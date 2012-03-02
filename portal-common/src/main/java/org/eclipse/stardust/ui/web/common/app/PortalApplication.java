@@ -1183,7 +1183,7 @@ public class PortalApplication
    public String getOverflowTabIframePopupArgs()
    {
       String advanceArgs = "{anchorId:'ippOverflowTabAnchor', width:100, height:30, maxWidth:800, maxHeight:550, "
-            + "openOnRight:false, anchorXAdjustment:120, anchorYAdjustment:5, zIndex:200, border:'1px solid black'}";
+            + "openOnRight:false, anchorXAdjustment:120, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
 
