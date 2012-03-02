@@ -32,6 +32,7 @@ import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultColumnModelEventHandler;
@@ -132,6 +133,7 @@ public class DocumentVersionDialog extends PopupUIComponentBean
    {
       try
       {
+         document = DocumentMgmtUtility.getDocument(document.getId());
          docVersionTable.setList(getDocumentVersionList(document));
          docVersionTable.initialize();
          this.documentName = document.getName();

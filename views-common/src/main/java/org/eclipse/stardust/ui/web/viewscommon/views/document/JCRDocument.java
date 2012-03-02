@@ -119,18 +119,15 @@ public class JCRDocument extends AbstractDocumentContentInfo
    JCRDocument(Document doc, boolean readOnly, JCRVersionTracker vTracker)
    {
       this.document = doc;
-//      if (DocumentMgmtUtility.isDocumentVersioned(document))
-//      {
-         supportVersioning = true;
-         if (null == vTracker)
-         {
-            this.versionTracker = new JCRVersionTracker(document);
-         }
-         else
-         {
-            this.versionTracker = vTracker;
-         }
-//      }
+      supportVersioning = true;
+      if (null == vTracker)
+      {
+         this.versionTracker = new JCRVersionTracker(document);
+      }
+      else
+      {
+         this.versionTracker = vTracker;
+      }
 
       name = document.getName();
 
@@ -156,12 +153,9 @@ public class JCRDocument extends AbstractDocumentContentInfo
       }
       
       documentID = document.getId();
-      if (supportVersioning)
+      if (!versionTracker.isLatestVersion())
       {
-         if (!versionTracker.isLatestVersion())
-         {
-            documentID = document.getRevisionId();
-         }
+         documentID = document.getRevisionId();
       }
    }
 
