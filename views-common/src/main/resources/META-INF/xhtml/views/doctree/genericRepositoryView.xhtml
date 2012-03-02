@@ -5,11 +5,7 @@
 	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
-
-	<html>
-	<head>
-	</head>
-	<body>
+<ui:component>
 	<ice:panelGroup>
 		<ui:include src="#{genericPopup.includePath}" />
 		<ui:include
@@ -327,6 +323,5 @@
 			value="#{genericRepositoryTreeViewBean.messages['jcrErrorMsg']}"
 			style="color: red" />
 	</ice:panelGroup>
-	</body>
-	</html>
+</ui:component>	
 </f:view>

@@ -6,11 +6,13 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-	<ui:include
-		src="/plugins/views-common/views/doctree/commonFileUploadDialog.xhtml" />
-	<ui:include
-		src="/plugins/views-common/views/doctree/fileSaveDialog.xhtml" />
-
+	<ice:panelGroup>
+		<ui:include
+			src="/plugins/views-common/views/doctree/commonFileUploadDialog.xhtml" />
+		<ui:include
+			src="/plugins/views-common/views/doctree/fileSaveDialog.xhtml" />
+	</ice:panelGroup>
+	
 	<ice:panelGroup>
 		<ice:commandLink style="float: right;"
 			title="#{documentHandlerBean.messages['save.label']}"

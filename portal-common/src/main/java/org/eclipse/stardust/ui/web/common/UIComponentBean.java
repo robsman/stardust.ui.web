@@ -11,9 +11,11 @@
 package org.eclipse.stardust.ui.web.common;
 
 import java.io.Serializable;
+import java.util.Random;
 
 import org.eclipse.stardust.ui.web.common.message.UiElementMessage;
 import org.eclipse.stardust.ui.web.common.uielement.DefaultViewDefinition;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 
 
 /**
@@ -25,6 +27,8 @@ public abstract class UIComponentBean implements Serializable
    private static final long serialVersionUID = 1L;
 
    private DefaultViewDefinition viewDef;
+
+   protected String id;
 
    // ************* PROTECTED METHODS **********************
 
@@ -59,5 +63,18 @@ public abstract class UIComponentBean implements Serializable
                "View Definition is not initialized to read messages");
 
       return viewDef.getMessages();
+   }
+   
+   /**
+    * @return
+    */
+   public String getId()
+   {
+      if(StringUtils.isEmpty(id))
+      {
+         Random o = new Random();
+         id = "UIC" + o.nextInt(10000);
+      }
+      return id;
    }
 }
