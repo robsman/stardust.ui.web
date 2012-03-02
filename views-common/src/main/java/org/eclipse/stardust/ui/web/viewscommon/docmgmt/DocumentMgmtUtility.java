@@ -130,7 +130,6 @@ public class DocumentMgmtUtility
          docInfo.setContentType(contentType);
       }
       Document document = getDocumentManagementService().createDocument(targetId, docInfo);
-      document = getDocumentManagementService().versionDocument(document.getId(), CommonProperties.ZERO);
       return document;
    }
 
@@ -198,8 +197,6 @@ public class DocumentMgmtUtility
             docInfo.setProperties(properties);
          }
          doc = getDocumentManagementService().createDocument(targetId, docInfo, byteContents, null);
-         // for creating version
-         doc = getDocumentManagementService().versionDocument(doc.getId(), CommonProperties.ZERO);
       }
       return doc;
    }
@@ -229,8 +226,6 @@ public class DocumentMgmtUtility
             docInfo.setProperties(properties);
          }
          doc = getDocumentManagementService().createDocument(targetId, docInfo, byteContents, null);
-         // for creating version
-         getDocumentManagementService().versionDocument(doc.getId(), CommonProperties.ZERO);
       }
       return doc;
    }
@@ -265,22 +260,12 @@ public class DocumentMgmtUtility
    public static Document updateDocument(Document existingDocument, String physicalPath, String description,
          String comments) throws DocumentManagementServiceException, IOException
    {
-      if (StringUtils.isNotEmpty(description))
-      {
-         existingDocument.getProperties().put(CommonProperties.DESCRIPTION, description);
-      }
-      if (StringUtils.isNotEmpty(comments))
-      {
-         existingDocument.getProperties().put(CommonProperties.COMMENTS, comments);
-      }
-
       FileInputStream is = new FileInputStream(physicalPath);
       Document doc = null;
       if (null != is)
       {
-         int version = getDocumentManagementService().getDocumentVersions(existingDocument.getId()).size();
-         doc = getDocumentManagementService().updateDocument(existingDocument, getFileContent(is), "", true,
-               (new Integer(version + 1).toString()), false);
+         byte[] fileData = getFileContent(is);
+         doc = updateDocument(existingDocument, fileData, description, comments);
       }
       return doc;
    }
@@ -309,9 +294,14 @@ public class DocumentMgmtUtility
       
       if (null != fileData)
       {
-         int version = getDocumentManagementService().getDocumentVersions(existingDocument.getId()).size();
+         List versions = getDocumentVersions(existingDocument);
+         Integer version = 0;
+         if (null != versions)
+         {
+            version = versions.size() + 1;
+         }
          doc = getDocumentManagementService().updateDocument(existingDocument, fileData, "", true,
-               (new Integer(version + 1).toString()), false);
+               (version.toString()), false);
       }
       return doc;
    }
@@ -440,13 +430,19 @@ public class DocumentMgmtUtility
 
    /**
     * returns latest version history of the resource
-    * 
-    * @param docId
+    * @param document
     * @return
     */
-   public static List getDocumentVersions(String docId)
+   public static List getDocumentVersions(Document document)
    {
-      return getDocumentManagementService().getDocumentVersions(docId);
+      if (isDocumentVersioned(document))
+      {
+         return getDocumentManagementService().getDocumentVersions(document.getId());
+      }
+      else
+      {
+         return null;
+      }
    }
 
    /**
@@ -465,7 +461,7 @@ public class DocumentMgmtUtility
       docInfo.setProperties(srcDoc.getProperties());
       Document document = dms.createDocument(targetFolderPath, docInfo, dms.retrieveDocumentContent(srcDoc.getId()),
             null);
-      return getDocumentManagementService().versionDocument(document.getId(), CommonProperties.ZERO);
+      return document;
    }
 
    /**
@@ -860,11 +856,9 @@ public class DocumentMgmtUtility
                   // since the base url of the dms-content servlet is unknown
                   byte[] documentContent = readEntryData(stream);
                   // use default encoding, should not be a problem
-                  Document document = getDocumentManagementService().createDocument(folder.getId(), DmsUtils.createDocumentInfo(documentName),
+                  getDocumentManagementService().createDocument(folder.getId(), DmsUtils.createDocumentInfo(documentName),
                         documentContent, null);
-                  getDocumentManagementService().versionDocument(document.getId(), CommonProperties.ZERO);
                }
-               
             }
          }
       }

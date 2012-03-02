@@ -19,10 +19,8 @@ import java.util.TreeMap;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.ui.web.viewscommon.services.ContextPortalServices;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.GenericRepositoryTreeViewBean;
-
-
 
 /**
  * @author Yogesh.Manware
@@ -58,28 +56,30 @@ public class JCRVersionTracker implements IVersionTracker
       try
       {
          @SuppressWarnings("unchecked")
-         List<Document> docVersionList = ContextPortalServices.getDocumentManagementService().getDocumentVersions(
-               document.getId());
-         Map<Date, Document> tempMap = new TreeMap<Date, Document>();
-
-         for (Document document1 : docVersionList)
+         List<Document> docVersionList = DocumentMgmtUtility.getDocumentVersions(document);
+         if (null != docVersionList)
          {
-            tempMap.put(document1.getDateLastModified(), document1);
-         }
+            Map<Date, Document> tempMap = new TreeMap<Date, Document>();
 
-         int version = LOWEST_VERSION;
-         Document tempDoc;
-
-         for (Date d : tempMap.keySet())
-         {
-            tempDoc = tempMap.get(d);
-            if (tempDoc.getRevisionId().equals(document.getRevisionId()))
+            for (Document document1 : docVersionList)
             {
-               this.currentVersionNo = version;
+               tempMap.put(document1.getDateLastModified(), document1);
             }
-            versions.put(version, tempDoc);
-            this.latestVersion = version;
-            version = version + MIN_DIFF;
+
+            int version = LOWEST_VERSION;
+            Document tempDoc;
+
+            for (Date d : tempMap.keySet())
+            {
+               tempDoc = tempMap.get(d);
+               if (tempDoc.getRevisionId().equals(document.getRevisionId()))
+               {
+                  this.currentVersionNo = version;
+               }
+               versions.put(version, tempDoc);
+               this.latestVersion = version;
+               version = version + MIN_DIFF;
+            }
          }
       }
       catch (Exception e)

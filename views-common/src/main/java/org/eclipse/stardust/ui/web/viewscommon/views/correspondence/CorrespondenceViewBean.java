@@ -686,7 +686,6 @@ public class CorrespondenceViewBean extends UIComponentBean
       docInfo.setContentType(MimeTypesHelper.HTML.getType());
       Document mailDocument = DocumentMgmtUtility.getDocumentManagementService().createDocument(
             processAttachmentsFolder.getId(), docInfo, editor.getContent().getBytes(), null);
-      DocumentMgmtUtility.getDocumentManagementService().versionDocument(mailDocument.getId(), CommonProperties.ZERO);
       populateMetaData(mailDocument, attachmentInfo);
       mailDocument = DocumentMgmtUtility.getDocumentManagementService().updateDocument(mailDocument, false, "", false);
       DMSHelper.addAndSaveProcessAttachment(processInstance, mailDocument);
