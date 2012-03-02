@@ -76,6 +76,11 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		class="org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog"
 		scope="portalTab">
 	</bean>
+	
+	<bean name="fileSaveDialog"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.doctree.FileSaveDialog"
+		scope="portalTab">
+	</bean>
 
 	<bean name="tiffCustomSaveDialog"
 		class="org.eclipse.stardust.ui.web.viewscommon.views.document.TIFFCustomSaveDialog"

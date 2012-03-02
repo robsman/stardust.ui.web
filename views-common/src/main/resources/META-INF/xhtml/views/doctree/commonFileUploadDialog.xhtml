@@ -40,12 +40,6 @@
 								escape="false" styleClass="label-form" />
 							<ice:panelGroup styleClass="clearing" />
 								
-							<!-- Custom dialog (Before) -->
-							<ice:panelGroup rendered="#{commonFileUploadDialog.customDialog and (commonFileUploadDialog.customDialogPosition eq 'ADD_BEFORE')}" style="width: 350px;">
-								<ui:include src="#{commonFileUploadDialog.customDialogSource}">									
-								</ui:include>
-							</ice:panelGroup>
-	
 							<ice:panelGroup
 								rendered="#{not empty commonFileUploadDialog.message}">
 								<ice:outputLabel styleClass="label-form" value="#{commonFileUploadDialog.message}" />
@@ -117,12 +111,6 @@
 										<pc:automationTag value="auto-COM-FileUpdDlg-VerCmt" standAlone="false"/>
 									</ice:inputTextarea>
 								</ice:panelGroup>
-							</ice:panelGroup>
-							
-							<!-- Custom dialog (After) -->
-							<ice:panelGroup rendered="#{commonFileUploadDialog.customDialog and (commonFileUploadDialog.customDialogPosition eq 'ADD_AFTER')}" style="width: 350px;">
-								<ui:include src="#{commonFileUploadDialog.customDialogSource}">									
-								</ui:include>
 							</ice:panelGroup>
 						</h:panelGrid>
 						

@@ -52,6 +52,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog;
+import org.eclipse.stardust.ui.web.viewscommon.views.doctree.FileSaveDialog;
+import org.eclipse.stardust.ui.web.viewscommon.views.doctree.FileSaveDialog.FileSaveCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.OutputResource;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentEventListener.DocumentEventType;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.helper.CorrespondenceMetaData;
@@ -280,20 +282,19 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       {
          try
          {
-            CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getCurrent();
-            fileUploadDialog.initialize();
-            fileUploadDialog.setTitle(propsBean.getString("views.documentView.saveDocumentDialog.saveDocument"));
-            fileUploadDialog.setICallbackHandler(new DCCallBackHandler(false));
-            fileUploadDialog.setViewFileUpload(false);
-            fileUploadDialog.setViewDescription(false);
-            if (contentHandler instanceof ICustomDocumentSaveHandler && ((ICustomDocumentSaveHandler)contentHandler).usesCustomSaveDialog())
+            FileSaveDialog fileSaveDialog = FileSaveDialog.getInstance();
+            fileSaveDialog.initialize();
+            fileSaveDialog.setCallbackHandler(new DCCallBackHandler(false));
+            if (contentHandler instanceof ICustomDocumentSaveHandler
+                  && ((ICustomDocumentSaveHandler) contentHandler).usesCustomSaveDialog())
             {
-               fileUploadDialog.setCustomDialog(true);
-               fileUploadDialog.setCustomDialogPosition(((ICustomDocumentSaveHandler)contentHandler).getDialogPosition());
-               fileUploadDialog.setCustomDialogSource(((ICustomDocumentSaveHandler) contentHandler).getCustomDialogURL());
+               fileSaveDialog.setCustomDialog(true);
+               fileSaveDialog
+                     .setCustomDialogPosition(((ICustomDocumentSaveHandler) contentHandler).getDialogPosition());
+               fileSaveDialog.setCustomDialogSource(((ICustomDocumentSaveHandler) contentHandler).getCustomDialogURL());
                ((ICustomDocumentSaveHandler) contentHandler).setCustomSaveDialogOptions();
             }
-            fileUploadDialog.openPopup();
+            fileSaveDialog.openPopup();
          }
          catch (Exception e)
          {
@@ -345,21 +346,21 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       try
       {
          // get the version revision id and save it with new version using kernel API
-         CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getCurrent();
-         fileUploadDialog.initialize();
-         fileUploadDialog.setHeaderMessage(propsBean.getString("views.documentView.saveDocumentDialog.revert"));
-         fileUploadDialog.setTitle(propsBean.getString("views.documentView.saveDocumentDialog.saveDocumentVersion"));
-         fileUploadDialog.setViewFileUpload(false);
-         fileUploadDialog.setICallbackHandler(new DCCallBackHandler(true));
+         FileSaveDialog fileSaveDialog = FileSaveDialog.getInstance();
+         fileSaveDialog.initialize();
+         fileSaveDialog.setTitle(MessagesViewsCommonBean.getInstance().getString(
+               "views.documentView.saveDocumentDialog.saveDocument"));
+         fileSaveDialog.setHeaderMessage(propsBean.getString("views.documentView.saveDocumentDialog.revert"));
+         fileSaveDialog.setCallbackHandler(new DCCallBackHandler(true));
          //check if the document type matches
          IDocumentContentInfo latestDocInfo = getVersionTracker().getLatestVersion();
          if (!StringUtils.areEqual(getDocumentContentInfo().getDocumentType(), latestDocInfo.getDocumentType()))
          {
-            fileUploadDialog.setMessage(propsBean.getParamString(
+            fileSaveDialog.setMessage(propsBean.getParamString(
                   "views.documentView.saveDocumentDialog.documentTypeWarning", getDocumentTypeName()));
          }
          
-         fileUploadDialog.openPopup();
+         fileSaveDialog.openPopup();
       }
       catch (Exception e)
       {
@@ -413,7 +414,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
     * 
     * @param force
     */
-   private void saveDocumentContents(boolean force) 
+   private void saveDocumentContents(boolean force, String comments) 
    {
       if (force || isModified())
       {
@@ -422,8 +423,6 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
             documentContentInfo = ((ICustomDocumentSaveHandler) contentHandler).save();
          }
          
-         CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getCurrent();
-         String comments = fileUploadDialog.getComments();
          if (isDescriptionChanged())
          {
             documentContentInfo.setDescription(inputDescription);
@@ -866,10 +865,11 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
     * @author Yogesh.Manware
     * @version $Revision: $
     */
-   class DCCallBackHandler implements ICallbackHandler
+   class DCCallBackHandler extends FileSaveCallbackHandler
    {
       private boolean force;
-
+      private String comments;
+      
       public DCCallBackHandler(boolean force)
       {
          this.force = force;
@@ -881,13 +881,23 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          {
             try
             {
-               saveDocumentContents(force);
+               saveDocumentContents(force, getComments());
             }
             catch (Exception e)
             {
                RepositoryUtility.showErrorPopup("views.genericRepositoryView.saveFile.error", null, e);
             }
          }
+      }
+
+      public String getComments()
+      {
+         return comments;
+      }
+
+      public void setComments(String comments)
+      {
+         this.comments = comments;
       }
 
    }

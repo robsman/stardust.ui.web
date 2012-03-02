@@ -34,7 +34,6 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DocumentTypeWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
-import org.eclipse.stardust.ui.web.viewscommon.views.document.ICustomDocumentSaveHandler;
 
 import com.icesoft.faces.component.inputfile.FileInfo;
 import com.icesoft.faces.component.inputfile.InputFile;
@@ -68,9 +67,6 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
    // action)
    private boolean showDescription;
    private boolean showComment;
-   private boolean customDialog;
-   private String customDialogSource;
-   private ICustomDocumentSaveHandler.CustomDialogPosition customDialogPosition;
    
    private Map<String, DocumentType> allDocumentTypes;
    private List<SelectItem> allDocumentTypesList;
@@ -129,10 +125,6 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
       showDescription = false;
       showComment = false;
       
-      customDialog = false;
-      customDialogSource = null;
-      customDialogPosition = null;
-
       allDocumentTypes = null;
       allDocumentTypesList = null;
       documentTypeId = null;
@@ -422,36 +414,6 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
    public void setViewComment(boolean viewComment)
    {
       this.viewComment = viewComment;
-   }
-
-   public boolean isCustomDialog()
-   {
-      return customDialog;
-   }
-
-   public void setCustomDialog(boolean customDialog)
-   {
-      this.customDialog = customDialog;
-   }   
-   
-   public String getCustomDialogSource()
-   {
-      return customDialogSource;
-   }
-
-   public void setCustomDialogSource(String customDialogSource)
-   {
-      this.customDialogSource = customDialogSource;
-   }
-
-   public ICustomDocumentSaveHandler.CustomDialogPosition getCustomDialogPosition()
-   {
-      return customDialogPosition;
-   }
-
-   public void setCustomDialogPosition(ICustomDocumentSaveHandler.CustomDialogPosition customDialogPosition)
-   {
-      this.customDialogPosition = customDialogPosition;
    }
 
    public String getDocumentTypeId()

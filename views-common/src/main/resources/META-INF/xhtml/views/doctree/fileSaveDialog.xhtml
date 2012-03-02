@@ -1,0 +1,112 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelPopup modal="true" rendered="#{fileSaveDialog.visible}"
+		draggable="true" autoCentre="true" positionOnLoadOnly="true"
+		styleClass="popupDialog" clientOnly="true">
+
+		<f:facet name="header">
+			<ice:panelGroup style="min-width: 200px;">
+				<pc:automationTag value="auto-COM-FileUpdDlg-Header" />
+				<ice:outputText value="#{fileSaveDialog.title} "
+					styleClass="headerText" />
+				<pc:automationTag value="auto-COM-FileUpdDlg-CloseLink"
+					standAlone="false" />
+				<ice:commandButton
+					image="/plugins/common/images/dialog-windowbttn-close.png"
+					title="#{common_msgPropsBean['common.close']}"
+					action="#{fileSaveDialog.closePopup}" immediate="true"
+					styleClass="windowClose" />
+			</ice:panelGroup>
+		</f:facet>
+
+		<f:facet name="body">
+			<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+				cellspacing="0" renderNorth="false" renderEast="false"
+				renderSouth="true" renderWest="false" renderCenter="true"
+				style="width:100%">
+				<f:facet name="center">
+					<ice:panelGroup>
+						<h:panelGrid columns="1" style="width: 100%; margin-bottom: 5px;">
+
+							<ice:outputText
+								rendered="#{not empty fileSaveDialog.headerMessage}"
+								value="#{fileSaveDialog.headerMessage}" escape="false"
+								styleClass="label-form" />
+							<ice:panelGroup styleClass="clearing" />
+
+							<!-- Custom dialog (Before) -->
+							<ice:panelGroup
+								rendered="#{fileSaveDialog.customDialog and (fileSaveDialog.customDialogPosition eq 'ADD_BEFORE')}"
+								style="width: 350px;">
+								<ui:include src="#{fileSaveDialog.customDialogSource}">
+								</ui:include>
+							</ice:panelGroup>
+
+							<ice:panelGroup rendered="#{not empty fileSaveDialog.message}">
+								<ice:outputLabel styleClass="label-form"
+									value="#{fileSaveDialog.message}" />
+							</ice:panelGroup>
+
+							<!-- ***** COMMENTS ***** -->
+							<ice:panelGrid columns="2"
+								rendered="#{!fileSaveDialog.showComment}">
+								<ice:commandLink action="#{fileSaveDialog.toggleComment}">
+									<pc:automationTag value="auto-COM-FileUpdDlg-VerCmtLink"
+										standAlone="false" />
+									<ice:graphicImage
+										value="/plugins/views-common/images/icons/add.png" />
+								</ice:commandLink>
+								<ice:commandLink
+									value="#{views_common_msgPropsBean['fileUpload.comment.label']}"
+									action="#{fileSaveDialog.toggleComment}"
+									styleClass="once-only-action-link" />
+							</ice:panelGrid>
+							<ice:panelGroup rendered="#{fileSaveDialog.showComment}">
+								<ice:outputText
+									value="#{views_common_msgPropsBean['fileUpload.comment.label']}"
+									styleClass="label-form" />
+								<ice:panelGroup scrollWidth="100%">
+									<ice:inputTextarea partialSubmit="true"
+										value="#{fileSaveDialog.comments}" rows="2"
+										style="width: 300px;">
+										<pc:automationTag value="auto-COM-FileUpdDlg-VerCmt"
+											standAlone="false" />
+									</ice:inputTextarea>
+								</ice:panelGroup>
+							</ice:panelGroup>
+
+							<!-- Custom dialog (After) -->
+							<ice:panelGroup
+								rendered="#{fileSaveDialog.customDialog and (fileSaveDialog.customDialogPosition eq 'ADD_AFTER')}"
+								style="width: 350px;">
+								<ui:include src="#{fileSaveDialog.customDialogSource}">
+								</ui:include>
+							</ice:panelGroup>
+						</h:panelGrid>
+
+					</ice:panelGroup>
+				</f:facet>
+
+				<f:facet name="south">
+					<ice:panelGroup>
+						<pc:automationTag value="auto-COM-FileUpdDlg-BtnsBar"
+							standAlone="false" />
+						<ice:commandButton value="#{views_common_msgPropsBean['views.common.continue.label']}"
+							action="#{fileSaveDialog.continueAction}" immediate="true"
+							styleClass="button" />
+						<ice:commandButton
+							value="#{views_common_msgPropsBean['common.close']}"
+							action="#{fileSaveDialog.closePopup}" immediate="true"
+							styleClass="button" />
+					</ice:panelGroup>
+				</f:facet>
+			</ice:panelBorder>
+		</f:facet>
+	</ice:panelPopup>
+</f:view>
