@@ -173,6 +173,7 @@
 	font-weight: bold;
 	color: #333333;
 	background: #FFFFFF url(../images/panelHeader-BG.png) repeat-x scroll center bottom;
+	white-space: normal;
 }
 
 .popupDialogHdr .headerText {
