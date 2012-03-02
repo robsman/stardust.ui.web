@@ -130,6 +130,7 @@ public class DocumentMgmtUtility
          docInfo.setContentType(contentType);
       }
       Document document = getDocumentManagementService().createDocument(targetId, docInfo);
+      document = getDocumentManagementService().versionDocument(document.getId(), CommonProperties.ZERO);
       return document;
    }
 
@@ -197,6 +198,7 @@ public class DocumentMgmtUtility
             docInfo.setProperties(properties);
          }
          doc = getDocumentManagementService().createDocument(targetId, docInfo, byteContents, null);
+         doc = getDocumentManagementService().versionDocument(doc.getId(), CommonProperties.ZERO);
       }
       return doc;
    }
@@ -226,6 +228,7 @@ public class DocumentMgmtUtility
             docInfo.setProperties(properties);
          }
          doc = getDocumentManagementService().createDocument(targetId, docInfo, byteContents, null);
+         doc = getDocumentManagementService().versionDocument(doc.getId(), CommonProperties.ZERO);
       }
       return doc;
    }
@@ -461,6 +464,7 @@ public class DocumentMgmtUtility
       docInfo.setProperties(srcDoc.getProperties());
       Document document = dms.createDocument(targetFolderPath, docInfo, dms.retrieveDocumentContent(srcDoc.getId()),
             null);
+      document = getDocumentManagementService().versionDocument(document.getId(), CommonProperties.ZERO);
       return document;
    }
 
@@ -856,8 +860,9 @@ public class DocumentMgmtUtility
                   // since the base url of the dms-content servlet is unknown
                   byte[] documentContent = readEntryData(stream);
                   // use default encoding, should not be a problem
-                  getDocumentManagementService().createDocument(folder.getId(), DmsUtils.createDocumentInfo(documentName),
+                  Document document = getDocumentManagementService().createDocument(folder.getId(), DmsUtils.createDocumentInfo(documentName),
                         documentContent, null);
+                  getDocumentManagementService().versionDocument(document.getId(), CommonProperties.ZERO);
                }
             }
          }
