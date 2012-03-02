@@ -140,7 +140,7 @@ public class ModelElementUtils
                baseName = DEFAULT_BUNDLE_PREFIX + model.getId();
                try
                {
-                  ResourceBundle.getBundle(baseName);
+                  ResourceBundle.getBundle(baseName, FacesUtils.getLocaleFromView());
                }
                catch(Exception e)
                {
