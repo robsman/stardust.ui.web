@@ -113,7 +113,7 @@
       <server-archive name="ipp-views-common" type="jar"
          sourceFile="../../../add-ons/ipp-portal/lib/ipp-views-common.jar" destDir="WEB-INF/lib/"/>
       <server-archive name="ejb" type="jar"
-         sourceFile="../../../lib/ext/ejb.jar" destDir="WEB-INF/lib/" />
+         sourceFile="../../../lib/ext/geronimo-ejb_2.1_spec.jar" destDir="WEB-INF/lib/" />
       <server-archive name="jms" type="jar" appservers="tomcat"
          sourceFile="../../../lib/ext/geronimo-jms_1.1_spec.jar" destDir="WEB-INF/lib/" />
       <server-archive name="jsp-api" type="jar" appservers="was5, wls8"
