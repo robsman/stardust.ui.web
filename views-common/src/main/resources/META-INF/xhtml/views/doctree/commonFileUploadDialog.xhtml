@@ -47,7 +47,7 @@
 
 							<!-- ***** DOC TYPE ***** -->
 							<ice:panelGrid columns="2" cellpadding="0" cellspacing="0"
-								rendered="#{commonFileUploadDialog.viewFileUpload}">
+								rendered="#{commonFileUploadDialog.viewDocumentType}">
 								<ice:outputLabel
 									value="#{views_common_msgPropsBean['fileUpload.documentTypes.label']}"
 									styleClass="label-form" />
@@ -144,7 +144,7 @@
 							rendered="#{commonFileUploadDialog.viewFileUpload}">
 							<ice:selectBooleanCheckbox partialSubmit="true"
 								value="#{commonFileUploadDialog.openDocument}"
-								disabled="#{!commonFileUploadDialog.showOpenDocument}">
+								disabled="#{!commonFileUploadDialog.enableOpenDocument}">
 								<pc:automationTag value="auto-COM-FileUpdDlg-OpenDoc"
 									standAlone="false" />
 							</ice:selectBooleanCheckbox>

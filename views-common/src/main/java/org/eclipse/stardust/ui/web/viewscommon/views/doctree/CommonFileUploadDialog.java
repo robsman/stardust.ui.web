@@ -62,6 +62,7 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
    // To enable/disable the description and comment section on the dialog
    private boolean viewDescription;
    private boolean viewComment;
+   private boolean viewDocumentType;
 
    // To show/hide the description and comment section on the dialog (page section link
    // action)
@@ -80,7 +81,7 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
 
    private boolean documentTypeDisabled;
    
-   private boolean showOpenDocument;
+   private boolean enableOpenDocument;
    private boolean openDocument;
    
    private String message;
@@ -119,19 +120,20 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
       fileInfo = null;
 
       viewFileUpload = true;
+      viewDocumentType = true;
       viewDescription = true;
       viewComment = true;
-
+      enableOpenDocument = true;
+      
       showDescription = false;
       showComment = false;
       
       allDocumentTypes = null;
       allDocumentTypesList = null;
       documentTypeId = null;
-      documentTypeDisabled = false;      
-
+      documentTypeDisabled = false;
+      
       openDocument = false;
-      showOpenDocument = true;
    }
 
    /**
@@ -444,16 +446,6 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
       this.openDocument = openDocument;
    }
 
-   public boolean isShowOpenDocument()
-   {
-      return showOpenDocument;
-   }
-
-   public void setShowOpenDocument(boolean showOpenDocument)
-   {
-      this.showOpenDocument = showOpenDocument;
-   }
-
    public String getMessage()
    {
       return message;
@@ -462,5 +454,25 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
    public void setMessage(String message)
    {
       this.message = message;
+   }
+
+   public boolean isViewDocumentType()
+   {
+      return viewDocumentType;
+   }
+
+   public void setViewDocumentType(boolean viewDocumentType)
+   {
+      this.viewDocumentType = viewDocumentType;
+   }
+
+   public boolean isEnableOpenDocument()
+   {
+      return enableOpenDocument;
+   }
+
+   public void setEnableOpenDocument(boolean enableOpenDocument)
+   {
+      this.enableOpenDocument = enableOpenDocument;
    }
 }

@@ -617,7 +617,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
             "views.documentView.saveDocumentDialog.uploadNewVersion.text", documentContentInfo.getName()));
       fileUploadDialog.setDocumentType(documentContentInfo.getDocumentType());
       // In Document viewer document is already open, so no need to set Open Document
-      fileUploadDialog.setShowOpenDocument(false);
+      fileUploadDialog.setEnableOpenDocument(false);
       fileUploadDialog.setOpenDocument(true);
       fileUploadDialog.setICallbackHandler(new ICallbackHandler()
       {

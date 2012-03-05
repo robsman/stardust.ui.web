@@ -219,6 +219,7 @@ public class FileUploadHelper
             "views.genericRepositoryView.createDocumentVersionConfirmation", this.existingDocument.getName()));
       fileUploadDialog.setTitle(msgBean.getString("views.documentView.saveDocumentDialog.saveDocument"));
       fileUploadDialog.setViewFileUpload(false);
+      fileUploadDialog.setViewDocumentType(false);
       fileUploadDialog.setViewDescription(true);
       fileUploadDialog.setViewComment(true);
       
