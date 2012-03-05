@@ -173,6 +173,8 @@ public class RepositoryVirtualUserObject extends RepositoryResourceUserObject
       fileUploadDialog.setTitle(propsBean.getString("common.fileUpload"));
       fileUploadDialog.setViewDescription(false);
       fileUploadDialog.setViewComment(false);
+      fileUploadDialog.setViewDocumentType(false);
+      fileUploadDialog.setEnableOpenDocument(false);
       fileUploadDialog.setICallbackHandler(new ICallbackHandler()
       {
          public void handleEvent(EventType eventType)
