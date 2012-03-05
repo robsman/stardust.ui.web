@@ -305,8 +305,8 @@ public class UserManagementBean extends PopupUIComponentBean
                User user = userDetailsTableEntry.getUser();
                if (user != null && !user.getAccount().equals("motu")
                      && userDetailsTableEntry.getValidTo() == null)
-               {
-                  User u= service.invalidateUser(user.getAccount());
+               {                 
+                  User u= service.invalidateUser(user.getRealm().getId(),user.getAccount());
                   invalidatedUsers.add(u);
                }
                else
