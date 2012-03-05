@@ -14,16 +14,13 @@ import java.util.Set;
 
 
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
-import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.PermissionState;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
-import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.core.runtime.utils.ExecutionPermission;
 import org.eclipse.stardust.engine.core.runtime.utils.Permissions;
-import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl.IppUser;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl.IppUserProvider;
 
@@ -59,48 +56,7 @@ public class AuthorizationUtils
     */
    public static boolean hasManageCasePermission(ProcessInstance processInstance)
    {
-      boolean hasPermission = PermissionState.Granted.equals(processInstance.getPermission(PERMISSION_MANAGE_CASE));
-      // whole if block is not required and this should be removed
-      // first line is sufficient to know permission for "Manage case"
-      if (!hasPermission)
-      {
-         Participant participant = ProcessInstanceUtils.getCaseOwner(processInstance);
-         if (null == participant)
-         {
-            return false;
-         }
-         else
-         {
-
-            IppUser currentUser = (IppUser) IppUserProvider.getInstance().getUser();
-            if (participant instanceof QualifiedModelParticipantInfo)
-            {
-               QualifiedModelParticipantInfo qualifiedParticipantInfo = (QualifiedModelParticipantInfo) participant;
-               if (currentUser.isInRole(qualifiedParticipantInfo.getQualifiedId()))
-               {
-                  hasPermission = true;
-               }
-            }
-            else if (participant instanceof User)
-            {
-               User user = SessionContext.findSessionContext().getUser();
-               User participantUser = (User) participant;
-               if (user.getOID() == participantUser.getOID())
-               {
-                  hasPermission = true;
-               }
-            }
-            else
-            {
-               if (currentUser.isInRole(participant.getId()))
-               {
-                  hasPermission = true;
-               }
-            }
-         }
-
-      }
-      return hasPermission;
+      return PermissionState.Granted.equals(processInstance.getPermission(PERMISSION_MANAGE_CASE));      
    }
 
 
