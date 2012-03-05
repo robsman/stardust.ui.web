@@ -340,7 +340,7 @@ public class I18nUtils
       for (DataPath path : datas)
       {
          if (caseDataPath.getId().equals(path.getId()) && caseDataPath.getMappedType().equals(path.getMappedType())
-               && path.isDescriptor() && path.isKeyDescriptor())
+               && path.isKeyDescriptor())
          {
             label = getString(path, mode);
             if (null != label)

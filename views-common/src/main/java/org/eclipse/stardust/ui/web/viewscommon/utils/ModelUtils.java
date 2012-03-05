@@ -245,7 +245,7 @@ public class ModelUtils
       Map<String, DataPath> dataMap = CollectionUtils.newHashMap();
       for (DataPath path : datas)
       {
-         if (path.isDescriptor() && path.isKeyDescriptor())
+         if (path.isKeyDescriptor())
          {
             dataMap.put(path.getId(), path);
          }

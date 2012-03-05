@@ -468,7 +468,7 @@ public class CommonDescriptorUtils
       Map<String, DataPath> keyDescriptors = CollectionUtils.newHashMap();
       for (DataPath path : dataList)
       {
-         if (path.isKeyDescriptor() && Direction.IN.equals(path.getDirection()) && path.isDescriptor()
+         if (path.isKeyDescriptor() && Direction.IN.equals(path.getDirection()) 
                && DescriptorFilterUtils.isDataFilterable(path))
          {
             keyDescriptors.put(path.getId(), path);
@@ -501,7 +501,7 @@ public class CommonDescriptorUtils
       DataPath[] commonDatas = getCommonDescriptors(commonProcessDefinitions, true);
       for (DataPath dataPath : commonDatas)
       {
-         if (dataPath.isDescriptor() && dataPath.isKeyDescriptor() && !isStructuredData(dataPath))
+         if (dataPath.isKeyDescriptor())
          {
             Pair<Class, Object> firstTypeValuePair = null;
             for (ProcessInstance childPi : children)
