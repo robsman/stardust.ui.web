@@ -84,5 +84,20 @@ public class PriorityAutoCompleteItem extends DefaultRowModel
    {
       priorityAutocompleteSelector.removePriority(this);
    }
+   
+   @Override
+   public boolean equals(Object equateTo)
+   {
+      if (null != equateTo && equateTo instanceof PriorityAutoCompleteItem)
+      {
+         PriorityAutoCompleteItem eTo = (PriorityAutoCompleteItem) equateTo;
+         if (eTo.getLabel().equals(getLabel()))
+         {
+            return true;
+         }
+      }
+
+      return false;
+   }
 
 }

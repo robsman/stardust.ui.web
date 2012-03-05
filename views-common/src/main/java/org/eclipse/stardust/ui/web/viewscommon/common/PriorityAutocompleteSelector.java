@@ -50,6 +50,7 @@ public class PriorityAutocompleteSelector extends AutocompleteMultiSelector<Prio
 
    protected boolean showAutocompletePanel;
    protected boolean showSelectedList;
+   private SelectInputText autoComplete;
 
    /**
     * @param provider
@@ -104,7 +105,7 @@ public class PriorityAutocompleteSelector extends AutocompleteMultiSelector<Prio
 
    /**
     * Overridden - to first check if the given event is in INVOKE_APPLICATION phase - this
-    * is needed as the participant data provider uses bean members and we must wait till
+    * is needed as the Priority data provider uses bean members and we must wait till
     * their values are set.
     * 
     */
@@ -122,17 +123,9 @@ public class PriorityAutocompleteSelector extends AutocompleteMultiSelector<Prio
          {
             if (event.getComponent() instanceof SelectInputText)
             {
-               SelectInputText autoComplete = (SelectInputText) event.getComponent();
+               autoComplete = (SelectInputText) event.getComponent();
                selectedItem = autoComplete.getSelectedItem();
-               if (selectedItem != null)
-               {
-                  autoComplete.setValue(selectedItem.getLabel());
-                  if (autocompleteSelectorListener != null)
-                  {
-                     autocompleteSelectorListener.actionPerformed(autoComplete, selectedItem);
-                  }
-               }
-               else
+               if (selectedItem == null)
                {
                   String newWord = (String) event.getNewValue();
                   newWord = newWord.trim();
@@ -154,6 +147,26 @@ public class PriorityAutocompleteSelector extends AutocompleteMultiSelector<Prio
       }
    }
 
+   /**
+    * Action method called on selection of Priority
+    */
+   public void searchPriority()
+   {
+      if (null != autoComplete)
+      {
+         selectedItem = autoComplete.getSelectedItem();
+
+         if (selectedItem != null)
+         {
+            autoComplete.setValue(selectedItem.getLabel());
+            if (autocompleteSelectorListener != null)
+            {
+               autocompleteSelectorListener.actionPerformed(autoComplete, selectedItem);
+            }
+         }
+      }
+   }
+   
    /**
     * @param priorityItem
     */
@@ -256,6 +269,13 @@ public class PriorityAutocompleteSelector extends AutocompleteMultiSelector<Prio
    {
       this.showSelectedList = showSelectedList;
    }
+
+   public SelectInputText getAutoComplete()
+   {
+      return autoComplete;
+   }
+   
+   
 }
 
 /**
