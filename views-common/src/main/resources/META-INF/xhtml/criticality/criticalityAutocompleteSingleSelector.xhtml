@@ -17,7 +17,7 @@
 				valueChangeListener="#{component.searchValueChanged}"
 				disabled="#{component.disabled}" partialSubmit="false" width="95%"
 				listVar="criticality" listValue="#{component.matchingData}"
-				style="margin: 0px 0px 9px 2px;">
+				style="margin: 0px 0px 9px 2px;" action="#{component.searchCriticality}">
 				<f:facet name="selectInputText">
 					<ice:panelGrid columns="2">
 						<ice:outputText value="#{criticality.label}" escape="false"

@@ -45,7 +45,8 @@ public class CriticalityAutocompleteSelector extends AutocompleteMultiSelector<C
 
    protected boolean showAutocompletePanel;
    protected boolean showSelectedList;
-
+   private SelectInputText autoComplete;
+   
    /**
     * @param provider
     * @param autoCompleteListner
@@ -117,17 +118,9 @@ public class CriticalityAutocompleteSelector extends AutocompleteMultiSelector<C
          {
             if (event.getComponent() instanceof SelectInputText)
             {
-               SelectInputText autoComplete = (SelectInputText) event.getComponent();
+               autoComplete = (SelectInputText) event.getComponent();
                selectedItem = autoComplete.getSelectedItem();
-               if (selectedItem != null)
-               {
-                  autoComplete.setValue(selectedItem.getLabel());
-                  if (autocompleteSelectorListener != null)
-                  {
-                     autocompleteSelectorListener.actionPerformed(autoComplete, selectedItem);
-                  }
-               }
-               else
+               if (selectedItem == null)
                {
                   String newWord = (String) event.getNewValue();
                   newWord = newWord.trim();
@@ -149,6 +142,25 @@ public class CriticalityAutocompleteSelector extends AutocompleteMultiSelector<C
       }
    }
 
+   /**
+    * Action method called on selection of Criticality
+    */
+   public void searchCriticality()
+   {
+      if (null != autoComplete)
+      {
+         selectedItem = autoComplete.getSelectedItem();
+         if (selectedItem != null)
+         {
+            autoComplete.setValue(selectedItem.getLabel());
+            if (autocompleteSelectorListener != null)
+            {
+               autocompleteSelectorListener.actionPerformed(autoComplete, selectedItem);
+            }
+         }
+      }
+   }
+   
    /**
     * @param criticality
     */
@@ -234,6 +246,11 @@ public class CriticalityAutocompleteSelector extends AutocompleteMultiSelector<C
    public void setShowSelectedList(boolean showSelectedList)
    {
       this.showSelectedList = showSelectedList;
+   }
+
+   public SelectInputText getAutoComplete()
+   {
+      return autoComplete;
    }
 
    /**
