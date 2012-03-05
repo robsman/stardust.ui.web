@@ -269,7 +269,7 @@
 }
 
 .pnlPopUpMsgExceptionStackTrace{
-	max-height: 500px;
+	max-height: 300px;
 	max-width: 800px;
 	width: 650px;
 	overflow: scroll;
