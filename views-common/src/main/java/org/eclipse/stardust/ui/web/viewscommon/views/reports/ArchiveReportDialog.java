@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
@@ -117,9 +118,9 @@ public class ArchiveReportDialog extends PopupUIComponentBean
       }
       else
       {
-         DocumentMgmtUtility.createFolderIfNotExists(reportFolderPath);
-         DocumentMgmtUtility.createDocument(reportFolderPath, out.toByteArray(), reportName, MimeTypesHelper.PDF
-               .getType(), null);
+         Folder reportFolder = DocumentMgmtUtility.createFolderIfNotExists(reportFolderPath);
+         DocumentMgmtUtility.createDocument(reportFolder.getId(), reportName, out.toByteArray(), null,
+               MimeTypesHelper.PDF.getType(), null, null, null);
          closePopup();
       }
    }

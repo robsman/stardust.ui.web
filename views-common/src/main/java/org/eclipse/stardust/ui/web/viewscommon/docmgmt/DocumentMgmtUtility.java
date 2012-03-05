@@ -22,6 +22,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -83,6 +84,8 @@ import org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentTypeWrappe
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRVersionTracker;
 import org.eclipse.stardust.ui.web.viewscommon.views.documentsearch.DocumentSearchProvider;
+
+import com.icesoft.faces.component.inputfile.FileInfo;
 
 
 
@@ -153,68 +156,42 @@ public class DocumentMgmtUtility
    }
 
    /**
-    * creates new document based on the input parameters
-    * 
     * @param targetId
-    * @param physicalPath
-    * @param contentType
-    * @param fileName
-    * @param properties
+    * @param fileInfo
+    * @param description
+    * @param comments
+    * @param documentType
     * @return
-    * @throws DocumentManagementServiceException
     * @throws IOException
     */
-   public static Document createDocument(String targetId, String physicalPath, String contentType, String fileName,
-         Map<String, Object> properties) throws DocumentManagementServiceException, IOException
+   public static Document createDocument(String targetId, FileInfo fileInfo, String description, String comments,
+         DocumentType documentType) throws IOException
    {
-      FileInputStream is = new FileInputStream(physicalPath);
+      String fileName = fileInfo.getFileName();
       Document doc = null;
-      if (null != is)
+      byte[] contents = getFileSystemDocumentContent(fileInfo.getPhysicalPath());
+      if (null != contents)
       {
-         doc = createDocument(targetId, getFileContent(is), fileName, contentType, properties);
-      }
-      return doc;
-   }
-
-   /**
-    * @param targetId
-    * @param byteContents
-    * @param fileName
-    * @param contentType
-    * @param properties
-    * @return
-    */
-   public static Document createDocument(String targetId, byte[] byteContents, String fileName, String contentType,
-         Map<String, Object> properties)
-   {
-      Document doc = null;
-      if (null != byteContents)
-      {
-         DocumentInfo docInfo = DmsUtils.createDocumentInfo(fileName);
-         docInfo.setOwner(getUser().getAccount());
-         docInfo.setContentType(contentType);
-         if (null != properties)
-         {
-            docInfo.setProperties(properties);
-         }
-         doc = getDocumentManagementService().createDocument(targetId, docInfo, byteContents, null);
-         doc = getDocumentManagementService().versionDocument(doc.getId(), CommonProperties.ZERO);
+         doc = createDocument(targetId, fileName, contents, documentType, fileInfo.getContentType(), description,
+               comments, null);
       }
       return doc;
    }
    
-  /**
-   * 
-   * @param targetId
-   * @param byteContents
-   * @param fileName
-   * @param contentType
-   * @param properties
-   * @param annotation
-   * @return
-   */
-   public static Document createDocument(String targetId, byte[] byteContents, String fileName, String contentType,
-         Map<String, Object> properties,DocumentAnnotations annotation)
+   /**
+    * @param targetId
+    * @param fileName
+    * @param byteContents
+    * @param documentType
+    * @param contentType
+    * @param description
+    * @param comments
+    * @param annotation
+    * @return
+    */
+   public static Document createDocument(String targetId, String fileName, byte[] byteContents,
+         DocumentType documentType, String contentType, String description, String comments,
+         DocumentAnnotations annotation)
    {
       Document doc = null;
       if (null != byteContents)
@@ -223,77 +200,26 @@ public class DocumentMgmtUtility
          docInfo.setOwner(getUser().getAccount());
          docInfo.setContentType(contentType);
          docInfo.setDocumentAnnotations(annotation);
-         if (null != properties)
+         docInfo.setDocumentType(documentType);
+         docInfo.setDescription(description);
+         Map properties = docInfo.getProperties();
+         if (null == properties)
          {
-            docInfo.setProperties(properties);
+            properties = new HashMap();
          }
+         properties.put(CommonProperties.DESCRIPTION, description);
+         properties.put(CommonProperties.COMMENTS, comments);
          doc = getDocumentManagementService().createDocument(targetId, docInfo, byteContents, null);
          doc = getDocumentManagementService().versionDocument(doc.getId(), CommonProperties.ZERO);
       }
       return doc;
    }
 
-   /**
-    * creates new document based on the input parameters
-    * 
-    * @param targetId
-    * @param physicalPath
-    * @param contentType
-    * @param properties
-    * @return
-    * @throws DocumentManagementServiceException
-    * @throws IOException
-    */
-   public static Document createDocument(String targetId, String physicalPath, String contentType,
-         Map<String, Object> properties) throws DocumentManagementServiceException, IOException
-   {
-      String docName = org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils.substringAfterLast(physicalPath, File.separator);
-      return createDocument(targetId, physicalPath, contentType, docName, properties);
-   }
-
-   /**
-    * update the existing document when new version is uploaded
-    * 
-    * @param existingDocument
-    * @param physicalPath
-    * @return
-    * @throws DocumentManagementServiceException
-    * @throws IOException
-    */
-   public static Document updateDocument(Document existingDocument, String physicalPath, String description,
-         String comments) throws DocumentManagementServiceException, IOException
-   {
-      FileInputStream is = new FileInputStream(physicalPath);
-      Document doc = null;
-      if (null != is)
-      {
-         byte[] fileData = getFileContent(is);
-         doc = updateDocument(existingDocument, fileData, description, comments);
-      }
-      return doc;
-   }
-
-   /**
-    * update the existing document when new version is uploaded
-    * 
-    * @param existingDocument
-    * @param physicalPath
-    * @return
-    * @throws DocumentManagementServiceException
-    * @throws IOException
-    */
    public static Document updateDocument(Document existingDocument, byte[] fileData, String description, String comments)
-         throws DocumentManagementServiceException, IOException
    {
       Document doc = null;
-      if (StringUtils.isNotEmpty(description))
-      {
-         existingDocument.getProperties().put(CommonProperties.DESCRIPTION, description);
-      }
-      if (StringUtils.isNotEmpty(comments))
-      {
-         existingDocument.getProperties().put(CommonProperties.COMMENTS, comments);
-      }
+      existingDocument.getProperties().put(CommonProperties.DESCRIPTION, description);
+      existingDocument.getProperties().put(CommonProperties.COMMENTS, comments);
       
       if (null != fileData)
       {
@@ -462,6 +388,9 @@ public class DocumentMgmtUtility
       docInfo.setOwner(getUser().getAccount());
       docInfo.setContentType(srcDoc.getContentType());
       docInfo.setProperties(srcDoc.getProperties());
+      docInfo.setDocumentType(srcDoc.getDocumentType());
+      docInfo.setDocumentAnnotations(srcDoc.getDocumentAnnotations());
+      docInfo.setDescription(srcDoc.getDescription());
       Document document = dms.createDocument(targetFolderPath, docInfo, dms.retrieveDocumentContent(srcDoc.getId()),
             null);
       document = getDocumentManagementService().versionDocument(document.getId(), CommonProperties.ZERO);

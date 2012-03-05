@@ -23,7 +23,6 @@ import org.eclipse.stardust.engine.extensions.dms.data.DmsPrivilege;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
-import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
@@ -150,14 +149,8 @@ public class FileUploadHelper
             {
                try
                {
-                  Document document = DocumentMgmtUtility.createDocument(parentFolder.getId(),
-                        fileInfo.getPhysicalPath(), fileInfo.getContentType(), null);
-                  document.getProperties().put(CommonProperties.DESCRIPTION, fileUploadDialog.getDescription());
-                  document.getProperties().put(CommonProperties.COMMENTS, fileUploadDialog.getComments());
-                  document.setDocumentType(fileUploadDialog.getDocumentType());
-
-                  document = DocumentMgmtUtility.getDocumentManagementService().updateDocument(document, false, "",
-                        false);
+                  Document document = DocumentMgmtUtility.createDocument(parentFolder.getId(), 
+                        fileInfo, fileUploadDialog.getDescription(), fileUploadDialog.getComments(), fileUploadDialog.getDocumentType());
 
                   informInitiator(FileUploadEvent.FILE_UPLOADED, document);
                   
@@ -168,7 +161,7 @@ public class FileUploadHelper
                      {
                         viewParam = ((IParametricCallbackHandler) callbackHandler).getParameters();
                      }
-                     DocumentViewUtil.openJCRDocument(document, viewParam);
+                     DocumentViewUtil.openJCRDocument(document.getId(), viewParam);
                   }
                }
                catch (Exception e)
@@ -328,7 +321,8 @@ public class FileUploadHelper
             FileInfo fileInfo = fileUploadDialog.getFileInfo();
             existingDocument = DocumentMgmtUtility.getDocumentManagementService().getDocument(
                   parentFolderPath + "/" + fileInfo.getFileName());
-            existingDocument = DocumentMgmtUtility.updateDocument(existingDocument, fileInfo.getPhysicalPath(),
+            existingDocument = DocumentMgmtUtility.updateDocument(existingDocument,
+                  DocumentMgmtUtility.getFileSystemDocumentContent(fileInfo.getPhysicalPath()),
                   fileUploadDialog.getDescription(), fileUploadDialog.getComments());
          }// if document is drag-dropped
          else

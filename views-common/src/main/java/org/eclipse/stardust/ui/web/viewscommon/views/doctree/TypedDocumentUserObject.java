@@ -23,7 +23,6 @@ import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.viewscommon.common.NoteTip;
-import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
@@ -208,7 +207,7 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
       CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getCurrent();
       fileUploadDialog.initialize();
       fileUploadDialog.setDocumentType(typedDocument.getDocumentType());
-
+      fileUploadDialog.setOpenDocument(true);
       if (null == getDocument())
       {
          fileUploadDialog.setHeaderMessage(propsBean.getParamString(
@@ -274,20 +273,12 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
       if (null == getDocument()) // first version
       {
          Folder typedDocFolder = DocumentMgmtUtility.createFolderIfNotExists(typedDocumentPath);
-
          try
          {
-            document = DocumentMgmtUtility.createDocument(typedDocFolder.getId(), fileInfo.getPhysicalPath(),
-                  fileInfo.getContentType(), null);
-            document.setDocumentType(fileUploadDialog.getDocumentType());
+            document = DocumentMgmtUtility.createDocument(typedDocFolder.getId(), fileInfo,
+                  fileUploadDialog.getDescription(), fileUploadDialog.getComments(), fileUploadDialog.getDocumentType());
             typedDocument.setDocument(document);
-            // updating the document to process before adding description and comments
-            // as kernel throws exception otherwise
-            // TODO: Due to kernel issue CRNT-20987
             TypedDocumentsUtil.updateTypedDocument(typedDocument);
-            document.getProperties().put(CommonProperties.DESCRIPTION, fileUploadDialog.getDescription());
-            document.getProperties().put(CommonProperties.COMMENTS, fileUploadDialog.getComments());
-            document = DocumentMgmtUtility.getDocumentManagementService().updateDocument(document, false, "", false);
          }
          catch (Exception e)
          {
@@ -298,8 +289,8 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
       {
          document = getDocument();
          document.setName(fileInfo.getFileName());
-         document.setContentType(fileInfo.getContentType());
-         document = DocumentMgmtUtility.updateDocument(getDocument(), fileInfo.getPhysicalPath(),
+         document = DocumentMgmtUtility.updateDocument(getDocument(),
+               DocumentMgmtUtility.getFileSystemDocumentContent(fileInfo.getPhysicalPath()),
                fileUploadDialog.getDescription(), fileUploadDialog.getComments());
          typedDocument.setDocument(document);
          TypedDocumentsUtil.updateTypedDocument(typedDocument);
@@ -308,7 +299,7 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
       
       if (null != document && fileUploadDialog.isOpenDocument())
       {
-         DocumentViewUtil.openJCRDocument(document);
+         DocumentViewUtil.openJCRDocument(document.getId());
       }
    }
 

@@ -392,7 +392,8 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
          Document document = getDocument();
          document.setName(fileName);
          document.setContentType(fileUploadDialog.getFileInfo().getContentType());
-         document = DocumentMgmtUtility.updateDocument(document, fileUploadDialog.getFileInfo().getPhysicalPath(),
+         document = DocumentMgmtUtility.updateDocument(document,
+               DocumentMgmtUtility.getFileSystemDocumentContent(fileUploadDialog.getFileInfo().getPhysicalPath()),
                fileUploadDialog.getDescription(), fileUploadDialog.getComments());
          updateprocessInstance(document);
          RepositoryUtility.refreshNode(this.wrapper);

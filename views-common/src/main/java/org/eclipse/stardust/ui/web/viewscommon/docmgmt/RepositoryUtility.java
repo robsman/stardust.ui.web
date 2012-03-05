@@ -10,13 +10,11 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.docmgmt;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.faces.model.SelectItem;
@@ -27,7 +25,6 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
@@ -53,9 +50,6 @@ import org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryResourceU
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryVirtualUserObject;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocumentUserObject;
-
-
-import com.icesoft.faces.component.inputfile.FileInfo;
 
 /**
  * contains UI dependent utility methods for document management
@@ -455,27 +449,6 @@ public class RepositoryUtility
       parentNode.add(subNode);
       return subNode;
    }
-
-   /**
-    * creates new document for the uploaded file under the provided target node
-    * 
-    * @param targetNode
-    * @param fileInfo
-    * @return
-    * @throws DocumentManagementServiceException
-    * @throws IOException
-    */
-   public static DefaultMutableTreeNode createDocument(DefaultMutableTreeNode targetNode, FileInfo fileInfo,
-         Map<String, Object> properties) throws DocumentManagementServiceException, IOException
-   {
-      expandTree(targetNode);
-      Document document = DocumentMgmtUtility.createDocument(getUpdatedFolder(targetNode).getId(), fileInfo
-            .getPhysicalPath(), fileInfo.getContentType(), fileInfo.getFileName(), properties);
-      DefaultMutableTreeNode subNode = createDocumentNode(document);
-      ((RepositoryDocumentUserObject) subNode.getUserObject()).setNewNodeCreated(true);
-      return subNode;
-   }
-
    
    /**
     * This function creates a copy of document

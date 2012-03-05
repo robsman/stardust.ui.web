@@ -15,11 +15,9 @@ import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
-import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
-
 
 /**
  * Mainly this is FileSystemDocument.
@@ -97,18 +95,10 @@ public class FileSystemJCRDocument extends FileSystemDocument
          }
 
          // Create Document with Properties
-         concreteDocument = DocumentMgmtUtility.createDocument(typedDocFolder.getId(), file.getAbsolutePath(),
-               getMimeType().getType(), getProperties());
+         concreteDocument = DocumentMgmtUtility.createDocument(typedDocFolder.getId(), file.getName(),
+               DocumentMgmtUtility.getFileSystemDocumentContent(file.getAbsolutePath()), null, getMimeType().getType(),
+               description, comments, null);
 
-         // Set Description & Comments
-         getProperties().put(CommonProperties.DESCRIPTION, description);
-         getProperties().put(CommonProperties.COMMENTS, comments);
-         
-         // Set Document Type
-         concreteDocument.setDocumentType(getDocumentType());
-         
-         concreteDocument = DocumentMgmtUtility.getDocumentManagementService().updateDocument(concreteDocument, false, "", false);
-         
          // It's observed that Document Type is not there when document is just created
          // Set it again to UI to work
          concreteDocument.setDocumentType(getDocumentType());

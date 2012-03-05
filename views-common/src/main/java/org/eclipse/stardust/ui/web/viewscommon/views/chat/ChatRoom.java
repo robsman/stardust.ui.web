@@ -344,8 +344,8 @@ public class ChatRoom implements Serializable
                + DMSUtils.replaceAllSpecialChars(format.format(new Date(System.currentTimeMillis())));
 
          Document document = DocumentMgmtUtility.createDocument(
-               RepositoryUtility.getProcessAttachmentsFolder(processInstance).getPath(), getHTMLString().getBytes(),
-               fileName, MimeTypesHelper.HTML.getType(), null);
+               RepositoryUtility.getProcessAttachmentsFolder(processInstance).getPath(), fileName, getHTMLString()
+                     .getBytes(), null, MimeTypesHelper.HTML.getType(), null, null, null);
 
          DMSHelper.addAndSaveProcessAttachment(processInstance, document);
 
