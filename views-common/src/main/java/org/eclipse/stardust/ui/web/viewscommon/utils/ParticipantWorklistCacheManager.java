@@ -25,6 +25,7 @@ import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler.MessageDisplayMode;
 import org.springframework.beans.factory.InitializingBean;
 
 
@@ -62,19 +63,24 @@ public class ParticipantWorklistCacheManager implements InitializingBean
    public void reset()
    {
       participantWorklists = new LinkedHashMap<ParticipantInfoWrapper, ParticipantWorklistCacheEntry>();
-
-      List<Worklist> worklists = WorklistUtils.getWorklist_anyForUser();
-      
-      ParticipantInfo worklistOwner;
-      for (Worklist worklist : worklists)
+      ParticipantInfo worklistOwner = null;
+      try
       {
-         worklistOwner = worklist.getOwner();
-         
-         participantWorklists.put(new ParticipantInfoWrapper(worklistOwner), new ParticipantWorklistCacheEntry(worklist
-               .getTotalCount(), WorklistUtils.createWorklistQuery(worklistOwner)));
+         List<Worklist> worklists = WorklistUtils.getWorklist_anyForUser();
+         for (Worklist worklist : worklists)
+         {
+            worklistOwner = worklist.getOwner();
+
+            participantWorklists.put(new ParticipantInfoWrapper(worklistOwner), new ParticipantWorklistCacheEntry(
+                  worklist.getTotalCount(), WorklistUtils.createWorklistQuery(worklistOwner)));
+         }
+
       }
-      
-//      printCache("reset()");
+      catch (Exception e)
+      {
+         ExceptionHandler.handleException(e, "Error occurred while retrieving worklist",
+               MessageDisplayMode.CUSTOM_MSG_OPTIONAL);
+      }
    }
 
    /**
@@ -83,7 +89,12 @@ public class ParticipantWorklistCacheManager implements InitializingBean
     */
    public long getWorklistCount(ParticipantInfo participantInfo)
    {
-      return participantWorklists.get(new ParticipantInfoWrapper(participantInfo)).getCount();
+      ParticipantWorklistCacheEntry cacheEntry = participantWorklists.get(new ParticipantInfoWrapper(participantInfo));
+      if (null != cacheEntry)
+      {
+         return cacheEntry.getCount();
+      }
+      return 0;
    }
 
    /**

@@ -41,18 +41,13 @@
 	
 					<f:facet name="center">
 						<ice:panelGroup>
-							<ice:panelGroup rendered="#{not empty ippMessageDialog.details}">
-								<c:forEach items="#{ippMessageDialog.detailsLines}" var="detailsLine">
-									<ice:outputText value="#{detailsLine}">
-										<pc:automationTag value="auto-FW-ComMsgDlg-Details" standAlone="false"/>
-									</ice:outputText>
+							<ice:panelGroup>
+								<ui:repeat value="#{ippMessageDialog.detailsLines}"
+									var="detailLine">
+									<ice:outputText value="#{detailLine}" />
 									<ice:panelGroup styleClass="clearing" />
-								</c:forEach>
+								</ui:repeat>
 							</ice:panelGroup>
-							<!--
-							<ice:outputText 
-								value="#{ippMessageDialog.exceptionMessage}" />
-							-->
 							<ice:panelCollapsible expanded="false" toggleOnClick="true"
 								rendered="#{not empty ippMessageDialog.exception}">
 								<f:facet name="header">
