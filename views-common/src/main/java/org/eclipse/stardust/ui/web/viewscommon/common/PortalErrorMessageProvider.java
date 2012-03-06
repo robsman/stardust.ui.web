@@ -27,7 +27,7 @@ public class PortalErrorMessageProvider implements IErrorMessageProvider
    public final static String SUMMARY_CONTEXT = "summary";
    public final static String DETAIL_CONTEXT = "detail";
 
-   public static final String MSG_BUNDLE_NAME = "ipp-bpm-portal-errors";
+   public static final String MSG_BUNDLE_NAME = "bpm-portal-errors";
    private Map bundles = new ConcurrentHashMap();
    
    public String getErrorMessage(ErrorCase errorCase, Object[] context, Locale locale)
@@ -106,6 +106,5 @@ public class PortalErrorMessageProvider implements IErrorMessageProvider
       {
          return (errorCase instanceof PortalErrorClass) ? INSTANCE : null;
       }
-      
    }
 }
