@@ -8,19 +8,21 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-require({baseUrl: "../../../graphics-common/js"},["m_pageController", "m_pharmacyToolbarController", "m_pharmacyCanvasController", "m_urlUtils"], function() {
-	var canvasController = require('m_pharmacyCanvasController');
-	var urlUtils = require('m_urlUtils');
-	var tiffIframe = parent.frames['tiff_frame' + urlUtils
-			.getQueryParam('docId')];
-	configurei18n();	
-	canvasController.init(tiffIframe, 'canvas',
-			urlUtils.getQueryParam('docId'), urlUtils
-					.getQueryParam('noOfPages'),
-					urlUtils.getQueryParam('isEditable'),
-					parseFloat(urlUtils.getQueryParam('canvasWidth')),
-					parseFloat(urlUtils.getQueryParam('canvasHeight')),
-					'toolbar');
+jQuery(function () {
+	require({baseUrl: "../../../graphics-common/js"},["m_pageController", "m_pharmacyToolbarController", "m_pharmacyCanvasController", "m_urlUtils"], function() {
+		var canvasController = require('m_pharmacyCanvasController');
+		var urlUtils = require('m_urlUtils');
+		var tiffIframe = parent.frames['tiff_frame' + urlUtils
+				.getQueryParam('docId')];
+		configurei18n();	
+		canvasController.init(tiffIframe, 'canvas',
+				urlUtils.getQueryParam('docId'), urlUtils
+						.getQueryParam('noOfPages'),
+						urlUtils.getQueryParam('isEditable'),
+						parseFloat(urlUtils.getQueryParam('canvasWidth')),
+						parseFloat(urlUtils.getQueryParam('canvasHeight')),
+						'toolbar');
+	});
 });
 
 function configurei18n()
