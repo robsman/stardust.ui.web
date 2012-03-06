@@ -40,7 +40,6 @@ import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
-import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
@@ -284,6 +283,10 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          {
             FileSaveDialog fileSaveDialog = FileSaveDialog.getInstance();
             fileSaveDialog.initialize();
+            if (documentContentInfo instanceof FileSystemJCRDocument)
+            {
+               fileSaveDialog.setComments(documentContentInfo.getComments());
+            }
             fileSaveDialog.setCallbackHandler(new DCCallBackHandler(false));
             if (contentHandler instanceof ICustomDocumentSaveHandler
                   && ((ICustomDocumentSaveHandler) contentHandler).usesCustomSaveDialog())
@@ -498,9 +501,6 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          // update specific document
          if (org.eclipse.stardust.common.StringUtils.isNotEmpty(dataPathId))
          {
-            // TODO: Due to kernel issue CRNT-20987
-            docToBeUpdated.getProperties().remove(CommonProperties.DESCRIPTION);
-            docToBeUpdated.getProperties().remove(CommonProperties.COMMENTS);
             TypedDocumentsUtil.updateTypedDocument(processInstance.getOID(), dataPathId, docToBeUpdated);
          }
          // update process attachment

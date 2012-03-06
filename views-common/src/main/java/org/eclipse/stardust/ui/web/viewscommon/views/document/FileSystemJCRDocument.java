@@ -17,7 +17,7 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
-import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
+
 
 /**
  * Mainly this is FileSystemDocument.
@@ -34,22 +34,17 @@ public class FileSystemJCRDocument extends FileSystemDocument
    /**
     * @param resourcePath
     * @param documentType
+    * @param jcrParentFolder
+    * @param description
+    * @param comments
     */
-   public FileSystemJCRDocument(String resourcePath, DocumentType documentType, String jcrParentFolder)
+   public FileSystemJCRDocument(String resourcePath, DocumentType documentType, String jcrParentFolder,
+         String description, String comments)
    {
       super(resourcePath, documentType);
       this.jcrParentFolder = jcrParentFolder;
-   }
-
-   /**
-    * @param resourcePath
-    * @param mimeType
-    * @param name
-    */
-   public FileSystemJCRDocument(String resourcePath, MIMEType mimeType, String name, String jcrParentFolder)
-   {
-      super(resourcePath, mimeType, name);
-      this.jcrParentFolder = jcrParentFolder;
+      this.description = description;
+      this.comments = comments;
    }
 
    @Override
@@ -72,7 +67,7 @@ public class FileSystemJCRDocument extends FileSystemDocument
    @Override
    public IDocumentContentInfo reset()
    {
-      return new FileSystemJCRDocument(file.getPath(), documentType, jcrParentFolder);
+      return new FileSystemJCRDocument(file.getPath(), documentType, jcrParentFolder, description, comments);
    }
 
    /**

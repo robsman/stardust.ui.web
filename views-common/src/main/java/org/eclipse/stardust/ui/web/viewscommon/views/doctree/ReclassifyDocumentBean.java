@@ -252,9 +252,6 @@ public class ReclassifyDocumentBean extends PanelConfirmation
       // dissociate the existing document from specific document and
       // update current typed documents and re-initialize
       targetTypedDocument.setDocument(docToBeDettached);
-      // TODO: Due to kernel issue CRNT-20987
-      docToBeDettached.getProperties().remove(CommonProperties.DESCRIPTION);
-      docToBeDettached.getProperties().remove(CommonProperties.COMMENTS);
       TypedDocumentsUtil.updateTypedDocument(targetTypedDocument);
       targetTypedDocUserObject.initialize();
       super.apply();
@@ -294,9 +291,6 @@ public class ReclassifyDocumentBean extends PanelConfirmation
       document = createVersion(document, targetTypedDocument.getDocumentType());
       
       targetTypedDocument.setDocument(document);
-      // TODO: Due to kernel issue CRNT-20987
-      document.getProperties().remove(CommonProperties.DESCRIPTION);
-      document.getProperties().remove(CommonProperties.COMMENTS);
       TypedDocumentsUtil.updateTypedDocument(targetTypedDocument);
       targetTypedDocUserObject.initialize();
       

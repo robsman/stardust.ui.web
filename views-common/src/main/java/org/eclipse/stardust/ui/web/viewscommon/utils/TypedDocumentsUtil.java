@@ -27,6 +27,7 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.DocumentEvent;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.IppEventController;
+import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
 
 
@@ -129,6 +130,14 @@ public class TypedDocumentsUtil
    {
       try
       {
+         // updating the document to process before adding description and comments
+         // as kernel throws exception otherwise
+         // TODO: Due to kernel issue CRNT-20987
+         if (null != document)
+         {
+            document.getProperties().remove(CommonProperties.DESCRIPTION);
+            document.getProperties().remove(CommonProperties.COMMENTS);
+         }
          ServiceFactoryUtils.getWorkflowService().setOutDataPath(processInstanceOID, dataPathId, document);
          // update activity panel
          IppEventController.getInstance().notifyEvent(

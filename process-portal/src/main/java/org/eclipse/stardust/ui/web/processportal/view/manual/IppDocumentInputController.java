@@ -232,9 +232,10 @@ public class IppDocumentInputController extends DocumentInputController implemen
    {
       if (document instanceof RawDocument)
       {
+         RawDocument rawDocument = (RawDocument) document;
          String parentFolder = DocumentMgmtUtility.getTypedDocumentsFolderPath(activityInstance.getProcessInstance());
-         return new FileSystemJCRDocument(((RawDocument) document).getFileInfo().getPhysicalPath(),
-               document.getDocumentType(), parentFolder);
+         return new FileSystemJCRDocument(rawDocument.getFileInfo().getPhysicalPath(), document.getDocumentType(),
+               parentFolder, rawDocument.getDescription(), rawDocument.getComments());
       }
 
       return null;
