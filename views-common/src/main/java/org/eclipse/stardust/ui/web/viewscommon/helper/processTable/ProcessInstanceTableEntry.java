@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.DateUtils;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
@@ -179,14 +180,17 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
       linkType = getLinkType(processInstanceLink, processInstance);
 
       // NotesInfo populated to display the LinkComment
-      this.noteInfo = new NoteInfo(processInstanceLink.getComment(), UserUtils.getUserDisplayLabel(processInstance.getStartingUser()),
-            DateUtils.formatDateTime(processInstanceLink.getCreateTime()), linkType);
+      this.noteInfo = new NoteInfo(processInstanceLink.getComment(), UserUtils.getUserDisplayLabel(processInstance
+            .getStartingUser()), DateUtils.formatDateTime(processInstanceLink.getCreateTime()), linkType);
 
-      this.notePreview = processInstanceLink.getComment().substring(0,
-            Math.min(processInstanceLink.getComment().length(), TEXT_PREVIEW_LENGTH));
-      if (notePreview.length() < processInstanceLink.getComment().length())
+      if (StringUtils.isNotEmpty(processInstanceLink.getComment()))
       {
-         notePreview += " ...";
+         this.notePreview = processInstanceLink.getComment().substring(0,
+               Math.min(processInstanceLink.getComment().length(), TEXT_PREVIEW_LENGTH));
+         if (notePreview.length() < processInstanceLink.getComment().length())
+         {
+            notePreview += " ...";
+         }
       }
 
    }
