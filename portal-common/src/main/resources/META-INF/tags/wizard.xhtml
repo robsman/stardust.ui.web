@@ -72,9 +72,11 @@
 
 		<c:choose>
 			<c:when test="#{modal}">
-				<c:set var="autoPos" value="" />
+				<c:set var="dialogId" value="#{dialogBean.beanId}" />
+				<c:set var="autoPos" value="manual" />
 			</c:when>
 			<c:otherwise>
+				<c:set var="dialogId" value="wizardDialogId" />
 				<c:set var="autoPos" value="#{popupX}, #{popupY}" />
 			</c:otherwise>
 		</c:choose>
@@ -89,9 +91,9 @@
 
 		<c:if test="#{dialogBean.visible}">
 
-			<ice:panelPopup draggable="#{draggable}" resizable="#{resizable}"
+			<ice:panelPopup id="#{dialogId}" draggable="#{draggable}" resizable="#{resizable}"
 				modal="#{modal}" rendered="#{dialogBean.visible}"
-				positionOnLoadOnly="true" styleClass="popupDialog" autoCenter="true"
+				positionOnLoadOnly="true" styleClass="popupDialog"
 				autoPosition="#{autoPos}" style="min-width:600px;" clientOnly="true">
 
 				<f:facet name="header">
