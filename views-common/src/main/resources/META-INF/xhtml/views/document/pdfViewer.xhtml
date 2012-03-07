@@ -219,9 +219,9 @@
 		</ice:panelGroup>
 
 		<!-- Outline popup -->
-		<ice:panelPopup id="modalPnlPop" modal="true"
+		<ice:panelPopup id="#{contentHandler.pdfDocumentHandler.outlinePopupId}" modal="true"
 			rendered="#{contentHandler.pdfDocumentHandler.showOutlinePopup}" draggable="true"
-			autoCentre="true" styleClass="popupDialog" clientOnly="true">
+			autoPosition="manual" styleClass="popupDialog" clientOnly="true">
 			<f:facet name="header">
 				<ice:panelGroup>
 					<pc:automationTag

@@ -14,6 +14,8 @@
 
 package org.eclipse.stardust.ui.web.viewscommon.views.document.pdf.viewer;
 
+import java.util.Random;
+
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.PhaseId;
@@ -21,9 +23,13 @@ import javax.faces.event.ValueChangeEvent;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentContentInfo;
+
+import com.icesoft.faces.context.effects.JavascriptContext;
 
 public class PdfDocumentHandler
 {
@@ -31,6 +37,7 @@ public class PdfDocumentHandler
    private PdfDocumentState currentDocumentState;
    private boolean showOutlinePopup;
    private String documentId;
+   private String outlinePopupId;
    private String errorMessage;
 
    public PdfDocumentHandler()
@@ -262,12 +269,13 @@ public class PdfDocumentHandler
    public void toggleShowOutline()
    {
       showOutlinePopup = false;
-
+      addPopupCenteringScript();
    }
 
    public void showOutlinePopup(ActionEvent event)
    {
       showOutlinePopup = true;
+      addPopupCenteringScript();
    }
 
    public void goToFirstPage(ActionEvent event)
@@ -377,10 +385,36 @@ public class PdfDocumentHandler
             return true;
       return false;
    }
+   
+   /**
+    * 
+    */
+   private void addPopupCenteringScript()
+   {
+      if (showOutlinePopup)
+      {
+         String positionPopupScript = "InfinityBpm.Core.positionMessageDialog('" + getOutlinePopupId() + "');";
+         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), positionPopupScript);
+         PortalApplication.getInstance().addEventScript(positionPopupScript);
+      }
+   }
 
    public String getDocumentId()
    {
       return documentId;
+   }
+   
+   /**
+    * @return
+    */
+   public String getOutlinePopupId()
+   {
+      if(StringUtils.isEmpty(outlinePopupId))
+      {
+         Random o = new Random();
+         outlinePopupId = "UIC" + o.nextInt(10000);
+      }
+      return outlinePopupId;
    }
 
    public String getErrorMessage()
