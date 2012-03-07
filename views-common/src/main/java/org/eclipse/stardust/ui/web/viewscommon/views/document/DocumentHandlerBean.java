@@ -10,15 +10,18 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.views.document;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.component.UIComponent;
 import javax.faces.event.ActionEvent;
 
 import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.engine.api.model.Data;
+import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
 import org.eclipse.stardust.ui.common.form.FormGenerator;
 import org.eclipse.stardust.ui.common.form.jsf.DocumentForm;
 import org.eclipse.stardust.ui.common.form.jsf.DocumentObject;
@@ -230,8 +233,18 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          // Render Meta Data
          FormGenerationPreferences generationPreferences = new FormGenerationPreferences(noOfColumnsInColumnLayout,
                noOfColumnsInTable);
-         Model model = ModelUtils.getModelForDocumentType(documentContentInfo.getDocumentType());
+         DeployedModel model = ModelUtils.getModelForDocumentType(documentContentInfo.getDocumentType());
 
+         if (null != model && StringUtils.isEmpty(dataId))
+         {
+            List<Data> dataList = DocumentTypeUtils.getDataUsingDocumentType(model,
+                  documentContentInfo.getDocumentType());
+            if (CollectionUtils.isNotEmpty(dataList))
+            {
+               dataId = dataList.get(0).getId();
+            }
+         }         
+         
          ILabelProvider labelProvider = null;
          FormGenerator formGenerator;
          if (null != model && StringUtils.isNotEmpty(dataId))
