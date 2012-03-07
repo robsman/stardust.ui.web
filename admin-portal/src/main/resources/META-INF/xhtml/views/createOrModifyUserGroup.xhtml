@@ -7,8 +7,8 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 	
 	<ui:composition>
-		<ice:panelPopup id="#{createOrModifyUserGroupBean.id}" modal="true" rendered="#{createOrModifyUserGroupBean.visible}"
-			draggable="true" autoPosition="manual" positionOnLoadOnly="true"
+		<ice:panelPopup modal="true" rendered="#{createOrModifyUserGroupBean.visible}"
+			draggable="true" autoCentre="true" positionOnLoadOnly="true"
 			styleClass="popupDialog" clientOnly="true">
 			<f:facet name="header">
 				<ice:panelGroup>
@@ -36,7 +36,7 @@
 									value="* #{messages_admin['views.common.id.label']}#{messages_admin['common.colon']}"
 									styleClass="label-form" />
 								<ice:panelGroup>
-									<ice:inputText id="id"
+									<ice:inputText id="groupId"
 										value="#{createOrModifyUserGroupBean.id}"
 										disabled="#{(createOrModifyUserGroupBean.modifyMode) ? true : (not createOrModifyUserGroupBean.globalEnable)}"
 										required="true" 
@@ -44,7 +44,7 @@
 										<pc:automationTag value="auto-ADM-UserGrpMgmt-UserGrpPopup-Id" standAlone="false"/>
 									</ice:inputText>
 									<ice:panelGroup styleClass="msgError">
-										<ice:message for="id" />
+										<ice:message for="groupId" />
 									</ice:panelGroup>
 								</ice:panelGroup>
 
@@ -52,7 +52,7 @@
 									value="* #{messages_admin['views.common.name.label']}#{messages_admin['common.colon']}"
 									styleClass="label-form" />
 								<ice:panelGroup>
-									<ice:inputText id="name"
+									<ice:inputText id="groupName"
 										value="#{createOrModifyUserGroupBean.name}"
 										disabled="#{not createOrModifyUserGroupBean.globalEnable}"
 										required="true" 
@@ -60,7 +60,7 @@
 										<pc:automationTag value="auto-ADM-UserGrpMgmt-UserGrpPopup-Name" standAlone="false"/>
 									</ice:inputText>
 									<ice:panelGroup styleClass="msgError">
-										<ice:message for="name" />
+										<ice:message for="groupName" />
 									</ice:panelGroup>
 								</ice:panelGroup>
 
