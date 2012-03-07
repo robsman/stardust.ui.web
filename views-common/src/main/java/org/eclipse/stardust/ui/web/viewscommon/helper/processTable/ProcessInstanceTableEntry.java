@@ -41,6 +41,7 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
@@ -185,6 +186,7 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
 
       if (StringUtils.isNotEmpty(processInstanceLink.getComment()))
       {
+         this.noteInfo.userImageURL=MyPicturePreferenceUtils.getUsersImageURI(processInstance.getStartingUser());
          this.notePreview = processInstanceLink.getComment().substring(0,
                Math.min(processInstanceLink.getComment().length(), TEXT_PREVIEW_LENGTH));
          if (notePreview.length() < processInstanceLink.getComment().length())
@@ -481,6 +483,8 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
       private boolean readOnly = true;
       
       private String type;
+      
+      private String userImageURL;
 
       public NoteInfo(Note note)
       {
@@ -585,6 +589,11 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
       public String getType()
       {
          return type;
+      }
+
+      public String getUserImageURL()
+      {
+         return userImageURL;
       }
       
       

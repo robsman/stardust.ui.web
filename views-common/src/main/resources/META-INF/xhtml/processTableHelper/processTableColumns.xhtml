@@ -51,27 +51,23 @@
 
 		</ice:panelGroup>
 
-		<ice:panelGroup rendered="#{col.columnName == 'LinkComment'}"
-			panelTooltip="noteToolTip">
+		<ice:panelGroup rendered="#{col.columnName == 'LinkComment'}">
 			<c:set var="originalComment" value="#{row.notePreview}" />
-			<ice:panelGroup rendered="#{fn:length(originalComment) &gt; 0}">
+			<ice:panelGroup rendered="#{fn:length(originalComment) &gt; 0}" panelTooltip="noteToolTip">
 				<ice:panelGrid columns="2">
 					<ice:column>
-						<h:graphicImage
-							value="/plugins/processportal/images/icons/notes-filled.png"
-							style="border: none;" />
+						<ice:graphicImage value="#{row.noteInfo.userImageURL}" width="16px"
+							height="16px" />
 					</ice:column>
 					<ice:column>
 						<ice:outputText value="#{originalComment}" />
 					</ice:column>
 				</ice:panelGrid>
 			</ice:panelGroup>
-			<ice:panelGroup rendered="#{fn:length(originalComment) &lt; 1}">
-				<ice:panelGrid columns="1">
-					<h:graphicImage
-						value="/plugins/processportal/images/icons/notes-blank.png"
-						style="border: none;" />
-				</ice:panelGrid>
+			<ice:panelGroup rendered="#{fn:length(originalComment) &lt; 1}"
+				style="text-align:center;">
+				<ice:outputText
+					value="#{views_common_msgPropsBean['views.processInstanceDetailsView.noteEmpty.label']}" />
 			</ice:panelGroup>
 		</ice:panelGroup>
 
