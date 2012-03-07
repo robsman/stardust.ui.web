@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -32,6 +33,7 @@ import org.eclipse.stardust.engine.api.runtime.Privilege;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsPrincipal;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsPrivilege;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
@@ -54,6 +56,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 
 import com.icesoft.faces.component.ext.RowSelectorEvent;
+import com.icesoft.faces.context.effects.JavascriptContext;
 
 public class SecurityDialog extends PopupUIComponentBean
 {
@@ -72,6 +75,7 @@ public class SecurityDialog extends PopupUIComponentBean
    private boolean expanded;
    private boolean policyChanged = false;
    private Map<String, QualifiedModelParticipantInfo> allParticipants;
+   private String addEntryDialogId;
    
    public List<SelectItem> getPermission()
    {
@@ -89,6 +93,8 @@ public class SecurityDialog extends PopupUIComponentBean
    public void setOpenAddEntryDialog(boolean openAddEntryDialog)
    {
       this.openAddEntryDialog = openAddEntryDialog;
+      addPopupCenteringScript();
+      addPopupCenteringScript(openAddEntryDialog, getAddEntryDialogId());
    }
 
    public List<AccessControlBean> getAccessControlBean()
@@ -801,5 +807,18 @@ public class SecurityDialog extends PopupUIComponentBean
          }
       }
       return isEditMode;
+   }
+
+   /**
+    * @return
+    */
+   public String getAddEntryDialogId()
+   {
+      if(StringUtils.isEmpty(addEntryDialogId))
+      {
+         Random o = new Random();
+         addEntryDialogId = "UIC" + o.nextInt(10000);
+      }
+      return addEntryDialogId;
    }
 }

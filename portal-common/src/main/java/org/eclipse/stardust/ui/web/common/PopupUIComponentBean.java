@@ -94,18 +94,26 @@ public abstract class PopupUIComponentBean extends UIComponentBean
          // TODO trace
       }
    }
-   
+
    /**
     * 
     */
-   private void addPopupCenteringScript()
+   public void addPopupCenteringScript(boolean condition, String divId)
    {
-      if (popupAutoCenter)
+      if (condition)
       {
-         String positionPopupScript = "InfinityBpm.Core.positionMessageDialog('" + getBeanId() + "');";
+         String positionPopupScript = "InfinityBpm.Core.positionMessageDialog('" + divId + "');";
          JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), positionPopupScript);
          PortalApplication.getInstance().addEventScript(positionPopupScript);
       }
+   }
+
+   /**
+    * 
+    */
+   public void addPopupCenteringScript()
+   {
+      addPopupCenteringScript(popupAutoCenter, getBeanId());
    }
 
    public boolean isVisible()
