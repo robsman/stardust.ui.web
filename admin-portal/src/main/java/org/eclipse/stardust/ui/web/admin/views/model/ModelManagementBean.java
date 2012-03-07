@@ -319,7 +319,7 @@ public class ModelManagementBean extends UIComponentBean implements ViewEventHan
          Map<String, Object> urlParamMap = new HashMap<String, Object>();
          urlParamMap.put("ModelID", row.getModelDescription().getId());
          urlParamMap.put("ModelOID", String.valueOf(row.getOid()));
-         DocumentViewUtil.openFileSystemReport(RepositoryUtility.MODEL_DETAILS_DESIGN, row.getModelDescription().getId(), urlParamMap);
+         DocumentViewUtil.openActiveModelReport(RepositoryUtility.MODEL_DETAILS_DESIGN, row.getModelDescription().getId(), urlParamMap);
       }
       else if ((row != null) && type.equals(PopUpActionType.EXPORT.name()))
       {
@@ -331,7 +331,7 @@ public class ModelManagementBean extends UIComponentBean implements ViewEventHan
 
    public void openActiveModelsReport()
    {
-      DocumentViewUtil.openFileSystemReport(RepositoryUtility.DEFAULT_ACTIVE_MODEL_REPORT, null, null);
+      DocumentViewUtil.openActiveModelReport(RepositoryUtility.DEFAULT_ACTIVE_MODEL_REPORT, null, null);
    }
 
    public void deleteModel()
