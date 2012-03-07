@@ -5,10 +5,10 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 	<ui:composition>
-		<ice:panelPopup modal="true"
+		<ice:panelPopup id="#{delegationBean.beanId}" modal="true"
 			rendered="#{delegationBean.selectVisible or delegationBean.searchVisible}"
 			draggable="true"
-			autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
+			autoPosition="manual" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
 			<f:facet name="header">
 				<ice:panelGroup>
 					<ice:panelGroup rendered="#{delegationBean.selectVisible}">

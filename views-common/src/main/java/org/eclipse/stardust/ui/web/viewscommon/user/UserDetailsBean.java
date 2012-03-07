@@ -63,7 +63,7 @@ public class UserDetailsBean extends PopupUIComponentBean
     @Override
     public void initialize()
     {
-        
+       setPopupAutocenter();
     }
     
    /**
@@ -94,6 +94,7 @@ public class UserDetailsBean extends PopupUIComponentBean
         Object isModel = param.get(IS_MODEL);
         if(isModel!=null){
            model =Boolean.parseBoolean(isModel.toString());
+           setPopupAutocenter();
         }else{
            model=true;
         }
@@ -109,6 +110,16 @@ public class UserDetailsBean extends PopupUIComponentBean
         /* Sets the user image. If user is null will set to default image. */
         userImageURI = MyPicturePreferenceUtils.getUsersImageURI(user);
         super.openPopup();
+    }
+
+    /**
+    * 
+    */
+   private void setPopupAutocenter()
+    {
+      if (!model) {
+         setPopupAutoCenter(false);
+      }
     }
 
     public void setUser(User user)
