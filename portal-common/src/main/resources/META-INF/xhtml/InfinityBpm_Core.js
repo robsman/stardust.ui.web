@@ -438,6 +438,38 @@ if ( !InfinityBpm.Core) {
 	  	return {'width' : winW, 'height' : winH};
     }
     
+    function positionMessageDialog(divId) {
+    	var windowSize = getBrowserDimensions();
+    	var scrollPos = getWindowScrollPosition(mainIppFrame);
+    	var popupDivs = getElementsWithIDLike('div', divId);
+    	if (popupDivs && (popupDivs.length > 0)) {
+    		try {
+	    		var popupDiv = popupDivs[0];
+	    		var widthOffset = (popupDiv.offsetWidth < windowSize.width) ? popupDiv.offsetWidth : 0;
+	    		var heightOffset = (popupDiv.offsetHeight < windowSize.height) ? popupDiv.offsetHeight : 0;
+	    		popupDiv.style.left = (((windowSize.width - widthOffset)/ 2) + scrollPos.x) + 'px';
+	    		popupDiv.style.top = (((windowSize.height - heightOffset)/ 2) + scrollPos.y) + 'px';
+    		} catch (e) {
+	    		popupDiv.style.left = (scrollPos.x + 200) + 'px';
+	    		popupDiv.style.top = (scrollPos.y + 200) + 'px';
+    		}
+    	}
+    }
+    
+    function getElementsWithIDLike(tagName, elementId) {
+    	var allElems = document.getElementsByTagName(tagName);
+    	var selectedElems = [];    	
+    	if (allElems) {
+    		for (var i = 0; i < allElems.length; i++) {    			
+    			if (allElems[i].id && (allElems[i].id.indexOf(elementId) >= 0)) {
+    				selectedElems.push(allElems[i]);
+    			}
+    		}    			
+    	}
+    	
+    	return selectedElems;
+    }
+    
     function isIE7() {
     	if (navigator.appVersion && (-1 != navigator.appVersion.indexOf("MSIE 7.0"))) {
     		return true;
@@ -521,6 +553,10 @@ if ( !InfinityBpm.Core) {
       
       setLogoutUri : function(uri) {
     	  setLogoutUri(uri);
+      },
+      
+      positionMessageDialog : function(divId) {
+    	  positionMessageDialog(divId);
       }
     };
   };

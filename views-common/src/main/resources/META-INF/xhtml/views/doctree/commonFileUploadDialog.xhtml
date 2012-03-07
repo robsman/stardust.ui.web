@@ -6,10 +6,10 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-	<ice:panelPopup modal="true"
+	<ice:panelPopup id="#{commonFileUploadDialog.id}" modal="true"
 		rendered="#{commonFileUploadDialog.visible}"
 		draggable="true"
-		autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
+		autoPosition="manual" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
 
 		<f:facet name="header">
 			<ice:panelGroup style="min-width: 200px;">

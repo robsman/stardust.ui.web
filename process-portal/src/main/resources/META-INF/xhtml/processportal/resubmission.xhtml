@@ -6,8 +6,8 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-	<ice:panelPopup modal="true" rendered="#{resubmissionBean.visible}"
-		draggable="true" styleClass="popupDialog" autoCentre="true" positionOnLoadOnly="true" clientOnly="true">
+	<ice:panelPopup id="#{resubmissionBean.id}" modal="true" rendered="#{resubmissionBean.visible}"
+		draggable="true" styleClass="popupDialog" autoPosition="manual" positionOnLoadOnly="true" clientOnly="true">
 		<f:facet name="header">
 			<table cellpadding="0" cellspacing="0" width="100%">
 				<tr>

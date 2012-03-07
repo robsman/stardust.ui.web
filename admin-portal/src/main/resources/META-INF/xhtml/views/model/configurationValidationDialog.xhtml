@@ -7,10 +7,10 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
 	<ui:composition>
-		<ice:panelPopup modal="true"
+		<ice:panelPopup id="#{configurationValidationDialogBean.id}" modal="true"
 			rendered="#{configurationValidationDialogBean.visible}"
 			draggable="true"
-			positionOnLoadOnly="true" styleClass="popupDialog" autoCentre="false" clientOnly="true">
+			positionOnLoadOnly="true" styleClass="popupDialog" autoPosition="manual" clientOnly="true">
 			<f:facet name="header">
 				<ice:panelGroup>
 					<pc:automationTag value="auto-ADM-ConfigValidationDlg-Header"/>

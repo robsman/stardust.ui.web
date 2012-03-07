@@ -12,9 +12,14 @@ package org.eclipse.stardust.ui.web.common.util;
 
 import java.io.Serializable;
 
+import javax.faces.context.FacesContext;
+
+import org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript;
 import org.eclipse.stardust.ui.web.common.app.PortalUiController;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
+
+import com.icesoft.faces.context.effects.JavascriptContext;
 
 
 
@@ -26,6 +31,7 @@ import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
 public abstract class PopupDialog implements Serializable
 {
    private static final long serialVersionUID = 1L;
+   private boolean popupAutoCenter = true;
 
    protected String id;
    protected boolean visible = false;
@@ -104,6 +110,7 @@ public abstract class PopupDialog implements Serializable
          }
       }
 
+      addPopupCenteringScript();
       visible = true;
 
       if(fireViewEvents)
@@ -112,6 +119,16 @@ public abstract class PopupDialog implements Serializable
          {
             // TODO trace
          }
+      }
+   }
+   
+   private void addPopupCenteringScript()
+   {
+      if (popupAutoCenter)
+      {
+         String positionPopupScript = "InfinityBpm.Core.positionMessageDialog('" + id + "');";
+         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), positionPopupScript);
+         PortalApplicationEventScript.getInstance().addEventScript(positionPopupScript);
       }
    }
 
@@ -151,5 +168,10 @@ public abstract class PopupDialog implements Serializable
    public void setFireViewEvents(boolean fireViewEvents)
    {
       this.fireViewEvents = fireViewEvents;
+   }
+   
+   public void setPopupAutoCenter(boolean popupAutoCenter)
+   {
+      this.popupAutoCenter = popupAutoCenter;
    }
 }

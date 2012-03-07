@@ -7,8 +7,8 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 	
 	<ui:composition>
-		<ice:panelPopup modal="true" rendered="#{createOrModifyDepartmentBean.visible}"
-			draggable="true" autoCentre="true" positionOnLoadOnly="true"
+		<ice:panelPopup id="#{createOrModifyDepartmentBean.id}" modal="true" rendered="#{createOrModifyDepartmentBean.visible}"
+			draggable="true" autoPosition="manual" positionOnLoadOnly="true"
 			styleClass="popupDialog" clientOnly="true">
 			<f:facet name="header">
 				<ice:panelGroup>

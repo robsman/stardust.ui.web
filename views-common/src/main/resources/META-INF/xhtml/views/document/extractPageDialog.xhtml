@@ -7,9 +7,9 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
 	<ui:composition>		
-			<ice:panelPopup modal="true"
-				rendered="#{extractPageDialogBean.visible}" draggable="true"
-				autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog"
+			<ice:panelPopup id="#{extractPageDialogBean.id}" modal="true"
+				autoPosition="manual" rendered="#{extractPageDialogBean.visible}" draggable="true"
+				positionOnLoadOnly="true" styleClass="popupDialog"
 				style="max-width:600px;" clientOnly="true">
 				<f:facet name="header">
 					<ice:panelGroup>

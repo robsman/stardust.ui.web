@@ -6,10 +6,10 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-	<ice:panelPopup modal="true" style="width:770px"
+	<ice:panelPopup id="#{advancedTextSearchBean.id}" modal="true" style="width:770px"
 		rendered="#{advancedTextSearchBean.visible}"
 		draggable="true"
-		autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
+		autoPosition="manual" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
 
 		<f:facet name="header">
 			<ice:panelGroup>

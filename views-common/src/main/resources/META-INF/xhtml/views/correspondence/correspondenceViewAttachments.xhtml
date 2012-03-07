@@ -9,10 +9,10 @@
 		bean* - Instance of CorrespondenceAttachments.java 		
 	 -->
 
-<ice:panelPopup draggable="true" resizable="false" modal="true"
+<ice:panelPopup id="#{bean.id}" draggable="true" resizable="false" modal="true"
 	rendered="#{bean.visible}"
 	styleClass="popupDialog" style="width:500px; height:450px;"
-	autoCentre="true" positionOnLoadOnly="true" clientOnly="true">
+	autoPosition="manual" positionOnLoadOnly="true" clientOnly="true">
 
 	<f:facet name="header">
 		<table cellpadding="0" cellspacing="0" width="475px;"><tr>

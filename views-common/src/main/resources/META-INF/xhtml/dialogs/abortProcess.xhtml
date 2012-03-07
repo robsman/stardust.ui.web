@@ -5,8 +5,8 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 	<ui:composition>
-		<ice:panelPopup modal="true" rendered="#{abortProcessBean.visible}"
-			draggable="true" autoCentre="true" positionOnLoadOnly="true"
+		<ice:panelPopup id="#{abortProcessBean.id}" modal="true" rendered="#{abortProcessBean.visible}"
+			draggable="true" autoPosition="manual" positionOnLoadOnly="true"
 			styleClass="popupDialog" clientOnly="true">
 			<f:facet name="header">
 				<ice:panelGroup style="width: auto">

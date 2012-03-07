@@ -8,8 +8,8 @@
 	xmlns:ap="http://www.sungard.de/carnot/web/portal-plugin/adminportal">
 	
 	<ui:composition>
-		<ice:panelPopup modal="true" rendered="#{userProfileBean.visible}"
-			draggable="true" autoCentre="true" positionOnLoadOnly="true"
+		<ice:panelPopup id="#{userProfileBean.id}" modal="true" rendered="#{userProfileBean.visible}"
+			draggable="true" autoPosition="manual" positionOnLoadOnly="true"
 			styleClass="popupDialog" clientOnly="true">
 			<f:facet name="header">
 				<ice:panelGroup>

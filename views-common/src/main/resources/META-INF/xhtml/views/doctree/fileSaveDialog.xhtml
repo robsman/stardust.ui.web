@@ -6,8 +6,8 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-	<ice:panelPopup modal="true" rendered="#{fileSaveDialog.visible}"
-		draggable="true" autoCentre="true" positionOnLoadOnly="true"
+	<ice:panelPopup id="#{fileSaveDialog.id}" modal="true" rendered="#{fileSaveDialog.visible}"
+		draggable="true" autoPosition="manual" positionOnLoadOnly="true"
 		styleClass="popupDialog" clientOnly="true">
 
 		<f:facet name="header">

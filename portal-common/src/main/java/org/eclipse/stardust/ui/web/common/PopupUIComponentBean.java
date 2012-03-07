@@ -10,11 +10,15 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.common;
 
+import javax.faces.context.FacesContext;
+
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.PortalUiController;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+
+import com.icesoft.faces.context.effects.JavascriptContext;
 
 
 /**
@@ -27,6 +31,7 @@ public abstract class PopupUIComponentBean extends UIComponentBean
 
    private boolean visible = false;
    private String title;
+   private boolean popupAutoCenter = true;
   
    /**
     * 
@@ -81,11 +86,25 @@ public abstract class PopupUIComponentBean extends UIComponentBean
          // TODO trace
       }
      
+      addPopupCenteringScript();
       visible = true;
 
       if ((null != focusView) && !PortalUiController.getInstance().broadcastVetoableViewEvent(focusView, ViewEventType.DEACTIVATED))
       {
          // TODO trace
+      }
+   }
+   
+   /**
+    * 
+    */
+   private void addPopupCenteringScript()
+   {
+      if (popupAutoCenter)
+      {
+         String positionPopupScript = "InfinityBpm.Core.positionMessageDialog('" + getId() + "');";
+         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), positionPopupScript);
+         PortalApplication.getInstance().addEventScript(positionPopupScript);
       }
    }
 
@@ -107,5 +126,10 @@ public abstract class PopupUIComponentBean extends UIComponentBean
    public void setTitle(String title)
    {
       this.title = title;
+   }
+   
+   public void setPopupAutoCenter(boolean popupAutoCenter)
+   {
+      this.popupAutoCenter = popupAutoCenter;
    }
 }

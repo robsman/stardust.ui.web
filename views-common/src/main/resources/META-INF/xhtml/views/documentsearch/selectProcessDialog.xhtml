@@ -5,9 +5,9 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 	<ui:composition>
-		<ice:panelPopup modal="true" rendered="#{selectProcessDialog.visible}"
+		<ice:panelPopup id="#{selectProcessDialog.id}" modal="true" rendered="#{selectProcessDialog.visible}"
 			draggable="true"
-			autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
+			autoPosition="manual" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
 			<f:facet name="header">
 				<ice:panelGroup>
 					<pc:automationTag value="auto-COM-SelProcDlg-Header"/>

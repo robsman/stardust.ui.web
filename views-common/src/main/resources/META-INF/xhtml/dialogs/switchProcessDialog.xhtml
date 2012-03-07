@@ -14,9 +14,9 @@
 			</ui:include>
 		</ice:panelGroup>
 
-		<ice:panelPopup modal="true"
+		<ice:panelPopup id="#{switchProcessDialogBean.id}" modal="true"
 			rendered="#{switchProcessDialogBean.visible}" draggable="true"
-			autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
+			autoPosition="manual" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
 			<f:facet name="header">
 				<ice:panelGroup>
 					<pc:automationTag value="auto-COM-SwitchProcDlg-Header"/>

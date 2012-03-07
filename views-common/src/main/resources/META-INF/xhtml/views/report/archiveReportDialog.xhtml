@@ -6,8 +6,8 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 	
-	<ice:panelPopup modal="true" rendered="#{archiveReportDialog.visible}"
-		draggable="true" autoCentre="true" positionOnLoadOnly="true"
+	<ice:panelPopup id="#{archiveReportDialog.id}" modal="true" rendered="#{archiveReportDialog.visible}"
+		draggable="true" autoPosition="manual" positionOnLoadOnly="true"
 		styleClass="popupDialog" clientOnly="true">
 		<f:facet name="header">
 			<ice:panelGroup>

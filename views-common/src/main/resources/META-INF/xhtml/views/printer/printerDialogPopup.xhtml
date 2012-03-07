@@ -5,9 +5,9 @@
 	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
-	<ice:panelPopup modal="true" rendered="#{printerDialogPopup.visible}"
+	<ice:panelPopup id="#{printerDialogPopup.id}" modal="true" rendered="#{printerDialogPopup.visible}"
 		draggable="true"
-		autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
+		autoPosition="manual" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
 		<f:facet name="header">
 			<ice:panelGroup>
 				<pc:automationTag value="auto-COM-PrintDlg-Header"/>
