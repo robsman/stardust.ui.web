@@ -65,27 +65,17 @@ public class DocumentViewUtil
 
    /**
     * @param resourcePath
-    * @return
-    */
-   public static View openFileSystemDocument(String resourcePath)
-   {
-      return openFileSystemDocument(resourcePath, (String)null);
-   }
-
-   /**
-    * @param resourcePath
     * @param name
     * @return
     */
-   public static View openFileSystemDocument(String resourcePath, String name)
+   public static View openFileSystemDocument(String resourcePath, String name, boolean editable)
    {
-      FileSystemDocument fileSystemDocument = new FileSystemDocument(resourcePath, null);
-
+      FileSystemDocument fileSystemDocument = new FileSystemDocument(resourcePath, null, editable);
       if (StringUtils.isNotEmpty(name))
       {
          fileSystemDocument.setName(name);
       }
-      return openFileSystemDocument(fileSystemDocument);
+      return openFileSystemDocument(null, fileSystemDocument);
    }
 
    /**
@@ -101,15 +91,6 @@ public class DocumentViewUtil
       }
 
       return openDocument(viewKey, fileSystemDocument, null);
-   }
-
-   /**
-    * @param fileSystemDocument
-    * @return
-    */
-   public static View openFileSystemDocument(FileSystemDocument fileSystemDocument)
-   {
-      return openFileSystemDocument(null, fileSystemDocument);
    }
 
    /**
@@ -238,9 +219,9 @@ public class DocumentViewUtil
     * @param urlParamMap
     * @return
     */
-   public static View openFileSystemReport(String reportPath, String modelID, Map<String, Object> urlParamMap)
+   public static View openActiveModelReport(String reportPath, String modelID, Map<String, Object> urlParamMap)
    {
-      FileSystemDocument fileSystemDocument = new FileSystemDocument(reportPath, null);
+      FileSystemDocument fileSystemDocument = new FileSystemDocument(reportPath, null, false);
 
       // create viewKey
       String viewKey = "documentOID=";

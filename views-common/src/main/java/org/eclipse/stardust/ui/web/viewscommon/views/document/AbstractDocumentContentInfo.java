@@ -39,6 +39,9 @@ public abstract class AbstractDocumentContentInfo implements IDocumentContentInf
 
    protected boolean supportVersioning;
    protected JCRVersionTracker versionTracker;
+   
+   protected boolean contentEditable = true;
+   protected boolean metaDataEditable = true;
 
    public IDocumentContentInfo saveFile(String filePath)
    {
@@ -97,12 +100,12 @@ public abstract class AbstractDocumentContentInfo implements IDocumentContentInf
 
    public boolean isContentEditable()
    {
-      return true;
+      return contentEditable;
    }
 
    public boolean isMetaDataEditable()
    {
-      return true;
+      return metaDataEditable;
    }
 
    public boolean isSupportsVersioning()

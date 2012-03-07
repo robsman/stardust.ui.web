@@ -41,10 +41,11 @@ public class FileSystemJCRDocument extends FileSystemDocument
    public FileSystemJCRDocument(String resourcePath, DocumentType documentType, String jcrParentFolder,
          String description, String comments)
    {
-      super(resourcePath, documentType);
+      super(resourcePath, documentType, true);
       this.jcrParentFolder = jcrParentFolder;
       this.description = description;
       this.comments = comments;
+      this.metaDataEditable = true;
    }
 
    @Override

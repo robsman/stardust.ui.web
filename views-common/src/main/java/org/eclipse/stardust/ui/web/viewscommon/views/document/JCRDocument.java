@@ -157,6 +157,9 @@ public class JCRDocument extends AbstractDocumentContentInfo
       {
          documentID = document.getRevisionId();
       }
+      
+      contentEditable = modifyPrivilege && null != versionTracker && versionTracker.isLatestVersion();
+      metaDataEditable = contentEditable;
    }
 
    /* (non-Javadoc)
@@ -252,16 +255,6 @@ public class JCRDocument extends AbstractDocumentContentInfo
    public Document getDocument()
    {
       return document;
-   }
-
-   public boolean isContentEditable()
-   {
-      return modifyPrivilege && null != versionTracker && versionTracker.isLatestVersion();
-   }
-
-   public boolean isMetaDataEditable()
-   {
-      return modifyPrivilege && null != versionTracker && versionTracker.isLatestVersion();
    }
 
    /* (non-Javadoc)

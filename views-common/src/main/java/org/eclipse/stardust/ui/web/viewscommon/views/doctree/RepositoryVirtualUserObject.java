@@ -119,7 +119,7 @@ public class RepositoryVirtualUserObject extends RepositoryResourceUserObject
    {
       if (null != resourcePath)
       {
-         DocumentViewUtil.openFileSystemDocument(resourcePath, getLabel());
+         DocumentViewUtil.openFileSystemDocument(resourcePath, getLabel(), false);
       }
    }
 

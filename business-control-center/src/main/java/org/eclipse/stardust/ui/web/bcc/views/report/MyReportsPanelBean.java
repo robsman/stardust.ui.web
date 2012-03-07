@@ -44,7 +44,7 @@ public class MyReportsPanelBean extends AbstractLaunchPanel
       if (documentId.contains(".rptdesign"))
       {
          String documentName = favoriteReports.get(documentId);
-         DocumentViewUtil.openFileSystemDocument(documentId, documentName);
+         DocumentViewUtil.openFileSystemDocument(documentId, documentName, false);
       }
       else
       {

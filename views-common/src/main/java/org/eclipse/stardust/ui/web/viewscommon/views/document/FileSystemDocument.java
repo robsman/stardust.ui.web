@@ -26,7 +26,6 @@ import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileSystemDocumentServlet;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
-import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
@@ -41,20 +40,14 @@ public class FileSystemDocument extends AbstractDocumentContentInfo
 {
    protected File file;
 
-   public FileSystemDocument(String resourcePath, DocumentType documentType)
+   public FileSystemDocument(String resourcePath, DocumentType documentType, boolean editable)
    {
       file = new File(resourcePath);
       this.documentType = documentType;
       this.name = file.getName();
       mimeType = MimeTypesHelper.detectMimeType(getName(), "");
-      init();
-   }
-
-   public FileSystemDocument(String resourcePath, MIMEType mimeType, String name)
-   {
-      file = new File(resourcePath);
-      this.mimeType = mimeType;
-      this.name = name;
+      this.contentEditable = editable;
+      this.metaDataEditable = false;
       init();
    }
 
@@ -122,7 +115,7 @@ public class FileSystemDocument extends AbstractDocumentContentInfo
       {
          ExceptionHandler.handleException(e);
       }
-      return new FileSystemDocument(getId(), documentType);
+      return new FileSystemDocument(getId(), documentType, isContentEditable());
    }
 
    public Date getDateLastModified()
@@ -142,6 +135,6 @@ public class FileSystemDocument extends AbstractDocumentContentInfo
 
    public IDocumentContentInfo reset()
    {
-      return new FileSystemDocument(file.getPath(), documentType);
+      return new FileSystemDocument(file.getPath(), documentType, isContentEditable());
    }
 }
