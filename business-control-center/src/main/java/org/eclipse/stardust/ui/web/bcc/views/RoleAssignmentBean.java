@@ -10,9 +10,10 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.bcc.views;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -40,20 +41,24 @@ import org.eclipse.stardust.ui.web.bcc.jsf.IQueryExtender;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.column.ColumnModel;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
-import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
+import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterSearch;
+import org.eclipse.stardust.ui.web.common.table.DataTableSortModel;
 import org.eclipse.stardust.ui.web.common.table.IQuery;
 import org.eclipse.stardust.ui.web.common.table.IQueryResult;
+import org.eclipse.stardust.ui.web.common.table.ISortHandler;
 import org.eclipse.stardust.ui.web.common.table.IUserObjectBuilder;
 import org.eclipse.stardust.ui.web.common.table.PaginatorDataTable;
+import org.eclipse.stardust.ui.web.common.table.SortCriterion;
+import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
 import org.eclipse.stardust.ui.web.common.table.export.DataTableExportHandler;
 import org.eclipse.stardust.ui.web.common.table.export.ExportType;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
@@ -64,6 +69,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.ParticipantDepartmentPair;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppFilterHandler;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppQueryResult;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
+import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSortHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
 
@@ -297,11 +303,64 @@ public class RoleAssignmentBean extends UIComponentBean
                : filterResult(roleEntries, filterNamePattern);
 
          List<RoleAssignmentTableEntry> result = getPaginatedSubList(resultList, startRow, pageSize);
-
+         applySorting(result);
          RawQueryResult<RoleAssignmentTableEntry> queryResult = new RawQueryResult<RoleAssignmentTableEntry>(result,
                null, false, Long.valueOf(resultList.size()));
 
          return new IppQueryResult<RoleAssignmentTableEntry>(queryResult);
+      }
+      
+      /**
+       * 
+       * @param result
+       */
+      private void applySorting(List<RoleAssignmentTableEntry> result)
+      {
+         RoleAssignmentSortHandler roleAssignmentSortHandler = (RoleAssignmentSortHandler) roleAssignmentTable
+               .getISortHandler();
+
+         if (null != roleAssignmentSortHandler.getSortCriterion())
+         {
+            SortCriterion sortCriterion = roleAssignmentSortHandler.getSortCriterion();
+            Comparator<RoleAssignmentTableEntry> comparator = new SortableTableComparator<RoleAssignmentTableEntry>(
+                  sortCriterion.getProperty(), sortCriterion.isAscending());
+            Collections.sort(result, comparator);
+         }
+      }
+
+   }
+   
+   /**
+    * 
+    * @author Sidharth.Singh
+    * @version $Revision: $
+    */
+   private class RoleAssignmentSortHandler extends IppSortHandler
+   {
+      private static final long serialVersionUID = -2562964400250132610L;
+
+      private SortCriterion sortCriterion;
+
+      @Override
+      public void applySorting(Query query, List<SortCriterion> sortCriterias)
+      {}
+
+      public void applySorting(IQuery iQuery, List<SortCriterion> sortCriterias)
+      {
+         if (CollectionUtils.isNotEmpty(sortCriterias))
+         {
+            sortCriterion = sortCriterias.get(0);
+         }
+         else
+         {
+            sortCriterion = null;
+         }
+
+      }
+
+      public SortCriterion getSortCriterion()
+      {
+         return sortCriterion;
       }
 
    }
@@ -438,11 +497,12 @@ public class RoleAssignmentBean extends UIComponentBean
 
       IppSearchHandler<RoleAssignmentTableEntry> searchHandler = new RoleAssignmentSearchHandler();
       IppFilterHandler filterHandler = new RoleAssignmentFilterHandler();
-
+      ISortHandler sortHandler = new RoleAssignmentSortHandler();
       roleAssignmentTable = new PaginatorDataTable<RoleAssignmentTableEntry, RoleAssignmentTableEntry>(colSelecpopup,
-            searchHandler, null, this);
+            searchHandler, null, sortHandler, this, new DataTableSortModel<RoleAssignmentTableEntry>("name", true));
       roleAssignmentTable.setISearchHandler(searchHandler);
       roleAssignmentTable.setIFilterHandler(filterHandler);
+      roleAssignmentTable.setISortHandler(sortHandler);
       roleAssignmentTable.setDataTableExportHandler(new RoleAssignmentDataTableExportHandler());
       roleAssignmentTable.initialize();
       roleAssignmentTable.refresh(true);
