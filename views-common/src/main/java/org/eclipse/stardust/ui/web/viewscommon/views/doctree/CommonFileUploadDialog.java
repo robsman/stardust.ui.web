@@ -157,11 +157,11 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
             switch (fileInfo.getStatus())
             {
             case FileInfo.UNSPECIFIED_NAME:
-               ExceptionHandler.handleException("commonFile" + getId(),
+               ExceptionHandler.handleException("commonFile" + getBeanId(),
                      MessagesViewsCommonBean.getInstance().getString("views.genericRepositoryView.UNSPECIFIED_NAME"));
                break;
             default:
-               ExceptionHandler.handleException("commonFile" + getId(),
+               ExceptionHandler.handleException("commonFile" + getBeanId(),
                      MessagesViewsCommonBean.getInstance().getString("views.genericRepositoryView.fileUploadError"));
                break;
             }

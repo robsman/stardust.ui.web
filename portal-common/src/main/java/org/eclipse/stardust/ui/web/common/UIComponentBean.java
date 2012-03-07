@@ -68,7 +68,7 @@ public abstract class UIComponentBean implements Serializable
    /**
     * @return
     */
-   public String getId()
+   public final String getBeanId()
    {
       if(StringUtils.isEmpty(id))
       {

@@ -8,7 +8,7 @@
 	<ui:include src="/plugins/views-common/views/case/createCaseDialog.xhtml" />
 	<ui:include	src="/plugins/views-common/views/case/attachToCaseDialog.xhtml" />
 	
-		<ice:panelPopup id="#{relatedProcessSearchBean.id}" modal="true" 
+		<ice:panelPopup id="#{relatedProcessSearchBean.beanId}" modal="true" 
 			rendered="#{relatedProcessSearchBean.visible}" draggable="true"
 			autoPosition="manual" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
 			<f:facet name="header">

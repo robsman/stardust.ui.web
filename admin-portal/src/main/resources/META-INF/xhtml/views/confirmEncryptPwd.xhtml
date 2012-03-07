@@ -5,7 +5,7 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 	<ui:composition>
-		<ice:panelPopup id="#{genericPopup.id}" modal="true" rendered="#{genericPopup.visible}"
+		<ice:panelPopup id="#{genericPopup.beanId}" modal="true" rendered="#{genericPopup.visible}"
 			draggable="true" autoPosition="manual" positionOnLoadOnly="true"
 			styleClass="popupDialog" style="z-index: 999; width: auto; height: auto;" clientOnly="true">
 			<f:facet name="header">

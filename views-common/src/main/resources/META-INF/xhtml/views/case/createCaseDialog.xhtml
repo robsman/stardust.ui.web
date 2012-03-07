@@ -6,7 +6,7 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 	<ui:composition>
 		<c:if test="#{createCaseDialogBean.visible}">
-			<ice:panelPopup id="#{createCaseDialogBean.id}" modal="true"
+			<ice:panelPopup id="#{createCaseDialogBean.beanId}" modal="true"
 				rendered="#{createCaseDialogBean.visible}" draggable="true"
 				autoPosition="manual" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
 				<f:facet name="header">

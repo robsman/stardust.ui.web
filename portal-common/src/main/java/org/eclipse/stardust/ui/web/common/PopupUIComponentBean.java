@@ -102,7 +102,7 @@ public abstract class PopupUIComponentBean extends UIComponentBean
    {
       if (popupAutoCenter)
       {
-         String positionPopupScript = "InfinityBpm.Core.positionMessageDialog('" + getId() + "');";
+         String positionPopupScript = "InfinityBpm.Core.positionMessageDialog('" + getBeanId() + "');";
          JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), positionPopupScript);
          PortalApplication.getInstance().addEventScript(positionPopupScript);
       }

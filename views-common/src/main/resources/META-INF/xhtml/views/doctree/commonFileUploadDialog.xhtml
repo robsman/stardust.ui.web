@@ -6,7 +6,7 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-	<ice:panelPopup id="#{commonFileUploadDialog.id}" modal="true"
+	<ice:panelPopup id="#{commonFileUploadDialog.beanId}" modal="true"
 		rendered="#{commonFileUploadDialog.visible}"
 		draggable="true"
 		autoPosition="manual" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
@@ -122,7 +122,7 @@
 							<!-- The iframe that gets rendered as a part of ice:inputFile takes much wider space. So cap it with max-width -->
 							<ice:panelGroup style="margin-top: 5px; margin-bottom: 5px; max-width: auto;"
 								rendered="#{commonFileUploadDialog.fileUploadProgress eq 0  or commonFileUploadDialog.fileUploadProgress eq 100}">
-								<ice:inputFile id="commonFile#{commonFileUploadDialog.id}" failOnEmptyFile="false" width="400"
+								<ice:inputFile id="commonFile#{commonFileUploadDialog.beanId}" failOnEmptyFile="false" width="400"
 									actionListener="#{commonFileUploadDialog.uploadFile}"
 									progressListener="#{commonFileUploadDialog.measureProgress}"
 									submitOnUpload="preUpload" label="#{views_common_msgPropsBean['views.myDocumentsTreeView.fileUploadDialog.upload']}">
@@ -130,7 +130,7 @@
 								</ice:inputFile>								
 							</ice:panelGroup>
 							<ice:panelGroup styleClass="msgError">							
-								<ice:message for="commonFile#{commonFileUploadDialog.id}"/>	
+								<ice:message for="commonFile#{commonFileUploadDialog.beanId}"/>	
 							</ice:panelGroup>						
 							<ice:outputProgress
 								value="#{commonFileUploadDialog.fileUploadProgress}">

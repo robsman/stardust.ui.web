@@ -126,7 +126,7 @@ public abstract class PopupDialog implements Serializable
    {
       if (popupAutoCenter)
       {
-         String positionPopupScript = "InfinityBpm.Core.positionMessageDialog('" + id + "');";
+         String positionPopupScript = "InfinityBpm.Core.positionMessageDialog('" + getBeanId() + "');";
          JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), positionPopupScript);
          PortalApplicationEventScript.getInstance().addEventScript(positionPopupScript);
       }
@@ -138,6 +138,18 @@ public abstract class PopupDialog implements Serializable
          id = "Id" + hashCode();
 
       return id;
+   }
+   
+   /**
+    * A duplicate method for getId.
+    * Added to maintain consistency with UIComponentBean.getBeanId()
+    * 
+    * @return
+    */
+   public final String getBeanId()
+   {
+
+      return getId();
    }
    
    public boolean isVisible()
