@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.common.reflect;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -330,6 +331,64 @@ public class Reflect
       }
       
       return clazz;
+   }
+
+   /**
+    * @param clazz
+    * @param name
+    * @param value
+    */
+   public static void setStaticFieldValue(Class clazz, String name, Object value)
+   {
+      Field field = getField(clazz, name);
+      if (null != field)
+      {
+         field.setAccessible(true);
+         try
+         {
+            field.set(null, value);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      else
+      {
+         throw new RuntimeException("Field '" + name + "' for '" + clazz.getName() + "' not found");
+      }
+   }
+
+   /**
+    * @param clazz
+    * @param name
+    * @return
+    */
+   public static Field getField(Class clazz, String name)
+   {
+      Field field = null;
+
+      if (null != clazz)
+      {
+         try
+         {
+            field = clazz.getDeclaredField(name);
+            field.setAccessible(true);
+         }
+         catch (NoSuchFieldException e)
+         {
+            // ignore, bubble up to super class
+         }
+         catch (SecurityException e)
+         {
+            throw new RuntimeException(e);
+         }
+         if (null == field)
+         {
+            field = getField(clazz.getSuperclass(), name);
+         }
+      }
+      return field;
    }
 
    /**

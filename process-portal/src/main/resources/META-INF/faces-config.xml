@@ -58,6 +58,14 @@
         <converter-class>javax.faces.convert.ShortConverter</converter-class>
     </converter>
     <converter>
+        <converter-id>ippDefaultBigDecimalConverter</converter-id>
+        <converter-class>javax.faces.convert.BigDecimalConverter</converter-class>
+    </converter>
+    <converter>
+        <converter-id>ippDefaultPeriodConverter</converter-id>
+        <converter-class>org.eclipse.stardust.ui.common.form.jsf.converter.PeriodConverter</converter-class>
+    </converter>
+    <converter>
         <converter-id>ippDefaultPriorityConverter</converter-id>
         <converter-class>org.eclipse.stardust.ui.web.processportal.view.manual.PriorityConverter</converter-class>
     </converter>

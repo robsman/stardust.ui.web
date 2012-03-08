@@ -16,10 +16,10 @@ import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.ui.common.form.jsf.messages.DefaultLabelProvider;
+import org.eclipse.stardust.ui.common.form.jsf.utils.MessagePropertiesBean;
 import org.eclipse.stardust.ui.common.introspection.Path;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
-import org.eclipse.stardust.ui.web.processportal.common.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 
 
@@ -110,7 +110,8 @@ public class ManualActivityLabelProvider extends DefaultLabelProvider
    @Override
    public String getLabel(String key)
    {
-      if ("ui.form.validationMessage.globalMessage.label".equals(key))
+      if ("ui.form.validationMessage.globalMessage.label".equals(key)
+            || "formPanel.listController.addAction".equals(key) || "formPanel.listController.removeAction".equals(key))
       {
          return MessagePropertiesBean.getInstance().getString(key);
       }

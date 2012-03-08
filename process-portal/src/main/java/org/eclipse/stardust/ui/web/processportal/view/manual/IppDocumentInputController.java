@@ -30,6 +30,7 @@ import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog;
@@ -110,6 +111,7 @@ public class IppDocumentInputController extends DocumentInputController implemen
          documentView = DocumentViewUtil.openDataMappingDocument(activityInstance.getProcessInstance(),
                dataMapping.getDataId(), docInfo, params);
          PortalApplication.getInstance().registerViewDataEventHandler(documentView, this);
+         refreshPortalSession();
       }
    }
 
@@ -140,6 +142,7 @@ public class IppDocumentInputController extends DocumentInputController implemen
       {
          PortalApplication.getInstance().closeView(documentView);
          unregisterHandler();
+         refreshPortalSession();
       }
    }
 
@@ -179,6 +182,7 @@ public class IppDocumentInputController extends DocumentInputController implemen
          }
       });
       fileUploadDialog.openPopup();
+      refreshPortalSession();
    }
 
    @Override
@@ -257,6 +261,17 @@ public class IppDocumentInputController extends DocumentInputController implemen
       if (null != documentView)
       {
          PortalApplication.getInstance().unregisterViewDataEventHandler(documentView, this);
+      }
+   }
+
+   /**
+    * 
+    */
+   private void refreshPortalSession()
+   {
+      if (ActivityInstanceUtils.isIframeBased(activityInstance))
+      {
+         PortalApplication.getInstance().renderPortalSession();
       }
    }
 }

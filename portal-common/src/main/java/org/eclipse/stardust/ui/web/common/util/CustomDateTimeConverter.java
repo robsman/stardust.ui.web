@@ -30,17 +30,22 @@ import com.icesoft.faces.component.selectinputdate.SelectInputDate;
  */
 public class CustomDateTimeConverter extends DateTimeConverter implements Serializable
 {
-   MessagePropertiesBean propsBean = MessagePropertiesBean.getInstance();
-
    /**
     * 
     */
    public CustomDateTimeConverter()
    {
       super();
-      setTimeZone(java.util.TimeZone.getDefault());
-      setPattern(DateUtils.getDateTimeFormat());
-      setLocale(getLocale());
+      try
+      {
+         setTimeZone(java.util.TimeZone.getDefault());
+         setPattern(DateUtils.getDateTimeFormat());
+         setLocale(getLocale());
+      }
+      catch (Exception e)
+      {
+         // Ignore
+      }
    }
 
    /* (non-Javadoc)
@@ -59,9 +64,9 @@ public class CustomDateTimeConverter extends DateTimeConverter implements Serial
 
          FacesContext.getCurrentInstance().addMessage(
                arg1.getClientId(FacesContext.getCurrentInstance()),
-               new FacesMessage(MessageFormat.format(propsBean
-                     .getString("common.converter.date.errorMsg"), new Object[] {
-                     arg2, sdf.format(new Date())})));
+               new FacesMessage(MessageFormat.format(
+                     MessagePropertiesBean.getInstance().getString("common.converter.date.errorMsg"), new Object[] {
+                           arg2, sdf.format(new Date())})));
 
          // If error occurs return the earlier valid input
          if(arg1 instanceof SelectInputDate)

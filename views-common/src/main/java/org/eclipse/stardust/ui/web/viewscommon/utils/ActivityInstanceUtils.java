@@ -191,6 +191,29 @@ public class ActivityInstanceUtils
    }
 
    /**
+    * @param ai
+    * @return
+    */
+   public static boolean isIframeBased(ActivityInstance ai)
+   {
+      IActivityInteractionController interactionController = SpiUtils.getInteractionController(ai.getActivity());
+      if (null != interactionController)
+      {
+         String contextId = interactionController.getContextId(ai);
+         if (PredefinedConstants.DEFAULT_CONTEXT.equals(contextId))
+         {
+            return false;
+         }
+         else
+         {
+            return true;
+         }
+      }
+      
+      return false;
+   }
+
+   /**
     * @param activity
     * @return
     */

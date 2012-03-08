@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -887,7 +888,7 @@ public class ActivityDetailsBean
          IActivityInteractionController interactionController = getInteractionController(ai
                .getActivity());
 
-         Map outData = retrieveOutDataMapping();
+         Map outData = retrieveOutDataMapping(interactionController, false);
          String context = interactionController.getContextId(ai);
 
          ActivityInstanceUtils.openDelegateDialog(activityInstance, outData, context,
@@ -1079,7 +1080,7 @@ public class ActivityDetailsBean
             if (interactionController.closePanel(ai, ClosePanelScenario.SUSPEND_AND_SAVE))
             {
                // close synchronously
-               Map<String, ?> outData = retrieveOutDataMapping();
+               Map<String, ?> outData = retrieveOutDataMapping(interactionController, true);
 
                if (keepOwnership)
                {
@@ -1134,7 +1135,11 @@ public class ActivityDetailsBean
 
    private void completeQualityAssuranceActivity(QAAction action)
    {
-      Map<String, ? > outData = retrieveOutDataMapping();
+      ActivityInstance ai = activityInstance;
+      IActivityInteractionController interactionController = getInteractionController(ai
+            .getActivity());
+
+      Map<String, ? > outData = retrieveOutDataMapping(interactionController, false);
       QualityAssuranceActivityBean.openDialog(action, getActivityInstance(), thisView, outData);
    }
    
@@ -1194,7 +1199,7 @@ public class ActivityDetailsBean
             if (interactionController.closePanel(ai, ClosePanelScenario.COMPLETE))
             {
                // close synchronously
-               Map<String, ?> outData = retrieveOutDataMapping();
+               Map<String, ?> outData = retrieveOutDataMapping(interactionController, false);
 
                List<Object> completionResult = PPUtils.complete(interactionController
                      .getContextId(ai), outData, CompletionOptions.ACTIVATE_NEXT, ai);
@@ -1332,9 +1337,42 @@ public class ActivityDetailsBean
    /**
     * @return
     */
-   private Map<String, ?> retrieveOutDataMapping()
+   @SuppressWarnings({"unchecked", "rawtypes"})
+   private Map<String, ?> retrieveOutDataMapping(IActivityInteractionController interactionController, boolean releaseInteraction)
    {
-       return null != activityForm ? activityForm.retrieveData() : null;
+      Map<String, Serializable> ret = new HashMap<String, Serializable>();
+
+      ActivityInstance ai = activityInstance;
+      String contextId = interactionController.getContextId(ai);
+
+      if (PredefinedConstants.DEFAULT_CONTEXT.equals(contextId))
+      {
+         // TODO HACK working around the SPI for manual activities for the time being
+
+         if (null != activityForm)
+         {
+            Map<String, Serializable> outDataValues = (Map)activityForm.retrieveData();
+            if (!CollectionUtils.isEmpty(outDataValues))
+            {
+               ret.putAll(outDataValues);
+            }
+         }
+
+         if (releaseInteraction)
+         {
+            this.interaction = null;
+         }
+      }
+      else
+      {
+         Map<String, Serializable> outDataValues = interactionController.getOutDataValues(ai);
+         if (!CollectionUtils.isEmpty(outDataValues))
+         {
+            ret.putAll(outDataValues);
+         }
+      }
+
+      return ret;
    }
 
    /**

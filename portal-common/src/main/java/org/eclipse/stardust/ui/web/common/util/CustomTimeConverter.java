@@ -22,8 +22,15 @@ public class CustomTimeConverter extends CustomDateTimeConverter
    public CustomTimeConverter()
    {
       super();
-      setTimeZone(java.util.TimeZone.getDefault());
-      setPattern(DateUtils.getTimeFormat());
-      setLocale(getLocale());
+      try
+      {
+         setTimeZone(java.util.TimeZone.getDefault());
+         setPattern(DateUtils.getTimeFormat());
+         setLocale(getLocale());
+      }
+      catch (Exception e)
+      {
+         // Ignore
+      }
    }
 }
