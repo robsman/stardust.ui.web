@@ -69,6 +69,7 @@ import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
+import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.processportal.EventController;
 import org.eclipse.stardust.ui.web.processportal.PollingProperties;
@@ -634,6 +635,18 @@ public class ActivityDetailsBean
 
          // At the end the focus view should be this view
          PortalApplication.getInstance().setFocusView(view);
+         
+         /*
+          * If any message pop-up is set to be opened up, then fire a de-activate view
+          * event. This is needed for IFRAME based activities (JSF activities, external
+          * web applications, etc) in particular, to avoid activation of IFRAMES - which
+          * would otherwise overlay the modal pop-up, rendering the portal unusable.
+          */
+         if (MessageDialog.hasMessages())
+         {
+            fireEventForViewEventAwareInteractionController(activityInstance, new ViewEvent(thisView,
+                  ViewEvent.ViewEventType.TO_BE_DEACTIVATED));
+         }
          
          // Check if UI was already pinned. This case will arise when user completes the
          // activity in pin mode and next activity is also assigned to the same user

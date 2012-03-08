@@ -180,6 +180,15 @@ public class MessageDialog extends PopupDialog
       msgbean.exception = null;
    }
    
+   /**
+    * @return
+    */
+   public static boolean hasMessages()
+   {
+      MessageDialog msgbean = getInstance();
+      return ((null != msgbean.title) || (null != msgbean.messageType) || (null != msgbean.details) || (null != msgbean.exception));
+   }
+   
    @Override
    public void closePopup()
    {
