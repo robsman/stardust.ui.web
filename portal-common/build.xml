@@ -169,6 +169,14 @@
          <fileset dir="${latakia.home}/etc/i18n" >
             <!-- currently only japanese property files -->
             <include name="*_ja.properties*" />
+            <exclude name="PredefinedModel_ja.properties" />
+         </fileset>
+      </copy>
+      <copy todir="${project.webapp.dir}/WEB-INF/classes/ag/carnot">
+         <!-- currently only japanese property files -->
+         <fileset dir="${latakia.home}/etc/i18n" >
+            <!-- currently only japanese property files -->
+            <include name="PredefinedModel_ja.properties" />
          </fileset>
       </copy>
 
