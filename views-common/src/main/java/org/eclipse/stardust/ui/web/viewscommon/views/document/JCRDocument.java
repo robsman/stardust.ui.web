@@ -265,6 +265,11 @@ public class JCRDocument extends AbstractDocumentContentInfo
       properties.put(CommonProperties.DESCRIPTION, description);
       properties.put(CommonProperties.COMMENTS, comments);
       this.document.setDocumentAnnotations(annotations);
+      if (!DocumentMgmtUtility.isDocumentVersioned(this.document))
+      {
+         DocumentMgmtUtility.getDocumentManagementService().versionDocument(this.document.getId(),
+               CommonProperties.ZERO);
+      }
       Document document = DocumentMgmtUtility.getDocumentManagementService().updateDocument(this.document, contentByte,
             "", true, String.valueOf(this.versionTracker.getVersions().size() + 1), false);
       return new JCRDocument(document, new JCRVersionTracker(document));

@@ -227,6 +227,11 @@ public class DocumentMgmtUtility
       existingDocument.getProperties().put(CommonProperties.DESCRIPTION, description);
       existingDocument.getProperties().put(CommonProperties.COMMENTS, comments);
       
+      if (!isDocumentVersioned(existingDocument))
+      {
+         getDocumentManagementService().versionDocument(existingDocument.getId(), CommonProperties.ZERO);
+      }
+      
       if (null != fileData)
       {
          List versions = getDocumentVersions(existingDocument);
