@@ -29,6 +29,7 @@ import org.eclipse.stardust.ui.web.admin.WorkflowFacade;
 import org.eclipse.stardust.ui.web.admin.messages.AdminMessagesPropertiesBean;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
@@ -51,6 +52,10 @@ public class AuditTrailBean extends PopupUIComponentBean
    private AdminMessagesPropertiesBean propsBean;
    
    private AuditTrailConfirmationDialog mappedConfirmationDialog;
+   
+   private ConfirmationDialog auditTrailAndModelCleanUpDialog;
+   
+   private ConfirmationDialog recoveryDialog;
 
    /**
     * 
@@ -68,7 +73,7 @@ public class AuditTrailBean extends PopupUIComponentBean
     * @param event
     * @throws PortalException
     */
-   public void recoverWE(ActionEvent event) throws PortalException
+   public void recoverWE() throws PortalException
    {
       try
       {
@@ -152,7 +157,79 @@ public class AuditTrailBean extends PopupUIComponentBean
       mappedConfirmationDialog = new AuditTrailConfirmationDialog(DialogContentType.NONE,DialogActionType.YES_NO,ResourcePaths.LP_CleanAuditTrailDB);
       mappedConfirmationDialog.setTitle(propsBean.getString("launchPanels.ippAdmAdministrativeActions.catd.title"));
       mappedConfirmationDialog.openPopup();
-      }
+   }
+   
+   /**
+    * @param event
+    */
+   public void openCleanupATMDConfirm(ActionEvent event)
+   {
+      ConfirmationDialogHandler dialogHandler = new ConfirmationDialogHandler()
+      {
+         public boolean cancel()
+         {
+            auditTrailAndModelCleanUpDialog = null;
+            return true;
+         }
+
+         public boolean accept()
+         {
+            try
+            {
+               auditTrailAndModelCleanUpDialog = null;
+               cleanupATMD();
+               return true;
+            }
+            catch (Exception e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
+      };
+      auditTrailAndModelCleanUpDialog = new ConfirmationDialog(DialogContentType.NONE, DialogActionType.YES_NO,
+            dialogHandler);
+      auditTrailAndModelCleanUpDialog.setIncludePath(ResourcePaths.LP_CleanAuditAndModelTrailDB);
+      auditTrailAndModelCleanUpDialog.setDialogStyle(DialogStyle.COMPACT);
+      auditTrailAndModelCleanUpDialog.setTitle(propsBean
+            .getString("launchPanels.ippAdmAdministrativeActions.catmd.title"));
+      auditTrailAndModelCleanUpDialog.openPopup();
+   }
+   
+   /**
+    * @param event
+    */
+   public void openRecoveryDialog(ActionEvent event)
+   {
+      ConfirmationDialogHandler dialogHandler = new ConfirmationDialogHandler()
+      {
+         public boolean cancel()
+         {
+            recoveryDialog = null;
+            return true;
+         }
+
+         public boolean accept()
+         {
+            try
+            {
+               recoveryDialog = null;
+               recoverWE();
+               return true;
+            }
+            catch (Exception e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
+      };
+      recoveryDialog = new ConfirmationDialog(DialogContentType.NONE, DialogActionType.YES_NO,
+            dialogHandler);
+      recoveryDialog.setIncludePath(ResourcePaths.LP_Recovery);
+      recoveryDialog.setDialogStyle(DialogStyle.COMPACT);
+      recoveryDialog.setTitle(propsBean
+            .getString("launchPanels.ippAdmAdministrativeActions.recovery.title"));
+      recoveryDialog.openPopup();
+   }
    
    /**
     * Cleans up Audit trail database
@@ -197,6 +274,16 @@ public class AuditTrailBean extends PopupUIComponentBean
       return mappedConfirmationDialog;
    }
    
+   public ConfirmationDialog getAuditTrailAndModelCleanUpDialog()
+   {
+      return auditTrailAndModelCleanUpDialog;
+   }
+   
+   public ConfirmationDialog getRecoveryDialog()
+   {
+      return recoveryDialog;
+   }
+
    /**
     * 
     * @author Sidharth.Singh

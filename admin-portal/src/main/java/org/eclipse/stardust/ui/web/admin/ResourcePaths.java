@@ -68,6 +68,8 @@ public interface ResourcePaths
    //public static final String V_RESOURCEDOWNLOAD = "/plugins/admin-portal/views/resourceDownload.xhtml";   
    public static final String V_ConfirmEncyprtPwd = "/plugins/admin-portal/views/confirmEncryptPwd.xhtml";
    public static final String LP_CleanAuditTrailDB = "/plugins/admin-portal/extensions/launchpad/cleanAuditTrailDataBase.xhtml";
+   public static final String LP_CleanAuditAndModelTrailDB = "/plugins/admin-portal/extensions/launchpad/cleanAuditTrailAndModelDatabase.xhtml";
+   public static final String LP_Recovery = "/plugins/admin-portal/extensions/launchpad/revoveryPopupContent.xhtml";
    public static final String V_QA_ACTIVITIES_TABLE_COLUMNS = "/plugins/admin-portal/views/qualityAssuranceActivityTableColumns.xhtml";
    public static final String V_QA_DEPARTMENT_TABLE_COLUMNS = "/plugins/admin-portal/views/qualityAssuranceDepartmentTableColumns.xhtml";
 }

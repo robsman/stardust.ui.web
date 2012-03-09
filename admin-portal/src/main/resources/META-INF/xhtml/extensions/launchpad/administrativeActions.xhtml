@@ -9,8 +9,14 @@
 	
 	<ice:panelGroup>
 		<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
-				<ui:param name="dialogBean" value="#{auditTrailBean.mappedConfirmationDialog}" />
-			</ui:include>
+			<ui:param name="dialogBean" value="#{auditTrailBean.mappedConfirmationDialog}" />
+		</ui:include>
+		<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+			<ui:param name="dialogBean" value="#{auditTrailBean.auditTrailAndModelCleanUpDialog}" />
+		</ui:include>
+		<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+			<ui:param name="dialogBean" value="#{auditTrailBean.recoveryDialog}" />
+		</ui:include>
 	</ice:panelGroup>
 	<ice:panelGroup>
 		<ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
@@ -22,7 +28,7 @@
 		</ui:include>
 	</ice:panelGroup>
 	<ice:panelGrid columns="1" rendered="#{ippAdmAdministrativeActions.expanded}">
-		 <ice:commandLink panelConfirmation="recovery" actionListener="#{auditTrailBean.recoverWE}">
+		 <ice:commandLink actionListener="#{auditTrailBean.openRecoveryDialog}">
 		 	  <pc:automationTag value="auto-ADM-recovery" standAlone="false"/>
               <ice:outputText value="#{ippAdmAdministrativeActions.messages['recovery.title']} &amp;raquo;"
               	styleClass="action-link" escape="false"/>
@@ -31,19 +37,11 @@
           	  <pc:automationTag value="auto-ADM-clAuditTrailDB" standAlone="false"/>
               <ice:outputText value="#{ippAdmAdministrativeActions.messages['catd.title']} &amp;raquo;"
               	styleClass="action-link" escape="false"/>
-          </ice:commandLink>                  
-          <ice:commandLink panelConfirmation="catmd" action="#{auditTrailBean.cleanupATMD}">
+          </ice:commandLink>
+          <ice:commandLink actionListener="#{auditTrailBean.openCleanupATMDConfirm}">
           	  <pc:automationTag value="auto-ADM-clAuditTrailModelDB" standAlone="false"/>
               <ice:outputText value="#{ippAdmAdministrativeActions.messages['catmd.title']} &amp;raquo;"
               	styleClass="action-link" escape="false"/>
           </ice:commandLink>
-          <ice:panelConfirmation id="recovery" message="#{ippAdmAdministrativeActions.messages['auditTrail.recoverWorkflowEngineText']}"
-                    acceptLabel="#{messages_admin['common.yes']}" cancelLabel="#{messages_admin['common.no']}" title="#{ippAdmAdministrativeActions.messages['recovery.title']}">
-                    <pc:automationTag value="auto-ADM-RecoveryCnfMsg" standAlone="false" requiredValue="pnlConfirmation" />
-          </ice:panelConfirmation>
-          <ice:panelConfirmation id="catmd" message="#{ippAdmAdministrativeActions.messages['auditTrail.cleanUpAuditTrailAndModelDbText']}"
-                    acceptLabel="#{messages_admin['common.yes']}" cancelLabel="#{messages_admin['common.no']}" title="#{ippAdmAdministrativeActions.messages['catmd.title']}">
-                     <pc:automationTag value="auto-ADM-clAuditTrailModelDBCnfMsg" standAlone="false" requiredValue="pnlConfirmation" />
-          </ice:panelConfirmation>
 	</ice:panelGrid>
 </f:view>

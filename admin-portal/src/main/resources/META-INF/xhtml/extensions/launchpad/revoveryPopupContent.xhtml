@@ -1,0 +1,16 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ui:component>
+		<ice:panelGrid columns="1" cellpadding="0" cellspacing="0">
+			<ice:outputText style="white-space: normal"
+				value="#{ippAdmAdministrativeActions.messages['auditTrail.recoverWorkflowEngineText']}" escape="false"/>
+			<ice:panelGroup styleClass="clearing" />
+		</ice:panelGrid>
+	</ui:component>
+
+</f:view>
