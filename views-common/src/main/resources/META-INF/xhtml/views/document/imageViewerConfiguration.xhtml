@@ -214,7 +214,8 @@
 		<ice:panelGroup style="clearing" />
 		<ice:panelGroup>
 			<ice:selectBooleanCheckbox partialSubmit="true" disabled="#{!ippPortalApp.loggedInUser.administrator}"
-				value="#{imageViewerConfigurationBean.enableExtractPage}">				
+				value="#{imageViewerConfigurationBean.enableExtractPage}">	
+				<pc:automationTag value="auto-COM-ImgViewConf-enableExtractPage" standAlone="false" />			
 			</ice:selectBooleanCheckbox>
 			<ice:outputLabel
 				value="#{views_common_msgPropsBean['views.imageViewerConfig.extractPageOptions.enableExtractPages']}"
@@ -222,7 +223,8 @@
 			<ice:panelGrid columns="1" style="margin-left:25px">
 				<ice:panelGroup>
 					<ice:selectBooleanCheckbox partialSubmit="true" disabled="#{!ippPortalApp.loggedInUser.administrator or !imageViewerConfigurationBean.enableExtractPage}"
-						value="#{imageViewerConfigurationBean.allowDeleteFromOriginal}">						
+						value="#{imageViewerConfigurationBean.allowDeleteFromOriginal}">
+						<pc:automationTag value="auto-COM-ImgViewConf-allowDeleteFromOriginal" standAlone="false" />						
 					</ice:selectBooleanCheckbox>
 					<ice:outputLabel
 						value="#{views_common_msgPropsBean['views.imageViewerConfig.extractPageOptions.allowDeleteFromOriginal']}"
