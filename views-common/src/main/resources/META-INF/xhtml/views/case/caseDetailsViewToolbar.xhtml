@@ -45,8 +45,8 @@
 			styleClass="toolbar-button" />
 
 		<pc:automationTag value="auto-COM-CaseDetView-ToolbarAttachToCase"/>					
-		<ice:commandLink actionListener="#{processHistoryTable.attachToCase}"
-			rendered="#{processHistoryTable.enableCase and  caseDetailsBean.canManageCase}"
+		<ice:commandLink actionListener="#{caseDetailsBean.attachToCase}"
+			rendered="#{caseDetailsBean.canManageCase}"
 			disabled="#{caseDetailsBean.inactiveCase}" >	
 			<ice:graphicImage
 				url="/plugins/views-common/images/icons/case-attach.png"

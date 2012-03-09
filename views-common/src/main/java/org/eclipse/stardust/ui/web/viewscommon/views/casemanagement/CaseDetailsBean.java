@@ -319,6 +319,16 @@ public class CaseDetailsBean extends PopupUIComponentBean
 
    /**
     * 
+    */
+   public void attachToCase(ActionEvent event)
+   {
+      List<ProcessInstance> selectedProcesses = CollectionUtils.newArrayList();
+      selectedProcesses.add(processInstance);
+      ProcessInstanceUtils.openAttachToCase(selectedProcesses);
+   }
+   
+   /**
+    * 
     * @param ae
     */
    public void detachFromCase(ActionEvent ae)

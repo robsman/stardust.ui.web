@@ -176,16 +176,6 @@ public class ProcessHistoryTable extends UIViewComponentBean
    }
 
    /**
-    * 
-    */
-   public void attachToCase(ActionEvent event)
-   {
-      List<ProcessInstance> selectedProcesses = CollectionUtils.newArrayList();
-      selectedProcesses.add(getSelectedRow().getProcessInstance());
-      ProcessInstanceUtils.openAttachToCase(selectedProcesses);
-   }
-
-   /**
     * @param event
     */
    public void selectRow(ActionEvent event)
