@@ -39,14 +39,6 @@
 				title="#{views_common_msgPropsBean['common.tooltip.recover']}"/>
 		</ice:commandLink>	
 		
-		<ice:commandLink actionListener="#{bean.applyChanges}" 
-			disabled="#{!bean.priorityChanged}">
-			<pc:automationTag value="auto-COM-ProcTbl-ToolbarSavePrio" standAlone="false"/>
-			<ice:graphicImage
-				url="/plugins/business-control-center/images/icons/save_flag.png"
-                   style="border:none;" styleClass="#{!bean.priorityChanged ? 'iceCmdBtn-dis' : ''}"
-                   title="#{views_common_msgPropsBean['common.tooltip.savePriorityChanges']}"/>
-		</ice:commandLink>
 		<!-- Case Menu -->
 		<ice:panelGroup
 			rendered="#{!(bean.selectedItemCount eq 0 ? true : false)}">
@@ -61,6 +53,15 @@
 			<ice:graphicImage styleClass="iceCmdBtn-dis"
 				value="/plugins/views-common/images/icons/case-menu.png" />
 		</ice:panelGroup>
+		
+		<ice:commandLink actionListener="#{bean.applyChanges}" 
+			disabled="#{!bean.priorityChanged}">
+			<pc:automationTag value="auto-COM-ProcTbl-ToolbarSavePrio" standAlone="false"/>
+			<ice:graphicImage
+				url="/plugins/business-control-center/images/icons/save_flag.png"
+                   style="border:none;" styleClass="#{!bean.priorityChanged ? 'iceCmdBtn-dis' : ''}"
+                   title="#{views_common_msgPropsBean['common.tooltip.savePriorityChanges']}"/>
+		</ice:commandLink>
 
 	</ice:panelGrid>
 </f:view>

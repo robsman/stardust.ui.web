@@ -35,6 +35,14 @@
 				value="/plugins/common/images/panelHeader-triggerCollapse.png" />
 		</ice:panelGroup>
 		
+		<pc:automationTag value="auto-COM-PCERecover"/>
+		<ice:commandButton
+			image="/plugins/business-control-center/images/icons/recover_process.png"
+			action="#{processInstanceDetailsBean.recoverProcess}"
+			partialSubmit="true"
+			title="#{messages_bcc['common.tooltip.recover']}"
+			styleClass="toolbar-button" />
+			
 		<!-- Case Menu -->
 		<ice:panelGroup
 			rendered="#{processInstanceDetailsBean.processInstanceOID==processInstanceDetailsBean.processInstance.rootProcessInstanceOID}">
@@ -55,14 +63,6 @@
 				value="#{processInstanceDetailsBean.processInstanceOID}" />
 		</ice:commandLink>
 
-		<pc:automationTag value="auto-COM-PCERecover"/>
-		<ice:commandButton
-			image="/plugins/business-control-center/images/icons/recover_process.png"
-			action="#{processInstanceDetailsBean.recoverProcess}"
-			partialSubmit="true"
-			title="#{messages_bcc['common.tooltip.recover']}"
-			styleClass="toolbar-button" />
-					
 		<ice:graphicImage value="/plugins/common/images/toolbar-separator.png"/>	
 
 		<pc:automationTag value="auto-COM-PCEOpenCorrespondence"/>

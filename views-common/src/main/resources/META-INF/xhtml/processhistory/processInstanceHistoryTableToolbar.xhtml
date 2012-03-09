@@ -9,40 +9,29 @@
 	<h:panelGroup
 		style="cell-padding: 0; cell-spacing: 0; white-space: nowrap; padding-bottom: 2px; padding-left: 5px;">
 		
-		<ice:commandLink actionListener="#{processHistoryTable.applyChanges}"
-			style="vertical-align: middle;"
-			disabled="#{!processHistoryTable.processTreeTable.priorityChanged}">
-			<pc:automationTag value="auto-COM-PCEHistoryTable-ToolbarSave" standAlone="false"/>
-			<ice:graphicImage
-				url="/plugins/business-control-center/images/icons/save_flag.png"
-				style="border:none;padding-right: 10px;padding-left: 5px;"
-				styleClass="#{!processHistoryTable.processTreeTable.priorityChanged ? 'iceCmdBtn-dis' : ''}"
-				title="#{views_common_msgPropsBean['processHistory.processTable.applyChanges']}" />
-		</ice:commandLink>
-
 		<ice:commandLink actionListener="#{caseDetailsBean.detachFromCase}"
 			style="vertical-align: middle;" rendered="#{processHistoryTable.enableCase and caseDetailsBean.canManageCase }"
 			disabled="#{caseDetailsBean.inactiveCase}">	
 			<pc:automationTag value="auto-COM-PCEHistoryTable-ToolbarDetachPI" standAlone="false"/>
 			<ice:graphicImage
 				url="/plugins/views-common/images/icons/case-detach.png"
-				style="border:none;padding-right: 10px;"
+				style="border:none;padding-right: 5px;"
 				title="#{views_common_msgPropsBean['views.case.detachPI']}" 
 				styleClass="#{!caseDetailsBean.inactiveCase? '' : 'iceCmdBtn-dis'}" />
 			<f:attribute name="processInstance" value="#{processHistoryTable.selectedRow.processInstance}" />
 		</ice:commandLink>
 		
-		<ice:commandLink actionListener="#{processHistoryTable.attachToCase}"
-			style="vertical-align: middle;" rendered="#{processHistoryTable.enableCase and  caseDetailsBean.canManageCase}"
-			disabled="#{caseDetailsBean.inactiveCase}">	
-			<pc:automationTag value="auto-COM-PCEHistoryTable-ToolbarAttachPICase" standAlone="false"/>
+		<ice:commandLink actionListener="#{processHistoryTable.applyChanges}"
+			style="vertical-align: middle;"
+			disabled="#{!processHistoryTable.processTreeTable.priorityChanged}">
+			<pc:automationTag value="auto-COM-PCEHistoryTable-ToolbarSave" standAlone="false"/>
 			<ice:graphicImage
-				url="/plugins/views-common/images/icons/case-attach.png"
-				style="border:none;padding-right: 5px;"
-				title="#{views_common_msgPropsBean['views.case.attachPI']}" 
-				styleClass="#{!caseDetailsBean.inactiveCase? '' : 'iceCmdBtn-dis'}" />
+				url="/plugins/business-control-center/images/icons/save_flag.png"
+				style="border:none;padding-right: 5px;padding-left: 5px;"
+				styleClass="#{!processHistoryTable.processTreeTable.priorityChanged ? 'iceCmdBtn-dis' : ''}"
+				title="#{views_common_msgPropsBean['processHistory.processTable.applyChanges']}" />
 		</ice:commandLink>
-
+		
 		<span class="toolbarGroupRight" style="padding-left: 0px;" />
 
 		<ui:repeat

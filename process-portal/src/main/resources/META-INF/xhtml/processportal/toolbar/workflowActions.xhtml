@@ -108,6 +108,16 @@
 					value="/plugins/processportal/images/icons/resubmission.gif"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.resubmit']}" />
 			</ice:commandLink>
+			
+			<ice:commandLink
+				actionListener="#{activityDetailsBean.openDelegateDialog}"
+				disabled="#{!activityDetailsBean.delegable}">
+				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarDelegate" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/processportal/images/icons/delegate.png"
+					styleClass="toolbar-button #{!activityDetailsBean.delegable ? 'iceCmdBtn-dis' : ''}"
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.delegate']}" />
+			</ice:commandLink>
 
 			<ice:commandLink actionListener="#{activityDetailsBean.abortAction}"
 				immediate="true" disabled="#{!activityDetailsBean.abortable}">
@@ -143,6 +153,15 @@
 				<div id="ippCaseAnchor" style="width: 1px; height: 1px;"></div>
 			</ice:panelGroup>
 
+			<ice:commandLink action="#{spawnProcessDialogBean.openPopup}" rendered="#{activityDetailsBean.enableSpawnProcess}"	immediate="true" >								
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/cog_add.png"
+					styleClass="toolbar-button #{activityDetailsBean.enableSpawnProcess ? '': 'iceCmdBtn-dis'}"
+					title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}" />
+				<f:param name="processInstanceOID"
+					value="#{activityDetailsBean.activityInstance.processInstanceOID}" />					
+			</ice:commandLink>
+			
 			<ice:commandLink action="#{ippPortalApp.openView}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarProcDetails" standAlone="false"/>
 				<ice:graphicImage
@@ -155,25 +174,6 @@
 					value="processInstanceOID=#{activityDetailsBean.activityInstance.processInstanceOID}&amp;processInstanceName=#{activityDetailsBean.activityInstance.processInstance.processName}" />
 			</ice:commandLink>
 	
-			<ice:commandLink action="#{spawnProcessDialogBean.openPopup}" rendered="#{activityDetailsBean.enableSpawnProcess}"	immediate="true" >								
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/cog_add.png"
-					styleClass="toolbar-button #{activityDetailsBean.enableSpawnProcess ? '': 'iceCmdBtn-dis'}"
-					title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}" />
-				<f:param name="processInstanceOID"
-					value="#{activityDetailsBean.activityInstance.processInstanceOID}" />					
-			</ice:commandLink>
-
-			<ice:commandLink
-				actionListener="#{activityDetailsBean.openDelegateDialog}"
-				disabled="#{!activityDetailsBean.delegable}">
-				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarDelegate" standAlone="false"/>
-				<ice:graphicImage
-					value="/plugins/processportal/images/icons/delegate.png"
-					styleClass="toolbar-button #{!activityDetailsBean.delegable ? 'iceCmdBtn-dis' : ''}"
-					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.delegate']}" />
-			</ice:commandLink>
-			
 			<ice:panelGroup style="width:100%;">
 				<ui:include src="/plugins/views-common/dialogs/delegation.xhtml" />
 				<ui:include src="/plugins/views-common/dialogs/spawnProcessDialog.xhtml" />

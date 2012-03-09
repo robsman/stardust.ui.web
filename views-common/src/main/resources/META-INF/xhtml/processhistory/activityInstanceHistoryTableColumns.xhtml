@@ -63,18 +63,6 @@
 			</ice:commandLink>
 
 			<ice:commandLink
-				actionListener="#{row.activityTreeTable.openAbortActivityDialog}"
-				rendered="#{row.refersToActivity}"
-				disabled="#{not (row.refersToActivity and row.abortActivity)}">
-				<pc:automationTag value="auto-COM-ACTHistoryTable-ActionsAbort" standAlone="false"/>
-				<h:graphicImage
-					value="/plugins/common/images/icons/process-history/active/abort.png"
-					title="#{common_msgPropsBean['common.activity.abort']}"
-					styleClass="#{not (row.refersToActivity and row.abortActivity) ? 'iceCmdBtn-dis' : ''}" />
-				<f:attribute name="row" value="#{row}" />
-			</ice:commandLink>
-
-			<ice:commandLink
 				actionListener="#{row.activityTreeTable.activityUIBuilder.openDelegateDialog}"
 				rendered="#{row.refersToActivity}"
 				disabled="#{not (row.refersToActivity and row.delegable)}">
@@ -86,6 +74,18 @@
 				<f:attribute name="row" value="#{row}" />
 			</ice:commandLink>
 			
+			<ice:commandLink
+				actionListener="#{row.activityTreeTable.openAbortActivityDialog}"
+				rendered="#{row.refersToActivity}"
+				disabled="#{not (row.refersToActivity and row.abortActivity)}">
+				<pc:automationTag value="auto-COM-ACTHistoryTable-ActionsAbort" standAlone="false"/>
+				<h:graphicImage
+					value="/plugins/common/images/icons/process-history/active/abort.png"
+					title="#{common_msgPropsBean['common.activity.abort']}"
+					styleClass="#{not (row.refersToActivity and row.abortActivity) ? 'iceCmdBtn-dis' : ''}" />
+				<f:attribute name="row" value="#{row}" />
+			</ice:commandLink>
+
 			<ice:panelGroup rendered="#{row.refersToActivity and row.qualityAssuranceCodesBean.qualityAssuranceCodesVisible}"
 				style="text-align:right;">
 				<ice:menuBar displayOnClick="true"
