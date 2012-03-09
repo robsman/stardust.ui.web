@@ -17,7 +17,7 @@
 			<c:forEach var="descriptorItem" varStatus="iter"
 				items="#{descriptorItems}">
 				<ice:panelGrid columns="2"
-					rendered="#{!(descriptorItem.type eq 'TimeStamp' or descriptorItem.type eq 'date')}" columnClasses="table-columnVertical">
+					rendered="#{!(descriptorItem.type eq 'TimeStamp' or descriptorItem.type eq 'date')}" columnClasses="table-columnVertical columnStyle">
 					<ice:panelGroup>
 						<ice:outputText
 							value="#{descriptorItem.label}#{messages_bcc['common.colon']}"
@@ -102,7 +102,7 @@
 
 				</ice:panelGrid>
 				<ice:panelGrid columns="2"
-					rendered="#{(descriptorItem.type eq 'TimeStamp' or descriptorItem.type eq 'date')}" columnClasses="table-columnVertical">
+					rendered="#{(descriptorItem.type eq 'TimeStamp' or descriptorItem.type eq 'date')}" columnClasses="table-columnVertical columnStyle">
 					<ice:outputText
 						value="#{descriptorItem.label} (#{views_common_msgPropsBean['common.from']})#{messages_bcc['common.colon']}"
 						styleClass="label-form" />
