@@ -186,7 +186,7 @@ public class MessageDialog extends PopupDialog
    public static boolean hasMessages()
    {
       MessageDialog msgbean = getInstance();
-      return ((null != msgbean.title) || (null != msgbean.messageType) || (null != msgbean.details) || (null != msgbean.exception));
+      return (StringUtils.isNotEmpty(msgbean.title) || (null != msgbean.messageType) || StringUtils.isNotEmpty(msgbean.details) || (null != msgbean.exception));
    }
    
    @Override
