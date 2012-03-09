@@ -11,7 +11,6 @@
 package org.eclipse.stardust.ui.web.viewscommon.process.history;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,8 +21,8 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
-import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.UIViewComponentBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 
@@ -41,6 +40,10 @@ public class ProcessHistoryTable extends UIViewComponentBean
    private IProcessHistoryDataModel processHistoryDataModel;
    private ProcessTableEntryUserObject selectedRow;
    private boolean enableCase=false;
+   
+   private boolean hasSpawnProcessPermission;
+   private boolean hasSwitchProcessPermission;
+   private boolean hasJoinProcessPermission;
 
    /**
     * Construction the default tree structure by combining tree nodes.
@@ -48,14 +51,21 @@ public class ProcessHistoryTable extends UIViewComponentBean
    public ProcessHistoryTable()
    {
       processTreeTable = new ProcessTreeTable();
-      activityTreeTable = new ActivityTreeTable();
+      activityTreeTable = new ActivityTreeTable();    
    }
 
+   private void initializePermissions()
+   {
+      hasSpawnProcessPermission = AuthorizationUtils.hasSpawnProcessPermission();
+      hasSwitchProcessPermission = AuthorizationUtils.hasAbortAndStartProcessInstancePermission();
+      hasJoinProcessPermission = AuthorizationUtils.hasAbortAndJoinProcessInstancePermission();
+   }
    /**
     * This needs to be called by Caller to Initialize the Component
     */
    public void initialize()
    {
+      initializePermissions();
       trace.info("-----------> Process History Table Initialize");
       List<ProcessInstance> processInstances;
        if (getCurrentProcessInstance() != null)
@@ -251,6 +261,17 @@ public class ProcessHistoryTable extends UIViewComponentBean
       this.enableCase = enableCase;
    }
    
-   
+   public boolean isEnableSpawnProcess()
+   {
+      return hasSpawnProcessPermission;
+   }
+   public boolean isEnableSwitchProcess()
+   {
+      return hasSwitchProcessPermission;
+   }
+   public boolean isEnableJoinProcess()
+   {
+      return hasJoinProcessPermission;
+   } 
 
 }

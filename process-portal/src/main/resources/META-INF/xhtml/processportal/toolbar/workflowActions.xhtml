@@ -155,10 +155,10 @@
 					value="processInstanceOID=#{activityDetailsBean.activityInstance.processInstanceOID}&amp;processInstanceName=#{activityDetailsBean.activityInstance.processInstance.processName}" />
 			</ice:commandLink>
 	
-			<ice:commandLink action="#{spawnProcessDialogBean.openPopup}"	immediate="true" >								
+			<ice:commandLink action="#{spawnProcessDialogBean.openPopup}" disabled="#{!activityDetailsBean.enableSpawnProcess}"	immediate="true" >								
 				<ice:graphicImage
 					value="/plugins/views-common/images/icons/cog_add.png"
-					styleClass="toolbar-button"
+					styleClass="toolbar-button #{activityDetailsBean.enableSpawnProcess ? 'iceCmdBtn-dis' : ''}"
 					title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}" />
 				<f:param name="processInstanceOID"
 					value="#{activityDetailsBean.activityInstance.processInstanceOID}" />					

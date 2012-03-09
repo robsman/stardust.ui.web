@@ -53,6 +53,7 @@ import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.DataType;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.FilterCriteria;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterPickList.RenderType;
+import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.table.DataTableRowSelector;
 import org.eclipse.stardust.ui.web.common.table.DataTableSortModel;
 import org.eclipse.stardust.ui.web.common.table.IUserObjectBuilder;
@@ -87,6 +88,7 @@ import org.eclipse.stardust.ui.web.viewscommon.user.ParticipantWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserAutocompleteTableDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
@@ -136,6 +138,10 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
    private Set<String> visibleDescriptorsIds;
    
    private boolean fetchAllDescriptors;
+   
+   private boolean hasJoinProcessPermission;
+   
+   private boolean hasSwitchProcessPermission;
 
    public ActivityTableHelper()
    {
@@ -150,6 +156,10 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
       allStatusList = ActivityInstanceUtils.getAllActivityStates();
       
       columnModelListener = new ColumnModelListener();
+      
+      hasJoinProcessPermission = AuthorizationUtils.hasAbortAndJoinProcessInstancePermission();
+
+      hasSwitchProcessPermission = AuthorizationUtils.hasAbortAndStartProcessInstancePermission();
    }
    
    /**
@@ -226,11 +236,11 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
       {
          DelegationBean delegationBean = (DelegationBean) FacesUtils
                .getBeanFromContext("delegationBean");
-         delegationBean.setAis(ais);
-         delegationBean.setICallbackHandler(callbackHandler);
-         delegationBean.openPopup();
-      }
-   }
+            delegationBean.setAis(ais);
+            delegationBean.setICallbackHandler(callbackHandler);
+            delegationBean.openPopup();
+         }
+      }   
    
    /**
     * 
@@ -1176,7 +1186,7 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
          else
          {
             // For multiple row select i.e Activity table toolbar
-            List<ProcessInstance> processInstanceList = getSelectedActivities();
+            List<ProcessInstance> processInstanceList = getSelectedProcesses();
             dialog.setSourceProcessInstances(processInstanceList);
          }
          dialog.openPopup();
@@ -1186,6 +1196,32 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
          ExceptionHandler.handleException(e);
       }
 
+   }
+   
+   /**
+    * 
+    * @return
+    */
+   public boolean isEnableJoinProcess()
+   {
+      if (hasJoinProcessPermission && !ActivityInstanceUtils.isContainsCaseActivity(getSelectedActivities()))
+      {
+         return true;
+      }
+      return false;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public boolean isEnableSwitchProcess()
+   {
+      if (hasSwitchProcessPermission && !ActivityInstanceUtils.isContainsCaseActivity(getSelectedActivities()))
+      {
+         return true;
+      }
+      return false;
    }
    
    /**
@@ -1202,7 +1238,7 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
          ProcessInstance processInstance = null;
          if (null == activityInstance)
          {
-            processInstance = getSelectedActivities().get(0);
+            processInstance = getSelectedProcesses().get(0);
          }
          else
          {
@@ -1219,21 +1255,40 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
          ExceptionHandler.handleException(e);
       }
    }
+
    /**
     * 
     * @return
     */
-   private List<ProcessInstance> getSelectedActivities()
+   private List<ProcessInstance> getSelectedProcesses()
    {
       List<ProcessInstance> processInstanceList = CollectionUtils.newArrayList();
       List<ActivityInstanceWithPrioTableEntry> ait = activityTable.getCurrentList();
-      for (Iterator iterator = ait.iterator(); iterator.hasNext();)
+      for (ActivityInstanceWithPrioTableEntry at : ait)
       {
-         ActivityInstanceWithPrioTableEntry at = (ActivityInstanceWithPrioTableEntry) iterator.next();
          if (at.isCheckSelection())
          {
             ProcessInstance procInst = at.getActivityInstance().getProcessInstance();
             processInstanceList.add(procInst);
+         }
+      }
+      return processInstanceList;
+   }
+   
+   /**
+    * 
+    * @return
+    */
+   private List<ActivityInstance> getSelectedActivities()
+   {
+      List<ActivityInstance> processInstanceList = CollectionUtils.newArrayList();
+      List<ActivityInstanceWithPrioTableEntry> ait = activityTable.getCurrentList();
+      for (ActivityInstanceWithPrioTableEntry at:ait)
+      {         
+         if (at.isCheckSelection())
+         {
+            ActivityInstance ai = at.getActivityInstance();
+            processInstanceList.add(ai);
          }
       }
       return processInstanceList;

@@ -14,7 +14,7 @@ public interface UserPreferencesEntries
 {
    public static final String M_BCC = "ipp-business-control-center";
    
-   public static final String V_PROCESS_DESC_DETAILS = "processDescriptorDetails";
+  
    public static final String V_PRIORITY_VIEW = "priorityView";
    public static final String V_COMPLETED_ACTIVITY = "CompletedActivity";
    public static final String V_COST_AND_CONTROLLING = "CostsandControlling";
@@ -30,7 +30,7 @@ public interface UserPreferencesEntries
    public static final String V_USER_ASSIGNED = "userAssigned";
    public static final String V_USER_ASSIGNABLE = "userAssignable";
    public static final String V_TRAFFIC_LIGHT = "TrafficLightView";
-   public static final String V_TRAFFIC_LIGHT_ACTIVITY = "TrafficLightViewActivity";
+
    public static final String V_ROLE_ASSIGNED = "roleAssigned";
    public static final String V_ROLE_ASSIGNABLE = "roleAssignable";
    public static final String V_ACTIVITY_CRITICALITY_VIEW = "activityCriticalityView";

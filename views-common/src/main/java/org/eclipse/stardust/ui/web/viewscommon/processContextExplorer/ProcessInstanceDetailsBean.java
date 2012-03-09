@@ -120,6 +120,10 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    private boolean descriptorsPanelInitialized = false;
    private boolean participantsPanelInitialized = false;
    private boolean linkedProcessPanelInitialized = false;
+   private boolean hasSpawnProcessPermission;
+   private boolean hasSwitchProcessPermission;
+   private boolean hasJoinProcessPermission;
+   
 
    /**
     * 
@@ -215,7 +219,15 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
                }
             }
          }
+
       }
+   }
+
+   private void initializePermissions()
+   {
+      hasSpawnProcessPermission = AuthorizationUtils.hasSpawnProcessPermission();
+      hasSwitchProcessPermission = AuthorizationUtils.hasAbortAndStartProcessInstancePermission();
+      hasJoinProcessPermission = AuthorizationUtils.hasAbortAndJoinProcessInstancePermission();
    }
 
    /**
@@ -224,6 +236,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    public void update()
    {
       initialize();
+      initializePermissions();
    }
 
    /**
@@ -885,5 +898,24 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
          return queryService.getAllProcessInstances((ProcessInstanceQuery) query);
       }
    }
-   
+
+   /**
+    * check authorization for SpawnProcess
+    * 
+    * @return
+    */
+   public boolean isEnableSpawnProcess()
+   {
+      return hasSpawnProcessPermission;
+   }
+
+   public boolean isEnableSwitchProcess()
+   {
+      return hasSwitchProcessPermission;
+   }
+
+   public boolean isEnableJoinProcess()
+   {
+      return hasJoinProcessPermission;
+   }  
 }

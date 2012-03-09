@@ -23,14 +23,14 @@
 				icon="/plugins/common/images/panelHeader-triggerCollapse.png"
 				style="border:none;" value="" title="#{views_common_msgPropsBean['views.abortProcess.menu.tooltip']}">
 
-				<ice:menuItem styleClass="switchMnuItm"
+				<ice:menuItem styleClass="switchMnuItm" disabled="#{!bean.enableSwitchProcess}" style="font-weight: normal"
 					value="#{views_common_msgPropsBean['views.switchProcessDialog.Menu.abortandstart']}"
 					actionListener="#{bean.openSwitchProcess}" icon="">
 					<pc:automationTag value="auto-COM-SwitchProcMenuBar-SelAbortStart" standAlone="false"/>
 					<f:attribute name="processInstance" value="#{processInstance}" />
 					<f:attribute name="activityInstance" value="#{activityInstance}" />
 				</ice:menuItem>
-				<ice:menuItem styleClass="switchMnuItm" disabled="#{multiSelect}"
+				<ice:menuItem styleClass="switchMnuItm" disabled="#{multiSelect or !bean.enableJoinProcess}" style="font-weight: normal"
 					value="  #{views_common_msgPropsBean['views.switchProcessDialog.Menu.abortandjoin']}"
 					actionListener="#{bean.openJoinProcess}"		icon="" >
 					<pc:automationTag value="auto-COM-SwitchProcMenuBar-SelAbortJoin" standAlone="false"/>

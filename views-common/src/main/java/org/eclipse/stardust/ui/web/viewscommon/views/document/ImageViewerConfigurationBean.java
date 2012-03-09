@@ -17,7 +17,6 @@ import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
-import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
@@ -33,6 +32,7 @@ import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.views.PortalConfiguration;
 import org.eclipse.stardust.ui.web.common.views.PortalConfigurationListener;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
@@ -62,8 +62,6 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
    private boolean invertImage = false;
 
    private boolean showAnnotations = true;
-   
-   private boolean pageDeletionEnabled = true;
 
    private boolean highlightDataFieldsEnabled = true;
 
@@ -96,6 +94,10 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
    private String dataFieldHighlightOpacity;
    
    private ConfirmationDialog imageViewerConfirmationDialog;
+   
+   private boolean enableExtractPage = true;
+
+   private boolean allowDeleteFromOriginal = true;
    
    /**
     * 
@@ -188,22 +190,6 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
    /**
     * @return
     */
-   public boolean isPageDeletionEnabled()
-   {
-      return pageDeletionEnabled;
-   }
-
-   /**
-    * @param pageDeletionEnabled
-    */
-   public void setPageDeletionEnabled(boolean pageDeletionEnabled)
-   {
-      this.pageDeletionEnabled = pageDeletionEnabled;
-   }
-
-   /**
-    * @return
-    */
    public boolean isHighlightDataFieldsEnabled()
    {
       return highlightDataFieldsEnabled;
@@ -257,8 +243,7 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
       UserPreferencesHelper userPrefsHelper = getUserPrefenceHelper();
       userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SHOW_SIDE_PANEL, String.valueOf(showSidePanel));
       userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_INVERT_IMAGE, String.valueOf(invertImage));
-      userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SHOW_ANNOTATIONS, String.valueOf(showAnnotations));
-      userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_PAGE_DELETE, String.valueOf(pageDeletionEnabled));
+      userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SHOW_ANNOTATIONS, String.valueOf(showAnnotations));    
       userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_HIGHLIGHT_DATA_FIELDS_ENABLED, String.valueOf(highlightDataFieldsEnabled));
       userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_DATANAME_IN_TARGET_INCLUDED, String.valueOf(datanameInTargetIncluded));
       userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_MAGNIFY_FIELDS, String.valueOf(magnifyFields));
@@ -273,6 +258,9 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
       userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DATA_FIELD_HIGHLIGHTER_OPACITY, dataFieldHighlightOpacity);
       userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DISPLAY_ZOOM_LIVEL, selectedDisplayZoomLevel);
       userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_STAMP, ImageViewerStampsBean.getCurrent().getSelectedStampId());
+      userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_EXTRACT_PAGES, String.valueOf(enableExtractPage));
+      allowDeleteFromOriginal = enableExtractPage && allowDeleteFromOriginal;
+      userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ALLOW_DELETE_FROM_ORIGINAL, String.valueOf(allowDeleteFromOriginal));
       MessageDialog.addInfoMessage(messageBean.getString("views.imageViewerConfig.save.successMessage"));
    }
    
@@ -536,6 +524,28 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
    {
       return imageViewerConfirmationDialog;
    }
+   
+   
+
+   public boolean isEnableExtractPage()
+   {
+      return enableExtractPage;
+   }
+
+   public void setEnableExtractPage(boolean enableExtractPage)
+   {
+      this.enableExtractPage = enableExtractPage;
+   }
+
+   public boolean isAllowDeleteFromOriginal()
+   {
+      return allowDeleteFromOriginal;
+   }
+
+   public void setAllowDeleteFromOriginal(boolean allowDeleteFromOriginal)
+   {
+      this.allowDeleteFromOriginal = allowDeleteFromOriginal;
+   }
 
    /**
     * 
@@ -618,8 +628,7 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
       UserPreferencesHelper userPrefsHelper = getUserPrefenceHelper();
       showSidePanel = userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SHOW_SIDE_PANEL, true);
       invertImage = userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_INVERT_IMAGE, false);
-      showAnnotations = userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SHOW_ANNOTATIONS, true);
-      pageDeletionEnabled=userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_PAGE_DELETE, true);
+      showAnnotations = userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SHOW_ANNOTATIONS, true);    
       highlightDataFieldsEnabled = userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_HIGHLIGHT_DATA_FIELDS_ENABLED, true);
       datanameInTargetIncluded = userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_DATANAME_IN_TARGET_INCLUDED, true);
       magnifyFields = userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_MAGNIFY_FIELDS, false);
@@ -633,6 +642,11 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
       docPriorVersionAction = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DOC_PRIOR_VERSION_ACTION, "RETAIN_PRIOR_DOCUMENT");
       dataFieldHighlightOpacity = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DATA_FIELD_HIGHLIGHTER_OPACITY, "0.5");
       selectedDisplayZoomLevel = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DISPLAY_ZOOM_LIVEL, "FIT_TO_WINDOW");
+      if (SessionContext.findSessionContext().getUser().isAdministrator())
+      {
+         enableExtractPage = userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_EXTRACT_PAGES, true);
+         allowDeleteFromOriginal = userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ALLOW_DELETE_FROM_ORIGINAL, true);
+      }
       ImageViewerStampsBean.getCurrent().setSelectedStampId(userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_STAMP, ""));
    }
    
@@ -645,7 +659,6 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
       userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SHOW_SIDE_PANEL);
       userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_INVERT_IMAGE);
       userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SHOW_ANNOTATIONS);
-      userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_PAGE_DELETE);
       userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_HIGHLIGHT_DATA_FIELDS_ENABLED);
       userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_DATANAME_IN_TARGET_INCLUDED);
       userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_MAGNIFY_FIELDS);
@@ -659,7 +672,12 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
       userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DATA_FIELD_HIGHLIGHTER_OPACITY);
       userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DISPLAY_ZOOM_LIVEL);
       userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DOC_PRIOR_VERSION_ACTION);
-      userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_STAMP);
+      userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_STAMP);      
+      if (SessionContext.findSessionContext().getUser().isAdministrator())
+      {
+         userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_EXTRACT_PAGES);
+         userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ALLOW_DELETE_FROM_ORIGINAL);
+      }
    }
 
    /**
@@ -669,6 +687,28 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
    {
       return UserPreferencesHelper.getInstance(M_VIEWS_COMMON, PortalConfiguration.getInstance()
             .getPrefScopesHelper().getSelectedPreferenceScope());
+   }
+   
+   /**
+    * @return
+    */
+   public static boolean isExtractPagesEnable()
+   {
+      UserPreferencesHelper userPrefsHelper = getUserPrefenceHelper();
+      return userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_EXTRACT_PAGES, true);
+   }
+   
+   /**
+    * @return
+    */
+   public static boolean isAllowDeleteFromOriginalEnable()
+   {
+      if (isExtractPagesEnable())
+      {
+         UserPreferencesHelper userPrefsHelper = getUserPrefenceHelper();
+         return userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ALLOW_DELETE_FROM_ORIGINAL, true);
+      }
+      return false;
    }
   
 }

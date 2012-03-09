@@ -118,7 +118,52 @@ public class AuthorizationUtils
       {
          return false;
       }
-   }   
+   }
+   
+   /**
+    * @return
+    */
+   public static boolean hasSpawnProcessPermission()
+   {
+      try
+      {
+         return hasPermission(ExecutionPermission.Id.spawnSubProcessInstance);
+      }
+      catch (Exception e)
+      {
+         return false;
+      }
+   }
+   
+   /**
+    * @return
+    */
+   public static boolean hasAbortAndJoinProcessInstancePermission()
+   {
+      try
+      {
+         return hasPermission(ExecutionPermission.Id.joinProcessInstance);
+      }
+      catch (Exception e)
+      {
+         return false;
+      }
+   }
+   
+   /**
+    * @return
+    */
+   public static boolean hasAbortAndStartProcessInstancePermission()
+   {
+      try
+      {
+         return hasPermission(ExecutionPermission.Id.spawnPeerProcessInstance);
+      }
+      catch (Exception e)
+      {
+         return false;
+      }
+   }
 
    /**
     * @param permissionId

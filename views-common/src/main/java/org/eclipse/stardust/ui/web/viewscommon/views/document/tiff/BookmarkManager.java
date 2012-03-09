@@ -45,6 +45,7 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentContentInfo;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.ImageViewerConfigurationBean;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.TIFFDocumentWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.bookmark.BookmarkEntry;
@@ -730,6 +731,10 @@ public class BookmarkManager implements RowDeselectionListener
    
    private boolean canExtract()
    {
+      if (!ImageViewerConfigurationBean.isExtractPagesEnable())
+      {
+         return false;
+      }
       if (null != tiffDocHolder.getProcessInstance() && tiffDocHolder.getProcessInstance().isCaseProcessInstance())
       {
          return false;

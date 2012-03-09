@@ -132,6 +132,10 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
    private Set<String> visibleDescriptorsIds;
    
    private boolean fetchAllDescriptors;
+   
+   private boolean hasJoinProcessPermission;
+   
+   private boolean hasSwitchProcessPermission;
 
    public ProcessTableHelper()
    {
@@ -159,6 +163,10 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
       canCreateCase = AuthorizationUtils.canCreateCase();
       
       columnModelListener = new ColumnModelListener();
+      
+      hasJoinProcessPermission = AuthorizationUtils.hasAbortAndJoinProcessInstancePermission();
+
+      hasSwitchProcessPermission = AuthorizationUtils.hasAbortAndStartProcessInstancePermission();
    }   
    
    /**
@@ -216,6 +224,23 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
       }
    }
       
+   /**
+    * 
+    * @return
+    */
+   public boolean isEnableJoinProcess()
+   {
+      return hasJoinProcessPermission;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public boolean isEnableSwitchProcess()
+   {
+      return hasSwitchProcessPermission;
+   }
    
    /**
     * <p>

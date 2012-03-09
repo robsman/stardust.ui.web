@@ -204,7 +204,35 @@
 						title="#{views_common_msgPropsBean['views.imageViewerConfig.dataFieldsOptions.selectStamp']}" rendered="#{imageViewerStampsBean.stampSelected}" />
 				</ice:commandLink>
 			</ice:panelGroup>
-		</ice:panelGrid>	
+		</ice:panelGrid>
+		
+		<!-- Extract Page configuration -->
+		<ice:panelGroup styleClass="heading" style="width: 100%">
+			<ice:outputText
+				value="#{views_common_msgPropsBean['views.imageViewerConfig.extractPageOptions.title']}" />
+		</ice:panelGroup>
+		<ice:panelGroup style="clearing" />
+		<ice:panelGroup>
+			<ice:selectBooleanCheckbox partialSubmit="true" disabled="#{!ippPortalApp.loggedInUser.administrator}"
+				value="#{imageViewerConfigurationBean.enableExtractPage}">				
+			</ice:selectBooleanCheckbox>
+			<ice:outputLabel
+				value="#{views_common_msgPropsBean['views.imageViewerConfig.extractPageOptions.enableExtractPages']}"
+				styleClass="label-form" />
+			<ice:panelGrid columns="1" style="margin-left:25px">
+				<ice:panelGroup>
+					<ice:selectBooleanCheckbox partialSubmit="true" disabled="#{!ippPortalApp.loggedInUser.administrator or !imageViewerConfigurationBean.enableExtractPage}"
+						value="#{imageViewerConfigurationBean.allowDeleteFromOriginal}">						
+					</ice:selectBooleanCheckbox>
+					<ice:outputLabel
+						value="#{views_common_msgPropsBean['views.imageViewerConfig.extractPageOptions.allowDeleteFromOriginal']}"
+						styleClass="label-form" />
+				</ice:panelGroup>
+			</ice:panelGrid>
+		</ice:panelGroup>
+
+		<ice:panelGroup style="clearing" />
+
 		<!-- Temporary Commented following code as part of JIRA CRNT-21779 
 		<ice:panelGroup styleClass="heading" style="width: 100%">
 			<ice:outputText value="#{views_common_msgPropsBean['views.imageViewerConfig.extractPages.title']}" />

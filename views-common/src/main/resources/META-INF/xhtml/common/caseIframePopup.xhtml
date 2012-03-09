@@ -57,8 +57,8 @@
 					</ice:panelGrid>
 				</ice:commandLink>
 				<!-- Create Case without permission -->
-				<ice:panelGrid columns="1" style="margin-left:2px;"
-					rendered="#{!activityDetailsBean.canCreateCase}">
+				<ice:panelGrid columns="1" style="margin-left:2px;" 
+					rendered="#{!activityDetailsBean.enableCreateCase}">
 					<ice:outputText
 						style="white-space: nowrap;color: #B9B5AE !important;"
 						value="#{views_common_msgPropsBean['views.createCase.menubar.createCase']}" />
@@ -66,7 +66,7 @@
 				<!-- Create Case with permission -->
 				<ice:commandLink styleClass="action-link"
 					actionListener="#{activityDetailsBean.openCreateCase}"
-					rendered="#{activityDetailsBean.canCreateCase}">
+					rendered="#{activityDetailsBean.enableCreateCase}">
 					<pc:automationTag
 						value="auto-PP-ActivityPnl-ToolbarCase-CreateCase" />
 					<ice:panelGrid columns="1" style="margin-left:2px;">

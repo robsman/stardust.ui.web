@@ -132,8 +132,11 @@ public class CaseDetailsBean extends PopupUIComponentBean
    private String description;   
    private boolean editDescription = false;
    
-   private boolean canCreateCase;
-   private boolean canManageCase;
+   private boolean hasCreateCasePermission;
+   private boolean hasManageCasePermission;   
+   private boolean hasSpawnProcessPermission;
+   private boolean hasSwitchProcessPermission;
+   private boolean hasJoinProcessPermission;
 
    public CaseDetailsBean()
    {
@@ -181,6 +184,13 @@ public class CaseDetailsBean extends PopupUIComponentBean
 
    }
 
+   private void initializePermissions()
+   {
+      hasSpawnProcessPermission = AuthorizationUtils.hasSpawnProcessPermission();
+      hasSwitchProcessPermission = AuthorizationUtils.hasAbortAndStartProcessInstancePermission();
+      hasJoinProcessPermission = AuthorizationUtils.hasAbortAndJoinProcessInstancePermission();
+      hasCreateCasePermission = AuthorizationUtils.canCreateCase();
+   }
    /**
     * 
     */
@@ -294,7 +304,7 @@ public class CaseDetailsBean extends PopupUIComponentBean
                {
                   processInstanceOID = Long.parseLong(pOID);
                   initialize();
-                  canManageCase = AuthorizationUtils.hasManageCasePermission(processInstance);
+                  hasManageCasePermission = AuthorizationUtils.hasManageCasePermission(processInstance);
                }
                catch (Exception ex)
                {
@@ -303,8 +313,7 @@ public class CaseDetailsBean extends PopupUIComponentBean
                }
             }
          }
-         
-         canCreateCase = AuthorizationUtils.canCreateCase();
+         initializePermissions();        
       }
    }
 
@@ -1005,7 +1014,7 @@ public class CaseDetailsBean extends PopupUIComponentBean
     */
    public boolean isCanManageCase()
    {
-      return canManageCase;
+      return hasManageCasePermission;
    }
 
    /**
@@ -1014,7 +1023,7 @@ public class CaseDetailsBean extends PopupUIComponentBean
     */
    public boolean isCanCreateCase()
    {
-      return canCreateCase;
+      return hasCreateCasePermission;
    }
    
    public boolean isLinkedProcessPanelExpanded()
@@ -1085,5 +1094,17 @@ public class CaseDetailsBean extends PopupUIComponentBean
          return queryService.getAllProcessInstances((ProcessInstanceQuery) query);
       }
    }
-     
+
+   public boolean isEnableSpawnProcess()
+   {
+      return hasSpawnProcessPermission;
+   }
+   public boolean isEnableSwitchProcess()
+   {
+      return hasSwitchProcessPermission;
+   }
+   public boolean isEnableJoinProcess()
+   {
+      return hasJoinProcessPermission;
+   } 
 }

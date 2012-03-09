@@ -77,6 +77,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentHandlerBean;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.ImageViewerConfigurationBean;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.ImageUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.extract.TiffImageInfo.BookmarkPageRange;
 import org.springframework.beans.BeanUtils;
@@ -190,8 +191,7 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
       spawnProcessHelper = new SpawnProcessHelper();
       userPrefsHelper = getUserPrefenceHelper();
       validationMessageBean = new ValidationMessageBean();
-      deletePageEnable = userPrefsHelper.getBoolean(UserPreferencesEntries.V_IMAGE_VIEWER_CONFIG,
-            UserPreferencesEntries.F_IMAGE_VIEWER_ENABLE_PAGE_DELETE, true);
+      deletePageEnable = ImageViewerConfigurationBean.isAllowDeleteFromOriginalEnable();
 
       List<ProcessDefinition> startableProcesses = null;
 

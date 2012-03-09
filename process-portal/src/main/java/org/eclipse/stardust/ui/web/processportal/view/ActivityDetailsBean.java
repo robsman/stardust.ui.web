@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -35,11 +34,7 @@ import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.ContextData;
-import org.eclipse.stardust.engine.api.model.Data;
-import org.eclipse.stardust.engine.api.model.DataMapping;
-import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
-import org.eclipse.stardust.engine.api.model.Reference;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Document;
@@ -48,10 +43,7 @@ import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssu
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
-import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
-import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
-import org.eclipse.stardust.engine.extensions.xml.data.XPathUtils;
 import org.eclipse.stardust.ui.client.common.ClientContext;
 import org.eclipse.stardust.ui.common.form.jsf.DocumentInputController;
 import org.eclipse.stardust.ui.common.form.jsf.JsfStructureContainer;
@@ -202,7 +194,10 @@ public class ActivityDetailsBean
    private boolean supportsProcessDocuments = false;
    private QualityAssuranceCodesBean qaCodeIframeBean;
    
-   private boolean canCreateCase;
+   private boolean hasCreateCasePermission;
+   private boolean hasJoinProcessPermission;
+   private boolean hasSwitchProcessPermission;
+   private boolean hasSpawnProcessPermission;
    private ConfirmationDialog mappedDocumentConfirmationDialog;
 
    public static IActivityInteractionController getInteractionController(Activity activity)
@@ -375,9 +370,10 @@ public class ActivityDetailsBean
                   "views.processInstanceDetailsView.tooltip", thisView.getTooltip(), description);
             thisView.setTooltip(tooltip);
          }
-         canCreateCase = AuthorizationUtils.canCreateCase();
-         
-         
+         hasCreateCasePermission = AuthorizationUtils.canCreateCase();
+         hasJoinProcessPermission = AuthorizationUtils.hasAbortAndJoinProcessInstancePermission();
+         hasSwitchProcessPermission = AuthorizationUtils.hasAbortAndStartProcessInstancePermission();
+         hasSpawnProcessPermission = AuthorizationUtils.hasSpawnProcessPermission();
       }
       else if (ViewEventType.TO_BE_ACTIVATED == event.getType())
       {
@@ -2213,14 +2209,14 @@ public class ActivityDetailsBean
       renderSession();
 
    }
-
+   
    /**
-    * 
-    * @return
+    * Method isHasCreateCasePermission.
+    * @return boolean
     */
-   public boolean isCanCreateCase()
+   public boolean isEnableCreateCase()
    {
-      return canCreateCase;
+      return hasCreateCasePermission;
    }
 
    /**
@@ -2271,8 +2267,7 @@ public class ActivityDetailsBean
     */
    public void openJoinProcess(ActionEvent event)
    {
-      JoinProcessDialogBean dialog=JoinProcessDialogBean.getInstance();
-     // dialog.setMultiSelected(false);
+      JoinProcessDialogBean dialog=JoinProcessDialogBean.getInstance();    
       dialog.setSourceProcessInstance(getActivityInstance().getProcessInstance());
       dialog.openPopup();
       closeSwitchProcessIframePopup();
@@ -2292,6 +2287,22 @@ public class ActivityDetailsBean
 
       renderSession();
    }
+   
+   public boolean isEnableJoinProcess()
+   {
+      return hasJoinProcessPermission;
+   }
+
+   public boolean isEnableSwitchProcess()
+   {
+      return hasSwitchProcessPermission;
+   } 
+   
+   public boolean isEnableSpawnProcess()
+   {
+      return hasSpawnProcessPermission;
+   }
+   
    
    /**
     * 

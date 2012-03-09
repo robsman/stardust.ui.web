@@ -13,8 +13,8 @@
 		 	 <ice:panelGroup>
 			 	<ice:panelGrid columns="1">
 					<ice:commandLink styleClass="action-link" immediate="true"
-						actionListener="#{bean.openSwitchProcess}">
-						<ice:panelGrid columns="1">
+						actionListener="#{bean.openSwitchProcess}" disabled="#{!bean.enableSwitchProcess}">
+						<ice:panelGrid columns="1" styleClass="#{activityDetailsBean.enableSwitchProcess? '': 'iceCmdBtn-dis' }" >
 							<ice:outputText style="white-space: nowrap;"
 								value="#{views_common_msgPropsBean['views.switchProcessDialog.Menu.abortandstart']}" />
 						</ice:panelGrid>

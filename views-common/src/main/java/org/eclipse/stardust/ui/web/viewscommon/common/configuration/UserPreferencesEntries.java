@@ -78,6 +78,8 @@ public interface UserPreferencesEntries
    public static final String F_IMAGE_VIEWER_SELECTED_DATA_FIELD_HIGHLIGHTER_OPACITY = "prefs.imageViewer.selectedDataFieldHighlightOpacity";
    public static final String F_IMAGE_VIEWER_SELECTED_NOTE_FONT_SIZE = "prefs.imageViewer.selectedNoteFontSize";
    public static final String F_IMAGE_VIEWER_SELECTED_STAMP = "prefs.imageViewer.selectedStamp";
+   public static final String F_IMAGE_VIEWER_ENABLE_EXTRACT_PAGES = "prefs.imageViewer.enableExtractPages";
+   public static final String F_IMAGE_VIEWER_ALLOW_DELETE_FROM_ORIGINAL = "prefs.imageViewer.allowDeleteFromOriginal";
    
    //BCC
    public static final String F_REPORTS_FAVORITE = "prefs.reports.favoriteReports";

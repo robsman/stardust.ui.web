@@ -669,6 +669,33 @@ public class ActivityInstanceUtils
     * @param ai
     * @return
     */
+   public static boolean isContainsCaseActivity(List<ActivityInstance> ais)
+   {
+      if (CollectionUtils.isNotEmpty(ais))
+      {
+         for (ActivityInstance ai : ais)
+         {
+            // if any of activity is case activity then return true
+            if (ai.getProcessInstance().isCaseProcessInstance())
+            {
+               return true;
+            }
+         }
+         return false;
+      }
+      // if collection is empty then return false
+      else
+      {
+         return false;
+      }
+   }
+   
+   /**
+    * to check Activities of type is Default Case Activity
+    * 
+    * @param ai
+    * @return
+    */
    public static boolean isDefaultCaseActivities(List<ActivityInstance> ais)
    {
       if (CollectionUtils.isNotEmpty(ais))
@@ -676,7 +703,7 @@ public class ActivityInstanceUtils
          for (ActivityInstance ai : ais)
          {
             // if any of activity is non case activity then return false
-            if (!isDefaultCaseActivity(ai))
+            if (!ai.getProcessInstance().isCaseProcessInstance())
             {
                return false;
             }

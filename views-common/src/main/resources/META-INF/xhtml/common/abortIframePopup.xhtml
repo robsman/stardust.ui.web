@@ -48,17 +48,17 @@
 			<ice:panelGrid columns="1">
 				<!-- Added to give same spacing -->
 				<ice:commandLink styleClass="action-link"
-					actionListener="#{activityDetailsBean.openSwitchProcess}">
+					actionListener="#{activityDetailsBean.openSwitchProcess}" disabled="#{!activityDetailsBean.enableSwitchProcess}" >
 					<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSwitchJoin-SwitchProc" />
-					<ice:panelGrid columns="2" style="margin-left:2px;">
+					<ice:panelGrid columns="2" style="margin-left:2px;" styleClass="#{activityDetailsBean.enableSwitchProcess?'':'iceCmdBtn-dis'} ">
 						<ice:outputText style="white-space: nowrap;"
 							value="#{views_common_msgPropsBean['views.switchProcessDialog.Menu.abortandstart']}" />
 					</ice:panelGrid>
 				</ice:commandLink>
 				<ice:commandLink styleClass="action-link"
-					actionListener="#{activityDetailsBean.openJoinProcess}">
+					actionListener="#{activityDetailsBean.openJoinProcess}" disabled="#{!activityDetailsBean.enableJoinProcess}">
 					<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSwitchJoin-JoinProc" />
-					<ice:panelGrid columns="1" style="margin-left:2px;">
+					<ice:panelGrid columns="1" style="margin-left:2px;" styleClass="#{activityDetailsBean.enableJoinProcess?'':'iceCmdBtn-dis'} ">
 						<ice:outputText style="white-space: nowrap;"
 							value="#{views_common_msgPropsBean['views.switchProcessDialog.Menu.abortandjoin']}" />
 					</ice:panelGrid>

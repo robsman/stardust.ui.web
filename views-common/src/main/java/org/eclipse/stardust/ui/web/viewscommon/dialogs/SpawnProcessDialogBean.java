@@ -33,6 +33,7 @@ import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
@@ -61,6 +62,7 @@ public class SpawnProcessDialogBean extends PopupUIComponentBean implements Conf
    private SpawnProcessHelper spawnProcessHelper;
    private ProcessInstance sourceProcessInstance;
    private ConfirmationDialog confirmationDlg;
+   private Boolean hasSpawnProcessPermission;
 
    @Override
    public void initialize()
@@ -318,5 +320,14 @@ public class SpawnProcessDialogBean extends PopupUIComponentBean implements Conf
    {
       return confirmationDlg;
    }
+
+   public boolean isHasSpawnProcessPermission()
+   {
+      if (null == hasSpawnProcessPermission)
+      {
+         hasSpawnProcessPermission = AuthorizationUtils.hasSpawnProcessPermission();
+      }
+      return hasSpawnProcessPermission;
+   }  
    
 }
