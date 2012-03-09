@@ -111,7 +111,8 @@ public class DocumentSearchFilterHandler extends IppFilterHandler
             else if (DocumentSearchBean.DOCUMENT_TYPE.equals(tableDataFilter.getName()))
             {
                List<Object> filterByValues = ((TableDataFilterPickList) tableDataFilter).getSelected();
-               if (!CollectionUtils.isEmpty(filterByValues))
+               
+               if (!CollectionUtils.isEmpty(filterByValues) && !checkIfAllOptionSelected(filterByValues))
                {
                   FilterOrTerm filterOrTerm = filter.addOrTerm();
                   for (Object object : filterByValues)
@@ -125,4 +126,16 @@ public class DocumentSearchFilterHandler extends IppFilterHandler
       query.where(filter);
    }
 
+   
+   private static boolean checkIfAllOptionSelected(List<Object> selectedValues)
+   {
+      for (Object value : selectedValues)
+      {
+         if ("All".equalsIgnoreCase(String.valueOf(value)))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
 }
