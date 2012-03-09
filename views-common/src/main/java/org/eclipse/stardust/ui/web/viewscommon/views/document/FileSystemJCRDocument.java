@@ -55,7 +55,7 @@ public class FileSystemJCRDocument extends FileSystemDocument
    @Override
    public IDocumentContentInfo save(byte[] contentBytes)
    {
-      return new JCRDocument(createDocument());
+      return new JCRDocument(createDocument(contentBytes));
    }
    
 
@@ -68,7 +68,7 @@ public class FileSystemJCRDocument extends FileSystemDocument
    /**
     * @return
     */
-   private Document createDocument()
+   private Document createDocument(byte[] contentBytes)
    {
       Folder typedDocFolder = DocumentMgmtUtility.createFolderIfNotExists(jcrParentFolder);
 
@@ -85,9 +85,8 @@ public class FileSystemJCRDocument extends FileSystemDocument
          }
 
          // Create Document with Properties
-         concreteDocument = DocumentMgmtUtility.createDocument(typedDocFolder.getId(), file.getName(),
-               DocumentMgmtUtility.getFileSystemDocumentContent(file.getAbsolutePath()), getDocumentType(), getMimeType().getType(),
-               description, comments, null, getProperties());
+         concreteDocument = DocumentMgmtUtility.createDocument(typedDocFolder.getId(), file.getName(), contentBytes,
+               getDocumentType(), getMimeType().getType(), description, comments, null, getProperties());
 
          return concreteDocument;
       }
