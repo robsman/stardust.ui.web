@@ -292,9 +292,13 @@ public class RelatedProcessSearchHelper
          if (sourceDescriptors.containsKey(path.getId()))
          {
             Object value = sourceDescriptors.get(path.getId());
-            if (null == value || (value instanceof String && StringUtils.isEmpty(value.toString())))
+            if (null == value)
             {
                continue;
+            }
+            else if (value instanceof String && StringUtils.isEmpty(value.toString()))
+            {
+               filter.add(DataFilter.equalsCaseDescriptor(path.getId(), ""));
             }
             else
             {
