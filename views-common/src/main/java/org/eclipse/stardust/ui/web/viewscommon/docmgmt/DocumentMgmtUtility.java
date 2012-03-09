@@ -235,7 +235,7 @@ public class DocumentMgmtUtility
       if (null != fileData)
       {
          List versions = getDocumentVersions(existingDocument);
-         Integer version = 0;
+         Integer version = 1;
          if (null != versions)
          {
             version = versions.size() + 1;
