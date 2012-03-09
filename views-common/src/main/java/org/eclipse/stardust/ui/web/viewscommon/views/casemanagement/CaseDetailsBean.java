@@ -548,6 +548,7 @@ public class CaseDetailsBean extends PopupUIComponentBean
    public void update()
    {
       initialize();
+      initializePermissions();
    }
    
    /**

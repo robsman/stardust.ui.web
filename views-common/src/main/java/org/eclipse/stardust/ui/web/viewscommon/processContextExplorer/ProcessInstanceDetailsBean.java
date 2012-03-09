@@ -219,7 +219,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
                }
             }
          }
-
+         initializePermissions();
       }
    }
 

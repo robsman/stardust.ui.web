@@ -123,8 +123,8 @@
 			</ice:commandLink>
 			<ice:commandLink
 				actionListener="#{processHistoryTable.openSpawnProcess}"
-				rendered="#{!processHistoryTable.enableCase}"
-				disabled="#{!processHistoryTable.enableSpawnProcess or not row.enableTerminate}">
+				rendered="#{processHistoryTable.enableSpawnProcess and !processHistoryTable.enableCase}"
+				disabled="#{not row.enableTerminate}">
 				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsSpawn" standAlone="false"/>
 				<ice:graphicImage
 					value="/plugins/views-common/images/icons/cog_add.png"

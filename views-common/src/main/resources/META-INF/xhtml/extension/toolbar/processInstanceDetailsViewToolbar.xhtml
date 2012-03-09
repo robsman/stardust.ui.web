@@ -44,8 +44,8 @@
 			<ui:param name="bean" value="#{bean}" />			
 		</ice:panelGroup>
 
-		<ice:commandLink action="#{spawnProcessDialogBean.openPopup}"
-			immediate="true" disabled="#{!processInstanceDetailsBean.abortProcess or !processInstanceDetailsBean.enableSpawnProcess}">
+		<ice:commandLink action="#{spawnProcessDialogBean.openPopup}" rendered="#{processInstanceDetailsBean.enableSpawnProcess}"
+			immediate="true" disabled="#{!processInstanceDetailsBean.abortProcess}">
 			<pc:automationTag value="auto-COM-PCESpawnProcess" standAlone="false" />
 			<ice:graphicImage
 				value="/plugins/views-common/images/icons/cog_add.png"
