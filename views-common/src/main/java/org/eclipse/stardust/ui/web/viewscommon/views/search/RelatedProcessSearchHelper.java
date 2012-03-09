@@ -77,6 +77,7 @@ public class RelatedProcessSearchHelper
    private boolean searchCases;
    private boolean isSourceCase;
    private Map<Boolean, List<ProcessInstance>> resultCache;
+   private String messageHeader;
    
 
    /**
@@ -103,6 +104,8 @@ public class RelatedProcessSearchHelper
          createTable();
          buildTable();
       }
+      
+      
    }
 
    /**
@@ -536,6 +539,23 @@ public class RelatedProcessSearchHelper
    public void setSearchCases(boolean searchCase)
    {
       this.searchCases = searchCase;
+   }
+   
+   public String getMessageHeader()
+   {
+      if (!isSourceCase)
+      {
+         messageHeader = matchAny ? COMMON_MESSAGE_BEAN
+               .getString("views.joinProcessDialog.descriptorAnyMatchingCases.message") : COMMON_MESSAGE_BEAN
+               .getString("views.joinProcessDialog.descriptorAllMatchingCases.message");
+      }
+      else
+      {
+         messageHeader = matchAny ? COMMON_MESSAGE_BEAN
+               .getString("views.joinProcessDialog.descriptorAnyMatchingProcesses.message") : COMMON_MESSAGE_BEAN
+               .getString("views.joinProcessDialog.descriptorAllMatchingProcesses.message");
+      }
+      return messageHeader;
    }
 
 }
