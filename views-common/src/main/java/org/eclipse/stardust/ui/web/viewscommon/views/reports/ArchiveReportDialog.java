@@ -120,7 +120,7 @@ public class ArchiveReportDialog extends PopupUIComponentBean
       {
          Folder reportFolder = DocumentMgmtUtility.createFolderIfNotExists(reportFolderPath);
          DocumentMgmtUtility.createDocument(reportFolder.getId(), reportName, out.toByteArray(), null,
-               MimeTypesHelper.PDF.getType(), null, null, null);
+               MimeTypesHelper.PDF.getType(), null, null, null, null);
          closePopup();
       }
    }

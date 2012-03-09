@@ -711,7 +711,7 @@ public class CorrespondenceViewBean extends UIComponentBean
       // create document
       Document document = DocumentMgmtUtility.createDocument(processAttachmentsFolder.getId(), docName,
             DocumentMgmtUtility.getFileSystemDocumentContent(fileInfo.getPhysicalPath()), null,
-            fileInfo.getContentType(), null, null, null);
+            fileInfo.getContentType(), null, null, null, null);
 
       // update process attachment
       DMSHelper.addAndSaveProcessAttachment(processInstance, document);

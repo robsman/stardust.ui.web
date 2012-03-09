@@ -173,7 +173,7 @@ public class DocumentMgmtUtility
       if (null != contents)
       {
          doc = createDocument(targetId, fileName, contents, documentType, fileInfo.getContentType(), description,
-               comments, null);
+               comments, null, null);
       }
       return doc;
    }
@@ -191,7 +191,7 @@ public class DocumentMgmtUtility
     */
    public static Document createDocument(String targetId, String fileName, byte[] byteContents,
          DocumentType documentType, String contentType, String description, String comments,
-         DocumentAnnotations annotation)
+         DocumentAnnotations annotation, Map<String, Object> metaDataProperties)
    {
       Document doc = null;
       if (null != byteContents)
@@ -207,6 +207,12 @@ public class DocumentMgmtUtility
          {
             properties = new HashMap();
          }
+         
+         if (CollectionUtils.isNotEmpty(metaDataProperties))
+         {
+            properties.putAll(metaDataProperties);
+         }
+         
          properties.put(CommonProperties.DESCRIPTION, description);
          properties.put(CommonProperties.COMMENTS, comments);
          doc = getDocumentManagementService().createDocument(targetId, docInfo, byteContents, null);

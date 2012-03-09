@@ -48,12 +48,6 @@ public class FileSystemJCRDocument extends FileSystemDocument
       this.metaDataEditable = true;
    }
 
-   @Override
-   public String getId()
-   {
-      return "unassigned";
-   }
-
    /**
     * contentBytes are ignored.
     * Reads content from File and creates/saves file in JCR and returns JCRDocument
@@ -92,12 +86,8 @@ public class FileSystemJCRDocument extends FileSystemDocument
 
          // Create Document with Properties
          concreteDocument = DocumentMgmtUtility.createDocument(typedDocFolder.getId(), file.getName(),
-               DocumentMgmtUtility.getFileSystemDocumentContent(file.getAbsolutePath()), null, getMimeType().getType(),
-               description, comments, null);
-
-         // It's observed that Document Type is not there when document is just created
-         // Set it again to UI to work
-         concreteDocument.setDocumentType(getDocumentType());
+               DocumentMgmtUtility.getFileSystemDocumentContent(file.getAbsolutePath()), getDocumentType(), getMimeType().getType(),
+               description, comments, null, getProperties());
 
          return concreteDocument;
       }
@@ -114,8 +104,8 @@ public class FileSystemJCRDocument extends FileSystemDocument
                trace.error("Unable to Delete Document", ex);
             }
          }
-         //TODO I18N
-         throw new RuntimeException("Unable to create document in JCR", e);
+         throw new RuntimeException(MessagesViewsCommonBean.getInstance().getParamString(
+               "views.documentView.createError"), e);
       }
    }
 }

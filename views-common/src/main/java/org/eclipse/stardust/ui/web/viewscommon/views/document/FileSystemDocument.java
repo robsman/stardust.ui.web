@@ -25,6 +25,7 @@ import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileSystemDocumentServlet;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
@@ -39,7 +40,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 public class FileSystemDocument extends AbstractDocumentContentInfo
 {
    protected File file;
-
+   protected String id;
+   
    public FileSystemDocument(String resourcePath, DocumentType documentType, boolean editable)
    {
       file = new File(resourcePath);
@@ -53,7 +55,9 @@ public class FileSystemDocument extends AbstractDocumentContentInfo
 
    private void init()
    {
-      author = "unknown";
+      MessagesViewsCommonBean viewBean = MessagesViewsCommonBean.getInstance();
+      author = viewBean.getString("views.documentView.properties.author.default");
+      id = viewBean.getString("views.documentView.properties.id.default");
       properties = new HashMap<String, Object>();
    }
 
@@ -90,7 +94,7 @@ public class FileSystemDocument extends AbstractDocumentContentInfo
 
    public String getId()
    {
-      return file.getPath();
+      return id;
    }
 
    public byte[] retrieveContent()

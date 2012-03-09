@@ -345,7 +345,7 @@ public class ChatRoom implements Serializable
 
          Document document = DocumentMgmtUtility.createDocument(
                RepositoryUtility.getProcessAttachmentsFolder(processInstance).getPath(), fileName, getHTMLString()
-                     .getBytes(), null, MimeTypesHelper.HTML.getType(), null, null, null);
+                     .getBytes(), null, MimeTypesHelper.HTML.getType(), null, null, null, null);
 
          DMSHelper.addAndSaveProcessAttachment(processInstance, document);
 
