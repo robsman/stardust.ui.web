@@ -11,7 +11,7 @@
 	<ui:include src="/plugins/views-common/dialogs/joinProcessDialog.xhtml" />
 
 	<ice:panelGrid cellspacing="0" cellpadding="2"
-		style="padding-right: 10px;" columns="14">
+		style="padding-right: 10px;" columns="15">
 		<pc:automationTag value="auto-COM-CaseDetView-ToolbarTerminate"/>
 		<ice:commandButton
 			image="/plugins/business-control-center/images/icons/abort_process.png"
@@ -43,6 +43,16 @@
 			partialSubmit="true"
 			title="#{messages_bcc['common.tooltip.recover']}"
 			styleClass="toolbar-button" />
+
+		<pc:automationTag value="auto-COM-CaseDetView-ToolbarAttachToCase"/>					
+		<ice:commandLink actionListener="#{processHistoryTable.attachToCase}"
+			rendered="#{processHistoryTable.enableCase and  caseDetailsBean.canManageCase}"
+			disabled="#{caseDetailsBean.inactiveCase}" >	
+			<ice:graphicImage
+				url="/plugins/views-common/images/icons/case-attach.png"
+				title="#{views_common_msgPropsBean['views.case.attachPI']}" 
+				styleClass="#{!caseDetailsBean.inactiveCase? '' : 'iceCmdBtn-dis'}" />
+		</ice:commandLink>
 					
 		<ice:graphicImage value="/plugins/common/images/toolbar-separator.png"/>	
 		
