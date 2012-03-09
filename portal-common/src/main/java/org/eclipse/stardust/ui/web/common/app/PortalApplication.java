@@ -788,8 +788,12 @@ public class PortalApplication
       {
          closeView(view);         
       }
-
-      addToDisplayedViews(getLastFocusView());
+     
+      // When activity panel is open with Document Viewer, closeView() does not clear the
+      // Activity Panel view fro focusViewStack, manually removing if any view is open
+      focusViewStack.clear();
+      displayedViews.clear();
+      getPortalUiController().setFocusView(null);
    }
 
    /**
