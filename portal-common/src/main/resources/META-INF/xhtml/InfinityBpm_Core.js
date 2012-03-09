@@ -141,6 +141,12 @@ if ( !InfinityBpm.Core) {
 	        Ice.onSessionExpired('document:body', function() {
 	        	handleServerDisconnect("SessionExpired");
 	        });
+	        Ice.onConnectionLost('document:body', function() {
+	        	handleServerDisconnect("ConnectionLost");
+	        });
+	        Ice.onConnectionTrouble('document:body', function() {
+	        	handleServerDisconnect("ConnectionTrouble");
+	        });
 
 	        iceHandlerRegistered = true;
 
