@@ -10,8 +10,10 @@
 		style="width: 55%; white-space: nowrap; text-align:left;"
 		headerClass="heading">
 		<f:facet name="header">
+			<ice:panelGroup style="text-align:left;">
 			<ice:outputText
 				value="#{messages_bcc['views.processSearchView.descriptors.label']}" />
+			</ice:panelGroup>	
 		</f:facet>
 		<ice:panelGroup scrollHeight="240px">
 			<c:forEach var="descriptorItem" varStatus="iter"
