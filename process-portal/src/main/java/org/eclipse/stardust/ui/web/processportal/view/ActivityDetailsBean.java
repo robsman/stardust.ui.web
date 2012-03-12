@@ -638,7 +638,7 @@ public class ActivityDetailsBean
           * web applications, etc) in particular, to avoid activation of IFRAMES - which
           * would otherwise overlay the modal pop-up, rendering the portal unusable.
           */
-         if (MessageDialog.hasMessages())
+         if (MessageDialog.getInstance().isVisible())
          {
             fireEventForViewEventAwareInteractionController(activityInstance, new ViewEvent(thisView,
                   ViewEvent.ViewEventType.TO_BE_DEACTIVATED));
