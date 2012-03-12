@@ -226,7 +226,7 @@ public class DocumentMgmtUtility
       Document doc = null;
       existingDocument.getProperties().put(CommonProperties.DESCRIPTION, description);
       existingDocument.getProperties().put(CommonProperties.COMMENTS, comments);
-      
+      existingDocument.setOwner(getUser().getAccount());
       if (!isDocumentVersioned(existingDocument))
       {
          getDocumentManagementService().versionDocument(existingDocument.getId(), CommonProperties.ZERO);

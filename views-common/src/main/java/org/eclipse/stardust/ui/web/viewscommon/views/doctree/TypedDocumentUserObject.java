@@ -289,6 +289,7 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
       {
          document = getDocument();
          document.setName(fileInfo.getFileName());
+         document.setContentType(fileUploadDialog.getFileInfo().getContentType());
          document = DocumentMgmtUtility.updateDocument(getDocument(),
                DocumentMgmtUtility.getFileSystemDocumentContent(fileInfo.getPhysicalPath()),
                fileUploadDialog.getDescription(), fileUploadDialog.getComments());
