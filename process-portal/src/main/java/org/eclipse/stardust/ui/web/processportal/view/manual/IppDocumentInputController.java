@@ -124,7 +124,7 @@ public class IppDocumentInputController extends DocumentInputController implemen
       if (document instanceof RawDocument)
       {
          FileSystemJCRDocument fsDoc = getFileSystemDocument();
-         JCRDocument jcrDoc = (JCRDocument)fsDoc.save(null);
+         JCRDocument jcrDoc = (JCRDocument)fsDoc.save(fsDoc.retrieveContent());
          setValue(jcrDoc.getDocument());
 
          return true;
