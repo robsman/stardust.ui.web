@@ -118,6 +118,12 @@ public class JCRDocument extends AbstractDocumentContentInfo
    @SuppressWarnings("unchecked")
    JCRDocument(Document doc, boolean readOnly, JCRVersionTracker vTracker)
    {
+      initialize(doc, readOnly, vTracker);
+   }
+   
+   public void initialize(Document doc, boolean readOnly, JCRVersionTracker vTracker)
+   {
+
       this.document = doc;
       supportVersioning = true;
       if (null == vTracker)
@@ -169,8 +175,10 @@ public class JCRDocument extends AbstractDocumentContentInfo
    {
       try
       {
-         Document document = DocumentMgmtUtility.getDocument(this.document.getId());
-         return new JCRDocument(document);
+         initialize(DocumentMgmtUtility.getDocument(this.document.getId()), false, null);
+         initContent();
+
+         return this;
       }
       catch (ResourceNotFoundException e)
       {

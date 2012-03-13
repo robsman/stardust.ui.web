@@ -511,9 +511,9 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
       }
       else
       {
-         docInfoFreshCopy = documentInfo.reset();
          PrintDocumentAnnotationsImpl updatedMetadata = (PrintDocumentAnnotationsImpl) DOC_ID_VS_DOC_MAP.get(docId)
                .getDocInfo().getAnnotations();
+         docInfoFreshCopy = documentInfo.reset();
          PrintDocumentAnnotationsImpl saveableMetadata = (PrintDocumentAnnotationsImpl) docInfoFreshCopy
                .getAnnotations();
          if (null == saveableMetadata)
