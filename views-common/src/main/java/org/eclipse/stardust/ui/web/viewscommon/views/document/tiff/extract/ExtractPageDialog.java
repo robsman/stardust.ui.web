@@ -598,8 +598,7 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
       
       ExtractPageCommand command = new ExtractPageCommand();
       command.setMimeType(MimeTypesHelper.TIFF.getType());
-      command.setProcessInstance(imageInfo.getProcessInstance());
-      command.setNewDocumentName(generateDocumentName(imageInfo.getDocument().getName()));
+      command.setProcessInstance(imageInfo.getProcessInstance());    
       command.setSourceDocumentName(imageInfo.getDocument().getName());
       command.setSourceDocumentPath(FileUtils.getDocumentPath(imageInfo.getDocument().getPath()));
 
@@ -646,20 +645,7 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
       return new ExtractPageCommand.PageModel(tableEntry.getContent(), tableEntry.getVersionComment(), tableEntry.getDocDecription(),
             tableEntry.getDocMetadata(), tableEntry.getSpawnProcessFQID(), tableEntry.isCopyProcessData(),
             tableEntry.getDataId());
-   }
-
-   /**
-    * generate new file name by appending date-time in source file name
-    * 
-    * @return
-    */
-   private String generateDocumentName(String sourceName)
-   {
-      StringBuilder fileName = new StringBuilder().append(ImageUtils.removeExtention(sourceName)).append("_")
-            .append(String.valueOf(new Date().getTime())).append(".").append(ImageUtils.getExtension(sourceName));
-
-      return fileName.toString();
-   }
+   }   
   /**
    * 
    * @param pis
