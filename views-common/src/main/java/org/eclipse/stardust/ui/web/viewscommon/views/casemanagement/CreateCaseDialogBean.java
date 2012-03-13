@@ -12,11 +12,13 @@ package org.eclipse.stardust.ui.web.viewscommon.views.casemanagement;
 
 import java.util.List;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.dto.ContextKind;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
+import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -38,7 +40,7 @@ public class CreateCaseDialogBean extends PopupUIComponentBean
 
    private static final long serialVersionUID = 1L;
    private static final String BEAN_NAME = "createCaseDialogBean";
-
+   private final MessagesViewsCommonBean COMMON_MESSAGE_BEAN = MessagesViewsCommonBean.getInstance();
    private String caseName;
    private String note;
    private String description;
@@ -79,6 +81,19 @@ public class CreateCaseDialogBean extends PopupUIComponentBean
    @Override
    public void openPopup()
    {
+
+      List<Long> oids = CollectionUtils.newArrayList();
+      for (ProcessInstance pi : sourceProcessInstances)
+      {
+         oids.add(pi.getOID());
+      }
+      sourceProcessInstances = ProcessInstanceUtils.getProcessInstances(oids);
+      if (!ProcessInstanceUtils.isRootProcessInstances(sourceProcessInstances))
+      {
+         MessageDialog.addErrorMessage(COMMON_MESSAGE_BEAN.getString("views.attachToCase.selectOnlyProcess.message"));
+         return;
+      }
+
       initialize();
       super.openPopup();
    }

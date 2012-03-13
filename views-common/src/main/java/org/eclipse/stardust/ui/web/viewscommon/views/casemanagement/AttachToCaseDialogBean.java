@@ -17,19 +17,20 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
-import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
+import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler.MessageDisplayMode;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler.MessageDisplayMode;
 import org.eclipse.stardust.ui.web.viewscommon.views.search.RelatedProcessSearchBean;
 import org.eclipse.stardust.ui.web.viewscommon.views.search.RelatedProcessTableEntry;
 
@@ -67,7 +68,28 @@ public class AttachToCaseDialogBean extends RelatedProcessSearchBean implements 
    public void openPopup()
    {
       resolveScope();
+      if (Scope.Process.equals(scope))
+      {
+         List<ProcessInstance> pis = getSourceProcessInstances();
+         List<Long> oids = CollectionUtils.newArrayList();
+         for (ProcessInstance pi : pis)
+         {
+            oids.add(pi.getOID());
+         }
+         pis = ProcessInstanceUtils.getProcessInstances(oids);
+         if (ProcessInstanceUtils.isRootProcessInstances(pis))
+         {
+            setSourceProcessInstances(pis);
+         }
+         else
+         {
+            MessageDialog.addErrorMessage(COMMON_MESSAGE_BEAN
+                  .getString("views.attachToCase.nonRootProcessSelectedToCreateCase"));
+            return;
+         }
 
+      }
+      
       getRelatedProcessSearchHelper().setSearchCases(Scope.Case.equals(scope) ? false : true);
 
       if ((Scope.Case.equals(scope) && hasManageCasePermission()) || Scope.Process.equals(scope))
