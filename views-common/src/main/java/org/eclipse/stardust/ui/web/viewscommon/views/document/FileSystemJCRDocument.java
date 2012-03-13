@@ -86,7 +86,7 @@ public class FileSystemJCRDocument extends FileSystemDocument
 
          // Create Document with Properties
          concreteDocument = DocumentMgmtUtility.createDocument(typedDocFolder.getId(), file.getName(), contentBytes,
-               getDocumentType(), getMimeType().getType(), description, comments, null, getProperties());
+               getDocumentType(), getMimeType().getType(), description, comments, getAnnotations(), getProperties());
 
          return concreteDocument;
       }
