@@ -420,7 +420,7 @@ public class PortalUiController
          broadcastNonVetoableViewEvent(oldFocusView, ViewEventType.DEACTIVATED);
       }
 
-      if (null != newFocusView)
+      if (null != newFocusView && ViewState.CLOSED != newFocusView.getViewState())
       {
          boolean success = broadcastVetoableViewEvent(newFocusView, ViewEventType.TO_BE_ACTIVATED);
          if(!success)
