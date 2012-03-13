@@ -134,12 +134,12 @@
 			<ice:commandLink
 				actionListener="#{processHistoryTable.openSpawnProcess}"
 				rendered="#{processHistoryTable.enableSpawnProcess and !processHistoryTable.enableCase}"
-				disabled="#{not row.enableTerminate}">
+				disabled="#{row.disableSpawnProcess}">
 				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsSpawn" standAlone="false"/>
 				<ice:graphicImage
 					value="/plugins/views-common/images/icons/cog_add.png"
 					style="border: none;"
-					styleClass="#{row.enableTerminate and processHistoryTable.enableSpawnProcess? '' : 'iceCmdBtn-dis'}" 
+					styleClass="#{!row.disableSpawnProcess and processHistoryTable.enableSpawnProcess? '' : 'iceCmdBtn-dis'}" 
 					title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}" />
 				<f:attribute name="processInstance" value="#{row.processInstance}" />
 			</ice:commandLink>

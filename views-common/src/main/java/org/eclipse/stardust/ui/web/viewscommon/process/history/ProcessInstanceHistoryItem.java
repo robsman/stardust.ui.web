@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
@@ -60,6 +61,7 @@ public class ProcessInstanceHistoryItem extends AbstractProcessHistoryTableEntry
    private boolean selected;
    private boolean caseInstance;
    private boolean enableDetach;
+   private boolean disableSpawnProcess;
    private final ProcessInstance rootProcessInstance;
 
    /**
@@ -95,7 +97,9 @@ public class ProcessInstanceHistoryItem extends AbstractProcessHistoryTableEntry
          processInstanceRootOID = processInstance.getRootProcessInstanceOID();
          notesCount = ProcessInstanceUtils.getNotes(processInstance).size();
          this.enableTerminate = ProcessInstanceUtils.isAbortable(processInstance);
-
+         List<ProcessInstance> piList = CollectionUtils.newArrayList();
+         piList.add(processInstance);
+         this.disableSpawnProcess = ProcessInstanceUtils.isTerminatedProcessInstances(piList);
          this.enableRecover = true;
          Model model = ModelCache.findModelCache().getModel(processInstance.getModelOID());
 
@@ -321,6 +325,13 @@ public class ProcessInstanceHistoryItem extends AbstractProcessHistoryTableEntry
    {
       return rootProcessInstance;
    }
+
+   public boolean isDisableSpawnProcess()
+   {
+      return disableSpawnProcess;
+   }
+   
+   
    
    
 }

@@ -227,6 +227,11 @@ public class ProcessTableEntryUserObject extends NodeUserObject
    {
       return tableEntry.isEnableTerminate();
    }
+   
+   public boolean isDisableSpawnProcess()
+   {
+      return tableEntry.isDisableSpawnProcess();
+   }
 
    public boolean isMoreDetailsAvailable()
    {

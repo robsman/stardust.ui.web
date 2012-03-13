@@ -123,7 +123,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    private boolean hasSpawnProcessPermission;
    private boolean hasSwitchProcessPermission;
    private boolean hasJoinProcessPermission;
-   
+   private boolean disableSpawnProcess = false;
 
    /**
     * 
@@ -175,6 +175,9 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       
       setSupportsProcessAttachments(DMSHelper.existsProcessAttachmentsDataPath(processInstance));
       setAbortProcess(ProcessInstanceUtils.isAbortable(processInstance));
+      List<ProcessInstance> sourceList = CollectionUtils.newArrayList();
+      sourceList.add(processInstance);
+      setDisableSpawnProcess(ProcessInstanceUtils.isTerminatedProcessInstances(sourceList));
       state = MessagesViewsCommonBean.getInstance().getString(
             STATE_PREFIX + processInstance.getState().getName().toLowerCase());
    
@@ -917,5 +920,17 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    public boolean isEnableJoinProcess()
    {
       return hasJoinProcessPermission;
+   }
+
+   public boolean isDisableSpawnProcess()
+   {
+      return disableSpawnProcess;
+   }
+
+   public void setDisableSpawnProcess(boolean disableSpawnProcess)
+   {
+      this.disableSpawnProcess = disableSpawnProcess;
    }  
+   
+   
 }
