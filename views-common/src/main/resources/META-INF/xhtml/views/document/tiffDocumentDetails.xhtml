@@ -241,19 +241,13 @@
 								toolbarUrl="/plugins/views-common/views/document/tiffBookmarkToolbar.xhtml" />
 							<ice:panelGroup styleClass="clearing" />
 							<ice:panelGrid columns="2">
+								<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.addBookmark']}" 
+									value="/plugins/views-common/images/icons/add.png"
+									style="#{!contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
 								<ice:commandLink actionListener="#{contentHandler.tiffDocumentHolder.bookmarkManager.addNewBookmark}"
 									disabled="#{!contentHandler.tiffDocumentHolder.editable}">
 									<pc:automationTag
 										value="auto-COM-DocView-TiffDocView-BookmarkTbl-AddBookmark"
-										standAlone="false" />
-									<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.addBookmark']}" 
-										value="/plugins/views-common/images/icons/add.png"
-										style="#{!contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
-								</ice:commandLink>
-								<ice:commandLink actionListener="#{contentHandler.tiffDocumentHolder.bookmarkManager.addNewBookmark}"
-									disabled="#{!contentHandler.tiffDocumentHolder.editable}">
-									<pc:automationTag
-										value="auto-COM-DocView-TiffDocView-BookmarkTbl-AddBookmark-Link"
 										standAlone="false" />
 									<ice:outputText value="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.addBookmark']}" styleClass="action-link"/>
 								</ice:commandLink>
