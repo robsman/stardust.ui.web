@@ -798,8 +798,11 @@ public class PortalApplication
    public void closeFocusView()
    {
       View closedView = getFocusView();
-      getPortalUiController().closeFocusView();
-      handleViewClose(closedView, closedView, false);
+      boolean closed = getPortalUiController().closeFocusView();
+      if (closed)
+      {
+         handleViewClose(closedView, closedView, false);
+      }
    }
 
    /**
@@ -1507,26 +1510,6 @@ public class PortalApplication
    private int getDisplayMode()
    {
       return displayMode;
-   }
-
-   public void completeActivity()
-   {
-      closeFocusView();
-   }
-
-   public void suspendActivity()
-   {
-      closeFocusView();
-   }
-
-   public void suspendAndSaveActivity()
-   {
-      closeFocusView();
-   }
-
-   public void delegateActivity()
-   {
-      closeFocusView();
    }
 
    public PortalUiController getPortalUiController()
