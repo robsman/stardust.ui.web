@@ -36,8 +36,6 @@ public class View extends AbstractUiElement implements TabScopeManager
    public static final String PRE_LABEL = "label";
    public static final String PRE_LABEL_TITLE = "labelTitle";
    public static final String PRE_DESCRIPTION = "description";
-   public static final String PROCESS_INST_VIEW = "processInstanceDetailsView";
-   public static final String ACTIVITY_INST_VIEW = "activityPanel";
    
    private ViewState viewState;
    
@@ -300,19 +298,7 @@ public class View extends AbstractUiElement implements TabScopeManager
       String key = "label";
       this.label = getMessage(key);
       this.fullLabel = this.label;
-
-      // When ProcessContext view is opened the tooltip set from
-      // ProcessInstanceDetailBean.java should
-      // be retained, same for ActivityPanel, tooltip is set from ActivityDetailsBean.java
-      if (PROCESS_INST_VIEW.equals(this.name) || ACTIVITY_INST_VIEW.equals(this.name))
-      {
-         if (null == this.tooltip)
-            this.tooltip = getMessage(key);
-      }
-      else
-      {
-         this.tooltip = getMessage(key);
-      }
+      this.tooltip = label;
 
       if (hasMessage(key))
       {
