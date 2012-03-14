@@ -133,8 +133,7 @@
          <exclude org="com.infinity.bpm" name="carnot-engine"/>
          <exclude org="javax.jcr" module="jcr"/>
       </dependency>
-      <dependency org="org.apache.myfaces.trinidad" name="trinidad-api" rev="1.0.10" conf="ipp-portal-base-lib-module-runtime->default"/>
-      <dependency org="org.apache.myfaces.trinidad" name="trinidad-impl" rev="1.0.10" conf="ipp-portal-base-lib-module-runtime->default"/>
+
       <dependency org="com.sun.el" name="el-ri" rev="1.0" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="javax.mail" name="mail" rev="1.4" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="net.sourceforge.jexcelapi" name="jxl" rev="2.6.10" conf="ipp-portal-base-lib-module-runtime->default">
