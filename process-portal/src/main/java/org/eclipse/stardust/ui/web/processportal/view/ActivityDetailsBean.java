@@ -736,11 +736,12 @@ public class ActivityDetailsBean
          String docDisplayType = ActivityPanelConfigurationBean.getAutoDisplayDocumentsType();
 
          Map<String, Object> params = CollectionUtils.newMap();
-         params.put("displayMode", ActivityPanelConfigurationBean.getAutoDocumentsDisplayMode());
          params.put("processInstance", processInstance);
 
          if (ActivityPanelConfigurationBean.DISPLAY_DOCUMENTS_OLDEST.equals(docDisplayType))
          {
+            params.put("displayMode", ActivityPanelConfigurationBean.getAutoDocumentsDisplayMode());
+
             PortalApplication.getInstance().setFocusView(thisView);
             docViews.add(DocumentViewUtil.openJCRDocument(processAttachments.get(0).getId(), params));
          }
@@ -750,8 +751,11 @@ public class ActivityDetailsBean
             for (int i = 0; i < attachmentsCount - 1; i++)
             {
                PortalApplication.getInstance().setFocusView(thisView);
-               docViews.add(DocumentViewUtil.openJCRDocument(processAttachments.get(i)));
+               docViews.add(DocumentViewUtil.openJCRDocument(processAttachments.get(i), params));
             }
+
+            params.put("displayMode", ActivityPanelConfigurationBean.getAutoDocumentsDisplayMode());
+
             PortalApplication.getInstance().setFocusView(thisView);
             docViews.add(DocumentViewUtil.openJCRDocument(processAttachments.get(attachmentsCount - 1), params));
          }
