@@ -67,7 +67,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
  */
 public class JCRDocument extends AbstractDocumentContentInfo
 {
-   private String documentID;
    private Document document;
    
    /**
@@ -115,7 +114,6 @@ public class JCRDocument extends AbstractDocumentContentInfo
     * @param readOnly
     * @param vTracker
     */
-   @SuppressWarnings("unchecked")
    JCRDocument(Document doc, boolean readOnly, JCRVersionTracker vTracker)
    {
       initialize(doc, readOnly, vTracker);
@@ -158,11 +156,12 @@ public class JCRDocument extends AbstractDocumentContentInfo
          modifyPrivilege = DMSHelper.hasPrivilege(getDocument().getId(), DmsPrivilege.MODIFY_PRIVILEGE);
       }
       
-      documentID = document.getId();
+      id = document.getId();
       if (!versionTracker.isLatestVersion())
       {
-         documentID = document.getRevisionId();
+         id = document.getRevisionId();
       }
+      idLabel = id;
       
       contentEditable = modifyPrivilege && null != versionTracker && versionTracker.isLatestVersion();
       metaDataEditable = contentEditable;
@@ -235,11 +234,6 @@ public class JCRDocument extends AbstractDocumentContentInfo
       {
          author = document.getOwner();
       }
-   }
-
-   public String getId()
-   {
-      return documentID;
    }
 
    public byte[] retrieveContent()

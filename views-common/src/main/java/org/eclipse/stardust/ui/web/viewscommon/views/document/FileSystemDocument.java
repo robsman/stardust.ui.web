@@ -40,7 +40,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 public class FileSystemDocument extends AbstractDocumentContentInfo
 {
    protected File file;
-   protected String id;
+  
    
    public FileSystemDocument(String resourcePath, DocumentType documentType, boolean editable)
    {
@@ -57,7 +57,8 @@ public class FileSystemDocument extends AbstractDocumentContentInfo
    {
       MessagesViewsCommonBean viewBean = MessagesViewsCommonBean.getInstance();
       author = viewBean.getString("views.documentView.properties.author.default");
-      id = viewBean.getString("views.documentView.properties.id.default");
+      id = file.getPath();
+      idLabel = viewBean.getString("views.documentView.properties.id.default");
       properties = new HashMap<String, Object>();
    }
 
@@ -90,11 +91,6 @@ public class FileSystemDocument extends AbstractDocumentContentInfo
          initURL();
       }
       return url;
-   }
-
-   public String getId()
-   {
-      return id;
    }
 
    public byte[] retrieveContent()

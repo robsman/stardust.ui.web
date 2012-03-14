@@ -25,6 +25,8 @@ public abstract class AbstractDocumentContentInfo implements IDocumentContentInf
 {
    protected String name = "";
    protected String author = null;
+   protected String id;
+   protected String idLabel;
    protected DocumentType documentType;
    protected boolean modifyPrivilege;
 
@@ -42,7 +44,7 @@ public abstract class AbstractDocumentContentInfo implements IDocumentContentInf
    
    protected boolean contentEditable = true;
    protected boolean metaDataEditable = true;
-
+   
    public IDocumentContentInfo saveFile(String filePath)
    {
       return null;
@@ -141,5 +143,15 @@ public abstract class AbstractDocumentContentInfo implements IDocumentContentInf
    public boolean isModifyPrivilege()
    {
       return modifyPrivilege;
+   }
+
+   public String getId()
+   {
+      return id;
+   }
+
+   public String getIdLabel()
+   {
+      return idLabel;
    }
 }
