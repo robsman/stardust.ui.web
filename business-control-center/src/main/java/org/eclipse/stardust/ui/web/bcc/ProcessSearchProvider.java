@@ -503,7 +503,7 @@ public class ProcessSearchProvider implements Serializable
             {
                result.add(ai.getProcessInstance());
             }
-            return new RawQueryResult<ProcessInstance>(result, null, false, Long.valueOf(result.size()));
+            return new RawQueryResult<ProcessInstance>(result, null, aiResult.hasMore(), Long.valueOf(aiResult.getTotalCount()));
          }
       }
 
