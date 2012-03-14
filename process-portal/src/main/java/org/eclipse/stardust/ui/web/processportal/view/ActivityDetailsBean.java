@@ -749,6 +749,7 @@ public class ActivityDetailsBean
             int attachmentsCount = processAttachments.size();
             for (int i = 0; i < attachmentsCount - 1; i++)
             {
+               PortalApplication.getInstance().setFocusView(thisView);
                docViews.add(DocumentViewUtil.openJCRDocument(processAttachments.get(i)));
             }
             PortalApplication.getInstance().setFocusView(thisView);
