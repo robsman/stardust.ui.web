@@ -55,6 +55,8 @@ public class View extends AbstractUiElement implements TabScopeManager
    
    private String label;
    
+   private String fullLabel;
+   
    private String tooltip;
 
    private String description;
@@ -297,6 +299,8 @@ public class View extends AbstractUiElement implements TabScopeManager
    {
       String key = "label";
       this.label = getMessage(key);
+      this.fullLabel = this.label;
+
       // When ProcessContext view is opened the tooltip set from
       // ProcessInstanceDetailBean.java should
       // be retained, same for ActivityPanel, tooltip is set from ActivityDetailsBean.java
@@ -406,6 +410,7 @@ public class View extends AbstractUiElement implements TabScopeManager
             }
             
             label = replace(label, strParamConstruct + paramTrunc + "]", truncatedValue);
+            fullLabel = replace(fullLabel, strParamConstruct + paramTrunc + "]", paramValue);
             tooltip = replace(tooltip, strParamConstruct + paramTrunc + "]", paramValue);
          }
          catch(Exception e)
@@ -416,6 +421,7 @@ public class View extends AbstractUiElement implements TabScopeManager
       else
       {
          label = replace(label, "${viewParams." + paramName + "}", paramValue);
+         fullLabel = replace(fullLabel, "${viewParams." + paramName + "}", paramValue);
          tooltip = replace(tooltip, "${viewParams." + paramName + "}", paramValue);
       }
    }
@@ -556,6 +562,16 @@ public class View extends AbstractUiElement implements TabScopeManager
    public void setLabel(String label)
    {
       this.label = label;
+   }
+
+   public String getFullLabel()
+   {
+      return fullLabel;
+   }
+
+   public void setFullLabel(String fullLabel)
+   {
+      this.fullLabel = fullLabel;
    }
 
    public String getTooltip()

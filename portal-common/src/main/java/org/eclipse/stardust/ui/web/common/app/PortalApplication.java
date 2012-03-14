@@ -129,7 +129,6 @@ public class PortalApplication
    private String copyrightMessage;
 
    private String logoutUri;
-   private String origToolTip;
 
    /**
     *
@@ -272,12 +271,6 @@ public class PortalApplication
             setActiveView(newView);
       
             fullScreenModeActivated = true;
-            origToolTip = newView.getTooltip();
-            if (origToolTip.contains("<br/>"))
-            {
-               int breakIndex = origToolTip.indexOf("<br/>");
-               newView.setTooltip(origToolTip.substring(0, breakIndex));
-            }
 
             // Vetoed not processed here. This is FYI only event,
             // As this view already returned success for TO_BE_FULL_SCREENED
@@ -305,10 +298,8 @@ public class PortalApplication
    {
       if (isFullScreenModeActivated())
       {
-         View newView = getFocusView();
-         newView.setTooltip(origToolTip);
          // broadcast activation events
-         setFocusView(newView);
+         setFocusView(getFocusView());
 
          closeOverflowTabIframePopup();
 
@@ -1699,11 +1690,6 @@ public class PortalApplication
       }
    }
    
-   public String getOrigToolTip()
-   {
-      return origToolTip;
-   }
-
    public String getLocaleString()
    {
       return getLocaleObject().toString();
