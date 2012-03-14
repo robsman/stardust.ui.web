@@ -201,7 +201,9 @@ public class PortalApplication
       if (!isLaunchPanelsActivated())
       {
          launchPanelsActivated = true;
-         
+
+         closeOverflowTabIframePopup();
+
          getPortalUiController().broadcastVetoableViewEvent(getFocusView(),
                ViewEventType.LAUNCH_PANELS_ACTIVATED);
    
@@ -221,7 +223,9 @@ public class PortalApplication
       if (isLaunchPanelsActivated())
       {
          launchPanelsActivated = false;
-         
+
+         closeOverflowTabIframePopup();
+
          getPortalUiController().broadcastVetoableViewEvent(getFocusView(),
                ViewEventType.LAUNCH_PANELS_DEACTIVATED);
    
@@ -240,6 +244,8 @@ public class PortalApplication
    {
       if (!isFullScreenModeActivated())
       {
+         closeOverflowTabIframePopup();
+
          boolean success = getPortalUiController().broadcastVetoableViewEvent(getFocusView(),
                ViewEventType.TO_BE_FULL_SCREENED);
          if(!success)
@@ -303,6 +309,8 @@ public class PortalApplication
          newView.setTooltip(origToolTip);
          // broadcast activation events
          setFocusView(newView);
+
+         closeOverflowTabIframePopup();
 
          boolean success = getPortalUiController().broadcastVetoableViewEvent(getFocusView(),
                ViewEventType.TO_BE_RESTORED_TO_NORMAL);
@@ -947,7 +955,9 @@ public class PortalApplication
 
       pinViewOpened = !pinViewOpened;
       launchPanelsActivated = !pinViewOpened;
-      
+
+      closeOverflowTabIframePopup();
+
       if(pinViewOpened)
       {
          if(fullScreenModeActivated)
@@ -1013,6 +1023,8 @@ public class PortalApplication
                addDummyOverflowView();
             }
       
+            closeOverflowTabIframePopup();
+
             int index = view != null ? displayedViews.indexOf(view) : -1;
             setViewIndex(index);
             if(index >= 0)
