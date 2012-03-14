@@ -200,14 +200,6 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
                   pi.getProcessID());
             focusView.getViewParams().put("processInstanceName", I18nUtils.getProcessName(processDef));
             
-            String description = I18nUtils.getDescriptionAsHtml(processDef, processDef.getDescription());
-            if (StringUtils.isNotEmpty(description))
-            {
-               String tooltip = MessagesViewsCommonBean.getInstance().getParamString(
-                     "views.processInstanceDetailsView.tooltip", focusView.getTooltip(), description);
-               focusView.setTooltip(tooltip);
-            }
-
             if (!StringUtils.isEmpty(pOID))
             {
                try
@@ -223,6 +215,34 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
             }
          }
          initializePermissions();
+      }
+      if (ViewEventType.POST_OPEN_LIFECYCLE == event.getType())
+      {
+         View focusView = event.getView();
+         if (focusView != null && processInstance != null)
+         {
+            setProcessDescription(processInstance, focusView);
+         }
+      }
+   }
+  
+   /**
+    * 
+    * @param processInstance
+    * @param focusView
+    * @return
+    */
+   private void setProcessDescription(ProcessInstance processInstance, View focusView)
+   {
+      String tooltip = null;
+      ProcessDefinition processDef = ProcessDefinitionUtils.getProcessDefinition(processInstance.getModelOID(),
+            processInstance.getProcessID());
+      String description = I18nUtils.getDescriptionAsHtml(processDef, processDef.getDescription());
+      if (StringUtils.isNotEmpty(description))
+      {
+         tooltip = MessagesViewsCommonBean.getInstance().getParamString("views.processInstanceDetailsView.tooltip",
+               focusView.getTooltip(), description);
+         focusView.setTooltip(tooltip);
       }
    }
 

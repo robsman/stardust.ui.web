@@ -363,13 +363,6 @@ public class ActivityDetailsBean
             thisView.setIcon(iconPath);
          }
          
-         String description = I18nUtils.getDescriptionAsHtml(activityInstance.getActivity(),activityInstance.getActivity().getDescription());
-         if (StringUtils.isNotEmpty(description))
-         {
-            String tooltip = MessagesViewsCommonBean.getInstance().getParamString(
-                  "views.processInstanceDetailsView.tooltip", thisView.getTooltip(), description);
-            thisView.setTooltip(tooltip);
-         }
          hasCreateCasePermission = AuthorizationUtils.canCreateCase();
          hasJoinProcessPermission = AuthorizationUtils.hasAbortAndJoinProcessInstancePermission();
          hasSwitchProcessPermission = AuthorizationUtils.hasAbortAndStartProcessInstancePermission();
@@ -441,6 +434,15 @@ public class ActivityDetailsBean
 
          if (isLoadSuccessful())
          {
+            String description = I18nUtils.getDescriptionAsHtml(activityInstance.getActivity(), activityInstance
+                  .getActivity().getDescription());
+            if (StringUtils.isNotEmpty(description))
+            {
+               String tooltip = MessagesViewsCommonBean.getInstance().getParamString(
+                     "views.processInstanceDetailsView.tooltip", thisView.getTooltip(), description);
+               thisView.setTooltip(tooltip);
+            }
+            
             performAutoOperations(event.getView());
          }
       }
