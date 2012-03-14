@@ -224,10 +224,59 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       return true;
    }
 
-   public @SuppressWarnings("unchecked")
-   Map getOutDataValues(ActivityInstance ai)
+   @SuppressWarnings("unchecked")
+   public Map getOutDataValues(ActivityInstance ai)
    {
+      InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(InteractionRegistry.BEAN_ID);
+
       Map<String, Serializable> outData = null;
+
+      if (null != registry)
+      {
+         // retrieve out data
+         Interaction interaction = registry.getInteraction(getInteractionId(ai));
+         if (null != interaction)
+         {
+            Map<String, Serializable> outParams = interaction.getOutDataValues();
+            if (null != outParams)
+            {
+               // performing client side OUT mappings
+               outData = newHashMap();
+               for (DataMapping outMapping : (List<DataMapping>) interaction.getDefinition().getAllOutDataMappings())
+               {
+                  Serializable outParam = outParams.get(outMapping.getApplicationAccessPoint().getId());
+                  if (null != outParam)
+                  {
+                     try
+                     {
+                        Object outValue = ClientSideDataFlowUtils.evaluateClientSideOutMapping(
+                              interaction.getModel(), outParam, outMapping);
+
+                        outData.put(outMapping.getId(), (Serializable) outValue);
+                     }
+                     catch (Exception e)
+                     {
+                        trace.warn("Failed evaluating client side of OUT data mapping "
+                              + outMapping.getId() + " on activity instance " + ai, e);
+                     }
+                  }
+                  else
+                  {
+                     trace.info("Missing value for data mapping " + outMapping.getId()
+                           + " on activity instance " + ai);
+                  }
+               }
+            }
+
+            // destroy interaction resource
+            registry.unregisterInteraction(interaction.getId());
+         }
+         else
+         {
+            trace.warn("Failed resolving interaction resource for activity instance " + ai);
+         }
+      }
+
       return outData;
    }
 
