@@ -742,7 +742,7 @@ public class ActivityDetailsBean
          if (ActivityPanelConfigurationBean.DISPLAY_DOCUMENTS_OLDEST.equals(docDisplayType))
          {
             PortalApplication.getInstance().setFocusView(thisView);
-            DocumentViewUtil.openJCRDocument(processAttachments.get(0).getId(), params);
+            docViews.add(DocumentViewUtil.openJCRDocument(processAttachments.get(0).getId(), params));
          }
          else if (ActivityPanelConfigurationBean.DISPLAY_DOCUMENTS_ALL.equals(docDisplayType))
          {
