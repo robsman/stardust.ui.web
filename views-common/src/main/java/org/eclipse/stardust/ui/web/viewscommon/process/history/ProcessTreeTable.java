@@ -265,28 +265,30 @@ public class ProcessTreeTable implements TreeTableBean
     */
    private boolean isPriorityModified(ProcessInstanceHistoryItem node)
    {
-      if (node.getOldPriority() != node.getPriority())
-      {
-         return true;
-      }
-
       boolean isPriorityModified = false;
-      List<IProcessHistoryTableEntry> childs = node.getChildren();
-
-      for (IProcessHistoryTableEntry entry : childs)
+      if (null != node)
       {
-         if (entry instanceof ProcessInstanceHistoryItem)
+         if (node.getOldPriority() != node.getPriority())
          {
-            ProcessInstanceHistoryItem item = (ProcessInstanceHistoryItem) entry;
-            isPriorityModified = isPriorityModified(item);
+            return true;
+         }
 
-            if (isPriorityModified)
+         List<IProcessHistoryTableEntry> childs = node.getChildren();
+
+         for (IProcessHistoryTableEntry entry : childs)
+         {
+            if (entry instanceof ProcessInstanceHistoryItem)
             {
-               break;
+               ProcessInstanceHistoryItem item = (ProcessInstanceHistoryItem) entry;
+               isPriorityModified = isPriorityModified(item);
+
+               if (isPriorityModified)
+               {
+                  break;
+               }
             }
          }
       }
-
       return isPriorityModified;
    }   
 
