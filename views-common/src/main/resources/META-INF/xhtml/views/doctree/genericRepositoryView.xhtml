@@ -232,7 +232,7 @@
 							</ice:menuItem>
 
 							<ice:menuItem id="securitySettings"
-								icon="/plugins/views-common/images/icons/configure.png"
+								icon="/plugins/views-common/images/icons/wrench.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.security']}"
 								action="#{securityDialog.open}"
 								disabled="#{!item.userObject.readACL}">
@@ -303,12 +303,12 @@
 							<ice:inputText value="#{item.userObject.name}"
 								partialSubmit="true" />
 							<ice:commandButton id="image_button__rename_accept"
-								image="/plugins/admin-portal/images/icons/rename-accept.gif"
+								image="/plugins/views-common/images/icons/button_bid_accept.gif"
 								action="#{item.userObject.renameAccept}"
 								style="border: 0px;width: 15px;height:15px;" />
 							<ice:commandButton id="image_button_rename_decline"
 								immediate="true"
-								image="/plugins/admin-portal/images/icons/rename-decline.gif"
+								image="/plugins/views-common/images/icons/button_bid_decline.gif"
 								action="#{item.userObject.renameDecline}"
 								rendered="#{not item.userObject.newNodeCreated}"
 								style="border: 0px;width: 15px;height:15px" />

@@ -58,7 +58,7 @@ public class PriorityOverviewUserObject extends NodeUserObject
       String tooltip = null;
       if (prioOverviewEntry instanceof ModelWithPrio)
       {
-         imagePath = "/plugins/admin-portal/images/icons/model.gif";
+         imagePath = "/plugins/views-common/images/icons/model.gif";
          tooltip = ((ModelWithPrio) prioOverviewEntry).getDescription();
       }
       else if (prioOverviewEntry instanceof ProcessDefinitionWithPrio)
@@ -70,7 +70,7 @@ public class PriorityOverviewUserObject extends NodeUserObject
          }
          else
          {
-            imagePath = "/plugins/common/images/icons/process-history/active/process.png";
+            imagePath = "/plugins/views-common/images/icons/process.png";
          }
          ProcessDefinition pd = ((ProcessDefinitionWithPrio) prioOverviewEntry).getProcessDefinition();
          tooltip = I18nUtils.getDescriptionAsHtml(pd, pd.getDescription());

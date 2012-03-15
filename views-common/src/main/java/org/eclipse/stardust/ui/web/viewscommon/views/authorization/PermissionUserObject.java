@@ -33,9 +33,9 @@ import com.icesoft.faces.component.tree.IceUserObject;
 public class PermissionUserObject extends IceUserObject
 {
     private static final long serialVersionUID = -364375780924462409L;
-    private static final String ICON_ROLE_UNSCOPED = "/plugins/admin-portal/images/icons/role.png";
+    private static final String ICON_ROLE_UNSCOPED = "/plugins/views-common/images/icons/role.png";
     //private static final String ICON_ROLE_SCOPED = "/plugins/admin-portal/images/icons/role_scoped.png";
-    private static final String ICON_PERMISSION = "/plugins/admin-portal/images/icons/key.png";
+    private static final String ICON_PERMISSION = "/plugins/views-common/images/icons/key.png";
     private static final String ICON_PERMISSION_MODIFIED = "/plugins/views-common/images/icons/key-modified.png";
 
     // ~ Instance fields

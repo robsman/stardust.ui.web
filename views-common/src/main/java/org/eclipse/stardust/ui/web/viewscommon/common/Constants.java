@@ -26,9 +26,9 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
  */
 public class Constants
 {
-   public static final String PROCESS_HISTORY_IMAGES_BASE_PATH = "/plugins/common/images/icons/process-history/active/";
-   public static final String WORKLIST_QA_AWAIT_STATE_IMAGE = "/plugins/processportal/images/icons/clock-small.png";
-   public static final String WORKLIST_QA_FAILED_STATE_IMAGE = "/plugins/processportal/images/icons/cross-small-circle.png";
+   public static final String PROCESS_HISTORY_IMAGES_BASE_PATH = "/plugins/views-common/images/icons/process-history/";
+   public static final String WORKLIST_QA_AWAIT_STATE_IMAGE = "/plugins/views-common/images/icons/clock-small.png";
+   public static final String WORKLIST_QA_FAILED_STATE_IMAGE = "/plugins/views-common/images/icons/cross-small-circle.png";
 
    public static final String ACTIVITY_QA_FAILED_IMAGE = "/plugins/views-common/images/icons/activity_qa_failed.png";
    public static final String ACTIVITY_QA_PASSED_IMAGE = "/plugins/views-common/images/icons/activity_qa_passed.png";

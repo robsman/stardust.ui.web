@@ -67,7 +67,7 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 public class ActivityInstanceUtils
 {
    private static final String STATUS_PREFIX = "views.activityTable.statusFilter.";
-   public static final String IMAGE_BASE_PATH = "/plugins/common/images/icons/process-history/active/";
+   public static final String IMAGE_BASE_PATH = "/plugins/views-common/images/icons/process-history/";
    private static final Map<String, String> iconMap;
    
    static
@@ -81,9 +81,9 @@ public class ActivityInstanceUtils
       iconMap.put("ActivityCompleted", "activity_completed.png");
       iconMap.put("StateChange", "activity_state.png");
       iconMap.put("ProcessInstance", "processrootblue.png");
-      iconMap.put("SubProcess", "process.png");
+      iconMap.put("SubProcess", "/plugins/views-common/images/icons/process.png");
       iconMap.put("AuxiliaryProcess", "process_auxiliary.png");
-      iconMap.put("CaseInstance", "envelope.png");
+      iconMap.put("CaseInstance", "/plugins/views-common/images/icons/envelope.png");
       iconMap.put("activityQAFailed", Constants.ACTIVITY_QA_FAILED_IMAGE);
       iconMap.put("activityQAPassed", Constants.ACTIVITY_QA_PASSED_IMAGE);
       iconMap.put("activityQAAwait", Constants.ACTIVITY_QA_AWAIT_IMAGE);

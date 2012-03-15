@@ -46,7 +46,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
  */
 public class ProcessUIBuilder
 {
-   public static final String IMAGE_BASE_PATH = "/plugins/common/images/icons/process-history/active/";
+   public static final String IMAGE_BASE_PATH = "/plugins/views-common/images/icons/process-history/";
    private MessagesViewsCommonBean propsBean;
    private List<SelectItem> priorityItems;
    private ICallbackHandler callbackHandler;

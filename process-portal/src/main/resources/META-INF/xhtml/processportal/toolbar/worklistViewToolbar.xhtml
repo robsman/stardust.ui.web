@@ -12,7 +12,7 @@
 			actionListener="#{worklistTableBean.openDelegateDialog}">
 			<pc:automationTag value="auto-PP-WorkList-ToolbarDelegate" standAlone="false"/>
 			<h:graphicImage
-				value="/plugins/processportal/images/icons/delegate.png"
+				value="/plugins/views-common/images/icons/process-history/delegate.png"
 				style="border: none;"
 				styleClass="#{worklistTableBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}"
 				title="#{processportal_msgPropsBean['toolbars.worklistView.tooltip.delegate']}" />
@@ -22,7 +22,7 @@
 			disabled="#{worklistTableBean.selectedItemCount eq 0 ? true : false}">
 			<pc:automationTag value="auto-PP-WorkList-ToolbarAbort" standAlone="false"/>
 			<ice:graphicImage
-				url="/plugins/common/images/icons/process-history/active/abort.png"
+				url="/plugins/views-common/images/icons/cross.png"
                    style="border:none;" styleClass="#{worklistTableBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}" 
                    title="#{processportal_msgPropsBean['toolbars.worklistView.tooltip.abort']}"/>
 		</ice:commandLink>

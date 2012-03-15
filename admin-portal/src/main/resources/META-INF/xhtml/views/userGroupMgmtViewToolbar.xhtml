@@ -9,14 +9,14 @@
 	<ice:panelGrid columns="2">
 		<ice:commandLink actionListener="#{createOrModifyUserGroupBean.openUserGroupDialog}">
 			<pc:automationTag value="auto-ADM-UserGrpMgmt-ToolbarCreateUserGrp" standAlone="false"/>
-			<h:graphicImage value="/plugins/admin-portal/images/icons/group_add.png"
+			<h:graphicImage value="/plugins/views-common/images/icons/group_add.png"
 				style="border: none;" title="#{messages_admin['common.create']}" />
 			<f:attribute name="editable" value="all" />
 		</ice:commandLink>	
 
 		<ice:commandLink actionListener="#{userGroupMgmtBean.invalidateUserGroup}" disabled="#{userGroupMgmtBean.selectedItemCount eq 0 ? true : false}">
 			<pc:automationTag value="auto-ADM-UserGrpMgmt-ToolbarInvalidateUserGrp" standAlone="false"/>
-			<h:graphicImage value="/plugins/admin-portal/images/icons/group_delete.png"
+			<h:graphicImage value="/plugins/views-common/images/icons/group_delete.png"
 				style="border: none;" 
 				styleClass="#{userGroupMgmtBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}"
 				title="#{userGroupMgmtBean.messages['invalidateUserGroup.tooltip.title']}" />

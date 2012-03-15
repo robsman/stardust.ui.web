@@ -60,13 +60,13 @@ public interface ResourcePaths
    
    static final String I_CASE = "/plugins/views-common/images/icons/envelope.png";
 
-   static final String I_PROCESS_ATTACHMENT = "/plugins/views-common/images/icons/document_set.png";
+   static final String I_PROCESS_ATTACHMENT = "/plugins/views-common/images/icons/page_white_stack.png";
    
-   static final String I_PROCESS_ATTACHMENT_BLANK = "/plugins/processportal/images/icons/document_set-blank-dropPanel.png";
-   static final String I_PROCESS_ATTACHMENT_FILLED = "/plugins/processportal/images/icons/document_set-filled-dropPanel.png";
+   static final String I_PROCESS_ATTACHMENT_BLANK = "/plugins/views-common/images/icons/document_set-blank-dropPanel.png";
+   static final String I_PROCESS_ATTACHMENT_FILLED = "/plugins/views-common/images/icons/document_set-filled-dropPanel.png";
 
-   static final String I_NOTES_BLANK = "/plugins/processportal/images/icons/notes-blank-dropPanel.png";
-   static final String I_NOTES_FILLED = "/plugins/processportal/images/icons/notes-filled-dropPanel.png";
+   static final String I_NOTES_BLANK = "/plugins/views-common/images/icons/notes-blank-dropPanel.png";
+   static final String I_NOTES_FILLED = "/plugins/views-common/images/icons/notes-filled-dropPanel.png";
    
    static final String I_NOTES = "/plugins/views-common/images/icons/folder_edit.png";
 

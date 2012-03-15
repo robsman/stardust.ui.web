@@ -19,7 +19,7 @@ package org.eclipse.stardust.ui.web.processportal.common;
 public final class Resources
 {
 
-   private static final String BASE_PATH = "/plugins/processportal/images/icons/";
+   private static final String BASE_PATH = "/plugins/views-common/images/icons/";
    
    public static final String VIEW_NOTES_COLUMNS = "/plugins/processportal/notesTableColumns.xhtml";
    public static final String VIEW_WORKLIST_COLUMNS = "/plugins/processportal/worklistViewColumns.xhtml";
@@ -29,7 +29,7 @@ public final class Resources
 
       public static final String getOrganization()
       {
-         return BASE_PATH + "organization.png";
+         return BASE_PATH + "chart_organisation.png";
       }
 
       public static final String getRole()
@@ -39,7 +39,7 @@ public final class Resources
 
       public static final String getScopedOrganization()
       {
-         return BASE_PATH + "department.png";
+         return BASE_PATH + "group_link.png";
       }
 
       public static final String getScopedRole()
@@ -54,7 +54,7 @@ public final class Resources
 
       public static final String getUserGroup()
       {
-         return BASE_PATH + "user-group.png";
+         return BASE_PATH + "group.png";
       }
 
       public static final String getAssemblyLine()

@@ -9,7 +9,7 @@
 	<ice:panelGrid columns="5">
 		<ice:commandLink actionListener="#{userMgmtBean.openCreateUserDialog}">
 			<pc:automationTag value="auto-ADM-PartMgmt-ToolbarCreateUser" standAlone="false"/>
-			<h:graphicImage value="/plugins/admin-portal/images/icons/user_add.png"
+			<h:graphicImage value="/plugins/views-common/images/icons/user_add.png"
 				style="border: none;" title="#{messages_admin['common.create']}" />
 		</ice:commandLink>
 
@@ -17,14 +17,14 @@
 			disabled="#{!(userMgmtBean.selectedItemCount eq 1)}">
 			<pc:automationTag value="auto-ADM-PartMgmt-ToolbarCopyUser" standAlone="false"/>
 			<h:graphicImage
-				value="/plugins/admin-portal/images/icons/user_go.png"
+				value="/plugins/views-common/images/icons/user_go.png"
 				style="border: none;" title="#{messages_admin['common.copy']}"
 				styleClass="#{!(userMgmtBean.selectedItemCount eq 1) ? 'iceCmdBtn-dis' : ''}"/>
 		</ice:commandLink>
 
 		<ice:commandLink actionListener="#{userMgmtBean.invalidateUser}" disabled="#{userMgmtBean.selectedItemCount eq 0}">
 			<pc:automationTag value="auto-ADM-PartMgmt-ToolbarInvalidateUser" standAlone="false"/>
-			<h:graphicImage value="/plugins/admin-portal/images/icons/user_delete.png"
+			<h:graphicImage value="/plugins/views-common/images/icons/user_delete.png"
 				style="border: none;" 
 				styleClass="#{userMgmtBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}"
 				title="#{userMgmtBean.messages['invalidateUser.title']}" />

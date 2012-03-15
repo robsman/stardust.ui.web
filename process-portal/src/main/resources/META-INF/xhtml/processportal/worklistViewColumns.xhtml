@@ -45,7 +45,7 @@
 		<ice:panelGroup rendered="#{col.columnName == 'Priority'}">
 			<ice:panelGroup panelTooltip="priorityTootip">
 			<h:graphicImage
-				value="/plugins/processportal/images/icons/priority-#{row.priority}.png"
+				value="/plugins/views-common/images/icons/priority-#{row.priority}.png"
 				title="" />
 			</ice:panelGroup>
 			<ice:panelTooltip id="priorityTootip"
@@ -118,7 +118,7 @@
 			<ice:commandLink action="#{ippPortalApp.openView}">
 				<pc:automationTag value="auto-PP-WorkList-ActionsProcDetails" standAlone="false"/>
 				<ice:graphicImage
-					value="/plugins/processportal/images/icons/process.png"
+					value="/plugins/views-common/images/icons/process.png"
 					title="#{worklistTableBean.messages['tooltip.processContextExplorer']}" />
 									
 				<f:param name="viewId" value="#{row.defaultCaseActivity ? 'caseDetailsView' : 'processInstanceDetailsView'}" />
@@ -133,7 +133,7 @@
 				disabled="#{!row.delegable and row.defaultCaseActivity}">
 				<pc:automationTag value="auto-PP-WorkList-ActionsDelegate" standAlone="false"/>
 				<ice:graphicImage
-					value="/plugins/processportal/images/icons/delegate.png"
+					value="/plugins/views-common/images/icons/process-history/delegate.png"
 					style="border:none;"
 					styleClass="#{row.delegable ? '' : 'iceCmdBtn-dis'}"
 					title="#{worklistTableBean.messages['tooltip.delegate']}" />
@@ -147,7 +147,7 @@
 				disabled="#{!row.abortActivity and row.defaultCaseActivity}">
 				<pc:automationTag value="auto-PP-WorkList-ActionsAbort" standAlone="false"/>
 				<ice:graphicImage
-					url="/plugins/processportal/images/icons/abort.png"
+					url="/plugins/views-common/images/icons/cross.png"
 					style="border:none;"
 					styleClass="#{row.abortActivity ? '' : 'iceCmdBtn-dis'}"
 					title="#{worklistTableBean.messages['tooltip.abort']}"/>
@@ -157,14 +157,14 @@
 			<!--	Notes	-->
 			<ice:panelGroup rendered="#{row.defaultCaseActivity }">
 					<ice:graphicImage styleClass="iceCmdBtn-dis"
-						value="/plugins/processportal/images/icons/notes-blank.png" />
+						value="/plugins/views-common/images/icons/notes-blank.png" />
 			</ice:panelGroup>
 						
 			<ice:commandLink rendered="#{row.notesCount gt 0 and !row.defaultCaseActivity}" 
 				actionListener="#{worklistTableBean.openNotes}">
 				<pc:automationTag value="auto-PP-WorkList-ActionsNotes" standAlone="false"/>
 				<ice:graphicImage
-					value="/plugins/processportal/images/icons/notes-filled.png"
+					value="/plugins/views-common/images/icons/mime-types/notes-filled.png"
 					title="#{worklistTableBean.messages['tooltip.notes']}" />
 				<f:param name="oid" value="#{row.oid}" />
 			</ice:commandLink>
@@ -172,7 +172,7 @@
 				actionListener="#{worklistTableBean.openNotes}">
 				<pc:automationTag value="auto-PP-WorkList-ActionsNotes" standAlone="false"/>
 				<ice:graphicImage
-					value="/plugins/processportal/images/icons/notes-blank.png"
+					value="/plugins/views-common/images/icons/notes-blank.png"
 					title="#{worklistTableBean.messages['tooltip.notesEmpty']}" />
 				<f:param name="oid" value="#{row.oid}" />
 			</ice:commandLink>

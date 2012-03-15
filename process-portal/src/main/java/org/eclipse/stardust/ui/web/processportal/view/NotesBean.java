@@ -145,9 +145,9 @@ public class NotesBean extends UIComponentBean implements IUserObjectBuilder<Not
       List<Note> noteList = attributes.getNotes();
       setNotes(noteList);
       if (noteList != null && noteList.size() > 0)
-        thisView.setIcon("/plugins/processportal/images/icons/notes-filled.png");
+        thisView.setIcon("/plugins/views-common/images/icons/mime-types/notes-filled.png");
       else
-         thisView.setIcon("/plugins/processportal/images/icons/notes-blank.png");
+         thisView.setIcon("/plugins/views-common/images/icons/notes-blank.png");
 
       Date noteTimestamp = (Date) getParamValue("noteTimestamp");
       Integer noteIndex = (Integer) getParamValue("noteIndex");

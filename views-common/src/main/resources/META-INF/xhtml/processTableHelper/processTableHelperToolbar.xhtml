@@ -11,7 +11,7 @@
 			disabled="#{bean.selectedItemCount eq 0 ? true : false}">
 			<pc:automationTag value="auto-COM-ProcTbl-ToolbarTerminate" standAlone="false"/>
 			<ice:graphicImage styleClass="#{bean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}"
-				value="/plugins/business-control-center/images/icons/abort_process.png"
+				value="/plugins/views-common/images/icons/abort_process.png"
 				title="#{views_common_msgPropsBean['common.tooltip.terminate']}"/>
 		</ice:commandLink>
 		<!-- Rendered when some row is selected -->
@@ -35,7 +35,7 @@
 			disabled="#{bean.selectedItemCount eq 0 ? true : false}">
 			<pc:automationTag value="auto-COM-ProcTbl-ToolbarRecover" standAlone="false"/>
 			<ice:graphicImage styleClass="#{bean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}"
-				value="/plugins/business-control-center/images/icons/recover_process.png"
+				value="/plugins/views-common/images/icons/recover_process.png"
 				title="#{views_common_msgPropsBean['common.tooltip.recover']}"/>
 		</ice:commandLink>	
 		
@@ -58,7 +58,7 @@
 			disabled="#{!bean.priorityChanged}">
 			<pc:automationTag value="auto-COM-ProcTbl-ToolbarSavePrio" standAlone="false"/>
 			<ice:graphicImage
-				url="/plugins/business-control-center/images/icons/save_flag.png"
+				url="/plugins/views-common/images/icons/save_flag.png"
                    style="border:none;" styleClass="#{!bean.priorityChanged ? 'iceCmdBtn-dis' : ''}"
                    title="#{views_common_msgPropsBean['common.tooltip.savePriorityChanges']}"/>
 		</ice:commandLink>

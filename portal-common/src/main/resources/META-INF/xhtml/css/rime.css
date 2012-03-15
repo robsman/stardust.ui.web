@@ -645,7 +645,7 @@ table.iceSelInpDate tbody tr td table{
 }
 
 .icePnlTbOn .MidMid a, .icePnlTbOn .MidMid div.ptfd {
-    background: url( './css-images/Tab_MidMid_bullet.gif' ) no-repeat top left;
+    background: url( './css-images/PnlHdr_down.gif' ) no-repeat top left;
     border: none;
     padding: 4px 8px 5px 28px;
     margin: 3px;
@@ -1006,7 +1006,7 @@ table.iceSelInpDate tbody tr td table{
 }
 
 .icePnlTbOnBtm .MidMid a, .icePnlTbOnBtm .MidMid div.ptfd{
-    background: url( './css-images/Tab_MidMid_bullet.gif' ) no-repeat top left;
+    background: url( './css-images/PnlHdr_down.gif' ) no-repeat top left;
     border: none;
     padding: 3px 8px 2px 28px;
     margin: 3px;

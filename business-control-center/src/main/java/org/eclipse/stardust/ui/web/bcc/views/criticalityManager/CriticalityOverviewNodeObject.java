@@ -55,7 +55,7 @@ public class CriticalityOverviewNodeObject extends NodeUserObject
 
       if (criticalityOverviewEntry instanceof ModelDefCriticalityMgrTableEntry)
       {
-         imagePath = "/plugins/admin-portal/images/icons/model.gif";
+         imagePath = "/plugins/views-common/images/icons/model.gif";
          tooltip = ((ModelDefCriticalityMgrTableEntry) criticalityOverviewEntry).getDescription();
          
       }
@@ -68,7 +68,7 @@ public class CriticalityOverviewNodeObject extends NodeUserObject
          }
          else
          {
-            imagePath = "/plugins/common/images/icons/process-history/active/process.png";
+            imagePath = "/plugins/views-common/images/icons/process.png";
          }
          tooltip = ((ProcessDefCriticalityMgrTableEntry) criticalityOverviewEntry).getDescription();
       }

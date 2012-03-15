@@ -123,7 +123,7 @@
 				controller="processInstanceDetailsBean" identityParams="processInstanceOID">
 				<ippui:preferences>
 					<ippui:preferencePage name="icon"
-						include="/plugins/views-common/images/process.png" />
+						include="/plugins/views-common/images/icons/process.png" />
 					<ippui:preferencePage name="configuration"
 						include="/plugins/views-common/views/processContextExplorer/processInstanceDetailConfiguration.xhtml" />
 				</ippui:preferences>
@@ -151,7 +151,7 @@
 				
 			<ippui:view name="myReportsView"
 			include="/plugins/views-common/views/report/myReportsView.xhtml"
-			controller="myReportsViewBean" >			<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/business-control-center/images/icons/chart-pie.png" />			</ippui:preferences>			</ippui:view>
+			controller="myReportsViewBean" >			<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/chart-pie.png" />			</ippui:preferences>			</ippui:view>
 				
 			<ippui:view name="imageViewerConfig"
 				include="/plugins/views-common/views/document/imageViewerConfiguration.xhtml">

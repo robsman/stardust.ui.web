@@ -32,11 +32,11 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.QualityAssuranceUtils;
 public class QualityAssuranceActivityTableEntry extends DefaultRowModel
 {
    private static final long serialVersionUID = 5119025123905804704L;
-   private static final String ICON_ORGANIZATION_UNSCOPED = "/plugins/admin-portal/images/icons/organization.png";
-   private static final String ICON_ORGANIZATION_SCOPED_EXPLICIT = "/plugins/admin-portal/images/icons/organization_scoped.png";
-   private static final String ICON_ORGANIZATION_SCOPED_IMPLICIT = "/plugins/admin-portal/images/icons/organization_scoped.png";
-   private static final String ICON_ROLE_UNSCOPED = "/plugins/admin-portal/images/icons/role.png";
-   private static final String ICON_ROLE_SCOPED = "/plugins/admin-portal/images/icons/role_scoped.png";
+   private static final String ICON_ORGANIZATION_UNSCOPED = "/plugins/views-common/images/icons/chart_organisation.png";
+   private static final String ICON_ORGANIZATION_SCOPED_EXPLICIT = "/plugins/views-common/images/icons/organization_scoped.png";
+   private static final String ICON_ORGANIZATION_SCOPED_IMPLICIT = "/plugins/views-common/images/icons/organization_scoped.png";
+   private static final String ICON_ROLE_UNSCOPED = "/plugins/views-common/images/icons/role.png";
+   private static final String ICON_ROLE_SCOPED = "/plugins/views-common/images/icons/role_scoped.png";
 
    private Activity activity;
    private String modelName;

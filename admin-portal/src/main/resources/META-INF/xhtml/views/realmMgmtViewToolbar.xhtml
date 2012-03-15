@@ -9,12 +9,12 @@
 	<ice:panelGrid columns="2">
 		<ice:commandLink action="#{realmMgmtBean.openPopup}">
 			<pc:automationTag value="auto-ADM-RealmMgmt-ToolbarCreate" standAlone="false" />
-			<h:graphicImage value="/plugins/admin-portal/images/icons/realm_add.png"
+			<h:graphicImage value="/plugins/views-common/images/icons/world_add.png"
 				style="border: none;" title="#{messages_admin['common.create']}" />
 		</ice:commandLink>	
 		<ice:commandLink panelConfirmation="deleteRealm" action="#{realmMgmtBean.deleteUserRealm}" disabled="#{realmMgmtBean.selectedItemCount eq 0 ? true : false}">
 			<pc:automationTag value="auto-ADM-RealmMgmt-ToolbarDel" standAlone="false" />
-			<h:graphicImage value="/plugins/admin-portal/images/icons/realm_delete.png"
+			<h:graphicImage value="/plugins/views-common/images/icons/world_delete.png"
 				style="vertical-align:top; border:none;"
 				styleClass="#{realmMgmtBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}"
 				title="#{messages_admin['common.delete']}" />

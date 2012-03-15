@@ -36,17 +36,17 @@ public class AggregateActivityColumnItem implements IColumnItem
 
    private static final String DEFAULT_STATE_CALCULATOR = "org.eclipse.stardust.ui.web.bcc.legacy.traffic.TerminationTimeBasedCalculator";
 
-   private final static String TRAFFIC_LIGHT_GREEN = "/plugins/business-control-center/images/icons/traffic_light_green.png";
+   private final static String TRAFFIC_LIGHT_GREEN = "/plugins/views-common/images/icons/traffic-light/traffic_light_green.png";
 
-   private final static String TRAFFIC_LIGHT_AMBER = "/plugins/business-control-center/images/icons/traffic_light_yellow.png";
+   private final static String TRAFFIC_LIGHT_AMBER = "/plugins/views-common/images/icons/traffic-light/traffic_light_yellow.png";
 
-   private final static String TRAFFIC_LIGHT_RED = "/plugins/business-control-center/images/icons/traffic_light_red.png";
+   private final static String TRAFFIC_LIGHT_RED = "/plugins/views-common/images/icons/traffic-light/traffic_light_red.png";
 
-   private final static String TRAFFIC_LIGHT_GREY = "/plugins/business-control-center/images/icons/traffic_light_grey.png";
+   private final static String TRAFFIC_LIGHT_GREY = "/plugins/views-common/images/icons/traffic-light/traffic_light_grey.png";
 
-   private final static String TRAFFIC_LIGHT_COMPLETED = "/plugins/business-control-center/images/icons/traffic_light_complete.gif";
+   private final static String TRAFFIC_LIGHT_COMPLETED = "/plugins/views-common/images/icons/traffic-light/traffic_light_complete.gif";
 
-   private final static String TRAFFIC_LIGHT_COMPLETED_TRANS = "/plugins/business-control-center/images/icons/traffic_light_complete_trans.gif";
+   private final static String TRAFFIC_LIGHT_COMPLETED_TRANS = "/plugins/views-common/images/icons/traffic-light/traffic_light_complete_trans.gif";
 
    //public final static String PROCESSES_PASSED_AI = "aggregateActivityColumnItem/processesPassedAI";
 

@@ -29,12 +29,12 @@
 					standAlone="false" />
 				<ice:graphicImage
 					rendered="#{activityDetailsBean.assemblyLinePushService}"
-					value="/plugins/processportal/images/icons/lightning_delete.png"
+					value="/plugins/views-common/images/icons/lightning_delete.png"
 					styleClass="toolbar-button"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.disableAssemblyLineFeedIn']}" />
 				<ice:graphicImage
 					rendered="#{not activityDetailsBean.assemblyLinePushService}"
-					value="/plugins/processportal/images/icons/lightning.png"
+					value="/plugins/views-common/images/icons/lightning.png"
 					styleClass="toolbar-button"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.enableAssemblyLineFeedIn']}" />
 			</ice:commandLink>
@@ -59,7 +59,7 @@
 				action="#{activityDetailsBean.completeQualityAssurancePass}">
 				<pc:automationTag value="auto-PP-ActivityPnl-Toolbar-QAPass" standAlone="false"/>
 				<ice:graphicImage
-					value="/plugins/processportal/images/icons/QA_Pass.png"
+					value="/plugins/views-common/images/icons/tick-octagon.png"
 					styleClass="toolbar-button"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.qaPass']}" />
 			</ice:commandLink>
@@ -68,7 +68,7 @@
 				action="#{activityDetailsBean.completeQualityAssuranceFail}">
 				<pc:automationTag value="auto-PP-ActivityPnl-Toolbar-QAFail" standAlone="false"/>
 				<ice:graphicImage
-					value="/plugins/processportal/images/icons/QA_Fail.png"
+					value="/plugins/views-common/images/icons/cross-octagon-frame.png"
 					styleClass="toolbar-button"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.qaFail']}" />
 			</ice:commandLink>
@@ -77,7 +77,7 @@
 				actionListener="#{activityDetailsBean.completeAction}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarComplete" standAlone="false"/>
 				<ice:graphicImage
-					value="/plugins/processportal/images/icons/activity_completed.png"
+					value="/plugins/views-common/images/icons/process-history/activity_completed.png"
 					styleClass="toolbar-button"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.complete']}" />
 			</ice:commandLink>
@@ -87,7 +87,7 @@
 				immediate="true">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSuspend" standAlone="false"/>
 				<ice:graphicImage
-					value="/plugins/processportal/images/icons/clock.png"
+					value="/plugins/views-common/images/icons/clock.png"
 					styleClass="toolbar-button"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspend']}" />
 			</ice:commandLink>
@@ -95,7 +95,7 @@
 			<ice:commandLink actionListener="#{activityDetailsBean.saveAction}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSave" standAlone="false"/>
 				<ice:graphicImage
-					value="/plugins/processportal/images/icons/clock_save.png"
+					value="/plugins/views-common/images/icons/clock_save.png"
 					styleClass="toolbar-button"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspendAndSave']}" />
 			</ice:commandLink>
@@ -105,7 +105,7 @@
 				immediate="true" rendered="#{activityDetailsBean.resubmitable}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarResubmit" standAlone="false"/>
 				<ice:graphicImage
-					value="/plugins/processportal/images/icons/resubmission.gif"
+					value="/plugins/views-common/images/icons/resubmission.gif"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.resubmit']}" />
 			</ice:commandLink>
 			
@@ -114,7 +114,7 @@
 				disabled="#{!activityDetailsBean.delegable}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarDelegate" standAlone="false"/>
 				<ice:graphicImage
-					value="/plugins/processportal/images/icons/delegate.png"
+					value="/plugins/views-common/images/icons/process-history/delegate.png"
 					styleClass="toolbar-button #{!activityDetailsBean.delegable ? 'iceCmdBtn-dis' : ''}"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.delegate']}" />
 			</ice:commandLink>
@@ -123,7 +123,7 @@
 				immediate="true" disabled="#{!activityDetailsBean.abortable}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarAbort" standAlone="false"/>
 				<ice:graphicImage
-					value="/plugins/processportal/images/icons/abort.png"
+					value="/plugins/views-common/images/icons/cross.png"
 					styleClass="toolbar-button #{!activityDetailsBean.abortable ? 'iceCmdBtn-dis' : ''}"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.abort']}" />
 			</ice:commandLink>
@@ -165,7 +165,7 @@
 			<ice:commandLink action="#{ippPortalApp.openView}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarProcDetails" standAlone="false"/>
 				<ice:graphicImage
-					value="/plugins/processportal/images/icons/process.png"
+					value="/plugins/views-common/images/icons/process.png"
 					styleClass="toolbar-button"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.processContextExplorer']}" />
 				<f:param name="viewId" value="processInstanceDetailsView" />

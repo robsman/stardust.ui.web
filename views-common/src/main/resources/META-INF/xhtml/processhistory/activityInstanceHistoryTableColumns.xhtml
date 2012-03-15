@@ -57,7 +57,7 @@
 				disabled="#{not (row.refersToActivity and row.activatable) }">
 				<pc:automationTag value="auto-COM-ACTHistoryTable-ActionsOpen" standAlone="false"/>
 				<f:param name="oid" value="#{row.tableEntry.OID}" />
-				<ice:graphicImage url="/plugins/common/images/activate_activity.png"
+				<ice:graphicImage url="/plugins/views-common/images/icons/process-history/activity_state.png"
 					styleClass="#{not (row.refersToActivity and row.activatable) ? 'iceCmdBtn-dis' : ''}"
 					title="#{common_msgPropsBean['common.activity.activate']}" />
 			</ice:commandLink>
@@ -68,7 +68,7 @@
 				disabled="#{not (row.refersToActivity and row.delegable)}">
 				<pc:automationTag value="auto-COM-ACTHistoryTable-ActionsDelegate" standAlone="false"/>
 				<h:graphicImage
-					value="/plugins/common/images/icons/process-history/active/delegate.png"
+					value="/plugins/views-common/images/icons/process-history/delegate.png"
 					title="#{views_common_msgPropsBean['delegation.tooltip.title']}"
 					styleClass="#{not (row.refersToActivity and row.delegable) ? 'iceCmdBtn-dis' : ''}" />
 				<f:attribute name="row" value="#{row}" />
@@ -80,7 +80,7 @@
 				disabled="#{not (row.refersToActivity and row.abortActivity)}">
 				<pc:automationTag value="auto-COM-ACTHistoryTable-ActionsAbort" standAlone="false"/>
 				<h:graphicImage
-					value="/plugins/common/images/icons/process-history/active/abort.png"
+					value="/plugins/views-common/images/icons/cross.png"
 					title="#{common_msgPropsBean['common.activity.abort']}"
 					styleClass="#{not (row.refersToActivity and row.abortActivity) ? 'iceCmdBtn-dis' : ''}" />
 				<f:attribute name="row" value="#{row}" />

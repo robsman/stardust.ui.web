@@ -11,7 +11,7 @@
 			<ice:panelGroup rendered="#{not row.running}" style="text-align: center;">
 				<ice:commandLink actionListener="#{daemonsBean.startDaemon}" disabled="#{not daemonsBean.authorizedForDaemonAction}">
 					<pc:automationTag value="auto-ADM-Daemon-ActionsStart" standAlone="false"/>
-					<h:graphicImage value="/plugins/admin-portal/images/icons/control_play.png"
+					<h:graphicImage value="/plugins/views-common/images/icons/control_play.png"
 						style="border: none;" title="#{daemonsBean.messages['startDaemon']}" />
 					<f:attribute name="daemon" value="#{row.daemon}" />
 				</ice:commandLink>
@@ -19,7 +19,7 @@
 			<ice:panelGroup rendered="#{row.running}" style="text-align: center;">
 				<ice:commandLink actionListener="#{daemonsBean.stopDaemon}" disabled="#{not daemonsBean.authorizedForDaemonAction}">
 					<pc:automationTag value="auto-ADM-Daemon-ActionsStop" standAlone="false"/>
-					<h:graphicImage value="/plugins/admin-portal/images/icons/control_stop.png"
+					<h:graphicImage value="/plugins/views-common/images/icons/control_stop.png"
 						style="border: none;" title="#{daemonsBean.messages['stopDaemon']}" />
 					<f:attribute name="daemon" value="#{row.daemon}" />
 				</ice:commandLink>

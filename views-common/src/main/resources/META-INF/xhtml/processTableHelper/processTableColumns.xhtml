@@ -11,12 +11,12 @@
 		<ice:panelGroup rendered="#{col.columnName == 'ProcessName'}">
 			<ice:panelGrid columns="2" rendered="#{!row.caseInstance}">
 				<h:graphicImage
-					value="/plugins/common/images/icons/process-history/active/processrootblue.png"
+					value="/plugins/views-common/images/icons/process-history/processrootblue.png"
 					style="border: none;"
 					title="#{messages_bcc['common.tooltip.process']}"
 					rendered="#{row.processInstanceOID==row.processInstanceRootOID}" />
 				<h:graphicImage
-					value="/plugins/common/images/icons/process-history/active/process.png"
+					value="/plugins/views-common/images/icons/process.png"
 					style="border: none;"
 					title="#{messages_bcc['common.tooltip.subProcess']}"
 					rendered="#{row.processInstanceOID!=row.processInstanceRootOID}" />
@@ -34,7 +34,7 @@
 
 			<ice:panelGrid columns="2" rendered="#{row.caseInstance}">
 				<h:graphicImage
-					value="/plugins/common/images/icons/process-history/active/envelope.png"
+					value="/plugins/views-common/images/icons/envelope.png"
 					style="border: none;"
 					title="#{messages_bcc['common.tooltip.case']}" />
 				<ice:commandLink value="#{row.processInstanceName}"
@@ -104,7 +104,7 @@
 			<ice:panelGrid columns="7" style="float: right;">
 				<ice:commandLink action="#{ippPortalApp.openView}" rendered="#{!row.caseInstance}">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsProcDetails" standAlone="false"/>
-					<h:graphicImage value="/plugins/common/images/icons/process-history/active/process.png"
+					<h:graphicImage value="/plugins/views-common/images/icons/process.png"
 						style="border: none;" title="#{messages_bcc['common.tooltip.contextExplorer']}"/>
 					<f:param name="viewId" value="processInstanceDetailsView" />
 					<f:param name="nested" value="true" />
@@ -116,7 +116,7 @@
 					rendered="#{row.caseInstance}">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsProcDetails" standAlone="false"/>
 					<h:graphicImage
-						value="/plugins/common/images/icons/process-history/active/process.png"
+						value="/plugins/views-common/images/icons/process.png"
 						style="border: none;"
 						title="#{messages_bcc['common.tooltip.contextExplorer']}" />
 					<f:param name="viewId" value="caseDetailsView" />
@@ -131,7 +131,7 @@
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsTerminate"
 						standAlone="false" />
 					<ice:graphicImage
-						value="/plugins/business-control-center/images/icons/abort_process.png"
+						value="/plugins/views-common/images/icons/abort_process.png"
 						title="#{views_common_msgPropsBean['common.tooltip.terminate']}" styleClass="#{row.enableTerminate? '' : 'iceCmdBtn-dis'}" />
 					<f:attribute name="processInstance" value="#{row.processInstance}" />
 				</ice:commandLink>
@@ -155,7 +155,7 @@
 				<ice:commandLink actionListener="#{bean.recoverProcess}" disabled="#{not row.enableRecover}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsRecover" standAlone="false"/>
 					<ice:graphicImage
-						value="/plugins/business-control-center/images/icons/recover_process.png"
+						value="/plugins/views-common/images/icons/recover_process.png"
 						title="#{messages_bcc['common.tooltip.recover']}"  styleClass="#{row.enableRecover ? '' : 'iceCmdBtn-dis'}" />
 					<f:attribute name="processInstance" value="#{row.processInstance}" />
 				</ice:commandLink>
@@ -169,7 +169,7 @@
 				</ice:commandLink>
 				<ice:commandLink action="#{ippPortalApp.openView}">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsGanttChart" standAlone="false"/>
-					<h:graphicImage value="/plugins/business-control-center/images/icons/gantt_diagram.gif"
+					<h:graphicImage value="/plugins/views-common/images/icons/diagram/gantt_diagram.gif"
 						style="border: none;" title="#{messages_bcc['views.processSearchView.tooltip.viewGanttChart']}" />
 					<f:param name="viewId" value="ganttChartView" />
 					<f:param name="nested" value="true" />
@@ -179,7 +179,7 @@
 					actionListener="#{bean.openNotes}">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsNotes" standAlone="false"/>
 					<ice:graphicImage
-						value="/plugins/processportal/images/icons/notes-filled.png"
+						value="/plugins/views-common/images/icons/mime-types/notes-filled.png"
 						title="#{messages_bcc['common.tooltip.notes']}" />
 					<f:attribute name="processInstance" value="#{row.processInstance}" />
 				</ice:commandLink>
@@ -187,7 +187,7 @@
 					actionListener="#{bean.openNotes}">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsNotes" standAlone="false"/>
 					<ice:graphicImage
-						value="/plugins/processportal/images/icons/notes-blank.png"
+						value="/plugins/views-common/images/icons/notes-blank.png"
 						title="#{messages_bcc['common.tooltip.notes']}" />
 					<f:attribute name="processInstance" value="#{row.processInstance}" />
 				</ice:commandLink>

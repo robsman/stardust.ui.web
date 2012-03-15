@@ -98,7 +98,7 @@
 			<ice:panelGrid columns="6" style="float: right;" rendered="#{row.loaded}">
 				<ice:commandLink action="#{ippPortalApp.openView}" rendered="#{!row.caseInstance}">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsProcDetails" standAlone="false"/>
-					<h:graphicImage value="/plugins/common/images/icons/process-history/active/process.png"
+					<h:graphicImage value="/plugins/views-common/images/icons/process.png"
 						style="border: none;" title="#{messages_bcc['common.tooltip.contextExplorer']}"/>
 					<f:param name="viewId" value="processInstanceDetailsView" />
 					<f:param name="nested" value="true" />
@@ -108,7 +108,7 @@
 				
 				<ice:commandLink action="#{ippPortalApp.openView}" rendered="#{row.caseInstance}">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsProcDetails" standAlone="false"/>
-					<h:graphicImage value="/plugins/common/images/icons/process-history/active/process.png"
+					<h:graphicImage value="/plugins/views-common/images/icons/process.png"
 						style="border: none;" title="#{messages_bcc['common.tooltip.contextExplorer']}"/>
 					<f:param name="viewId" value="caseDetailsView" />
 					<f:param name="nested" value="true" />
@@ -121,7 +121,7 @@
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsActivate" standAlone="false"/>
 					<f:param name="oid" value="#{row.activityOID}" />
 					<ice:graphicImage
-						url="/plugins/common/images/activate_activity.png"
+						url="/plugins/views-common/images/icons/process-history/activity_state.png"
 	                    style="border:none;" 
 	                    styleClass="#{row.activatable and !row.caseInstance ? '' : 'iceCmdBtn-dis'}"
 	                    title="#{messages_bcc['common.tooltip.activate']}"/>
@@ -137,7 +137,7 @@
 				</ice:commandLink>
 				<ice:commandLink actionListener="#{bean.openDelegateDialog}" disabled="#{!row.delegable or row.caseInstance}">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsDelegate" standAlone="false"/>
-					<h:graphicImage value="/plugins/common/images/icons/process-history/active/delegate.png"
+					<h:graphicImage value="/plugins/views-common/images/icons/process-history/delegate.png"
 						style="border: none;" 
 						styleClass="#{row.delegable and !row.caseInstance ? '' : 'iceCmdBtn-dis'}"
 						title="#{messages_bcc['common.tooltip.delegate']}"/>
@@ -146,7 +146,7 @@
 				<ice:commandLink actionListener="#{bean.openAbortDialog}" disabled="#{not row.abortActivity}">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsAbort" standAlone="false"/>
 					<ice:graphicImage
-						url="/plugins/common/images/icons/process-history/active/abort.png"
+						url="/plugins/views-common/images/icons/cross.png"
 	                    style="border:none;" styleClass="#{row.abortActivity ? '' : 'iceCmdBtn-dis'}" 
 	                    title="#{messages_bcc['common.tooltip.abort']}"/>
 	                 <f:attribute name="activityInstance" value="#{row.activityInstance}" />
@@ -168,14 +168,14 @@
 				<!--	Notes	-->
 				<ice:panelGroup rendered="#{row.caseInstance }">
 					<ice:graphicImage styleClass="iceCmdBtn-dis"
-						value="/plugins/processportal/images/icons/notes-blank.png" />
+						value="/plugins/views-common/images/icons/notes-blank.png" />
 				</ice:panelGroup>
 				
 				<ice:commandLink rendered="#{row.notesCount gt 0 and !row.caseInstance}"
 					actionListener="#{bean.openNotes}">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsNotes" standAlone="false"/>
 					<ice:graphicImage
-						value="/plugins/processportal/images/icons/notes-filled.png"
+						value="/plugins/views-common/images/icons/mime-types/notes-filled.png"
 						title="#{messages_bcc['common.tooltip.notes']}" />
 					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
 				</ice:commandLink>
@@ -183,7 +183,7 @@
 					actionListener="#{bean.openNotes}">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsNotes" standAlone="false"/>
 					<ice:graphicImage
-						value="/plugins/processportal/images/icons/notes-blank.png"
+						value="/plugins/views-common/images/icons/notes-blank.png"
 						title="#{messages_bcc['common.tooltip.notes']}" />
 					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
 				</ice:commandLink>

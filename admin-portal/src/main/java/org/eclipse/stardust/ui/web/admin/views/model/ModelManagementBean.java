@@ -441,26 +441,26 @@ public class ModelManagementBean extends UIComponentBean implements ViewEventHan
 
       FilterToolbarItem versionTool = new FilterToolbarItem(ModelManagementTreeItem.Type.MODEL_VERSION.name(),
             ModelManagementTreeItem.Type.MODEL_VERSION.name(), "version",
-            "/plugins/admin-portal/images/icons/book_open.png");
+            "/plugins/views-common/images/icons/book_open.png");
       versionTool.setActive(false);
       filterToolbarItems.add(versionTool);
 
       FilterToolbarItem consumerTool = new FilterToolbarItem(
             ModelManagementTreeItem.Type.MODEL_VERSION_PROVIDER.name(),
             ModelManagementTreeItem.Type.MODEL_VERSION_PROVIDER.name(), "provider",
-            "/plugins/admin-portal/images/icons/resultset_next.png");
+            "/plugins/views-common/images/icons/resultset_next.png");
       filterToolbarItems.add(consumerTool);
 
       FilterToolbarItem providerTool = new FilterToolbarItem(
             ModelManagementTreeItem.Type.MODEL_VERSION_CONSUMER.name(),
             ModelManagementTreeItem.Type.MODEL_VERSION_CONSUMER.name(), "consumer",
-            "/plugins/admin-portal/images/icons/resultset_previous.png");
+            "/plugins/views-common/images/icons/resultset_previous.png");
       filterToolbarItems.add(providerTool);
 
       FilterToolbarItem primaryInterfaceTool = new FilterToolbarItem(
             ModelManagementTreeItem.Type.PRIMARY_INTERFACE.name(),
             ModelManagementTreeItem.Type.PRIMARY_INTERFACE.name(), "primaryinterface",
-            "/plugins/admin-portal/images/icons/cog.png");
+            "/plugins/views-common/images/icons/cog.png");
       filterToolbarItems.add(primaryInterfaceTool);
 
       Collections.unmodifiableCollection(filterToolbarItems);

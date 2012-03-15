@@ -15,11 +15,11 @@
 	<ice:panelGroup style="margin: 0px; padding: 0px; overflow: hidden;">
 
 		<ice:panelGroup rendered="#{col.columnName == 'Info'}">
-			<ice:graphicImage value="/plugins/common/images/icons/process-history/active/descriptor.png"
+			<ice:graphicImage value="/plugins/views-common/images/icons/process-history/descriptor.png"
 				title="#{row.progressStatus.descriptorText}" longdesc="#{row.progressStatus.descriptorText}" />
-			<ice:graphicImage value="/plugins/common/images/icons/process-history/active/notes-filled.png"
+			<ice:graphicImage value="/plugins/views-common/images/icons/mime-types/notes-filled.png"
 				title="#{row.progressStatus.noteText}" styleClass="#{row.progressStatus.noteIconStatus ? '' : 'iceCmdBtn-dis'}"/>
-			<ice:graphicImage value="/plugins/business-control-center/images/icons/active/complete.gif"
+			<ice:graphicImage value="/plugins/views-common/images/icons/diagram/complete.gif"
 				title="#{row.progressStatus.completeText}" rendered="#{row.progressStatus.completeIconStatus}"/>
 		</ice:panelGroup>
 
@@ -50,7 +50,7 @@
 					rendered="#{(ganttChartSelectionBean.ganttChart.showDependencyBar) and (row.progressStatus.dependencyWidth == 1)}">
 					<div
 						style="z-index: 6; top: 8px; #top: 6px; left: #{row.progressStatus.barLeft + row.progressStatus.barWidth - 5}px;">
-						<ice:graphicImage value="/plugins/business-control-center/images/kreis_trans.gif"
+						<ice:graphicImage value="/plugins/views-common/images/kreis_trans.gif"
 							width="#{row.progressStatus.dependencyWidth * 10}px"
 							height="10px" />
 					</div>
@@ -58,7 +58,7 @@
 						style="top: -#{row.progressStatus.dependencyHeight - 8}px; left: #{row.progressStatus.barLeft + row.progressStatus.barWidth}px; width: #{row.progressStatus.dependencyWidth}px; height: #{row.progressStatus.dependencyHeight}px;"></div>
 					<div
 						style="z-index: 6; top: -#{row.progressStatus.dependencyHeight - 8}px; #top: -#{row.progressStatus.dependencyHeight - 6}px; left: #{row.progressStatus.barLeft + row.progressStatus.barWidth - 5}px;">
-						<ice:graphicImage value="/plugins/business-control-center/images/kreis_trans.gif"
+						<ice:graphicImage value="/plugins/views-common/images/kreis_trans.gif"
 							width="#{row.progressStatus.dependencyWidth * 10}px"
 							height="10px" />
 					</div>

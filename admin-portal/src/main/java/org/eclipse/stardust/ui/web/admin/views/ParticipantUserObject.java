@@ -46,31 +46,31 @@ public class ParticipantUserObject extends IceUserObject
 
    private static final String DEFAULT_DEPARTMENT_SUFFIX = " - Default";
 
-   private static final String ICON_PARTICIPANT_ROOT = "/plugins/admin-portal/images/icons/realm.png";
+   private static final String ICON_PARTICIPANT_ROOT = "/plugins/views-common/images/icons/world.png";
 
-   private static final String ICON_MODEL = "/plugins/admin-portal/images/icons/model.gif";
+   private static final String ICON_MODEL = "/plugins/views-common/images/icons/model.gif";
 
-   private static final String ICON_ORGANIZATION_UNSCOPED = "/plugins/admin-portal/images/icons/organization.png";
+   private static final String ICON_ORGANIZATION_UNSCOPED = "/plugins/views-common/images/icons/chart_organisation.png";
 
-   private static final String ICON_ORGANIZATION_SCOPED_EXPLICIT = "/plugins/admin-portal/images/icons/organization_scoped.png";
+   private static final String ICON_ORGANIZATION_SCOPED_EXPLICIT = "/plugins/views-common/images/icons/organization_scoped.png";
 
-   private static final String ICON_ORGANIZATION_SCOPED_IMPLICIT = "/plugins/admin-portal/images/icons/organization_scoped.png";
+   private static final String ICON_ORGANIZATION_SCOPED_IMPLICIT = "/plugins/views-common/images/icons/organization_scoped.png";
 
-   private static final String ICON_ROLE_UNSCOPED = "/plugins/admin-portal/images/icons/role.png";
+   private static final String ICON_ROLE_UNSCOPED = "/plugins/views-common/images/icons/role.png";
 
-   private static final String ICON_ROLE_SCOPED = "/plugins/admin-portal/images/icons/role_scoped.png";
+   private static final String ICON_ROLE_SCOPED = "/plugins/views-common/images/icons/role_scoped.png";
 
-   private static final String ICON_ROLE_TEAMLEAD_UNSCOPED = "/plugins/admin-portal/images/icons/role_teamlead.png";
+   private static final String ICON_ROLE_TEAMLEAD_UNSCOPED = "/plugins/views-common/images/icons/role_teamlead.png";
 
-   private static final String ICON_ROLE_TEAMLEAD_SCOPED = "/plugins/admin-portal/images/icons/role_teamlead_scoped.png";
+   private static final String ICON_ROLE_TEAMLEAD_SCOPED = "/plugins/views-common/images/icons/role_teamlead_scoped.png";
 
-   private static final String ICON_DEPARTMENT = "/plugins/admin-portal/images/icons/department.png";
+   private static final String ICON_DEPARTMENT = "/plugins/views-common/images/icons/group_link.png";
 
-   private static final String ICON_DEPARTMENT_DEFAULT = "/plugins/admin-portal/images/icons/department_default.png";
+   private static final String ICON_DEPARTMENT_DEFAULT = "/plugins/views-common/images/icons/group_error.png";
 
-   private static final String ICON_USERGROUP = "/plugins/admin-portal/images/icons/group.png";
+   private static final String ICON_USERGROUP = "/plugins/views-common/images/icons/group.png";
 
-   private static final String ICON_USER = "/plugins/admin-portal/images/icons/user.png";
+   private static final String ICON_USER = "/plugins/views-common/images/icons/user.png";
    
    private static final String HIGHLIGHT_USER_STYLE_PREFIX = "participant-tree-highlight-style-common participant-tree-highlight-style";
 

@@ -11,7 +11,7 @@
 }
 
 .iceMnuBarItem a:hover, .iceMnuBarVrtItem a:hover {
-    background-image: url( "./css-images/nav_main_selected.png" );
+    background-image: url( "./css-images/bottom_menu_bg.png" );
 }
 
 /* Styles for ice:panelTabSet */

@@ -31,7 +31,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 public class ParticipantWrapper extends DefaultRowModel
 {
    private static final long serialVersionUID = 1L;
-   private static final String BASE_IMAGE_PATH = "/plugins/processportal/images/icons/";
+   private static final String BASE_IMAGE_PATH = "/plugins/views-common/images/icons/";
    private Participant participant;
    private DepartmentInfo department;
    private boolean onlineStatus = false;
@@ -91,12 +91,12 @@ public class ParticipantWrapper extends DefaultRowModel
          }
          else
          {
-            return BASE_IMAGE_PATH + "organization.png";
+            return BASE_IMAGE_PATH + "chart_organisation.png";
          }
       }
       else
       {
-         return BASE_IMAGE_PATH + "department.png";
+         return BASE_IMAGE_PATH + "group_link.png";
       }
    }
 

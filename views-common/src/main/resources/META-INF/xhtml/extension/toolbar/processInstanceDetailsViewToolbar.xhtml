@@ -14,7 +14,7 @@
 	<ice:panelGrid columns="16" cellspacing="0" cellpadding="2" style="padding-right: 10px;">
 		<pc:automationTag value="auto-COM-PCETerminate"/>
 		<ice:commandButton
-			image="/plugins/business-control-center/images/icons/abort_process.png"
+			image="/plugins/views-common/images/icons/abort_process.png"
 			action="#{processInstanceDetailsBean.terminateProcess}" 
 			disabled="#{!processInstanceDetailsBean.abortProcess}"
 			partialSubmit="true"
@@ -37,7 +37,7 @@
 		
 		<pc:automationTag value="auto-COM-PCERecover"/>
 		<ice:commandButton
-			image="/plugins/business-control-center/images/icons/recover_process.png"
+			image="/plugins/views-common/images/icons/recover_process.png"
 			action="#{processInstanceDetailsBean.recoverProcess}"
 			partialSubmit="true"
 			title="#{messages_bcc['common.tooltip.recover']}"
@@ -85,7 +85,7 @@
 		
 		<pc:automationTag value="auto-COM-PCEUpdate"/>
 		<ice:commandButton
-			image="/plugins/business-control-center/images/icons/arrow_refresh.png"
+			image="/plugins/views-common/images/icons/arrow_refresh.png"
 			action="#{processInstanceDetailsBean.update}" partialSubmit="true"
 			title="#{messages_bcc['toolbars.common.tooltip.update']}"
 			styleClass="toolbar-button" />

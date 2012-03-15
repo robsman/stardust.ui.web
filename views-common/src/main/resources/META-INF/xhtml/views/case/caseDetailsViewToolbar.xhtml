@@ -14,7 +14,7 @@
 		style="padding-right: 10px;" columns="15">
 		<pc:automationTag value="auto-COM-CaseDetView-ToolbarTerminate"/>
 		<ice:commandButton
-			image="/plugins/business-control-center/images/icons/abort_process.png"
+			image="/plugins/views-common/images/icons/abort_process.png"
 			action="#{caseDetailsBean.terminateProcess}"
 			disabled="#{!caseDetailsBean.abortProcess}" partialSubmit="true"
 			title="#{views_common_msgPropsBean['common.tooltip.terminate']}"
@@ -38,7 +38,7 @@
 
 		<pc:automationTag value="auto-COM-CaseDetView-ToolbarRecover"/>
 		<ice:commandButton
-			image="/plugins/business-control-center/images/icons/recover_process.png"
+			image="/plugins/views-common/images/icons/recover_process.png"
 			action="#{caseDetailsBean.recoverProcess}"
 			partialSubmit="true"
 			title="#{messages_bcc['common.tooltip.recover']}"
@@ -76,7 +76,7 @@
 		
 		<pc:automationTag value="auto-COM-CaseDetView-ToolbarRefresh"/>
 		<ice:commandButton
-			image="/plugins/business-control-center/images/icons/arrow_refresh.png"
+			image="/plugins/views-common/images/icons/arrow_refresh.png"
 			action="#{caseDetailsBean.update}" partialSubmit="true"
 			title="#{messages_bcc['toolbars.common.tooltip.update']}"
 			styleClass="toolbar-button" />

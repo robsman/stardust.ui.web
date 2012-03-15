@@ -18,14 +18,14 @@
 		</ice:commandLink>
 		<ice:commandLink actionListener="#{bean.openDelegateDialog}" disabled="#{bean.selectedItemCount eq 0 ? true : false}">
 			<pc:automationTag value="auto-COM-ActivityTbl-ToolbarDelegate" standAlone="false"/>
-			<h:graphicImage value="/plugins/common/images/icons/process-history/active/delegate.png"
+			<h:graphicImage value="/plugins/views-common/images/icons/process-history/delegate.png"
 				style="border: none;" styleClass="#{bean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}"
 				title="#{views_common_msgPropsBean['common.tooltip.delegate']}"/>
 		</ice:commandLink>
 		<ice:commandLink actionListener="#{bean.openAbortDialog}" disabled="#{bean.selectedItemCount eq 0 ? true : false}">
 			<pc:automationTag value="auto-COM-ActivityTbl-ToolbarAbort" standAlone="false"/>
 			<ice:graphicImage
-				url="/plugins/common/images/icons/process-history/active/abort.png"
+				url="/plugins/views-common/images/icons/cross.png"
                    style="border:none;" styleClass="#{bean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}" 
                    title="#{views_common_msgPropsBean['common.tooltip.abort']}"/>
 		</ice:commandLink>
@@ -48,7 +48,7 @@
 			disabled="#{!bean.priorityChanged}">
 			<pc:automationTag value="auto-COM-ActivityTbl-ToolbarSavePrio" standAlone="false"/>
 			<ice:graphicImage
-				url="/plugins/business-control-center/images/icons/save_flag.png"
+				url="/plugins/views-common/images/icons/save_flag.png"
                    style="border:none;" styleClass="#{!bean.priorityChanged ? 'iceCmdBtn-dis' : ''}"
                    title="#{views_common_msgPropsBean['common.tooltip.savePriorityChanges']}"/>
 		</ice:commandLink>

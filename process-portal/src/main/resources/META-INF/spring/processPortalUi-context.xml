@@ -62,7 +62,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			
 		<ippui:view name="worklistPanel" include="/plugins/processportal/worklistPanel.xhtml" controller="worklistTableBean">
 			<ippui:preferences>
-				<ippui:preferencePage name="icon" include="/plugins/processportal/images/icons/clipboard-task.png" />
+				<ippui:preferencePage name="icon" include="/plugins/views-common/images/icons/clipboard-task.png" />
 				<ippui:preferencePage name="configuration"
 					include="/plugins/processportal/worklistPanelConfiguration.xhtml" />
 			</ippui:preferences>
@@ -71,7 +71,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<ippui:view name="activityPanel" include="/plugins/processportal/activityPanel.xhtml"
             controller="activityDetailsBean">
 			<ippui:preferences>
-				<ippui:preferencePage name="icon" include="/plugins/processportal/images/icons/activity.png" />
+				<ippui:preferencePage name="icon" include="/plugins/views-common/images/icons/process-history/activity.png" />
 				<ippui:preferencePage name="configuration" include="/plugins/processportal/activityPanelConfiguration.xhtml" />
 			</ippui:preferences>
 		</ippui:view>

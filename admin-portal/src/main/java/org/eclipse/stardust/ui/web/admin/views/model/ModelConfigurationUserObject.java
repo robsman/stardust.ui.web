@@ -30,7 +30,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 public class ModelConfigurationUserObject extends NodeUserObject
 {
     private static final String MODEL_IMAGE_PATH = "/plugins/views-common/images/icons/model.gif";
-    private static final String BLANK_IMAGE_PATH = "/plugins/admin-portal/images/t.gif";
+    private static final String BLANK_IMAGE_PATH = "/plugins/views-common/images/t.gif";
     private static final long serialVersionUID = 1L;
     private ModelConfigurationTreeItem treeItem = null;
     private boolean activeModelVersion;

@@ -18,14 +18,14 @@
 		</ice:commandLink>
 		<ice:commandLink actionListener="#{trafficLightViewManagerBean.notPassedActivityHelper.openDelegateDialog}" disabled="#{trafficLightViewManagerBean.notPassedActivityHelper.selectedItemCount eq 0 ? true : false}">
 			<pc:automationTag value="auto-BCC-TrafficLgt-PendActTbl-ToolbarDelegate" standAlone="false"/>
-			<h:graphicImage value="/plugins/common/images/icons/process-history/active/delegate.png"
+			<h:graphicImage value="/plugins/views-common/images/icons/process-history/delegate.png"
 				style="border: none;" styleClass="#{trafficLightViewManagerBean.notPassedActivityHelper.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}"
 				title="#{views_common_msgPropsBean['common.tooltip.delegate']}"/>
 		</ice:commandLink>
 		<ice:commandLink actionListener="#{trafficLightViewManagerBean.notPassedActivityHelper.openAbortDialog}" disabled="#{trafficLightViewManagerBean.notPassedActivityHelper.selectedItemCount eq 0 ? true : false}">
 			<pc:automationTag value="auto-BCC-TrafficLgt-PendActTbl-ToolbarAbort" standAlone="false"/>
 			<ice:graphicImage
-				url="/plugins/common/images/icons/process-history/active/abort.png"
+				url="/plugins/views-common/images/icons/cross.png"
                    style="border:none;" styleClass="#{trafficLightViewManagerBean.notPassedActivityHelper.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}" 
                    title="#{views_common_msgPropsBean['common.tooltip.abort']}"/>
 		</ice:commandLink>
@@ -49,7 +49,7 @@
 			disabled="#{!trafficLightViewManagerBean.notPassedActivityHelper.priorityChanged}">
 			<pc:automationTag value="auto-BCC-TrafficLgt-PendActTbl-ToolbarSave" standAlone="false"/>
 			<ice:graphicImage
-				url="/plugins/business-control-center/images/icons/save_flag.png"
+				url="/plugins/views-common/images/icons/save_flag.png"
                    style="border:none;" styleClass="#{!trafficLightViewManagerBean.notPassedActivityHelper.priorityChanged ? 'iceCmdBtn-dis' : ''}"
                    title="#{views_common_msgPropsBean['common.tooltip.savePriorityChanges']}"/>
 		</ice:commandLink>

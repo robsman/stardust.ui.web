@@ -17,10 +17,10 @@
 		<ice:panelGroup rendered="#{col.columnName == 'modelName'}" style="display:inline;" panelTooltip="procToolTip">
 			<ice:outputText style="display: inline;" value="#{row.modelName}">
 				<h:graphicImage rendered="#{row.oldModel}"
-					value="/plugins/admin-portal/images/icons/model.gif"
+					value="/plugins/views-common/images/icons/model.gif"
 					style="vertical-align: middle; margin-right:5px; opacity: 0.3;filter: alpha(opacity=30);  display: inline;" />
 				<h:graphicImage rendered="#{!row.oldModel}"
-					value="/plugins/admin-portal/images/icons/model.gif"
+					value="/plugins/views-common/images/icons/model.gif"
 					style="vertical-align: middle; margin-right:5px;  display: inline;" />
 			</ice:outputText>
 
@@ -59,7 +59,7 @@
 		<ice:panelGroup rendered="#{col.columnName == 'activityName'}">
 			<ice:outputText value="#{row.activityName}">
 				<h:graphicImage
-					value="/plugins/common/images/icons/process-history/active/activity_manual.png"
+					value="/plugins/views-common/images/icons/process-history/activity_manual.png"
 					style="vertical-align: middle; margin-right:5px" />
 			</ice:outputText>
 		</ice:panelGroup>

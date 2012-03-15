@@ -466,7 +466,7 @@ public class UserManagementBean extends PopupUIComponentBean
       FilterToolbarItem filterToolbarItem = new FilterToolbarItem("0", SHOW_INVALIDATED_USERS,
             "views.participantMgmt.filters.invalidatedUsers.showUser",
             "views.participantMgmt.filters.invalidatedUsers.hideUser",
-            "/plugins/admin-portal/images/icons/user-invalidated.png");
+            "/plugins/views-common/images/icons/user-invalidated.png");
       filterToolbarItem.setActive(true);
       userMgmtFilterToolbarItems.add(filterToolbarItem);
    }

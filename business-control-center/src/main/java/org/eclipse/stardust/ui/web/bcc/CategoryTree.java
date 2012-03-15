@@ -46,7 +46,7 @@ public class CategoryTree extends UIViewComponentBean
    private static final String PRE_NODE = "views.categoryTree.tree.";
    private static final String PRE_LEAF = "views.";
    private static final String POST_LEAF = ".label";
-   public static final String IMAGE_BASE_PATH = "/plugins/business-control-center/images/icons/";
+   public static final String IMAGE_BASE_PATH = "/plugins/views-common/images/icons/";
    private static final Map<String, String> iconMap;
    
    private GenericCategory userArchivedReportsCategory;
@@ -58,15 +58,15 @@ public class CategoryTree extends UIViewComponentBean
    {
       iconMap = new LinkedHashMap<String, String>();
       iconMap.put("processOverviewView", "process_manager.png");
-      iconMap.put("processSearchView", "gear_find.png");
+      iconMap.put("processSearchView", "cog_search.png");
       iconMap.put("trafficLightView", "traffic_light.png");
       iconMap.put("activityCriticalityManagerView", "criticality_manager.png");
       iconMap.put("pendingActivities", "pending_activities.png");
-      iconMap.put("completedActivities", "/plugins/common/images/icons/process-history/active/activity_completed.png");
+      iconMap.put("completedActivities", "/plugins/views-common/images/icons/process-history/activity_completed.png");
       iconMap.put("postponedActivities", "activity_postponed.png");
       iconMap.put("strandedActivities", "activity_stranded.png");
-      iconMap.put("resourceAvailabilityView", "/plugins/admin-portal/images/icons/group.png");
-      iconMap.put("roleAssignmentView", "/plugins/admin-portal/images/icons/role.png");
+      iconMap.put("resourceAvailabilityView", "group.png");
+      iconMap.put("roleAssignmentView", "role.png");
       iconMap.put("resourceLoginView", "resource_login.png");
       iconMap.put("resourcePerformance", "chart-up.png");
       iconMap.put("performanceTeamleader", "chart-up-color.png");

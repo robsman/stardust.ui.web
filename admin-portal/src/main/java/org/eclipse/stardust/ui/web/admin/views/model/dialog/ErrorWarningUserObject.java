@@ -29,7 +29,7 @@ public class ErrorWarningUserObject extends NodeUserObject
    private static final long serialVersionUID = 1L;
    private static final String ERROR_IMAGE_PATH = "/plugins/views-common/images/icons/cancel.png";
    private static final String WARNING_IMAGE_PATH = "/plugins/views-common/images/icons/warning.png";
-   private static final String NONE_IMAGE_PATH = "/plugins/admin-portal/images/t.gif";
+   private static final String NONE_IMAGE_PATH = "/plugins/views-common/images/t.gif";
    private ErrorWarningTreeItem treeItem;
 
    public ErrorWarningUserObject(TreeTable treeTable, TreeTableNode node, TreeTableBean treeBeanPointer,

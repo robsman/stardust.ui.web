@@ -54,7 +54,7 @@
 			styleClass="modelMenuBar" immediate="false"
 			rendered="#{row.type=='MODEL_VERSION' and row.actionAllowed }">
 			<ice:menuItem id="menuPopup" styleClass=""
-				icon="/plugins/admin-portal/images/icons/wrench_closed.png"
+				icon="/plugins/views-common/images/icons/wrench_closed.png"
 				 value="">
 				<ice:menuItem icon="/plugins/views-common/images/icons/cross.png" styleClass="modelMnuItm"
 					value="#{modelManagementBean.messages['actions.delete']}"
@@ -65,7 +65,7 @@
 					<f:attribute name="type" value="DELETE" />
 				</ice:menuItem>
 				<ice:menuItem
-					icon="/plugins/admin-portal/images/icons/server_go.png" styleClass="modelMnuItm"
+					icon="/plugins/views-common/images/icons/server_go.png" styleClass="modelMnuItm"
 					value="#{modelManagementBean.messages['actions.overwrite']}"
 					actionListener="#{modelManagementBean.popUpActionListener}">
 					<pc:automationTag
@@ -84,7 +84,7 @@
 					<f:attribute name="row" value="#{row}" />
 					<f:attribute name="type" value="EXPORT" />
 				</ice:menuItem>
-				<ice:menuItem icon="/plugins/admin-portal/images/icons/report.png" styleClass="modelMnuItm"
+				<ice:menuItem icon="/plugins/views-common/images/icons/mime-types/report.png" styleClass="modelMnuItm"
 					value="#{modelManagementBean.messages['actions.runreport']}"
 					actionListener="#{modelManagementBean.popUpActionListener}">
 					<pc:automationTag
@@ -104,7 +104,7 @@
 				<pc:automationTag value="auto-ADM-ModelMgmt-ModelTreeTbl-EditImpl"
 					standAlone="false" />
 			<h:graphicImage
-				value="/plugins/admin-portal/images/icons/cog_edit.png"
+				value="/plugins/views-common/images/icons/cog_edit.png"
 				style="border: none;"
 				title="#{modelManagementBean.messages['primaryinterface.modify']}" />
 			<f:attribute name="row" value="#{row}" />

@@ -43,7 +43,7 @@ public class ModelTreeItemUserObject extends NodeUserObject
    {
       super(treeTable, node, treeBeanPointer, componenttype);
       this.modelTreeItem = modelTreeItem;
-      String imagePath = "/plugins/common/images/icons/process-history/active/process.png";
+      String imagePath = "/plugins/views-common/images/icons/process.png";
 
       setLeafIcon(imagePath);
       setBranchContractedIcon(imagePath);
