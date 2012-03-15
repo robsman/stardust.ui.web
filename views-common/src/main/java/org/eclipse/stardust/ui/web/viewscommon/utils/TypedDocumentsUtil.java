@@ -118,15 +118,16 @@ public class TypedDocumentsUtil
    public static void updateTypedDocument(TypedDocument typedDocument)
    {
       updateTypedDocument(typedDocument.getProcessInstance().getOID(), typedDocument.getDataPath().getId(),
-            typedDocument.getDocument());
+            typedDocument.getDataDetails().getId(), typedDocument.getDocument());
    }
 
    /**
     * @param processInstanceOID
     * @param dataPathId
+    * @param dataId
     * @param document
     */
-   public static void updateTypedDocument(long processInstanceOID, String dataPathId, Document document)
+   public static void updateTypedDocument(long processInstanceOID, String dataPathId, String dataId, Document document)
    {
       try
       {
@@ -141,7 +142,7 @@ public class TypedDocumentsUtil
          ServiceFactoryUtils.getWorkflowService().setOutDataPath(processInstanceOID, dataPathId, document);
          // update activity panel
          IppEventController.getInstance().notifyEvent(
-               new DocumentEvent(DocumentEvent.EventType.EDITED, processInstanceOID));
+               new DocumentEvent(DocumentEvent.EventType.EDITED, processInstanceOID, dataId, document));
       }
       catch (Exception e)
       {

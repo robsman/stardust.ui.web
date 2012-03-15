@@ -514,7 +514,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          // update specific document
          if (org.eclipse.stardust.common.StringUtils.isNotEmpty(dataPathId))
          {
-            TypedDocumentsUtil.updateTypedDocument(processInstance.getOID(), dataPathId, docToBeUpdated);
+            TypedDocumentsUtil.updateTypedDocument(processInstance.getOID(), dataPathId, dataId, docToBeUpdated);
          }
          // update process attachment
          else

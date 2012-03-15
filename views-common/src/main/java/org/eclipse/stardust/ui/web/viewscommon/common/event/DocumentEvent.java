@@ -40,6 +40,7 @@ public class DocumentEvent
    private List<Document> allProcessAttachments;
    private EventType eventType;
    private EventMode eventMode;
+   private String dataId;
    
    /**
     * @param eventType
@@ -58,11 +59,13 @@ public class DocumentEvent
       this.eventMode = EventMode.PROCESS_ATTACHMENTS;
    }
 
-   public DocumentEvent(EventType eventType, long processOid)
+   public DocumentEvent(EventType eventType, long processOid, String dataId, Document currentDocument)
    {
       this.eventType = eventType;
       this.processInstanceOid = processOid;
       this.eventMode = EventMode.PROCESS_DOCUMENTS;
+      this.currentDocument = currentDocument;
+      this.dataId = dataId;
    }   
    
    /**
@@ -100,5 +103,10 @@ public class DocumentEvent
    public EventMode getEventMode()
    {
       return eventMode;
+   }
+
+   public String getDataId()
+   {
+      return dataId;
    }
 }

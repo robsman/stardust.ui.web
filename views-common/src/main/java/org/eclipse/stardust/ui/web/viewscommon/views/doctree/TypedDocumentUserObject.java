@@ -137,8 +137,8 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
 
          try
          {
-            DocumentViewUtil.openDataMappingDocument(typedDocument.getProcessInstance(), typedDocument.getDataPath()
-                  .getData(), new JCRDocument(getDocument().getId()), params);
+            DocumentViewUtil.openDataMappingDocument(typedDocument.getProcessInstance(), typedDocument.getDataDetails()
+                  .getId(), new JCRDocument(getDocument().getId()), params);
          }
          catch (ResourceNotFoundException e)
          {
@@ -300,7 +300,7 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
       
       if (null != document && fileUploadDialog.isOpenDocument())
       {
-         DocumentViewUtil.openJCRDocument(document.getId());
+         openDocument();
       }
    }
 

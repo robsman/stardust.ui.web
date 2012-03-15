@@ -73,6 +73,7 @@ import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ExternalWebA
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.FaceletPanelInteractionController;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.JspPanelInteractionController;
 import org.eclipse.stardust.ui.web.processportal.launchpad.WorklistsBean;
+import org.eclipse.stardust.ui.web.processportal.view.manual.IppDocumentInputController;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityForm;
 import org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityAssuranceActivityBean;
 import org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityAssuranceActivityBean.QAAction;
@@ -600,7 +601,7 @@ public class ActivityDetailsBean
          {
             if(null != activityForm)
             {
-               List<DocumentInputController> mappedDocs = activityForm.getDisplayedMappedDocuments(false);
+               List<DocumentInputController> mappedDocs = activityForm.getDisplayedMappedDocuments(false, true);
                for (DocumentInputController docInputCtrl : mappedDocs)
                {
                   PortalApplication.getInstance().setFocusView(thisView);
@@ -715,7 +716,7 @@ public class ActivityDetailsBean
       // This is irrespective of "close related views flag"
       if(null != activityForm)
       {
-         List<DocumentInputController> mappedDocs = activityForm.getDisplayedMappedDocuments(true);
+         List<DocumentInputController> mappedDocs = activityForm.getDisplayedMappedDocuments(true, true);
          for (DocumentInputController docInputCtrl : mappedDocs)
          {
             docInputCtrl.closeDocument();
@@ -847,10 +848,10 @@ public class ActivityDetailsBean
    /* (non-Javadoc)
     * @see org.eclipse.stardust.ui.web.viewscommon.common.event.DocumentEventObserver#handleEvent(org.eclipse.stardust.ui.web.viewscommon.common.event.DocumentEvent)
     */
-   public void handleEvent(DocumentEvent event)
+   public void handleEvent(DocumentEvent documentEvent)
    {
-      if (EventMode.PROCESS_ATTACHMENTS == event.getEventMode()
-            && processInstance.getOID() == event.getProcessInstanceOid())
+      if (EventMode.PROCESS_ATTACHMENTS == documentEvent.getEventMode()
+            && processInstance.getOID() == documentEvent.getProcessInstanceOid())
       {
          // For Any EventType - Refresh Full List
          // Using list from event does not work refreshProcessAttachments(event.getAllProcessAttachments());
@@ -858,10 +859,23 @@ public class ActivityDetailsBean
          fetchProcessAttachments();
          
       }
-      if (EventMode.PROCESS_DOCUMENTS.equals(event.getEventMode())
-            && processInstance.getOID() == event.getProcessInstanceOid())
+      if (EventMode.PROCESS_DOCUMENTS.equals(documentEvent.getEventMode())
+            && processInstance.getOID() == documentEvent.getProcessInstanceOid())
       {
          fetchProcessDocuments();
+         List<DocumentInputController> docs = activityForm.getDisplayedMappedDocuments(false, false);
+         for (DocumentInputController documentInputController : docs)
+         {
+            if (documentInputController instanceof IppDocumentInputController)
+            {
+               IppDocumentInputController ippDocumentInputController = (IppDocumentInputController) documentInputController;
+               if (documentEvent.getDataId().equals(ippDocumentInputController.getDataMapping().getDataId()))
+               {
+                  ippDocumentInputController.setValue(documentEvent.getCurrentDocument());
+                  break;
+               }
+            }
+         }
       }
    }
 
@@ -1331,7 +1345,7 @@ public class ActivityDetailsBean
       try
       {
          if (ActivityPanelConfigurationBean.isAutoShowMappedDocumentWarning()
-               && null != activityForm && activityForm.getDisplayedMappedDocuments(true).size() > 0)
+               && null != activityForm && activityForm.getDisplayedMappedDocuments(true, true).size() > 0)
          {
             mappedDocumentConfirmationDialog = new MappedDocumentsConfirmationDialog(action, DialogContentType.WARNING,
                   DialogActionType.CONTINUE_CANCEL, MAPPED_DOC_WARN_INCLUDE);

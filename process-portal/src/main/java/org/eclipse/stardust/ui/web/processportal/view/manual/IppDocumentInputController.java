@@ -274,4 +274,9 @@ public class IppDocumentInputController extends DocumentInputController implemen
          PortalApplication.getInstance().renderPortalSession();
       }
    }
+
+   public DataMapping getDataMapping()
+   {
+      return dataMapping;
+   }
 }

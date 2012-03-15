@@ -118,6 +118,11 @@ public class TypedDocument
       this.document = document;
    }
 
+   public DataDetails getDataDetails()
+   {
+      return dataDetails;
+   }
+   
    @Override
    public boolean equals(Object obj)
    {

@@ -277,16 +277,17 @@ public class ManualActivityForm extends Form
 
    /**
     * @param onlyHavingDocViewerOpened
+    * @param checkDocementAvailable
     * @return
     */
-   public List<DocumentInputController> getDisplayedMappedDocuments(boolean onlyHavingDocViewerOpened)
+   public List<DocumentInputController> getDisplayedMappedDocuments(boolean onlyHavingDocViewerOpened, boolean checkDocementAvailable)
    {
       IppDocumentInputController docInputCtrl;
       List<DocumentInputController> mappedDocs = new ArrayList<DocumentInputController>();
       for (InputController inputCtrl : getTopLevelInputControllerMap().values())
       {
          if (inputCtrl instanceof IppDocumentInputController
-               && ((IppDocumentInputController) inputCtrl).isDocumentAvailable())
+               && (!checkDocementAvailable || ((IppDocumentInputController) inputCtrl).isDocumentAvailable()))
          {
             docInputCtrl = (IppDocumentInputController) inputCtrl;
             if (!onlyHavingDocViewerOpened || docInputCtrl.isDocumentViewerOpened())
@@ -298,7 +299,7 @@ public class ManualActivityForm extends Form
 
       return mappedDocs;
    }
-
+   
    /**
     * @param systemPath
     * @return
