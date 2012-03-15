@@ -22,7 +22,6 @@ import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
-import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.core.query.statistics.api.CriticalProcessingTimePolicy;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserWorktimeStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserWorktimeStatisticsQuery;
@@ -49,6 +48,7 @@ import org.eclipse.stardust.ui.web.common.table.DataTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 
 
@@ -141,6 +141,7 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
     	 selectedComponent=null;
          allRoles = WorkflowFacade.getWorkflowFacade().getAllRoles();
          selectedModelParticipant=allRoles.isEmpty()?null:allRoles.get(0).getRole();
+         initAllParticipants();
          initialize();
 
       }
@@ -165,6 +166,13 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
     */
    public void updateUserStatistics(ValueChangeEvent evt)
    {
+      if (!evt.getPhaseId().equals(javax.faces.event.PhaseId.INVOKE_APPLICATION))
+      {
+         evt.setPhaseId(javax.faces.event.PhaseId.INVOKE_APPLICATION);
+         evt.queue();
+         return;
+      }
+      
       if (evt.getNewValue() != null)
       {
          String selectedItem = evt.getNewValue().toString();
@@ -172,8 +180,9 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
          {
             for (RoleItem item : allRoles)
             {
-               if (item.getRole().getQualifiedId().equals(selectedItem))
-               {
+               String key = ParticipantUtils.getParticipantUniqueKey(item.getRole());
+               if (key.equals(selectedItem))
+               {                 
                   setSelectedModelParticipant(item.getRole());
                   break;
                }
@@ -245,11 +254,10 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
    }
 
    /**
-    * @return AllModelParticipants
+    * 
     */
-   public SelectItem[] getAllModelParticipants()
+   private void initAllParticipants()
    {
-
       roleSelectItem = new SelectItem[allRoles.size()];
 
       Collections.sort(allRoles, new Comparator<RoleItem>()
@@ -265,22 +273,26 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
       for (int j = 0; j < allRoles.size(); j++)
       {
          roleItem = (RoleItem) allRoles.get(j);
-         roleSelectItem[j] = new SelectItem(((QualifiedModelParticipantInfo) roleItem.getRole()).getQualifiedId(),
+         roleSelectItem[j] = new SelectItem(ParticipantUtils.getParticipantUniqueKey(roleItem.getRole()),
                roleItem.getRoleName());
       }
+   }
+   /**
+    * @return AllModelParticipants
+    */
+   public SelectItem[] getAllModelParticipants()
+   {
       return roleSelectItem;
-
    }
 
    // **************** Modified setter method***********
    public void setSelectedModelParticipant(ModelParticipantInfo selectedModelParticipant)
    {
+      //object reference check is required here instead of equals()
       if (selectedModelParticipant == null
-            || (selectedModelParticipant != null && !selectedModelParticipant.equals(this.selectedModelParticipant)))
+            || (selectedModelParticipant != null && selectedModelParticipant != this.selectedModelParticipant))
       {
          this.selectedModelParticipant = selectedModelParticipant;
-         //sessionCtx.bind("selectedModelParticipant", selectedModelParticipant);
-
       }
 
    }
