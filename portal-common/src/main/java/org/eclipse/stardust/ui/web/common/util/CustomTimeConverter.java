@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.common.util;
 
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+
 /**
  * @author Subodh.Godbole
  *
@@ -24,7 +26,7 @@ public class CustomTimeConverter extends CustomDateTimeConverter
       super();
       try
       {
-         setTimeZone(java.util.TimeZone.getDefault());
+         setTimeZone(PortalApplication.getInstance().getTimeZone());
          setPattern(DateUtils.getTimeFormat());
          setLocale(getLocale());
       }

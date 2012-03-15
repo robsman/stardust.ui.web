@@ -22,6 +22,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.DateTimeConverter;
 
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+
 import com.icesoft.faces.component.selectinputdate.SelectInputDate;
 
 /**
@@ -38,7 +40,7 @@ public class CustomDateTimeConverter extends DateTimeConverter implements Serial
       super();
       try
       {
-         setTimeZone(java.util.TimeZone.getDefault());
+         setTimeZone(PortalApplication.getInstance().getTimeZone());
          setPattern(DateUtils.getDateTimeFormat());
          setLocale(getLocale());
       }
