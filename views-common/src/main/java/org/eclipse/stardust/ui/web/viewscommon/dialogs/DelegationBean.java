@@ -99,7 +99,7 @@ public class DelegationBean extends PopupUIComponentBean
    private List<ActivityInstance> delegatedActivities;
    private ICallbackHandler iCallbackHandler;
    private Map<String, ? > activityOutData;
-   private String activityContext;   
+   private String activityContext;
    private ParticipantAutocompleteSelector autoCompleteSelector;   
    private boolean notesEnabled;
    private boolean buildDefaultNotes;
@@ -107,11 +107,16 @@ public class DelegationBean extends PopupUIComponentBean
    private boolean oldlimitedSearch = false;
    private boolean limitedSearchEnabled = true;
    private boolean disableAdministrator = false;
-   private boolean selectMode = false;   
    private boolean fireCloseEvent = true;
    private boolean delegateCase = false;
    
-   private String id;
+   private String id;  
+   
+   private DELEGATION_MODE delegationMode = DELEGATION_MODE.SEARCH_PARTICIPANTS;
+   
+   public static enum DELEGATION_MODE {
+      PICK_FROM_LIST, SEARCH_PARTICIPANTS, PICK_FROM_TREE
+   };
 
    /**
     * Initializes session context and type filters
@@ -346,7 +351,7 @@ public class DelegationBean extends PopupUIComponentBean
       iCallbackHandler = null;
       fireCloseEvent = true;
       limitedSearch = true;
-      selectMode = false;
+      delegationMode = DELEGATION_MODE.SEARCH_PARTICIPANTS;
       autoCompleteSelector.setSearchValue(EMPTY_STRING);
    }
 
@@ -355,7 +360,7 @@ public class DelegationBean extends PopupUIComponentBean
     */
    private Object getSelectedParticipant()
    {
-      if (selectMode)
+      if (DELEGATION_MODE.PICK_FROM_LIST.equals(delegationMode))
       {
          if (selectedUser != null)
          {
@@ -369,7 +374,7 @@ public class DelegationBean extends PopupUIComponentBean
             }
          }
       }
-      else
+      else if (DELEGATION_MODE.SEARCH_PARTICIPANTS.equals(delegationMode))
       {
          ParticipantWrapper participantWrapper = autoCompleteSelector.getSelectedValue();
          if (null != participantWrapper)
@@ -1083,7 +1088,7 @@ public class DelegationBean extends PopupUIComponentBean
     */
    public boolean isSelectVisible()
    {
-      return isVisible() && selectMode;
+      return isVisible() && DELEGATION_MODE.PICK_FROM_LIST.equals(delegationMode);
    }
    
    /**
@@ -1091,22 +1096,30 @@ public class DelegationBean extends PopupUIComponentBean
     */
    public boolean isSearchVisible()
    {
-      return isVisible() && !selectMode;
+      return isVisible() && DELEGATION_MODE.SEARCH_PARTICIPANTS.equals(delegationMode);
    }
-
+   
    /**
-    * Toggles between search and select dialog. Resets the view being switched to so that
-    * a fresh search can be made.
+    * @return
     */
-   public void toggleSearchOrSelectFlag()
+   public boolean isTreeVisible()
    {
-      selectMode = !selectMode;
-      if ( (selectMode && searchResult==null) || selectMode && oldlimitedSearch!=limitedSearch)
-      {
-         retrieveParticipants();
-         oldlimitedSearch=limitedSearch;
-      }
-     
+      return isVisible() && DELEGATION_MODE.PICK_FROM_TREE.equals(delegationMode);
+   }
+   
+   public void setSelectMode()
+   {
+      delegationMode = DELEGATION_MODE.PICK_FROM_LIST;
+   }
+   
+   public void setSearchMode()
+   {
+      delegationMode = DELEGATION_MODE.SEARCH_PARTICIPANTS;
+   }
+   
+   public void setPickFromTreeMode()
+   {
+      delegationMode = DELEGATION_MODE.PICK_FROM_TREE;
    }
 
    /**
@@ -1134,7 +1147,7 @@ public class DelegationBean extends PopupUIComponentBean
          return;
       }
 
-      if (selectMode || oldlimitedSearch != limitedSearch)
+      if ((DELEGATION_MODE.PICK_FROM_LIST.equals(delegationMode)) || oldlimitedSearch != limitedSearch)
       {
          retrieveParticipants();         
          oldlimitedSearch=limitedSearch;
@@ -1203,7 +1216,7 @@ public class DelegationBean extends PopupUIComponentBean
           */
          public String getNameFilter()
          {
-            if (selectMode)
+            if (DELEGATION_MODE.PICK_FROM_LIST.equals(delegationMode))
             {
                return nameFilter;
             }
@@ -1225,7 +1238,7 @@ public class DelegationBean extends PopupUIComponentBean
 
          public String getNameFilter()
          {
-            if (selectMode)
+            if (DELEGATION_MODE.PICK_FROM_LIST.equals(delegationMode))
             {
                return nameFilter;
             }

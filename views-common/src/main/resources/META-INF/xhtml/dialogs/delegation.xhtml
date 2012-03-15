@@ -6,23 +6,12 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 	<ui:composition>
 		<ice:panelPopup id="#{delegationBean.beanId}" modal="true"
-			rendered="#{delegationBean.selectVisible or delegationBean.searchVisible}"
+			rendered="#{delegationBean.selectVisible or delegationBean.searchVisible or delegationBean.treeVisible}"
 			draggable="true"
 			autoPosition="manual" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
 			<f:facet name="header">
 				<ice:panelGroup>
-					<ice:panelGroup rendered="#{delegationBean.selectVisible}">
-						<pc:automationTag value="auto-COM-DelegateDlg-Header"/>
-						<ice:outputText
-							value="#{delegationBean.dialogTitle}"
-							styleClass="headerText" />
-						<ice:commandButton title="#{common_msgPropsBean['common.close']}"
-							image="/plugins/common/images/dialog-windowbttn-close.png"
-							action="#{delegationBean.onCancel}" partialSubmit="true"
-							styleClass="windowClose" immediate="true" />
-	
-					</ice:panelGroup>
-					<ice:panelGroup rendered="#{delegationBean.searchVisible}">
+					<ice:panelGroup>
 						<pc:automationTag value="auto-COM-DelegateDlg-Header"/>
 						<ice:outputText
 							value="#{delegationBean.dialogTitle}"
@@ -51,13 +40,23 @@
 									<ice:panelGroup>
 										<ice:panelGrid columns="1" width="100%"
 											style="text-align: right">
-											<ice:commandLink
-												action="#{delegationBean.toggleSearchOrSelectFlag}">
-												<pc:automationTag value="auto-COM-DelegateDlg-SrchPartLink" standAlone="false"/>
-												<ice:outputText
-													value="#{views_common_msgPropsBean['delegation.select.toggleLinkText']} &amp;raquo;"
-													styleClass="action-link" escape="false" />
-											</ice:commandLink>
+											<ice:panelGroup>
+												<ice:commandLink
+													action="#{delegationBean.setSearchMode}" style="float : right">
+													<pc:automationTag value="auto-COM-DelegateDlg-SrchPartLink" standAlone="false"/>
+													<ice:outputText
+														value="#{views_common_msgPropsBean['delegation.select.toggleLinkText']} &amp;raquo;"
+														styleClass="action-link" escape="false" />
+												</ice:commandLink>
+												<ice:graphicImage value="/plugins/views-common/images/icons/spacer.gif" style="width: 10px; float : right" />
+												<ice:commandLink
+													action="#{delegationBean.setPickFromTreeMode}" rendered="#{delegationBean.delegateCase}">
+													<pc:automationTag value="" standAlone="false"/>
+													<ice:outputText
+														value="#{views_common_msgPropsBean['delegation.tree.link.text']} &amp;raquo;"
+														styleClass="action-link" escape="false" />
+												</ice:commandLink>
+											</ice:panelGroup>
 										</ice:panelGrid>
 										<ice:selectBooleanCheckbox partialSubmit="true"
 											rendered="#{delegationBean.limitedSearchEnabled and !delegationBean.delegateCase}"
@@ -68,7 +67,7 @@
 										</ice:selectBooleanCheckbox>
 										<ice:outputLabel
 											value="#{views_common_msgPropsBean['delegation.showAllUserRoles']}"
-											styleClass="label-form" />
+											styleClass="label-form" rendered="#{!delegationBean.delegateCase}" />
 									</ice:panelGroup>
 		
 									<pc:automationTag value="auto-COM-DelegateDlg-DataTable"/>
@@ -187,13 +186,23 @@
 									<ice:panelGroup>
 										<ice:panelGrid columns="1" width="100%"
 											style="text-align: right">
+											<ice:panelGroup>
 											<ice:commandLink
-												action="#{delegationBean.toggleSearchOrSelectFlag}">
+												action="#{delegationBean.setSelectMode}" style="float : right">
 												<pc:automationTag value="auto-COM-DelegateDlg-PickListLink" standAlone="false"/>
 												<ice:outputText
 													value="#{views_common_msgPropsBean['delegation.search.toggleLinkText']} &amp;raquo;"
 													styleClass="action-link" escape="false" />
 											</ice:commandLink>
+											<ice:graphicImage value="/plugins/views-common/images/icons/spacer.gif" style="width: 10px; float : right" />
+											<ice:commandLink
+												action="#{delegationBean.setPickFromTreeMode}" rendered="#{delegationBean.delegateCase}">
+												<pc:automationTag value="" standAlone="false"/>
+												<ice:outputText
+													value="#{views_common_msgPropsBean['delegation.tree.link.text']} &amp;raquo;"
+													styleClass="action-link" escape="false" />
+											</ice:commandLink>
+											</ice:panelGroup>
 										</ice:panelGrid>
 										<ice:selectBooleanCheckbox partialSubmit="true"
 											rendered="#{delegationBean.limitedSearchEnabled and !delegationBean.delegateCase}"
@@ -204,7 +213,7 @@
 										</ice:selectBooleanCheckbox>
 										<ice:outputLabel
 											value="#{views_common_msgPropsBean['delegation.searchAllUserRoles']}"
-											styleClass="label-form" />
+											styleClass="label-form" rendered="#{!delegationBean.delegateCase}" />
 									</ice:panelGroup>
 									<ice:panelGroup styleClass="clearing" />
 		
@@ -238,6 +247,74 @@
 										</ice:panelGrid>
 									</ice:panelGroup>
 		
+									<ice:panelGroup rendered="#{delegationBean.notesEnabled}">
+										<ice:panelGroup styleClass="heading">
+											<ice:outputText
+												value="#{views_common_msgPropsBean['delegation.note.label']}" />
+										</ice:panelGroup>
+										<ice:panelGroup styleClass="notesContent">
+											<ice:inputTextarea value="#{delegationBean.notes}"
+												partialSubmit="true" id="notes" rows="5" />
+										</ice:panelGroup>
+									</ice:panelGroup>
+								</ice:panelGroup>
+							</f:facet>
+		
+							<f:facet name="south">
+								<ice:panelGroup>
+									<pc:automationTag value="auto-COM-DelegateDlg-BtnsBar" standAlone="false"/>
+									<ice:commandButton value="#{views_common_msgPropsBean['delegation.applyButton.text']}"
+										actionListener="#{delegationBean.onApply}" partialSubmit="true"
+										id="applyDelegate"
+										disabled="#{delegationBean.applyButtonDisabled}"
+										styleClass="button"
+										title="#{views_common_msgPropsBean['delegation.applyButton.text']}" />
+									<ice:commandButton
+										value="#{common_msgPropsBean['common.cancel']}"
+										action="#{delegationBean.onCancel}" partialSubmit="true"
+										id="cancel" styleClass="button"
+										title="#{common_msgPropsBean['common.cancel']}" immediate="true" />
+								</ice:panelGroup>
+							</f:facet>
+						</ice:panelBorder>
+					</ice:panelGroup>
+					<ice:panelGroup rendered="#{delegationBean.treeVisible}">
+						<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+							cellspacing="0" renderNorth="false" renderSouth="true"
+							renderCenter="true" renderWest="true" renderEast="false">
+		
+							<f:facet name="center">
+								<ice:panelGroup style="height: 370px; width: 350px; overflow: auto;">
+									<ice:panelGroup styleClass="msgError">
+										<ice:messages />
+									</ice:panelGroup>
+									<ice:panelGroup>
+										<ice:panelGrid columns="1" width="100%"
+											style="text-align: right">
+											<ice:panelGroup>
+											<ice:commandLink
+												action="#{delegationBean.setSearchMode}" style="float : right">
+												<pc:automationTag value="auto-COM-DelegateDlg-PickListLink" standAlone="false"/>
+												<ice:outputText
+													value="#{views_common_msgPropsBean['delegation.select.toggleLinkText']} &amp;raquo;"
+													styleClass="action-link" escape="false" />
+											</ice:commandLink>
+											<ice:graphicImage value="/plugins/views-common/images/icons/spacer.gif" style="width: 10px; float : right" />
+											<ice:commandLink
+												action="#{delegationBean.setSelectMode}" style="float : right">
+												<pc:automationTag value="auto-COM-DelegateDlg-PickListLink" standAlone="false"/>
+												<ice:outputText
+													value="#{views_common_msgPropsBean['delegation.search.toggleLinkText']} &amp;raquo;"
+													styleClass="action-link" escape="false" />
+											</ice:commandLink>
+											</ice:panelGroup>
+										</ice:panelGrid>
+									</ice:panelGroup>
+									<ice:panelGroup styleClass="clearing" />
+									<ice:panelGroup>
+										<!-- <ui:include src="/plugins/views-common/participantTree/participantTree.xhtml" /> -->
+										<ice:outputText value="Participant Tree Place Holder" />
+									</ice:panelGroup>
 									<ice:panelGroup rendered="#{delegationBean.notesEnabled}">
 										<ice:panelGroup styleClass="heading">
 											<ice:outputText
