@@ -53,6 +53,7 @@ import org.eclipse.stardust.ui.web.common.table.DataTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 
 
@@ -194,7 +195,7 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
       for (int j = 0; j < allRoles.size(); j++)
       {
          roleItem = (RoleItem) allRoles.get(j);
-         roleSelectItem[j] = new SelectItem(roleItem.getRole().getQualifiedId(), roleItem.getRoleName());
+         roleSelectItem[j] = new SelectItem(ParticipantUtils.getParticipantUniqueKey(roleItem.getRole()), roleItem.getRoleName());
       }
 
    }
@@ -225,6 +226,12 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
     */
    public void roleChangeListener(ValueChangeEvent event)
    {
+      if (!event.getPhaseId().equals(javax.faces.event.PhaseId.INVOKE_APPLICATION))
+      {
+         event.setPhaseId(javax.faces.event.PhaseId.INVOKE_APPLICATION);
+         event.queue();
+         return;
+      }
       
       List<RoleItem> allRoles = WorkflowFacade.getWorkflowFacade().getAllRoles();
       
@@ -234,11 +241,12 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
          if (selectedItem != null && getRoleSelectItem()!=null)
          {
                for (RoleItem item : allRoles)
-               {
-                  if ( item.getRole().getQualifiedId().equals(selectedItem))
+               {                  
+                  String key = ParticipantUtils.getParticipantUniqueKey(item.getRole());
+                  if (selectedItem.equals(key))
                   {
                      setSelectedModelParticipant(item.getRole());
-                     break;                    
+                     break;
                   }
                }
          }

@@ -571,4 +571,35 @@ public class ParticipantUtils
       }
       return null;
    }
+   
+   /**
+    * method return unique key for Participant
+    * 
+    * @param role
+    * @return
+    */
+   public static String getParticipantUniqueKey(ParticipantInfo participantInfo)
+   {
+      if (participantInfo instanceof ModelParticipantInfo)
+      {
+         ModelParticipantInfo modelParticipantInfo = (ModelParticipantInfo) participantInfo;
+         if (modelParticipantInfo.isDepartmentScoped())
+         {
+            DepartmentInfo departmentInfo = modelParticipantInfo.getDepartment();
+            if (null != departmentInfo)
+            {
+               if (departmentInfo instanceof OrganizationInfo)
+               {
+                  OrganizationInfo organizationInfo = (OrganizationInfo) departmentInfo;
+                  return modelParticipantInfo.getQualifiedId() + " (" + organizationInfo.getId() + "-"
+                        + departmentInfo.getId() + " )";
+               }
+
+               return modelParticipantInfo.getQualifiedId() + "-" + departmentInfo.getId();
+            }
+         }
+      }
+      return participantInfo.getQualifiedId();
+   }
+   
 }
