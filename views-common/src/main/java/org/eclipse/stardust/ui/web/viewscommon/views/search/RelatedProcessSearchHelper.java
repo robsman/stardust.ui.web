@@ -540,7 +540,7 @@ public class RelatedProcessSearchHelper
    
    public String getMessageHeader()
    {
-      if (!isSourceCase)
+      if (searchCases)
       {
          messageHeader = matchAny ? COMMON_MESSAGE_BEAN
                .getString("views.joinProcessDialog.descriptorAnyMatchingCases.message") : COMMON_MESSAGE_BEAN
