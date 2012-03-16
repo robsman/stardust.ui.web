@@ -140,6 +140,7 @@
          <exclude org="log4j" module="log4j"/>
       </dependency>
       <dependency org="org.springframework" name="spring-webmvc" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-base-lib-module-runtime->default"/>
+      <dependency org="aopalliance" name="aopalliance" transitive="false" rev="1.0" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="org.apache.geronimo.specs" name="geronimo-ejb_2.1_spec" transitive="false" rev="1.1" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="commons-discovery" name="commons-discovery" rev="0.4" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="javax.media" name="jai_imageio-infinity01" rev="1.1" conf="ipp-portal-base-lib-module-runtime->default"/>
