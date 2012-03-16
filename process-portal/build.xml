@@ -176,4 +176,15 @@
 	</target>
 	
    <target name="deploy" depends="build"/>
+   
+   <target name="install" depends="deploy" if="maven.localRepository"
+      description="installs the artifacts into a local Maven repository">
+      <ipp:init-mvn />
+      <exec dir="." executable="${m2.home}/bin/${mvn.exe}" failonerror="true">
+         <arg value="install:install-file"/>
+         <arg value="-Dfile=${process.portal.jar}"/>
+         <arg value="-DpomFile=${build.lib}/ipp-workflow-perspective.pom"/>
+         <arg value="-DlocalRepositoryPath=${maven.localRepository}"/>
+      </exec>
+   </target>
 </project>
