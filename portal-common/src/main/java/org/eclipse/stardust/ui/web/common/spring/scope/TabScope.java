@@ -132,4 +132,14 @@ public class TabScope implements Scope
 
       return bean;
    }
+   /**
+    * This method is part of the Scope SPI in Spring 3.0, but we can just that. 
+    */
+   public Object resolveContextualObject(String key)
+   {
+//      FacesContext facesContext = FacesContext.getCurrentInstance();
+//      FacesRequestAttributes facesRequestAttributes = new FacesRequestAttributes(facesContext);
+//      return facesRequestAttributes.resolveReference(name);
+      return null;
+   }
 }
