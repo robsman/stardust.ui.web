@@ -55,13 +55,13 @@
 			rendered="#{row.selected}">
 			<pc:automationTag value="auto-COM-PCEHistoryTable-Select" standAlone="false"/>
 			<f:attribute name="selectedRow" value="#{row}" />
-			<ice:graphicImage value="/plugins/common/images/radio-on.png" />
+			<ice:graphicImage value="/plugins/views-common/images/icons/radio-on.png" />
 		</ice:commandLink>
 		<ice:commandLink actionListener="#{bean.selectRow}"
 			rendered="#{not row.selected}">
 			<pc:automationTag value="auto-COM-PCEHistoryTable-Select" standAlone="false"/>
 			<f:attribute name="selectedRow" value="#{row}" />
-			<ice:graphicImage value="/plugins/common/images/radio-off.png" />
+			<ice:graphicImage value="/plugins/views-common/images/icons/radio-off.png" />
 		</ice:commandLink>
 
 	</ice:panelGroup>
@@ -103,7 +103,7 @@
 			</ice:commandLink>
 			<ice:panelGroup rendered="#{!(row.enableTerminate)}">
 				<ice:graphicImage styleClass="iceCmdBtn-dis"
-					value="/plugins/common/images/panelHeader-triggerCollapse.png" />
+					value="/plugins/views-common/images/icons/panelHeader-triggerCollapse.png" />
 			</ice:panelGroup>
 			<ice:panelGroup rendered="#{(row.enableTerminate)}">
 				<c:set var="processInstance" value="#{row.processInstance}" />
@@ -126,7 +126,7 @@
 				disabled="#{caseDetailsBean.inactiveCase}">	
 				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsDetachCase" standAlone="false"/>		
 				<ice:graphicImage
-					value="/plugins/views-common/images/icons/case-detach.png"
+					value="/plugins/views-common/images/icons/envelope--minus.png"
 					title="#{views_common_msgPropsBean['views.case.detachPI']}" 
 					styleClass="#{!caseDetailsBean.inactiveCase? '' : 'iceCmdBtn-dis'}" />
 				<f:attribute name="processInstance" value="#{row.processInstance}" />

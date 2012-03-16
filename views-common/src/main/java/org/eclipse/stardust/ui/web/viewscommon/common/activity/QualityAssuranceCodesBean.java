@@ -156,7 +156,7 @@ public class QualityAssuranceCodesBean
                   if (null != assuranceCode)
                   {
                      MenuItem codeItem = new MenuItem();
-                     codeItem.setIcon("/plugins/views-common/images/icons/wrench_exclamation.png");
+                     codeItem.setIcon("/plugins/views-common/images/icons/wrench--exclamation.png");
                      codeItem.setValue(I18nUtils.getQualityAssuranceDesc(assuranceCode, modelOID));
                      qualityACMenuItems.add(codeItem);
                   }

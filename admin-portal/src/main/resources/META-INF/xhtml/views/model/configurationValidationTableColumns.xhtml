@@ -10,7 +10,7 @@
 		<h:graphicImage url="/plugins/views-common/images/icons/accept.png"
 			rendered="#{row.errors == 0 and row.warnings==0   }"
 			title="#{ messages_admin['views.configurationVariablesView.validation.success']}" />
-		<h:graphicImage url="/plugins/views-common/images/icons/warning.png"
+		<h:graphicImage url="/plugins/views-common/images/icons/error.png"
 			rendered="#{row.errors == 0 and row.warnings > 0   }"
 			title="#{ messages_admin['views.configurationVariablesView.validation.failed']}" />			
 		<h:graphicImage url="/plugins/views-common/images/icons/cancel.png"

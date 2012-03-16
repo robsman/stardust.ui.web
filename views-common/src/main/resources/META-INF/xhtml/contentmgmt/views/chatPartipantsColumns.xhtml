@@ -9,13 +9,13 @@
 	<ice:panelGroup style="margin: 0px; padding: 0px;">
 		<ice:panelGroup rendered="#{col.columnName == 'Icon'}">
 			<ice:graphicImage
-				value="/plugins/views-common/images/icons/chat-initiator.png"
+				value="/plugins/views-common/images/icons/user_red.png"
 				rendered="#{row.inviter and row.online}" />
 			<ice:graphicImage
-				value="/plugins/views-common/images/icons/user-offline.png"
+				value="/plugins/views-common/images/icons/user_gray.png"
 				rendered="#{!row.online and !row.inviter}" />
 			<ice:graphicImage
-				value="/plugins/views-common/images/icons/user-online.png"
+				value="/plugins/views-common/images/icons/user_green.png"
 				rendered="#{row.online and !row.inviter}" />
 		</ice:panelGroup>
 
@@ -27,7 +27,7 @@
 			<ice:commandLink actionListener="#{chatViewBean.leave}"
 				rendered="#{(documentRepo.user == chatViewBean.chatRoom.initiatingUser) || (row == documentRepo.user)}">
 				<f:attribute name="user" value="#{row}" />
-				<ice:graphicImage value="/plugins/common/images/dialog-windowbttn-close.png"
+				<ice:graphicImage value="/plugins/views-common/images/icons/dialog-windowbttn-close.png"
 					styleClass="toolbar-button" />
 			</ice:commandLink>
 		</ice:panelGroup>

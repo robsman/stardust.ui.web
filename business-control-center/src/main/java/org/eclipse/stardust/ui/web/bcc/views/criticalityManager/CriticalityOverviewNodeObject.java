@@ -51,7 +51,7 @@ public class CriticalityOverviewNodeObject extends NodeUserObject
       super(treeTable, node, treeBeanPointer, componenttype);
       String tooltip = null;
       this.criticalityOverviewEntry = criticalityOverviewEntry;
-      String imagePath = "/plugins/common/images/icons/file.gif";
+      String imagePath = "/plugins/views-common/images/icons/file.gif";
 
       if (criticalityOverviewEntry instanceof ModelDefCriticalityMgrTableEntry)
       {

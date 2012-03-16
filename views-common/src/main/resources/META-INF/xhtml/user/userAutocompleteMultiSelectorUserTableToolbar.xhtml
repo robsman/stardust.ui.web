@@ -17,9 +17,9 @@
 
 		<ice:panelGroup rendered="#{col.columnName == 'OnlineIcon'}">
 			<ice:graphicImage rendered="#{row.online}"
-			 	value="/plugins/views-common/images/icons/user-online.png" />
+			 	value="/plugins/views-common/images/icons/user_green.png" />
 			<ice:graphicImage rendered="#{not row.online}" 
-				value="/plugins/views-common/images/icons/user-offline.png" />
+				value="/plugins/views-common/images/icons/user_gray.png" />
 		</ice:panelGroup>
 
 		<ice:panelGroup rendered="#{col.columnName == 'UserName'}">
@@ -29,7 +29,7 @@
 		<ice:panelGroup rendered="#{col.columnName == 'Actions'}">
 			<ice:commandLink action="#{row.removeUser}"
 				rendered="#{row.removeable}">
-				<ice:graphicImage value="/plugins/common/images/dialog-windowbttn-close.png"
+				<ice:graphicImage value="/plugins/views-common/images/icons/dialog-windowbttn-close.png"
 					styleClass="toolbar-button" />
 			</ice:commandLink>
 		</ice:panelGroup>

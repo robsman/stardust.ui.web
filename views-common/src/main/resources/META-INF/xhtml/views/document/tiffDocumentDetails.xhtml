@@ -98,7 +98,7 @@
 							</ice:commandLink>
 							<ice:outputLabel value=" " />
 							<ice:graphicImage
-								value="/plugins/common/images/toolbar-separator.png" />
+								value="/plugins/views-common/images/icons/toolbar-separator.png" />
 							<ice:outputLabel value=" " />
 							<ice:commandLink
 								actionListener="#{contentHandler.tiffDocumentHolder.movePageUp}"
@@ -134,7 +134,7 @@
 							</ice:commandLink>
 							<ice:outputLabel value=" " />
 							<ice:graphicImage
-								value="/plugins/common/images/toolbar-separator.png" />
+								value="/plugins/views-common/images/icons/toolbar-separator.png" />
 							<ice:outputLabel value="  " />
 							<ice:commandLink
 								actionListener="#{contentHandler.tiffDocumentHolder.addBookmark}"
@@ -142,7 +142,7 @@
 								<pc:automationTag value="auto-COM-DocView-TiffDocView-AddBookmark" standAlone="false" />
 								<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.addBookmark']}"
 									rendered="#{contentHandler.tiffDocumentHolder.documentContent != null}"
-									value="/plugins/views-common/images/icons/bookmark-add.png"
+									value="/plugins/views-common/images/icons/bookmark--plus.png"
 									style="#{!contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
 							</ice:commandLink>
 						</ice:panelGroup>
@@ -219,7 +219,7 @@
 									</ice:menuItem>
 									<ice:menuItem
 										value="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.addBookmark']}"
-										icon="/plugins/views-common/images/icons/bookmark-add.png"
+										icon="/plugins/views-common/images/icons/bookmark--plus.png"
 										actionListener="#{contentHandler.tiffDocumentHolder.addBookmark}">
 										<pc:automationTag
 											value="auto-COM-DocView-TiffDocView-ThumbNailMnu-AddBookmark"

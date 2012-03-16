@@ -33,7 +33,7 @@
 		<ice:panelGroup
 			rendered="#{!(caseDetailsBean.abortProcess)}">
 			<ice:graphicImage styleClass="iceCmdBtn-dis"
-				value="/plugins/common/images/panelHeader-triggerCollapse.png" />
+				value="/plugins/views-common/images/icons/panelHeader-triggerCollapse.png" />
 		</ice:panelGroup>
 
 		<pc:automationTag value="auto-COM-CaseDetView-ToolbarRecover"/>
@@ -49,12 +49,12 @@
 			rendered="#{caseDetailsBean.canManageCase}"
 			disabled="#{caseDetailsBean.inactiveCase}" >	
 			<ice:graphicImage
-				url="/plugins/views-common/images/icons/case-attach.png"
+				url="/plugins/views-common/images/icons/envelope--plus.png"
 				title="#{views_common_msgPropsBean['views.case.attachPI']}" 
 				styleClass="#{!caseDetailsBean.inactiveCase? '' : 'iceCmdBtn-dis'}" />
 		</ice:commandLink>
 					
-		<ice:graphicImage value="/plugins/common/images/toolbar-separator.png"/>	
+		<ice:graphicImage value="/plugins/views-common/images/icons/toolbar-separator.png"/>	
 		
 		<pc:automationTag value="auto-COM-CaseDetView-ToolbarOpenCorrespondence"/>
 		<ice:commandButton
@@ -72,7 +72,7 @@
 			action="#{caseDetailsBean.openChat}" partialSubmit="true"
 			title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.chat']}"
 			styleClass="toolbar-button" />
-		<ice:graphicImage value="/plugins/common/images/toolbar-separator.png"/>
+		<ice:graphicImage value="/plugins/views-common/images/icons/toolbar-separator.png"/>
 		
 		<pc:automationTag value="auto-COM-CaseDetView-ToolbarRefresh"/>
 		<ice:commandButton

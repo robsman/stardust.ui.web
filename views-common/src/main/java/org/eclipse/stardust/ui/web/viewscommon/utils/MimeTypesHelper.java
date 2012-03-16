@@ -36,7 +36,7 @@ public class MimeTypesHelper implements Serializable
    public static final MIMEType PJPG = new MIMEType("image/pjpeg", "jpg", "document-image.png", "PJPEG");
    public static final MIMEType XPNG = new MIMEType("image/x-png", "jpg", "document-image.png", "X-PNG");
    public static final MIMEType GIF = new MIMEType("image/gif", "gif", "gif.gif", "GIF");
-	public static final MIMEType TIFF = new MIMEType("image/tiff", new String[] { "tif", "tiff" }, "tif_image.png", "Tiff");
+	public static final MIMEType TIFF = new MIMEType("image/tiff", new String[] { "tif", "tiff" }, "images.png", "Tiff");
    public static final MIMEType PDF = new MIMEType("application/pdf", "pdf", "pdf.gif", "PDF");
    public static final MIMEType RTF = new MIMEType("text/rtf", "rtf", "ms-word.gif", "");
    public static final MIMEType DOC = new MIMEType("application/msword", "doc", "ms-word.gif", "");
@@ -52,7 +52,7 @@ public class MimeTypesHelper implements Serializable
    public static final MIMEType PPT = new MIMEType("application/vnd.ms-powerpoint", "ppt", "ms-power-point.gif", "");
    public static final MIMEType XLS = new MIMEType("application/vnd.ms-excel", "xls", "ms-excel.gif", "");
    public static final MIMEType PNG = new MIMEType("image/png", "png", "document-image.png", "PNG");
-   public static final MIMEType DEFAULT = new MIMEType("application/octet-stream", "", "default.gif", "");
+   public static final MIMEType DEFAULT = new MIMEType("application/octet-stream", "", "tree_document.gif", "");
    public static final MIMEType MS2007_DOC = new MIMEType(
          "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx", "ms-word.gif", "");
    public static final MIMEType MS2007_XLS = new MIMEType(

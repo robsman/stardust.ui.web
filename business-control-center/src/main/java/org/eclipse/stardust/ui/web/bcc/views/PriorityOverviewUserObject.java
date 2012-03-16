@@ -54,7 +54,7 @@ public class PriorityOverviewUserObject extends NodeUserObject
    {
       super(treeTable, node, treeBeanPointer, componenttype);
       this.prioOverviewEntry = prioOverviewEntry;
-      String imagePath = "/plugins/common/images/icons/file.gif";
+      String imagePath = "/plugins/views-common/images/icons/file.gif";
       String tooltip = null;
       if (prioOverviewEntry instanceof ModelWithPrio)
       {

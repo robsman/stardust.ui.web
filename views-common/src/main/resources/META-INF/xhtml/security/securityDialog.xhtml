@@ -15,7 +15,7 @@
 					value="#{securityDialog.messages['securityDialog.title']}"
 					escape="false" styleClass="headerText" />
 				<ice:commandButton
-					image="/plugins/common/images/dialog-windowbttn-close.png" title="#{common_msgPropsBean['common.close']}"
+					image="/plugins/views-common/images/icons/dialog-windowbttn-close.png" title="#{common_msgPropsBean['common.close']}"
 					styleClass="windowClose" action="#{securityDialog.closePopup}" />
 			</ice:panelGroup>
 		</f:facet>
@@ -33,7 +33,7 @@
 										value="/plugins/views-common/images/icons/thumbnailsPanel-triggerExpand.png"
 										style="border: none" />
 									<ice:graphicImage rendered="#{securityDialog.expanded}"
-										value="/plugins/common/images/panelHeader-triggerCollapse.png"
+										value="/plugins/views-common/images/icons/panelHeader-triggerCollapse.png"
 										style="border: none" />
 									<ice:outputText styleClass="panelHeaderTitle"
 										value="#{securityDialog.messages['securityDialog.inheritedTable.title']}  #{securityDialog.resourceName}" />
@@ -89,7 +89,7 @@
 					value="#{securityDialog.messages['securityDialog.participantPopup.title']}"
 					escape="false" styleClass="headerText" />
 				<ice:commandButton
-					image="/plugins/common/images/dialog-windowbttn-close.png"
+					image="/plugins/views-common/images/icons/dialog-windowbttn-close.png"
 					action="#{securityDialog.closeAddEntryDialog}" title="#{common_msgPropsBean['common.close']}"
 					styleClass="windowClose" />
 			</ice:panelGroup>

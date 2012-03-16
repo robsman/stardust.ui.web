@@ -99,10 +99,10 @@ public interface ResourcePaths
    static final String V_AUTOCOMPLETE_PRIORITY_MULTIPLE_SELECTOR = "/plugins/views-common/common/priorityAutocompleteMultiSelector.xhtml";
    static final String V_AUTOCOMPLETE_PRIORITY_SELECTOR_TABLE = "/plugins/views-common/common/priorityMultiSelectorTable.xhtml";
    
-   static final String I_USER_ONLINE = "/plugins/views-common/images/icons/user-online.png";
-   static final String I_USER_OFFLINE = "/plugins/views-common/images/icons/user-offline.png";
+   static final String I_USER_ONLINE = "/plugins/views-common/images/icons/user_green.png";
+   static final String I_USER_OFFLINE = "/plugins/views-common/images/icons/user_gray.png";
 
-   static final String I_USER_CHAT_INITIATOR = "/plugins/views-common/images/icons/chat-initiator.png";
+   static final String I_USER_CHAT_INITIATOR = "/plugins/views-common/images/icons/user_red.png";
    static final String VIEW_DOCUMENT_SEARCH_COLUMN = "/plugins/views-common/views/documentsearch/documentSearchColumns.xhtml";
    static final String I_EMPTY_CORE_DOCUMENT = "/plugins/views-common/images/icons/page_white_error.png";
    static final String I_CORE_DOCUMENTS = "/plugins/views-common/images/icons/page_white_gear.png";
