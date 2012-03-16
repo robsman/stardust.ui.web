@@ -29,6 +29,7 @@ import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
@@ -250,6 +251,14 @@ public class IppDocumentInputController extends DocumentInputController implemen
     */
    private JCRDocument getJCRDocument()
    {
+      try
+      {
+         document = DocumentMgmtUtility.getDocument(document.getId());
+      }
+      catch (ResourceNotFoundException e)
+      {
+         // should never occur
+      }
       return new JCRDocument(document, getPath().isReadonly());
    }
 
