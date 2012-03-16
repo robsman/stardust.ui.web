@@ -22,6 +22,9 @@
    <property name="organizationId" value="com.infinity.bpm" />
    <property name="artifactId" value="ipp-portal-common" />
    <property name="webArtifactId" value="ipp-portal" />
+   
+   <!-- define Community Edition of Icefaces as the default --> 
+   <property name="icefaces-conf.xml" location="${project.dir}/etc/icefaces-ivy-conf.xml"/>
 	
    <import file="../../build.tools/commons-build.xml" />
 
@@ -89,7 +92,16 @@
       <init-ivy />
    </target>
    
-   <target name="initClasspath" if="dependencies.mode.ivy" depends="init, init.ivy">
+   <target name="publish.icefaces" xmlns:ivy="antlib:org.apache.ivy.ant">
+      <ivy:resolve file="${icefaces-conf.xml}" conf="*" keep="true"/>
+      <ivy:deliver deliverpattern="${build.lib}/icefaces-ivy-conf.xml" />
+      <ivy:publish srcivypattern="${icefaces-conf.xml}" conf="*" resolver="buildenv" merge="false"
+         organisation="com.infinity.bpm" module="icefaces-impl" overwrite="true" haltonmissing="true"/>
+   </target>
+   
+   <target name="initClasspath" if="dependencies.mode.ivy" depends="init, init.ivy, publish.icefaces"
+      xmlns:ivy="antlib:org.apache.ivy.ant">
+      <ivy:resolve file="${project.dir}/ivy.xml" conf="*" keep="true"/>
       <init-ivy-classpath />
 
       <path id="portal.common.classpath">
@@ -164,7 +176,7 @@
       <delete dir="${project.webapp.dir}/WEB-INF/classes" failonerror="false"/>
       <mkdir dir="${project.webapp.dir}/WEB-INF/classes"/>
       
-      <copy todir="${project.webapp.dir}/WEB-INF/classes">
+      <copy todir="${project.webapp.dir}/WEB-INF/classes" failonerror="false">
          <!-- currently only japanese property files -->
          <fileset dir="${latakia.home}/etc/i18n" >
             <!-- currently only japanese property files -->
@@ -172,7 +184,7 @@
             <exclude name="PredefinedModel_ja.properties" />
          </fileset>
       </copy>
-      <copy todir="${project.webapp.dir}/WEB-INF/classes/ag/carnot">
+      <copy todir="${project.webapp.dir}/WEB-INF/classes/ag/carnot" failonerror="false">
          <!-- currently only japanese property files -->
          <fileset dir="${latakia.home}/etc/i18n" >
             <!-- currently only japanese property files -->
@@ -215,4 +227,14 @@
 
    <target name="dist" depends="build, copyToMoonglow" />
 
+   <target name="install" depends="deploy" if="maven.localRepository"
+      description="installs the artifacts into a local Maven repository">
+      <ipp:init-mvn />
+      <exec dir="." executable="${m2.home}/bin/${mvn.exe}" failonerror="true">
+         <arg value="install:install-file"/>
+         <arg value="-Dfile=${portal.common.jar}"/>
+         <arg value="-DpomFile=${build.lib}/ipp-portal-common.pom"/>
+         <arg value="-DlocalRepositoryPath=${maven.localRepository}"/>
+      </exec>
+   </target>
 </project>

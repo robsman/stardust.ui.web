@@ -15,17 +15,21 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
    <info organisation="com.infinity.bpm" module="ipp-portal-common"
-      revision="${ipp.version.full}" />
+      revision="${ipp.version.full}">
+      <!-- must define an icefaces config -->
+      <extends organisation="com.infinity.bpm" module="icefaces-impl" revision="latest.integration"
+         extendType="configurations,dependencies"/>
+   </info>
 
    <configurations>
-      <conf name="ipp-portal-common-compile" description="IPP Portal Common - Compile Scope" />
+      <conf name="ipp-portal-common-compile" extends="icefaces" description="IPP Portal Common - Compile Scope" />
       <conf name="ipp-portal-common-runtime" extends="ipp-portal-common-compile" description="IPP Portal Common - Runtime Scope" />
       <conf name="ipp-portal-common-provided" description="IPP Portal Common - Provided Scope" />
       
       <conf name="ipp-portal-common-sources" description="IPP Portal Common - Sources" />
       
       <conf name="ipp-portal-web" description="IPP Portal Web Archive" />
-      <conf name="ipp-portal-base-lib-module-runtime" description="IPP Portal WEBINF-lib Archives" visibility="private" />
+      <conf name="ipp-portal-base-lib-module-runtime" extends="icefaces" description="IPP Portal WEBINF-lib Archives" visibility="private" />
    
       <conf name="jsf-api-module-compile" description="JSF API Classes - Compile Scope" />
       
@@ -56,25 +60,12 @@
       <artifact name="jsf-mojarra-module" type="pom" conf="module-pom" ext="pom" />
    </publications>
 
-   <dependencies>
+   <dependencies>      
       <!-- ipp-portal-common-compile -->
       <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->engine-module-compile" />
       <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->spring-module-compile" />
       <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->logging-log4j-module-compile"/>
       <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->logging-slf4j-log4j-module-compile"/>
-      <dependency org="org.icefaces" name="icefaces-ee-infinity04" rev="EE-1.8.2.GA_P03" conf="ipp-portal-common-compile->default">
-         <exclude org="javax.faces" module="jsf-api" />
-         <exclude org="javax.faces" module="jsf-impl" />
-         <exclude org="commons-logging" module="commons-logging-api"/>
-         <exclude org="commons-beanutils" module="commons-beanutils"/>
-         <exclude org="backport-util-concurrent" module="backport-util-concurrent"/>
-      </dependency>
-      <dependency org="org.icefaces" name="icefaces-comps-ee-infinity04" rev="EE-1.8.2.GA_P03" conf="ipp-portal-common-compile->default">
-         <exclude org="org.icefaces" module="icefaces-ee" />
-      </dependency>
-      <dependency org="org.icefaces" name="icefaces-facelets-ee-infinity04" rev="EE-1.8.2.GA_P03" conf="ipp-portal-common-compile->default">
-         <exclude org="org.icefaces" module="icefaces-ee" />
-      </dependency>
       
       <!-- ipp-portal-common-runtime -->
       <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-runtime->engine-module-runtime" />
@@ -112,21 +103,6 @@
       <dependency org="org.apache.myfaces.core" name="myfaces-api" rev="1.1.5" conf="ipp-portal-base-lib-module-runtime->default">
          <exclude org="javax.servlet" module="jstl"/>
       </dependency>
-      <dependency org="org.apache.myfaces.core" name="myfaces-impl" rev="1.1.5" conf="ipp-portal-base-lib-module-runtime->default">
-         <exclude org="commons-codec" module="commons-codec"/>
-      </dependency>
-      <dependency org="org.icefaces" name="icefaces-ee-infinity04" rev="EE-1.8.2.GA_P03" conf="ipp-portal-base-lib-module-runtime->default">
-         <exclude org="commons-fileupload" module="commons-fileupload"/>
-         <exclude org="commons-logging" module="commons-logging-api"/>
-         <exclude org="javax.faces" module="jsf-api" />
-         <exclude org="javax.faces" module="jsf-impl" />
-      </dependency>
-      <dependency org="org.icefaces" name="icefaces-comps-ee-infinity04" rev="EE-1.8.2.GA_P03" conf="ipp-portal-base-lib-module-runtime->default">
-         <exclude org="org.icefaces" module="icefaces-ee"/>
-      </dependency>
-      <dependency org="org.icefaces" name="icefaces-facelets-ee-infinity04" rev="EE-1.8.2.GA_P03" conf="ipp-portal-base-lib-module-runtime->default">
-         <exclude org="org.icefaces" module="icefaces-ee"/>         
-      </dependency>
       <dependency org="org.icepdf" name="icepdf-core" rev="4.0.1" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-base-lib-module-runtime->jcr-vfs-module-runtime">
          <exclude org="commons-fileupload" module="commons-fileupload"/>
@@ -155,5 +131,5 @@
       <override org="commons-lang" module="commons-lang" rev="2.4" />
       <override org="commons-collections" module="commons-collections" rev="3.2" />
       <override org="backport-util-concurrent" module="backport-util-concurrent" rev="3.1"/>
-   </dependencies>
+   </dependencies>   
 </ivy-module>
