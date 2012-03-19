@@ -29,7 +29,7 @@ define([ "m_pharmacyToolbarController", "m_canvasManager", "m_communicationContr
 	var annotationHighlighter = undefined;
 	var _toolActionsMap;
 	var _annotationMovedFlag = false; 
-	var bgImage = "../../images/icons/gray.jpg";
+	var bgImage = "../../images/annotations/gray.jpg";
 	var imageViewerConfigOptions;
 	var sharedViewerState = {};
 	var annotationWithContextMenu;
@@ -1794,16 +1794,16 @@ define([ "m_pharmacyToolbarController", "m_canvasManager", "m_communicationContr
 		function getBGImageForColour(colour)
 		{
 			var colourMap = {
-					green : "../../images/icons/postItBG-Grn_200_150.png",
-					pink : "../../images/icons/postItBG-Pnk_200_150.png",
-					blue : "../../images/icons/postItBG-Blu_200_150.png",
-					yellow : "../../images/icons/postItBG-Yel_200_150.png"
+					green : "../../images/annotations/postItBG-Grn_200_150.png",
+					pink : "../../images/annotations/postItBG-Pnk_200_150.png",
+					blue : "../../images/annotations/postItBG-Blu_200_150.png",
+					yellow : "../../images/annotations/postItBG-Yel_200_150.png"
 			}
 			
 			var url = colourMap[colour];
 			if (url == undefined)
 			{
-				url = "../../images/icons/postItBG-Yel_200_150.png";
+				url = "../../images/annotations/postItBG-Yel_200_150.png";
 			}
 			
 			return url;
@@ -2218,7 +2218,7 @@ define([ "m_pharmacyToolbarController", "m_canvasManager", "m_communicationContr
 			{
 				var menuOptions = getAnnotContextMenuOptions(annotation);
 				var annotContextMenu = [];
-				var blackBack = m_canvasManager.drawImageAt("../../images/icons/black.jpeg", menuOptions.x, menuOptions.y, menuOptions.backWidth, menuOptions.backHeight);
+				var blackBack = m_canvasManager.drawImageAt("../../images/annotations/black.jpeg", menuOptions.x, menuOptions.y, menuOptions.backWidth, menuOptions.backHeight);
 				annotContextMenu.push(blackBack);
 				
 				//Add delete menu

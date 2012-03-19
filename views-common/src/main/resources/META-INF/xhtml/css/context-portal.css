@@ -302,7 +302,7 @@ chat-protocol-table
 .notesTooltip .icePnlTlTip{
 	width:200px;
 	border:1px solid #FFCC00;
-	background: url('../images/icons/notes-background.png') top repeat-x #FFFFE0;
+	background: url('../images/notes-background.png') top repeat-x #FFFFE0;
 	clear:both;
 	font-family:Arial, Helvetica, sans-serif;
 	font-size:11px;
