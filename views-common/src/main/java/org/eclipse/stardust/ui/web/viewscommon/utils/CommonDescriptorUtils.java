@@ -660,9 +660,8 @@ public class CommonDescriptorUtils
             for (DataPath path : datas)
             {
                DataPath caseDataPath = caseDescriptorDefinitions.get(path.getId());
-               if (!dataPathMap.containsKey(path.getId()) && null != caseDataPath
-                     && caseDataPath.getMappedType().equals(path.getMappedType())
-                     && !CommonDescriptorUtils.isStructuredData(path))
+               if (path.isKeyDescriptor() && !dataPathMap.containsKey(path.getId()) && null != caseDataPath
+                     && caseDataPath.getMappedType().equals(path.getMappedType()))
                {
                   dataPathMap.put(path.getId(), path);
                }
