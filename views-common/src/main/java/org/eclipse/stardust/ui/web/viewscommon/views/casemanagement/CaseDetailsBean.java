@@ -104,8 +104,7 @@ public class CaseDetailsBean extends PopupUIComponentBean
 
    private ProcessTableHelper processHelper;
    private String duration;
-   private String activityNotes;
-   private boolean abortProcess;
+   private String activityNotes;   
    private String state;
    private boolean supportsProcessAttachments;
 
@@ -178,7 +177,7 @@ public class CaseDetailsBean extends PopupUIComponentBean
       }
 
       setSupportsProcessAttachments(DMSHelper.existsProcessAttachmentsDataPath(processInstance));
-      setAbortProcess(ProcessInstanceUtils.isAbortable(processInstance));
+     
       state = MessagesViewsCommonBean.getInstance().getString(
             STATE_PREFIX + processInstance.getState().getName().toLowerCase());
 
@@ -796,18 +795,8 @@ public class CaseDetailsBean extends PopupUIComponentBean
    public void setActivityNotes(String activityNotes)
    {
       this.activityNotes = activityNotes;
-   }
-
-   public boolean isAbortProcess()
-   {
-      return abortProcess;
-   }
-
-   public void setAbortProcess(boolean abortProcess)
-   {
-      this.abortProcess = abortProcess;
-   }
-
+   }   
+  
    public String getProcessName()
    {
          return processName;

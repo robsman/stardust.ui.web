@@ -12,17 +12,16 @@
 
 	<ice:panelGrid cellspacing="0" cellpadding="2"
 		style="padding-right: 10px;" columns="15">
-		<pc:automationTag value="auto-COM-CaseDetView-ToolbarTerminate"/>
-		<ice:commandButton
-			image="/plugins/views-common/images/icons/abort_process.png"
-			action="#{caseDetailsBean.terminateProcess}"
-			disabled="#{!caseDetailsBean.abortProcess}" partialSubmit="true"
-			title="#{views_common_msgPropsBean['common.tooltip.terminate']}"
-			styleClass="toolbar-button" />
+		<pc:automationTag value="auto-COM-CaseDetView-ToolbarTerminate"/>		
+		
+		<ice:panelGroup>
+			<ice:graphicImage styleClass="iceCmdBtn-dis"
+				value="/plugins/views-common/images/icons/abort_process.png" />
+		</ice:panelGroup>
 
 		<!-- Rendered when process termination is allowed -->
 		<ice:panelGroup
-			rendered="#{(caseDetailsBean.abortProcess)}">
+			rendered="#{caseDetailsBean.canManageCase and !caseDetailsBean.inactiveCase}">
 			<c:set var="bean" value="#{caseDetailsBean}" />
 			<c:set var="processInstance"
 				value="#{caseDetailsBean.processInstance}" />
@@ -31,7 +30,7 @@
 		</ice:panelGroup>
 		<!-- Rendered when process termination is not allowed -->
 		<ice:panelGroup
-			rendered="#{!(caseDetailsBean.abortProcess)}">
+			rendered="#{!caseDetailsBean.canManageCase or caseDetailsBean.inactiveCase}">
 			<ice:graphicImage styleClass="iceCmdBtn-dis"
 				value="/plugins/views-common/images/icons/panelHeader-triggerCollapse.png" />
 		</ice:panelGroup>

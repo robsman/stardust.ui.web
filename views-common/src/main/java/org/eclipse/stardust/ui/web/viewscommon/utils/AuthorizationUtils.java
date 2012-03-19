@@ -59,22 +59,11 @@ public class AuthorizationUtils
       return PermissionState.Granted.equals(processInstance.getPermission(PERMISSION_MANAGE_CASE));      
    }
 
-   /**
-    * 
-    * @param processInstance
-    * @return
-    */
+
    public static boolean hasAbortPermission(ProcessInstance processInstance)
    {
-      if (processInstance.isCaseProcessInstance())
-      {
-         return hasManageCasePermission(processInstance);
-      }
-      else
-      {
-         return PermissionState.Granted.equals(processInstance
-               .getPermission(Permissions.PROCESS_DEFINITION_ABORT_PROCESS_INSTANCES));
-      }
+      return PermissionState.Granted.equals(processInstance
+            .getPermission(Permissions.PROCESS_DEFINITION_ABORT_PROCESS_INSTANCES));
    }
 
    public static boolean hasDelegatePermission(ActivityInstance activityInstance)

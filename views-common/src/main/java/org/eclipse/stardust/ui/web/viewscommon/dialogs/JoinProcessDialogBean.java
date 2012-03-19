@@ -159,7 +159,8 @@ public class JoinProcessDialogBean extends PopupUIComponentBean implements ICall
    private boolean showNotificationForAbortedSource()
    {
       MessagePropertiesBean messageBean = MessagePropertiesBean.getInstance();
-      if (!AuthorizationUtils.hasAbortPermission(sourceProcessInstance))
+      if (sourceProcessInstance.isCaseProcessInstance()
+            && !AuthorizationUtils.hasManageCasePermission(sourceProcessInstance))
       {
          MessageDialog.addMessage(MessageType.ERROR, messageBean.getString("common.error"),
                COMMON_MESSAGE_BEAN.getString("common.authorization.msg"));
