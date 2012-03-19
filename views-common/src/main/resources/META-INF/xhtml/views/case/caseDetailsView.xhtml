@@ -112,7 +112,7 @@
 							<ice:column>
 								<ice:commandLink
 									actionListener="#{caseDetailsBean.openDelegateDialog}"
-									rendered="#{caseDetailsBean.canManageCase}">
+									rendered="#{caseDetailsBean.canManageCase and not caseDetailsBean.inactiveCase}">
 									<pc:automationTag value="auto-COM-CaseDetView-OpenDelegateCase"
 											standAlone="false" />
 									<h:graphicImage
