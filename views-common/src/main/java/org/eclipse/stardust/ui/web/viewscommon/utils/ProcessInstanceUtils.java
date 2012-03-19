@@ -183,10 +183,18 @@ public class ProcessInstanceUtils
     */
    public static boolean isAbortable(ProcessInstance processInstance)
    {
-      boolean abortable = processInstance == null ? false : !ProcessInstanceState.Aborted
-            .equals(processInstance.getState())
-            && !ProcessInstanceState.Completed.equals(processInstance.getState())
-            && AuthorizationUtils.hasAbortPermission(processInstance);
+      boolean abortable = isAbortableState(processInstance) && AuthorizationUtils.hasAbortPermission(processInstance);
+      return abortable;
+   }
+   
+   /**
+    * @param processInstance
+    * @return
+    */
+   public static boolean isAbortableState(ProcessInstance processInstance)
+   {
+      boolean abortable = processInstance == null ? false : !ProcessInstanceState.Aborted.equals(processInstance
+            .getState()) && !ProcessInstanceState.Completed.equals(processInstance.getState());
       return abortable;
    }
    

@@ -165,7 +165,7 @@ public class JoinProcessDialogBean extends PopupUIComponentBean implements ICall
                COMMON_MESSAGE_BEAN.getString("common.authorization.msg"));
          return true;
       }
-      else if (!ProcessInstanceUtils.isAbortable(sourceProcessInstance))
+      else if (!ProcessInstanceUtils.isAbortableState(sourceProcessInstance))
       {
          MessageDialog.addMessage(MessageType.ERROR, messageBean.getString("common.error"),
                COMMON_MESSAGE_BEAN.getString("common.notifyProcessAlreadyAborted"));
