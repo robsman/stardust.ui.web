@@ -64,6 +64,8 @@
       <dependency org="com.sun.jersey" name="jersey-core" rev="1.1.5.1" conf="ipp-views-common-runtime->default" />
       <dependency org="com.sun.jersey" name="jersey-server" rev="1.1.5.1" conf="ipp-views-common-runtime->default" />
       <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-views-common-runtime->spring-module-runtime" />
+ 	  <dependency org="org.springframework" name="spring-core" transitive="false" rev="3.0.5.RELEASE" conf="ipp-views-common-runtime->default"/>
+      <dependency org="org.springframework" name="spring-beans" transitive="false" rev="3.0.5.RELEASE" conf="ipp-views-common-runtime->default"/>
 
       <!-- ipp-views-common-provided -->
       <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-views-common-provided->jsf-api-module-compile" />

@@ -75,6 +75,10 @@
       <dependency org="commons-collections" name="commons-collections" rev="3.2" conf="ipp-portal-common-runtime->default" />
       <dependency org="commons-digester" name="commons-digester" rev="1.8" conf="ipp-portal-common-runtime->default" />
       <dependency org="commons-lang" name="commons-lang" rev="2.4" conf="ipp-portal-common-runtime->default" />
+      <dependency org="org.springframework" name="spring-core" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-common-runtime->default"/>
+      <dependency org="org.springframework" name="spring-beans" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-common-runtime->default"/>
+      <dependency org="org.springframework" name="spring-context" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-common-runtime->default"/>
+
 
       <!-- ipp-portal-common-provided -->
       <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="ipp-portal-common-provided, compile->default" />

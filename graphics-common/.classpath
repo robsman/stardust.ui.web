@@ -8,9 +8,12 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="var" path="CARNOT_HOME/lib/carnot-engine.jar"/>
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/sun/jersey/1.1.5.1/jsr311-api-1.1.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/2.5.6/spring.jar" sourcepath="/Q-ARCHIVE/thirdparty/spring/framework/2.5.6/spring-sources.jar"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-core-3.0.5.RELEASE.jar" sourcepath="/Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-core-3.0.5.RELEASE-sources.jar"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-beans-3.0.5.RELEASE.jar" sourcepath="/Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-beans-3.0.5.RELEASE-sources.jar"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-context-3.0.5.RELEASE.jar" sourcepath="/Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-context-3.0.5.RELEASE-sources.jar" />
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-web-3.0.5.RELEASE.jar" sourcepath="/Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-web-3.0.5.RELEASE-sources.jar" />
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javax/servlet/2.4/servlet-2.4.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/google.com/gson/1.6/gson-1.6.jar"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/google.com/gson/1.6/gson-1.6.jar"/>	
 	<classpathentry combineaccessrules="false" kind="src" path="/views-common"/>
 	<classpathentry kind="output" path=".eclipse/bin"/>
 </classpath>

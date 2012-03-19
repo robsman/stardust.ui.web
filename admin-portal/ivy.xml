@@ -51,6 +51,7 @@
       <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-administration-perspective-runtime->ipp-views-common-runtime" />
       <dependency org="com.infinity.bpm" name="ipp-portal-api" rev="${ipp.version.full}" conf="ipp-administration-perspective-runtime->ipp-portal-api-runtime" />
       <dependency org="com.infinity.bpm" name="ipp-graphics-common" rev="${ipp.version.full}" conf="ipp-administration-perspective-runtime->ipp-graphics-common-runtime" />
+	  <dependency org="org.springframework" name="spring-core" transitive="false" rev="3.0.5.RELEASE" conf="ipp-administration-perspective-runtime->default"/>
 
       <!-- ipp-administration-perspective-provided -->
       <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-administration-perspective-provided->jsf-api-module-compile" />
