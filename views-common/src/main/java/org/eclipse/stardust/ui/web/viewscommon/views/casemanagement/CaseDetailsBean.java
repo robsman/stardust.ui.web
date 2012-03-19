@@ -686,13 +686,22 @@ public class CaseDetailsBean extends PopupUIComponentBean
     */
    public void openDelegateDialog(ActionEvent ae)
    {
-      List<ActivityInstance> ais = CollectionUtils.newArrayList();
-      ais.add(activityInstance);
-      DelegationBean delegationBean = (DelegationBean) FacesUtils.getBeanFromContext("delegationBean");
-      delegationBean.setAis(ais);
-      delegationBean.setDelegateCase(true);
-      delegationBean.setICallbackHandler(this);
-      delegationBean.openPopup();
+      processInstance = ProcessInstanceUtils.getProcessInstance(processInstance.getOID());
+      if (!isInactiveCase())
+      {
+         List<ActivityInstance> ais = CollectionUtils.newArrayList();
+         ais.add(activityInstance);
+         DelegationBean delegationBean = (DelegationBean) FacesUtils.getBeanFromContext("delegationBean");
+         delegationBean.setAis(ais);
+         delegationBean.setDelegateCase(true);
+         delegationBean.setICallbackHandler(this);
+         delegationBean.openPopup();
+      }
+      else
+      {
+         MessageDialog.addMessage(MessageType.ERROR, MessagePropertiesBean.getInstance().getString("common.error"),
+               COMMON_MESSAGE_BEAN.getString("common.notifyProcessAlreadyAborted"));
+      }
    }
 
    /**
