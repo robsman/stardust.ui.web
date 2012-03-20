@@ -65,12 +65,13 @@
 						<ice:outputLabel
 							value="#{ messages_admin['views.deployModelView.ignoreWarning.label']}#{messages_admin['common.colon']}"
 							styleClass="label-form" />
-						
-						<pc:automationTag value="auto-ADM-ModelDeployDlg-IgnoreWarnings"/>
-						<ice:selectBooleanCheckbox
-							value="#{modelDeploymentDialogBean.deploymentPage.deploymentOptions.ignoreWarnings}"
-							partialSubmit="true" />
 
+						<ice:panelGroup>
+							<pc:automationTag value="auto-ADM-ModelDeployDlg-IgnoreWarnings" />
+							<ice:selectBooleanCheckbox
+								value="#{modelDeploymentDialogBean.deploymentPage.deploymentOptions.ignoreWarnings}"
+								partialSubmit="true" />
+						</ice:panelGroup>
 
 
 
