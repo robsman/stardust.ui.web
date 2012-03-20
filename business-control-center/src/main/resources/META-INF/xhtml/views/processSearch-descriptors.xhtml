@@ -16,135 +16,177 @@
 			</ice:panelGroup>	
 		</f:facet>
 		<ice:panelGroup scrollHeight="240px">
-			<c:forEach var="descriptorItem" varStatus="iter"
-				items="#{descriptorItems}">
-				<ice:panelGrid columns="2"
-					rendered="#{!(descriptorItem.type eq 'TimeStamp' or descriptorItem.type eq 'date')}" columnClasses="table-columnVertical columnStyle">
-					<ice:panelGroup>
-						<ice:outputText
-							value="#{descriptorItem.label}#{messages_bcc['common.colon']}"
-							styleClass="label-form" />
+			<table style="vertical-align: top;">
+				<c:forEach var="descriptorItem" varStatus="iter"
+					items="#{descriptorItems}">
+					<ice:panelGroup columns="2"
+						rendered="#{!(descriptorItem.type eq 'TimeStamp' or descriptorItem.type eq 'date')}"
+						columnClasses="table-columnVertical">
+						<tr>
+							<td><ice:panelGroup>
+									<ice:outputText
+										value="#{descriptorItem.label}#{messages_bcc['common.colon']}"
+										styleClass="label-form" />
+								</ice:panelGroup>
+							</td>
+							<td><ice:panelGroup
+									rendered="#{descriptorItem.type eq 'Boolean'}">
+									<ice:selectOneMenu
+										valueChangeListener="#{descriptorItem.booleanValueChangeListener}"
+										value="#{descriptorItem.booleanValueStr}" partialSubmit="true">
+										<pc:automationTag
+											value="auto-BCC-ProcSrch-Descriptors-OnOffFilter"
+											standAlone="false" />
+										<f:selectItem itemValue="" itemLabel="" />
+										<f:selectItem itemValue="true"
+											itemLabel="#{common_msgPropsBean['common.filterPopup.onOffFilter.ON']}" />
+										<f:selectItem itemValue="false"
+											itemLabel="#{common_msgPropsBean['common.filterPopup.onOffFilter.OFF']}" />
+									</ice:selectOneMenu>
+								</ice:panelGroup>
+								
+								 <ice:panelGroup rendered="#{descriptorItem.type eq 'Long'}">
+									<ice:inputText partialSubmit="true"
+										id="Long#{descriptorItem.id}"
+										value="#{descriptorItem.longValue}">
+										<pc:automationTag
+											value="auto-BCC-ProcSrch-Descriptors-LongVal"
+											standAlone="false" />
+									</ice:inputText>
+									<ice:message for="Long#{descriptorItem.id}"
+										styleClass="iceMsgImage" showSummary="false"
+										showDetail="false" />
+									<ice:panelGroup styleClass="msgError">
+										<ice:message for="Long#{descriptorItem.id}"
+											styleClass="iceMsgInline" />
+									</ice:panelGroup>
+								</ice:panelGroup>
+								
+								 <ice:panelGroup rendered="#{descriptorItem.type eq 'Priority'}">
+									<ice:inputText partialSubmit="true"
+										id="Priority#{descriptorItem.id}"
+										value="#{descriptorItem.longValue}">
+										<pc:automationTag
+											value="auto-BCC-ProcSrch-Descriptors-PriorityVal"
+											standAlone="false" />
+									</ice:inputText>
+									<ice:message for="Priority#{descriptorItem.id}"
+										styleClass="iceMsgImage" showSummary="false"
+										showDetail="false" />
+									<ice:panelGroup styleClass="msgError">
+										<ice:message for="Priority#{descriptorItem.id}"
+											styleClass="iceMsgInline" />
+									</ice:panelGroup>
+								</ice:panelGroup>
+								
+								 <ice:panelGroup rendered="#{descriptorItem.type eq 'Double'}">
+									<ice:inputText partialSubmit="true"
+										id="Double#{descriptorItem.id}"
+										value="#{descriptorItem.doubleValue}">
+										<pc:automationTag
+											value="auto-BCC-ProcSrch-Descriptors-DoubleVal"
+											standAlone="false" />
+									</ice:inputText>
+									<ice:message for="Double#{descriptorItem.id}"
+										styleClass="iceMsgImage" showSummary="false"
+										showDetail="false" />
+									<ice:panelGroup styleClass="msgError">
+										<ice:message for="Double#{descriptorItem.id}"
+											styleClass="iceMsgInline" />
+									</ice:panelGroup>
+								</ice:panelGroup>
+								
+								 <ice:panelGroup
+									rendered="#{descriptorItem.type eq 'String' or descriptorItem.type eq 'Time'}">
+									<ice:inputText partialSubmit="true"
+										id="String#{descriptorItem.id}"
+										value="#{descriptorItem.stringValue}">
+										<pc:automationTag
+											value="auto-BCC-ProcSrch-Descriptors-StringVal"
+											standAlone="false" />
+									</ice:inputText>
+								</ice:panelGroup>
+								
+								 <ice:panelGroup
+									rendered="#{descriptorItem.type eq 'Structured'}">
+									<ice:inputText partialSubmit="true"
+										id="Str#{descriptorItem.id}"
+										value="#{descriptorItem.stringValue}">
+										<pc:automationTag
+											value="auto-BCC-ProcSrch-Descriptors-StructStringVal"
+											standAlone="false" />
+									</ice:inputText>
+								</ice:panelGroup>
+							</td>
+						</tr>
 					</ice:panelGroup>
-					<ice:panelGroup rendered="#{descriptorItem.type eq 'Boolean'}">
-						<ice:selectOneMenu
-							valueChangeListener="#{descriptorItem.booleanValueChangeListener}"
-							value="#{descriptorItem.booleanValueStr}" partialSubmit="true">
-							<pc:automationTag
-								value="auto-BCC-ProcSrch-Descriptors-OnOffFilter"
-								standAlone="false" />
-							<f:selectItem itemValue="" itemLabel="" />
-							<f:selectItem itemValue="true"
-								itemLabel="#{common_msgPropsBean['common.filterPopup.onOffFilter.ON']}" />
-							<f:selectItem itemValue="false"
-								itemLabel="#{common_msgPropsBean['common.filterPopup.onOffFilter.OFF']}" />
-						</ice:selectOneMenu>
-					</ice:panelGroup>
+					
+					<ice:panelGroup columns="2"
+						rendered="#{(descriptorItem.type eq 'TimeStamp' or descriptorItem.type eq 'date')}"
+						columnClasses="table-columnVertical">
+						<tr>
+							<td><ice:outputText
+									value="#{descriptorItem.label} (#{views_common_msgPropsBean['common.from']})#{messages_bcc['common.colon']}"
+									styleClass="label-form" /></td>
+							<td><ice:panelGrid columns="2">
+									<ice:selectInputDate renderAsPopup="true"
+										style="white-space:nowrap" id="from#{descriptorItem.id}"
+										value="#{descriptorItem.fromDateValue}">
+										<pc:automationTag
+											value="auto-BCC-ProcSrch-Descriptors-TimeStampFrm"
+											standAlone="false" />
+										<f:converter converterId="#{descriptorItem.convertorId}" />
+									</ice:selectInputDate>
+									<ice:message for="from#{descriptorItem.id}"
+										styleClass="iceMsgImage" showSummary="false"
+										showDetail="false" />
+								</ice:panelGrid>
+							</td>
+						</tr>
 
-					<ice:panelGroup rendered="#{descriptorItem.type eq 'Long'}">
-						<ice:inputText partialSubmit="true" id="Long#{descriptorItem.id}"
-							value="#{descriptorItem.longValue}">
-							<pc:automationTag
-								value="auto-BCC-ProcSrch-Descriptors-LongVal"
-								standAlone="false" />
-						</ice:inputText>
-						<ice:message for="Long#{descriptorItem.id}" styleClass="iceMsgImage"
-							showSummary="false" showDetail="false" />
-						<ice:panelGroup styleClass="msgError">
-							<ice:message for="Long#{descriptorItem.id}" styleClass="iceMsgInline"/>
-						</ice:panelGroup>
-					</ice:panelGroup>
+						<tr>
+							<td><ice:panelGroup>
+								</ice:panelGroup>
+							</td>
+							<td><ice:panelGroup styleClass="msgError">
+									<ice:message for="from#{descriptorItem.id}"
+										styleClass="iceMsgInline" />
+								</ice:panelGroup>
+							</td>
+						</tr>
 
-					<ice:panelGroup rendered="#{descriptorItem.type eq 'Priority'}">
-						<ice:inputText partialSubmit="true"
-							id="Priority#{descriptorItem.id}"
-							value="#{descriptorItem.longValue}" >
-							<pc:automationTag
-								value="auto-BCC-ProcSrch-Descriptors-PriorityVal"
-								standAlone="false" />
-						</ice:inputText>	
-						<ice:message for="Priority#{descriptorItem.id}" styleClass="iceMsgImage"
-							showSummary="false" showDetail="false" />
-						<ice:panelGroup styleClass="msgError">
-							<ice:message for="Priority#{descriptorItem.id}" styleClass="iceMsgInline"/>
-						</ice:panelGroup>
-					</ice:panelGroup>
+						<tr>
+							<td><ice:outputText
+									value="#{descriptorItem.label} (#{views_common_msgPropsBean['common.to']})#{messages_bcc['common.colon']}"
+									styleClass="label-form" /></td>
+							<td><ice:panelGrid columns="2">
+									<ice:selectInputDate renderAsPopup="true"
+										style="white-space:nowrap" id="to#{descriptorItem.id}"
+										value="#{descriptorItem.toDateValue}">
+										<pc:automationTag
+											value="auto-BCC-ProcSrch-Descriptors-TimeStampTo"
+											standAlone="false" />
+										<f:converter converterId="#{descriptorItem.convertorId}" />
+									</ice:selectInputDate>
+									<ice:message for="to#{descriptorItem.id}"
+										styleClass="iceMsgImage" showSummary="false"
+										showDetail="false" />
+								</ice:panelGrid>
+							</td>
+						</tr>
 
-					<ice:panelGroup rendered="#{descriptorItem.type eq 'Double'}">
-						<ice:inputText partialSubmit="true"
-							id="Double#{descriptorItem.id}"
-							value="#{descriptorItem.doubleValue}">
-							<pc:automationTag
-								value="auto-BCC-ProcSrch-Descriptors-DoubleVal"
-								standAlone="false" />
-						</ice:inputText>
-						<ice:message for="Double#{descriptorItem.id}" styleClass="iceMsgImage" showSummary="false" showDetail="false" />	
-						<ice:panelGroup styleClass="msgError">
-							<ice:message for="Double#{descriptorItem.id}" styleClass="iceMsgInline"/>
-						</ice:panelGroup>
+						<tr>
+							<td><ice:panelGroup>
+								</ice:panelGroup></td>
+							<td><ice:panelGroup styleClass="msgError">
+									<ice:message for="to#{descriptorItem.id}"
+										styleClass="iceMsgInline" />
+								</ice:panelGroup>
+							</td>
+						</tr>
 					</ice:panelGroup>
-
-					<ice:panelGroup rendered="#{descriptorItem.type eq 'String' or descriptorItem.type eq 'Time'}">
-						<ice:inputText partialSubmit="true"
-							id="String#{descriptorItem.id}"
-							value="#{descriptorItem.stringValue}">
-							<pc:automationTag
-								value="auto-BCC-ProcSrch-Descriptors-StringVal"
-								standAlone="false" />
-						</ice:inputText>
-					</ice:panelGroup>
-
-					<ice:panelGroup rendered="#{descriptorItem.type eq 'Structured'}">
-						<ice:inputText partialSubmit="true" id="Str#{descriptorItem.id}"
-							value="#{descriptorItem.stringValue}">
-							<pc:automationTag
-								value="auto-BCC-ProcSrch-Descriptors-StructStringVal"
-								standAlone="false" />
-						</ice:inputText>	
-					</ice:panelGroup>
-
-				</ice:panelGrid>
-				<ice:panelGrid columns="2"
-					rendered="#{(descriptorItem.type eq 'TimeStamp' or descriptorItem.type eq 'date')}" columnClasses="table-columnVertical columnStyle">
-					<ice:outputText
-						value="#{descriptorItem.label} (#{views_common_msgPropsBean['common.from']})#{messages_bcc['common.colon']}"
-						styleClass="label-form" />
-					<ice:panelGrid columns="2">	
-						<ice:selectInputDate renderAsPopup="true" style="white-space:nowrap"
-							id="from#{descriptorItem.id}"
-							value="#{descriptorItem.fromDateValue}">
-							<pc:automationTag
-									value="auto-BCC-ProcSrch-Descriptors-TimeStampFrm"
-									standAlone="false" />
-							<f:converter converterId="#{descriptorItem.convertorId}" />
-						</ice:selectInputDate>
-						<ice:message for="from#{descriptorItem.id}" styleClass="iceMsgImage" showSummary="false" showDetail="false" />
-					</ice:panelGrid>	
-					<ice:panelGroup>
-					</ice:panelGroup>
-					<ice:panelGroup styleClass="msgError">
-						<ice:message for="from#{descriptorItem.id}" styleClass="iceMsgInline"/>
-					</ice:panelGroup>
-
-					<ice:outputText
-						value="#{descriptorItem.label} (#{views_common_msgPropsBean['common.to']})#{messages_bcc['common.colon']}"
-						styleClass="label-form" />
-					<ice:panelGrid columns="2">	
-						<ice:selectInputDate renderAsPopup="true"  style="white-space:nowrap"
-							id="to#{descriptorItem.id}" value="#{descriptorItem.toDateValue}">
-							<pc:automationTag
-									value="auto-BCC-ProcSrch-Descriptors-TimeStampTo"
-									standAlone="false" />
-							<f:converter converterId="#{descriptorItem.convertorId}" />
-						</ice:selectInputDate>
-						<ice:message for="to#{descriptorItem.id}" styleClass="iceMsgImage" showSummary="false" showDetail="false" />						
-					</ice:panelGrid>	
-					<ice:panelGroup>
-					</ice:panelGroup>
-					<ice:panelGroup styleClass="msgError">
-						<ice:message for="to#{descriptorItem.id}" styleClass="iceMsgInline"/>
-					</ice:panelGroup>
-				</ice:panelGrid>
-			</c:forEach>
+				</c:forEach>
+			</table>
 		</ice:panelGroup>
 	</ice:panelGrid>
 </f:view>

@@ -1047,12 +1047,6 @@ img
 	vertical-align: top;
 }
 
-.table-columnVertical .columnStyle
-{
-	vertical-align: top;
-	width:50%;
-}
-	
 .odd-table-row
 {
 	border: none;
