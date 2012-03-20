@@ -209,7 +209,7 @@
 		<!-- Extract Page configuration -->
 		<ice:panelGroup styleClass="heading" style="width: 100%">
 			<ice:outputText
-				value="#{views_common_msgPropsBean['views.imageViewerConfig.extractPageOptions.title']}" />
+				value="#{views_common_msgPropsBean['views.imageViewerConfig.extractPages.title']}" />
 		</ice:panelGroup>
 		<ice:panelGroup style="clearing" />
 		<ice:panelGroup>
@@ -232,7 +232,16 @@
 				</ice:panelGroup>
 			</ice:panelGrid>
 		</ice:panelGroup>
-
+		<ice:panelGroup style="clearing" />
+		<ice:panelGrid columns="2" rendered="#{imageViewerConfigurationBean.allowDeleteFromOriginal}">
+			<ice:outputLabel value="#{views_common_msgPropsBean['views.imageViewerConfig.extractPages.DocPriorVersionAction.Label']}" styleClass="label-form"/>
+			<ice:selectOneMenu partialSubmit="true"
+				value="#{imageViewerConfigurationBean.docPriorVersionAction}"
+				disabled="#{!ippPortalApp.loggedInUser.administrator or !imageViewerConfigurationBean.enableExtractPage}">
+				<f:selectItems
+					value="#{imageViewerConfigurationBean.docPriorVersionActionList}" />
+			</ice:selectOneMenu>
+		</ice:panelGrid>
 		<ice:panelGroup style="clearing" />
 
 		<!-- Temporary Commented following code as part of JIRA CRNT-21779 

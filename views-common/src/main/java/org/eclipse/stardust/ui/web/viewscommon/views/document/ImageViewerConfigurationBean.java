@@ -44,6 +44,8 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 public class ImageViewerConfigurationBean implements PortalConfigurationListener, UserPreferencesEntries, ConfirmationDialogHandler
 {
    private static final String BEAN_NAME = "imageViewerConfigurationBean";
+   private static final String RETAIN_PRIOR_DOCUMENT_VERSIONS="0";
+   private static final String DELETE_PRIOR_DOCUMENT_VERSIONS="1";
    
    private static final String DEFAULT_NOTE_FONT_SIZE = "24";
 
@@ -254,13 +256,19 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
       userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_STICKY_NOTE_COLOUR, stickyNoteColour);
       userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_HIGHLIGHTER_COLOUR, highlighterColour);
       userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DATA_FIELD_HIGHLIGHTER_COLOUR, dataFieldHighlightColour);
-      userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DOC_PRIOR_VERSION_ACTION, docPriorVersionAction);
+
       userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DATA_FIELD_HIGHLIGHTER_OPACITY, dataFieldHighlightOpacity);
       userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DISPLAY_ZOOM_LIVEL, selectedDisplayZoomLevel);
       userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_STAMP, ImageViewerStampsBean.getCurrent().getSelectedStampId());
-      userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_EXTRACT_PAGES, String.valueOf(enableExtractPage));
-      allowDeleteFromOriginal = enableExtractPage && allowDeleteFromOriginal;
-      userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ALLOW_DELETE_FROM_ORIGINAL, String.valueOf(allowDeleteFromOriginal));
+      
+      //non-admin user can't change values
+      if (SessionContext.findSessionContext().getUser().isAdministrator())
+      {
+         userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_EXTRACT_PAGES, String.valueOf(enableExtractPage));
+         allowDeleteFromOriginal = enableExtractPage && allowDeleteFromOriginal;
+         userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_PAGE_DELETE, String.valueOf(allowDeleteFromOriginal));
+         userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DOC_PRIOR_VERSION_ACTION, docPriorVersionAction);
+      }
       MessageDialog.addInfoMessage(messageBean.getString("views.imageViewerConfig.save.successMessage"));
    }
    
@@ -582,8 +590,8 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
     */
    private void initializeDocPriorVerionAcionList(){
       docPriorVersionActionList=new ArrayList<SelectItem>();
-      docPriorVersionActionList.add(new SelectItem("0",messageBean.getString("views.imageViewerConfig.extractPages.DocPriorVerionAction.Retain")));
-      docPriorVersionActionList.add(new SelectItem("1",messageBean.getString("views.imageViewerConfig.extractPages.DocPriorVerionAction.Delete")));
+      docPriorVersionActionList.add(new SelectItem(RETAIN_PRIOR_DOCUMENT_VERSIONS,messageBean.getString("views.imageViewerConfig.extractPages.DocPriorVerionAction.Retain")));
+      docPriorVersionActionList.add(new SelectItem(DELETE_PRIOR_DOCUMENT_VERSIONS,messageBean.getString("views.imageViewerConfig.extractPages.DocPriorVerionAction.Delete")));
    }
    /**
     * 
@@ -638,15 +646,12 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
       selectedNoteFontSize = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_NOTE_FONT_SIZE, DEFAULT_NOTE_FONT_SIZE);
       stickyNoteColour = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_STICKY_NOTE_COLOUR, "yellow");
       highlighterColour = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_HIGHLIGHTER_COLOUR, "#FF0000");
-      dataFieldHighlightColour = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DATA_FIELD_HIGHLIGHTER_COLOUR, "#FF0000");
-      docPriorVersionAction = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DOC_PRIOR_VERSION_ACTION, "RETAIN_PRIOR_DOCUMENT");
+      dataFieldHighlightColour = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DATA_FIELD_HIGHLIGHTER_COLOUR, "#FF0000");      
       dataFieldHighlightOpacity = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DATA_FIELD_HIGHLIGHTER_OPACITY, "0.5");
       selectedDisplayZoomLevel = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DISPLAY_ZOOM_LIVEL, "FIT_TO_WINDOW");
-      if (SessionContext.findSessionContext().getUser().isAdministrator())
-      {
-         enableExtractPage = userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_EXTRACT_PAGES, true);
-         allowDeleteFromOriginal = userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ALLOW_DELETE_FROM_ORIGINAL, true);
-      }
+      enableExtractPage = userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_EXTRACT_PAGES, true);
+      allowDeleteFromOriginal = userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_PAGE_DELETE, true);
+      docPriorVersionAction = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DOC_PRIOR_VERSION_ACTION, RETAIN_PRIOR_DOCUMENT_VERSIONS);     
       ImageViewerStampsBean.getCurrent().setSelectedStampId(userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_STAMP, ""));
    }
    
@@ -670,13 +675,13 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
       userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_HIGHLIGHTER_COLOUR);
       userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DATA_FIELD_HIGHLIGHTER_COLOUR);
       userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DATA_FIELD_HIGHLIGHTER_OPACITY);
-      userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DISPLAY_ZOOM_LIVEL);
-      userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DOC_PRIOR_VERSION_ACTION);
+      userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DISPLAY_ZOOM_LIVEL);   
       userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_STAMP);      
       if (SessionContext.findSessionContext().getUser().isAdministrator())
       {
          userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_EXTRACT_PAGES);
-         userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ALLOW_DELETE_FROM_ORIGINAL);
+         userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_PAGE_DELETE);
+         userPrefsHelper.resetValue(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DOC_PRIOR_VERSION_ACTION);
       }
    }
 
@@ -701,14 +706,29 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
    /**
     * @return
     */
-   public static boolean isAllowDeleteFromOriginalEnable()
+   public static boolean isEnablePageDelete()
    {
       if (isExtractPagesEnable())
       {
          UserPreferencesHelper userPrefsHelper = getUserPrefenceHelper();
-         return userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ALLOW_DELETE_FROM_ORIGINAL, true);
+         return userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_PAGE_DELETE, true);
       }
       return false;
+   }
+
+   /**
+    * check user preference for document version retain configuration
+    * 
+    * @return
+    */
+
+   public static boolean isRetainPriorVersion()
+   {
+      UserPreferencesHelper userPrefsHelper = getUserPrefenceHelper();
+      String docPriorVersionAction = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG,
+            F_IMAGE_VIEWER_SELECTED_DOC_PRIOR_VERSION_ACTION, RETAIN_PRIOR_DOCUMENT_VERSIONS);
+
+      return DELETE_PRIOR_DOCUMENT_VERSIONS.equals(docPriorVersionAction) ? false : true;
    }
   
 }

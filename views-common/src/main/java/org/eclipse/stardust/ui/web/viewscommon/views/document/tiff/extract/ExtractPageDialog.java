@@ -191,7 +191,7 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
       spawnProcessHelper = new SpawnProcessHelper();
       userPrefsHelper = getUserPrefenceHelper();
       validationMessageBean = new ValidationMessageBean();
-      deletePageEnable = ImageViewerConfigurationBean.isAllowDeleteFromOriginalEnable();
+      deletePageEnable = ImageViewerConfigurationBean.isEnablePageDelete();
 
       List<ProcessDefinition> startableProcesses = null;
 
@@ -620,7 +620,7 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
       deleteExtractedPages(updatePageList);
 
       // delete old versions if not to retain version
-      if (deletePageEnable && !isRetainPriorVersion())
+      if (deletePageEnable && !ImageViewerConfigurationBean.isRetainPriorVersion())
       {
          DocumentMgmtUtility.deleteOldVersions(imageInfo.getDocument());
       }
@@ -686,24 +686,7 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
       {
          DMSHelper.deleteProcessAttachment(pi, document);
       }
-   }
-
-   /**
-    * check user preference for document version retain configuration
-    * 
-    * @return
-    */
-   private boolean isRetainPriorVersion()
-   {
-      String docPriorVersionAction = userPrefsHelper.getSingleString(UserPreferencesEntries.V_IMAGE_VIEWER_CONFIG,
-            UserPreferencesEntries.F_IMAGE_VIEWER_SELECTED_DOC_PRIOR_VERSION_ACTION, "RETAIN_PRIOR_DOCUMENT");
-
-      return "1".equals(docPriorVersionAction) ? false : true; // 1= not retain prior
-                                                               // version,0=retain prior
-                                                               // version
-   }
-
-   
+   }  
 
    /**
     * 
