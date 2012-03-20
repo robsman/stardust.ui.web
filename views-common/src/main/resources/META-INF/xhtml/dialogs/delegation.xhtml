@@ -312,8 +312,10 @@
 									</ice:panelGroup>
 									<ice:panelGroup styleClass="clearing" />
 									<ice:panelGroup>
-										<!-- <ui:include src="/plugins/views-common/participantTree/participantTree.xhtml" /> -->
-										<ice:outputText value="Participant Tree Place Holder" />
+										<ui:include src="/plugins/views-common/participantTree/participantTree.xhtml">
+											<ui:param name="participantTree" value="#{delegationBean.participantTree}" />
+											<ui:param name="disableContextMenu" value="true" />
+										</ui:include>
 									</ice:panelGroup>
 									<ice:panelGroup rendered="#{delegationBean.notesEnabled}">
 										<ice:panelGroup styleClass="heading">

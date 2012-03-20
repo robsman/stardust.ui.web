@@ -8,7 +8,7 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.admin.views;
+package org.eclipse.stardust.ui.web.viewscommon.participantManagement;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,18 +55,16 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserGroup;
 import org.eclipse.stardust.engine.api.runtime.UserService;
-import org.eclipse.stardust.ui.web.admin.AdminportalConstants;
-import org.eclipse.stardust.ui.web.admin.ResourcePaths;
-import org.eclipse.stardust.ui.web.admin.WorkflowFacade;
-import org.eclipse.stardust.ui.web.admin.messages.AdminMessagesPropertiesBean;
-import org.eclipse.stardust.ui.web.admin.views.ParticipantUserObject.NODE_TYPE;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.table.PaginatorDataTable;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataFilterOnOff;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
+import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.CallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.PanelConfirmation;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.participantManagement.ParticipantUserObject.NODE_TYPE;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantItem;
@@ -83,7 +81,7 @@ import com.icesoft.faces.component.tree.Tree;
  * @author anair
  * @version $Revision: $
  */
-public class ParticipantTree extends UIComponentBean
+public class ParticipantTree
 {
    private static final long serialVersionUID = 992994543928984490L;
    private static final Logger trace = LogManager.getLogger(ParticipantTree.class);
@@ -94,8 +92,6 @@ public class ParticipantTree extends UIComponentBean
    private static final String SEARCH_PARTICIPANT = "SearchParticipant";
 
    private Map<Long, Department> departmentCache = CollectionUtils.newMap();
-
-   private WorkflowFacade workflowFacade;
 
    // Used to store list of model tree nodes with model id (key)
    private Map<String, DefaultMutableTreeNode> modelNodesMap;
@@ -114,11 +110,11 @@ public class ParticipantTree extends UIComponentBean
    //hold the list of highlighted user (unique)
    private Set<String> highlightedUsers = new HashSet<String>();
    
+   private Set<User> selectedUsers;
+   
    public ParticipantTree()
    {
-      super(ResourcePaths.V_participantMgmt);
-      workflowFacade = (WorkflowFacade) SessionContext.findSessionContext()
-            .lookup(AdminportalConstants.WORKFLOW_FACADE);
+      //super(view);
       modelNodesMap = new LinkedHashMap<String, DefaultMutableTreeNode>();
       topLevelParticipantsByModelMap = new LinkedHashMap<String, List<DefaultMutableTreeNode>>();
       
@@ -137,17 +133,8 @@ public class ParticipantTree extends UIComponentBean
       topLevelParticipantsByModelMap.clear();
       refreshTreeModel();
       highlightAllSelectedUsers();
+      selectedUsers = new HashSet<User>();
    }
-
-   /**
-    * @return
-    */
-   public static ParticipantTree getInstance()
-   {
-      return (ParticipantTree) FacesContext.getCurrentInstance().getApplication().getVariableResolver()
-            .resolveVariable(FacesContext.getCurrentInstance(), "participantTree");
-   }
-
    
    public void applyFilter(ActionEvent event)
    {
@@ -501,10 +488,10 @@ public class ParticipantTree extends UIComponentBean
    /**
     * @return
     */
-   private static DefaultMutableTreeNode addRootParticipantNode()
+   private DefaultMutableTreeNode addRootParticipantNode()
    {
       DefaultMutableTreeNode childNode = new DefaultMutableTreeNode();
-      ParticipantUserObject branchObject = new ParticipantUserObject();
+      ParticipantUserObject branchObject = new ParticipantUserObject(this);
 
       childNode.setUserObject(branchObject);
 
@@ -516,10 +503,10 @@ public class ParticipantTree extends UIComponentBean
     * @param model
     * @return
     */
-   private static DefaultMutableTreeNode addModelNode(DefaultMutableTreeNode parentNode, Model model, int index)
+   private DefaultMutableTreeNode addModelNode(DefaultMutableTreeNode parentNode, Model model, int index)
    {
       DefaultMutableTreeNode childNode = new DefaultMutableTreeNode();
-      ParticipantUserObject branchObject = new ParticipantUserObject(childNode, model);
+      ParticipantUserObject branchObject = new ParticipantUserObject(childNode, model, this);
 
       childNode.setUserObject(branchObject);
       if (parentNode != null)
@@ -535,11 +522,11 @@ public class ParticipantTree extends UIComponentBean
     * @param qualifiedParticipantInfo
     * @return
     */
-   private static DefaultMutableTreeNode addParticipantNode(DefaultMutableTreeNode parentNode,
+   private DefaultMutableTreeNode addParticipantNode(DefaultMutableTreeNode parentNode,
          QualifiedModelParticipantInfo qualifiedParticipantInfo)
    {
       DefaultMutableTreeNode childNode = new DefaultMutableTreeNode();
-      ParticipantUserObject branchObject = new ParticipantUserObject(childNode, qualifiedParticipantInfo);
+      ParticipantUserObject branchObject = new ParticipantUserObject(childNode, qualifiedParticipantInfo, this);
 
       childNode.setUserObject(branchObject);
       if (parentNode != null)
@@ -556,7 +543,7 @@ public class ParticipantTree extends UIComponentBean
     * @param dynamicParticipantInfo
     * @return
     */
-   private static DefaultMutableTreeNode addParticipantNode(DefaultMutableTreeNode parentNode,
+   private DefaultMutableTreeNode addParticipantNode(DefaultMutableTreeNode parentNode,
          DynamicParticipantInfo dynamicParticipantInfo)
    {
       return addParticipantNode(parentNode, dynamicParticipantInfo, null);
@@ -570,11 +557,11 @@ public class ParticipantTree extends UIComponentBean
     * @param childIndex
     * @return
     */
-   private static DefaultMutableTreeNode addParticipantNode(DefaultMutableTreeNode parentNode,
+   private DefaultMutableTreeNode addParticipantNode(DefaultMutableTreeNode parentNode,
          DynamicParticipantInfo dynamicParticipantInfo, Integer childIndex)
    {
       DefaultMutableTreeNode childNode = new DefaultMutableTreeNode();
-      ParticipantUserObject branchObject = new ParticipantUserObject(childNode, dynamicParticipantInfo);
+      ParticipantUserObject branchObject = new ParticipantUserObject(childNode, dynamicParticipantInfo, this);
 
       childNode.setUserObject(branchObject);
       if (parentNode != null)
@@ -596,10 +583,10 @@ public class ParticipantTree extends UIComponentBean
     * @param department
     * @return
     */
-   private static DefaultMutableTreeNode addDepartmentNode(DefaultMutableTreeNode parentNode, Department department)
+   private DefaultMutableTreeNode addDepartmentNode(DefaultMutableTreeNode parentNode, Department department)
    {
       DefaultMutableTreeNode childNode = new DefaultMutableTreeNode();
-      ParticipantUserObject branchObject = new ParticipantUserObject(childNode, department);
+      ParticipantUserObject branchObject = new ParticipantUserObject(childNode, department, this);
 
       childNode.setUserObject(branchObject);
       if (parentNode != null)
@@ -615,11 +602,11 @@ public class ParticipantTree extends UIComponentBean
     * @param qualifiedOrganizationInfo
     * @return
     */
-   private static DefaultMutableTreeNode addDefaultDepartmentNode(DefaultMutableTreeNode parentNode,
+   private DefaultMutableTreeNode addDefaultDepartmentNode(DefaultMutableTreeNode parentNode,
          QualifiedOrganizationInfo qualifiedOrganizationInfo)
    {
       DefaultMutableTreeNode childNode = new DefaultMutableTreeNode();
-      ParticipantUserObject branchObject = new ParticipantUserObject(childNode, qualifiedOrganizationInfo, true);
+      ParticipantUserObject branchObject = new ParticipantUserObject(childNode, qualifiedOrganizationInfo, true, this);
 
       childNode.setUserObject(branchObject);
       if (parentNode != null)
@@ -915,9 +902,9 @@ public class ParticipantTree extends UIComponentBean
          // create panelpopup
          PanelConfirmation panelConfirmation = PanelConfirmation.getInstance(true);
          panelConfirmation.setCallbackHandler(callbackHandler);
-         panelConfirmation.setMessage(AdminMessagesPropertiesBean.getInstance().getString(
+         panelConfirmation.setMessage(MessagesViewsCommonBean.getInstance().getString(
                "views.participantMgmt.confirmDepartmentDelete.msg.title"));
-         panelConfirmation.setTitle(AdminMessagesPropertiesBean.getInstance().getString(
+         panelConfirmation.setTitle(MessagesViewsCommonBean.getInstance().getString(
                "views.participantMgmt.confirmDepartmentDelete.title"));
          panelConfirmation.openPopup();
       }
@@ -959,14 +946,18 @@ public class ParticipantTree extends UIComponentBean
             catch (InvalidArgumentException aex)
             {
                trace.error(aex);
-               ExceptionHandler.handleException(aex,
-                     this.getMessages().getString("deleteDepartment.error.inUse"));
+               ExceptionHandler.handleException(
+                     aex,
+                     MessagesViewsCommonBean.getInstance().getString(
+                           "views.participantTree.deleteDepartment.error.inUse"));
             }
             catch (Exception ex)
             {
                trace.error(ex);
-               ExceptionHandler.handleException(ex,
-                     this.getMessages().getString("deleteDepartment.error.generic"));
+               ExceptionHandler.handleException(
+                     ex,
+                     MessagesViewsCommonBean.getInstance().getString(
+                           "views.participantTree.deleteDepartment.error.generic"));
             }
          }
       }
@@ -1127,7 +1118,7 @@ public class ParticipantTree extends UIComponentBean
     */
    private QueryService getQryService()
    {
-      return workflowFacade.getQueryService();
+      return SessionContext.findSessionContext().getServiceFactory().getQueryService();
    }
 
    /**
@@ -1135,7 +1126,7 @@ public class ParticipantTree extends UIComponentBean
     */
    private UserService getUserService()
    {
-      return workflowFacade.getServiceFactory().getUserService();
+      return SessionContext.findSessionContext().getServiceFactory().getUserService();
    }
 
    /**
@@ -1143,7 +1134,7 @@ public class ParticipantTree extends UIComponentBean
     */
    private AdministrationService getAdministrationService()
    {
-      return workflowFacade.getServiceFactory().getAdministrationService();
+      return SessionContext.findSessionContext().getServiceFactory().getAdministrationService();
    }
 
    /*
@@ -1161,38 +1152,34 @@ public class ParticipantTree extends UIComponentBean
    }
 
    /**
-    * highlight all selected users
+    * Highlight all selected users. Takes a fresh copy of users before highlighting.
     */
    private void highlightAllSelectedUsers()
    {
-      try
+      if (isHighlightUsersOn())
       {
-         if (isHighlightUsersOn())
+         Set<User> latestUsers = new HashSet<User>();
+         UserService userService = ServiceFactoryUtils.getUserService();
+         for (User user : selectedUsers)
          {
-            resetHighlightUser();
-            List<User> users = CollectionUtils.newList();
-
-            UserManagementBean userManagementBean = UserManagementBean.getCurrent();
-            PaginatorDataTable<UserDetailsTableEntry, User> userDetailsTable = userManagementBean.getUserDetailsTable();
-            UserService userService=ServiceFactoryUtils.getUserService();
-            
-            if (null != userDetailsTable)
-            {
-               List<UserDetailsTableEntry> usersList = userDetailsTable.getCurrentList();
-               for (UserDetailsTableEntry userDetailsTableEntry : usersList)
-               {
-                  if (userDetailsTableEntry.isSelectedRow())
-                  {
-                     users.add(userService.getUser(userDetailsTableEntry.getUser().getOID()));//latest latest user to get latest roles
-                  }
-               }
-            }
-            highlightUsers(users);
+            latestUsers.add(userService.getUser(user.getOID()));
          }
+         selectedUsers = latestUsers;
+         removeHighlighting();
+         highlightUsers(selectedUsers);
       }
-      catch (Exception e)
+   }
+   
+   /**
+    * Highlights the selected users without taking fresh copies of users.
+    * 
+    */
+   public void highlightSelectedUsers()
+   {
+      if (isHighlightUsersOn())
       {
-         ExceptionHandler.handleException(e);
+         removeHighlighting();
+         highlightUsers(selectedUsers);
       }
    }
 
@@ -1219,25 +1206,26 @@ public class ParticipantTree extends UIComponentBean
     * 
     * @param userEntry
     */
-   public void highlightSelectedUser(Object userEntry)
+   public void highlightSelectedUser(User user, boolean selected)
    {
       try
       {
+         updateSelectedUsersSet(user, selected);
          if (isHighlightUsersOn())
          {
-            UserDetailsTableEntry userDetailsTableEntry = (UserDetailsTableEntry) userEntry;
-            if (userDetailsTableEntry.isSelectedRow())
+            if (selected)
             {
-               List<User> users = CollectionUtils.newList();
+               Set<User> users = CollectionUtils.newHashSet();
                UserService userService = ServiceFactoryUtils.getUserService();
-               users.add(userService.getUser(userDetailsTableEntry.getUser().getOID()));//latest latest user to get latest roles
+               User usr = userService.getUser(user.getOID());
+               users.add(usr);// latest latest user to get latest roles
                highlightUsers(users);
             }
             else
             {
-               if (highlightedUsers.contains(userDetailsTableEntry.getAccount()))
+               if (highlightedUsers.contains(user.getAccount()))
                {
-                  removeHighlightingForSelectedUser(userDetailsTableEntry);
+                  removeHighlightingForSelectedUser(user);
                }
             }
          }
@@ -1245,6 +1233,18 @@ public class ParticipantTree extends UIComponentBean
       catch (Exception e)
       {
          ExceptionHandler.handleException(e);
+      }
+   }
+   
+   private void updateSelectedUsersSet(User user, boolean selected)
+   {
+      if (selected)
+      {
+         selectedUsers.add(user);
+      }
+      else
+      {
+         selectedUsers.remove(user);
       }
    }
    
@@ -1263,12 +1263,12 @@ public class ParticipantTree extends UIComponentBean
             "participantTree.toolbar.searchParticipants.title"), true, false,
             "/plugins/views-common/images/icons/find.png"));*/
 
-      onOffFilters.put(SHOW_MODEL_ACTION, new GenericDataFilterOnOff(SHOW_MODEL_ACTION, getMessages().getString(
-            "participantTree.filters.model.title"), getMessages().getString("participantTree.filters.model.off.title"),
+      onOffFilters.put(SHOW_MODEL_ACTION, new GenericDataFilterOnOff(SHOW_MODEL_ACTION, MessagesViewsCommonBean.getInstance().getString(
+            "participantTree.filters.model.title"), MessagesViewsCommonBean.getInstance().getString("participantTree.filters.model.off.title"),
             true, false, "/plugins/views-common/images/icons/model.gif"));
 
-      onOffFilters.put(HIGHLIGHT_USERS_ACTION, new GenericDataFilterOnOff(HIGHLIGHT_USERS_ACTION, getMessages()
-            .getString("participantTree.toolbar.highlightUsers.title"), getMessages().getString(
+      onOffFilters.put(HIGHLIGHT_USERS_ACTION, new GenericDataFilterOnOff(HIGHLIGHT_USERS_ACTION, MessagesViewsCommonBean.getInstance()
+            .getString("participantTree.toolbar.highlightUsers.title"), MessagesViewsCommonBean.getInstance().getString(
             "participantTree.toolbar.highlightUsers.off.title"), true, false,
             "/plugins/views-common/images/icons/flashlight-shine.png"));
    }
@@ -1278,7 +1278,7 @@ public class ParticipantTree extends UIComponentBean
     * 
     * @param users
     */
-   private void highlightUsers(List<User> users)
+   private void highlightUsers(Set<User> users)
    {
       if (CollectionUtils.isEmpty(users))
       {
@@ -1470,16 +1470,16 @@ public class ParticipantTree extends UIComponentBean
     * remove user highlighting
     * @param userDetailsTableEntry
     */
-   private void removeHighlightingForSelectedUser(UserDetailsTableEntry userDetailsTableEntry)
+   private void removeHighlightingForSelectedUser(User user)
    {
-      if (highlightedUsers.contains(userDetailsTableEntry.getAccount()))
+      if (highlightedUsers.contains(user.getAccount()))
       {
          boolean marker = false;
          for (Iterator<ParticipantUserObject> iterator = highlightedParticipantUserObjects.iterator(); iterator
                .hasNext();)
          {
             ParticipantUserObject participantUserObject = (ParticipantUserObject) iterator.next();
-            if (participantUserObject.getUser().getAccount().equals(userDetailsTableEntry.getAccount()))
+            if (participantUserObject.getUser().getAccount().equals(user.getAccount()))
             {
                participantUserObject.setHighlightStyleClass(0);
                iterator.remove();
@@ -1489,7 +1489,7 @@ public class ParticipantTree extends UIComponentBean
          if (marker)
          {
             highlightStyleIndex = (highlightStyleIndex > 1) ? --highlightStyleIndex : highlightStyleIndex;
-            highlightedUsers.remove(userDetailsTableEntry.getAccount());
+            highlightedUsers.remove(user.getAccount());
          }
       }
    }
@@ -1710,5 +1710,15 @@ public class ParticipantTree extends UIComponentBean
    public boolean isHighlightUsersOn()
    {
       return onOffFilters.get(HIGHLIGHT_USERS_ACTION).isOn();
+   }
+
+   public Set<User> getSelectedUsers()
+   {
+      return selectedUsers;
+   }
+
+   public void setSelectedUsers(Set<User> selectedUsers)
+   {
+      this.selectedUsers = selectedUsers;
    }
 }

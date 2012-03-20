@@ -7,10 +7,18 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
 	<ice:panelGroup>
-		<ui:include src="createOrModifyDepartment.xhtml" />
 		<ui:include src="#{genericPopup.includePath}" />
 		<ui:include src="/plugins/views-common/common/panelConfirmation.xhtml" />
 	</ice:panelGroup>
+
+	<c:choose>
+		<c:when test="#{not empty disableContextMenu}">
+			<c:set var="contextMenuDisabled" value="true" />
+		</c:when>
+		<c:otherwise>
+			<c:set var="contextMenuDisabled" value="false" />
+		</c:otherwise>
+	</c:choose>
 
 	<link
 		href="#{facesContext.externalContext.requestContextPath}/plugins/views-common/css/context-portal.css"
@@ -19,7 +27,7 @@
 	<!-- Participant Tree Heading -->
 	<ice:panelGroup styleClass="heading">
 		<ice:outputText
-			value="#{participantMgmtBean.messages['participantTree.title']}" />
+			value="#{views_common_msgPropsBean['views.participantTree.title']}" />
 	</ice:panelGroup>
 
 	<!-- Participant Tree Filter Bar -->
@@ -120,28 +128,30 @@
 				<ice:panelGroup style="display: inline;">
 
 					<ice:menuPopup id="participantTreeMenuPopup" hideOn="mouseout">
-						<ice:menuItem id="createUser"
-							icon="/plugins/views-common/images/icons/user_add.png"
-							value="#{participantMgmtBean.messages['participantTree.contextMenu.createUser']}"
-							actionListener="#{item.userObject.createUser}">
-							<pc:automationTag
-								value="auto-ADM-PartMgmt-Tree-MenuDlg-CreateUser"
-								standAlone="false" />
-						</ice:menuItem>
+						<c:if test="#{null != roleNodeContextMenu and fn:length(roleNodeContextMenu) > 0}">
+							<ice:menuItem
+								icon="#{roleNodeContextMenu[0].icon}"
+								value="#{roleNodeContextMenu[0].value}"
+								actionListener="#{roleNodeContextMenu[0].invoke}">
+								<pc:automationTag
+									value="auto-ADM-PartMgmt-Tree-MenuDlg-CreateUser"
+									standAlone="false" />
+								<f:attribute name="userObject" value="#{item.userObject}" />
+							</ice:menuItem>
+						</c:if>
 					</ice:menuPopup>
-
 					<!-- Root Node -->
 					<ice:panelGroup
 						style="display: inline;"
 						rendered="#{item.userObject.referencesRoot}"
-						menuPopup="menuPopupRoot">
+						menuPopup="#{contextMenuDisabled == true? '' : 'menuPopupRoot'}">
 						<ice:outputText value="#{item.userObject.text}"/>
 
 						<ice:menuPopup id="menuPopupRoot"
 							hideOn="mouseout">
 							<!-- This function is disabled intentionally as currently it is not supported -->
 							<ice:menuItem id="createUserGroup"
-								value="#{participantMgmtBean.messages['participantTree.contextMenu.createUserGroup']}"
+								value="#{views_common_msgPropsBean['views.participantTree.contextMenu.createUserGroup']}"
 								rendered="false"
 								action="#{participantTree.createUserGroup}">
 							</ice:menuItem>
@@ -162,7 +172,7 @@
 						dropValue="#{item.userObject}"
 						hoverclass="dropTargetHover"
 						rendered="#{item.userObject.referencesUnscopedOrganization}"
-						menuPopup="participantTreeMenuPopup">
+						menuPopup="#{contextMenuDisabled == true? '' : 'participantTreeMenuPopup'}">
 						<ice:outputText value="#{item.userObject.text}"/>
 					</ice:panelGroup>
 
@@ -170,20 +180,19 @@
 					<ice:panelGroup
 						style="display: inline;"
 						rendered="#{item.userObject.referencesScopedOrganization}"
-						menuPopup="menuPopupScopedOrganization">
+						menuPopup="#{contextMenuDisabled == true? '' : 'menuPopupScopedOrganization'}">
 						<ice:outputText value="#{item.userObject.text}"/>
-
-						<ice:menuPopup id="menuPopupScopedOrganization"
-							hideOn="mouseout">
-							<ice:menuItem id="createDepartment"
-								value="#{participantMgmtBean.messages['participantTree.contextMenu.createDepartment']}"
-								actionListener="#{createOrModifyDepartmentBean.openDepartmentDialog}">
-								<pc:automationTag
-									value="auto-ADM-PartMgmt-Tree-MenuDlg-CreateDept"
-									standAlone="false" />
-								<f:attribute name="userObject"
-									value="#{item.userObject}" />
-							</ice:menuItem>
+						<ice:menuPopup id="menuPopupScopedOrganization" hideOn="mouseout">
+							<c:if
+								test="#{null != scopedOrgNodeContextMenu and fn:length(scopedOrgNodeContextMenu) > 0}">
+								<ice:menuItem value="#{scopedOrgNodeContextMenu[0].value}"
+									actionListener="#{scopedOrgNodeContextMenu[0].invoke}">
+									<pc:automationTag
+										value="auto-ADM-PartMgmt-Tree-MenuDlg-CreateDept"
+										standAlone="false" />
+									<f:attribute name="userObject" value="#{item.userObject}" />
+								</ice:menuItem>
+							</c:if>
 						</ice:menuPopup>
 					</ice:panelGroup>
 
@@ -194,7 +203,7 @@
 						dropValue="#{item.userObject}"
 						hoverclass="dropTargetHover"
 						rendered="#{item.userObject.referencesImplicitlyScopedOrganization}"
-						menuPopup="participantTreeMenuPopup">
+						menuPopup="#{contextMenuDisabled == true? '' : 'participantTreeMenuPopup'}">
 						<ice:outputText value="#{item.userObject.text}"/>
 					</ice:panelGroup>
 
@@ -205,7 +214,7 @@
 						dropValue="#{item.userObject}"
 						hoverclass="dropTargetHover"
 						rendered="#{item.userObject.referencesUnscopedRole || item.userObject.referencesScopedRole}"
-						menuPopup="participantTreeMenuPopup">
+						menuPopup="#{contextMenuDisabled == true? '' : 'participantTreeMenuPopup'}">
 						<ice:outputText value="#{item.userObject.text}"/>
 					</ice:panelGroup>
 
@@ -216,35 +225,44 @@
 						dropValue="#{item.userObject}"
 						hoverclass="dropTargetHover"
 						rendered="#{item.userObject.referencesUserGroup}"
-						menuPopup="menuPopupUserGroup">
+						menuPopup="#{contextMenuDisabled == true? '' : 'menuPopupUserGroup'}">
 						<ice:outputText value="#{item.userObject.text}"/>
 
-						<ice:menuPopup id="menuPopupUserGroup"
-							hideOn="mouseout">
+						<ice:menuPopup id="menuPopupUserGroup" hideOn="mouseout">
+							<c:if
+								test="#{null != userGrpNodeContextMenu and fn:length(userGrpNodeContextMenu) > 0}">
+								<ice:menuItem value="#{userGrpNodeContextMenu[0].value}"
+									icon="#{userGrpNodeContextMenu[0].icon}"
+									actionListener="#{userGrpNodeContextMenu[0].invoke}">
+									<pc:automationTag
+										value="auto-ADM-PartMgmt-Tree-MenuDlg-CreateUser"
+										standAlone="false" />
+									<f:attribute name="userObject" value="#{item.userObject}" />
+									<f:param name="menuOption" value="createUser" />
+								</ice:menuItem>
+							</c:if>
 							<!-- This function is disabled intentionally as currently it is not supported -->
-							<ice:menuItem id="modifyUserGroup"
-								value="#{participantMgmtBean.messages['participantTree.contextMenu.modifyUserGroup']}"
-								rendered="false"
-								action="#{participantTree.modifyUserGroup}">
-								<f:param name="uuid"
-									value="#{item.userObject.uuid}" />
-							</ice:menuItem>
+							<c:if
+								test="#{null != userGrpNodeContextMenu and fn:length(userGrpNodeContextMenu) > 1}">
+								<ice:menuItem value="#{userGrpNodeContextMenu[1].value}"
+									icon="#{userGrpNodeContextMenu[1].icon}"
+									rendered="false"
+									actionListener="#{userGrpNodeContextMenu[1].invoke}">
+									<f:attribute name="userObject" value="#{item.userObject}" />
+									<f:param name="menuOption" value="modifyUserGroup" />
+								</ice:menuItem>
+							</c:if>
 							<!-- This function is disabled intentionally as currently it is not supported -->
-							<ice:menuItem id="invalidateUserGroup"
-								value="#{participantMgmtBean.messages['participantTree.contextMenu.invalidateUserGroup']}"
-								rendered="false"
-								action="#{participantTree.deleteUserGroup}">
-								<f:param name="uuid"
-									value="#{item.userObject.uuid}" />
-							</ice:menuItem>
-							<ice:menuItem id="createUser"
-								icon="/plugins/views-common/images/icons/user_add.png"
-								value="#{participantMgmtBean.messages['participantTree.contextMenu.createUser']}"
-								actionListener="#{item.userObject.createUser}">
-								<pc:automationTag
-									value="auto-ADM-PartMgmt-Tree-MenuDlg-CreateUser"
-									standAlone="false" />
-							</ice:menuItem>
+							<c:if
+								test="#{null != userGrpNodeContextMenu and fn:length(userGrpNodeContextMenu) > 2}">
+								<ice:menuItem value="#{userGrpNodeContextMenu[2].value}"
+									icon="#{userGrpNodeContextMenu[2].icon}"
+									rendered="false"
+									actionListener="#{userGrpNodeContextMenu[2].invoke}">
+									<f:attribute name="userObject" value="#{item.userObject}" />
+									<f:param name="menuOption" value="deleteUserGroup" />
+								</ice:menuItem>
+							</c:if>
 						</ice:menuPopup>
 					</ice:panelGroup>
 
@@ -252,37 +270,45 @@
 					<ice:panelGroup
 						style="display: inline;"
 						rendered="#{item.userObject.referencesUser}"
-						menuPopup="menuPopupUser">
+						menuPopup="#{contextMenuDisabled == true? '' : 'menuPopupUser'}">
 						<ice:outputText styleClass="#{item.userObject.highlightStyleClass}" value="#{item.userObject.text}"/>
-
-						<ice:menuPopup id="menuPopupUser"
-							hideOn="mouseout">
-							<ice:menuItem id="removeUser" 
-								icon="/plugins/views-common/images/icons/user_delete.png"
-								value="#{participantMgmtBean.messages['participantTree.contextMenu.removeUserGrant']}"
-								action="#{participantTree.removeUserFromParticipant}">
-								<pc:automationTag
-									value="auto-ADM-PartMgmt-Tree-MenuDlg-RemoveUser"
-									standAlone="false" />
-								<f:param name="uuid"
-									value="#{item.userObject.uuid}" />
-							</ice:menuItem>
+						<ice:menuPopup id="menuPopupUser" hideOn="mouseout">
+							<c:if
+								test="#{null != userNodeContextMenu and fn:length(userNodeContextMenu) > 0}">
+								<ice:menuItem
+									icon="#{userNodeContextMenu[0].icon}"
+									value="#{userNodeContextMenu[0].value}"
+									actionListener="#{userNodeContextMenu[0].invoke}">
+									<pc:automationTag
+										value="auto-ADM-PartMgmt-Tree-MenuDlg-RemoveUser"
+										standAlone="false" />
+									<f:attribute name="userObject" value="#{item.userObject}" />
+									<f:param name="uuid" value="#{item.userObject.uuid}" />
+									<f:param name="menuOption" value="removeUserFromParticipant" />
+								</ice:menuItem>
+							</c:if>
 							<!-- This function is disabled intentionally as currently it is not supported -->
-							<ice:menuItem id="modifyUser"
-								value="#{participantMgmtBean.messages['participantTree.contextMenu.modifyUser']}"
-								rendered="false"
-								action="#{participantTree.modifyUser}">
-								<f:param name="uuid"
-									value="#{item.userObject.uuid}" />
-							</ice:menuItem>
+							<c:if
+								test="#{null != userNodeContextMenu and fn:length(userNodeContextMenu) > 1}">
+								<ice:menuItem
+									rendered="false"
+									value="#{userNodeContextMenu[1].value}"
+									actionListener="#{userNodeContextMenu[1].invoke}">
+									<f:attribute name="userObject" value="#{item.userObject}" />
+									<f:param name="menuOption" value="modifyUser" />
+								</ice:menuItem>
+							</c:if>
 							<!-- This function is disabled intentionally as currently it is not supported -->
-							<ice:menuItem id="invalidateUser"
-								value="#{participantMgmtBean.messages['participantTree.contextMenu.invalidateUser']}"
-								rendered="false"
-								action="#{participantTree.deleteUser}">
-								<f:param name="uuid"
-									value="#{item.userObject.uuid}" />
-							</ice:menuItem>
+							<c:if
+								test="#{null != userNodeContextMenu and fn:length(userNodeContextMenu) > 2}">
+								<ice:menuItem
+									rendered="false"
+									value="#{userNodeContextMenu[2].value}"
+									actionListener="#{userNodeContextMenu[2].invoke}">
+									<f:attribute name="userObject" value="#{item.userObject}" />
+									<f:param name="menuOption" value="deleteUser" />
+								</ice:menuItem>
+							</c:if>
 						</ice:menuPopup>
 					</ice:panelGroup>
 
@@ -293,34 +319,45 @@
 						dropValue="#{item.userObject}"
 						hoverclass="dropTargetHover"
 						rendered="#{item.userObject.referencesDepartment}"
-						menuPopup="menuPopupDepartment">
+						menuPopup="#{contextMenuDisabled == true? '' : 'menuPopupDepartment'}">
 						<ice:outputText value="#{item.userObject.text}"/>
 
-						<ice:menuPopup id="menuPopupDepartment"
-							hideOn="mouseout">
-							<ice:menuItem id="modifyDepartment"
-								value="#{participantMgmtBean.messages['participantTree.contextMenu.modifyDepartment']}"
-								actionListener="#{createOrModifyDepartmentBean.openDepartmentDialog}">
-								<pc:automationTag
-									value="auto-ADM-PartMgmt-Tree-MenuDlg-ModifyDept"
-									standAlone="false" />
-								<f:attribute name="userObject"
-									value="#{item.userObject}" />
-							</ice:menuItem>
-							<ice:menuItem id="deleteDepartment"
-								value="#{participantMgmtBean.messages['participantTree.contextMenu.deleteDepartment']}"
-								actionListener="#{participantTree.deleteDepartment}">
-								<pc:automationTag
-									value="auto-ADM-PartMgmt-Tree-MenuDlg-DeleteDept"
-									standAlone="false" />
-								<f:attribute name="uuid"
-									value="#{item.userObject.uuid}" />
-							</ice:menuItem>
-							<ice:menuItem id="createUser"
-								icon="/plugins/views-common/images/icons/user_add.png"
-								value="#{participantMgmtBean.messages['participantTree.contextMenu.createUser']}"
-								actionListener="#{item.userObject.createUser}">
-							</ice:menuItem>
+						<ice:menuPopup id="menuPopupDepartment" hideOn="mouseout">
+							<c:if
+								test="#{null != deptNodeContextMenu and fn:length(deptNodeContextMenu) > 0}">
+								<ice:menuItem value="#{deptNodeContextMenu[0].value}"
+									actionListener="#{deptNodeContextMenu[0].invoke}">
+									<pc:automationTag
+										value="auto-ADM-PartMgmt-Tree-MenuDlg-ModifyDept"
+										standAlone="false" />
+									<f:attribute name="userObject" value="#{item.userObject}" />
+									<f:param name="menuOption" value="modifyDepartment" />
+								</ice:menuItem>
+							</c:if>
+							<c:if
+								test="#{null != deptNodeContextMenu and fn:length(deptNodeContextMenu) > 1}">
+								<ice:menuItem value="#{deptNodeContextMenu[1].value}"
+									actionListener="#{deptNodeContextMenu[1].invoke}">
+									<pc:automationTag
+										value="auto-ADM-PartMgmt-Tree-MenuDlg-DeleteDept"
+										standAlone="false" />
+									<f:attribute name="userObject" value="#{item.userObject}" />
+									<f:attribute name="uuid" value="#{item.userObject.uuid}" />
+									<f:param name="menuOption" value="deleteDepartment" />
+								</ice:menuItem>
+							</c:if>
+							<c:if
+								test="#{null != deptNodeContextMenu and fn:length(deptNodeContextMenu) > 2}">
+								<ice:menuItem value="#{deptNodeContextMenu[2].value}"
+									icon="#{deptNodeContextMenu[2].icon}"
+									actionListener="#{deptNodeContextMenu[2].invoke}">
+									<pc:automationTag
+										value="auto-ADM-PartMgmt-Tree-DeptMenuDlg-createUser"
+										standAlone="false" />
+									<f:attribute name="userObject" value="#{item.userObject}" />
+									<f:param name="menuOption" value="createUser" />
+								</ice:menuItem>
+							</c:if>
 						</ice:menuPopup>
 					</ice:panelGroup>
 					

@@ -57,6 +57,14 @@
 	</ice:panelCollapsible>
 
 	<ice:panelGroup>
-		<ui:include src="participantTree.xhtml" />
+		<ui:include src="createOrModifyDepartment.xhtml" />
+		<ui:include src="/plugins/views-common/participantTree/participantTree.xhtml">
+			<ui:param name="participantTree" value="#{participantMgmtBean.participantTree}" />
+			<ui:param name="roleNodeContextMenu" value="#{participantMgmtBean.roleNodeContextMenu}" />
+			<ui:param name="userGrpNodeContextMenu" value="#{participantMgmtBean.userGrpNodeContextMenu}" />			
+			<ui:param name="userNodeContextMenu" value="#{participantMgmtBean.userNodeContextMenu}" />
+			<ui:param name="scopedOrgNodeContextMenu" value="#{createOrModifyDepartmentBean.scopedOrgNodeContextMenu}" />
+			<ui:param name="deptNodeContextMenu" value="#{createOrModifyDepartmentBean.deptNodeContextMenu}" />
+		</ui:include>
 	</ice:panelGroup>
 </f:view>

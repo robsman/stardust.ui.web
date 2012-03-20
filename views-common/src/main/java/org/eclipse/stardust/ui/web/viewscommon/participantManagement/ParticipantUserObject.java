@@ -8,9 +8,10 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.admin.views;
+package org.eclipse.stardust.ui.web.viewscommon.participantManagement;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.UUID;
 
 import javax.faces.event.ActionEvent;
@@ -26,8 +27,8 @@ import org.eclipse.stardust.engine.api.model.RoleInfo;
 import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserGroup;
-import org.eclipse.stardust.ui.web.admin.messages.AdminMessagesPropertiesBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserProfileBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantItem;
@@ -88,22 +89,26 @@ public class ParticipantUserObject extends IceUserObject
    
    private boolean childrenLoaded = false;
    
-   private AdminMessagesPropertiesBean propsBean;
+   private MessagesViewsCommonBean propsBean;
 
-   public ParticipantUserObject()
+   private ParticipantTree participantTree;
+   
+   public ParticipantUserObject(ParticipantTree participantTree)
    {
       super(null);
-      propsBean = AdminMessagesPropertiesBean.getInstance();
-      setText(propsBean.getString("views.participantMgmt.participantTree.participantNode.label"));
+      this.participantTree = participantTree;
+      propsBean = MessagesViewsCommonBean.getInstance();
+      setText(propsBean.getString("views.participantTree.participantNode.label"));
       setExpanded(true);
       setNodeType();
       setBranchIcon();
       setUuid(UUID.randomUUID());
    }
 
-   public ParticipantUserObject(DefaultMutableTreeNode wrapper, Model model)
+   public ParticipantUserObject(DefaultMutableTreeNode wrapper, Model model, ParticipantTree participantTree)
    {
       super(wrapper);
+      this.participantTree = participantTree;
       setText(I18nUtils.getLabel(model, model.getName()));
       setModelOid(model.getModelOID());
       nodeType = NODE_TYPE.MODEL;
@@ -113,10 +118,10 @@ public class ParticipantUserObject extends IceUserObject
    }
 
    public ParticipantUserObject(DefaultMutableTreeNode wrapper, QualifiedModelParticipantInfo qualifiedParticipantInfo,
-         boolean isDefault)
+         boolean isDefault, ParticipantTree participantTree)
    {
       super(wrapper);
-      
+      this.participantTree = participantTree;      
       setText(I18nUtils.getParticipantName(ParticipantUtils.getParticipant(qualifiedParticipantInfo))
             + DEFAULT_DEPARTMENT_SUFFIX);
 
@@ -126,10 +131,11 @@ public class ParticipantUserObject extends IceUserObject
       setUuid(UUID.randomUUID());
    }
 
-   public ParticipantUserObject(DefaultMutableTreeNode wrapper, QualifiedModelParticipantInfo qualifiedParticipantInfo)
+   public ParticipantUserObject(DefaultMutableTreeNode wrapper, QualifiedModelParticipantInfo qualifiedParticipantInfo,
+         ParticipantTree participantTree)
    {
       super(wrapper);
-
+      this.participantTree = participantTree;
       setText(I18nUtils.getParticipantName(ParticipantUtils.getParticipant(qualifiedParticipantInfo)));
 
       participantItem = new ParticipantItem(qualifiedParticipantInfo);
@@ -138,10 +144,11 @@ public class ParticipantUserObject extends IceUserObject
       setUuid(UUID.randomUUID());
    }
 
-   public ParticipantUserObject(DefaultMutableTreeNode wrapper, DynamicParticipantInfo dynamicParticipantInfo)
+   public ParticipantUserObject(DefaultMutableTreeNode wrapper, DynamicParticipantInfo dynamicParticipantInfo,
+         ParticipantTree participantTree)
    {
       super(wrapper);
-
+      this.participantTree = participantTree;
       // TODO
       if (dynamicParticipantInfo instanceof Participant)
       {
@@ -158,9 +165,10 @@ public class ParticipantUserObject extends IceUserObject
       setUuid(UUID.randomUUID());
    }
 
-   public ParticipantUserObject(DefaultMutableTreeNode wrapper, Department department)
+   public ParticipantUserObject(DefaultMutableTreeNode wrapper, Department department, ParticipantTree participantTree)
    {
       super(wrapper);
+      this.participantTree = participantTree;
 
       setText(department.getName());
       participantItem = new ParticipantItem(department);
@@ -169,7 +177,7 @@ public class ParticipantUserObject extends IceUserObject
       setUuid(UUID.randomUUID());
    }
 
-   public void createUser(ActionEvent event)
+   public void createUser(ActionEvent event, final ICallbackHandler refreshUserTableCallback)
    {
       UserProfileBean userProfileBean = UserProfileBean.getInstance();
       userProfileBean.setICallbackHandler(new ICallbackHandler()
@@ -206,7 +214,11 @@ public class ParticipantUserObject extends IceUserObject
                }
                }
                ServiceFactoryUtils.getUserService().modifyUser(newUser);
-               ParticipantManagementBean.getInstance().refreshUserManagementTable();
+
+               if (null != refreshUserTableCallback)
+               {
+                  refreshUserTableCallback.handleEvent(ICallbackHandler.EventType.APPLY);
+               }
                refreshParticipantTree();
             }
          }
@@ -216,7 +228,7 @@ public class ParticipantUserObject extends IceUserObject
    
    private void refreshParticipantTree()
    {
-      ParticipantTree.getInstance().refreshParticipantNode(this.wrapper,  EnumSet.of(NODE_TYPE.USER));
+      participantTree.refreshParticipantNode(this.wrapper,  EnumSet.of(NODE_TYPE.USER));
    }
    
    private void setBranchIcon()

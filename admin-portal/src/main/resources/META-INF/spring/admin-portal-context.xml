@@ -116,10 +116,6 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	     scope="session">
 	</bean>
 	
-	<bean name="participantTree" class="org.eclipse.stardust.ui.web.admin.views.ParticipantTree"
-	     scope="session">
-	</bean>
-	
 	<bean name="passwordMgmtBean" class="org.eclipse.stardust.ui.web.admin.views.PasswordManagementBean"
 	     scope="session">
 	</bean>

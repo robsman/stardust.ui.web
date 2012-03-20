@@ -52,6 +52,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.LocalizerKey;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDelegatesProvider.Options;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.participantManagement.ParticipantTree;
 import org.eclipse.stardust.ui.web.viewscommon.user.DelegatesDataProvider;
 import org.eclipse.stardust.ui.web.viewscommon.user.ParticipantAutocompleteSelector;
 import org.eclipse.stardust.ui.web.viewscommon.user.ParticipantWrapper;
@@ -109,6 +110,7 @@ public class DelegationBean extends PopupUIComponentBean
    private boolean disableAdministrator = false;
    private boolean fireCloseEvent = true;
    private boolean delegateCase = false;
+   private ParticipantTree participantTree;
    
    private String id;  
    
@@ -125,6 +127,8 @@ public class DelegationBean extends PopupUIComponentBean
    public DelegationBean()
    {
       propsBean = MessagesViewsCommonBean.getInstance();
+      participantTree = new ParticipantTree();
+      participantTree.initialize();
    }
 
    /**
@@ -1120,6 +1124,11 @@ public class DelegationBean extends PopupUIComponentBean
    public void setPickFromTreeMode()
    {
       delegationMode = DELEGATION_MODE.PICK_FROM_TREE;
+   }
+
+   public ParticipantTree getParticipantTree()
+   {
+      return participantTree;
    }
 
    /**

@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.admin.views;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -25,14 +27,20 @@ import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.ui.web.admin.AdminportalConstants;
+import org.eclipse.stardust.ui.web.admin.ResourcePaths;
 import org.eclipse.stardust.ui.web.admin.WorkflowFacade;
-import org.eclipse.stardust.ui.web.admin.views.ParticipantUserObject.NODE_TYPE;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.ContextMenuItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.GlobalPageMessage;
+import org.eclipse.stardust.ui.web.viewscommon.common.IContextMenuActionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
 import org.eclipse.stardust.ui.web.viewscommon.common.LocalizerKey;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.participantManagement.ParticipantUserObject;
+import org.eclipse.stardust.ui.web.viewscommon.participantManagement.ParticipantUserObject.NODE_TYPE;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
@@ -57,6 +65,10 @@ public class CreateOrModifyDepartmentBean extends PopupUIComponentBean
 
    private WorkflowFacade workflowFacade;
 
+   private List<ContextMenuItem> scopedOrgNodeContextMenu;
+
+   private List<ContextMenuItem> deptNodeContextMenu;
+
    // TODO: To be reviewed!
    private DefaultMutableTreeNode parentNodeToRefresh;
 
@@ -65,10 +77,43 @@ public class CreateOrModifyDepartmentBean extends PopupUIComponentBean
     */
    public CreateOrModifyDepartmentBean()
    {
+      super(ResourcePaths.V_participantMgmt);
       workflowFacade = (WorkflowFacade) SessionContext.findSessionContext()
             .lookup(AdminportalConstants.WORKFLOW_FACADE);
+      initializeContextMenus();
    }
 
+   /**
+    * 
+    */
+   public void initializeContextMenus()
+   {
+      // Scoped organization node menu
+      scopedOrgNodeContextMenu = new ArrayList<ContextMenuItem>();
+      ContextMenuItem createDept = new ContextMenuItem();
+      createDept.setValue(getMessages().getString("participantTree.contextMenu.createDepartment"));
+      createDept.setMenuActionhandler(new ScopedOrgNodeContextMenuActionHandler());
+      scopedOrgNodeContextMenu.add(createDept);
+
+      // Department node menu
+      deptNodeContextMenu = new ArrayList<ContextMenuItem>();
+      ContextMenuItem modifyDepartment = new ContextMenuItem();
+      modifyDepartment.setValue(getMessages().getString("participantTree.contextMenu.modifyDepartment"));
+      modifyDepartment.setMenuActionhandler(new DeptNodeContextMenuActionHandler());
+      deptNodeContextMenu.add(modifyDepartment);
+
+      ContextMenuItem deleteDepartment = new ContextMenuItem();
+      deleteDepartment.setValue(getMessages().getString("participantTree.contextMenu.deleteDepartment"));
+      deleteDepartment.setMenuActionhandler(new DeptNodeContextMenuActionHandler());
+      deptNodeContextMenu.add(deleteDepartment);
+
+      ContextMenuItem createUser = new ContextMenuItem();
+      createUser.setValue(getMessages().getString("participantTree.contextMenu.createUser"));
+      createUser.setIcon("/plugins/views-common/images/icons/user_add.png");
+      createUser.setMenuActionhandler(new DeptNodeContextMenuActionHandler());
+      deptNodeContextMenu.add(createUser);
+   }
+   
    /**
     * create or modifies user group as per edit mode and selected user group
     */
@@ -107,7 +152,7 @@ public class CreateOrModifyDepartmentBean extends PopupUIComponentBean
       }
 
       closePopup();
-      ParticipantTree.getInstance().refreshParticipantNode(parentNodeToRefresh,
+      ParticipantManagementBean.getInstance().getParticipantTree().refreshParticipantNode(parentNodeToRefresh,
             EnumSet.of(NODE_TYPE.DEPARTMENT, NODE_TYPE.DEPARTMENT_DEFAULT));
    }
 
@@ -232,6 +277,16 @@ public class CreateOrModifyDepartmentBean extends PopupUIComponentBean
       return createMode;
    }
 
+   public List<ContextMenuItem> getScopedOrgNodeContextMenu()
+   {
+      return scopedOrgNodeContextMenu;
+   }
+
+   public List<ContextMenuItem> getDeptNodeContextMenu()
+   {
+      return deptNodeContextMenu;
+   }
+
    @Override
    public void initialize()
    {
@@ -240,5 +295,56 @@ public class CreateOrModifyDepartmentBean extends PopupUIComponentBean
    public String getOrganizationName()
    {
      return I18nUtils.getParticipantName(ParticipantUtils.getParticipant(getOrganization()));      
+   }
+
+   /**
+    * @author Shrikant.Gangal
+    * 
+    */
+   public class ScopedOrgNodeContextMenuActionHandler implements IContextMenuActionHandler
+   {
+      public void handle(ActionEvent event)
+      {
+         openDepartmentDialog(event);
+      }
+   }
+
+   /**
+    * @author Shrikant.Gangal
+    * 
+    */
+   public class DeptNodeContextMenuActionHandler implements IContextMenuActionHandler
+   {
+      public void handle(ActionEvent event)
+      {
+         String menuOption = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
+               .get("menuOption");
+         if (StringUtils.isNotEmpty(menuOption))
+         {
+            if ("modifyDepartment".equals(menuOption))
+            {
+               openDepartmentDialog(event);
+            }
+            else if ("deleteDepartment".equals(menuOption))
+            {
+               ParticipantManagementBean.getInstance().getParticipantTree().deleteDepartment(event);
+            }
+            else if ("createUser".equals(menuOption))
+            {
+               ParticipantUserObject userObj = (ParticipantUserObject) event.getComponent().getAttributes()
+                     .get("userObject");
+               userObj.createUser(event, new ICallbackHandler()
+               {
+                  public void handleEvent(EventType eventType)
+                  {
+                     if (eventType.equals(EventType.APPLY))
+                     {
+                        ParticipantManagementBean.getInstance().refreshUserManagementTable();
+                     }
+                  }
+               });
+            }
+         }
+      }
    }
 }
