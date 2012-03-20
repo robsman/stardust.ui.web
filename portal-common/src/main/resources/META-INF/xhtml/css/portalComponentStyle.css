@@ -18,7 +18,7 @@
 	white-space: nowrap;
 	padding-bottom: 2px;
 	padding-right: 8px;
-	background: transparent url(../images/toolbar-separator.png) no-repeat scroll right center;
+	background: transparent url(../images/icons/toolbar-separator.png) no-repeat scroll right center;
 }	
 
 .genericTableUserToolbar
@@ -28,7 +28,7 @@
 	white-space: nowrap;
 	padding-bottom: 2px;
 	padding-right: 8px;
-	background: transparent url(../images/toolbar-separator.png) no-repeat scroll right center;
+	background: transparent url(../images/icons/toolbar-separator.png) no-repeat scroll right center;
 }
 
 .genericTableRow1

@@ -17,7 +17,7 @@
 					<ice:panelGroup style="text-align: right;">
 						<pc:automationTag value="auto-FW-ComMsgDlg-CloseBtn" standAlone="false"/>
 						<ice:commandButton title="#{common_msgPropsBean['common.close']}"
-							image="/plugins/common/images/dialog-windowbttn-close.png" 
+							image="/plugins/common/images/icons/dialog-windowbttn-close.png" 
 							action="#{ippMessageDialog.closePopup}"
 							styleClass="windowClose" />
 					</ice:panelGroup>
@@ -30,11 +30,11 @@
 	
 					<f:facet name="west">
 						<ice:panelGroup>
-							<ice:graphicImage url="/plugins/common/images/dialog-icon-error.jpg"
+							<ice:graphicImage url="/plugins/common/images/icons/dialog-icon-error.jpg"
 								rendered="#{ippMessageDialog.messageType eq 'ERROR'}" />
-							<ice:graphicImage url="/plugins/common/images/dialog-icon-warning.jpg"
+							<ice:graphicImage url="/plugins/common/images/icons/dialog-icon-warning.jpg"
 								rendered="#{ippMessageDialog.messageType eq 'WARNING'}" />
-							<ice:graphicImage url="/plugins/common/images/dialog-icon-info.jpg"
+							<ice:graphicImage url="/plugins/common/images/icons/dialog-icon-info.jpg"
 								rendered="#{ippMessageDialog.messageType eq 'INFO'}" />
 						</ice:panelGroup>
 					</f:facet>

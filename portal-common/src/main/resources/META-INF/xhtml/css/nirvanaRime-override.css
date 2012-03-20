@@ -407,7 +407,7 @@
 /* messages */
  
 .iceMsgImageError {
-	background: url('../images/exclamation.png') no-repeat 0;
+	background: url('../images/icons/exclamation.png') no-repeat 0;
 	padding-left: 16px !important;
 	padding-bottom: 1px; 
 	margin-left: 5px;
@@ -418,7 +418,7 @@
 	padding-left: 16px !important;
 	padding-bottom: 1px;
 	margin-left: 5px;
-	background: url('../images/exclamation.png') no-repeat 0; 
+	background: url('../images/icons/exclamation.png') no-repeat 0; 
 }
 
 .iceMsgError {

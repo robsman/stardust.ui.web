@@ -8,9 +8,9 @@
 	<ice:panelGroup>
 		<pc:automationTag value="auto-FW-Alerts" standAlone="false" />
 		<ice:graphicImage style="margin-right: 8px; vertical-align: middle;" rendered="#{not ippAlertManager.newAlert}"
-			value="/plugins/common/images/bell.png" />
+			value="/plugins/common/images/icons/bell.png" />
 		<ice:graphicImage style="margin-right: 8px; vertical-align: middle;" rendered="#{ippAlertManager.newAlert}"
-			value="/plugins/common/images/bell-ringing.gif" />
+			value="/plugins/common/images/icons/bell-ringing.gif" />
 		<ice:commandLink action="#{ippAlertManager.toggleAlertsPanel}" styleClass="portalAlertsLink">
 			<ice:panelGroup effect="#{ippAlertManager.alertEffect}" style="display: inline;">
 				<ice:outputText value="#{common_msgPropsBean['portalFramework.alerts.label']}" />

@@ -182,7 +182,7 @@ div#loginBox .buttonContainer input{
 }
 
 .logout{
-	background:url(../images/userConsole-bttn-logOut.png) right no-repeat;
+	background:url(../images/icons/userConsole-bttn-logOut.png) right no-repeat;
 	padding-right:20px;
 	margin: 10px;
 	text-decoration:none;
@@ -191,7 +191,7 @@ div#loginBox .buttonContainer input{
 }
 
 .logout:hover{
-	background:url(../images/userConsole-bttn-logOutHover.png) right no-repeat;
+	background:url(../images/icons/userConsole-bttn-logOutHover.png) right no-repeat;
 }
 
 .topMenu{
@@ -260,7 +260,7 @@ div#loginBox .buttonContainer input{
 }
 
 .toolbarGroupLeft {
-	background: url(../images/toolbar-separator.png) right no-repeat;
+	background: url(../images/icons/toolbar-separator.png) right no-repeat;
 	padding-top: 0px;
 	padding-left: 8px;
 	padding-right: 8px;
@@ -269,7 +269,7 @@ div#loginBox .buttonContainer input{
 }
 
 .toolbarGroupRight {
-	background: url(../images/toolbar-separator.png) left no-repeat;
+	background: url(../images/icons/toolbar-separator.png) left no-repeat;
 	padding-left: 8px;
 	padding-right: 8px;
 	white-space: nowrap;
@@ -318,7 +318,7 @@ html, body {
 
 .breadcrumbs a{
 	display:inline;
-	background:url(../images/breadcrumb-arrow.png) right no-repeat;
+	background:url(../images/icons/breadcrumb-arrow.png) right no-repeat;
 	padding-right:10px;
 	text-decoration:none;
 	margin:0 5px 0 0;

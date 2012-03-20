@@ -29,13 +29,13 @@
 			<ice:panelGroup>
 				<ice:panelGrid columns="2" rendered="#{!row.edit}">
 					<ice:graphicImage
-						value="/plugins/views-common/images/icons/dot_green.gif"
+						value="/plugins/views-common/images/icons/status.png"
 						rendered="#{row.create}" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.allow']}"
 						rendered="#{row.create}" />
 					<ice:graphicImage
-						value="/plugins/views-common/images/icons/dot_red.gif"
+						value="/plugins/views-common/images/icons/status-busy.png"
 						rendered="#{!row.create}" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.deny']}"
@@ -59,13 +59,13 @@
 		<ice:panelGroup rendered="#{col.columnName == 'Read'}">
 			<ice:panelGrid columns="2" rendered="#{!row.edit}">
 				<ice:graphicImage
-					value="/plugins/views-common/images/icons/dot_green.gif"
+					value="/plugins/views-common/images/icons/status.png"
 					rendered="#{row.read}" />
 				<ice:outputText
 					value="#{securityDialog.messages['securityDialog.columnValue.allow']}"
 					rendered="#{row.read}" />
 				<ice:graphicImage
-					value="/plugins/views-common/images/icons/dot_red.gif"
+					value="/plugins/views-common/images/icons/status-busy.png"
 					rendered="#{!row.read}" />
 				<ice:outputText
 					value="#{securityDialog.messages['securityDialog.columnValue.deny']}"
@@ -87,13 +87,13 @@
 		<ice:panelGroup rendered="#{col.columnName == 'Modify'}">
 			<ice:panelGrid columns="2" rendered="#{!row.edit}">
 				<ice:graphicImage
-					value="/plugins/views-common/images/icons/dot_green.gif"
+					value="/plugins/views-common/images/icons/status.png"
 					rendered="#{row.modify}" />
 				<ice:outputText
 					value="#{securityDialog.messages['securityDialog.columnValue.allow']}"
 					rendered="#{row.modify}" />
 				<ice:graphicImage
-					value="/plugins/views-common/images/icons/dot_red.gif"
+					value="/plugins/views-common/images/icons/status-busy.png"
 					rendered="#{!row.modify}" />
 				<ice:outputText
 					value="#{securityDialog.messages['securityDialog.columnValue.deny']}"
@@ -116,13 +116,13 @@
 		<ice:panelGroup rendered="#{col.columnName == 'Delete'}">
 			<ice:panelGrid columns="2" rendered="#{!row.edit}">
 				<ice:graphicImage
-					value="/plugins/views-common/images/icons/dot_green.gif"
+					value="/plugins/views-common/images/icons/status.png"
 					rendered="#{row.delete}" />
 				<ice:outputText
 					value="#{securityDialog.messages['securityDialog.columnValue.allow']}"
 					rendered="#{row.delete}" />
 				<ice:graphicImage
-					value="/plugins/views-common/images/icons/dot_red.gif"
+					value="/plugins/views-common/images/icons/status-busy.png"
 					rendered="#{!row.delete}" />
 				<ice:outputText
 					value="#{securityDialog.messages['securityDialog.columnValue.deny']}"
@@ -145,13 +145,13 @@
 		<ice:panelGroup rendered="#{col.columnName == 'ReadACL'}">
 			<ice:panelGrid columns="2" rendered="#{!row.edit}">
 				<ice:graphicImage
-					value="/plugins/views-common/images/icons/dot_green.gif"
+					value="/plugins/views-common/images/icons/status.png"
 					rendered="#{row.readAcl}" />
 				<ice:outputText
 					value="#{securityDialog.messages['securityDialog.columnValue.allow']}"
 					rendered="#{row.readAcl}" />
 				<ice:graphicImage
-					value="/plugins/views-common/images/icons/dot_red.gif"
+					value="/plugins/views-common/images/icons/status-busy.png"
 					rendered="#{!row.readAcl}" />
 				<ice:outputText
 					value="#{securityDialog.messages['securityDialog.columnValue.deny']}"
@@ -174,13 +174,13 @@
 		<ice:panelGroup rendered="#{col.columnName == 'ModifyACL'}">
 			<ice:panelGrid columns="2" rendered="#{!row.edit}">
 				<ice:graphicImage
-					value="/plugins/views-common/images/icons/dot_green.gif"
+					value="/plugins/views-common/images/icons/status.png"
 					rendered="#{row.modifyAcl}" />
 				<ice:outputText
 					value="#{securityDialog.messages['securityDialog.columnValue.allow']}"
 					rendered="#{row.modifyAcl}" />
 				<ice:graphicImage
-					value="/plugins/views-common/images/icons/dot_red.gif"
+					value="/plugins/views-common/images/icons/status-busy.png"
 					rendered="#{!row.modifyAcl}" />
 				<ice:outputText
 					value="#{securityDialog.messages['securityDialog.columnValue.deny']}"

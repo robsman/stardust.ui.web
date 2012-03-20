@@ -141,14 +141,14 @@
 								<ice:dataExporter
 									for="#{id}" rendered="#{table.supportExportToExcel and !emptyData}" 
 									type="excel" style="vertical-align:top; border:none; padding-left:5px;"
-									image="/plugins/common/images/icons/xls-icon.png"
+									image="/plugins/common/images/icons/document-excel-table.png"
 									label="#{common_msgPropsBean['common.genericDataTable.asExcel']}"
 									includeColumns="#{table.exportableColumns}"
 									outputTypeHandler="#{table.excelDataTableExporter}" />								
 								
 								<ice:commandLink rendered="#{!table.supportExportToExcel}" disabled="#{!table.supportExportToExcel}" >	
 									<ice:graphicImage style="vertical-align:top; border:none; padding-left:5px;"
-												value="/plugins/common/images/icons/xls-icon.png"
+												value="/plugins/common/images/icons/document-excel-table.png"
 												styleClass="iceCmdBtn-dis"
 												title="#{common_msgPropsBean['common.genericDataTable.asExcel']}" />
 								</ice:commandLink>
@@ -159,7 +159,7 @@
 								<ice:dataExporter
 									for="#{id}" rendered="#{not emptyData}"
 									type="csv" style="vertical-align:top; border:none; padding-left:5px;"
-									image="/plugins/common/images/icons/csv-icon.png"
+									image="/plugins/common/images/icons/document-excel-csv.png"
 									label="#{common_msgPropsBean['common.genericDataTable.asCSV']}"
 									includeColumns="#{table.exportableColumns}"
 									outputTypeHandler="#{table.csvDataTableExporter}" />

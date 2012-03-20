@@ -78,6 +78,13 @@ public class ProcessInstanceUtils
    public static String PRIORITY_NORMAL = "normal";
    public static String PRIORITY_HIGH = "high";
    
+   private static final Map<String, String> PRIORITY_COLOR_MAP = new HashMap<String, String>();
+   static {
+      PRIORITY_COLOR_MAP.put(PRIORITY_LOW, "/plugins/views-common/images/icons/flag-blue.png");
+      PRIORITY_COLOR_MAP.put(PRIORITY_NORMAL, "/plugins/views-common/images/icons/flag-yellow.png");
+      PRIORITY_COLOR_MAP.put(PRIORITY_HIGH, "/plugins/views-common/images/icons/flag.png");
+   }
+
    /**
     * @param processInstance
     * @return
@@ -596,7 +603,16 @@ public class ProcessInstanceUtils
    {
       return MessagesViewsCommonBean.getInstance().getString("common.process.priority.options." + priorityIdent);
    }
-
+   
+   /**
+    * 
+    * @param iconValue
+    * @return
+    */
+   public static String getPriorityIcon(String iconValue)
+   {
+      return PRIORITY_COLOR_MAP.get(iconValue);
+   }
 
    /**
     * Method will find the LinkedProcess in given direction and return the ProcessInstance
@@ -1159,6 +1175,11 @@ public class ProcessInstanceUtils
 
       return priorityValue;
 
+   }
+   
+   public static Map<String, String> getPriorityColorMap()
+   {
+      return PRIORITY_COLOR_MAP;
    }
    
 }

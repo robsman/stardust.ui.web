@@ -45,7 +45,7 @@
 		<ice:panelGroup rendered="#{col.columnName == 'Priority'}">
 			<ice:panelGroup panelTooltip="priorityTootip">
 			<h:graphicImage
-				value="/plugins/views-common/images/icons/priority-#{row.priority}.png"
+				value="#{row.priorityIcon}"
 				title="" />
 			</ice:panelGroup>
 			<ice:panelTooltip id="priorityTootip"

@@ -17,7 +17,7 @@
 								action="#{ippPortalApp.activateLaunchPanels}">
 								<pc:automationTag value="auto-FW-ShowLPs" standAlone="false" />
 								<ice:graphicImage
-									url="/plugins/common/images/pane-expand.png"
+									url="/plugins/common/images/icons/pane-expand.png"
 				                    styleClass="toolbar-button" 
 				                    title="#{common_msgPropsBean['portalFramework.launchPanels.show']}"/>
 							</ice:commandLink>
@@ -30,7 +30,7 @@
 							disabled="#{ippPortalApp.openViewsSize lt 1}">
 							<pc:automationTag value="auto-FW-CloseFocusView" standAlone="false" />
 							<ice:graphicImage
-								url="/plugins/common/images/close.gif"
+								url="/plugins/common/images/icons/door_open.png"
 			                    styleClass="toolbar-button #{(ippPortalApp.openViewsSize lt 1) ? 'iceCmdBtn-dis' : ''}"
 			                    title="#{common_msgPropsBean['portalFramework.toolbar.view.close']}"/>
 						</ice:commandLink>
@@ -38,7 +38,7 @@
 							disabled="#{ippPortalApp.openViewsSize lt 1}">
 							<pc:automationTag value="auto-FW-CloseAllViews" standAlone="false" />
 							<ice:graphicImage
-								url="/plugins/common/images/close-all.gif"
+								url="/plugins/common/images/icons/door_in.png"
 			                    styleClass="toolbar-button #{(ippPortalApp.openViewsSize lt 1) ? 'iceCmdBtn-dis' : ''}"
 			                    title="#{common_msgPropsBean['portalFramework.toolbar.view.closeAll']}"/>
 						</ice:commandLink>
@@ -50,7 +50,7 @@
 								action="#{ippPortalApp.openPinViewHorizontal}">
 								<pc:automationTag value="auto-FW-PinHorizontal" standAlone="false" />
 								<ice:graphicImage
-									url="/plugins/common/images/application_split.png"
+									url="/plugins/common/images/icons/application_split.png"
 									styleClass="toolbar-button #{ippPortalApp.openViewsSize lt 2 ? 'iceCmdBtn-dis' : ''}"
 				                    title="#{common_msgPropsBean['portalFramework.toolbar.view.openPinViewHorizontal']}"/>
 							</ice:commandLink>
@@ -58,7 +58,7 @@
 								action="#{ippPortalApp.openPinViewVertical}">
 								<pc:automationTag value="auto-FW-PinVertical" standAlone="false" />
 								<ice:graphicImage
-									url="/plugins/common/images/application_tile_horizontal.png"
+									url="/plugins/common/images/icons/application_tile_horizontal.png"
 									styleClass="toolbar-button #{ippPortalApp.openViewsSize lt 2 ? 'iceCmdBtn-dis' : ''}"
 				                    title="#{common_msgPropsBean['portalFramework.toolbar.view.openPinViewVertical']}"/>
 							</ice:commandLink>
@@ -67,11 +67,11 @@
 							<ice:commandLink action="#{ippPortalApp.restorePinView}">
 								<pc:automationTag value="auto-FW-RestorePin" standAlone="false" />
 								<ice:graphicImage rendered="#{ippPortalApp.pinViewOrientation eq 'horizontal'}"
-									url="/plugins/common/images/application_home.png"
+									url="/plugins/common/images/icons/application_home.png"
 									styleClass="toolbar-button" 
 				                    title="#{common_msgPropsBean['portalFramework.toolbar.view.closePinViewHorizontal']}"/>
 								<ice:graphicImage rendered="#{ippPortalApp.pinViewOrientation eq 'vertical'}"
-									url="/plugins/common/images/application_home.png"
+									url="/plugins/common/images/icons/application_home.png"
 									styleClass="toolbar-button"
 				                    title="#{common_msgPropsBean['portalFramework.toolbar.view.closePinViewVertical']}"/>
 							</ice:commandLink>

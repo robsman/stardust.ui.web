@@ -301,7 +301,7 @@ class PriorityAutocompleteDataProvider implements IAutocompleteDataProvider
          {
             // Populate PriorityAutoCompleteItem with priority Label ,priority and icon
             String iconVal = ProcessInstanceUtils.getPriorityLabel(i);
-            String iconPath = "/plugins/views-common/images/icons/priority-" + iconVal.toLowerCase() + ".png";
+            String iconPath = ProcessInstanceUtils.getPriorityIcon(iconVal.toLowerCase());
             PriorityAutoCompleteItem pItem = new PriorityAutoCompleteItem(iconVal, iconPath, i);
             if (pItem.getLabel().toUpperCase().startsWith(searchValue.toUpperCase()))
             {

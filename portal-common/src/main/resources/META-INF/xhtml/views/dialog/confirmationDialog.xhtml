@@ -23,7 +23,7 @@
 						<ice:panelGroup style="text-align: right;">
 							<pc:automationTag value="auto-COM-ConfirmMsgDlg-CloseBtn" standAlone="false"/>
 							<ice:commandButton title="#{common_msgPropsBean['common.close']}"
-								image="/plugins/common/images/dialog-windowbttn-close.png" 
+								image="/plugins/common/images/icons/dialog-windowbttn-close.png" 
 								action="#{dialogBean.cancelAction}"
 								styleClass="windowClose" />
 						</ice:panelGroup>
@@ -38,11 +38,11 @@
 						<c:if test="#{dialogBean.contentTypeAsString != 'NONE'}">
 							<f:facet name="west">
 								<ice:panelGroup>
-									<ice:graphicImage url="/plugins/common/images/dialog-icon-error.jpg"
+									<ice:graphicImage url="/plugins/common/images/icons/dialog-icon-error.jpg"
 										rendered="#{dialogBean.contentTypeAsString eq 'ERROR'}" />
-									<ice:graphicImage url="/plugins/common/images/dialog-icon-warning.jpg"
+									<ice:graphicImage url="/plugins/common/images/icons/dialog-icon-warning.jpg"
 										rendered="#{dialogBean.contentTypeAsString eq 'WARNING'}" />
-									<ice:graphicImage url="/plugins/common/images/dialog-icon-info.jpg"
+									<ice:graphicImage url="/plugins/common/images/icons/dialog-icon-info.jpg"
 										rendered="#{dialogBean.contentTypeAsString eq 'INFO'}" />
 								</ice:panelGroup>
 							</f:facet>

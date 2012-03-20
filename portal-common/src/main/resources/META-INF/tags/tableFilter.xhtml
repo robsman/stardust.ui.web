@@ -74,7 +74,7 @@
 
 	  		<c:if test="#{filterPopup.dataFilters.count > 1}"> <!-- Only if Popup covers more than one Filters -->
 				<ice:panelGroup rendered="#{filterPopup.dataFilters.filtersSet}">
-					<img src="/plugins/common/images/icons/ok.gif" />
+					<img src="/plugins/common/images/icons/tick.png" />
 				</ice:panelGroup>
 				<ice:panelGroup rendered="#{filterPopup.dataFilters.filtersSet}">
 					<ice:commandButton image="/plugins/common/images/icons/close-panel.gif" action="#{filterPopup.resetAndApply}"
@@ -103,7 +103,7 @@
 							styleClass="headerText" />
 					</td>
 					<td style="text-align: right">
-						<ice:commandButton image="/plugins/common/images/dialog-windowbttn-close.png"
+						<ice:commandButton image="/plugins/common/images/icons/dialog-windowbttn-close.png"
 							action="#{filterPopup.closePopup}" immediate="true"
 							title="#{common_msgPropsBean['common.filterPopup.close']}"
 							styleClass="windowClose">
@@ -128,7 +128,7 @@
 											<ice:panelGrid width="100%" columns="2" cellpadding="0" cellspacing="0">
 												<ice:outputText value="#{item.title}" style="font-weight:bold" />
 												<ice:panelGroup style="text-align: right;" rendered="#{item.filterSet}">
-													<img src="/plugins/common/images/icons/ok.gif" />
+													<img src="/plugins/common/images/icons/tick.png" />
 												</ice:panelGroup>
 											</ice:panelGrid>
 										</f:facet>

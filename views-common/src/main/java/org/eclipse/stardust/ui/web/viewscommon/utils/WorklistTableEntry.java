@@ -79,6 +79,8 @@ public class WorklistTableEntry extends DefaultRowModel
    
    private String iconPath;
    
+   private String priorityIcon;
+   
    public WorklistTableEntry()
    {
       defaultCaseActivity = false;
@@ -112,6 +114,7 @@ public class WorklistTableEntry extends DefaultRowModel
       this.activatable = activatable;
       this.lastPerformer = lastPerformer;
       this.priority = priority;
+      this.priorityIcon = ProcessInstanceUtils.getPriorityIcon(priority.toLowerCase());
       this.processPriority = processPriority;
       this.startDate = startDate;
       this.duration = duration;
@@ -381,4 +384,10 @@ public class WorklistTableEntry extends DefaultRowModel
    {
       return iconPath;
    }
+
+   public String getPriorityIcon()
+   {
+      return priorityIcon;
+   }
+   
 }

@@ -67,7 +67,7 @@ public class CategoryTree extends UIViewComponentBean
       iconMap.put("strandedActivities", "activity_stranded.png");
       iconMap.put("resourceAvailabilityView", "group.png");
       iconMap.put("roleAssignmentView", "role.png");
-      iconMap.put("resourceLoginView", "resource_login.png");
+      iconMap.put("resourceLoginView", "group_key.png");
       iconMap.put("resourcePerformance", "chart-up.png");
       iconMap.put("performanceTeamleader", "chart-up-color.png");
       iconMap.put("costs", "money-coin.png");

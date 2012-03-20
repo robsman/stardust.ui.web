@@ -38,7 +38,7 @@ public class ReportViewer implements IDocumentViewer
 {
    public static final String URL_PARAMETERS="URL_PARAMETERS";
    private static final String FAVORITE_MARKED = "/plugins/views-common/images/icons/star.png";
-   private static final String MARK_FAVORITE = "/plugins/views-common/images/icons/star_disabled.png";
+   private static final String MARK_FAVORITE = "/plugins/views-common/images/icons/star-empty.png";
    private static final String CONTEXT_PARAM_REPORTING_URI = "ag.carnot.processportal.integration.REPORTING_URL";
    
    private final String contentUrl = "/plugins/views-common/views/report/reportViewer.xhtml";

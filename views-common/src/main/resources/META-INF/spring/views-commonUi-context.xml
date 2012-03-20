@@ -106,7 +106,7 @@
 				controller="documentSearchBean">
 				<ippui:preferences>
 					<ippui:preferencePage name="icon"
-						include="/plugins/views-common/images/icons/document_find.png" />
+						include="/plugins/views-common/images/icons/page_white_find.png" />
 				</ippui:preferences>
 			</ippui:view>
 

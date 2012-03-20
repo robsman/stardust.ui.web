@@ -49,7 +49,7 @@ public class View extends AbstractUiElement implements TabScopeManager
    
    private final String id;
 
-   private String icon = "/plugins/common/images/tabIcon-generic.png" ;
+   private String icon = "/plugins/common/images/icons/tabIcon-generic.png" ;
    
    private String label;
    
