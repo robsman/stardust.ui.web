@@ -18,6 +18,7 @@ import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityPropert
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.PopupDialog;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
@@ -148,15 +149,24 @@ public class ResetPasswordDialog extends PopupDialog
       {
          ExceptionHandler.handleException(FORM_ID + ":" + COMMON_MESSAGE_ID, e);
       }
-      
+      reset();
       setVisible(!success); // This is required, otherwise Popup Dialog disappears
    }
 
    @Override
    public void reset()
    {
+      account = null;
+      FacesUtils.clearFacesTreeValues();
    }
 
+   @Override
+   public void closePopup()
+   {
+      reset();
+      super.closePopup();
+   }
+   
    private Map<String, String> getLoginProperties()
    {
       LoginDialogBean loginDlg = LoginDialogBean.getInstance();
