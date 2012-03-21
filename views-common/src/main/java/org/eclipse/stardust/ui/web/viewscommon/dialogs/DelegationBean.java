@@ -53,6 +53,7 @@ import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventTyp
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDelegatesProvider.Options;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.participantManagement.ParticipantTree;
+import org.eclipse.stardust.ui.web.viewscommon.participantManagement.ParticipantUserObject;
 import org.eclipse.stardust.ui.web.viewscommon.user.DelegatesDataProvider;
 import org.eclipse.stardust.ui.web.viewscommon.user.ParticipantAutocompleteSelector;
 import org.eclipse.stardust.ui.web.viewscommon.user.ParticipantWrapper;
@@ -384,6 +385,25 @@ public class DelegationBean extends PopupUIComponentBean
          if (null != participantWrapper)
          {
             return participantWrapper.getObject();
+         }
+      }
+      else if (DELEGATION_MODE.PICK_FROM_TREE.equals(delegationMode))
+      {
+         ParticipantUserObject userObj = participantTree.getSelectedUserObject();
+         if (null != userObj)
+         {
+            if (null != userObj.getDynamicParticipantInfo())
+            {
+               return userObj.getDynamicParticipantInfo();
+            }
+            else if (null != userObj.getQualifiedModelParticipantInfo())
+            {
+               return userObj.getQualifiedModelParticipantInfo();
+            }
+            else if (null != userObj.getDepartment())
+            {
+               return userObj.getDepartment();
+            }
          }
       }
       return null;

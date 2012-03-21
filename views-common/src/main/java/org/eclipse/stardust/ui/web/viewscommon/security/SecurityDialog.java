@@ -25,15 +25,19 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 
+import org.eclipse.stardust.engine.api.dto.ConditionalPerformerInfoDetails;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.AccessControlEntry;
 import org.eclipse.stardust.engine.api.runtime.AccessControlPolicy;
+import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Privilege;
+import org.eclipse.stardust.engine.core.runtime.beans.daemons.GetDaemonLogAction;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsPrincipal;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsPrivilege;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
@@ -50,6 +54,8 @@ import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
+import org.eclipse.stardust.ui.web.viewscommon.participantManagement.ParticipantTree;
+import org.eclipse.stardust.ui.web.viewscommon.participantManagement.ParticipantUserObject;
 import org.eclipse.stardust.ui.web.viewscommon.services.ContextPortalServices;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
@@ -76,6 +82,12 @@ public class SecurityDialog extends PopupUIComponentBean
    private boolean policyChanged = false;
    private Map<String, QualifiedModelParticipantInfo> allParticipants;
    private String addEntryDialogId;
+   private SELECTION_MODE selectionMode = SELECTION_MODE.PICK_FROM_LIST;
+   private ParticipantTree participantTree;
+
+   public static enum SELECTION_MODE {
+      PICK_FROM_LIST, PICK_FROM_TREE
+   };
    
    public List<SelectItem> getPermission()
    {
@@ -127,6 +139,8 @@ public class SecurityDialog extends PopupUIComponentBean
       super("myDocumentsTreeView");
       accessControlBean = new ArrayList<AccessControlBean>();
       accessControlBeanInherited = new ArrayList<AccessControlBean>();
+      participantTree = new ParticipantTree();
+      participantTree.initialize();
       initialize();
    }
 
@@ -340,7 +354,36 @@ public class SecurityDialog extends PopupUIComponentBean
    }
 
    public void addUserPrev()
-   {
+   {      
+      if (SELECTION_MODE.PICK_FROM_TREE.equals(selectionMode))
+      {
+         ParticipantUserObject userObj = participantTree.getSelectedUserObject();
+         if (null != userObj)
+         {
+            if (null != userObj.getQualifiedModelParticipantInfo())
+            {
+               selectedParticipant = new Participant(userObj.getQualifiedModelParticipantInfo());
+            }
+//            if (null != userObj.getDepartment())
+//            {
+//               System.out.println("@@@@@@@@@@@ userObj.getDepartment() " + userObj.getDepartment());
+//               Department dept = userObj.getDepartment();
+//               try
+//               {
+//                  selectedParticipant = new Participant(new ConditionalPerformerInfoDetails(dept.getRuntimeOrganizationOID(),
+//                        dept.getOrganization().getId(), dept.getOrganization().getName(), dept));
+//               }
+//               catch (Exception e)
+//               {
+//                  e.printStackTrace();
+//               }
+//            }
+//            else if (null != userObj.getScopedOrganization())
+//            {
+//               System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ userObj.getScopedOrganization() " + userObj.getScopedOrganization());
+//            }
+         }
+      }
       closeAddEntryDialog();
       AccessControlBean acb = new AccessControlBean(selectedParticipant, true, true, true, true, true, true);
       selectedParticipant = null;
@@ -820,5 +863,30 @@ public class SecurityDialog extends PopupUIComponentBean
          addEntryDialogId = "UIC" + o.nextInt(10000);
       }
       return addEntryDialogId;
+   }
+
+   public void setPickFromTreeMode()
+   {
+      this.selectionMode = SELECTION_MODE.PICK_FROM_TREE;
+   }
+
+   public void setPickFromListMode()
+   {
+      this.selectionMode = SELECTION_MODE.PICK_FROM_LIST;
+   }
+
+   public boolean isPickFromTreeMode()
+   {
+      return SELECTION_MODE.PICK_FROM_TREE.equals(selectionMode);
+   }
+
+   public boolean isPickFromListMode()
+   {
+      return SELECTION_MODE.PICK_FROM_LIST.equals(selectionMode);
+   }
+
+   public ParticipantTree getParticipantTree()
+   {
+      return participantTree;
    }
 }

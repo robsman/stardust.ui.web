@@ -110,7 +110,13 @@ public class ParticipantTree
    //hold the list of highlighted user (unique)
    private Set<String> highlightedUsers = new HashSet<String>();
    
+   /**
+    * Nodes to be highlighted.
+    * These are the participants selected in the user table.
+    */
    private Set<User> selectedUsers;
+   
+   private ParticipantUserObject selectedUserObject;
    
    public ParticipantTree()
    {
@@ -198,6 +204,43 @@ public class ParticipantTree
       else if (tree.getNavigationEventType().equals(Tree.NAVIGATION_EVENT_COLLAPSE))
       {
          // NOP
+      }
+   }
+
+   public void nodeClicked(ActionEvent event)
+   {
+      ParticipantUserObject userObj = (ParticipantUserObject) event.getComponent().getAttributes().get("userObject");
+      if (null != userObj)
+      {
+         toggleSelection(userObj);
+         resetPreviousSelection();
+         if (userObj.isSelected())
+         {
+            selectedUserObject = userObj;
+         }
+      }
+   }
+
+   /**
+    * 
+    */
+   private void resetPreviousSelection()
+   {
+      if (null != selectedUserObject)
+      {
+         selectedUserObject.setSelected(false);
+         selectedUserObject = null;
+      }
+   }
+
+   /**
+    * 
+    */
+   private void toggleSelection(ParticipantUserObject userObj)
+   {
+      if (null != userObj)
+      {
+         userObj.setSelected(!userObj.isSelected());
       }
    }
 
@@ -1720,5 +1763,10 @@ public class ParticipantTree
    public void setSelectedUsers(Set<User> selectedUsers)
    {
       this.selectedUsers = selectedUsers;
+   }
+
+   public ParticipantUserObject getSelectedUserObject()
+   {
+      return selectedUserObject;
    }
 }

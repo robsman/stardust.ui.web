@@ -19,6 +19,15 @@
 			<c:set var="contextMenuDisabled" value="false" />
 		</c:otherwise>
 	</c:choose>
+	
+	<c:choose>
+		<c:when test="#{not empty nodesSelectable}">
+			<c:set var="nodesSelectable" value="true" />
+		</c:when>
+		<c:otherwise>
+			<c:set var="nodesSelectable" value="false" />
+		</c:otherwise>
+	</c:choose>
 
 	<link
 		href="#{facesContext.externalContext.requestContextPath}/plugins/views-common/css/context-portal.css"
@@ -52,7 +61,6 @@
 
 	</ice:panelGroup>
 	<ice:panelGroup styleClass="clearing" />
-	
 	<!-- Participant Tree -->
 	<pc:automationTag value="auto-ADM-PartMgmt-Tree"/>
 	<ice:tree id="tree"
@@ -173,7 +181,13 @@
 						hoverclass="dropTargetHover"
 						rendered="#{item.userObject.referencesUnscopedOrganization}"
 						menuPopup="#{contextMenuDisabled == true? '' : 'participantTreeMenuPopup'}">
-						<ice:outputText value="#{item.userObject.text}"/>
+						<ice:outputText rendered="#{!nodesSelectable}" value="#{item.userObject.text}"/>
+						<ice:commandLink rendered="#{nodesSelectable}"
+							value="#{item.userObject.text}"
+							actionListener="#{participantTree.nodeClicked}"
+							style="#{item.userObject.selected ? 'font-weight: bold;' : 'font-weight: normal;'}">
+							<f:attribute name="userObject" value="#{item.userObject}" />
+						</ice:commandLink>
 					</ice:panelGroup>
 
 					<!-- Scoped Organization Node -->
@@ -181,7 +195,13 @@
 						style="display: inline;"
 						rendered="#{item.userObject.referencesScopedOrganization}"
 						menuPopup="#{contextMenuDisabled == true? '' : 'menuPopupScopedOrganization'}">
-						<ice:outputText value="#{item.userObject.text}"/>
+						<ice:outputText rendered="#{!nodesSelectable}" value="#{item.userObject.text}"/>
+						<ice:commandLink rendered="#{nodesSelectable}"
+							value="#{item.userObject.text}"
+							actionListener="#{participantTree.nodeClicked}"
+							style="#{item.userObject.selected ? 'font-weight: bold;' : 'font-weight: normal;'}">
+							<f:attribute name="userObject" value="#{item.userObject}" />
+						</ice:commandLink>
 						<ice:menuPopup id="menuPopupScopedOrganization" hideOn="mouseout">
 							<c:if
 								test="#{null != scopedOrgNodeContextMenu and fn:length(scopedOrgNodeContextMenu) > 0}">
@@ -204,7 +224,13 @@
 						hoverclass="dropTargetHover"
 						rendered="#{item.userObject.referencesImplicitlyScopedOrganization}"
 						menuPopup="#{contextMenuDisabled == true? '' : 'participantTreeMenuPopup'}">
-						<ice:outputText value="#{item.userObject.text}"/>
+						<ice:outputText rendered="#{!nodesSelectable}" value="#{item.userObject.text}"/>
+						<ice:commandLink rendered="#{nodesSelectable}"
+							value="#{item.userObject.text}"
+							actionListener="#{participantTree.nodeClicked}"
+							style="#{item.userObject.selected ? 'font-weight: bold;' : 'font-weight: normal;'}">
+							<f:attribute name="userObject" value="#{item.userObject}" />
+						</ice:commandLink>
 					</ice:panelGroup>
 
 					<!-- Role Node -->
@@ -215,7 +241,13 @@
 						hoverclass="dropTargetHover"
 						rendered="#{item.userObject.referencesUnscopedRole || item.userObject.referencesScopedRole}"
 						menuPopup="#{contextMenuDisabled == true? '' : 'participantTreeMenuPopup'}">
-						<ice:outputText value="#{item.userObject.text}"/>
+						<ice:outputText rendered="#{!nodesSelectable}" value="#{item.userObject.text}"/>
+						<ice:commandLink rendered="#{nodesSelectable}"
+							value="#{item.userObject.text}"
+							actionListener="#{participantTree.nodeClicked}"
+							style="#{item.userObject.selected ? 'font-weight: bold;' : 'font-weight: normal;'}">
+							<f:attribute name="userObject" value="#{item.userObject}" />
+						</ice:commandLink>
 					</ice:panelGroup>
 
 					<!-- UserGroup Node -->
@@ -226,8 +258,13 @@
 						hoverclass="dropTargetHover"
 						rendered="#{item.userObject.referencesUserGroup}"
 						menuPopup="#{contextMenuDisabled == true? '' : 'menuPopupUserGroup'}">
-						<ice:outputText value="#{item.userObject.text}"/>
-
+						<ice:outputText rendered="#{!nodesSelectable}" value="#{item.userObject.text}"/>
+						<ice:commandLink rendered="#{nodesSelectable}"
+							value="#{item.userObject.text}"
+							actionListener="#{participantTree.nodeClicked}">
+							<f:attribute name="userObject" value="#{item.userObject}"
+								style="#{item.userObject.selected ? 'font-weight: bold;' : 'font-weight: normal;'}" />
+						</ice:commandLink>
 						<ice:menuPopup id="menuPopupUserGroup" hideOn="mouseout">
 							<c:if
 								test="#{null != userGrpNodeContextMenu and fn:length(userGrpNodeContextMenu) > 0}">
@@ -271,7 +308,16 @@
 						style="display: inline;"
 						rendered="#{item.userObject.referencesUser}"
 						menuPopup="#{contextMenuDisabled == true? '' : 'menuPopupUser'}">
-						<ice:outputText styleClass="#{item.userObject.highlightStyleClass}" value="#{item.userObject.text}"/>
+						<ice:outputText
+							styleClass="#{item.userObject.highlightStyleClass}"
+							rendered="#{!nodesSelectable}" value="#{item.userObject.text}" />
+						<ice:commandLink
+							styleClass="#{item.userObject.highlightStyleClass}"
+							rendered="#{nodesSelectable}" value="#{item.userObject.text}"
+							actionListener="#{participantTree.nodeClicked}"
+							style="#{item.userObject.selected ? 'font-weight: bold;' : 'font-weight: normal;'}">
+							<f:attribute name="userObject" value="#{item.userObject}" />
+						</ice:commandLink>
 						<ice:menuPopup id="menuPopupUser" hideOn="mouseout">
 							<c:if
 								test="#{null != userNodeContextMenu and fn:length(userNodeContextMenu) > 0}">
@@ -320,8 +366,13 @@
 						hoverclass="dropTargetHover"
 						rendered="#{item.userObject.referencesDepartment}"
 						menuPopup="#{contextMenuDisabled == true? '' : 'menuPopupDepartment'}">
-						<ice:outputText value="#{item.userObject.text}"/>
-
+						<ice:outputText rendered="#{!nodesSelectable}" value="#{item.userObject.text}"/>
+						<ice:commandLink rendered="#{nodesSelectable}"
+							value="#{item.userObject.text}"
+							actionListener="#{participantTree.nodeClicked}"
+							style="#{item.userObject.selected ? 'font-weight: bold;' : 'font-weight: normal;'}">
+							<f:attribute name="userObject" value="#{item.userObject}" />
+						</ice:commandLink>
 						<ice:menuPopup id="menuPopupDepartment" hideOn="mouseout">
 							<c:if
 								test="#{null != deptNodeContextMenu and fn:length(deptNodeContextMenu) > 0}">
@@ -368,7 +419,13 @@
 						dropValue="#{item.userObject}"
 						hoverclass="dropTargetHover"
 						rendered="#{item.userObject.referencesDefaultDepartment}">
-						<ice:outputText value="#{item.userObject.text}"/>
+						<ice:outputText rendered="#{!nodesSelectable}" value="#{item.userObject.text}"/>
+						<ice:commandLink rendered="#{nodesSelectable}"
+							value="#{item.userObject.text}"
+							actionListener="#{participantTree.nodeClicked}"
+							style="#{item.userObject.selected ? 'font-weight: bold;' : 'font-weight: normal;'}">
+							<f:attribute name="userObject" value="#{item.userObject}" />
+						</ice:commandLink>
 					</ice:panelGroup>
 				</ice:panelGroup>
 			</f:facet>

@@ -315,6 +315,7 @@
 										<ui:include src="/plugins/views-common/participantTree/participantTree.xhtml">
 											<ui:param name="participantTree" value="#{delegationBean.participantTree}" />
 											<ui:param name="disableContextMenu" value="true" />
+											<ui:param name="nodesSelectable" value="true" />
 										</ui:include>
 									</ice:panelGroup>
 									<ice:panelGroup rendered="#{delegationBean.notesEnabled}">

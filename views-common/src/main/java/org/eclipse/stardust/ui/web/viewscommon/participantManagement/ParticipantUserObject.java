@@ -93,6 +93,8 @@ public class ParticipantUserObject extends IceUserObject
 
    private ParticipantTree participantTree;
    
+   private boolean selected;
+   
    public ParticipantUserObject(ParticipantTree participantTree)
    {
       super(null);
@@ -548,5 +550,15 @@ public class ParticipantUserObject extends IceUserObject
    public ParticipantItem getParticipantItem()
    {
       return participantItem;
+   }
+
+   public boolean isSelected()
+   {      
+      return selected;
+   }
+
+   public void setSelected(boolean selected)
+   {
+      this.selected = selected;
    }
 }

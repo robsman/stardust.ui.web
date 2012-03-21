@@ -98,34 +98,67 @@
 			<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
 				cellspacing="0" renderNorth="false" renderEast="false"
 				renderSouth="true" renderWest="false" renderCenter="true">
-				<f:facet name="center">
+				<f:facet name="center">					
 					<ice:panelGroup>
-						<ice:panelGroup
-							style="width:100%;height: 230px; overflow: scroll; background-color:white;">
-							<ice:dataTable var="entry" value="#{securityDialog.participants}"
-								resizable="true" columnWidths="60%,40%" border="0">
-								<ice:column>
-									<ice:rowSelector value="#{entry.selected}"
-										clickAction="dummyAction"
-										selectionListener="#{securityDialog.onRowSelection}" />
-									<f:facet name="header">
-										<ice:outputText
-											value="#{securityDialog.messages['securityDialog.participantPopup.column.name']}" />
-									</f:facet>
-									<ice:panelGrid columns="2">
-										<ice:outputText value="#{entry.name}" />
-									</ice:panelGrid>
-								</ice:column>
-								<ice:column>
-									<f:facet name="header">
-										<ice:outputText
-											value="#{securityDialog.messages['securityDialog.participantPopup.column.id']}" />
-									</f:facet>
-									<ice:panelGrid columns="2">
-										<ice:outputText value="#{entry.id}" />
-									</ice:panelGrid>
-								</ice:column>
-							</ice:dataTable>
+						<ice:panelGroup rendered="#{securityDialog.pickFromListMode}">
+							<ice:panelGrid style="width: 98%">
+								<ice:commandLink action="#{securityDialog.setPickFromTreeMode}"
+									style="float : right">
+									<pc:automationTag value="auto-COM-SecurityDlg-PickFromTreeLink"
+										standAlone="false" />
+									<ice:outputText
+										value="#{views_common_msgPropsBean['delegation.tree.link.text']} &amp;raquo;"
+										styleClass="action-link" escape="false" />
+								</ice:commandLink>
+							</ice:panelGrid>
+							<ice:panelGroup style="clearing" />
+							<ice:panelGroup
+								style="width:100%;height: 230px; overflow: scroll; background-color:white;">
+								<ice:dataTable var="entry" value="#{securityDialog.participants}"
+									resizable="true" columnWidths="60%,40%" border="0">
+									<ice:column>
+										<ice:rowSelector value="#{entry.selected}"
+											clickAction="dummyAction"
+											selectionListener="#{securityDialog.onRowSelection}" />
+										<f:facet name="header">
+											<ice:outputText
+												value="#{securityDialog.messages['securityDialog.participantPopup.column.name']}" />
+										</f:facet>
+										<ice:panelGrid columns="2">
+											<ice:outputText value="#{entry.name}" />
+										</ice:panelGrid>
+									</ice:column>
+									<ice:column>
+										<f:facet name="header">
+											<ice:outputText
+												value="#{securityDialog.messages['securityDialog.participantPopup.column.id']}" />
+										</f:facet>
+										<ice:panelGrid columns="2">
+											<ice:outputText value="#{entry.id}" />
+										</ice:panelGrid>
+									</ice:column>
+								</ice:dataTable>
+							</ice:panelGroup>
+						</ice:panelGroup>
+						<ice:panelGroup rendered="#{securityDialog.pickFromTreeMode}" style="width : 400px; max-height: 400px;">
+							<ice:panelGrid style="width: 98%">
+								<ice:commandLink action="#{securityDialog.setPickFromListMode}"
+									style="float : right">
+									<pc:automationTag value="auto-COM-SecurityDlg-PickFromListLink"
+										standAlone="false" />
+									<ice:outputText
+										value="#{views_common_msgPropsBean['delegation.select.toggleLinkText']} &amp;raquo;"
+										styleClass="action-link" escape="false" />
+								</ice:commandLink>
+							</ice:panelGrid>
+							<ice:panelGroup style="clearing" />
+							<ice:panelGroup>
+								<ui:include src="/plugins/views-common/participantTree/participantTree.xhtml">
+									<ui:param name="participantTree" value="#{securityDialog.participantTree}" />
+									<ui:param name="disableContextMenu" value="true" />
+									<ui:param name="nodesSelectable" value="true" />
+								</ui:include>
+							</ice:panelGroup>
 						</ice:panelGroup>
 					</ice:panelGroup>
 				</f:facet>
