@@ -52,6 +52,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
 
 
+
 /**
  * 
  * @author Vikas.Mishra
@@ -249,25 +250,32 @@ public class RelatedProcessSearchHelper
          {
 
             List<ProcessInstance> processInstances = null;
-            
-            //first check in cache
-            if (resultCache.containsKey(matchAny))
+
+            // to search Process(es)/Case(es),atleast one key descriptor must contain non empty value.
+            if (!isEmptyDescriptors(keyDescriptors.values(), sourceDescriptors))
             {
-               processInstances = resultCache.get(matchAny);
-            }
-            else
-            {
-               ProcessInstanceQuery query = createQuery();
-               processInstances = ServiceFactoryUtils.getQueryService().getAllProcessInstances(query);
-               resultCache.put(matchAny, processInstances);
-            }
-            if (CollectionUtils.isNotEmpty(processInstances))
-            {
-               for (ProcessInstance processInstance : processInstances)
+               // first check in cache
+               if (resultCache.containsKey(matchAny))
                {
-                  tablelList.add(new RelatedProcessTableEntry(processInstance));
+                  processInstances = resultCache.get(matchAny);
+               }
+               else
+               {
+                  ProcessInstanceQuery query = createQuery();
+                  processInstances = ServiceFactoryUtils.getQueryService().getAllProcessInstances(query);
+                  resultCache.put(matchAny, processInstances);
+               }
+               
+               
+               if (CollectionUtils.isNotEmpty(processInstances))
+               {
+                  for (ProcessInstance processInstance : processInstances)
+                  {
+                     tablelList.add(new RelatedProcessTableEntry(processInstance));
+                  }
                }
             }
+            
          }
       }
       catch (Exception e)
@@ -407,6 +415,27 @@ public class RelatedProcessSearchHelper
 
       return piQuery;
    }
+
+   private boolean isEmptyDescriptors(final Collection<DataPath> datas, final Map<String, Object> sourceDescriptors)
+   {
+      for (DataPath path : datas)
+      {
+         if (sourceDescriptors.containsKey(path.getId()))
+         {
+            Object value = sourceDescriptors.get(path.getId());
+            if (null != value && !(value instanceof String))
+            {
+               return false;
+            }
+            else if (value instanceof String && StringUtils.isNotEmpty(value.toString()))
+            {
+               return false;
+            }
+         }
+      }
+      return true;
+   }
+   
 
    /**
     * 
