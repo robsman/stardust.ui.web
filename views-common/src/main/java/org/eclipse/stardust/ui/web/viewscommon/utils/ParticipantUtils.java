@@ -583,23 +583,60 @@ public class ParticipantUtils
       if (participantInfo instanceof ModelParticipantInfo)
       {
          ModelParticipantInfo modelParticipantInfo = (ModelParticipantInfo) participantInfo;
-         if (modelParticipantInfo.isDepartmentScoped())
+         return getParticipantUniqueKey(modelParticipantInfo);
+      }
+      return participantInfo.getQualifiedId();
+   }
+   /**
+    * method return unique key for Participant
+    * @param participantInfo
+    * @return
+    */
+   public static String getParticipantUniqueKey(ModelParticipantInfo participantInfo)
+   {
+      ModelParticipantInfo modelParticipantInfo = (ModelParticipantInfo) participantInfo;
+      if (modelParticipantInfo.isDepartmentScoped())
+      {
+         DepartmentInfo departmentInfo = modelParticipantInfo.getDepartment();
+         if (null != departmentInfo)
          {
-            DepartmentInfo departmentInfo = modelParticipantInfo.getDepartment();
-            if (null != departmentInfo)
+            if (departmentInfo instanceof OrganizationInfo)
             {
-               if (departmentInfo instanceof OrganizationInfo)
-               {
-                  OrganizationInfo organizationInfo = (OrganizationInfo) departmentInfo;
-                  return modelParticipantInfo.getQualifiedId() + " (" + organizationInfo.getId() + "-"
-                        + departmentInfo.getId() + " )";
-               }
-
-               return modelParticipantInfo.getQualifiedId() + "-" + departmentInfo.getId();
+               OrganizationInfo organizationInfo = (OrganizationInfo) departmentInfo;
+               return modelParticipantInfo.getQualifiedId() + " (" + organizationInfo.getId() + "-"
+                     + departmentInfo.getId() + " )";
             }
+
+            return modelParticipantInfo.getQualifiedId() + "-" + departmentInfo.getId();
          }
       }
       return participantInfo.getQualifiedId();
    }
    
+   /**
+    * method return unique key for Grant
+    * 
+    * @param role
+    * @return
+    */
+   public static String getGrantUniqueKey(Grant grant)
+   {
+
+      if (null != grant.getDepartment())
+      {
+         DepartmentInfo departmentInfo = grant.getDepartment();
+         if (null != departmentInfo)
+         {
+            if (departmentInfo instanceof OrganizationInfo)
+            {
+               OrganizationInfo organizationInfo = (OrganizationInfo) departmentInfo;
+               return grant.getQualifiedId() + " (" + organizationInfo.getId() + "-" + departmentInfo.getId() + " )";
+            }
+
+            return grant.getQualifiedId() + "-" + departmentInfo.getId();
+         }
+      }
+
+      return grant.getQualifiedId();
+   }
 }

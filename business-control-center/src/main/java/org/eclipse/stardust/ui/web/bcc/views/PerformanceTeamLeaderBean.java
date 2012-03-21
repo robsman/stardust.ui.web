@@ -12,15 +12,12 @@ package org.eclipse.stardust.ui.web.bcc.views;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.engine.api.dto.RoleDetails;
 import org.eclipse.stardust.engine.api.dto.RoleInfoDetails;
 import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.Model;
@@ -30,6 +27,7 @@ import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.model.QualifiedRoleInfo;
 import org.eclipse.stardust.engine.api.model.Role;
+import org.eclipse.stardust.engine.api.model.RoleInfo;
 import org.eclipse.stardust.engine.api.query.FilterTerm;
 import org.eclipse.stardust.engine.api.query.ParticipantAssociationFilter;
 import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
@@ -39,9 +37,9 @@ import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics;
-import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatisticsQuery;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics.Contribution;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics.PerformanceStatistics;
+import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatisticsQuery;
 import org.eclipse.stardust.ui.web.bcc.ResourcePaths;
 import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
 import org.eclipse.stardust.ui.web.bcc.common.configuration.UserPreferencesEntries;
@@ -49,21 +47,23 @@ import org.eclipse.stardust.ui.web.bcc.jsf.IQueryExtender;
 import org.eclipse.stardust.ui.web.bcc.jsf.UserItem;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
-import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
-import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
+import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
-import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
+import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterSearch;
 import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 
 
@@ -83,7 +83,8 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
 
    private WorkflowFacade facade;
 
-   private Map teamMap;
+   private Map<String,List<Participant>> teamMap;
+   private Map<String,QualifiedRoleInfo> roleInfoMap;
 
    private SortableTable<TeamLeaderTableEntry> teamLeaderTable;
 
@@ -114,57 +115,36 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
    {
       processes = ProcessDefinitionUtils.getAllBusinessRelevantProcesses();
       
-      teamMap = new HashMap();
+      teamMap = CollectionUtils.newHashMap();
 
       UserQuery query = UserQuery.findActive();
       facade = WorkflowFacade.getWorkflowFacade();
       FilterTerm filter = query.getFilter().addOrTerm();
-      Iterator<QualifiedRoleInfo> iter = facade.getTeamleadRoles().iterator();
-      ModelCache modelCache = ModelCache.findModelCache();
-      while (iter.hasNext())
+      roleInfoMap = CollectionUtils.newHashMap();
+     
+      for (Object leadRole : facade.getTeamleadRoles())
       {
-         Role teamLeadRole = null;
-         QualifiedRoleInfo teamLeadRoleInfo = iter.next();
-         if (teamLeadRoleInfo instanceof RoleDetails)
+         QualifiedRoleInfo teamLeadRoleInfo = (QualifiedRoleInfo) leadRole;
+        
+         String participantKey = ParticipantUtils.getParticipantUniqueKey(teamLeadRoleInfo);
+         roleInfoMap.put(participantKey, teamLeadRoleInfo);
+         
+         List<Participant> teams = teamMap.get(participantKey);
+         if (teams == null)
          {
-            RoleDetails role = (RoleDetails) teamLeadRoleInfo;
-            DeployedModel model = modelCache.getModel(role.getModelOID());
-            teamLeadRole = (Role) model.getParticipant(teamLeadRoleInfo.getId());
-
+            teams = CollectionUtils.newArrayList();
+            teamMap.put(participantKey, teams);
          }
-         else if (teamLeadRoleInfo instanceof RoleInfoDetails)
-         {
-            RoleInfoDetails roleInfo = (RoleInfoDetails) teamLeadRoleInfo;
+         filter.add(ParticipantAssociationFilter.forParticipant(teamLeadRoleInfo));
 
-            for (DeployedModel model : modelCache.getAllModels())
-            {
-               String modelId = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.extractModelId(roleInfo
-                     .getQualifiedId());
-               if (model.getId().equals(modelId))
-               {
-                  teamLeadRole = (Role) model.getParticipant(roleInfo.getId());
-                  if (teamLeadRole.getRuntimeElementOID() == roleInfo.getRuntimeElementOID())
-                  {
-                     break;
-                  }
-               }
-            }
-         }
+         Role teamLeadRole = getRole(teamLeadRoleInfo);
 
-         if (teamLeadRole != null)
+         if (null != teamLeadRole)
          {
-            filter.add(ParticipantAssociationFilter.forParticipant(teamLeadRoleInfo));
-            Iterator teamIter = teamLeadRole.getTeams().iterator();
-            while (teamIter.hasNext())
+            for (Object teamIter : teamLeadRole.getTeams())
             {
-               Participant team = (Participant) teamIter.next();
-               List teams = (List) teamMap.get(teamLeadRole.getQualifiedId());
-               if (teams == null)
-               {
-                  teams = new ArrayList();
-                  teamMap.put(teamLeadRole.getQualifiedId(), teams);                 
-               }
-               teams.add(team);
+               Participant teamMember = (Participant) teamIter;
+               teams.add(teamMember);
             }
          }
       }
@@ -177,6 +157,38 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
       createTeamLeaderList(query);
 
    }
+   /**
+    * 
+    * @param teamLeadRoleInfo
+    * @return
+    */
+   private Role getRole(QualifiedRoleInfo qRoleInfo)
+   {
+      if (qRoleInfo instanceof Role)
+      {
+         return (Role) qRoleInfo;
+      }
+      else
+      {
+         RoleInfoDetails roleInfo = (RoleInfoDetails) qRoleInfo;
+         ModelCache modelCache = ModelCache.findModelCache();
+         for (DeployedModel model : modelCache.getAllModels())
+         {
+            String modelId = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.extractModelId(roleInfo
+                  .getQualifiedId());
+            if (model.getId().equals(modelId))
+            {
+               Role teamLeadRole = (Role) model.getParticipant(roleInfo.getId());
+               if (teamLeadRole.getRuntimeElementOID() == roleInfo.getRuntimeElementOID())
+               {
+                  return teamLeadRole;
+               }
+            }
+         }
+      }
+      return null;
+   }
+   
 
    private void createTable()
    {
@@ -213,7 +225,7 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
     * Refresh the table
     */
    public void update()
-   {
+   {     
       createTable();
       initialize();
    }
@@ -224,8 +236,7 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
     * @param query
     */
    private void createTeamLeaderList(UserQuery query)
-   {    
-      List data = new ArrayList();//remove this variable
+   {         
       Users teamleader = null;
       if (teamMap.size() > 0)
       {
@@ -236,70 +247,64 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
                   UserQuery.ACCOUNT);
          }
          teamleader = facade.getAllUsers((UserQuery) query);
-         List userItems = facade.getAllUsersAsUserItems(teamleader);
-         Iterator uIter = userItems.iterator();
-         Set teamleaders = CollectionUtils.newSet();
-         ModelCache modelCache = ModelCache.findModelCache();
-         while (uIter.hasNext())
+         List<UserItem> userItems = facade.getAllUsersAsUserItems(teamleader);       
+         Set<Teamleader> teamleaders = CollectionUtils.newSet();
+        
+         //iterate team lead
+         for (UserItem userItem : userItems)
          {
-            UserItem userItem = (UserItem) uIter.next();
             User user = userItem.getUser();
-            Iterator gIter = user.getAllGrants().iterator();
-            while (gIter.hasNext())
+            for (Grant grant : user.getAllGrants())
             {
-               Grant grant = (Grant) gIter.next();
-               List teams = (List) teamMap.get(grant.getQualifiedId());
-               Model model = modelCache.getActiveModel(grant);
-               Participant p = model != null ? model.getParticipant(grant.getId()) : null;
-               Role teamleaderRole = null;
-               if (p instanceof Role)
+
+               List<Participant> teams = teamMap.get(ParticipantUtils.getGrantUniqueKey(grant));
+               //Grant key and Participant key is suppose to same
+               QualifiedRoleInfo roleInfo = roleInfoMap.get(ParticipantUtils.getGrantUniqueKey(grant));
+               
+              //find role from model 
+               if (null == roleInfo)
                {
-                  teamleaderRole = (Role) p;
+                  roleInfo = findRole(grant);
                }
-               if (teams != null && teamleaderRole != null)
+               //create row for each Organization(as same user can be leader in many Organizations)
+               if (teams != null && null != roleInfo)
                {
-                  Iterator teamIter = teams.iterator();
-                  while (teamIter.hasNext())
+                  List<Organization> orgs = findOrganizations(teams);
+                  for (Organization org : orgs)
                   {
-                     p = (Participant) teamIter.next();
-                     if (p instanceof Organization)
-                     {
-                        teamleaders.add(new Teamleader(userItem, teamleaderRole,
-                              (Organization) p));
-                     }
+                     teamleaders.add(new Teamleader(userItem, roleInfo, org));
                   }
                }
             }
          }
-         Map tStatistics = getTeamStatistics(teamleaders);
-         Iterator tlIter = tStatistics.entrySet().iterator();
+        buildTeamStatistics(teamleaders);        
+      }   
 
-         while (tlIter.hasNext())
-         {
-            Entry entry = (Entry) tlIter.next();
-            Map objectData = (Map) entry.getValue();
+   }
 
-            Iterator itr = objectData.keySet().iterator();
-            while (itr.hasNext())
-            {
-               String pId = (String) itr.next();
-               List<CompletedActivityStatistics> tempList = new ArrayList<CompletedActivityStatistics>();
-               if (objectData.get(pId) instanceof CompletedActivityStatistics)
-               {
-                  CompletedActivityStatistics cas = (CompletedActivityStatistics) objectData
-                        .get(pId);
-                  tempList.add(new CompletedActivityStatistics(cas.getCountToday(), cas
-                        .getCountWeek(), cas.getCountMonth(), pId));
-               }
-
-            }
-            data.add(entry.getKey());
-
-         }
-
+   private Role findRole(Grant grant)
+   {
+      ModelCache modelCache = ModelCache.findModelCache();
+      Model model = modelCache.getActiveModel(grant);
+      Participant p = model != null ? model.getParticipant(grant.getId()) : null;    
+      if (p instanceof Role)
+      {
+         return (Role) p;
       }
-      
-
+      return null;
+   }
+   
+   private List<Organization> findOrganizations(List<Participant> teams)
+   {
+      List<Organization> orgs = CollectionUtils.newArrayList();
+      for (Participant participant : teams)
+      {
+         if (participant instanceof Organization)
+         {
+            orgs.add((Organization) participant);
+         }
+      }
+      return orgs;
    }
 
    /**
@@ -310,34 +315,28 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
     * 
     */
    //TODO: code cleanup /optimization
-   private Map getTeamStatistics(Set teamleaders)
+   private void buildTeamStatistics(Set<Teamleader> teamleaders)
    {
       // The following map should have a predictable iteration order
       // so that the ordering of the teamleader list is not destroyed
-      Map tStatistics = new LinkedHashMap();
+      Map<Teamleader,Map> tStatistics = new LinkedHashMap<Teamleader,Map>();
       List<TeamLeaderTableEntry> teamLeaderList = new ArrayList<TeamLeaderTableEntry>();
 
       List<ColumnPreference> selCols = teamLeaderTable.getColumnModel()
             .getSelectableColumns();
-      if (teamleaders != null)
+      if (CollectionUtils.isNotEmpty(teamleaders))
       {
-         // ****** DATA
-        
-         Iterator tlIter = teamleaders.iterator();
-         while (tlIter.hasNext())
+         for (Teamleader tl:teamleaders)
          {
-            List<CompletedActivityStatisticsTableEntry> activityStatisticsList =null;
-            Teamleader tl = (Teamleader) tlIter.next();
+            List<CompletedActivityStatisticsTableEntry> activityStatisticsList =null;            
             Map pStatistics = new HashMap();
             tStatistics.put(tl, pStatistics);
-            Iterator teamIter = getTeamMember(tl).iterator();   
-          
-            while (teamIter.hasNext())
-            { 
-               activityStatisticsList = new ArrayList<CompletedActivityStatisticsTableEntry>();   
-               User user = (User) teamIter.next();
-               setCompletedProcessStatisticsForUser(pStatistics, user,
-                     activityStatisticsList);
+            List<User> teamMembers = getTeamMember(tl);
+
+            for (User user : teamMembers)
+            {
+               activityStatisticsList = CollectionUtils.newArrayList();
+               setCompletedProcessStatisticsForUser(pStatistics, user, activityStatisticsList);
             }
             
             if (CollectionUtils.isEmpty(activityStatisticsList))
@@ -395,7 +394,7 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
          teamLeaderTable.setList(teamLeaderList);
          teamLeaderTable.initialize();
       }
-      return tStatistics;
+     
    }
 
    /**
@@ -451,7 +450,7 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
     * @param tl
     * @return list of teamLeadersRole
     */
-   private List getTeamMember(Teamleader tl)
+   private List<User> getTeamMember(Teamleader tl)
    {
       UserQuery query = UserQuery.findAll();
       query.getFilter().add(
@@ -546,24 +545,28 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
          this.processDefinitionName = processDefinitionName;
       }
    }
-
+   /**
+    * 
+    * 
+    * @version $Revision: $
+    */
    public static class Teamleader
    {
       private UserItem user;
 
       private ModelParticipant team;
 
-      private Role teamleaderRole;
+      private RoleInfo teamleaderRole;
 
       private String teamName;
 
       private List<CompletedActivityStatistics> statisticsList;
 
-      protected Teamleader(UserItem user, Role teamleaderRole, ModelParticipant team)
+      protected Teamleader(UserItem user, RoleInfo teamleaderRole, ModelParticipant team)
       {
          this.user = user;
          this.team = team;
-         teamName = I18nUtils.getParticipantName(team);
+         this.teamName = ModelHelper.getParticipantName(teamleaderRole);
          this.teamleaderRole = teamleaderRole;
       }
 
@@ -587,7 +590,7 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
          return team;
       }
 
-      public Role getTeamleaderRole()
+      public RoleInfo getTeamleaderRole()
       {
          return teamleaderRole;
       }
@@ -598,7 +601,6 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
          {
             Teamleader tl = (Teamleader) obj;
             return user.getUser().getOID() == tl.user.getUser().getOID()
-                  && user.getUser().getRealmOID() == tl.user.getUser().getRealmOID()
                   && team.getRuntimeElementOID() == tl.team.getRuntimeElementOID();
          }
          return false;
@@ -606,8 +608,10 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
 
       public int hashCode()
       {
-         return (int) user.getUser().getOID() | (int) user.getUser().getRealmOID()
-               | (int) team.getRuntimeElementOID();
+         int hash = 7;
+         hash = 31 * hash + (int) user.getUser().getOID();
+         hash = 31 * hash + (int) team.getRuntimeElementOID();
+         return hash;
       }
 
       public List<CompletedActivityStatistics> getStatisticsList()

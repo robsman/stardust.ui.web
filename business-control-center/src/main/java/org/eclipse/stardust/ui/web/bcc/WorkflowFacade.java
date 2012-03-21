@@ -12,7 +12,6 @@ package org.eclipse.stardust.ui.web.bcc;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -66,9 +65,9 @@ import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.compatibility.extensions.dms.DmsConstants;
 import org.eclipse.stardust.engine.core.query.statistics.api.WorklistStatistics;
-import org.eclipse.stardust.engine.core.query.statistics.api.WorklistStatisticsQuery;
 import org.eclipse.stardust.engine.core.query.statistics.api.WorklistStatistics.ParticipantStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.WorklistStatistics.UserStatistics;
+import org.eclipse.stardust.engine.core.query.statistics.api.WorklistStatisticsQuery;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.web.bcc.jsf.BusinessControlCenterLocalizerKey;
 import org.eclipse.stardust.ui.web.bcc.jsf.InvalidServiceException;
@@ -85,6 +84,7 @@ import org.eclipse.stardust.ui.web.viewscommon.helper.activityTable.ActivityInst
 import org.eclipse.stardust.ui.web.viewscommon.helper.processTable.ProcessInstanceTableEntry;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
@@ -173,58 +173,67 @@ public class WorkflowFacade implements Resetable
    @SuppressWarnings("unchecked")
    private void buildRoleAndUserItemList()
    {
-      UserQuery query = UserQuery.findActive();
-      query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Core));
-      List/* <User> */users = getQueryService().getAllUsers(query);
-      List/* <Role> */roles = new ArrayList/* <Role> */();
-      ModelCache modelCache = ModelCache.findModelCache();
-      List/* <Participant> */participants = modelCache != null ? new ArrayList(modelCache
-            .getAllParticipants()) : Collections.EMPTY_LIST;
 
-      for (Iterator<Participant> pIter = participants.iterator(); pIter.hasNext();)
-      {
-         Participant p = (Participant) pIter.next();
+     
+      List<ModelParticipantInfo> roles = CollectionUtils.newArrayList();
+      
+      ModelCache modelCache = ModelCache.findModelCache();
+
+      for (Participant p:modelCache.getAllParticipants())
+      {        
          this.participants.put(p.getQualifiedId(), p);
          if (p instanceof Role || p instanceof Organization)
          {
             ModelParticipantInfo mp = (ModelParticipantInfo) p;
-            if (!mp.isDepartmentScoped())
+            roles.add(mp);
+            
+            boolean isTeamLead = isTeamLead(mp);            
+                 
+            if (isTeamLead)
             {
-               roles.add(p);
-               List teams = (p instanceof Role) ? ((Role) p).getTeams() : new ArrayList();
-               if (!teams.isEmpty())
-               {
-                  // this is a team lead role
-                  ParticipantDepartmentPair key = ParticipantDepartmentPair.getParticipantDepartmentPair(mp);
-                  teamleadRoles.put(key, p);
-               }
+               teamleadRoles.put(ParticipantUtils.getParticipantUniqueKey(p), p);
             }
-            else
+
+            if (mp.isDepartmentScoped())
             {
-               roles.add(p);//add default department and role
+
                List<ModelParticipantInfo> runtimeScopes = getRuntimeScopes((ModelParticipantInfo) p);
                for (ModelParticipantInfo modelParticipantInfo : runtimeScopes)
                {
                   roles.add(modelParticipantInfo);
-                  List teams = (p instanceof Role) ? ((Role) p).getTeams() : new ArrayList();
-                  if (!teams.isEmpty())
-                  {
-                     // this is a team lead role
-                     ParticipantDepartmentPair key = ParticipantDepartmentPair
-                           .getParticipantDepartmentPair(modelParticipantInfo);
-                     teamleadRoles.put(key, modelParticipantInfo);
+                  if (isTeamLead)// this is a team lead role
+                  {                     
+                     String participantKey = ParticipantUtils.getParticipantUniqueKey(modelParticipantInfo);
+                     teamleadRoles.put(participantKey, modelParticipantInfo);
+                  
                   }
                }
             }
-         }
-      }
 
+         }
+
+      }
+      
+      UserQuery query = UserQuery.findActive();
+      query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Core));
+      List<User> users = getQueryService().getAllUsers(query);
+      
       Pair/* <Map<String, RoleItem>, Map<Long, UserItem>> */pair = getWorklistStatistics(roles, users);
       ParticipantDepartmentPairComparator pairComparator = new ParticipantDepartmentPairComparator();
       roleItems = new TreeMap(pairComparator);
       roleItems.putAll((Map) pair.getFirst());
 
       userItems = (Map) pair.getSecond();
+   }
+   
+   private boolean isTeamLead(ModelParticipantInfo participant)
+   {
+      if (participant instanceof Role)
+      {
+         Role role = (Role) participant;
+         return !role.getTeams().isEmpty();
+      }
+      return false;
    }
 
    /**
@@ -1144,8 +1153,8 @@ public class WorkflowFacade implements Resetable
                   modelParticipantInfo = role;
                }
 
-               if (teamleadRoles.containsKey(ParticipantDepartmentPair
-                     .getParticipantDepartmentPair(modelParticipantInfo)))
+               String participantKey = ParticipantUtils.getParticipantUniqueKey(modelParticipantInfo);
+               if (teamleadRoles.containsKey(participantKey))
                {
                   filter.add(ParticipantAssociationFilter
                         .forTeamLeader((RoleInfo) modelParticipantInfo));
