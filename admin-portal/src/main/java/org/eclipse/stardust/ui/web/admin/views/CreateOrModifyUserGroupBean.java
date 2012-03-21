@@ -19,6 +19,7 @@ import javax.faces.event.ActionEvent;
 
 import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.engine.api.runtime.UserGroup;
+import org.eclipse.stardust.engine.api.runtime.UserGroupExistsException;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.ui.web.admin.AdminportalConstants;
 import org.eclipse.stardust.ui.web.admin.WorkflowFacade;
@@ -61,6 +62,8 @@ public class CreateOrModifyUserGroupBean extends PopupUIComponentBean
    private ICallbackHandler iCallbackHandler;
    
    private AdminMessagesPropertiesBean propsBean;
+   
+   private String validationMessage;
 
    /**
     * 
@@ -85,7 +88,8 @@ public class CreateOrModifyUserGroupBean extends PopupUIComponentBean
          if (!DateValidator.validInputDate(userGroup.getValidFrom(), userGroup
                .getValidTo()))
          {
-            throw new Exception(propsBean.getString("views.userGroupMgmt.invalidDate"));
+            validationMessage = propsBean.getString("views.userGroupMgmt.invalidDate");
+            return;
          }
          UserService service = workflowFacade.getServiceFactory().getUserService();
          if (!modifyMode)
@@ -119,6 +123,11 @@ public class CreateOrModifyUserGroupBean extends PopupUIComponentBean
          
          MessageDialog.addErrorMessage(fs.getDetail());
       }
+      catch (UserGroupExistsException e)
+      {
+         validationMessage = propsBean.getParamString("views.userGroupMgmt.notifyUserGroupExistMsg", userGroup.getId());
+         return;
+      }
       catch (Exception e)
       {
          ExceptionHandler.handleException(e);
@@ -151,6 +160,7 @@ public class CreateOrModifyUserGroupBean extends PopupUIComponentBean
          modifyMode = false;
          this.userGroup = new UserGroupBean();
       }
+      validationMessage = null;
       super.openPopup();
    }
 
@@ -222,12 +232,14 @@ public class CreateOrModifyUserGroupBean extends PopupUIComponentBean
 
    @Override
    public void initialize()
+   {}
+   
+   public String getValidationMessage()
    {
-      // TODO Auto-generated method stub
-      
+      return validationMessage;
    }
 
-	@Override
+   @Override
 	public void closePopup() {
 		FacesUtils.refreshPage();
 		super.closePopup();

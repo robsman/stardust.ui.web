@@ -174,6 +174,7 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
    {
       boolean success = true;
       passwordValidationMsg = null;
+      validationMsg = null;
       MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
       User newUser = null;
       if (FacesContext.getCurrentInstance().getMessages().hasNext())
@@ -182,7 +183,8 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
       {
          if (!DateValidator.validInputDate(getValidFrom(), getValidTo()))
          {
-            throw new UserDefinedException(propsBean.getString("views.createUser.invalidDate"), "");//TODO:avoid this Exception type
+            validationMsg = propsBean.getString("views.createUser.invalidDate");
+            return;
          }
          if (!validatePassword(getPassword()))
          {
@@ -262,11 +264,6 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
       {
          success = false;
          validationMsg = ExceptionHandler.getExceptionMessage(e);
-      }
-      catch (UserDefinedException e)
-      {
-         success = false;
-         ExceptionHandler.handleException(e);
       }
 
       if (success)
