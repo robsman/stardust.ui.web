@@ -21,7 +21,7 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
-import org.eclipse.stardust.ui.web.viewscommon.common.NoteTip;
+import org.eclipse.stardust.ui.web.viewscommon.common.ToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileUploadHelper;
@@ -418,12 +418,7 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
    // This method is not applicable for folders
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryResourceUserObject#getNoteTip()
-    */
-   public NoteTip getNoteTip()
+   public ToolTip getToolTip()
    {
       return null;
    }

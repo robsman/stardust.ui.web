@@ -22,7 +22,8 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceExceptio
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
-import org.eclipse.stardust.ui.web.viewscommon.common.NoteTip;
+import org.eclipse.stardust.ui.web.viewscommon.common.DocumentToolTip;
+import org.eclipse.stardust.ui.web.viewscommon.common.ToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
@@ -54,6 +55,8 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
    private boolean readable = false;
    private boolean deletable = false;
    private boolean readACL = false;
+   private ToolTip documentToolTip;
+   private boolean supportsToolTip = false;
 
    /**
     * custom constructor initialing document user object
@@ -100,6 +103,8 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
          }
          this.mType = MimeTypesHelper.detectMimeType(document.getName(), document.getContentType());
          setLeafIcon(this.mType.getCompleteIconPath());
+         supportsToolTip = true;
+         documentToolTip = new DocumentToolTip(typedDocument.getDocumentType(), document);
       }
       else
       {
@@ -368,7 +373,7 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
    @Override
    public boolean isSupportsToolTip()
    {
-      return false;
+      return supportsToolTip;
    }
 
    @Override
@@ -385,9 +390,9 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
    }
 
    @Override
-   public NoteTip getNoteTip()
+   public ToolTip getToolTip()
    {
-      return null;
+      return documentToolTip;
    }
 
    @Override

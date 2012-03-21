@@ -65,13 +65,14 @@
 							dropMask="dragging,drag_cancel,hover_start,hover_end"
 							rendered="#{item.userObject.draggable}"
 							styleClass="document-tree-view-icon"
-							menuPopup="repositoryViewPopup">
+							menuPopup="repositoryViewPopup"
+							panelTooltip="toolTip">
 							<ice:graphicImage value="#{item.userObject.leafIcon}" />
 						</ice:panelGroup>
 
 						<ice:panelGroup style="display: inline" draggable="false"
 							rendered="#{!item.userObject.draggable}"
-							panelTooltip="noteToolTip" 
+							panelTooltip="toolTip" 
 							menuPopup="repositoryViewPopup"
 							dropTarget="true"
 							hoverclass="dropTargetHover"
@@ -82,17 +83,17 @@
 								width="16px" height="16px" />
 						</ice:panelGroup>
 
-						<ice:panelGroup style="display: inline;" styleClass="notesTooltip"
+						<ice:panelGroup style="display: inline;" 
 							rendered="#{item.userObject.supportsToolTip}">
-							<ice:panelTooltip id="noteToolTip" hideOn="mouseout"
-								hoverDelay="500" styleClass="notesTooltip">
-								<!-- throws error so commented temporarily <ui:include src="#{item.userObject.toolTipContentUrl}" />  -->
-								<ui:include
-									src="/plugins/views-common/views/doctree/toolTip.xhtml">
-									<ui:param name="noteTip" value="#{item.userObject.noteTip}" />
-								</ui:include>
-							</ice:panelTooltip>
-
+								<ice:panelTooltip id="toolTip" hideOn="mouseout"
+									style="#{item.userObject.toolTip.style}"
+									styleClass="tooltip2" hoverDelay="500">
+									<!-- throws error so commented temporarily <ui:include src="#{item.userObject.toolTipContentUrl}" />  -->
+									<ui:include
+										src="/plugins/views-common/views/doctree/toolTip.xhtml">
+										<ui:param name="toolTip" value="#{item.userObject.toolTip}" />
+									</ui:include>
+								</ice:panelTooltip>
 						</ice:panelGroup>
 						
 						<ice:menuPopup id="repositoryViewPopup" 

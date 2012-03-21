@@ -37,11 +37,11 @@
 			</ice:panelGrid>
 		</ice:panelGroup>
 
-		<ice:panelGroup style="display: inline;" styleClass="notesTooltip">
-			<ice:panelTooltip id="noteToolTip" hideOn="mouseout" hoverDelay="500"
-				styleClass="notesTooltip">
+		<ice:panelGroup style="display: inline;">
+			<ice:panelTooltip id="noteToolTip" style="#{row.noteInfo.style}"
+				styleClass="tooltip2" hideOn="mouseout" hoverDelay="500">
 				<ui:include src="/plugins/views-common/views/doctree/toolTip.xhtml">
-					<ui:param name="noteTip" value="#{row.noteInfo}" />
+					<ui:param name="toolTip" value="#{row.noteInfo}" />
 				</ui:include>
 			</ice:panelTooltip>
 

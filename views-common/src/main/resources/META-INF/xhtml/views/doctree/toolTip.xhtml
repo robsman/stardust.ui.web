@@ -4,21 +4,55 @@
 	<f:facet name="header">
 	</f:facet>
 	<f:facet name="body">
-		<ice:panelGroup>
-			<ice:panelGrid columns="2" styleClass="notesTooltipPanel"
-				columnClasses="label, data">
-				<ice:outputText styleClass="label"
-					value="#{views_common_msgPropsBean['common.user.label']}" />
-				<ice:outputText styleClass="data" value="#{noteTip.user}" />
-				<ice:outputText styleClass="label"
-					value="#{views_common_msgPropsBean['common.time.label']}" />
-				<ice:outputText styleClass="data" value="#{noteTip.timeStamp}" />
-				<ice:outputText styleClass="label"
-					value="#{views_common_msgPropsBean['common.scope.label']}" />
-				<ice:outputText styleClass="data" value="#{noteTip.scopeType}" />
+		<ice:panelGroup style="#{toolTip.style}" >
+			<ice:panelGrid columns="1">
+				<ice:outputText styleClass="tooltip2TitleBar"
+					value="#{toolTip.title}" />
 			</ice:panelGrid>
-			<ice:panelGroup styleClass="notesTooltipContent">
-				<ice:outputText value="#{noteTip.toolTipContent}" />
+
+			<!-- Note Tool Tip -->
+			<ice:panelGroup rendered="#{toolTip.toolTipType == 'note'}">
+				<ice:panelGrid
+					style="border-top: 1px dotted #999; border-bottom: 1px dotted #999;"
+					columns="2" columnClasses="tooltip2Label, tooltip2Data">
+					<ice:outputLabel
+						value="#{views_common_msgPropsBean['common.user.label']}" />
+					<ice:outputText value="#{toolTip.user}" />
+					<ice:outputLabel
+						value="#{views_common_msgPropsBean['common.time.label']}" />
+					<ice:outputText value="#{toolTip.timeStamp}" />
+					<ice:outputLabel
+						value="#{views_common_msgPropsBean['common.scope.label']}" />
+					<ice:outputText value="#{toolTip.scopeType}" />
+				</ice:panelGrid>
+				<ice:panelGroup styleClass="clearing" />
+				<ice:panelGroup>
+					<ice:outputText value="#{toolTip.toolTipContent}" style="padding: 0px; white-space: normal"/>
+				</ice:panelGroup>
+			</ice:panelGroup>
+
+			<!-- Document Tool Tip -->
+			<ice:panelGroup rendered="#{toolTip.toolTipType == 'document'}">
+				<ice:panelGrid style="border-top: 1px dotted #999;" columns="2"
+					columnClasses="tooltip2Label, tooltip2Data">
+					<ice:outputLabel
+						value="#{views_common_msgPropsBean['common.tooltip.document.documentType']}" />
+					<ice:outputText value="#{toolTip.documentType}" />
+					<ice:outputLabel
+						value="#{views_common_msgPropsBean['common.tooltip.document.fileType']}" />
+					<ice:outputText value="#{toolTip.fileType}" />
+					<ice:outputLabel
+						value="#{views_common_msgPropsBean['common.tooltip.document.fileSize']}" />
+					<ice:outputText value="#{toolTip.size}">
+						<f:converter converterId="fileSizeConverter" />
+					</ice:outputText>
+					<ice:outputLabel
+						value="#{views_common_msgPropsBean['common.tooltip.document.modificationDate']}" />
+					<ice:outputText value="#{toolTip.modificationDate}" />
+					<ice:outputLabel
+						value="#{views_common_msgPropsBean['common.tooltip.document.description']}" />
+					<ice:outputText value="#{toolTip.description}" />
+				</ice:panelGrid>
 			</ice:panelGroup>
 		</ice:panelGroup>
 	</f:facet>

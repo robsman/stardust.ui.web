@@ -17,7 +17,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.runtime.Resource;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsPrivilege;
-import org.eclipse.stardust.ui.web.viewscommon.common.NoteTip;
+import org.eclipse.stardust.ui.web.viewscommon.common.ToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
@@ -34,6 +34,8 @@ import com.icesoft.faces.context.effects.Highlight;
  */
 public abstract class RepositoryResourceUserObject extends IceUserObject
 {
+   private static final long serialVersionUID = 5221739219683823073L;
+
    public enum ResourceType {
       FOLDER, DOCUMENT, VIRTUAL, NOTE
    }
@@ -404,7 +406,7 @@ public abstract class RepositoryResourceUserObject extends IceUserObject
 
    public abstract boolean isDownloadable();
 
-   public abstract NoteTip getNoteTip();
+   public abstract ToolTip getToolTip();
 
    public abstract boolean isRefreshable();
 

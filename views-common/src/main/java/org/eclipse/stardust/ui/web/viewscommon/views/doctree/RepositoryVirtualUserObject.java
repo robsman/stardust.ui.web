@@ -20,6 +20,7 @@ import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.viewscommon.common.NoteTip;
+import org.eclipse.stardust.ui.web.viewscommon.common.ToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.CallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.PanelConfirmation;
@@ -206,8 +207,7 @@ public class RepositoryVirtualUserObject extends RepositoryResourceUserObject
       setLeafIcon(iconFile);
    }
 
-   @Override
-   public NoteTip getNoteTip()
+   public ToolTip getToolTip()
    {
       return null;
    }

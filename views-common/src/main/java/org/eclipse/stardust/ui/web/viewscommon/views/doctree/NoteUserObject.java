@@ -18,7 +18,7 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.viewscommon.common.NoteTip;
-import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
+import org.eclipse.stardust.ui.web.viewscommon.common.ToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 
@@ -32,7 +32,7 @@ public class NoteUserObject extends RepositoryResourceUserObject
 {
 
    private static final long serialVersionUID = 1L;
-   private NoteTip noteTip;
+   private ToolTip noteTip;
    private String noteIndex;
    private ProcessInstance processInstance;
 
@@ -62,7 +62,7 @@ public class NoteUserObject extends RepositoryResourceUserObject
    public void createNote()
    {}
 
-   public NoteTip getNoteTip()
+   public ToolTip getToolTip()
    {
       return noteTip;
    }

@@ -26,19 +26,19 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 
 
-
 /**
  * @author Yogesh.Manware
  * @version $Revision: $
  */
-public class NoteTip implements Serializable
+public class NoteTip implements ToolTip, Serializable
 {
    private static final long serialVersionUID = 1L;
+   protected static final String NOTE = "note";
+   protected static final String STYLE = "background: url('./css-images/notes-background.png') top repeat-x #FFFFE0;";
    private String user;
    private String timeStamp;
    private String title;
    private String scopeType;
-   private boolean readOnly;
    private String toolTipContent;
    private Date timeStampAsDate;
    private String userImageURL;
@@ -51,7 +51,6 @@ public class NoteTip implements Serializable
    public NoteTip(Note note, Long Oid)
    {
       super();
-      readOnly = true;
       user = FormatterUtils.getUserLabel(note.getUser());
       userImageURL = MyPicturePreferenceUtils.getUsersImageURI(note.getUser());
       if (note.getTimestamp() != null)
@@ -66,6 +65,19 @@ public class NoteTip implements Serializable
       scopeType = getScopeType(note, Oid);
    }
 
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.viewscommon.common.ToolTip#getToolTipType()
+    */
+   public String getToolTipType()
+   {
+      return NOTE;
+   }
+
+   public String getStyle()
+   {
+      return STYLE;
+   }
+   
    public String getUser()
    {
       return user;
@@ -84,11 +96,6 @@ public class NoteTip implements Serializable
    public String getScopeType()
    {
       return scopeType;
-   }
-
-   public boolean isReadOnly()
-   {
-      return readOnly;
    }
 
    public String getToolTipContent()

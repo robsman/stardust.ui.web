@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.views.doctree;
 
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
@@ -17,10 +19,11 @@ import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
-
 
 
 /**
@@ -29,6 +32,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
  */
 public class TypedDocument
 {
+   private static final Logger trace = LogManager.getLogger(TypedDocument.class);
    private ProcessInstance processInstance;
    private Document document;
    private boolean outMappingExist = false;
@@ -56,6 +60,19 @@ public class TypedDocument
          if (null == this.document.getId())
          {
             this.document = null;
+         }
+         else
+         {
+            //above fetched document does not contain complete details of the document like description etc
+            try
+            {
+               DocumentMgmtUtility.getDocument(document.getId());
+            }
+            catch (ResourceNotFoundException e)
+            {
+              //should never occur
+               trace.error(e);
+            }
          }
       }
    }

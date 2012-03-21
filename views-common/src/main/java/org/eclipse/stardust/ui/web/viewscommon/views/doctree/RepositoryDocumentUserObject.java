@@ -23,7 +23,8 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceExceptio
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
-import org.eclipse.stardust.ui.web.viewscommon.common.NoteTip;
+import org.eclipse.stardust.ui.web.viewscommon.common.DocumentToolTip;
+import org.eclipse.stardust.ui.web.viewscommon.common.ToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
@@ -52,6 +53,7 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    private MIMEType mType = MimeTypesHelper.DEFAULT;
    private boolean sendFileAllowed = false;
    private MessagesViewsCommonBean propsBean;
+   private ToolTip documentToolTip;
 
    /**
     * custom constructor initialing document user object
@@ -90,6 +92,8 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
             setEditable(false);
          }
       }
+      
+      documentToolTip = new DocumentToolTip(null, document);
    }
 
    @Override
@@ -314,7 +318,7 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    @Override
    public boolean isSupportsToolTip()
    {
-      return false;
+      return true;
    }
 
    @Override
@@ -331,9 +335,9 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    }
 
    @Override
-   public NoteTip getNoteTip()
+   public ToolTip getToolTip()
    {
-      return null;
+      return documentToolTip;
    }
 
    @Override
