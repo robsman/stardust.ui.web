@@ -35,7 +35,9 @@ import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.FileSystemDocument;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentContentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.TIFFDocumentWrapper;
 
@@ -90,7 +92,7 @@ public class TIFFDocumentHolder
 
       try
       {
-         documentContent = docInfo.retrieveContent();
+         documentContent = docInfo.retrieveContent();         
 
          Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName(TIFF_FORMAT_NAME);
          if (!readers.hasNext())
@@ -628,7 +630,9 @@ public class TIFFDocumentHolder
     */
    public String getDocId()
    {
-      return docInfo.getId();
+      return (docInfo instanceof FileSystemDocument)
+            ? DocumentMgmtUtility.stripOffSpecialCharacters(docInfo.getId())
+            : docInfo.getId();
    }
 
    /**

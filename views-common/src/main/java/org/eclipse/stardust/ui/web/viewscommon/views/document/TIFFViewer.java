@@ -32,6 +32,7 @@ import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.TIFFDocumentHolder;
@@ -88,7 +89,7 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
    {
       this.view = view;
       processInstance = (ProcessInstance) view.getViewParams().get("processInstance");
-      docId = documentContentInfo.getId();
+      setDocumentId(documentContentInfo);
       
       //Temporary code
       documentInfo = documentContentInfo;
@@ -333,7 +334,7 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
     * 
     */
    public void close()
-   {
+   {      
       String publishSaveMsg = "window.parent.EventHub.events.publish('VIEW_CLOSING', '" + docId + "');";
       JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), publishSaveMsg);
       PortalApplication.getInstance().addEventScript(publishSaveMsg);
@@ -627,5 +628,15 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
    }
 
    public void closeDocument()
-   {}
+   {}   
+
+   /**
+    * @return
+    */
+   private void setDocumentId(IDocumentContentInfo docInfo)
+   {
+      docId = (docInfo instanceof FileSystemDocument)
+            ? DocumentMgmtUtility.stripOffSpecialCharacters(docInfo.getId())
+            : docInfo.getId();
+   }
 }
