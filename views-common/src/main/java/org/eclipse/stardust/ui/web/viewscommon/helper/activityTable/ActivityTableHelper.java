@@ -964,7 +964,7 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
                      .ascendig(sortCriterion.isAscending());
                query.orderBy(o);
             }
-            else if ("assignedTo".equals(sortCriterion.getProperty()))
+            else if ("currentPerformer".equals(sortCriterion.getProperty()))
             {
                query.orderBy(ActivityInstanceQuery.CURRENT_USER_PERFORMER_OID,
                      sortCriterion.isAscending());
