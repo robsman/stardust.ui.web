@@ -136,16 +136,16 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       else if (ViewEventType.ACTIVATED == event.getType())
       {
          //refresh if different document is selected (but with same view-key)
-         IDocumentContentInfo existingDocumet = documentContentInfo;
-         documentContentInfo = (IDocumentContentInfo) event.getView().getViewParams().get("documentInfo");
-         if (!existingDocumet.getId().equals(documentContentInfo.getId()))
-         {
-            thisView = event.getView();
-            if (!initializeBean())
-            {
-               event.setVetoed(true);
-            }
-         }
+//         IDocumentContentInfo existingDocumet = documentContentInfo;
+//         documentContentInfo = (IDocumentContentInfo) event.getView().getViewParams().get("documentInfo");
+//         if (!existingDocumet.getId().equals(documentContentInfo.getId()))
+//         {
+//            thisView = event.getView();
+//            if (!initializeBean())
+//            {
+//               event.setVetoed(true);
+//            }
+//         }
          
          ExternalDocumentViewerBean externalDocumentViewer = ExternalDocumentViewerBean.getInstance();
          if (externalDocumentViewer.isOpened()
