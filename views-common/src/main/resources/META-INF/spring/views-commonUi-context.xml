@@ -131,7 +131,7 @@
 			
 			<ippui:view name="caseDetailsView"
 				include="/plugins/views-common/views/case/caseDetailsView.xhtml"
-				controller="caseDetailsBean" identityParams="processInstanceOID">
+				controller="caseDetailsBean">
 				<ippui:preferences>
 				<ippui:preferencePage name="icon"
 					include="/plugins/views-common/images/icons/envelope.png" />
