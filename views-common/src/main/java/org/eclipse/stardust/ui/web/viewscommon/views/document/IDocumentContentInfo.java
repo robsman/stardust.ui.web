@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.DocumentAnnotations;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 
 
@@ -52,7 +53,7 @@ public interface IDocumentContentInfo
 
    IDocumentContentInfo save(byte[] contentBytes);
    IDocumentContentInfo saveFile(String filePath);
-   IDocumentContentInfo reset();
+   IDocumentContentInfo reset() throws ResourceNotFoundException;
 
    boolean isSupportsVersioning();
    IVersionTracker getVersionTracker();

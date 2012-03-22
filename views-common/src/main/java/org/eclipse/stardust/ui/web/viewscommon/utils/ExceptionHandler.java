@@ -29,6 +29,8 @@ import org.eclipse.stardust.ui.web.viewscommon.common.PortalErrorClass;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalErrorMessageProvider;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 
 
@@ -167,7 +169,7 @@ public class ExceptionHandler
             
             if (FacesMessage.SEVERITY_ERROR == facesMsg.getSeverity())
             {
-               if (exception instanceof I18NException)
+               if (exception instanceof I18NException || exception instanceof ResourceNotFoundException)
                {
                   MessageDialog.addErrorMessage(messageToShow);
                }
@@ -266,6 +268,12 @@ public class ExceptionHandler
          else if (exception instanceof I18NException)
          {
             String message = ((I18NException) exception).getMessage();
+            facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, message, null);
+         }
+         else if (exception instanceof ResourceNotFoundException)
+         {
+            String message = (MessagesViewsCommonBean.getInstance()
+                  .getString("views.documentView.documentNotFoundError"));
             facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, message, null);
          }
 

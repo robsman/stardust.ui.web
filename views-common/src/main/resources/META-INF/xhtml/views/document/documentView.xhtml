@@ -13,7 +13,7 @@
 			src="/plugins/views-common/views/doctree/fileSaveDialog.xhtml" />
 	</ice:panelGroup>
 	
-	<ice:panelGroup>
+	<ice:panelGroup rendered="#{documentHandlerBean.loadSuccessful}">
 		<ice:commandLink style="float: right;"
 			title="#{documentHandlerBean.messages['save.label']}"
 			rendered="#{!documentHandlerBean.disableSaveAction and documentHandlerBean.savable}"
@@ -203,4 +203,12 @@
 			</ice:panelGroup>
 		</ice:panelGroup>
 	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{not documentHandlerBean.loadSuccessful}">
+		<ice:panelGroup styleClass="clearing" />
+		<ice:outputText styleClass="msgError"
+			value="#{documentHandlerBean.loadUnsuccessfulMsg}" />
+		<ice:panelGroup styleClass="clearing" />
+	</ice:panelGroup>
+
 </f:view>

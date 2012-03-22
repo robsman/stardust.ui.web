@@ -62,7 +62,7 @@ public class FileSystemJCRDocument extends FileSystemDocument
    @Override
    public IDocumentContentInfo reset()
    {
-      return new FileSystemJCRDocument(file.getPath(), documentType, jcrParentFolder, description, comments);
+      return this;
    }
 
    /**

@@ -25,7 +25,8 @@ public interface IDocumentEventListener
       SHOW_NEXT_VERSION_TO_BE_INVOKED,
       SHOW_NEXT_VERSION_INVOKED,
       REFRESH_VIWER_TO_BE_INVOKED,
-      REFRESH_VIWER_INVOKED
+      REFRESH_VIWER_INVOKED,
+      DOCUMENT_DELETED
    }
    
    void handleEvent(DocumentEventType documentEventType);

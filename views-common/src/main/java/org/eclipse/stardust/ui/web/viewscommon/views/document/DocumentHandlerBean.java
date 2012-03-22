@@ -48,6 +48,7 @@ import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DocumentTypeWrapper;
@@ -92,6 +93,8 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    private String dataId;
    private String baseFormBinding = BEAN_NAME;
    private boolean disableSaveAction;
+   private boolean loadSuccessful = false;
+   private String loadUnsuccessfulMsg;
 
    /**
     * default constructor
@@ -115,8 +118,12 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
     */
    public void handleEvent(ViewEvent event)
    {
+      propsBean = MessagesViewsCommonBean.getInstance();
+      loadUnsuccessfulMsg = propsBean.getString("views.documentView.fetchError");
+      
       if (ViewEventType.CREATED == event.getType())
       {
+         loadSuccessful = false;
          thisView = event.getView();
          documentContentInfo = (IDocumentContentInfo) thisView.getViewParams().get("documentInfo");
          processInstance = (ProcessInstance) thisView.getViewParams().get("processInstance");
@@ -137,8 +144,6 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          {
             disableSaveAction = (Boolean) thisView.getViewParams().get("disableSaveAction");
          }
-
-         propsBean = MessagesViewsCommonBean.getInstance();
 
          // Check if this document is already open in any Activity Panel
          if (!embededView)
@@ -174,6 +179,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          if (!initializeBean())
          {
             event.setVetoed(true);
+            return;
          }
          
          // pop-out the document
@@ -182,9 +188,27 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          {
             popOutDocument();
          }
+         
+         loadSuccessful = true;
       }
       else if (ViewEventType.ACTIVATED == event.getType())
       {
+         loadSuccessful = false;
+         // check if the document still exist
+         if (documentContentInfo instanceof JCRDocument)
+         {
+            try
+            {
+               DocumentMgmtUtility.getDocument(documentContentInfo.getId());
+            }
+            catch (ResourceNotFoundException exception)
+            {
+               fireDocumentDeletedEvent();
+               loadUnsuccessfulMsg = propsBean.getString("views.documentView.documentNotFoundError");
+               return;
+            }
+         }
+         
          //refresh if different document is selected (but with same view-key)
          IDocumentContentInfo documentInfoParam = (IDocumentContentInfo) event.getView().getViewParams()
                .get("documentInfo");
@@ -194,7 +218,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
             thisView = event.getView();
             if (!initializeBean())
             {
-               event.setVetoed(true);
+               return;
             }
          }
          
@@ -204,9 +228,12 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          {
             externalDocumentViewer.openDocument(this, thisView);
          }
+         
+         loadSuccessful = true;
       }
       else if (ViewEventType.TO_BE_CLOSED == event.getType())
       {
+         loadSuccessful = false;
          ExternalDocumentViewerBean externalDocumentViewer = ExternalDocumentViewerBean.getInstance();
          if (externalDocumentViewer.isOpened())
          {
@@ -216,9 +243,10 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          {
             contentHandler.closeDocument();
          }
+         loadSuccessful = true;
       }
 
-      if (contentHandler instanceof ViewEventHandler)
+      if (contentHandler instanceof ViewEventHandler && loadSuccessful)
       {
          ((ViewEventHandler) contentHandler).handleEvent(event);
       }
@@ -509,8 +537,9 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
     * Save document contents
     * 
     * @param force
+    * @throws ResourceNotFoundException 
     */
-   private void saveDocumentContents(boolean force, String comments) 
+   private void saveDocumentContents(boolean force, String comments) throws ResourceNotFoundException 
    {
       if (force || isModified())
       {
@@ -585,8 +614,9 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    
    /**
     * Updates the ProcessAttachments and reinitialize the data
+    * @throws ResourceNotFoundException 
     */
-   private void postSave(boolean refreshViewer)
+   private void postSave(boolean refreshViewer) throws ResourceNotFoundException
    {
       if (null != processInstance && documentContentInfo instanceof JCRDocument)
       {
@@ -777,7 +807,16 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    public void refreshViewer()
    {
       fireRefreshViewerToBeInvoked();
-      this.documentContentInfo.reset();
+      try
+      {
+         documentContentInfo = this.documentContentInfo.reset();
+         thisView.getViewParams().put("documentInfo", documentContentInfo);
+      }
+      catch (ResourceNotFoundException e)
+      {
+         ExceptionHandler.handleException(e);
+      }
+      
       initializeBean();
       fireRefreshViewerInvoked();
    }
@@ -901,6 +940,14 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       }
    }
    
+   private void fireDocumentDeletedEvent()
+   {
+      if (contentHandler instanceof IDocumentEventListener)
+      {
+         ((IDocumentEventListener) contentHandler).handleEvent(DocumentEventType.DOCUMENT_DELETED);
+      }
+   }
+   
    private void fireRefreshViewerToBeInvoked()
    {
       if (contentHandler instanceof IDocumentEventListener)
@@ -995,9 +1042,19 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
                   callback.handleEvent(EventType.APPLY);
                }
             }
+            catch (ResourceNotFoundException exception)
+            {
+               ExceptionHandler.handleException(exception);
+               fireDocumentDeletedEvent();
+               loadSuccessful = false;
+               return;
+            }
             catch (Exception e)
             {
                RepositoryUtility.showErrorPopup("views.genericRepositoryView.saveFile.error", null, e);
+               fireDocumentDeletedEvent();
+               loadSuccessful = false;
+               return;
             }
 
             if (null != callback)
@@ -1029,5 +1086,15 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    {
       // TODO Auto-generated method stub
       
+   }
+
+   public boolean isLoadSuccessful()
+   {
+      return loadSuccessful;
+   }
+
+   public String getLoadUnsuccessfulMsg()
+   {
+      return loadUnsuccessfulMsg;
    }
 }

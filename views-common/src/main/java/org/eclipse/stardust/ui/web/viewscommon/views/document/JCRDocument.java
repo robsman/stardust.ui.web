@@ -170,20 +170,11 @@ public class JCRDocument extends AbstractDocumentContentInfo
    /* (non-Javadoc)
     * @see org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentContentInfo#reset()
     */
-   public JCRDocument reset()
+   public JCRDocument reset() throws ResourceNotFoundException
    {
-      try
-      {
-         initialize(DocumentMgmtUtility.getDocument(this.document.getId()), false, null);
-         initContent();
-
-         return this;
-      }
-      catch (ResourceNotFoundException e)
-      {
-         ExceptionHandler.handleException(e);
-      }
-      return null;
+     initialize(DocumentMgmtUtility.getDocument(this.document.getId()), false, null);
+     content = null;
+     return this;
    }
 
    /**

@@ -135,6 +135,6 @@ public class FileSystemDocument extends AbstractDocumentContentInfo
 
    public IDocumentContentInfo reset()
    {
-      return new FileSystemDocument(file.getPath(), documentType, isContentEditable());
+      return this;
    }
 }

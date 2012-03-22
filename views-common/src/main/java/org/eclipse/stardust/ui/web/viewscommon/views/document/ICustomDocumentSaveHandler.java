@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.views.document;
 
-import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 
 public interface ICustomDocumentSaveHandler
 {
@@ -21,7 +21,7 @@ public interface ICustomDocumentSaveHandler
       ADD_AFTER
    }
    
-   IDocumentContentInfo save();
+   IDocumentContentInfo save() throws ResourceNotFoundException;
    
    boolean isModified();
    

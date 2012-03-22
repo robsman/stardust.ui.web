@@ -33,6 +33,7 @@ import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.TIFFDocumentHolder;
@@ -304,6 +305,9 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
       case REFRESH_VIWER_INVOKED:
          activate();
          break;
+      case DOCUMENT_DELETED:
+         closeIframe();
+         break;
       }
    }
    
@@ -499,7 +503,7 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
       return processInstance;
    }
 
-   public IDocumentContentInfo save()
+   public IDocumentContentInfo save() throws ResourceNotFoundException
    {
       TIFFCustomSaveDialog saveOptions = TIFFCustomSaveDialog.getCurrent();
       IDocumentContentInfo docInfoFreshCopy = null;
