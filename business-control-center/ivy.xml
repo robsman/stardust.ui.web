@@ -25,7 +25,7 @@
       <conf name="ipp-business-control-center-sources" description="Business Control Center - Sources" />
 
       <conf name="compile" extends="ipp-business-control-center-compile" visibility="private" description="Business Control Center" />
-      
+            
       <conf name="test" visibility="private" description="Test dependencies" />
 
       <conf name="pom" description="Business Control Center POMs" />
@@ -54,7 +54,6 @@
       <dependency org="net.sourceforge.jexcelapi" name="jxl" rev="2.6.10" conf="ipp-business-control-center-runtime->default">
          <exclude org="log4j" module="log4j"/>
       </dependency>
-	 <dependency org="org.springframework" name="spring-core" transitive="false" rev="3.0.5.RELEASE" conf="ipp-business-control-center-runtime->default"/>
 
       <!-- ipp-business-control-center-provided -->
       <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-business-control-center-provided->jsf-api-module-compile" />

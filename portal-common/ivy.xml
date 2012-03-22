@@ -75,9 +75,6 @@
       <dependency org="commons-collections" name="commons-collections" rev="3.2" conf="ipp-portal-common-runtime->default" />
       <dependency org="commons-digester" name="commons-digester" rev="1.8" conf="ipp-portal-common-runtime->default" />
       <dependency org="commons-lang" name="commons-lang" rev="2.4" conf="ipp-portal-common-runtime->default" />
-      <dependency org="org.springframework" name="spring-core" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-common-runtime->default"/>
-      <dependency org="org.springframework" name="spring-beans" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-common-runtime->default"/>
-      <dependency org="org.springframework" name="spring-context" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-common-runtime->default"/>
 
 
       <!-- ipp-portal-common-provided -->
@@ -103,7 +100,7 @@
       <!-- jsf-mojarra-module-runtime -->
       <dependency org="javax.faces" name="jsf-impl" rev="1.1_02" conf="jsf-mojarra-module-runtime->default" />
 
-      <!-- ipp-portal-base-lib-module-runtime: any modification results in a change of the WEB-INF/lib folder and therefore configure must be adjusted -->
+      <!-- ipp-portal-base-lib-module-runtime: any modification results in a change of the WEB-INF/lib folder and therefore configure must be adjusted -->      
       <dependency org="org.apache.myfaces.core" name="myfaces-api" rev="1.1.5" conf="ipp-portal-base-lib-module-runtime->default">
          <exclude org="javax.servlet" module="jstl"/>
       </dependency>
@@ -123,7 +120,11 @@
       <dependency org="net.sourceforge.jexcelapi" name="jxl" rev="2.6.10" conf="ipp-portal-base-lib-module-runtime->default">
          <exclude org="log4j" module="log4j"/>
       </dependency>
+      <dependency org="org.springframework" name="spring-core" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-base-lib-module-runtime->default"/>
+      <dependency org="org.springframework" name="spring-beans" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-base-lib-module-runtime->default"/>
+      <dependency org="org.springframework" name="spring-context" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="org.springframework" name="spring-webmvc" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-base-lib-module-runtime->default"/>
+      <dependency org="org.springframework" name="spring-web" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-base-lib-module-runtime->default"/>            
       <dependency org="aopalliance" name="aopalliance" transitive="false" rev="1.0" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="org.apache.geronimo.specs" name="geronimo-ejb_2.1_spec" transitive="false" rev="1.1" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="commons-discovery" name="commons-discovery" rev="0.4" conf="ipp-portal-base-lib-module-runtime->default"/>

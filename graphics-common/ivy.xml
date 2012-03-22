@@ -23,7 +23,7 @@
       <conf name="ipp-graphics-common-provided" description="Graphics Common - Provided Scope" />
       
       <conf name="ipp-graphics-common-sources" description="Graphics Common - Sources" />
-   
+      
       <conf name="compile" extends="ipp-graphics-common-compile, ipp-graphics-common-provided" visibility="private" description="Graphics Common" />
       <conf name="test" visibility="private" description="Test dependencies" />
       <conf name="pom" description="Graphics Common POMs" />
@@ -48,10 +48,6 @@
       <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-graphics-common-runtime->ipp-views-common-runtime" />
       <dependency org="com.sun.jersey" name="jersey-core" rev="1.1.5.1" conf="ipp-graphics-common-runtime->default" />
       <dependency org="com.sun.jersey" name="jersey-server" rev="1.1.5.1" conf="ipp-graphics-common-runtime->default" />
-      <dependency org="org.springframework" name="spring-core" transitive="false" rev="3.0.5.RELEASE" conf="ipp-graphics-common-runtime->default"/>
-      <dependency org="org.springframework" name="spring-beans" transitive="false" rev="3.0.5.RELEASE" conf="ipp-graphics-common-runtime->default"/>
-      <dependency org="org.springframework" name="spring-context" transitive="false" rev="3.0.5.RELEASE" conf="ipp-graphics-common-runtime->default"/>
-      <dependency org="org.springframework" name="spring-web" transitive="false" rev="3.0.5.RELEASE" conf="ipp-graphics-common-runtime->default"/>
       
       <!-- ipp-graphics-common-provided -->
       <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="ipp-graphics-common-provided->default" />
