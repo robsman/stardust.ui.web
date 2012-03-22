@@ -22,7 +22,9 @@
 	                  </f:subview>
 		          </c:if>
 		          <c:if test="#{activityDetailsBean.singleDocumentCase}">
-					<ui:include src="/plugins/views-common/views/document/documentView.xhtml" />
+					<ui:include src="/plugins/views-common/views/document/documentView.xhtml">
+						<ui:param name="includeUploadDialog" value="false" />
+					</ui:include>
 		          </c:if>
                </c:when>
                <c:otherwise>

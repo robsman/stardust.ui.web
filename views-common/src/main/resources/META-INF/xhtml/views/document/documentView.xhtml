@@ -6,9 +6,20 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates mandatory attributes)
+		includeUploadDialog = true/false. Default true
+	-->
+
+	<c:if test="#{empty includeUploadDialog}">
+		<c:set var="includeUploadDialog" value="true" />
+	</c:if>
+
 	<ice:panelGroup>
-		<ui:include
-			src="/plugins/views-common/views/doctree/commonFileUploadDialog.xhtml" />
+		<c:if test="#{includeUploadDialog}">
+			<ui:include
+				src="/plugins/views-common/views/doctree/commonFileUploadDialog.xhtml" />
+		</c:if>
 		<ui:include
 			src="/plugins/views-common/views/doctree/fileSaveDialog.xhtml" />
 	</ice:panelGroup>
