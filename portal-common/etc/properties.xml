@@ -1007,9 +1007,7 @@
             value="c:/Temp" appservers="wls" />
 
          <!-- ******** FILTER SECTION ******** -->
-         <property name="filter[ADF_FACES].filter-name" value="adfFaces" />
-         <property name="filter[ADF_FACES].filter-class"
-            value="org.apache.myfaces.trinidad.webapp.TrinidadFilter" />
+
 
          <property name="filter[LOGIN_FILTER].filter-name"
             value="IppPortalLoginFilter" />
@@ -1022,8 +1020,6 @@
             value="org.eclipse.stardust.ui.web.plugin.support.PortalPluginContentFilter" />
 
          <!-- ******** FILTER MAPPING SECTION ******** -->
-         <property name="filter-mapping[ADF_FACES_MAPPING].filter-name"
-            value="adfFaces" />
          <property name="filter-mapping[ADF_FACES_MAPPING].servlet-name"
             value="faces" />
 
@@ -1052,10 +1048,7 @@
             value="REQUEST" />
          <property
             name="filter-mapping[IFACE_LOGIN_FILTER_MAPPING].dispatcher[FORWARD]"
-            value="FORWARD" />
-
-         <property name="filter-mapping[ADF_IFACE_MAPPING].filter-name"
-            value="adfFaces" />
+            value="FORWARD" />
          <property name="filter-mapping[ADF_IFACE_MAPPING].servlet-name"
             value="Persistent Faces Servlet" />
 
@@ -1164,11 +1157,6 @@
             name="servlet[REST].init-param[JERSEY_PROP_CLASSNAMES].param-value"
             value="com.infinity.bpm.rt.api.rest.interactions.UiInteractionsRestlet; org.eclipse.stardust.ui.web.graphics.service.rest.ImageViewerMetadataRestlet; org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentRepositoryRestlet; com.infinity.bpm.rt.api.rest.processinterface.ProcessesRestlet; com.infinity.bpm.rt.api.rest.processinterface.TypeDeclarationsRestlet; com.infinity.bpm.rt.api.rest.processinterface.RuntimeExceptionProvider"
             setups="production-withLiberation, development-withLiberation, build" />
-
-         <property name="servlet[TRINIDAD_RES_SERVLET].servlet-name"
-            value="ResourceServlet" />
-         <property name="servlet[TRINIDAD_RES_SERVLET].servlet-class"
-            value="org.apache.myfaces.trinidad.webapp.ResourceServlet" />
 
          <property name="servlet[SPRING_REMOTING].servlet-name"
             value="carnot-spring-remoting" modules="spring-remoting-server-ipp-portal"
@@ -1421,11 +1409,6 @@
             value="IppUploadServlet" />
          <property name="servlet-mapping[UPLOAD].url-pattern"
             value="/uploadHtml" />
-         
-         <property name="servlet-mapping[ADF_RES_SERVLET_MAPPING].servlet-name"
-            value="ResourceServlet" />
-         <property name="servlet-mapping[ADF_RES_SERVLET_MAPPING].url-pattern"
-            value="/adf/*" />
 
          <property name="servlet-mapping[PLUGINS_RES_SERVLET_MAPPING].servlet-name"
             value="ResourceServlet" />
@@ -2108,9 +2091,6 @@
             value="c:/Temp" appservers="wls" />
 
          <!-- ******** FILTER SECTION ******** -->
-         <property name="filter[ADF_FACES].filter-name" value="adfFaces" />
-         <property name="filter[ADF_FACES].filter-class"
-            value="org.apache.myfaces.trinidad.webapp.TrinidadFilter" />
 
          <property name="filter[LOGIN_FILTER].filter-name"
             value="IppPortalLoginFilter" />
@@ -2123,8 +2103,6 @@
             value="org.eclipse.stardust.ui.web.plugin.support.PortalPluginContentFilter" />
 
          <!-- ******** FILTER MAPPING SECTION ******** -->
-         <property name="filter-mapping[ADF_FACES_MAPPING].filter-name"
-            value="adfFaces" />
          <property name="filter-mapping[ADF_FACES_MAPPING].servlet-name"
             value="faces" />
 
@@ -2153,10 +2131,8 @@
             value="REQUEST" />
          <property
             name="filter-mapping[IFACE_LOGIN_FILTER_MAPPING].dispatcher[FORWARD]"
-            value="FORWARD" />
+            value="FORWARD" />            
 
-         <property name="filter-mapping[ADF_IFACE_MAPPING].filter-name"
-            value="adfFaces" />
          <property name="filter-mapping[ADF_IFACE_MAPPING].servlet-name"
             value="Persistent Faces Servlet" />
 
@@ -2237,11 +2213,6 @@
             value="com.icesoft.faces.component.inputfile.FileUploadServlet" />
          <property name="servlet[IFACE_UPLOAD_SERVLET].load-on-startup"
             value="1" />
-
-         <property name="servlet[TRINIDAD_RES_SERVLET].servlet-name"
-            value="ResourceServlet" />
-         <property name="servlet[TRINIDAD_RES_SERVLET].servlet-class"
-            value="org.apache.myfaces.trinidad.webapp.ResourceServlet" />
 
          <property name="servlet[JACKRABBIT_REPOSITORY].display-name"
             value="Jackrabbit Repository Servlet" setups="production-withJcr, development-withJcr, build" />
@@ -2377,13 +2348,7 @@
             name="servlet-mapping[IFACE_PERSISTENT_MAPPING].url-pattern"
             value="*.iface" />
 
-         <property name="servlet-mapping[ADF_RES_SERVLET_MAPPING].servlet-name"
-            value="ResourceServlet" />
-         <property name="servlet-mapping[ADF_RES_SERVLET_MAPPING].url-pattern"
-            value="/adf/*" />
 
-         <property name="servlet-mapping[PLUGINS_RES_SERVLET_MAPPING].servlet-name"
-            value="ResourceServlet" />
          <property name="servlet-mapping[PLUGINS_RES_SERVLET_MAPPING].url-pattern"
             value="/plugins/*" />
 
