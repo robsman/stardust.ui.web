@@ -364,24 +364,11 @@ public class SecurityDialog extends PopupUIComponentBean
             {
                selectedParticipant = new Participant(userObj.getQualifiedModelParticipantInfo());
             }
-//            if (null != userObj.getDepartment())
-//            {
-//               System.out.println("@@@@@@@@@@@ userObj.getDepartment() " + userObj.getDepartment());
-//               Department dept = userObj.getDepartment();
-//               try
-//               {
-//                  selectedParticipant = new Participant(new ConditionalPerformerInfoDetails(dept.getRuntimeOrganizationOID(),
-//                        dept.getOrganization().getId(), dept.getOrganization().getName(), dept));
-//               }
-//               catch (Exception e)
-//               {
-//                  e.printStackTrace();
-//               }
-//            }
-//            else if (null != userObj.getScopedOrganization())
-//            {
-//               System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ userObj.getScopedOrganization() " + userObj.getScopedOrganization());
-//            }
+            else if (null != userObj.getDepartment())
+            {
+               Department dept = userObj.getDepartment();               
+               selectedParticipant = new Participant(dept.getScopedParticipant(dept.getOrganization()));
+            }
          }
       }
       closeAddEntryDialog();
