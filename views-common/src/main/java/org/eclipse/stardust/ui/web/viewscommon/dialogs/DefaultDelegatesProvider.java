@@ -45,6 +45,7 @@ import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.PerformerType;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssuranceState;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
@@ -133,8 +134,8 @@ public class DefaultDelegatesProvider implements IDelegatesProvider, Serializabl
                // limited search
                if (options.isStrictSearch() && !isCaseActivities)
                {
-                  ModelParticipant modelParticipant = ai.getActivity()
-                        .getDefaultPerformer();
+                  ModelParticipant modelParticipant = getActivityPerformer(ai);                  
+
                   if (modelParticipant instanceof ConditionalPerformer)
                   {
                      // resolve conditional performer
@@ -317,7 +318,8 @@ public class DefaultDelegatesProvider implements IDelegatesProvider, Serializabl
                   && ai.getState() != ActivityInstanceState.Aborted)
             {
                // Get the default performer for the AI
-               ModelParticipant defaultPerformer = ai.getActivity().getDefaultPerformer();
+               ModelParticipant defaultPerformer = getActivityPerformer(ai);                 
+
                // Get the current performer for the AI
                ParticipantInfo currentPerformer = ai.getCurrentPerformer();
 
@@ -525,5 +527,23 @@ public class DefaultDelegatesProvider implements IDelegatesProvider, Serializabl
    private static AdministrationService getAdministrationService()
    {
       return ServiceFactoryUtils.getAdministrationService();
+   }
+   
+   /**
+    * @param ai
+    * @return
+    */
+   private static ModelParticipant getActivityPerformer(ActivityInstance ai)
+   {
+      ModelParticipant performer = null;
+      if (QualityAssuranceState.IS_QUALITY_ASSURANCE.equals(ai.getQualityAssuranceState()))
+      {
+         performer = ai.getActivity().getQualityAssurancePerformer();
+      }
+      else
+      {
+         performer = ai.getActivity().getDefaultPerformer();
+      }
+      return performer;
    }
 }
