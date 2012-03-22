@@ -186,16 +186,17 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       else if (ViewEventType.ACTIVATED == event.getType())
       {
          //refresh if different document is selected (but with same view-key)
-//         IDocumentContentInfo existingDocumet = documentContentInfo;
-//         documentContentInfo = (IDocumentContentInfo) event.getView().getViewParams().get("documentInfo");
-//         if (!existingDocumet.getId().equals(documentContentInfo.getId()))
-//         {
-//            thisView = event.getView();
-//            if (!initializeBean())
-//            {
-//               event.setVetoed(true);
-//            }
-//         }
+         IDocumentContentInfo documentInfoParam = (IDocumentContentInfo) event.getView().getViewParams()
+               .get("documentInfo");
+         if (!documentInfoParam.getId().equals(documentContentInfo.getId()))
+         {
+            documentContentInfo = documentInfoParam;
+            thisView = event.getView();
+            if (!initializeBean())
+            {
+               event.setVetoed(true);
+            }
+         }
          
          ExternalDocumentViewerBean externalDocumentViewer = ExternalDocumentViewerBean.getInstance();
          if (externalDocumentViewer.isOpened()
@@ -605,6 +606,9 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
             documentContentInfo = documentContentInfo.reset();
          }
       }
+      
+      //update view parameter - this is used to check if refresh is required while handling "Activated" event
+      thisView.getViewParams().put("documentInfo", documentContentInfo);
 
       PortalApplication.getInstance().broadcastViewDataEvent(
             new ViewDataEvent(thisView, ViewDataEventType.DATA_MODIFIED, documentContentInfo));
