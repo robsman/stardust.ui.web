@@ -16,7 +16,7 @@
 	<ice:panelGroup>
 		<ice:commandLink style="float: right;"
 			title="#{documentHandlerBean.messages['save.label']}"
-			rendered="#{documentHandlerBean.savable}"
+			rendered="#{!documentHandlerBean.disableSaveAction and documentHandlerBean.savable}"
 			action="#{documentHandlerBean.save}">
 			<pc:automationTag value="auto-COM-DocView-SaveBtn" standAlone="false"/>
 			<ice:graphicImage value="/plugins/views-common/images/icons/disk.png"

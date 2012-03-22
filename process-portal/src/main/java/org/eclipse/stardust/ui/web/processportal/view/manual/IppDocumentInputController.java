@@ -15,6 +15,7 @@ import java.util.Map;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.ui.common.form.jsf.DocumentInputController;
 import org.eclipse.stardust.ui.common.form.jsf.DocumentPath;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
@@ -25,6 +26,8 @@ import org.eclipse.stardust.ui.web.common.event.ViewDataEventHandler;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
+import org.eclipse.stardust.ui.web.processportal.view.manual.DocumentInputEventHandler.DocumentInputEvent;
+import org.eclipse.stardust.ui.web.processportal.view.manual.DocumentInputEventHandler.DocumentInputEvent.DocumentInputEventType;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
@@ -52,17 +55,20 @@ public class IppDocumentInputController extends DocumentInputController implemen
    private View documentView; 
    private ActivityInstance activityInstance;
    private DataMapping dataMapping;
+   private DocumentInputEventHandler handler;
 
    /**
     * @param path
     * @param activityInstance
     * @param dataMapping
     */
-   public IppDocumentInputController(DocumentPath path, ActivityInstance activityInstance, DataMapping dataMapping)
+   public IppDocumentInputController(DocumentPath path, ActivityInstance activityInstance, DataMapping dataMapping,
+         DocumentInputEventHandler handler)
    {
       super(path);
       this.activityInstance = activityInstance;
       this.dataMapping = dataMapping;
+      this.handler = handler;
 
       setDeleteIcon("/plugins/views-common/images/icons/page_white_delete.png");
       setDeleteLabel(MessagesViewsCommonBean.getInstance().getString("views.genericRepositoryView.treeMenuItem.delete"));
@@ -102,17 +108,22 @@ public class IppDocumentInputController extends DocumentInputController implemen
    {
       if (null != document)
       {
-         unregisterHandler();
-
-         IDocumentContentInfo docInfo = (document instanceof RawDocument) ? getFileSystemDocument() : getJCRDocument();
-         Map<String, Object> params = CollectionUtils.newMap();
-         params.put("processInstance", activityInstance.getProcessInstance());
-         params.put("dataPathId", dataMapping.getDataPath());
-         params.put("dataId", dataMapping.getDataId());
-         documentView = DocumentViewUtil.openDataMappingDocument(activityInstance.getProcessInstance(),
-               dataMapping.getDataId(), docInfo, params);
-         PortalApplication.getInstance().registerViewDataEventHandler(documentView, this);
-         refreshPortalSession();
+         if (!fireEvent(DocumentInputEventType.TO_BE_VIEWED, null))
+         {
+            unregisterHandler();
+   
+            IDocumentContentInfo docInfo = (document instanceof RawDocument) ? getFileSystemDocument() : getJCRDocument();
+            Map<String, Object> params = CollectionUtils.newMap();
+            params.put("processInstance", activityInstance.getProcessInstance());
+            params.put("dataPathId", dataMapping.getDataPath());
+            params.put("dataId", dataMapping.getDataId());
+            documentView = DocumentViewUtil.openDataMappingDocument(activityInstance.getProcessInstance(),
+                  dataMapping.getDataId(), docInfo, params);
+            PortalApplication.getInstance().registerViewDataEventHandler(documentView, this);
+            refreshPortalSession();
+            
+            fireEvent(DocumentInputEventType.VIEWED, null);
+         }
       }
    }
 
@@ -173,11 +184,14 @@ public class IppDocumentInputController extends DocumentInputController implemen
                rawDocument.setComments(fileUploadDialog.getComments());
                rawDocument.setDocumentType(fileUploadDialog.getDocumentType());
 
-               setValue(rawDocument);
-
-               if (fileUploadDialog.isOpenDocument())
+               if (!fireEvent(DocumentInputEventType.TO_BE_UPLOADED, getFileSystemDocument(rawDocument)))
                {
-                  viewDocument();
+                  setValue(rawDocument);
+                  fireEvent(DocumentInputEventType.UPLOADED, null);
+                  if (fileUploadDialog.isOpenDocument())
+                  {
+                     viewDocument();
+                  }
                }
             }
          }
@@ -189,8 +203,13 @@ public class IppDocumentInputController extends DocumentInputController implemen
    @Override
    public void deleteDocument()
    {
-      setValue(null);
-      closeDocument();
+      if (!fireEvent(DocumentInputEventType.TO_BE_DELETED, null))
+      {
+         setValue(null);
+         closeDocument();
+         
+         fireEvent(DocumentInputEventType.DELETED, null);
+      }
    }
 
    @Override
@@ -233,17 +252,41 @@ public class IppDocumentInputController extends DocumentInputController implemen
    /**
     * @return
     */
-   private FileSystemJCRDocument getFileSystemDocument()
+   public IDocumentContentInfo getDocumentContentInfo()
    {
       if (document instanceof RawDocument)
       {
-         RawDocument rawDocument = (RawDocument) document;
+         return getFileSystemDocument();
+      }
+      else
+      {
+         return getJCRDocument();
+      }
+   }
+
+   /**
+    * @param doc
+    * @return
+    */
+   private FileSystemJCRDocument getFileSystemDocument(Document doc)
+   {
+      if (doc instanceof RawDocument)
+      {
+         RawDocument rawDocument = (RawDocument) doc;
          String parentFolder = DocumentMgmtUtility.getTypedDocumentsFolderPath(activityInstance.getProcessInstance());
-         return new FileSystemJCRDocument(rawDocument.getFileInfo().getPhysicalPath(), document.getDocumentType(),
+         return new FileSystemJCRDocument(rawDocument.getFileInfo().getPhysicalPath(), doc.getDocumentType(),
                parentFolder, rawDocument.getDescription(), rawDocument.getComments());
       }
 
       return null;
+   }
+
+   /**
+    * @return
+    */
+   private FileSystemJCRDocument getFileSystemDocument()
+   {
+      return getFileSystemDocument(document);
    }
 
    /**
@@ -282,6 +325,23 @@ public class IppDocumentInputController extends DocumentInputController implemen
       {
          PortalApplication.getInstance().renderPortalSession();
       }
+   }
+
+   /**
+    * @param eventType
+    * @param newDocument
+    * @return
+    */
+   private boolean fireEvent(DocumentInputEventType eventType, IDocumentContentInfo newDocument)
+   {
+      if (null != handler)
+      {
+         DocumentInputEvent event = new DocumentInputEvent(this, eventType, newDocument);
+         handler.handleEvent(event);
+         return event.isVetoed();
+      }
+
+      return false;
    }
 
    public DataMapping getDataMapping()

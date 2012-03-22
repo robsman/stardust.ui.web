@@ -164,6 +164,32 @@ public class PortalUiController
    }
 
    /**
+    * @param view
+    * @return
+    */
+   public static List<ToolbarSection> getToolbarSections(View view)
+   {
+      ViewDefinition currentView = view.getDefinition();
+
+      List<ToolbarSection> ret = newArrayList();
+      for (IPerspectiveDefinition definition : PortalUiController.getInstance().getPerspectives().values())
+      {
+         if (definition.getViews().contains(currentView))
+         {
+            // add view dependent toolbar from perspective defining the view
+            for (ToolbarSection toolbar : definition.getToolbarSections())
+            {
+               if (!ret.contains(toolbar) && FacesUtils.isToolbarEnabledForView(view, toolbar))
+               {
+                  ret.add(toolbar);
+               }
+            }
+         }
+      }
+      return ret;
+   }
+   
+   /**
     * @deprecated replaced by request bound view scope manager
     */
    public Map<String, Object> getCurrentTabScope()
@@ -569,6 +595,10 @@ public class PortalUiController
       if (null == view)
       {
          view = createView(viewDef, viewKey, params, msgBean, nestedView);
+         if (null == view)
+         {
+            return null; // create was not successful
+         }
          openViews.add(view);
          newView = true;
       }

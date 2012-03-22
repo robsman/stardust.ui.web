@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.processportal.view.manual;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -73,6 +74,8 @@ public class ManualActivityForm extends Form
    private WorkflowService workflowService;
    private ApplicationContext applicationContext;
    private ActivityInstance activityInstance;
+   
+   private DocumentInputEventHandler documentInputEventHandler;
 
    /**
     * @param generationPreferences
@@ -80,14 +83,18 @@ public class ManualActivityForm extends Form
     * @param activityInstance
     * @param workflowService
     * @param applicationContext
+    * @param documentInputEventHandler
     */
    public ManualActivityForm(FormGenerationPreferences generationPreferences, String formBinding,
-         ActivityInstance activityInstance, WorkflowService workflowService, ApplicationContext applicationContext)
+         ActivityInstance activityInstance, WorkflowService workflowService, ApplicationContext applicationContext,
+         DocumentInputEventHandler documentInputEventHandler)
+
    {
       super();
       this.activityInstance = activityInstance;
       this.workflowService = workflowService;
       this.applicationContext = applicationContext;
+      this.documentInputEventHandler = documentInputEventHandler;
 
       this.formGenerator = new JsfFormGenerator(generationPreferences, formBinding);
       generateForm();
@@ -300,6 +307,24 @@ public class ManualActivityForm extends Form
       return mappedDocs;
    }
    
+   /**
+    * @return
+    */
+   public IppDocumentInputController getIfSingleDocument()
+   {
+      if (getTopLevelInputControllerMap().size() == 1)
+      {
+         Collection<InputController> values = getTopLevelInputControllerMap().values();
+         InputController ctrl = values.iterator().next();
+         if (ctrl instanceof IppDocumentInputController)
+         {
+            return (IppDocumentInputController) ctrl;
+         }
+      }
+
+      return null;
+   }
+
    /**
     * @param systemPath
     * @return
@@ -536,7 +561,7 @@ public class ManualActivityForm extends Form
    private boolean handleDocumentPath(DocumentPath documentPath, DataMapping dataMapping)
    {
       DocumentInputController docInputController = new IppDocumentInputController(documentPath,
-            activityInstance, dataMapping);
+            activityInstance, dataMapping, documentInputEventHandler);
 
       formGenerator.addDocumentInput(getFullPathInputControllerMap(), getRootContainer(), docInputController);
 

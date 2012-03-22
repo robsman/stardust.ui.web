@@ -34,6 +34,7 @@ import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.ContextData;
+import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
@@ -50,8 +51,11 @@ import org.eclipse.stardust.ui.common.form.jsf.JsfStructureContainer;
 import org.eclipse.stardust.ui.common.form.preferences.FormGenerationPreferences;
 import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.event.ActivityEventObserver;
+import org.eclipse.stardust.ui.web.common.ToolbarSection;
+import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.ViewDefinition;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.common.app.PortalUiController;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.app.View.ViewState;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
@@ -73,6 +77,7 @@ import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ExternalWebA
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.FaceletPanelInteractionController;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.JspPanelInteractionController;
 import org.eclipse.stardust.ui.web.processportal.launchpad.WorklistsBean;
+import org.eclipse.stardust.ui.web.processportal.view.manual.DocumentInputEventHandler;
 import org.eclipse.stardust.ui.web.processportal.view.manual.IppDocumentInputController;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityForm;
 import org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityAssuranceActivityBean;
@@ -89,12 +94,15 @@ import org.eclipse.stardust.ui.web.viewscommon.common.event.IppEventController;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.NoteEvent;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.NoteEventObserver;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
+import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.AbortActivityBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.JoinProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.SwitchProcessDialogBean;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
@@ -112,6 +120,9 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 import org.eclipse.stardust.ui.web.viewscommon.views.casemanagement.AttachToCaseDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.views.casemanagement.CreateCaseDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentHandlerBean;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentContentInfo;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
 import org.springframework.beans.factory.DisposableBean;
 
 import com.icesoft.faces.context.effects.JavascriptContext;
@@ -120,7 +131,7 @@ import com.icesoft.faces.context.effects.JavascriptContext;
  * @author roland.stamm
  * 
  */
-public class ActivityDetailsBean
+public class ActivityDetailsBean extends UIComponentBean
       implements ActivityEventObserver, NoteEventObserver, DocumentEventObserver, ViewEventHandler, DisposableBean,
       Activator
 {
@@ -201,6 +212,12 @@ public class ActivityDetailsBean
    private boolean hasSpawnProcessPermission;
    private ConfirmationDialog mappedDocumentConfirmationDialog;
 
+   private boolean singleDocumentCase;
+   private View singleDocumentView;
+   private DataMapping singleDocumentDatgaMapping;
+   private DocumentHandlerBean documentHandlerBean;
+   List<ToolbarSection> documentViewToolbars;
+   
    public static IActivityInteractionController getInteractionController(Activity activity)
    {
       IActivityInteractionController interactionController = ActivityInstanceUtils
@@ -227,6 +244,7 @@ public class ActivityDetailsBean
      */
    public ActivityDetailsBean()
    {
+      super("activityPanel");
       this.title = "";
    }
 
@@ -237,6 +255,12 @@ public class ActivityDetailsBean
    {
       return (ActivityDetailsBean) FacesUtils.getBeanFromContext("activityDetailsBean");
 
+   }
+
+   @Override
+   public void initialize()
+   {
+      // NOP
    }
 
    public Interaction getInteraction()
@@ -415,7 +439,7 @@ public class ActivityDetailsBean
             // refresh UI
             if (update)
             {
-               update();
+               update(true);
             }
 
             if (isLoadSuccessful())
@@ -532,6 +556,11 @@ public class ActivityDetailsBean
       {
          fireEventForViewEventAwareInteractionController(activityInstance, event);
       }
+
+      if (singleDocumentCase && isLoadSuccessful())
+      {
+         documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, event.getType()));
+      }
       
       handleIframePopups(event);
    }
@@ -599,7 +628,7 @@ public class ActivityDetailsBean
 
          if (ActivityPanelConfigurationBean.isAutoDisplayMappedDocuments())
          {
-            if(null != activityForm)
+            if(null != activityForm && !singleDocumentCase)
             {
                List<DocumentInputController> mappedDocs = activityForm.getDisplayedMappedDocuments(false, true);
                for (DocumentInputController docInputCtrl : mappedDocs)
@@ -818,7 +847,7 @@ public class ActivityDetailsBean
       {
          if (event.getType().equals(ActivityEvent.ACTIVATED))
          {
-            update();
+            update(false);
          }
          else if (event.getType().equals(ActivityEvent.COMPLETED)
                || event.getType().equals(ActivityEvent.SUSPENDED)
@@ -918,35 +947,53 @@ public class ActivityDetailsBean
          IActivityInteractionController interactionController = getInteractionController(ai
                .getActivity());
 
-         Map outData = retrieveOutDataMapping(interactionController, false);
-         String context = interactionController.getContextId(ai);
-
-         ActivityInstanceUtils.openDelegateDialog(activityInstance, outData, context,
-               new ICallbackHandler()
+         retrieveOutDataMapping(interactionController, false, new ParametricCallbackHandler()
+         {
+            @SuppressWarnings({"unchecked", "rawtypes"})
+            public void handleEvent(EventType eventType)
+            {
+               if (EventType.APPLY == eventType)
                {
-                  public void handleEvent(EventType eventType)
-                  {
-                     if (eventType.equals(EventType.APPLY))
-                     {
-                        ActivityDetailsBean.this.interaction = null;
-                        skipViewEvents = true;
-                        PortalApplication.getInstance().closeView(thisView);
-                        skipViewEvents = false;
-                     }
-                     else if (eventType.equals(EventType.CANCEL))
-                     {
-                        ActivityInstance ai = ActivityInstanceUtils.getActivityInstance(activityInstance
-                              .getOID());
-                        if (ai != null && ActivityInstanceState.Application != ai.getState())
-                        {
-                           setActivityInstance(ActivityInstanceUtils.activate(ai));
-                           update();
-                           FacesUtils.refreshPage();
-                        }
-                     }
-                  }
-               });
+                  openDelegateDialogContinue((Map)getParameters());
+               }
+            }
+         });
       }
+   }
+
+   /**
+    * @param outData
+    */
+   private void openDelegateDialogContinue(Map<String, Serializable>outData)
+   {
+      ActivityInstance ai = activityInstance;
+      IActivityInteractionController interactionController = getInteractionController(ai.getActivity());
+
+      String context = interactionController.getContextId(ai);
+
+      ActivityInstanceUtils.openDelegateDialog(activityInstance, outData, context, new ICallbackHandler()
+      {
+         public void handleEvent(EventType eventType)
+         {
+            if (eventType.equals(EventType.APPLY))
+            {
+               ActivityDetailsBean.this.interaction = null;
+               skipViewEvents = true;
+               PortalApplication.getInstance().closeView(thisView);
+               skipViewEvents = false;
+            }
+            else if (eventType.equals(EventType.CANCEL))
+            {
+               ActivityInstance ai = ActivityInstanceUtils.getActivityInstance(activityInstance.getOID());
+               if (ai != null && ActivityInstanceState.Application != ai.getState())
+               {
+                  setActivityInstance(ActivityInstanceUtils.activate(ai));
+                  update(false);
+                  FacesUtils.refreshPage();
+               }
+            }
+         }
+      });
    }
 
    /**
@@ -1096,8 +1143,8 @@ public class ActivityDetailsBean
       }
    }
 
-   public void suspendAndSaveCurrentActivity(boolean keepOwnership, boolean closeView,
-         boolean suspendToParticipant)
+   public void suspendAndSaveCurrentActivity(final boolean keepOwnership, final boolean closeView,
+         final boolean suspendToParticipant)
    {
       if (null != activityInstance)
       {
@@ -1110,39 +1157,18 @@ public class ActivityDetailsBean
             if (interactionController.closePanel(ai, ClosePanelScenario.SUSPEND_AND_SAVE))
             {
                // close synchronously
-               Map<String, ?> outData = retrieveOutDataMapping(interactionController, true);
-
-               if (keepOwnership)
+               retrieveOutDataMapping(interactionController, true, new ParametricCallbackHandler()
                {
-                  ActivityInstance newAi = ActivityInstanceUtils.suspendToUserWorklist(ai,
-                        interactionController.getContextId(ai), outData);
-                  if (!closeView) // No need to set the AI if view is closing
+                  @SuppressWarnings({"unchecked", "rawtypes"})
+                  public void handleEvent(EventType eventType)
                   {
-                     setActivityInstance(newAi);
+                     if (EventType.APPLY == eventType)
+                     {
+                        suspendAndSaveCurrentActivityContinue(keepOwnership, closeView, suspendToParticipant,
+                              (Map) getParameters());
+                     }
                   }
-               }
-               else if (suspendToParticipant)
-               {
-                  this.activityInstance = ActivityInstanceUtils.suspend(ai, new ContextData(
-                        interactionController.getContextId(ai), outData));
-               }
-               else
-               {
-                  ActivityInstance newAi = ActivityInstanceUtils.suspendToDefaultPerformer(ai,
-                        interactionController.getContextId(ai), outData);
-                  if (!closeView) // No need to set the AI if view is closing
-                  {
-                     setActivityInstance(newAi);
-                  }
-               }
-
-               if (closeView)
-               {
-                  skipViewEvents = true;
-                  // TODO move to controller?
-                  PortalApplication.getInstance().closeView(thisView, true);
-                  skipViewEvents = false;
-               }
+               });
             }
          }
          else
@@ -1150,6 +1176,51 @@ public class ActivityDetailsBean
             throw new PublicException(
                   ProcessPortalErrorClass.UNKNOWN_APP_CONTEXT_FOR_METHOD_INVOCATION);
          }
+      }
+   }
+
+   /**
+    * @param keepOwnership
+    * @param closeView
+    * @param suspendToParticipant
+    * @param outData
+    */
+   private void suspendAndSaveCurrentActivityContinue(boolean keepOwnership, boolean closeView,
+         boolean suspendToParticipant, Map<String, Serializable> outData)
+   {
+      ActivityInstance ai = activityInstance;
+      IActivityInteractionController interactionController = getInteractionController(ai.getActivity());
+
+      if (keepOwnership)
+      {
+         ActivityInstance newAi = ActivityInstanceUtils.suspendToUserWorklist(ai,
+               interactionController.getContextId(ai), outData);
+         if (!closeView) // No need to set the AI if view is closing
+         {
+            setActivityInstance(newAi);
+         }
+      }
+      else if (suspendToParticipant)
+      {
+         this.activityInstance = ActivityInstanceUtils.suspend(ai, new ContextData(
+               interactionController.getContextId(ai), outData));
+      }
+      else
+      {
+         ActivityInstance newAi = ActivityInstanceUtils.suspendToDefaultPerformer(ai,
+               interactionController.getContextId(ai), outData);
+         if (!closeView) // No need to set the AI if view is closing
+         {
+            setActivityInstance(newAi);
+         }
+      }
+
+      if (closeView)
+      {
+         skipViewEvents = true;
+         // TODO move to controller?
+         PortalApplication.getInstance().closeView(thisView, true);
+         skipViewEvents = false;
       }
    }
 
@@ -1163,14 +1234,22 @@ public class ActivityDetailsBean
       completeQualityAssuranceActivity(QAAction.FAIL);
    }
 
-   private void completeQualityAssuranceActivity(QAAction action)
+   private void completeQualityAssuranceActivity(final QAAction action)
    {
       ActivityInstance ai = activityInstance;
       IActivityInteractionController interactionController = getInteractionController(ai
             .getActivity());
 
-      Map<String, ? > outData = retrieveOutDataMapping(interactionController, false);
-      QualityAssuranceActivityBean.openDialog(action, getActivityInstance(), thisView, outData);
+      retrieveOutDataMapping(interactionController, false, new ParametricCallbackHandler()
+      {
+         public void handleEvent(EventType eventType)
+         {
+            if (EventType.APPLY == eventType)
+            {
+               QualityAssuranceActivityBean.openDialog(action, getActivityInstance(), thisView, getParameters());
+            }
+         }
+      });
    }
    
    /**
@@ -1229,54 +1308,17 @@ public class ActivityDetailsBean
             if (interactionController.closePanel(ai, ClosePanelScenario.COMPLETE))
             {
                // close synchronously
-               Map<String, ?> outData = retrieveOutDataMapping(interactionController, false);
-
-               List<Object> completionResult = PPUtils.complete(interactionController
-                     .getContextId(ai), outData, CompletionOptions.ACTIVATE_NEXT, ai);
-
-               if ((Boolean) completionResult.get(2))
+               retrieveOutDataMapping(interactionController, false, new ParametricCallbackHandler()
                {
-                  this.interaction = null;
-                  this.activityInstance = (ActivityInstance) completionResult.get(0);
-                  ActivityInstance nextActivityObject = (ActivityInstance) completionResult.get(1);
-                  
-                  if (null == nextActivityObject
-                        && !QualityAssuranceState.QUALITY_ASSURANCE_TRIGGERED.equals(activityInstance
-                              .getQualityAssuranceState()))
+                  @SuppressWarnings({"rawtypes", "unchecked"})
+                  public void handleEvent(EventType eventType)
                   {
-                     nextActivityObject = PollingProperties.getInstance().poll(this);
-                  }
-
-                  // Lookahead Functionality Part I
-                  // Set Close Related Views to None because another related activity would be started
-                  if (null != nextActivityObject)
-                  {
-                     thisView.getDefinition().setClosingPolicy(ViewDefinition.CLOSING_POLICY_NONE);
-                  }
-                  
-                  Map<String, Object> params = getPinViewStatusParam();
-                  
-                  skipViewEvents = true;
-                  PortalApplication.getInstance().closeView(thisView, true);
-
-                  if (null != nextActivityObject)
-                  {
-                     if (null != worklistsBean) // Means Assembly Line Mode is OFF  
+                     if (EventType.APPLY == eventType)
                      {
-                        params.put("assemblyLineActivity", worklistsBean.isAssemblyLineActivity(nextActivityObject
-                              .getActivity()));
-                        params.put("pushService", assemblyLinePushService);
-                        params.put("worklistsBean", worklistsBean);
+                        completeCurrentActivityContinue((Map)getParameters());
                      }
-
-                     ActivityInstanceUtils.openActivity(nextActivityObject, params);
                   }
-                  else if(assemblyLineActivity && assemblyLinePushService)
-                  {
-                     worklistsBean.openNextAssemblyLineActivity(params);
-                  }
-                  skipViewEvents = false;
-               }
+               });
             }
          }
          else
@@ -1284,6 +1326,62 @@ public class ActivityDetailsBean
             throw new PublicException(
                   ProcessPortalErrorClass.UNKNOWN_APP_CONTEXT_FOR_METHOD_INVOCATION);
          }
+      }
+   }
+   
+   /**
+    * @param outData
+    */
+   private void completeCurrentActivityContinue(Map<String, Serializable> outData)
+   {
+      ActivityInstance ai = activityInstance;
+      IActivityInteractionController interactionController = getInteractionController(ai.getActivity());
+
+      List<Object> completionResult = PPUtils.complete(interactionController
+            .getContextId(ai), outData, CompletionOptions.ACTIVATE_NEXT, ai);
+
+      if ((Boolean) completionResult.get(2))
+      {
+         this.interaction = null;
+         this.activityInstance = (ActivityInstance) completionResult.get(0);
+         ActivityInstance nextActivityObject = (ActivityInstance) completionResult.get(1);
+         
+         if (null == nextActivityObject
+               && !QualityAssuranceState.QUALITY_ASSURANCE_TRIGGERED.equals(activityInstance
+                     .getQualityAssuranceState()))
+         {
+            nextActivityObject = PollingProperties.getInstance().poll(this);
+         }
+
+         // Lookahead Functionality Part I
+         // Set Close Related Views to None because another related activity would be started
+         if (null != nextActivityObject)
+         {
+            thisView.getDefinition().setClosingPolicy(ViewDefinition.CLOSING_POLICY_NONE);
+         }
+         
+         Map<String, Object> params = getPinViewStatusParam();
+         
+         skipViewEvents = true;
+         PortalApplication.getInstance().closeView(thisView, true);
+
+         if (null != nextActivityObject)
+         {
+            if (null != worklistsBean) // Means Assembly Line Mode is OFF  
+            {
+               params.put("assemblyLineActivity", worklistsBean.isAssemblyLineActivity(nextActivityObject
+                     .getActivity()));
+               params.put("pushService", assemblyLinePushService);
+               params.put("worklistsBean", worklistsBean);
+            }
+
+            ActivityInstanceUtils.openActivity(nextActivityObject, params);
+         }
+         else if(assemblyLineActivity && assemblyLinePushService)
+         {
+            worklistsBean.openNextAssemblyLineActivity(params);
+         }
+         skipViewEvents = false;
       }
    }
 
@@ -1365,44 +1463,81 @@ public class ActivityDetailsBean
    }
 
    /**
-    * @return
+    * @param interactionController
+    * @param releaseInteraction
+    * @param mainCallback
     */
    @SuppressWarnings({"unchecked", "rawtypes"})
-   private Map<String, ?> retrieveOutDataMapping(IActivityInteractionController interactionController, boolean releaseInteraction)
+   private void retrieveOutDataMapping(IActivityInteractionController interactionController,
+         final boolean releaseInteraction, final ParametricCallbackHandler mainCallback)
    {
-      Map<String, Serializable> ret = new HashMap<String, Serializable>();
+      boolean dataAvailable = true;
+      Map<String, Serializable> outDataValues = null;
 
       ActivityInstance ai = activityInstance;
       String contextId = interactionController.getContextId(ai);
 
       if (PredefinedConstants.DEFAULT_CONTEXT.equals(contextId))
       {
-         // TODO HACK working around the SPI for manual activities for the time being
-
-         if (null != activityForm)
+         if (singleDocumentCase)
          {
-            Map<String, Serializable> outDataValues = (Map)activityForm.retrieveData();
-            if (!CollectionUtils.isEmpty(outDataValues))
+            dataAvailable = false;
+            documentHandlerBean.save(new ICallbackHandler()
             {
-               ret.putAll(outDataValues);
-            }
-         }
+               public void handleEvent(EventType eventType)
+               {
+                  if (EventType.APPLY == eventType)
+                  {
+                     Document document = ((JCRDocument) documentHandlerBean.getDocumentContentInfo()).getDocument();
 
-         if (releaseInteraction)
-         {
-            this.interaction = null;
+                     // This cleanup is required because issue - CRNT-20987
+                     document.getProperties().remove(CommonProperties.DESCRIPTION);
+                     document.getProperties().remove(CommonProperties.COMMENTS);
+
+                     Map<String, Serializable> outDataValues = new HashMap<String, Serializable>();
+                     outDataValues.put(singleDocumentDatgaMapping.getId(), document);
+                     retrieveOutDataMappingContinue(releaseInteraction, mainCallback, outDataValues);
+                  }
+               }
+            });
          }
+         else if (null != activityForm)
+         {
+            outDataValues = (Map)activityForm.retrieveData();
+         }         
       }
       else
       {
-         Map<String, Serializable> outDataValues = interactionController.getOutDataValues(ai);
+         outDataValues = interactionController.getOutDataValues(ai);
+      }
+
+      if (dataAvailable)
+      {
+         Map<String, Serializable> ret = new HashMap<String, Serializable>();
          if (!CollectionUtils.isEmpty(outDataValues))
          {
             ret.putAll(outDataValues);
          }
+         retrieveOutDataMappingContinue(releaseInteraction, mainCallback, ret);
+      }
+   }
+
+   /**
+    * @param releaseInteraction
+    * @param mainCallback
+    * @param outValues
+    */
+   @SuppressWarnings({"rawtypes", "unchecked"})
+   private void retrieveOutDataMappingContinue(boolean releaseInteraction, ParametricCallbackHandler mainCallback,
+         Map<String, Serializable> outValues)
+   {
+      if (releaseInteraction)
+      {
+         this.interaction = null;
       }
 
-      return ret;
+      mainCallback.setParameters((Map)outValues);
+      mainCallback.handleEvent(EventType.APPLY);
    }
 
    /**
@@ -1416,7 +1551,7 @@ public class ActivityDetailsBean
    /**
     * @param ai
     */
-   private void update()
+   private void update(boolean fromViewEvent)
    {
       try
       {
@@ -1439,10 +1574,44 @@ public class ActivityDetailsBean
                   FormGenerationPreferences formPref = new FormGenerationPreferences(
                         ActivityPanelConfigurationBean.getAutoNoOfColumnsInColumnLayout(),
                         ActivityPanelConfigurationBean.getAutoNoOfColumnsInTable());
+                  
+                  if (!fromViewEvent && null != activityForm)
+                  {
+                     activityForm.destroy(); // If already exists destroy it first before creating again
+                     activityForm = null;
+                  }
+
                   activityForm = new ManualActivityForm(formPref, "activityDetailsBean.activityForm", activityInstance,
                         ServiceFactoryUtils.getWorkflowService(), activityInstance.getActivity().getApplicationContext(
-                              "default"));
+                              "default"), new DocumentInputEventHandler()
+                              {
+                                 /* (non-Javadoc)
+                                  * @see org.eclipse.stardust.ui.web.processportal.view.manual.DocumentInputEventHandler#handleEvent(org.eclipse.stardust.ui.web.processportal.view.manual.DocumentInputEventHandler.DocumentInputEvent)
+                                  */
+                                 public void handleEvent(DocumentInputEvent documentInputEvent)
+                                 {
+                                    switch (documentInputEvent.getType())
+                                    {
+                                    case UPLOADED:
+                                       IppDocumentInputController docController = activityForm.getIfSingleDocument();
+                                       if (null != docController && null != docController.getValue())
+                                       {
+                                          processSingleDocumentMappingCase(true);
+                                          documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.TO_BE_ACTIVATED));
+                                          documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.ACTIVATED));
+                                          documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.POST_OPEN_LIFECYCLE));
+                                       }
+                                       break;
+                                    case TO_BE_VIEWED:
+                                       if (singleDocumentCase)
+                                       {
+                                          documentInputEvent.setVetoed(true);
+                                       }
+                                    }
+                                 }
+                              });
                   activityForm.setData();
+                  processSingleDocumentMappingCase(fromViewEvent);
                }
                else
                {
@@ -1474,6 +1643,79 @@ public class ActivityDetailsBean
          loadUnsuccessfulMsg = "";
          trace.error(e);
          ExceptionHandler.handleException(e);
+      }
+   }
+
+   /**
+    * @param fromViewEvent
+    */
+   private void processSingleDocumentMappingCase(boolean fromViewEvent)
+   {
+      IppDocumentInputController docController = activityForm.getIfSingleDocument();
+      
+      if (null != docController && null != docController.getValue())
+      {
+         singleDocumentDatgaMapping = docController.getDataMapping();
+
+         IDocumentContentInfo documentContentInfo = docController.getDocumentContentInfo();
+
+         Map<String, Object> docViewParams = new HashMap<String, Object>();
+         docViewParams.put("documentInfo", documentContentInfo);
+         //docViewParams.put("processInstance", processInstance);
+         docViewParams.put("dataPathId", docController.getDataMapping().getDataId());
+         docViewParams.put("baseFormBinding", "activityDetailsBean.documentHandlerBean");
+         docViewParams.put("disableSaveAction", true);
+         docViewParams.put("embededView", true);
+
+         ViewDefinition definition = PortalUiController.getInstance().getViewDefinition("documentView");
+         singleDocumentView = new View(definition, "dummy.xhtml");
+         singleDocumentView.getViewParams().putAll(docViewParams);
+         documentViewToolbars = PortalUiController.getToolbarSections(singleDocumentView);
+
+         // fromViewEvent = True means View is just created, so create the Bean
+         if (fromViewEvent && null == documentHandlerBean)
+         {
+            // DocumentHandlerBean.getInstance() is not working so create new instance and push it to Tab scope
+            documentHandlerBean = new DocumentHandlerBean();
+            thisView.getCurrentTabScope().put("documentHandlerBean", documentHandlerBean);
+
+            documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.CREATED));
+
+            // Check if Document is already open in Separate Viewer
+            for (View openView : PortalApplication.getInstance().getOpenViews())
+            {
+               if ("documentView".equals(openView.getDefinition().getName()))
+               {
+                  try
+                  {
+                     DocumentHandlerBean docHandlerBean = (DocumentHandlerBean) openView.getCurrentTabScope()
+                           .get("documentHandlerBean");
+                     IDocumentContentInfo docInfo = docHandlerBean.getDocumentContentInfo();
+                     if (docInfo.getId().equals(documentContentInfo.getId()))
+                     {
+                        PortalApplication.getInstance().closeView(openView, true);
+                        MessageDialog.addInfoMessage(getMessages().getString("message.documentViewClosed"));
+                        break;
+                     }
+                  }
+                  catch (Exception e)
+                  {
+                     // TODO
+                  }
+               }
+            }
+         }
+         else
+         {
+            documentHandlerBean.initializeBean();
+         }
+         
+         activityForm = null;
+         singleDocumentCase = true;
+      }
+      else
+      {
+         singleDocumentCase = false;
       }
    }
 
@@ -2579,6 +2821,21 @@ public class ActivityDetailsBean
    public ConfirmationDialog getMappedDocumentConfirmationDialog()
    {
       return mappedDocumentConfirmationDialog;
+   }
+
+   public boolean isSingleDocumentCase()
+   {
+      return singleDocumentCase;
+   }
+
+   public List<ToolbarSection> getDocumentViewToolbars()
+   {
+      return documentViewToolbars;
+   }
+
+   public DocumentHandlerBean getDocumentHandlerBean()
+   {
+      return documentHandlerBean;
    }
 
    /**

@@ -16,9 +16,14 @@
                	  <!-- For now use the default style from new form generation -->
 	              <ice:outputStyle href="/plugins/stardust-ui-form-jsf/public/css/stardust-ui-form-jsf.css" />
  				  <ice:outputStyle href="/plugins/processportal/css/stardust-ui-form-jsf-override.css" />
-	              <f:subview id="#{activityDetailsBean.formId}">
-					<ice:panelGrid binding="#{activityDetailsBean.rootGrid}" style="width: 100%;" />
-                  </f:subview>
+ 				  <c:if test="#{not activityDetailsBean.singleDocumentCase}">
+		              <f:subview id="#{activityDetailsBean.formId}">
+						<ice:panelGrid binding="#{activityDetailsBean.rootGrid}" style="width: 100%;" />
+	                  </f:subview>
+		          </c:if>
+		          <c:if test="#{activityDetailsBean.singleDocumentCase}">
+					<ui:include src="/plugins/views-common/views/document/documentView.xhtml" />
+		          </c:if>
                </c:when>
                <c:otherwise>
                   <ui:insert name="faceletsActivityPanel">

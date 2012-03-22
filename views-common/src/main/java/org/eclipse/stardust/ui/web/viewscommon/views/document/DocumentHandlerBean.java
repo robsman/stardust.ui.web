@@ -45,6 +45,7 @@ import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -89,6 +90,8 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    private boolean metaDataPanelExpanded = true;
    private String dataPathId;
    private String dataId;
+   private String baseFormBinding = BEAN_NAME;
+   private boolean disableSaveAction;
 
    /**
     * default constructor
@@ -119,7 +122,54 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          processInstance = (ProcessInstance) thisView.getViewParams().get("processInstance");
          dataPathId = (String) thisView.getViewParams().get("dataPathId");
          dataId = (String) thisView.getViewParams().get("dataId");
+         baseFormBinding = (String) thisView.getViewParams().get("baseFormBinding");
+         if (StringUtils.isEmpty(baseFormBinding))
+         {
+            baseFormBinding = BEAN_NAME;
+         }
+         boolean embededView = false;
+         if (null != thisView.getViewParams().get("embededView"))
+         {
+            embededView = (Boolean) thisView.getViewParams().get("embededView");
+         }
+         
+         if (null != thisView.getViewParams().get("disableSaveAction"))
+         {
+            disableSaveAction = (Boolean) thisView.getViewParams().get("disableSaveAction");
+         }
+
          propsBean = MessagesViewsCommonBean.getInstance();
+
+         // Check if this document is already open in any Activity Panel
+         if (!embededView)
+         {
+            for (View openView : PortalApplication.getInstance().getOpenViews())
+            {
+               if ("activityPanel".equals(openView.getDefinition().getName()))
+               {
+                  try
+                  {
+                     Object activityDetailsBean = openView.getCurrentTabScope().get("activityDetailsBean");
+                     DocumentHandlerBean docHandlerBean = (DocumentHandlerBean) ReflectionUtils.invokeGetterMethod(
+                           activityDetailsBean, "documentHandlerBean");
+                     if (null != docHandlerBean) // Single Document Case
+                     {
+                        IDocumentContentInfo docInfo = docHandlerBean.getDocumentContentInfo();
+                        if (docInfo.getId().equals(this.getDocumentContentInfo().getId()))
+                        {
+                           event.setVetoed(true);
+                           MessageDialog.addInfoMessage(getMessages().getString("message.alreadyOpenInActivityPanel"));
+                           return;
+                        }
+                     }
+                  }
+                  catch (Exception e)
+                  {
+                     // TODO
+                  }
+               }
+            }
+         }
 
          if (!initializeBean())
          {
@@ -262,11 +312,11 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          if (null != model && StringUtils.isNotEmpty(dataId))
          {
             labelProvider = new DocumentMetaDataLabelProvider(model.getData(dataId));
-            formGenerator = new JsfFormGenerator(generationPreferences, "documentHandlerBean.documentForm", labelProvider);
+            formGenerator = new JsfFormGenerator(generationPreferences, baseFormBinding + ".documentForm", labelProvider);
          }
          else
          {
-            formGenerator = new JsfFormGenerator(generationPreferences, "documentHandlerBean.documentForm");
+            formGenerator = new JsfFormGenerator(generationPreferences, baseFormBinding + ".documentForm");
          }
 
          documentForm = new DocumentForm(new DocumentObject(documentContentInfo.getDocumentType(),
@@ -302,6 +352,15 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
     */
    public void save()
    {
+      save(null);
+   }
+
+
+   /**
+    * @param callback
+    */
+   public void save(ICallbackHandler callback)
+   {
       if (isModified())
       {
          try
@@ -312,7 +371,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
             {
                fileSaveDialog.setComments(documentContentInfo.getComments());
             }
-            fileSaveDialog.setCallbackHandler(new DCCallBackHandler(false));
+            fileSaveDialog.setCallbackHandler(new DCCallBackHandler(false, callback));
             if (contentHandler instanceof ICustomDocumentSaveHandler
                   && ((ICustomDocumentSaveHandler) contentHandler).usesCustomSaveDialog())
             {
@@ -327,11 +386,19 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          catch (Exception e)
          {
             ExceptionHandler.handleException(e);
+            callback.handleEvent(EventType.CANCEL);
          }
       }
       else
       {
-         MessageDialog.addWarningMessage(propsBean.getString("views.documentView.saveDocumentDialog.notSaved"));
+         if (null == callback)
+         {
+            MessageDialog.addWarningMessage(propsBean.getString("views.documentView.saveDocumentDialog.notSaved"));
+         }
+         else
+         {
+            callback.handleEvent(EventType.APPLY);
+         }
       }
    }
    
@@ -573,6 +640,11 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    public boolean isSavable()
    {
       return documentContentInfo.isContentEditable();
+   }
+
+   public boolean isDisableSaveAction()
+   {
+      return disableSaveAction;
    }
 
    public String getInputDescription()
@@ -894,11 +966,18 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    {
       private boolean force;
       private String comments;
+      private ICallbackHandler callback;
       
       public DCCallBackHandler(boolean force)
       {
-         this.force = force;
+         this(force, null);
       }
+
+      public DCCallBackHandler(boolean force, ICallbackHandler callback)
+      {
+         this.force = force;
+         this.callback = callback;
+      }      
 
       public void handleEvent(EventType eventType)
       {
@@ -907,10 +986,19 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
             try
             {
                saveDocumentContents(force, getComments());
+               if (null != callback)
+               {
+                  callback.handleEvent(EventType.APPLY);
+               }
             }
             catch (Exception e)
             {
                RepositoryUtility.showErrorPopup("views.genericRepositoryView.saveFile.error", null, e);
+            }
+
+            if (null != callback)
+            {
+               callback.handleEvent(EventType.CANCEL);
             }
          }
       }
