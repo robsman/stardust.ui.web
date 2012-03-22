@@ -128,11 +128,7 @@ public class DelegationBean extends PopupUIComponentBean
    public DelegationBean()
    {
       propsBean = MessagesViewsCommonBean.getInstance();
-      participantTree = new ParticipantTree();
-      participantTree.setShowUserNodes(false);
-      participantTree.setShowUserGroupNodes(false);
-      participantTree.setHighlightUserFilterEnabled(false);
-      participantTree.initialize();
+      initializeParticipantTree();
    }
 
    /**
@@ -341,6 +337,15 @@ public class DelegationBean extends PopupUIComponentBean
       this.selectedUser = searchResult.get(re.getRow());
    }
 
+   private void initializeParticipantTree()
+   {
+      participantTree = new ParticipantTree();
+      participantTree.setShowUserNodes(false);
+      participantTree.setShowUserGroupNodes(false);
+      participantTree.setHighlightUserFilterEnabled(false);
+      participantTree.initialize();
+   }
+   
    /**
     * Cleanup resources
     */
@@ -583,6 +588,7 @@ public class DelegationBean extends PopupUIComponentBean
    {
       super.openPopup();
       initialize();
+      participantTree.resetPreviousSelection();
      // retrieveParticipants();
      // FacesUtils.refreshPage();
    }

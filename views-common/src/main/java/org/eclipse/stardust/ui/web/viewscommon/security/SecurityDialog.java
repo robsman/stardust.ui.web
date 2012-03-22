@@ -139,11 +139,7 @@ public class SecurityDialog extends PopupUIComponentBean
       super("myDocumentsTreeView");
       accessControlBean = new ArrayList<AccessControlBean>();
       accessControlBeanInherited = new ArrayList<AccessControlBean>();
-      participantTree = new ParticipantTree();
-      participantTree.setShowUserNodes(false);
-      participantTree.setShowUserGroupNodes(false);
-      participantTree.setHighlightUserFilterEnabled(false);
-      participantTree.initialize();      
+      initializeParticipantTree();
       initialize();
    }
 
@@ -207,12 +203,13 @@ public class SecurityDialog extends PopupUIComponentBean
 
    public void openAddEntryDialog()
    {
+      participantTree.resetPreviousSelection();
       setOpenAddEntryDialog(true);
    }
 
    public void closeAddEntryDialog()
    {
-      setOpenAddEntryDialog(false);
+      setOpenAddEntryDialog(false);      
    }
   
    public void generateUserList()
@@ -479,6 +476,15 @@ public class SecurityDialog extends PopupUIComponentBean
 
    }
 
+   private void initializeParticipantTree()
+   {
+      participantTree = new ParticipantTree();
+      participantTree.setShowUserNodes(false);
+      participantTree.setShowUserGroupNodes(false);
+      participantTree.setHighlightUserFilterEnabled(false);
+      participantTree.initialize();      
+   }
+   
    private Set<AccessControlPolicy> printDmsSecurity(DocumentManagementService dms, String resourceId)
    {
       trace.debug("Security for: " + resourceId);

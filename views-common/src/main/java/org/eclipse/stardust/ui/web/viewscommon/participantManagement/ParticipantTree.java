@@ -229,7 +229,7 @@ public class ParticipantTree
    /**
     * 
     */
-   private void resetPreviousSelection()
+   public void resetPreviousSelection()
    {
       if (null != selectedUserObject)
       {
@@ -957,9 +957,9 @@ public class ParticipantTree
          PanelConfirmation panelConfirmation = PanelConfirmation.getInstance(true);
          panelConfirmation.setCallbackHandler(callbackHandler);
          panelConfirmation.setMessage(MessagesViewsCommonBean.getInstance().getString(
-               "views.participantMgmt.confirmDepartmentDelete.msg.title"));
+               "views.participantTree.confirmDepartmentDelete.msg.title"));
          panelConfirmation.setTitle(MessagesViewsCommonBean.getInstance().getString(
-               "views.participantMgmt.confirmDepartmentDelete.title"));
+               "views.participantTree.confirmDepartmentDelete.title"));
          panelConfirmation.openPopup();
       }
    }
