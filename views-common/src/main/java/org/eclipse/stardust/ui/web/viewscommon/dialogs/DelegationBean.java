@@ -131,6 +131,7 @@ public class DelegationBean extends PopupUIComponentBean
       participantTree = new ParticipantTree();
       participantTree.setShowUserNodes(false);
       participantTree.setShowUserGroupNodes(false);
+      participantTree.setHighlightUserFilterEnabled(false);
       participantTree.initialize();
    }
 

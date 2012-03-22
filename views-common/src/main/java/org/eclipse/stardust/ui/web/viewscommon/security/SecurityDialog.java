@@ -142,6 +142,7 @@ public class SecurityDialog extends PopupUIComponentBean
       participantTree = new ParticipantTree();
       participantTree.setShowUserNodes(false);
       participantTree.setShowUserGroupNodes(false);
+      participantTree.setHighlightUserFilterEnabled(false);
       participantTree.initialize();      
       initialize();
    }

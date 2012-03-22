@@ -122,14 +122,13 @@ public class ParticipantTree
 
    private boolean showUserGroupNodes = true;
 
+   private boolean highlightUserFilterEnabled = true;
+
    public ParticipantTree()
    {
       //super(view);
       modelNodesMap = new LinkedHashMap<String, DefaultMutableTreeNode>();
       topLevelParticipantsByModelMap = new LinkedHashMap<String, List<DefaultMutableTreeNode>>();
-      
-      // As per Filter Toolbar creating Data Filters
-      createFilterToolbar();
    }
 
    /**
@@ -137,6 +136,8 @@ public class ParticipantTree
     */
    public void initialize()
    {
+      // As per Filter Toolbar creating Data Filters
+      createFilterToolbar();
       treeModel = null;
       departmentCache.clear();
       modelNodesMap.clear();
@@ -1317,13 +1318,16 @@ public class ParticipantTree
             "/plugins/views-common/images/icons/find.png"));*/
 
       onOffFilters.put(SHOW_MODEL_ACTION, new GenericDataFilterOnOff(SHOW_MODEL_ACTION, MessagesViewsCommonBean.getInstance().getString(
-            "participantTree.filters.model.title"), MessagesViewsCommonBean.getInstance().getString("participantTree.filters.model.off.title"),
+            "views.participantTree.filters.model.title"), MessagesViewsCommonBean.getInstance().getString("views.participantTree.filters.model.off.title"),
             true, false, "/plugins/views-common/images/icons/model.gif"));
 
-      onOffFilters.put(HIGHLIGHT_USERS_ACTION, new GenericDataFilterOnOff(HIGHLIGHT_USERS_ACTION, MessagesViewsCommonBean.getInstance()
-            .getString("participantTree.toolbar.highlightUsers.title"), MessagesViewsCommonBean.getInstance().getString(
-            "participantTree.toolbar.highlightUsers.off.title"), true, false,
-            "/plugins/views-common/images/icons/flashlight-shine.png"));
+      if (highlightUserFilterEnabled)
+      {
+         onOffFilters.put(HIGHLIGHT_USERS_ACTION, new GenericDataFilterOnOff(HIGHLIGHT_USERS_ACTION, MessagesViewsCommonBean.getInstance()
+               .getString("views.participantTree.toolbar.highlightUsers.title"), MessagesViewsCommonBean.getInstance().getString(
+               "views.participantTree.toolbar.highlightUsers.off.title"), true, false,
+               "/plugins/views-common/images/icons/flashlight-shine.png"));
+      }
    }
  
    /**
@@ -1762,7 +1766,12 @@ public class ParticipantTree
 
    public boolean isHighlightUsersOn()
    {
-      return onOffFilters.get(HIGHLIGHT_USERS_ACTION).isOn();
+      if (null != onOffFilters.get(HIGHLIGHT_USERS_ACTION))
+      {
+         return onOffFilters.get(HIGHLIGHT_USERS_ACTION).isOn();
+      }
+
+      return false;
    }
 
    public Set<User> getSelectedUsers()
@@ -1798,5 +1807,15 @@ public class ParticipantTree
    public void setShowUserGroupNodes(boolean showUserGroupNodes)
    {
       this.showUserGroupNodes = showUserGroupNodes;
+   }
+
+   public boolean isHighlightUserFilterEnabled()
+   {
+      return highlightUserFilterEnabled;
+   }
+
+   public void setHighlightUserFilterEnabled(boolean highlightUserFilterEnabled)
+   {
+      this.highlightUserFilterEnabled = highlightUserFilterEnabled;
    }
 }
