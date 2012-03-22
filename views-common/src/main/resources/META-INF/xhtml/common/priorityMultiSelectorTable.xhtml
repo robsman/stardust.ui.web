@@ -12,9 +12,6 @@
 	<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"></meta>
-<link
-	href="#{facesContext.externalContext.requestContextPath}/plugins/views-common/css/context-portal.css"
-	rel="stylesheet" type="text/css" />
 </head>
 <body>
 	<c:choose>
@@ -49,13 +46,8 @@
 													<tr>
 														<td><ice:outputText value="#{priorityItem.label}" />
 														</td>
-														<td><ice:panelGroup>
-																<ice:panelGrid columns="5">
-																	<ice:graphicImage value="#{priorityItem.icon}"
-																		width="16px" height="16px" />
-																</ice:panelGrid>
-															</ice:panelGroup>
-														</td>
+														<td><ice:graphicImage value="#{priorityItem.icon}"
+																width="16px" height="16px" /></td>
 													</tr>
 												</tbody>
 											</table>

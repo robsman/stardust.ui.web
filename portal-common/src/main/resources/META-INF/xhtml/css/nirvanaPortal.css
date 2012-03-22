@@ -1750,3 +1750,214 @@ table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbo
 }
 
 /* ********** TOOLTIP2 - END ********** */
+
+/******** Style moved from context-portal.css **********/
+
+/* Action Panel */
+
+.actionPanel .iceCmdLnk 
+{
+	color: #444444;
+	text-decoration: underline;
+}
+
+.actionPanel .iceCmdLnk -dis
+{
+	color: gray;
+}
+
+.content-area
+{
+	border:1px solid #dbdbdb;
+	height: auto;
+	overflow: auto;
+}
+
+.documentviewer-subpanel
+{
+	padding-top: 10px;
+}
+
+.attachments-panel
+{
+	border: 1px solid #D9D9D9;
+	width: 97%;
+	height: 50px;
+	padding: 3px;
+	margin: 2px;
+}
+
+/* Generic Forms */
+
+.formLabel {
+	width: 75px;
+}
+
+.formLabel a
+{
+	font-weight: bold;
+}
+
+.formInput
+{
+	width: 100%;
+	float: left;
+}
+
+.formInput input,.formInput textarea
+{
+	width: 97%;
+}
+
+/* Chat Messages */
+
+.chat-messageeditor-user0
+{
+	color: #000000;
+}
+
+.chat-messageeditor-user1
+{
+	color: #A80000;
+}
+
+.chat-messageeditor-user2
+{
+	color: #800080;
+}
+
+.chat-messageeditor-user3
+{
+	color: #A80000;
+}
+
+.chat-messageeditor-user4
+{
+	color: #808000;
+}
+
+.chat-messageeditor-user5
+{
+	color: #505050;
+}
+
+.chat-messageeditor-user6
+{
+	color: #A0A0A0;
+}
+
+.chat-messageeditor-user7
+{
+	color: #006666;
+}
+
+.chat-messageeditor-user8
+{
+	color: #003399;
+}
+
+.chat-messageeditor-user9
+{
+	color: #003300;
+}
+
+.chat-messageeditor-user10
+{
+	color: #660000;
+}
+
+.chat-messageeditor-user11
+{
+	color: #666633;
+}
+.chat-messageeditor-user-1
+{
+	color:  #006677;
+	font-style: italic;
+}
+
+.chatPartColClass1
+{
+    width: 20%;
+    text-align: center;
+}
+
+.chatPartColClass2
+{
+    text-align: center;
+}
+
+.chatPartColClass3
+{
+    width: 20%;
+    text-align: center;
+}
+
+.pnlBrdrDemo {
+	display: block;
+	float: left;
+	width: 100%;
+}
+
+.pnlBrdrDemo .icePnlBrdrWest {
+	font-weight: lighter;
+	text-align: left;
+	vertical-align: top;
+	width: 200px;
+	min-width: 200px;
+	background: none;
+	padding-right: 10px;
+}
+
+.pnlBrdrDemo .icePnlBrdrCenter {
+	border-left: 1px dotted #CCCCCC;
+	font-weight: lighter;
+	text-align: left;
+	vertical-align: middle;
+	width: 100%;
+	background: none;
+	padding-left: 10px;
+}
+
+.chatSendButtonContainer {
+	background: transparent url(../images/footer_bg.png) repeat-x
+		scroll center top;
+	border-top: 1px solid #CCCCCC;
+	bottom: 0;
+	clear: both;
+	left: 0;
+}
+
+.chatSendButtonContainer input {
+	background: #FFFFFF url(../images/toolbar-BG.jpg) repeat-x scroll
+		center bottom;
+	border-color: #CCCCCC #999999 #999999 #CCCCCC;
+	border-style: solid;
+	border-width: 1px;
+	color: #333333;
+	cursor: pointer;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	margin: 5px;
+	padding: 3px;
+}
+
+.chatMessageEditor {
+	width: 100%;
+	border: 1px solid #CCCCCC;
+	margin-top: 20px;
+}
+
+.chatEntryPanel {
+	background-color: white;
+	border: 1px solid #CCCCCC;
+}
+
+.chatEntryPanelSeries
+{
+	width:100%;
+	height:300px;
+}
+
+/******** context-portal.css Style Ends**********/
