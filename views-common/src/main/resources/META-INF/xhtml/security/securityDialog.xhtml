@@ -99,7 +99,7 @@
 				cellspacing="0" renderNorth="false" renderEast="false"
 				renderSouth="true" renderWest="false" renderCenter="true">
 				<f:facet name="center">					
-					<ice:panelGroup>
+					<ice:panelGroup style="width : 740px; height: 350px;">
 						<ice:panelGroup rendered="#{securityDialog.pickFromListMode}">
 							<ice:panelGrid style="width: 98%">
 								<ice:commandLink action="#{securityDialog.setPickFromTreeMode}"
@@ -140,7 +140,7 @@
 								</ice:dataTable>
 							</ice:panelGroup>
 						</ice:panelGroup>
-						<ice:panelGroup rendered="#{securityDialog.pickFromTreeMode}" style="width : 400px; max-height: 400px;">
+						<ice:panelGroup rendered="#{securityDialog.pickFromTreeMode}">
 							<ice:panelGrid style="width: 98%">
 								<ice:commandLink action="#{securityDialog.setPickFromListMode}"
 									style="float : right">
@@ -152,7 +152,7 @@
 								</ice:commandLink>
 							</ice:panelGrid>
 							<ice:panelGroup style="clearing" />
-							<ice:panelGroup>
+							<ice:panelGroup style="height: 325px; overflow: auto;">
 								<ui:include src="/plugins/views-common/participantTree/participantTree.xhtml">
 									<ui:param name="participantTree" value="#{securityDialog.participantTree}" />
 									<ui:param name="disableContextMenu" value="true" />

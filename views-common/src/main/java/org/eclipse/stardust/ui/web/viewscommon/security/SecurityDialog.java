@@ -140,7 +140,9 @@ public class SecurityDialog extends PopupUIComponentBean
       accessControlBean = new ArrayList<AccessControlBean>();
       accessControlBeanInherited = new ArrayList<AccessControlBean>();
       participantTree = new ParticipantTree();
-      participantTree.initialize();
+      participantTree.setShowUserNodes(false);
+      participantTree.setShowUserGroupNodes(false);
+      participantTree.initialize();      
       initialize();
    }
 

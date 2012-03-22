@@ -129,6 +129,8 @@ public class DelegationBean extends PopupUIComponentBean
    {
       propsBean = MessagesViewsCommonBean.getInstance();
       participantTree = new ParticipantTree();
+      participantTree.setShowUserNodes(false);
+      participantTree.setShowUserGroupNodes(false);
       participantTree.initialize();
    }
 

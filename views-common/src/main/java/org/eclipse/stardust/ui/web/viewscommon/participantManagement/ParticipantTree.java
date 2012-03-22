@@ -117,7 +117,11 @@ public class ParticipantTree
    private Set<User> selectedUsers;
    
    private ParticipantUserObject selectedUserObject;
-   
+
+   private boolean showUserNodes = true;
+
+   private boolean showUserGroupNodes = true;
+
    public ParticipantTree()
    {
       //super(view);
@@ -271,7 +275,10 @@ public class ParticipantTree
       addTopLevelRoles(root);
 
       // Add all UserGroups
-      addAllUserGroups(root);
+      if (showUserGroupNodes)
+      {
+         addAllUserGroups(root);
+      }
 
       if (isModelsDisplayed())
       {
@@ -500,13 +507,16 @@ public class ParticipantTree
     */
    private void addUsersForParticipant(DefaultMutableTreeNode node, ParticipantInfo participantInfo)
    {
-      UserQuery userQuery = UserQuery.findAll();
-      userQuery.getFilter().add(ParticipantAssociationFilter.forParticipant(participantInfo, false));
-      Users allUsers = getQryService().getAllUsers(userQuery);
-      int index = 0;
-      for (User user : allUsers)
+      if (showUserNodes)
       {
-         addParticipantNode(node, user, index++);
+         UserQuery userQuery = UserQuery.findAll();
+         userQuery.getFilter().add(ParticipantAssociationFilter.forParticipant(participantInfo, false));
+         Users allUsers = getQryService().getAllUsers(userQuery);
+         int index = 0;
+         for (User user : allUsers)
+         {
+            addParticipantNode(node, user, index++);
+         }
       }
    }
    /**
@@ -1768,5 +1778,25 @@ public class ParticipantTree
    public ParticipantUserObject getSelectedUserObject()
    {
       return selectedUserObject;
+   }
+
+   public boolean isShowUserNodes()
+   {
+      return showUserNodes;
+   }
+
+   public void setShowUserNodes(boolean showUserNodes)
+   {
+      this.showUserNodes = showUserNodes;
+   }
+
+   public boolean isShowUserGroupNodes()
+   {
+      return showUserGroupNodes;
+   }
+
+   public void setShowUserGroupNodes(boolean showUserGroupNodes)
+   {
+      this.showUserGroupNodes = showUserGroupNodes;
    }
 }
