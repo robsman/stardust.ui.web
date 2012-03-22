@@ -390,7 +390,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
     */
    public void save(ICallbackHandler callback)
    {
-      if (isModified())
+      if (isSavable() && isModified())
       {
          try
          {
