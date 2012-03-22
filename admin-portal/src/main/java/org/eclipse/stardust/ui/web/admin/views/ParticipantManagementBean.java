@@ -133,7 +133,7 @@ public class ParticipantManagementBean extends PopupUIComponentBean implements V
       roleNodeContextMenu = new ArrayList<ContextMenuItem>();
       ContextMenuItem createUser = new ContextMenuItem();
       createUser.setValue(getMessages().getString("participantTree.contextMenu.createUser"));
-      createUser.setIcon("/plugins/admin-portal/images/icons/user_add.png");
+      createUser.setIcon("/plugins/views-common/images/icons/user_add.png");
       createUser.setMenuActionhandler(new RoleNodeContextMenuActionHandler());
       roleNodeContextMenu.add(createUser);
 
