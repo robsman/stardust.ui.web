@@ -96,6 +96,8 @@ public class CaseDetailsBean extends PopupUIComponentBean
 
    private static final String STATE_PREFIX = "views.processTable.statusFilter.";
    private static final String VIEW_ID = "caseDetailsView"; 
+   private static final String ABORT_STATE_MSG = "abort";
+   private static final String COMPLETE_STATE_MSG = "complete";
    private ProcessInstance processInstance;
    private Long processInstanceOID;
    private boolean hideCompletedActivities;
@@ -126,6 +128,7 @@ public class CaseDetailsBean extends PopupUIComponentBean
    private boolean editProcessName = false;
    private String processName;
    private String caseOwnerLabel;
+   private String detachNotificationMessage;
    private ProcessInstance detachProcessInstance;
    private ConfirmationDialog detachCaseConfirmationDialog;
    private String description;   
@@ -136,6 +139,8 @@ public class CaseDetailsBean extends PopupUIComponentBean
    private boolean hasSpawnProcessPermission;
    private boolean hasSwitchProcessPermission;
    private boolean hasJoinProcessPermission;
+   
+   private int activeChildProcessCount;
 
    public CaseDetailsBean()
    {
@@ -286,7 +291,7 @@ public class CaseDetailsBean extends PopupUIComponentBean
     * 
     */
    public void handleEvent(ViewEvent event)
-   {	   
+   {       
       if (ViewEventType.CREATED == event.getType())
       {
          View focusView = event.getView();
@@ -344,18 +349,32 @@ public class CaseDetailsBean extends PopupUIComponentBean
          }
 
          detachProcessInstance = pi;
-         ProcessInstance rootProcessInstance = ProcessInstanceUtils.getRootProcessInstance(pi, false);
-         Set<Long> childPIs = countImmediateChilds(rootProcessInstance);
-
-         if (childPIs.contains(pi.getOID()) && childPIs.size() == 1)
+         if (ProcessInstanceUtils.isActiveProcessInstance(pi))
          {
-            openConfirmationDialog();
-            return;
+            ProcessInstance rootProcessInstance = ProcessInstanceUtils.getRootProcessInstance(pi, false);
+            Set<Long> childPIs = countImmediateChilds(rootProcessInstance);
+
+            if (childPIs.contains(pi.getOID()) && activeChildProcessCount == 1)
+            {
+               if (childPIs.size() == activeChildProcessCount)
+               {
+                  detachNotificationMessage = COMMON_MESSAGE_BEAN.getParamString("views.detachCase.notification.msg",
+                        ABORT_STATE_MSG);
+               }
+               else
+                  detachNotificationMessage = COMMON_MESSAGE_BEAN.getParamString("views.detachCase.notification.msg",
+                        COMPLETE_STATE_MSG);
+               openConfirmationDialog();
+               return;
+            }
+            else
+            {
+               detachProcess();
+            }
+
          }
          else
-         {
             detachProcess();
-         }
       }
       catch (Exception e)
       {
@@ -393,19 +412,31 @@ public class CaseDetailsBean extends PopupUIComponentBean
       return true;
    }
    
+   /**
+    * Retrieve the immediate Child count and also active child count for Case PI
+    * 
+    * @param rootProcessInstance
+    * @return
+    */
    private Set<Long> countImmediateChilds(ProcessInstance rootProcessInstance)
    {
       List<ProcessInstanceHistoryItem> childPIs = ProcessHistoryTable.getCurrent().getProcessTreeTable()
             .getProcessHistoryTableRoot().getChildren();
+      activeChildProcessCount = 0;
       Set<Long> processOIDs = CollectionUtils.newHashSet();
       for (ProcessInstanceHistoryItem pi : childPIs)
       {
+         // Store the Active Child count ,required as confirm Detach dialog should be
+         // shown when there is only 1 active Child
+         if (pi.getState().equals(ProcessInstanceState.Active.getName()))
+         {
+            activeChildProcessCount = activeChildProcessCount + 1;
+         }
          processOIDs.add(pi.getOID());
       }
       return processOIDs;
    }
-
-
+   
    public void detachProcess()
    {
       long[] pis = {detachProcessInstance.getOID()};
@@ -1015,6 +1046,11 @@ public class CaseDetailsBean extends PopupUIComponentBean
       {
          this.description = description;   
       }
+   }
+   
+   public String getDetachNotificationMessage()
+   {
+      return detachNotificationMessage;
    }
 
    /**
