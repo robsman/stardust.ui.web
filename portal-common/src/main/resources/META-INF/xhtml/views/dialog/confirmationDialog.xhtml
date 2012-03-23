@@ -52,6 +52,7 @@
 							<ice:panelGroup>
 								<ice:panelGroup rendered="#{not empty dialogBean.message}">
 									<ice:outputText value="#{dialogBean.message}" />
+									<pc:automationTag value="auto-DT-DTCol-StringVal" />
 								</ice:panelGroup>
 		
 								<ice:panelGroup rendered="#{not empty dialogBean.includePath}">
