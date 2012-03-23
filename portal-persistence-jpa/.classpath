@@ -8,6 +8,7 @@
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/2.5.6/spring.jar" sourcepath="/Q-ARCHIVE/thirdparty/spring/framework/2.5.6/spring-sources.jar"/>
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javax/jta/1.1/jta-1.1.jar" sourcepath="/Q-ARCHIVE/thirdparty/javax/jta/1.1/jta-1.1-sources.jar"/>
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/org.eclipse/persistence/eclipselink/2.0.0/eclipselink-2.0.0.jar" sourcepath="/Q-ARCHIVE/thirdparty/org.eclipse/persistence/eclipselink/2.0.0/eclipselink-2.0.0-sources.jar"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/org.eclipse/persistence/eclipselink/2.0.0/javax.persistence_2.0.0.v200911271158.jar" sourcepath="/Q-ARCHIVE/thirdparty/org.eclipse/persistence/eclipselink/2.0.0/javax.persistence.source_2.0.0.v200911271158.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="output" path=".eclipse/classes"/>
 </classpath>
