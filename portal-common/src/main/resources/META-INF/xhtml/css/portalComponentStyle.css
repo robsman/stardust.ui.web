@@ -66,16 +66,27 @@
 .genericTableSortColHdr
 {
 	background: transparent url("./css-images/colHeader-Sort.png") no-repeat scroll right center;
-	height: 20px;
+	height: 16px;
 	width: 10px;
 	padding-left: 4px;
+}
+
+.genericTableHdr{
+    text-align: center;
+    font: 11px tahoma;
+    color: #484848;
+    padding: 5px;
+    font-weight: bold;
+    background: #FFF url( './css-images/table_col_header.gif' ) repeat-x bottom left;
+    border: 1px solid #d9d9d9;
+    vertical-align:top;
 }
 
 /* Overrides the ICEfaces Default Styles in connection with above style */
 .iceCmdSrtHdrAsc 
 {
 	background: transparent url("./css-images/colHeader-Sort-Acending.png") no-repeat scroll right center;
-	height: 20px;
+	height: 16px;
 	width: 10px;
 	padding-left: 4px;
 }
@@ -83,7 +94,7 @@
 .iceCmdSrtHdrDesc
 {
 	background: transparent url("./css-images/colHeader-Sort-Decending.png") no-repeat scroll right center;
-	height: 20px;
+	height: 16px;
 	width: 10px;
 	padding-left: 4px;
 }

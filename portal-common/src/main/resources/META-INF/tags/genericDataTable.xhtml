@@ -244,7 +244,7 @@
 									                    	</c:if>
 															<c:choose>
 																<c:when test="#{sortSupported and colPref.sortable}">
-																	<ice:commandSortHeader columnName="#{colPref.columnProperty}">
+																	<ice:commandSortHeader columnName="#{colPref.columnProperty}" styleClass="iceCmdSrtHdr">
 																		<pc:automationTag value="auto-DT-Col-Sorter" standAlone="false" />
 																		<c:choose>
 																			<c:when test="#{(selectColumn eq colPref.columnName) and (colPref.columnRenderType eq 'READ_WRITE')}">
@@ -319,9 +319,14 @@
 								<c:if test="#{renderColumnHeaders and not columnModel.columnGropuing}">
 									<f:facet name="header">
 										<ice:panelGrid columns="1" width="100%">
-											<ice:panelGroup rendered="#{table.showFilterAtColumns and item.columnDataFilterPopup != null}">
+											<ice:panelGroup rendered="#{table.showFilterAtColumns and item.columnDataFilterPopup != null}" style="vertical-align:top;">
 												<pc:tableFilter bean="#{bean}" filterPopup="#{item.columnDataFilterPopup}"
 													anchorStyle="border: none" showAnchorTitle="false" /> <!-- disabled="#{emptyData}" -->
+											</ice:panelGroup>
+											<ice:panelGroup rendered="#{table.atleastOneFilterVisible and item.columnDataFilterPopup == null}">
+												<ice:panelGroup styleClass="clearing" />
+													<ice:outputText />
+													<ice:panelGroup styleClass="clearing" />
 											</ice:panelGroup>
 											<ice:panelGroup>
 												<c:choose>

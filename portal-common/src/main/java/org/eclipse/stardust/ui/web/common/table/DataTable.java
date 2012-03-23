@@ -419,6 +419,26 @@ public class DataTable<T extends IRowModel> implements IDataTable<T>, ITableData
    }
    
    /**
+    * Method to validate any Filter Column visible , used for aligning Non Filterable
+    * column Header
+    * 
+    * @return
+    */
+   public boolean isAtleastOneFilterVisible()
+   {
+      if (null != columnModel)
+      {
+         List<ColumnPreference> colPref = columnModel.getRenderableLeafColumns();
+         for (ColumnPreference pref : colPref)
+         {
+            if (pref.isVisible() && pref.getColumnDataFilterPopup() != null)
+               return true;
+         }
+      }
+      return false;
+   }
+   
+   /**
     * 
     */
    public void resetExportFiles()
