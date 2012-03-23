@@ -42,7 +42,6 @@
       <!-- ipp-persistence-jpa-compile -->
       <dependency org="org.springframework" name="spring" rev="2.5.6" conf="ipp-persistence-jpa-compile->default" />
       <dependency org="org.eclipse.persistence" name="eclipselink" rev="2.0.0" conf="ipp-persistence-jpa-compile->default" />
-      <dependency org="toplink.essentials" name="toplink-essentials" rev="2.0-58g" conf="ipp-persistence-jpa-compile->default" />
 
       <!-- ipp-persistence-jpa-runtime -->
       <!-- nothing to add -->

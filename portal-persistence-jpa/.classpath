@@ -7,7 +7,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/2.5.6/spring.jar" sourcepath="/Q-ARCHIVE/thirdparty/spring/framework/2.5.6/spring-sources.jar"/>
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javax/jta/1.1/jta-1.1.jar" sourcepath="/Q-ARCHIVE/thirdparty/javax/jta/1.1/jta-1.1-sources.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/toplink/2.0.b58g/toplink-essentials.jar" sourcepath="/Q-ARCHIVE/thirdparty/toplink/2.0.b58g/toplink-essentials-2.0-58g-sources.jar"/>
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/org.eclipse/persistence/eclipselink/2.0.0/eclipselink-2.0.0.jar" sourcepath="/Q-ARCHIVE/thirdparty/org.eclipse/persistence/eclipselink/2.0.0/eclipselink-2.0.0-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="output" path=".eclipse/classes"/>

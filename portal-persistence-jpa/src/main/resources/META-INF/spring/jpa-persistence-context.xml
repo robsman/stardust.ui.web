@@ -48,7 +48,7 @@
             <entry key="toplink.ddl-generation" value="drop-and-create-tables" />
             
             <!-- hook into the environment's JTA TX manager -->
-            <entry key="toplink.target-server" value="org.eclipse.stardust.ui.web.rt.persistence.jpa.toplink.SpringJtaTxController" />
+            <!--<entry key="toplink.target-server" value="org.eclipse.stardust.ui.web.rt.persistence.jpa.toplink.SpringJtaTxController" />-->
             <!--entry key="toplink.target-server" value="oracle.toplink.essentials.transaction.JTATransactionController" /-->
 
             <entry key="eclipselink.target-server" value="org.eclipse.stardust.ui.web.rt.persistence.jpa.eclipselink.SpringJtaTxController" />
