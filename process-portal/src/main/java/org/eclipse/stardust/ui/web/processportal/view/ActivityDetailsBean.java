@@ -1494,6 +1494,9 @@ public class ActivityDetailsBean extends UIComponentBean
                      document.getProperties().remove(CommonProperties.DESCRIPTION);
                      document.getProperties().remove(CommonProperties.COMMENTS);
 
+                     // Even Annotations needs to be cleared
+                     document.setDocumentAnnotations(null);
+                     
                      Map<String, Serializable> outDataValues = new HashMap<String, Serializable>();
                      outDataValues.put(singleDocumentDatgaMapping.getId(), document);
                      retrieveOutDataMappingContinue(releaseInteraction, mainCallback, outDataValues);

@@ -551,6 +551,14 @@ public class ManualActivityForm extends Form
             handleStructureDataMapping(path);
          }
       }
+
+      // For Single Document Case
+      IppDocumentInputController docController = getIfSingleDocument();
+      if (null != docController && null == docController.getValue())
+      {
+         docController.setOpenDocument(true);
+         docController.setEnableOpenDocument(false);
+      }
    }
 
    /**

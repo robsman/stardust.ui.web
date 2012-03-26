@@ -56,6 +56,8 @@ public class IppDocumentInputController extends DocumentInputController implemen
    private ActivityInstance activityInstance;
    private DataMapping dataMapping;
    private DocumentInputEventHandler handler;
+   private boolean openDocument = true;
+   private boolean enableOpenDocument = true;
 
    /**
     * @param path
@@ -170,7 +172,8 @@ public class IppDocumentInputController extends DocumentInputController implemen
       fileUploadDialog.setHeaderMessage(propsBean.getParamString(
             "views.genericRepositoryView.specificDocument.uploadFile", label));
       fileUploadDialog.setTitle(propsBean.getString("common.fileUpload"));
-      fileUploadDialog.setOpenDocument(true);
+      fileUploadDialog.setOpenDocument(openDocument);
+      fileUploadDialog.setEnableOpenDocument(enableOpenDocument);
 
       fileUploadDialog.setICallbackHandler(new ICallbackHandler()
       {
@@ -347,5 +350,15 @@ public class IppDocumentInputController extends DocumentInputController implemen
    public DataMapping getDataMapping()
    {
       return dataMapping;
+   }
+
+   public void setOpenDocument(boolean openDocument)
+   {
+      this.openDocument = openDocument;
+   }
+
+   public void setEnableOpenDocument(boolean enableOpenDocument)
+   {
+      this.enableOpenDocument = enableOpenDocument;
    }
 }
