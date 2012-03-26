@@ -29,6 +29,7 @@ import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
+import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
@@ -316,7 +317,7 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
     */
    public void activate()
    {
-      if (!isPoppedOut())
+      if (!isPoppedOut() && !MessageDialog.getInstance().isVisible())
       {
          String pagePath = docHolder.getDefaultPagePath();
          pagePath += "&isEditable=" + documentInfo.isContentEditable();
