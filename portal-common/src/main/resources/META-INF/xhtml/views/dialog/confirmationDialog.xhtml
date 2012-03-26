@@ -18,10 +18,10 @@
 				<f:facet name="header">
 					<ice:panelGrid width="100%" columns="2" cellpadding="0" cellspacing="0">
 						<ice:outputText value="#{dialogBean.title}" styleClass="headerText">
-							<pc:automationTag value="auto-COM-ConfirmMsgDlg-Title" standAlone="false"/>
+							<pc:automationTag value="auto-FW-ConfirmMsgDlg-Title" standAlone="false"/>
 						</ice:outputText>
 						<ice:panelGroup style="text-align: right;">
-							<pc:automationTag value="auto-COM-ConfirmMsgDlg-CloseBtn" standAlone="false"/>
+							<pc:automationTag value="auto-FW-ConfirmMsgDlg-CloseBtn" standAlone="false"/>
 							<ice:commandButton title="#{common_msgPropsBean['common.close']}"
 								image="/plugins/common/images/icons/dialog-windowbttn-close.png" 
 								action="#{dialogBean.cancelAction}"
@@ -52,7 +52,7 @@
 							<ice:panelGroup>
 								<ice:panelGroup rendered="#{not empty dialogBean.message}">
 									<ice:outputText value="#{dialogBean.message}" />
-									<pc:automationTag value="auto-COM-ConfDlg-MsgTxt" />
+									<pc:automationTag value="auto-FW-ConfDlg-MsgTxt" />
 								</ice:panelGroup>
 		
 								<ice:panelGroup rendered="#{not empty dialogBean.includePath}">
@@ -66,7 +66,7 @@
 						<f:facet name="south">
 							<ice:panelGrid columns="3" style="text-align: left">
 								<ice:panelGroup>
-									<pc:automationTag value="auto-COM-ConfDlg-YesNoBtnsBar" />
+									<pc:automationTag value="auto-FW-ConfDlg-YesNoBtnsBar" />
 									<ice:commandButton value="#{dialogBean.acceptLabel}"
 										action="#{dialogBean.acceptAction}" styleClass="button"
 										style="width: 60px"
@@ -74,7 +74,7 @@
 									</ice:commandButton>
 								</ice:panelGroup>
 								<ice:panelGroup>
-									<pc:automationTag value="auto-COM-ConfDlg-YesNoBtnsBar" />
+									<pc:automationTag value="auto-FW-ConfDlg-YesNoBtnsBar" />
 									<ice:commandButton value="#{dialogBean.cancelLabel}"
 										action="#{dialogBean.cancelAction}" styleClass="button"
 										style="width: 60px"
