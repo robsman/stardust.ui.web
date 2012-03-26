@@ -323,15 +323,22 @@ public class FacesUtils
       HttpServletResponse response = (HttpServletResponse) ectx.getResponse();
       response.sendRedirect(response.encodeRedirectURL(toUrl));
    }
-   
+
    /**
     * 
     */
    public static void refreshPage()
    {
+      handleNavigation("pageRefresh");
+   }
+
+   /**
+    * 
+    */
+   public static void handleNavigation(String navigationRuleId)
+   {
       FacesContext facesContext = FacesContext.getCurrentInstance();
-      facesContext.getApplication().getNavigationHandler().handleNavigation(facesContext,
-            null, "pageRefresh");
+      facesContext.getApplication().getNavigationHandler().handleNavigation(facesContext, null, navigationRuleId);
    }
 
    /**

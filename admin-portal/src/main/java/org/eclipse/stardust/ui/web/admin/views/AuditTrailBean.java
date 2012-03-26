@@ -34,6 +34,8 @@ import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
@@ -126,7 +128,7 @@ public class AuditTrailBean extends PopupUIComponentBean
     * @param event
     * @throws PortalException
     */
-   public String cleanupATMD() throws PortalException
+   public String cleanupATMD()
    {
 
       try
@@ -174,16 +176,13 @@ public class AuditTrailBean extends PopupUIComponentBean
 
          public boolean accept()
          {
-            try
+            auditTrailAndModelCleanUpDialog = null;
+            String navigationRuleId = cleanupATMD();
+            if (StringUtils.isNotEmpty(navigationRuleId))
             {
-               auditTrailAndModelCleanUpDialog = null;
-               cleanupATMD();
-               return true;
+               FacesUtils.handleNavigation(navigationRuleId);
             }
-            catch (Exception e)
-            {
-               throw new RuntimeException(e);
-            }
+            return true;
          }
       };
       auditTrailAndModelCleanUpDialog = new ConfirmationDialog(DialogContentType.NONE, DialogActionType.YES_NO,
