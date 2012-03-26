@@ -65,11 +65,17 @@ public class DelegationHandlerBean implements IDelegationHandler
    public List<ActivityInstance> delegateActivities(List<ActivityInstance> activities, Participant toParticipant,
          Map<String, Object> params) throws FacesException
    {
-      if (toParticipant != null && activities != null)
+      return delegateActivities(activities, (ParticipantInfo) toParticipant, params);
+   }
+
+   public List<ActivityInstance> delegateActivities(List<ActivityInstance> activities,
+         ParticipantInfo toParticipantInfo, Map<String, Object> params) throws FacesException
+   {
+      if (toParticipantInfo != null && activities != null)
       {
          try
          {
-            return delegateActivitiesToParticipant(activities, toParticipant, params);
+            return delegateActivitiesToParticipant(activities, toParticipantInfo, params);
          }
          catch (Exception e)
          {
@@ -91,8 +97,8 @@ public class DelegationHandlerBean implements IDelegationHandler
       }
 
       return null;
-   }
-
+   }   
+   
    public List<ActivityInstance> delegateActivities(List<ActivityInstance> activities, Department department,
          Map<String, Object> params) throws FacesException
    {
@@ -236,7 +242,7 @@ public class DelegationHandlerBean implements IDelegationHandler
    }
 
    protected List<ActivityInstance> delegateActivitiesToParticipant(
-         List<ActivityInstance> activityInstanceOids, Participant participant,
+         List<ActivityInstance> activityInstanceOids, ParticipantInfo participant,
          Map<String, Object> params)
    {
       List<ActivityInstance> delegatedActivities = CollectionUtils.newList();

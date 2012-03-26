@@ -35,6 +35,7 @@ import org.eclipse.stardust.engine.api.dto.DepartmentDetails;
 import org.eclipse.stardust.engine.api.model.ModelParticipant;
 import org.eclipse.stardust.engine.api.model.Organization;
 import org.eclipse.stardust.engine.api.model.Participant;
+import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Role;
 import org.eclipse.stardust.engine.api.query.UserGroups;
 import org.eclipse.stardust.engine.api.query.Users;
@@ -174,7 +175,7 @@ public class DelegationBean extends PopupUIComponentBean
          DepartmentInfo deptInfo = (DepartmentInfo) obj;
          department = SessionContext.findSessionContext().getServiceFactory().getAdministrationService().getDepartment(
                deptInfo.getOID());
-      }
+      }      
       Map<String, Object> params = CollectionUtils.newMap();
 
       params.put(NOTE_ENABLED, Boolean.valueOf(notesEnabled));
@@ -239,6 +240,10 @@ public class DelegationBean extends PopupUIComponentBean
          else if (department != null)
          {
             delegatedActivities = delHandler.delegateActivities(ais, department, params);
+         }
+         else if (null != obj && obj instanceof ParticipantInfo)
+         {
+            delegatedActivities = delHandler.delegateActivities(ais, (ParticipantInfo) obj, params);
          }
          else
          {
