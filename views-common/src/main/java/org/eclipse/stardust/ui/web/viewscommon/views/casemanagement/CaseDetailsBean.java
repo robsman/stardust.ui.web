@@ -354,7 +354,14 @@ public class CaseDetailsBean extends PopupUIComponentBean
             ProcessInstance rootProcessInstance = ProcessInstanceUtils.getRootProcessInstance(pi, false);
             Set<Long> childPIs = countImmediateChilds(rootProcessInstance);
 
-            if (childPIs.contains(pi.getOID()) && activeChildProcessCount == 1)
+            if(!childPIs.contains(pi.getOID()))
+            {
+               MessagePropertiesBean messageBean = MessagePropertiesBean.getInstance();
+               MessageDialog.addMessage(MessageType.ERROR, messageBean.getString("common.error"),
+                     COMMON_MESSAGE_BEAN.getString("views.attachToCase.caseDetach.nonCaseProcessError"));
+               return;
+            }
+            else if (childPIs.contains(pi.getOID()) && activeChildProcessCount == 1)
             {
                if (childPIs.size() == activeChildProcessCount)
                {
