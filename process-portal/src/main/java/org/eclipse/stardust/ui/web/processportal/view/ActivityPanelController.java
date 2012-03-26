@@ -446,18 +446,42 @@ public class ActivityPanelController extends UIComponentBean
     */
    public String getProcessAttachmentsIcon()
    {
-      if (isSupportsProcessAttachments())
-      {
-         if (getProcessAttachments().size() > 0)
-         {
-            return ResourcePaths.I_PROCESS_ATTACHMENT_FILLED;
-         }
-      }
-      else if (isSupportsProcessDocuments())
+      if (isSupportsProcessAttachments() && getProcessAttachments().size() > 0)
       {
          return ResourcePaths.I_PROCESS_ATTACHMENT_FILLED;
       }
+
+      if (isSupportsProcessDocuments() && specificDocumentExist())
+      {
+         return ResourcePaths.I_PROCESS_ATTACHMENT_FILLED;
+      }
+
       return ResourcePaths.I_PROCESS_ATTACHMENT_BLANK;
+   }
+   
+
+   public String getSeparatorStyle()
+   {
+      if (isSupportsProcessAttachments() && getProcessAttachments().size() > 0 && isSupportsProcessDocuments())
+      {
+         return "border-bottom: 1px solid #CCCCCC;";
+      }
+
+      return "";
+   }
+
+   
+   private boolean specificDocumentExist()
+   {
+      List<DocumentInfo> documents = getProcessDocuments();
+      for (DocumentInfo documentInfo : documents)
+      {
+         if (StringUtils.isNotEmpty(documentInfo.getId()))
+         {
+            return true;
+         }
+      }
+      return false;
    }
    
    /**

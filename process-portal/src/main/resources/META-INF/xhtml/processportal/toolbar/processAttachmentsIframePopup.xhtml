@@ -69,6 +69,23 @@
 				</ice:panelGrid>
 			</ice:panelGroup>
 			<ice:panelGroup>
+				<ice:panelSeries style="#{ippActivityPanelController.separatorStyle}" 
+					rendered="#{ippActivityPanelController.supportsProcessDocuments}"
+					value="#{ippActivityPanelController.processDocuments}" var="processDocument">
+					<ice:panelGrid columns="1"> <!-- Added to give same spacing -->
+						<ice:commandLink styleClass="action-link"
+							action="#{ippActivityPanelController.openDocument}">
+							<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarOpenNewDocument" />
+							<f:param name="documentId" value="#{processDocument.id}" />
+							<f:param name="documentName" value="#{processDocument.name}" />
+							<ice:panelGrid columns="2">
+								<ice:graphicImage value="#{processDocument.documentIcon}" />
+								<ice:outputText value="#{processDocument.name}" style="white-space: nowrap;" />
+							</ice:panelGrid>
+						</ice:commandLink>
+					</ice:panelGrid>
+				</ice:panelSeries>
+				
 				<ice:panelSeries rendered="#{ippActivityPanelController.supportsProcessAttachments}"
 					value="#{ippActivityPanelController.processAttachments}" var="processAttachment">
 					<ice:panelGrid columns="1"> <!-- Added to give same spacing -->
@@ -84,22 +101,7 @@
 						</ice:commandLink>
 					</ice:panelGrid>
 				</ice:panelSeries>
-
-				<ice:panelSeries rendered="#{ippActivityPanelController.supportsProcessDocuments}"
-					value="#{ippActivityPanelController.processDocuments}" var="processDocument">
-					<ice:panelGrid columns="1"> <!-- Added to give same spacing -->
-						<ice:commandLink styleClass="action-link"
-							action="#{ippActivityPanelController.openDocument}">
-							<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarOpenNewDocument" />
-							<f:param name="documentId" value="#{processDocument.id}" />
-							<f:param name="documentName" value="#{processDocument.name}" />
-							<ice:panelGrid columns="2">
-								<ice:graphicImage value="#{processDocument.documentIcon}" />
-								<ice:outputText value="#{processDocument.name}" style="white-space: nowrap;" />
-							</ice:panelGrid>
-						</ice:commandLink>
-					</ice:panelGrid>
-				</ice:panelSeries>
+				
 			</ice:panelGroup>
 		</ice:form>
 	</body>
