@@ -49,23 +49,23 @@
 						<c:when test="#{!switchProcessDialogBean.showAbortDailog}">
 							<td class="autoCompTableTextCol"><ice:outputText
 									value="#{switchProcessTable.abortedProcessName}" />
-									<pc:automationTag value="auto-DT-DTCol-StringVal" />
+								<pc:automationTag value="auto-COM-SwitchProcDlg-AbortSrcTbl-AbortProcName" />
 							</td>
 							<td class="autoCompTableTextCol"><ice:outputText
 									value="#{switchProcessTable.switchedProcessName}" />
-									<pc:automationTag value="auto-DT-DTCol-StringVal" />
+								<pc:automationTag value="auto-COM-SwitchProcDlg-AbortSrcTbl-SwitchProcName" />
 							</td>
 						</c:when>
 						<c:otherwise>
 							<td class="autoCompTableTextCol"><ice:outputText
 									value="#{switchProcessTable.abortedProcessInstance}" />
-									<pc:automationTag value="auto-DT-DTCol-StringVal" />
+								<pc:automationTag value="auto-COM-SwitchProcDlg-AbortSrcTbl-AbortProcMsg" />
 							</td>
 						</c:otherwise>
 					</c:choose>
 					<td class="autoCompTableTextCol"><ice:outputText
 							value="#{switchProcessTable.statusMessage}" />
-							<pc:automationTag value="auto-DT-DTCol-StringVal" />
+							<pc:automationTag value="auto-COM-SwitchProcDlg-AbortSrcTbl-StatusMsg" />
 					</td>
 					</tr>
 
