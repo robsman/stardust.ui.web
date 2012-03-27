@@ -130,7 +130,7 @@
 			<!--	Delegate Dialog		-->
 			<ice:commandLink
 				actionListener="#{worklistTableBean.openDelegateDialog}"
-				disabled="#{!row.delegable and row.defaultCaseActivity}">
+				disabled="#{!row.delegable or row.defaultCaseActivity}">
 				<pc:automationTag value="auto-PP-WorkList-ActionsDelegate" standAlone="false"/>
 				<ice:graphicImage
 					value="/plugins/views-common/images/icons/process-history/delegate.png"
@@ -144,7 +144,7 @@
 			<!--	Abort Dialog		-->
 
 			<ice:commandLink actionListener="#{worklistTableBean.openAbortDialog}"
-				disabled="#{!row.abortActivity and row.defaultCaseActivity}">
+				disabled="#{!row.abortActivity or row.defaultCaseActivity}">
 				<pc:automationTag value="auto-PP-WorkList-ActionsAbort" standAlone="false"/>
 				<ice:graphicImage
 					url="/plugins/views-common/images/icons/cross.png"
