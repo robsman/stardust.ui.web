@@ -124,6 +124,8 @@ public class ParticipantTree
 
    private boolean highlightUserFilterEnabled = true;
 
+   private boolean filterPredefniedModelNodes = true;
+
    public ParticipantTree()
    {
       //super(view);
@@ -387,9 +389,12 @@ public class ParticipantTree
       List<DeployedModel> models = ModelUtils.getActiveModels();
       for (Model model : models)
       {
-         // Add the model nodes to the root node starting at position 0
-         modelNode = addModelNode(node, model, index++);
-         modelNodesMap.put(model.getId(), modelNode);
+         if (!filterModelNodes(model))
+         {
+            // Add the model nodes to the root node starting at position 0
+            modelNode = addModelNode(node, model, index++);
+            modelNodesMap.put(model.getId(), modelNode);
+         }
       }
    }
 
@@ -405,11 +410,14 @@ public class ParticipantTree
       List<DeployedModel> models = ModelUtils.getActiveModels();
       for (Model model : models)
       {
-         topLevelOrganizations = model.getAllTopLevelOrganizations();
-         for (Organization organization : topLevelOrganizations)
+         if (!filterModelNodes(model))
          {
-            orgNode = addParticipantNode(node, organization);
-            addToTopLevelParticipantsMap(model.getId(), orgNode);
+            topLevelOrganizations = model.getAllTopLevelOrganizations();
+            for (Organization organization : topLevelOrganizations)
+            {
+               orgNode = addParticipantNode(node, organization);
+               addToTopLevelParticipantsMap(model.getId(), orgNode);
+            }
          }
       }
    }
@@ -444,12 +452,14 @@ public class ParticipantTree
                }
             }
 
-            roleNode = addParticipantNode(node, role);
-
-            // Add non-Administrator top-level role nodes to model-participant Map
-            if (!PredefinedConstants.ADMINISTRATOR_ROLE.equals(role.getId()))
+            if (PredefinedConstants.ADMINISTRATOR_ROLE.equals(role.getId()) || !filterModelNodes(model))
             {
-               addToTopLevelParticipantsMap(model.getId(), roleNode);
+               roleNode = addParticipantNode(node, role);
+               // Add non-Administrator top-level role nodes to model-participant Map
+               if (!PredefinedConstants.ADMINISTRATOR_ROLE.equals(role.getId()))
+               {
+                  addToTopLevelParticipantsMap(model.getId(), roleNode);
+               }
             }
          }
       }
@@ -1759,6 +1769,20 @@ public class ParticipantTree
       highlightStyleIndex = 1;
    }
 
+   /**
+    * @param model
+    * @return
+    */
+   private boolean filterModelNodes(Model model)
+   {
+      if (filterPredefniedModelNodes && PredefinedConstants.PREDEFINED_MODEL_ID.equals(model.getId()))
+      {
+         return true;
+      }
+
+      return false;
+   }
+
    public List<GenericDataFilterOnOff> getOnOffFilters()
    {
       return CollectionUtils.newArrayList(onOffFilters.values());
@@ -1817,5 +1841,15 @@ public class ParticipantTree
    public void setHighlightUserFilterEnabled(boolean highlightUserFilterEnabled)
    {
       this.highlightUserFilterEnabled = highlightUserFilterEnabled;
+   }
+
+   public boolean isFilterPredefniedModelNodes()
+   {
+      return filterPredefniedModelNodes;
+   }
+
+   public void setFilterPredefniedModelNodes(boolean filterPredefniedModelNodes)
+   {
+      this.filterPredefniedModelNodes = filterPredefniedModelNodes;
    }
 }
