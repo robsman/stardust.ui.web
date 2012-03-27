@@ -120,17 +120,14 @@
       <dependency org="net.sourceforge.jexcelapi" name="jxl" rev="2.6.10" conf="ipp-portal-base-lib-module-runtime->default">
          <exclude org="log4j" module="log4j"/>
       </dependency>
-      <dependency org="org.springframework" name="spring-core" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-base-lib-module-runtime->default"/>
-      <dependency org="org.springframework" name="spring-beans" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-base-lib-module-runtime->default"/>
-      <dependency org="org.springframework" name="spring-context" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="org.springframework" name="spring-webmvc" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-base-lib-module-runtime->default"/>
-      <dependency org="org.springframework" name="spring-web" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-base-lib-module-runtime->default"/>            
-      <dependency org="org.springframework" name="spring-aop" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-base-lib-module-runtime->default"/>
+      <dependency org="org.springframework" name="spring-web" transitive="false" rev="3.0.5.RELEASE" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="aopalliance" name="aopalliance" transitive="false" rev="1.0" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="org.apache.geronimo.specs" name="geronimo-ejb_2.1_spec" transitive="false" rev="1.1" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="commons-discovery" name="commons-discovery" rev="0.4" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="javax.media" name="jai_imageio-infinity01" rev="1.1" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="net.sourceforge.htmlcleaner" name="htmlcleaner" rev="2.1" conf="ipp-portal-base-lib-module-runtime->default" />      
+      <dependency org="backport-util-concurrent" name="backport-util-concurrent" rev="3.1" conf="ipp-portal-base-lib-module-runtime->default" />
       
       <!-- test -->
       <dependency org="junit" name="junit" rev="3.8.1" conf="test->default" />
