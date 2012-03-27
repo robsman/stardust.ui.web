@@ -560,6 +560,11 @@ public class ActivityDetailsBean extends UIComponentBean
       if (singleDocumentCase && isLoadSuccessful())
       {
          documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, event.getType()));
+         boolean docViewLoadSuccessful = documentHandlerBean.isLoadSuccessful();
+         if (!docViewLoadSuccessful)
+         {
+            update(false);
+         }
       }
       
       handleIframePopups(event);
@@ -892,16 +897,19 @@ public class ActivityDetailsBean extends UIComponentBean
             && processInstance.getOID() == documentEvent.getProcessInstanceOid())
       {
          fetchProcessDocuments();
-         List<DocumentInputController> docs = activityForm.getDisplayedMappedDocuments(false, false);
-         for (DocumentInputController documentInputController : docs)
+         if (null != activityForm)
          {
-            if (documentInputController instanceof IppDocumentInputController)
+            List<DocumentInputController> docs = activityForm.getDisplayedMappedDocuments(false, false);
+            for (DocumentInputController documentInputController : docs)
             {
-               IppDocumentInputController ippDocumentInputController = (IppDocumentInputController) documentInputController;
-               if (documentEvent.getDataId().equals(ippDocumentInputController.getDataMapping().getDataId()))
+               if (documentInputController instanceof IppDocumentInputController)
                {
-                  ippDocumentInputController.setValue(documentEvent.getCurrentDocument());
-                  break;
+                  IppDocumentInputController ippDocumentInputController = (IppDocumentInputController) documentInputController;
+                  if (documentEvent.getDataId().equals(ippDocumentInputController.getDataMapping().getDataId()))
+                  {
+                     ippDocumentInputController.setValue(documentEvent.getCurrentDocument());
+                     break;
+                  }
                }
             }
          }
@@ -1665,7 +1673,7 @@ public class ActivityDetailsBean extends UIComponentBean
          Map<String, Object> docViewParams = new HashMap<String, Object>();
          docViewParams.put("documentInfo", documentContentInfo);
          //docViewParams.put("processInstance", processInstance);
-         docViewParams.put("dataPathId", docController.getDataMapping().getDataId());
+         docViewParams.put("dataPathId", singleDocumentDatgaMapping.getDataId());
          docViewParams.put("baseFormBinding", "activityDetailsBean.documentHandlerBean");
          docViewParams.put("disableSaveAction", true);
          docViewParams.put("embededView", true);
@@ -1676,11 +1684,15 @@ public class ActivityDetailsBean extends UIComponentBean
          documentViewToolbars = PortalUiController.getToolbarSections(singleDocumentView);
 
          // fromViewEvent = True means View is just created, so create the Bean
-         if (fromViewEvent && null == documentHandlerBean)
+         if (fromViewEvent)
          {
-            // DocumentHandlerBean.getInstance() is not working so create new instance and push it to Tab scope
-            documentHandlerBean = new DocumentHandlerBean();
-            thisView.getCurrentTabScope().put("documentHandlerBean", documentHandlerBean);
+            if (null == documentHandlerBean)
+            {
+               // DocumentHandlerBean.getInstance() is not working so create new instance and push it to Tab scope
+               documentHandlerBean = new DocumentHandlerBean();
+               thisView.getCurrentTabScope().remove("documentHandlerBean"); // Remove if exists
+               thisView.getCurrentTabScope().put("documentHandlerBean", documentHandlerBean);
+            }
 
             documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.CREATED));
 
