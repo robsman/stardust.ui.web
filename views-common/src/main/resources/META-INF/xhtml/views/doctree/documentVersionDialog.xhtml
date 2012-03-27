@@ -5,6 +5,7 @@
 	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
 	<ice:panelPopup id="#{documentVersionDialog.beanId}" modal="true" rendered="#{documentVersionDialog.visible}"
 		draggable="true" autoPosition="manual" positionOnLoadOnly="true"
 		styleClass="popupDialog" clientOnly="true">
@@ -31,21 +32,23 @@
 			<ice:panelBorder  styleClass="pnlPopUpBrdrDialog" cellpadding="0" cellspacing="0"
 				renderNorth="false" renderEast="false" renderSouth="true"  renderWest="false" renderCenter="true">
 				<f:facet name="center">
-					<ice:panelGroup>
-					
-						<ice:panelGroup >
-							<ui:include src="/plugins/views-common/user/userDetails.xhtml" />
-						</ice:panelGroup>
-						<pc:automationTag value="auto-COM-DocVersionDlg-DocVersionTbl"/>
-						<pc:genericDataTable
-							title="#{messages['documentVersion.versionHistory']}"
-							exportExcel="false" exportCsv="false"
-							bean="#{documentVersionDialog}" id="ctxDocumentVersionList"
-							table="#{documentVersionDialog.docVersionTable}"
-							sortSupported="true" />
-							
 
+					<ice:panelGroup style="width:600px; max-width: 700px; max-height: 350px; overflow: auto;">
+							<ice:panelGroup>
+								<ui:include src="/plugins/views-common/user/userDetails.xhtml" />
+							</ice:panelGroup>
+							<ice:panelGroup style="width:98%">
+							
+							<pc:automationTag value="auto-COM-DocVersionDlg-DocVersionTbl"/>
+							<pc:genericDataTable
+								title="#{messages['documentVersion.versionHistory']}"
+								exportExcel="false" exportCsv="false" resizable="false"
+								bean="#{documentVersionDialog}" id="ctxDocumentVersionList"
+								table="#{documentVersionDialog.docVersionTable}"
+								sortSupported="true" />
+							</ice:panelGroup>	
 					</ice:panelGroup>
+
 				</f:facet>
 	
 				<f:facet name="south">
