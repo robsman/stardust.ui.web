@@ -1020,9 +1020,6 @@
             value="org.eclipse.stardust.ui.web.plugin.support.PortalPluginContentFilter" />
 
          <!-- ******** FILTER MAPPING SECTION ******** -->
-         <property name="filter-mapping[ADF_FACES_MAPPING].servlet-name"
-            value="faces" />
-
          <property
             name="filter-mapping[PLUGIN_CONTENT_FILTER_MAPPING].filter-name"
             value="portalPluginContentFilter" />
@@ -1048,10 +1045,7 @@
             value="REQUEST" />
          <property
             name="filter-mapping[IFACE_LOGIN_FILTER_MAPPING].dispatcher[FORWARD]"
-            value="FORWARD" />
-         <property name="filter-mapping[ADF_IFACE_MAPPING].servlet-name"
-            value="Persistent Faces Servlet" />
-
+            value="FORWARD" />
          <property
             name="filter-mapping[XHTML_LOGIN_FILTER_MAPPING].filter-name"
             value="IppPortalLoginFilter" />
@@ -1409,11 +1403,6 @@
             value="IppUploadServlet" />
          <property name="servlet-mapping[UPLOAD].url-pattern"
             value="/uploadHtml" />
-
-         <property name="servlet-mapping[PLUGINS_RES_SERVLET_MAPPING].servlet-name"
-            value="ResourceServlet" />
-         <property name="servlet-mapping[PLUGINS_RES_SERVLET_MAPPING].url-pattern"
-            value="/plugins/*" />
 
          <property name="servlet-mapping[SPRING_REMOTING].servlet-name"
             value="carnot-spring-remoting" modules="spring-remoting-server-ipp-portal"
@@ -2103,9 +2092,6 @@
             value="org.eclipse.stardust.ui.web.plugin.support.PortalPluginContentFilter" />
 
          <!-- ******** FILTER MAPPING SECTION ******** -->
-         <property name="filter-mapping[ADF_FACES_MAPPING].servlet-name"
-            value="faces" />
-
          <property
             name="filter-mapping[PLUGIN_CONTENT_FILTER_MAPPING].filter-name"
             value="portalPluginContentFilter" />
@@ -2131,11 +2117,7 @@
             value="REQUEST" />
          <property
             name="filter-mapping[IFACE_LOGIN_FILTER_MAPPING].dispatcher[FORWARD]"
-            value="FORWARD" />            
-
-         <property name="filter-mapping[ADF_IFACE_MAPPING].servlet-name"
-            value="Persistent Faces Servlet" />
-
+            value="FORWARD" /> 
          <property
             name="filter-mapping[XHTML_LOGIN_FILTER_MAPPING].filter-name"
             value="IppPortalLoginFilter" />
@@ -2347,10 +2329,6 @@
          <property
             name="servlet-mapping[IFACE_PERSISTENT_MAPPING].url-pattern"
             value="*.iface" />
-
-
-         <property name="servlet-mapping[PLUGINS_RES_SERVLET_MAPPING].url-pattern"
-            value="/plugins/*" />
 
          <property
             name="servlet-mapping[XMLHTTP_PERSISTENT_MAPPING].servlet-name"
