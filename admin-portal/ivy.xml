@@ -60,7 +60,7 @@
       <dependency org="javax.faces" name="jsf-api" rev="1.1_02" conf="compile->default" />
 
       <!-- test -->
-      <dependency org="junit" name="junit" rev="3.8.1" conf="test->default" />
+      <dependency org="junit" name="junit" rev="4.10" conf="test->default" />
 
       <override org="commons-beanutils" module="commons-beanutils" rev="1.8.0" />
       <override org="commons-collections" module="commons-collections" rev="3.1" />

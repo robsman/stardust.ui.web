@@ -56,7 +56,7 @@
       <dependency org="javax.transaction" name="jta" rev="1.0.1B" conf="ipp-persistence-jpa-provided->default" />
 
       <!-- test -->
-      <dependency org="junit" name="junit" rev="3.8.1" conf="test->default" />
+      <dependency org="junit" name="junit" rev="4.10" conf="test->default" />
    </dependencies>
    
 </ivy-module>
