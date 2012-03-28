@@ -194,7 +194,7 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
    {
       List<ColumnPreference> fixedCols = new ArrayList<ColumnPreference>();
       ColumnPreference nameCol = new ColumnPreference("TeamMember", "name", this.getMessages().getString(
-            "column.teamMember"), V_performanceTeamLeaderColumns,
+            "column.teamLeader"), V_performanceTeamLeaderColumns,
             new TableDataFilterPopup(new TableDataFilterSearch()), true, true);
       fixedCols.add(nameCol);
 
