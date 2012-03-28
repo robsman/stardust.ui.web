@@ -45,6 +45,7 @@ import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.PerformerType;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
+import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
@@ -593,11 +594,24 @@ public class DelegationBean extends PopupUIComponentBean
     */
    public void openPopup()
    {
-      super.openPopup();
-      initialize();
-      participantTree.resetPreviousSelection();
-     // retrieveParticipants();
-     // FacesUtils.refreshPage();
+      boolean isCaseActivities = ActivityInstanceUtils.isContainsCaseActivity(ais);
+      if (!delegateCase && isCaseActivities)
+      {
+         MessageDialog.addErrorMessage(MessagesViewsCommonBean.getInstance().getString("delegation.cantDelegateCase.message"));
+
+         return;
+      }
+      else if (delegateCase && !isCaseActivities)
+      {
+         MessageDialog.addErrorMessage(MessagesViewsCommonBean.getInstance().getString("delegation.selectOnlyCase.message"));
+         return;
+      }
+      else
+      {
+         super.openPopup();
+         initialize();
+         participantTree.resetPreviousSelection();
+      }    
    }
 
    /* (non-Javadoc)
@@ -1151,6 +1165,7 @@ public class DelegationBean extends PopupUIComponentBean
    public void setSelectMode()
    {
       delegationMode = DELEGATION_MODE.PICK_FROM_LIST;
+      retrieveParticipants();
    }
    
    public void setSearchMode()
