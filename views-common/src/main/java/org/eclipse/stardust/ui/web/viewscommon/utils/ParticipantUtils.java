@@ -639,4 +639,53 @@ public class ParticipantUtils
 
       return grant.getQualifiedId();
    }
+   
+   
+   /**
+    * @param modelParticipantInfo
+    * @return
+    */
+   public static List<ModelParticipantInfo> getRuntimeScopes(ModelParticipantInfo modelParticipantInfo)
+   {
+      List<ModelParticipantInfo> modelParticipants = new ArrayList<ModelParticipantInfo>();
+
+      if (modelParticipantInfo instanceof Organization)
+      {
+         Organization organization = (Organization) modelParticipantInfo;
+         List<Department> departments = ServiceFactoryUtils.getQueryService().findAllDepartments(null, organization);
+
+         for (Department department : departments)
+         {
+            modelParticipants.add(department.getScopedParticipant(organization));
+         }
+      }
+      else if (modelParticipantInfo instanceof Role)
+      {
+         Role role = (Role) modelParticipantInfo;
+         Organization parentOrganization = null;
+         List<Organization> leadsOrganizations = role.getTeams();
+         if (CollectionUtils.isEmpty(leadsOrganizations))
+         {
+            List<Organization> worksForOrganizations = role.getClientOrganizations();
+            if ((worksForOrganizations != null) && (worksForOrganizations.size() > 0))
+            {
+               parentOrganization = worksForOrganizations.get(0);
+            }
+         }
+         else
+         {
+            parentOrganization = leadsOrganizations.get(0);
+         }
+         List<Department> departments = ServiceFactoryUtils.getQueryService().findAllDepartments(null,
+               parentOrganization);
+
+         for (Department department : departments)
+         {
+            modelParticipants.add(department.getScopedParticipant(role));
+         }
+      }
+
+      return modelParticipants;
+   }
+   
 }

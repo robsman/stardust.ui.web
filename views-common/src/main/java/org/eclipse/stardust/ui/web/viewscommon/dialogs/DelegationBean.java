@@ -33,10 +33,10 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.DepartmentDetails;
 import org.eclipse.stardust.engine.api.model.ModelParticipant;
-import org.eclipse.stardust.engine.api.model.Organization;
+import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
-import org.eclipse.stardust.engine.api.model.Role;
+import org.eclipse.stardust.engine.api.model.RoleInfo;
 import org.eclipse.stardust.engine.api.query.UserGroups;
 import org.eclipse.stardust.engine.api.query.Users;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
@@ -50,6 +50,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
 import org.eclipse.stardust.ui.web.viewscommon.common.LocalizerKey;
+import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDelegatesProvider.Options;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -231,16 +232,13 @@ public class DelegationBean extends PopupUIComponentBean
                      propsBean.getString("views.common.activity.abortActivity.failureMsg1"));
                return;
             }
-         }
+         }         
          
-         if (participant != null)
-         {
-            delegatedActivities = delHandler.delegateActivities(ais, participant, params);
-         }
-         else if (department != null)
+         if (department != null)
          {
             delegatedActivities = delHandler.delegateActivities(ais, department, params);
          }
+         //this will delegate to Case and non Case activity
          else if (null != obj && obj instanceof ParticipantInfo)
          {
             delegatedActivities = delHandler.delegateActivities(ais, (ParticipantInfo) obj, params);
@@ -300,7 +298,7 @@ public class DelegationBean extends PopupUIComponentBean
 
       if (autoCompleteSelector == null)
       {
-         autoCompleteSelector = new ParticipantAutocompleteSelector(new DelegatesDataProvider(
+         DelegatesDataProvider delegatesDataProvider=new DelegatesDataProvider(
                new ParticipantFilterCriteria()
                {
 
@@ -328,7 +326,10 @@ public class DelegationBean extends PopupUIComponentBean
                   {
                      return typeFilter;
                   }
-               }), null);
+               });
+         delegatesProvider = delegateCase ? CaseDelegateProvider.INSTANCE : delegatesProvider;
+         delegatesDataProvider.setDelegatesProvider(delegatesProvider);
+         autoCompleteSelector = new ParticipantAutocompleteSelector(delegatesDataProvider, null);
       }
    }
 
@@ -484,20 +485,20 @@ public class DelegationBean extends PopupUIComponentBean
     */
    private void retrieveDefaultParticipants()
    {
-      IDelegatesProvider delegatesProvider = getDelegatesProvider();
+      delegatesProvider = delegateCase ? CaseDelegateProvider.INSTANCE : delegatesProvider;
       if (null == delegatesProvider)
       {
          delegatesProvider = DefaultDelegatesProvider.INSTANCE;
          trace.info("Using DEFAULT delegates provider to retrieve participants");
       }
 
-      Map<PerformerType, List<? extends Participant>> delegates = delegatesProvider.findDelegates(ais,
+      Map<PerformerType, List<? extends ParticipantInfo>> delegates = delegatesProvider.findDelegates(ais,
             getDelegateProviderOptions());
 
       if (!CollectionUtils.isEmpty(delegates))
       {
          // handle users
-         List<? extends Participant> users = delegates.get(PerformerType.User);
+         List<? extends ParticipantInfo> users = delegates.get(PerformerType.User);
 
          if ((users instanceof Users) && ((Users) users).hasMore())
          {
@@ -510,7 +511,7 @@ public class DelegationBean extends PopupUIComponentBean
          }
 
          // handle model participants
-         List<? extends Participant> modelParticipants = delegates.get(PerformerType.ModelParticipant);
+         List<? extends ParticipantInfo> modelParticipants = delegates.get(PerformerType.ModelParticipant);
 
          if (!CollectionUtils.isEmpty(modelParticipants))
          {
@@ -518,7 +519,7 @@ public class DelegationBean extends PopupUIComponentBean
          }
 
          // handle user groups
-         List<? extends Participant> userGroups = delegates.get(PerformerType.UserGroup);
+         List<? extends ParticipantInfo> userGroups = delegates.get(PerformerType.UserGroup);
 
          if ((userGroups instanceof UserGroups) && ((UserGroups) userGroups).hasMore())
          {
@@ -538,12 +539,13 @@ public class DelegationBean extends PopupUIComponentBean
     * 
     * @param delegates
     */
-   private void appendParticipantsToSearchResult(List<? extends Participant> delegates)
+   private void appendParticipantsToSearchResult(List< ? extends ParticipantInfo> delegates)
    {
-      for (int i = 0; i < delegates.size(); ++i)
+      for (ParticipantInfo delegate : delegates)
       {
-         Participant delegate = delegates.get(i);
-         searchResult.add(new ParticipantEntry(delegate, false));
+         {
+            searchResult.add(new ParticipantEntry(delegate, false));
+         }
       }
    }
 
@@ -975,7 +977,7 @@ public class DelegationBean extends PopupUIComponentBean
    {
       private final static long serialVersionUID = 1l;
 
-      private Participant participant;
+      private ParticipantInfo participant;
 
       private DepartmentInfo department;
 
@@ -989,15 +991,15 @@ public class DelegationBean extends PopupUIComponentBean
       
       private String label;
 
-      public ParticipantEntry(Participant participant)
+      public ParticipantEntry(ParticipantInfo participant)
       {
          this.participant = participant;
-         if (participant instanceof Role)
+         if (participant instanceof RoleInfo)
          {
             isRole = true;
             type = "delegation.role";
          }
-         else if (participant instanceof Organization)
+         else if (participant instanceof OrganizationInfo)
          {
             isOrganization = true;
             type = "delegation.organization";
@@ -1009,7 +1011,7 @@ public class DelegationBean extends PopupUIComponentBean
          this.label = getLabel();
       }
 
-      public ParticipantEntry(Participant participant, boolean select)
+      public ParticipantEntry(ParticipantInfo participant, boolean select)
       {
          this(participant);
          this.selected = select;      
@@ -1052,7 +1054,7 @@ public class DelegationBean extends PopupUIComponentBean
          return isOrganization;
       }
 
-      public Participant getParticipant()
+      public ParticipantInfo getParticipant()
       {
          return participant;
       }
@@ -1063,7 +1065,7 @@ public class DelegationBean extends PopupUIComponentBean
          {
             if (isRole() || isOrganization())
             {
-               return I18nUtils.getParticipantName(participant);
+               return ModelHelper.getParticipantName(participant);//I18nUtils.getParticipantName(participant);
             }
             else if (participant instanceof User)
             {
@@ -1072,7 +1074,7 @@ public class DelegationBean extends PopupUIComponentBean
          }
          else if (isReferencingDepartment())
          {
-            if (department instanceof DepartmentDetails)
+            if (department instanceof Department)
             {
                DepartmentDetails deptDetail = (DepartmentDetails) department;
                if (null != deptDetail.getOrganization() && deptDetail.getOrganization().isDepartmentScoped())
@@ -1080,9 +1082,10 @@ public class DelegationBean extends PopupUIComponentBean
                   StringBuilder departmentName = new StringBuilder();
                   departmentName.append(I18nUtils.getParticipantName(deptDetail.getOrganization()));
                   return departmentName.append(" - ").append(department.getName()).toString();
+              
                }
 
-            }
+            }           
             return department.getName();
          }
          return "";

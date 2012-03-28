@@ -18,11 +18,13 @@ import java.util.Set;
 import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.engine.api.model.Participant;
+import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.PerformerType;
 import org.eclipse.stardust.ui.web.common.autocomplete.IAutocompleteDataProvider;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.DefaultDelegatesProvider;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.DepartmentDelegatesProvider;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDelegatesProvider;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ParticipantFilterCriteria;
 
 
@@ -41,6 +43,8 @@ public class DelegatesDataProvider implements IAutocompleteDataProvider
    private static final int DEPARTMENT_TYPE = 4;
 
    private ParticipantFilterCriteria addnFilterCriteria;
+   
+   private IDelegatesProvider delegatesProvider;
 
    /**
     * @param addnFilterCriteria
@@ -60,9 +64,12 @@ public class DelegatesDataProvider implements IAutocompleteDataProvider
     * (java.lang.String, int)
     */
    public List<SelectItem> getMatchingData(String searchValue, int maxMatches)
-   {
-      Map<PerformerType, List<? extends Participant>> delegates = DefaultDelegatesProvider.INSTANCE.findDelegates(
-            addnFilterCriteria.getActivityInstances(), addnFilterCriteria.getDefaultParticipantOptions());
+   {      
+      if (null == delegatesProvider)
+      {
+         delegatesProvider = DefaultDelegatesProvider.INSTANCE;
+      }
+
 
       List<SelectItem> userItems = new ArrayList<SelectItem>();
       // Add default participants
@@ -70,6 +77,10 @@ public class DelegatesDataProvider implements IAutocompleteDataProvider
       if (typeFilter == ALL_TYPES || typeFilter == USER_TYPE || typeFilter == ROLE_TYPE
             || typeFilter == ORGANIZATION_TYPE)
       {
+
+         Map<PerformerType, List< ? extends ParticipantInfo>> delegates = delegatesProvider.findDelegates(
+               addnFilterCriteria.getActivityInstances(), addnFilterCriteria.getDefaultParticipantOptions());
+         
          List<ParticipantWrapper> selectedParticipants = new ArrayList<ParticipantWrapper>();
          selectedParticipants.addAll(copyToParticipantWrapperList(delegates.get(PerformerType.User)));
          selectedParticipants.addAll(copyToParticipantWrapperList(delegates.get(PerformerType.ModelParticipant)));
@@ -80,6 +91,7 @@ public class DelegatesDataProvider implements IAutocompleteDataProvider
             userItems.add(new SelectItem(participantWrapper, participantWrapper.getText()));
          }
       }
+      
       // Add departments
       if (typeFilter == ALL_TYPES || typeFilter == DEPARTMENT_TYPE)
       {
@@ -100,17 +112,30 @@ public class DelegatesDataProvider implements IAutocompleteDataProvider
     * @param allParticipants
     * @return
     */
-   private List<ParticipantWrapper> copyToParticipantWrapperList(List<? extends Participant> allParticipants)
+   private List<ParticipantWrapper> copyToParticipantWrapperList(List< ? extends ParticipantInfo> allParticipants)
    {
       List<ParticipantWrapper> selectParticipants = new ArrayList<ParticipantWrapper>();
       if (allParticipants != null)
       {
-         for (Participant participant : allParticipants)
+         for (ParticipantInfo participantInfo : allParticipants)
          {
-
-            selectParticipants.add(new ParticipantWrapper(participant));
+            if (participantInfo instanceof Participant)
+            {
+               selectParticipants.add(new ParticipantWrapper((Participant) participantInfo));
+            }
          }
       }
       return selectParticipants;
    }
+
+   public IDelegatesProvider getDelegatesProvider()
+   {
+      return delegatesProvider;
+   }
+
+   public void setDelegatesProvider(IDelegatesProvider delegatesProvider)
+   {
+      this.delegatesProvider = delegatesProvider;
+   }
+   
 }

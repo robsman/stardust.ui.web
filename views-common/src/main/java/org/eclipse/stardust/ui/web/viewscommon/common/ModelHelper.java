@@ -67,10 +67,11 @@ public class ModelHelper
                Role role = (Role) ModelUtils.getModelCache().getParticipant(roleInfo.getId(), Role.class);
 
                // Format: RoleName (OrgName - DeptName)
-               AdministrationService as = SessionContext.findSessionContext().getServiceFactory().getAdministrationService();
+
                participantName = I18nUtils.getParticipantName(role);
                if (departmentInfo != null && !Department.DEFAULT.equals(departmentInfo))
                {
+                  AdministrationService as = SessionContext.findSessionContext().getServiceFactory().getAdministrationService();
                   Department department = as.getDepartment(departmentInfo.getOID());
                   String organizationName = I18nUtils.getParticipantName(department.getOrganization()); 
                   participantName += " (" + organizationName + " - " + department.getName() + ")";

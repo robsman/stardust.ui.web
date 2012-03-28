@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.stardust.engine.api.model.Participant;
+import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.PerformerType;
 
@@ -98,7 +98,7 @@ public interface IDelegatesProvider
     * @param options Additional options further describing the domain of valid delegates.
     * @return A list of valid delegates per requested participant category.
     */
-   Map<PerformerType, List<? extends Participant>> findDelegates(
+   Map<PerformerType, List<? extends ParticipantInfo>> findDelegates(
          List<ActivityInstance> activityInstances, Options options);
    
    interface Factory

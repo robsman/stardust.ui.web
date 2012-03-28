@@ -60,13 +60,8 @@ public class DelegationHandlerBean implements IDelegationHandler
 
    protected final static Logger trace = LogManager
          .getLogger(DelegationHandlerBean.class);
-   private MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
-   
-   public List<ActivityInstance> delegateActivities(List<ActivityInstance> activities, Participant toParticipant,
-         Map<String, Object> params) throws FacesException
-   {
-      return delegateActivities(activities, (ParticipantInfo) toParticipant, params);
-   }
+   private MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();  
+  
 
    public List<ActivityInstance> delegateActivities(List<ActivityInstance> activities,
          ParticipantInfo toParticipantInfo, Map<String, Object> params) throws FacesException

@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.FacesException;
-
-import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.Department;
@@ -24,8 +22,6 @@ import org.eclipse.stardust.engine.api.runtime.Department;
 
 public interface IDelegationHandler extends Serializable
 {
-   public List<ActivityInstance> delegateActivities(List<ActivityInstance> activities, Participant toParticipant,
-         Map<String, Object> params) throws FacesException;
 
    public List<ActivityInstance> delegateActivities(List<ActivityInstance> activities, Department toDepartment,
          Map<String, Object> params) throws FacesException;

@@ -47,7 +47,6 @@ import org.eclipse.stardust.engine.api.runtime.PerformerType;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssuranceState;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
@@ -66,18 +65,17 @@ public class DefaultDelegatesProvider implements IDelegatesProvider, Serializabl
 
    public static final DefaultDelegatesProvider INSTANCE = new DefaultDelegatesProvider();
 
-   public Map<PerformerType, List<? extends Participant>> findDelegates(
+   public Map<PerformerType, List<? extends ParticipantInfo>> findDelegates(
          List<ActivityInstance> activityInstances, Options options)
    {
-      Map<PerformerType, List<? extends Participant>> result = CollectionUtils.newMap();
+      Map<PerformerType, List<? extends ParticipantInfo>> result = CollectionUtils.newMap();
       QueryService service = getQueryService();
      
 
       if ((null != service) && (null != activityInstances))
       {
          // collect models
-         Set<Integer> models = CollectionUtils.newSet();
-         boolean isCaseActivities = ActivityInstanceUtils.isDefaultCaseActivities(activityInstances);
+         Set<Integer> models = CollectionUtils.newSet();   
          
          for (int i = 0; i < activityInstances.size(); ++i)
          {
@@ -94,9 +92,8 @@ public class DefaultDelegatesProvider implements IDelegatesProvider, Serializabl
          if (options.getPerformerTypes().contains(USER_TYPE))
          {
             // limited or not
-            UserQuery userQuery = (options.isStrictSearch() && !isCaseActivities)
-                  ? buildStrictUserQuery(activityInstances)
-                  : UserQuery.findActive();
+            UserQuery userQuery = (options.isStrictSearch()) ? buildStrictUserQuery(activityInstances) : UserQuery
+                  .findActive();
 
             // filter for user names if selected
             if (!StringUtils.isEmpty(options.getNameFilter()))
@@ -132,7 +129,7 @@ public class DefaultDelegatesProvider implements IDelegatesProvider, Serializabl
                ActivityInstance ai = activityInstances.get(i);
 
                // limited search
-               if (options.isStrictSearch() && !isCaseActivities)
+               if (options.isStrictSearch())
                {
                   ModelParticipant modelParticipant = getActivityPerformer(ai);                  
 
@@ -193,15 +190,13 @@ public class DefaultDelegatesProvider implements IDelegatesProvider, Serializabl
             }
 
             // get all from model and select only the ones we have filtered
-            Collection<Participant> candidateParticipants = isCaseActivities
-                  ? getUniqueParticipantsFromActiveModels()
-                  : getCommonParticipantsFromModels(models);
+            Collection<Participant> candidateParticipants = getCommonParticipantsFromModels(models);
             List<String> roleIds = CollectionUtils.newList();
             List<String> orgIds = CollectionUtils.newList();
             for (Iterator<Participant> i = candidateParticipants.iterator(); i.hasNext();)
             {
                Participant p = i.next();
-               if (!options.isStrictSearch() || isCaseActivities || defaultPerformerSet.contains(p.getId()))
+               if (!options.isStrictSearch() || defaultPerformerSet.contains(p.getId()))
                {
                   if (p instanceof Organization)
                   {
@@ -390,31 +385,7 @@ public class DefaultDelegatesProvider implements IDelegatesProvider, Serializabl
       return userQuery;
    }
 
-   /**
-    * 
-    * @return
-    */
-   private static Collection<Participant> getUniqueParticipantsFromActiveModels()
-   {
-      ModelCache modelCache = ModelCache.findModelCache();
-      List<DeployedModel> activeModels = modelCache.getActiveModels();
-      Map<String, Participant> participants = CollectionUtils.newMap();
-
-      for (DeployedModel model : activeModels)
-      {
-         List<Participant> allParticipants = model.getAllParticipants();
-         for (Participant participant : allParticipants)
-         {
-            if (participant instanceof Role || participant instanceof Organization)
-            {
-               participants.put(participant.getId(), participant);
-            }
-         }
-      }
-
-      Collection<Participant> uniqueParticipants = participants.values();
-      return uniqueParticipants;
-   }
+   
 
    // collect all participants
    private static Collection<Participant> getCommonParticipantsFromModels(
