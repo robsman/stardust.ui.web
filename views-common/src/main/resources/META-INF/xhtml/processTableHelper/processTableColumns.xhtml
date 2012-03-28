@@ -193,32 +193,30 @@
 				</ice:commandLink>
 			</ice:panelGrid>
 		</ice:panelGroup>
-		
-	 <ice:panelGroup style="display: inline;" styleClass="notesTooltip">
+
+		<ice:panelGroup style="display: inline;">
 			<ice:panelTooltip id="noteToolTip" hideOn="mouseout" hoverDelay="500"
-				styleClass="notesTooltip">
+				styleClass="tooltip2">
 				<f:facet name="header">
 				</f:facet>
 				<f:facet name="body">
 					<ice:panelGroup>
-						<ice:panelGrid columns="2" styleClass="notesTooltipPanel"
-							columnClasses="label, data">
-							<ice:outputText styleClass="label"
+						<ice:panelGrid columns="2"
+							columnClasses="tooltip2Label, tooltip2Data">
+							<ice:outputLabel
 								value="#{processportal_NotesBean.messages['user']}" />
-							<ice:outputText styleClass="data"
-								value="#{row.noteInfo.user}" />
-							<ice:outputText styleClass="label"
+							<ice:outputText value="#{row.noteInfo.user}" />
+							<ice:outputLabel
 								value="#{processportal_NotesBean.messages['time']}" />
-							<ice:outputText styleClass="data"
-								value="#{row.noteInfo.timeStamp}" />
-							<ice:outputText styleClass="label"
+							<ice:outputText value="#{row.noteInfo.timeStamp}" />
+							<ice:outputLabel
 								value="#{processportal_NotesBean.messages['type']}" />
-							<ice:outputText styleClass="data"
-								value="#{row.noteInfo.type}" />
+							<ice:outputText value="#{row.noteInfo.type}" />
 						</ice:panelGrid>
-						<ice:panelGroup styleClass="notesTooltipContent">
-							<ice:outputText
-								value="#{row.noteInfo.text}" />
+						<ice:panelGroup style="border-top: 1px dotted #FFCC00;">
+							<ice:panelGroup styleClass="clearing" />
+							<ice:outputText value="#{row.noteInfo.text}"
+								styleClass="tooltip2Content" />
 						</ice:panelGroup>
 					</ice:panelGroup>
 				</f:facet>

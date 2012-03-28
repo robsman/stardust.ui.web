@@ -34,7 +34,6 @@ public class NoteTip implements ToolTip, Serializable
 {
    private static final long serialVersionUID = 1L;
    protected static final String NOTE = "note";
-   protected static final String STYLE = "background: url('./css-images/notes-background.png') top repeat-x #FFFFE0;";
    private String user;
    private String timeStamp;
    private String title;
@@ -71,11 +70,6 @@ public class NoteTip implements ToolTip, Serializable
    public String getToolTipType()
    {
       return NOTE;
-   }
-
-   public String getStyle()
-   {
-      return STYLE;
    }
    
    public String getUser()

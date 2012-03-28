@@ -4,17 +4,10 @@
 	<f:facet name="header">
 	</f:facet>
 	<f:facet name="body">
-		<ice:panelGroup style="#{toolTip.style}" >
-			<ice:panelGrid columns="1">
-				<ice:outputText styleClass="tooltip2TitleBar"
-					value="#{toolTip.title}" />
-			</ice:panelGrid>
-
+		<ice:panelGroup>
 			<!-- Note Tool Tip -->
 			<ice:panelGroup rendered="#{toolTip.toolTipType == 'note'}">
-				<ice:panelGrid
-					style="border-top: 1px dotted #999; border-bottom: 1px dotted #999;"
-					columns="2" columnClasses="tooltip2Label, tooltip2Data">
+				<ice:panelGrid columns="2" columnClasses="tooltip2Label, tooltip2Data">
 					<ice:outputLabel
 						value="#{views_common_msgPropsBean['common.user.label']}" />
 					<ice:outputText value="#{toolTip.user}" />
@@ -25,15 +18,19 @@
 						value="#{views_common_msgPropsBean['common.scope.label']}" />
 					<ice:outputText value="#{toolTip.scopeType}" />
 				</ice:panelGrid>
-				<ice:panelGroup styleClass="clearing" />
-				<ice:panelGroup>
-					<ice:outputText value="#{toolTip.toolTipContent}" style="padding: 0px; white-space: normal"/>
+				<ice:panelGroup style="border-top: 1px dotted #FFCC00;">
+					<ice:panelGroup styleClass="clearing" />
+					<ice:outputText value="#{toolTip.toolTipContent}" styleClass="tooltip2Content"/>
 				</ice:panelGroup>
 			</ice:panelGroup>
 
 			<!-- Document Tool Tip -->
 			<ice:panelGroup rendered="#{toolTip.toolTipType == 'document'}">
-				<ice:panelGrid style="border-top: 1px dotted #999;" columns="2"
+				<ice:panelGrid columns="1">
+					<ice:outputText styleClass="tooltip2TitleBar"
+						value="#{toolTip.title}" />
+				</ice:panelGrid>
+				<ice:panelGrid style="border-top: 1px dotted #FFCC00;" columns="2"
 					columnClasses="tooltip2Label, tooltip2Data">
 					<ice:outputLabel
 						value="#{views_common_msgPropsBean['common.tooltip.document.documentType']}" />

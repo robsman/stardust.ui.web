@@ -31,7 +31,6 @@ public class DocumentToolTip implements ToolTip, Serializable
 {
    private static final long serialVersionUID = 1207798997426129373L;
    private static final String DOCUMENT = "document";
-   protected static final String STYLE = "background: #e1e1e1 url(images/tooltipBG.png) top repeat-x;";
    private String name;
    private String documentType;
    private String fileType;
@@ -100,11 +99,6 @@ public class DocumentToolTip implements ToolTip, Serializable
          }
       }
       return dType;
-   }
-
-   public String getStyle()
-   {
-      return STYLE;
    }
 
    public String getToolTipType()

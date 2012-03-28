@@ -20,6 +20,4 @@ public interface ToolTip
    String getToolTipType();
 
    String getTitle();
-
-   String getStyle();
 }
