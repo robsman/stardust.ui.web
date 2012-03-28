@@ -193,7 +193,7 @@
       </copy>
 
       <war destfile="${build.deploy}/ipp-portal.war" basedir="${project.webapp.dir}"
-         webxml="${project.webapp.dir}/WEB-INF/web.xml">
+         webxml="${project.webapp.dir}/WEB-INF/web.xml" excludes="**/.gitignore">
       </war>
    </target>
 
