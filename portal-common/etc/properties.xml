@@ -66,9 +66,7 @@
          setups="production-withJcr, development-withJcr, build" />
       <server-archive name="cglib-nodep" type="jar"
          sourceFile="../../../lib/hibernate/cglib-nodep.jar" />
-      <!-- spring.jar must be included in any case, not only in engine-ejb-spring -->
-      <server-archive name="spring" type="jar" 
-         sourceFile="../../../lib/spring/spring.jar"/>
+      <!-- spring.jar must be included in any case, not only in engine-ejb-spring -->      <server-archive name="spring-beans" type="jar" sourceFile="../../../lib/spring/spring-beans.jar" />      <server-archive name="spring-core" type="jar" sourceFile="../../../lib/spring/spring-core.jar" />      <server-archive name="spring-tx" type="jar" sourceFile="../../../lib/spring/spring-tx.jar" />      <server-archive name="spring-jms" type="jar" sourceFile="../../../lib/spring/spring-jms.jar" />      <server-archive name="spring-jdbc" type="jar" sourceFile="../../../lib/spring/spring-jdbc.jar" />      <server-archive name="spring-expression" type="jar" sourceFile="../../../lib/spring/spring-expression.jar" />      <server-archive name="spring-context-support" type="jar" sourceFile="../../../lib/spring/spring-context-support.jar" />      <server-archive name="spring-context" type="jar" sourceFile="../../../lib/spring/spring-context.jar" />      <server-archive name="spring-asm" type="jar" sourceFile="../../../lib/spring/spring-asm.jar" />      <server-archive name="spring-aop" type="jar" sourceFile="../../../lib/spring/spring-aop.jar" />
       <server-archive name="snowdrop-vfs" type="jar" 
          sourceFile="../../../lib/spring/snowdrop-vfs.jar" 
          appservers="jboss5" />
@@ -128,9 +126,7 @@
          appservers="local, cleanroom, wls, tomcat" />
       <server-archive name="jcr-vfs" type="jar"
          sourceFile="../../../lib/jcr-vfs.jar" destDir="WEB-INF/lib/" />
-      <server-archive name="spring" type="jar"
-         sourceFile="../../../lib/spring/spring.jar" destDir="WEB-INF/lib/" />
-      <server-archive name="snowdrop-vfs" type="jar"
+      <server-archive name="spring-beans" type="jar"          sourceFile="../../../lib/spring/spring-beans.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-core" type="jar"          sourceFile="../../../lib/spring/spring-core.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-tx" type="jar"          sourceFile="../../../lib/spring/spring-tx.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-jms" type="jar"          sourceFile="../../../lib/spring/spring-jms.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-jdbc" type="jar"          sourceFile="../../../lib/spring/spring-jdbc.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-expression" type="jar"          sourceFile="../../../lib/spring/spring-expression.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-context-support" type="jar"          sourceFile="../../../lib/spring/spring-context-support.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-context" type="jar"          sourceFile="../../../lib/spring/spring-context.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-asm" type="jar"          sourceFile="../../../lib/spring/spring-asm.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-aop" type="jar"          sourceFile="../../../lib/spring/spring-aop.jar" destDir="WEB-INF/lib/"/>      <server-archive name="snowdrop-vfs" type="jar"
          sourceFile="../../../lib/spring/snowdrop-vfs.jar" destDir="WEB-INF/lib/"
          appservers="jboss5" />
       <server-archive name="geronimo-connector" type="jar"
@@ -1875,23 +1871,23 @@
          <!-- don't include wstx-asl.jar as its content is included with webservices-rt.jar (which sometimes comes from the server classpath) -->
          <property name="Class-Path"
             value="engine-ejb.ejb mail.jar commons-jxpath.jar
-                jcr-vfs.jar asm.jar gson.jar jersey-core.jar jersey-server.jar spring.jar
+                jcr-vfs.jar asm.jar gson.jar jersey-core.jar jersey-server.jar                 spring-beans.jar spring-core.jar spring-tx.jar spring-jms.jar spring-jdbc.jar spring-expression.jar spring-context-support.jar spring-context.jar spring-asm.jar spring-aop.jar
                 jsr250-api.jar jsr311-api.jar ipp-engine-ws-metro.jar xom.jar webservices-rt.jar webservices-api.jar webservices-extra.jar
                 webservices-extra-api.jar webservices-tools.jar jaxws-spring.jar cglib-nodep.jar
                 jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar">
             <appserver-value appserver="jboss5" 
                value="mail.jar commons-jxpath.jar snowdrop-vfs.jar
-                jcr-vfs.jar asm.jar gson.jar jersey-core.jar jersey-server.jar spring.jar
+                jcr-vfs.jar asm.jar gson.jar jersey-core.jar jersey-server.jar                 spring-beans.jar spring-core.jar spring-tx.jar spring-jms.jar spring-jdbc.jar spring-expression.jar spring-context-support.jar spring-context.jar spring-asm.jar spring-aop.jar 
                 jsr250-api.jar jsr311-api.jar jaxws-spring.jar cglib-nodep.jar
                 jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar"/>
             <appserver-value appserver="wls"
                value="mail.jar commons-jxpath.jar
-                jcr-vfs.jar asm.jar gson.jar jersey-core.jar jersey-server.jar spring.jar
+                jcr-vfs.jar asm.jar gson.jar jersey-core.jar jersey-server.jar                 spring-beans.jar spring-core.jar spring-tx.jar spring-jms.jar spring-jdbc.jar spring-expression.jar spring-context-support.jar spring-context.jar spring-asm.jar spring-aop.jar 
                 jsr250-api.jar jsr311-api.jar jaxws-spring.jar cglib-nodep.jar
                 jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar"/>
             <appserver-value appserver="was"
                value="engine-ejb.ejb mail.jar commons-jxpath.jar
-                jcr-vfs.jar jsp-api.jar asm.jar gson.jar jersey-core.jar jersey-server.jar spring.jar
+                jcr-vfs.jar jsp-api.jar asm.jar gson.jar jersey-core.jar jersey-server.jar                 spring-beans.jar spring-core.jar spring-tx.jar spring-jms.jar spring-jdbc.jar spring-expression.jar spring-context-support.jar spring-context.jar spring-asm.jar spring-aop.jar 
                 jsr250-api.jar jsr311-api.jar ipp-engine-ws-metro.jar xom.jar webservices-rt.jar webservices-api.jar webservices-extra.jar
                 webservices-extra-api.jar webservices-tools.jar jaxws-spring.jar cglib-nodep.jar
                 jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar"/>
@@ -2791,12 +2787,6 @@
          filetype="overlay" filename="carnot-diagrams.war"
          destinations="ippBasePortal-pojo"
          modules="ippBasePortal-pojo" setups="withDiagrams"/>
-         
-      <property-file name="spring-web"
-         sourceFile="../../lib/spring/spring-web.jar"
-         filetype="binary" filename="spring-web.jar"
-         destinations="ippBasePortal-ejb:WEB-INF/lib"
-         modules="ippBasePortal-ejb"/>
          
       <property-file name="ipp-portal-common"
          sourceFile="../../add-ons/ipp-portal/lib/ipp-portal-common.jar"
