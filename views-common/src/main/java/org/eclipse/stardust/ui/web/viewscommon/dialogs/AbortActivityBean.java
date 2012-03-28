@@ -196,7 +196,12 @@ public class AbortActivityBean extends PopupUIComponentBean
                }
                else
                {
-                  if (ActivityInstanceState.Aborted.equals(activityInstance.getState())
+                  if(ActivityInstanceUtils.isDefaultCaseActivity(activityInstance))
+                  {
+                     skippedActivities.put(activityInstance, MessagesViewsCommonBean.getInstance().getParamString(
+                           "views.switchProcessDialog.caseAbort.message"));
+                  }
+                  else if (ActivityInstanceState.Aborted.equals(activityInstance.getState())
                         || ActivityInstanceState.Completed.equals(activityInstance.getState()))
                   {
                      skippedActivities.put(activityInstance, MessagesViewsCommonBean.getInstance().getParamString(
