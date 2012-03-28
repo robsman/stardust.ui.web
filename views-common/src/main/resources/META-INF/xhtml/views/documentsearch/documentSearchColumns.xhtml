@@ -13,7 +13,8 @@
 				value="#{row.selectedRow}" />
 		</ice:panelGroup>
 
-		<ice:panelGroup rendered="#{col.columnName == 'documentName'}">
+		<ice:panelGroup rendered="#{col.columnName == 'documentName'}" 
+		panelTooltip="toolTip">
 			<table>
 				<tr style="vertical-align: top;">
 					<td><h:graphicImage url="#{row.iconPath}" /></td>
@@ -114,6 +115,15 @@
 					
 			</ice:panelGrid>
 			</ice:panelGroup>
+		</ice:panelGroup>
+
+		<ice:panelGroup style="display: inline;">
+			<ice:panelTooltip id="toolTip" styleClass="tooltip2"
+				hideOn="mouseout" hoverDelay="500">
+				<ui:include src="/plugins/views-common/views/doctree/toolTip.xhtml">
+					<ui:param name="toolTip" value="#{row.documentToolTip}" />
+				</ui:include>
+			</ice:panelTooltip>
 		</ice:panelGroup>
 
 	</ice:panelGroup>

@@ -199,7 +199,7 @@
 				styleClass="tooltip2">
 				<f:facet name="header">
 				</f:facet>
-				<f:facet name="body">
+				<f:facet name="body" >
 					<ice:panelGroup>
 						<ice:panelGrid columns="2"
 							columnClasses="tooltip2Label, tooltip2Data">
@@ -213,6 +213,7 @@
 								value="#{processportal_NotesBean.messages['type']}" />
 							<ice:outputText value="#{row.noteInfo.type}" />
 						</ice:panelGrid>
+						<ice:panelGroup styleClass="clearing" />
 						<ice:panelGroup style="border-top: 1px dotted #FFCC00;">
 							<ice:panelGroup styleClass="clearing" />
 							<ice:outputText value="#{row.noteInfo.text}"

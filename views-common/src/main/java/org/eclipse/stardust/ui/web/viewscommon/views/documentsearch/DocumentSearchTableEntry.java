@@ -20,6 +20,8 @@ import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ProcessInstances;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
+import org.eclipse.stardust.ui.web.viewscommon.common.DocumentToolTip;
+import org.eclipse.stardust.ui.web.viewscommon.common.ToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.*;
@@ -54,6 +56,7 @@ public class DocumentSearchTableEntry extends DefaultRowModel
    private long fileSize;
    private boolean selectedRow;
    private String fileSizeLabel;
+   private ToolTip documentToolTip;
 
    private final DocumentProcessesDialog processesDialog;
 
@@ -88,6 +91,8 @@ public class DocumentSearchTableEntry extends DefaultRowModel
       {
          author = document.getOwner();
       }
+      
+      documentToolTip = new DocumentToolTip(null, document);
    }
 
    public DocumentProcessesDialog getProcessesDialog()
@@ -270,6 +275,11 @@ public class DocumentSearchTableEntry extends DefaultRowModel
       this.documentType = documentType;
    }
 
+   public ToolTip getDocumentToolTip()
+   {
+      return documentToolTip;
+   }
+   
    // ~ Methods
    // ================================================================================================
 
@@ -339,5 +349,4 @@ public class DocumentSearchTableEntry extends DefaultRowModel
       }
 
    }
-
 }
