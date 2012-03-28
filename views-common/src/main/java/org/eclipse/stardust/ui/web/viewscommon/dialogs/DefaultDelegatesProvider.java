@@ -22,7 +22,6 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.CompareHelper;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.ConditionalPerformer;
-import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ModelParticipant;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Organization;
@@ -399,10 +398,13 @@ public class DefaultDelegatesProvider implements IDelegatesProvider, Serializabl
 
       if (modelCache != null && models != null)
       {
-         Iterator<DeployedModel> modelIter = modelCache.getAllModels().iterator();
-         while (modelIter.hasNext())
+         for (DeployedModel model : modelCache.getAllModels())
          {
-            Model model = modelIter.next();
+            if (PredefinedConstants.PREDEFINED_MODEL_ID.equals(model.getId()))
+            {
+               continue;
+            }
+            
             if (models.contains(new Integer(model.getModelOID())))
             {
                if (participants.isEmpty())

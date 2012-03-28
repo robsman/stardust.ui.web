@@ -16,6 +16,7 @@ import org.eclipse.stardust.engine.api.model.Organization;
 import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.Role;
 import org.eclipse.stardust.engine.api.model.RoleInfo;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
@@ -152,6 +153,11 @@ public class CaseDelegateProvider implements IDelegatesProvider, Serializable
 
       for (DeployedModel model : activeModels)
       {
+         if (PredefinedConstants.PREDEFINED_MODEL_ID.equals(model.getId()))
+         {
+            continue;
+         }
+         
          List<Participant> allParticipants = model.getAllParticipants();
          for (Participant participant : allParticipants)
          {
