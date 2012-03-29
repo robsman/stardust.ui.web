@@ -40,7 +40,7 @@
       <property name="javac.debuglevel" value="lines,source" />
    </target>
 
-   <target name="init" depends="initOnDevelopment, initOnProduction, initBuildDir, initLatakiaHome">
+   <target name="init" depends="initOnDevelopment, initOnProduction, initBuildDir">
       <property name="build.dir" value="${build.home}" />
    </target>
 
@@ -52,10 +52,6 @@
       <property name="build.home" value="${project.dir}/build" />
    </target>
 
-   <target name="initLatakiaHome" unless="latakia.home">
-      <property name="latakia.home" value="${project.dir}/../latakia/build" />
-   </target>
-
    <target name="initBuild" depends="init, initBuildDir">
       <property name="build.dir" value="${build.home}" />
       <property name="build.classes" value="${build.dir}/classes" />
@@ -63,6 +59,7 @@
       <property name="build.src" value="${build.dir}/src" />
       <property name="build.deploy" value="${build.dir}/deploy" />
       <property name="build.config" value="${build.dir}/etc" />
+      <property name="build.temp" value="${build.dir}/temp" />
 
       <property name="portal.common.jarfile" value="ipp-portal-common.jar" />
       <property name="portal.common.jar" value="${build.lib}/${portal.common.jarfile}" />
@@ -76,6 +73,7 @@
       <mkdir dir="${build.src}" />
       <mkdir dir="${build.deploy}" />
       <mkdir dir="${build.config}"/>
+      <mkdir dir="${build.temp}"/>
    </target>
 
    <target name="prepareSources" depends="initBuild">
@@ -170,26 +168,34 @@
       <ivy:retrieve pattern="${project.webapp.dir}/WEB-INF/lib/[artifact]-[revision].[ext]"
          conf="ipp-portal-base-lib-module-runtime"/>
    </target>
-
-   <target name="war" depends="retrieve-war-deps.ivy">
+   
+   <target name="war" depends="retrieve-war-deps.ivy" xmlns:ivy="antlib:org.apache.ivy.ant">
       <!-- drop folder if it already exists by a previous build -->
       <delete dir="${project.webapp.dir}/WEB-INF/classes" failonerror="false"/>
       <mkdir dir="${project.webapp.dir}/WEB-INF/classes"/>
       
+      <ivy:cachefileset setid="engine.deps" conf="carnot-engine-compile" inline="true" organisation="com.infinity.bpm" 
+         module="infinity-process-engine" revision="${ipp.version.full}" transitive="false" >
+      </ivy:cachefileset>
+
+      <!-- make a copy of engine to temp folder -->
+      <copy todir="${build.temp}">
+         <fileset refid="engine.deps" />
+      </copy>
+      
+      <!-- copy resources to war's WEB-INF/classes -->
       <copy todir="${project.webapp.dir}/WEB-INF/classes" failonerror="false">
-         <!-- currently only japanese property files -->
-         <fileset dir="${latakia.home}/etc/i18n" >
-            <!-- currently only japanese property files -->
-            <include name="*_ja.properties*" />
-            <exclude name="PredefinedModel_ja.properties" />
-         </fileset>
+         <zipfileset src="${build.temp}/carnot-engine.jar" >
+            <include name="/META-INF/resources/i18n/*"/>
+            <exclude name="**/PredefinedModel*.properties" />
+         </zipfileset>
+         <flattenmapper/>
       </copy>
       <copy todir="${project.webapp.dir}/WEB-INF/classes/ag/carnot" failonerror="false">
-         <!-- currently only japanese property files -->
-         <fileset dir="${latakia.home}/etc/i18n" >
-            <!-- currently only japanese property files -->
-            <include name="PredefinedModel_ja.properties" />
-         </fileset>
+         <zipfileset src="${build.temp}/carnot-engine.jar" >
+            <include name="/META-INF/resources/i18n/PredefinedModel*.properties"/>
+         </zipfileset>
+         <flattenmapper/>
       </copy>
 
       <war destfile="${build.deploy}/ipp-portal.war" basedir="${project.webapp.dir}"
