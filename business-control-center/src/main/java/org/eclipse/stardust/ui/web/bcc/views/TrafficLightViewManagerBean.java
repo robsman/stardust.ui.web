@@ -1336,10 +1336,7 @@ public void init()
          else if (getMessages().getString("category.total").equals(o1.getCategoryName())
                && getMessages().getString("category.undefined").equals(o2.getCategoryName()))
          {
-            if (ascending)
                return 1;
-            else
-               return -1;
          }
          else if (getMessages().getString("category.undefined").equals(o1.getCategoryName())
                || getMessages().getString("category.total").equals(o1.getCategoryName()))
