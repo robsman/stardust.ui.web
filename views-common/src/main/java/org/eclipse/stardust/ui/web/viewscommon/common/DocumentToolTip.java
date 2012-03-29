@@ -71,11 +71,9 @@ public class DocumentToolTip implements ToolTip, Serializable
 
          @SuppressWarnings("rawtypes")
          Map properties = document.getProperties();
-         description = document.getDescription();
-         if (StringUtils.isEmpty(description))
-         {
-            description = (String) properties.get(CommonProperties.DESCRIPTION);
-         }
+         description = (String) properties.get(CommonProperties.DESCRIPTION);
+         description = description == null || description.length() < 90 ? description : description.substring(0, 89)
+               + "...";
       }
    }
 
