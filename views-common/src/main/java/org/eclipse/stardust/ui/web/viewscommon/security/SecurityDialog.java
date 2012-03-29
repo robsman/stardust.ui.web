@@ -669,7 +669,7 @@ public class SecurityDialog extends PopupUIComponentBean
     */
    private Map<String, QualifiedModelParticipantInfo> getAllParticipant()
    {
-      List<QualifiedModelParticipantInfo> allParticipants = ParticipantUtils.fetchAllParticipants();
+      List<QualifiedModelParticipantInfo> allParticipants = ParticipantUtils.fetchAllParticipants(true);
       Map<String, QualifiedModelParticipantInfo> participants = new HashMap<String, QualifiedModelParticipantInfo>();
       for (QualifiedModelParticipantInfo qualifiedModelParticipantInfo : allParticipants)
       {

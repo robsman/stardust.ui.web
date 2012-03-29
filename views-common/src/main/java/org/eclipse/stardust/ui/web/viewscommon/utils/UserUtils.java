@@ -380,7 +380,7 @@ public class UserUtils
    public static User copyGrantsAndUserGroups(User referenceUser, User targetUser)
    {
       List<Grant> grants = referenceUser.getAllGrants();
-      List<QualifiedModelParticipantInfo> allParticipants = ParticipantUtils.fetchAllParticipants();
+      List<QualifiedModelParticipantInfo> allParticipants = ParticipantUtils.fetchAllParticipants(false);
       ModelParticipantInfo modelParticipantInfo;
       for (Grant grant : grants)
       {

@@ -31,6 +31,7 @@ import org.eclipse.stardust.engine.api.model.Organization;
 import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.QualifiedOrganizationInfo;
 import org.eclipse.stardust.engine.api.model.Role;
@@ -439,12 +440,16 @@ public class ParticipantUtils
     * 
     * @return
     */
-   public static List<QualifiedModelParticipantInfo> getAllModelParticipants()
+   public static List<QualifiedModelParticipantInfo> getAllModelParticipants(boolean filterPredefinedModel)
    {
       Collection<DeployedModel> allModels = ModelUtils.getAllModels();
       List<QualifiedModelParticipantInfo> allParticipants = new ArrayList<QualifiedModelParticipantInfo>();
       for (Model model : allModels)
       {
+         if (filterPredefinedModel && PredefinedConstants.PREDEFINED_MODEL_ID.equals(model.getId()))
+         {
+            continue;
+         }
          List<Participant> participants = model.getAllParticipants();
          for (Participant participant : participants)
          {
@@ -464,9 +469,9 @@ public class ParticipantUtils
     * @return
     */
 
-   public static List<QualifiedModelParticipantInfo> fetchAllParticipants()
+   public static List<QualifiedModelParticipantInfo> fetchAllParticipants(boolean filterPredefinedModel)
    {
-      List<QualifiedModelParticipantInfo> allModelParticipants = getAllModelParticipants();
+      List<QualifiedModelParticipantInfo> allModelParticipants = getAllModelParticipants(filterPredefinedModel);
 
       // This list contains runtime participants along with model participants
       List<QualifiedModelParticipantInfo> allParticipants = new ArrayList<QualifiedModelParticipantInfo>(
