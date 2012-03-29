@@ -543,7 +543,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    {
       if (force || isModified())
       {
-         if (contentHandler instanceof ICustomDocumentSaveHandler)
+         if (!(force && !documentContentInfo.getVersionTracker().isLatestVersion()) && contentHandler instanceof ICustomDocumentSaveHandler)
          {
             documentContentInfo = ((ICustomDocumentSaveHandler) contentHandler).save();
          }
