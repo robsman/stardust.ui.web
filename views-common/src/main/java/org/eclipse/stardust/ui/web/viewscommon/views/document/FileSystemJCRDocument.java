@@ -59,10 +59,21 @@ public class FileSystemJCRDocument extends FileSystemDocument
    }
    
 
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.viewscommon.views.document.FileSystemDocument#reset()
+    * 
+    * The reset methods returns a fresh copy of the file system document.
+    * This is needed in case of TIFF viewer as tiff viewer takes a fresh copy and applies 
+    * additions made to the annotations / bookmarks "selectively" to this fresh object.
+    * 
+    * Changing the behaviour of reset method behaviour will affect the save functionality
+    * of file system tiff documents.
+    */
    @Override
    public IDocumentContentInfo reset()
    {
-      return this;
+      /* Please read the docs for this method before making any changes. */
+      return new FileSystemJCRDocument(file.getPath(), documentType, jcrParentFolder, description, comments);
    }
 
    /**
