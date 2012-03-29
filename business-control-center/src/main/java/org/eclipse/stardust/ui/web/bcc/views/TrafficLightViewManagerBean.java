@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -294,7 +295,7 @@ public void init()
       TableColumnSelectorPopup colSelecpopup = new TableColumnSelectorPopup(columnModel);
 
       trafficLightViewTable = new SortableTable<TrafficLightViewUserObject>(
-            colSelecpopup, null, new SortableTableComparator<TrafficLightViewUserObject>(
+            colSelecpopup, null, new TrafficLightComparator(
                   "categoryName", true));
       trafficLightViewTable.setList(trafficLightViewList);
       
@@ -1310,4 +1311,52 @@ public void init()
    {
       return notPassedActivityTableInitialized;
    }
+   
+   /**
+    * 
+    * @author Sidharth.Singh
+    * 
+    */
+   public class TrafficLightComparator extends SortableTableComparator<TrafficLightViewUserObject>
+   {
+
+      public TrafficLightComparator(String sortColumnProperty, boolean ascending)
+      {
+         super(sortColumnProperty, ascending);
+      }
+
+      @Override
+      public int compare(TrafficLightViewUserObject o1, TrafficLightViewUserObject o2)
+      {
+         if (getMessages().getString("category.undefined").equals(o1.getCategoryName())
+               && getMessages().getString("category.total").equals(o2.getCategoryName()))
+         {
+            return -1;
+         }
+         else if (getMessages().getString("category.total").equals(o1.getCategoryName())
+               && getMessages().getString("category.undefined").equals(o2.getCategoryName()))
+         {
+            if (ascending)
+               return 1;
+            else
+               return -1;
+         }
+         else if (getMessages().getString("category.undefined").equals(o1.getCategoryName())
+               || getMessages().getString("category.total").equals(o1.getCategoryName()))
+         {
+            return 1;
+         }
+         else if (getMessages().getString("category.undefined").equals(o2.getCategoryName())
+               || getMessages().getString("category.total").equals(o2.getCategoryName()))
+         {
+            return -1;
+         }
+         else
+         {
+            return super.compare(o1, o2);
+         }
+      }
+
+   }
+
 }
