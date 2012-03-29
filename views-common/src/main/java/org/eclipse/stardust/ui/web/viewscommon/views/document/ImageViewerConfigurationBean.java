@@ -99,7 +99,12 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
    
    private boolean enableExtractPage = true;
 
-   private boolean allowDeleteFromOriginal = true;
+   /**
+    * Using a boolean object (as against primitive) to avoid issues caused by icefaces trying to assign
+    * null value to primitive boolean.
+    *  
+    */
+   private Boolean allowDeleteFromOriginal = true;
    
    /**
     * 
@@ -545,14 +550,21 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
       this.enableExtractPage = enableExtractPage;
    }
 
-   public boolean isAllowDeleteFromOriginal()
+   public Boolean getAllowDeleteFromOriginal()
    {
       return allowDeleteFromOriginal;
    }
 
-   public void setAllowDeleteFromOriginal(boolean allowDeleteFromOriginal)
+   public void setAllowDeleteFromOriginal(Boolean allowDeleteFromOriginal)
    {
-      this.allowDeleteFromOriginal = allowDeleteFromOriginal;
+      if (null != allowDeleteFromOriginal)
+      {
+         this.allowDeleteFromOriginal = allowDeleteFromOriginal;
+      }
+      else
+      {
+         this.allowDeleteFromOriginal = false;
+      }
    }
 
    /**
