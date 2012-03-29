@@ -597,8 +597,7 @@ public class DelegationBean extends PopupUIComponentBean
       boolean isCaseActivities = ActivityInstanceUtils.isContainsCaseActivity(ais);
       if (!delegateCase && isCaseActivities)
       {
-         MessageDialog.addErrorMessage(MessagesViewsCommonBean.getInstance().getString("delegation.cantDelegateCase.message"));
-
+         MessageDialog.addErrorMessage(MessagesViewsCommonBean.getInstance().getString("views.switchProcessDialog.caseAbort.message"));
          return;
       }
       else if (delegateCase && !isCaseActivities)
