@@ -1445,6 +1445,9 @@ public class PortalApplication
 
    public boolean isClientTimeZoneSet()
    {
+      //Following fix was added as part of CRNT-20962 but later on with the new Icefaces jars the issue got resolved
+      //Keeping the following code as comment it may required in future   
+      /*         String userAgent = FacesUtils.getUserAgent();
       try
       {
          String userAgent = FacesUtils.getUserAgent();
@@ -1460,7 +1463,7 @@ public class PortalApplication
       {
          clientTimeZone = java.util.TimeZone.getDefault();
          trace.error("Not supporting client timezone. Server Time will be referred", e);
-      }
+      }*/
       return clientTimeZone != null;
    }   
    
