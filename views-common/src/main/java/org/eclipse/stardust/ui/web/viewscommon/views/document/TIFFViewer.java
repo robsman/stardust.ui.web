@@ -461,7 +461,8 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
 
    private void closeIframe()
    {
-      String closeIframeJS = "InfinityBpm.ProcessPortal.closeContentFrame('" + frameId + "');";
+      String closeIframeJS = "window.setTimeout(function() {InfinityBpm.ProcessPortal.closeContentFrame('" + frameId
+            + "');}," + this.iframeDelay + ");";
       JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), closeIframeJS);
       PortalApplication.getInstance().addEventScript(closeIframeJS);
    }

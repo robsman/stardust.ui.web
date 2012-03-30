@@ -783,7 +783,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
                   // same delay is required
                   if (newFileMimeType.equals(TIFF_IMAGE) && newFileMimeType.equals(origFileMimeType))
                   {
-                     ((TIFFViewer) contentHandler).setIframeDelay(100);
+                     ((TIFFViewer) contentHandler).setIframeDelay(200);
                   }
                   // Activiate the Iframe if available
                   fireRefreshViewerInvoked();
