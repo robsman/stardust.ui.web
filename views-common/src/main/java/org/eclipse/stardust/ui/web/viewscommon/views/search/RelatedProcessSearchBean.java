@@ -16,6 +16,7 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.casemanagement.CreateCaseDialogBean;
@@ -38,6 +39,8 @@ public class RelatedProcessSearchBean extends PopupUIComponentBean
    private final RelatedProcessSearchHelper relatedProcessSearchHelper = new RelatedProcessSearchHelper();
    private List<ProcessInstance> sourceProcessInstances;
    private ProcessInstance targetProcessInstance;
+   private boolean skipNotification;
+   private ICallbackHandler callbackHandler;
 
    @Override
    public void initialize()
@@ -249,6 +252,26 @@ public class RelatedProcessSearchBean extends PopupUIComponentBean
       boolean matchAny = relatedProcessSearchHelper.isMatchAny();
       relatedProcessSearchHelper.setMatchAny(!matchAny);
       relatedProcessSearchHelper.update();
-   } 
+   }
+
+   public boolean isSkipNotification()
+   {
+      return skipNotification;
+   }
+
+   public void setSkipNotification(boolean skipNotification)
+   {
+      this.skipNotification = skipNotification;
+   }
+
+   public ICallbackHandler getCallbackHandler()
+   {
+      return callbackHandler;
+   }
+
+   public void setCallbackHandler(ICallbackHandler callbackHandler)
+   {
+      this.callbackHandler = callbackHandler;
+   }
 
 }

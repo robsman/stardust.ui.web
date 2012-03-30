@@ -269,8 +269,8 @@ public class CommonDescriptorUtils
          }
       }
       return datapathMap;
-   }
-
+   }   
+   
    /**
     * Returns an array with all COMMON descriptors which exists in the given processes.
     * Furthermore you have the option to get only descriptors that are filterable.
@@ -431,9 +431,9 @@ public class CommonDescriptorUtils
     * @param sourceProcessInstances
     * @return
     */
-   public static Map<String, DataPath> getCommonDescriptorsMap(List<ProcessInstance> sourceProcessInstances, boolean onlyKeyDescriptor)
+   public static Map<String, DataPath> getKeyDescriptorsIntersectionMap(List<ProcessInstance> sourceProcessInstances)
    {
-      Map<String, DataPath> keyDescriptors = CollectionUtils.newHashMap();
+      Map<String, DataPath> keyDescriptorsMap = CollectionUtils.newHashMap();
 
       List<ProcessDefinition> commonProcessDefinitions = CollectionUtils.newArrayList();
       for (ProcessInstance processInstance : sourceProcessInstances)
@@ -441,19 +441,99 @@ public class CommonDescriptorUtils
          ProcessDefinition pd = ProcessDefinitionUtils.getProcessDefinition(processInstance.getModelOID(),
                processInstance.getProcessID());
          commonProcessDefinitions.add(pd);
-      }
-      DataPath[] commonDatas = getCommonDescriptors(commonProcessDefinitions, true);
+      }   
+      DataPath[] commonDatas = getKeyDescriptorsIntersection(commonProcessDefinitions);
 
       for (DataPath dataPath : commonDatas)
       {
-         if (dataPath.isDescriptor() && ((onlyKeyDescriptor && dataPath.isKeyDescriptor()) || !onlyKeyDescriptor ) )
+         keyDescriptorsMap.put(dataPath.getId(), dataPath);
+      }
+      return keyDescriptorsMap;
+   }
+
+   /**
+    * 
+    * @param processes
+    * @return
+    */
+
+   public static DataPath[] getKeyDescriptorsIntersection(List<ProcessDefinition> processes)
+   {
+      boolean firstProcess = true;
+
+      // We have to use this type of Map because of the predictable order of the keys
+      Map<String, DataPath> intersectionMap = new LinkedHashMap<String, DataPath>();
+
+      for (ProcessDefinition pd : processes)
+      {
+         // for first process put all key descriptor in Map
+         if (firstProcess)
          {
-            keyDescriptors.put(dataPath.getId(), dataPath);
+            firstProcess = false;
+
+            for (Object item : pd.getAllDataPaths())
+            {
+               DataPath path = (DataPath) item;
+               if (null != path && path.isKeyDescriptor() && Direction.IN.equals(path.getDirection()))
+               {
+                  intersectionMap.put(path.getId(), path);
+               }
+            }
+
+         }
+         // from second process on words check intersectionMap descriptors present in
+         // process
+         // if not present then remove from map
+         else
+         {
+            for (Iterator<DataPath> itr = intersectionMap.values().iterator(); itr.hasNext();)
+            {
+               boolean contains = false;
+               DataPath first = itr.next();
+
+               for (Object item : pd.getAllDataPaths())
+               {
+                  DataPath second = (DataPath) item;
+                  if (null != second && second.isKeyDescriptor() && Direction.IN.equals(second.getDirection())
+                        && equalsDescriptor(first, second))
+                  {
+                     contains = true;
+                     break;
+                  }
+               }
+               // if descriptor is not present then remove from map
+               if (!contains)
+               {
+                  itr.remove();
+               }
+            }
          }
 
       }
-      return keyDescriptors;
+
+      DataPath[] descriptors = (DataPath[]) intersectionMap.values().toArray(new DataPath[0]);
+      return descriptors;
    }
+   /**
+    * 
+    * @param first
+    * @param secound
+    * @return
+    */
+   private static boolean equalsDescriptor(DataPath first, DataPath secound)
+   {
+      if (null != first && null != secound && first.getId().equals(secound.getId()))
+      {
+         Data data1 = DescriptorFilterUtils.getData(secound);
+         Data data2 = DescriptorFilterUtils.getData(first);
+         if (data1.equals(data2))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+   
    
    /**
     * 
@@ -498,7 +578,9 @@ public class CommonDescriptorUtils
                childPi.getProcessID());
          commonProcessDefinitions.add(pd);
       }
-      DataPath[] commonDatas = getCommonDescriptors(commonProcessDefinitions, true);
+     // DataPath[] commonDatas = getCommonDescriptors(commonProcessDefinitions, true);
+      DataPath[] commonDatas = getKeyDescriptorsIntersection(commonProcessDefinitions);    
+      
       for (DataPath dataPath : commonDatas)
       {
          if (dataPath.isKeyDescriptor())
@@ -523,10 +605,14 @@ public class CommonDescriptorUtils
                      descriptors.remove(dataPath.getId());
                   }
                }
+               else
+               {
+                  descriptors.remove(dataPath.getId());
+               }
             }
          }
 
-      }
+      }    
       
       Set<Entry<String, Pair<Class, Object>>> entrySet = descriptors.entrySet();
       for (Entry<String, Pair<Class, Object>> entry : entrySet)

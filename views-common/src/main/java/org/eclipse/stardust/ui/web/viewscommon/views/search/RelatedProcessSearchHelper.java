@@ -98,7 +98,7 @@ public class RelatedProcessSearchHelper
          }
          else
          {
-            keyDescriptors = CommonDescriptorUtils.getCommonDescriptorsMap(sourceProcessInstances, true);
+            keyDescriptors = CommonDescriptorUtils.getKeyDescriptorsIntersectionMap(sourceProcessInstances);
             sourceDescriptors = getSourceDescriptors();
          }
 
@@ -248,12 +248,10 @@ public class RelatedProcessSearchHelper
          // if key descriptors is empty then no need to create n fire query
          if (CollectionUtils.isNotEmpty(keyDescriptors))
          {
-
-            List<ProcessInstance> processInstances = null;
-
             // to search Process(es)/Case(es),atleast one key descriptor must contain non empty value.
             if (!isEmptyDescriptors(keyDescriptors.values(), sourceDescriptors))
             {
+               List<ProcessInstance> processInstances = null;
                // first check in cache
                if (resultCache.containsKey(matchAny))
                {

@@ -24,6 +24,7 @@ import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
@@ -298,8 +299,19 @@ public class AttachToCaseDialogBean extends RelatedProcessSearchBean implements 
             {
                ServiceFactoryUtils.getWorkflowService().joinCase(caseOID.longValue(), members);
                CommonDescriptorUtils.reCalculateCaseDescriptors(caseInstance);
-               setCurrentPage(Page.NOTIFICATION);
-               openConfirmationDialog();
+               if (isSkipNotification())
+               {
+                  closeCasePopup();
+                  if (null != getCallbackHandler())
+                  {
+                     getCallbackHandler().handleEvent(ICallbackHandler.EventType.APPLY);
+                  }
+               }
+               else
+               {
+                  setCurrentPage(Page.NOTIFICATION);
+                  openConfirmationDialog();
+               }
             }
             else
             {
@@ -333,6 +345,12 @@ public class AttachToCaseDialogBean extends RelatedProcessSearchBean implements 
    public boolean accept()
    {
       attachCaseConfirmationDialog = null;
+
+      if (null != getCallbackHandler())
+      {
+         getCallbackHandler().handleEvent(ICallbackHandler.EventType.APPLY);
+      }
+
       openCase();
       return true;
    }

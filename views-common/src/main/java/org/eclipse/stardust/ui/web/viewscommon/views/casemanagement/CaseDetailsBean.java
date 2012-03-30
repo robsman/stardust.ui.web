@@ -328,7 +328,19 @@ public class CaseDetailsBean extends PopupUIComponentBean
    {
       List<ProcessInstance> selectedProcesses = CollectionUtils.newArrayList();
       selectedProcesses.add(processInstance);
-      ProcessInstanceUtils.openAttachToCase(selectedProcesses);
+      
+      ICallbackHandler callbackHandler = new ICallbackHandler()
+      {
+         public void handleEvent(EventType eventType)
+         {
+            if (EventType.APPLY.equals(eventType))
+            {
+               initialize();
+            }
+         }
+      };
+      ProcessInstanceUtils.openAttachToCase(selectedProcesses, true, callbackHandler);      
+      
    }
    
    /**
@@ -531,7 +543,7 @@ public class CaseDetailsBean extends PopupUIComponentBean
          AbortProcessBean abortProcessHelper = AbortProcessBean.getInstance();
          abortProcessHelper.setCallbackHandler(new ICallbackHandler()
          {
-            public void handleEvent(EventType eventType)
+            public void handleEvent(EventType eventType)//Add condition check initialize() class
             {
                initialize();
             }

@@ -59,6 +59,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverte
 import org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationMessage;
 import org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationMessageBean;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.JoinProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.SpawnProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.SwitchProcessDialogBean;
@@ -999,8 +1000,18 @@ public class ProcessInstanceUtils
    
    /**
     * 
+    * @param processInstanceList
     */
    public static void openAttachToCase(List<ProcessInstance> processInstanceList)
+   {
+      openAttachToCase(processInstanceList, false, null);
+   }
+
+   /**
+    * 
+    */
+   public static void openAttachToCase(List<ProcessInstance> processInstanceList, boolean skipNotification,
+         ICallbackHandler callbackHandler)
    {
       MessagesViewsCommonBean commonMessage = MessagesViewsCommonBean.getInstance();
       List<ProcessInstance> selectedProcesses = processInstanceList;
@@ -1044,6 +1055,8 @@ public class ProcessInstanceUtils
             {
                AttachToCaseDialogBean attachToCaseDialog = AttachToCaseDialogBean.getInstance();
                attachToCaseDialog.setSourceProcessInstances(selectedProcesses);
+               attachToCaseDialog.setSkipNotification(skipNotification);
+               attachToCaseDialog.setCallbackHandler(callbackHandler);
                attachToCaseDialog.openPopup();
             }
          }
