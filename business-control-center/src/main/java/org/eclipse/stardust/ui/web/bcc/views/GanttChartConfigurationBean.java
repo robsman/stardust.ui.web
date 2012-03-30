@@ -810,12 +810,11 @@ public class GanttChartConfigurationBean extends UIComponentBean implements Conf
             && StringUtils.isEmpty(selectedDescriptorValue))
       {   
          
-         PropertyEntry pe = (PropertyEntry) propertyEntries.get(selectedProcessQId);
-         if (pe != null)
+         if (propertyEntry != null)
          {
             this.descriptorValues = descriptorValues;
-            pe.setDescriptorValues(descriptorValues);
-            computeDescriptorList(pe);
+            propertyEntry.setDescriptorValues(descriptorValues);
+            computeDescriptorList(propertyEntry);
          }
       }
 
