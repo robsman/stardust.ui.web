@@ -279,4 +279,22 @@
 			</ice:panelGroup>
 		</ice:panelGrid>
 	</ice:panelGroup>
+	<script id="tiffRepositionScripts" lang="javascript">
+		Ice.onSendReceive("document:body", function() {}, function() {
+			var elems = window.parent.document.getElementsByTagName("IFRAME");			
+			for (var i = 0; i != elems.length; i++) {
+				if (-1 != elems[i].id.indexOf('tiff')) {
+					InfinityBpm.ProcessPortal.repositionContentFrame(elems[i].id, {'anchorId' : 'tiffViewerIframe'});
+				}
+			}
+		});
+		Ice.onAsynchronousReceive("document:body", function() {
+			var elems = window.parent.document.getElementsByTagName("IFRAME");
+			for (var i = 0; i != elems.length; i++) {
+				if (-1 != elems[i].id.indexOf('tiff')) {
+					InfinityBpm.ProcessPortal.repositionContentFrame(elems[i].id, {'anchorId' : 'tiffViewerIframe'});
+				}
+			}
+		});
+	</script>
 </f:view>
