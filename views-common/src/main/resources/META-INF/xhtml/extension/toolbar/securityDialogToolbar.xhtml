@@ -8,28 +8,29 @@
 
 	<ice:panelGrid columns="3">
 		<ice:commandLink action="#{securityDialog.removeRoles}"
-			disabled="#{securityDialog.selectedRowCount eq 0 ? true : false}">
+			disabled="#{!securityDialog.rolesEditable}">
 			<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ToolbarRemove" standAlone="false"/>
 			<h:graphicImage
 				value="/plugins/views-common/images/icons/group_delete.png"
 				style="border: none;"
-				styleClass="#{securityDialog.selectedRowCount eq 0 ? 'iceCmdBtn-dis' : ''}"
+				styleClass="#{!securityDialog.rolesEditable ? 'iceCmdBtn-dis' : ''}"
 				title="#{securityDialog.messages['securityDialog.table.toolbar.delete']}" />
 		</ice:commandLink>
-		<ice:commandLink action="#{securityDialog.openAddEntryDialog}">
+		<ice:commandLink action="#{securityDialog.openAddEntryDialog}" disabled="#{!securityDialog.modifyACL}">
 			<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ToolbarAdd" standAlone="false"/>
 			<h:graphicImage
 				value="/plugins/views-common/images/icons/group_add.png"
 				style="border: none;"
+				styleClass="#{!securityDialog.modifyACL ? 'iceCmdBtn-dis' : ''}"
 				title="#{securityDialog.messages['securityDialog.table.toolbar.addParticipants']}" />
 		</ice:commandLink>
 		<ice:commandLink action="#{securityDialog.editRoles}"
-			disabled="#{securityDialog.selectedRowCount eq 0 ? true : false}">
+			disabled="#{!securityDialog.rolesEditable}">
 			<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ToolbarEdit" standAlone="false"/>
 			<h:graphicImage
 				value="/plugins/views-common/images/icons/group_edit.png"
 				style="border: none;"
-				styleClass="#{securityDialog.selectedRowCount eq 0 ? 'iceCmdBtn-dis' : ''}"
+				styleClass="#{!securityDialog.rolesEditable ? 'iceCmdBtn-dis' : ''}"
 				title="#{securityDialog.messages['securityDialog.table.toolbar.editPermissions']}" />
 		</ice:commandLink>
 	</ice:panelGrid>

@@ -25,19 +25,15 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 
-import org.eclipse.stardust.engine.api.dto.ConditionalPerformerInfoDetails;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.AccessControlEntry;
 import org.eclipse.stardust.engine.api.runtime.AccessControlPolicy;
 import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Privilege;
-import org.eclipse.stardust.engine.core.runtime.beans.daemons.GetDaemonLogAction;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsPrincipal;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsPrivilege;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
-import org.eclipse.stardust.ui.web.common.app.PortalApplication;
-import org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
@@ -62,7 +58,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 
 import com.icesoft.faces.component.ext.RowSelectorEvent;
-import com.icesoft.faces.context.effects.JavascriptContext;
 
 public class SecurityDialog extends PopupUIComponentBean
 {
@@ -84,7 +79,7 @@ public class SecurityDialog extends PopupUIComponentBean
    private String addEntryDialogId;
    private SELECTION_MODE selectionMode = SELECTION_MODE.PICK_FROM_LIST;
    private ParticipantTree participantTree;
-
+   
    public static enum SELECTION_MODE {
       PICK_FROM_LIST, PICK_FROM_TREE
    };
@@ -884,5 +879,10 @@ public class SecurityDialog extends PopupUIComponentBean
    public ParticipantTree getParticipantTree()
    {
       return participantTree;
+   }
+   
+   public boolean isRolesEditable()
+   {
+      return isModifyACL() && getSelectedRowCount() > 0;
    }
 }
