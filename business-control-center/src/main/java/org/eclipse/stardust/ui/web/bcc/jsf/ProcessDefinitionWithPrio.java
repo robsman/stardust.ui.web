@@ -25,6 +25,7 @@ import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstancePriority;
 import org.eclipse.stardust.engine.core.query.statistics.api.ProcessStatistics.IProcessStatistics;
 import org.eclipse.stardust.ui.web.bcc.views.BusinessProcessManagerBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
@@ -36,6 +37,7 @@ public class ProcessDefinitionWithPrio implements PriorityOverviewEntry, Seriali
    
    private ProcessDefinition processDefinition;
    private List activityDataModel;
+   private List children;
    private IProcessInstancesPrioritySearchHandler detailSearchHandler;
    private IActivityStatisticsSearchHandler activitySearchHandler;
    private boolean fetchChildren;
@@ -48,11 +50,14 @@ public class ProcessDefinitionWithPrio implements PriorityOverviewEntry, Seriali
    
    private int thresholdState;
 
+   private boolean filterAuxiliaryActivities;
+
    public ProcessDefinitionWithPrio(ProcessDefinition processDefinition, 
          IProcessStatistics ps,
          IActivityStatisticsSearchHandler activitySearchHandler,
-         IProcessInstancesPrioritySearchHandler detailSearchHandler)
+         IProcessInstancesPrioritySearchHandler detailSearchHandler, boolean filterAuxiliaryActivities)
    {
+      this.filterAuxiliaryActivities = filterAuxiliaryActivities;
       this.processDefinition = processDefinition;
       this.ps = ps;
       thresholdState = IThresholdProvider.UNDEFINED_THRESHOLD_STATE;
@@ -152,10 +157,19 @@ public class ProcessDefinitionWithPrio implements PriorityOverviewEntry, Seriali
       if(!alreadyFetchedChildren && fetchChildren)
       {
          activityDataModel = activitySearchHandler.getActivityStatistics(processDefinition);
+         children = new ArrayList();
+         for (int i = 0; i < activityDataModel.size(); i++)
+         {
+            if (!(filterAuxiliaryActivities && ActivityInstanceUtils
+                  .isAuxiliaryActivity(((ActivityDefinitionWithPrio) activityDataModel.get(i)).getActivity())))
+            {
+               children.add(activityDataModel.get(i));
+            }
+         }
          alreadyFetchedChildren = true;
          fetchChildren = false;
       }
-      return activityDataModel;
+      return children;
    }
    
    public void activateChildrenFetch()

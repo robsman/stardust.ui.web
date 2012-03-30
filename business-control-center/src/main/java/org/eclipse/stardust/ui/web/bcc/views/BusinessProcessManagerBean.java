@@ -149,13 +149,14 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
 
       List<DeployedModel> models = ModelCache.findModelCache().getActiveModels();
       boolean filterAuxiliaryProcesses = filterAuxiliaryProcesses();
+      boolean filterAuxiliaryActivities = filterAuxiliaryActivities();
       for (DeployedModel activeModel : models)
       {
          List<ProcessDefinitionWithPrio> processDefList = processDefinitionSearchHandler
-               .getProcessDefinitions(filterAuxiliaryProcesses, activeModel);
+               .getProcessDefinitions(false, filterAuxiliaryActivities, activeModel);
 
          PriorityOverviewEntry modelWithPrio = new ModelWithPrio(processDefList, processInstancePrioritySearchHandler,
-               activeModel.getModelOID());
+               activeModel.getModelOID(), filterAuxiliaryProcesses);
 
          TreeTableNode modelNode = TreeNodeFactory.createTreeNode(treeTable, this, modelWithPrio, true);
          // Build Tree
@@ -187,7 +188,14 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
                   Constants.PROCESS_HISTORY_IMAGES_BASE_PATH);
             auxiliaryProcess.setActive(false);
             processFilterToolbarItems.add(auxiliaryProcess);
-            
+
+            FilterToolbarItem auxiliaryActivity = new FilterToolbarItem("" + 1, "auxiliaryActivity",
+                  "processHistory.processTable.showAuxiliaryActivities",
+                  "processHistory.processTable.hideAuxiliaryActivities", "activity_auxiliary.png",
+                  Constants.PROCESS_HISTORY_IMAGES_BASE_PATH);
+            auxiliaryActivity.setActive(false);
+            processFilterToolbarItems.add(auxiliaryActivity);
+
             initializeDataFilters();
             
             setEmbedded(false);
@@ -615,6 +623,16 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
    public boolean filterAuxiliaryProcesses()
    {
       FilterToolbarItem filterToolbarItem = getFilterToolbarItem("auxiliaryProcess");
+      return !filterToolbarItem.isActive();
+   }
+   
+
+   /**
+    * @return
+    */
+   public boolean filterAuxiliaryActivities()
+   {
+      FilterToolbarItem filterToolbarItem = getFilterToolbarItem("auxiliaryActivity");
       return !filterToolbarItem.isActive();
    }
    

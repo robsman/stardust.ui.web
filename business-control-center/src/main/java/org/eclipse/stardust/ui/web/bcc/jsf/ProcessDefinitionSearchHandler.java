@@ -36,7 +36,7 @@ public class ProcessDefinitionSearchHandler implements IProcessDefinitionSearchH
    /* (non-Javadoc)
     * @see org.eclipse.stardust.ui.web.bcc.jsf.IProcessDefinitionSearchHandler#getProcessDefinitions()
     */
-   public List getProcessDefinitions(boolean filterAuxiliaryProcesses)
+   public List getProcessDefinitions(boolean filterAuxiliaryProcesses, boolean filterAuxiliaryActivities)
    {
       List<ProcessDefinition> allProcessDefinitions;
       if (filterAuxiliaryProcesses)
@@ -47,7 +47,7 @@ public class ProcessDefinitionSearchHandler implements IProcessDefinitionSearchH
       {
          allProcessDefinitions = ProcessDefinitionUtils.getAllAccessibleProcessDefinitions();
       }
-      return getProcessStatistics(allProcessDefinitions);
+      return getProcessStatistics(allProcessDefinitions, filterAuxiliaryActivities);
    }
    
    /**
@@ -55,15 +55,15 @@ public class ProcessDefinitionSearchHandler implements IProcessDefinitionSearchH
     * {@link BusinessControlCenterConstants#BUSINESS_RELEVANT_PROCESS_ID_LIST}. The result is
     * stored in the field {@link #searchResult}.
     */
-   public List getProcessDefinitions(boolean filterAuxiliaryProcesses, org.eclipse.stardust.engine.api.model.Model model)
+   public List getProcessDefinitions(boolean filterAuxiliaryProcesses, boolean filterAuxiliaryActivities, org.eclipse.stardust.engine.api.model.Model model)
    {
       // TODO: Merge
       List<ProcessDefinition> processes = ProcessDefinitionUtils.getAllProcessDefinitions(model, filterAuxiliaryProcesses);     
-      return getProcessStatistics(processes);
+      return getProcessStatistics(processes, filterAuxiliaryActivities);
    }
    
    private List <ProcessDefinitionWithPrio>getProcessStatistics(
-         List <ProcessDefinition> pdl)
+         List <ProcessDefinition> pdl, boolean filterAuxiliaryActivities)
    {
       SessionContext sessionCtx = SessionContext.findSessionContext();
       List <ProcessDefinitionWithPrio>pdwp = null;
@@ -88,7 +88,7 @@ public class ProcessDefinitionSearchHandler implements IProcessDefinitionSearchH
             
             ProcessDefinitionWithPrio pdWithPrio = new ProcessDefinitionWithPrio(
                   processDefinition, ps,
-                  activityStatisticsSearchHandler, detailSearchHandler);
+                  activityStatisticsSearchHandler, detailSearchHandler, filterAuxiliaryActivities);
             pdwp.add(pdWithPrio);
          }
       }

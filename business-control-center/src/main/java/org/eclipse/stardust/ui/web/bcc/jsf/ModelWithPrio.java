@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.bcc.jsf;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -30,6 +31,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelElementLocalizerKey;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 
 
 
@@ -38,6 +40,7 @@ public class ModelWithPrio implements PriorityOverviewEntry, Serializable
   
    private static final long serialVersionUID = 1L;
    private List<ProcessDefinitionWithPrio> children;
+   private List<ProcessDefinitionWithPrio> allChildProcesses;
    private IProcessInstancesPrioritySearchHandler searchHandler;
 
    private Priorities priorities;  
@@ -45,14 +48,18 @@ public class ModelWithPrio implements PriorityOverviewEntry, Serializable
    
    String modelName;
    String description;
+   
+   boolean filterAuxiliaryProcesses = true;
    public ModelWithPrio()
    {
       
    }
-   public ModelWithPrio(List<ProcessDefinitionWithPrio> children, IProcessInstancesPrioritySearchHandler  detailSearchHandler,int modelOID)
+   public ModelWithPrio(List<ProcessDefinitionWithPrio> childProcesses, IProcessInstancesPrioritySearchHandler  detailSearchHandler,int modelOID, boolean filterAuxiliaryProcesses)
    {
-      this.children = children;
-      Iterator<PriorityOverviewEntry> childIter = children != null ? children.iterator() : 
+      this.filterAuxiliaryProcesses = filterAuxiliaryProcesses;
+      allChildProcesses = childProcesses;
+      initialzeChildren();
+      Iterator<PriorityOverviewEntry> childIter = childProcesses != null ? childProcesses.iterator() : 
            Collections.EMPTY_LIST.iterator();
       priorities = new Priorities();
       criticalPriorities = new Priorities();
@@ -81,7 +88,22 @@ public class ModelWithPrio implements PriorityOverviewEntry, Serializable
       description = model != null ? I18nUtils.getDescriptionAsHtml(model, model.getDescription()) : null;
       this.searchHandler = detailSearchHandler;
    }
-   
+
+   /**
+    * 
+    */
+   private void initialzeChildren()
+   {
+      children = new ArrayList<ProcessDefinitionWithPrio>();
+      for (ProcessDefinitionWithPrio pp : allChildProcesses)
+      {
+         if (!(filterAuxiliaryProcesses && ProcessDefinitionUtils.isAuxiliaryProcess(pp.getProcessDefinition())))
+         {
+            children.add(pp);
+         }
+      }
+   }
+
    public String getName()
    {
       return modelName;
@@ -171,9 +193,9 @@ public class ModelWithPrio implements PriorityOverviewEntry, Serializable
          if (isCriticalPriority())
          {
             oids = new HashSet<Long>();
-            if (null != children)
+            if (null != allChildProcesses)
             {
-               for (Object rowData : children)
+               for (Object rowData : allChildProcesses)
                {
                   if (rowData instanceof ProcessDefinitionWithPrio)
                   {
@@ -191,7 +213,7 @@ public class ModelWithPrio implements PriorityOverviewEntry, Serializable
          }
          else
          {
-               for (Object rowData : children)
+               for (Object rowData : allChildProcesses)
                {
                   if (rowData instanceof ProcessDefinitionWithPrio)
                   {

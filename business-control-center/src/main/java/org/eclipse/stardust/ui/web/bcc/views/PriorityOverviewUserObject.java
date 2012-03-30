@@ -140,7 +140,26 @@ public class PriorityOverviewUserObject extends NodeUserObject
       }
       return false;
    }
-   
+
+   /**
+    * @return
+    */
+   public Boolean isAuxiliaryActivity()
+   {
+      // TODO - review
+      ITableDataFilterOnOff tableDataFilter = (ITableDataFilterOnOff) treeTable.getDataFilters().getDataFilter(
+            "auxiliaryActivity");
+      ITableDataFilterOnOff onOffFilter = ((ITableDataFilterOnOff) tableDataFilter);
+      if (onOffFilter.isOn())
+      {
+         if (onOffFilter.getName().equals(prioOverviewEntry.getType()))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+
    public int getThresholdState()
    {
       return prioOverviewEntry.getThresholdState();

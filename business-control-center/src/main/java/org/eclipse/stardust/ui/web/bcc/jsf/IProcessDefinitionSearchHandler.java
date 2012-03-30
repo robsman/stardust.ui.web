@@ -17,7 +17,7 @@ import org.eclipse.stardust.engine.api.model.Model;
 
 public interface IProcessDefinitionSearchHandler
 {
-   List<ProcessDefinitionWithPrio> getProcessDefinitions(boolean filterAuxiliaryProcesses);
+   List<ProcessDefinitionWithPrio> getProcessDefinitions(boolean filterAuxiliaryProcesses,  boolean filterAuxiliaryActivities);
 
-   List<ProcessDefinitionWithPrio> getProcessDefinitions(boolean filterAuxiliaryProcesses, Model model);
+   List<ProcessDefinitionWithPrio> getProcessDefinitions(boolean filterAuxiliaryProcesses, boolean filterAuxiliaryActivities, Model model);
 }
