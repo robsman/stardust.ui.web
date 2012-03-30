@@ -39,7 +39,6 @@ public class PdfViewer implements IDocumentViewer
       SessionSharedObjectsMap sharedObjectsMap = SessionSharedObjectsMap.getCurrent();
       sharedObjectsMap.removeObject(documentId);
       sharedObjectsMap.setObject(documentId, pdfDocumentHandler);
-      FacesUtils.refreshPage();
    }
 
    public String getContent()

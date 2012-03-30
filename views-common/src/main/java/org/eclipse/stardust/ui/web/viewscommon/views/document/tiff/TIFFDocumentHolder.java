@@ -306,7 +306,6 @@ public class TIFFDocumentHolder
       {
          trace.error(e);
       }
-      FacesUtils.refreshPage();
    }
 
    /**

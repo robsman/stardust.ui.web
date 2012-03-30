@@ -131,7 +131,6 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
                   .getDocumentManagementService());
          }
 
-         FacesUtils.refreshPage();
       }
       catch (Exception e)
       {
