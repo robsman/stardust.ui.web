@@ -125,6 +125,25 @@ public class CriticalityOverviewNodeObject extends NodeUserObject
       }
       return false;
    }
+   
+   /**
+    * @return
+    */
+   public Boolean isAuxiliaryActivity()
+   {
+      // TODO - review if this is needed
+      ITableDataFilterOnOff tableDataFilter = (ITableDataFilterOnOff) treeTable.getDataFilters().getDataFilter(
+            "auxiliaryActivity");
+      ITableDataFilterOnOff onOffFilter = ((ITableDataFilterOnOff) tableDataFilter);
+      if (onOffFilter.isOn())
+      {
+         if (onOffFilter.getName().equals(criticalityOverviewEntry.getType()))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
 
    public int getThresholdState()
    {

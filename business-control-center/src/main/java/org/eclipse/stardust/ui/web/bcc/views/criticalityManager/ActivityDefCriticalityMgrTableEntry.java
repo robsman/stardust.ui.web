@@ -32,6 +32,7 @@ import org.eclipse.stardust.engine.core.query.statistics.api.CriticalityStatisti
 import org.eclipse.stardust.engine.core.query.statistics.api.CriticalityStatistics.IActivityEntry;
 import org.eclipse.stardust.engine.core.query.statistics.api.CriticalityStatisticsQuery;
 import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelElementLocalizerKey;
@@ -53,6 +54,7 @@ public class ActivityDefCriticalityMgrTableEntry implements ICriticalityMgrTable
    private ProcessDefinition processDefinition;
    private Activity activity;
    private CriticalityCategory selectedCriticalityCategory;
+   private String type;
 
    /**
     * @param activity
@@ -65,6 +67,10 @@ public class ActivityDefCriticalityMgrTableEntry implements ICriticalityMgrTable
       this.activity = activity;
       this.processDefinition = processDefinition;
       this.criticaliyStatisticsMap = criticaliyStatisticsMap;
+      if (ActivityInstanceUtils.isAuxiliaryActivity(activity))
+      {
+         type = "auxiliaryActivity";
+      }
    }
 
    /**
@@ -113,8 +119,7 @@ public class ActivityDefCriticalityMgrTableEntry implements ICriticalityMgrTable
 
    public String getType()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return type;
    }
 
    public String getName()

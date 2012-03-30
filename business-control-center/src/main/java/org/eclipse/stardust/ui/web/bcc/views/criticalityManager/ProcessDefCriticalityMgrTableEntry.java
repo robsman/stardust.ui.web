@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.bcc.views.criticalityManager;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,6 +33,7 @@ import org.eclipse.stardust.engine.core.query.statistics.api.CriticalityStatisti
 import org.eclipse.stardust.engine.core.query.statistics.api.CriticalityStatistics.IProcessEntry;
 import org.eclipse.stardust.engine.core.query.statistics.api.CriticalityStatisticsQuery;
 import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
@@ -51,10 +53,12 @@ public class ProcessDefCriticalityMgrTableEntry implements ICriticalityMgrTableE
 
    private ProcessDefinition processDefinition;
    private List<ActivityDefCriticalityMgrTableEntry> activityEntries;
+   private List<ActivityDefCriticalityMgrTableEntry> filteredActivityEntries;
    private Map<String, CriticalityStatistics> criticaliyStatisticsMap;
    private Map<String, CriticalityDetails> criticalityDetailsMap;
    private CriticalityCategory selectedCriticalityCategory;
    private String type;
+   private boolean filterAuxiliaryActivities;
 
    /**
     * @param processDefinition
@@ -62,15 +66,17 @@ public class ProcessDefCriticalityMgrTableEntry implements ICriticalityMgrTableE
     */
    public ProcessDefCriticalityMgrTableEntry(ProcessDefinition processDefinition,
          Map<String, CriticalityStatistics> criticaliyStatisticsMap,
-         List<ActivityDefCriticalityMgrTableEntry> activityEntries)
+         List<ActivityDefCriticalityMgrTableEntry> activityEntries, boolean filterAuxiliaryActivities)
    {
       this.processDefinition = processDefinition;
       this.activityEntries = activityEntries;
       this.criticaliyStatisticsMap = criticaliyStatisticsMap;
+      this.filterAuxiliaryActivities = filterAuxiliaryActivities;
       if (ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition))
       {
          type = "auxiliaryProcess";
       }
+      initFilteredActivities();
    }
 
    /**
@@ -99,12 +105,27 @@ public class ProcessDefCriticalityMgrTableEntry implements ICriticalityMgrTableE
     */
    public void initialize()
    {
-      List<ICriticalityMgrTableEntry> children = getChildren();
+      List<ICriticalityMgrTableEntry> children = (List) activityEntries;
       for (ICriticalityMgrTableEntry child : children)
       {
          child.initialize();
       }
       initializeSelf();
+   }
+
+   /**
+    * 
+    */
+   private void initFilteredActivities()
+   {
+      filteredActivityEntries = new ArrayList<ActivityDefCriticalityMgrTableEntry>();
+      for (ActivityDefCriticalityMgrTableEntry ae : activityEntries)
+      {
+         if (!(filterAuxiliaryActivities && ActivityInstanceUtils.isAuxiliaryActivity(ae.getActivity())))
+         {
+            filteredActivityEntries.add(ae);
+         }
+      }
    }
 
    public String getDefaultPerformerName()
@@ -114,7 +135,7 @@ public class ProcessDefCriticalityMgrTableEntry implements ICriticalityMgrTableE
 
    public List getChildren()
    {
-      return activityEntries;
+      return filteredActivityEntries;
    }
 
    public String getType()
@@ -153,6 +174,11 @@ public class ProcessDefCriticalityMgrTableEntry implements ICriticalityMgrTableE
    public Map<String, CriticalityDetails> getCriticalityDetailsMap()
    {
       return criticalityDetailsMap;
+   }
+
+   public ProcessDefinition getProcessDefinition()
+   {
+      return processDefinition;
    }
 
    public class ProcessEntryCriticalitySearchhandler implements ISearchHandler

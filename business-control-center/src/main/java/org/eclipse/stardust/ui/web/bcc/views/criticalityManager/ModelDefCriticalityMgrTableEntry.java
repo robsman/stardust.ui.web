@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.bcc.views.criticalityManager;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,6 +33,7 @@ import org.eclipse.stardust.engine.core.query.statistics.api.CriticalityStatisti
 import org.eclipse.stardust.engine.core.query.statistics.api.CriticalityStatistics.IActivityEntry;
 import org.eclipse.stardust.engine.core.query.statistics.api.CriticalityStatisticsQuery;
 import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelElementLocalizerKey;
@@ -51,20 +53,24 @@ public class ModelDefCriticalityMgrTableEntry implements ICriticalityMgrTableEnt
 {
    private Map<String, CriticalityDetails> criticalityDetailsMap;
    private List<ProcessDefCriticalityMgrTableEntry> processEntries;
+   private List<ProcessDefCriticalityMgrTableEntry> filteredProcessEntries;
    private String modelName;
    private String description;
    private DeployedModel model;
    private CriticalityCategory selectedCriticalityCategory;
    private boolean filterAuxiliaryProcesses;
+   private boolean filterAuxiliaryActivities;
 
    public ModelDefCriticalityMgrTableEntry()
    {}
 
-   public ModelDefCriticalityMgrTableEntry(List<ProcessDefCriticalityMgrTableEntry> processEntries, DeployedModel model, boolean filterAuxiliaryProcesses)
+   public ModelDefCriticalityMgrTableEntry(List<ProcessDefCriticalityMgrTableEntry> processEntries, DeployedModel model, boolean filterAuxiliaryProcesses, boolean filterAuxiliaryActivities)
    {
-      this.processEntries = processEntries;
-      this.model = model;
       this.filterAuxiliaryProcesses = filterAuxiliaryProcesses;
+      this.filterAuxiliaryActivities = filterAuxiliaryActivities;
+      this.processEntries = processEntries;
+      initiFilteredProcessEntries();
+      this.model = model;
       modelName = model != null ? I18nUtils.getLabel(model, model.getName()) : null;
       description = model != null ? I18nUtils.getDescriptionAsHtml(model, model.getDescription()) : null;
    }
@@ -75,8 +81,7 @@ public class ModelDefCriticalityMgrTableEntry implements ICriticalityMgrTableEnt
       for (ProcessDefCriticalityMgrTableEntry pe : processEntries)
       {
          Map<String, CriticalityDetails> cdm = pe.getCriticalityDetailsMap();
-         Set<String> keys = cdm.keySet();
-         for (String key : keys)
+         for (String key : cdm.keySet())
          {
             CriticalityDetails pcc = cdm.get(key);
 
@@ -104,12 +109,27 @@ public class ModelDefCriticalityMgrTableEntry implements ICriticalityMgrTableEnt
     */
    public void initialize()
    {
-      List<ICriticalityMgrTableEntry> children = getChildren();
+      List<ICriticalityMgrTableEntry> children = (List) processEntries;
       for (ICriticalityMgrTableEntry child : children)
       {
          child.initialize();
       }
       initializeSelf();
+   }
+
+   /**
+    * 
+    */
+   private void initiFilteredProcessEntries()
+   {
+      filteredProcessEntries = new ArrayList<ProcessDefCriticalityMgrTableEntry>();
+      for (ProcessDefCriticalityMgrTableEntry pe : processEntries)
+      {
+         if (!(filterAuxiliaryProcesses && ProcessDefinitionUtils.isAuxiliaryProcess(pe.getProcessDefinition())))
+         {
+            filteredProcessEntries.add(pe);
+         }
+      }
    }
 
    public String getDefaultPerformerName()
@@ -119,7 +139,7 @@ public class ModelDefCriticalityMgrTableEntry implements ICriticalityMgrTableEnt
 
    public List getChildren()
    {
-      return processEntries;
+      return filteredProcessEntries;
    }
 
    public String getType()
@@ -170,8 +190,13 @@ public class ModelDefCriticalityMgrTableEntry implements ICriticalityMgrTableEnt
             ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
             FilterTerm filter = query.getFilter();
             FilterTerm orTerm = filter.addOrTerm();
-            List<ProcessDefinition> procDefs = ProcessDefinitionUtils.getAllProcessDefinitions(model, filterAuxiliaryProcesses);
-            
+
+            /*
+             * Fetch all process definitions irrespective of the filterAuxiliaryProcesses
+             * flag as we need to show consider all processes for showing row counts.
+             */
+            List<ProcessDefinition> procDefs = ProcessDefinitionUtils.getAllProcessDefinitions(model, false);
+
             boolean hasAtLeastOneActivity = false;
             for (ProcessDefinition processDefinition : procDefs)
             {

@@ -121,12 +121,18 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
 
       List<DeployedModel> models = ModelCache.findModelCache().getActiveModels();
       boolean filterAuxiliaryProcesses = filterAuxiliaryProcesses();
+      boolean filterAuxiliaryActivities = filterAuxiliaryActivities();
       processCriticalityStatisticsMap = new HashMap<String, Map<String, CriticalityStatistics>>();
       for (DeployedModel activeModel : models)
       {
          List<ProcessDefCriticalityMgrTableEntry> processEntries = new ArrayList<ProcessDefCriticalityMgrTableEntry>();
-         List<ProcessDefinition> procDefs = ProcessDefinitionUtils.getAllProcessDefinitions(activeModel,
-               filterAuxiliaryProcesses);
+
+         /*
+          * Fetch all process definitions irrespective of the filterAuxiliaryProcesses
+          * flag as we need to show consider all processes for showing row counts.
+          */
+         List<ProcessDefinition> procDefs = ProcessDefinitionUtils.getAllProcessDefinitions(activeModel, false);
+
          for (ProcessDefinition procDef : procDefs)
          {
             List<ActivityDefCriticalityMgrTableEntry> actEntries = new ArrayList<ActivityDefCriticalityMgrTableEntry>();
@@ -143,11 +149,11 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
             }
 
             processEntries.add(new ProcessDefCriticalityMgrTableEntry(procDef, processCriticalityStatisticsMap
-                  .get(procDef.getQualifiedId()), actEntries));
+                  .get(procDef.getQualifiedId()), actEntries, filterAuxiliaryActivities));
          }
 
          ICriticalityMgrTableEntry modelWithCriticality = new ModelDefCriticalityMgrTableEntry(processEntries,
-               activeModel, filterAuxiliaryProcesses);
+               activeModel, filterAuxiliaryProcesses, filterAuxiliaryActivities);
 
          TreeTableNode modelNode = TreeNodeFactory.createTreeNode(treeTable, this, modelWithCriticality, true);
          // Build Tree
@@ -328,6 +334,16 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
       FilterToolbarItem filterToolbarItem = getFilterToolbarItem("auxiliaryProcess");
       return !filterToolbarItem.isActive();
    }
+   
+   /**
+    * @return
+    */
+   public boolean filterAuxiliaryActivities()
+   {
+      //TODO - review
+      FilterToolbarItem filterToolbarItem = getFilterToolbarItem("auxiliaryActivity");
+      return !filterToolbarItem.isActive();
+   }
 
    /**
     * 
@@ -353,6 +369,13 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
                "process_auxiliary.png", Constants.PROCESS_HISTORY_IMAGES_BASE_PATH);
          auxiliaryProcess.setActive(false);
          processFilterToolbarItems.add(auxiliaryProcess);
+
+         FilterToolbarItem auxiliaryActivity = new FilterToolbarItem("" + 1, "auxiliaryActivity",
+               "processHistory.processTable.showAuxiliaryActivities",
+               "processHistory.processTable.hideAuxiliaryActivities", "activity_auxiliary.png",
+               Constants.PROCESS_HISTORY_IMAGES_BASE_PATH);
+         auxiliaryActivity.setActive(false);
+         processFilterToolbarItems.add(auxiliaryActivity);
 
          initializeDataFilters();
       }
