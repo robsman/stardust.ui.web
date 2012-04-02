@@ -10,14 +10,14 @@
 		<pc:automationTag value="auto-DT-SelAllNone-UnCheckAllRows"
 			standAlone="false" />
 		<f:param name="selectColumnName" value="#{item.columnName}" />
-		<ice:graphicImage value="/plugins/common/images/icons/checkbox-on.gif"
+		<ice:graphicImage value="/plugins/common/images/icons/ui-check-box.png"
 			title="#{common_msgPropsBean['common.genericDataTable.uncheckAll.title']}" />
 	</ice:commandLink>
 	<ice:commandLink action="#{table.selectAllRows}" rendered="#{not table.allRowsSelected}">
 		<pc:automationTag value="auto-DT-SelAllNone-CheckAllRows"
 			standAlone="false" />
 		<f:param name="selectColumnName" value="#{item.columnName}" />
-		<ice:graphicImage value="/plugins/common/images/icons/checkbox-off.gif"
+		<ice:graphicImage value="/plugins/common/images/icons/ui-check-box-uncheck.png"
 			title="#{common_msgPropsBean['common.genericDataTable.checkAll.title']}" />
 	</ice:commandLink>
 

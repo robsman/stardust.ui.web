@@ -35,12 +35,12 @@ public class MimeTypesHelper implements Serializable
    public static final MIMEType JPG = new MIMEType("image/jpeg", new String[]{"jpg", "jpeg"}, "document-image.png", "JPEG");
    public static final MIMEType PJPG = new MIMEType("image/pjpeg", "jpg", "document-image.png", "PJPEG");
    public static final MIMEType XPNG = new MIMEType("image/x-png", "jpg", "document-image.png", "X-PNG");
-   public static final MIMEType GIF = new MIMEType("image/gif", "gif", "gif.gif", "GIF");
+   public static final MIMEType GIF = new MIMEType("image/gif", "gif", "document-image.png", "GIF");
 	public static final MIMEType TIFF = new MIMEType("image/tiff", new String[] { "tif", "tiff" }, "images.png", "Tiff");
    public static final MIMEType PDF = new MIMEType("application/pdf", "pdf", "document-pdf-text.png", "PDF");
    public static final MIMEType RTF = new MIMEType("text/rtf", "rtf", "document-word-text.png", "");
    public static final MIMEType DOC = new MIMEType("application/msword", "doc", "document-word-text.png", "");
-   public static final MIMEType MOV = new MIMEType("video/quicktime", "mov", "quicktime.gif", "Video");
+   public static final MIMEType MOV = new MIMEType("video/quicktime", "mov", "document-film.png", "Video");
    public static final MIMEType WMF = new MIMEType("video/x-ms-wmv", "wmf", "document-film.png", "Video");
    public static final MIMEType AVI = new MIMEType("video/x-msvideo", "avi", "document-film.png", "Video");
    public static final MIMEType SWF = new MIMEType("application/x-shockwave-flash", "swf", "document-flash-movie.png", "Shockwave Flash");
@@ -48,7 +48,7 @@ public class MimeTypesHelper implements Serializable
    public static final MIMEType MP3 = new MIMEType("audio/mpeg", "mp3", "document-music.png", "Audio");
    public static final MIMEType ZIP = new MIMEType("application/zip", "zip", "document-zipper.png", "");
    public static final MIMEType TXT = new MIMEType("text/plain", "txt", "document-text.png", "Text");
-   public static final MIMEType XML = new MIMEType("text/xml", "xml", "xml.gif", "XML");
+   public static final MIMEType XML = new MIMEType("text/xml", "xml", "document-code.png", "XML");
    public static final MIMEType PPT = new MIMEType("application/vnd.ms-powerpoint", "ppt", "document-powerpoint.png", "");
    public static final MIMEType XLS = new MIMEType("application/vnd.ms-excel", "xls", "document-excel.png", "");
    public static final MIMEType PNG = new MIMEType("image/png", "png", "document-image.png", "PNG");

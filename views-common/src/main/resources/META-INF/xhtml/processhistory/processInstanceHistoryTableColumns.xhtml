@@ -55,13 +55,13 @@
 			rendered="#{row.selected}">
 			<pc:automationTag value="auto-COM-PCEHistoryTable-Select" standAlone="false"/>
 			<f:attribute name="selectedRow" value="#{row}" />
-			<ice:graphicImage value="/plugins/views-common/images/icons/radio-on.png" />
+			<ice:graphicImage value="/plugins/views-common/images/icons/ui-radio-button.png" />
 		</ice:commandLink>
 		<ice:commandLink actionListener="#{bean.selectRow}"
 			rendered="#{not row.selected}">
 			<pc:automationTag value="auto-COM-PCEHistoryTable-Select" standAlone="false"/>
 			<f:attribute name="selectedRow" value="#{row}" />
-			<ice:graphicImage value="/plugins/views-common/images/icons/radio-off.png" />
+			<ice:graphicImage value="/plugins/views-common/images/icons/ui-radio-button-uncheck.png" />
 		</ice:commandLink>
 
 	</ice:panelGroup>
