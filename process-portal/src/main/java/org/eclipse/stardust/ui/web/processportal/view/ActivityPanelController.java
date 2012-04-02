@@ -27,8 +27,8 @@ import org.eclipse.stardust.engine.api.query.LinkDirection;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.api.runtime.PredefinedProcessInstanceLinkTypes;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstanceLinkType;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
@@ -43,16 +43,15 @@ import org.eclipse.stardust.ui.web.viewscommon.dialogs.LinkedProcessBean;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileUploadHelper;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileUploadHelper.FUNCTION_TYPE;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileUploadHelper.FileUploadEvent;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
-
 
 import com.icesoft.faces.context.effects.JavascriptContext;
 
@@ -540,9 +539,9 @@ public class ActivityPanelController extends UIComponentBean
       {
          ProcessInstance processInstance = activityDetailsBean.getProcessInstance();
          ProcessInstance fromProcessLink = ProcessInstanceUtils.getLinkInfo(processInstance, LinkDirection.TO,
-               ProcessInstanceLinkType.SWITCH);
+               PredefinedProcessInstanceLinkTypes.SWITCH);
          ProcessInstance joinProcessLink = ProcessInstanceUtils.getLinkInfo(processInstance, LinkDirection.TO,
-               ProcessInstanceLinkType.JOIN);
+        		 PredefinedProcessInstanceLinkTypes.JOIN);
          linkedProcess = LinkedProcessBean.getCurrent();
          linkedProcess.setFromLinkedProcess(fromProcessLink);
          linkedProcess.setJoinLinkedProcess(joinProcessLink);

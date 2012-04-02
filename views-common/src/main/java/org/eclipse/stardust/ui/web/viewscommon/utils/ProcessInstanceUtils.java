@@ -39,6 +39,7 @@ import org.eclipse.stardust.engine.api.query.ProcessInstances;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
+import org.eclipse.stardust.engine.api.runtime.PredefinedProcessInstanceLinkTypes;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstancePriority;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
@@ -321,8 +322,7 @@ public class ProcessInstanceUtils
     * @param forceReload
     * @return
     */
-   @SuppressWarnings("unchecked")
-   public static Map<Long, ProcessInstance> getProcessInstancesAsMap(QueryResult result, boolean forceReload)
+   public static Map<Long, ProcessInstance> getProcessInstancesAsMap(QueryResult<?> result, boolean forceReload)
    {
       List<Long> processInstanceIds = CollectionUtils.newList();
       for (Object resultObject : result)
@@ -623,6 +623,32 @@ public class ProcessInstanceUtils
     * @return
     */
    public static ProcessInstance getLinkInfo(ProcessInstance instance, LinkDirection linkDir, String linkType)
+   {
+      if (null != instance)
+      {
+         ProcessInstanceQuery query = ProcessInstanceQuery.findLinked(instance.getOID(), linkDir, linkType);
+         ProcessInstanceDetailsPolicy processInstanceDetailsPolicy = new ProcessInstanceDetailsPolicy(
+               ProcessInstanceDetailsLevel.Default);
+         processInstanceDetailsPolicy.getOptions().add(ProcessInstanceDetailsOptions.WITH_LINK_INFO);
+         query.setPolicy(processInstanceDetailsPolicy);
+
+         List<ProcessInstance> pis = ServiceFactoryUtils.getQueryService().getAllProcessInstances(query);
+         if (CollectionUtils.isNotEmpty(pis))
+            return pis.get(0);
+         else
+            return null;
+      }
+      return null;
+   }
+
+   /**
+    * Method will find the LinkedProcess in given direction and return the ProcessInstance
+    * 
+    * @param instance
+    * @param linkDir
+    * @return
+    */
+   public static ProcessInstance getLinkInfo(ProcessInstance instance, LinkDirection linkDir, PredefinedProcessInstanceLinkTypes linkType)
    {
       if (null != instance)
       {

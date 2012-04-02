@@ -15,23 +15,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.context.FacesContext;
+import javax.faces.convert.Converter;
+
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.DateUtils;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.engine.api.dto.ContextKind;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
+import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.PredefinedProcessInstanceLinkTypes;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceLink;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstanceLinkType;
-
-
-
-import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import org.eclipse.stardust.engine.api.dto.ContextKind;
-import org.eclipse.stardust.engine.api.model.Activity;
-import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.RuntimeObject;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
@@ -46,7 +44,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
-
 
 /**
  * @author Ankita.Patel
@@ -446,11 +443,11 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
       if (processInstance.getOID() == sourceLinkOID)
       {
          // If the link type is Join , set the To Process Link Type
-         linkType = ProcessInstanceLinkType.JOIN.equals(link.getLinkType().getId()) ? JOIN_TO : SWITCH_TO;
+         linkType = PredefinedProcessInstanceLinkTypes.JOIN.equals(link.getLinkType().getId()) ? JOIN_TO : SWITCH_TO;
       }
       else if (processInstance.getOID() == targetLinkOID)
       {
-         linkType = ProcessInstanceLinkType.JOIN.equals(link.getLinkType().getId()) ? JOIN_FROM : SWITCH_FROM;
+         linkType = PredefinedProcessInstanceLinkTypes.JOIN.equals(link.getLinkType().getId()) ? JOIN_FROM : SWITCH_FROM;
       }
       return linkType;
 
