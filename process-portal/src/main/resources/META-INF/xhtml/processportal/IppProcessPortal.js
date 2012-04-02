@@ -508,66 +508,6 @@ InfinityBpm.ProcessPortal = new function() {
       });
     }
 
-    //Only repositions the iframe, doesn't activate it.
-    function repositionContentFrame(contentId, advanceArgs) {
-        debug("About to reposition content frame with ID " + contentId);
-        
-        if (advanceArgs != undefined)
-        {
-  	      var anchorId = advanceArgs.anchorId;
-  	      var width = advanceArgs.width;
-  	      var height = advanceArgs.height;
-  	      var openOnRight = advanceArgs.openOnRight;
-  	      var anchorXAdjustment = advanceArgs.anchorXAdjustment;
-  	      var anchorYAdjustment = advanceArgs.anchorYAdjustment;
-  	      var zIndex = advanceArgs.zIndex;
-  	      var border = advanceArgs.border;
-        }
-
-        doWithContentFrame(contentId, function(contentFrame) {
-          debug("Repositioning content frame: " + contentFrame);
-          var ippPortalDom = ippPortalWindow().document;
-          
-          var anchor = anchorId == undefined ? 'ippActivityPanelAnchor' : anchorId;
-          var contentPanelAnchor = ippPortalDom.getElementById(anchor);
-          if (contentPanelAnchor) {
-            debug('Repositioning content frame: ' + contentId + ' (using anchor: ' + contentPanelAnchor + ')');
-            var pos = findPosition(contentPanelAnchor);
-            debug('Moving to (' + pos.x + ', ' + pos.y + ')');
-            
-            var iFrameWith = (width == undefined) ? contentPanelAnchor.offsetWidth : width;
-            var iFrameHeight = (height == undefined) ? contentPanelAnchor.offsetHeight : height;
-           
-            openOnRight = (openOnRight == undefined) ?  true : openOnRight;
-            anchorXAdjustment = (anchorXAdjustment == undefined) ? 0 : anchorXAdjustment;
-            anchorYAdjustment = (anchorYAdjustment == undefined) ? 0 : anchorYAdjustment;
-
-            var posX = openOnRight ? pos.x : (pos.x - iFrameWith);
-            posX += anchorXAdjustment;
-            var posY = pos.y + anchorYAdjustment;
-
-            contentFrame.style.position = 'absolute';
-            contentFrame.style.left = posX + 'px';
-            contentFrame.style.top = posY + 'px';
-            contentFrame.style.width = iFrameWith + 'px';
-            contentFrame.style.height = iFrameHeight + 'px';
-            
-            if (border != undefined) {
-            	contentFrame.style.border = border;
-            }
-            
-            if (zIndex != undefined) {
-          	  contentFrame.style.zIndex = zIndex;
-            }
-
-            addIframe(contentId, posX, posY);
-            // This is needed because if page is scrolled at the time of iFrame activation
-            // Then it has to be readjusted for scroll position.
-            handleScroll();
-          }  
-        });
-     }
-
     function resizeAndRepositionContentFrame(contentId, advanceArgs) {
     	debug("About to resize and reposition content frame with ID " + contentId);
     	doWithContentFrame(contentId, function(contentFrame) {
@@ -827,14 +767,6 @@ InfinityBpm.ProcessPortal = new function() {
         	  activateContentFrame(contentId, advanceArgs);
           } catch (e) {
         	  alert(getMessage("portal.common.js.contentFrame.resize.failed", 'Failed during content frame resize: ') + e.message);
-          }
-        },
-
-        repositionContentFrame: function(contentId, advanceArgs) {
-          try {
-        	  repositionContentFrame(contentId, advanceArgs);
-          } catch (e) {
-            alert(getMessage("portal.common.js.contentFrame.reposition.failed", 'Failed during content frame repositioning: ') + e.message);
           }
         },
 

@@ -280,21 +280,21 @@
 		</ice:panelGrid>
 	</ice:panelGroup>
 	<script id="tiffRepositionScripts" lang="javascript">
-		Ice.onSendReceive("document:body", function() {}, function() {
-			var elems = window.parent.document.getElementsByTagName("IFRAME");			
-			for (var i = 0; i != elems.length; i++) {
-				if (-1 != elems[i].id.indexOf('tiff')) {
-					InfinityBpm.ProcessPortal.repositionContentFrame(elems[i].id, {'anchorId' : 'tiffViewerIframe'});
-				}
-			}
-		});
-		Ice.onAsynchronousReceive("document:body", function() {
+		function repositionTIFFIFRAME() {
 			var elems = window.parent.document.getElementsByTagName("IFRAME");
 			for (var i = 0; i != elems.length; i++) {
-				if (-1 != elems[i].id.indexOf('tiff')) {
-					InfinityBpm.ProcessPortal.repositionContentFrame(elems[i].id, {'anchorId' : 'tiffViewerIframe'});
+				if ("tiff_frame#{contentHandler.tiffDocumentHolder.docId}" == elems[i].id) {
+					if ('inline' == elems[i].style.display) {
+						InfinityBpm.ProcessPortal.resizeContentFrame("tiff_frame#{contentHandler.tiffDocumentHolder.docId}", {'anchorId' : 'tiffViewerIframe'});						
+					}					
 				}
 			}
+		}
+		Ice.onSendReceive("document:body", function() {}, function() {			
+			repositionTIFFIFRAME();
+		});
+		Ice.onAsynchronousReceive("document:body", function() {
+			repositionTIFFIFRAME();
 		});
 	</script>
 </f:view>
