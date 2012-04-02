@@ -180,7 +180,7 @@
       </copy>
    </target>
 
-   <target name="deploy" depends="jar" />
+   <target name="deploy" depends="build" />
    
    <target name="install" depends="deploy" if="maven.localRepository"
       description="installs the artifacts into a local Maven repository">
