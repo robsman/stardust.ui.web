@@ -40,12 +40,8 @@
 
    <dependencies>
       <!-- ipp-persistence-jpa-compile -->
-      <dependency org="org.springframework" name="spring-core" rev="3.0.5.RELEASE" conf="ipp-persistence-jpa-compile->default" />
-      <dependency org="org.springframework" name="spring-beans" rev="3.0.5.RELEASE" conf="ipp-persistence-jpa-compile->default" />
-      <dependency org="org.springframework" name="spring-context" rev="3.0.5.RELEASE" conf="ipp-persistence-jpa-compile->default" />
+      <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-persistence-jpa-compile->spring-module-compile"/>
       <dependency org="org.springframework" name="spring-orm" rev="3.0.5.RELEASE" conf="ipp-persistence-jpa-compile->default" />
-      <dependency org="org.springframework" name="spring-jdbc" rev="3.0.5.RELEASE" conf="ipp-persistence-jpa-compile->default" />
-      <dependency org="org.springframework" name="spring-tx" rev="3.0.5.RELEASE" conf="ipp-persistence-jpa-compile->default" />
       <dependency org="org.eclipse.persistence" name="eclipselink" rev="2.0.0" conf="ipp-persistence-jpa-compile->default" />
       <dependency org="org.eclipse.persistence" name="javax.persistence" rev="2.0.0" conf="ipp-persistence-jpa-compile->default" />
 
@@ -53,7 +49,7 @@
       <!-- nothing to add -->
 
       <!-- ipp-persistence-jpa-provided -->
-      <dependency org="javax.transaction" name="jta" rev="1.0.1B" conf="ipp-persistence-jpa-provided->default" />
+      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-persistence-jpa-provided->jta-api-module-compile"/>
 
       <!-- test -->
       <dependency org="junit" name="junit" rev="4.10" conf="test->default" />
