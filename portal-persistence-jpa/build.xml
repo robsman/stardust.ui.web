@@ -11,7 +11,7 @@
 <!--
   To execute this build script, you have to configure your environment as follows:
   - Java property java.home must point to an existent JAVA_HOME (either via parameter 
-    (e.g. antit.bat -Djava.home=C:/Programme/Java15) or create a private.properties file
+    (e.g. antit.bat -Djava.home=C:/Programme/Java16) or create a private.properties file
     in the etc folder of the project and put the property in there)
   - portal-common and portal-api have to be build before this build can be executed
   - you need an Infinity installation or you have to execute at least the latakia build file
@@ -29,7 +29,7 @@
    <property name="organizationId" value="com.infinity.bpm" />
    <property name="artifactId" value="ipp-persistence-jpa" />
 
-   <import file="../../stardust/build.tools/commons-build.xml" />
+   <import file="../../build.tools/commons-build.xml" />
 
    <target name="initOnDevelopment" if="setup.development">
       <echo message="Performing a development build ..." />
@@ -109,17 +109,17 @@
       </path>
    </target>
 
-   <target name="compile.jdk15" depends="init" description="Compiling Java 5 code.">
-      <ipp:javac-java5 srcdir="${build.src}" destdir="${build.classes}">
+   <target name="compile.jdk16" depends="init" description="Compiling Java 6 code.">
+      <ipp:javac-java6 srcdir="${build.src}" destdir="${build.classes}">
          <include name="**/*.java" />
-         <classpath id="compile5.classpath">
+         <classpath id="compile6.classpath">
             <path path="${build.classes}" />
             <path refid="persistence-jpa.classpath" />
          </classpath>
-      </ipp:javac-java5>
+      </ipp:javac-java6>
    </target>
 
-   <target name="compile" depends="prepareSources, initBuildDirectories, initClasspath, compile.jdk15" />
+   <target name="compile" depends="prepareSources, initBuildDirectories, initClasspath, compile.jdk16" />
 
    <target name="copyDatFiles" depends="initBuildDirectories">
       <copy todir="${build.classes}">
