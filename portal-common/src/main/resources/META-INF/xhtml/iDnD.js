@@ -27,6 +27,8 @@ var iDnD = function () {
 	
 	var hideIframe = function()
 	{
+		dragContentIFrame.width = "0px";
+		dragContentIFrame.height = "0px";
 		dragContentIFrame.style.visibility = "hidden";
 	}
 	
@@ -35,7 +37,7 @@ var iDnD = function () {
 		var dragOverlayDiv = document.createElement('div');
 		dragOverlayDiv.id = "dragOverlay";
 		document.getElementsByTagName('body') [0].appendChild(dragOverlayDiv);
-		dragOverlayDiv.innerHTML = '<iframe id="dragContentIFrame" width="170px" height="50px"  style="z-index:10000; overflow : hidden;" src="dndContent.xhtml" frameborder="0"></iframe>';
+		dragOverlayDiv.innerHTML = '<iframe id="dragContentIFrame" width="0px" height="0px"  style="z-index:10000; overflow : hidden;" src="dndContent.xhtml" frameborder="0"></iframe>';
 		dragContentIFrame = document.getElementById('dragContentIFrame');
 		dragContentIFrame.style.visibility = "hidden";
 	}
@@ -59,6 +61,8 @@ var iDnD = function () {
 			  	e.preventDefault();
 			 }
 			var coordinates = getMouseCoordinates(e, container)
+			dragContentIFrame.width = "170px";
+			dragContentIFrame.height = "50px";
 			dragContentIFrame.style.visibility = "visible";
 			this.setIframeXY(e, container);
 		},
