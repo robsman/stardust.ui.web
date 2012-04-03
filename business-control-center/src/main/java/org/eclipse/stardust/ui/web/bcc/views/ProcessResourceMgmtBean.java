@@ -11,15 +11,21 @@
 package org.eclipse.stardust.ui.web.bcc.views;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.faces.context.FacesContext;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
+import org.eclipse.stardust.engine.api.query.RawQueryResult;
 import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.query.Users;
@@ -29,27 +35,35 @@ import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
 import org.eclipse.stardust.ui.web.bcc.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.bcc.jsf.IQueryExtender;
 import org.eclipse.stardust.ui.web.bcc.jsf.RoleItem;
-import org.eclipse.stardust.ui.web.bcc.jsf.UserDefinedQueryResult;
 import org.eclipse.stardust.ui.web.bcc.jsf.UserItem;
 import org.eclipse.stardust.ui.web.bcc.messsages.MessagesBCCBean;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
-import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
-import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
+import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
-import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
+import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
+import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterSearch;
-import org.eclipse.stardust.ui.web.common.table.SortableTable;
+import org.eclipse.stardust.ui.web.common.table.DataTableSortModel;
+import org.eclipse.stardust.ui.web.common.table.IQuery;
+import org.eclipse.stardust.ui.web.common.table.IQueryResult;
+import org.eclipse.stardust.ui.web.common.table.ISortHandler;
+import org.eclipse.stardust.ui.web.common.table.IUserObjectBuilder;
+import org.eclipse.stardust.ui.web.common.table.PaginatorDataTable;
+import org.eclipse.stardust.ui.web.common.table.SortCriterion;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
-import org.eclipse.stardust.ui.web.viewscommon.common.ISearchHandler;
-import org.eclipse.stardust.ui.web.viewscommon.common.ISortHandler;
-import org.eclipse.stardust.ui.web.viewscommon.common.UserQuerySortHandler;
+import org.eclipse.stardust.ui.web.viewscommon.common.table.IppFilterHandler;
+import org.eclipse.stardust.ui.web.viewscommon.common.table.IppQueryResult;
+import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
+import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSortHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultColumnModelEventHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 
@@ -61,7 +75,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
  * @author Giridhara.G
  * @version
  */
-public class ProcessResourceMgmtBean extends UIComponentBean implements ResourcePaths, ViewEventHandler
+public class ProcessResourceMgmtBean extends UIComponentBean implements ResourcePaths, ViewEventHandler, IUserObjectBuilder
 {
    private static final long serialVersionUID = 1L;
 
@@ -73,11 +87,18 @@ public class ProcessResourceMgmtBean extends UIComponentBean implements Resource
 
    private SessionContext sessionCtx;
 
-   private SortableTable<ProcessResourceMgmtRoleTableEntry> processResourceRoleMgmtTable;
+   private PaginatorDataTable<ProcessResourceMgmtRoleTableEntry, ProcessResourceMgmtRoleTableEntry> processResourceRoleMgmtTable;
 
-   private SortableTable<ProcessResourceMgmtUserTableEntry> processResourceUserMgmtTable;
+   private PaginatorDataTable<ProcessResourceMgmtUserTableEntry,ProcessResourceMgmtUserTableEntry> processResourceUserMgmtTable;
 
+   private List<ProcessResourceMgmtUserTableEntry> processResourceUserList = null;
+
+   private List<ProcessResourceMgmtRoleTableEntry> processResourceRoleList = null;
+   
    private MessagesBCCBean propsBean;
+   
+   private String roleFilterNamePattern;
+   private String userFilterNamePattern;
 
    /**
     * Constructor ProcessResourceMgmtBean
@@ -103,8 +124,8 @@ public class ProcessResourceMgmtBean extends UIComponentBean implements Resource
     */
    public void initialize()
    {
-      getProcessResourceUserMgmt();
-      getProcessResourceRoleMgmt();
+      processResourceRoleMgmtTable.refresh(true);
+      processResourceUserMgmtTable.refresh(true);
    }
 
    public void handleEvent(ViewEvent event)
@@ -117,6 +138,10 @@ public class ProcessResourceMgmtBean extends UIComponentBean implements Resource
          getProcessResourceRolMgmtTable();
          initialize();
 
+      }
+      else if (ViewEventType.ACTIVATED == event.getType())
+      {
+         initialize();   
       }
    }
 
@@ -131,6 +156,11 @@ public class ProcessResourceMgmtBean extends UIComponentBean implements Resource
    private void getProcessResourceUsrMgmtTable()
    {
       List<ColumnPreference> userCols = new ArrayList<ColumnPreference>();
+      
+      ProcessResourceMgmtSearchHandler processResourceMgmtSearchHandler = new ProcessResourceMgmtSearchHandler(
+            getQueryExtender(), true);
+      Query query = createQuery();
+      processResourceUserList = getProcessResourceUserMgmt(query);
 
       ColumnPreference colUserName = new ColumnPreference("UserName", "userName", propsBean
             .getString("views.processOverviewView.priorityTable.column.name"),
@@ -168,10 +198,14 @@ public class ProcessResourceMgmtBean extends UIComponentBean implements Resource
             UserPreferencesEntries.V_PROCESS_RESOURCE_USR_MGT, columnModelListener);
      
       TableColumnSelectorPopup userColSelecpopup = new TableColumnSelectorPopup(userColumnModel);
-
-      processResourceUserMgmtTable = new SortableTable<ProcessResourceMgmtUserTableEntry>(userColSelecpopup, null,
-            new SortableTableComparator<ProcessResourceMgmtUserTableEntry>("userName", true));
-      
+      IppFilterHandler filterHandler = new ProcessResourceMgmtFilterHandler();
+      ISortHandler sortHandler = new ProcessResourceMgmtSortHandler();
+      processResourceUserMgmtTable = new PaginatorDataTable<ProcessResourceMgmtUserTableEntry, ProcessResourceMgmtUserTableEntry>(
+            userColSelecpopup, processResourceMgmtSearchHandler, filterHandler, null, this,
+            new DataTableSortModel<ProcessResourceMgmtUserTableEntry>("userName", true));
+      processResourceUserMgmtTable.setISearchHandler(processResourceMgmtSearchHandler);
+      processResourceUserMgmtTable.setISortHandler(sortHandler);
+      processResourceUserMgmtTable.setIFilterHandler(filterHandler);
       columnModelListener.setNeedRefresh(false);
       processResourceUserMgmtTable.initialize();      
       columnModelListener.setNeedRefresh(true);
@@ -181,6 +215,9 @@ public class ProcessResourceMgmtBean extends UIComponentBean implements Resource
    private void getProcessResourceRolMgmtTable()
    {
       List<ColumnPreference> roleCols = new ArrayList<ColumnPreference>();
+      
+      ProcessResourceMgmtSearchHandler processResourceMgmtSearchHandler = new ProcessResourceMgmtSearchHandler(null,
+            false);
 
       ColumnPreference colName = new ColumnPreference("Name", "name", propsBean
             .getString("views.processOverviewView.priorityTable.column.name"),
@@ -208,10 +245,14 @@ public class ProcessResourceMgmtBean extends UIComponentBean implements Resource
       IColumnModel roleColumnModel = new DefaultColumnModel(roleCols, null, null, UserPreferencesEntries.M_BCC,
             UserPreferencesEntries.V_PROCESS_RESOURCE_ROLE_MGT, columnModelListener);
       TableColumnSelectorPopup roleColSelecpopup = new TableColumnSelectorPopup(roleColumnModel);
-
-      processResourceRoleMgmtTable = new SortableTable<ProcessResourceMgmtRoleTableEntry>(roleColSelecpopup, null,
-            new SortableTableComparator<ProcessResourceMgmtRoleTableEntry>("name", true));
-      
+      IppFilterHandler filterHandler = new ProcessResourceMgmtFilterHandler();
+      ISortHandler sortHandler = new ProcessResourceMgmtSortHandler();
+      processResourceRoleMgmtTable = new PaginatorDataTable<ProcessResourceMgmtRoleTableEntry, ProcessResourceMgmtRoleTableEntry>(
+            roleColSelecpopup, processResourceMgmtSearchHandler, filterHandler, null, this,
+            new DataTableSortModel<ProcessResourceMgmtRoleTableEntry>("name", true));
+      processResourceRoleMgmtTable.setISearchHandler(processResourceMgmtSearchHandler);
+      processResourceRoleMgmtTable.setISortHandler(sortHandler);
+      processResourceRoleMgmtTable.setIFilterHandler(filterHandler);
       columnModelListener.setNeedRefresh(false);
       processResourceRoleMgmtTable.initialize();
       columnModelListener.setNeedRefresh(true);
@@ -220,7 +261,7 @@ public class ProcessResourceMgmtBean extends UIComponentBean implements Resource
    /**
     * Used to set the ProcessResourceRoleMgmtTable
     */
-   public void getProcessResourceRoleMgmt()
+   public List<ProcessResourceMgmtRoleTableEntry> getProcessResourceRoleMgmt()
    {
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
       List<ProcessResourceMgmtRoleTableEntry> processResourceRoleList = new ArrayList<ProcessResourceMgmtRoleTableEntry>();
@@ -242,33 +283,34 @@ public class ProcessResourceMgmtBean extends UIComponentBean implements Resource
 
          }
 
-         processResourceRoleMgmtTable.setList(processResourceRoleList);       
       }
       catch (Exception e)
       {
         trace.error(e);
       }
+      return processResourceRoleList;
    }
 
    /**
     * Used to set the processResourceUserMgmtTable
     */
-   public void getProcessResourceUserMgmt()
+   public List<ProcessResourceMgmtUserTableEntry> getProcessResourceUserMgmt(Query query)
    {
       List<ProcessResourceMgmtUserTableEntry> processResourceUserList = new ArrayList<ProcessResourceMgmtUserTableEntry>();
 
-      ProcessResourceMgmtSearchHandler processResourceMgmtSearchHandler = new ProcessResourceMgmtSearchHandler(
-            getQueryExtender());
-
-      Query query = processResourceMgmtSearchHandler.createQuery();
-      QueryResult queryResult = processResourceMgmtSearchHandler.performSearch(query);
-      if (!queryResult.isEmpty())
+      processResourceUserList = new ArrayList<ProcessResourceMgmtUserTableEntry>();
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
+      if (query.getOrderCriteria().getCriteria().size() == 0)
+      {
+         query.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
+      }
+      Users users = facade.getAllUsers((UserQuery) query);
+      List<UserItem> userItems = facade.getAllUsersAsUserItems(users);
+      if (!userItems.isEmpty())
       {
          String userFullName;
-         UserItem userItem;
-         for (int i = 0; i < queryResult.size(); i++)
+         for (UserItem userItem : userItems)
          {
-            userItem = (UserItem) queryResult.get(i);
             userFullName = I18nUtils.getUserLabel(userItem.getUser());
             processResourceUserList.add(new ProcessResourceMgmtUserTableEntry(userItem.getUserName(), userItem,
                   userItem.getUser().getOID(), userItem.getUser().getId(), userFullName, userItem.getUser()
@@ -279,97 +321,242 @@ public class ProcessResourceMgmtBean extends UIComponentBean implements Resource
          }
       }
 
-      processResourceUserMgmtTable.setList(processResourceUserList);
+      return processResourceUserList;
    }
 
-   public SortableTable<ProcessResourceMgmtRoleTableEntry> getProcessResourceRoleMgmtTable()
+   public PaginatorDataTable<ProcessResourceMgmtRoleTableEntry, ProcessResourceMgmtRoleTableEntry> getProcessResourceRoleMgmtTable()
    {
       return processResourceRoleMgmtTable;
    }
 
-   public SortableTable<ProcessResourceMgmtUserTableEntry> getProcessResourceUserMgmtTable()
+   public PaginatorDataTable<ProcessResourceMgmtUserTableEntry, ProcessResourceMgmtUserTableEntry> getProcessResourceUserMgmtTable()
    {
       return processResourceUserMgmtTable;
    }
+   
+   /**
+    * Creates the query to get User Details
+    * 
+    * @return query
+    */
+   public Query createQuery()
+   {
+      UserQuery query = UserQuery.findActive();
+      query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Core));
 
-   private class ProcessResourceMgmtSearchHandler implements ISearchHandler, ISortHandler
+      if (queryExtender != null)
+      {
+         queryExtender.extendQuery(query);
+      }
+      return query;
+   }
+
+   /**
+    * 
+    * @param list
+    * @param filterNamePattern
+    * @return
+    */
+   private List filterResult(List list, String filterNamePattern)
+   {
+      List filteredList = CollectionUtils.newArrayList();
+      String regex = filterNamePattern.replaceAll("\\*", ".*") + ".*";
+      Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+      Iterator iterator = list.iterator();
+
+      while (iterator.hasNext())
+      {
+         Object instanceVar = iterator.next();
+         if (instanceVar instanceof ProcessResourceMgmtUserTableEntry)
+         {
+            ProcessResourceMgmtUserTableEntry var = (ProcessResourceMgmtUserTableEntry) instanceVar;
+            if (pattern.matcher(var.getUserName()).matches())
+            {
+               filteredList.add(var);
+            }
+
+         }
+         else
+         {
+            ProcessResourceMgmtRoleTableEntry var = (ProcessResourceMgmtRoleTableEntry) instanceVar;
+            if (pattern.matcher(var.getName()).matches())
+            {
+               filteredList.add(var);
+            }
+         }
+      }
+      return filteredList;
+   }
+   
+   /**
+    * 
+    * @author Sidharth.Singh
+    *
+    */
+   public class ProcessResourceMgmtFilterHandler extends IppFilterHandler
+   {
+      private static final long serialVersionUID = -2173022668039757090L;
+
+      @Override
+      public void applyFiltering(Query query, List<ITableDataFilter> filters)
+      {
+         roleFilterNamePattern = null;
+         userFilterNamePattern = null;
+         for (ITableDataFilter tableDataFilter : filters)
+         {
+            String filterName = tableDataFilter.getName();
+            if ("Name".equals(filterName))
+            {
+               roleFilterNamePattern = ((TableDataFilterSearch) tableDataFilter).getValue();
+            }
+            if ("UserName".equals(filterName))
+            {
+               userFilterNamePattern = ((TableDataFilterSearch) tableDataFilter).getValue();
+            }
+         }
+      }
+   }
+   
+   /**
+    * 
+    * @author Sidharth.Singh
+    *
+    */
+   private class ProcessResourceMgmtSearchHandler extends IppSearchHandler
    {
       
       private static final long serialVersionUID = 1L;
 
       private IQueryExtender queryExtender;
-
-      private final ISortHandler sortHandler = new UserQuerySortHandler();
+      private boolean userSearch;
 
       /**
        * @param queryExtender
        */
-      public ProcessResourceMgmtSearchHandler(IQueryExtender queryExtender)
+      public ProcessResourceMgmtSearchHandler(IQueryExtender queryExtender , boolean userSearch)
       {
          this.queryExtender = queryExtender;
+         this.userSearch = userSearch;
       }
 
-      /*
-       * (non-Javadoc)
+      /**
        * 
-       * @see org.eclipse.stardust.ui.web.jsf.common.ISearchHandler#createQuery()
        */
       public Query createQuery()
       {
-         UserQuery query = UserQuery.findActive();
-         query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Core));
-
-         if (queryExtender != null)
-         {
-            queryExtender.extendQuery(query);
-         }
-         return query;
+         return null;// No query for engine call
       }
 
-      /*
-       * (non-Javadoc)
-       * 
-       * @see org.eclipse.stardust.ui.web.jsf.common.ISearchHandler#performSearch(org.eclipse.stardust.engine.api.query.Query)
-       */
-      public QueryResult<UserItem> performSearch(Query query)
+     /**
+      * 
+      */
+      @Override
+      public QueryResult performSearch(Query query)
       {
-         try
-         {
-            WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
-            if (query.getOrderCriteria().getCriteria().size() == 0)
-            {
-               query.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
-            }
-            Users users = facade.getAllUsers((UserQuery) query);
-            List<UserItem> userItems = facade.getAllUsersAsUserItems(users);
-            return new UserDefinedQueryResult(query, userItems, users.hasMore(), new Long(users.getTotalCount()));
-         }
-         catch (Exception e)
-         {
-            trace.error(e);
-         }
          return null;
       }
+      
+      /**
+       * 
+       */
+      @Override
+      public IQueryResult performSearch(IQuery iQuery, int startRow, int pageSize)
+      {
+         if (userSearch)
+         {
+            if (CollectionUtils.isNotEmpty(processResourceUserList))
+            {
+               List<ProcessResourceMgmtUserTableEntry> resultList = StringUtils.isEmpty(userFilterNamePattern)
+                     ? processResourceUserList
+                     : filterResult(processResourceUserList, userFilterNamePattern);
+               applySorting(resultList);
+               RawQueryResult<ProcessResourceMgmtUserTableEntry> queryResult = new RawQueryResult<ProcessResourceMgmtUserTableEntry>(
+                     resultList, null, false, Long.valueOf(resultList.size()));
+
+               return (IQueryResult) new IppQueryResult(queryResult);
+            }
+            else
+               return null;
+         }
+         else
+         {
+            processResourceRoleList = getProcessResourceRoleMgmt();
+            List<ProcessResourceMgmtRoleTableEntry> resultList = StringUtils.isEmpty(roleFilterNamePattern)
+                  ? processResourceRoleList
+                  : filterResult(processResourceRoleList, roleFilterNamePattern);
+            applySorting(resultList);
+            RawQueryResult<ProcessResourceMgmtRoleTableEntry> queryResult = new RawQueryResult<ProcessResourceMgmtRoleTableEntry>(
+                  resultList, null, false, Long.valueOf(resultList.size()));
+            return (IQueryResult) new IppQueryResult(queryResult);
+         }
+      }
+
 
       /*
        * (non-Javadoc)
        * 
-       * @see org.eclipse.stardust.ui.web.jsf.common.ISortHandler#applySorting(org.eclipse.stardust.engine.api.query.Query, java.util.List)
+       * @see
+       * org.eclipse.stardust.ui.web.jsf.common.ISortHandler#applySorting(org.eclipse.
+       * stardust.engine.api.query.Query, java.util.List)
        */
-      public void applySorting(Query query, List sortCriteria)
+      public void applySorting(List result)
       {
-         sortHandler.applySorting(query, sortCriteria);
+         if (!CollectionUtils.isEmpty(result))
+         {
+            ISortHandler sortHandler = (result.get(0) instanceof ProcessResourceMgmtUserTableEntry)
+                  ? processResourceUserMgmtTable.getISortHandler()
+                  : processResourceRoleMgmtTable.getISortHandler();
+            ProcessResourceMgmtSortHandler resourceMgmtSortHandler = (ProcessResourceMgmtSortHandler) sortHandler;
+            if (null != resourceMgmtSortHandler && null != resourceMgmtSortHandler.getSortCriterion())
+            {
+               SortCriterion sortCriterion = resourceMgmtSortHandler.getSortCriterion();
+               if (null != resourceMgmtSortHandler.getSortCriterion())
+               {
+                  Comparator comparator = new SortableTableComparator(sortCriterion.getProperty(),
+                        sortCriterion.isAscending());
+                  Collections.sort(result, comparator);
+               }
+            }
+         }
+
+      }
+      
+   }
+   
+   /**
+    * 
+    * @author Sidharth.Singh
+    * @version $Revision: $
+    */
+   private class ProcessResourceMgmtSortHandler extends IppSortHandler
+   {
+      private static final long serialVersionUID = -2562964400250132610L;
+
+      private SortCriterion sortCriterion;
+
+      @Override
+      public void applySorting(Query query, List<SortCriterion> sortCriterias)
+      {}
+
+      public void applySorting(IQuery iQuery, List<SortCriterion> sortCriterias)
+      {
+
+         if (CollectionUtils.isNotEmpty(sortCriterias))
+         {
+            sortCriterion = sortCriterias.get(0);
+         }
+         else
+         {
+            sortCriterion = null;
+         }
+
       }
 
-      /*
-       * (non-Javadoc)
-       * 
-       * @see org.eclipse.stardust.ui.web.jsf.common.ISortHandler#isSortableColumn(java.lang. String)
-       */
-      public boolean isSortableColumn(String propertyName)
+      public SortCriterion getSortCriterion()
       {
-         return sortHandler.isSortableColumn(propertyName);
+         return sortCriterion;
       }
+
    }
 
    /**
@@ -382,6 +569,24 @@ public class ProcessResourceMgmtBean extends UIComponentBean implements Resource
          return (IQueryExtender) sessionCtx.lookup(QUERY_EXTENDER);
       }
       return queryExtender;
+   }
+
+   public Object createUserObject(Object resultRow)
+   {
+      if (resultRow instanceof ProcessResourceMgmtRoleTableEntry)
+         return (ProcessResourceMgmtRoleTableEntry) resultRow;
+      else
+         return (ProcessResourceMgmtUserTableEntry) resultRow;
+   }
+
+   public List<ProcessResourceMgmtUserTableEntry> getProcessResourceUserList()
+   {
+      return processResourceUserList;
+   }
+
+   public List<ProcessResourceMgmtRoleTableEntry> getProcessResourceRoleList()
+   {
+      return processResourceRoleList;
    }
 }
 
