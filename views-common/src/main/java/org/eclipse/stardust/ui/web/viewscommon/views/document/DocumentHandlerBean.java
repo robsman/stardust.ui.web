@@ -262,7 +262,9 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          }
          catch (ResourceNotFoundException e)
          {
-            trace.error(e); // less likely
+            trace.error(e);
+            viewEvent.setVetoed(true);
+            return;
          }
       }
 
@@ -274,9 +276,9 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          Long processInstanceOid;
          if (null != processInsOIdObj)
          {
-            if (processInsOIdObj instanceof Long)
+            if (processInsOIdObj instanceof Number)
             {
-               processInstanceOid = (Long) processInsOIdObj;
+               processInstanceOid = ((Number) processInsOIdObj).longValue();
             }
             else
             {
