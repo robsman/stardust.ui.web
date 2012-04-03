@@ -54,6 +54,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DocumentTypeWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.FileSaveDialog;
@@ -93,6 +94,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    private String dataId;
    private String baseFormBinding = BEAN_NAME;
    private boolean disableSaveAction;
+   private boolean embededView;
    private boolean loadSuccessful = false;
    private String loadUnsuccessfulMsg;
 
@@ -125,25 +127,8 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       {
          loadSuccessful = false;
          thisView = event.getView();
-         documentContentInfo = (IDocumentContentInfo) thisView.getViewParams().get("documentInfo");
-         processInstance = (ProcessInstance) thisView.getViewParams().get("processInstance");
-         dataPathId = (String) thisView.getViewParams().get("dataPathId");
-         dataId = (String) thisView.getViewParams().get("dataId");
-         baseFormBinding = (String) thisView.getViewParams().get("baseFormBinding");
-         if (StringUtils.isEmpty(baseFormBinding))
-         {
-            baseFormBinding = BEAN_NAME;
-         }
-         boolean embededView = false;
-         if (null != thisView.getViewParams().get("embededView"))
-         {
-            embededView = (Boolean) thisView.getViewParams().get("embededView");
-         }
-         
-         if (null != thisView.getViewParams().get("disableSaveAction"))
-         {
-            disableSaveAction = (Boolean) thisView.getViewParams().get("disableSaveAction");
-         }
+        
+         retrieveAndSetInputParameters(event);
 
          // Check if this document is already open in any Activity Panel
          if (!embededView)
@@ -212,7 +197,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          //refresh if different document is selected (but with same view-key)
          IDocumentContentInfo documentInfoParam = (IDocumentContentInfo) event.getView().getViewParams()
                .get("documentInfo");
-         if (!documentInfoParam.getId().equals(documentContentInfo.getId()))
+         if (null != documentInfoParam && !documentInfoParam.getId().equals(documentContentInfo.getId()))
          {
             documentContentInfo = documentInfoParam;
             thisView = event.getView();
@@ -252,6 +237,83 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       }
    }
 
+   /**
+    * @param viewEvent
+    */
+   public void retrieveAndSetInputParameters(ViewEvent viewEvent)
+   {
+      dataPathId = (String) thisView.getViewParams().get("dataPathId");
+      dataId = (String) thisView.getViewParams().get("dataId");
+      baseFormBinding = (String) thisView.getViewParams().get("baseFormBinding");
+      if (StringUtils.isEmpty(baseFormBinding))
+      {
+         baseFormBinding = BEAN_NAME;
+      }
+
+      documentContentInfo = (IDocumentContentInfo) thisView.getViewParams().get("documentInfo");
+
+      if (null == documentContentInfo && null != thisView.getViewParams().get("documentId"))
+      {
+         String documentId = (String) thisView.getViewParams().get("documentId");
+         try
+         {
+            documentContentInfo = new JCRDocument(DocumentMgmtUtility.getDocument(documentId));
+            thisView.getViewParams().put("documentInfo", documentContentInfo);
+         }
+         catch (ResourceNotFoundException e)
+         {
+            trace.error(e); // less likely
+         }
+      }
+
+      processInstance = (ProcessInstance) thisView.getViewParams().get("processInstance");
+
+      if (null == processInstance)
+      {
+         Object processInsOIdObj = thisView.getViewParams().get("processInstanceOId");
+         Long processInstanceOid;
+         if (null != processInsOIdObj)
+         {
+            if (processInsOIdObj instanceof Long)
+            {
+               processInstanceOid = (Long) processInsOIdObj;
+            }
+            else
+            {
+               processInstanceOid = Long.valueOf((String) processInsOIdObj);
+            }
+            processInstance = ProcessInstanceUtils.getProcessInstance(processInstanceOid);
+         }
+      }
+      Object embededViewObj = thisView.getViewParams().get("embededView");
+
+      if (null != embededViewObj)
+      {
+         if (embededViewObj instanceof Boolean)
+         {
+            embededView = (Boolean) embededViewObj;
+         }
+         else
+         {
+            embededView = Boolean.valueOf((String) embededViewObj);
+         }
+      }
+
+      Object disableSaveActionObj = thisView.getViewParams().get("disableSaveAction");
+
+      if (null != disableSaveActionObj)
+      {
+         if (disableSaveActionObj instanceof Boolean)
+         {
+            disableSaveAction = (Boolean) disableSaveActionObj;
+         }
+         else
+         {
+            disableSaveAction = Boolean.valueOf((String) disableSaveActionObj);
+         }
+      }
+   }
+   
    /*
     * (non-Javadoc)
     * 
