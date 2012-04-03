@@ -543,7 +543,11 @@ InfinityBpm.ProcessPortal = new function() {
         // Delayed removal of iFrame, This is a workaround for ICEfaces concurrent dom view issue with iFrames
         contentFrame.src = "about:blank";
         window.setTimeout(function() {
-        	contentFrame.parentNode.removeChild(contentFrame);
+        	if (contentFrame) {
+        		if (contentFrame.parentNode) {
+        			contentFrame.parentNode.removeChild(contentFrame);
+        		}
+        	}
         }, CONTENT_FRAME_CLOSE_DELAY);
 
         removeIframe(contentId);
