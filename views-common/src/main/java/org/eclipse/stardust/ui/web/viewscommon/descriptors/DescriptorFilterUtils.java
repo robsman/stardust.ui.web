@@ -590,7 +590,7 @@ public class DescriptorFilterUtils
       // for String
       if (Character.class.equals(dataPath.getMappedType()) || String.class.equals(dataPath.getMappedType()))
       {
-         dataFilter = getStringFilter(dataPath, (String) value, false);
+         dataFilter = getStringFilter(dataPath, value, false);
       }// for boolean
       else if (Boolean.class.equals(dataPath.getMappedType()))
       {

@@ -174,13 +174,18 @@ public class RelatedProcessSearchHelper
             Object value = sourceDescriptors.get(path.getId());
             if (null != value)
             {
+               if (value instanceof Character)
+               {
+                  value = value.toString();
+               }
+               
                if (value instanceof String && StringUtils.isNotEmpty(value.toString()))
                {
-                  dmWrapper.setValue(sourceDescriptors.get(path.getId()));
+                  dmWrapper.setValue(value);
                }
                else if (!(value instanceof String))
                {
-                  dmWrapper.setValue(sourceDescriptors.get(path.getId()));
+                  dmWrapper.setValue(value);
                }
             }
          }

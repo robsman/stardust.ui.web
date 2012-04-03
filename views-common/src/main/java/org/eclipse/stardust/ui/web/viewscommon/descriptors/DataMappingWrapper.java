@@ -397,6 +397,15 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
       {
          setDateValue((Date) value);
       }
+      else if (null != value && value instanceof Character)
+      {
+         setStringValue(value.toString());
+      }
+      else
+      {
+         this.value = value;
+      }
+      
    }
 
    private Number convertToNumber(Number value, Class type)
