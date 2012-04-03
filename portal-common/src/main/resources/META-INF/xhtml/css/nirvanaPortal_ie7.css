@@ -11,3 +11,8 @@
 	margin-top: -2px;
 }
 
+.participantAutoCplRow {
+	white-space: normal !important;
+	word-wrap: break-word;
+	overflow:hidden;
+}

@@ -1913,3 +1913,12 @@ table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbo
 }
 
 /******** context-portal.css Style Ends**********/
+
+/* ********* Tooltip for Participant Single Select AutoComplete Text ********** */
+.participantAutoCplRow 
+{
+	white-space: normal; 
+	word-wrap: break-word;
+	width:85px;
+}
+/***************Participant Single Select AutoComplete Ends *******************/
