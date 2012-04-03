@@ -59,42 +59,41 @@
 			<ice:treeNode>
 				<f:facet name="icon">
 					<ice:panelGroup style="display: inline;">
-						<ice:panelGroup style="display: inline" draggable="true"
-							dragValue="#{item}" dragOptions="dragGhost"
-							dragMask="dragging,drag_cancel,hover_start,hover_end"
-							dropMask="dragging,drag_cancel,hover_start,hover_end"
-							rendered="#{item.userObject.draggable}"
-							styleClass="document-tree-view-icon"
-							menuPopup="repositoryViewPopup"
-							panelTooltip="toolTip">
-							<ice:graphicImage value="#{item.userObject.leafIcon}" />
-						</ice:panelGroup>
-
-						<ice:panelGroup style="display: inline" draggable="false"
-							rendered="#{!item.userObject.draggable}"
-							panelTooltip="toolTip" 
-							menuPopup="repositoryViewPopup"
-							dropTarget="true"
-							hoverclass="dropTargetHover"
-							dragMask="hover_start, dragging, hover_end, drag_cancel"
-							dropValue="#{item}"
-							dropListener="#{genericRepositoryTreeViewBean.dropPanelListener}">
-							<ice:graphicImage value="#{item.userObject.leafIcon}"
-								width="16px" height="16px" />
-						</ice:panelGroup>
-
-						<ice:panelGroup style="display: inline;" 
-							rendered="#{item.userObject.supportsToolTip}">
-								<ice:panelTooltip id="toolTip" hideOn="mouseout"
-									styleClass="tooltip2" hoverDelay="500">
-									<!-- throws error so commented temporarily <ui:include src="#{item.userObject.toolTipContentUrl}" />  -->
-									<ui:include
-										src="/plugins/views-common/views/doctree/toolTip.xhtml">
-										<ui:param name="toolTip" value="#{item.userObject.toolTip}" />
-									</ui:include>
-								</ice:panelTooltip>
-						</ice:panelGroup>
-						
+						<ice:panelGroup style="display: inline;" panelTooltip="toolTip">
+							<ice:panelGroup style="display: inline" draggable="true"
+								dragValue="#{item}" dragOptions="dragGhost"
+								dragMask="dragging,drag_cancel,hover_start,hover_end"
+								dropMask="dragging,drag_cancel,hover_start,hover_end"
+								rendered="#{item.userObject.draggable}"
+								styleClass="document-tree-view-icon"
+								menuPopup="repositoryViewPopup">
+								<ice:graphicImage value="#{item.userObject.leafIcon}" />
+							</ice:panelGroup>
+	
+							<ice:panelGroup style="display: inline" draggable="false"
+								rendered="#{!item.userObject.draggable}"
+								menuPopup="repositoryViewPopup"
+								dropTarget="true"
+								hoverclass="dropTargetHover"
+								dragMask="hover_start, dragging, hover_end, drag_cancel"
+								dropValue="#{item}"
+								dropListener="#{genericRepositoryTreeViewBean.dropPanelListener}">
+								<ice:graphicImage value="#{item.userObject.leafIcon}"
+									width="16px" height="16px" />
+							</ice:panelGroup>
+	
+							<ice:panelGroup style="display: inline;" 
+								rendered="#{item.userObject.supportsToolTip}">
+									<ice:panelTooltip id="toolTip" hideOn="mouseout"
+										styleClass="tooltip2" hoverDelay="500">
+										<!-- throws error so commented temporarily <ui:include src="#{item.userObject.toolTipContentUrl}" />  -->
+										<ui:include
+											src="/plugins/views-common/views/doctree/toolTip.xhtml">
+											<ui:param name="toolTip" value="#{item.userObject.toolTip}" />
+										</ui:include>
+									</ice:panelTooltip>
+							</ice:panelGroup>
+						</ice:panelGroup>						
 						<ice:menuPopup id="repositoryViewPopup" 
 							displayListener="#{genericRepositoryTreeViewBean.menuPopupListener}"
 							rendered="#{item.userObject.menuPopupApplicable}">
