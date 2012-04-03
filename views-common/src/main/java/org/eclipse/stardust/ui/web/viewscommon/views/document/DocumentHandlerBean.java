@@ -128,7 +128,10 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          loadSuccessful = false;
          thisView = event.getView();
         
-         retrieveAndSetInputParameters(event);
+         if (!retrieveAndSetInputParameters(event))
+         {
+            return;
+         }
 
          // Check if this document is already open in any Activity Panel
          if (!embededView)
@@ -240,7 +243,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    /**
     * @param viewEvent
     */
-   public void retrieveAndSetInputParameters(ViewEvent viewEvent)
+   public boolean retrieveAndSetInputParameters(ViewEvent viewEvent)
    {
       dataPathId = (String) thisView.getViewParams().get("dataPathId");
       dataId = (String) thisView.getViewParams().get("dataId");
@@ -255,6 +258,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       if (null == documentContentInfo && null != thisView.getViewParams().get("documentId"))
       {
          String documentId = (String) thisView.getViewParams().get("documentId");
+         
          try
          {
             documentContentInfo = new JCRDocument(DocumentMgmtUtility.getDocument(documentId));
@@ -262,9 +266,9 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          }
          catch (ResourceNotFoundException e)
          {
-            trace.error(e);
             viewEvent.setVetoed(true);
-            return;
+            ExceptionHandler.handleException(e);
+            return false;
          }
       }
 
@@ -314,6 +318,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
             disableSaveAction = Boolean.valueOf((String) disableSaveActionObj);
          }
       }
+      return true;
    }
    
    /*
