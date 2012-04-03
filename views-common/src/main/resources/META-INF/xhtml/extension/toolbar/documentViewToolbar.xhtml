@@ -6,8 +6,6 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-	<ui:include
-		src="/plugins/views-common/views/doctree/downloadPopupDialog.xhtml" />
 	<ice:panelGrid
 		columns="11" cellspacing="0" cellpadding="0">
 		<ice:commandLink disabled="#{!documentHandlerBean.showPrev}"
@@ -83,7 +81,7 @@
 		<ice:commandButton rendered="#{!documentHandlerBean.poppedOut}"
 			image="/plugins/views-common/images/icons/external.png"
 			title="#{documentHandlerBean.messages['popOut.title']}"
-			action="#{documentHandlerBean.popOutDocument}"
+			action="#{documentHandlerBean.popOutDocument}" immediate="true"
 			styleClass="toolbar-button">
 			<pc:automationTag value="auto-COM-DocView-ToolbarPopOutDoc"
 				standAlone="false" />
@@ -92,7 +90,7 @@
 		<ice:commandButton rendered="#{documentHandlerBean.poppedOut}"
 			image="/plugins/views-common/images/icons/external_sw.png"
 			title="#{documentHandlerBean.messages['popIn.title']}" 
-			action="#{documentHandlerBean.popInDocument}"
+			action="#{documentHandlerBean.popInDocument}" immediate="true"
 			styleClass="toolbar-button">
 			<pc:automationTag value="auto-COM-DocView-ToolbarPopInDoc"
 				standAlone="false" />

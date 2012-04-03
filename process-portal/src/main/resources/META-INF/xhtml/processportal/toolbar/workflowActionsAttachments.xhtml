@@ -6,15 +6,10 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-	<ice:panelGroup>
-		<ui:include
-			src="/plugins/views-common/views/doctree/commonFileUploadDialog.xhtml" />
-	</ice:panelGroup>
-
 	<ice:panelGrid columns="4"
 		rendered="#{ippActivityPanelController.loadSuccessful}">
 		<ice:panelGroup>			
-			<ice:commandLink
+			<ice:commandLink immediate="true"
 				action="#{ippActivityPanelController.toggleNotesIframePopup}"
 				title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.notes']}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarNotes" standAlone="false"/>
@@ -23,7 +18,7 @@
 			<div id="ippNotesAnchor" style="width: 1px; height: 1px;"></div>
 		</ice:panelGroup>
 		<ice:panelGroup rendered="#{ippActivityPanelController.supportsProcessAttachments or ippActivityPanelController.supportsProcessDocuments}">			
-			<ice:commandLink
+			<ice:commandLink immediate="true"
 				action="#{ippActivityPanelController.toggleProcessAttachmentsIframePopup}"
 				title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.processDocuments']}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarProcAttach" standAlone="false"/>
@@ -33,7 +28,7 @@
 		</ice:panelGroup>
 		
 		<ice:panelGroup>			
-			<ice:commandLink
+			<ice:commandLink immediate="true"
 				action="#{ippActivityPanelController.toggleLinkedProcessIframePopup}"
 				title="#{views_common_msgPropsBean['linkedProcessTable.table']}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarProcAttach" standAlone="false"/>

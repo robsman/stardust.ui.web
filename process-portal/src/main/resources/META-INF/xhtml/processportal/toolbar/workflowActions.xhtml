@@ -6,17 +6,6 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-	<ice:panelGroup rendered="#{ippActivityPanelController.loadSuccessful}">
-		<ice:panelGroup>
-			<ui:include src="/plugins/processportal/views/qualityassurance/qualityAssuranceActivityDialog.xhtml" />
-		</ice:panelGroup>
-		<ice:panelGroup>
-			<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
-				<ui:param name="dialogBean" value="#{activityDetailsBean.mappedDocumentConfirmationDialog}" />
-			</ui:include>
-		</ice:panelGroup>
-	</ice:panelGroup>
-
 	<ice:panelGrid columns="2" cellpadding="0" cellspacing="0"
 		rendered="#{ippActivityPanelController.loadSuccessful}">
 
@@ -130,7 +119,7 @@
 			<ice:panelGroup>
 				<ice:commandLink
 					action="#{activityDetailsBean.toggleSwitchProcessIframePopup}"
-					style="padding:0px;"
+					style="padding:0px;" immediate="true"
 					title="#{views_common_msgPropsBean['views.abortProcess.menu.tooltip']}"
 					disabled="#{!activityDetailsBean.abortableProcess}">
 					<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSwitchJoin" standAlone="false"/>
@@ -144,7 +133,7 @@
 			<ice:panelGroup rendered="#{activityDetailsBean.caseEnabled}">
 				<ice:commandLink
 					action="#{activityDetailsBean.toggleCaseIframePopup}"
-					style="padding:0px;"
+					style="padding:0px;" immediate="true"
 					title="#{views_common_msgPropsBean['views.case.tooltip.menu']}">
 					<pc:automationTag value="auto-PP-ActivityPnl-ToolbarCase" standAlone="false"/>
 					<ice:graphicImage style="padding:0px;"
@@ -153,7 +142,7 @@
 				<div id="ippCaseAnchor" style="width: 1px; height: 1px;"></div>
 			</ice:panelGroup>
 
-			<ice:commandLink action="#{spawnProcessDialogBean.openPopup}" rendered="#{activityDetailsBean.enableSpawnProcess}"	immediate="true" >								
+			<ice:commandLink action="#{spawnProcessDialogBean.openPopup}" rendered="#{activityDetailsBean.enableSpawnProcess}">								
 				<ice:graphicImage
 					value="/plugins/views-common/images/icons/cog_add.png"
 					styleClass="toolbar-button #{activityDetailsBean.enableSpawnProcess ? '': 'iceCmdBtn-dis'}"
@@ -162,7 +151,7 @@
 					value="#{activityDetailsBean.activityInstance.processInstanceOID}" />					
 			</ice:commandLink>
 			
-			<ice:commandLink action="#{ippPortalApp.openView}">
+			<ice:commandLink action="#{ippPortalApp.openView}" immediate="true">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarProcDetails" standAlone="false"/>
 				<ice:graphicImage
 					value="/plugins/views-common/images/icons/process.png"
@@ -173,18 +162,6 @@
 				<f:param name="viewParams"
 					value="processInstanceOID=#{activityDetailsBean.activityInstance.processInstanceOID}&amp;processInstanceName=#{activityDetailsBean.activityInstance.processInstance.processName}" />
 			</ice:commandLink>
-	
-			<ice:panelGroup style="width:100%;">
-				<ui:include src="/plugins/views-common/dialogs/delegation.xhtml" />
-				<ui:include src="/plugins/views-common/dialogs/spawnProcessDialog.xhtml" />
-				<ui:include src="/plugins/views-common/dialogs/switchProcessDialog.xhtml" />
-				<ui:include src="/plugins/views-common/dialogs/joinProcessDialog.xhtml" />
-				<ui:include src="/plugins/views-common/dialogs/relatedProcessSearchDialog.xhtml" />
-				<ui:include src="/plugins/views-common/dialogs/abortActivity.xhtml" />
-				<ui:include src="/plugins/views-common/contentmgmt/views/notificationMessage.xhtml" />
-				<ui:include src="/plugins/processportal/resubmission.xhtml" />
-			</ice:panelGroup>					
-			
 		</ice:panelGrid>
 		
 	</ice:panelGrid>

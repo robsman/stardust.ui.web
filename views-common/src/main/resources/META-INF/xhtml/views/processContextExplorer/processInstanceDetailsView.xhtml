@@ -6,13 +6,19 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-	<ui:include src="resubmissionActivityNotes.xhtml" />
-	<ui:include src="/plugins/views-common/dialogs/abortActivity.xhtml" />
-	<ui:include src="/plugins/views-common/dialogs/delegation.xhtml" />
-	<ui:include src="/plugins/views-common/dialogs/spawnProcessDialog.xhtml" />
-	<ui:include src="/plugins/views-common/contentmgmt/views/notificationMessage.xhtml" />
-	
-	
+	<ice:panelGroup>
+		<ui:include src="resubmissionActivityNotes.xhtml" />
+		<ui:include src="/plugins/views-common/dialogs/abortActivity.xhtml" />
+		<ui:include src="/plugins/views-common/dialogs/delegation.xhtml" />
+		<ui:include src="/plugins/views-common/dialogs/spawnProcessDialog.xhtml" />
+		<ui:include src="/plugins/views-common/contentmgmt/views/notificationMessage.xhtml" />
+		<ui:include src="/plugins/views-common/dialogs/abortProcess.xhtml" />
+		<ui:include	src="/plugins/views-common/dialogs/switchProcessDialog.xhtml" />
+		<ui:include	src="/plugins/views-common/dialogs/joinProcessDialog.xhtml" />
+		<ui:include	src="/plugins/views-common/views/case/attachToCaseDialog.xhtml" />
+		<ui:include	src="/plugins/views-common/views/case/createCaseDialog.xhtml" />
+	</ice:panelGroup>
+
 	<ice:panelGroup width="100%">
 		<ice:panelGroup style="vertical-align: top; width:100%">
 			<ice:panelCollapsible
