@@ -320,6 +320,41 @@ if ( !InfinityBpm.Core) {
       mainIppFrame.location = logoutUri;
     }
 
+    function repositionViewToolbar() {
+    	var ippDocument = mainIppFrame["ippPortalMain"].document;
+    	var viewToolbarAnchor = ippDocument.getElementById('ippViewToolbarAnchor');
+    	if(viewToolbarAnchor) {
+    		var toolbar = ippDocument.getElementById('ippViewToolbar');
+    		if(toolbar) {
+    			var toolbarStart = ippDocument.getElementById('ippViewToolbarStart');
+    			var toolbarEnd = ippDocument.getElementById('ippViewToolbarEnd');
+    			var toolbarWidth = findPosition(toolbarEnd).x - findPosition(toolbarStart).x;
+
+    			var posToolbarAnchor = findPosition(viewToolbarAnchor);
+
+    			var widthAdjustment = 2;
+    			var heightAdjustment = -18;
+    			
+        		toolbar.style.left = (posToolbarAnchor.x - toolbarWidth + widthAdjustment) + 'px';
+        		toolbar.style.top = (posToolbarAnchor.y + heightAdjustment) + 'px';
+        		toolbar.style.visibility = "visible";
+    		}
+    	}
+    }
+
+    function findPosition(node) {
+    	  var curleft = curtop = 0;
+    	  do {
+    	    curleft += node.offsetLeft;
+    	    curtop += node.offsetTop;
+    	  } while (node = node.offsetParent);
+    	  
+    	  var pos = new Object();
+    	  pos.x = curleft;
+    	  pos.y = curtop;
+    	  return pos;
+    }
+
     function isThisIppWindow(win) {
         var baseLocation = String(win.document.location);
         
@@ -397,6 +432,9 @@ if ( !InfinityBpm.Core) {
 
 	  portalMainContainer.style.height = (height + 'px');
 	  setWindowScrollPosition(mainIppFrame, scrollPos);
+
+	  // Reposition View Specific Toolbar
+	  repositionViewToolbar();
     }
     
     function getWindowScrollPosition(targetWin) {
@@ -537,6 +575,10 @@ if ( !InfinityBpm.Core) {
     	  window.setTimeout(function() {
     		  closeSession();
     	  }, CONTENT_FRAME_CLOSE_DELAY);
+      },
+
+      repositionViewToolbar : function() {
+    	  repositionViewToolbar();
       },
       
       getIppWindow : function() {

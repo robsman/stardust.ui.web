@@ -24,6 +24,7 @@
 							<f:subview id="subView">
 								<ice:panelGroup>
 									<ice:form partialSubmit="false">
+										<ui:include src="portalViewToolbar.xhtml" />
 										<c:if test="#{not ippPortalApp.pinViewOpened}">
 											<ui:include src="portalTabDisplayMode.xhtml" />
 										</c:if>
@@ -43,6 +44,7 @@
 		<c:if test="#{ippPortalApp.fullScreenModeActivated}">
 			<ui:include src="portalToolbar.xhtml" />
 			<ice:form partialSubmit="false">
+				<ui:include src="portalViewToolbar.xhtml" />
 				<table cellpadding="0" cellspacing="0" style="width: 100%;border-bottom: 1px solid #dbdbdb;">
 					<tr style="border-bottom: 1px solid #dbdbdb;" class="panel-header-selected">
 						<td style="white-space: nowrap">
