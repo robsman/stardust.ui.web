@@ -104,11 +104,11 @@
       <dependency org="org.apache.myfaces.core" name="myfaces-api" rev="1.1.5" conf="ipp-portal-base-lib-module-runtime->default">
          <exclude org="javax.servlet" module="jstl"/>
       </dependency>
-	  <dependency org="org.apache.myfaces.core" name="myfaces-impl" rev="1.1.5" conf="ipp-portal-base-lib-module-runtime->default">
-   		  <exclude org="commons-codec" module="commons-codec"/>
-	  </dependency>      
+      <dependency org="org.apache.myfaces.core" name="myfaces-impl" rev="1.1.5" conf="ipp-portal-base-lib-module-runtime->default">
+         <exclude org="commons-codec" module="commons-codec"/>
+      </dependency>      
       
-      <dependency org="org.icepdf" name="icepdf-core" rev="4.0.1" conf="ipp-portal-base-lib-module-runtime->default"/>
+      <dependency org="org.icepdf" name="icepdf-core" rev="4.3.2" transitive="false" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-base-lib-module-runtime->jcr-vfs-module-runtime">
          <exclude org="commons-fileupload" module="commons-fileupload"/>
          <exclude org="com.infinity.bpm" name="carnot-engine"/>

@@ -44,7 +44,6 @@
       <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-business-control-center-compile->spring-module-compile" />
       <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-business-control-center-compile->ipp-portal-common-compile" />
       <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-business-control-center-compile->ipp-views-common-compile" />
-      <dependency org="org.icepdf" name="icepdf-core" rev="4.0.1" conf="ipp-business-control-center-compile->default" />
 
       <!-- ipp-business-control-center-runtime -->
       <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-business-control-center-runtime->web-client-module-runtime" />
