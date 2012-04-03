@@ -20,6 +20,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
@@ -280,6 +281,35 @@ public class ModelUtils
       for (DocumentType documentType : DocumentTypeUtils.getDeclaredDocumentTypes(model))
       {
          allDocumentTypes.add(new DocumentTypeWrapper(documentType, model));
+      }
+      // Get the reference document data for given model and get DocType using Data
+      // modelID
+      List<Data> referedDocData = DocumentTypeUtils.getReferencedDocumentData(model);
+      for (Data docData : referedDocData)
+      {
+         DeployedModel dataModel = getModel(docData.getModelOID());
+         allDocumentTypes.add(new DocumentTypeWrapper(DocumentTypeUtils.getDocumentTypeFromData(dataModel, docData),
+               dataModel));
+      }
+      return allDocumentTypes;
+   }
+   
+   /**
+    * Temporary method to convert viewscommon.utils.DocumentTypeWrapper to
+    * views.document.DocumentTypeWrapper used by DocumentMgmtUtility.java
+    * 
+    * @param model
+    * @return
+    */
+   public static Set<org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentTypeWrapper> getDeclaredDocumentTypesForDocTemp(
+         DeployedModel model)
+   {
+      Set<org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentTypeWrapper> allDocumentTypes = CollectionUtils
+            .newHashSet();
+      for (DocumentTypeWrapper wrapper : getDeclaredDocumentTypes(model))
+      {
+         allDocumentTypes.add(new org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentTypeWrapper(wrapper
+               .getDocumentType(), model.getModelOID()));
       }
       return allDocumentTypes;
    }

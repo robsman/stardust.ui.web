@@ -1435,11 +1435,7 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
             // if selected process support attachment then show all document type
             if (isAttachmentAllowed)
             {
-               List<DocumentType> types= DocumentTypeUtils.getDeclaredDocumentTypes(model);
-               for(DocumentType documentType:types)
-               {
-               docTypes.add(new DocumentTypeWrapper(documentType,model));
-               }
+               docTypes.addAll(ModelUtils.getDeclaredDocumentTypes(model));
             }
             else
             {

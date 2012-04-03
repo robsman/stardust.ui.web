@@ -41,6 +41,7 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
+import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
@@ -544,12 +545,7 @@ public class DocumentMgmtUtility
 
       for (DeployedModel deployedModel : allModels)
       {
-         List<DocumentType> documentTypes = DocumentTypeUtils.getDeclaredDocumentTypes(deployedModel);
-
-         for (DocumentType documentType : documentTypes)
-         {
-            declaredDocTypes.add(new DocumentTypeWrapper(documentType, deployedModel.getModelOID()));
-         }
+         declaredDocTypes.addAll(ModelUtils.getDeclaredDocumentTypesForDocTemp(deployedModel));
       }
       return declaredDocTypes;
    }

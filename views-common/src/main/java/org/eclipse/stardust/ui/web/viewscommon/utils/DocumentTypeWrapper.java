@@ -49,16 +49,27 @@ public class DocumentTypeWrapper
          this.typeDeclaration = model.getTypeDeclaration(documentType);
       }
    }
-
+   
+   /*
+    * (non-Javadoc)
+    * 
+    * @see java.lang.Object#hashCode()
+    */
+   @Override
+   public int hashCode()
+   {
+      final int prime = 31;
+      int result = 1;
+      if (null != getDocumentType())
+      result = prime * result + ((getDocumentType().getDocumentTypeId() == null) ? 0 : getDocumentType().getDocumentTypeId().hashCode());
+      return result;
+   }
+   
    @Override
    public boolean equals(Object obj)
    {
-      if (null != getDocumentType())
-      {
-         getDocumentType().equals(obj);
-      }
-      
-      return false;
+         DocumentTypeWrapper docWrapperObj=(DocumentTypeWrapper) obj;
+         return getDocumentType().getDocumentTypeId().equals(docWrapperObj.getDocumentType().getDocumentTypeId());
    }
 
    public String getDocumentTypeI18nName()
