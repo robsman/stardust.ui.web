@@ -11,7 +11,6 @@
 package org.eclipse.stardust.ui.web.viewscommon.views.authorization;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -35,8 +34,7 @@ import org.eclipse.stardust.ui.web.viewscommon.user.ParticipantAutocompleteSelec
 import org.eclipse.stardust.ui.web.viewscommon.user.ParticipantWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 
 
 import com.icesoft.faces.component.selectinputtext.SelectInputText;
@@ -422,7 +420,7 @@ public class PermissionPickList
          List<SelectItem> selectItems = new ArrayList<SelectItem>();
          String regex = (!StringUtils.isEmpty(searchValue)) ? (searchValue.replaceAll("\\*", ".*") + ".*") : "";
 
-         List<Participant> participantList=ModelUtils.getAllUnScopedModelParticipant();
+         List<Participant> participantList=ParticipantUtils.getAllUnScopedModelParticipant(true);
 
          // Compile the pattern first as we are using this multiple times below in for
          // loop

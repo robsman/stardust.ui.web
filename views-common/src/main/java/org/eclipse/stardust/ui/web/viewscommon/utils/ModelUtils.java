@@ -199,28 +199,7 @@ public class ModelUtils
       return null;
    }
 
-   /**
-    * method return only un-scoped model participants from all deployed models
-    */
-   public static List<Participant> getAllUnScopedModelParticipant()
-   {
-      Collection<Participant> allParticipants = ModelCache.findModelCache().getAllParticipants();
-
-      // filter scoped roles/orgs
-      List<Participant> participantList = CollectionUtils.newArrayList();
-      for (Participant participant : allParticipants)
-      {
-         if (participant instanceof ModelParticipantInfo)
-         {
-            ModelParticipantInfo modelParticipant = (ModelParticipantInfo) participant;
-            if (!modelParticipant.isDepartmentScoped())
-            {
-               participantList.add(participant);
-            }
-         }
-      }
-      return participantList;
-   }
+   
    
    /**
     * method returns Map of DataPath from all active models (exclude PredefinedModel)

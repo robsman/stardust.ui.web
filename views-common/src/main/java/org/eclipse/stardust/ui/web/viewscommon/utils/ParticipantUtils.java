@@ -444,6 +444,9 @@ public class ParticipantUtils
    {
       Collection<DeployedModel> allModels = ModelUtils.getAllModels();
       List<QualifiedModelParticipantInfo> allParticipants = new ArrayList<QualifiedModelParticipantInfo>();
+     
+      boolean isAdminAdded = false;
+
       for (Model model : allModels)
       {
          if (filterPredefinedModel && PredefinedConstants.PREDEFINED_MODEL_ID.equals(model.getId()))
@@ -455,12 +458,57 @@ public class ParticipantUtils
          {
             if (participant instanceof QualifiedModelParticipantInfo)
             {
-               allParticipants.add((QualifiedModelParticipantInfo) participant);
+               boolean isAdminRole = isAdministratorRole(participant);
+
+               // Administrator should be add only once
+               if (!isAdminAdded && isAdminRole)
+               {
+                  allParticipants.add((QualifiedModelParticipantInfo) participant);
+                  isAdminAdded = true;
+               }
+               else if (!isAdminRole)
+               {
+                  allParticipants.add((QualifiedModelParticipantInfo) participant);
+               }
             }
          }
       }
       return allParticipants;
    }
+   
+   public static boolean isAdministratorRole(Participant participant)
+   {
+      if (participant instanceof Role && PredefinedConstants.ADMINISTRATOR_ROLE.equals(participant.getId()))
+      {
+         return true;
+      }
+      return false;
+   }
+   
+   
+   /**
+    * method return only un-scoped model participants from all deployed models
+    */
+   public static List<Participant> getAllUnScopedModelParticipant(boolean filterPredefinedModel)
+   {
+      List<QualifiedModelParticipantInfo> allParticipants = getAllModelParticipants(filterPredefinedModel);
+
+      // filter scoped roles/orgs
+      List<Participant> participantList = CollectionUtils.newArrayList();
+      for (QualifiedModelParticipantInfo participant : allParticipants)
+      {
+         if (participant instanceof Participant)
+         {
+            ModelParticipantInfo modelParticipant = (ModelParticipantInfo) participant;
+            if (!modelParticipant.isDepartmentScoped())
+            {
+               participantList.add((Participant)participant);
+            }
+         }
+      }
+      return participantList;
+   }
+   
 
    /**
     * return all model participants along with runtime participants

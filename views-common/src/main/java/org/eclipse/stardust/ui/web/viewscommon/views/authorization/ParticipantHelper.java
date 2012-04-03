@@ -50,7 +50,7 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.user.ParticipantAutocompleteSelector;
 import org.eclipse.stardust.ui.web.viewscommon.user.ParticipantWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 
 
 import com.icesoft.faces.component.selectinputtext.SelectInputText;
@@ -374,7 +374,7 @@ public class ParticipantHelper implements IUserObjectBuilder<ParticipantTableEnt
     */
    private List<Participant> findParticipantsByType(int typeFilter)
    {
-      List<Participant> participantList = ModelUtils.getAllUnScopedModelParticipant();
+      List<Participant> participantList = ParticipantUtils.getAllUnScopedModelParticipant(true);
 
       List<Participant> filteredList = CollectionUtils.newArrayList();
 
