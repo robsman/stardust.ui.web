@@ -22,14 +22,14 @@
 						partialSubmit="false">
 						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarFirst" standAlone="false"/>
 						<ice:graphicImage
-							value="/plugins/views-common/images/icons/spacer.gif" alt="First"
+							value="/plugins/views-common/images/spacer.png" alt="First"
 							title="#{views_common_msgPropsBean['common.tooltip.first']}" width="15" height="15" />
 					</ice:commandLink>
 					<ice:commandLink styleClass="toolbarControl firstToolControl-disabled"
 						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState == null or ( (contentHandler.pdfDocumentHandler.currentDocumentState != null) and (contentHandler.pdfDocumentHandler.firstPage))}"
 						partialSubmit="false">
 						<ice:graphicImage
-							value="/plugins/views-common/images/icons/spacer.gif" alt="First"
+							value="/plugins/views-common/images/spacer.png" alt="First"
 							title="#{views_common_msgPropsBean['common.tooltip.first']}" width="15" height="15" />
 					</ice:commandLink>
 				</ice:panelGroup>
@@ -42,14 +42,14 @@
 						partialSubmit="false">
 						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarPrevious" standAlone="false"/>
 						<ice:graphicImage
-							value="/plugins/views-common/images/icons/spacer.gif"
+							value="/plugins/views-common/images/spacer.png"
 							alt="Previous" title="#{views_common_msgPropsBean['common.tooltip.previous']}" width="15" height="15" />
 					</ice:commandLink>
 					<ice:commandLink styleClass="toolbarControl previousToolControl-disabled"
 						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState == null or ( (contentHandler.pdfDocumentHandler.currentDocumentState != null) and (contentHandler.pdfDocumentHandler.firstPage))}"
 						partialSubmit="false">
 						<ice:graphicImage
-							value="/plugins/views-common/images/icons/spacer.gif"
+							value="/plugins/views-common/images/spacer.png"
 							alt="Previous" title="#{views_common_msgPropsBean['common.tooltip.previous']}" width="15" height="15" />
 					</ice:commandLink>
 				</ice:panelGroup>
@@ -79,14 +79,14 @@
 						partialSubmit="false">
 						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarForward" standAlone="false"/>
 						<ice:graphicImage
-							value="/plugins/views-common/images/icons/spacer.gif" alt="Next"
+							value="/plugins/views-common/images/spacer.png" alt="Next"
 							title="#{views_common_msgPropsBean['common.tooltip.next']}" width="15" height="15" />
 					</ice:commandLink>
 					<ice:commandLink styleClass="toolbarControl forwardToolControl-disabled"
 						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState == null or ( (contentHandler.pdfDocumentHandler.currentDocumentState != null) and (contentHandler.pdfDocumentHandler.lastPage))}"
 						partialSubmit="false">
 						<ice:graphicImage
-							value="/plugins/views-common/images/icons/spacer.gif" alt="Next"
+							value="/plugins/views-common/images/spacer.png" alt="Next"
 							title="#{views_common_msgPropsBean['common.tooltip.next']}" width="15" height="15" />
 					</ice:commandLink>
 				</ice:panelGroup>
@@ -98,14 +98,14 @@
 						partialSubmit="false">
 						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarLast" standAlone="false"/>
 						<ice:graphicImage
-							value="/plugins/views-common/images/icons/spacer.gif" alt="Last"
+							value="/plugins/views-common/images/spacer.png" alt="Last"
 							title="#{views_common_msgPropsBean['common.tooltip.last']}" width="15" height="15" />
 					</ice:commandLink>
 					<ice:commandLink styleClass="toolbarControl lastToolControl-disabled"
 						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState == null or ( (contentHandler.pdfDocumentHandler.currentDocumentState != null) and (contentHandler.pdfDocumentHandler.lastPage))}"
 						partialSubmit="false">
 						<ice:graphicImage
-							value="/plugins/views-common/images/icons/spacer.gif" alt="Last"
+							value="/plugins/views-common/images/spacer.png" alt="Last"
 							title="#{views_common_msgPropsBean['common.tooltip.last']}" width="15" height="15" />
 					</ice:commandLink>
 				</ice:panelGroup>
@@ -118,13 +118,13 @@
 						action="#{contentHandler.pdfDocumentHandler.zoomIn}" partialSubmit="false">
 						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarZoomIn" standAlone="false"/>
 						<ice:graphicImage
-							value="/plugins/views-common/images/icons/spacer.gif"
+							value="/plugins/views-common/images/spacer.png"
 							alt="Zoom In" title="#{views_common_msgPropsBean['common.tooltip.zoomIn']}" width="16" height="16" />
 					</ice:commandLink>
 					<ice:commandLink styleClass="toolbarControl zoomInToolControl-disabled"
 						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState == null or (contentHandler.pdfDocumentHandler.currentDocumentState != null and contentHandler.pdfDocumentHandler.maxZoom)}">
 						<ice:graphicImage
-							value="/plugins/views-common/images/icons/spacer.gif"
+							value="/plugins/views-common/images/spacer.png"
 							alt="Zoom In" title="#{views_common_msgPropsBean['common.tooltip.zoomIn']}" width="16" height="16" />
 					</ice:commandLink>
 				</ice:panelGroup>
@@ -135,13 +135,13 @@
 						action="#{contentHandler.pdfDocumentHandler.zoomOut}" partialSubmit="false">
 						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarZoomOut" standAlone="false"/>
 						<ice:graphicImage
-							value="/plugins/views-common/images/icons/spacer.gif"
+							value="/plugins/views-common/images/spacer.png"
 							alt="Zoom Out" title="#{views_common_msgPropsBean['common.tooltip.zoomOut']}" width="16" height="16" />
 					</ice:commandLink>
 					<ice:commandLink styleClass="toolbarControl zoomOutToolControl-disabled"
 						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState == null or (contentHandler.pdfDocumentHandler.currentDocumentState != null and contentHandler.pdfDocumentHandler.minZoom)}">
 						<ice:graphicImage
-							value="/plugins/views-common/images/icons/spacer.gif"
+							value="/plugins/views-common/images/spacer.png"
 							alt="Zoom Out" title="#{views_common_msgPropsBean['common.tooltip.zoomOut']}" width="16" height="16" />
 					</ice:commandLink>
 				</ice:panelGroup>
@@ -169,7 +169,7 @@
 						partialSubmit="false">
 						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarRotRight" standAlone="false"/>
 						<ice:graphicImage
-							value="/plugins/views-common/images/icons/spacer.gif" alt="Right"
+							value="/plugins/views-common/images/spacer.png" alt="Right"
 							title="#{views_common_msgPropsBean['common.tooltip.rightRotation']}" width="16" height="16" />
 					</ice:commandLink>
 				</ice:panelGroup>
@@ -182,7 +182,7 @@
 						partialSubmit="false">
 						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarRotLeft" standAlone="false"/>
 						<ice:graphicImage
-							value="/plugins/views-common/images/icons/spacer.gif"
+							value="/plugins/views-common/images/spacer.png"
 							alt="Left Rotation" title="#{views_common_msgPropsBean['common.tooltip.leftRotation']}" width="16" height="16" />
 					</ice:commandLink>
 				</ice:panelGroup>
@@ -194,11 +194,11 @@
 						partialSubmit="false">
 						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarOutlinePopUp" standAlone="false"/>
 						<ice:graphicImage
-							value="/plugins/views-common/images/icons/spacer.gif"
+							value="/plugins/views-common/images/spacer.png"
 							alt="Show Outline" title="#{views_common_msgPropsBean['common.tooltip.showOutline']}" width="16" height="16" />
 					</ice:commandLink>
 					<ice:graphicImage styleClass="outline-disabled"
-						value="/plugins/views-common/images/icons/spacer.gif"
+						value="/plugins/views-common/images/spacer.png"
 						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState == null or(contentHandler.pdfDocumentHandler.currentDocumentState != null and !contentHandler.pdfDocumentHandler.havingOutline)}"
 						alt="Show Outline" title="#{views_common_msgPropsBean['common.tooltip.showOutline']}" width="16" height="16" />
 
