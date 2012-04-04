@@ -1650,7 +1650,7 @@ table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbo
 	margin-top: -2px;
 }
 
-.procSearchProcSelMenu {
+.procSearchSelMenu {
 	height: 75px;
 	overflow: auto;
 	margin-left: 4px;

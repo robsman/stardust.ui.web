@@ -132,16 +132,16 @@
 							</ui:repeat>
 						</ice:panelGroup>
 						<ice:panelGroup>
-							<ice:selectManyMenu id="SlctProcess"
-								value="#{processSearchBean.selectedProcesses}"
-								styleClass="procSearchProcSelMenu" partialSubmit="true"
-								valueChangeListener="#{processSearchBean.selectedProcessesChangeListener}">
-								<pc:automationTag value="auto-BCC-ProcSrch-Process"
-									standAlone="false" />
-								<f:selectItems id="SlctProcessItms"
-									value="#{processSearchBean.processes}" />
-							</ice:selectManyMenu>
-						</ice:panelGroup>
+								<ice:selectManyMenu id="SlctProcess"
+									value="#{processSearchBean.selectedProcesses}"
+									partialSubmit="true"
+									valueChangeListener="#{processSearchBean.selectedProcessesChangeListener}">
+									<pc:automationTag value="auto-BCC-ProcSrch-Process"
+										requiredValue="procSearchSelMenu" standAlone="false" />
+									<f:selectItems id="SlctProcessItms"
+										value="#{processSearchBean.processes}" />
+								</ice:selectManyMenu>
+							</ice:panelGroup>
 					</ice:column>
 
 					<ice:column>
@@ -348,8 +348,9 @@
 							<ice:panelGroup style="clear: both; height:3px;"/>
 							<ice:panelGroup>
 								<ice:selectManyMenu id="SlctActivities"
-									value="#{processSearchBean.selectedActivities}" styleClass="procSearchProcSelMenu">
-									<pc:automationTag value="auto-BCC-ActivitySrch-Activity" standAlone="false"/>
+									value="#{processSearchBean.selectedActivities}">
+									<pc:automationTag value="auto-BCC-ActivitySrch-Activity"
+										requiredValue="procSearchSelMenu" standAlone="false" />
 									<f:selectItems id="SlctActivitiesItems"
 										value="#{processSearchBean.activities}" />
 								</ice:selectManyMenu>
