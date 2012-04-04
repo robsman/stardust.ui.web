@@ -52,10 +52,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			include="/plugins/processportal/toolbar/workflowActionsAttachments.xhtml"
 			requiredView="activityPanel" />
 		
-		<ippui:toolbarSection name="activityPanelViewToolbar"
-			include="/plugins/processportal/toolbar/activityPanelViewToolbar.xhtml"
-			requiredView="activityPanel" />
-		<ippui:toolbarSection name="workflowActionsExtension"			include="/plugins/processportal/toolbar/workflowActionsExtension.xhtml"			requiredView="activityPanel" />
+		<ippui:toolbarSection name="workflowActionsExtension"			include="/plugins/processportal/toolbar/workflowActionsExtension.xhtml"			requiredView="activityPanel" />
 		<ippui:toolbarSection name="worklistPanelViewToolbar"
 			include="/plugins/processportal/toolbar/worklistPanelViewToolbar.xhtml"
 			requiredView="worklistPanel" />
