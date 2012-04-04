@@ -25,6 +25,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler.MessageDisplayMode;
 
 public class PdfRenderer extends HttpServlet
 {
@@ -58,6 +61,9 @@ public class PdfRenderer extends HttpServlet
       }
       catch (Exception e)
       {
+         ExceptionHandler.handleException(e,
+               MessagesViewsCommonBean.getInstance().getString("common.unableToPerformAction"),
+               MessageDisplayMode.ONLY_CUSTOM_MSG);
       }
    }
 }

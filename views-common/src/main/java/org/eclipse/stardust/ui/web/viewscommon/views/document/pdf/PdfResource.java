@@ -26,7 +26,10 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.viewscommon.core.HtmlCleanerUtility;
 import org.eclipse.stardust.ui.web.viewscommon.core.HtmlFormatter;
 import org.eclipse.stardust.ui.web.viewscommon.core.ContextPortalEnums.PrintPageOrientation;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler.MessageDisplayMode;
 import org.eclipse.stardust.ui.web.viewscommon.views.correspondence.Attachment;
 
 import com.icesoft.faces.context.Resource;
@@ -111,6 +114,9 @@ public class PdfResource implements Resource, Serializable
          catch (Exception e)
          {
             logger.debug("Error Occured while PDF conversion");
+            ExceptionHandler.handleException(e,
+                  MessagesViewsCommonBean.getInstance().getString("common.unableToPerformAction"),
+                  MessageDisplayMode.ONLY_CUSTOM_MSG);
          }
       }
       return inputStream;

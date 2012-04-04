@@ -27,7 +27,10 @@ import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler.MessageDisplayMode;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentContentInfo;
+
 
 import com.icesoft.faces.context.effects.JavascriptContext;
 
@@ -39,11 +42,7 @@ public class PdfDocumentHandler
    private String documentId;
    private String outlinePopupId;
    private String errorMessage;
-
-   public PdfDocumentHandler()
-   {
-
-   }
+   private MessagesViewsCommonBean msgBean;
    
    /**
     * @param docId
@@ -51,9 +50,9 @@ public class PdfDocumentHandler
    public PdfDocumentHandler(IDocumentContentInfo documentContentInfo)
    {
       super();
+      msgBean = MessagesViewsCommonBean.getInstance();
       documentId = documentContentInfo.getId();
       currentDocumentState = new PdfDocumentState(documentContentInfo);
-      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();;
       try
       {
          currentDocumentState.openDocument();
@@ -61,9 +60,9 @@ public class PdfDocumentHandler
       }
       catch (Exception e)
       {
-         errorMessage = propsBean.getString("common.pdfErrorMessage");
-         trace.error("Error while setting document.", e);
-         MessageDialog.addErrorMessage(propsBean.getString("views.documentView.pdfException"), e);
+         trace.error("Error while initializing the document.", e);
+         errorMessage = msgBean.getString("common.pdfErrorMessage");
+         MessageDialog.addErrorMessage(msgBean.getString("views.documentView.pdfException"), e);
       }
    }
 
@@ -100,8 +99,10 @@ public class PdfDocumentHandler
             refreshDocumentState();
          }
       }
-      catch (Throwable e)
+      catch (Exception e)
       {
+         ExceptionHandler.handleException(e, msgBean.getString("common.unableToPerformAction"),
+               MessageDisplayMode.ONLY_CUSTOM_MSG);
       }
    }
 
@@ -132,8 +133,10 @@ public class PdfDocumentHandler
             refreshDocumentState();
          }
       }
-      catch (Throwable e)
+      catch (Exception e)
       {
+         ExceptionHandler.handleException(e, msgBean.getString("common.unableToPerformAction"),
+               MessageDisplayMode.ONLY_CUSTOM_MSG);
       }
    }
 
@@ -162,8 +165,10 @@ public class PdfDocumentHandler
             refreshDocumentState();
          }
       }
-      catch (Throwable e)
+      catch (Exception e)
       {
+         ExceptionHandler.handleException(e, msgBean.getString("common.unableToPerformAction"),
+               MessageDisplayMode.ONLY_CUSTOM_MSG);
       }
    }
 
@@ -189,8 +194,10 @@ public class PdfDocumentHandler
             refreshDocumentState();
          }
       }
-      catch (Throwable e)
+      catch (Exception e)
       {
+         ExceptionHandler.handleException(e, msgBean.getString("common.unableToPerformAction"),
+               MessageDisplayMode.ONLY_CUSTOM_MSG);
       }
    }
 
@@ -223,8 +230,10 @@ public class PdfDocumentHandler
             refreshDocumentState();
          }
       }
-      catch (Throwable e)
+      catch (Exception e)
       {
+         ExceptionHandler.handleException(e, msgBean.getString("common.unableToPerformAction"),
+               MessageDisplayMode.ONLY_CUSTOM_MSG);
       }
    }
 
@@ -243,7 +252,6 @@ public class PdfDocumentHandler
          event.setPhaseId(PhaseId.INVOKE_APPLICATION);
          event.queue();
       }
-      currentDocumentState.setZoom(currentDocumentState.getZoom1());
       refreshDocumentState();
    }
 
@@ -288,8 +296,10 @@ public class PdfDocumentHandler
             refreshDocumentState();
          }
       }
-      catch (Throwable e)
+      catch (Exception e)
       {
+         ExceptionHandler.handleException(e, msgBean.getString("common.unableToPerformAction"),
+               MessageDisplayMode.ONLY_CUSTOM_MSG);
       }
    }
 
@@ -305,8 +315,10 @@ public class PdfDocumentHandler
             refreshDocumentState();
          }
       }
-      catch (Throwable e)
+      catch (Exception e)
       {
+         ExceptionHandler.handleException(e, msgBean.getString("common.unableToPerformAction"),
+               MessageDisplayMode.ONLY_CUSTOM_MSG);
       }
    }
 
@@ -315,7 +327,6 @@ public class PdfDocumentHandler
       if (3.0f >= getCurrentDocumentState().getZoom())
       {
          getCurrentDocumentState().setZoom(getCurrentDocumentState().getZoom() + 0.1f);
-         getCurrentDocumentState().setZoom1(getCurrentDocumentState().getZoom());
       }
       refreshDocumentState();
    }
@@ -325,7 +336,6 @@ public class PdfDocumentHandler
       if (0.1f < getCurrentDocumentState().getZoom())
       {
          getCurrentDocumentState().setZoom(getCurrentDocumentState().getZoom() - 0.1f);
-         getCurrentDocumentState().setZoom1(getCurrentDocumentState().getZoom());
       }
       refreshDocumentState();
    }
@@ -340,8 +350,10 @@ public class PdfDocumentHandler
                return true;
          }
       }
-      catch (Throwable e)
+      catch (Exception e)
       {
+         ExceptionHandler.handleException(e, msgBean.getString("common.unableToPerformAction"),
+               MessageDisplayMode.ONLY_CUSTOM_MSG);
       }
       return false;
    }
@@ -356,8 +368,10 @@ public class PdfDocumentHandler
                return true;
          }
       }
-      catch (Throwable e)
+      catch (Exception e)
       {
+         ExceptionHandler.handleException(e, msgBean.getString("common.unableToPerformAction"),
+               MessageDisplayMode.ONLY_CUSTOM_MSG);
       }
       return false;
    }

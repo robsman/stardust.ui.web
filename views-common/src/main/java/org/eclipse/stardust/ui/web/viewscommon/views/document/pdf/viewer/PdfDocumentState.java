@@ -23,6 +23,9 @@ import java.util.List;
 import javax.faces.model.SelectItem;
 import javax.swing.tree.DefaultTreeModel;
 
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler.MessageDisplayMode;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentContentInfo;
 import org.icepdf.core.exceptions.PDFException;
 import org.icepdf.core.exceptions.PDFSecurityException;
@@ -36,6 +39,20 @@ public class PdfDocumentState
 {
    // default rotation factor increment.
    public static final float ROTATION_FACTOR = 90f;
+   
+   public static List<SelectItem> preDefinedZoomLevels;
+   {
+      preDefinedZoomLevels = new ArrayList<SelectItem>();
+      preDefinedZoomLevels.add(new SelectItem(0.1f, "10%"));
+      preDefinedZoomLevels.add(new SelectItem(0.25f, "25%"));
+      preDefinedZoomLevels.add(new SelectItem(0.50f, "50%"));
+      preDefinedZoomLevels.add(new SelectItem(0.75f, "75%"));
+      preDefinedZoomLevels.add(new SelectItem(1.0f, "100%"));
+      preDefinedZoomLevels.add(new SelectItem(1.25f, "125%"));
+      preDefinedZoomLevels.add(new SelectItem(1.5f, "150%"));
+      preDefinedZoomLevels.add(new SelectItem(2.0f, "200%"));
+      preDefinedZoomLevels.add(new SelectItem(3.0f, "300%"));
+   }
 
    private final Object documentLock = new Object();
 
@@ -51,8 +68,6 @@ public class PdfDocumentState
 
    private float zoom = 1.0f;
 
-   private float zoom1 = 1.0f;
-
    private float rotation = 0f;
 
    private int pageCursor = 1;
@@ -66,7 +81,7 @@ public class PdfDocumentState
 
    // list of zoom levels
    public List<SelectItem> zoomLevels;
-
+   
    /**
     * Create new document state based on the given document path.
     * 
@@ -85,20 +100,12 @@ public class PdfDocumentState
    }
    
    /**
-    * intialize Zoom levels
+    * initialize Zoom levels
     */
    public void initZoomLevels()
    {
       zoomLevels = new ArrayList<SelectItem>();
-      zoomLevels.add(new SelectItem(0.1f, "10%"));
-      zoomLevels.add(new SelectItem(0.25f, "25%"));
-      zoomLevels.add(new SelectItem(0.50f, "50%"));
-      zoomLevels.add(new SelectItem(0.75f, "75%"));
-      zoomLevels.add(new SelectItem(1.0f, "100%"));
-      zoomLevels.add(new SelectItem(1.25f, "125%"));
-      zoomLevels.add(new SelectItem(1.5f, "150%"));
-      zoomLevels.add(new SelectItem(2.0f, "200%"));
-      zoomLevels.add(new SelectItem(3.0f, "300%"));
+      zoomLevels.addAll(preDefinedZoomLevels);
    }
 
    /**
@@ -164,8 +171,11 @@ public class PdfDocumentState
             outline = null;
             maxPages = -1;
          }
-         catch (Throwable e)
+         catch (Exception e)
          {
+            ExceptionHandler.handleException(e,
+                  MessagesViewsCommonBean.getInstance().getString("common.unableToPerformAction"),
+                  MessageDisplayMode.ONLY_CUSTOM_MSG);
          }
       }
    }
@@ -288,27 +298,37 @@ public class PdfDocumentState
     */
    public void populateZoomLevel(float zoom)
    {
-      zoomLevels.clear();
-      int i = Math.round(zoom * 100);
-      // float i = zoom * 100;
+      int zoomInt = Math.round(zoom * 100);
 
-      if ((i != 10) && (i != 25) && (i != 50) && (i != 100) && (i != 125) && (i != 150) && (i != 200) && (i != 300))
+      // clear previous list
+      zoomLevels.clear();
+      zoomLevels.addAll(preDefinedZoomLevels);
+
+      if (!contains(zoomInt * 1f / 100))
       {
-         // zoomLevels.add(new SelectItem(zoom, i + "%"));
-         zoomLevels.add(new SelectItem((i * 1f / 100), i + "%"));
+         zoomLevels.add(0, new SelectItem((zoomInt * 1f / 100), zoomInt + "%"));
       }
-      zoomLevels.add(new SelectItem(0.1f, "10%"));
-      zoomLevels.add(new SelectItem(0.25f, "25%"));
-      zoomLevels.add(new SelectItem(0.50f, "50%"));
-      zoomLevels.add(new SelectItem(0.75f, "75%"));
-      zoomLevels.add(new SelectItem(1.0f, "100%"));
-      zoomLevels.add(new SelectItem(1.25f, "125%"));
-      zoomLevels.add(new SelectItem(1.5f, "150%"));
-      zoomLevels.add(new SelectItem(2.0f, "200%"));
-      zoomLevels.add(new SelectItem(3.0f, "300%"));
-      this.zoom = i * 1f / 100;
+
+      this.zoom = zoomInt * 1f / 100;
    }
 
+   /**
+    * @param zoomValue
+    * @return
+    */
+   private boolean contains(float zoomValue)
+   {
+      for (SelectItem zoomLevel : preDefinedZoomLevels)
+      {
+         Float zValue = (Float) zoomLevel.getValue();
+         if (zValue.equals(zoomValue))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+   
    public float getRotation()
    {
       return rotation;
@@ -347,15 +367,5 @@ public class PdfDocumentState
    public void setOutlineExpanded(boolean outlineExpanded)
    {
       this.outlineExpanded = outlineExpanded;
-   }
-
-   public float getZoom1()
-   {
-      return zoom1;
-   }
-
-   public void setZoom1(float zoom1)
-   {
-      this.zoom1 = zoom1;
    }
 }
