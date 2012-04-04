@@ -1485,7 +1485,7 @@ select.icon-menu option {
 /* Style for menu bar box */
 .switchMenuBarSubMenu {
 	border: 1px solid #000000;
-	width: 12%;
+	width: auto;
 	position:absolute;
 }
 
@@ -1506,6 +1506,10 @@ select.icon-menu option {
 	background-image: none;
 	background-color: #EAEAEA;
 	padding: 3px;
+}
+
+.switchMnuItmLabel {
+	padding-right: 7px;
 }
 
 /* Style for disabled menu item text */
