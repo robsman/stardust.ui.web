@@ -31,10 +31,10 @@
          <exclude org="backport-util-concurrent" module="backport-util-concurrent"/>
       </dependency>
       <dependency org="org.icefaces" name="icefaces-comps-ee-infinity04" rev="EE-1.8.2.GA_P03" conf="icefaces->default">
-         <exclude org="org.icefaces" module="icefaces-ee" />
+         <exclude org="org.icefaces" module="icefaces-ee-infinity04" />
       </dependency>
       <dependency org="org.icefaces" name="icefaces-facelets-ee-infinity04" rev="EE-1.8.2.GA_P03" conf="icefaces->default">
-         <exclude org="org.icefaces" module="icefaces-ee" />
+         <exclude org="org.icefaces" module="icefaces-ee-infinity04" />
       </dependency>
    </dependencies>
 </ivy-module>
