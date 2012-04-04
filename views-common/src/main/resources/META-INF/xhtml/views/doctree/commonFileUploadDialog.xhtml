@@ -120,8 +120,7 @@
 								styleClass="label-form" />
 								
 							<!-- The iframe that gets rendered as a part of ice:inputFile takes much wider space. So cap it with max-width -->
-							<ice:panelGroup style="margin-top: 5px; margin-bottom: 5px; max-width: auto;"
-								rendered="#{commonFileUploadDialog.fileUploadProgress eq 0  or commonFileUploadDialog.fileUploadProgress eq 100}">
+							<ice:panelGroup style="margin-top: 5px; margin-bottom: 5px; max-width: auto;" >
 								<ice:inputFile id="commonFile#{commonFileUploadDialog.beanId}" failOnEmptyFile="false" width="400"
 									actionListener="#{commonFileUploadDialog.uploadFile}"
 									progressListener="#{commonFileUploadDialog.measureProgress}"
@@ -131,11 +130,13 @@
 							</ice:panelGroup>
 							<ice:panelGroup styleClass="msgError">							
 								<ice:message for="commonFile#{commonFileUploadDialog.beanId}"/>	
-							</ice:panelGroup>						
-							<ice:outputProgress
-								value="#{commonFileUploadDialog.fileUploadProgress}">
-								<pc:automationTag value="auto-COM-FileUpdDlg-UpdStatus" standAlone="false"/>
-							</ice:outputProgress>
+							</ice:panelGroup>
+							<ice:panelGroup>						
+								<ice:outputProgress
+									value="#{commonFileUploadDialog.fileUploadProgress}">
+									<pc:automationTag value="auto-COM-FileUpdDlg-UpdStatus" standAlone="false"/>
+								</ice:outputProgress>
+							</ice:panelGroup>							
 						</ice:panelGroup>
 						
 						<!-- ***** ADDITIONAL OPTIONS ***** -->
