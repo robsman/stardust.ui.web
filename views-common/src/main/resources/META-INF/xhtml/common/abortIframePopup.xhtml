@@ -37,6 +37,11 @@
 					advanceArgs.width = document.documentElement.scrollWidth + 20;
 					advanceArgs.height = document.documentElement.scrollHeight;
 	
+					if (parent.ippPortalMain.InfinityBpm.Core.isFF())
+					{
+						advanceArgs.anchorYAdjustment = advanceArgs.anchorYAdjustment - 17; 
+					}
+
 					parent.ippPortalMain.InfinityBpm.ProcessPortal.resizeAndRepositionContentFrame(iFrameId, advanceArgs);
 				}
 			}

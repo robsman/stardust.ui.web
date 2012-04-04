@@ -523,6 +523,14 @@ if ( !InfinityBpm.Core) {
     	
     	return false;
     }
+
+    function isFF() {
+    	if (navigator.userAgent && (-1 != navigator.userAgent.indexOf("Firefox"))) {
+    		return true;
+    	}
+    	
+    	return false;
+    }
     
     function getOffsetleft(element)
     {
@@ -599,6 +607,10 @@ if ( !InfinityBpm.Core) {
       
       positionMessageDialog : function(divId) {
     	  positionMessageDialog(divId);
+      },
+      
+      isFF : function() {
+    	  return isFF();
       }
     };
   };
