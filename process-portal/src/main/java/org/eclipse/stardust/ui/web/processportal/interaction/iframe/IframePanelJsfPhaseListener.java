@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.processportal.interaction.iframe;
 
-import static java.util.Arrays.asList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 
 import java.util.Map;
@@ -236,6 +235,52 @@ public class IframePanelJsfPhaseListener implements PhaseListener
                catch (PortalException pe)
                {
                   trace.warn("", pe);
+               }
+            }
+            else if ((PhaseId.RENDER_RESPONSE == event.getPhaseId())
+                  && (IframePanelConstants.CMD_IFRAME_PANEL_COMPLETE.equals(panelCommand) 
+                        || IframePanelConstants.CMD_IFRAME_PANEL_SUSPEND_AND_SAVE.equals(panelCommand)))
+            {
+               try
+               {
+                  final String interactionId = (String) sessionMap.get(IframePanelConstants.KEY_INTERACTION_ID);
+                  
+                  InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(
+                        facesContext, InteractionRegistry.BEAN_ID);
+                  Interaction interaction = ((null != registry) && !isEmpty(interactionId))
+                        ? registry.getInteraction(interactionId)
+                        : null;
+                  
+                  if (null != interaction)
+                  {
+                     ApplicationContext jsfContext = interaction.getDefinition();
+                     if (null != jsfContext)
+                     {
+                        String viewId = (String) sessionMap.get(IframePanelConstants.KEY_VIEW_ID);
+                        if ( isEmpty(viewId))
+                        {
+                           viewId = (String) jsfContext.getAttribute("jsf:url");
+                        }
+                        if ( !isEmpty(viewId) && !viewId.startsWith("/"))
+                        {
+                           viewId = "/" + viewId;
+                        }
+                        
+                        if (facesContext.getViewRoot().getViewId().equals(viewId)
+                              || requestUri.equals(viewId))
+                        {
+                           // Cleanup Session
+                           trace.info("About to perform Cleaning Session Map for IPP activity panel view  " + viewId);
+                           sessionMap.remove(IframePanelConstants.KEY_COMMAND);
+                           sessionMap.remove(IframePanelConstants.KEY_INTERACTION_ID);
+                           sessionMap.remove(IframePanelConstants.KEY_VIEW_ID);
+                        }
+                     }
+                  }
+               }
+               catch (Exception e)
+               {
+                  trace.warn("", e);
                }
             }
          }
