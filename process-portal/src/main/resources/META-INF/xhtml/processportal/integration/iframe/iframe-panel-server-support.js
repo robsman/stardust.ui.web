@@ -23,7 +23,7 @@ function performIppAiClosePanelCommand()
       if ('function' === typeof submitForm) {
     	  // Trinidad
           submitForm(theForm, null, null);
-      } else if ('function' === typeof iceSubmitPartial) {
+      } else if ('function' === typeof iceSubmit) {
     	  // ICEfaces
     	  iceSubmit(theForm, null, null);
       }
