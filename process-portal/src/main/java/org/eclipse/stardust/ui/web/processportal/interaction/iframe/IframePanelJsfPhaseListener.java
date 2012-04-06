@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.processportal.interaction.iframe;
 
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import javax.faces.component.UIViewRoot;
@@ -116,42 +117,22 @@ public class IframePanelJsfPhaseListener implements PhaseListener
                   && IframePanelConstants.CMD_IFRAME_PANEL_INITIALIZE.equals(panelCommand))
             {
                // perform in data mapping if required
-               String interactionId = (String) sessionMap.get(IframePanelConstants.KEY_INTERACTION_ID);
-
-               InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(
-                     facesContext, InteractionRegistry.BEAN_ID);
-               Interaction interaction = ((null != registry) && !isEmpty(interactionId))
-                     ? registry.getInteraction(interactionId)
-                     : null;
-               
-               if (null != interaction)
+               JsfInteractionData jsfInteractionData = getJsfInteractionData(sessionMap, facesContext, requestUri);
+               if (null != jsfInteractionData)
                {
-                  ApplicationContext jsfContext = interaction.getDefinition();
-                  if (null != jsfContext)
+                  if (facesContext.getViewRoot().getViewId().equals(jsfInteractionData.getViewId())
+                        || requestUri.equals(jsfInteractionData.getViewId()))
                   {
-                     String viewId = (String) sessionMap.get(IframePanelConstants.KEY_VIEW_ID);
-                     if ( isEmpty(viewId))
-                     {
-                        viewId = (String) jsfContext.getAttribute("jsf:url");
-                     }
-                     if ( !isEmpty(viewId) && !viewId.startsWith("/"))
-                     {
-                        viewId = "/" + viewId;
-                     }
+                     trace.info("About to perform IN data mappings for IPP activity panel view "
+                           + jsfInteractionData.getViewId());
                      
-                     if (facesContext.getViewRoot().getViewId().equals(viewId) || requestUri.equals(viewId))
-                     {
-                        trace.info("About to perform IN data mappings for IPP activity panel view "
-                              + viewId);
-                        
-                        // first time connecting against an interaction, IN mappings should be performed
-                        JsfBackingBeanUtils.performBackingBeanInDataMappings(jsfContext,
-                              interaction.getInDataValues());
+                     // first time connecting against an interaction, IN mappings should be performed
+                     JsfBackingBeanUtils.performBackingBeanInDataMappings(jsfInteractionData.getInteraction()
+                           .getDefinition(), jsfInteractionData.getInteraction().getInDataValues());
 
-                        sessionMap.remove(IframePanelConstants.KEY_COMMAND);
-                        sessionMap.remove(IframePanelConstants.KEY_INTERACTION_ID);
-                        sessionMap.remove(IframePanelConstants.KEY_VIEW_ID);
-                     }
+                     sessionMap.remove(IframePanelConstants.KEY_COMMAND);
+                     sessionMap.remove(IframePanelConstants.KEY_INTERACTION_ID);
+                     sessionMap.remove(IframePanelConstants.KEY_VIEW_ID);
                   }
                }
             }
@@ -162,72 +143,52 @@ public class IframePanelJsfPhaseListener implements PhaseListener
                
                try
                {
-                  final String interactionId = (String) sessionMap.get(IframePanelConstants.KEY_INTERACTION_ID);
-                  
-                  InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(
-                        facesContext, InteractionRegistry.BEAN_ID);
-                  Interaction interaction = ((null != registry) && !isEmpty(interactionId))
-                        ? registry.getInteraction(interactionId)
-                        : null;
-                  
-                  if (null != interaction)
+                  JsfInteractionData jsfInteractionData = getJsfInteractionData(sessionMap, facesContext, requestUri);
+                  if (null != jsfInteractionData)
                   {
-                     ApplicationContext jsfContext = interaction.getDefinition();
-                     if (null != jsfContext)
+                     if (facesContext.getViewRoot().getViewId().equals(jsfInteractionData.getViewId())
+                           || requestUri.equals(jsfInteractionData.getViewId()))
                      {
-                        String viewId = (String) sessionMap.get(IframePanelConstants.KEY_VIEW_ID);
-                        if ( isEmpty(viewId))
-                        {
-                           viewId = (String) jsfContext.getAttribute("jsf:url");
-                        }
-                        if ( !isEmpty(viewId) && !viewId.startsWith("/"))
-                        {
-                           viewId = "/" + viewId;
-                        }
+                        trace.info("About to perform OUT data mappings for IPP activity panel view "
+                              + jsfInteractionData.getViewId());
                         
-                        if (facesContext.getViewRoot().getViewId().equals(viewId)
-                              || requestUri.equals(viewId))
+                        try
                         {
-                           trace.info("About to perform OUT data mappings for IPP activity panel view "
-                                 + viewId);
-                           
-                           try
-                           {
-                              Map outMap = JsfBackingBeanUtils.performBackingBeanOutDataMappings(jsfContext);
+                           Map outMap = JsfBackingBeanUtils.performBackingBeanOutDataMappings(jsfInteractionData
+                                 .getInteraction().getDefinition());
 
-                              interaction.setOutDataValues(outMap);
-                              interaction.setStatus(Interaction.Status.Complete);
+                           jsfInteractionData.getInteraction().setOutDataValues(outMap);
+                           jsfInteractionData.getInteraction().setStatus(Interaction.Status.Complete);
 
-                              sessionMap.remove(IframePanelConstants.KEY_INTERACTION_ID);
-                              sessionMap.remove(IframePanelConstants.KEY_VIEW_ID);
+                           sessionMap.remove(IframePanelConstants.KEY_INTERACTION_ID);
+                           sessionMap.remove(IframePanelConstants.KEY_VIEW_ID);
 
-                              if (IframePanelUtils.isIceFaces(facesContext))
-                              {
-                                 // confirm completion of AI panel command
-                                 JavascriptContext.addJavascriptCall(facesContext,
-                                       "confirmIppAiClosePanelCommand('" + panelCommand
-                                             + "');");
-                              }
-                              else
-                              {
-                                 trace.error("FacesContext other than ICEfaces is not supported...", new Throwable());
-                              }
-                           }
-                           catch (ValidatorException ve)
+                           if (IframePanelUtils.isIceFaces(facesContext))
                            {
-                              trace.info(
-                                    "ValidationException from IPP activity panel view "
-                                          + viewId);
-                              if (trace.isDebugEnabled())
-                              {
-                                 trace.debug("Trace: ",ve);
-                              }
+                              // confirm completion of AI panel command
+                              JavascriptContext.addJavascriptCall(facesContext,
+                                    "confirmIppAiClosePanelCommand('" + panelCommand
+                                          + "');");
                            }
-                           finally
+                           else
                            {
-                              // Command is considered executed and thereby removed.
-                              sessionMap.remove(IframePanelConstants.KEY_COMMAND);
+                              trace.error("FacesContext other than ICEfaces is not supported...", new Throwable());
                            }
+                        }
+                        catch (ValidatorException ve)
+                        {
+                           trace.info(
+                                 "ValidationException from IPP activity panel view "
+                                       + jsfInteractionData.getViewId());
+                           if (trace.isDebugEnabled())
+                           {
+                              trace.debug("Trace: ",ve);
+                           }
+                        }
+                        finally
+                        {
+                           // Command is considered executed and thereby removed.
+                           sessionMap.remove(IframePanelConstants.KEY_COMMAND);
                         }
                      }
                   }
@@ -241,46 +202,18 @@ public class IframePanelJsfPhaseListener implements PhaseListener
                   && (IframePanelConstants.CMD_IFRAME_PANEL_COMPLETE.equals(panelCommand) 
                         || IframePanelConstants.CMD_IFRAME_PANEL_SUSPEND_AND_SAVE.equals(panelCommand)))
             {
-               try
+               JsfInteractionData jsfInteractionData = getJsfInteractionData(sessionMap, facesContext, requestUri);
+               if (null != jsfInteractionData)
                {
-                  final String interactionId = (String) sessionMap.get(IframePanelConstants.KEY_INTERACTION_ID);
-                  
-                  InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(
-                        facesContext, InteractionRegistry.BEAN_ID);
-                  Interaction interaction = ((null != registry) && !isEmpty(interactionId))
-                        ? registry.getInteraction(interactionId)
-                        : null;
-                  
-                  if (null != interaction)
+                  if (facesContext.getViewRoot().getViewId().equals(jsfInteractionData.getViewId())
+                        || requestUri.equals(jsfInteractionData.getViewId()))
                   {
-                     ApplicationContext jsfContext = interaction.getDefinition();
-                     if (null != jsfContext)
-                     {
-                        String viewId = (String) sessionMap.get(IframePanelConstants.KEY_VIEW_ID);
-                        if ( isEmpty(viewId))
-                        {
-                           viewId = (String) jsfContext.getAttribute("jsf:url");
-                        }
-                        if ( !isEmpty(viewId) && !viewId.startsWith("/"))
-                        {
-                           viewId = "/" + viewId;
-                        }
-                        
-                        if (facesContext.getViewRoot().getViewId().equals(viewId)
-                              || requestUri.equals(viewId))
-                        {
-                           // Cleanup Session
-                           trace.info("About to perform Cleaning Session Map for IPP activity panel view  " + viewId);
-                           sessionMap.remove(IframePanelConstants.KEY_COMMAND);
-                           sessionMap.remove(IframePanelConstants.KEY_INTERACTION_ID);
-                           sessionMap.remove(IframePanelConstants.KEY_VIEW_ID);
-                        }
-                     }
+                     // Cleanup Session
+                     trace.info("About to perform Cleaning Session Map for IPP activity panel view  " + jsfInteractionData.getViewId());
+                     sessionMap.remove(IframePanelConstants.KEY_COMMAND);
+                     sessionMap.remove(IframePanelConstants.KEY_INTERACTION_ID);
+                     sessionMap.remove(IframePanelConstants.KEY_VIEW_ID);
                   }
-               }
-               catch (Exception e)
-               {
-                  trace.warn("", e);
                }
             }
          }
@@ -331,4 +264,82 @@ public class IframePanelJsfPhaseListener implements PhaseListener
             && ("/plugins/common/login.xhtml".equals(viewRoot.getViewId()) || "/plugins/common/main.xhtml".equals(viewRoot.getViewId()));
    }
 
+   /**
+    * @param sessionMap
+    * @param facesContext
+    * @param requestUri
+    * @return
+    */
+   private JsfInteractionData getJsfInteractionData(Map<String, Object> sessionMap, FacesContext facesContext,
+         String requestUri)
+   {
+      JsfInteractionData jsfInteractionData = null;
+
+      try
+      {
+         String interactionId = (String) sessionMap.get(IframePanelConstants.KEY_INTERACTION_ID);
+         InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(facesContext,
+               InteractionRegistry.BEAN_ID);
+
+         Interaction interaction = ((null != registry) && !isEmpty(interactionId)) ? registry
+               .getInteraction(interactionId) : null;
+
+         if (null != interaction)
+         {
+            ApplicationContext jsfContext = interaction.getDefinition();
+            if (null != jsfContext)
+            {
+               String viewId = (String) sessionMap.get(IframePanelConstants.KEY_VIEW_ID);
+               if (isEmpty(viewId))
+               {
+                  viewId = (String) jsfContext.getAttribute("jsf:url");
+               }
+               if (!isEmpty(viewId) && !viewId.startsWith("/"))
+               {
+                  viewId = "/" + viewId;
+               }
+
+               jsfInteractionData = new JsfInteractionData(interaction, viewId);
+            }
+         }
+      }
+      catch (Exception e)
+      {
+         trace.warn("", e);
+      }
+
+      return jsfInteractionData;
+   }
+
+   /**
+    * @author Subodh.Godbole
+    *
+    */
+   private class JsfInteractionData implements Serializable
+   {
+      private static final long serialVersionUID = 1L;
+      
+      private Interaction interaction;
+      private String viewId;
+
+      /**
+       * @param interaction
+       * @param viewId
+       */
+      public JsfInteractionData(Interaction interaction, String viewId)
+      {
+         this.interaction = interaction;
+         this.viewId = viewId;
+      }
+
+      public Interaction getInteraction()
+      {
+         return interaction;
+      }
+
+      public String getViewId()
+      {
+         return viewId;
+      }
+   }
 }
