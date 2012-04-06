@@ -54,8 +54,8 @@ public class ActivityUtils
       List<Activity> activities, filteredActivities;
 
       // Following function assumes that model list contains the hierarchy defined from
-      // model management i.e. active model at 1st index and so on
-      List<DeployedModel> models = CollectionUtils.newArrayList(ModelUtils.getAllModels());
+      // model management i.e. active model prior to old models
+      List<DeployedModel> models = ModelUtils.getAllModelsActiveFirst();
       for (Model model : models)
       {
          processes = model.getAllProcessDefinitions();

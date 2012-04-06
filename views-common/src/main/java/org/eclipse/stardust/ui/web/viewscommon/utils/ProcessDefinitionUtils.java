@@ -221,10 +221,11 @@ public class ProcessDefinitionUtils
    {
       return getAllProcessDefinitions(true, filterAuxiliaryProcesses, true, activeModel);
    }
-
+   
+   
    /**
     * This method returns ALL accessible process definitions across ALL model versions
-    * TODO: following methods needs to refined
+    * 
     * 
     * @param doFilterAccess
     * @param filterAuxiliaryProcesses
@@ -232,64 +233,14 @@ public class ProcessDefinitionUtils
     *           (across model versions)
     * @return
     */
-   @SuppressWarnings("unchecked")
    private static List<ProcessDefinition> getAllProcessDefinitions(boolean doFilterAccess,
          boolean filterAuxiliaryProcesses, boolean filterDuplicateProcesses)
    {
-      List<ProcessDefinition> allProcesses = CollectionUtils.newArrayList();
-      List<ProcessDefinition> processes, filteredProcesses;
-      Set<String> processDefinitionQIds = new HashSet<String>();
-
-      // read processes from all active models
-      List<DeployedModel> activeModels = ModelUtils.getActiveModels();
-      List<Integer> activeModelOids = new ArrayList<Integer>();
-      for (DeployedModel deployedModel : activeModels)
-      {
-         activeModelOids.add(deployedModel.getModelOID());
-         processes = deployedModel.getAllProcessDefinitions();
-         filteredProcesses = doFilterAccess == true ? filterAccessibleProcesses(
-               ServiceFactoryUtils.getWorkflowService(), processes) : processes;
-         for (ProcessDefinition processDefinition : filteredProcesses)
-         {
-            // check for Auxiliary Processes
-            if (!(filterAuxiliaryProcesses && ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition)))
-            {
-               allProcesses.add(processDefinition);
-               processDefinitionQIds.add(processDefinition.getQualifiedId());
-            }
-         }
-      }
-
-      // read processes from old versions
-      List<DeployedModel> models = CollectionUtils.newArrayList(ModelUtils.getAllModels());
-      for (Model model : models)
-      {
-         if (!activeModelOids.contains(model.getModelOID()))
-         {
-            processes = model.getAllProcessDefinitions();
-            filteredProcesses = doFilterAccess == true ? filterAccessibleProcesses(ServiceFactoryUtils
-                  .getWorkflowService(), processes) : processes;
-            for (ProcessDefinition processDefinition : filteredProcesses)
-            {
-               // check for Auxiliary Processes
-               if (!(filterAuxiliaryProcesses && ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition)))
-               {
-                  // check for duplicate process from different versions (active version's
-                  // processes will override)
-                  if (!(filterDuplicateProcesses && processDefinitionQIds.contains(processDefinition.getQualifiedId())))
-                  {
-                     allProcesses.add(processDefinition);
-                     processDefinitionQIds.add(processDefinition.getQualifiedId());
-                  }
-               }
-            }
-         }
-      }
-      return allProcesses;
+      return getAllProcessDefinitions(doFilterAccess, filterAuxiliaryProcesses, filterDuplicateProcesses, null);
    }
-   
+
    /**
-    * TODO: This method needs to be refined if possible
+    * Returns all processes from all models or from provided model
     * 
     * @param doFilterAccess
     * @param filterAuxiliaryProcesses
@@ -297,50 +248,36 @@ public class ProcessDefinitionUtils
     * @param deployedModel
     * @return
     */
+   @SuppressWarnings("unchecked")
    private static List<ProcessDefinition> getAllProcessDefinitions(boolean doFilterAccess,
-        boolean filterAuxiliaryProcesses, boolean filterDuplicateProcesses, Model deployedModel){
-      
+         boolean filterAuxiliaryProcesses, boolean filterDuplicateProcesses, Model deployedModel)
+   {
       List<ProcessDefinition> allProcesses = CollectionUtils.newArrayList();
       List<ProcessDefinition> processes, filteredProcesses;
       Set<String> processDefinitionQIds = new HashSet<String>();
-      // read processes from all active models
 
-      processes = deployedModel.getAllProcessDefinitions();
-      filteredProcesses = doFilterAccess == true ? filterAccessibleProcesses(ServiceFactoryUtils.getWorkflowService(),
-            processes) : processes;
-      for (ProcessDefinition processDefinition : filteredProcesses)
-      {
-         // check for Auxiliary Processes
-         if (!(filterAuxiliaryProcesses && ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition)))
-         {
-            allProcesses.add(processDefinition);
-            processDefinitionQIds.add(processDefinition.getQualifiedId());
-         }
-      }
-
-      // read processes from old versions
-      List<DeployedModel> models = CollectionUtils.newArrayList(ModelUtils.getAllModels());
+      List<DeployedModel> models = ModelUtils.getAllModelsActiveFirst();
+      
       for (Model model : models)
       {
-         // TODO: try using qualifiedid instead of id?
-         if (deployedModel.getModelOID() != model.getModelOID() && deployedModel.getQualifiedId().equals(model.getQualifiedId()))
+         if (null == deployedModel || deployedModel.getQualifiedId().equals(model.getQualifiedId()))
          {
             processes = model.getAllProcessDefinitions();
             filteredProcesses = doFilterAccess == true ? filterAccessibleProcesses(
                   ServiceFactoryUtils.getWorkflowService(), processes) : processes;
             for (ProcessDefinition processDefinition : filteredProcesses)
             {
-               // check for Auxiliary Processes
-               if (!(filterAuxiliaryProcesses && ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition)))
+               // check for duplicate process from different versions (active version's
+               // processes will override)
+               if (!(filterDuplicateProcesses && processDefinitionQIds.contains(processDefinition.getQualifiedId())))
                {
-                  // check for duplicate process from different versions (active version's
-                  // processes will override)
-                  if (!(filterDuplicateProcesses && processDefinitionQIds.contains(processDefinition.getQualifiedId())))
+                  // check for Auxiliary Processes
+                  if (!(filterAuxiliaryProcesses && ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition)))
                   {
                      allProcesses.add(processDefinition);
-                     processDefinitionQIds.add(processDefinition.getQualifiedId());
                   }
                }
+               processDefinitionQIds.add(processDefinition.getQualifiedId());
             }
          }
       }
