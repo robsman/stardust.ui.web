@@ -76,6 +76,7 @@
 								dropTarget="true"
 								hoverclass="dropTargetHover"
 								dragMask="hover_start, dragging, hover_end, drag_cancel"
+								dropMask="dragging,drag_cancel,hover_start,hover_end"
 								dropValue="#{item}"
 								dropListener="#{genericRepositoryTreeViewBean.dropPanelListener}">
 								<ice:graphicImage value="#{item.userObject.leafIcon}"
@@ -274,6 +275,7 @@
 							style="display: inline" dropTarget="true"
 							hoverclass="dropTargetHover"
 							dragMask="hover_start, dragging, hover_end, drag_cancel"
+							dropMask="dragging,drag_cancel,hover_start,hover_end"
 							dropValue="#{item}"
 							dropListener="#{genericRepositoryTreeViewBean.dropPanelListener}"
 							effect="#{item.userObject.resourceFoundEffect}"

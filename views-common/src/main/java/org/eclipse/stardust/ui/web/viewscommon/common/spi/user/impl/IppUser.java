@@ -38,6 +38,8 @@ public class IppUser implements User
    private PermissionHelper permissionHelper = null;
 
    private String uniqueUserId;
+   
+   private String displayName = null;
 
    /**
     * Gets the logged in user
@@ -133,6 +135,10 @@ public class IppUser implements User
    
    public String getDisplayName()
    {
-      return UserUtils.getUserDisplayLabel(ippUser);
+      if (null == displayName)
+      {
+         displayName = UserUtils.getUserDisplayLabel(ippUser);
+      }
+      return displayName;
    }
 }
