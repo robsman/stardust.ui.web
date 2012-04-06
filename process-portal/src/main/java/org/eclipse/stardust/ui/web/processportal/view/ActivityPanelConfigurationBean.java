@@ -84,12 +84,14 @@ public class ActivityPanelConfigurationBean extends UIComponentBean implements U
       }
 
       // Columns in Table
-      noOfColumnsInTable = 5;
+      noOfColumnsInTable = 0;
       availableNoOfColumnsInTable = new ArrayList<SelectItem>();
       for (int i = 1; i <= 9; i++)
       {
          availableNoOfColumnsInTable.add(new SelectItem(i, String.valueOf(i)));
       }
+      availableNoOfColumnsInTable.add(new SelectItem(0, getMessages().getString(
+            "config.autoGeneration.noOfColumnsInTable.option.all")));
 
       initialize();
    }
@@ -227,7 +229,7 @@ public class ActivityPanelConfigurationBean extends UIComponentBean implements U
    public static int getAutoNoOfColumnsInTable()
    {
       UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance(M_WORKFLOW);
-      return userPrefsHelper.getInteger(V_ACTIVITY_PANEL, F_NO_OF_COLUMNS_IN_TABLE, 5);
+      return userPrefsHelper.getInteger(V_ACTIVITY_PANEL, F_NO_OF_COLUMNS_IN_TABLE, 0);
    }
 
    @Override
@@ -248,7 +250,7 @@ public class ActivityPanelConfigurationBean extends UIComponentBean implements U
       pinActivityViewType = userPrefsHelper.getSingleString(V_ACTIVITY_PANEL, F_PIN_ACTIVITY_VIEW_TYPE, PIN_ACTIVITY_VIEW_VERTICALLY);
       showMappedDocumentWarning = userPrefsHelper.getBoolean(V_ACTIVITY_PANEL, F_SHOW_MAPPED_DOC_WARNING, true);
       noOfColumnsInColumnLayout = userPrefsHelper.getInteger(V_ACTIVITY_PANEL, F_NO_OF_COLUMNS_IN_COLUMN_LAYOUT, 3);
-      noOfColumnsInTable = userPrefsHelper.getInteger(V_ACTIVITY_PANEL, F_NO_OF_COLUMNS_IN_TABLE, 5);
+      noOfColumnsInTable = userPrefsHelper.getInteger(V_ACTIVITY_PANEL, F_NO_OF_COLUMNS_IN_TABLE, 0);
    }
 
    /**
