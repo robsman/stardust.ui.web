@@ -38,7 +38,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import com.icesoft.faces.context.effects.JavascriptContext;
 
 
-
 /**
  * @author sauer
  * @version $Revision: $
@@ -46,9 +45,11 @@ import com.icesoft.faces.context.effects.JavascriptContext;
 public class IframePanelJsfPhaseListener implements PhaseListener
 {
    private static final long serialVersionUID = 1;
-
    private static final Logger trace = LogManager.getLogger(IframePanelJsfPhaseListener.class);
    
+   /* (non-Javadoc)
+    * @see javax.faces.event.PhaseListener#beforePhase(javax.faces.event.PhaseEvent)
+    */
    public void beforePhase(PhaseEvent event)
    {
       FacesContext facesContext = event.getFacesContext();
@@ -68,6 +69,9 @@ public class IframePanelJsfPhaseListener implements PhaseListener
       manageViewScope(facesContext, true);
    }
 
+   /* (non-Javadoc)
+    * @see javax.faces.event.PhaseListener#afterPhase(javax.faces.event.PhaseEvent)
+    */
    public void afterPhase(PhaseEvent event)
    {
       final FacesContext facesContext = event.getFacesContext();
@@ -80,8 +84,7 @@ public class IframePanelJsfPhaseListener implements PhaseListener
 
       if (isLoginOrMainPage(facesContext))
       {
-         // login or main view, don't intercept
-         return;
+         return; // login or main view, don't intercept
       }
 
       try
@@ -92,8 +95,7 @@ public class IframePanelJsfPhaseListener implements PhaseListener
          String panelCommand = (String) sessionMap.get(IframePanelConstants.KEY_COMMAND);
          if (isEmpty(panelCommand))
          {
-            // no action required
-            return;
+            return; // no action required
          }
 
          // extract request URI to match against URL in activity definition
@@ -125,7 +127,7 @@ public class IframePanelJsfPhaseListener implements PhaseListener
                   {
                      trace.info("About to perform IN data mappings for IPP activity panel view "
                            + jsfInteractionData.getViewId());
-                     
+
                      // first time connecting against an interaction, IN mappings should be performed
                      JsfBackingBeanUtils.performBackingBeanInDataMappings(jsfInteractionData.getInteraction()
                            .getDefinition(), jsfInteractionData.getInteraction().getInDataValues());
@@ -137,7 +139,8 @@ public class IframePanelJsfPhaseListener implements PhaseListener
                }
             }
             else if ((PhaseId.INVOKE_APPLICATION == event.getPhaseId())
-                  && (IframePanelConstants.CMD_IFRAME_PANEL_COMPLETE.equals(panelCommand) || IframePanelConstants.CMD_IFRAME_PANEL_SUSPEND_AND_SAVE.equals(panelCommand)))
+                  && (IframePanelConstants.CMD_IFRAME_PANEL_COMPLETE.equals(panelCommand)
+                        || IframePanelConstants.CMD_IFRAME_PANEL_SUSPEND_AND_SAVE.equals(panelCommand)))
             {
                // perform out data mapping if required
                
@@ -166,9 +169,8 @@ public class IframePanelJsfPhaseListener implements PhaseListener
                            if (IframePanelUtils.isIceFaces(facesContext))
                            {
                               // confirm completion of AI panel command
-                              JavascriptContext.addJavascriptCall(facesContext,
-                                    "confirmIppAiClosePanelCommand('" + panelCommand
-                                          + "');");
+                              JavascriptContext.addJavascriptCall(facesContext, "confirmIppAiClosePanelCommand('"
+                                    + panelCommand + "');");
                            }
                            else
                            {
@@ -177,12 +179,11 @@ public class IframePanelJsfPhaseListener implements PhaseListener
                         }
                         catch (ValidatorException ve)
                         {
-                           trace.info(
-                                 "ValidationException from IPP activity panel view "
-                                       + jsfInteractionData.getViewId());
+                           trace.info("ValidationException from IPP activity panel view "
+                                 + jsfInteractionData.getViewId());
                            if (trace.isDebugEnabled())
                            {
-                              trace.debug("Trace: ",ve);
+                              trace.debug("Trace: ", ve);
                            }
                         }
                         finally
@@ -209,7 +210,8 @@ public class IframePanelJsfPhaseListener implements PhaseListener
                         || requestUri.equals(jsfInteractionData.getViewId()))
                   {
                      // Cleanup Session
-                     trace.info("About to perform Cleaning Session Map for IPP activity panel view  " + jsfInteractionData.getViewId());
+                     trace.info("About to perform Cleaning Session Map for IPP activity panel view  "
+                           + jsfInteractionData.getViewId());
                      sessionMap.remove(IframePanelConstants.KEY_COMMAND);
                      sessionMap.remove(IframePanelConstants.KEY_INTERACTION_ID);
                      sessionMap.remove(IframePanelConstants.KEY_VIEW_ID);
@@ -224,18 +226,24 @@ public class IframePanelJsfPhaseListener implements PhaseListener
       }
    }
 
+   /* (non-Javadoc)
+    * @see javax.faces.event.PhaseListener#getPhaseId()
+    */
    public PhaseId getPhaseId()
    {
       return PhaseId.ANY_PHASE;
    }
 
+   /**
+    * @param facesContext
+    * @param doBind
+    */
    private void manageViewScope(FacesContext facesContext, boolean doBind)
    {
       if (null != facesContext.getExternalContext().getSession(false))
       {
-         // see if this session aleady contains a properly initialized UI controller
-         PortalUiController portalUiController = (PortalUiController) facesContext.getExternalContext()
-               .getSessionMap()
+         // see if this session already contains a properly initialized UI controller
+         PortalUiController portalUiController = (PortalUiController) facesContext.getExternalContext().getSessionMap()
                .get(PortalUiController.BEAN_NAME);
          if (null != portalUiController)
          {
@@ -256,12 +264,17 @@ public class IframePanelJsfPhaseListener implements PhaseListener
       }
    }
    
+   /**
+    * @param facesContext
+    * @return
+    */
    private boolean isLoginOrMainPage(final FacesContext facesContext)
    {
       UIViewRoot viewRoot = facesContext.getViewRoot();
 
       return (null != viewRoot)
-            && ("/plugins/common/login.xhtml".equals(viewRoot.getViewId()) || "/plugins/common/main.xhtml".equals(viewRoot.getViewId()));
+            && ("/plugins/common/login.xhtml".equals(viewRoot.getViewId()) || "/plugins/common/main.xhtml"
+                  .equals(viewRoot.getViewId()));
    }
 
    /**
