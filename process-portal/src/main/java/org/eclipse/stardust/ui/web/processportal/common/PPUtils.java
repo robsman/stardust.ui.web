@@ -407,13 +407,14 @@ public class PPUtils
     * @param ai
     * @return
     */
-   public static List<Object> complete(String context, Map<String, ? > data, CompletionOptions options,
-         ActivityInstance ai)
+   public static WorkflowActivityCompletionLog complete(String context, Map<String, ? > data,
+         CompletionOptions options, ActivityInstance ai)
    {
       ActivityInstance completedAi = null;
       ActivityInstance newInstance = null;
 
       boolean closeViewAndProceed = true;
+      boolean success = false;
 
       try
       {
@@ -437,6 +438,8 @@ public class PPUtils
          {
             sendActivityEvent(null, ActivityEvent.activated(newInstance));
          }
+
+         success = true;
       }
       catch (ConcurrencyException ce)
       {
@@ -464,12 +467,7 @@ public class PPUtils
          ExceptionHandler.handleException(e);
       }
 
-      List<Object> retData = new ArrayList<Object>(3);
-      retData.add(completedAi);
-      retData.add(newInstance);
-      retData.add(closeViewAndProceed);
-
-      return retData;
+      return new WorkflowActivityCompletionLog(completedAi, newInstance, success, closeViewAndProceed);
    }
 
    /**
@@ -667,5 +665,4 @@ public class PPUtils
       ProcessWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
       ClientContextBean.getCurrentInstance().getClientContext().sendActivityEvent(activityEvent);
    }
-
 }

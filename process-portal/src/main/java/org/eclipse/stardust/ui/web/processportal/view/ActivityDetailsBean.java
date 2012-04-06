@@ -73,6 +73,7 @@ import org.eclipse.stardust.ui.web.processportal.PollingProperties.Activator;
 import org.eclipse.stardust.ui.web.processportal.common.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils.CompletionOptions;
+import org.eclipse.stardust.ui.web.processportal.common.WorkflowActivityCompletionLog;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ExternalWebAppInteractionController;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.FaceletPanelInteractionController;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.JspPanelInteractionController;
@@ -135,6 +136,8 @@ public class ActivityDetailsBean extends UIComponentBean
       implements ActivityEventObserver, NoteEventObserver, DocumentEventObserver, ViewEventHandler, DisposableBean,
       Activator
 {
+   private static final long serialVersionUID = 1L;
+
    private static final Logger trace = LogManager.getLogger(ActivityDetailsBean.class);
 
    public static final String ACTIVITY_PANEL_VIEW_ID = "activityPanel";
@@ -1345,49 +1348,56 @@ public class ActivityDetailsBean extends UIComponentBean
       ActivityInstance ai = activityInstance;
       IActivityInteractionController interactionController = getInteractionController(ai.getActivity());
 
-      List<Object> completionResult = PPUtils.complete(interactionController
-            .getContextId(ai), outData, CompletionOptions.ACTIVATE_NEXT, ai);
+      WorkflowActivityCompletionLog completionLog = PPUtils.complete(interactionController.getContextId(ai), outData,
+            CompletionOptions.ACTIVATE_NEXT, ai);
 
-      if ((Boolean) completionResult.get(2))
+      if (completionLog.isCloseViewAndProceed())
       {
          this.interaction = null;
-         this.activityInstance = (ActivityInstance) completionResult.get(0);
-         ActivityInstance nextActivityObject = (ActivityInstance) completionResult.get(1);
-         
-         if (null == nextActivityObject
-               && !QualityAssuranceState.QUALITY_ASSURANCE_TRIGGERED.equals(activityInstance
-                     .getQualityAssuranceState()))
+         ActivityInstance nextActivityObject = null;
+
+         if (completionLog.isSuccess())
          {
-            nextActivityObject = PollingProperties.getInstance().poll(this);
+            this.activityInstance = completionLog.getCompletedActivity();
+            nextActivityObject = completionLog.getNextActivity();
+            if (null == nextActivityObject
+                  && !QualityAssuranceState.QUALITY_ASSURANCE_TRIGGERED.equals(activityInstance
+                        .getQualityAssuranceState()))
+            {
+               nextActivityObject = PollingProperties.getInstance().poll(this);
+            }
+   
+            // Lookahead Functionality Part I
+            // Set Close Related Views to None because another related activity would be started
+            if (null != nextActivityObject)
+            {
+               thisView.getDefinition().setClosingPolicy(ViewDefinition.CLOSING_POLICY_NONE);
+            }
          }
 
-         // Lookahead Functionality Part I
-         // Set Close Related Views to None because another related activity would be started
-         if (null != nextActivityObject)
-         {
-            thisView.getDefinition().setClosingPolicy(ViewDefinition.CLOSING_POLICY_NONE);
-         }
-         
          Map<String, Object> params = getPinViewStatusParam();
          
          skipViewEvents = true;
          PortalApplication.getInstance().closeView(thisView, true);
 
-         if (null != nextActivityObject)
+         if (completionLog.isSuccess())
          {
-            if (null != worklistsBean) // Means Assembly Line Mode is OFF  
+            if (null != nextActivityObject)
             {
-               params.put("assemblyLineActivity", worklistsBean.isAssemblyLineActivity(nextActivityObject
-                     .getActivity()));
-               params.put("pushService", assemblyLinePushService);
-               params.put("worklistsBean", worklistsBean);
+               if (null != worklistsBean) // Means Assembly Line Mode is OFF  
+               {
+                  params.put("assemblyLineActivity", worklistsBean.isAssemblyLineActivity(nextActivityObject
+                        .getActivity()));
+                  params.put("pushService", assemblyLinePushService);
+                  params.put("worklistsBean", worklistsBean);
+               }
+   
+               ActivityInstanceUtils.openActivity(nextActivityObject, params);
             }
-
-            ActivityInstanceUtils.openActivity(nextActivityObject, params);
-         }
-         else if(assemblyLineActivity && assemblyLinePushService)
-         {
-            worklistsBean.openNextAssemblyLineActivity(params);
+            else if(assemblyLineActivity && assemblyLinePushService)
+            {
+               worklistsBean.openNextAssemblyLineActivity(params);
+            }
          }
          skipViewEvents = false;
       }
