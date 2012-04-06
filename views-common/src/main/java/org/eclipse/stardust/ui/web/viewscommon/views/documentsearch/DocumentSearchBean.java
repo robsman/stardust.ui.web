@@ -55,13 +55,13 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserAutocompleteMultiSelector;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserWrapper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.DocumentTypeWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.DocumentVersionDialog;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.DownloadPopupDialog;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.OutputResource;
-import org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentTypeWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.views.documentsearch.DocumentSearchProvider.FilterAttributes;
 
 

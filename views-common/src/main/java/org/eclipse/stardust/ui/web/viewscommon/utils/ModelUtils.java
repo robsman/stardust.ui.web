@@ -295,26 +295,6 @@ public class ModelUtils
    }
    
    /**
-    * Temporary method to convert viewscommon.utils.DocumentTypeWrapper to
-    * views.document.DocumentTypeWrapper used by DocumentMgmtUtility.java
-    * 
-    * @param model
-    * @return
-    */
-   public static Set<org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentTypeWrapper> getDeclaredDocumentTypesForDocTemp(
-         DeployedModel model)
-   {
-      Set<org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentTypeWrapper> allDocumentTypes = CollectionUtils
-            .newHashSet();
-      for (DocumentTypeWrapper wrapper : getDeclaredDocumentTypes(model))
-      {
-         allDocumentTypes.add(new org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentTypeWrapper(wrapper
-               .getDocumentType(), model.getModelOID()));
-      }
-      return allDocumentTypes;
-   }
-
-   /**
     * @param documentType
     * @return
     */

@@ -74,6 +74,7 @@ import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.DocumentTypeWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
@@ -81,7 +82,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
-import org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentTypeWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRVersionTracker;
 import org.eclipse.stardust.ui.web.viewscommon.views.documentsearch.DocumentSearchProvider;
@@ -545,7 +545,7 @@ public class DocumentMgmtUtility
 
       for (DeployedModel deployedModel : allModels)
       {
-         declaredDocTypes.addAll(ModelUtils.getDeclaredDocumentTypesForDocTemp(deployedModel));
+         declaredDocTypes.addAll(ModelUtils.getDeclaredDocumentTypes(deployedModel));
       }
       return declaredDocTypes;
    }
@@ -560,7 +560,7 @@ public class DocumentMgmtUtility
    public static String getDeclaredDocumentTypeLabel(DocumentTypeWrapper docTypeWrapper)
    {
       String docTypeId = docTypeWrapper.getDocumentTypeId();
-      Model model = ModelCache.findModelCache().getModel(docTypeWrapper.getModelOID());
+      Model model = docTypeWrapper.getModel();
       TypeDeclaration typeDeclaration = model.getTypeDeclaration(QName.valueOf(docTypeId).getLocalPart());
       return I18nUtils.getLabel(model, model.getName()) + " - "
             + I18nUtils.getLabel(typeDeclaration, typeDeclaration.getName());

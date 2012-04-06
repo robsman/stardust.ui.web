@@ -10,11 +10,11 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
+import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.TypeDeclaration;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
-
-
 
 /**
  * @author Subodh.Godbole
@@ -24,7 +24,7 @@ public class DocumentTypeWrapper
 {
    private DocumentType documentType;
    private TypeDeclaration typeDeclaration;
-   private String modelId;
+   private Model model;
 
    /**
     * String Manipulation needed because DocumentType does not expose the method to get OID
@@ -45,7 +45,7 @@ public class DocumentTypeWrapper
       
       if (null != model)
       {
-         this.modelId = model.getId();
+         this.model = model;
          this.typeDeclaration = model.getTypeDeclaration(documentType);
       }
    }
@@ -61,15 +61,23 @@ public class DocumentTypeWrapper
       final int prime = 31;
       int result = 1;
       if (null != getDocumentType())
-      result = prime * result + ((getDocumentType().getDocumentTypeId() == null) ? 0 : getDocumentType().getDocumentTypeId().hashCode());
+         result = prime
+               * result
+               + ((getDocumentType().getDocumentTypeId() == null) ? 0 : getDocumentType().getDocumentTypeId()
+                     .hashCode());
       return result;
    }
    
    @Override
    public boolean equals(Object obj)
    {
-         DocumentTypeWrapper docWrapperObj=(DocumentTypeWrapper) obj;
-         return getDocumentType().getDocumentTypeId().equals(docWrapperObj.getDocumentType().getDocumentTypeId());
+      if (obj instanceof DocumentType)
+      {
+         DocumentTypeWrapper docWrapperObj = (DocumentTypeWrapper) obj;
+         return StringUtils.areEqual(getDocumentType().getDocumentTypeId(), docWrapperObj.getDocumentType()
+               .getDocumentTypeId());
+      }
+      return super.equals(obj);
    }
 
    public String getDocumentTypeI18nName()
@@ -88,9 +96,9 @@ public class DocumentTypeWrapper
       return null != typeDeclaration ? typeDeclaration.getName() : "";
    }
 
-   public String getModelId()
+   public Model getModel()
    {
-      return modelId;
+      return model;
    }
 
    public DocumentType getDocumentType()
