@@ -25,7 +25,7 @@ function performIppAiClosePanelCommand()
           submitForm(theForm, null, null);
       } else if ('function' === typeof iceSubmitPartial) {
     	  // ICEfaces
-    	  iceSubmitPartial(theForm, null, null);
+    	  iceSubmit(theForm, null, null);
       }
 	  return;
   }
