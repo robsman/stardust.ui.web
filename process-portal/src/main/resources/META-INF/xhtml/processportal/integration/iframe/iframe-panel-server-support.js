@@ -38,7 +38,8 @@ function confirmIppAiClosePanelCommand(commandId)
 {
   // alert("Executing iFrame confirmIppAiClosePanelCommand(" + commandId + ")");
   
-  var mainIppFrame = top;
+  // Covering IPP for iFrame Scenario 
+  var mainIppFrame = parent ? parent.ippPortalMain : top;
 
   if (mainIppFrame)
   {
