@@ -385,7 +385,7 @@ public class ModelUtils
         refModel = ModelCache.findModelCache().getModel(ref.getModelOid());
       }
 
-      return XPathUtils.getXPaths(refModel, typeDeclarationId);
+      return XPathUtils.getXPaths(refModel, typeDeclarationId, dm.getDataPath());
    }
 
 
