@@ -45,7 +45,6 @@
       scope="session">
       <property name="portalUiController" ref="ippPortalUi" />
       <property name="userProvider" ref="userProvider"/>
-      <property name="portalConfiguration" ref="ippPortalConfig"/>
       <property name="portalApplicationEventScript" ref="ippPortalAppEventScript"/>
       <property name="runtimeEnvironmentInfoProvider" ref="runtimeEnvironmentInfoProvider"/>
    </bean>

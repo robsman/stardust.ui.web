@@ -45,7 +45,6 @@ import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.SessionRendererHelper;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
-import org.eclipse.stardust.ui.web.common.views.PortalConfiguration;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.icesoft.faces.component.paneltabset.TabChangeEvent;
@@ -119,8 +118,6 @@ public class PortalApplication
    
    private PortalApplicationEventScript portalApplicationEventScript; 
    
-   private PortalConfiguration portalConfiguration;
-   
    private TimeZone clientTimeZone = null;
    private boolean overflowTabPopupOpened = false;
 
@@ -145,14 +142,14 @@ public class PortalApplication
       return (PortalApplication) FacesUtils.getBeanFromContext("ippPortalApp");
    }
    
+   /**
+    * @throws Exception
+    */
    public void afterPropertiesSet() throws Exception
    {
       launchPanelsActivated = true;
       fullScreenModeActivated = false;
       displayMode = TAB_DISPLAY_MODE;
-      
-//      maxTabDisplay = UserPreferencesHelper.getInstance(M_PORTAL).getInteger(
-//            V_PORTAL_CONFIG, F_TABS_MAX_TABS_DISPLAY, DEFAULT_MAX_TAB_DISPLAY);
 
       dummyViewForOverflowTab = new View(null, "/dummy.xhtml");
       
@@ -168,11 +165,17 @@ public class PortalApplication
       SessionRendererHelper.addCurrentSession(SessionRendererHelper.getPortalSessionRendererId(getLoggedInUser()));
    }
 
+   /**
+    * @return
+    */
    public User getLoggedInUser()
    {
       return  userProvider.getUser();
    }
    
+   /**
+    * @return
+    */
    public PreferencePage getHelpDocPreference()
    {
       if(getPortalUiController().getPerspective().getPreferences() != null)
@@ -583,12 +586,8 @@ public class PortalApplication
     */
    public List<View> getOpenViews()
    {
-      // TODO drop process_portal View type
-
       List<View> openViews = getPortalUiController().getOpenViews();
-      //return openViews;
 
-      // repackage to adjust type
       List<View> result = new ArrayList<View>(openViews.size());
       for (View view : openViews)
       {
@@ -642,23 +641,9 @@ public class PortalApplication
     */
    public void setViewIndex(int index)
    {
-      // TODO only proceed if current focus view may be deactivated
-      
       this.viewIndex = index;
       setActiveView(displayedViews.get(this.viewIndex));
       setActiveViewBreadCrumb();
-      
-/*
-      if (viewIndex != index)
-      {
-         this.viewIndex = index;
-         
-         View newFocusView = getDisplayedViews().get(index);
-         setFocusView(newFocusView);
-         
-         setActiveViewBreadCrumb();
-      }
- */
    }
 
    /**
@@ -902,9 +887,6 @@ public class PortalApplication
     */
    public String logout()
    {
-      //SessionContext.findSessionContext().logout();
-      //return "ippPortalLogout";
-
       // Close All Open Views
       closeAllViews();
       
@@ -1592,11 +1574,6 @@ public class PortalApplication
       this.userProvider = userProvider;
    }
 
-   public void setPortalConfiguration(PortalConfiguration portalConfiguration)
-   {
-      this.portalConfiguration = portalConfiguration;
-   }
-
    /**
     * @return
     */
@@ -1678,19 +1655,13 @@ public class PortalApplication
          }
          catch (Exception e)
          {
-            maxTabDisplay = -1;
-            trace.error("Exception occurred while reading user preferences (maxTabDisplay)", e);
+            maxTabDisplay = DEFAULT_MAX_TAB_DISPLAY;
+            trace.error("Exception occurred while reading user preferences (maxTabDisplay), Using default as "
+                  + DEFAULT_MAX_TAB_DISPLAY, e);
          }
       }
 
-      if (maxTabDisplay != -1)
-      {
-         return maxTabDisplay;
-      }
-      else
-      {
-         return DEFAULT_MAX_TAB_DISPLAY;
-      }
+      return maxTabDisplay;
    }
    
    public String getLocaleString()
