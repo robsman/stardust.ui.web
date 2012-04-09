@@ -15,6 +15,7 @@ import java.util.Iterator;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
@@ -28,6 +29,7 @@ import org.eclipse.stardust.ui.web.admin.ResourcePaths;
 import org.eclipse.stardust.ui.web.admin.WorkflowFacade;
 import org.eclipse.stardust.ui.web.admin.messages.AdminMessagesPropertiesBean;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
@@ -149,49 +151,67 @@ public class AuditTrailBean extends PopupUIComponentBean
       }
       return null;
    }
-   
+
    /**
     * opens confirmation dialog for cleanup
+    * 
     * @param event
     */
    public void openCleanupATDConfirm(ActionEvent event)
    {
-      mappedConfirmationDialog = new AuditTrailConfirmationDialog(DialogContentType.NONE,DialogActionType.YES_NO,ResourcePaths.LP_CleanAuditTrailDB);
-      mappedConfirmationDialog.setTitle(propsBean.getString("launchPanels.ippAdmAdministrativeActions.catd.title"));
-      mappedConfirmationDialog.openPopup();
+      if (areAllViewsClosed())
+      {
+         mappedConfirmationDialog = new AuditTrailConfirmationDialog(DialogContentType.NONE, DialogActionType.YES_NO,
+               ResourcePaths.LP_CleanAuditTrailDB);
+         mappedConfirmationDialog.setTitle(propsBean.getString("launchPanels.ippAdmAdministrativeActions.catd.title"));
+         mappedConfirmationDialog.openPopup();
+      }
+      else
+      {
+         MessageDialog.getInstance().addErrorMessage(
+               propsBean.getString("launchPanels.ippAdmAdministrativeActions.auditTrail.viewsOpen.errorMessage"));
+      }
    }
-   
+
    /**
     * @param event
     */
    public void openCleanupATMDConfirm(ActionEvent event)
    {
-      ConfirmationDialogHandler dialogHandler = new ConfirmationDialogHandler()
+      if (areAllViewsClosed())
       {
-         public boolean cancel()
+         ConfirmationDialogHandler dialogHandler = new ConfirmationDialogHandler()
          {
-            auditTrailAndModelCleanUpDialog = null;
-            return true;
-         }
-
-         public boolean accept()
-         {
-            auditTrailAndModelCleanUpDialog = null;
-            String navigationRuleId = cleanupATMD();
-            if (StringUtils.isNotEmpty(navigationRuleId))
+            public boolean cancel()
             {
-               FacesUtils.handleNavigation(navigationRuleId);
+               auditTrailAndModelCleanUpDialog = null;
+               return true;
             }
-            return true;
-         }
-      };
-      auditTrailAndModelCleanUpDialog = new ConfirmationDialog(DialogContentType.NONE, DialogActionType.YES_NO,
-            dialogHandler);
-      auditTrailAndModelCleanUpDialog.setIncludePath(ResourcePaths.LP_CleanAuditAndModelTrailDB);
-      auditTrailAndModelCleanUpDialog.setDialogStyle(DialogStyle.COMPACT);
-      auditTrailAndModelCleanUpDialog.setTitle(propsBean
-            .getString("launchPanels.ippAdmAdministrativeActions.catmd.title"));
-      auditTrailAndModelCleanUpDialog.openPopup();
+
+            public boolean accept()
+            {
+               auditTrailAndModelCleanUpDialog = null;
+               String navigationRuleId = cleanupATMD();
+               if (StringUtils.isNotEmpty(navigationRuleId))
+               {
+                  FacesUtils.handleNavigation(navigationRuleId);
+               }
+               return true;
+            }
+         };
+         auditTrailAndModelCleanUpDialog = new ConfirmationDialog(DialogContentType.NONE, DialogActionType.YES_NO,
+               dialogHandler);
+         auditTrailAndModelCleanUpDialog.setIncludePath(ResourcePaths.LP_CleanAuditAndModelTrailDB);
+         auditTrailAndModelCleanUpDialog.setDialogStyle(DialogStyle.COMPACT);
+         auditTrailAndModelCleanUpDialog.setTitle(propsBean
+               .getString("launchPanels.ippAdmAdministrativeActions.catmd.title"));
+         auditTrailAndModelCleanUpDialog.openPopup();
+      }
+      else
+      {
+         MessageDialog.getInstance().addErrorMessage(
+               propsBean.getString("launchPanels.ippAdmAdministrativeActions.auditTrail.viewsOpen.errorMessage"));
+      }
    }
    
    /**
@@ -235,7 +255,7 @@ public class AuditTrailBean extends PopupUIComponentBean
     * 
     * @param event
     */
-   public boolean cleanupATD(boolean retainUsersAndDepts)
+   public String cleanupATD(boolean retainUsersAndDepts)
    {
       AdministrationService service = null;
       try
@@ -244,21 +264,16 @@ public class AuditTrailBean extends PopupUIComponentBean
          if (service != null)
          {
             service.cleanupRuntime(retainUsersAndDepts);
-            FacesMessage message = new FacesMessage(
-                  propsBean
-                        .getString("launchPanels.ippAdmAdministrativeActions.auditTrail.cleanUpAuditTrailDbCompleted"));
-            message.setSeverity(FacesMessage.SEVERITY_INFO);
-            MessageDialog.addInfoMessage(message.getDetail());
-
             SessionContext.findSessionContext().resetSession();
+            return "ippPortalLogout";
          }
-         return true;
+         return null;
       }
       catch (PublicException e)
       {
          ExceptionHandler.handleException(e);
       }
-      return false;
+      return null;
    }
 
    @Override
@@ -266,6 +281,14 @@ public class AuditTrailBean extends PopupUIComponentBean
    {
    // TODO Auto-generated method stub
 
+   }
+
+   /**
+    * 
+    */
+   private boolean areAllViewsClosed()
+   {
+      return CollectionUtils.isEmpty(PortalApplication.getInstance().getOpenViews());
    }
 
    public ConfirmationDialog getMappedConfirmationDialog()
@@ -317,7 +340,12 @@ public class AuditTrailBean extends PopupUIComponentBean
       public boolean accept()
       {
          mappedConfirmationDialog = null;
-         return cleanupATD(retainUsersAndDepts);
+         String navigationRuleId = cleanupATD(retainUsersAndDepts);
+         if (StringUtils.isNotEmpty(navigationRuleId))
+         {
+            FacesUtils.handleNavigation(navigationRuleId);
+         }
+         return true;
       }
 
       public boolean cancel()
