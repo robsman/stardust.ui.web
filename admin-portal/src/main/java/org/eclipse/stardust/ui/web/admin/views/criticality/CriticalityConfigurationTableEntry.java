@@ -60,7 +60,15 @@ public class CriticalityConfigurationTableEntry extends DefaultRowModel
       iconColor = ICON_COLOR.valueOf(tok.nextToken());
       iconCount = tok.hasMoreTokens() ? Integer.parseInt(tok.nextToken()) : 1;
    }
-   
+
+   /**
+    * 
+    */
+   private void validateCriticalityConfiguration()
+   {
+      CriticalityConfigurationBean.getInstance().validate();
+   }
+
    public int getRangeFrom()
    {
       return rangeFrom;
@@ -69,6 +77,7 @@ public class CriticalityConfigurationTableEntry extends DefaultRowModel
    public void setRangeFrom(int rangeFrom)
    {
       this.rangeFrom = rangeFrom;
+      validateCriticalityConfiguration();
    }
    
    public int getRangeTo()
@@ -79,6 +88,7 @@ public class CriticalityConfigurationTableEntry extends DefaultRowModel
    public void setRangeTo(int rangeTo)
    {
       this.rangeTo = rangeTo;
+      validateCriticalityConfiguration();
    }
    
    public String getLabel()
@@ -89,6 +99,7 @@ public class CriticalityConfigurationTableEntry extends DefaultRowModel
    public void setLabel(String label)
    {
       this.label = label;
+      validateCriticalityConfiguration();
    }
    
    public String getIcon()
@@ -109,6 +120,7 @@ public class CriticalityConfigurationTableEntry extends DefaultRowModel
    public void setIconColor(ICON_COLOR iconColor)
    {
       this.iconColor = iconColor;
+      validateCriticalityConfiguration();
    }
    
    public int getIconCount()

@@ -194,7 +194,6 @@ public class CriticalityConfigurationBean extends UIComponentBean implements Vie
    {
       try
       {
-         errorMessages = new HashSet<String>();
          if (validate())
          {
             //Sort the table in ascending order
@@ -224,6 +223,7 @@ public class CriticalityConfigurationBean extends UIComponentBean implements Vie
    {
       criticalityCategoriesList.add(getNewCriticalityConfigurationEntry());
       criticalityConfEntryTable.initialize();
+      validate();
    }
    
    public void editRow(ActionEvent event)
@@ -248,6 +248,7 @@ public class CriticalityConfigurationBean extends UIComponentBean implements Vie
          }
       }
       criticalityConfEntryTable.initialize();
+      validate();
    }
    
    public void reset(ActionEvent event)
@@ -357,8 +358,9 @@ public class CriticalityConfigurationBean extends UIComponentBean implements Vie
       }
    }
 
-   private boolean validate()
+   public boolean validate()
    {
+      errorMessages = new HashSet<String>();
       Set<String> labels = new HashSet<String>();
       Set<Integer> uniqueRangeList = new HashSet<Integer>();
       for (CriticalityConfigurationTableEntry te : criticalityCategoriesList)
