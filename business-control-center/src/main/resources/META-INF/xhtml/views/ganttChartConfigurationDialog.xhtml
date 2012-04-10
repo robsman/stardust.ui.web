@@ -16,7 +16,7 @@
 		<ice:panelGroup>
 			<ice:panelGroup styleClass="heading">
 				<ice:outputText
-					value="#{views_common_msgPropsBean['views.ganttChartView.configure.selectProcessesCaptionText.label']}" />
+					value="#{messages_bcc['views.ganttChartView.configure.selectProcessesCaptionText.label']}" />
 			</ice:panelGroup>
 			<ice:panelGroup
 				style="max-height: 7em; height: auto !important; height: 7em; overflow-y: auto; overflow-x: visible; border: 1px solid #D3D3D3">
@@ -37,7 +37,7 @@
 		<ice:panelGrid columns="2">
 			<ice:panelGroup>
 				<ice:outputLabel for="txtselectProcess"
-					value="#{views_common_msgPropsBean['views.ganttChartView.configure.chooseProcess.label']}:"
+					value="#{messages_bcc['views.ganttChartView.configure.chooseProcess.label']}:"
 					styleClass="label-form" style="text-align: right;" />
 			</ice:panelGroup>
 			<ice:panelGroup>
@@ -56,7 +56,7 @@
 
 			<ice:panelGroup>
 				<ice:outputLabel for="txtDescr"
-					value="#{views_common_msgPropsBean['views.ganttChartView.configure.chooseDescriptorValue.label']}:"
+					value="#{messages_bcc['views.ganttChartView.configure.chooseDescriptorValue.label']}:"
 					styleClass="label-form" style="text-align: right;" />
 			</ice:panelGroup>
 			<ice:panelGroup>
@@ -75,7 +75,7 @@
 
 			<ice:panelGroup>
 				<ice:outputLabel for="txtstart"
-					value="#{views_common_msgPropsBean['views.ganttChartView.configure.plannedStartTime.label']}:"
+					value="#{messages_bcc['views.ganttChartView.configure.plannedStartTime.label']}:"
 					styleClass="label-form" style="text-align: right;" />
 			</ice:panelGroup>
 			<ice:panelGroup>
@@ -92,7 +92,7 @@
 
 			<ice:panelGroup>
 				<ice:outputLabel for="txtTerminate"
-					value="#{views_common_msgPropsBean['views.ganttChartView.configure.plannedTerminationTime.label']}:"
+					value="#{messages_bcc['views.ganttChartView.configure.plannedTerminationTime.label']}:"
 					styleClass="label-form" style="text-align: right;" />
 			</ice:panelGroup>
 			<ice:panelGroup>
@@ -109,7 +109,7 @@
 
 			<ice:panelGroup>
 				<ice:outputLabel for="txtEstimate"
-					value="#{views_common_msgPropsBean['views.ganttChartView.configure.estimatedDurationSeconds.label']}:"
+					value="#{messages_bcc['views.ganttChartView.configure.estimatedDurationSeconds.label']}:"
 					styleClass="label-form" style="text-align: right;" />
 			</ice:panelGroup>
 			<ice:panelGroup>
@@ -126,7 +126,7 @@
 
 			<ice:panelGroup>
 				<ice:outputLabel for="txtthreshold"
-					value="#{views_common_msgPropsBean['views.ganttChartView.configure.thresholdPercentage.label']}:"
+					value="#{messages_bcc['views.ganttChartView.configure.thresholdPercentage.label']}:"
 					styleClass="label-form" style="text-align: right;" />
 			</ice:panelGroup>
 			<ice:panelGroup>
@@ -143,7 +143,7 @@
 
 			<ice:panelGroup>
 				<ice:outputLabel for="txtsuccessor"
-					value="#{views_common_msgPropsBean['views.ganttChartView.configure.successor.label']}:"
+					value="#{messages_bcc['views.ganttChartView.configure.successor.label']}:"
 					styleClass="label-form" style="text-align: right;" />
 			</ice:panelGroup>
 			<ice:panelGroup>
@@ -160,7 +160,7 @@
 
 			<ice:panelGroup>
 				<ice:outputLabel for="txtPrede"
-					value="#{views_common_msgPropsBean['views.ganttChartView.configure.predecessor.label']}:"
+					value="#{messages_bcc['views.ganttChartView.configure.predecessor.label']}:"
 					styleClass="label-form" style="text-align: right;" />
 			</ice:panelGroup>
 			<ice:panelGroup>
@@ -177,7 +177,7 @@
 
 			<ice:panelGroup>
 				<ice:outputLabel for="txtDescrId"
-					value="#{views_common_msgPropsBean['views.ganttChartView.configure.descriptorId.label']}:"
+					value="#{messages_bcc['views.ganttChartView.configure.descriptorId.label']}:"
 					styleClass="label-form" style="text-align: right;" />
 			</ice:panelGroup>
 			<ice:panelGroup>
@@ -194,7 +194,7 @@
 
 			<ice:panelGroup>
 				<ice:outputLabel for="txtDescrValues"
-					value="#{views_common_msgPropsBean['views.ganttChartView.configure.descriptorValues.label']}:"
+					value="#{messages_bcc['views.ganttChartView.configure.descriptorValues.label']}:"
 					styleClass="label-form" style="text-align: right;" />
 			</ice:panelGroup>
 			<ice:panelGroup>
@@ -212,15 +212,15 @@
 			<pc:automationTag value="auto-BCC-GanttChartConf-BtnsBar"
 				standAlone="false" />
 			<ice:commandButton
-				value="#{views_common_msgPropsBean['views.ganttChartView.configure.button.save']}"
+				value="#{messages_bcc['views.ganttChartView.configure.button.save']}"
 				action="#{ganttChartconfigurationBean.applyConfiguration}"
 				partialSubmit="true" id="applyConfiguration" styleClass="button"
-				title="#{views_common_msgPropsBean['views.ganttChartView.configure.button.save']}" />
+				title="#{messages_bcc['views.ganttChartView.configure.button.save']}" />
 			<ice:commandButton
-				value="#{views_common_msgPropsBean['views.ganttChartView.configure.button.reset']}"
+				value="#{messages_bcc['views.ganttChartView.configure.button.reset']}"
 				action="#{ganttChartconfigurationBean.openConfirmationDialog}"
 				immediate="true" id="cancelProp" styleClass="button"
-				title="#{views_common_msgPropsBean['views.ganttChartView.configure.button.reset']}" />
+				title="#{messages_bcc['views.ganttChartView.configure.button.reset']}" />
 			<ice:panelGroup styleClass="msgError" style="display: inline;">
 				<ice:outputText
 					value="#{ganttChartconfigurationBean.warningMessage}"
@@ -231,7 +231,7 @@
 	</ice:panelGroup>
 	<ice:panelGroup style="width:100%;"	rendered="#{not ippPortalApp.loggedInUser.administrator}">
 		<ice:outputText
-			value="#{views_common_msgPropsBean['views.ganttChartView.configure.authorize.label']}" />
+			value="#{messages_bcc['views.ganttChartView.configure.authorize.label']}" />
 	</ice:panelGroup>
 
 </f:view>

@@ -138,17 +138,6 @@
 				</ippui:preferences>
 			</ippui:view>
 			
-			<ippui:view name="ganttChartView"
-				include="/plugins/business-control-center/views/ganttChartView.xhtml"
-				controller="ganttChartSelectionBean" identityParams="processInstanceOId">
-				<ippui:preferences>
-					<ippui:preferencePage name="configuration"
-						include="/plugins/business-control-center/views/ganttChartConfigurationDialog.xhtml" />
-				</ippui:preferences>
-			</ippui:view>
-			<ippui:view name="processDiagramView" identityParams="processInstanceOId"
-				include="/plugins/business-control-center/views/processDiagramView.xhtml" />
-				
 			<ippui:view name="myReportsView"
 			include="/plugins/views-common/views/report/myReportsView.xhtml"
 			controller="myReportsViewBean" >			<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/chart-pie.png" />			</ippui:preferences>			</ippui:view>
