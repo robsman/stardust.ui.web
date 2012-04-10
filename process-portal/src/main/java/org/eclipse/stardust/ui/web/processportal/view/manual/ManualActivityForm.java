@@ -37,16 +37,13 @@ import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.common.form.Form;
 import org.eclipse.stardust.ui.common.form.FormInput;
-import org.eclipse.stardust.ui.common.form.Indent;
 import org.eclipse.stardust.ui.common.form.InputController;
 import org.eclipse.stardust.ui.common.form.ListInputController;
 import org.eclipse.stardust.ui.common.form.PrimitiveInputController;
 import org.eclipse.stardust.ui.common.form.jsf.DocumentInputController;
 import org.eclipse.stardust.ui.common.form.jsf.DocumentPath;
-import org.eclipse.stardust.ui.common.form.jsf.JsfFormGenerator;
 import org.eclipse.stardust.ui.common.form.jsf.JsfStructureContainer;
 import org.eclipse.stardust.ui.common.form.jsf.PrimitiveInputControllerDataTypeAdapter;
-import org.eclipse.stardust.ui.common.form.jsf.utils.IceFacesHelper;
 import org.eclipse.stardust.ui.common.form.preferences.FormGenerationPreferences;
 import org.eclipse.stardust.ui.common.introspection.Path;
 import org.eclipse.stardust.ui.common.introspection.java.JavaPath;
@@ -67,7 +64,7 @@ public class ManualActivityForm extends Form
 {
    private static final Logger trace = LogManager.getLogger(ManualActivityForm.class);
 
-   private JsfFormGenerator formGenerator;
+   private ManualActivityJsfFormGenerator formGenerator;
 
    private String formId;
 
@@ -96,7 +93,7 @@ public class ManualActivityForm extends Form
       this.applicationContext = applicationContext;
       this.documentInputEventHandler = documentInputEventHandler;
 
-      this.formGenerator = new JsfFormGenerator(generationPreferences, formBinding);
+      this.formGenerator = new ManualActivityJsfFormGenerator(generationPreferences, formBinding);
       generateForm();
    }
 
@@ -262,9 +259,7 @@ public class ManualActivityForm extends Form
       {
          trace.debug("Full Path Map = " + getFullPathInputControllerMap());
          trace.debug("Top Level Map = " + getTopLevelInputControllerMap());
-         trace.debug("Markup:\n"
-               + new IceFacesHelper().generateMarkup(((JsfStructureContainer) getRootContainer()).getRootGrid(),
-                     new Indent()));
+         trace.debug("Markup:\n" + generateMarkup());
       }
    }
    
@@ -323,6 +318,14 @@ public class ManualActivityForm extends Form
       }
 
       return null;
+   }
+
+   /**
+    * @return
+    */
+   public String generateMarkup()
+   {
+      return formGenerator.generateMarkup(((JsfStructureContainer) getRootContainer()).getRootGrid());
    }
 
    /**
