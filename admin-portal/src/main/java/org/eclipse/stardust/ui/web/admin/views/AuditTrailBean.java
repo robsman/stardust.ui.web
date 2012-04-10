@@ -32,6 +32,7 @@ import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
@@ -60,6 +61,8 @@ public class AuditTrailBean extends PopupUIComponentBean
    private ConfirmationDialog auditTrailAndModelCleanUpDialog;
    
    private ConfirmationDialog recoveryDialog;
+
+   private ConfirmationDialog errorDialog;
 
    /**
     * 
@@ -168,8 +171,8 @@ public class AuditTrailBean extends PopupUIComponentBean
       }
       else
       {
-         MessageDialog.getInstance().addErrorMessage(
-               propsBean.getString("launchPanels.ippAdmAdministrativeActions.auditTrail.viewsOpen.errorMessage"));
+         initViewsOpenConfirmationDialog();
+         errorDialog.openPopup();
       }
    }
 
@@ -209,8 +212,8 @@ public class AuditTrailBean extends PopupUIComponentBean
       }
       else
       {
-         MessageDialog.getInstance().addErrorMessage(
-               propsBean.getString("launchPanels.ippAdmAdministrativeActions.auditTrail.viewsOpen.errorMessage"));
+         initViewsOpenConfirmationDialog();
+         errorDialog.openPopup();
       }
    }
    
@@ -291,6 +294,18 @@ public class AuditTrailBean extends PopupUIComponentBean
       return CollectionUtils.isEmpty(PortalApplication.getInstance().getOpenViews());
    }
 
+   /**
+    * 
+    */
+   private void initViewsOpenConfirmationDialog()
+   {
+      if (null == errorDialog)
+      {
+         errorDialog = new ConfirmationDialog(DialogContentType.ERROR, DialogActionType.OK_CANCEL, DialogType.ACCEPT_ONLY, null);
+         errorDialog.setMessage(propsBean.getString("launchPanels.ippAdmAdministrativeActions.auditTrail.viewsOpen.errorMessage"));
+      }
+   }
+
    public ConfirmationDialog getMappedConfirmationDialog()
    {
       return mappedConfirmationDialog;
@@ -304,6 +319,11 @@ public class AuditTrailBean extends PopupUIComponentBean
    public ConfirmationDialog getRecoveryDialog()
    {
       return recoveryDialog;
+   }
+
+   public ConfirmationDialog getErrorDialog()
+   {
+      return errorDialog;
    }
 
    /**
@@ -355,5 +375,4 @@ public class AuditTrailBean extends PopupUIComponentBean
       }
 
    }
-   
 }

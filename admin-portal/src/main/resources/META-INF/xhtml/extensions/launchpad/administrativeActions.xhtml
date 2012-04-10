@@ -8,15 +8,26 @@
 	
 	
 	<ice:panelGroup>
-		<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
-			<ui:param name="dialogBean" value="#{auditTrailBean.mappedConfirmationDialog}" />
-		</ui:include>
-		<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
-			<ui:param name="dialogBean" value="#{auditTrailBean.auditTrailAndModelCleanUpDialog}" />
-		</ui:include>
-		<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
-			<ui:param name="dialogBean" value="#{auditTrailBean.recoveryDialog}" />
-		</ui:include>
+		<ice:panelGroup>
+			<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+				<ui:param name="dialogBean" value="#{auditTrailBean.mappedConfirmationDialog}" />
+			</ui:include>
+		</ice:panelGroup>
+		<ice:panelGroup>
+			<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+				<ui:param name="dialogBean" value="#{auditTrailBean.auditTrailAndModelCleanUpDialog}" />
+			</ui:include>
+		</ice:panelGroup>
+		<ice:panelGroup>
+			<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+				<ui:param name="dialogBean" value="#{auditTrailBean.recoveryDialog}" />
+			</ui:include>
+		</ice:panelGroup>
+		<ice:panelGroup>
+			<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+				<ui:param name="dialogBean" value="#{auditTrailBean.errorDialog}" />
+			</ui:include>
+		</ice:panelGroup>
 	</ice:panelGroup>
 	<ice:panelGroup>
 		<ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
