@@ -82,7 +82,7 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
    private boolean documentTypeDisabled;
    
    private boolean enableOpenDocument;
-   private boolean openDocument;
+   private Boolean openDocument;
    
    private String message;
 
@@ -436,12 +436,25 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
       return documentTypeDisabled;
    }
 
-   public boolean isOpenDocument()
+   public Boolean getOpenDocument()
    {
       return openDocument;
    }
 
-   public void setOpenDocument(boolean openDocument)
+   /**
+    * is invoked only from icefaces form
+    * @param openDocument
+    */
+   public void setOpenDocument(Boolean openDocument)
+   {
+      this.openDocument = openDocument;
+      if (enableOpenDocument)
+      {
+         this.openDocument = openDocument;
+      }
+   }
+   
+   public void setOpenDocumentFlag(Boolean openDocument)
    {
       this.openDocument = openDocument;
    }

@@ -82,7 +82,7 @@ public class FileUploadHelper
          fileUploadDialog.initialize();
          fileUploadDialog.setTitle(msgBean.getString("common.fileUpload"));
          fileUploadDialog.setHeaderMessage(headerMsg);
-         fileUploadDialog.setOpenDocument(true);
+         fileUploadDialog.setOpenDocumentFlag(true);
          fileUploadDialog.setICallbackHandler(new ICallbackHandler()
          {
             public void handleEvent(EventType eventType)
@@ -154,7 +154,7 @@ public class FileUploadHelper
 
                   informInitiator(FileUploadEvent.FILE_UPLOADED, document);
                   
-                  if (fileUploadDialog.isOpenDocument())
+                  if (fileUploadDialog.getOpenDocument())
                   {
                      Map<String, Object> viewParam = null;
                      if (null != callbackHandler && callbackHandler instanceof IParametricCallbackHandler)
@@ -333,7 +333,7 @@ public class FileUploadHelper
          }
          informInitiator(FileUploadEvent.VERSION_UPLOADED, existingDocument);
          
-         if (fileUploadDialog.isOpenDocument())
+         if (fileUploadDialog.getOpenDocument())
          {
             Map<String, Object> viewParam = null;
             if (null != callbackHandler && callbackHandler instanceof IParametricCallbackHandler)

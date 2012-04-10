@@ -205,7 +205,7 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
       fileUploadDialog.setHeaderMessage(propsBean.getParamString(
             "views.documentView.saveDocumentDialog.uploadNewVersion.text", getDocument().getName()));
       fileUploadDialog.setDocumentType(getDocument().getDocumentType());
-      fileUploadDialog.setOpenDocument(true);
+      fileUploadDialog.setOpenDocumentFlag(true);
       fileUploadDialog.setICallbackHandler(new ICallbackHandler()
       {
          public void handleEvent(EventType eventType)
@@ -401,7 +401,7 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
                fileUploadDialog.getDescription(), fileUploadDialog.getComments());
          updateprocessInstance(document);
          RepositoryUtility.refreshNode(this.wrapper);
-         if (fileUploadDialog.isOpenDocument())
+         if (fileUploadDialog.getOpenDocument())
          {
             DocumentViewUtil.openJCRDocument(document);
          }

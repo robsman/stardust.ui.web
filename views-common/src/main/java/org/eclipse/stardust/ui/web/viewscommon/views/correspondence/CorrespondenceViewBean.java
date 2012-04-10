@@ -218,7 +218,7 @@ public class CorrespondenceViewBean extends UIComponentBean
       fileUploadDialog.initialize();
       fileUploadDialog.setViewComment(false);
       fileUploadDialog.setViewDescription(false);
-      fileUploadDialog.setOpenDocument(false);
+      fileUploadDialog.setOpenDocumentFlag(false);
       fileUploadDialog.setEnableOpenDocument(false);
       fileUploadDialog.setViewDocumentType(false);
       

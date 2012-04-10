@@ -212,7 +212,7 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
       CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getCurrent();
       fileUploadDialog.initialize();
       fileUploadDialog.setDocumentType(typedDocument.getDocumentType());
-      fileUploadDialog.setOpenDocument(true);
+      fileUploadDialog.setOpenDocumentFlag(true);
       if (null == getDocument())
       {
          fileUploadDialog.setHeaderMessage(propsBean.getParamString(
@@ -303,7 +303,7 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
       }
       initialize();
       
-      if (null != document && fileUploadDialog.isOpenDocument())
+      if (null != document && fileUploadDialog.getOpenDocument())
       {
          openDocument();
       }

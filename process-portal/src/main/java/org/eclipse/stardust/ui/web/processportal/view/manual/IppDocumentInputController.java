@@ -172,7 +172,7 @@ public class IppDocumentInputController extends DocumentInputController implemen
       fileUploadDialog.setHeaderMessage(propsBean.getParamString(
             "views.genericRepositoryView.specificDocument.uploadFile", label));
       fileUploadDialog.setTitle(propsBean.getString("common.fileUpload"));
-      fileUploadDialog.setOpenDocument(openDocument);
+      fileUploadDialog.setOpenDocumentFlag(openDocument);
       fileUploadDialog.setEnableOpenDocument(enableOpenDocument);
 
       fileUploadDialog.setICallbackHandler(new ICallbackHandler()
@@ -191,7 +191,7 @@ public class IppDocumentInputController extends DocumentInputController implemen
                {
                   setValue(rawDocument);
                   fireEvent(DocumentInputEventType.UPLOADED, null);
-                  if (fileUploadDialog.isOpenDocument())
+                  if (fileUploadDialog.getOpenDocument())
                   {
                      viewDocument();
                   }
