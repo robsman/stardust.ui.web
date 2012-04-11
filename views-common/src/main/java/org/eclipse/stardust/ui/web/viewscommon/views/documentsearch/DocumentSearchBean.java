@@ -17,6 +17,7 @@ import java.util.Set;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
+import org.eclipse.stardust.common.Pair;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.User;
@@ -46,6 +47,8 @@ import org.eclipse.stardust.ui.web.common.table.DataTableSortModel;
 import org.eclipse.stardust.ui.web.common.table.ISearchHandler;
 import org.eclipse.stardust.ui.web.common.table.IUserObjectBuilder;
 import org.eclipse.stardust.ui.web.common.table.PaginatorDataTable;
+import org.eclipse.stardust.ui.web.common.table.export.DataTableExportHandler;
+import org.eclipse.stardust.ui.web.common.table.export.ExportType;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSortHandler;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
@@ -200,6 +203,7 @@ public class DocumentSearchBean extends UIComponentBean
       documentSearchTable.setRowSelector(new DataTableRowSelector("selectedRow", true));
       documentSearchTable.setISearchHandler(searchHandler);
       documentSearchTable.setISortHandler(sortHandler);
+      documentSearchTable.setDataTableExportHandler(new DocumentSearchExportHandler());
    }
    
    /**
@@ -584,5 +588,51 @@ public class DocumentSearchBean extends UIComponentBean
    public final UserAutocompleteMultiSelector getAutoCompleteSelector()
    {
       return autoCompleteSelector;
+   }
+
+   /**
+    * @author Subodh.Godbole
+    *
+    */
+   private class DocumentSearchExportHandler implements DataTableExportHandler<DocumentSearchTableEntry>
+   {
+      /* (non-Javadoc)
+       * @see org.eclipse.stardust.ui.web.common.table.export.DataTableExportHandler#handleCellExport(org.eclipse.stardust.ui.web.common.table.export.ExportType, org.eclipse.stardust.ui.web.common.column.ColumnPreference, java.lang.Object, java.lang.Object)
+       */
+      public Object handleCellExport(ExportType exportType, ColumnPreference column,
+            DocumentSearchTableEntry row, Object value)
+      {
+         if (METADATA.equals(column.getColumnName()))
+         {
+            String separator = ExportType.EXCEL == exportType ? "\n" : ", ";
+
+            StringBuffer exportData = new StringBuffer();
+            List<Pair<String, String>> metadata = row.getMetadata();
+            for (Pair<String, String> data : metadata)
+            {
+               exportData.append(data.getFirst()).append(": ").append(data.getSecond()).append(separator);
+            }
+
+            String data = exportData.toString();
+            if (data.length() > 0)
+            {
+               data = data.substring(0, data.length() - separator.length());
+            }
+
+            return data;
+         }
+         else
+         {
+            return value;
+         }
+      }
+
+      /* (non-Javadoc)
+       * @see org.eclipse.stardust.ui.web.common.table.export.DataTableExportHandler#handleHeaderCellExport(org.eclipse.stardust.ui.web.common.table.export.DataTableExportHandler.ExportType, org.eclipse.stardust.ui.web.common.column.ColumnPreference, java.lang.String)
+       */
+      public String handleHeaderCellExport(ExportType exportType, ColumnPreference column, String text)
+      {
+         return text;
+      }
    }
 }
