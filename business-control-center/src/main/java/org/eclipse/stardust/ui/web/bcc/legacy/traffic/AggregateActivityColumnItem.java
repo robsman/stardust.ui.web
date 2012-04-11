@@ -69,6 +69,8 @@ public class AggregateActivityColumnItem implements IColumnItem
    private IRowItem rowItem;
 
    private List/* <ActivityInstance> */aInstances = new ArrayList();
+   
+   private int totalActivityCnt = 0;
 
    public AggregateActivityColumnItem(String id,String qualifiedId, String name, IRowItem rowItem)
    {
@@ -81,6 +83,11 @@ public class AggregateActivityColumnItem implements IColumnItem
    public void addCompletedActivity()
    {
       this.completed = this.completed + 1;
+   }
+   
+   public void addTotalActivityCnt()
+   {
+      this.totalActivityCnt = this.totalActivityCnt + 1;
    }
 
    public String getId()
@@ -116,6 +123,16 @@ public String getName()
    public void setCompleted(int completed)
    {
       this.completed = completed;
+   }
+
+   public int getTotalActivityCnt()
+   {
+      return totalActivityCnt;
+   }
+
+   public void setTotalActivityCnt(int totalActivityCnt)
+   {
+      this.totalActivityCnt = totalActivityCnt;
    }
 
    /**
@@ -172,7 +189,8 @@ public String getName()
    {
       String completedIcon = null;
 
-      if (this.rowItem.getTotalCount().longValue() == this.completed
+      if ((this.rowItem.getTotalCount().longValue() == this.completed
+            || (this.completed > 0 && this.completed == this.totalActivityCnt))
             && this.rowItem.getTotalCount().longValue() != 0)
       {
          completedIcon = TRAFFIC_LIGHT_COMPLETED;

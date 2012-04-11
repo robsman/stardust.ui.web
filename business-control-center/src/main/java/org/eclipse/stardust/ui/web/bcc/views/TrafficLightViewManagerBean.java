@@ -518,6 +518,7 @@ public void init()
                      columnItem.addCompletedActivity();
                      columnItem.addActivityInstance(aInstance);
                   }
+                  
                }
             }
          }
@@ -561,6 +562,11 @@ public void init()
             {
                columnItem.addCompletedActivity();
                columnItem.addActivityInstance(aInstance);
+            }
+            if (columnItem != null)
+            {
+               AggregateActivityColumnItem aggregateActivity = (AggregateActivityColumnItem) columnItem;
+               aggregateActivity.addTotalActivityCnt();
             }
          }
 
