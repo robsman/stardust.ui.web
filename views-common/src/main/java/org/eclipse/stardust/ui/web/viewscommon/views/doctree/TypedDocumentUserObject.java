@@ -152,7 +152,7 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
       }
       else
       {
-         MessageDialog.addErrorMessage(propsBean.getString("views.genericRepositoryView.documentNotUploaded"));
+         upload();
       }
    }
 
@@ -250,7 +250,7 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
     * @throws DocumentManagementServiceException
     * @throws IOException
     */
-   public void saveDocument() throws DocumentManagementServiceException, IOException
+   private void saveDocument() throws DocumentManagementServiceException, IOException
    {
       CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getCurrent();
       FileInfo fileInfo = fileUploadDialog.getFileInfo();

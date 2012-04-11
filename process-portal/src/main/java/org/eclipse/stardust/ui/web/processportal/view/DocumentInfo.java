@@ -20,6 +20,7 @@ public class DocumentInfo
    private String documentIcon;
    private String id = "";
    private String name = "";
+   private TypedDocument typedDocument;
 
    /**
     * @param icon
@@ -39,6 +40,7 @@ public class DocumentInfo
    public DocumentInfo(String icon, TypedDocument typedDocument)
    {
       this.documentIcon = icon;
+      this.typedDocument = typedDocument;
       Document document = typedDocument.getDocument();
       if (null != document)
       {
@@ -60,5 +62,10 @@ public class DocumentInfo
    public String getName()
    {
       return name;
+   }
+
+   public TypedDocument getTypedDocument()
+   {
+      return typedDocument;
    }
 }

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
@@ -32,7 +33,6 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
-import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.FaceletPanelInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.NoteTip;
@@ -52,6 +52,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 
 import com.icesoft.faces.context.effects.JavascriptContext;
 
@@ -67,7 +68,8 @@ public class ActivityPanelController extends UIComponentBean
    private boolean openProcessDocuments;
    private MessagesViewsCommonBean propsBean;
    private LinkedProcessBean linkedProcess;
-
+   private DocumentInfo typedDocumentInfo;
+   
    public ActivityPanelController(ActivityDetailsBean activityDetailsBean)
    {
       super("activityPanel");
@@ -297,38 +299,55 @@ public class ActivityPanelController extends UIComponentBean
    /**
     * timeout
     */
-   public void openDocument()
+   public void openDocument(ActionEvent event)
    {
-      FacesContext context = FacesContext.getCurrentInstance();
-      String documentId = (String) context.getExternalContext().getRequestParameterMap().get("documentId");
-      
-      if (StringUtils.isNotEmpty(documentId))
+      DocumentInfo docInfo = (DocumentInfo) event.getComponent().getAttributes().get("documentInfo");
+
+      if (StringUtils.isNotEmpty(docInfo.getId()))
       {
          Map<String, Object> params = CollectionUtils.newMap();
          params.put("processInstance", activityDetailsBean.getProcessInstance());
-         params.put("documentName", (String) context.getExternalContext().getRequestParameterMap().get("documentName"));
-         DocumentViewUtil.openJCRDocument(documentId, params);
+         params.put("documentName", docInfo.getName());
+         DocumentViewUtil.openJCRDocument(docInfo.getId(), params);
 
          activityDetailsBean.closeProcessAttachmentsIframePopupSelf();
          activityDetailsBean.renderSession();
       }
       else
       {
-         activityDetailsBean.closeProcessAttachmentsIframePopupSelf();
-         activityDetailsBean.renderSession();
-         MessageDialog.addErrorMessage(propsBean.getString("views.genericRepositoryView.documentNotUploaded"));
+         typedDocumentInfo = docInfo;
+         uploadDocument(FUNCTION_TYPE.UPLOAD_TYPED_DOCUMENT,
+               DocumentMgmtUtility.getTypedDocumentsFolderPath(activityDetailsBean.getProcessInstance()),
+               propsBean.getParamString("views.genericRepositoryView.specificDocument.uploadFile", docInfo.getName()));
       }
+   }
+
+   public void uploadProcessAttachment()
+   {
+      typedDocumentInfo = null;
+      uploadDocument(
+            FUNCTION_TYPE.UPLOAD_ON_FOLDER,
+            DocumentMgmtUtility.getProcessAttachmentsFolderPath(activityDetailsBean.getProcessInstance()),
+            propsBean.getParamString("common.uploadIntoFolder",
+                  propsBean.getString("views.processInstanceDetailsView.processDocumentTree.processAttachment")));
    }
 
    /**
     * upload a document
     */
-   public void uploadDocument()
+   private void uploadDocument(FUNCTION_TYPE type, String parentFolderPath, String headerMsg)
    {
-      FileUploadHelper fileUploadHelper = new FileUploadHelper(FUNCTION_TYPE.UPLOAD_ON_FOLDER,
-            DocumentMgmtUtility.getProcessAttachmentsFolderPath(activityDetailsBean.getProcessInstance()));
-      fileUploadHelper.setHeaderMsg(propsBean.getParamString("common.uploadIntoFolder",
-            propsBean.getString("views.processInstanceDetailsView.processDocumentTree.processAttachment")));
+      FileUploadHelper fileUploadHelper = new FileUploadHelper(type, parentFolderPath);
+      fileUploadHelper.setHeaderMsg(headerMsg);
+      if (null != typedDocumentInfo)
+      {
+         if (activityDetailsBean.getActivityForm().getIfSingleDocument() != null)
+         {
+            fileUploadHelper.setEnableOpenDocument(false);
+            fileUploadHelper.setTriggerOpenDocument(false);
+         }
+         fileUploadHelper.setDocumentType(typedDocumentInfo.getTypedDocument().getDocumentType());
+      }
       fileUploadHelper.setCallbackHandler(new ParametricCallbackHandler()
       {
          public void handleEvent(EventType eventType)
@@ -393,7 +412,17 @@ public class ActivityPanelController extends UIComponentBean
          if (parameters.get(FileUploadHelper.EVENT).equals(FileUploadEvent.FILE_UPLOADED))
          {
             Document document = (Document) parameters.get(FileUploadHelper.DOCUMENT);
-            DMSHelper.addAndSaveProcessAttachment(activityDetailsBean.getProcessInstance(), document);
+            if (null == typedDocumentInfo) // process attachment
+            {
+               DMSHelper.addAndSaveProcessAttachment(activityDetailsBean.getProcessInstance(), document);
+            }
+            else
+            // typed document
+            {
+               typedDocumentInfo.getTypedDocument().setDocument(document);
+               TypedDocumentsUtil.updateTypedDocument(typedDocumentInfo.getTypedDocument());
+            }
+            activityDetailsBean.refreshActivityPanelForSingleDocument();
          }
          // after version upload
          if (parameters.get(FileUploadHelper.EVENT).equals(FileUploadEvent.VERSION_UPLOADED))

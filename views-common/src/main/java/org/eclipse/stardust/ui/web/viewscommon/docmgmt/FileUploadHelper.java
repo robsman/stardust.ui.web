@@ -49,7 +49,7 @@ public class FileUploadHelper
    public static final String DOCUMENT = "document";
 
    public enum FUNCTION_TYPE {
-      UPLOAD_ON_FOLDER, DROP_ON_FOLDER
+      UPLOAD_ON_FOLDER, UPLOAD_TYPED_DOCUMENT, DROP_ON_FOLDER
    }
 
    private FUNCTION_TYPE functionType = FUNCTION_TYPE.UPLOAD_ON_FOLDER;
@@ -58,7 +58,10 @@ public class FileUploadHelper
    private String headerMsg;
    private Document existingDocument;
    private Document draggedDocument;
-
+   private DocumentType documentType;
+   private boolean enableOpenDocument = true;
+   private boolean triggerOpenDocument = true;
+   
    public FileUploadHelper(FUNCTION_TYPE functionType, String parentFolderPath)
    {
       super();
@@ -82,6 +85,11 @@ public class FileUploadHelper
          fileUploadDialog.initialize();
          fileUploadDialog.setTitle(msgBean.getString("common.fileUpload"));
          fileUploadDialog.setHeaderMessage(headerMsg);
+         if (null != documentType)
+         {
+            fileUploadDialog.setDocumentType(documentType);
+         }
+         fileUploadDialog.setEnableOpenDocument(enableOpenDocument);
          fileUploadDialog.setOpenDocumentFlag(true);
          fileUploadDialog.setICallbackHandler(new ICallbackHandler()
          {
@@ -132,7 +140,8 @@ public class FileUploadHelper
             this.existingDocument = DocumentMgmtUtility.getDocument(parentFolder.getPath(), fileName);
             if (null != this.existingDocument)
             {
-               if (isVersionPermissible(parentFolder, fileName))
+               if (!FUNCTION_TYPE.UPLOAD_TYPED_DOCUMENT.equals(functionType)
+                     && isVersionPermissible(parentFolder, fileName))
                {
                   updateVersion(existingDocument, null);
                }
@@ -154,7 +163,7 @@ public class FileUploadHelper
 
                   informInitiator(FileUploadEvent.FILE_UPLOADED, document);
                   
-                  if (fileUploadDialog.getOpenDocument())
+                  if (fileUploadDialog.getOpenDocument() && triggerOpenDocument)
                   {
                      Map<String, Object> viewParam = null;
                      if (null != callbackHandler && callbackHandler instanceof IParametricCallbackHandler)
@@ -333,7 +342,7 @@ public class FileUploadHelper
          }
          informInitiator(FileUploadEvent.VERSION_UPLOADED, existingDocument);
          
-         if (fileUploadDialog.getOpenDocument())
+         if (fileUploadDialog.getOpenDocument() && triggerOpenDocument)
          {
             Map<String, Object> viewParam = null;
             if (null != callbackHandler && callbackHandler instanceof IParametricCallbackHandler)
@@ -391,5 +400,20 @@ public class FileUploadHelper
    public void setHeaderMsg(String headerMsg)
    {
       this.headerMsg = headerMsg;
+   }
+
+   public void setDocumentType(DocumentType documentType)
+   {
+      this.documentType = documentType;
+   }
+
+   public void setEnableOpenDocument(boolean enableOpenDocumen)
+   {
+      this.enableOpenDocument = enableOpenDocumen;
+   }
+
+   public void setTriggerOpenDocument(boolean openDocumentAction)
+   {
+      this.triggerOpenDocument = openDocumentAction;
    }
 }

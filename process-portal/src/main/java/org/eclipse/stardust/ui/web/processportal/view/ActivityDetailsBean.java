@@ -1614,14 +1614,7 @@ public class ActivityDetailsBean extends UIComponentBean
                                     switch (documentInputEvent.getType())
                                     {
                                     case UPLOADED:
-                                       IppDocumentInputController docController = activityForm.getIfSingleDocument();
-                                       if (null != docController && null != docController.getValue())
-                                       {
-                                          processSingleDocumentMappingCase(true);
-                                          documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.TO_BE_ACTIVATED));
-                                          documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.ACTIVATED));
-                                          documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.POST_OPEN_LIFECYCLE));
-                                       }
+                                       refreshActivityPanelForSingleDocument();
                                        break;
                                     case TO_BE_VIEWED:
                                        if (singleDocumentCase)
@@ -1667,6 +1660,19 @@ public class ActivityDetailsBean extends UIComponentBean
       }
    }
 
+   public void refreshActivityPanelForSingleDocument()
+   {
+      IppDocumentInputController docController = activityForm.getIfSingleDocument();
+      if (null != docController && null != docController.getValue())
+      {
+         processSingleDocumentMappingCase(true);
+         documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.TO_BE_ACTIVATED));
+         documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.ACTIVATED));
+         documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.POST_OPEN_LIFECYCLE));
+      }
+   }
+   
+   
    /**
     * @param fromViewEvent
     */

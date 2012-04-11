@@ -52,7 +52,7 @@
 			<ice:panelGroup rendered="#{ippActivityPanelController.supportsProcessAttachments}" style="background-color: #EAEAEA;">
 				<ice:panelGrid columns="1" > <!-- Added to give same spacing -->
 					<ice:commandLink styleClass="action-link"
-						action="#{ippActivityPanelController.uploadDocument}">
+						action="#{ippActivityPanelController.uploadProcessAttachment}">
 						<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarUpload" />
 						<ice:panelGrid columns="2">
 							<ice:graphicImage value="/plugins/views-common/images/icons/page_white_get.png" />
@@ -79,10 +79,9 @@
 					value="#{ippActivityPanelController.processDocuments}" var="processDocument">
 					<ice:panelGrid columns="1"> <!-- Added to give same spacing -->
 						<ice:commandLink styleClass="action-link"
-							action="#{ippActivityPanelController.openDocument}">
+							actionListener="#{ippActivityPanelController.openDocument}">
 							<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarOpenNewDocument" />
-							<f:param name="documentId" value="#{processDocument.id}" />
-							<f:param name="documentName" value="#{processDocument.name}" />
+							<f:attribute name="documentInfo" value="#{processDocument}" />
 							<ice:panelGrid columns="2">
 								<ice:graphicImage value="#{processDocument.documentIcon}" />
 								<ice:outputText value="#{processDocument.name}" style="white-space: nowrap;" />
@@ -95,10 +94,9 @@
 					value="#{ippActivityPanelController.processAttachments}" var="processAttachment">
 					<ice:panelGrid columns="1"> <!-- Added to give same spacing -->
 						<ice:commandLink styleClass="action-link"
-							action="#{ippActivityPanelController.openDocument}">
+							actionListener="#{ippActivityPanelController.openDocument}">
 							<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarOpenAttachment" />
-							<f:param name="documentId" value="#{processAttachment.id}" />
-							<f:param name="documentName" value="#{processAttachment.name}" />
+							<f:attribute name="documentInfo" value="#{processAttachment}" />
 							<ice:panelGrid columns="2">
 								<ice:graphicImage value="#{processAttachment.documentIcon}" />
 								<ice:outputText value="#{processAttachment.name}" style="white-space: nowrap;" />
