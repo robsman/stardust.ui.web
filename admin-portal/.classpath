@@ -9,7 +9,7 @@
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-ee-infinity04-EE-1.8.2.GA_P03.jar"/>
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/servlet/2.4/servlet-2.4.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Portal-Common"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javax/jsf/1.1_02/jsf-api.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/views-common"/>	
 	<classpathentry kind="output" path=".eclipse/bin"/>

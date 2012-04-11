@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.plugin.support;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.ServiceLoader;
 
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -26,20 +27,20 @@ public class ServiceLoaderUtils
 {
    private static final Logger trace = LogManager.getLogger(ServiceLoaderUtils.class);
 
-   private static boolean useJSE16 = false;
+   private static boolean useIpp = false;
 
    static
    {
       try
       {
-         Class.forName("java.util.ServiceLoader");
-         useJSE16 = true;
-         trace.info("Using JSE1.6 for Loading Services...");
+         Class.forName("org.eclipse.stardust.common.config.ExtensionProviderUtils");
+         useIpp = true;
+         trace.info("Using IPP for Loading Services...");
       }
       catch(Exception e)
       {
-         useJSE16 = false;
-         trace.info("Using IPP for Loading Services...");
+         useIpp = false;
+         trace.info("Using JSE1.6 for Loading Services...");
       }
    }
 
@@ -54,13 +55,13 @@ public class ServiceLoaderUtils
 
       try
       {
-         if (useJSE16)
+         if (useIpp)
          {
-            servicesIterator = searchProvidersUsingJSE16(clazz);
+            servicesIterator = searchProvidersUsingIpp(clazz);
          }
          else
          {
-            servicesIterator = searchProvidersUsingIpp(clazz);
+            servicesIterator = searchProvidersUsingJSE16(clazz);
          }
       }
       catch(Exception e)
@@ -76,18 +77,16 @@ public class ServiceLoaderUtils
     * @param clazz
     * @return
     */
-   @SuppressWarnings("unchecked")
    private static <S> Iterator<S> searchProvidersUsingJSE16(Class<S> clazz)
    {
       try
       {
          trace.info("searchProviders: Searching providers usng JSE1.6 = " + clazz.getName());
-         Object serviceLoader = ReflectionUtils.invokeStaticMethod("java.util.ServiceLoader", "load(java.lang.Class)",
-               clazz);
-         Object servicesIterator = ReflectionUtils.invokeMethod(serviceLoader, "iterator");
+         ServiceLoader<S> serviceLoader = ServiceLoader.load(clazz);
+         Iterator<S> servicesIterator = serviceLoader.iterator();
          trace.info("searchProviders: Found provider usng JSE1.6");
 
-         return (Iterator<S>) servicesIterator;
+         return servicesIterator;
       }
       catch(Exception e)
       {
