@@ -50,6 +50,7 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
 {
    private static final String imgConfigMapKey = "IMAGE_VIEWER_CONFIGURATION";
    private static final Logger trace = LogManager.getLogger(TIFFViewer.class);
+   private static final int IFRAME_CLOSE_DELAY = 100;
 
    private final String contentUrl = "/plugins/views-common/views/document/tiffDocumentDetails.xhtml";
    
@@ -79,8 +80,6 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
    
    private boolean descriptionChanged;
    
-   private int iframeDelay;
-
    /*
     * (non-Javadoc)
     * 
@@ -305,16 +304,27 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
       case REFRESH_VIWER_INVOKED:
          activate();
          break;
+      case REFRESH_VIWER_WITH_DELAY_INVOKED:
+         activate(IFRAME_CLOSE_DELAY);
+         break;
       case DOCUMENT_DELETED:
          closeIframe();
          break;
       }
    }
-   
+
    /**
     * 
     */
    public void activate()
+   {
+      activate(0);
+   }
+
+   /**
+    * 
+    */
+   public void activate(int iframeDelay)
    {
       if (!isPoppedOut() && !MessageDialog.getInstance().isVisible())
       {
@@ -327,10 +337,19 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
 
          restoreTiffIframe();
          String anchor = "tiffViewerIframe";
-         PortalApplication.getInstance().addEventScript(
-               "window.setTimeout(function() {InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + frameId
-                     + "', '" + pagePath + "' + '&canvasWidth=' + docWidth + '&canvasHeight=' + docHeight, {anchorId:'"
-                     + anchor + "'});},"+this.iframeDelay+");");
+
+         String activateScript = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + frameId + "', '"
+               + pagePath + "' + '&canvasWidth=' + docWidth + '&canvasHeight=' + docHeight, {anchorId:'" + anchor
+               + "'});";
+         if (iframeDelay > 0)
+         {
+            PortalApplication.getInstance().addEventScript(
+                  "window.setTimeout(function() {" + activateScript + "}," + iframeDelay + ");");
+         }
+         else
+         {
+            PortalApplication.getInstance().addEventScript(activateScript);
+         }
       }
    }
 
@@ -453,15 +472,14 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
     */
    public void deActivateIframe()
    {
-      String deActivateIframeJS = "window.setTimeout(function() {InfinityBpm.ProcessPortal.deactivateContentFrame('" + frameId + "');},"+this.iframeDelay+");";
+      String deActivateIframeJS = "InfinityBpm.ProcessPortal.deactivateContentFrame('" + frameId + "');";
       JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), deActivateIframeJS);
       PortalApplication.getInstance().addEventScript(deActivateIframeJS);
    }
 
    private void closeIframe()
    {
-      String closeIframeJS = "window.setTimeout(function() {InfinityBpm.ProcessPortal.closeContentFrame('" + frameId
-            + "');}," + this.iframeDelay + ");";
+      String closeIframeJS = "InfinityBpm.ProcessPortal.closeContentFrame('" + frameId + "');";
       JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), closeIframeJS);
       PortalApplication.getInstance().addEventScript(closeIframeJS);
    }
@@ -590,16 +608,6 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
       return poppedOut;
    }
 
-   public int getIframeDelay()
-   {
-      return iframeDelay;
-   }
-
-   public void setIframeDelay(int iframeDelay)
-   {
-      this.iframeDelay = iframeDelay;
-   }
-   
    public void setCustomSaveDialogOptions()
    {
       TIFFCustomSaveDialog saveDialog = TIFFCustomSaveDialog.getCurrent();

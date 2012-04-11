@@ -830,10 +830,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
                   JCRDocument dmsDocument = (JCRDocument) documentContentInfo;
                   Document document = dmsDocument.getDocument();
                   String origFileMimeType = documentContentInfo.getMimeType().getType();
-                  if (origFileMimeType.equals(TIFF_IMAGE))
-                  {
-                     ((TIFFViewer) contentHandler).setIframeDelay(0);
-                  }
+
                   // Close the current IFrame if available
                   fireShowNextVersionToBeInvoked();
                   // Remove current document from sessionMap, required for creating new
@@ -848,14 +845,8 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
 
                   String newFileMimeType = documentContentInfo.getMimeType().getType();
                   postSave(false);
-                  // A delay of 100ms is there for closeIframe, before opening new Iframe
-                  // same delay is required
-                  if (newFileMimeType.equals(TIFF_IMAGE) && newFileMimeType.equals(origFileMimeType))
-                  {
-                     ((TIFFViewer) contentHandler).setIframeDelay(200);
-                  }
-                  // Activiate the Iframe if available
-                  fireRefreshViewerInvoked();
+                  // Activiate the Iframe with dealy if available
+                  fireRefreshViewerWithDelayInvoked();
                }
                catch (Exception e)
                {
@@ -1030,6 +1021,14 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       if (contentHandler instanceof IDocumentEventListener)
       {
          ((IDocumentEventListener) contentHandler).handleEvent(DocumentEventType.REFRESH_VIWER_INVOKED);
+      }
+   }
+   
+   private void fireRefreshViewerWithDelayInvoked()
+   {
+      if (contentHandler instanceof IDocumentEventListener)
+      {
+         ((IDocumentEventListener) contentHandler).handleEvent(DocumentEventType.REFRESH_VIWER_WITH_DELAY_INVOKED);
       }
    }
 

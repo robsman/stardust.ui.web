@@ -26,6 +26,7 @@ public interface IDocumentEventListener
       SHOW_NEXT_VERSION_INVOKED,
       REFRESH_VIWER_TO_BE_INVOKED,
       REFRESH_VIWER_INVOKED,
+      REFRESH_VIWER_WITH_DELAY_INVOKED,
       DOCUMENT_DELETED
    }
    
