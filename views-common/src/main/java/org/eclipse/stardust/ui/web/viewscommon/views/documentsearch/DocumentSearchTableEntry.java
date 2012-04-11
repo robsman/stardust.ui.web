@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.Pair;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ProcessInstances;
@@ -45,6 +46,7 @@ public class DocumentSearchTableEntry extends DefaultRowModel
    private String containingText;
    private String fileType;
    private String documentType;
+   private List<Pair<String, String>> metadata;
 
    // ~ Instance fields
    // ================================================================================================
@@ -93,6 +95,12 @@ public class DocumentSearchTableEntry extends DefaultRowModel
       }
       
       documentToolTip = new DocumentToolTip(null, document);
+      
+      metadata = TypedDocumentsUtil.getMetadataAsList(document, true);
+      if (metadata.size() > 5) // Requirement is to only show first 5 entries
+      {
+         metadata = metadata.subList(0, 5);
+      }
    }
 
    public DocumentProcessesDialog getProcessesDialog()
@@ -279,7 +287,17 @@ public class DocumentSearchTableEntry extends DefaultRowModel
    {
       return documentToolTip;
    }
-   
+
+   public List<Pair<String, String>> getMetadata()
+   {
+      return metadata;
+   }
+
+   public void setMetadata(List<Pair<String, String>> metadata)
+   {
+      this.metadata = metadata;
+   }
+
    // ~ Methods
    // ================================================================================================
 

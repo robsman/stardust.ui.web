@@ -88,6 +88,7 @@ public class DocumentSearchBean extends UIComponentBean
    public static final String FILE_SIZE = "fileSize";
    public static final String DATE_LAST_MODIFIED = "modificationDate";
    public static final String DATE_CREATED = "createDate";
+   public static final String METADATA = "metadata";
    protected static final Logger trace = LogManager.getLogger(DocumentSearchBean.class);
 
    // ~ Instance fields
@@ -160,6 +161,10 @@ public class DocumentSearchBean extends UIComponentBean
             new TableDataFilterDate(DataType.DATE)), true, true);
       createDateCol.setNoWrap(true);
 
+      ColumnPreference metadataCol = new ColumnPreference(METADATA, METADATA, this.getMessages().getString(
+            "documentSearchTable.column.metadata"), ResourcePaths.VIEW_DOCUMENT_SEARCH_COLUMN, true, false);
+      metadataCol.setNoWrap(true);
+
       List<ColumnPreference> documentSearchFixedCols2 = new ArrayList<ColumnPreference>();
       ColumnPreference actionsCol = new ColumnPreference("Actions", "", this.getMessages().getString(
             "documentSearchTable.column.actions"), ResourcePaths.VIEW_DOCUMENT_SEARCH_COLUMN, true, false);
@@ -177,6 +182,7 @@ public class DocumentSearchBean extends UIComponentBean
       documentSearchCols.add(fileTypeCol);
       documentSearchCols.add(documentTypeCol);
       documentSearchCols.add(fileSizeCol);
+      documentSearchCols.add(metadataCol);
 
       documentSearchFixedCols.add(nameCol);
 

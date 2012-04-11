@@ -11,20 +11,34 @@
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.stardust.common.Direction;
+import org.eclipse.stardust.common.Pair;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.model.TypeDeclaration;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
+import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
+import org.eclipse.stardust.ui.common.form.jsf.ILabelProvider;
+import org.eclipse.stardust.ui.common.form.jsf.messages.DefaultLabelProvider;
+import org.eclipse.stardust.ui.common.introspection.Path;
+import org.eclipse.stardust.ui.common.introspection.xsd.XsdPath;
+import org.eclipse.stardust.ui.web.common.util.DateUtils;
+import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.DocumentEvent;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.IppEventController;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
@@ -32,9 +46,14 @@ import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
 
 
 
+
 /**
  * @author Yogesh.Manware
  * 
+ */
+/**
+ * @author Subodh.Godbole
+ *
  */
 public class TypedDocumentsUtil
 {
@@ -148,5 +167,167 @@ public class TypedDocumentsUtil
       {
          ExceptionHandler.handleException(e);
       }
+   }
+
+   /**
+    * @param document
+    * @param supressBlank
+    * @return
+    */
+   @SuppressWarnings("unchecked")
+   public static List<Pair<String, String>> getMetadataAsList(Document document, boolean supressBlank)
+   {
+      Path path = null;
+      List<Pair<String, String>> metadataList = new ArrayList<Pair<String,String>>();
+
+      if (null != document && null != document.getDocumentType())
+      {
+         Model model = ModelUtils.getModelForDocumentType(document.getDocumentType());
+         if (null != model)
+         {
+            String typeId = document.getDocumentType().getDocumentTypeId()
+                  .substring(document.getDocumentType().getDocumentTypeId().lastIndexOf("}") + 1);
+   
+            TypeDeclaration typeDeclaration = model.getTypeDeclaration(typeId);
+            Set<TypedXPath> allXPaths = StructuredTypeRtUtils.getAllXPaths(model, typeDeclaration);
+   
+            for (TypedXPath tPath : allXPaths)
+            {
+               if (tPath.getParentXPath() == null)
+               {
+                  path = new XsdPath(null, tPath, true);
+                  break;
+               }
+            }
+   
+            if (null != path && null != document.getProperties())
+            {
+               getMetadataAsList(path, document.getProperties(), metadataList, supressBlank, new DefaultLabelProvider());
+            }
+         }
+      }
+
+      return metadataList;
+   }
+
+   /**
+    * @param path
+    * @param metadata
+    * @param metadataList
+    * @param supressBlank
+    * @param labelProvider
+    */
+   private static void getMetadataAsList(Path path, Map<String, ? > metadata, List<Pair<String, String>> metadataList,
+         boolean supressBlank, ILabelProvider labelProvider)
+   {
+      if (path.isPrimitive())
+      {
+         String value = getValue(path, metadata);
+         if (supressBlank && StringUtils.isEmpty(value))
+         {
+         }
+         else
+         {
+            // TODO: I18N XPath
+            String fullXPath = path.getFullXPath();
+            if (fullXPath.startsWith("/"))
+            {
+               fullXPath = fullXPath.substring(1);
+            }
+
+            StringBuffer fullXPathLabels = new StringBuffer();
+            String[] xpaths = fullXPath.split("/");
+            for (String xpath : xpaths)
+            {
+               fullXPathLabels.append(labelProvider.getLabel(xpath)).append("/");
+            }
+            fullXPathLabels.deleteCharAt(fullXPathLabels.length() - 1);
+
+            metadataList.add(new Pair<String, String>(fullXPathLabels.toString(), value));
+         }
+      }
+      else
+      {
+         for (Path cPath : path.getChildPaths())
+         {
+            getMetadataAsList(cPath, metadata, metadataList, supressBlank, labelProvider);
+         }
+      }
+   }
+   
+   /**
+    * @param path
+    * @param mainMetadata
+    * @return
+    */
+   @SuppressWarnings("unchecked")
+   private static String getValue(Path path, Map<String, ?> mainMetadata)
+   {
+      String[] paths = path.getFullXPath().split("/");
+      
+      Map<String, ?> data = mainMetadata;
+      for (int i = 2; i < paths.length - 1; i++)
+      {
+         if (data.get(paths[i]) instanceof Map)
+         {
+            data = (Map<String, ?>)data.get(paths[i]);
+         }
+         else
+         {
+            return null;
+         }
+      }
+
+      return getValueAsString(path, data.get(paths[paths.length - 1]));
+   }
+
+   /**
+    * @param path
+    * @param value
+    * @return
+    */
+   private static String getValueAsString(Path path, Object value)
+   {
+      String retValue = null;
+      
+      if (null != value)
+      {
+         if (path.getJavaClass() == Date.class || path.getJavaClass() == Calendar.class)
+         {
+            Date dateValue = null;
+            if (path.getJavaClass() == Calendar.class)
+            {
+               dateValue = ((Calendar) value).getTime();
+            }
+            else
+            {
+               dateValue = (Date) value;
+            }
+   
+            if ("date".equals(path.getTypeName()))
+            {
+               retValue = DateUtils.formatDate(dateValue);
+            }
+            else if ("time".equals(path.getTypeName()))
+            {
+               retValue = DateUtils.formatTime(dateValue);
+            }
+            else // dateTime
+            {
+               retValue = DateUtils.formatDateTime(dateValue);
+            }
+         }
+         else if (path.getJavaClass() == Boolean.class)
+         {
+            MessagePropertiesBean props = MessagePropertiesBean.getInstance();
+            retValue = (Boolean) value ? props.getString("common.true") : props.getString("common.false");
+         }
+         else
+         {
+            retValue = value.toString();
+         }
+      }
+
+      return retValue;
    }
 }
