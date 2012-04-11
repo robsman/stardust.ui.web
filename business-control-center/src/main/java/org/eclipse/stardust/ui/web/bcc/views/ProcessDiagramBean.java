@@ -33,9 +33,11 @@ import org.eclipse.stardust.ui.web.bcc.ResourcePaths;
 import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
 import org.eclipse.stardust.ui.web.bcc.jsf.BusinessControlCenterConstants;
 import org.eclipse.stardust.ui.web.bcc.jsf.InvalidServiceException;
-import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
-import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.View;
+import org.eclipse.stardust.ui.web.common.event.ViewEvent;
+import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
+import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
@@ -43,7 +45,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
  * @author Ankita.Patel
  * @version $Revision: $
  */
-public class ProcessDiagramBean extends PopupUIComponentBean implements ResourcePaths
+public class ProcessDiagramBean extends UIComponentBean implements ResourcePaths, ViewEventHandler
 {
    private static final long serialVersionUID = -5438797603265752843L;
 
@@ -74,14 +76,20 @@ public class ProcessDiagramBean extends PopupUIComponentBean implements Resource
    {
       super(V_processDiagramView);
       sessionCtx = SessionContext.findSessionContext();
-
-      View focusView = PortalApplication.getInstance().getFocusView();
-      String pOID = focusView.getParamValue("processInstanceOId");
-      if (!StringUtils.isEmpty(pOID))
-         processInstanceOID = Long.parseLong(pOID);
-      initialize();
    }
-
+   
+   public void handleEvent(ViewEvent event)
+   {
+      if (ViewEventType.CREATED == event.getType())
+      {
+         View focusView = event.getView();
+         String pOID = focusView.getParamValue("processInstanceOId");
+         if (!StringUtils.isEmpty(pOID))
+            processInstanceOID = Long.parseLong(pOID);
+         initialize();
+      }
+   } 
+      
    @Override
    public void initialize()
    {
