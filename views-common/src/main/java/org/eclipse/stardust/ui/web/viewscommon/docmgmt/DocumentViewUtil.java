@@ -22,6 +22,7 @@ import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.FileSystemDocument;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.FileSystemJCRDocument;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentContentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
 
@@ -246,7 +247,14 @@ public class DocumentViewUtil
          IDocumentContentInfo documentContentInfo, Map<String, Object> viewParams)
    {
       StringBuffer viewKey = new StringBuffer();
-      viewKey.append("documentKey=").append(processInstance.getOID()).append(":").append(dataId);
+      if (documentContentInfo instanceof FileSystemJCRDocument)
+      {
+         viewKey.append("documentOID=").append(documentContentInfo.getId().hashCode());
+      }
+      else
+      {
+         viewKey.append("documentOID=").append(documentContentInfo.getId());
+      }
       return openDocument(viewKey.toString(), documentContentInfo, viewParams);
    }
 }

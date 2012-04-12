@@ -15,6 +15,7 @@ import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
@@ -91,7 +92,7 @@ public class FileSystemJCRDocument extends FileSystemDocument
          if (null != existingDocument)
          {
             // display error message
-            throw new RuntimeException(MessagesViewsCommonBean.getInstance().getParamString(
+            throw new I18NException(MessagesViewsCommonBean.getInstance().getParamString(
                   "views.genericRepositoryView.specificDocument.reclassifyDocument.fileAlreadyExist", file.getName()));
          }
 
@@ -114,8 +115,16 @@ public class FileSystemJCRDocument extends FileSystemDocument
                trace.error("Unable to Delete Document", ex);
             }
          }
-         throw new RuntimeException(MessagesViewsCommonBean.getInstance().getParamString(
-               "views.documentView.createError"), e);
+         
+         if (e instanceof I18NException)
+         {
+            throw (I18NException) e;
+         }
+         else
+         {
+            throw new I18NException(MessagesViewsCommonBean.getInstance().getParamString(
+                  "views.documentView.createError", file.getName()));
+         }
       }
    }
 }

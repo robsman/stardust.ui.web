@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
@@ -105,8 +106,10 @@ public class IppEventController implements Serializable
       {
          trace.debug("Notifying Document Event. Observer Count = " + documentObservers.size());
       }
-
-      for (DocumentEventObserver observer : documentObservers)
+      
+      List<DocumentEventObserver> documentObserversClone = CollectionUtils.copyList(documentObservers);
+      
+      for (DocumentEventObserver observer : documentObserversClone)
       {
          try
          {

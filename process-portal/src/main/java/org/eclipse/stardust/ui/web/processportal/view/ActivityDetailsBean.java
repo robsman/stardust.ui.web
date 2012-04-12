@@ -911,6 +911,10 @@ public class ActivityDetailsBean extends UIComponentBean
                   if (documentEvent.getDataId().equals(ippDocumentInputController.getDataMapping().getDataId()))
                   {
                      ippDocumentInputController.setValue(documentEvent.getCurrentDocument());
+                     if (ippDocumentInputController.isDocumentViewerOpened())
+                     {
+                        ippDocumentInputController.closeDocument();
+                     }
                      break;
                   }
                }
