@@ -413,8 +413,9 @@ public class PortalApplication
       if (overflowTabPopupOpened)
       {
          closeOverflowTabIframePopup();
-         renderPortalSession();
       }
+
+      renderPortalSession();
    }
 
    /**
