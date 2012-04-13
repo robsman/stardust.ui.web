@@ -37,7 +37,7 @@ var iDnD = function () {
 		var dragOverlayDiv = document.createElement('div');
 		dragOverlayDiv.id = "dragOverlay";
 		document.getElementsByTagName('body') [0].appendChild(dragOverlayDiv);
-		dragOverlayDiv.innerHTML = '<iframe id="dragContentIFrame" width="0px" height="0px"  style="z-index:10000; overflow : hidden;" src="dndContent.xhtml" frameborder="0"></iframe>';
+		dragOverlayDiv.innerHTML = '<iframe id="dragContentIFrame" width="0px" height="0px"  style="z-index:10000; overflow : hidden;" src="dndContent.html" frameborder="0"></iframe>';
 		dragContentIFrame = document.getElementById('dragContentIFrame');
 		dragContentIFrame.style.visibility = "hidden";
 	}
