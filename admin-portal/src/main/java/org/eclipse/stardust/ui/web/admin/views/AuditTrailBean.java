@@ -109,7 +109,7 @@ public class AuditTrailBean extends PopupUIComponentBean
             {
                MessageDialog.addWarningMessage(propsBean
                      .getString("launchPanels.ippAdmAdministrativeActions.auditTrail.processInstanceRecoveringFailed")
-                     + " " + details.getOID());
+                     + " " + details.getOID(), e);
                errors++;
             }
          }

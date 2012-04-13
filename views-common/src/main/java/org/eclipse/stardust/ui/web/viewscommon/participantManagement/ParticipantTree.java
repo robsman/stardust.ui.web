@@ -1009,7 +1009,6 @@ public class ParticipantTree
             }
             catch (InvalidArgumentException aex)
             {
-               trace.error(aex);
                ExceptionHandler.handleException(
                      aex,
                      MessagesViewsCommonBean.getInstance().getString(
@@ -1017,7 +1016,6 @@ public class ParticipantTree
             }
             catch (Exception ex)
             {
-               trace.error(ex);
                ExceptionHandler.handleException(
                      ex,
                      MessagesViewsCommonBean.getInstance().getString(

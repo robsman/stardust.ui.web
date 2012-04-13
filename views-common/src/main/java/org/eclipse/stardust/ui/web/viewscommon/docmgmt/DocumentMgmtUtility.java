@@ -41,7 +41,6 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
-import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
@@ -61,7 +60,6 @@ import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.repository.DocumentRepositoryFolderNames;
-import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.DocumentAnnotations;
@@ -911,7 +909,6 @@ public class DocumentMgmtUtility
          DocumentMgmtUtility.getDocument(documentId);
          if (StringUtils.isNotEmpty(message) || null != e)
          {
-            trace.error("Error in verifyExistenceOfDocumentAndShowMessage()", e);
             ExceptionHandler.handleException(e, message);
             return false;
          }

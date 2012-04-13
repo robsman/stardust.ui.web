@@ -100,7 +100,7 @@ public class ChangePasswordDialog extends PopupDialog
 		}
 		catch (Exception e)
 		{
-		   trace.error("Error in Changing Password", e);
+		   trace.error("Error in Changing Password");
 		   ExceptionHandler.handleException(FORM_ID + ":" + COMMON_MESSAGE_ID, e);
 		}
 

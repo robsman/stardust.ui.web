@@ -325,7 +325,7 @@ public class DelegationHandlerBean implements IDelegationHandler
          catch (Exception e)
          {
             MessageDialog.addErrorMessage(MessagesViewsCommonBean.getInstance().getParamString("delegation.error",
-                  String.valueOf(ai.getOID())));
+                  String.valueOf(ai.getOID())), e);
             return false;
          }
       }

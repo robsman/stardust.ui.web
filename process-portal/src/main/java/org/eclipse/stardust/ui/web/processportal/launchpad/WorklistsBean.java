@@ -167,7 +167,6 @@ public class WorklistsBean extends AbstractLaunchPanel implements InitializingBe
          }
          catch (Exception e)
          {
-            trace.error("", e);
             ExceptionHandler.handleException(e);
          }
       }

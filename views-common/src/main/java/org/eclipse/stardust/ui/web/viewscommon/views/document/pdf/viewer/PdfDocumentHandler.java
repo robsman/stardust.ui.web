@@ -24,7 +24,6 @@ import javax.faces.event.ValueChangeEvent;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
-import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
@@ -61,8 +60,7 @@ public class PdfDocumentHandler
       catch (Exception e)
       {
          trace.error("Error while initializing the document.", e);
-         errorMessage = msgBean.getString("common.pdfErrorMessage");
-         MessageDialog.addErrorMessage(msgBean.getString("views.documentView.pdfException"), e);
+         errorMessage = msgBean.getString("views.documentView.pdfException");
       }
    }
 

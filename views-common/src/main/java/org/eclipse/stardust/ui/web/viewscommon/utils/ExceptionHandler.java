@@ -23,6 +23,8 @@ import org.eclipse.stardust.common.config.ExtensionProviderUtils;
 import org.eclipse.stardust.common.error.ApplicationException;
 import org.eclipse.stardust.common.error.ErrorCase;
 import org.eclipse.stardust.common.error.IErrorMessageProvider;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalErrorClass;
@@ -42,6 +44,7 @@ public class ExceptionHandler
 {
    public static final String BEAN_NAME = "ippExceptionHandler";
    public static final String CLIENT_ID_NONE = "ClientIdNone";
+   private static final Logger trace = LogManager.getLogger(ExceptionHandler.class);
 
    public static enum MessageDisplayMode
    {
@@ -148,6 +151,9 @@ public class ExceptionHandler
    public static void handleException(String clientId, Exception exception, String customMsg,
          MessageDisplayMode displayMode, Locale locale)
    {
+      
+      trace.error(exception);
+      
       FacesMessage facesMsg = getInstance().getFacesMessage(exception, customMsg, displayMode, locale);
 
       if (null != facesMsg)

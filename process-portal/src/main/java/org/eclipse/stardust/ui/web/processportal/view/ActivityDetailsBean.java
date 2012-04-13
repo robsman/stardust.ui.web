@@ -1451,7 +1451,7 @@ public class ActivityDetailsBean extends UIComponentBean
       }
       catch (Exception e)
       {
-         trace.error("Unable to Process Activity", e);
+         trace.error("Unable to Process Activity");
          ExceptionHandler.handleException(e);
          return false;
       }
@@ -1479,7 +1479,7 @@ public class ActivityDetailsBean extends UIComponentBean
       }
       catch (Exception e)
       {
-         trace.error("Unable to Process Activity = " + action, e);
+         trace.error("Unable to Process Activity = " + action);
          ExceptionHandler.handleException(e);
       }
    }
@@ -1659,7 +1659,6 @@ public class ActivityDetailsBean extends UIComponentBean
       {
          loadSuccessful = false;
          loadUnsuccessfulMsg = "";
-         trace.error(e);
          ExceptionHandler.handleException(e);
       }
    }

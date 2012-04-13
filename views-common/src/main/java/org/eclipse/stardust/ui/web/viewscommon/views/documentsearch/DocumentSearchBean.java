@@ -361,7 +361,6 @@ public class DocumentSearchBean extends UIComponentBean
       }
       catch (Exception e)
       {
-         trace.error(e.getMessage());
          ExceptionHandler.handleException(e);
       }
    }

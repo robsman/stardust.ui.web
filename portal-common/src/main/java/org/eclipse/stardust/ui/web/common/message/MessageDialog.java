@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.stardust.ui.web.common.app.PortalUiController;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.PopupDialog;
@@ -30,6 +32,7 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
 public class MessageDialog extends PopupDialog
 {
    private static final long serialVersionUID = 1L;
+   private static final Logger trace = LogManager.getLogger(MessageDialog.class);
    public static enum MessageType
    {
       INFO,
@@ -96,6 +99,7 @@ public class MessageDialog extends PopupDialog
       msgbean.title = title;
       msgbean.messageType = messageType;
       msgbean.exception = exception;
+      msgbean.logException();
       msgbean.openPopup();
    }
    
@@ -113,7 +117,32 @@ public class MessageDialog extends PopupDialog
       msgbean.setDetailsLines();
       msgbean.messageType = messageType;
       msgbean.exception = exception;
+      msgbean.logException();
       msgbean.openPopup();
+   }
+   
+   private void logException()
+   {
+      if (null != this.exception)
+      {
+         switch (messageType)
+         {
+         case ERROR:
+            trace.error(this.exception);
+            break;
+
+         case WARNING:
+            trace.warn(this.exception);
+            break;
+
+         case INFO:
+            trace.info(this.exception);
+            break;
+
+         default:
+            break;
+         }
+      }
    }
    
    /**
@@ -160,6 +189,15 @@ public class MessageDialog extends PopupDialog
       addMessage(MessageType.INFO, getMessage("common.info"), details);
    }
 
+
+   /**
+    * @param details
+    */
+   public static void addWarningMessage(String details, Exception e)
+   {
+      addMessage(MessageType.WARNING, getMessage("common.warning"), details, e);
+   }
+   
    /**
     * @param details
     */
