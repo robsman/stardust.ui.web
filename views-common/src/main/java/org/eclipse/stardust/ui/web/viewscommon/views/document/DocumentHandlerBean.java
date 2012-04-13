@@ -627,7 +627,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          {
             contentByte = contentHandler.getContent().getBytes();
          }
-         else if (contentHandler instanceof IDocumentViewer)
+         else //for viewer and unsupported documents, retrieve content
          {
             contentByte = documentContentInfo.retrieveContent();
          }
