@@ -67,9 +67,6 @@
       <server-archive name="cglib-nodep" type="jar"
          sourceFile="../../../lib/hibernate/cglib-nodep.jar" />
       <!-- spring.jar must be included in any case, not only in engine-ejb-spring -->      <server-archive name="spring-beans" type="jar" sourceFile="../../../lib/spring/spring-beans.jar" />      <server-archive name="spring-core" type="jar" sourceFile="../../../lib/spring/spring-core.jar" />      <server-archive name="spring-tx" type="jar" sourceFile="../../../lib/spring/spring-tx.jar" />      <server-archive name="spring-jms" type="jar" sourceFile="../../../lib/spring/spring-jms.jar" />      <server-archive name="spring-jdbc" type="jar" sourceFile="../../../lib/spring/spring-jdbc.jar" />      <server-archive name="spring-expression" type="jar" sourceFile="../../../lib/spring/spring-expression.jar" />      <server-archive name="spring-context-support" type="jar" sourceFile="../../../lib/spring/spring-context-support.jar" />      <server-archive name="spring-context" type="jar" sourceFile="../../../lib/spring/spring-context.jar" />      <server-archive name="spring-asm" type="jar" sourceFile="../../../lib/spring/spring-asm.jar" />      <server-archive name="spring-aop" type="jar" sourceFile="../../../lib/spring/spring-aop.jar" />
-      <server-archive name="snowdrop-vfs" type="jar" 
-         sourceFile="../../../lib/spring/snowdrop-vfs.jar" 
-         appservers="jboss5" />
       
       <server-archive name="jackrabbit-webapp" type="jar"
          sourceFile="../../../lib/dms/jackrabbit-webapp.jar"
@@ -128,10 +125,7 @@
          appservers="local, cleanroom, wls, tomcat" />
       <server-archive name="jcr-vfs" type="jar"
          sourceFile="../../../lib/jcr-vfs.jar" destDir="WEB-INF/lib/" />
-      <server-archive name="spring-beans" type="jar"          sourceFile="../../../lib/spring/spring-beans.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-core" type="jar"          sourceFile="../../../lib/spring/spring-core.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-tx" type="jar"          sourceFile="../../../lib/spring/spring-tx.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-jms" type="jar"          sourceFile="../../../lib/spring/spring-jms.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-jdbc" type="jar"          sourceFile="../../../lib/spring/spring-jdbc.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-expression" type="jar"          sourceFile="../../../lib/spring/spring-expression.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-context-support" type="jar"          sourceFile="../../../lib/spring/spring-context-support.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-context" type="jar"          sourceFile="../../../lib/spring/spring-context.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-asm" type="jar"          sourceFile="../../../lib/spring/spring-asm.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-aop" type="jar"          sourceFile="../../../lib/spring/spring-aop.jar" destDir="WEB-INF/lib/"/>      <server-archive name="snowdrop-vfs" type="jar"
-         sourceFile="../../../lib/spring/snowdrop-vfs.jar" destDir="WEB-INF/lib/"
-         appservers="jboss5" />
-      <server-archive name="geronimo-connector" type="jar"
+      <server-archive name="spring-beans" type="jar"          sourceFile="../../../lib/spring/spring-beans.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-core" type="jar"          sourceFile="../../../lib/spring/spring-core.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-tx" type="jar"          sourceFile="../../../lib/spring/spring-tx.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-jms" type="jar"          sourceFile="../../../lib/spring/spring-jms.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-jdbc" type="jar"          sourceFile="../../../lib/spring/spring-jdbc.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-expression" type="jar"          sourceFile="../../../lib/spring/spring-expression.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-context-support" type="jar"          sourceFile="../../../lib/spring/spring-context-support.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-context" type="jar"          sourceFile="../../../lib/spring/spring-context.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-asm" type="jar"          sourceFile="../../../lib/spring/spring-asm.jar" destDir="WEB-INF/lib/" />      <server-archive name="spring-aop" type="jar"          sourceFile="../../../lib/spring/spring-aop.jar" destDir="WEB-INF/lib/"/>      <server-archive name="geronimo-connector" type="jar"
          appservers="tomcat" sourceFile="../../../lib/spring/geronimo-connector.jar"
          destDir="WEB-INF/lib/" />
       <server-archive name="geronimo-j2ee-connector_1.5_spec"
@@ -947,10 +941,6 @@
             value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml" />
          <property name="context-param[SPRING_CONFIG_LOCATION].param-value"
             value="classpath*:META-INF/spring/*-context.xml" />
-         <property name="context-param[SPRING_CONTEXT_CLASS].param-name"
-            value="contextClass" appservers="jboss5" />
-         <property name="context-param[SPRING_CONTEXT_CLASS].param-value"
-            value="org.jboss.spring.vfs.context.VFSXmlWebApplicationContext" appservers="jboss5" />
 
        <!-- Myfaces section -->
          <property name="context-param[MYFACE_DISABLE_DIALOG_OUTCOMES].param-name"
@@ -1878,7 +1868,7 @@
                 webservices-extra-api.jar webservices-tools.jar jaxws-spring.jar cglib-nodep.jar
                 jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar">
             <appserver-value appserver="jboss5" 
-               value="ipp-engine-core.jar mail.jar commons-jxpath.jar snowdrop-vfs.jar
+               value="ipp-engine-core.jar mail.jar commons-jxpath.jar
                 jcr-vfs.jar asm.jar gson.jar jersey-core.jar jersey-server.jar                 spring-beans.jar spring-core.jar spring-tx.jar spring-jms.jar spring-jdbc.jar spring-expression.jar spring-context-support.jar spring-context.jar spring-asm.jar spring-aop.jar spring-orm.jar 
                 jsr250-api.jar jsr311-api.jar jaxws-spring.jar cglib-nodep.jar
                 jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar"/>
@@ -2020,10 +2010,6 @@
             value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml" />
          <property name="context-param[SPRING_CONFIG_LOCATION].param-value"
             value="classpath*:META-INF/spring/*-context.xml" />
-         <property name="context-param[SPRING_CONTEXT_CLASS].param-name"
-            value="contextClass" appservers="jboss5" />
-         <property name="context-param[SPRING_CONTEXT_CLASS].param-value"
-            value="org.jboss.spring.vfs.context.VFSXmlWebApplicationContext" appservers="jboss5" />
 
        <!-- Myfaces section -->
          <property name="context-param[MYFACE_DISABLE_DIALOG_OUTCOMES].param-name"
