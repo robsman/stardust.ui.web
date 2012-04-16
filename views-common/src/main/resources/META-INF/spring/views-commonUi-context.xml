@@ -30,7 +30,7 @@
 
 			<ippui:toolbarSection name="chatViewToolbar"
 				include="/plugins/views-common/extension/toolbar/chatViewToolbar.xhtml"
-				requiredView="chatView" />
+				requiredView="chatView" />							<ippui:toolbarSection name="correspondenceViewToolbar"				include="/plugins/views-common/extension/toolbar/correspondenceViewToolbar.xhtml"				requiredView="correspondenceView" />	
 
 			<ippui:toolbarSection name="repositoryViewToolbar"
 				include="/plugins/views-common/extension/toolbar/repositoryViewToolbar.xhtml"

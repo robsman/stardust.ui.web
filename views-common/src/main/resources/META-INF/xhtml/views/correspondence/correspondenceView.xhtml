@@ -27,27 +27,6 @@
 
 	<ice:panelGroup>
 		<ice:panelGroup>
-			<ice:panelGroup style="float: right;">
-				<ice:commandButton
-					image="/plugins/views-common/images/icons/email_go.png"
-					actionListener="#{correspondenceViewBean.sendMessage}"
-					partialSubmit="true"
-					title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.correspondenceSend']}"
-					styleClass="toolbar-button">
-					<pc:automationTag value="auto-COM-CorrView-ToolbarSend"
-						standAlone="false" />
-				</ice:commandButton>
-				<ice:commandButton
-					image="/plugins/views-common/images/icons/printer.png"
-					disabled="#{!correspondenceViewBean.printAvailable}"
-					action="#{correspondenceViewBean.print}" partialSubmit="true"
-					title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.print']}"
-					styleClass="toolbar-button">
-					<pc:automationTag value="auto-COM-CorrView-ToolbarPrint"
-						standAlone="false" />
-				</ice:commandButton>
-			</ice:panelGroup>
-
 			<ice:panelCollapsible id="detailsPanel" expanded="true"
 				styleClass="actionPanel">
 				<f:facet name="header">

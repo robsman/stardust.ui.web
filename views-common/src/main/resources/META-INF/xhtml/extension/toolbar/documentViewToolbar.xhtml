@@ -6,7 +6,17 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-	<ice:panelGrid columns="8">
+	<ice:panelGrid columns="7">
+
+		<ice:commandLink 
+			title="#{documentHandlerBean.messages['save.label']}"
+			rendered="#{!documentHandlerBean.disableSaveAction and documentHandlerBean.savable}"
+			action="#{documentHandlerBean.save}">
+			<pc:automationTag value="auto-COM-DocView-SaveBtn" standAlone="false"/>
+			<ice:graphicImage value="/plugins/views-common/images/icons/disk.png"
+				styleClass="toolbar-button" />
+		</ice:commandLink>
+	
 		<ice:commandLink disabled="#{!documentHandlerBean.showPrev}"
 			action="#{documentHandlerBean.showPreviousVersion}">
 			<pc:automationTag value="auto-COM-DocView-ToolbarShowPrevVersion"

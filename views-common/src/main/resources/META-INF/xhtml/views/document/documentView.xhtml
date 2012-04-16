@@ -24,15 +24,6 @@
 	</ice:panelGroup>
 	
 	<ice:panelGroup rendered="#{documentHandlerBean.loadSuccessful}">
-		<ice:commandLink style="float: right;"
-			title="#{documentHandlerBean.messages['save.label']}"
-			rendered="#{!documentHandlerBean.disableSaveAction and documentHandlerBean.savable}"
-			action="#{documentHandlerBean.save}">
-			<pc:automationTag value="auto-COM-DocView-SaveBtn" standAlone="false"/>
-			<ice:graphicImage value="/plugins/views-common/images/icons/disk.png"
-				styleClass="toolbar-button" />
-		</ice:commandLink>
-
 		<ice:panelCollapsible id="detailsPanel"  expanded="#{documentHandlerBean.detailsPanelExpanded}"
 			actionListener="#{documentHandlerBean.detailsPanelCollapseListener}">
 			<f:facet name="header">

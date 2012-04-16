@@ -1,0 +1,31 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid columns="2">
+		<ice:commandButton
+			image="/plugins/views-common/images/icons/email_go.png"
+			actionListener="#{correspondenceViewBean.sendMessage}"
+			title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.correspondenceSend']}"
+			styleClass="toolbar-button">
+			<pc:automationTag value="auto-COM-CorrView-ToolbarSend"
+				standAlone="false" />
+		</ice:commandButton>
+		<ice:commandButton
+			image="/plugins/views-common/images/icons/printer.png"
+			disabled="#{!correspondenceViewBean.printAvailable}"
+			action="#{correspondenceViewBean.print}"
+			title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.print']}"
+			styleClass="toolbar-button">
+			<pc:automationTag value="auto-COM-CorrView-ToolbarPrint"
+				standAlone="false" />
+		</ice:commandButton>
+	</ice:panelGrid>
+
+</f:view>
+
+
