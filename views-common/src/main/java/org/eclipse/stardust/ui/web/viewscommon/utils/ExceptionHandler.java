@@ -151,8 +151,10 @@ public class ExceptionHandler
    public static void handleException(String clientId, Exception exception, String customMsg,
          MessageDisplayMode displayMode, Locale locale)
    {
-      
-      trace.error(exception);
+      if (null != exception)
+      {
+         trace.error(exception);
+      }
       
       FacesMessage facesMsg = getInstance().getFacesMessage(exception, customMsg, displayMode, locale);
 
