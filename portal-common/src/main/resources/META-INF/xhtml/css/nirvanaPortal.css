@@ -839,23 +839,25 @@ img
 
 .toolbar-button
 {
-	border: none;
-	margin: 1px;
-	padding: 3px;
+	border: 1px dotted transparent;
+	margin: 2px;
+	padding: 2px;
 }
 
 .toolbar-button:hover 
 {
 	border: 1px dotted black;
-	margin: 0px;
-	padding: 3px;
+	margin: 2px;
+	padding: 2px;
 }
 
 .toolbar-button-dis
 {
-	border: none;
-	margin: 1px;
-	padding: 3px;
+	border: 1px dotted transparent;
+	margin: 2px;
+	padding: 2px;
+	opacity: 0.4;
+	filter: alpha(opacity=40)
 }
 
 .heading 
@@ -1062,17 +1064,6 @@ img
 .content-viewer
 {
 	/*background-color: #d4d0c8;*/	
-}
-
-/* Document Tabs Toolbar */
-
-.document-tabs-toolbar
-{
-}
-
-.document-tabs-toolbar .iceCmdBtn 
-{
-	margin: 5px;
 }
 
 /* Action Link */

@@ -14,15 +14,11 @@
 				standAlone="false" />
 			<ice:graphicImage
 				value="#{documentHandlerBean.contentHandler.favoriteIcon}"
-				styleClass="document-tabs-toolbar"
+				styleClass="toolbar-button"
 				title="#{documentHandlerBean.contentHandler.favoriteTitle}" />
 			<f:param name="reportUri"
 				value="#{documentHandlerBean.contentHandler.content}" />
 		</ice:commandLink>
-		
-		<ice:graphicImage
-			value="/plugins/views-common/images/spacer.png" width="5"
-			height="15" />
 
 		<ice:commandLink
 			action="#{documentHandlerBean.contentHandler.archiveReport}">
@@ -30,7 +26,7 @@
 				standAlone="false" />
 			<ice:graphicImage
 				value="/plugins/views-common/images/icons/report_go.png"
-				styleClass="document-tabs-toolbar"
+				styleClass="toolbar-button"
 				title="#{views_common_msgPropsBean['views.myReportsView.archiveReport.title']}" />
 			<f:param name="reportUri"
 				value="#{documentHandlerBean.contentHandler.content}" />
