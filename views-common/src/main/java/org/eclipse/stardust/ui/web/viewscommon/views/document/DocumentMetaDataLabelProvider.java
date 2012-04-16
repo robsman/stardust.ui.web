@@ -11,9 +11,11 @@
 package org.eclipse.stardust.ui.web.viewscommon.views.document;
 
 import org.eclipse.stardust.engine.api.model.Data;
+import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.ui.common.form.jsf.messages.DefaultLabelProvider;
 import org.eclipse.stardust.ui.common.form.jsf.utils.MessagePropertiesBean;
 import org.eclipse.stardust.ui.common.introspection.Path;
+import org.eclipse.stardust.ui.common.introspection.xsd.XsdPath;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 
@@ -26,13 +28,15 @@ public class DocumentMetaDataLabelProvider extends DefaultLabelProvider
    private static final long serialVersionUID = 1L;
    
    private Data data;
+   private Model model;
 
    /**
     * @param data
     */
-   public DocumentMetaDataLabelProvider(Data data)
+   public DocumentMetaDataLabelProvider(Data data, Model model)
    {
       this.data = data;
+      this.model = model;
    }
 
    @Override
@@ -47,6 +51,10 @@ public class DocumentMetaDataLabelProvider extends DefaultLabelProvider
          {
             label = null; // Label is same as Id, Means I18N not present
          }
+      }
+      else if (path instanceof XsdPath)
+      {
+         label = I18nUtils.getLabel(((XsdPath)path).getTypedXPath(), model, null);
       }
 
       if(StringUtils.isNotEmpty(label))
@@ -93,7 +101,11 @@ public class DocumentMetaDataLabelProvider extends DefaultLabelProvider
             }
          }
       }
- 
+      else if (path instanceof XsdPath)
+      {
+         desc = I18nUtils.getDescription(((XsdPath)path).getTypedXPath(), model, null);
+      }
+
       return desc;
    }
 }

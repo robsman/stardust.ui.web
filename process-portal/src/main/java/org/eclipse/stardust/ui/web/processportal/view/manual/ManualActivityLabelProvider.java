@@ -18,6 +18,7 @@ import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.ui.common.form.jsf.messages.DefaultLabelProvider;
 import org.eclipse.stardust.ui.common.form.jsf.utils.MessagePropertiesBean;
 import org.eclipse.stardust.ui.common.introspection.Path;
+import org.eclipse.stardust.ui.common.introspection.xsd.XsdPath;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
@@ -55,7 +56,6 @@ public class ManualActivityLabelProvider extends DefaultLabelProvider
       DataMapping mapping = path2DataMappingMap.get(path);
       String label = null;
 
-      // There is no way currently to I18N Structure Types. Only Top level Data Mappings can be I18N.
       if (null != mapping)
       {
          label = I18nUtils.getLabel(mapping, mapping.getId());
@@ -63,6 +63,10 @@ public class ManualActivityLabelProvider extends DefaultLabelProvider
          {
             label = null; // Label is same as Id, Means I18N not present
          }
+      }
+      else if (path instanceof XsdPath)
+      {
+         label = I18nUtils.getLabel(((XsdPath)path).getTypedXPath(), model, null);
       }
 
       // If I18N Label not found, then return from super Default Provider 
@@ -84,7 +88,6 @@ public class ManualActivityLabelProvider extends DefaultLabelProvider
       DataMapping mapping = path2DataMappingMap.get(path);
       String desc = null;
 
-      // There is no way currently to I18N Structure Types. Only Top level Data Mappings can be I18N.
       if (null != mapping)
       {
          Data data = model.getData(mapping.getDataId());
@@ -101,6 +104,10 @@ public class ManualActivityLabelProvider extends DefaultLabelProvider
                desc = StringUtils.replace(desc, "\n", "<br/>");
             }
          }
+      }
+      else if (path instanceof XsdPath)
+      {
+         desc = I18nUtils.getDescription(((XsdPath)path).getTypedXPath(), model, null);
       }
 
       // If I18N not found, No description defined 

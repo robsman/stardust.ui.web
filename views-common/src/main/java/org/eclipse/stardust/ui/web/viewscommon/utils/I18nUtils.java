@@ -20,6 +20,7 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ModelElement;
 import org.eclipse.stardust.engine.api.model.ModelParticipant;
 import org.eclipse.stardust.engine.api.model.Participant;
@@ -31,6 +32,7 @@ import org.eclipse.stardust.engine.api.runtime.DeployedModelDescription;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserGroup;
 import org.eclipse.stardust.engine.api.runtime.UserGroupInfo;
+import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
 import org.eclipse.stardust.ui.web.viewscommon.common.LocalizerKey;
 
@@ -38,6 +40,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.LocalizerKey;
 
 /**
  * @author rsauer
+ * @author Subodh.Godbole
  * @version $Revision$
  */
 public class I18nUtils
@@ -306,6 +309,57 @@ public class I18nUtils
          // TODO when should logged the error?
       }
       return label;
+   }
+
+   /**
+    * @param typedXPath
+    * @param model
+    * @param defaultLabel
+    * @param mode
+    * @return
+    */
+   public static String getLabel(TypedXPath typedXPath, Model model, String defaultLabel, int mode)
+   {
+      String label = null;
+
+      LocalizerKey key = new StructuredTypeLocalizerKey(typedXPath, model, mode);
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("use '" + key.getBundleName() + "' for label receivment");
+      }
+
+      try
+      {
+         label = Localizer.getString(key);
+      }
+      catch (Exception e)
+      {
+         // TODO when should logged the error?
+      }
+
+      return StringUtils.isEmpty(label) ? defaultLabel : label;
+   }
+
+   /**
+    * @param typedXPath
+    * @param model
+    * @param defaultLabel
+    * @return
+    */
+   public static String getLabel(TypedXPath typedXPath, Model model, String defaultLabel)
+   {
+      return getLabel(typedXPath, model, defaultLabel, StructuredTypeLocalizerKey.KEY_NAME);
+   }
+
+   /**
+    * @param typedXPath
+    * @param model
+    * @param defaultLabel
+    * @return
+    */
+   public static String getDescription(TypedXPath typedXPath, Model model, String defaultLabel)
+   {
+      return getLabel(typedXPath, model, defaultLabel, StructuredTypeLocalizerKey.KEY_DESC);
    }
 
    /**

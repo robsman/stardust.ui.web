@@ -409,7 +409,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          FormGenerator formGenerator;
          if (null != model && StringUtils.isNotEmpty(dataId))
          {
-            labelProvider = new DocumentMetaDataLabelProvider(model.getData(dataId));
+            labelProvider = new DocumentMetaDataLabelProvider(model.getData(dataId), model);
             formGenerator = new JsfFormGenerator(generationPreferences, baseFormBinding + ".documentForm", labelProvider);
          }
          else
