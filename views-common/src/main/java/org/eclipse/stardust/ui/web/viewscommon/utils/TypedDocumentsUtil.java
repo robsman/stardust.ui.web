@@ -32,7 +32,6 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
-import org.eclipse.stardust.ui.common.form.jsf.ILabelProvider;
 import org.eclipse.stardust.ui.common.form.jsf.messages.DefaultLabelProvider;
 import org.eclipse.stardust.ui.common.introspection.Path;
 import org.eclipse.stardust.ui.common.introspection.xsd.XsdPath;
@@ -49,11 +48,8 @@ import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
 
 /**
  * @author Yogesh.Manware
- * 
- */
-/**
  * @author Subodh.Godbole
- *
+ * 
  */
 public class TypedDocumentsUtil
 {
@@ -202,7 +198,7 @@ public class TypedDocumentsUtil
    
             if (null != path && null != document.getProperties())
             {
-               getMetadataAsList(path, document.getProperties(), metadataList, supressBlank, new DefaultLabelProvider());
+               getMetadataAsList(path, document.getProperties(), metadataList, supressBlank, model);
             }
          }
       }
@@ -215,10 +211,10 @@ public class TypedDocumentsUtil
     * @param metadata
     * @param metadataList
     * @param supressBlank
-    * @param labelProvider
+    * @param model
     */
    private static void getMetadataAsList(Path path, Map<String, ? > metadata, List<Pair<String, String>> metadataList,
-         boolean supressBlank, ILabelProvider labelProvider)
+         boolean supressBlank, Model model)
    {
       if (path.isPrimitive())
       {
@@ -228,29 +224,24 @@ public class TypedDocumentsUtil
          }
          else
          {
-            // TODO: I18N XPath
-            String fullXPath = path.getFullXPath();
-            if (fullXPath.startsWith("/"))
+            String label = null;
+            if (path instanceof XsdPath)
             {
-               fullXPath = fullXPath.substring(1);
+               label = getFullXPathLabel(((XsdPath)path).getTypedXPath(), model);
+            }
+            else // This should not happen!
+            {
+               label = DefaultLabelProvider.convertToLabel(path.getId());
             }
 
-            StringBuffer fullXPathLabels = new StringBuffer();
-            String[] xpaths = fullXPath.split("/");
-            for (String xpath : xpaths)
-            {
-               fullXPathLabels.append(labelProvider.getLabel(xpath)).append("/");
-            }
-            fullXPathLabels.deleteCharAt(fullXPathLabels.length() - 1);
-
-            metadataList.add(new Pair<String, String>(fullXPathLabels.toString(), value));
+            metadataList.add(new Pair<String, String>(label, value));
          }
       }
       else
       {
          for (Path cPath : path.getChildPaths())
          {
-            getMetadataAsList(cPath, metadata, metadataList, supressBlank, labelProvider);
+            getMetadataAsList(cPath, metadata, metadataList, supressBlank, model);
          }
       }
    }
@@ -329,5 +320,38 @@ public class TypedDocumentsUtil
       }
 
       return retValue;
+   }
+
+   /**
+    * @param typedXPath
+    * @param model
+    * @return
+    */
+   private static String getFullXPathLabel(TypedXPath typedXPath, Model model)
+   {
+      StringBuffer sb = new StringBuffer(getXPathLabel(typedXPath, model));
+      while (null != typedXPath.getParentXPath())
+      {
+         typedXPath = typedXPath.getParentXPath();
+         sb.insert(0, getXPathLabel(typedXPath, model) + " / ");
+      }
+
+      return sb.toString();
+   }
+
+   /**
+    * @param typedXPath
+    * @param model
+    * @return
+    */
+   private static String getXPathLabel(TypedXPath typedXPath, Model model)
+   {
+      String label = I18nUtils.getLabel(typedXPath, model, typedXPath.getId());
+      if (label.equals(typedXPath.getId()))
+      {
+         label = DefaultLabelProvider.convertToLabel(typedXPath.getId());
+      }
+         
+      return label;
    }
 }
