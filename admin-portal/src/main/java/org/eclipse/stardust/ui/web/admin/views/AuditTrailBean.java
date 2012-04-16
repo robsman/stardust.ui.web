@@ -42,6 +42,7 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
 
 
@@ -143,6 +144,7 @@ public class AuditTrailBean extends PopupUIComponentBean
          if (service != null)
          {
             service.cleanupRuntimeAndModels();
+            ModelCache.findModelCache().reset();
             SessionContext.findSessionContext().resetSession();
             return "ippPortalLogout";
          }
