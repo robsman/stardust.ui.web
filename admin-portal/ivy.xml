@@ -63,7 +63,7 @@
       <dependency org="junit" name="junit" rev="4.10" conf="test->default" />
 
       <override org="commons-beanutils" module="commons-beanutils" rev="1.8.0" />
-      <override org="commons-collections" module="commons-collections" rev="3.1" />
+      <override org="commons-collections" module="commons-collections" rev="3.2" />
       <override org="commons-digester" module="commons-digester" rev="1.8" />
       <override org="commons-logging" module="commons-logging" rev="1.1.1" />
    </dependencies>
