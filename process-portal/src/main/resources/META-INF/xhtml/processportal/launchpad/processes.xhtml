@@ -25,14 +25,15 @@
 				<ice:panelGrid columns="2">
 					<ice:graphicImage
 						value="/plugins/views-common/images/icons/process.png"  />
-					<ice:panelGroup style="display:inline;" panelTooltip="procToolTip">
+					<ice:panelGroup style="display:inline;" panelTooltip="startProcTooltip">
 						<ice:commandLink value="#{item.name}" styleClass="action-link"
 							action="#{item.selectAction}">
 						</ice:commandLink>
 					</ice:panelGroup>
 				</ice:panelGrid>
-				<ui:include src="/plugins/views-common/common/processToolTip.xhtml">
+				<ui:include src="/plugins/views-common/common/genericPanelToolTip.xhtml">
 					<ui:param name="tooltip" value="#{item.title}" />
+					<ui:param name="id" value="startProcTooltip" />
 				</ui:include>
 			</ice:panelSeries>
 		</ice:panelGroup>

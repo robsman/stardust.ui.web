@@ -224,7 +224,6 @@ public class ModelManagementBean extends UIComponentBean implements ViewEventHan
       hiddenRootItem.setType(ModelManagementTreeItem.Type.NONE);
       // rootItem.setLabel("Models");
       rootModelNode = TreeNodeFactory.createTreeNode(modelTreeTable, this, hiddenRootItem, true);
-
       // Now Create a Model & Tree Table
       DefaultTreeModel rootNode = new DefaultTreeModel(rootModelNode);
       modelTreeTable = new TreeTable(rootNode, colSelectorPopup, tableDataFilters);
@@ -233,7 +232,10 @@ public class ModelManagementBean extends UIComponentBean implements ViewEventHan
       modelTreeTable.setAutoFilter(false);
       modelTreeTable.setFilterRootNode(true);
       rootModelNode.getUserObject().setTreeTable(modelTreeTable);
-
+      if (null != modelTreeTable)
+      {
+         modelTreeTable.setTooltipURL(org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths.V_PANELTOOLTIP_URL);
+      }
       List<ModelManagementTreeItem> list = buildTreeTableData(hiddenRootItem);
 
       for (ModelManagementTreeItem item : list)

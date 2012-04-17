@@ -25,7 +25,7 @@
 				<ice:panelGrid columns="3">
 					<ice:graphicImage
 						value="/plugins/views-common/images/icons/process.png" />
-					<ice:panelGroup style="display:inline;" panelTooltip="procToolTip">
+					<ice:panelGroup style="display:inline;" panelTooltip="myProcTooltip">
 						<ice:outputText value="#{item.name}:" />
 					</ice:panelGroup>
 					<ice:commandLink styleClass="action-link" action="#{item.select}" 
@@ -36,8 +36,9 @@
 						</ice:outputFormat>
 					</ice:commandLink>
 				</ice:panelGrid>
-				<ui:include src="/plugins/views-common/common/processToolTip.xhtml">
+				<ui:include src="/plugins/views-common/common/genericPanelToolTip.xhtml">
 					<ui:param name="tooltip" value="#{item.title}" />
+					<ui:param name="id" value="myProcTooltip" />
 				</ui:include>
 			</ice:panelSeries>
 		</ice:panelGroup>

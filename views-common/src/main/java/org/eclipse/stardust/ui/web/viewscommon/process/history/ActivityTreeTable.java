@@ -32,6 +32,7 @@ import org.eclipse.stardust.ui.web.common.treetable.TreeTable;
 import org.eclipse.stardust.ui.web.common.treetable.TreeTableBean;
 import org.eclipse.stardust.ui.web.common.treetable.TreeTableNode;
 import org.eclipse.stardust.ui.web.viewscommon.common.FilterToolbarItem;
+import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.AbortActivityBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -223,7 +224,8 @@ public class ActivityTreeTable implements TreeTableBean,ICallbackHandler
          treeTable.setAutoFilter(false);
          activityRootNode.getUserObject().setTreeTable(treeTable);
          activityRootNode.getUserObject().setLeaf(false);
-
+         if (null != treeTable)
+            treeTable.setTooltipURL(ResourcePaths.V_PANELTOOLTIP_URL);
          buildActivityTreeTable(activityRootNode, activityTableRoot);
          
          columnModelEventHandler.setNeedRefresh(false);

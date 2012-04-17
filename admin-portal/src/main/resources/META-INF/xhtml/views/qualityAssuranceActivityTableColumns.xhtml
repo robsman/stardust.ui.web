@@ -14,7 +14,7 @@
 	-->
 	
 	<ice:panelGroup style="margin: 0px; padding: 0px;">
-		<ice:panelGroup rendered="#{col.columnName == 'modelName'}" style="display:inline;" panelTooltip="procToolTip">
+		<ice:panelGroup rendered="#{col.columnName == 'modelName'}" style="display:inline;" panelTooltip="qcPnlTooltip">
 			<ice:outputText style="display: inline;" value="#{row.modelName}">
 				<h:graphicImage rendered="#{row.oldModel}"
 					value="/plugins/views-common/images/icons/model.gif"
@@ -65,7 +65,8 @@
 		</ice:panelGroup>
 		
 	</ice:panelGroup>
-	<ui:include src="/plugins/views-common/common/processToolTip.xhtml">
+	<ui:include src="/plugins/views-common/common/genericPanelToolTip.xhtml">
 		<ui:param name="tooltip" value="#{row.modelDescription}" />
+		<ui:param name="id" value="qcPnlTooltip" />
 	</ui:include>
 </f:view>

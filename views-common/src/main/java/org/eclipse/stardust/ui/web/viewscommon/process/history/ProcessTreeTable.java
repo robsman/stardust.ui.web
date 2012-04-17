@@ -30,6 +30,7 @@ import org.eclipse.stardust.ui.web.common.treetable.TreeTableBean;
 import org.eclipse.stardust.ui.web.common.treetable.TreeTableNode;
 import org.eclipse.stardust.ui.web.common.treetable.TreeTableUserObject;
 import org.eclipse.stardust.ui.web.viewscommon.common.FilterToolbarItem;
+import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorColumnUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultColumnModelEventHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
@@ -190,7 +191,8 @@ public class ProcessTreeTable implements TreeTableBean
             // Build Tree
             buildProcessHistoryTree(processHistoryTableRoot, processInstanceNode);
          }
-         
+         if (null != treeTable)
+            treeTable.setTooltipURL(ResourcePaths.V_PANELTOOLTIP_URL);
          treeTable.setAutoFilter(false);
          columnModelEventHandler.setNeedRefresh(false);
          // Build Tree

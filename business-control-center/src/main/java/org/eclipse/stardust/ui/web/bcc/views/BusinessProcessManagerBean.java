@@ -159,6 +159,10 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
                activeModel.getModelOID(), filterAuxiliaryProcesses);
 
          TreeTableNode modelNode = TreeNodeFactory.createTreeNode(treeTable, this, modelWithPrio, true);
+         if (null != treeTable)
+         {
+            treeTable.setTooltipURL(org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths.V_PANELTOOLTIP_URL);
+         }
          // Build Tree
          buildPriorityOverviewTree(modelWithPrio, modelNode);
          modelNode.getUserObject().setTreeTable(treeTable);

@@ -34,6 +34,7 @@ public class TreeTable extends DataTable<TreeTableUserObject>
    private TreeModel treeModel;
    private boolean filterRootNode = true;
    private boolean hideRootNode;
+   private String tooltipURL;
 
    // **************************** CONSTRUCTORS ****************************
 
@@ -248,4 +249,15 @@ public class TreeTable extends DataTable<TreeTableUserObject>
    {
       this.hideRootNode = hideRootNode;
    }
+
+   public String getTooltipURL()
+   {
+      return tooltipURL;
+   }
+
+   public void setTooltipURL(String tooltipURL)
+   {
+      this.tooltipURL = tooltipURL;
+   }
+   
 }

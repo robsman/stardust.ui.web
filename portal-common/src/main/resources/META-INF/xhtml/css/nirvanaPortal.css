@@ -1624,14 +1624,14 @@ table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbo
 }
 
 /* ********* Tooltip for Process,Model ,Activity Details ********** */
-.processTooltip {
+.genericPnlTooltip {
 	white-space: normal;
 	text-align: left;
 	font-weight: normal;
 	word-wrap: break-word;
 }
 
-.processTooltipPanel .processTooltipPanelBody{
+.genericPnlTooltipPanel .genericPnlTooltipPanelBody{
 	width: auto;
 	max-width: 200px;
 	height: auto;

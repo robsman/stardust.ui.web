@@ -118,7 +118,10 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
       treeTable.setFilterRootNode(false);
       treeTable.setHideRootNode(true);
       rootModelNode.getUserObject().setTreeTable(treeTable);
-
+      if (null != treeTable)
+      {
+         treeTable.setTooltipURL(org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths.V_PANELTOOLTIP_URL);
+      }
       List<DeployedModel> models = ModelCache.findModelCache().getActiveModels();
       boolean filterAuxiliaryProcesses = filterAuxiliaryProcesses();
       boolean filterAuxiliaryActivities = filterAuxiliaryActivities();

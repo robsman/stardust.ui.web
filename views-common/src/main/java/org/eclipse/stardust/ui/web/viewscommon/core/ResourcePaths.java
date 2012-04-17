@@ -116,4 +116,6 @@ public interface ResourcePaths
    static final String V_JOIN_PROCESS_CONF_DLG = "/plugins/views-common/dialogs/joinProcessNotificationDialog.xhtml";
    static final String V_ATTACH_CASE_CONF_DLG = "/plugins/views-common/views/case/attachToCaseNotification.xhtml";
    static final String V_DETACH_CASE_CONF_DLG = "/plugins/views-common/views/case/detachCaseNotification.xhtml";
+   
+   static final String V_PANELTOOLTIP_URL = "/plugins/views-common/common/genericPanelToolTip.xhtml";
 }

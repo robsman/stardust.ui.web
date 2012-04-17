@@ -6,11 +6,18 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-	<ice:panelTooltip id="procToolTip" hoverDelay="500"
-		styleClass="tooltip processTooltipPanel" rendered="#{tooltip!=null}">
+	<!-- ***** Documentation for Tooltip *****
+	# Attributes ('*' indicates mandatory attributes)
+		id* -> tooltip Id 
+		tooltip - > tooltip text displayed Default null
+	 -->
+	<ice:panelTooltip id="#{id}" hoverDelay="500"
+		styleClass="tooltip genericPnlTooltipPanel"
+		rendered="#{!empty tooltip}">
 		<f:facet name="header"></f:facet>
 		<f:facet name="body">
-			<ice:outputText value="#{tooltip}" styleClass="processTooltip" escape="false"/>
+			<ice:outputText value="#{tooltip}" styleClass="genericPnlTooltip"
+				escape="false" />
 		</f:facet>
 	</ice:panelTooltip>
 

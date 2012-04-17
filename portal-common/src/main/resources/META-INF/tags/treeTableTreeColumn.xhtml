@@ -13,9 +13,12 @@
 		rendered -> "true/false" Default true
 	 -->
 	<ui:composition>
-		<ui:include src="/plugins/views-common/common/processToolTip.xhtml">
-			<ui:param name="tooltip" value="#{row.tooltip}" />
-		</ui:include>
+		<ice:panelGroup rendered="#{!empty table.tooltipURL}">
+			<ui:include src="#{table.tooltipURL}">
+				<ui:param name="tooltip" value="#{row.tooltip}" />
+				<ui:param name="id" value="treeTableTooltip" />
+			</ui:include>
+		</ice:panelGroup>
 		<c:if test="#{empty treeLineStyle}">
 			<c:set var="treeLineStyle" value="NONE" />
 		</c:if>
@@ -79,10 +82,19 @@
 					<ice:commandButton disabled="#{row.leaf}" image="#{row.icon}" action="#{row.toggleRow}"
 						style="#{row.leaf ? 'cursor: default; opacity: 1' : ''}; padding-left:3px; background:transparent;" />
 					<ice:outputText value=" " escape="false" style="vertical-align: super;display:inline;padding:0px;margin:0px;" />
-					<ice:panelGroup style="display:inline;" panelTooltip="procToolTip">
-						<ice:outputText value="#{row.line1Text}" escape="false"
-							style="vertical-align: super;display:inline;" />
-					</ice:panelGroup>
+					<c:choose>
+						<c:when test="#{!empty table.tooltipURL}">
+							<ice:panelGroup style="display:inline;"
+								panelTooltip="treeTableTooltip">
+								<ice:outputText value="#{row.line1Text}" escape="false"
+									style="vertical-align: super;display:inline;" />
+							</ice:panelGroup>
+						</c:when>
+						<c:otherwise>
+							<ice:outputText value="#{row.line1Text}" escape="false"
+								style="vertical-align: super;display:inline;" />
+						</c:otherwise>
+					</c:choose>
 				</ice:panelGroup>
 
 				<!-- *** LINE 2 *** -->

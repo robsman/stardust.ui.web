@@ -71,6 +71,7 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ConfigurationImportDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.PreferencesResource;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
@@ -353,7 +354,12 @@ public class ConfigurationVariablesBean extends UIComponentBean
       treeTable.setAutoFilter(true);
       treeTable.setFilterRootNode(true);
       rootModelNode.getUserObject().setTreeTable(treeTable);
-
+      
+      if (null != treeTable)
+      {
+         treeTable.setTooltipURL(org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths.V_PANELTOOLTIP_URL);  
+      }
+      
       try
       {
          // create root node end
