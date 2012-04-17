@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 
 
@@ -27,6 +28,7 @@ import com.icesoft.faces.component.inputfile.FileInfo;
 public class Attachment
 {
    private Document document;
+   private DocumentManagementService documentManagementService;
    private FileInfo fileInfo;
    private boolean containsDocument = false;
    private String documentKey;
@@ -35,12 +37,13 @@ public class Attachment
    /**
     * @param document
     */
-   public Attachment(Document document)
+   public Attachment(Document document, DocumentManagementService documentManagementService)
    {
       super();
       this.document = document;
       containsDocument = true;
       documentKey = document.getId();
+      this.documentManagementService = documentManagementService;
    }
 
    /**
@@ -71,7 +74,7 @@ public class Attachment
    {
       if (isContainsDocument())
       {
-         return DocumentMgmtUtility.getDocumentManagementService().retrieveDocumentContent(documentKey);
+         return documentManagementService.retrieveDocumentContent(documentKey);
       }
       else
       {

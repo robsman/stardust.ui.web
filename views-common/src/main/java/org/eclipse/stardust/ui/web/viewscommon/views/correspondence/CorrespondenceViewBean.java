@@ -119,7 +119,7 @@ public class CorrespondenceViewBean extends UIComponentBean
       Document document = (Document) PortalApplication.getInstance().getFocusView().getViewParams().get("attachment");
       if (null != document)
       {
-         addAttachments(new Attachment(document));
+         addAttachments(new Attachment(document, DocumentMgmtUtility.getDocumentManagementService()));
       }
       String procInstOID = (String) PortalApplication.getInstance().getFocusView().getViewParams().get(
             "processInstanceOID");
@@ -161,7 +161,7 @@ public class CorrespondenceViewBean extends UIComponentBean
 
          public boolean addAttachment(Document document)
          {
-            return CorrespondenceViewBean.this.addAttachments(new Attachment(document));
+            return CorrespondenceViewBean.this.addAttachments(new Attachment(document, DocumentMgmtUtility.getDocumentManagementService()));
          }
 
          public boolean addTemplate(Document document, AddPolicy addPolicy)
@@ -353,7 +353,7 @@ public class CorrespondenceViewBean extends UIComponentBean
             DefaultMutableTreeNode valueNode = (DefaultMutableTreeNode) dropEvent.getTargetDragValue();
             RepositoryDocumentUserObject docUserObject = (RepositoryDocumentUserObject) valueNode.getUserObject();
             Document draggedFile = (Document) docUserObject.getResource();
-            addAttachments(new Attachment(draggedFile));
+            addAttachments(new Attachment(draggedFile, DocumentMgmtUtility.getDocumentManagementService()));
          }
          catch (Exception e)
          {

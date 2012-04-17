@@ -113,10 +113,7 @@ public class PdfResource implements Resource, Serializable
          }
          catch (Exception e)
          {
-            logger.debug("Error Occured while PDF conversion");
-            ExceptionHandler.handleException(e,
-                  MessagesViewsCommonBean.getInstance().getString("common.unableToPerformAction"),
-                  MessageDisplayMode.ONLY_CUSTOM_MSG);
+            logger.error("Error Occured while PDF conversion");
          }
       }
       return inputStream;
