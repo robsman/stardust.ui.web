@@ -58,7 +58,6 @@ import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter;
 import org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationItem;
-import org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationMessage;
 import org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationMessageBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.JoinProcessDialogBean;
@@ -435,71 +434,14 @@ public class ProcessInstanceUtils
    }
 
    /**
-    * Shows notification dialog for group changes on processes
-    * 
-    * @param successTitle
-    * @param failureTitle
-    * @param successResults
-    * @param failureResults
-    */
-   public static void showNotifications(String successTitle, String failureTitle, Map<String, String> successResults,
-         Map<String, String> failureResults)
-   {
-      NotificationMessageBean notificationMB = NotificationMessageBean.getCurrent();
-      boolean showPopup = false;
-      // success messages
-      if (CollectionUtils.isNotEmpty(successResults))
-      {
-         notificationMB.add(getNotificationMessage(successTitle, successResults));
-         showPopup = true;
-      }
-      // failure messages
-      if (CollectionUtils.isNotEmpty(failureResults))
-      {
-         notificationMB.add(getNotificationMessage(failureTitle, failureResults));
-         showPopup = true;
-      }
-      if (showPopup)
-      {
-         notificationMB.openPopup();
-      }
-   }
-
-   /**
-    * @param title
-    * @param successResults
-    * @return
-    */
-   private static NotificationMessage getNotificationMessage(String title, Map<String, String> successResults)
-   {
-      NotificationMessage notificationMessage = new NotificationMessage();
-      if (CollectionUtils.isNotEmpty(successResults))
-      {
-         List<NotificationItem> itemsList = new ArrayList<NotificationItem>();
-         notificationMessage.setMessage(title);
-
-         for (Entry<String, String> processInstanceEntry : successResults.entrySet())
-         {
-            itemsList.add(new NotificationItem(processInstanceEntry.getKey(), processInstanceEntry.getValue()));
-         }
-         notificationMessage.setNotificationItem(itemsList);
-         notificationMessage.setKeyTitle(MessagesViewsCommonBean.getInstance().getString(
-               "common.notification.selectedItems"));
-         notificationMessage.setValueTitle(MessagesViewsCommonBean.getInstance().getString(
-               "common.notification.actionStatus"));
-      }
-      return notificationMessage;
-   }
-
-   /**
     * update process priorities
     * 
     * @param changedProcess
     */
    public static void updatePriorities(Map<Object, Integer> changedProcess)
    {
-      Map<String, String> failureMessages = new HashMap<String, String>();
-      Map<String, String> successMessages = new HashMap<String, String>();
+      List<NotificationItem> successItemsList = new ArrayList<NotificationItem>();
+      List<NotificationItem> failureItemsList = new ArrayList<NotificationItem>();
 
       for (Entry<Object, Integer> entry : changedProcess.entrySet())
       {
@@ -529,20 +471,18 @@ public class ProcessInstanceUtils
          try
          {
             ProcessInstanceUtils.setProcessPriority(processOID, priority);
-            successMessages.put(
-                  itemLabel,
-                  MessagesViewsCommonBean.getInstance().getParamString(
-                        "views.processTable.savePriorities.priorityChanged",
-                        PriorityConverter.getPriorityLabel(priority)));
+            successItemsList.add(new NotificationItem(itemLabel, MessagesViewsCommonBean.getInstance().getParamString(
+                  "views.processTable.savePriorities.priorityChanged",
+                  PriorityConverter.getPriorityLabel(priority))));
          }
          catch (AccessForbiddenException e)
          {
-            failureMessages.put(itemLabel, MessagesViewsCommonBean.getInstance().getString("common.authorization.msg"));
+            failureItemsList.add(new NotificationItem(itemLabel, MessagesViewsCommonBean.getInstance().getString("common.authorization.msg")));
             trace.error("Authorization exception occurred while changing process priority: ", e);
          }
          catch (Exception e)
          {
-            failureMessages.put(itemLabel, ExceptionHandler.getExceptionMessage(e));
+            failureItemsList.add(new NotificationItem(itemLabel, ExceptionHandler.getExceptionMessage(e)));
             trace.error("Exception occurred while changing process priority: ", e);
          }
       }
@@ -552,8 +492,10 @@ public class ProcessInstanceUtils
             + MessagesViewsCommonBean.getInstance().getString("views.processTable.savePriorities.successMsg");
       String failureTitle = title
             + MessagesViewsCommonBean.getInstance().getString("views.processTable.savePriorities.failureMsg");
-
-      ProcessInstanceUtils.showNotifications(successTitle, failureTitle, successMessages, failureMessages);
+      String itemTitle = MessagesViewsCommonBean.getInstance().getString("common.notification.selectedItems");
+      String itemStatusTitle = MessagesViewsCommonBean.getInstance().getString("common.notification.actionStatus");
+      NotificationMessageBean.showNotifications(successItemsList, successTitle, failureItemsList, failureTitle,
+            itemTitle, itemStatusTitle, null);
    }
 
    /**

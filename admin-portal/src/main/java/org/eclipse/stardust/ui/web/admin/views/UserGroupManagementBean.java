@@ -48,7 +48,6 @@ import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationItem;
-import org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationMessage;
 import org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationMessageBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppFilterHandler;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
@@ -134,7 +133,9 @@ public class UserGroupManagementBean extends UIComponentBean
    {
       List<UserGroup> invalidatedUserGroups = new ArrayList<UserGroup>();
       List<UserGroup> skippedUserGroups = new ArrayList<UserGroup>();
-
+      List<NotificationItem> successItemsList = new ArrayList<NotificationItem>();
+      List<NotificationItem> failureItemsList = new ArrayList<NotificationItem>();
+      
       List<UserGroupsTableEntry> groupsList = userGroupsTable.getCurrentList();
 
       UserService service = workflowFacade.getServiceFactory().getUserService();
@@ -159,41 +160,29 @@ public class UserGroupManagementBean extends UIComponentBean
          }
 
       }
-      NotificationMessageBean nb = NotificationMessageBean.getCurrent();
-      NotificationMessage notificationMessage = new NotificationMessage();
-      List<NotificationItem> itemsList = new ArrayList<NotificationItem>();
+      
       if (invalidatedUserGroups != null && !invalidatedUserGroups.isEmpty())
       {
-         notificationMessage.setMessage(this.getMessages().getString("notifySuccessMsg"));
-         for (Iterator<UserGroup> iterator = invalidatedUserGroups.iterator(); iterator
-               .hasNext();)
+         for (Iterator<UserGroup> iterator = invalidatedUserGroups.iterator(); iterator.hasNext();)
          {
             UserGroup userGroup = (UserGroup) iterator.next();
 
-            itemsList.add(new NotificationItem(I18nUtils.getUserGroupLabel(userGroup), this.getMessages().getString(
-                  "notifyUserGroupInvalidate")));
+            successItemsList.add(new NotificationItem(I18nUtils.getUserGroupLabel(userGroup), this.getMessages()
+                  .getString("notifyUserGroupInvalidate")));
          }
-         notificationMessage.setNotificationItem(itemsList);
-         nb.add(notificationMessage);
       }
-      notificationMessage = new NotificationMessage();
-      itemsList = new ArrayList<NotificationItem>();
 
       if (skippedUserGroups != null && !skippedUserGroups.isEmpty())
       {
-         notificationMessage.setMessage(this.getMessages().getString(
-               "notifyNonValidateMsg"));
-         for (Iterator<UserGroup> iterator = skippedUserGroups.iterator(); iterator
-               .hasNext();)
+         for (Iterator<UserGroup> iterator = skippedUserGroups.iterator(); iterator.hasNext();)
          {
             UserGroup userGroup = (UserGroup) iterator.next();
-            itemsList.add(new NotificationItem(I18nUtils.getUserGroupLabel(userGroup), this.getMessages().getString(
-                  "notifyUserGroupNotValidateMsg")));
+            failureItemsList.add(new NotificationItem(I18nUtils.getUserGroupLabel(userGroup), this.getMessages()
+                  .getString("notifyUserGroupNotValidateMsg")));
          }
-         notificationMessage.setNotificationItem(itemsList);
-         nb.add(notificationMessage);
       }
-      nb.openPopup();
+      NotificationMessageBean.showNotifications(successItemsList, this.getMessages().getString("notifySuccessMsg"),
+            failureItemsList, this.getMessages().getString("notifyNonValidateMsg"));
       initialize();
    }
 

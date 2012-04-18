@@ -11,10 +11,7 @@
 package org.eclipse.stardust.ui.web.viewscommon.dialogs;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.faces.model.SelectItem;
 
@@ -29,7 +26,6 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationItem;
-import org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationMessage;
 import org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationMessageBean;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
@@ -167,10 +163,12 @@ public class AbortActivityBean extends PopupUIComponentBean
     */
    private boolean abortActivities(AbortScope abortScope)
    {
+
       if (CollectionUtils.isNotEmpty(activitiesToBeAborted))
       {
-         List<ActivityInstance> abortedActivities = new ArrayList<ActivityInstance>();
-         Map<ActivityInstance, String> skippedActivities = new HashMap<ActivityInstance, String>();
+         List<NotificationItem> successNotifications = new ArrayList<NotificationItem>();
+         List<NotificationItem> failureNotifications = new ArrayList<NotificationItem>();
+
          WorkflowService workflowService = ServiceFactoryUtils.getWorkflowService();
          for (ActivityInstance activityInstance : activitiesToBeAborted)
          {
@@ -183,102 +181,60 @@ public class AbortActivityBean extends PopupUIComponentBean
                   try
                   {
                      workflowService.abortActivityInstance(activityInstance.getOID(), abortScope);
-                     ClientContextBean.getCurrentInstance().getClientContext().sendActivityEvent(ActivityEvent.aborted(activityInstance));
-                     abortedActivities.add(activityInstance);
+                     ClientContextBean.getCurrentInstance().getClientContext()
+                           .sendActivityEvent(ActivityEvent.aborted(activityInstance));
+                     successNotifications.add(new NotificationItem(ActivityInstanceUtils
+                           .getActivityLabel(activityInstance), ActivityInstanceUtils
+                           .getActivityStateLabel(activityInstance)));
                   }
                   catch (Exception e)
                   {
                      // It is very to rare that any exception would occur here
                      trace.error(e);
-                     skippedActivities.put(activityInstance, MessagesViewsCommonBean.getInstance().getParamString(
-                           "views.common.activity.abortActivity.failureMsg2", ExceptionHandler.getExceptionMessage(e)));
+
+                     failureNotifications
+                           .add(new NotificationItem(ActivityInstanceUtils.getActivityLabel(activityInstance),
+                                 MessagesViewsCommonBean.getInstance().getParamString(
+                                       "views.common.activity.abortActivity.failureMsg2",
+                                       ExceptionHandler.getExceptionMessage(e))));
                   }
                }
                else
                {
-                  if(ActivityInstanceUtils.isDefaultCaseActivity(activityInstance))
+                  if (ActivityInstanceUtils.isDefaultCaseActivity(activityInstance))
                   {
-                     skippedActivities.put(activityInstance, MessagesViewsCommonBean.getInstance().getParamString(
-                           "views.switchProcessDialog.caseAbort.message"));
+                     failureNotifications.add(new NotificationItem(ActivityInstanceUtils
+                           .getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getString(
+                           "views.switchProcessDialog.caseAbort.message")));
                   }
                   else if (ActivityInstanceState.Aborted.equals(activityInstance.getState())
                         || ActivityInstanceState.Completed.equals(activityInstance.getState()))
                   {
-                     skippedActivities.put(activityInstance, MessagesViewsCommonBean.getInstance().getParamString(
+                     failureNotifications.add(new NotificationItem(ActivityInstanceUtils
+                           .getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getParamString(
                            "views.common.activity.abortActivity.failureMsg3",
-                           ActivityInstanceUtils.getActivityStateLabel(activityInstance)));
+                           ActivityInstanceUtils.getActivityStateLabel(activityInstance))));
                   }
                   else
                   {
-                     skippedActivities.put(activityInstance, MessagesViewsCommonBean.getInstance().getString(
-                           "views.common.activity.abortActivity.failureMsg1"));
+                     failureNotifications.add(new NotificationItem(ActivityInstanceUtils
+                           .getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getString(
+                           "views.common.activity.abortActivity.failureMsg1")));
                   }
                }
             }
          }
-         return showActivityAbortNotification(abortedActivities, skippedActivities, callbackHandler);
-      }
 
-      return false;
-   }
-
-   /**
-    * Shows abort notification dialog
-    * 
-    * @param abortedActivities
-    * @param skippedActivities
-    */
-   private boolean showActivityAbortNotification(List<ActivityInstance> abortedActivities,
-         Map<ActivityInstance, String> skippedActivities, ICallbackHandler callbackHandler)
-   {
-      MessagesViewsCommonBean msgBean = MessagesViewsCommonBean.getInstance();
-      if ((CollectionUtils.isNotEmpty(abortedActivities)) || (CollectionUtils.isNotEmpty(skippedActivities)))
-      {
-         NotificationMessageBean notificationMB = NotificationMessageBean.getCurrent();
-         notificationMB.setCallbackHandler(callbackHandler);
-         WorkflowService ws = ServiceFactoryUtils.getWorkflowService();
-
-         // aborted activities
-         NotificationMessage notificationMessage = new NotificationMessage();
-         List<NotificationItem> itemsList = new ArrayList<NotificationItem>();
-         if (CollectionUtils.isNotEmpty(abortedActivities))
-         {
-            notificationMessage.setMessage(msgBean.getString("views.common.activity.abortActivity.success"));
-
-            for (ActivityInstance ai : abortedActivities)
-            {
-               ai = ws.getActivityInstance(ai.getOID());
-               itemsList.add(new NotificationItem(ActivityInstanceUtils.getActivityLabel(ai), ActivityInstanceUtils
-                     .getActivityStateLabel(ai)));
-            }
-            notificationMessage.setNotificationItem(itemsList);
-            notificationMB.add(notificationMessage);
-         }
-
-         // skipped activities
-         notificationMessage = new NotificationMessage();
-         itemsList = new ArrayList<NotificationItem>();
-
-         if (CollectionUtils.isNotEmpty(skippedActivities))
-         {
-            notificationMessage.setMessage(msgBean.getString("views.common.activity.abortActivity.failure"));
-            for (Entry<ActivityInstance, String> skippedActivity : skippedActivities.entrySet())
-            {
-               ActivityInstance ai = ws.getActivityInstance(skippedActivity.getKey().getOID());
-               itemsList.add(new NotificationItem(ActivityInstanceUtils.getActivityLabel(ai), skippedActivity
-                     .getValue()));
-            }
-            notificationMessage.setNotificationItem(itemsList);
-            notificationMB.add(notificationMessage);
-         }
-         
-         // Before opening new Popup close current Popup so that ViewEvents will be fired in order
+         // Before opening new Popup close current Popup so that ViewEvents will be fired
+         // in order
          closePopup();
-         notificationMB.openPopup();
-         
+         NotificationMessageBean.showNotifications(successNotifications, MessagesViewsCommonBean.getInstance()
+               .getString("views.common.activity.abortActivity.success"), failureNotifications, MessagesViewsCommonBean
+               .getInstance().getString("views.common.activity.abortActivity.failure"), callbackHandler);
+
          return true;
       }
-      
+
       return false;
    }
 

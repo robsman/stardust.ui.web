@@ -11,10 +11,7 @@
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.faces.model.SelectItem;
 
@@ -28,13 +25,10 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationItem;
-import org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationMessage;
 import org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationMessageBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
-
-
 
 /**
  * @author Yogesh.Manware
@@ -153,58 +147,6 @@ public class AbortProcessBean extends PopupUIComponentBean
       openPopup();
    }
 
-   
-   /**
-    * Shows abort notification dialog
-    * 
-    * @param abortedProcesses
-    * @param skippedProcesses
-    */
-   private static void showProcessAbortNotification(List<ProcessInstance> abortedProcesses,
-         Map<ProcessInstance, String> skippedProcesses)
-   {
-      MessagesViewsCommonBean msgBean = MessagesViewsCommonBean.getInstance();
-      if ((CollectionUtils.isNotEmpty(abortedProcesses)) || (CollectionUtils.isNotEmpty(skippedProcesses)))
-      {
-         NotificationMessageBean notificationMB = NotificationMessageBean.getCurrent();
-         WorkflowService ws = ServiceFactoryUtils.getWorkflowService();
-
-         // Aborted processes
-         NotificationMessage notificationMessage = new NotificationMessage();
-         List<NotificationItem> itemsList = new ArrayList<NotificationItem>();
-         if (CollectionUtils.isNotEmpty(abortedProcesses))
-         {
-            notificationMessage.setMessage(msgBean.getString("views.common.process.abortProcess.success"));
-
-            for (ProcessInstance pi : abortedProcesses)
-            {
-               pi = ws.getProcessInstance(pi.getOID());
-               itemsList.add(new NotificationItem(ProcessInstanceUtils.getProcessLabel(pi), ProcessInstanceUtils
-                     .getProcessStateLabel(pi)));
-            }
-            notificationMessage.setNotificationItem(itemsList);
-            notificationMB.add(notificationMessage);
-         }
-
-         // Skipped Processes
-         notificationMessage = new NotificationMessage();
-         itemsList = new ArrayList<NotificationItem>();
-
-         if (CollectionUtils.isNotEmpty(skippedProcesses))
-         {
-            notificationMessage.setMessage(msgBean.getString("views.common.process.abortProcess.failure"));
-            for (Entry<ProcessInstance, String> skippedProcess : skippedProcesses.entrySet())
-            {
-               ProcessInstance pi = ws.getProcessInstance(skippedProcess.getKey().getOID());
-               itemsList.add(new NotificationItem(ProcessInstanceUtils.getProcessLabel(pi), skippedProcess.getValue()));
-            }
-            notificationMessage.setNotificationItem(itemsList);
-            notificationMB.add(notificationMessage);
-         }
-         notificationMB.openPopup();
-      }
-   }
-
    /**
     * Abort Process based on user preference
     * 
@@ -212,10 +154,13 @@ public class AbortProcessBean extends PopupUIComponentBean
     */
    private void abortProcess(AbortScope abortScope)
    {
+      MessagesViewsCommonBean msgBean = MessagesViewsCommonBean.getInstance();
       if (CollectionUtils.isNotEmpty(processesToBeAborted))
       {
-         List<ProcessInstance> abortedProcesses = new ArrayList<ProcessInstance>();
-         Map<ProcessInstance, String> skippedProcesses = new HashMap<ProcessInstance, String>();
+         List<NotificationItem> successNotifications = new ArrayList<NotificationItem>();
+         List<NotificationItem> failureNotifications = new ArrayList<NotificationItem>();
+         WorkflowService ws = ServiceFactoryUtils.getWorkflowService();
+         
          for (ProcessInstance processInstance : processesToBeAborted)
          {
             if (processInstance != null)
@@ -225,26 +170,29 @@ public class AbortProcessBean extends PopupUIComponentBean
                {
                   try
                   {
-                     
                      if(processInstance.isCaseProcessInstance())
                      {
-                        skippedProcesses.put(processInstance, MessagesViewsCommonBean.getInstance().getParamString(
+                        failureNotifications.add(new NotificationItem(ProcessInstanceUtils
+                              .getProcessLabel(processInstance), msgBean.getParamString(
                               "views.switchProcessDialog.caseAbort.message",
-                              ProcessInstanceUtils.getProcessStateLabel(processInstance)));
+                              ProcessInstanceUtils.getProcessStateLabel(processInstance))));
                      }
                      else
                      {
                         ProcessInstanceUtils.abortProcess(processInstance, abortScope);
-                        abortedProcesses.add(processInstance);   
+                        
+                        successNotifications.add(new NotificationItem(ProcessInstanceUtils
+                              .getProcessLabel(processInstance), ProcessInstanceUtils.getProcessStateLabel(ws
+                              .getProcessInstance(processInstance.getOID()))));
                      }
-                     
                   }
                   catch (Exception e)
                   {
                      // It is very to rare, any exception would occur here
                      trace.error(e);
-                     skippedProcesses.put(processInstance, MessagesViewsCommonBean.getInstance().getParamString(
-                           "views.common.process.abortProcess.failureMsg2", ExceptionHandler.getExceptionMessage(e)));
+                     failureNotifications.add(new NotificationItem(ProcessInstanceUtils
+                           .getProcessLabel(processInstance), msgBean.getParamString(
+                           "views.common.process.abortProcess.failureMsg2", ExceptionHandler.getExceptionMessage(e))));
                   }
                }
                else
@@ -252,19 +200,25 @@ public class AbortProcessBean extends PopupUIComponentBean
                   if (ProcessInstanceState.Aborted.equals(processInstance.getState())
                         || ProcessInstanceState.Completed.equals(processInstance.getState()))
                   {
-                     skippedProcesses.put(processInstance, MessagesViewsCommonBean.getInstance().getParamString(
+                     failureNotifications.add(new NotificationItem(ProcessInstanceUtils
+                           .getProcessLabel(processInstance), msgBean.getParamString(
                            "views.common.process.abortProcess.failureMsg3",
-                           ProcessInstanceUtils.getProcessStateLabel(processInstance)));
+                           ProcessInstanceUtils.getProcessStateLabel(processInstance))));
                   }
                   else
                   {
-                     skippedProcesses.put(processInstance, MessagesViewsCommonBean.getInstance().getString(
-                           "views.common.process.abortProcess.failureMsg1"));
+                     failureNotifications.add(new NotificationItem(ProcessInstanceUtils
+                           .getProcessLabel(processInstance), msgBean
+                           .getString("views.common.process.abortProcess.failureMsg1")));
                   }
                }
             }
          }
-         showProcessAbortNotification(abortedProcesses, skippedProcesses);
+         
+         NotificationMessageBean.showNotifications(successNotifications,
+               msgBean.getString("views.common.process.abortProcess.success"), failureNotifications,
+               msgBean.getString("views.common.process.abortProcess.failure"));
+         
          if (null != callbackHandler)
          {
             callbackHandler.handleEvent(EventType.APPLY);

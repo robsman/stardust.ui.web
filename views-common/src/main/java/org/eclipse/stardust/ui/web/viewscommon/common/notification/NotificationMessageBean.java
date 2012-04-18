@@ -13,11 +13,11 @@ package org.eclipse.stardust.ui.web.viewscommon.common.notification;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
-
 
 /**
  * @author Ankita.Patel
@@ -34,8 +34,6 @@ public class NotificationMessageBean extends PopupUIComponentBean
    private ButtonType buttonType = ButtonType.CLOSE;
    private ICallbackHandler callbackHandler ;
 
-
-
    /**
     * 
     */
@@ -44,6 +42,80 @@ public class NotificationMessageBean extends PopupUIComponentBean
       notifications = new ArrayList<NotificationMessage>();
    }
 
+   
+   /**
+    * @param successNotifications
+    * @param successTitle
+    * @param failureNotifications
+    * @param failureTitle
+    * @param itemTitle
+    * @param itemStatusTitle
+    * @return
+    */
+   public static boolean showNotifications(List<NotificationItem> successNotifications, String successTitle,
+         List<NotificationItem> failureNotifications, String failureTitle, String itemTitle, String itemStatusTitle, ICallbackHandler callbackHandler)
+   {
+      if ((CollectionUtils.isNotEmpty(successNotifications)) || (CollectionUtils.isNotEmpty(failureNotifications)))
+      {
+         NotificationMessageBean notificationMB = NotificationMessageBean.getCurrent();
+         notificationMB.setCallbackHandler(callbackHandler);
+         // Aborted processes
+         NotificationMessage notificationMessage = new NotificationMessage();
+         if (CollectionUtils.isNotEmpty(successNotifications))
+         {
+            notificationMessage.setMessage(successTitle);
+            notificationMessage.setKeyTitle(itemTitle);
+            notificationMessage.setValueTitle(itemStatusTitle);
+            notificationMessage.setNotificationItem(successNotifications);
+            notificationMB.add(notificationMessage);
+         }
+
+         // Skipped Processes
+         notificationMessage = new NotificationMessage();
+         if (CollectionUtils.isNotEmpty(failureNotifications))
+         {
+            notificationMessage.setMessage(failureTitle);
+            notificationMessage.setKeyTitle(itemTitle);
+            notificationMessage.setValueTitle(itemStatusTitle);
+            notificationMessage.setNotificationItem(failureNotifications);
+            notificationMB.add(notificationMessage);
+         }
+         if (!notificationMB.getNotifications().isEmpty())
+         {
+            notificationMB.openPopup();
+            return true;
+         }
+      }
+      return false;
+   }
+   
+   /**
+    * @param successNotifications
+    * @param successTitle
+    * @param failureNotifications
+    * @param failureTitle
+    */
+   public static boolean showNotifications(List<NotificationItem> successNotifications, String successTitle,
+         List<NotificationItem> failureNotifications, String failureTitle)
+   {
+      return showNotifications(successNotifications, successTitle, failureNotifications, failureTitle, null, null, null);
+   }
+   
+  /**
+   * 
+   * @param successNotifications
+   * @param successTitle
+   * @param failureNotifications
+   * @param failureTitle
+   * @param callbackHandler
+   * @return
+   */
+   public static boolean showNotifications(List<NotificationItem> successNotifications, String successTitle,
+         List<NotificationItem> failureNotifications, String failureTitle, ICallbackHandler callbackHandler)
+   {
+      return showNotifications(successNotifications, successTitle, failureNotifications, failureTitle, null, null,callbackHandler);
+   }
+   
    /**
     * Closes popup and clears list
     */
@@ -119,7 +191,4 @@ public class NotificationMessageBean extends PopupUIComponentBean
    {
       this.callbackHandler = callbackHandler;
    }
-
-
-
 }

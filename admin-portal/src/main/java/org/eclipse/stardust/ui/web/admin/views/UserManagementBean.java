@@ -73,7 +73,6 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.FilterToolbarItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationItem;
-import org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationMessage;
 import org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationMessageBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppFilterHandler;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
@@ -513,47 +512,36 @@ public class UserManagementBean extends PopupUIComponentBean
     */
    private void showNotificationDialog()
    {
-      NotificationMessageBean nb = NotificationMessageBean.getCurrent();
-      NotificationMessage notificationMessage = new NotificationMessage();
-      List<NotificationItem> itemsList = new ArrayList<NotificationItem>();
+      List<NotificationItem> successItemsList = new ArrayList<NotificationItem>();
+      List<NotificationItem> failureItemsList = new ArrayList<NotificationItem>();
       if (invalidatedUsers != null && !invalidatedUsers.isEmpty())
       {
-         notificationMessage.setMessage(this.getMessages().getString(
-               "notifySuccessMsg"));
-         for (Iterator<User> iterator = invalidatedUsers.iterator(); iterator
-               .hasNext();)
+         for (Iterator<User> iterator = invalidatedUsers.iterator(); iterator.hasNext();)
          {
             User user = (User) iterator.next();
 
-            itemsList.add(new NotificationItem(user.getAccount(), this.getMessages()
-                  .getString("notifyUserInvalidate")));
+            successItemsList.add(new NotificationItem(user.getAccount(), this.getMessages().getString(
+                  "notifyUserInvalidate")));
          }
-         notificationMessage.setNotificationItem(itemsList);
-         nb.add(notificationMessage);
       }
-      notificationMessage = new NotificationMessage();
-      itemsList = new ArrayList<NotificationItem>();
 
       if (skippedUsers != null && !skippedUsers.isEmpty())
       {
-         notificationMessage.setMessage(this.getMessages().getString(
-               "notifyNonValidateMsg"));
          for (Iterator<User> iterator = skippedUsers.iterator(); iterator.hasNext();)
          {
             User user = (User) iterator.next();
             if (user.getAccount().equals("motu"))
-               itemsList.add(new NotificationItem(user.getAccount(), this.getMessages().getString(
+               failureItemsList.add(new NotificationItem(user.getAccount(), this.getMessages().getString(
                      "notifyMotuNotValidateMsg")));
             else
-               itemsList.add(new NotificationItem(user.getAccount(), this.getMessages().getString(
+               failureItemsList.add(new NotificationItem(user.getAccount(), this.getMessages().getString(
                      "notifyUserCannotBeInvalidatedMsg")));
          }
-         notificationMessage.setNotificationItem(itemsList);
-         nb.add(notificationMessage);
       }
-      nb.openPopup();
+      NotificationMessageBean.showNotifications(successItemsList, this.getMessages().getString("notifySuccessMsg"),
+            failureItemsList, this.getMessages().getString("notifyNonValidateMsg"));
       initialize();
-      
+
    }
 
    /**
