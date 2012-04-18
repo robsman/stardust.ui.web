@@ -86,11 +86,13 @@
          <exclude org="commons-lang" module="commons-lang"/>
          <exclude org="commons-digester" module="commons-digester"/>
          <exclude org="commons-logging" module="commons-logging"/>
+         <exclude org="javax.servlet" module="jstl"/>
       </dependency>
       <!-- force latest revision in jsf-api-module and jsf-myfaces-module -->
       <dependency org="commons-lang" name="commons-lang" rev="2.4" conf="jsf-api-module-compile, jsf-myfaces-module-compile->default"/>
       <dependency org="commons-digester" name="commons-digester" rev="1.8" conf="jsf-api-module-compile, jsf-myfaces-module-compile->default"/>
       <dependency org="commons-logging" name="commons-logging" rev="1.1.1" conf="jsf-api-module-compile, jsf-myfaces-module-compile->default"/>
+      <dependency org="javax.servlet" name="jstl" rev="1.2" conf="jsf-api-module-compile, jsf-myfaces-module-compile->default"/>
       
       <!-- compile, jsf-mojarra-module-compile -->
       <dependency org="javax.faces" name="jsf-api" rev="1.1_02" conf="compile, jsf-mojarra-module-compile->default" />
