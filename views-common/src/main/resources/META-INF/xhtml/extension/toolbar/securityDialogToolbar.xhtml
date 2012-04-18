@@ -16,7 +16,7 @@
 				styleClass="#{!securityDialog.rolesEditable ? 'iceCmdBtn-dis' : ''}"
 				title="#{securityDialog.messages['securityDialog.table.toolbar.delete']}" />
 		</ice:commandLink>
-		<ice:commandLink action="#{securityDialog.openAddEntryDialog}" disabled="#{!securityDialog.modifyACL}">
+		<ice:commandLink action="#{securityDialog.addParticipant}" disabled="#{!securityDialog.modifyACL}">
 			<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ToolbarAdd" standAlone="false"/>
 			<h:graphicImage
 				value="/plugins/views-common/images/icons/group_add.png"

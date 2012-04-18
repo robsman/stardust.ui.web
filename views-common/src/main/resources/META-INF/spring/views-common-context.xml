@@ -138,6 +138,11 @@
 		scope="portalTab">
 	</bean>
 
+	<bean name="securityAddParticipantDialog"
+		class="org.eclipse.stardust.ui.web.viewscommon.security.SecurityAddParticipantDialog"
+		scope="portalTab">
+	</bean>
+
 	<bean name="resourceMgmtTreeViewBean"
 		class="org.eclipse.stardust.ui.web.viewscommon.views.resourcemgmttree.ResourceMgmtTreeViewBean"
 		scope="portalTab">
