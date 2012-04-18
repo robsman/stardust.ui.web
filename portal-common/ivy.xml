@@ -94,7 +94,11 @@
       <dependency org="javax.faces" name="jsf-api" rev="1.1_02" conf="compile, jsf-mojarra-module-compile->default" />
       
       <!-- jsf-myfaces-module-runtime -->
-      <dependency org="org.apache.myfaces.core" name="myfaces-impl" rev="1.1.5" conf="jsf-myfaces-module-runtime->default" />
+      <dependency org="org.apache.myfaces.core" name="myfaces-impl" rev="1.1.5" conf="jsf-myfaces-module-runtime->default">
+         <exclude org="commons-collections" module="commons-collections"/>
+      </dependency>
+      <!-- force correct revision in module POM --> 
+      <dependency org="commons-collections" name="commons-collections" rev="3.2" conf="jsf-myfaces-module-runtime->default"/>
       <dependency org="com.sun.el" name="el-ri" rev="1.0" conf="jsf-myfaces-module-runtime->default" />
       
       <!-- jsf-mojarra-module-runtime -->
