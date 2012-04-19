@@ -54,7 +54,7 @@
       <dependency org="commons-lang" name="commons-lang" rev="2.4" conf="ipp-views-common-compile->default" />
       <dependency org="org.icepdf" name="icepdf-core" rev="4.3.2" transitive="false" conf="ipp-views-common-compile->default" />
       <dependency org="net.sourceforge.htmlcleaner" name="htmlcleaner" rev="2.1" conf="ipp-views-common-compile->default" />
-      <dependency org="javax.ws.rs" name="jsr311-api" rev="1.1" conf="ipp-views-common-compile->default" />
+      <dependency org="javax.ws.rs" name="jsr311-api" rev="1.1.1" conf="ipp-views-common-compile->default" />
       <dependency org="javax.media" name="jai_imageio-infinity01" rev="1.1" conf="ipp-views-common-compile->default" />
 
       <!-- ipp-views-common-runtime -->
@@ -80,6 +80,6 @@
       <override org="commons-beanutils" module="commons-beanutils" rev="1.8.0" />
       <override org="commons-digester" module="commons-digester" rev="1.8" />
       <override org="commons-logging" module="commons-logging" rev="1.1.1" />
-      <override org="javax.ws.rs" module="jsr311-api" rev="1.1" />
+      <override org="javax.ws.rs" module="jsr311-api" rev="1.1.1" />
    </dependencies>
 </ivy-module>
