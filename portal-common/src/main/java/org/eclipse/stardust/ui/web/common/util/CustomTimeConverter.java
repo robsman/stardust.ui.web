@@ -27,7 +27,7 @@ public class CustomTimeConverter extends CustomDateTimeConverter
       {
          setPattern(DateUtils.getTimeFormat());
       }
-      catch (Exception e)
+      catch (Throwable t)
       {
          // Ignore
       }

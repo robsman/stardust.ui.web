@@ -21,6 +21,7 @@ import org.eclipse.stardust.ui.common.introspection.Path;
 import org.eclipse.stardust.ui.common.introspection.xsd.XsdPath;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 
 

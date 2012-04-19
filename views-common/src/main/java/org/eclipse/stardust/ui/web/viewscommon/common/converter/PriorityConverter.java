@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.common.converter;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -21,15 +24,23 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstancePriority;
 import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityLabelLocalizerKey;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 
 
+/**
+ * @author Subodh.Godbole
+ *
+ */
 public class PriorityConverter implements Converter
 {
    // API field
-   public static final String CONVERTER_ID = "org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter";
+   public static final String CONVERTER_ID = "org.eclipse.stardust.ui.web.processportal.view.manual.PriorityConverter";
     
    protected final static Logger trace = LogManager.getLogger(PriorityConverter.class);
    
+   /* (non-Javadoc)
+    * @see javax.faces.convert.Converter#getAsObject(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.String)
+    */
    public Object getAsObject(FacesContext context, UIComponent component, String value)
          throws ConverterException
    {
@@ -38,9 +49,7 @@ public class PriorityConverter implements Converter
          int max = getHighestPriorityIdent();
          for (int i = getLowestPriorityIdent(); i <= max; i++)
          {
-            // TODO should we cache the label? If so then we have to extend
-            // the method with a new Locale paramater
-            String label = Localizer.getString(new PriorityLabelLocalizerKey(i));
+            String label = getPriorityLabel(i);
             if(value.equals(label))
             {
                return new Integer(i);
@@ -50,6 +59,9 @@ public class PriorityConverter implements Converter
       return null;
    }
 
+   /* (non-Javadoc)
+    * @see javax.faces.convert.Converter#getAsString(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
+    */
    public String getAsString(FacesContext context, UIComponent component, Object value)
          throws ConverterException
    {
@@ -61,8 +73,7 @@ public class PriorityConverter implements Converter
       {
          try
          {
-            return Localizer.getString(new PriorityLabelLocalizerKey(
-                  Integer.parseInt((String)value)));
+            return getPriorityLabel(Integer.parseInt((String)value));
          }
          catch(NumberFormatException e)
          {
@@ -84,6 +95,19 @@ public class PriorityConverter implements Converter
 
    public static String getPriorityLabel(int priorityIdent)
    {
-      return Localizer.getString(new PriorityLabelLocalizerKey(priorityIdent));
+      return ProcessInstanceUtils.getPriorityLabel(priorityIdent);
+   }
+
+   /**
+    * @return
+    */
+   public static Map<String, String> getPossibleValues()
+   {
+      Map<String, String> values = new LinkedHashMap<String, String>();
+      values.put(String.valueOf(ProcessInstancePriority.LOW), getPriorityLabel(ProcessInstancePriority.LOW));
+      values.put(String.valueOf(ProcessInstancePriority.NORMAL), getPriorityLabel(ProcessInstancePriority.NORMAL));
+      values.put(String.valueOf(ProcessInstancePriority.HIGH), getPriorityLabel(ProcessInstancePriority.HIGH));
+
+      return values;
    }
 }

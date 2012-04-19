@@ -80,6 +80,20 @@ public class ManualActivityForm extends Form
     * @param activityInstance
     * @param workflowService
     * @param applicationContext
+    */
+   public ManualActivityForm(FormGenerationPreferences generationPreferences, String formBinding,
+         ActivityInstance activityInstance, WorkflowService workflowService, ApplicationContext applicationContext)
+
+   {
+      this(generationPreferences, formBinding, activityInstance, workflowService, applicationContext, null);
+   }
+
+   /**
+    * @param generationPreferences
+    * @param formBinding
+    * @param activityInstance
+    * @param workflowService
+    * @param applicationContext
     * @param documentInputEventHandler
     */
    public ManualActivityForm(FormGenerationPreferences generationPreferences, String formBinding,
@@ -325,7 +339,7 @@ public class ManualActivityForm extends Form
     */
    public String generateMarkup()
    {
-      return formGenerator.generateMarkup(((JsfStructureContainer) getRootContainer()).getRootGrid());
+      return formGenerator.generateMarkup(((JsfStructureContainer) getRootContainer()).getRootGrid(), null);
    }
 
    /**

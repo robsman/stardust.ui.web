@@ -44,7 +44,7 @@ public class CustomDateTimeConverter extends DateTimeConverter implements Serial
          setPattern(DateUtils.getDateTimeFormat());
          setLocale(getLocale());
       }
-      catch (Exception e)
+      catch (Throwable t)
       {
          // Ignore
       }

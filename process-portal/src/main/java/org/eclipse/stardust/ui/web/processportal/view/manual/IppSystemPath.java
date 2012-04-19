@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.eclipse.stardust.ui.common.introspection.Path;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ModelUtils.SystemDefinedDataType;
+import org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter;
 
 
 /**
