@@ -902,7 +902,8 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       public Query createQuery()
       {
          ProcessInstanceQuery query = ProcessInstanceQuery.findLinked(processInstanceOID, LinkDirection.TO_FROM,
-        		 PredefinedProcessInstanceLinkTypes.JOIN, PredefinedProcessInstanceLinkTypes.SWITCH);
+               PredefinedProcessInstanceLinkTypes.JOIN, PredefinedProcessInstanceLinkTypes.SWITCH,
+               PredefinedProcessInstanceLinkTypes.UPGRADE);
          ProcessInstanceDetailsPolicy processInstanceDetailsPolicy = new ProcessInstanceDetailsPolicy(
                ProcessInstanceDetailsLevel.Default);
          processInstanceDetailsPolicy.getOptions().add(ProcessInstanceDetailsOptions.WITH_LINK_INFO);

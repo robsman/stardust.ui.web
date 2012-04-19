@@ -1140,7 +1140,7 @@ public class CaseDetailsBean extends PopupUIComponentBean
          String qualifiedGroupId = "{" + PredefinedConstants.PREDEFINED_MODEL_ID + "}"
          + PredefinedConstants.CASE_PROCESS_ID;
          ProcessInstanceQuery query = ProcessInstanceQuery.findLinked(processInstanceOID, LinkDirection.TO_FROM,
-        		 PredefinedProcessInstanceLinkTypes.JOIN);
+               PredefinedProcessInstanceLinkTypes.JOIN, PredefinedProcessInstanceLinkTypes.UPGRADE);
          ProcessInstanceDetailsPolicy processInstanceDetailsPolicy = new ProcessInstanceDetailsPolicy(
                ProcessInstanceDetailsLevel.Default);
          processInstanceDetailsPolicy.getOptions().add(ProcessInstanceDetailsOptions.WITH_LINK_INFO);

@@ -435,6 +435,8 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
       String SWITCH_TO = MessagesViewsCommonBean.getInstance().getString("view.linkedProcess.label.switch_to");
       String JOIN_FROM = MessagesViewsCommonBean.getInstance().getString("views.joinProcessDialog.label.join_from");
       String SWITCH_FROM = MessagesViewsCommonBean.getInstance().getString("view.linkedProcess.label.switch_from");
+      String MIGRATE_TO = MessagesViewsCommonBean.getInstance().getString("view.linkedProcess.label.migrate_to");
+      String MIGRATE_FROM = MessagesViewsCommonBean.getInstance().getString("view.linkedProcess.label.migrate_from");
 
       long sourceLinkOID = link.getSourceOID();
       long targetLinkOID = link.getTargetOID();
@@ -442,12 +444,22 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
       // then use the target Process linked information
       if (processInstance.getOID() == sourceLinkOID)
       {
-         // If the link type is Join , set the To Process Link Type
-         linkType = PredefinedProcessInstanceLinkTypes.JOIN.equals(link.getLinkType().getId()) ? JOIN_TO : SWITCH_TO;
+         if (PredefinedProcessInstanceLinkTypes.UPGRADE.equals(link.getLinkType().getId()))
+         {
+            linkType = MIGRATE_TO;
+         }
+         else
+            // If the link type is Join , set the To Process Link Type
+            linkType = PredefinedProcessInstanceLinkTypes.JOIN.equals(link.getLinkType().getId()) ? JOIN_TO : SWITCH_TO;
       }
       else if (processInstance.getOID() == targetLinkOID)
       {
-         linkType = PredefinedProcessInstanceLinkTypes.JOIN.equals(link.getLinkType().getId()) ? JOIN_FROM : SWITCH_FROM;
+         if (PredefinedProcessInstanceLinkTypes.UPGRADE.equals(link.getLinkType().getId()))
+         {
+            linkType = MIGRATE_FROM;
+         }
+         else
+            linkType = PredefinedProcessInstanceLinkTypes.JOIN.equals(link.getLinkType().getId()) ? JOIN_FROM : SWITCH_FROM;
       }
       return linkType;
 
