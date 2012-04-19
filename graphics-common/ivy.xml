@@ -41,7 +41,7 @@
       <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-graphics-common-compile->spring-module-compile" />
       <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-graphics-common-compile->ipp-views-common-compile" />
       <dependency org="com.google.code.gson" name="gson" rev="1.6" conf="ipp-graphics-common-compile->default" />
-      <dependency org="javax.ws.rs" name="jsr311-api" rev="1.1" conf="ipp-graphics-common-compile->default" />
+      <dependency org="javax.ws.rs" name="jsr311-api" rev="1.1.1" conf="ipp-graphics-common-compile->default" />
       
       <!-- ipp-graphics-common-runtime -->
       <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-graphics-common-runtime->web-client-module-runtime" />
@@ -57,7 +57,7 @@
       
       <override org="commons-beanutils" module="commons-beanutils" rev="1.8.0" />
       <override org="commons-logging" module="commons-logging" rev="1.1.1" />
-      <override org="javax.ws.rs" module="jsr311-api" rev="1.1" />
+      <override org="javax.ws.rs" module="jsr311-api" rev="1.1.1" />
    </dependencies>
    
 </ivy-module>
