@@ -33,7 +33,7 @@ import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
  * @author Nicolas.Werlein
  * @version $Revision: $
  */
-public class TabScopedComponent extends UIComponentBase
+public class TabScopedComponent extends UIComponentBase implements MyFacesRestoreStateUtilsBindingAware
 {
    private static final Logger trace = LogManager.getLogger(TabScopedComponent.class);
    
@@ -180,6 +180,64 @@ public class TabScopedComponent extends UIComponentBase
       else
       {
          super.queueEvent(event);
+      }
+   }
+
+   /**
+    * This hooks into a workaround MyFaces provides due to a JSF 1.x spec deficiency.
+    * <p>
+    * Reflection is being used to prevent a compile time dependency on MyFaces.
+    * 
+    * @see MyFacesRestoreStateUtilsBindingAware
+    * @see org.apache.myfaces.shared_impl.util.RestoreStateUtils
+    */
+   public void handleBindings()
+   {
+      try
+      {
+         bindViewScope();
+
+         Class< ? > clazz = ReflectionUtils
+               .getClassFromClassName("org.apache.myfaces.shared_impl.util.RestoreStateUtils");
+         if (null != clazz)
+         {
+            Method delegateMethod = Reflect
+                  .decodeMethod(
+                        clazz,
+                        "recursivelyHandleComponentReferencesAndSetValid(javax.faces.context.FacesContext, javax.faces.component.UIComponent, boolean)");
+            if (null != delegateMethod)
+            {
+               // re-invoke method, but this time forcing it to handle the component
+               // itself
+               delegateMethod.invoke(null, FacesContext.getCurrentInstance(), this, true);
+            }
+         }
+      }
+      catch (Exception e)
+      {
+         trace.error("Failed invoking MyFaces RestoreStateUtils utility method.", e);
+      }
+      finally
+      {
+         unbindViewScope();
+      }
+   }
+
+   private void bindViewScope()
+   {
+      Object currentView = getAttributes().get(ATTR_CURRENT_TAB);
+      if (currentView instanceof View)
+      {
+         TabScopeUtils.bindTabScope((View) currentView);
+      }
+   }
+
+   private void unbindViewScope()
+   {
+      Object currentView = getAttributes().get(ATTR_CURRENT_TAB);
+      if (currentView instanceof View)
+      {
+         TabScopeUtils.unbindTabScope((View) currentView);
       }
    }
 
