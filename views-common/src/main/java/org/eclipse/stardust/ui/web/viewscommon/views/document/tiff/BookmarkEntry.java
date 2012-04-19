@@ -8,7 +8,7 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.bookmark;
+package org.eclipse.stardust.ui.web.viewscommon.views.document.tiff;
 
 import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.PageBookmark;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;

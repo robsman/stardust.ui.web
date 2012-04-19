@@ -28,7 +28,6 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
-import org.eclipse.stardust.ui.web.bcc.PropertyEntry;
 import org.eclipse.stardust.ui.web.bcc.legacy.gantt.ConfigurationValidator;
 import org.eclipse.stardust.ui.web.bcc.legacy.gantt.PropertyProvider;
 import org.eclipse.stardust.ui.web.bcc.messsages.MessagesBCCBean;

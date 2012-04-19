@@ -8,7 +8,7 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.bcc;
+package org.eclipse.stardust.ui.web.bcc.views;
 
 import java.util.ArrayList;
 import java.util.Collections;

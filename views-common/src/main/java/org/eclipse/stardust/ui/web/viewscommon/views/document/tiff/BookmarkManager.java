@@ -48,7 +48,6 @@ import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentContentIn
 import org.eclipse.stardust.ui.web.viewscommon.views.document.ImageViewerConfigurationBean;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.TIFFDocumentWrapper;
-import org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.bookmark.BookmarkEntry;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.extract.ExtractPageDialog;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.extract.TiffImageInfo;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.extract.TiffImageInfo.BookmarkPageRange;
