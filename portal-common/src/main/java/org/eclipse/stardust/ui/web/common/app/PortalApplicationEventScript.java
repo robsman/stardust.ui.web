@@ -33,7 +33,8 @@ public class PortalApplicationEventScript implements Serializable
    // Possibility to have more than one Scripts to be executed
    private ArrayList<String> eventScripts = new ArrayList<String>(); 
    private boolean onceRead = false;
-   
+   private boolean resetWindowWidth = false;
+
    /**
     * @return
     */
@@ -57,8 +58,16 @@ public class PortalApplicationEventScript implements Serializable
       }
       
       onceRead = true;
-      
-      return es.toString();
+
+      String scripts = es.toString();
+
+      if (resetWindowWidth)
+      {
+         scripts = "InfinityBpm.Core.resetWindowWidth();\n" + scripts;
+         resetWindowWidth = false;
+      }
+
+      return scripts;
    }
    
    /**
@@ -120,5 +129,10 @@ public class PortalApplicationEventScript implements Serializable
       {
          eventScripts = new ArrayList<String>();
       }
+   }
+
+   public void setResetWindowWidth(boolean resetWindowWidth)
+   {
+      this.resetWindowWidth = resetWindowWidth;
    }
 }

@@ -913,6 +913,15 @@ public class PortalApplication
    }
 
    /**
+    * This resets the window size to 98% so that the new view's width can be recalculated correctly.
+    * Without this, the second view of lesser wide would still assume the same width as the previous view.
+    */
+   private void resetWindowWidth()
+   {
+      PortalApplicationEventScript.getInstance().setResetWindowWidth(true);
+   }
+
+   /**
     * 
     */
    private void togglePinView()
@@ -968,6 +977,7 @@ public class PortalApplication
     */
    private void addToDisplayedViews(View view, boolean justOpened, int viewIndex)
    {
+      resetWindowWidth();
       if(displayedViews == null)
          displayedViews = new ArrayList<View>();
 
@@ -1275,6 +1285,7 @@ public class PortalApplication
     */
    private void handleViewClose(View closedView, View focusView, boolean forceClose)
    {
+      resetWindowWidth();
       removeFromDisplayedViews(closedView);
       
       if(focusView == closedView)

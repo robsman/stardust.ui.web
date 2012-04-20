@@ -397,11 +397,14 @@ if ( !InfinityBpm.Core) {
     		return null;
     	}
     }
+
+    function resetWindowWidth() {
+	  var portalMainContainer = mainIppFrame.document.getElementById("ippPortalMainContainer");
+	  portalMainContainer.style.width = '98%'; // This is required so that all sizes gets recalculated to fit the content
+    }
     
     function resizePortalMainWindow() {
   	  var portalMainContainer = mainIppFrame.document.getElementById("ippPortalMainContainer");
-  	  var scrollPos = getWindowScrollPosition(mainIppFrame);
-  	  portalMainContainer.style.width = '98%'; // This is required so that all sizes gets recalculated to fit the content
 
 	  //Set portalMainContainer width
 	  var widthEndDivOffsetLeft = getOffsetleft(mainIppFrame["ippPortalMain"].document.getElementById("ippPortalContentWidthEnd"));
@@ -431,7 +434,6 @@ if ( !InfinityBpm.Core) {
 	  height = (height < minHeight) ? minHeight : height;		  
 
 	  portalMainContainer.style.height = (height + 'px');
-	  setWindowScrollPosition(mainIppFrame, scrollPos);
 
 	  // Reposition View Specific Toolbar
 	  repositionViewToolbar();
@@ -595,6 +597,10 @@ if ( !InfinityBpm.Core) {
       
       resizePortalMainWindow : function(rdm) {
     	  resizePortalMainWindow(rdm);
+      },
+      
+      resetWindowWidth : function() {
+    	  resetWindowWidth();
       },
       
       registerIceHandlers : function() {
