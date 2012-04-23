@@ -30,7 +30,6 @@ import org.eclipse.stardust.engine.api.model.TypeDeclaration;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
-import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
 import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
@@ -52,6 +51,7 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
+import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 
 
 /**
@@ -431,9 +431,9 @@ public class ManualActivityForm extends Form
       {
          if (!isWriteOnly(dataMapping, allInMappings))
          {
-            DocumentType documentType = DocumentTypeUtils.getDocumentTypeFromData(getModel(),
-                  getModel().getData(dataMapping.getDataId()));
-            
+            DocumentType documentType = TypedDocumentsUtil.getDocumentTypeFromData(getModel().getData(
+                  dataMapping.getDataId()));
+
             // Manual Activity Panel will not display Meta Data. So pass the List<Path> documentTypes as null
             return new DocumentPath(maPath, dataMapping.getId(), documentType, null,
                   Direction.IN == dataMapping.getDirection());

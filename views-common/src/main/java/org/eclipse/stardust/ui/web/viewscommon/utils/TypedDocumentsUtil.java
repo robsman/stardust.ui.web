@@ -23,15 +23,19 @@ import org.eclipse.stardust.common.Pair;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
+import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.model.TypeDeclaration;
+import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
 import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
+import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.common.form.jsf.messages.DefaultLabelProvider;
 import org.eclipse.stardust.ui.common.introspection.Path;
 import org.eclipse.stardust.ui.common.introspection.xsd.XsdPath;
@@ -205,6 +209,18 @@ public class TypedDocumentsUtil
 
       return metadataList;
    }
+   
+   /**
+    * @author Yogesh.Manware
+    * @param data
+    * @return
+    */
+   public static DocumentType getDocumentTypeFromData(Data data)
+   {
+      DeployedModel relevantModel = ModelUtils.getModel(data.getModelOID());
+      return DocumentTypeUtils.getDocumentTypeFromData(relevantModel, data);
+   }
+
 
    /**
     * @param path
