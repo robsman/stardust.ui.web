@@ -71,7 +71,7 @@ public class DocumentTypeWrapper
    @Override
    public boolean equals(Object obj)
    {
-      if (obj instanceof DocumentType)
+      if (obj instanceof DocumentTypeWrapper)
       {
          DocumentTypeWrapper docWrapperObj = (DocumentTypeWrapper) obj;
          return StringUtils.areEqual(getDocumentType().getDocumentTypeId(), docWrapperObj.getDocumentType()

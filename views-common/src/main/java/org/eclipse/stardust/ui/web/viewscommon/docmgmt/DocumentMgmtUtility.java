@@ -20,14 +20,12 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -530,24 +528,6 @@ public class DocumentMgmtUtility
       return processAttachments;
    }
 
-   /**
-    * return document types from all active models
-    * 
-    * @return map of Map<Model, List<DocumentType>
-    */
-   public static Set<DocumentTypeWrapper> getDeclaredDocumentTypes()
-   {
-      ModelCache modelCache = ModelCache.findModelCache();
-      Collection<DeployedModel> allModels = modelCache.getAllModels();
-      Set<DocumentTypeWrapper> declaredDocTypes = CollectionUtils.newSet();
-
-      for (DeployedModel deployedModel : allModels)
-      {
-         declaredDocTypes.addAll(ModelUtils.getDeclaredDocumentTypes(deployedModel));
-      }
-      return declaredDocTypes;
-   }
-   
    /**
     * return localized label for declared document type
     * 

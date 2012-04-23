@@ -61,6 +61,7 @@ import org.eclipse.stardust.ui.web.viewscommon.user.UserWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DocumentTypeWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.DocumentVersionDialog;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.DownloadPopupDialog;
@@ -118,7 +119,7 @@ public class DocumentSearchBean extends UIComponentBean
    private void createTable()
    {
 
-      declaredDocumentTypes = DocumentMgmtUtility.getDeclaredDocumentTypes();
+      declaredDocumentTypes = ModelUtils.getAllActiveDeclaredDocumentTypes();
       searchProvider = new DocumentSearchProvider(declaredDocumentTypes);
 
       List<ColumnPreference> documentSearchFixedCols = new ArrayList<ColumnPreference>();
