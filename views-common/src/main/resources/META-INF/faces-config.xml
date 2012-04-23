@@ -12,8 +12,8 @@
 <!DOCTYPE faces-config PUBLIC "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN" "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
 
 <faces-config>
-	<converter>		<converter-id>fileSizeConverter</converter-id>		<converter-class>			org.eclipse.stardust.ui.web.viewscommon.core.FileSizeConverter            </converter-class>	</converter>    <converter>        <converter-id>ippDefaultPriorityConverter</converter-id>        <converter-class>org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter</converter-class>    </converter>
-	<validator>		<validator-id>eMailAddressValidator</validator-id>		<validator-class>			org.eclipse.stardust.ui.web.viewscommon.core.EMailAddressValidator		</validator-class>	</validator>
+	<converter>		<converter-id>fileSizeConverter</converter-id>		<converter-class>org.eclipse.stardust.ui.web.viewscommon.core.FileSizeConverter</converter-class>	</converter>    <converter>        <converter-id>ippDefaultPriorityConverter</converter-id>        <converter-class>org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter</converter-class>    </converter>
+	<validator>		<validator-id>eMailAddressValidator</validator-id>		<validator-class>org.eclipse.stardust.ui.web.viewscommon.core.EMailAddressValidator</validator-class>	</validator>
 <!-- ****************** LOGIN PANEL ****************** -->
    <navigation-rule>
       <display-name>login</display-name>
