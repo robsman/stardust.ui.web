@@ -24,6 +24,7 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.DocumentQuery;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
+import org.eclipse.stardust.engine.api.query.FilterCriterion;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
@@ -264,8 +265,8 @@ public class DocumentSearchProvider implements Serializable
          }
          else
          {
-            return createDateTo;
-         }
+        return createDateTo;
+      }
       }
 
       public void setCreateDateTo(Date createDateTo)
@@ -291,8 +292,8 @@ public class DocumentSearchProvider implements Serializable
          }
          else
          {
-            return modificationDateTo;
-         }
+         return modificationDateTo;
+      }
       }
 
       public void setModificationDateTo(Date modificationDateTo)
@@ -601,17 +602,43 @@ public class DocumentSearchProvider implements Serializable
             filter.and(DocumentQuery.ID.like(QueryUtils.getFormattedString(getFilterAttributes().getDocumentId())));
          }
 
+         FilterCriterion contentFilter = null, dataFilter = null;
          if (StringUtils.isNotEmpty(getFilterAttributes().getContainingText()))
          {
-            filter.and(DocumentQuery.CONTENT.like(QueryUtils.getFormattedString(Text
-                  .escapeIllegalJcrChars(getFilterAttributes().getContainingText()))));
-         }
+            if (getFilterAttributes().isSearchContent())
+            {
+               contentFilter = DocumentQuery.CONTENT.like(QueryUtils.getFormattedString(Text
+                     .escapeIllegalJcrChars(getFilterAttributes().getContainingText())));
+            }
 
+            if (getFilterAttributes().isSearchData())
+            {
+               dataFilter = DocumentQuery.META_DATA.any().like(
+                     QueryUtils.getFormattedString(Text
+                           .escapeIllegalJcrChars(getFilterAttributes().getContainingText())));
+            }
+          
+            if (null != contentFilter && null != dataFilter)
+            {
+               FilterOrTerm filterOrTerm = filter.addOrTerm();
+               filterOrTerm.add(contentFilter);
+               filterOrTerm.add(dataFilter);
+            }
+            else if (null != contentFilter)
+            {
+               filter.and(contentFilter);
+            }
+            else if (null != dataFilter)
+            {
+               filter.and(dataFilter);
+            }
+         }
+         
          Documents docs = getQueryService().getAllDocuments((DocumentQuery) query);
 
          return docs;
       }
-
+      
       private boolean checkIfAllOptionSelect(String[] selectedValues)
       {
          for (String value : selectedValues)
