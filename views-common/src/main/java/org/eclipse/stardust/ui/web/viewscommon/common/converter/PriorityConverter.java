@@ -22,8 +22,6 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstancePriority;
-import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
-import org.eclipse.stardust.ui.web.viewscommon.common.PriorityLabelLocalizerKey;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 
 
@@ -34,7 +32,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 public class PriorityConverter implements Converter
 {
    // API field
-   public static final String CONVERTER_ID = "org.eclipse.stardust.ui.web.processportal.view.manual.PriorityConverter";
+   public static final String CONVERTER_ID = "org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter";
     
    protected final static Logger trace = LogManager.getLogger(PriorityConverter.class);
    
