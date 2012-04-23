@@ -540,8 +540,7 @@ public class DocumentMgmtUtility
       String docTypeId = docTypeWrapper.getDocumentTypeId();
       Model model = docTypeWrapper.getModel();
       TypeDeclaration typeDeclaration = model.getTypeDeclaration(QName.valueOf(docTypeId).getLocalPart());
-      return I18nUtils.getLabel(model, model.getName()) + " - "
-            + I18nUtils.getLabel(typeDeclaration, typeDeclaration.getName());
+      return I18nUtils.getLabel(typeDeclaration, typeDeclaration.getName());
    }
 
    /**
