@@ -36,11 +36,11 @@ import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.table.RowDeselectionListener;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
-
 
 
 /**
@@ -48,7 +48,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
  * @author Vikas.Mishra
  * 
  */
-public class ModelImplementationDialogBean extends PopupUIComponentBean
+public class ModelImplementationDialogBean extends PopupUIComponentBean implements RowDeselectionListener
 {
    private static final long serialVersionUID = 1L;
    private static final String BEAN_NAME = "modelImplementationDialogBean";
@@ -290,6 +290,7 @@ public class ModelImplementationDialogBean extends PopupUIComponentBean
                entry.setVersion(model.getVersion());
                entry.setModelOID((int) implementation.getImplementationModelOid());
                entry.setCheckSelection(implementation.isPrimaryImplementation());
+               entry.setRowDeselectionListener(this);
                list.add(entry);
             }
          }
@@ -300,6 +301,16 @@ public class ModelImplementationDialogBean extends PopupUIComponentBean
       return result;
    }
 
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.viewscommon.common.table.RowDeselectionListener#rowDeselected()
+    */
+   public void rowDeselected()
+   {
+      for (ImplementationTableEntry implementationTableEntry : implementationTable.getList())
+      {
+         implementationTableEntry.resetCheckSelection();
+      }
+   }
    /**
     * Util method to get String value between bracket
     * 

@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.admin.views.model.dialog;
 
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
+import org.eclipse.stardust.ui.web.viewscommon.common.table.RowDeselectionListener;
 
 public class ImplementationTableEntry extends DefaultRowModel
 {
@@ -22,6 +23,7 @@ public class ImplementationTableEntry extends DefaultRowModel
    private String process;
    private boolean checkSelection;
    private String ModelId;
+   private RowDeselectionListener rowDeselectionListener;
 
    public String getModelName()
    {
@@ -69,7 +71,16 @@ public class ImplementationTableEntry extends DefaultRowModel
 
    public void setCheckSelection(boolean checkSelection)
    {
+      if (checkSelection && null != rowDeselectionListener)
+      {
+         rowDeselectionListener.rowDeselected();
+      }
       this.checkSelection = checkSelection;
+   }
+   
+   public void resetCheckSelection()
+   {
+      this.checkSelection = false;
    }
 
    public int getModelOID()
@@ -98,6 +109,8 @@ public class ImplementationTableEntry extends DefaultRowModel
       ModelId = modelId;
    }
 
-  
-
+   public void setRowDeselectionListener(RowDeselectionListener rowDeselectionListener)
+   {
+      this.rowDeselectionListener = rowDeselectionListener;
+   }
 }
