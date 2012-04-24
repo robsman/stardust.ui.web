@@ -236,9 +236,6 @@
       <server-archive name="poi-scratchpad" type="jar"
          appservers="tomcat" sourceFile="../../../lib/dms/poi-scratchpad.jar"
          destDir="WEB-INF/lib/" setups="production-withJcr, development-withJcr, build" />
-      <server-archive name="bcmail-jdk15" type="jar"
-         appservers="tomcat" sourceFile="../../../lib/dms/bcmail-jdk15.jar"
-         destDir="WEB-INF/lib/" setups="production-withJcr, development-withJcr, build" />
       <server-archive name="boilerpipe" type="jar"
          appservers="tomcat" sourceFile="../../../lib/dms/boilerpipe.jar"
          destDir="WEB-INF/lib/" setups="production-withJcr, development-withJcr, build" />
@@ -280,6 +277,9 @@
          destDir="WEB-INF/lib/" />
       <server-archive name="activemq-core" type="jar"
          appservers="tomcat" sourceFile="../../../lib/jms/activemq-core.jar"
+         destDir="WEB-INF/lib/" />
+      <server-archive name="geronimo-j2ee-management_1.1_spec" type="jar"
+         appservers="tomcat" sourceFile="../../../lib/ext/geronimo-j2ee-management_1.1_spec.jar"
          destDir="WEB-INF/lib/" />
       <server-archive name="xbean-spring" type="jar"
          appservers="tomcat" sourceFile="../../../lib/jms/xbean-spring.jar"
