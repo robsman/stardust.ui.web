@@ -196,6 +196,8 @@ public class IppDocumentInputController extends DocumentInputController implemen
                      viewDocument();
                   }
                }
+
+               refreshPortalSession();
             }
          }
       });
