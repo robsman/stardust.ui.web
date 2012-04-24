@@ -6,16 +6,7 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-	<ice:panelGrid columns="7">
-
-		<ice:commandLink 
-			title="#{documentHandlerBean.messages['save.label']}"
-			rendered="#{!documentHandlerBean.disableSaveAction and documentHandlerBean.savable}"
-			action="#{documentHandlerBean.save}">
-			<pc:automationTag value="auto-COM-DocView-SaveBtn" standAlone="false"/>
-			<ice:graphicImage value="/plugins/views-common/images/icons/disk.png"
-				styleClass="toolbar-button" />
-		</ice:commandLink>
+	<ice:panelGrid columns="9">
 	
 		<ice:commandLink disabled="#{!documentHandlerBean.showPrev}"
 			action="#{documentHandlerBean.showPreviousVersion}">
@@ -85,9 +76,28 @@
 			styleClass="toolbar-button">
 			<pc:automationTag value="auto-COM-DocView-ToolbarPopInDoc"
 				standAlone="false" />
-		</ice:commandButton>	
-	</ice:panelGrid>
+		</ice:commandButton>
 
+		<ice:panelGroup
+			rendered="#{not empty documentHandlerBean.contentHandler.toolbarUrl}"
+			styleClass="toolbarGroupRight">
+			<ui:include src="#{documentHandlerBean.contentHandler.toolbarUrl}" />
+		</ice:panelGroup>
+
+		<ice:panelGroup styleClass="toolbarGroupRight">
+			<ice:commandLink
+				title="#{documentHandlerBean.messages['save.label']}"
+				rendered="#{!documentHandlerBean.disableSaveAction and documentHandlerBean.savable}"
+				action="#{documentHandlerBean.save}">
+				<pc:automationTag value="auto-COM-DocView-SaveBtn"
+					standAlone="false" />
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/disk.png"
+					styleClass="toolbar-button" />
+			</ice:commandLink>
+		</ice:panelGroup>
+		
+	</ice:panelGrid>
 </f:view>
 
 

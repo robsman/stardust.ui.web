@@ -44,10 +44,6 @@
 				include="/plugins/views-common/extension/toolbar/documentViewToolbar.xhtml"
 				requiredView="documentView" />
 				
-			<ippui:toolbarSection name="documentViewSpecificToolBar"
-				include="/plugins/views-common/extension/toolbar/documentViewSpecificToolbar.xhtml"
-				requiredView="documentView" />
-
 			<ippui:toolbarSection name="resourceMgmtTreeViewToolbar"
 				include="/plugins/views-common/extension/toolbar/resourceMgmtTreeViewToolbar.xhtml"
 				requiredView="resourceMgmtTreeView" />
