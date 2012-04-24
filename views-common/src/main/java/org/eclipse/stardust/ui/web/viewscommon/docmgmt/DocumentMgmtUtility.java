@@ -103,8 +103,8 @@ public class DocumentMgmtUtility
    private static final String UNVERSIONED = "UNVERSIONED";
    
    private static final String CONTENT_TYPE = "text/plain";
-   private static final String SPECIAL_CHARACTER_SET = "[\\\\/:*?\"<>|]";
-   private static final String VALID_FILENAME_PATTERN = "[^\\\\/:*?\"<>|]*";
+   private static final String SPECIAL_CHARACTER_SET = "[\\\\/:*?\"<>|\\[\\]]";
+   private static final String VALID_FILENAME_PATTERN = "[^\\\\/:*?\"<>|\\[\\]]*";
 
    /**
     * creates blank document with default file name

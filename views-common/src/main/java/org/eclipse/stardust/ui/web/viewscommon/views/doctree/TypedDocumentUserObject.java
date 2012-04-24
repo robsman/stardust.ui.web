@@ -258,7 +258,7 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
 
       if (!DocumentMgmtUtility.validateFileName(fileName))
       {
-         MessageDialog.addInfoMessage(propsBean.getString("views.common.invalidCharater"));
+         MessageDialog.addInfoMessage(propsBean.getString("views.common.invalidCharater.error"));
          return;
       }
 

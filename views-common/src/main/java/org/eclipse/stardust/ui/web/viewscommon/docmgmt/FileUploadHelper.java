@@ -134,7 +134,7 @@ public class FileUploadHelper
          {
             if (!DocumentMgmtUtility.validateFileName(fileName))
             {
-               MessageDialog.addInfoMessage(msgBean.getString("views.common.invalidCharater"));
+               MessageDialog.addInfoMessage(msgBean.getString("views.common.invalidCharater.error"));
                return;
             }
             this.existingDocument = DocumentMgmtUtility.getDocument(parentFolder.getPath(), fileName);
