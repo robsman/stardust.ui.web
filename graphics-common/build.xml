@@ -177,7 +177,7 @@
       </copy>
    </target>
    
-	<target name="dist" depends="jar, copyToMoonglow">
+	<target name="dist" depends="build, copyToMoonglow">
 	</target>
    
    <target name="deploy" depends="build, copyToMoonglow"/>
