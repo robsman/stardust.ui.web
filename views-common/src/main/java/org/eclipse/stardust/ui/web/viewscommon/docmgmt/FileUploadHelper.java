@@ -61,6 +61,7 @@ public class FileUploadHelper
    private DocumentType documentType;
    private boolean enableOpenDocument = true;
    private boolean triggerOpenDocument = true;
+   private boolean documentTypeDisabled = false;
    
    public FileUploadHelper(FUNCTION_TYPE functionType, String parentFolderPath)
    {
@@ -85,7 +86,7 @@ public class FileUploadHelper
          fileUploadDialog.initialize();
          fileUploadDialog.setTitle(msgBean.getString("common.fileUpload"));
          fileUploadDialog.setHeaderMessage(headerMsg);
-         if (null != documentType)
+         if (null != documentType || documentTypeDisabled)
          {
             fileUploadDialog.setDocumentType(documentType);
          }
@@ -405,6 +406,7 @@ public class FileUploadHelper
    public void setDocumentType(DocumentType documentType)
    {
       this.documentType = documentType;
+      this.documentTypeDisabled = true;
    }
 
    public void setEnableOpenDocument(boolean enableOpenDocumen)
