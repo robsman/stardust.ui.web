@@ -147,5 +147,30 @@ public class JsfBackingBeanUtils
          throw pe;
       }
    }
-   
+
+   /**
+    * @param jsfContext
+    * @return
+    */
+   public static Object getBackingBean(ApplicationContext jsfContext)
+   {
+      String beanName = (String) jsfContext.getAttribute("jsf:managedBeanName");
+
+      Object targetObject = PortalBackingBean.getManagedBean(beanName);
+
+      if (null == targetObject)
+      {
+         targetObject = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(beanName);
+      }
+
+      if (null == targetObject)
+      {
+         FacesContext context = FacesContext.getCurrentInstance();
+         ValueBinding binding = context.getApplication().createValueBinding(
+               MessageFormat.format("#'{'{0}'}'", new Object[] {beanName}));
+         targetObject = binding.getValue(context);
+      }
+
+      return targetObject;
+   }
 }

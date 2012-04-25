@@ -33,6 +33,7 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.model.Activity;
+import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.ContextData;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
@@ -67,6 +68,7 @@ import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.processportal.EventController;
 import org.eclipse.stardust.ui.web.processportal.PollingProperties;
 import org.eclipse.stardust.ui.web.processportal.PollingProperties.Activator;
@@ -110,6 +112,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.JsfBackingBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
@@ -571,6 +574,33 @@ public class ActivityDetailsBean extends UIComponentBean
       }
       
       handleIframePopups(event);
+
+      // Propagate Event to JSF Bean
+      if (isLoadSuccessful())
+      {
+         try
+         {
+            Activity activity = activityInstance.getActivity();
+            IActivityInteractionController interactionController = getInteractionController(activity);
+            if (null != interactionController)
+            {
+               String contextId = interactionController.getContextId(activityInstance);
+               if (PredefinedConstants.JSF_CONTEXT.equals(contextId))
+               {
+                  ApplicationContext applicationContext = activity.getApplicationContext(PredefinedConstants.JSF_CONTEXT);
+                  Object beanObject = JsfBackingBeanUtils.getBackingBean(applicationContext);
+                  if (beanObject instanceof ViewEventHandler)
+                  {
+                     ReflectionUtils.invokeMethod(beanObject, "handleEvent", new Object[]{event});
+                  }
+               }
+            }
+         }
+         catch (Exception e)
+         {
+            trace.error("Could not propagate ViewEvent to JSF Backing Bean", e);
+         }
+      }
    }
 
    /**
