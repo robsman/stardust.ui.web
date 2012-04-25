@@ -1665,13 +1665,16 @@ public class ActivityDetailsBean extends UIComponentBean
 
    public void refreshActivityPanelForSingleDocument()
    {
-      IppDocumentInputController docController = activityForm.getIfSingleDocument();
-      if (null != docController && null != docController.getValue())
+      if (null != activityForm)
       {
-         processSingleDocumentMappingCase(true);
-         documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.TO_BE_ACTIVATED));
-         documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.ACTIVATED));
-         documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.POST_OPEN_LIFECYCLE));
+         IppDocumentInputController docController = activityForm.getIfSingleDocument();
+         if (null != docController && null != docController.getValue())
+         {
+            processSingleDocumentMappingCase(true);
+            documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.TO_BE_ACTIVATED));
+            documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.ACTIVATED));
+            documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.POST_OPEN_LIFECYCLE));
+         }
       }
    }
    
@@ -1681,75 +1684,78 @@ public class ActivityDetailsBean extends UIComponentBean
     */
    private void processSingleDocumentMappingCase(boolean fromViewEvent)
    {
-      IppDocumentInputController docController = activityForm.getIfSingleDocument();
-      
-      if (null != docController && null != docController.getValue())
+      if (null != activityForm)
       {
-         singleDocumentDatgaMapping = docController.getDataMapping();
-
-         IDocumentContentInfo documentContentInfo = docController.getDocumentContentInfo();
-
-         Map<String, Object> docViewParams = new HashMap<String, Object>();
-         docViewParams.put("documentInfo", documentContentInfo);
-         //docViewParams.put("processInstance", processInstance);
-         docViewParams.put("dataPathId", singleDocumentDatgaMapping.getDataId());
-         docViewParams.put("baseFormBinding", "activityDetailsBean.documentHandlerBean");
-         docViewParams.put("disableSaveAction", true);
-         docViewParams.put("embededView", true);
-
-         ViewDefinition definition = PortalUiController.getInstance().getViewDefinition("documentView");
-         singleDocumentView = new View(definition, "dummy.xhtml");
-         singleDocumentView.getViewParams().putAll(docViewParams);
-         documentViewToolbars = PortalUiController.getToolbarSections(singleDocumentView);
-
-         // fromViewEvent = True means View is just created, so create the Bean
-         if (fromViewEvent)
+         IppDocumentInputController docController = activityForm.getIfSingleDocument();
+         
+         if (null != docController && null != docController.getValue())
          {
-            if (null == documentHandlerBean)
+            singleDocumentDatgaMapping = docController.getDataMapping();
+   
+            IDocumentContentInfo documentContentInfo = docController.getDocumentContentInfo();
+   
+            Map<String, Object> docViewParams = new HashMap<String, Object>();
+            docViewParams.put("documentInfo", documentContentInfo);
+            //docViewParams.put("processInstance", processInstance);
+            docViewParams.put("dataPathId", singleDocumentDatgaMapping.getDataId());
+            docViewParams.put("baseFormBinding", "activityDetailsBean.documentHandlerBean");
+            docViewParams.put("disableSaveAction", true);
+            docViewParams.put("embededView", true);
+   
+            ViewDefinition definition = PortalUiController.getInstance().getViewDefinition("documentView");
+            singleDocumentView = new View(definition, "dummy.xhtml");
+            singleDocumentView.getViewParams().putAll(docViewParams);
+            documentViewToolbars = PortalUiController.getToolbarSections(singleDocumentView);
+   
+            // fromViewEvent = True means View is just created, so create the Bean
+            if (fromViewEvent)
             {
-               // DocumentHandlerBean.getInstance() is not working so create new instance and push it to Tab scope
-               documentHandlerBean = new DocumentHandlerBean();
-               thisView.getCurrentTabScope().remove("documentHandlerBean"); // Remove if exists
-               thisView.getCurrentTabScope().put("documentHandlerBean", documentHandlerBean);
-            }
-
-            documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.CREATED));
-
-            // Check if Document is already open in Separate Viewer
-            for (View openView : PortalApplication.getInstance().getOpenViews())
-            {
-               if ("documentView".equals(openView.getDefinition().getName()))
+               if (null == documentHandlerBean)
                {
-                  try
+                  // DocumentHandlerBean.getInstance() is not working so create new instance and push it to Tab scope
+                  documentHandlerBean = new DocumentHandlerBean();
+                  thisView.getCurrentTabScope().remove("documentHandlerBean"); // Remove if exists
+                  thisView.getCurrentTabScope().put("documentHandlerBean", documentHandlerBean);
+               }
+   
+               documentHandlerBean.handleEvent(new ViewEvent(singleDocumentView, ViewEventType.CREATED));
+   
+               // Check if Document is already open in Separate Viewer
+               for (View openView : PortalApplication.getInstance().getOpenViews())
+               {
+                  if ("documentView".equals(openView.getDefinition().getName()))
                   {
-                     DocumentHandlerBean docHandlerBean = (DocumentHandlerBean) openView.getCurrentTabScope()
-                           .get("documentHandlerBean");
-                     IDocumentContentInfo docInfo = docHandlerBean.getDocumentContentInfo();
-                     if (docInfo.getId().equals(documentContentInfo.getId()))
+                     try
                      {
-                        PortalApplication.getInstance().closeView(openView, true);
-                        MessageDialog.addInfoMessage(getMessages().getString("message.documentViewClosed"));
-                        break;
+                        DocumentHandlerBean docHandlerBean = (DocumentHandlerBean) openView.getCurrentTabScope()
+                              .get("documentHandlerBean");
+                        IDocumentContentInfo docInfo = docHandlerBean.getDocumentContentInfo();
+                        if (docInfo.getId().equals(documentContentInfo.getId()))
+                        {
+                           PortalApplication.getInstance().closeView(openView, true);
+                           MessageDialog.addInfoMessage(getMessages().getString("message.documentViewClosed"));
+                           break;
+                        }
                      }
-                  }
-                  catch (Exception e)
-                  {
-                     // TODO
+                     catch (Exception e)
+                     {
+                        // TODO
+                     }
                   }
                }
             }
+            else
+            {
+               documentHandlerBean.initializeBean();
+            }
+            
+            activityForm = null;
+            singleDocumentCase = true;
          }
          else
          {
-            documentHandlerBean.initializeBean();
+            singleDocumentCase = false;
          }
-         
-         activityForm = null;
-         singleDocumentCase = true;
-      }
-      else
-      {
-         singleDocumentCase = false;
       }
    }
 

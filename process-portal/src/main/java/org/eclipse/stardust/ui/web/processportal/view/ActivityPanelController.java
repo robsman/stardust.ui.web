@@ -341,7 +341,8 @@ public class ActivityPanelController extends UIComponentBean
       fileUploadHelper.setHeaderMsg(headerMsg);
       if (null != typedDocumentInfo)
       {
-         if (activityDetailsBean.getActivityForm().getIfSingleDocument() != null)
+         if (null != activityDetailsBean.getActivityForm()
+               && activityDetailsBean.getActivityForm().getIfSingleDocument() != null)
          {
             fileUploadHelper.setEnableOpenDocument(false);
             fileUploadHelper.setTriggerOpenDocument(false);
