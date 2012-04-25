@@ -444,7 +444,7 @@ public class ParticipantUtils
    {
       Collection<DeployedModel> allModels = ModelUtils.getAllModels();
       List<QualifiedModelParticipantInfo> allParticipants = new ArrayList<QualifiedModelParticipantInfo>();
-     
+      Set<String> allParticipantQIDs = new HashSet<String>();
       boolean isAdminAdded = false;
 
       for (Model model : allModels)
@@ -460,7 +460,7 @@ public class ParticipantUtils
             {
                boolean isAdminRole = isAdministratorRole(participant);
 
-               // Administrator should be add only once
+               // Administrator should be added only once
                if (!isAdminAdded && isAdminRole)
                {
                   allParticipants.add((QualifiedModelParticipantInfo) participant);
@@ -468,7 +468,11 @@ public class ParticipantUtils
                }
                else if (!isAdminRole)
                {
-                  allParticipants.add((QualifiedModelParticipantInfo) participant);
+                  if (!allParticipantQIDs.contains(participant.getQualifiedId()))
+                  {
+                     allParticipants.add((QualifiedModelParticipantInfo) participant);
+                     allParticipantQIDs.add(participant.getQualifiedId());
+                  }
                }
             }
          }
