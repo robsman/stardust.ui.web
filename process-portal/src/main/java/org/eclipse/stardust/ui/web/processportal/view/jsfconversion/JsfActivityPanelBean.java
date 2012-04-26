@@ -20,6 +20,7 @@ import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.util.SessionRendererHelper;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityForm;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
@@ -55,6 +56,10 @@ public class JsfActivityPanelBean implements ViewEventHandler
                      ServiceFactoryUtils.getWorkflowService(), activityInstance.getActivity().getApplicationContext("jsf"));
 
                setSessionRendererId(activityInstance);
+               if (StringUtils.isNotEmpty(sessionRendererId))
+               {
+                  SessionRendererHelper.addCurrentSession(sessionRendererId);
+               }
             }
          }
       }
@@ -71,11 +76,11 @@ public class JsfActivityPanelBean implements ViewEventHandler
    {
       switch (event.getType())
       {
-      case POST_OPEN_LIFECYCLE:
-         SessionRendererHelper.addCurrentSession(sessionRendererId);
-         break;
       case CLOSED:
-         SessionRendererHelper.removeCurrentSession(sessionRendererId);
+         if (StringUtils.isNotEmpty(sessionRendererId))
+         {
+            SessionRendererHelper.removeCurrentSession(sessionRendererId);
+         }
          break;
       }
    }

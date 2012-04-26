@@ -539,9 +539,10 @@ public class ActivityDetailsBean extends UIComponentBean
             ippEventController.unregisterObserver((DocumentEventObserver)this);
          }
 
-         if(null != activityForm)
+         ManualActivityForm currentActivityForm = getCurrentManualActivityForm();
+         if(null != currentActivityForm)
          {
-            activityForm.destroy();
+            currentActivityForm.destroy();
          }
       }
       else if (ViewEventType.TO_BE_FULL_SCREENED == event.getType())
@@ -1566,8 +1567,10 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       try
       {
-         if (ActivityPanelConfigurationBean.isAutoShowMappedDocumentWarning()
-               && null != activityForm && activityForm.getDisplayedMappedDocuments(true, true).size() > 0)
+         ManualActivityForm currentActivityForm = getCurrentManualActivityForm();
+
+         if (ActivityPanelConfigurationBean.isAutoShowMappedDocumentWarning() && null != currentActivityForm
+               && currentActivityForm.getDisplayedMappedDocuments(true, true).size() > 0)
          {
             mappedDocumentConfirmationDialog = new MappedDocumentsConfirmationDialog(action, DialogContentType.WARNING,
                   DialogActionType.CONTINUE_CANCEL, MAPPED_DOC_WARN_INCLUDE);
