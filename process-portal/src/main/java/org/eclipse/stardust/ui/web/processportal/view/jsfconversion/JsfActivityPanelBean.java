@@ -11,16 +11,15 @@
 package org.eclipse.stardust.ui.web.processportal.view.jsfconversion;
 
 import java.util.HashMap;
-import java.util.List;
 
 import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
-import org.eclipse.stardust.ui.common.form.jsf.DocumentInputController;
 import org.eclipse.stardust.ui.common.form.preferences.FormGenerationPreferences;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
+import org.eclipse.stardust.ui.web.common.util.SessionRendererHelper;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityForm;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
@@ -32,6 +31,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 public class JsfActivityPanelBean implements ViewEventHandler
 {
    private ManualActivityForm activityForm;
+   private String sessionRendererId;
 
    /**
     * 
@@ -40,11 +40,10 @@ public class JsfActivityPanelBean implements ViewEventHandler
    {
       try
       {
-         ActivityInstance activityInstance = null;
          View view = PortalApplication.getInstance().getFocusView();
          if (null != view)
          {
-            activityInstance = (ActivityInstance) view.getViewParams().get(ActivityInstance.class.getName());
+            ActivityInstance activityInstance = (ActivityInstance) view.getViewParams().get(ActivityInstance.class.getName());
             
             if (null != activityInstance)
             {
@@ -54,6 +53,8 @@ public class JsfActivityPanelBean implements ViewEventHandler
       
                activityForm = new ManualActivityForm(formPref, "activityDetailsBean.activityForm", activityInstance,
                      ServiceFactoryUtils.getWorkflowService(), activityInstance.getActivity().getApplicationContext("jsf"));
+
+               setSessionRendererId(activityInstance);
             }
          }
       }
@@ -70,21 +71,24 @@ public class JsfActivityPanelBean implements ViewEventHandler
    {
       switch (event.getType())
       {
+      case POST_OPEN_LIFECYCLE:
+         SessionRendererHelper.addCurrentSession(sessionRendererId);
+         break;
       case CLOSED:
-         // Close the document, because it belongs to activity data and needs to close with activity
-         // This is irrespective of "close related views flag"
-         if(null != activityForm)
-         {
-            List<DocumentInputController> mappedDocs = activityForm.getDisplayedMappedDocuments(true, true);
-            for (DocumentInputController docInputCtrl : mappedDocs)
-            {
-               docInputCtrl.closeDocument();
-            }
-         }
+         SessionRendererHelper.removeCurrentSession(sessionRendererId);
          break;
       }
    }
 
+   /**
+    * @param activityInstance
+    */
+   private void setSessionRendererId(ActivityInstance activityInstance)
+   {
+      sessionRendererId = SessionRendererHelper.getPortalSessionRendererId(PortalApplication.getInstance().getLoggedInUser());
+      sessionRendererId += ":jsf-" + activityInstance.getOID();
+   }
+   
    public void setData(HashMap<String, ? > data)
    {
       activityForm.setData();
@@ -98,5 +102,10 @@ public class JsfActivityPanelBean implements ViewEventHandler
    public ManualActivityForm getActivityForm()
    {
       return activityForm;
+   }
+
+   public String getSessionRendererId()
+   {
+      return sessionRendererId;
    }
 }

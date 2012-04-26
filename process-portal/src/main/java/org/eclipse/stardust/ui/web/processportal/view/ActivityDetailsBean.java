@@ -69,6 +69,7 @@ import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
+import org.eclipse.stardust.ui.web.common.util.SessionRendererHelper;
 import org.eclipse.stardust.ui.web.processportal.EventController;
 import org.eclipse.stardust.ui.web.processportal.PollingProperties;
 import org.eclipse.stardust.ui.web.processportal.PollingProperties.Activator;
@@ -580,20 +581,10 @@ public class ActivityDetailsBean extends UIComponentBean
       {
          try
          {
-            Activity activity = activityInstance.getActivity();
-            IActivityInteractionController interactionController = getInteractionController(activity);
-            if (null != interactionController)
+            Object beanObject = getBackingBeanForJsfActivity();
+            if (null != beanObject && beanObject instanceof ViewEventHandler)
             {
-               String contextId = interactionController.getContextId(activityInstance);
-               if (PredefinedConstants.JSF_CONTEXT.equals(contextId))
-               {
-                  ApplicationContext applicationContext = activity.getApplicationContext(PredefinedConstants.JSF_CONTEXT);
-                  Object beanObject = JsfBackingBeanUtils.getBackingBean(applicationContext);
-                  if (beanObject instanceof ViewEventHandler)
-                  {
-                     ReflectionUtils.invokeMethod(beanObject, "handleEvent", new Object[]{event});
-                  }
-               }
+               ReflectionUtils.invokeMethod(beanObject, "handleEvent", new Object[]{event});
             }
          }
          catch (Exception e)
@@ -781,13 +772,89 @@ public class ActivityDetailsBean extends UIComponentBean
 
       // Close the document, because it belongs to activity data and needs to close with activity
       // This is irrespective of "close related views flag"
-      if(null != activityForm)
+      ManualActivityForm currentActivityForm = getCurrentManualActivityForm();
+      if(null != currentActivityForm)
       {
-         List<DocumentInputController> mappedDocs = activityForm.getDisplayedMappedDocuments(true, true);
+         List<DocumentInputController> mappedDocs = currentActivityForm.getDisplayedMappedDocuments(true, true);
          for (DocumentInputController docInputCtrl : mappedDocs)
          {
             docInputCtrl.closeDocument();
          }
+
+         renderJsfActivitySession();
+      }
+   }
+
+   /**
+    * @return
+    */
+   private ManualActivityForm getCurrentManualActivityForm()
+   {
+      if(null != activityForm)
+      {
+         return activityForm;
+      }
+      else // Try for JSF Activity
+      {
+         try
+         {
+            Object beanObject = getBackingBeanForJsfActivity();
+            if (null != beanObject)
+            {
+               return (ManualActivityForm)ReflectionUtils.invokeMethod(beanObject, "getActivityForm");
+            }
+         }
+         catch (Exception e)
+         {
+            trace.error("Error in working with JSF Backing Bean", e);
+         }
+      }
+
+      return null;
+   }
+
+   /**
+    * @return
+    */
+   private Object getBackingBeanForJsfActivity()
+   {
+      Activity activity = activityInstance.getActivity();
+      IActivityInteractionController interactionController = getInteractionController(activity);
+      if (null != interactionController)
+      {
+         String contextId = interactionController.getContextId(activityInstance);
+         if (PredefinedConstants.JSF_CONTEXT.equals(contextId))
+         {
+            ApplicationContext applicationContext = activity.getApplicationContext(PredefinedConstants.JSF_CONTEXT);
+            if (null != applicationContext)
+            {
+               return JsfBackingBeanUtils.getBackingBean(applicationContext);
+            }
+         }
+      }
+      return null;
+   }
+
+   /**
+    * @return
+    */
+   private void renderJsfActivitySession()
+   {
+      try
+      {
+         Object beanObject = getBackingBeanForJsfActivity();
+         if (null != beanObject)
+         {
+            String sessionRendererId = (String)ReflectionUtils.invokeMethod(beanObject, "getSessionRendererId");
+            if (StringUtils.isNotEmpty(sessionRendererId))
+            {
+               SessionRendererHelper.render(sessionRendererId);
+            }
+         }
+      }
+      catch (Exception e)
+      {
+         trace.error("Error in rendering JSF Activity session", e);
       }
    }
 
@@ -930,9 +997,12 @@ public class ActivityDetailsBean extends UIComponentBean
             && processInstance.getOID() == documentEvent.getProcessInstanceOid())
       {
          fetchProcessDocuments();
-         if (null != activityForm)
+
+         // Work with Document Data Mappings
+         ManualActivityForm currentActivityForm = getCurrentManualActivityForm();
+         if(null != currentActivityForm)
          {
-            List<DocumentInputController> docs = activityForm.getDisplayedMappedDocuments(false, false);
+            List<DocumentInputController> docs = currentActivityForm.getDisplayedMappedDocuments(false, false);
             for (DocumentInputController documentInputController : docs)
             {
                if (documentInputController instanceof IppDocumentInputController)
@@ -949,6 +1019,8 @@ public class ActivityDetailsBean extends UIComponentBean
                   }
                }
             }
+
+            renderJsfActivitySession();
          }
       }
    }
