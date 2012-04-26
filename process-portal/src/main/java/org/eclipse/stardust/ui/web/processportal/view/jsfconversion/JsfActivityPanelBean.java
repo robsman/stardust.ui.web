@@ -30,7 +30,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
  */
 public class JsfActivityPanelBean implements ViewEventHandler
 {
-   private ManualActivityForm activityForm;
+   protected ManualActivityForm activityForm;
    private String sessionRendererId;
 
    /**
@@ -94,6 +94,12 @@ public class JsfActivityPanelBean implements ViewEventHandler
       activityForm.setData();
    }
 
+   /**
+    * This is default 'complete' method called by framework
+    * If implementation changes the name of 'complete' method then the same method must be implemented
+    * And this method can be called to retrieve Out Data in there
+    * @return
+    */
    public Object complete()
    {
       return activityForm.retrieveData();
@@ -104,6 +110,10 @@ public class JsfActivityPanelBean implements ViewEventHandler
       return activityForm;
    }
 
+   /**
+    * This method is called by the framework to render the JSF Activity Panel Session
+    * @return
+    */
    public String getSessionRendererId()
    {
       return sessionRendererId;
