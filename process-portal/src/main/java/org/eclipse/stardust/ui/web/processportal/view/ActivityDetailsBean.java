@@ -1567,10 +1567,8 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       try
       {
-         ManualActivityForm currentActivityForm = getCurrentManualActivityForm();
-
-         if (ActivityPanelConfigurationBean.isAutoShowMappedDocumentWarning() && null != currentActivityForm
-               && currentActivityForm.getDisplayedMappedDocuments(true, true).size() > 0)
+         if (ActivityPanelConfigurationBean.isAutoShowMappedDocumentWarning() && null != activityForm
+               && activityForm.getDisplayedMappedDocuments(true, true).size() > 0)
          {
             mappedDocumentConfirmationDialog = new MappedDocumentsConfirmationDialog(action, DialogContentType.WARNING,
                   DialogActionType.CONTINUE_CANCEL, MAPPED_DOC_WARN_INCLUDE);
