@@ -1606,28 +1606,32 @@ public class ActivityDetailsBean extends UIComponentBean
       {
          if (singleDocumentCase)
          {
-            dataAvailable = false;
-            documentHandlerBean.save(new ICallbackHandler()
+            // If not 'savable' means only IN Data Mapping, So no Out Data
+            if (documentHandlerBean.isSavable())
             {
-               public void handleEvent(EventType eventType)
+               dataAvailable = false;
+               documentHandlerBean.save(new ICallbackHandler()
                {
-                  if (EventType.APPLY == eventType)
+                  public void handleEvent(EventType eventType)
                   {
-                     Document document = ((JCRDocument) documentHandlerBean.getDocumentContentInfo()).getDocument();
-
-                     // This cleanup is required because issue - CRNT-20987
-                     document.getProperties().remove(CommonProperties.DESCRIPTION);
-                     document.getProperties().remove(CommonProperties.COMMENTS);
-
-                     // Even Annotations needs to be cleared
-                     document.setDocumentAnnotations(null);
-                     
-                     Map<String, Serializable> outDataValues = new HashMap<String, Serializable>();
-                     outDataValues.put(singleDocumentDatgaMapping.getId(), document);
-                     retrieveOutDataMappingContinue(releaseInteraction, mainCallback, outDataValues);
+                     if (EventType.APPLY == eventType)
+                     {
+                        Document document = ((JCRDocument) documentHandlerBean.getDocumentContentInfo()).getDocument();
+   
+                        // This cleanup is required because issue - CRNT-20987
+                        document.getProperties().remove(CommonProperties.DESCRIPTION);
+                        document.getProperties().remove(CommonProperties.COMMENTS);
+   
+                        // Even Annotations needs to be cleared
+                        document.setDocumentAnnotations(null);
+                        
+                        Map<String, Serializable> outDataValues = new HashMap<String, Serializable>();
+                        outDataValues.put(singleDocumentDatgaMapping.getId(), document);
+                        retrieveOutDataMappingContinue(releaseInteraction, mainCallback, outDataValues);
+                     }
                   }
-               }
-            });
+               });
+            }
          }
          else if (null != activityForm)
          {
