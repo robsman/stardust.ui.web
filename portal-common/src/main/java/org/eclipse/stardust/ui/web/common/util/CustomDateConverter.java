@@ -17,6 +17,8 @@ package org.eclipse.stardust.ui.web.common.util;
  */
 public class CustomDateConverter extends CustomDateTimeConverter
 {
+   private static final long serialVersionUID = -8529162372195806885L;
+
    /**
     * 
     */
@@ -25,6 +27,7 @@ public class CustomDateConverter extends CustomDateTimeConverter
       super();
       try
       {
+         setTimeZone(java.util.TimeZone.getDefault());
          setPattern(DateUtils.getDateFormat());
       }
       catch (Throwable t)
