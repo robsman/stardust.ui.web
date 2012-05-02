@@ -10,7 +10,6 @@
  -->
 <!--
   To execute this build script, you have to configure your environment as follows:
-  - environment variable CM_HOME must point to an existent q-archive checkout
   - Java property java.home must point to an existent JAVA_HOME (either via parameter 
     (e.g. antit.bat -Djava.home=C:/Programme/Java15) or create a private.properties file
     in the etc folder of the project and put the property in there)
