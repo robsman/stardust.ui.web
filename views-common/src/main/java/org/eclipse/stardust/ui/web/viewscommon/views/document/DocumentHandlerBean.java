@@ -74,7 +74,6 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
 
    private static final long serialVersionUID = 1L;
    private static final String BEAN_NAME = "documentHandlerBean";
-   private static final String TIFF_IMAGE="image/tiff";
    private IDocumentContentInfo documentContentInfo;
    private CorrespondenceMetaData correspondencInfo;
    private boolean correspondencInfoAvailble = false;
@@ -717,6 +716,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       if(refreshViewer)
       {
          fireRefreshViewerInvoked();
+         PortalApplication.getInstance().updateViewKey(thisView, "documentOID=" + documentContentInfo.getId());
       }
    }
    
@@ -829,7 +829,6 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
                {
                   JCRDocument dmsDocument = (JCRDocument) documentContentInfo;
                   Document document = dmsDocument.getDocument();
-                  String origFileMimeType = documentContentInfo.getMimeType().getType();
 
                   // Close the current IFrame if available
                   fireShowNextVersionToBeInvoked();
@@ -843,7 +842,6 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
                   documentContentInfo.setDescription(fileUploadDialog.getDescription());
                   documentContentInfo = documentContentInfo.saveFile(fileUploadDialog.getFileInfo().getPhysicalPath());
 
-                  String newFileMimeType = documentContentInfo.getMimeType().getType();
                   postSave(false);
                   // Activiate the Iframe with dealy if available
                   fireRefreshViewerWithDelayInvoked();

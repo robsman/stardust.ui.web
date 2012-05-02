@@ -1460,7 +1460,15 @@ public class PortalApplication
       }*/
       return clientTimeZone != null;
    }   
-   
+
+   /**
+    * @param currentView
+    * @param viewKey
+    */
+   public void updateViewKey(View currentView, String viewKey)
+   {
+      getPortalUiController().updateViewUrl(currentView.getUrl(), View.createURL(currentView.getDefinition(), viewKey));
+   }
 
    private void setDisplayMode(int displayMode)
    {

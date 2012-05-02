@@ -227,7 +227,6 @@ public class PortalUiController
       
       // Collect Perspectives based on Role
       PerspectiveDefinition pd;
-      @SuppressWarnings("unchecked")
       Map<String, PerspectiveDefinition> systemPerspectives = appContext.getBeansOfType(PerspectiveDefinition.class);
       for (String key : systemPerspectives.keySet())
       {
@@ -269,7 +268,6 @@ public class PortalUiController
             
             perspectiveItems.add(createMenuItem(perspective));
 
-            @SuppressWarnings("unchecked")
             Map<String, PerspectiveExtension> extensions = appContext.getBeansOfType(PerspectiveExtension.class);
 
             for (PerspectiveExtension extension : extensions.values())
@@ -880,6 +878,17 @@ public class PortalUiController
       return view;
    }
 
+   /**
+    * @param oldUrl
+    * @param newUrl
+    */
+   public void updateViewUrl(String oldUrl, String newUrl)
+   {
+      View view = views.get(oldUrl);
+      views.remove(oldUrl);
+      views.put(newUrl, view);
+   }
+   
    private void setViewIcon(View view)
    {
       if(view.getDefinition() != null && view.getDefinition().getPreferences() != null)
