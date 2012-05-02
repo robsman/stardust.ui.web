@@ -1462,12 +1462,12 @@ public class PortalApplication
    }   
 
    /**
-    * @param currentView
-    * @param viewKey
+    * @param view
+    * @param newViewKey
     */
-   public void updateViewKey(View currentView, String viewKey)
+   public void updateViewKey(View view, String newViewKey)
    {
-      getPortalUiController().updateViewKey(currentView, viewKey);
+      getPortalUiController().updateViewKey(view, newViewKey);
    }
 
    private void setDisplayMode(int displayMode)

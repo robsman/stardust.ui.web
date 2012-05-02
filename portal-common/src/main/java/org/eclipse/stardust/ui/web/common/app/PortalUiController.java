@@ -879,15 +879,13 @@ public class PortalUiController
    }
 
    /**
-    * @param currentView
-    * @param viewKey
+    * @param view
+    * @param newViewKey
     */
-   public void updateViewKey(View currentView, String viewKey)
+   public void updateViewKey(View view, String newViewKey)
    {
-      String newUrl = View.createURL(currentView.getDefinition(), viewKey);
-      View view = views.get(currentView.getUrl());
-
-      views.remove(currentView.getUrl());
+      String newUrl = View.createURL(view.getDefinition(), newViewKey);
+      views.remove(view.getUrl());
       views.put(newUrl, view);
    }
    
