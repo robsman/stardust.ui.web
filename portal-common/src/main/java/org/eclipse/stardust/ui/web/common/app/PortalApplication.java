@@ -1467,7 +1467,7 @@ public class PortalApplication
     */
    public void updateViewKey(View currentView, String viewKey)
    {
-      getPortalUiController().updateViewUrl(currentView.getUrl(), View.createURL(currentView.getDefinition(), viewKey));
+      getPortalUiController().updateViewKey(currentView, viewKey);
    }
 
    private void setDisplayMode(int displayMode)
