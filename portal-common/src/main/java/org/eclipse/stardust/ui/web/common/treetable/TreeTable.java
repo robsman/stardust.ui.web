@@ -109,8 +109,6 @@ public class TreeTable extends DataTable<TreeTableUserObject>
 			list = new ArrayList<TreeTableUserObject>();
 		list.clear();
 		
-		resetExportFiles();
-
 		TreeTableUserObject ttuo = ((TreeTableNode) treeModel.getRoot()).getUserObject();
 		if(ttuo != null)
 		{

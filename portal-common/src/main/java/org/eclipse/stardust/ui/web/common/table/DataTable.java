@@ -77,8 +77,6 @@ public class DataTable<T extends IRowModel> implements IDataTable<T>, ITableData
    
    private DataTableRowSelector rowSelector;
 
-   private ExcelDataTableExporter<T> excelDataTableExporter;
-   private CSVDataTableExporter<T> csvDataTableExporter;
    private DataTableExportHandler<T> dataTableExportHandler;
    
  
@@ -250,8 +248,6 @@ public class DataTable<T extends IRowModel> implements IDataTable<T>, ITableData
       {
          getRowSelector().resetSelectedRow(list);
       }
-
-      resetExportFiles();
    }
    
    /* (non-Javadoc)
@@ -437,15 +433,6 @@ public class DataTable<T extends IRowModel> implements IDataTable<T>, ITableData
       }
       return false;
    }
-   
-   /**
-    * 
-    */
-   public void resetExportFiles()
-   {
-      excelDataTableExporter = null;
-      csvDataTableExporter = null;
-   }
 
    public List<T> getList()
    {
@@ -535,22 +522,12 @@ public class DataTable<T extends IRowModel> implements IDataTable<T>, ITableData
 
    public ExcelDataTableExporter<T> getExcelDataTableExporter()
    {
-      if (null == excelDataTableExporter)
-      {
-         excelDataTableExporter = new ExcelDataTableExporter<T>(this, dataTableExportHandler);
-      }
-
-      return excelDataTableExporter;
+      return new ExcelDataTableExporter<T>(this, dataTableExportHandler);
    }
    
    public CSVDataTableExporter<T> getCsvDataTableExporter()
    {
-      if (null == csvDataTableExporter)
-      {
-         csvDataTableExporter = new CSVDataTableExporter<T>(this, dataTableExportHandler);
-      }
-
-      return csvDataTableExporter;
+      return new CSVDataTableExporter<T>(this, dataTableExportHandler);
    }
 
    public DataTableExportHandler<T> getDataTableExportHandler()

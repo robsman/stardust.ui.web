@@ -505,16 +505,6 @@ public class PaginatorDataTable<T extends IRowModel, E> extends DataTable<T>
                   }
                }
                
-               /*
-                * It's observed that if same file is used to export different page then NPE is thrown in ICEfaces code
-                *    java.lang.NullPointerException 
-                *    at jxl.write.biff.File.write(File.java:149) 
-                *    at jxl.write.biff.WritableWorkbookImpl.write(WritableWorkbookImpl.java:697) 
-                *    at com.icesoft.faces.component.dataexporter.ExcelOutputHandler.flushFile(ExcelOutputHandler.java:78)
-                * To cover up this, create new export files on ever page navigation
-                */ 
-               resetExportFiles();
-               
                return new DataPage<T>(totalCount, startRow, pageData);
             }
          }
