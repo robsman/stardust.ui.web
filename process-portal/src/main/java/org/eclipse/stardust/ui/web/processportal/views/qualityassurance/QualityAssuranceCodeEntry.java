@@ -27,12 +27,14 @@ public class QualityAssuranceCodeEntry extends DefaultRowModel implements Compar
    private boolean selectedRow;
    private QualityACAutocompleteMultiSelector codesAutocompleteMultiSelector;
    private String description;
+   private String code;
 
-   public QualityAssuranceCodeEntry(QualityAssuranceCode code, long modelOID)
+   public QualityAssuranceCodeEntry(QualityAssuranceCode qaCode, long modelOID)
    {
       super();
-      this.qualityAssuranceCode = code;
+      this.qualityAssuranceCode = qaCode;
       description = I18nUtils.getQualityAssuranceDesc(qualityAssuranceCode, modelOID);
+      code = I18nUtils.getQualityAssuranceCode(qualityAssuranceCode, modelOID);
    }
 
    public void remove()
@@ -42,7 +44,7 @@ public class QualityAssuranceCodeEntry extends DefaultRowModel implements Compar
 
    public String getCode()
    {
-      return qualityAssuranceCode.getCode();
+      return code;
    }
 
    public String getDescription()

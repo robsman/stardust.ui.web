@@ -228,7 +228,7 @@ public class QualityACAutocompleteMultiSelector extends AutocompleteMultiSelecto
                QualityAssuranceCodeEntry qualityACodeEntry = new QualityAssuranceCodeEntry(qualityAssuranceCode,
                      modelOID);
 
-               if (qualityAssuranceCode.getCode().toLowerCase().contains(searchValue.toLowerCase())
+               if (qualityACodeEntry.getCode().toLowerCase().contains(searchValue.toLowerCase())
                      || qualityACodeEntry.getDescription().toLowerCase().contains(searchValue.toLowerCase()))
                {
                   if (!searchResult.contains(qualityACodeEntry))

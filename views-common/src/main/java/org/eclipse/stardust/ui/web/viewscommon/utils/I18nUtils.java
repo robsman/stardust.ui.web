@@ -141,15 +141,15 @@ public class I18nUtils
    
    /**
     * 
-    * @param qualityAC
+    * @param qaCode
     * @param modelOID
     * @return
     */
    public static String getQualityAssuranceDesc(QualityAssuranceCode qaCode, long modelOID)
    {
       String label = null;
-      LocalizerKey key = new LocalizerKey(ModelElementUtils.getBundleName(modelOID), "QualityAssuranceCode." + qaCode.getCode()
-            + ".Description");
+      LocalizerKey key = new LocalizerKey(ModelElementUtils.getBundleName(modelOID), "QualityAssuranceCode."
+            + qaCode.getCode() + ".Description");
       if (trace.isDebugEnabled())
       {
          trace.debug("use '" + key.getBundleName() + "' for label receivement");
@@ -168,6 +168,37 @@ public class I18nUtils
       }
       return label;
    }
+   
+   /**
+    * 
+    * @param qaCode
+    * @param modelOID
+    * @return
+    */
+   public static String getQualityAssuranceCode(QualityAssuranceCode qaCode, long modelOID)
+   {
+      String label = null;
+      LocalizerKey key = new LocalizerKey(ModelElementUtils.getBundleName(modelOID), "QualityAssuranceCode."
+            + qaCode.getCode() + ".Name");
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("use '" + key.getBundleName() + "' for label receivement");
+      }
+      try
+      {
+         label = Localizer.getString(key);
+      }
+      catch (Exception e)
+      {
+         ExceptionHandler.handleException(e);
+      }
+      if (StringUtils.isEmpty(label))
+      {
+         label = qaCode.getName();
+      }
+      return label;
+   }
+   
    
    private static String getProcessLabel(ProcessDefinition process, String defaultLabel, int mode)
    {
