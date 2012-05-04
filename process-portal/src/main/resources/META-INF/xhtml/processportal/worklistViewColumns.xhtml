@@ -44,7 +44,7 @@
 		<!--	Priority	-->
 		<ice:panelGroup rendered="#{col.columnName == 'Priority'}">
 			<ice:panelGroup panelTooltip="priorityTootip">
-			<h:graphicImage
+			<h:graphicImage styleClass="portal-std-icon"
 				value="#{row.priorityIcon}"
 				title="" />
 			</ice:panelGroup>
@@ -81,15 +81,20 @@
 	<ice:panelGroup rendered="#{col.columnName == 'Criticality'}">
 		<ice:panelGroup panelTooltip="criticalityTootip">
 			<ice:graphicImage value="#{row.criticality.icon}"
-				rendered="#{1 le row.criticality.iconCount}" />
+				rendered="#{1 le row.criticality.iconCount}"
+				styleClass="portal-std-icon" />
 			<ice:graphicImage value="#{row.criticality.icon}"
-				rendered="#{2 le row.criticality.iconCount}" />
+				rendered="#{2 le row.criticality.iconCount}"
+				styleClass="portal-std-icon" />
 			<ice:graphicImage value="#{row.criticality.icon}"
-				rendered="#{3 le row.criticality.iconCount}" />
+				rendered="#{3 le row.criticality.iconCount}"
+				styleClass="portal-std-icon" />
 			<ice:graphicImage value="#{row.criticality.icon}"
-				rendered="#{4 le row.criticality.iconCount}" />
+				rendered="#{4 le row.criticality.iconCount}"
+				styleClass="portal-std-icon" />
 			<ice:graphicImage value="#{row.criticality.icon}"
-				rendered="#{5 le row.criticality.iconCount}" />
+				rendered="#{5 le row.criticality.iconCount}"
+				styleClass="portal-std-icon" />
 		</ice:panelGroup>
 		<ice:panelTooltip id="criticalityTootip"
 			style="background: #FFFFFF; background-color: #F0F0F2; border: 2px solid black;">
@@ -119,7 +124,8 @@
 				<pc:automationTag value="auto-PP-WorkList-ActionsProcDetails" standAlone="false"/>
 				<ice:graphicImage
 					value="/plugins/views-common/images/icons/process.png"
-					title="#{worklistTableBean.messages['tooltip.processContextExplorer']}" />
+					title="#{worklistTableBean.messages['tooltip.processContextExplorer']}"
+					styleClass="portal-std-icon" />
 									
 				<f:param name="viewId" value="#{row.defaultCaseActivity ? 'caseDetailsView' : 'processInstanceDetailsView'}" />
 				<f:param name="nested" value="true" />
@@ -135,7 +141,7 @@
 				<ice:graphicImage
 					value="/plugins/views-common/images/icons/process-history/delegate.png"
 					style="border:none;"
-					styleClass="#{row.delegable ? '' : 'iceCmdBtn-dis'}"
+					styleClass="#{row.delegable ? '' : 'iceCmdBtn-dis'} portal-std-icon"
 					title="#{worklistTableBean.messages['tooltip.delegate']}" />
 				<f:attribute name="activityInstance" value="#{row.activityInstance}" />
 				<f:param name="oid" value="#{row.oid}" />
@@ -149,14 +155,14 @@
 				<ice:graphicImage
 					url="/plugins/views-common/images/icons/cross.png"
 					style="border:none;"
-					styleClass="#{row.abortActivity ? '' : 'iceCmdBtn-dis'}"
+					styleClass="#{row.abortActivity ? '' : 'iceCmdBtn-dis'} portal-std-icon"
 					title="#{worklistTableBean.messages['tooltip.abort']}"/>
 				<f:attribute name="activityInstance" value="#{row.activityInstance}" />
 			</ice:commandLink>
 
 			<!--	Notes	-->
 			<ice:panelGroup rendered="#{row.defaultCaseActivity }">
-					<ice:graphicImage styleClass="iceCmdBtn-dis"
+					<ice:graphicImage styleClass="iceCmdBtn-dis portal-std-icon"
 						value="/plugins/views-common/images/icons/notes-blank.png" />
 			</ice:panelGroup>
 						
@@ -165,7 +171,8 @@
 				<pc:automationTag value="auto-PP-WorkList-ActionsNotes" standAlone="false"/>
 				<ice:graphicImage
 					value="/plugins/views-common/images/icons/mime-types/notes-filled.png"
-					title="#{worklistTableBean.messages['tooltip.notes']}" />
+					title="#{worklistTableBean.messages['tooltip.notes']}"
+					styleClass="portal-std-icon" />
 				<f:param name="oid" value="#{row.oid}" />
 			</ice:commandLink>
 			<ice:commandLink rendered="#{row.notesCount le 0 and !row.defaultCaseActivity}" 
@@ -173,7 +180,8 @@
 				<pc:automationTag value="auto-PP-WorkList-ActionsNotes" standAlone="false"/>
 				<ice:graphicImage
 					value="/plugins/views-common/images/icons/notes-blank.png"
-					title="#{worklistTableBean.messages['tooltip.notesEmpty']}" />
+					title="#{worklistTableBean.messages['tooltip.notesEmpty']}"
+					styleClass="portal-std-icon" />
 				<f:param name="oid" value="#{row.oid}" />
 			</ice:commandLink>
 		</ice:panelGrid>

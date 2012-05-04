@@ -842,6 +842,8 @@ img
 	border: 1px dotted transparent;
 	margin: 2px;
 	padding: 2px;
+	width: 16px;
+	height: 16px;
 }
 
 .toolbar-button:hover 
@@ -857,7 +859,15 @@ img
 	margin: 2px;
 	padding: 2px;
 	opacity: 0.4;
-	filter: alpha(opacity=40)
+	filter: alpha(opacity=40);
+	width: 16px;
+	height: 16px;
+}
+
+.portal-std-icon
+{
+	width: 16px;
+	height: 16px;
 }
 
 .heading 
