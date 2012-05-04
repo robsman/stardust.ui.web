@@ -13,8 +13,11 @@ package org.eclipse.stardust.ui.web.common.util;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -50,6 +53,8 @@ public class FacesUtils
    private static final Logger trace = LogManager.getLogger(FacesUtils.class);
    
    private static final List<ClassLoader> registeredCl = CollectionUtils.newList();
+   
+   private static final String QUERY_SEPARATOR = "&;";
 
    /**
     * @param list
@@ -315,6 +320,96 @@ public class FacesUtils
          return req.getParameter(param);
       }
       return null;
+   }
+   
+   /**
+    * @param paramName
+    * @return
+    */
+   public static String getQueryParameterValue(final String paramName)
+   {
+      ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
+      HttpServletRequest req = (HttpServletRequest) ectx.getRequest();
+
+      Map<String, List<String>> queryParameters = parseQueryString(req.getQueryString());
+      if (queryParameters.containsKey(paramName))
+      {
+         return queryParameters.get(paramName).get(0);
+      }
+      return null;
+   }
+
+   /**
+    * @param paramName
+    * @return
+    */
+   public static List<String> getQueryParameterValues(final String paramName)
+   {
+      ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
+      HttpServletRequest req = (HttpServletRequest) ectx.getRequest();
+
+      Map<String, List<String>> queryParameters = parseQueryString(req.getQueryString());
+      if (queryParameters.containsKey(paramName))
+      {
+         return queryParameters.get(paramName);
+      }
+      return null;
+   }
+   
+   /**
+    * @param queryString
+    * @return
+    */
+   public static Map<String, List<String>> parseQueryString(final String queryString)
+   {
+      final Map<String, List<String>> queryParameters = new LinkedHashMap<String, List<String>>();
+
+      if (queryString != null)
+      {
+         StringTokenizer stringTokenizer = new StringTokenizer(queryString, QUERY_SEPARATOR);
+
+         while (stringTokenizer.hasMoreTokens())
+         {
+            String queryParam = stringTokenizer.nextToken();
+
+            int indexOfEq = queryParam.indexOf('=');
+
+            String paramName;
+            String paramValue;
+
+            try
+            {
+               if (indexOfEq != -1)
+               {
+                  paramName = queryParam.substring(0, indexOfEq);
+                  paramValue = queryParam.substring(indexOfEq + 1);
+
+                  if (StringUtils.isNotEmpty(paramName))
+                  {
+                     paramName = URLDecoder.decode(paramName, "UTF-8");
+
+                     if (StringUtils.isNotEmpty(paramValue))
+                     {
+                        paramValue = URLDecoder.decode(paramValue, "UTF-8");
+                     }
+                     List<String> paramValues = queryParameters.get(paramName);
+
+                     if (paramValues == null)
+                     {
+                        paramValues = new ArrayList<String>();
+                        queryParameters.put(paramName, paramValues);
+                     }
+                     paramValues.add(paramValue);
+                  }
+               }
+            }
+            catch (Exception e)
+            {
+               trace.error("Failed decoding query parameters.", e);
+            }
+         }
+      }
+      return queryParameters;
    }
    
    public static void sendRedirect(String toUrl) throws IOException

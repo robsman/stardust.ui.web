@@ -53,8 +53,6 @@ public class LoginDialogBean implements Serializable
 
    private String partition;
    
-   private String returnUrl;
-
    boolean promptForPartition;
 
    boolean promptForRealm;
@@ -99,7 +97,7 @@ public class LoginDialogBean implements Serializable
       {
          domain = Parameters.instance().getString(SecurityProperties.DEFAULT_DOMAIN, "");
       }
-      returnUrl = FacesUtils.getRequestParameter(InfinityStartup.RETURN_URL_PARAM);
+
       String tenant = FacesUtils.getRequestParameter("tenant");
       if(StringUtils.isNotEmpty(tenant))
       {
@@ -266,14 +264,15 @@ public class LoginDialogBean implements Serializable
     */
    public String proceedToMainPage() throws IOException
    {
-	   if(!StringUtils.isEmpty(returnUrl))
-	   {
-		   FacesUtils.sendRedirect(returnUrl);
-		   return null;
-	   }
+      String returnUrl = FacesUtils.getQueryParameterValue(InfinityStartup.RETURN_URL_PARAM);
 
-       return getNavigationOutcome();
+      if (!StringUtils.isEmpty(returnUrl))
+      {
+         FacesUtils.sendRedirect(returnUrl);
+         return null;
+      }
 
+      return getNavigationOutcome();
    }
    
    public String getNavigationOutcome()
@@ -327,16 +326,6 @@ public class LoginDialogBean implements Serializable
    public boolean isPromptForRealm()
    {
       return promptForRealm;
-   }
-
-   public String getReturnUrl()
-   {
-      return returnUrl;
-   }
-
-   public void setReturnUrl(String returnUrl)
-   {
-      this.returnUrl = returnUrl;
    }
 
    public ChangePasswordDialog getChangePwdDialog()
