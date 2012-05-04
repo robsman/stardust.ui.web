@@ -1,0 +1,136 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ui:composition>
+		<ice:panelPopup id="#{createOrModifyPreference.beanId}" modal="true"
+			rendered="#{createOrModifyPreference.visible}" draggable="true"
+			autoPosition="manual" positionOnLoadOnly="true"
+			styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText
+						value="#{createOrModifyPreference.modifyMode ? prefManagerBean.messages['modifyPreference.edit.title'] : prefManagerBean.messages['modifyPreference.add.title']}"
+						styleClass="headerText" />
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/views-common/images/icons/dialog-windowbttn-close.png"
+						action="#{createOrModifyPreference.closePopup}" immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+
+			<f:facet name="body">
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+					cellspacing="0" renderNorth="false" renderEast="false"
+					renderSouth="true" renderWest="false" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGrid columns="2" headerClass="heading"
+							style="height:#{!createOrModifyPreference.modifyMode ? '230px' : '100px'};vertical-align: top;"
+							columnClasses="table-columnVertical">
+							<ice:outputLabel
+								value="* #{prefManagerBean.messages['moduleId.label']}#{messages_admin['common.colon']}"
+								styleClass="label-form"
+								rendered="#{!createOrModifyPreference.modifyMode}" />
+							<ice:panelGroup
+								rendered="#{!createOrModifyPreference.modifyMode}">
+								<ice:inputText id="moduleId"
+									value="#{createOrModifyPreference.moduleId}" required="true"
+									style="width:215px;" partialSubmit="true">
+								</ice:inputText>
+								<ice:panelGroup styleClass="msgError">
+									<ice:message for="moduleId" />
+								</ice:panelGroup>
+							</ice:panelGroup>
+
+							<ice:outputLabel
+								value="* #{prefManagerBean.messages['preferenceId.label']}#{messages_admin['common.colon']}"
+								styleClass="label-form"
+								rendered="#{!createOrModifyPreference.modifyMode}" />
+							<ice:panelGroup
+								rendered="#{!createOrModifyPreference.modifyMode}">
+								<ice:inputText id="preferenceId"
+									value="#{createOrModifyPreference.preferenceId}"
+									required="true" style="width:215px;" partialSubmit="true">
+								</ice:inputText>
+								<ice:panelGroup styleClass="msgError">
+									<ice:message for="preferenceId" />
+								</ice:panelGroup>
+							</ice:panelGroup>
+
+							<ice:outputLabel
+								value="* #{prefManagerBean.messages['preferenceName.label']}#{messages_admin['common.colon']}"
+								styleClass="label-form"
+								rendered="#{!createOrModifyPreference.modifyMode}" />
+							<ice:panelGroup
+								rendered="#{!createOrModifyPreference.modifyMode}">
+								<ice:inputText id="preferenceName"
+									value="#{createOrModifyPreference.preferenceName}"
+									required="true" style="width:215px;" partialSubmit="true">
+								</ice:inputText>
+								<ice:panelGroup styleClass="msgError">
+									<ice:message for="preferenceName" />
+								</ice:panelGroup>
+							</ice:panelGroup>
+
+							<ice:outputLabel
+								value="#{prefManagerBean.messages['preferenceValue.label']}#{messages_admin['common.colon']}"
+								styleClass="label-form" />
+
+							<ice:inputTextarea id="preferenceValue"
+								value="#{createOrModifyPreference.preferenceValue}"
+								required="true" cols="36" partialSubmit="true">
+							</ice:inputTextarea>
+
+
+							<ice:outputLabel
+								value="#{prefManagerBean.messages['scope.label']}#{messages_admin['common.colon']}"
+								styleClass="label-form"
+								rendered="#{!createOrModifyPreference.modifyMode}" />
+
+							<ice:panelGrid columns="2"
+								rendered="#{!createOrModifyPreference.modifyMode}"
+								style="margin-top:-5px;">
+								<ice:selectOneRadio
+									value="#{createOrModifyPreference.selectedView}"
+									style="text-align: left;" partialSubmit="true"
+									layout="pageDirection" styleClass="label-form">
+									<f:selectItem
+										value="#{createOrModifyPreference.viewSelection[0]}" />
+									<f:selectItem
+										value="#{createOrModifyPreference.viewSelection[1]}" />
+								</ice:selectOneRadio>
+
+								<ice:panelGroup
+									style="padding-top: 10px;width:auto;min-width: 150px; " rendered="#{createOrModifyPreference.selectedView eq 'USER'}">
+									<ui:include
+										src="#{createOrModifyPreference.preferenceBean.userSelector.autocompleteContentUrl}">
+										<ui:param name="component"
+											value="#{createOrModifyPreference.userSelector}" />
+									</ui:include>
+								</ice:panelGroup>
+							</ice:panelGrid>
+						</ice:panelGrid>
+					</f:facet>
+
+					<f:facet name="south">
+						<ice:panelGroup>
+							<ice:commandButton value="#{messages_admin['common.ok']}"
+								action="#{createOrModifyPreference.apply}" id="applyPreference"
+								styleClass="button" title="#{messages_admin['common.ok']}"
+								immediate="true" />
+							<ice:commandButton value="#{messages_admin['common.cancel']}"
+								action="#{createOrModifyPreference.closePopup}" immediate="true"
+								id="cancel" styleClass="button"
+								title="#{messages_admin['common.cancel']}" />
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

@@ -1,0 +1,57 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<ice:panelGroup>
+		<ui:include src="createOrModifyPreference.xhtml" />
+		<ui:include
+			src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+			<ui:param name="dialogBean"
+				value="#{prefManagerBean.prefMngrConfirmationDialog}" />
+		</ui:include>
+	</ice:panelGroup>
+
+	<ice:panelGroup>
+		<ice:panelGrid columns="2">
+			<ice:selectOneRadio value="#{prefManagerBean.selectedView}"
+				style="text-align: left;"
+				valueChangeListener="#{prefManagerBean.viewSelectionListener}"
+				partialSubmit="true" layout="pageDirection" styleClass="label-form">
+				<f:selectItem value="#{prefManagerBean.viewSelection[0]}" />
+				<f:selectItem value="#{prefManagerBean.viewSelection[1]}" />
+			</ice:selectOneRadio>
+
+			<ice:panelGroup
+				style="padding-top: 10px;width:auto;min-width: 220px; "
+				rendered="#{prefManagerBean.selectedView eq 'USER'}">
+				<ui:include
+					src="#{prefManagerBean.userSelector.autocompleteContentUrl}">
+					<ui:param name="component" value="#{prefManagerBean.userSelector}" />
+				</ui:include>
+			</ice:panelGroup>
+		</ice:panelGrid>
+
+		<ice:panelGroup styleClass="clearing" />
+		<ice:panelGroup>
+			<ice:inputText value="#{prefManagerBean.prefSearchTxt}"
+				style="width: 90%;margin-left:10px;" partialSubmit="true">
+			</ice:inputText>
+			<ice:commandButton id="submitSearch"
+				value="#{prefManagerBean.messages['searchPrefStore.label']}"
+				action="#{prefManagerBean.performSearch}" styleClass="button" />
+		</ice:panelGroup>
+
+		<ice:panelGroup styleClass="clearing" />
+		<ice:panelGroup style="margin-left:5px;" scrollHeight="450px;">
+			<pc:genericDataTable title="" bean="#{prefManagerBean}"
+				id="prefManagerList" table="#{prefManagerBean.prefManagerTable}"
+				sortSupported="true"
+				toolbarUrl="/plugins/admin-portal/views/prefManagerViewToolbar.xhtml" />
+		</ice:panelGroup>
+
+	</ice:panelGroup>
+</f:view>

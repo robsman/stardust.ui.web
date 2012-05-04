@@ -112,7 +112,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 
 		<ippui:view name="qaManagementView" 
 			include="/plugins/admin-portal/views/qualityAssuranceManagementView.xhtml" 
-			controller="qaManagementBean"/>
+			controller="qaManagementBean"/>					<ippui:view name="prefManagerBean" 			include="/plugins/admin-portal/views/preferenceManagerView.xhtml" 			controller="prefManagerBean"/>	
 			
 	</ippui:perspective>
 

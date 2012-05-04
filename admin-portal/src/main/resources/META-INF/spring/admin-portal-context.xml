@@ -128,7 +128,7 @@
 	
 	<bean name="participantMgmtConfigurationBean" class="org.eclipse.stardust.ui.web.admin.views.ParticipantMgmtConfigurationBean"
 	     scope="session">
-	</bean>
+	</bean>		<bean name="prefManagerBean" class="org.eclipse.stardust.ui.web.admin.views.PreferenceManagerBean"	     scope="portalTab">	</bean>		<bean name="createOrModifyPreference" class="org.eclipse.stardust.ui.web.admin.views.CreateOrModifyPreferenceBean"	     scope="portalTab">	</bean>
    <!-- ********** VIEW SCOPE BEANS ********** --><!--
    
    	<bean name="renameDocumentExtensionDialog"
