@@ -14,8 +14,8 @@
 			<attribute name="javadoc_location" value="http://java.sun.com/j2ee/1.4/docs/api/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-comps-ee-infinity04-EE-1.8.2.GA_P03.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-ee-infinity04-EE-1.8.2.GA_P03.jar"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-comps-ee-EE-1.8.2.GA_P04.jar"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-ee-EE-1.8.2.GA_P04.jar"/>
 	<classpathentry kind="var" path="CARNOT_HOME/lib/carnot-engine.jar"/>
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javax/jsf/1.1_02/jsf-api.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/views-common"/>	

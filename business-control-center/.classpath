@@ -6,8 +6,8 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-core-3.0.5.RELEASE.jar" sourcepath="/Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-core-3.0.5.RELEASE-sources.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-comps-ee-infinity04-EE-1.8.2.GA_P03.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-ee-infinity04-EE-1.8.2.GA_P03.jar"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-comps-ee-EE-1.8.2.GA_P04.jar"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-ee-EE-1.8.2.GA_P04.jar"/>
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/servlet/2.4/servlet-2.4.jar"/>
 	<classpathentry kind="var" path="CARNOT_HOME/lib/carnot-engine.jar" sourcepath="/CARNOT_HOME/src/carnot-engine-src.jar"/>
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javax/jsf/1.1_02/jsf-api.jar"/>
