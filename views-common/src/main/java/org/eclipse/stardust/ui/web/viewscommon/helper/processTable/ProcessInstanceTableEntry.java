@@ -441,25 +441,25 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
       long sourceLinkOID = link.getSourceOID();
       long targetLinkOID = link.getTargetOID();
       // If processOID of current process is Sources for LinkedProcess,
-      // then use the target Process linked information
+      // then use the source Process linked information
       if (processInstance.getOID() == sourceLinkOID)
       {
-         if (PredefinedProcessInstanceLinkTypes.UPGRADE.equals(link.getLinkType().getId()))
-         {
-            linkType = MIGRATE_TO;
-         }
-         else
-            // If the link type is Join , set the To Process Link Type
-            linkType = PredefinedProcessInstanceLinkTypes.JOIN.equals(link.getLinkType().getId()) ? JOIN_TO : SWITCH_TO;
-      }
-      else if (processInstance.getOID() == targetLinkOID)
-      {
-         if (PredefinedProcessInstanceLinkTypes.UPGRADE.equals(link.getLinkType().getId()))
+         if (PredefinedProcessInstanceLinkTypes.UPGRADE.getId().equals(link.getLinkType().getId()))
          {
             linkType = MIGRATE_FROM;
          }
          else
-            linkType = PredefinedProcessInstanceLinkTypes.JOIN.equals(link.getLinkType().getId()) ? JOIN_FROM : SWITCH_FROM;
+            // If the link type is Join , set the To Process Link Type
+            linkType = PredefinedProcessInstanceLinkTypes.JOIN.getId().equals(link.getLinkType().getId()) ? JOIN_FROM : SWITCH_FROM;
+      }
+      else if (processInstance.getOID() == targetLinkOID)
+      {
+         if (PredefinedProcessInstanceLinkTypes.UPGRADE.getId().equals(link.getLinkType().getId()))
+         {
+            linkType = MIGRATE_TO;
+         }
+         else
+            linkType = PredefinedProcessInstanceLinkTypes.JOIN.getId().equals(link.getLinkType().getId()) ? JOIN_TO : SWITCH_TO;
       }
       return linkType;
 

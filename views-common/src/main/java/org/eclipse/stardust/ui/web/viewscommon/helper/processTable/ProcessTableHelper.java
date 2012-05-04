@@ -1188,7 +1188,7 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
 
                if (CollectionUtils.isNotEmpty(linkedProcess))
                {
-                  ProcessInstanceLink processInstanceLink = linkedProcess.get(0);
+                  ProcessInstanceLink processInstanceLink = linkedProcess.get(linkedProcess.size()-1);
                   if (resultRow instanceof ProcessInstance)
                   {
                      tableEntry = new ProcessInstanceTableEntry(processInstance, processInstanceLink);
