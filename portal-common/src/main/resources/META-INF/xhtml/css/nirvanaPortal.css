@@ -1435,7 +1435,7 @@ select.icon-menu option {
  	background-repeat: no-repeat;
 	padding: 2px 0 5px 20px;
 	vertical-align: middle;
-	background-image:url(../images/key.png);	
+	background-image:url(../images/icons/key.png);	
 }
 
 /* ********* Session Control - Start ********** */
