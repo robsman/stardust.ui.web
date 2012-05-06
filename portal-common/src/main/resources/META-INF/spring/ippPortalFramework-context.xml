@@ -39,7 +39,7 @@
    <bean name="ippPortalUi" class="org.eclipse.stardust.ui.web.common.app.PortalUiController"
       scope="session">
       <property name="userProvider" ref="userProvider"/>
-   </bean>
+      <property name="commonMenuProvider" ref="commonMenuProvider"/>   </bean>
       
    <bean name="ippPortalApp" class="org.eclipse.stardust.ui.web.common.app.PortalApplication"
       scope="session">

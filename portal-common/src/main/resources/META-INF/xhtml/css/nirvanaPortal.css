@@ -823,7 +823,7 @@ img
 	height: 10px;
 }
 
-.button, .button-dis
+.button, .button-dis /* Primary Button */
 {
 	font-family:Arial, Helvetica, sans-serif;
 	font-size:11px;
@@ -835,6 +835,10 @@ img
 	border-right:1px solid #999999;		
 	/* min-width: 60px; */
 	cursor: pointer;
+}
+
+.secondary /* Secondary Button */
+{
 }
 
 .toolbar-button

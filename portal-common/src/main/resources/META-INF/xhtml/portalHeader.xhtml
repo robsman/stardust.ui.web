@@ -11,6 +11,16 @@
 			<ice:form partialSubmit="false">
 				<table cellpadding="0" cellspacing="0" width="100%">
 					<tr>
+						<td>
+							<ice:menuBar
+								rendered="#{ippPortalUi.commonMenuItems != null}"
+								styleClass="commonMenuBar" style="position: absolute; top:18px; left: -1px;">
+								<!-- TODO: Temporary solution! -->
+								<ice:menuItem value="_____________" style="font: 16px bold Arial;">
+									<ice:menuItems value="#{ippPortalUi.commonMenuItems}" />
+								</ice:menuItem>
+							</ice:menuBar>
+						</td>
 						<td width="100%"></td>
 						<td style="white-space: nowrap">
 							<div class="userConsole">
