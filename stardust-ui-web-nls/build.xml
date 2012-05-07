@@ -1,0 +1,54 @@
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<!--
+  To execute this build script, you have to configure your environment as follows:
+  - Java property java.home must point to an existent JAVA_HOME (either via parameter
+    (e.g. antit.bat -Djava.home=C:/Programme/Java15) or create a private.properties file
+    in the etc folder of the project and put the property in there)
+-->
+
+<project name="stardust-ui-web-nls" default="copy-nls-resources" basedir="." xmlns:ipp="com.infinity.bpm.ant.macros">
+
+   <property name="project.dir" location="${basedir}" />
+   <property name="project.etc" location="${project.dir}/etc" />
+   <property name="project.res" location="${project.dir}/src/main/resources" />
+   
+   <property name="build.dir" location="${project.dir}/build" />
+   <property name="build.nls.dir" location="${build.dir}/nls" />
+
+   <property file="${project.etc}/private.properties" />
+   <import file="../../build.tools/commons-build.xml" />
+
+   <!-- target is invoked by ipp-product-nls -->
+   <target name="copy-nls-resources" 
+      description="copies the resources into a given folder">
+      <ant target="copy-nls-resources" dir="${project.dir}/../admin-portal" inheritall="false">
+         <property name="build.nls.dir" value="${build.nls.dir}" />
+      </ant>
+      <ant target="copy-nls-resources" dir="${project.dir}/../business-control-center" inheritall="false">
+         <property name="build.nls.dir" value="${build.nls.dir}" />
+      </ant>
+      <ant target="copy-nls-resources" dir="${project.dir}/../graphics-common" inheritall="false">
+         <property name="build.nls.dir" value="${build.nls.dir}" />
+      </ant>
+      <ant target="copy-nls-resources" dir="${project.dir}/../portal-common" inheritall="false">
+         <property name="build.nls.dir" value="${build.nls.dir}" />
+      </ant>
+      <ant target="copy-nls-resources" dir="${project.dir}/../process-portal" inheritall="false">
+         <property name="build.nls.dir" value="${build.nls.dir}" />
+      </ant>
+      <ant target="copy-nls-resources" dir="${project.dir}/../views-common" inheritall="false">
+         <property name="build.nls.dir" value="${build.nls.dir}" />
+      </ant>
+   </target>
+
+</project>
