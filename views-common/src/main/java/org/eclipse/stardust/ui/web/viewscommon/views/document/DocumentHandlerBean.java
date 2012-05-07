@@ -26,7 +26,6 @@ import org.eclipse.stardust.ui.common.form.FormGenerator;
 import org.eclipse.stardust.ui.common.form.jsf.DocumentForm;
 import org.eclipse.stardust.ui.common.form.jsf.DocumentObject;
 import org.eclipse.stardust.ui.common.form.jsf.ILabelProvider;
-import org.eclipse.stardust.ui.common.form.jsf.JsfFormGenerator;
 import org.eclipse.stardust.ui.common.form.jsf.JsfStructureContainer;
 import org.eclipse.stardust.ui.common.form.preferences.FormGenerationPreferences;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
@@ -53,6 +52,7 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DocumentTypeWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
+import org.eclipse.stardust.ui.web.viewscommon.utils.IppJsfFormGenerator;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
@@ -409,11 +409,12 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          if (null != model && StringUtils.isNotEmpty(dataId))
          {
             labelProvider = new DocumentMetaDataLabelProvider(model.getData(dataId), model);
-            formGenerator = new JsfFormGenerator(generationPreferences, baseFormBinding + ".documentForm", labelProvider);
+            formGenerator = new IppJsfFormGenerator(generationPreferences, baseFormBinding + ".documentForm",
+                  labelProvider);
          }
          else
          {
-            formGenerator = new JsfFormGenerator(generationPreferences, baseFormBinding + ".documentForm");
+            formGenerator = new IppJsfFormGenerator(generationPreferences, baseFormBinding + ".documentForm");
          }
 
          documentForm = new DocumentForm(new DocumentObject(documentContentInfo.getDocumentType(),

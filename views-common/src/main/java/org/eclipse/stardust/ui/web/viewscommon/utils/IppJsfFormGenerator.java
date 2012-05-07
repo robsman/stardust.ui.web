@@ -16,6 +16,7 @@ import java.util.Date;
 import javax.faces.convert.Converter;
 
 import org.eclipse.stardust.ui.common.form.Indent;
+import org.eclipse.stardust.ui.common.form.jsf.ILabelProvider;
 import org.eclipse.stardust.ui.common.form.jsf.JsfFormGenerator;
 import org.eclipse.stardust.ui.common.form.preferences.FormGenerationPreferences;
 import org.eclipse.stardust.ui.common.introspection.Path;
@@ -40,6 +41,17 @@ public class IppJsfFormGenerator extends JsfFormGenerator
    public IppJsfFormGenerator(FormGenerationPreferences generationPreferences, String formBinding)
    {
       super(generationPreferences, formBinding);
+   }
+
+   /**
+    * @param generationPreferences
+    * @param formBinding
+    * @param labelProvider
+    */
+   public IppJsfFormGenerator(FormGenerationPreferences generationPreferences, String formBinding,
+         ILabelProvider labelProvider)
+   {
+      super(generationPreferences, formBinding, labelProvider);
    }
 
    @Override
