@@ -31,10 +31,10 @@ public class PreferenceManagerTableEntry extends DefaultRowModel
    private boolean selected;
 
    public PreferenceManagerTableEntry(String scope, String moduleId, String preferenceId, String preferenceName,
-         String preferenceValue)
+         String preferenceValue, String partitionId, String userName)
    {
       super();
-      this.scope = scope;
+      this.scope = scope + getPreferenceScope(partitionId, userName);
       this.moduleId = moduleId;
       this.preferenceId = preferenceId;
       this.preferenceName = preferenceName;
@@ -74,6 +74,26 @@ public class PreferenceManagerTableEntry extends DefaultRowModel
    public void setSelected(boolean selected)
    {
       this.selected = selected;
+   }
+
+   /**
+    * Utility method which returns the User Full Name or Partition Id for preference
+    * 
+    * @param partitionId
+    * @param userName
+    * @return
+    */
+   private String getPreferenceScope(String partitionId, String userName)
+   {
+      if (null != userName)
+      {
+         return "(" + userName + ")";
+      }
+      else
+      {
+         return " (" + partitionId + ")";
+      }
+
    }
 
 }

@@ -133,6 +133,7 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
       QueryService qService = SessionContext.findSessionContext().getServiceFactory().getQueryService();
       List<Preferences> prefs = new ArrayList<Preferences>();
       prefList.clear();
+      String userFullName = null;
       if (VIEW_TYPE.TENENT.name().equals(selectedView))
       {
          // fetch all the Partition preferences
@@ -144,6 +145,7 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
          if (userWrapper != null)
          {
             User u = userWrapper.getUser();
+            userFullName = userWrapper.getFullName();
             // fetch all preference store entries for User, the moduleId and PreferenceId
             // can be passed as '*'
             prefs = qService.getAllPreferences(PreferenceQuery.findPreferencesForUsers(u.getRealm().getId(), u.getId(),
@@ -157,8 +159,10 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
 
          for (Map.Entry<String, Serializable> entry : pref11.entrySet())
          {
-            prefList.add(new PreferenceManagerTableEntry(pref.getScope().name(), pref.getModuleId(), pref
-                  .getPreferencesId(), entry.getKey(), entry.getValue().toString()));
+            prefList
+                  .add(new PreferenceManagerTableEntry(pref.getScope().name(), pref.getModuleId(), pref
+                        .getPreferencesId(), entry.getKey(), entry.getValue().toString(), pref.getPartitionId(),
+                        userFullName));
          }
       }
 
@@ -175,19 +179,19 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
       fixedCols.add(scopeCol);
 
       ColumnPreference moduleIdCol = new ColumnPreference("ModuleId", "moduleId", ColumnDataType.STRING, getMessages()
-            .getString("moduleId.label"), null, true, false);
+            .getString("moduleId.label"), null, true, true);
       fixedCols.add(moduleIdCol);
 
       ColumnPreference preferenceIdCol = new ColumnPreference("PreferenceId", "preferenceId", ColumnDataType.STRING,
-            getMessages().getString("preferenceId.label"), null, true, false);
+            getMessages().getString("preferenceId.label"), null, true, true);
       fixedCols.add(preferenceIdCol);
 
       ColumnPreference preferenceNameCol = new ColumnPreference("PreferenceName", "preferenceName",
-            ColumnDataType.STRING, getMessages().getString("preferenceName.label"), null, true, false);
+            ColumnDataType.STRING, getMessages().getString("preferenceName.label"), null, true, true);
       fixedCols.add(preferenceNameCol);
 
       ColumnPreference preferenceValueCol = new ColumnPreference("PreferenceValue", "preferenceValue",
-            ColumnDataType.STRING, getMessages().getString("preferenceValue.label"), null, true, false);
+            ColumnDataType.STRING, getMessages().getString("preferenceValue.label"), null, true, true);
       fixedCols.add(preferenceValueCol);
 
       List<ColumnPreference> selectableCols = new ArrayList<ColumnPreference>();
