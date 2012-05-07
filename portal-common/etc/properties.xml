@@ -90,6 +90,8 @@
          sourceFile="../../../lib/carnot-engine.jar" destDir="WEB-INF/lib/" />
       <server-archive name="ipp-engine-core" type="jar"
          sourceFile="../../../lib/ipp-engine-core.jar" destDir="WEB-INF/lib/" />
+      <server-archive name="ipp-product-nls" type="jar"
+         sourceFile="../../../lib/ipp-product-nls.jar" destDir="WEB-INF/lib/" />
       <server-archive name="jaxb-api" type="jar"
          sourceFile="../../../lib/jaxb-api.jar" destDir="WEB-INF/lib/"
          setups="!production-withLiberation, !development-withLiberation"/>
@@ -1862,23 +1864,23 @@
          <!-- don't include stax-api.jar as its content is included with webservices-api.jar (which sometimes comes from the server classpath) -->
          <!-- don't include wstx-asl.jar as its content is included with webservices-rt.jar (which sometimes comes from the server classpath) -->
          <property name="Class-Path"
-            value="engine-ejb.ejb ipp-engine-core.jar mail.jar commons-jxpath.jar
+            value="engine-ejb.ejb ipp-engine-core.jar ipp-product-nls.jar mail.jar commons-jxpath.jar
                 jcr-vfs.jar asm.jar gson.jar jersey-core.jar jersey-server.jar                 spring-beans.jar spring-core.jar spring-tx.jar spring-jms.jar spring-jdbc.jar spring-expression.jar spring-context-support.jar spring-context.jar spring-asm.jar spring-aop.jar spring-orm.jar 
                 jsr250-api.jar jsr311-api.jar ipp-engine-ws-metro.jar xom.jar webservices-rt.jar webservices-api.jar webservices-extra.jar
                 webservices-extra-api.jar webservices-tools.jar jaxws-spring.jar cglib-nodep.jar
                 jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar">
             <appserver-value appserver="jboss5" 
-               value="ipp-engine-core.jar mail.jar commons-jxpath.jar
+               value="ipp-engine-core.jar ipp-product-nls.jar mail.jar commons-jxpath.jar
                 jcr-vfs.jar asm.jar gson.jar jersey-core.jar jersey-server.jar                 spring-beans.jar spring-core.jar spring-tx.jar spring-jms.jar spring-jdbc.jar spring-expression.jar spring-context-support.jar spring-context.jar spring-asm.jar spring-aop.jar spring-orm.jar 
                 jsr250-api.jar jsr311-api.jar jaxws-spring.jar cglib-nodep.jar
                 jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar"/>
             <appserver-value appserver="wls"
-               value="ipp-engine-core.jar mail.jar commons-jxpath.jar
+               value="ipp-engine-core.jar ipp-product-nls.jar mail.jar commons-jxpath.jar
                 jcr-vfs.jar asm.jar gson.jar jersey-core.jar jersey-server.jar                 spring-beans.jar spring-core.jar spring-tx.jar spring-jms.jar spring-jdbc.jar spring-expression.jar spring-context-support.jar spring-context.jar spring-asm.jar spring-aop.jar spring-orm.jar 
                 jsr250-api.jar jsr311-api.jar jaxws-spring.jar cglib-nodep.jar
                 jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar"/>
             <appserver-value appserver="was"
-               value="engine-ejb.ejb ipp-engine-core.jar mail.jar commons-jxpath.jar
+               value="engine-ejb.ejb ipp-engine-core.jar ipp-product-nls.jar mail.jar commons-jxpath.jar
                 jcr-vfs.jar jsp-api.jar asm.jar gson.jar jersey-core.jar jersey-server.jar                 spring-beans.jar spring-core.jar spring-tx.jar spring-jms.jar spring-jdbc.jar spring-expression.jar spring-context-support.jar spring-context.jar spring-asm.jar spring-aop.jar spring-orm.jar 
                 jsr250-api.jar jsr311-api.jar ipp-engine-ws-metro.jar xom.jar webservices-rt.jar webservices-api.jar webservices-extra.jar
                 webservices-extra-api.jar webservices-tools.jar jaxws-spring.jar cglib-nodep.jar

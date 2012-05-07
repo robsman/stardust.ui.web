@@ -187,4 +187,16 @@
          <arg value="-DlocalRepositoryPath=${maven.localRepository}"/>
       </exec>
    </target>
+   
+   <!-- target is invoked by stardust-ui-web-nls project -->
+   <target name="copy-nls-resources" 
+      description="copies the resources into a given folder">
+      <copy todir="${build.nls.dir}">
+         <fileset dir="${resources.src}">
+            <include name="**/*_de.properties"/>
+            <include name="**/*_en.properties"/>
+            <include name="**/*_zh_CN.properties"/>
+         </fileset>
+      </copy>
+   </target>
 </project>

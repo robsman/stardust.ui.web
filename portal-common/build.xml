@@ -172,32 +172,7 @@
    <target name="war" depends="retrieve-war-deps.ivy" xmlns:ivy="antlib:org.apache.ivy.ant">
       <!-- drop folder if it already exists by a previous build -->
       <delete dir="${project.webapp.dir}/WEB-INF/classes" failonerror="false"/>
-      <mkdir dir="${project.webapp.dir}/WEB-INF/classes"/>
       
-      <ivy:cachefileset setid="engine.deps" conf="carnot-engine-compile" inline="true" organisation="com.infinity.bpm" 
-         module="infinity-process-engine" revision="${ipp.version.full}" transitive="false" >
-      </ivy:cachefileset>
-
-      <!-- make a copy of engine to temp folder -->
-      <copy todir="${build.temp}">
-         <fileset refid="engine.deps" />
-      </copy>
-      
-      <!-- copy resources to war's WEB-INF/classes -->
-      <copy todir="${project.webapp.dir}/WEB-INF/classes" failonerror="false">
-         <zipfileset src="${build.temp}/carnot-engine.jar" >
-            <include name="/META-INF/resources/i18n/*"/>
-            <exclude name="**/PredefinedModel*.properties" />
-         </zipfileset>
-         <flattenmapper/>
-      </copy>
-      <copy todir="${project.webapp.dir}/WEB-INF/classes/ag/carnot" failonerror="false">
-         <zipfileset src="${build.temp}/carnot-engine.jar" >
-            <include name="/META-INF/resources/i18n/PredefinedModel*.properties"/>
-         </zipfileset>
-         <flattenmapper/>
-      </copy>
-
       <war destfile="${build.deploy}/ipp-portal.war" basedir="${project.webapp.dir}"
          webxml="${project.webapp.dir}/WEB-INF/web.xml" excludes="**/.gitignore">
       </war>
@@ -242,5 +217,17 @@
          <arg value="-DpomFile=${build.lib}/ipp-portal-common.pom"/>
          <arg value="-DlocalRepositoryPath=${maven.localRepository}"/>
       </exec>
+   </target>
+   
+   <!-- target is invoked by stardust-ui-web-nls project -->
+   <target name="copy-nls-resources" 
+      description="copies the resources into a given folder">
+      <copy todir="${build.nls.dir}">
+         <fileset dir="${resources.src}">
+            <include name="**/*_de.properties"/>
+            <include name="**/*_en.properties"/>
+            <include name="**/*_zh_CN.properties"/>
+         </fileset>
+      </copy>
    </target>
 </project>
