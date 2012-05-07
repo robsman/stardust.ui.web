@@ -1676,8 +1676,14 @@ table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbo
 	border-right: 1px solid #999;
 	border-bottom: 1px solid #999;
 	border-left: 1px solid #999;
-	max-width: 300px;
+	max-width: 350px;
 	background: url('./css-images/notes-background.png') top repeat-x #FFFFE0;
+}
+
+/* max-width of tooltip2body must be 30px lesser than tooltip2 (popup) */
+.tooltip2 .tooltip2Body {
+	max-width: 320px;
+	overflow:hidden;
 }
 
 .tooltip2 .tooltip2TitleBar {
