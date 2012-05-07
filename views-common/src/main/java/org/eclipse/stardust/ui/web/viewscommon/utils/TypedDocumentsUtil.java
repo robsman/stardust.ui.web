@@ -349,6 +349,13 @@ public class TypedDocumentsUtil
       while (null != typedXPath.getParentXPath())
       {
          typedXPath = typedXPath.getParentXPath();
+
+         // Top most Parent is Declared Data Type. This needs to be skipped
+         if (null != typedXPath && null == typedXPath.getParentXPath()) 
+         {
+            break;
+         }
+
          sb.insert(0, getXPathLabel(typedXPath, model) + " / ");
       }
 
