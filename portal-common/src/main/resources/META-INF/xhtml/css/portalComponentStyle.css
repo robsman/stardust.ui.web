@@ -214,11 +214,12 @@
 }
 
 .popupDialogHdr .windowClose {
-	background: url(../images/icons/dialog-windowbttn-close.png) no-repeat;
+	background: url(../images/icons/dialog-windowbttn-close.png) no-repeat scroll 0 transparent;
 	border: none;
 	float: right;
 	padding-top: 6px;
 	padding-right: 10px;
+	cursor: pointer;
 }
 
 .popupDialogBody {
