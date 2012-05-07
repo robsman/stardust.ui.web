@@ -407,6 +407,10 @@ public class WorkflowFacade implements Resetable
       return null;
    }
 
+   /**
+    * @param modelParticipantInfo
+    * @return
+    */
    public RoleItem getRoleItem(ModelParticipantInfo modelParticipantInfo)
    {
       RoleItem roleItem = null;
@@ -416,7 +420,20 @@ public class WorkflowFacade implements Resetable
          {
             if (item.getRole().getQualifiedId().equals(modelParticipantInfo.getQualifiedId()))
             {
-               roleItem = item;
+               if (modelParticipantInfo.isDepartmentScoped())
+               {
+                  if (org.eclipse.stardust.ui.web.common.util.StringUtils.areEqual(
+                        modelParticipantInfo.getDepartment(), item.getRole().getDepartment()))
+                  {
+                     roleItem = item;
+                     break;
+                  }
+               }
+               else
+               {
+                  roleItem = item;
+                  break;
+               }
             }
          }
          
