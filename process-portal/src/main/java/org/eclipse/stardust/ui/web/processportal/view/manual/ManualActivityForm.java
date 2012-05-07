@@ -51,6 +51,7 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
+import org.eclipse.stardust.ui.web.viewscommon.utils.IppJsfFormGenerator;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 
 
@@ -64,7 +65,7 @@ public class ManualActivityForm extends Form
 {
    private static final Logger trace = LogManager.getLogger(ManualActivityForm.class);
 
-   private ManualActivityJsfFormGenerator formGenerator;
+   private IppJsfFormGenerator formGenerator;
 
    private String formId;
 
@@ -107,7 +108,7 @@ public class ManualActivityForm extends Form
       this.applicationContext = applicationContext;
       this.documentInputEventHandler = documentInputEventHandler;
 
-      this.formGenerator = new ManualActivityJsfFormGenerator(generationPreferences, formBinding);
+      this.formGenerator = new IppJsfFormGenerator(generationPreferences, formBinding);
       generateForm();
    }
 

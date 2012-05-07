@@ -8,7 +8,7 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.processportal.view.manual;
+package org.eclipse.stardust.ui.web.viewscommon.utils;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -24,7 +24,6 @@ import org.eclipse.stardust.ui.web.common.util.CustomDateConverter;
 import org.eclipse.stardust.ui.web.common.util.CustomDateTimeConverter;
 import org.eclipse.stardust.ui.web.common.util.CustomTimeConverter;
 import org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter;
-import org.eclipse.stardust.ui.web.viewscommon.utils.IceFacesHelperExt;
 
 import com.icesoft.faces.component.ext.HtmlPanelGrid;
 
@@ -32,13 +31,13 @@ import com.icesoft.faces.component.ext.HtmlPanelGrid;
  * @author Subodh.Godbole
  *
  */
-public class ManualActivityJsfFormGenerator extends JsfFormGenerator
+public class IppJsfFormGenerator extends JsfFormGenerator
 {
    /**
     * @param generationPreferences
     * @param formBinding
     */
-   public ManualActivityJsfFormGenerator(FormGenerationPreferences generationPreferences, String formBinding)
+   public IppJsfFormGenerator(FormGenerationPreferences generationPreferences, String formBinding)
    {
       super(generationPreferences, formBinding);
    }
