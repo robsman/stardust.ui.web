@@ -38,7 +38,7 @@
 		<ice:panelGroup styleClass="clearing" />
 		<ice:panelGroup>
 			<ice:inputText value="#{prefManagerBean.prefSearchTxt}"
-				style="width: 90%;margin-left:10px;" partialSubmit="true">
+				style="width: 305px;margin-left:10px;margin-right:10px;" partialSubmit="true">
 			</ice:inputText>
 			<ice:commandButton id="submitSearch"
 				value="#{prefManagerBean.messages['searchPrefStore.label']}"
@@ -46,7 +46,7 @@
 		</ice:panelGroup>
 
 		<ice:panelGroup styleClass="clearing" />
-		<ice:panelGroup style="margin-left:5px;" scrollHeight="450px;">
+		<ice:panelGroup style="margin-left:5px;">
 			<pc:genericDataTable title="" bean="#{prefManagerBean}"
 				id="prefManagerList" table="#{prefManagerBean.prefManagerTable}"
 				sortSupported="true"
