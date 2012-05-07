@@ -248,6 +248,7 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
 
          if (row.isSelected())
          {
+            selectedPrefMngrObj = row;
             // Confirmation Dialog on Delete action
             prefMngrConfirmationDialog = new ConfirmationDialog(DialogContentType.WARNING,
                   DialogActionType.CONTINUE_CANCEL, null, DialogStyle.COMPACT, this);
