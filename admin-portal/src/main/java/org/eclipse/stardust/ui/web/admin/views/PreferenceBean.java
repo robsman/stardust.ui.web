@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.admin.views;
 
-import org.eclipse.stardust.ui.web.viewscommon.user.UserAutocompleteMultiSelector;
 
 /**
  * 
@@ -20,40 +19,28 @@ import org.eclipse.stardust.ui.web.viewscommon.user.UserAutocompleteMultiSelecto
 public class PreferenceBean
 {
 
-   private String scope;
    private String moduleId;
    private String preferenceId;
    private String preferenceName;
    private String preferenceValue;
-   private UserAutocompleteMultiSelector userSelector;
+   private String userId;
+   private String realmId;
 
    public PreferenceBean()
    {
       super();
-      userSelector = new UserAutocompleteMultiSelector(false, true);
-      userSelector.setShowOnlineIndicator(false);
    }
 
-   public PreferenceBean(String scope, String moduleId, String preferenceId, String preferenceName,
-         String preferenceValue, UserAutocompleteMultiSelector userSelector)
+   public PreferenceBean(String moduleId, String preferenceId, String preferenceName, String preferenceValue,
+         String userId, String realmId)
    {
       super();
-      this.scope = scope;
       this.moduleId = moduleId;
       this.preferenceId = preferenceId;
       this.preferenceName = preferenceName;
       this.preferenceValue = preferenceValue;
-      this.userSelector = userSelector;
-   }
-
-   public String getScope()
-   {
-      return scope;
-   }
-
-   public void setScope(String scope)
-   {
-      this.scope = scope;
+      this.userId = userId;
+      this.realmId = realmId;
    }
 
    public String getModuleId()
@@ -96,9 +83,14 @@ public class PreferenceBean
       this.preferenceValue = preferenceValue;
    }
 
-   public UserAutocompleteMultiSelector getUserSelector()
+   public String getUserId()
    {
-      return userSelector;
+      return userId;
+   }
+
+   public String getRealmId()
+   {
+      return realmId;
    }
 
 }

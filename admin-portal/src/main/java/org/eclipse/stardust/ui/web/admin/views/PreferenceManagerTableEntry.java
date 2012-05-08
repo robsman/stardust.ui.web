@@ -28,10 +28,12 @@ public class PreferenceManagerTableEntry extends DefaultRowModel
    private String preferenceId;
    private String preferenceName;
    private String preferenceValue;
+   private String userId;
+   private String realmId;
    private boolean selected;
 
    public PreferenceManagerTableEntry(String scope, String moduleId, String preferenceId, String preferenceName,
-         String preferenceValue, String partitionId, String userName)
+         String preferenceValue, String userId, String realmId, String partitionId, String userName)
    {
       super();
       this.scope = scope + getPreferenceScope(partitionId, userName);
@@ -39,6 +41,8 @@ public class PreferenceManagerTableEntry extends DefaultRowModel
       this.preferenceId = preferenceId;
       this.preferenceName = preferenceName;
       this.preferenceValue = preferenceValue;
+      this.userId = userId;
+      this.realmId = realmId;
    }
 
    public String getScope()
@@ -76,6 +80,16 @@ public class PreferenceManagerTableEntry extends DefaultRowModel
       this.selected = selected;
    }
 
+   public String getUserId()
+   {
+      return userId;
+   }
+
+   public String getRealmId()
+   {
+      return realmId;
+   }
+
    /**
     * Utility method which returns the User Full Name or Partition Id for preference
     * 
@@ -87,7 +101,7 @@ public class PreferenceManagerTableEntry extends DefaultRowModel
    {
       if (null != userName)
       {
-         return "(" + userName + ")";
+         return " (" + userName + ")";
       }
       else
       {

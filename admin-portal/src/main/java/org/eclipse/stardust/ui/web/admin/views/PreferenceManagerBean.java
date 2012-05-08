@@ -38,10 +38,10 @@ import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
-import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
@@ -104,9 +104,9 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
    {
       userSelector = new UserAutocompleteMultiSelector(false, true);
       userSelector.setShowOnlineIndicator(false);
-      viewSelection[0] = new SelectItem(VIEW_TYPE.TENENT.name(), getMessages().getString("tenant.label"));
+      viewSelection[0] = new SelectItem(VIEW_TYPE.PARTITION.name(), getMessages().getString("tenant.label"));
       viewSelection[1] = new SelectItem(VIEW_TYPE.USER.name(), getMessages().getString("user.label"));
-      selectedView = VIEW_TYPE.TENENT.name();
+      selectedView = VIEW_TYPE.PARTITION.name();
       prefList = CollectionUtils.newArrayList();
       createTable();
       update();
@@ -134,7 +134,7 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
       List<Preferences> prefs = new ArrayList<Preferences>();
       prefList.clear();
       String userFullName = null;
-      if (VIEW_TYPE.TENENT.name().equals(selectedView))
+      if (VIEW_TYPE.PARTITION.name().equals(selectedView))
       {
          // fetch all the Partition preferences
          prefs = qService.getAllPreferences(PreferenceQuery.findAll(PreferenceScope.PARTITION));
@@ -159,10 +159,9 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
 
          for (Map.Entry<String, Serializable> entry : pref11.entrySet())
          {
-            prefList
-                  .add(new PreferenceManagerTableEntry(pref.getScope().name(), pref.getModuleId(), pref
-                        .getPreferencesId(), entry.getKey(), entry.getValue().toString(), pref.getPartitionId(),
-                        userFullName));
+            prefList.add(new PreferenceManagerTableEntry(pref.getScope().name(), pref.getModuleId(), pref
+                  .getPreferencesId(), entry.getKey(), entry.getValue().toString(), pref.getUserId(),
+                  pref.getRealmId(), pref.getPartitionId(), userFullName));
          }
       }
 
@@ -310,7 +309,7 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
       AdministrationService adminService = SessionContext.findSessionContext().getServiceFactory()
             .getAdministrationService();
       Preferences selPreference = null;
-      if (VIEW_TYPE.TENENT.name().equals(selectedView))
+      if (VIEW_TYPE.PARTITION.name().equals(selectedView))
       {
          selPreference = adminService.getPreferences(PreferenceScope.PARTITION, selectedPrefMngrObj.getModuleId(),
                selectedPrefMngrObj.getPreferenceId());
@@ -335,7 +334,7 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
    *
    */
    public static enum VIEW_TYPE {
-      TENENT, USER;
+      PARTITION, USER;
    }
 
    public SelectItem[] getViewSelection()

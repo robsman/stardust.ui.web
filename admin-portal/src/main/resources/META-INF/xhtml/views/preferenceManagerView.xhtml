@@ -38,9 +38,10 @@
 		<ice:panelGroup styleClass="clearing" />
 		<ice:panelGroup>
 			<ice:inputText value="#{prefManagerBean.prefSearchTxt}"
-				style="width: 305px;margin-left:10px;margin-right:10px;" partialSubmit="true">
+				style="width: 305px;margin-left:10px;margin-right:10px;"
+				partialSubmit="true">
 			</ice:inputText>
-			<ice:commandButton id="submitSearch"
+			<ice:commandButton
 				value="#{prefManagerBean.messages['searchPrefStore.label']}"
 				action="#{prefManagerBean.performSearch}" styleClass="button" />
 		</ice:panelGroup>

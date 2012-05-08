@@ -37,7 +37,7 @@
 							<ice:panelGroup
 								rendered="#{!createOrModifyPreference.modifyMode}">
 								<ice:inputText id="moduleId"
-									value="#{createOrModifyPreference.moduleId}" required="true"
+									value="#{createOrModifyPreference.preferenceBean.moduleId}" required="true"
 									style="width:215px;" partialSubmit="true">
 								</ice:inputText>
 								<ice:panelGroup styleClass="msgError">
@@ -52,7 +52,7 @@
 							<ice:panelGroup
 								rendered="#{!createOrModifyPreference.modifyMode}">
 								<ice:inputText id="preferenceId"
-									value="#{createOrModifyPreference.preferenceId}"
+									value="#{createOrModifyPreference.preferenceBean.preferenceId}"
 									required="true" style="width:215px;" partialSubmit="true">
 								</ice:inputText>
 								<ice:panelGroup styleClass="msgError">
@@ -67,7 +67,7 @@
 							<ice:panelGroup
 								rendered="#{!createOrModifyPreference.modifyMode}">
 								<ice:inputText id="preferenceName"
-									value="#{createOrModifyPreference.preferenceName}"
+									value="#{createOrModifyPreference.preferenceBean.preferenceName}"
 									required="true" style="width:215px;" partialSubmit="true">
 								</ice:inputText>
 								<ice:panelGroup styleClass="msgError">
@@ -80,8 +80,8 @@
 								styleClass="label-form" />
 
 							<ice:inputTextarea id="preferenceValue"
-								value="#{createOrModifyPreference.preferenceValue}"
-								required="true" cols="36" partialSubmit="true">
+								value="#{createOrModifyPreference.preferenceBean.preferenceValue}"
+								required="true" cols="36" rows="5" partialSubmit="true">
 							</ice:inputTextarea>
 
 
@@ -104,27 +104,32 @@
 								</ice:selectOneRadio>
 
 								<ice:panelGroup
-									style="padding-top: 10px;width:auto;min-width: 150px; " rendered="#{createOrModifyPreference.selectedView eq 'USER'}">
+									style="padding-top: 10px;width:auto;min-width: 150px; "
+									rendered="#{createOrModifyPreference.selectedView eq 'USER'}">
 									<ui:include
-										src="#{createOrModifyPreference.preferenceBean.userSelector.autocompleteContentUrl}">
+										src="#{createOrModifyPreference.userSelector.autocompleteContentUrl}">
 										<ui:param name="component"
 											value="#{createOrModifyPreference.userSelector}" />
 									</ui:include>
 								</ice:panelGroup>
 							</ice:panelGrid>
+							<ice:panelGroup></ice:panelGroup>
+							<ice:panelGroup styleClass="msgError" rendered="#{createOrModifyPreference.selectedView eq 'USER'}">
+										<ice:outputText
+											value="#{createOrModifyPreference.userValidationMsg}"
+											styleClass="msgError" escape="false" />
+									</ice:panelGroup>
 						</ice:panelGrid>
 					</f:facet>
 
 					<f:facet name="south">
 						<ice:panelGroup>
 							<ice:commandButton value="#{messages_admin['common.ok']}"
-								action="#{createOrModifyPreference.apply}" id="applyPreference"
-								styleClass="button" title="#{messages_admin['common.ok']}"
-								immediate="true" />
+								action="#{createOrModifyPreference.apply}" styleClass="button"
+								title="#{messages_admin['common.ok']}" immediate="true" />
 							<ice:commandButton value="#{messages_admin['common.cancel']}"
 								action="#{createOrModifyPreference.closePopup}" immediate="true"
-								id="cancel" styleClass="button"
-								title="#{messages_admin['common.cancel']}" />
+								styleClass="button" title="#{messages_admin['common.cancel']}" />
 						</ice:panelGroup>
 					</f:facet>
 				</ice:panelBorder>
