@@ -36,7 +36,7 @@
 	</context-param>
 	<context-param>
 		<param-name>carnot.SESSION_LISTENERS</param-name>
-		<param-value>ippAdmPortalSessionListenerBean,businessControlCenterInitializer</param-value>
+		<param-value>ippAdmPortalSessionListenerBean</param-value>
 	</context-param>
 	<context-param>
 		<param-name>carnot.login.APPLICATION_ID</param-name>

@@ -116,7 +116,7 @@
 
 	<bean name="documentHandlersRegistryBean"
 		class="org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentHandlersRegistryBean"
-		scope="globalSession">
+		scope="singleton">
 		<property name="registeredContentHandlers">
 			<list>
 				<value>org.eclipse.stardust.ui.web.viewscommon.views.document.RichTextViewer</value>

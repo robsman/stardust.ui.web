@@ -21,11 +21,7 @@
    <bean name="messages_bcc" class="org.eclipse.stardust.ui.web.bcc.messsages.MessagesBCCBean"
         scope="session">
    </bean>
-   
-   <bean name="businessControlCenterInitializer" class="org.eclipse.stardust.ui.web.bcc.jsf.BusinessControlCenterSessionInitializer"
-        scope="globalSession">
-   </bean>
-
+ 
    <bean name="businessControlCenterPerspectiveEventHandler" class="org.eclipse.stardust.ui.web.bcc.BusinessControlCenterPerspectiveEventHandler"
         scope="session">
    </bean>

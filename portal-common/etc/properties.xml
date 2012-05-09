@@ -921,7 +921,7 @@
          <property name="context-param[SESSION_LISTENERS].param-name"
             value="carnot.SESSION_LISTENERS" />
          <property name="context-param[SESSION_LISTENERS].param-value"
-            value="ippRADProcessPortalSessionInitializer,businessControlCenterInitializer,ippAdmPortalSessionListenerBean"/>
+            value="ippRADProcessPortalSessionInitializer,ippAdmPortalSessionListenerBean"/>
 
          <property name="context-param[DIAGRAMS_URL].param-name"
             value="ag.carnot.processportal.integration.LIVE_DIAGRAMS_URL" 
@@ -1979,7 +1979,7 @@
          <property name="context-param[SESSION_LISTENERS].param-name"
             value="carnot.SESSION_LISTENERS" />
          <property name="context-param[SESSION_LISTENERS].param-value"
-            value="ippRADProcessPortalSessionInitializer,businessControlCenterInitializer,ippAdmPortalSessionListenerBean" />
+            value="ippRADProcessPortalSessionInitializer,ippAdmPortalSessionListenerBean" />
 
          <property name="context-param[DIAGRAMS_URL].param-name"
             value="ag.carnot.processportal.integration.LIVE_DIAGRAMS_URL" 
