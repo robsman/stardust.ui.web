@@ -20,12 +20,14 @@ import javax.faces.component.UIComponent;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
+import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.engine.api.query.PreferenceQuery;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
 import org.eclipse.stardust.ui.web.admin.messages.AdminMessagesPropertiesBean;
-import org.eclipse.stardust.ui.web.admin.views.PreferenceManagerBean.VIEW_TYPE;
+import org.eclipse.stardust.ui.web.admin.views.PreferenceManagerBean.PREF_VIEW_TYPE;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog.MessageType;
@@ -40,15 +42,14 @@ public class CreateOrModifyPreferenceBean extends PopupUIComponentBean
     * 
     */
    private static final long serialVersionUID = 1L;
-
-   private boolean modifyMode;
-
-   private PreferenceBean preferenceBean;
-   private String selectedView;
    private final SelectItem[] viewSelection = new SelectItem[2];
-   private AdminMessagesPropertiesBean propsBean;
+   private boolean modifyMode;
+   private String selectedView;
    private String userValidationMsg;
+   private AdminMessagesPropertiesBean propsBean;
+   private PreferenceBean preferenceBean;
    private UserAutocompleteMultiSelector userSelector;
+   AdministrationService adminService;
 
    public CreateOrModifyPreferenceBean()
    {
@@ -79,11 +80,11 @@ public class CreateOrModifyPreferenceBean extends PopupUIComponentBean
             {
                this.preferenceBean = new PreferenceBean(row.getModuleId(), row.getPreferenceId(),
                      row.getPreferenceName(), row.getPreferenceValue(), row.getUserId(), row.getRealmId());
-               selectedView = row.getScope().contains(VIEW_TYPE.PARTITION.name())
-                     ? VIEW_TYPE.PARTITION.name()
-                     : VIEW_TYPE.USER.name();
+               selectedView = row.getScope().contains(PREF_VIEW_TYPE.PARTITION.name()) ? PREF_VIEW_TYPE.PARTITION
+                     .name() : PREF_VIEW_TYPE.USER.name();
             }
          }
+         // If no row is selected, show error message dialog
          if (null == preferenceBean)
          {
             MessageDialog.addMessage(MessageType.ERROR, propsBean.getString("views.common.error.label"),
@@ -96,74 +97,90 @@ public class CreateOrModifyPreferenceBean extends PopupUIComponentBean
       {
          this.preferenceBean = new PreferenceBean();
          this.modifyMode = false;
-         viewSelection[0] = new SelectItem(VIEW_TYPE.PARTITION.name(),
+         viewSelection[0] = new SelectItem(PREF_VIEW_TYPE.PARTITION.name(),
                propsBean.getString("views.prefManagerBean.modifyPreference.tenant.label"));
-         viewSelection[1] = new SelectItem(VIEW_TYPE.USER.name(),
+         viewSelection[1] = new SelectItem(PREF_VIEW_TYPE.USER.name(),
                propsBean.getString("views.prefManagerBean.modifyPreference.user.label"));
-         selectedView = VIEW_TYPE.PARTITION.name();
-         userSelector = new UserAutocompleteMultiSelector(false, true);
-         userSelector.setShowOnlineIndicator(false);
+         selectedView = PREF_VIEW_TYPE.PARTITION.name();
       }
+      userSelector = new UserAutocompleteMultiSelector(false, true);
+      userSelector.setShowOnlineIndicator(false);
       super.openPopup();
    }
 
    public void apply()
    {
-      AdministrationService adminService = SessionContext.findSessionContext().getServiceFactory()
-            .getAdministrationService();
-      Map<String, Serializable> preferenceMap = new HashMap<String, Serializable>();
+      adminService = SessionContext.findSessionContext().getServiceFactory().getAdministrationService();
       Preferences prefs = null;
       userValidationMsg = null;
-      preferenceMap.put(preferenceBean.getPreferenceName(), preferenceBean.getPreferenceValue());
-      if (VIEW_TYPE.PARTITION.name().equals(selectedView))
+      if (PREF_VIEW_TYPE.PARTITION.name().equals(selectedView))
       {
-         // If Preference for current Preference Id already exist,set Preference Map
-         prefs = adminService.getPreferences(PreferenceScope.PARTITION, preferenceBean.getModuleId(),
-               preferenceBean.getPreferenceId());
-         if (null != prefs)
-         {
-            prefs.getPreferences().put(preferenceBean.getPreferenceName(), preferenceBean.getPreferenceValue());
-         }
-         else
-         {
-            prefs = new Preferences(PreferenceScope.PARTITION, preferenceBean.getModuleId(),
-                  preferenceBean.getPreferenceId(), preferenceMap);
-         }
+         prefs = updatePreference(PreferenceScope.PARTITION, true);
       }
       else
       {
-         prefs = adminService.getPreferences(PreferenceScope.USER, preferenceBean.getModuleId(),
-               preferenceBean.getPreferenceId());
+         prefs = updatePreference(PreferenceScope.USER, false);
+      }
+      if (null == prefs)
+         return;
+      else
+         adminService.savePreferences(prefs);
+      PreferenceManagerBean.getCurrent().update();
+      closePopup();
+   }
 
-         if (null != prefs)
-         {
-            prefs.getPreferences().put(preferenceBean.getPreferenceName(), preferenceBean.getPreferenceValue());
-            prefs.setUserId(preferenceBean.getUserId());
-            prefs.setRealmId(preferenceBean.getRealmId());
-         }
-         else
-         {
-            prefs = new Preferences(PreferenceScope.USER, preferenceBean.getModuleId(),
-                  preferenceBean.getPreferenceId(), preferenceMap);
-         }
-         UserWrapper userWrapper = getUserSelector().getSelectedValue();
+   private Preferences updatePreference(PreferenceScope prefScope, boolean partitionPrefSelected)
+   {
+      Preferences prefs = null;
+      Map<String, Serializable> preferenceMap = new HashMap<String, Serializable>();
+      preferenceMap.put(preferenceBean.getPreferenceName(), preferenceBean.getPreferenceValue());
+      UserWrapper userWrapper = getUserSelector().getSelectedValue();
+
+      if (partitionPrefSelected)
+         prefs = adminService.getPreferences(prefScope, preferenceBean.getModuleId(), preferenceBean.getPreferenceId());
+      else
+      {
+         // Add Preference with User selection
          if (!modifyMode && null != userWrapper)
          {
             User u = userWrapper.getUser();
-            prefs.setUserId(u.getId());
-            prefs.setRealmId(u.getRealm().getId());
+            preferenceBean.setUserId(u.getId());
+            preferenceBean.setRealmId(u.getRealm().getId());
          }
-         // If Add Preference with User is selected and User entry is empty add error
-         // message
          else if (!modifyMode && null == userWrapper)
          {
+            // When no user selection is made in 'Add' for User Preference Scope , return
+            // null with error msg
             userValidationMsg = propsBean.getString("views.prefManagerBean.modifyPreference.confirmAddPref.error");
-            return;
+            return null;
+         }
+         List<Preferences> userPrefList = CollectionUtils.newArrayList();
+         // AdminServiceImpl does not have method to retrieve specific preference for User
+         // , we use QueryService call to get preference for User selected
+         userPrefList = SessionContext
+               .findSessionContext()
+               .getServiceFactory()
+               .getQueryService()
+               .getAllPreferences(
+                     PreferenceQuery.findPreferencesForUsers(preferenceBean.getRealmId(), preferenceBean.getUserId(),
+                           preferenceBean.getModuleId(), preferenceBean.getPreferenceId()));
+         if (CollectionUtils.isNotEmpty(userPrefList))
+         {
+            prefs = userPrefList.get(0);
          }
       }
-      adminService.savePreferences(prefs);
-      PreferenceManagerBean.getCurrent().update();
-      closePopup();
+      if (null == prefs)
+      {
+         prefs = new Preferences(prefScope, preferenceBean.getModuleId(), preferenceBean.getPreferenceId(),
+               preferenceMap);
+      }
+      else
+      {
+         prefs.getPreferences().put(preferenceBean.getPreferenceName(), preferenceBean.getPreferenceValue());
+      }
+      prefs.setUserId(preferenceBean.getUserId());
+      prefs.setRealmId(preferenceBean.getRealmId());
+      return prefs;
    }
 
    @Override

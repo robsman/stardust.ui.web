@@ -76,6 +76,7 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
    private List<PreferenceManagerTableEntry> prefList;
    private ConfirmationDialog prefMngrConfirmationDialog;
    private PreferenceManagerTableEntry selectedPrefMngrObj;
+   private QueryService qService;
 
    public PreferenceManagerBean()
    {
@@ -104,9 +105,9 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
    {
       userSelector = new UserAutocompleteMultiSelector(false, true);
       userSelector.setShowOnlineIndicator(false);
-      viewSelection[0] = new SelectItem(VIEW_TYPE.PARTITION.name(), getMessages().getString("tenant.label"));
-      viewSelection[1] = new SelectItem(VIEW_TYPE.USER.name(), getMessages().getString("user.label"));
-      selectedView = VIEW_TYPE.PARTITION.name();
+      viewSelection[0] = new SelectItem(PREF_VIEW_TYPE.PARTITION.name(), getMessages().getString("tenant.label"));
+      viewSelection[1] = new SelectItem(PREF_VIEW_TYPE.USER.name(), getMessages().getString("user.label"));
+      selectedView = PREF_VIEW_TYPE.PARTITION.name();
       prefList = CollectionUtils.newArrayList();
       createTable();
       update();
@@ -130,11 +131,11 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
    private void fetchPreferences()
    {
 
-      QueryService qService = SessionContext.findSessionContext().getServiceFactory().getQueryService();
+      qService = SessionContext.findSessionContext().getServiceFactory().getQueryService();
       List<Preferences> prefs = new ArrayList<Preferences>();
       prefList.clear();
       String userFullName = null;
-      if (VIEW_TYPE.PARTITION.name().equals(selectedView))
+      if (PREF_VIEW_TYPE.PARTITION.name().equals(selectedView))
       {
          // fetch all the Partition preferences
          prefs = qService.getAllPreferences(PreferenceQuery.findAll(PreferenceScope.PARTITION));
@@ -309,14 +310,21 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
       AdministrationService adminService = SessionContext.findSessionContext().getServiceFactory()
             .getAdministrationService();
       Preferences selPreference = null;
-      if (VIEW_TYPE.PARTITION.name().equals(selectedView))
+      if (PREF_VIEW_TYPE.PARTITION.name().equals(selectedView))
       {
          selPreference = adminService.getPreferences(PreferenceScope.PARTITION, selectedPrefMngrObj.getModuleId(),
                selectedPrefMngrObj.getPreferenceId());
       }
       else
-         selPreference = adminService.getPreferences(PreferenceScope.USER, selectedPrefMngrObj.getModuleId(),
-               selectedPrefMngrObj.getPreferenceId());
+      {
+         // Specific User Preference is retrieved from QueryService method to remove the
+         // Map entry for Preference Name-Value pair
+         selPreference = qService.getAllPreferences(
+               PreferenceQuery.findPreferencesForUsers(selectedPrefMngrObj.getRealmId(),
+                     selectedPrefMngrObj.getUserId(), selectedPrefMngrObj.getModuleId(),
+                     selectedPrefMngrObj.getPreferenceId())).get(0);
+      }
+
       selPreference.getPreferences().remove(selectedPrefMngrObj.getPreferenceName());
       adminService.savePreferences(selPreference);
       update();
@@ -333,7 +341,7 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
    /**
    *
    */
-   public static enum VIEW_TYPE {
+   public static enum PREF_VIEW_TYPE {
       PARTITION, USER;
    }
 
@@ -390,6 +398,11 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
    public void setSelectedPrefMngrObj(PreferenceManagerTableEntry selectedPrefMngrObj)
    {
       this.selectedPrefMngrObj = selectedPrefMngrObj;
+   }
+
+   public QueryService getqService()
+   {
+      return qService;
    }
 
 }

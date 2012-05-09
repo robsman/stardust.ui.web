@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.admin.views;
 
-
 /**
  * 
  * @author Sidharth.Singh
@@ -88,9 +87,19 @@ public class PreferenceBean
       return userId;
    }
 
+   public void setUserId(String userId)
+   {
+      this.userId = userId;
+   }
+
    public String getRealmId()
    {
       return realmId;
+   }
+
+   public void setRealmId(String realmId)
+   {
+      this.realmId = realmId;
    }
 
 }
