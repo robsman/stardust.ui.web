@@ -109,6 +109,8 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
    @Override
    public void initialize()
    {
+      criticalityCategoryList = CriticalityConfigurationHelper.getInstance().getCriticalityConfiguration();
+      initializeCriticalityTable();
       rootModelNode = TreeNodeFactory.createTreeNode(treeTable, this, new ModelDefCriticalityMgrTableEntry(), false);
       // Now Create a Model & Tree Table
       model = new DefaultTreeModel(rootModelNode);
@@ -386,8 +388,6 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
       {
          if (!isActivated)
          {
-            criticalityCategoryList = CriticalityConfigurationHelper.getInstance().getCriticalityConfiguration();
-            initializeCriticalityTable();
             initialize();
             initializeActivityTable();
             isActivated = true;

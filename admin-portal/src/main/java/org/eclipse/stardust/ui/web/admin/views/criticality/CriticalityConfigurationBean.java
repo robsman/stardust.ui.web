@@ -49,6 +49,7 @@ import org.eclipse.stardust.ui.web.common.table.IDataTable;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
+import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil.ICON_COLOR;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
@@ -209,6 +210,9 @@ public class CriticalityConfigurationBean extends UIComponentBean implements Vie
             CriticalityConfigurationUtil.saveCriticalityCategories(getCriticalityCategoriesAsMap());
             saveCriticalityEnginePreferences();
             initializeFileResource();
+
+            //Re-initialize criticality configuration helper.
+            CriticalityConfigurationHelper.getInstance().initialize();
             MessageDialog.addInfoMessage(propsBean.getString("views.criticalityConf.criticality.save.success.dialog"));
          }
       }
