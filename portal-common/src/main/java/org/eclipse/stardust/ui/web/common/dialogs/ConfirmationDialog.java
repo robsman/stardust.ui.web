@@ -198,7 +198,7 @@ public class ConfirmationDialog extends PopupUIComponentBean
    /**
     * 
     */
-   private void setActionType(DialogActionType actionType)
+   public void setActionType(DialogActionType actionType)
    {
       if (null == actionType)
       {

@@ -24,6 +24,9 @@
 		<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
 			<ui:param name="dialogBean" value="#{activityDetailsBean.mappedDocumentConfirmationDialog}" />
 		</ui:include>
+		<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+			<ui:param name="dialogBean" value="#{confirmationDialogWithOptionsBean}" />
+		</ui:include>
 	</ice:panelGroup>
 
 	<ice:panelGroup>

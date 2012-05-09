@@ -158,6 +158,11 @@
 		scope="portalTab">
 	</bean>
 
+	<bean name="confirmationDialogWithOptionsBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.dialogs.ConfirmationDialogWithOptionsBean"
+		scope="portalTab">
+	</bean>
+
 	<!--
 		****************** Document Repository Beans: end ******************
 	-->

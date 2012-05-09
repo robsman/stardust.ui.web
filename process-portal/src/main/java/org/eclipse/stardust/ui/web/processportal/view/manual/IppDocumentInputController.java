@@ -21,20 +21,27 @@ import org.eclipse.stardust.ui.common.form.jsf.DocumentPath;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.app.View.ViewState;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
 import org.eclipse.stardust.ui.web.common.event.ViewDataEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewDataEventHandler;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
+import org.eclipse.stardust.ui.web.processportal.common.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.processportal.view.manual.DocumentInputEventHandler.DocumentInputEvent;
 import org.eclipse.stardust.ui.web.processportal.view.manual.DocumentInputEventHandler.DocumentInputEvent.DocumentInputEventType;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.ConfirmationDialogWithOptionsBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.IceComponentUtil;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog;
@@ -51,13 +58,20 @@ import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
 public class IppDocumentInputController extends DocumentInputController implements ViewDataEventHandler
 {
    private static final Logger trace = LogManager.getLogger(IppDocumentInputController.class);
-
+   private static final String DELETE_DOCUMENT_OPTIONS_PREFIX = "views.activityPanel.deleteDocument.options.";
+   
+   private static enum RemoveDocumentOptions {
+      MOVE_TO_PROCESS_ATTACHMENTS, DELETE_PERMANENTLY;
+   }
+   
    private View documentView; 
    private ActivityInstance activityInstance;
    private DataMapping dataMapping;
    private DocumentInputEventHandler handler;
    private boolean openDocument = true;
    private boolean enableOpenDocument = true;
+   private Document documentTobeRemoved;
+   private RemoveDocumentOptions selectedRemoveDocumentOption;
 
    /**
     * @param path
@@ -205,14 +219,127 @@ public class IppDocumentInputController extends DocumentInputController implemen
       refreshPortalSession();
    }
 
+   /**
+    * Display confirmation dialog only in case of JCR document else just update activity panel
+    * 
+    * @author Yogesh.Manware
+    * 
+    */
    @Override
    public void deleteDocument()
+   {
+      // check if the document is JCR document
+      if (!(document instanceof RawDocument))
+      {
+         MessagePropertiesBean propsBean = MessagePropertiesBean.getInstance();
+
+         ConfirmationDialogWithOptionsBean confirmationDialog = ConfirmationDialogWithOptionsBean.getInstance();
+         confirmationDialog.setContentType(DialogContentType.WARNING);
+         confirmationDialog.setActionType(DialogActionType.OK_CANCEL);
+
+         confirmationDialog.setTitle(MessagesViewsCommonBean.getInstance().getString("common.confirmDelete.title"));
+
+         // If process supports process attachments
+         if (DMSHelper.existsProcessAttachmentsDataPath(activityInstance.getProcessInstance()))
+         {
+            confirmationDialog.setMessage(propsBean.getString("views.activityPanel.deleteDocument.message"));
+            confirmationDialog.setIncludePath(ResourcePaths.V_CONFIRMATION_DIALOG_OPTIONS);
+
+            // set available options
+            String[] keys = {RemoveDocumentOptions.MOVE_TO_PROCESS_ATTACHMENTS.name(), RemoveDocumentOptions.DELETE_PERMANENTLY.name()};
+            confirmationDialog.setOptions(IceComponentUtil.buildSelectItemArray(DELETE_DOCUMENT_OPTIONS_PREFIX, keys,
+                  MessagePropertiesBean.getInstance()));
+            confirmationDialog.setSelectedOption(DELETE_DOCUMENT_OPTIONS_PREFIX
+                  + RemoveDocumentOptions.MOVE_TO_PROCESS_ATTACHMENTS.name());
+
+            confirmationDialog.setHandler(new ConfirmationDialogHandler()
+            {
+               public boolean cancel()
+               {
+                  return true;
+               }
+
+               public boolean accept()
+               {
+                  // logical delete
+                  if (ConfirmationDialogWithOptionsBean.getInstance().getSelectedOption()
+                        .contains(RemoveDocumentOptions.MOVE_TO_PROCESS_ATTACHMENTS.name()))
+                  {
+                     selectedRemoveDocumentOption = RemoveDocumentOptions.MOVE_TO_PROCESS_ATTACHMENTS;
+                  }
+                  else
+                  {
+                     selectedRemoveDocumentOption = RemoveDocumentOptions.DELETE_PERMANENTLY;
+                  }
+                  documentTobeRemoved = document; 
+                  updateActivityPanel();
+                  return true;
+               }
+            });
+         }
+         // If process does not supports process attachments
+         else
+         {
+            confirmationDialog.setMessage(MessagesViewsCommonBean.getInstance().getString(
+                  "common.confirmDeleteRes.message.label"));
+            confirmationDialog.setActionType(DialogActionType.YES_NO);
+
+            confirmationDialog.setHandler(new ConfirmationDialogHandler()
+            {
+               public boolean cancel()
+               {
+                  return true;
+               }
+
+               public boolean accept()
+               {
+                  selectedRemoveDocumentOption = RemoveDocumentOptions.DELETE_PERMANENTLY;
+                  documentTobeRemoved = document;
+                  updateActivityPanel();
+                  return true;
+               }
+            });
+         }
+
+         confirmationDialog.openPopup();
+      }
+      else
+      {
+         updateActivityPanel();
+      }
+   }
+
+   /**
+    * converts logical JCR operations into concrete on complete / suspend Activity
+    * 
+    * @author Yogesh.Manware
+    */
+   private void processJCRDocuments()
+   {
+      if (null != documentTobeRemoved)
+      {
+         switch (selectedRemoveDocumentOption)
+         {
+         case MOVE_TO_PROCESS_ATTACHMENTS:
+            DMSHelper.addAndSaveProcessAttachment(activityInstance.getProcessInstance(), documentTobeRemoved);
+            break;
+
+         case DELETE_PERMANENTLY:
+            DocumentMgmtUtility.getDocumentManagementService().removeDocument(documentTobeRemoved.getId());
+            break;
+         default:
+            break;
+         }
+      }
+   }
+
+   private void updateActivityPanel()
    {
       if (!fireEvent(DocumentInputEventType.TO_BE_DELETED, null))
       {
          setValue(null);
          closeDocument();
-         
+
          fireEvent(DocumentInputEventType.DELETED, null);
       }
    }
@@ -220,6 +347,7 @@ public class IppDocumentInputController extends DocumentInputController implemen
    @Override
    public void destroy()
    {
+      processJCRDocuments();
       super.destroy();
       unregisterHandler();
    }

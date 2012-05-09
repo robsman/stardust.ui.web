@@ -50,7 +50,7 @@
 						<f:facet name="center">
 							<ice:panelGroup>
 								<ice:panelGroup rendered="#{not empty dialogBean.message}">
-									<ice:outputText value="#{dialogBean.message}" />
+									<ice:outputText value="#{dialogBean.message}" escape="false"/>
 									<pc:automationTag value="auto-FW-ConfDlg-MsgTxt" />
 								</ice:panelGroup>
 		
