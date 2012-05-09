@@ -20,7 +20,7 @@
 			disabled="#{(mainRow.criticalityDetailsMap[col.columnName].count eq 0) ? true : false}"
 			 title="#{(mainRow.criticalityDetailsMap[col.columnName].count eq 0) ? null: messages_bcc['views.processOverviewView.tooltip.activityTable']}">
 			<pc:automationTag
-				value="auto-BCC-CriticalityMgr-CriticalityDataTable-#{col.columnName}"
+				value="auto-BCC-CriticalityMgr-CriticalityDataTable-#{mainRow.criticalityDetailsMap[col.columnName].criticalityLabelStripped}"
 				standAlone="false" />
 			<f:param name="selectedCriticalityCategory" value="#{col.columnName}" />
 		</ice:commandLink>

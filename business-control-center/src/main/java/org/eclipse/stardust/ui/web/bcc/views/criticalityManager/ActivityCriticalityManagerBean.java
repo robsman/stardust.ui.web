@@ -383,6 +383,7 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
          processFilterToolbarItems.add(auxiliaryActivity);
 
          initializeDataFilters();
+         isActivated = false;
       }
       if (ViewEventType.ACTIVATED == event.getType())
       {

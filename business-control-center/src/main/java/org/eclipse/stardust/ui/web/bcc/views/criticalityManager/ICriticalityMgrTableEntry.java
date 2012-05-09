@@ -15,6 +15,8 @@ import java.util.Map;
 
 import javax.faces.event.ActionEvent;
 
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
+
 /**
  * Represents one row of the criticality manager tree table. Separate implementation for
  * each type of row would needed (Acticvity Def., Process Def., Model).
@@ -73,6 +75,22 @@ public interface ICriticalityMgrTableEntry
       public void setCriticalityLabel(String criticalityLabel)
       {
          this.criticalityLabel = criticalityLabel;
+      }
+
+      /**
+       * Stripes the whitespaces from label.
+       * Used for automation tags where we cannot have spaces.
+       * 
+       * @return
+       */
+      public String getCriticalityLabelStripped()
+      {
+         if (StringUtils.isNotEmpty(criticalityLabel))
+         {
+            return StringUtils.replace(criticalityLabel, " ", "");
+         }
+
+         return "";
       }
 
       public void doCriticalityAction(ActionEvent event)
