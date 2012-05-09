@@ -33,14 +33,12 @@ import org.eclipse.stardust.engine.core.query.statistics.api.CriticalityStatisti
 import org.eclipse.stardust.engine.core.query.statistics.api.CriticalityStatistics.IActivityEntry;
 import org.eclipse.stardust.engine.core.query.statistics.api.CriticalityStatisticsQuery;
 import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelElementLocalizerKey;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ISearchHandler;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
+import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 
 
@@ -52,22 +50,29 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 public class ModelDefCriticalityMgrTableEntry implements ICriticalityMgrTableEntry
 {
    private Map<String, CriticalityDetails> criticalityDetailsMap;
-   private List<ProcessDefCriticalityMgrTableEntry> processEntries;
-   private List<ProcessDefCriticalityMgrTableEntry> filteredProcessEntries;
+   private List<ICriticalityMgrTableEntry> processEntries;
+   private List<ICriticalityMgrTableEntry> filteredProcessEntries;
    private String modelName;
    private String description;
    private DeployedModel model;
    private CriticalityCategory selectedCriticalityCategory;
    private boolean filterAuxiliaryProcesses;
-   private boolean filterAuxiliaryActivities;
 
+   /**
+    * 
+    */
    public ModelDefCriticalityMgrTableEntry()
    {}
 
-   public ModelDefCriticalityMgrTableEntry(List<ProcessDefCriticalityMgrTableEntry> processEntries, DeployedModel model, boolean filterAuxiliaryProcesses, boolean filterAuxiliaryActivities)
+   /**
+    * @param processEntries
+    * @param model
+    * @param filterAuxiliaryProcesses
+    * @param filterAuxiliaryActivities
+    */
+   public ModelDefCriticalityMgrTableEntry(List<ICriticalityMgrTableEntry> processEntries, DeployedModel model, boolean filterAuxiliaryProcesses, boolean filterAuxiliaryActivities)
    {
       this.filterAuxiliaryProcesses = filterAuxiliaryProcesses;
-      this.filterAuxiliaryActivities = filterAuxiliaryActivities;
       this.processEntries = processEntries;
       initiFilteredProcessEntries();
       this.model = model;
@@ -75,10 +80,13 @@ public class ModelDefCriticalityMgrTableEntry implements ICriticalityMgrTableEnt
       description = model != null ? I18nUtils.getDescriptionAsHtml(model, model.getDescription()) : null;
    }
 
+   /**
+    * 
+    */
    public void initializeSelf()
    {
       criticalityDetailsMap = new LinkedHashMap<String, CriticalityDetails>();
-      for (ProcessDefCriticalityMgrTableEntry pe : processEntries)
+      for (ICriticalityMgrTableEntry pe : processEntries)
       {
          Map<String, CriticalityDetails> cdm = pe.getCriticalityDetailsMap();
          for (String key : cdm.keySet())
@@ -109,7 +117,7 @@ public class ModelDefCriticalityMgrTableEntry implements ICriticalityMgrTableEnt
     */
    public void initialize()
    {
-      List<ICriticalityMgrTableEntry> children = (List) processEntries;
+      List<ICriticalityMgrTableEntry> children = (List<ICriticalityMgrTableEntry>) processEntries;
       for (ICriticalityMgrTableEntry child : children)
       {
          child.initialize();
@@ -122,40 +130,15 @@ public class ModelDefCriticalityMgrTableEntry implements ICriticalityMgrTableEnt
     */
    private void initiFilteredProcessEntries()
    {
-      filteredProcessEntries = new ArrayList<ProcessDefCriticalityMgrTableEntry>();
-      for (ProcessDefCriticalityMgrTableEntry pe : processEntries)
+      filteredProcessEntries = new ArrayList<ICriticalityMgrTableEntry>();
+      for (ICriticalityMgrTableEntry pe : processEntries)
       {
-         if (!(filterAuxiliaryProcesses && ProcessDefinitionUtils.isAuxiliaryProcess(pe.getProcessDefinition())))
+         if (!(filterAuxiliaryProcesses && ProcessDefinitionUtils
+               .isAuxiliaryProcess(((ProcessDefCriticalityMgrTableEntry) pe).getProcessDefinition())))
          {
             filteredProcessEntries.add(pe);
          }
       }
-   }
-
-   public String getDefaultPerformerName()
-   {
-      return null;
-   }
-
-   public List getChildren()
-   {
-      return filteredProcessEntries;
-   }
-
-   public String getType()
-   {
-      // TODO Auto-generated method stub
-      return null;
-   }
-
-   public String getName()
-   {
-      return modelName;
-   }
-   
-   public String getDescription()
-   {
-      return description;
    }
 
    public void doCriticalityAction(ActionEvent event)
@@ -181,8 +164,45 @@ public class ModelDefCriticalityMgrTableEntry implements ICriticalityMgrTableEnt
       return criticalityDetailsMap;
    }
 
+   public String getDefaultPerformerName()
+   {
+      return null;
+   }
+
+   public List<ICriticalityMgrTableEntry> getChildren()
+   {
+      return filteredProcessEntries;
+   }
+
+   public String getType()
+   {
+      return null;
+   }
+
+   public String getName()
+   {
+      return modelName;
+   }
+   
+   public String getDescription()
+   {
+      return description;
+   }
+
+   /**
+    * @author Shrikant.Gangal
+    *
+    */
    public class ModelEntryCriticalitySearchhandler implements ISearchHandler
    {
+      /**
+       * 
+       */
+      private static final long serialVersionUID = 1L;
+
+      /* (non-Javadoc)
+       * @see org.eclipse.stardust.ui.web.viewscommon.common.ISearchHandler#createQuery()
+       */
       public Query createQuery()
       {
          if (null != selectedCriticalityCategory)
@@ -209,6 +229,7 @@ public class ModelDefCriticalityMgrTableEntry implements ICriticalityMgrTableEnt
                      .getAllActivityInstances(cQuery);
                if (null != selectedCriticalityStats)
                {
+                  @SuppressWarnings("unchecked")
                   List<Activity> activities = processDefinition.getAllActivities();
                   for (Activity act : activities)
                   {
@@ -241,6 +262,9 @@ public class ModelDefCriticalityMgrTableEntry implements ICriticalityMgrTableEnt
          return null;
       }
 
+      /* (non-Javadoc)
+       * @see org.eclipse.stardust.ui.web.viewscommon.common.ISearchHandler#performSearch(org.eclipse.stardust.engine.api.query.Query)
+       */
       public QueryResult<ActivityInstance> performSearch(Query query)
       {
          return WorkflowFacade.getWorkflowFacade().getAllActivityInstances((ActivityInstanceQuery) query);

@@ -32,7 +32,7 @@ public interface ICriticalityMgrTableEntry
 
    String getDefaultPerformerName();
 
-   List getChildren();
+   List<ICriticalityMgrTableEntry> getChildren();
 
    String getType();
 

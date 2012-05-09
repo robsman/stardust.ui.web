@@ -33,13 +33,13 @@ import org.eclipse.stardust.ui.web.bcc.common.configuration.UserPreferencesEntri
 import org.eclipse.stardust.ui.web.bcc.views.TreeNodeFactory;
 import org.eclipse.stardust.ui.web.bcc.views.criticalityManager.ICriticalityMgrTableEntry.CriticalityDetails;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
-import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
-import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
+import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterOnOff;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterOnOff;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
@@ -72,8 +72,6 @@ import org.eclipse.stardust.ui.web.viewscommon.helper.activityTable.ActivityTabl
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 
-
-
 /**
  * @author Shrikant.Gangal
  * 
@@ -82,20 +80,17 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
       implements TreeTableBean, ICallbackHandler, ViewEventHandler
 {
    private static final long serialVersionUID = 1L;
+   private static final int DEFAULT_COLUMNS_TO_DISPLAY = 3;
+
+   public static final String BEAN_ID = "activityCriticalityManagerBean";
+
    private TreeTableNode rootModelNode;
    private TreeTable treeTable;
-   private DefaultTreeModel model;
-   private boolean activityTableVisible;
    private ActivityTableHelper activityTableHelper;
    private TableDataFilters onOffFilters;
-   private DefaultColumnModel activityCriticalityManagerColumnModel;
-   private TableColumnSelectorPopup columnSelectorPopup;
-   public static final String BEAN_ID = "activityCriticalityManagerBean";
    private List<FilterToolbarItem> processFilterToolbarItems;
-   private CriticalityMgrColumnModelListener columnSelectionListener = new CriticalityMgrColumnModelListener(this);
-   private List<CriticalityCategory> criticalityCategoryList;
-   private final int DEFAULT_COLUMNS_TO_DISPLAY = 3;
    private Map<String, Map<String, CriticalityStatistics>> processCriticalityStatisticsMap;
+   private boolean activityTableVisible;
    private boolean isActivated = false;
 
    /**
@@ -109,28 +104,17 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
    @Override
    public void initialize()
    {
-      criticalityCategoryList = CriticalityConfigurationHelper.getInstance().getCriticalityConfiguration();
-      initializeCriticalityTable();
-      rootModelNode = TreeNodeFactory.createTreeNode(treeTable, this, new ModelDefCriticalityMgrTableEntry(), false);
-      // Now Create a Model & Tree Table
-      model = new DefaultTreeModel(rootModelNode);
-      treeTable = new TreeTable(model, columnSelectorPopup, getOnOffFilters());
-      treeTable.setDataTableExportHandler(new ActivityCriticalityManagerTableExportHandler());
+      CriticalityMgrColumnModelListener columnSelectionListener = new CriticalityMgrColumnModelListener(this);
+      List<CriticalityCategory> criticalityCategoryList = CriticalityConfigurationHelper.getInstance().getCriticalityConfiguration();
+      initializeCriticalityTable(criticalityCategoryList, columnSelectionListener);
 
-      treeTable.setFilterRootNode(false);
-      treeTable.setHideRootNode(true);
-      rootModelNode.getUserObject().setTreeTable(treeTable);
-      if (null != treeTable)
-      {
-         treeTable.setTooltipURL(org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths.V_PANELTOOLTIP_URL);
-      }
       List<DeployedModel> models = ModelCache.findModelCache().getActiveModels();
       boolean filterAuxiliaryProcesses = filterAuxiliaryProcesses();
       boolean filterAuxiliaryActivities = filterAuxiliaryActivities();
       processCriticalityStatisticsMap = new HashMap<String, Map<String, CriticalityStatistics>>();
       for (DeployedModel activeModel : models)
       {
-         List<ProcessDefCriticalityMgrTableEntry> processEntries = new ArrayList<ProcessDefCriticalityMgrTableEntry>();
+         List<ICriticalityMgrTableEntry> processEntries = new ArrayList<ICriticalityMgrTableEntry>();
 
          /*
           * Fetch all process definitions irrespective of the filterAuxiliaryProcesses
@@ -140,12 +124,13 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
 
          for (ProcessDefinition procDef : procDefs)
          {
-            List<ActivityDefCriticalityMgrTableEntry> actEntries = new ArrayList<ActivityDefCriticalityMgrTableEntry>();
+            List<ICriticalityMgrTableEntry> actEntries = new ArrayList<ICriticalityMgrTableEntry>();
             for (int i = 0; i < criticalityCategoryList.size() && i < DEFAULT_COLUMNS_TO_DISPLAY; i++)
             {
                updateCriticalityStatisticsMap(processCriticalityStatisticsMap, procDef, criticalityCategoryList.get(i));
             }
 
+            @SuppressWarnings("unchecked")
             List<Activity> activities = procDef.getAllActivities();
             for (Activity act : activities)
             {
@@ -162,7 +147,7 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
 
          TreeTableNode modelNode = TreeNodeFactory.createTreeNode(treeTable, this, modelWithCriticality, true);
          // Build Tree
-         buildPriorityOverviewTree(modelWithCriticality, modelNode);
+         buildCriticalityOverviewTree(modelWithCriticality, modelNode);
          modelNode.getUserObject().setTreeTable(treeTable);
          rootModelNode.add(modelNode);
       }
@@ -182,7 +167,7 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
     */
    public void initializeMissingCriticaliyStatistics()
    {
-      List<ColumnPreference> cols = activityCriticalityManagerColumnModel.getSelectableColumns();
+      List<ColumnPreference> cols = treeTable.getColumnModel().getSelectableColumns();
       for (ColumnPreference col : cols)
       {
          if (col.isVisible())
@@ -218,7 +203,7 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
     */
    public void reInitializeCriticaliyStatistics()
    {
-      List<ColumnPreference> cols = activityCriticalityManagerColumnModel.getSelectableColumns();
+      List<ColumnPreference> cols = treeTable.getColumnModel().getSelectableColumns();
       for (ColumnPreference col : cols)
       {
          if (col.isVisible())
@@ -234,8 +219,6 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
                         filterAuxiliaryProcesses);
                   for (ProcessDefinition procDef : procDefs)
                   {
-                     Map<String, CriticalityStatistics> csMap = processCriticalityStatisticsMap.get(procDef
-                           .getQualifiedId());
                      updateCriticalityStatisticsMap(processCriticalityStatisticsMap, procDef, cCat);
                   }
                }
@@ -281,7 +264,7 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
    private void updateCriticalityStatisticsMap(Map<String, Map<String, CriticalityStatistics>> pcsMap,
          ProcessDefinition pDef, CriticalityCategory cCat)
    {
-      Map criticaliyStatisticsMap = pcsMap.get(pDef.getQualifiedId());
+      Map<String, CriticalityStatistics> criticaliyStatisticsMap = pcsMap.get(pDef.getQualifiedId());
       if (null == criticaliyStatisticsMap)
       {
          criticaliyStatisticsMap = new HashMap<String, CriticalityStatistics>();
@@ -300,7 +283,7 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
     * @param criticalityTableEntry
     * @param parent
     */
-   private void buildPriorityOverviewTree(ICriticalityMgrTableEntry criticalityTableEntry, TreeTableNode parent)
+   private void buildCriticalityOverviewTree(ICriticalityMgrTableEntry criticalityTableEntry, TreeTableNode parent)
    {
       List<ICriticalityMgrTableEntry> listChildren = criticalityTableEntry.getChildren();
       if (listChildren != null)
@@ -313,7 +296,7 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
             TreeTableNode node = TreeNodeFactory.createTreeNode(treeTable, this, childEntry, false);
             parent.add(node);
 
-            buildPriorityOverviewTree(childEntry, node);
+            buildCriticalityOverviewTree(childEntry, node);
          }
       }
    }
@@ -335,7 +318,6 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
     */
    public boolean filterAuxiliaryProcesses()
    {
-      //TODO - review
       FilterToolbarItem filterToolbarItem = getFilterToolbarItem("auxiliaryProcess");
       return !filterToolbarItem.isActive();
    }
@@ -345,7 +327,6 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
     */
    public boolean filterAuxiliaryActivities()
    {
-      //TODO - review
       FilterToolbarItem filterToolbarItem = getFilterToolbarItem("auxiliaryActivity");
       return !filterToolbarItem.isActive();
    }
@@ -364,7 +345,6 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
     */
    public void handleEvent(ViewEvent event)
    {
-      //TODO
       if (ViewEventType.CREATED == event.getType())
       {
          activityTableVisible = false;
@@ -412,7 +392,6 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
     */
    public int getIncreasedLabelCount()
    {
-      // TODO Auto-generated method stub
       return 0;
    }
 
@@ -421,7 +400,6 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
     */
    public void setSelectedNodeLabel(String label)
    {
-      // TODO Auto-generated method stub
    }
 
    /* (non-Javadoc)
@@ -429,7 +407,6 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
     */
    public void setSelectedNodeObject(NodeUserObject nodeObject)
    {
-      // TODO Auto-generated method stub
    }
 
    /**
@@ -445,8 +422,8 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
     */
    public void filterTable(ActionEvent event)
    {
-      //TODO
       UICommand commandObject = (UICommand) event.getComponent();
+      @SuppressWarnings("unchecked")
       Map<String, Object> attributesMap = commandObject.getAttributes();
 
       String filterName = (String) attributesMap.get("name");
@@ -463,18 +440,18 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
    }
 
    /**
-    * 
+    * @param criticalityCategoryList
+    * @param columnSelectionListener
     */
-   public void initializeCriticalityTable()
+   public void initializeCriticalityTable(List<CriticalityCategory> criticalityCategoryList, CriticalityMgrColumnModelListener columnSelectionListener)
    {
-
       List<ColumnPreference> fixedCols = new ArrayList<ColumnPreference>();
       ColumnPreference nameCol = new ColumnPreference("Name", "name", ColumnDataType.STRING, this.getMessages()
             .getString("criticalityTable.modelElementCol.label"), new TableDataFilterPopup(new TableDataFilterSearch()));
       fixedCols.add(nameCol);
 
       List<ColumnPreference> selectableColumns = new ArrayList<ColumnPreference>();
-
+      
       for (int i = 0; i < criticalityCategoryList.size(); i++)
       {
          CriticalityCategory cCat = criticalityCategoryList.get(i);
@@ -492,10 +469,20 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
             "criticalityTable.roleCol.label"), ResourcePaths.V_activityCriticalityMgrColumns, true, false);
       performerCol.setColumnAlignment(ColumnAlignment.CENTER);
       selectableColumns.add(performerCol);
-      activityCriticalityManagerColumnModel = new DefaultColumnModel(selectableColumns, fixedCols, null,
+      DefaultColumnModel activityCriticalityManagerColumnModel = new DefaultColumnModel(selectableColumns, fixedCols, null,
             UserPreferencesEntries.M_BCC, UserPreferencesEntries.V_ACTIVITY_CRITICALITY_VIEW, columnSelectionListener);
-      columnSelectorPopup = new TableColumnSelectorPopup(activityCriticalityManagerColumnModel);
+      TableColumnSelectorPopup columnSelectorPopup = new TableColumnSelectorPopup(activityCriticalityManagerColumnModel);
 
+      rootModelNode = TreeNodeFactory.createTreeNode(treeTable, this, new ModelDefCriticalityMgrTableEntry(), false);
+      // Now Create a Model & Tree Table
+      DefaultTreeModel model = new DefaultTreeModel(rootModelNode);
+      treeTable = new TreeTable(model, columnSelectorPopup, getOnOffFilters());
+      treeTable.setDataTableExportHandler(new ActivityCriticalityManagerTableExportHandler());
+
+      treeTable.setFilterRootNode(false);
+      treeTable.setHideRootNode(true);
+      rootModelNode.getUserObject().setTreeTable(treeTable);
+      treeTable.setTooltipURL(org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths.V_PANELTOOLTIP_URL);
    }
 
    /**
@@ -538,6 +525,10 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
       }
    }
 
+   /**
+    * @author Shrikant.Gangal
+    *
+    */
    private class ActivityCriticalityManagerTableExportHandler implements DataTableExportHandler<TreeTableUserObject>
    {
       /*
@@ -634,9 +625,6 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
       }
    }
 
-   /**
-    * @return
-    */
    public TableDataFilters getOnOffFilters()
    {
       return onOffFilters;

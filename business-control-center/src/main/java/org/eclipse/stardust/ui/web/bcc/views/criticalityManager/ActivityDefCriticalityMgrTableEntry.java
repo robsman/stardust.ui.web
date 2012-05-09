@@ -32,14 +32,14 @@ import org.eclipse.stardust.engine.core.query.statistics.api.CriticalityStatisti
 import org.eclipse.stardust.engine.core.query.statistics.api.CriticalityStatistics.IActivityEntry;
 import org.eclipse.stardust.engine.core.query.statistics.api.CriticalityStatisticsQuery;
 import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelElementLocalizerKey;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ISearchHandler;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelElementLocalizerKey;
 
 
 
@@ -112,31 +112,14 @@ public class ActivityDefCriticalityMgrTableEntry implements ICriticalityMgrTable
    /* (non-Javadoc)
     * @see org.eclipse.stardust.ui.web.bcc.views.criticalityManager.ICriticalityMgrTableEntry#getChildren()
     */
-   public List getChildren()
+   public List<ICriticalityMgrTableEntry> getChildren()
    {
       return null;
    }
 
-   public String getType()
-   {
-      return type;
-   }
-
-   public String getName()
-   {
-      return I18nUtils.getActivityName(activity);
-   }
-
-   public Activity getActivity()
-   {
-      return activity;
-   }
-
-   public ProcessDefinition getProcessDefinition()
-   {
-      return processDefinition;
-   }
-
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.bcc.views.criticalityManager.ICriticalityMgrTableEntry#doCriticalityAction(javax.faces.event.ActionEvent)
+    */
    public void doCriticalityAction(ActionEvent event)
    {
       Map param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
@@ -160,8 +143,40 @@ public class ActivityDefCriticalityMgrTableEntry implements ICriticalityMgrTable
       return criticalityDetailsMap;
    }
 
+   public String getType()
+   {
+      return type;
+   }
+
+   public String getName()
+   {
+      return I18nUtils.getActivityName(activity);
+   }
+
+   public Activity getActivity()
+   {
+      return activity;
+   }
+
+   public ProcessDefinition getProcessDefinition()
+   {
+      return processDefinition;
+   }
+
+   /**
+    * @author Shrikant.Gangal
+    *
+    */
    public class ActivityEntryCriticalitySearchhandler implements ISearchHandler
    {
+      /**
+       * 
+       */
+      private static final long serialVersionUID = 1L;
+
+      /* (non-Javadoc)
+       * @see org.eclipse.stardust.ui.web.viewscommon.common.ISearchHandler#createQuery()
+       */
       public Query createQuery()
       {
          if (null != selectedCriticalityCategory)
@@ -203,6 +218,9 @@ public class ActivityDefCriticalityMgrTableEntry implements ICriticalityMgrTable
          return null;
       }
 
+      /* (non-Javadoc)
+       * @see org.eclipse.stardust.ui.web.viewscommon.common.ISearchHandler#performSearch(org.eclipse.stardust.engine.api.query.Query)
+       */
       public QueryResult<ActivityInstance> performSearch(Query query)
       {
          return WorkflowFacade.getWorkflowFacade().getAllActivityInstances((ActivityInstanceQuery) query);
