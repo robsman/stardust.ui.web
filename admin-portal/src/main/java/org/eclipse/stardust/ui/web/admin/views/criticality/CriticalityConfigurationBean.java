@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -365,7 +366,7 @@ public class CriticalityConfigurationBean extends UIComponentBean implements Vie
    public boolean validate()
    {
       errorMessages = new HashSet<String>();
-      Set<String> labels = new HashSet<String>();
+      Set<String> labels = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
       Set<Integer> uniqueRangeList = new HashSet<Integer>();
       for (CriticalityConfigurationTableEntry te : criticalityCategoriesList)
       {
