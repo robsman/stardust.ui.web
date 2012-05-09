@@ -70,8 +70,6 @@ public class IppDocumentInputController extends DocumentInputController implemen
    private DocumentInputEventHandler handler;
    private boolean openDocument = true;
    private boolean enableOpenDocument = true;
-   private Document documentTobeRemoved;
-   private RemoveDocumentOptions selectedRemoveDocumentOption;
 
    /**
     * @param path
@@ -220,7 +218,7 @@ public class IppDocumentInputController extends DocumentInputController implemen
    }
 
    /**
-    * Display confirmation dialog only in case of JCR document else just update activity panel
+    * Display confirmation dialog only in case of JCR document, else just update activity panel
     * 
     * @author Yogesh.Manware
     * 
@@ -261,17 +259,15 @@ public class IppDocumentInputController extends DocumentInputController implemen
 
                public boolean accept()
                {
-                  // logical delete
                   if (ConfirmationDialogWithOptionsBean.getInstance().getSelectedOption()
                         .contains(RemoveDocumentOptions.MOVE_TO_PROCESS_ATTACHMENTS.name()))
                   {
-                     selectedRemoveDocumentOption = RemoveDocumentOptions.MOVE_TO_PROCESS_ATTACHMENTS;
+                     processJCRDocument(RemoveDocumentOptions.MOVE_TO_PROCESS_ATTACHMENTS);
                   }
                   else
                   {
-                     selectedRemoveDocumentOption = RemoveDocumentOptions.DELETE_PERMANENTLY;
+                     processJCRDocument(RemoveDocumentOptions.DELETE_PERMANENTLY);
                   }
-                  documentTobeRemoved = document; 
                   updateActivityPanel();
                   return true;
                }
@@ -293,8 +289,7 @@ public class IppDocumentInputController extends DocumentInputController implemen
 
                public boolean accept()
                {
-                  selectedRemoveDocumentOption = RemoveDocumentOptions.DELETE_PERMANENTLY;
-                  documentTobeRemoved = document;
+                  processJCRDocument(RemoveDocumentOptions.DELETE_PERMANENTLY);
                   updateActivityPanel();
                   return true;
                }
@@ -310,26 +305,23 @@ public class IppDocumentInputController extends DocumentInputController implemen
    }
 
    /**
-    * converts logical JCR operations into concrete on complete / suspend Activity
     * 
     * @author Yogesh.Manware
     */
-   private void processJCRDocuments()
+   private void processJCRDocument(RemoveDocumentOptions selectedRemoveDocumentOption)
    {
-      if (null != documentTobeRemoved)
+      switch (selectedRemoveDocumentOption)
       {
-         switch (selectedRemoveDocumentOption)
-         {
          case MOVE_TO_PROCESS_ATTACHMENTS:
-            DMSHelper.addAndSaveProcessAttachment(activityInstance.getProcessInstance(), documentTobeRemoved);
+            DMSHelper.addAndSaveProcessAttachment(activityInstance.getProcessInstance(), document);
             break;
-
+   
          case DELETE_PERMANENTLY:
-            DocumentMgmtUtility.getDocumentManagementService().removeDocument(documentTobeRemoved.getId());
+            DocumentMgmtUtility.getDocumentManagementService().removeDocument(document.getId());
             break;
+   
          default:
             break;
-         }
       }
    }
 
@@ -347,7 +339,6 @@ public class IppDocumentInputController extends DocumentInputController implemen
    @Override
    public void destroy()
    {
-      processJCRDocuments();
       super.destroy();
       unregisterHandler();
    }
