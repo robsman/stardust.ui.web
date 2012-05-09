@@ -607,4 +607,10 @@ public class View extends AbstractUiElement implements TabScopeManager
       INACTIVE,
       CLOSED
    }
+
+   public void updateViewKey(String newViewKey)
+   {
+      this.viewKey = newViewKey;
+      identityUrl = null;
+   }
 }

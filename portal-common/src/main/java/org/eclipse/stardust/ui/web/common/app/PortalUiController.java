@@ -929,10 +929,11 @@ public class PortalUiController
     * @param newViewKey
     */
    public void updateViewKey(View view, String newViewKey)
-   {
-      String newUrl = View.createURL(view.getDefinition(), newViewKey);
+   {    
       views.remove(view.getUrl());
-      views.put(newUrl, view);
+      
+      view.updateViewKey(newViewKey);
+      views.put(view.getIdentityUrl(), view);
    }
    
    private void setViewIcon(View view)
