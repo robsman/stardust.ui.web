@@ -237,7 +237,7 @@ public class IppDocumentInputController extends DocumentInputController implemen
          confirmationDialog.setContentType(DialogContentType.WARNING);
          confirmationDialog.setActionType(DialogActionType.OK_CANCEL);
 
-         confirmationDialog.setTitle(MessagesViewsCommonBean.getInstance().getString("common.confirmDelete.title"));
+         confirmationDialog.setTitle(MessagesViewsCommonBean.getInstance().getString("common.confirm"));
 
          // If process supports process attachments
          if (DMSHelper.existsProcessAttachmentsDataPath(activityInstance.getProcessInstance()))
