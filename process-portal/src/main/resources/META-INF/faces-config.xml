@@ -18,10 +18,6 @@
 <faces-config>
 
    <lifecycle>
-      <phase-listener>org.eclipse.stardust.ui.web.processportal.interaction.embedded.jsf.IppIceFacesJsfPhaseListener</phase-listener>
-   </lifecycle>
-
-   <lifecycle>
       <phase-listener>org.eclipse.stardust.ui.web.processportal.interaction.iframe.IframePanelJsfPhaseListener</phase-listener>
    </lifecycle>
 
