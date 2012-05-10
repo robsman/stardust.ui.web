@@ -20,9 +20,11 @@
 			<ice:selectOneRadio value="#{prefManagerBean.selectedView}"
 				style="text-align: left;"
 				valueChangeListener="#{prefManagerBean.viewSelectionListener}"
-				partialSubmit="true" layout="pageDirection" styleClass="label-form">
+				partialSubmit="true" layout="pageDirection" >
 				<f:selectItem value="#{prefManagerBean.viewSelection[0]}" />
 				<f:selectItem value="#{prefManagerBean.viewSelection[1]}" />
+				<pc:automationTag value="auto-ADM-PrefMngrView-SelView"
+					standAlone="false" requiredValue="label-form"/>
 			</ice:selectOneRadio>
 
 			<ice:panelGroup
@@ -40,14 +42,20 @@
 			<ice:inputText value="#{prefManagerBean.prefSearchTxt}"
 				style="width: 305px;margin-left:10px;margin-right:10px;"
 				partialSubmit="true">
+				<pc:automationTag value="auto-ADM-PrefMngrView-PrefSearchTxt"
+					standAlone="false" />
 			</ice:inputText>
 			<ice:commandButton
 				value="#{prefManagerBean.messages['searchPrefStore.label']}"
-				action="#{prefManagerBean.performSearch}" styleClass="button" />
+				action="#{prefManagerBean.performSearch}">
+				<pc:automationTag value="auto-ADM-PrefMngrView-SearchPrefBtn"
+					standAlone="false" requiredValue="button"/>
+			</ice:commandButton>	
 		</ice:panelGroup>
 
 		<ice:panelGroup styleClass="clearing" />
 		<ice:panelGroup style="margin-left:5px;">
+			<pc:automationTag value="auto-ADM-PrefMngrView-DataTable"/>
 			<pc:genericDataTable title="" bean="#{prefManagerBean}"
 				id="prefManagerList" table="#{prefManagerBean.prefManagerTable}"
 				sortSupported="true"

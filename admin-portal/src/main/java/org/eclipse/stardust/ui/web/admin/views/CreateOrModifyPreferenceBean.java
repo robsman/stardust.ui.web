@@ -65,6 +65,7 @@ public class CreateOrModifyPreferenceBean extends PopupUIComponentBean
    {
       UIComponent source = ae.getComponent();
       userValidationMsg = null;
+      preferenceBean = null;
       Object obj = source.getAttributes().get("editRow");
       // If Edit preference is selected , get selected row
       if (null != obj)

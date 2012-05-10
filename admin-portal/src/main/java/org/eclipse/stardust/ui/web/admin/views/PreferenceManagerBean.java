@@ -246,6 +246,7 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
     */
    public void removePreference(ActionEvent event)
    {
+      selectedPrefMngrObj = null;
       for (Iterator<PreferenceManagerTableEntry> it = prefManagerTable.getList().iterator(); it.hasNext();)
       {
          PreferenceManagerTableEntry row = it.next();
