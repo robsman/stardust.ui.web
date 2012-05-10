@@ -9,35 +9,16 @@
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 var InfinityBPMI18N = function() {
-	return {
-		initPluginProps : function (initParam) {
-			this[initParam.pluginName] = createPlugin(initParam);
-		}
-	}
 	
 	function createPlugin(initParam) {
 		var propertiesMap;
 		
-		//Initialization properties
+		//Initialization of properties
 		var initProp = {
 			propFilePath : "",
 			propFileBaseName : "",
 			localeRetrievalURL : "",
 			locale : ""
-		};
-		
-		initialize(initParam);
-		
-		return {
-			getProperty : function(key, defaultValue) {
-				var val = propertiesMap[key];
-				if (!val && defaultValue)
-				{
-					val = defaultValue;
-				}
-				
-				return val;
-			}		
 		};
 		
 		function initialize(initObj) {
@@ -84,34 +65,43 @@ var InfinityBPMI18N = function() {
 		function initializePropertiesMapDefault() {
 			initProp.locale = "en";
 			setPropertyFile();
-			initializePropertiesMap()
+			initializePropertiesMap(true);
 		} 
 		
-		function initializePropertiesMap() {
+		function populatePropertiesMap(val, isFinalAttemptToRead) {
+			var propText;
+			propText = val;
+			if (propText && "" != propText)
+			{
+			    var lines = propText.split(/\r\n|\r|\n/);
+			    for (var i = 0; i < lines.length; i++) {
+			    	var keyVals = lines[i].split('=');
+			    	if (keyVals && "" != keyVals
+			    			&& keyVals.length == 2
+			    			&& trim(keyVals[0]).indexOf('#') != 0) {
+			    		propertiesMap[trim(keyVals[0])] = replaceUicodeChars(keyVals[1]);	
+			    	}
+			    }
+			}
+			else
+			{
+				if (!isFinalAttemptToRead) {
+					initializePropertiesMapDefault();
+				}
+			}		
+		}
+		
+		function initializePropertiesMap(isFinalAttemptToRead) {
 			propertiesMap = {};
 			ajaxRequest("GET", initProp.propertyFile, false,  new function() {
 				return {
 					successCallback : function(val) {
-						var propText;
-						propText = val;
-						if (propText && "" != propText)
-						{
-						    var lines = propText.split(/\r\n|\r|\n/);
-						    for (var i = 0; i < lines.length; i++) {
-						    	var keyVals = lines[i].split('=');
-						    	if (keyVals && "" != keyVals && keyVals.length == 2)
-						    	{
-						    		propertiesMap[trim(keyVals[0])] = replaceUicodeChars(keyVals[1]);	
-						    	}			    	
-						    }
-						}
-						else
-						{
-							initializePropertiesMapDefault();
-						}
+						populatePropertiesMap(val, isFinalAttemptToRead);
 					},
 					failureCallback : function(val) {
-						initializePropertiesMapDefault();
+						if (!isFinalAttemptToRead) {
+							initializePropertiesMapDefault();
+						}
 					}
 				};
 			});
@@ -156,7 +146,14 @@ var InfinityBPMI18N = function() {
 		    if (true != async)
 		    {
 		    	try {
-		    		func.successCallback(xmlHttpReq.responseText);
+					  if (xmlHttpReq.status == 200)
+					  {
+						  func.successCallback(xmlHttpReq.responseText);  
+					  }
+					  else
+					  {
+						  func.failureCallback();
+					  }
 		    	} catch (e) {
 		    		func.failureCallback();
 		    	}
@@ -186,6 +183,39 @@ var InfinityBPMI18N = function() {
 		{
 			return val.replace(/((\s*\S+)*)\s*/, "$1");
 		}
+
+		initialize(initParam);
+
+		return {
+			getProperty : function(key, defaultValue) {
+				var val = propertiesMap[key];
+				if (!val && defaultValue)
+				{
+					val = defaultValue;
+				}
+				
+				return val;
+			} // Interface function
+		}; // Interface InfinityBPMI18N.<plugin-name>
 	}
+
+	return {
+		// Following parameter are needed for successful initialization
+		//	propFilePath (Mandatory) - path to the bundle's directory
+		//	propFileBaseName (Mandatory) - base name for property files
+		//	localeRetrievalURL (Optional if locale is provided) - a URL end-point that would return locale
+		//	locale (Optional if localeRetrievalURL is provided) - locale
+		//	pluginName (Mandatory) - a plugin name with which to access properties
+		initPluginProps : function (initParam) {
+			if (initParam.pluginName
+					&& initParam.propFilePath
+					&& initParam.propFileBaseName
+					&& (initParam.locale || initParam.localeRetrievalURL)) {
+				this[initParam.pluginName] = createPlugin(initParam);
+			} else {
+				alert("InfinityBPMI18N initialialization failed. Mandatory parameter(s) missing.");
+			}
+		} // Interface function
+	}; //Interface InfinityBPMI18N
 }();
 
