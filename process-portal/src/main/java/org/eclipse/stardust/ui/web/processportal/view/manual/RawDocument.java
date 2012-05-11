@@ -220,4 +220,9 @@ public class RawDocument implements Document
    {
       throw new UnsupportedOperationException();
    }
+
+   public String getRevisionComment()
+   {
+      throw new UnsupportedOperationException();
+   }
 }
