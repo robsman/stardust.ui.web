@@ -10,6 +10,8 @@
 		<ice:commandLink actionListener="#{createOrModifyPreference.openModifyPrefDialog}">
 			<h:graphicImage value="/plugins/views-common/images/icons/add.png"
 				style="border: none;" title="#{prefManagerBean.messages['modifyPreference.add.title']}" />
+			<f:attribute name="selectedView" value="#{prefManagerBean.selectedView}" />
+			<f:attribute name="selectedUser" value="#{prefManagerBean.userWrapperObj}" />
 		</ice:commandLink>	
 
 		<ice:commandLink actionListener="#{prefManagerBean.removePreference}">

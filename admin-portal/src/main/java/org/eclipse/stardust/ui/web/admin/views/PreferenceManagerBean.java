@@ -74,9 +74,11 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
    private String prefSearchTxt;
    private SortableTable<PreferenceManagerTableEntry> prefManagerTable;
    private List<PreferenceManagerTableEntry> prefList;
+   private List<PreferenceManagerTableEntry> partitionCacheList;
    private ConfirmationDialog prefMngrConfirmationDialog;
    private PreferenceManagerTableEntry selectedPrefMngrObj;
    private QueryService qService;
+   private UserWrapper userWrapperObj;
 
    public PreferenceManagerBean()
    {
@@ -105,12 +107,17 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
    {
       userSelector = new UserAutocompleteMultiSelector(false, true);
       userSelector.setShowOnlineIndicator(false);
+      User user = SessionContext.findSessionContext().getUser();
+      userWrapperObj = new UserWrapper(user, false);
+      userSelector.setSearchValue(userWrapperObj.getFullName());
       viewSelection[0] = new SelectItem(PREF_VIEW_TYPE.PARTITION.name(), getMessages().getString("tenant.label"));
       viewSelection[1] = new SelectItem(PREF_VIEW_TYPE.USER.name(), getMessages().getString("user.label"));
       selectedView = PREF_VIEW_TYPE.PARTITION.name();
       prefList = CollectionUtils.newArrayList();
       createTable();
       update();
+      partitionCacheList = CollectionUtils.newArrayList();
+      partitionCacheList.addAll(prefList);
    }
 
    public void update()
@@ -133,8 +140,9 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
 
       qService = SessionContext.findSessionContext().getServiceFactory().getQueryService();
       List<Preferences> prefs = new ArrayList<Preferences>();
-      prefList.clear();
+      User user = null;
       String userFullName = null;
+      prefList.clear();
       if (PREF_VIEW_TYPE.PARTITION.name().equals(selectedView))
       {
          // fetch all the Partition preferences
@@ -143,16 +151,26 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
       else
       {
          UserWrapper userWrapper = userSelector.getSelectedValue();
-         if (userWrapper != null)
+         if (null != userWrapper)
          {
-            User u = userWrapper.getUser();
+            user = userWrapper.getUser();
             userFullName = userWrapper.getFullName();
+            userWrapperObj = userWrapper;
+         }
+         // Use the Current Logged In User Details initialized at page creation
+         else if (StringUtils.isNotEmpty(getUserSelector().getSearchValue()) && null != userWrapperObj)
+         {
+            user = userWrapperObj.getUser();
+            userFullName = userWrapperObj.getFullName();
+         }
+         if (null != user)
+         {
             // fetch all preference store entries for User, the moduleId and PreferenceId
             // can be passed as '*'
-            prefs = qService.getAllPreferences(PreferenceQuery.findPreferencesForUsers(u.getRealm().getId(), u.getId(),
-                  "*", "*"));
-         }
+            prefs = qService.getAllPreferences(PreferenceQuery.findPreferencesForUsers(user.getRealm().getId(),
+                  user.getId(), "*", "*"));
 
+         }
       }
       for (Preferences pref : prefs)
       {
@@ -220,7 +238,7 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
       }
       else
       {
-         update();
+         performSearch();
       }
    }
 
@@ -230,14 +248,15 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
     */
    public void performSearch()
    {
-      if (StringUtils.isNotEmpty(prefSearchTxt))
+      if (StringUtils.isNotEmpty(prefSearchTxt) || PREF_VIEW_TYPE.USER.name().equals(selectedView))
       {
-         if (CollectionUtils.isEmpty(prefList))
-            fetchPreferences();
+         fetchPreferences();
          updatePrefStoreTable(polulateSearchResult());
       }
       else
-         update();
+      {
+         updatePrefStoreTable(partitionCacheList);
+      }
    }
 
    /**
@@ -287,13 +306,15 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
             for (Field field : inputFields)
             {
 
-               String value = ReflectionUtils.invokeGetterMethod((Object) prefTabList, field.getName()).toString();
-               if (value.toLowerCase().contains(prefSearchTxt.toLowerCase()))
+               if (!field.getName().equals("selected"))
                {
-                  prefTableList.add(prefTabList);
-                  break;
+                  Object value = ReflectionUtils.invokeGetterMethod((Object) prefTabList, field.getName());
+                  if (null != value && value.toString().toLowerCase().contains(prefSearchTxt.toLowerCase()))
+                  {
+                     prefTableList.add(prefTabList);
+                     break;
+                  }
                }
-
             }
          }
       }
@@ -302,6 +323,7 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
       }
       catch (Exception e)
       {
+         e.printStackTrace();
       }
       return prefTableList;
    }
@@ -404,6 +426,16 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
    public QueryService getqService()
    {
       return qService;
+   }
+
+   public UserWrapper getUserWrapperObj()
+   {
+      return userWrapperObj;
+   }
+
+   public void setUserWrapperObj(UserWrapper userWrapperObj)
+   {
+      this.userWrapperObj = userWrapperObj;
    }
 
 }

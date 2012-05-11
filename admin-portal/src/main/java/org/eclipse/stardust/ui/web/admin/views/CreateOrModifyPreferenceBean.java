@@ -31,6 +31,7 @@ import org.eclipse.stardust.ui.web.admin.views.PreferenceManagerBean.PREF_VIEW_T
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog.MessageType;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserAutocompleteMultiSelector;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserWrapper;
@@ -49,7 +50,8 @@ public class CreateOrModifyPreferenceBean extends PopupUIComponentBean
    private AdminMessagesPropertiesBean propsBean;
    private PreferenceBean preferenceBean;
    private UserAutocompleteMultiSelector userSelector;
-   AdministrationService adminService;
+   private AdministrationService adminService;
+   private UserWrapper userWrapperObj;
 
    public CreateOrModifyPreferenceBean()
    {
@@ -67,6 +69,13 @@ public class CreateOrModifyPreferenceBean extends PopupUIComponentBean
       userValidationMsg = null;
       preferenceBean = null;
       Object obj = source.getAttributes().get("editRow");
+      // Get the preference selected in Preference Manager View, to populate the Scope in
+      // Add Preference
+      String selPrefView = (String) source.getAttributes().get("selectedView");
+      selectedView = selPrefView;
+      // Get the User selected in Preference Manager View, to populate the Scoped User in
+      // Add Preference
+      userWrapperObj = (UserWrapper) source.getAttributes().get("selectedUser");
       // If Edit preference is selected , get selected row
       if (null != obj)
       {
@@ -102,10 +111,15 @@ public class CreateOrModifyPreferenceBean extends PopupUIComponentBean
                propsBean.getString("views.prefManagerBean.modifyPreference.tenant.label"));
          viewSelection[1] = new SelectItem(PREF_VIEW_TYPE.USER.name(),
                propsBean.getString("views.prefManagerBean.modifyPreference.user.label"));
-         selectedView = PREF_VIEW_TYPE.PARTITION.name();
+
       }
       userSelector = new UserAutocompleteMultiSelector(false, true);
       userSelector.setShowOnlineIndicator(false);
+      // Auto populate the User Select Autocomplete text
+      if (null != userWrapperObj)
+      {
+         userSelector.setSearchValue(userWrapperObj.getFullName());
+      }
       super.openPopup();
    }
 
@@ -133,6 +147,7 @@ public class CreateOrModifyPreferenceBean extends PopupUIComponentBean
    private Preferences updatePreference(PreferenceScope prefScope, boolean partitionPrefSelected)
    {
       Preferences prefs = null;
+      User user = null;
       Map<String, Serializable> preferenceMap = new HashMap<String, Serializable>();
       preferenceMap.put(preferenceBean.getPreferenceName(), preferenceBean.getPreferenceValue());
       UserWrapper userWrapper = getUserSelector().getSelectedValue();
@@ -144,17 +159,32 @@ public class CreateOrModifyPreferenceBean extends PopupUIComponentBean
          // Add Preference with User selection
          if (!modifyMode && null != userWrapper)
          {
-            User u = userWrapper.getUser();
-            preferenceBean.setUserId(u.getId());
-            preferenceBean.setRealmId(u.getRealm().getId());
+            user = userWrapper.getUser();
+            userWrapperObj = userWrapper;
          }
-         else if (!modifyMode && null == userWrapper)
+         else if (!modifyMode && StringUtils.isNotEmpty(getUserSelector().getSearchValue()) && null != userWrapperObj)
+         {
+            if(userWrapperObj.getFullName().equals(getUserSelector().getSearchValue()))
+            {
+               user = userWrapperObj.getUser();   
+            }
+            
+         }
+         
+         if (!modifyMode && null == user)
          {
             // When no user selection is made in 'Add' for User Preference Scope , return
             // null with error msg
             userValidationMsg = propsBean.getString("views.prefManagerBean.modifyPreference.confirmAddPref.error");
             return null;
          }
+         
+         if (null != user)
+         {
+            preferenceBean.setUserId(user.getId());
+            preferenceBean.setRealmId(user.getRealm().getId());
+         }
+
          List<Preferences> userPrefList = CollectionUtils.newArrayList();
          // AdminServiceImpl does not have method to retrieve specific preference for User
          // , we use QueryService call to get preference for User selected
