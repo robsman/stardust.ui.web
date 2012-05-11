@@ -3,6 +3,7 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="var" path="CARNOT_HOME/lib/carnot-base.jar"/>
 	<classpathentry kind="var" path="CARNOT_HOME/lib/carnot-engine.jar"/>
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-core-3.0.5.RELEASE.jar" sourcepath="/Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-core-3.0.5.RELEASE-sources.jar"/>
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-comps-ee-EE-1.8.2.GA_P04.jar"/>
@@ -11,6 +12,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/Portal-Common"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javax/jsf/1.1_02/jsf-api.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/views-common"/>	
+	<classpathentry combineaccessrules="false" kind="src" path="/views-common"/>
 	<classpathentry kind="output" path=".eclipse/bin"/>
 </classpath>

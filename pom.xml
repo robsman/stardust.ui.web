@@ -22,6 +22,7 @@
     <module>process-portal</module>
     <module>business-control-center</module>
     <module>admin-portal</module>
+    <module>portal-persistence-jpa</module>
   </modules>
 
 </project>

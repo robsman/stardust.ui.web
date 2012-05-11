@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.processportal.legacy;
 
-import org.eclipse.stardust.common.security.authentication.LoginFailedException;
+import org.eclipse.stardust.common.error.LoginFailedException;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.AbstractBpmJsfClientSessionListener;

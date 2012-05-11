@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.common.listener;
 
-import org.eclipse.stardust.common.security.authentication.LoginFailedException;
+import org.eclipse.stardust.common.error.LoginFailedException;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 
 
