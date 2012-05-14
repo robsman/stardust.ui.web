@@ -64,7 +64,7 @@
       <!-- ipp-portal-common-compile -->
       <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->engine-module-compile" />
       <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->spring-module-compile" />
-      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->logging-log4j-module-compile"/>
+      <dependency org="com.infinity.bpm" name="stardust-engine-base-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->logging-log4j-module-compile"/>
       <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->logging-slf4j-log4j-module-compile"/>
       
       <!-- ipp-portal-common-runtime -->
