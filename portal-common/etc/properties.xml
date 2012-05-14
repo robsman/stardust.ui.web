@@ -1153,7 +1153,7 @@
          <property name="servlet[DMS_CONTENT].servlet-class"
             value="org.eclipse.stardust.engine.api.web.dms.DmsContentServlet"
             setups="production-withJcr, development-withJcr, build" />
-
+         <property name="servlet[SKIN_CONTENT].servlet-name"            value="SkinContentServlet" setups="production-withJcr, development-withJcr, build" />         <property name="servlet[SKIN_CONTENT].servlet-class"            value="org.eclipse.stardust.engine.api.web.dms.SkinContentServlet"            setups="production-withJcr, development-withJcr, build" />
          <property name="servlet[FSD_CONTENT].servlet-name"            value="FsdContentServlet" />
          <property name="servlet[FSD_CONTENT].servlet-class"
             value="org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileSystemDocumentServlet" />
@@ -1404,7 +1404,7 @@
             value="DmsContentServlet" setups="production-withJcr, development-withJcr, build" />
          <property name="servlet-mapping[DMS_CONTENT].url-pattern"
             value="/dms-content/*" setups="production-withJcr, development-withJcr, build" />
-
+         <property name="servlet-mapping[SKIN_CONTENT].servlet-name"            value="SkinContentServlet" setups="production-withJcr, development-withJcr, build" />         <property name="servlet-mapping[SKIN_CONTENT].url-pattern"            value="/skin-content/*" setups="production-withJcr, development-withJcr, build" />
 		 <property name="servlet-mapping[FSD_CONTENT].servlet-name"
 			value="FsdContentServlet" />
 		<property name="servlet-mapping[FSD_CONTENT].url-pattern"
