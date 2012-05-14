@@ -74,7 +74,6 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
    private String prefSearchTxt;
    private SortableTable<PreferenceManagerTableEntry> prefManagerTable;
    private List<PreferenceManagerTableEntry> prefList;
-   private List<PreferenceManagerTableEntry> partitionCacheList;
    private ConfirmationDialog prefMngrConfirmationDialog;
    private PreferenceManagerTableEntry selectedPrefMngrObj;
    private QueryService qService;
@@ -116,8 +115,6 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
       prefList = CollectionUtils.newArrayList();
       createTable();
       update();
-      partitionCacheList = CollectionUtils.newArrayList();
-      partitionCacheList.addAll(prefList);
    }
 
    public void update()
@@ -248,14 +245,14 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
     */
    public void performSearch()
    {
-      if (StringUtils.isNotEmpty(prefSearchTxt) || PREF_VIEW_TYPE.USER.name().equals(selectedView))
+      if (StringUtils.isNotEmpty(prefSearchTxt))
       {
          fetchPreferences();
          updatePrefStoreTable(polulateSearchResult());
       }
       else
       {
-         updatePrefStoreTable(partitionCacheList);
+         update();
       }
    }
 
