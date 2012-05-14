@@ -48,6 +48,8 @@ import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventTyp
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelper;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DocumentTypeWrapper;
@@ -56,9 +58,9 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.IppJsfFormGenerator;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
-import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.FileSaveDialog;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.FileSaveDialog.FileSaveCallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadDialogAttributes;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.OutputResource;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentEventListener.DocumentEventType;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.helper.CorrespondenceMetaData;
@@ -814,52 +816,47 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
     */
    public void uploadNewVersion()
    {
-      final CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getCurrent();
-      fileUploadDialog.initialize();
-      fileUploadDialog.setTitle(propsBean.getString("views.documentView.saveDocumentDialog.uploadNewVersion.label"));
-      fileUploadDialog.setHeaderMessage(propsBean.getParamString(
-            "views.documentView.saveDocumentDialog.uploadNewVersion.text", documentContentInfo.getName()));
-      fileUploadDialog.setDocumentType(documentContentInfo.getDocumentType());
-      // In Document viewer document is already open, so no need to set Open Document
-      fileUploadDialog.setEnableOpenDocument(false);
-      fileUploadDialog.setOpenDocumentFlag(true);
-      fileUploadDialog.setICallbackHandler(new ICallbackHandler()
+      if (!(documentContentInfo instanceof JCRDocument))
       {
-         public void handleEvent(EventType eventType)
-         {
-            if (eventType == EventType.APPLY)
+         return;
+      }
+      Document existingDocument = ((JCRDocument) documentContentInfo).getDocument();
+
+      DocumentUploadHelper documentUploadHelper = new DocumentUploadHelper();
+      documentUploadHelper.initializeVersionUploadDialog(existingDocument);
+      FileUploadDialogAttributes attributes = documentUploadHelper.getFileUploadDialogAttributes();
+      // In Document viewer document is already open, so no need to set Open Document
+      attributes.setEnableOpenDocument(false);
+      attributes.setOpenDocumentFlag(true);
+      documentUploadHelper.setCallbackHandler(new DocumentUploadCallbackHandler()
+      {
+         public void handleEvent(DocumentUploadEventType eventType)
+         { 
+            if (DocumentUploadEventType.VERSION_SAVED == eventType)
             {
+               // Close the current IFrame if available
+               fireShowNextVersionToBeInvoked();
+               // Remove current document from sessionMap, required for creating new
+               // object with same documentId with new metadata
+               SessionSharedObjectsMap sessionMap = SessionSharedObjectsMap.getCurrent();
+               sessionMap.removeObject(documentContentInfo.getId());
                try
                {
-                  JCRDocument dmsDocument = (JCRDocument) documentContentInfo;
-                  Document document = dmsDocument.getDocument();
-
-                  // Close the current IFrame if available
-                  fireShowNextVersionToBeInvoked();
-                  // Remove current document from sessionMap, required for creating new
-                  // object with same documentId with new metadata
-                  SessionSharedObjectsMap sessionMap = SessionSharedObjectsMap.getCurrent();
-                  sessionMap.removeObject(document.getId());
-
-                  documentContentInfo.setComments(fileUploadDialog.getComments());
-                  documentContentInfo.setAnnotations(null);
-                  documentContentInfo.setDescription(fileUploadDialog.getDescription());
-                  documentContentInfo = documentContentInfo.saveFile(fileUploadDialog.getFileInfo().getPhysicalPath());
-
+                  documentContentInfo = documentContentInfo.reset();
                   postSave(false);
-                  // Activiate the Iframe with dealy if available
-                  fireRefreshViewerWithDelayInvoked();
                }
-               catch (Exception e)
+               catch (ResourceNotFoundException e)
                {
-                  DocumentMgmtUtility.verifyExistanceOfDocumentAndShowMessage(documentContentInfo.getId(), "", e);
+                  ExceptionHandler.handleException(e);
                }
+               // Activiate the Iframe with dealy if available
+               fireRefreshViewerWithDelayInvoked();
             }
          }
       });
-      fileUploadDialog.openPopup();
+      documentUploadHelper.uploadFile();
    }
-
+   
    /**
     * This method is called when document is modified in the background and the
     * viewer needs to be refreshed with the latest document.

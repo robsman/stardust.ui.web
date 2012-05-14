@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.views.doctree;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -19,7 +18,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
-import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
@@ -27,7 +25,8 @@ import org.eclipse.stardust.ui.web.viewscommon.common.DocumentToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.common.ToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
-import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelper;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
@@ -199,30 +198,31 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    @Override
    public void upload()
    {
-      CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getCurrent();
-      fileUploadDialog.initialize();
-      fileUploadDialog.setTitle(propsBean.getString("views.documentView.saveDocumentDialog.uploadNewVersion.label"));
-      fileUploadDialog.setHeaderMessage(propsBean.getParamString(
-            "views.documentView.saveDocumentDialog.uploadNewVersion.text", getDocument().getName()));
-      fileUploadDialog.setDocumentType(getDocument().getDocumentType());
-      fileUploadDialog.setOpenDocumentFlag(true);
-      fileUploadDialog.setICallbackHandler(new ICallbackHandler()
+      DocumentUploadHelper documentUploadHelper = new DocumentUploadHelper();
+      documentUploadHelper.initializeVersionUploadDialog(getDocument());
+      documentUploadHelper.getFileUploadDialogAttributes().setOpenDocumentFlag(true);
+      documentUploadHelper.setCallbackHandler(new DocumentUploadCallbackHandler()
       {
-         public void handleEvent(EventType eventType)
+         public void handleEvent(DocumentUploadEventType eventType)
          {
-            if (eventType == EventType.APPLY)
+            if (DocumentUploadEventType.VERSION_SAVED == eventType)
+            {
+               updateprocessInstance(getDocument());
+               RepositoryUtility.refreshNode(wrapper);
+            }
+            else if (DocumentUploadEventType.UPLOAD_FAILED == eventType)
             {
                try
                {
-                  saveVersion();
+                  setResource(DocumentMgmtUtility.getDocument(getResource().getId()));
                }
-               catch (Exception e)
+               catch (ResourceNotFoundException e)
                {
                }
             }
          }
       });
-      fileUploadDialog.openPopup();
+      documentUploadHelper.uploadFile();
    }
 
    @Override
@@ -380,44 +380,6 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
     */
    public void createNote()
    {}
-
-   /**
-    * save document
-    * 
-    * @throws DocumentManagementServiceException
-    * @throws IOException
-    */
-   public void saveVersion() throws DocumentManagementServiceException, IOException
-   {
-      CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getCurrent();
-      String fileName = fileUploadDialog.getFileInfo().getFileName();
-      try
-      {
-         Document document = getDocument();
-         document.setName(fileName);
-         document.setContentType(fileUploadDialog.getFileInfo().getContentType());
-         document = DocumentMgmtUtility.updateDocument(document,
-               DocumentMgmtUtility.getFileSystemDocumentContent(fileUploadDialog.getFileInfo().getPhysicalPath()),
-               fileUploadDialog.getDescription(), fileUploadDialog.getComments());
-         updateprocessInstance(document);
-         RepositoryUtility.refreshNode(this.wrapper);
-         if (fileUploadDialog.getOpenDocument())
-         {
-            DocumentViewUtil.openJCRDocument(document);
-         }
-      }
-      catch (Exception e)
-      {
-         try
-         {
-            this.setResource(DocumentMgmtUtility.getDocument(getResource().getId()));
-         }
-         catch (ResourceNotFoundException e1)
-         {
-         }
-         DocumentMgmtUtility.verifyExistanceOfDocumentAndShowMessage(getDocument().getId(), "", e);
-      }
-   }
 
    /**
     * Update document into process instance

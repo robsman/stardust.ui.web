@@ -24,67 +24,34 @@ import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
-import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
-import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.FileWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DocumentTypeWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
+import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadCallbackHandler.FileUploadEvent;
 
 import com.icesoft.faces.component.inputfile.FileInfo;
 import com.icesoft.faces.component.inputfile.InputFile;
 
-
-
 /**
+ * Assist in uploading a File
+ * 
  * @author Yogesh.Manware
  * @version $Revision: $
  */
 public class CommonFileUploadDialog extends PopupUIComponentBean
 {
    private static final long serialVersionUID = 1L;
-   private static final String BEAN_NAME = "commonFileUploadDialog";
    private static final Logger trace = LogManager.getLogger(CommonFileUploadDialog.class);
+   private static final String BEAN_NAME = "commonFileUploadDialog";
    private static final String DEFAULT_DOCUMENT_TYPE = "default";
-   
-   private Folder targetFolder;
+   private FileUploadCallbackHandler callbackHandler;
    private int fileUploadProgress;
-   private ICallbackHandler iCallbackHandler;
-   private FileInfo fileInfo;
-   private String description;
-   private String headerMessage;
-   private String comments;
-   private boolean viewFileUpload;
-   // To enable/disable the description and comment section on the dialog
-   private boolean viewDescription;
-   private boolean viewComment;
-   private boolean viewDocumentType;
-
-   // To show/hide the description and comment section on the dialog (page section link
-   // action)
-   private boolean showDescription;
-   private boolean showComment;
-   
-   private Map<String, DocumentType> allDocumentTypes;
-   private List<SelectItem> allDocumentTypesList;
-
-   // Used in case where document type is disabled
-   private DocumentType documentType;
-   private String documentTypeName;
-
-   // Used in case where document type is not disabled as displayed as select box
-   private String documentTypeId;
-
-   private boolean documentTypeDisabled;
-   
-   private boolean enableOpenDocument;
-   private Boolean openDocument;
-   
-   private String message;
+   private FileUploadDialogAttributes attributes;
 
    /**
     * default constructor
@@ -92,48 +59,19 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
    public CommonFileUploadDialog()
    {
       super();
-      setTitle(MessagesViewsCommonBean.getInstance().getString("fileUpload.label"));
-      fileUploadProgress = 0;
    }
 
-   /**
-    * @return fileUploadAdminDialog object
-    */
-   public static CommonFileUploadDialog getCurrent()
+   public static CommonFileUploadDialog getInstance()
    {
       return (CommonFileUploadDialog) FacesUtils.getBeanFromContext(BEAN_NAME);
    }
 
-   @Override
-   public void initialize()
+   public void initializeBean()
    {
-      //FacesUtils.refreshPage();
-      setTitle(MessagesViewsCommonBean.getInstance().getString("fileUpload.label"));
+      attributes = new FileUploadDialogAttributes();
+      attributes.title = MessagesViewsCommonBean.getInstance().getString("fileUpload.label");
       fileUploadProgress = 0;
-      description = "";
-      comments = "";
-      headerMessage = "";
-      message = "";
-
-      targetFolder = null;
-      iCallbackHandler = null;
-      fileInfo = null;
-
-      viewFileUpload = true;
-      viewDocumentType = true;
-      viewDescription = true;
-      viewComment = true;
-      enableOpenDocument = true;
-      
-      showDescription = false;
-      showComment = false;
-      
-      allDocumentTypes = null;
-      allDocumentTypesList = null;
-      documentTypeId = null;
-      documentTypeDisabled = false;
-      
-      openDocument = false;
+      callbackHandler = null;
    }
 
    /**
@@ -145,41 +83,39 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
    {
       InputFile inputFile = (InputFile) event.getSource();
       FileInfo fileInfo = inputFile.getFileInfo();
-      this.fileInfo = fileInfo;
       try
       {
          if (fileInfo.isSaved())
          {
-            fireCallback(EventType.APPLY);
+            fireCallback(FileUploadEvent.FILE_UPLOADED, fileInfo);
          }
          else
          {
             switch (fileInfo.getStatus())
             {
             case FileInfo.UNSPECIFIED_NAME:
-               ExceptionHandler.handleException("commonFile" + getBeanId(),
-                     MessagesViewsCommonBean.getInstance().getString("views.genericRepositoryView.UNSPECIFIED_NAME"));
+               ExceptionHandler.handleException("commonFile" + getBeanId(), MessagesViewsCommonBean.getInstance()
+                     .getString("views.genericRepositoryView.UNSPECIFIED_NAME"));
                break;
             default:
-               ExceptionHandler.handleException("commonFile" + getBeanId(),
-                     MessagesViewsCommonBean.getInstance().getString("views.genericRepositoryView.fileUploadError"));
+               ExceptionHandler.handleException("commonFile" + getBeanId(), MessagesViewsCommonBean.getInstance()
+                     .getString("views.genericRepositoryView.fileUploadError"));
                break;
             }
-
-            // fireCallback(EventType.CANCEL);
+            fireCallback(FileUploadEvent.UPLOAD_FAILED, null);
          }
       }
-      catch (Exception x)
+      catch (Exception exception)
       {
-         ExceptionHandler.handleException(x);
-         fireCallback(EventType.CANCEL);
+         ExceptionHandler.handleException(exception);
+         fireCallback(FileUploadEvent.UPLOAD_FAILED, null);
       }
 
    }
 
    public void continueAction()
    {
-      fireCallback(EventType.APPLY);
+      fireCallback(FileUploadEvent.SAVE_CONFIRMED, null);
    }
 
    /**
@@ -196,130 +132,39 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
 
    public void toggleDescription()
    {
-      showDescription = !showDescription;
+      attributes.showDescription = !attributes.showDescription;
    }
 
    public void toggleComment()
    {
-      showComment = !showComment;
+      attributes.showComment = !attributes.showComment;
    }
 
    /**
     * @return
     */
-   public List<SelectItem> getAllDocumentTypesList()
-   {
-      if (null == allDocumentTypes)
-      {
-         String displayName;
-         String key;
-
-         allDocumentTypes = new HashMap<String, DocumentType>();
-         allDocumentTypesList = new ArrayList<SelectItem>();
-
-         Set<DocumentTypeWrapper> docTypes = ModelUtils.getAllActiveDeclaredDocumentTypes();
-         for (DocumentTypeWrapper docTypeObj : docTypes)
-         {
-            key = getDocumentTypeMapKey(docTypeObj.getDocumentType());
-            displayName = docTypeObj.getDocumentTypeI18nName();
-
-            allDocumentTypes.put(key, docTypeObj.getDocumentType());
-            allDocumentTypesList.add(new SelectItem(key, displayName));
-         }
-
-         Collections.sort(allDocumentTypesList, new Comparator<SelectItem>()
-         {
-            public int compare(SelectItem arg0, SelectItem arg1)
-            {
-               return arg0.getLabel().compareTo(arg1.getLabel());
-            }
-         });
-
-         allDocumentTypesList.add(0, new SelectItem(DEFAULT_DOCUMENT_TYPE, MessagesViewsCommonBean.getInstance()
-               .getString("fileUpload.documentType.default")));
-      }
-
-      return allDocumentTypesList;
-   }
-
-   /**
-    * @return
-    */
-   public DocumentType getDocumentType()
-   {
-      if (!isDocumentTypeDisabled())
-      {
-         if (null != allDocumentTypes)
-         {
-            return allDocumentTypes.get(getDocumentTypeId());
-         }
-         return null;
-      }
-      else
-      {
-         return documentType;
-      }
-   }
-
-   /**
-    * @param documentType
-    */
-   public void setDocumentType(DocumentType documentType)
-   {
-      this.documentType = documentType;
-      setDocumentTypeName(documentType);
-      documentTypeDisabled = true;
-   }
-
-   /**
-    * @return
-    */
-   public String getDocumentTypeName()
-   {
-      return documentTypeName;
-   }
-
-   /**
-    * @param documentType
-    */
-   private void setDocumentTypeName(DocumentType documentType)
-   {
-      if (null != documentType)
-      {
-         Set<DocumentTypeWrapper> docTypes = ModelUtils.getAllDeclaredDocumentTypes();
-         for (DocumentTypeWrapper docTypeObj : docTypes)
-         {
-            if (docTypeObj.getDocumentType().equals(documentType))
-            {
-               documentTypeName = docTypeObj.getDocumentTypeI18nName();
-               break;
-            }
-         }
-      }
-      else
-      {
-         documentTypeName = MessagesViewsCommonBean.getInstance().getString("fileUpload.documentType.default");
-      }
-   }
-
-   /**
-    * @param docType
-    * @return
-    */
-   private String getDocumentTypeMapKey(DocumentType docType)
-   {
-      return docType.getSchemaLocation() + ":" + docType.getDocumentTypeId();
-   }
 
    /**
     * @param eventType
     */
-   private void fireCallback(EventType eventType)
+   private void fireCallback(FileUploadEvent eventType, FileInfo fileInfo)
    {
       closePopup();
-      if (iCallbackHandler != null)
+      if (callbackHandler != null)
       {
-         iCallbackHandler.handleEvent(eventType);
+         FileWrapper fileWrapper = new FileWrapper();
+         if (FileUploadEvent.FILE_UPLOADED == eventType)
+         {
+            fileWrapper.setFileInfo(fileInfo);
+            fileWrapper.setDocumentType(attributes.getDocumentType());
+            fileWrapper.setOpenDocument(attributes.openDocument);
+         }
+         fileWrapper.setDescription(attributes.description);
+         fileWrapper.setComments(attributes.comments);
+
+         callbackHandler.setFileWrapper(fileWrapper);
+
+         callbackHandler.handleEvent(eventType);
       }
    }
 
@@ -328,164 +173,373 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
       return fileUploadProgress;
    }
 
-   public Folder getTargetFolder()
+   public void setICallbackHandler(FileUploadCallbackHandler callbackHandler)
    {
-      return targetFolder;
+      this.callbackHandler = callbackHandler;
    }
 
-   public FileInfo getFileInfo()
+   @Override
+   public String getTitle()
    {
-      return this.fileInfo;
+      return attributes.title;
    }
 
-   public ICallbackHandler getICallbackHandler()
+   public static class FileUploadDialogAttributes
    {
-      return iCallbackHandler;
-   }
+      private String title = "";
+      private String description = "";
+      private String headerMessage = "";
+      private String comments = "";
+      private boolean viewFileUpload = true;
+      // To enable/disable the description and comment section on the dialog
+      private boolean viewDescription = true;
+      private boolean viewComment = true;
+      private boolean viewDocumentType = true;
 
-   public void setICallbackHandler(ICallbackHandler callbackHandler)
-   {
-      iCallbackHandler = callbackHandler;
-   }
+      // To show/hide the description and comment section on the dialog (page section link
+      // action)
+      private boolean showDescription;
+      private boolean showComment;
 
-   public String getDescription()
-   {
-      return description;
-   }
+      private Map<String, DocumentType> allDocumentTypes;
+      private List<SelectItem> allDocumentTypesList;
 
-   public void setDescription(String description)
-   {
-      this.description = description;
-   }
+      // Used in case where document type is disabled
+      private DocumentType documentType;
+      private String documentTypeName;
 
-   public String getHeaderMessage()
-   {
-      return headerMessage;
-   }
+      // Used in case where document type is not disabled as displayed as select box
+      private String documentTypeId;
 
-   public void setHeaderMessage(String headerMessage)
-   {
-      this.headerMessage = headerMessage;
-   }
+      private boolean documentTypeDisabled;
 
-   public String getComments()
-   {
-      return comments;
-   }
+      private boolean enableOpenDocument = true;
+      private Boolean openDocument = false;
+      private boolean showOpenDocument = true;
 
-   public void setComments(String comments)
-   {
-      this.comments = comments;
-   }
+      private String message = "";
 
-   public boolean isViewFileUpload()
-   {
-      return viewFileUpload;
-   }
-
-   public void setViewFileUpload(boolean fileUpload)
-   {
-      this.viewFileUpload = fileUpload;
-   }
-
-   public boolean isViewDescription()
-   {
-      return viewDescription;
-   }
-
-   public void setViewDescription(boolean viewDescription)
-   {
-      this.viewDescription = viewDescription;
-   }
-
-   public boolean isShowDescription()
-   {
-      return showDescription;
-   }
-
-   public boolean isShowComment()
-   {
-      return showComment;
-   }
-
-   public boolean isViewComment()
-   {
-      return viewComment;
-   }
-
-   public void setViewComment(boolean viewComment)
-   {
-      this.viewComment = viewComment;
-   }
-
-   public String getDocumentTypeId()
-   {
-      return documentTypeId;
-   }
-
-   public void setDocumentTypeId(String documentTypeId)
-   {
-      if (!isDocumentTypeDisabled())
-      {
-         this.documentTypeId = documentTypeId;
-      }
-   }
-
-   public boolean isDocumentTypeDisabled()
-   {
-      return documentTypeDisabled;
-   }
-
-   public Boolean getOpenDocument()
-   {
-      return openDocument;
-   }
-
-   /**
-    * is invoked only from icefaces form
-    * @param openDocument
-    */
-   public void setOpenDocument(Boolean openDocument)
-   {
-      this.openDocument = openDocument;
-      if (enableOpenDocument)
+      public void setOpenDocumentFlag(Boolean openDocument)
       {
          this.openDocument = openDocument;
       }
-   }
-   
-   public void setOpenDocumentFlag(Boolean openDocument)
-   {
-      this.openDocument = openDocument;
+
+      public String getDescription()
+      {
+         return description;
+      }
+
+      public void setDescription(String description)
+      {
+         this.description = description;
+      }
+
+      public String getHeaderMessage()
+      {
+         return headerMessage;
+      }
+
+      public void setHeaderMessage(String headerMessage)
+      {
+         this.headerMessage = headerMessage;
+      }
+
+      public String getComments()
+      {
+         return comments;
+      }
+
+      public void setComments(String comments)
+      {
+         this.comments = comments;
+      }
+
+      public boolean isViewFileUpload()
+      {
+         return viewFileUpload;
+      }
+
+      public void setViewFileUpload(boolean viewFileUpload)
+      {
+         this.viewFileUpload = viewFileUpload;
+      }
+
+      public boolean isViewDescription()
+      {
+         return viewDescription;
+      }
+
+      public void setViewDescription(boolean viewDescription)
+      {
+         this.viewDescription = viewDescription;
+      }
+
+      public boolean isViewComment()
+      {
+         return viewComment;
+      }
+
+      public void setViewComment(boolean viewComment)
+      {
+         this.viewComment = viewComment;
+      }
+
+      public boolean isViewDocumentType()
+      {
+         return viewDocumentType;
+      }
+
+      public void setViewDocumentType(boolean viewDocumentType)
+      {
+         this.viewDocumentType = viewDocumentType;
+      }
+
+      public boolean isShowDescription()
+      {
+         return showDescription;
+      }
+
+      public void setShowDescription(boolean showDescription)
+      {
+         this.showDescription = showDescription;
+      }
+
+      public boolean isShowComment()
+      {
+         return showComment;
+      }
+
+      public void setShowComment(boolean showComment)
+      {
+         this.showComment = showComment;
+      }
+
+      /**
+       * @return
+       */
+      public List<SelectItem> getAllDocumentTypesList()
+      {
+         if (null == allDocumentTypes)
+         {
+            String displayName;
+            String key;
+
+            allDocumentTypes = new HashMap<String, DocumentType>();
+            allDocumentTypesList = new ArrayList<SelectItem>();
+
+            Set<DocumentTypeWrapper> docTypes = ModelUtils.getAllActiveDeclaredDocumentTypes();
+            for (DocumentTypeWrapper docTypeObj : docTypes)
+            {
+               key = getDocumentTypeMapKey(docTypeObj.getDocumentType());
+               displayName = docTypeObj.getDocumentTypeI18nName();
+
+               allDocumentTypes.put(key, docTypeObj.getDocumentType());
+               allDocumentTypesList.add(new SelectItem(key, displayName));
+            }
+
+            Collections.sort(allDocumentTypesList, new Comparator<SelectItem>()
+            {
+               public int compare(SelectItem arg0, SelectItem arg1)
+               {
+                  return arg0.getLabel().compareTo(arg1.getLabel());
+               }
+            });
+
+            allDocumentTypesList.add(0, new SelectItem(DEFAULT_DOCUMENT_TYPE, MessagesViewsCommonBean.getInstance()
+                  .getString("fileUpload.documentType.default")));
+         }
+
+         return allDocumentTypesList;
+      }
+
+      /**
+       * @param docType
+       * @return
+       */
+      private String getDocumentTypeMapKey(DocumentType docType)
+      {
+         return docType.getSchemaLocation() + ":" + docType.getDocumentTypeId();
+      }
+
+      public Map<String, DocumentType> getAllDocumentTypes()
+      {
+         return allDocumentTypes;
+      }
+
+      public void setAllDocumentTypes(Map<String, DocumentType> allDocumentTypes)
+      {
+         this.allDocumentTypes = allDocumentTypes;
+      }
+
+      public void setDocumentTypeName(String documentTypeName)
+      {
+         this.documentTypeName = documentTypeName;
+      }
+
+      public String getDocumentTypeId()
+      {
+         return documentTypeId;
+      }
+
+      public void setDocumentTypeId(String documentTypeId)
+      {
+         if (!isDocumentTypeDisabled())
+         {
+            this.documentTypeId = documentTypeId;
+         }
+      }
+
+      public boolean isDocumentTypeDisabled()
+      {
+         return documentTypeDisabled;
+      }
+
+      public void setDocumentTypeDisabled(boolean documentTypeDisabled)
+      {
+         this.documentTypeDisabled = documentTypeDisabled;
+      }
+
+      public boolean isEnableOpenDocument()
+      {
+         return enableOpenDocument;
+      }
+
+      public void setEnableOpenDocument(boolean enableOpenDocument)
+      {
+         this.enableOpenDocument = enableOpenDocument;
+      }
+
+      public Boolean getOpenDocument()
+      {
+         return openDocument;
+      }
+
+      public void setOpenDocument(Boolean openDocument)
+      {
+         if (enableOpenDocument)
+         {
+            this.openDocument = openDocument;
+         }
+      }
+
+      public String getMessage()
+      {
+         return message;
+      }
+
+      public void setMessage(String message)
+      {
+         this.message = message;
+      }
+
+      /**
+       * @return
+       */
+      public DocumentType getDocumentType()
+      {
+         if (!isDocumentTypeDisabled())
+         {
+            if (null != allDocumentTypes)
+            {
+               return allDocumentTypes.get(getDocumentTypeId());
+            }
+            return null;
+         }
+         else
+         {
+            return documentType;
+         }
+      }
+
+      /**
+       * @param documentType
+       */
+      public void setDocumentType(DocumentType documentType)
+      {
+         this.documentType = documentType;
+         setDocumentTypeName(documentType);
+         documentTypeDisabled = true;
+      }
+
+      /**
+       * @return
+       */
+      public String getDocumentTypeName()
+      {
+         return documentTypeName;
+      }
+
+      /**
+       * @param documentType
+       */
+      private void setDocumentTypeName(DocumentType documentType)
+      {
+         if (null != documentType)
+         {
+            Set<DocumentTypeWrapper> docTypes = ModelUtils.getAllDeclaredDocumentTypes();
+            for (DocumentTypeWrapper docTypeObj : docTypes)
+            {
+               if (docTypeObj.getDocumentType().equals(documentType))
+               {
+                  documentTypeName = docTypeObj.getDocumentTypeI18nName();
+                  break;
+               }
+            }
+         }
+         else
+         {
+            documentTypeName = MessagesViewsCommonBean.getInstance().getString("fileUpload.documentType.default");
+         }
+      }
+
+      public void setTitle(String title)
+      {
+         this.title = title;
+      }
+
+      public boolean isShowOpenDocument()
+      {
+         return showOpenDocument;
+      }
+
+      public void setShowOpenDocument(boolean showOpenDocument)
+      {
+         this.showOpenDocument = showOpenDocument;
+      }
    }
 
-   public String getMessage()
+   public void setCallbackHandler(FileUploadCallbackHandler callbackHandler)
    {
-      return message;
+      this.callbackHandler = callbackHandler;
    }
 
-   public void setMessage(String message)
+   public FileUploadDialogAttributes getAttributes()
    {
-      this.message = message;
+      return attributes;
    }
 
-   public boolean isViewDocumentType()
+   public static abstract class FileUploadCallbackHandler
    {
-      return viewDocumentType;
+      private FileWrapper fileWrapper;
+
+      public static enum FileUploadEvent {
+         FILE_UPLOADED, UPLOAD_FAILED, SAVE_CONFIRMED
+      }
+
+      abstract public void handleEvent(FileUploadEvent eventType);
+
+      public FileWrapper getFileWrapper()
+      {
+         return fileWrapper;
+      }
+
+      public void setFileWrapper(FileWrapper fileWrapper)
+      {
+         this.fileWrapper = fileWrapper;
+      }
    }
 
-   public void setViewDocumentType(boolean viewDocumentType)
-   {
-      this.viewDocumentType = viewDocumentType;
-   }
-
-   public boolean isEnableOpenDocument()
-   {
-      return enableOpenDocument;
-   }
-
-   public void setEnableOpenDocument(boolean enableOpenDocument)
-   {
-      this.enableOpenDocument = enableOpenDocument;
-   }
+   @Override
+   public void initialize()
+   {}
 }

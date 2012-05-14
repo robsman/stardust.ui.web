@@ -53,6 +53,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog;
+import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadCallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadDialogAttributes;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryDocumentUserObject;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentEditor;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRVersionTracker;
@@ -214,23 +216,25 @@ public class CorrespondenceViewBean extends UIComponentBean
     */
    public void attachFile()
    {
-      CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getCurrent();
-      fileUploadDialog.initialize();
-      fileUploadDialog.setViewComment(false);
-      fileUploadDialog.setViewDescription(false);
-      fileUploadDialog.setOpenDocumentFlag(false);
-      fileUploadDialog.setEnableOpenDocument(false);
-      fileUploadDialog.setViewDocumentType(false);
-      
-      fileUploadDialog.setICallbackHandler(new ICallbackHandler()
+      CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getInstance();
+      fileUploadDialog.initializeBean();
+      FileUploadDialogAttributes attributes = fileUploadDialog.getAttributes();
+      attributes.setViewComment(false);
+      attributes.setViewDescription(false);
+      attributes.setOpenDocumentFlag(false);
+      attributes.setEnableOpenDocument(false);
+      attributes.setViewDocumentType(false);
+      attributes.setShowOpenDocument(false);
+
+      fileUploadDialog.setCallbackHandler(new FileUploadCallbackHandler()
       {
-         public void handleEvent(EventType eventType)
+         public void handleEvent(FileUploadEvent eventType)
          {
-            if (eventType == EventType.APPLY)
+            if (eventType == FileUploadEvent.FILE_UPLOADED)
             {
                try
                {
-                  processUploadedFile();
+                  addAttachments(new Attachment(getFileWrapper().getFileInfo()));
                }
                catch (Exception e)
                {
@@ -617,15 +621,6 @@ public class CorrespondenceViewBean extends UIComponentBean
             enteredValues.add(new DataPathValue(recipients[i], recipients[i], recipients[i]));
       }
       return enteredValues;
-   }
-
-   /**
-    * store uploaded file details
-    */
-   private void processUploadedFile()
-   {
-      CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getCurrent();
-      addAttachments(new Attachment(fileUploadDialog.getFileInfo()));
    }
 
    /**

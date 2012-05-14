@@ -19,10 +19,8 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
-import org.eclipse.stardust.ui.web.viewscommon.common.NoteTip;
 import org.eclipse.stardust.ui.web.viewscommon.common.ToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.CallbackHandler;
-import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.PanelConfirmation;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
@@ -30,7 +28,8 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils;
-
+import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadCallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadDialogAttributes;
 
 
 /**
@@ -168,24 +167,26 @@ public class RepositoryVirtualUserObject extends RepositoryResourceUserObject
     */
    private void updateConfiguration()
    {
-      CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getCurrent();
-      fileUploadDialog.initialize();
-      fileUploadDialog.setHeaderMessage(propsBean.getParamString("common.uploadIntoFolder", getLabel()));
-      fileUploadDialog.setTitle(propsBean.getString("common.fileUpload"));
-      fileUploadDialog.setViewDescription(false);
-      fileUploadDialog.setViewComment(false);
-      fileUploadDialog.setViewDocumentType(false);
-      fileUploadDialog.setEnableOpenDocument(false);
-      fileUploadDialog.setICallbackHandler(new ICallbackHandler()
+      CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getInstance();
+      fileUploadDialog.initializeBean();
+      
+      FileUploadDialogAttributes attributes = fileUploadDialog.getAttributes();
+      attributes.setHeaderMessage(propsBean.getParamString("common.uploadIntoFolder", getLabel()));
+      attributes.setTitle(propsBean.getString("common.fileUpload"));
+      attributes.setViewDescription(false);
+      attributes.setViewComment(false);
+      attributes.setViewDocumentType(false);
+      attributes.setEnableOpenDocument(false);
+      attributes.setShowOpenDocument(false);
+      fileUploadDialog.setCallbackHandler(new FileUploadCallbackHandler()
       {
-         public void handleEvent(EventType eventType)
+         public void handleEvent(FileUploadEvent eventType)
          {
-            if (eventType == EventType.APPLY)
+            if (eventType == FileUploadEvent.FILE_UPLOADED)
             {
-               CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getCurrent();
                try
                {
-                  loadConf(fileUploadDialog.getFileInfo().getFile());
+                  loadConf(getFileWrapper().getFileInfo().getFile());
                }
                catch (Exception e)
                {
@@ -193,6 +194,7 @@ public class RepositoryVirtualUserObject extends RepositoryResourceUserObject
             }
          }
       });
+      
       fileUploadDialog.openPopup();
    }
 

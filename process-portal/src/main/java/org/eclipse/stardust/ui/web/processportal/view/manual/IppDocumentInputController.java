@@ -34,10 +34,10 @@ import org.eclipse.stardust.ui.web.processportal.view.manual.DocumentInputEventH
 import org.eclipse.stardust.ui.web.processportal.view.manual.DocumentInputEventHandler.DocumentInputEvent.DocumentInputEventType;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ConfirmationDialogWithOptionsBean;
-import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.FileWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
@@ -45,6 +45,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.IceComponentUtil;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog;
+import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadCallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadDialogAttributes;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.FileSystemJCRDocument;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentContentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
@@ -177,39 +179,44 @@ public class IppDocumentInputController extends DocumentInputController implemen
    {
       MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
 
-      CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getCurrent();
-      fileUploadDialog.initialize();
-
-      fileUploadDialog.setDocumentType(getPath().getDocumentType());
-      fileUploadDialog.setHeaderMessage(propsBean.getParamString(
+      CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getInstance();
+      fileUploadDialog.initializeBean();
+      FileUploadDialogAttributes attributes = fileUploadDialog.getAttributes();
+      
+      attributes.setDocumentType(getPath().getDocumentType());
+      attributes.setHeaderMessage(propsBean.getParamString(
             "views.genericRepositoryView.specificDocument.uploadFile", label));
-      fileUploadDialog.setTitle(propsBean.getString("common.fileUpload"));
-      fileUploadDialog.setOpenDocumentFlag(openDocument);
-      fileUploadDialog.setEnableOpenDocument(enableOpenDocument);
+      attributes.setOpenDocumentFlag(openDocument);
+      attributes.setEnableOpenDocument(enableOpenDocument);
 
-      fileUploadDialog.setICallbackHandler(new ICallbackHandler()
+      fileUploadDialog.setCallbackHandler(new FileUploadCallbackHandler()
       {
-         public void handleEvent(EventType eventType)
+         public void handleEvent(FileUploadEvent eventType)
          {
-            if (eventType == EventType.APPLY)
+            if (eventType == FileUploadEvent.FILE_UPLOADED)
             {
-               CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getCurrent();
-               RawDocument rawDocument = new RawDocument(fileUploadDialog.getFileInfo());
-               rawDocument.setDescription(fileUploadDialog.getDescription());
-               rawDocument.setComments(fileUploadDialog.getComments());
-               rawDocument.setDocumentType(fileUploadDialog.getDocumentType());
-
-               if (!fireEvent(DocumentInputEventType.TO_BE_UPLOADED, getFileSystemDocument(rawDocument)))
+               try
                {
-                  setValue(rawDocument);
-                  fireEvent(DocumentInputEventType.UPLOADED, null);
-                  if (fileUploadDialog.getOpenDocument())
-                  {
-                     viewDocument();
-                  }
-               }
+                  FileWrapper fileWrapper = getFileWrapper();
+                  RawDocument rawDocument = new RawDocument(fileWrapper.getFileInfo());
+                  rawDocument.setDescription(fileWrapper.getDescription());
+                  rawDocument.setComments(fileWrapper.getComments());
+                  rawDocument.setDocumentType(fileWrapper.getDocumentType());
 
-               refreshPortalSession();
+                  if (!fireEvent(DocumentInputEventType.TO_BE_UPLOADED, getFileSystemDocument(rawDocument)))
+                  {
+                     setValue(rawDocument);
+                     fireEvent(DocumentInputEventType.UPLOADED, null);
+                     if (fileWrapper.isOpenDocument())
+                     {
+                        viewDocument();
+                     }
+                  }
+                  refreshPortalSession();
+               }
+               catch (Exception e)
+               {
+               }
             }
          }
       });

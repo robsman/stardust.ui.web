@@ -19,26 +19,22 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
-import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
-import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.viewscommon.common.DocumentToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.common.ToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
-import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.TypedDocumentUploadHelper;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
-import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
 
-
-import com.icesoft.faces.component.inputfile.FileInfo;
 
 /**
  * @author Yogesh.Manware
@@ -47,7 +43,6 @@ import com.icesoft.faces.component.inputfile.FileInfo;
 public class TypedDocumentUserObject extends RepositoryResourceUserObject
 {
    private static final long serialVersionUID = 1L;
-   private MessagesViewsCommonBean propsBean;
    private MIMEType mType = MimeTypesHelper.DEFAULT;
    private boolean sendFileAllowed = false;
    private TypedDocument typedDocument;
@@ -68,7 +63,6 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
    {
       super(node, typedDocument.getDocument());
       this.typedDocument = typedDocument;
-      propsBean = MessagesViewsCommonBean.getInstance();
       node.setAllowsChildren(false);
       setName(typedDocument.getName());
       this.setLeaf(true);
@@ -209,39 +203,33 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
    @Override
    public void upload()
    {
-      CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getCurrent();
-      fileUploadDialog.initialize();
-      fileUploadDialog.setDocumentType(typedDocument.getDocumentType());
-      fileUploadDialog.setOpenDocumentFlag(true);
-      if (null == getDocument())
+      TypedDocumentUploadHelper documentUploadHelper = new TypedDocumentUploadHelper();
+      documentUploadHelper.setParentFolderPath(DocumentMgmtUtility.getTypedDocumentsFolderPath(typedDocument
+            .getProcessInstance()));
+      documentUploadHelper.setTypedDocument(typedDocument);
+      DocumentUploadCallbackHandler callbackHandler = new DocumentUploadCallbackHandler()
       {
-         fileUploadDialog.setHeaderMessage(propsBean.getParamString(
-               "views.genericRepositoryView.specificDocument.uploadFile", getLabel()));
-         fileUploadDialog.setTitle(propsBean.getString("common.fileUpload"));
+         public void handleEvent(DocumentUploadEventType eventType)
+         {
+            if (DocumentUploadEventType.DOCUMENT_CREATED == eventType || DocumentUploadEventType.VERSION_SAVED == eventType)
+            {
+               saveDocument(getDocument());
+            }
+         }
+      };
+      
+      if (null == typedDocument.getDocument())
+      {
+         documentUploadHelper.initializeDocumentUploadDialog();
+         documentUploadHelper.setCallbackHandler(callbackHandler);
+         documentUploadHelper.uploadFile();
       }
       else
       {
-         fileUploadDialog.setHeaderMessage(propsBean.getParamString(
-               "views.genericRepositoryView.specificDocument.newVersion", getLabel()));
-         fileUploadDialog.setTitle(propsBean.getString("views.documentView.saveDocumentDialog.uploadNewVersion.label"));
+         documentUploadHelper.initializeVersionUploadDialog(typedDocument.getDocument());
+         documentUploadHelper.setCallbackHandler(callbackHandler);
+         documentUploadHelper.uploadFile();
       }
-      fileUploadDialog.setICallbackHandler(new ICallbackHandler()
-      {
-         public void handleEvent(EventType eventType)
-         {
-            if (eventType == EventType.APPLY)
-            {
-               try
-               {
-                  saveDocument();
-               }
-               catch (Exception e)
-               {
-               }
-            }
-         }
-      });
-      fileUploadDialog.openPopup();
    }
 
    /**
@@ -250,63 +238,11 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
     * @throws DocumentManagementServiceException
     * @throws IOException
     */
-   private void saveDocument() throws DocumentManagementServiceException, IOException
+   private void saveDocument(Document document)
    {
-      CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getCurrent();
-      FileInfo fileInfo = fileUploadDialog.getFileInfo();
-      String fileName = fileInfo.getFileName();
-
-      if (!DocumentMgmtUtility.validateFileName(fileName))
-      {
-         MessageDialog.addInfoMessage(propsBean.getString("views.common.invalidCharater.error"));
-         return;
-      }
-
-      String typedDocumentPath = DocumentMgmtUtility.getTypedDocumentsFolderPath(typedDocument.getProcessInstance());
-
-      // CHECK if the file with same name already exist in Specific Documents folder
-      Document existingDocument = DocumentMgmtUtility.getDocument(typedDocumentPath, fileName);
-      if (null != existingDocument &&  null == getDocument())
-      {
-         // display error message
-         MessageDialog.addErrorMessage(MessagesViewsCommonBean.getInstance().getParamString(
-               "views.genericRepositoryView.specificDocument.reclassifyDocument.fileAlreadyExist", fileName));
-         return;
-      }
-
-      Document document = null;
-      if (null == getDocument()) // first version
-      {
-         Folder typedDocFolder = DocumentMgmtUtility.createFolderIfNotExists(typedDocumentPath);
-         try
-         {
-            document = DocumentMgmtUtility.createDocument(typedDocFolder.getId(), fileInfo,
-                  fileUploadDialog.getDescription(), fileUploadDialog.getComments(), fileUploadDialog.getDocumentType());
-            typedDocument.setDocument(document);
-            TypedDocumentsUtil.updateTypedDocument(typedDocument);
-         }
-         catch (Exception e)
-         {
-            ExceptionHandler.handleException(e);
-         }
-      }
-      else
-      {
-         document = getDocument();
-         document.setName(fileInfo.getFileName());
-         document.setContentType(fileUploadDialog.getFileInfo().getContentType());
-         document = DocumentMgmtUtility.updateDocument(getDocument(),
-               DocumentMgmtUtility.getFileSystemDocumentContent(fileInfo.getPhysicalPath()),
-               fileUploadDialog.getDescription(), fileUploadDialog.getComments());
-         typedDocument.setDocument(document);
-         TypedDocumentsUtil.updateTypedDocument(typedDocument);
-      }
+      typedDocument.setDocument(document);
+      TypedDocumentsUtil.updateTypedDocument(typedDocument);
       initialize();
-      
-      if (null != document && fileUploadDialog.getOpenDocument())
-      {
-         openDocument();
-      }
    }
 
    @Override

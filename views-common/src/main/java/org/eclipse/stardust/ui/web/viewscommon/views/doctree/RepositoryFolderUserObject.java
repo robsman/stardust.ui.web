@@ -10,9 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.views.doctree;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -24,17 +22,14 @@ import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.viewscommon.common.ToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileUploadHelper;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.I18nFolderUtils;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileUploadHelper.FUNCTION_TYPE;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileUploadHelper.FileUploadEvent;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler.DocumentUploadEventType;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentDragDropHelper;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelper;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
-
-
-import com.icesoft.faces.component.inputfile.FileInfo;
 
 /**
  * @author Yogesh.Manware
@@ -170,38 +165,29 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
       return null;
    }
 
-   
-   /*
-    * (non-Javadoc)
-    * 
-    * @see
-    * org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryResourceUserObject#upload
-    * ()
-    */
    public void upload()
    {
       RepositoryUtility.expandTree(this.wrapper);
       this.wrapper.setAllowsChildren(true);
+      
       // upload file
-      FileUploadHelper fileUploadHelper = new FileUploadHelper(FUNCTION_TYPE.UPLOAD_ON_FOLDER, getFolder().getPath());
-      fileUploadHelper.setHeaderMsg(propsBean.getParamString("common.uploadIntoFolder", getLabel()));
-      ParametricCallbackHandler callbackHandler = new ParametricCallbackHandler()
+      DocumentUploadHelper documentUploadHelper = new DocumentUploadHelper();
+      documentUploadHelper.initializeDocumentUploadDialog();
+      documentUploadHelper.setParentFolderPath(getFolder().getPath());
+      documentUploadHelper.getFileUploadDialogAttributes().setHeaderMessage(
+            propsBean.getParamString("common.uploadIntoFolder", getLabel()));
+      
+      documentUploadHelper.setCallbackHandler(new DocumentUploadCallbackHandler()
       {
-         public void handleEvent(EventType eventType)
+         public void handleEvent(DocumentUploadEventType eventType)
          {
-            if (EventType.APPLY.equals(eventType))
-            {
-               handleFileUploadEvents(getParameters());
-            }
+            handleFileUploadEvents(getDocument(), eventType);
          }
-      };
-      Map<String, Object> params = new HashMap<String, Object>();
-      params.put("userObject", this);
-      callbackHandler.setParameters(params);
-      fileUploadHelper.setCallbackHandler(callbackHandler);
-      fileUploadHelper.uploadDocument();
+      });
+      documentUploadHelper.setRepositoryResourceUserObject(this);
+      documentUploadHelper.uploadFile();
    }
-
+   
    /*
     * (non-Javadoc)
     * 
@@ -209,7 +195,7 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
     * org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryResourceUserObject#drop
     * (javax.swing.tree.DefaultMutableTreeNode)
     */
-   public void drop(DefaultMutableTreeNode valueNode)
+   public void drop(final DefaultMutableTreeNode valueNode)
    {
       RepositoryResourceUserObject docUserObject = (RepositoryResourceUserObject) valueNode.getUserObject();
       Document draggedDocument = null;
@@ -225,46 +211,42 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
       }
       try
       {
-
-         if (RepositoryUtility.isFileTypePermissible(this.wrapper, draggedDocument.getContentType()))
+         if (!valueNode.getParent().equals(this.wrapper))
          {
-            if (!valueNode.getParent().equals(this.wrapper))
+            Document existingDocument = DocumentMgmtUtility.getDocument(getResource().getPath(),
+                  draggedDocument.getName());
+            
+            if (null != existingDocument)
             {
-               Document existingDocument = DocumentMgmtUtility.getDocument(getResource().getPath(),
-                     draggedDocument.getName());
-               if (null != existingDocument)
+               DocumentDragDropHelper uploadHelper = new DocumentDragDropHelper();
+               uploadHelper.setParentFolderPath(getResource().getPath());
+               uploadHelper.setRepositoryResourceUserObject(this);
+               
+               uploadHelper.setCallbackHandler(new DocumentUploadCallbackHandler()
                {
-                  FileUploadHelper fileUploadHelper = new FileUploadHelper(FUNCTION_TYPE.DROP_ON_FOLDER, getResource()
-                        .getPath());
-                  Map<String, Object> params = new HashMap<String, Object>();
-                  params.put("valueNode", valueNode);
-                  ParametricCallbackHandler callbackHandler = new ParametricCallbackHandler()
+                  public void handleEvent(DocumentUploadEventType eventType)
                   {
-                     public void handleEvent(EventType eventType)
+                     if (DocumentUploadEventType.VERSION_SAVED == eventType)
                      {
-                        if (EventType.APPLY.equals(eventType))
-                        {
-                           postDrop(getParameters());
-                        }
+                        //handleFileUploadEvents(getDocument(), eventType);
+                        postDrop(valueNode);
                      }
-                  };
-                  callbackHandler.setParameters(params);
-                  fileUploadHelper.setCallbackHandler(callbackHandler);
-                  fileUploadHelper.updateVersion(existingDocument, draggedDocument);
+                  }
+               });
+               uploadHelper.updateDocument(existingDocument, draggedDocument);
+            }
+            else
+            {
+               if (this.wrapper.isNodeRelated(valueNode))
+               {
+                  RepositoryUtility.moveDocument(this.wrapper, valueNode);
                }
                else
                {
-                  if (this.wrapper.isNodeRelated(valueNode))
-                  {
-                     RepositoryUtility.moveDocument(this.wrapper, valueNode);
-                  }
-                  else
-                  {
-                     RepositoryUtility.copyDocument(this.wrapper, valueNode);
-                  }
-
-                  afterUpload(docUserObject);
+                  RepositoryUtility.copyDocument(this.wrapper, valueNode);
                }
+
+               afterUpload(docUserObject);
             }
          }
       }
@@ -274,9 +256,8 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
       }
    }
    
-   private void postDrop(Map<String, Object> params)
+   private void postDrop(DefaultMutableTreeNode valueNode)
    {
-      DefaultMutableTreeNode valueNode = (DefaultMutableTreeNode) params.get("valueNode");
       RepositoryDocumentUserObject docUserObject = (RepositoryDocumentUserObject) valueNode.getUserObject();
       if (this.wrapper.isNodeRelated(valueNode))
       {
@@ -291,36 +272,30 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
     * 
     * @param parameters
     */
-   private void handleFileUploadEvents(Map<String, Object> parameters)
-  {
-      if (null != parameters)
+   private void handleFileUploadEvents(Document document, DocumentUploadEventType eventType)
+   {
+      // after file upload
+      if (DocumentUploadEventType.DOCUMENT_CREATED == eventType)
       {
-         // after file upload
-         if (parameters.get(FileUploadHelper.EVENT).equals(FileUploadEvent.FILE_UPLOADED))
-         {
-            Document document = (Document) parameters.get(FileUploadHelper.DOCUMENT);
-            DefaultMutableTreeNode subNode = RepositoryUtility.createDocumentNode(document);
-            RepositoryDocumentUserObject userObject = (RepositoryDocumentUserObject) subNode.getUserObject();
-            userObject.setNewNodeCreated(true);
-            this.wrapper.add(subNode);
-            // update process attachments
-            afterUpload(userObject);
-         }
-         // after version upload
-         if (parameters.get(FileUploadHelper.EVENT).equals(FileUploadEvent.VERSION_UPLOADED))
-         {
-            CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getCurrent();
-            FileInfo fileInfo = fileUploadDialog.getFileInfo();
-            DefaultMutableTreeNode childNode = RepositoryUtility.findNode(this.wrapper, fileInfo.getFileName(), true);
-            RepositoryDocumentUserObject documentUserObject = (RepositoryDocumentUserObject) childNode.getUserObject();
-            documentUserObject.refresh();
-            //Process attachment update
-            afterUpload(documentUserObject);
-         }
-         if (parameters.get(FileUploadHelper.EVENT).equals(FileUploadEvent.UPLOAD_ABORTED))
-         {
-            this.refresh();
-         }
+         DefaultMutableTreeNode subNode = RepositoryUtility.createDocumentNode(document);
+         RepositoryDocumentUserObject userObject = (RepositoryDocumentUserObject) subNode.getUserObject();
+         userObject.setNewNodeCreated(true);
+         this.wrapper.add(subNode);
+         // update process attachments
+         afterUpload(userObject);
+      }
+      // after version upload
+      if (DocumentUploadEventType.VERSION_SAVED == eventType)
+      {
+         DefaultMutableTreeNode childNode = RepositoryUtility.findNode(this.wrapper, document.getName(), true);
+         RepositoryDocumentUserObject documentUserObject = (RepositoryDocumentUserObject) childNode.getUserObject();
+         documentUserObject.refresh();
+         // Process attachment update
+         afterUpload(documentUserObject);
+      }
+      if (DocumentUploadEventType.UPLOAD_FAILED == eventType)
+      {
+         this.refresh();
       }
    }
    

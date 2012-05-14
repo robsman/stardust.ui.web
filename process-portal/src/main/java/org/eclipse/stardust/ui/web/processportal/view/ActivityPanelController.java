@@ -42,17 +42,19 @@ import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.LinkedProcessBean;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileUploadHelper;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileUploadHelper.FUNCTION_TYPE;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileUploadHelper.FileUploadEvent;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelper;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.TypedDocumentUploadHelper;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler.DocumentUploadEventType;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
+import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadDialogAttributes;
 
 import com.icesoft.faces.context.effects.JavascriptContext;
 
@@ -205,7 +207,6 @@ public class ActivityPanelController extends UIComponentBean
    public void initialize()
    {
    // TODO Auto-generated method stub
-
    }
 
    public boolean isSupportsProcessAttachments()
@@ -316,65 +317,67 @@ public class ActivityPanelController extends UIComponentBean
       else
       {
          typedDocumentInfo = docInfo;
-         uploadDocument(FUNCTION_TYPE.UPLOAD_TYPED_DOCUMENT,
-               DocumentMgmtUtility.getTypedDocumentsFolderPath(activityDetailsBean.getProcessInstance()),
-               propsBean.getParamString("views.genericRepositoryView.specificDocument.uploadFile", docInfo.getName()));
+         uploadTypedDocument();
       }
-   }
-
-   public void uploadProcessAttachment()
-   {
-      typedDocumentInfo = null;
-      uploadDocument(
-            FUNCTION_TYPE.UPLOAD_ON_FOLDER,
-            DocumentMgmtUtility.getProcessAttachmentsFolderPath(activityDetailsBean.getProcessInstance()),
-            propsBean.getParamString("common.uploadIntoFolder",
-                  propsBean.getString("views.processInstanceDetailsView.processDocumentTree.processAttachment")));
    }
 
    /**
-    * upload a document
+    * upload a process attachment
     */
-   private void uploadDocument(FUNCTION_TYPE type, String parentFolderPath, String headerMsg)
+   public void uploadProcessAttachment()
    {
-      FileUploadHelper fileUploadHelper = new FileUploadHelper(type, parentFolderPath);
-      fileUploadHelper.setHeaderMsg(headerMsg);
-      if (null != typedDocumentInfo)
-      {
-         if (null != activityDetailsBean.getActivityForm()
-               && activityDetailsBean.getActivityForm().getIfSingleDocument() != null)
-         {
-            fileUploadHelper.setEnableOpenDocument(false);
-            fileUploadHelper.setTriggerOpenDocument(false);
-         }
-         fileUploadHelper.setDocumentType(typedDocumentInfo.getTypedDocument().getDocumentType());
-      }
-      fileUploadHelper.setCallbackHandler(new ParametricCallbackHandler()
-      {
-         public void handleEvent(EventType eventType)
-         {
-            if (EventType.APPLY.equals(eventType))
-            {
-               handleFileUploadEvents(getParameters());
-            }
-         }
+      typedDocumentInfo = null;
+      DocumentUploadHelper documentUploadHelper = new DocumentUploadHelper();
+      documentUploadHelper.initializeDocumentUploadDialog();
 
-         @Override
-         public Map<String, Object> getParameters()
-         {
-           
-            Map<String, Object> viewParam = super.getParameters();
-            if (null != viewParam && !viewParam.containsKey("processInstance"))
-            {
-               viewParam.put("processInstance", activityDetailsBean.getActivityInstance().getProcessInstance());
-            }
-            return viewParam;
-         }
-         
-      });
-      fileUploadHelper.uploadDocument();
+      documentUploadHelper.setParentFolderPath(DocumentMgmtUtility.getProcessAttachmentsFolderPath(activityDetailsBean
+            .getProcessInstance()));
+      documentUploadHelper.getFileUploadDialogAttributes().setHeaderMessage(
+            propsBean.getParamString("common.uploadIntoFolder",
+                  propsBean.getString("views.processInstanceDetailsView.processDocumentTree.processAttachment")));
+      startFileUpload(documentUploadHelper);
+      documentUploadHelper.uploadFile();
    }
-   
+
+   private void uploadTypedDocument()
+   {
+      TypedDocumentUploadHelper uploadHelper = new TypedDocumentUploadHelper();
+      uploadHelper.setTypedDocument(typedDocumentInfo.getTypedDocument());
+      uploadHelper.initializeDocumentUploadDialog();
+      
+      uploadHelper.setParentFolderPath(DocumentMgmtUtility.getTypedDocumentsFolderPath(activityDetailsBean
+            .getProcessInstance()));
+
+      FileUploadDialogAttributes attributes = uploadHelper.getFileUploadDialogAttributes();
+      attributes.setHeaderMessage(propsBean.getParamString("views.genericRepositoryView.specificDocument.uploadFile",
+            typedDocumentInfo.getName()));
+
+      if (null != activityDetailsBean.getActivityForm()
+            && activityDetailsBean.getActivityForm().getIfSingleDocument() != null)
+      {
+         attributes.setEnableOpenDocument(false);
+         uploadHelper.setOpenDocumentOverride(false);
+      }
+      attributes.setDocumentType(typedDocumentInfo.getTypedDocument().getDocumentType());
+      startFileUpload(uploadHelper);
+   }
+
+   /**
+    * @param uploadHelper
+    */
+   private void startFileUpload(AbstractDocumentUploadHelper uploadHelper)
+   {
+      uploadHelper.setViewParam("processInstance", activityDetailsBean.getActivityInstance().getProcessInstance());
+      uploadHelper.setCallbackHandler(new DocumentUploadCallbackHandler()
+      {
+         public void handleEvent(DocumentUploadEventType eventType)
+         {
+            handleFileUploadEvents(getDocument(), eventType);
+         }
+      });
+      uploadHelper.uploadFile();
+   }
+
    /**
     * timeout
     */
@@ -399,41 +402,33 @@ public class ActivityPanelController extends UIComponentBean
     * 
     * @param parameters
     */
-   private void handleFileUploadEvents(Map<String, Object> parameters)
+   private void handleFileUploadEvents(Document document, DocumentUploadEventType eventType)
    {
-      if (null != parameters)
+      if (DocumentUploadEventType.DIALOG_OPENED == eventType)
       {
-         // after File Upload dialog opens
-         if (parameters.get(FileUploadHelper.EVENT).equals(FileUploadEvent.DIALOG_OPENED))
+         activityDetailsBean.closeProcessAttachmentsIframePopupSelf();
+         activityDetailsBean.renderSession();
+      }
+      if (DocumentUploadEventType.DOCUMENT_CREATED == eventType)
+      {
+         if (null == typedDocumentInfo) // process attachment
          {
-            activityDetailsBean.closeProcessAttachmentsIframePopupSelf();
-            activityDetailsBean.renderSession();
+            DMSHelper.addAndSaveProcessAttachment(activityDetailsBean.getProcessInstance(), document);
          }
-         // after file upload
-         if (parameters.get(FileUploadHelper.EVENT).equals(FileUploadEvent.FILE_UPLOADED))
+         else
+         // typed document
          {
-            Document document = (Document) parameters.get(FileUploadHelper.DOCUMENT);
-            if (null == typedDocumentInfo) // process attachment
-            {
-               DMSHelper.addAndSaveProcessAttachment(activityDetailsBean.getProcessInstance(), document);
-            }
-            else
-            // typed document
-            {
-               typedDocumentInfo.getTypedDocument().setDocument(document);
-               TypedDocumentsUtil.updateTypedDocument(typedDocumentInfo.getTypedDocument());
-            }
-            activityDetailsBean.refreshActivityPanelForSingleDocument();
+            typedDocumentInfo.getTypedDocument().setDocument(document);
+            TypedDocumentsUtil.updateTypedDocument(typedDocumentInfo.getTypedDocument());
          }
-         // after version upload
-         if (parameters.get(FileUploadHelper.EVENT).equals(FileUploadEvent.VERSION_UPLOADED))
-         {
-            Document document = (Document) parameters.get(FileUploadHelper.DOCUMENT);
-            DMSHelper.updateProcessAttachment(activityDetailsBean.getProcessInstance(), document);
-         }
+         activityDetailsBean.refreshActivityPanelForSingleDocument();
+      }
+      // after version upload
+      if (DocumentUploadEventType.VERSION_SAVED == eventType)
+      {
+         DMSHelper.updateProcessAttachment(activityDetailsBean.getProcessInstance(), document);
       }
    }
-   
    
    public String getProcessAttachmentsFolderId()
    {

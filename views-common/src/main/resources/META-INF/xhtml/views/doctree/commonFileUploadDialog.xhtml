@@ -7,19 +7,18 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
 	<ice:panelPopup id="#{commonFileUploadDialog.beanId}" modal="true"
-		rendered="#{commonFileUploadDialog.visible}"
-		draggable="true"
-		autoPosition="manual" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
+		rendered="#{commonFileUploadDialog.visible}" draggable="true"
+		autoPosition="manual" positionOnLoadOnly="true"
+		styleClass="popupDialog" clientOnly="true">
 
 		<f:facet name="header">
 			<ice:panelGroup style="min-width: 200px;">
-				<pc:automationTag value="auto-COM-FileUpdDlg-Header"/>
-				<ice:outputText
-					value="#{commonFileUploadDialog.title} "
+				<pc:automationTag value="auto-COM-FileUpdDlg-Header" />
+				<ice:outputText value="#{commonFileUploadDialog.title} "
 					styleClass="headerText" />
-				<pc:automationTag value="auto-COM-FileUpdDlg-CloseLink" standAlone="false"/>
-				<ice:commandButton
-					title="#{common_msgPropsBean['common.close']}"
+				<pc:automationTag value="auto-COM-FileUpdDlg-CloseLink"
+					standAlone="false" />
+				<ice:commandButton title="#{common_msgPropsBean['common.close']}"
 					action="#{commonFileUploadDialog.closePopup}" immediate="true"
 					styleClass="windowClose" />
 			</ice:panelGroup>
@@ -28,144 +27,165 @@
 		<f:facet name="body">
 			<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
 				cellspacing="0" renderNorth="false" renderEast="false"
-				renderSouth="true" renderWest="false" renderCenter="true" style="width:100%">
+				renderSouth="true" renderWest="false" renderCenter="true"
+				style="width:100%">
 				<f:facet name="center">
 					<ice:panelGroup>
 						<h:panelGrid columns="1" style="width: 100%; margin-bottom: 5px;">
-						
+
 							<ice:outputText
-								rendered="#{not empty commonFileUploadDialog.headerMessage}"
-								value="#{commonFileUploadDialog.headerMessage}"
+								rendered="#{not empty commonFileUploadDialog.attributes.headerMessage}"
+								value="#{commonFileUploadDialog.attributes.headerMessage}"
 								escape="false" styleClass="label-form" />
 							<ice:panelGroup styleClass="clearing" />
-								
+
 							<ice:panelGroup
-								rendered="#{not empty commonFileUploadDialog.message}">
-								<ice:outputLabel styleClass="label-form" value="#{commonFileUploadDialog.message}" />
+								rendered="#{not empty commonFileUploadDialog.attributes.message}">
+								<ice:outputLabel styleClass="label-form"
+									value="#{commonFileUploadDialog.attributes.message}" />
 							</ice:panelGroup>
 
 							<!-- ***** DOC TYPE ***** -->
 							<ice:panelGrid columns="2" cellpadding="0" cellspacing="0"
-								rendered="#{commonFileUploadDialog.viewDocumentType}">
+								rendered="#{commonFileUploadDialog.attributes.viewDocumentType}">
 								<ice:outputLabel
 									value="#{views_common_msgPropsBean['fileUpload.documentTypes.label']}"
 									styleClass="label-form" />
-								<ice:outputText rendered="#{commonFileUploadDialog.documentTypeDisabled}" 
-									value="#{commonFileUploadDialog.documentTypeName}" />
-								<ice:selectOneMenu
-									partialSubmit="true" rendered="#{not commonFileUploadDialog.documentTypeDisabled}"
-									value="#{commonFileUploadDialog.documentTypeId}">
-									<pc:automationTag value="auto-COM-FileUpdDlg-DocType" standAlone="false"/>
-									<f:selectItems value="#{commonFileUploadDialog.allDocumentTypesList}" />
+								<ice:outputText
+									rendered="#{commonFileUploadDialog.attributes.documentTypeDisabled}"
+									value="#{commonFileUploadDialog.attributes.documentTypeName}" />
+								<ice:selectOneMenu partialSubmit="true"
+									rendered="#{not commonFileUploadDialog.attributes.documentTypeDisabled}"
+									value="#{commonFileUploadDialog.attributes.documentTypeId}">
+									<pc:automationTag value="auto-COM-FileUpdDlg-DocType"
+										standAlone="false" />
+									<f:selectItems
+										value="#{commonFileUploadDialog.attributes.allDocumentTypesList}" />
 								</ice:selectOneMenu>
 							</ice:panelGrid>
 
 							<!-- ***** DESCRIPTION ***** -->
 							<ice:panelGrid columns="2"
-								rendered="#{commonFileUploadDialog.viewDescription and !commonFileUploadDialog.showDescription}">
+								rendered="#{commonFileUploadDialog.attributes.viewDescription and !commonFileUploadDialog.attributes.showDescription}">
 								<ice:commandLink
 									action="#{commonFileUploadDialog.toggleDescription}">
-									<pc:automationTag value="auto-COM-FileUpdDlg-DescLink" standAlone="false"/>
-									<ice:graphicImage value="/plugins/views-common/images/icons/add.png" />
+									<pc:automationTag value="auto-COM-FileUpdDlg-DescLink"
+										standAlone="false" />
+									<ice:graphicImage
+										value="/plugins/views-common/images/icons/add.png" />
 								</ice:commandLink>
 								<ice:commandLink
 									action="#{commonFileUploadDialog.toggleDescription}"
 									value="#{views_common_msgPropsBean['fileUpload.description.label']}"
 									styleClass="once-only-action-link" />
-							</ice:panelGrid>								
-							<ice:panelGroup rendered="#{commonFileUploadDialog.viewDescription and commonFileUploadDialog.showDescription}">
+							</ice:panelGrid>
+							<ice:panelGroup
+								rendered="#{commonFileUploadDialog.attributes.viewDescription and commonFileUploadDialog.attributes.showDescription}">
 								<ice:outputText
 									value="#{views_common_msgPropsBean['fileUpload.description.label']}"
 									styleClass="label-form" />
 								<ice:panelGroup scrollWidth="100%">
 									<ice:inputTextarea partialSubmit="true"
-										value="#{commonFileUploadDialog.description}" rows="2"
-										style="width: 300px;">
-										<pc:automationTag value="auto-COM-FileUpdDlg-Desc" standAlone="false"/>
+										value="#{commonFileUploadDialog.attributes.description}"
+										rows="2" style="width: 300px;">
+										<pc:automationTag value="auto-COM-FileUpdDlg-Desc"
+											standAlone="false" />
 									</ice:inputTextarea>
 								</ice:panelGroup>
 							</ice:panelGroup>
 
 							<!-- ***** COMMENTS ***** -->
 							<ice:panelGrid columns="2"
-								rendered="#{commonFileUploadDialog.viewComment and !commonFileUploadDialog.showComment}">
+								rendered="#{commonFileUploadDialog.attributes.viewComment and !commonFileUploadDialog.attributes.showComment}">
 								<ice:commandLink
 									action="#{commonFileUploadDialog.toggleComment}">
-									<pc:automationTag value="auto-COM-FileUpdDlg-VerCmtLink" standAlone="false"/>
-									<ice:graphicImage value="/plugins/views-common/images/icons/add.png" />
+									<pc:automationTag value="auto-COM-FileUpdDlg-VerCmtLink"
+										standAlone="false" />
+									<ice:graphicImage
+										value="/plugins/views-common/images/icons/add.png" />
 								</ice:commandLink>
 								<ice:commandLink
 									value="#{views_common_msgPropsBean['fileUpload.comment.label']}"
 									action="#{commonFileUploadDialog.toggleComment}"
 									styleClass="once-only-action-link" />
 							</ice:panelGrid>
-							<ice:panelGroup rendered="#{commonFileUploadDialog.showComment}">
+							<ice:panelGroup
+								rendered="#{commonFileUploadDialog.attributes.showComment}">
 								<ice:outputText
-									value="#{views_common_msgPropsBean['fileUpload.comment.label']}" 
+									value="#{views_common_msgPropsBean['fileUpload.comment.label']}"
 									styleClass="label-form" />
 								<ice:panelGroup scrollWidth="100%">
 									<ice:inputTextarea partialSubmit="true"
-										value="#{commonFileUploadDialog.comments}" rows="2"
+										value="#{commonFileUploadDialog.attributes.comments}" rows="2"
 										style="width: 300px;">
-										<pc:automationTag value="auto-COM-FileUpdDlg-VerCmt" standAlone="false"/>
+										<pc:automationTag value="auto-COM-FileUpdDlg-VerCmt"
+											standAlone="false" />
 									</ice:inputTextarea>
 								</ice:panelGroup>
 							</ice:panelGroup>
 						</h:panelGrid>
-						
-						<ice:panelGroup rendered="#{commonFileUploadDialog.viewFileUpload}">
+
+						<ice:panelGroup
+							rendered="#{commonFileUploadDialog.attributes.viewFileUpload}">
 							<h:outputText
 								value="#{views_common_msgPropsBean['common.selectFileForUpload']}"
 								styleClass="label-form" />
-								
+
 							<!-- The iframe that gets rendered as a part of ice:inputFile takes much wider space. So cap it with max-width -->
-							<ice:panelGroup style="margin-top: 5px; margin-bottom: 5px; max-width: auto;" >
-								<ice:inputFile id="commonFile#{commonFileUploadDialog.beanId}" failOnEmptyFile="false" width="400"
+							<ice:panelGroup
+								style="margin-top: 5px; margin-bottom: 5px; max-width: auto;">
+								<ice:inputFile id="commonFile#{commonFileUploadDialog.beanId}"
+									failOnEmptyFile="false" width="400"
 									actionListener="#{commonFileUploadDialog.uploadFile}"
 									progressListener="#{commonFileUploadDialog.measureProgress}"
-									submitOnUpload="preUpload" label="#{views_common_msgPropsBean['views.myDocumentsTreeView.fileUploadDialog.upload']}">
-									<pc:automationTag value="auto-COM-FileUpdDlg-File" standAlone="false"/>
-								</ice:inputFile>								
+									submitOnUpload="preUpload"
+									label="#{views_common_msgPropsBean['views.myDocumentsTreeView.fileUploadDialog.upload']}">
+									<pc:automationTag value="auto-COM-FileUpdDlg-File"
+										standAlone="false" />
+								</ice:inputFile>
 							</ice:panelGroup>
-							<ice:panelGroup styleClass="msgError">							
-								<ice:message for="commonFile#{commonFileUploadDialog.beanId}"/>	
+							<ice:panelGroup styleClass="msgError">
+								<ice:message for="commonFile#{commonFileUploadDialog.beanId}" />
 							</ice:panelGroup>
-							<ice:panelGroup>						
+							<ice:panelGroup>
 								<ice:outputProgress
 									value="#{commonFileUploadDialog.fileUploadProgress}">
-									<pc:automationTag value="auto-COM-FileUpdDlg-UpdStatus" standAlone="false"/>
+									<pc:automationTag value="auto-COM-FileUpdDlg-UpdStatus"
+										standAlone="false" />
 								</ice:outputProgress>
-							</ice:panelGroup>							
+							</ice:panelGroup>
 						</ice:panelGroup>
-						
+
 						<!-- ***** ADDITIONAL OPTIONS ***** -->
 						<ice:panelGroup styleClass="clearing" />
 						<ice:panelGrid columns="2" cellpadding="0" cellspacing="0"
-							rendered="#{commonFileUploadDialog.viewFileUpload}">
+							rendered="#{commonFileUploadDialog.attributes.showOpenDocument}">
 							<ice:selectBooleanCheckbox partialSubmit="true"
-								value="#{commonFileUploadDialog.openDocument}"
-								disabled="#{!commonFileUploadDialog.enableOpenDocument}">
+								value="#{commonFileUploadDialog.attributes.openDocument}"
+								disabled="#{!commonFileUploadDialog.attributes.enableOpenDocument}">
 								<pc:automationTag value="auto-COM-FileUpdDlg-OpenDoc"
 									standAlone="false" />
 							</ice:selectBooleanCheckbox>
 							<ice:outputLabel
 								value="#{views_common_msgPropsBean['fileUpload.openDocument.label']}"
 								styleClass="label-form" />
-						</ice:panelGrid>						
+						</ice:panelGrid>
 					</ice:panelGroup>
 				</f:facet>
 
 				<f:facet name="south">
 					<ice:panelGroup>
-						<pc:automationTag value="auto-COM-FileUpdDlg-BtnsBar" standAlone="false"/>
-						<ice:commandButton rendered="#{!commonFileUploadDialog.viewFileUpload}"
+						<pc:automationTag value="auto-COM-FileUpdDlg-BtnsBar"
+							standAlone="false" />
+						<ice:commandButton
+							rendered="#{!commonFileUploadDialog.attributes.viewFileUpload}"
 							value="#{views_common_msgPropsBean['views.common.continue.label']}"
-							action="#{commonFileUploadDialog.continueAction}" immediate="true"
-							styleClass="button"/>
+							action="#{commonFileUploadDialog.continueAction}"
+							immediate="true" styleClass="button" />
 						<ice:commandButton
 							value="#{views_common_msgPropsBean['common.close']}"
 							action="#{commonFileUploadDialog.closePopup}" immediate="true"
-							styleClass="button secondary"/>	
+							styleClass="button secondary" />
 					</ice:panelGroup>
 				</f:facet>
 			</ice:panelBorder>
