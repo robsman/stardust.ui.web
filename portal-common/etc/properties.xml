@@ -1176,7 +1176,7 @@
          <property
             name="servlet[DMS_CONTENT_PROXY].init-param[CONNECTION_TIMEOUT].param-value"
             value="5000" setups="production-withJcr, development-withJcr, build" />
-
+         <property name="servlet[SKIN_CONTENT_PROXY].servlet-name"            value="SkinContentProxyServlet" setups="production-withJcr, development-withJcr, build" />         <property name="servlet[SKIN_CONTENT_PROXY].servlet-class"            value="org.eclipse.stardust.vfs.impl.jcr.web.ProxyVfsContentServlet"            setups="production-withJcr, development-withJcr, build" />         <property            name="servlet[SKIN_CONTENT_PROXY].init-param[CONTENT_SERVLET_URI].param-name"            value="contentServletUri" setups="production-withJcr, development-withJcr, build" />         <property            name="servlet[SKIN_CONTENT_PROXY].init-param[CONTENT_SERVLET_URI].param-value"            value="http://localhost:8080/ipp-portal/skin-content"            setups="production-withJcr, development-withJcr, build" />         <property            name="servlet[SKIN_CONTENT_PROXY].init-param[CONNECTION_TIMEOUT].param-name"            value="connectionTimeout" setups="production-withJcr, development-withJcr, build" />         <property            name="servlet[SKIN_CONTENT_PROXY].init-param[CONNECTION_TIMEOUT].param-value"            value="5000" setups="production-withJcr, development-withJcr, build" />
          <property name="servlet[JACKRABBIT_REPOSITORY_STARTUP].display-name"
             value="Jackrabbit Repository Startup Servlet" setups="production-withJcr, development-withJcr, build"
             appservers="tomcat" />
@@ -1414,7 +1414,7 @@
             value="DmsContentProxyServlet" setups="production-withJcr, development-withJcr, build" />
          <property name="servlet-mapping[DMS_CONTENT_PROXY].url-pattern"
             value="/dms-content-proxy/*" setups="production-withJcr, development-withJcr, build" />
-
+         <property name="servlet-mapping[SKIN_CONTENT_PROXY].servlet-name"            value="SkinContentProxyServlet" setups="production-withJcr, development-withJcr, build" />         <property name="servlet-mapping[SKIN_CONTENT_PROXY].url-pattern"            value="/skin-content-proxy/*" setups="production-withJcr, development-withJcr, build" />
          <property name="servlet-mapping[SIMPLE_WEBDAV].servlet-name"
             value="jackrabbitSimpleWebdavServlet" setups="production-withJcr, development-withJcr, build" />
          <property name="servlet-mapping[SIMPLE_WEBDAV].url-pattern"

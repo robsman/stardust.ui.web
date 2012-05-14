@@ -43,6 +43,8 @@ public class LoginDialogBean implements Serializable
 
    protected static final Logger trace = LogManager.getLogger(LoginDialogBean.class);
 
+   public static final String LOGIN_SKIN_CSS_NAME = "login.css";
+
    private String account;
 
    private String password;

@@ -24,6 +24,7 @@ import org.eclipse.stardust.ui.web.common.spi.theme.Theme;
 import org.eclipse.stardust.ui.web.common.spi.theme.ThemeProvider;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.login.dialogs.LoginDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 
 
@@ -103,7 +104,8 @@ public class IppThemeProvider implements ThemeProvider
                   List<Document> documents = skinFolder.getDocuments();
                   for (Document skinFile : documents)
                   {
-                     if (skinFile.getName().toLowerCase().endsWith(".css"))
+                     if (skinFile.getName().toLowerCase().endsWith(".css")
+                           && !LoginDialogBean.LOGIN_SKIN_CSS_NAME.equals(skinFile.getName()))
                      {
                         String path = skinFile.getPath();
                         path = path.replace(skinRoot.getPath() + "/", "");
