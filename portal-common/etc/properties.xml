@@ -279,8 +279,8 @@
       <server-archive name="activemq-core" type="jar"
          appservers="tomcat" sourceFile="../../../lib/jms/activemq-core.jar"
          destDir="WEB-INF/lib/" />
-      <server-archive name="geronimo-j2ee-management_1.1_spec" type="jar"
-         appservers="tomcat" sourceFile="../../../lib/ext/geronimo-j2ee-management_1.1_spec.jar"
+      <server-archive name="geronimo-j2ee-management_1.0_spec" type="jar"
+         appservers="tomcat" sourceFile="../../../lib/ext/geronimo-j2ee-management_1.0_spec.jar"
          destDir="WEB-INF/lib/" />
       <server-archive name="xbean-spring" type="jar"
          appservers="tomcat" sourceFile="../../../lib/jms/xbean-spring.jar"
@@ -1153,7 +1153,8 @@
          <property name="servlet[DMS_CONTENT].servlet-class"
             value="org.eclipse.stardust.engine.api.web.dms.DmsContentServlet"
             setups="production-withJcr, development-withJcr, build" />
-         <property name="servlet[SKIN_CONTENT].servlet-name"            value="SkinContentServlet" setups="production-withJcr, development-withJcr, build" />         <property name="servlet[SKIN_CONTENT].servlet-class"            value="org.eclipse.stardust.engine.api.web.dms.SkinContentServlet"            setups="production-withJcr, development-withJcr, build" />
+
+         <property name="servlet[SKIN_CONTENT].servlet-name"            value="SkinContentServlet" setups="production-withJcr, development-withJcr, build" />         <property name="servlet[SKIN_CONTENT].servlet-class"            value="org.eclipse.stardust.engine.api.web.dms.SkinContentServlet"            setups="production-withJcr, development-withJcr, build" />
          <property name="servlet[FSD_CONTENT].servlet-name"            value="FsdContentServlet" />
          <property name="servlet[FSD_CONTENT].servlet-class"
             value="org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileSystemDocumentServlet" />
@@ -1176,7 +1177,8 @@
          <property
             name="servlet[DMS_CONTENT_PROXY].init-param[CONNECTION_TIMEOUT].param-value"
             value="5000" setups="production-withJcr, development-withJcr, build" />
-         <property name="servlet[SKIN_CONTENT_PROXY].servlet-name"            value="SkinContentProxyServlet" setups="production-withJcr, development-withJcr, build" />         <property name="servlet[SKIN_CONTENT_PROXY].servlet-class"            value="org.eclipse.stardust.vfs.impl.jcr.web.ProxyVfsContentServlet"            setups="production-withJcr, development-withJcr, build" />         <property            name="servlet[SKIN_CONTENT_PROXY].init-param[CONTENT_SERVLET_URI].param-name"            value="contentServletUri" setups="production-withJcr, development-withJcr, build" />         <property            name="servlet[SKIN_CONTENT_PROXY].init-param[CONTENT_SERVLET_URI].param-value"            value="http://localhost:8080/ipp-portal/skin-content"            setups="production-withJcr, development-withJcr, build" />         <property            name="servlet[SKIN_CONTENT_PROXY].init-param[CONNECTION_TIMEOUT].param-name"            value="connectionTimeout" setups="production-withJcr, development-withJcr, build" />         <property            name="servlet[SKIN_CONTENT_PROXY].init-param[CONNECTION_TIMEOUT].param-value"            value="5000" setups="production-withJcr, development-withJcr, build" />
+
+         <property name="servlet[SKIN_CONTENT_PROXY].servlet-name"            value="SkinContentProxyServlet" setups="production-withJcr, development-withJcr, build" />         <property name="servlet[SKIN_CONTENT_PROXY].servlet-class"            value="org.eclipse.stardust.vfs.impl.jcr.web.ProxyVfsContentServlet"            setups="production-withJcr, development-withJcr, build" />         <property            name="servlet[SKIN_CONTENT_PROXY].init-param[CONTENT_SERVLET_URI].param-name"            value="contentServletUri" setups="production-withJcr, development-withJcr, build" />         <property            name="servlet[SKIN_CONTENT_PROXY].init-param[CONTENT_SERVLET_URI].param-value"            value="http://localhost:8080/ipp-portal/skin-content"            setups="production-withJcr, development-withJcr, build" />         <property            name="servlet[SKIN_CONTENT_PROXY].init-param[CONNECTION_TIMEOUT].param-name"            value="connectionTimeout" setups="production-withJcr, development-withJcr, build" />         <property            name="servlet[SKIN_CONTENT_PROXY].init-param[CONNECTION_TIMEOUT].param-value"            value="5000" setups="production-withJcr, development-withJcr, build" />
          <property name="servlet[JACKRABBIT_REPOSITORY_STARTUP].display-name"
             value="Jackrabbit Repository Startup Servlet" setups="production-withJcr, development-withJcr, build"
             appservers="tomcat" />
@@ -1404,7 +1406,8 @@
             value="DmsContentServlet" setups="production-withJcr, development-withJcr, build" />
          <property name="servlet-mapping[DMS_CONTENT].url-pattern"
             value="/dms-content/*" setups="production-withJcr, development-withJcr, build" />
-         <property name="servlet-mapping[SKIN_CONTENT].servlet-name"            value="SkinContentServlet" setups="production-withJcr, development-withJcr, build" />         <property name="servlet-mapping[SKIN_CONTENT].url-pattern"            value="/skin-content/*" setups="production-withJcr, development-withJcr, build" />
+
+         <property name="servlet-mapping[SKIN_CONTENT].servlet-name"            value="SkinContentServlet" setups="production-withJcr, development-withJcr, build" />         <property name="servlet-mapping[SKIN_CONTENT].url-pattern"            value="/skin-content/*" setups="production-withJcr, development-withJcr, build" />
 		 <property name="servlet-mapping[FSD_CONTENT].servlet-name"
 			value="FsdContentServlet" />
 		<property name="servlet-mapping[FSD_CONTENT].url-pattern"
@@ -1414,7 +1417,8 @@
             value="DmsContentProxyServlet" setups="production-withJcr, development-withJcr, build" />
          <property name="servlet-mapping[DMS_CONTENT_PROXY].url-pattern"
             value="/dms-content-proxy/*" setups="production-withJcr, development-withJcr, build" />
-         <property name="servlet-mapping[SKIN_CONTENT_PROXY].servlet-name"            value="SkinContentProxyServlet" setups="production-withJcr, development-withJcr, build" />         <property name="servlet-mapping[SKIN_CONTENT_PROXY].url-pattern"            value="/skin-content-proxy/*" setups="production-withJcr, development-withJcr, build" />
+
+         <property name="servlet-mapping[SKIN_CONTENT_PROXY].servlet-name"            value="SkinContentProxyServlet" setups="production-withJcr, development-withJcr, build" />         <property name="servlet-mapping[SKIN_CONTENT_PROXY].url-pattern"            value="/skin-content-proxy/*" setups="production-withJcr, development-withJcr, build" />
          <property name="servlet-mapping[SIMPLE_WEBDAV].servlet-name"
             value="jackrabbitSimpleWebdavServlet" setups="production-withJcr, development-withJcr, build" />
          <property name="servlet-mapping[SIMPLE_WEBDAV].url-pattern"
