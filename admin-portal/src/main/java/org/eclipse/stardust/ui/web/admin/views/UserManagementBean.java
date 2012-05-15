@@ -348,7 +348,10 @@ public class UserManagementBean extends PopupUIComponentBean
       {
          for (ActivityInstance ai : activityInstances)
          {
-            ais.add(ai);
+            if (!ActivityInstanceUtils.isDefaultCaseActivity(ai))
+            {
+               ais.add(ai);
+            }
          }
       }
       ActivityInstanceUtils.delegateToDefaultPerformer(ais);

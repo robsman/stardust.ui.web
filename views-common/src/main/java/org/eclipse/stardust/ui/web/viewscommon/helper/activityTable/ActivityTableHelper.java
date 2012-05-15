@@ -1007,8 +1007,16 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
             }
          }
       }
-      if (ais != null)
+      if (CollectionUtils.isNotEmpty(ais))
       {
+         boolean isCaseActivities = ActivityInstanceUtils.isContainsCaseActivity(ais);
+         if (isCaseActivities)
+         {
+            MessageDialog.addErrorMessage(MessagesViewsCommonBean.getInstance().getString(
+                  "views.switchProcessDialog.caseAbort.message"));
+            return;
+         }
+         
          ActivityInstanceUtils.delegateToDefaultPerformer(ais);
          getCallbackHandler().handleEvent(EventType.APPLY);
       }

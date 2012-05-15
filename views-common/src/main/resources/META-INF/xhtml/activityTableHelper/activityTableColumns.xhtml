@@ -133,6 +133,7 @@
 					<ice:graphicImage
 						url="/plugins/views-common/images/icons/user-silhouette.png"
 						style="border:none;"
+						styleClass="#{!row.caseInstance ? '' : 'iceCmdBtn-dis'}"
 						title="#{messages_bcc['views.strandedActivities.toolTip.delegateToDefaultPerformer']}" />
 				</ice:commandLink>
 				<ice:commandLink actionListener="#{bean.openDelegateDialog}" disabled="#{!row.delegable or row.caseInstance}">
