@@ -149,7 +149,12 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
     */
    private void fireCallback(FileUploadEvent eventType, FileInfo fileInfo)
    {
-      closePopup();
+      // if exception occurs on dialog, don't close the popup
+      if (!(FileUploadEvent.UPLOAD_FAILED == eventType))
+      {
+         closePopup();
+      }
+      
       if (callbackHandler != null)
       {
          FileWrapper fileWrapper = new FileWrapper();
