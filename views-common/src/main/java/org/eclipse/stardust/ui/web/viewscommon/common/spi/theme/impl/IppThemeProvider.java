@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
@@ -93,6 +94,9 @@ public class IppThemeProvider implements ThemeProvider
          Folder skinRoot = getSkinsRootFolder();
          if (null != skinRoot)
          {
+            String loginStyleSheet = Parameters.instance().getString(LoginDialogBean.LOGIN_SKIN_CSS_PARAM,
+                  LoginDialogBean.DEFAULT_LOGIN_SKIN_CSS_NAME);
+
             List<Folder> allSkinFolders = getSkinsFolders();
             for (Folder skinFolder : allSkinFolders)
             {
@@ -105,7 +109,7 @@ public class IppThemeProvider implements ThemeProvider
                   for (Document skinFile : documents)
                   {
                      if (skinFile.getName().toLowerCase().endsWith(".css")
-                           && !LoginDialogBean.LOGIN_SKIN_CSS_NAME.equals(skinFile.getName()))
+                           && !loginStyleSheet.equals(skinFile.getName()))
                      {
                         String path = skinFile.getPath();
                         path = path.replace(skinRoot.getPath() + "/", "");

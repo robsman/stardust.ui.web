@@ -43,7 +43,8 @@ public class LoginDialogBean implements Serializable
 
    protected static final Logger trace = LogManager.getLogger(LoginDialogBean.class);
 
-   public static final String LOGIN_SKIN_CSS_NAME = "login.css";
+   public static final String DEFAULT_LOGIN_SKIN_CSS_NAME = "login.css";
+   public static final String LOGIN_SKIN_CSS_PARAM = "Carnot.Login.Skin.StyleSheet";
 
    private String account;
 
@@ -71,6 +72,8 @@ public class LoginDialogBean implements Serializable
    public static final String BEAN_ID = "ippLoginDialog";
    
    private boolean principalLogin;
+   
+   private String loginStyleSheetName;
    
    public LoginDialogBean()
    {
@@ -105,6 +108,9 @@ public class LoginDialogBean implements Serializable
       {
          partition = tenant;
       }
+      
+      loginStyleSheetName = Parameters.instance().getString(LoginDialogBean.LOGIN_SKIN_CSS_PARAM,
+            LoginDialogBean.DEFAULT_LOGIN_SKIN_CSS_NAME);
    }
 
    /**
@@ -338,5 +344,10 @@ public class LoginDialogBean implements Serializable
    public ResetPasswordDialog getResetPwdDialog()
    {
       return resetPwdDialog;
+   }
+
+   public String getLoginStyleSheetName()
+   {
+      return loginStyleSheetName;
    }
 }

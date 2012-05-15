@@ -22,7 +22,7 @@
 	        <link href="#{facesContext.externalContext.requestContextPath}/plugins/common/css/nirvanaRime-override.css" rel="stylesheet" type="text/css" />
 	        <link href="#{facesContext.externalContext.requestContextPath}/plugins/common/css/nirvanaPortal.css" rel="stylesheet" type="text/css" />
 	        <link href="#{facesContext.externalContext.requestContextPath}/plugins/common/css/portalComponentStyle.css" rel="stylesheet" type="text/css" />
-			<ice:outputStyle href="/skin-content/#{not empty ippLoginDialog.partition ? ippLoginDialog.partition : 'default'}/default-skin/login.css" />
+			<ice:outputStyle href="/skin-content/#{not empty ippLoginDialog.partition ? ippLoginDialog.partition : 'default'}/default-skin/#{ippLoginDialog.loginStyleSheetName}" />
  	    </head>
         <body style="background:#f5f5f5; text-align: center; height: auto;" onload="onLoginPageLoad();">
         <ice:form id="loginForm" onkeyup="default_portalCommon_loginuser(event);">
