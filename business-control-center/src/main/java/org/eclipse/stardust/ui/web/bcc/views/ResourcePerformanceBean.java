@@ -139,7 +139,7 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
       if (ViewEventType.CREATED == event.getType())
       {
     	 selectedComponent=null;
-         allRoles = WorkflowFacade.getWorkflowFacade().getAllRoles();
+         allRoles = WorkflowFacade.getWorkflowFacade().getAllRolesExceptCasePerformer();
          selectedModelParticipant=allRoles.isEmpty()?null:allRoles.get(0).getRole();
          initAllParticipants();
          initialize();

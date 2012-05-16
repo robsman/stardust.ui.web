@@ -406,6 +406,25 @@ public class WorkflowFacade implements Resetable
       }
       return null;
    }
+   
+   /**
+    * 
+    * @return
+    */
+   public List<RoleItem> getAllRolesExceptCasePerformer()
+   {
+      List<RoleItem> roles = getAllRoles();
+      Iterator<RoleItem> roleIterator = roles.iterator();
+      while (roleIterator.hasNext())
+      {
+         RoleItem roleItem = roleIterator.next();
+         if (PredefinedConstants.CASE_PERFORMER_ID.equals(roleItem.getRole().getId()))
+         {
+            roleIterator.remove();
+         }
+      }
+      return roles;
+   }
 
    /**
     * @param modelParticipantInfo

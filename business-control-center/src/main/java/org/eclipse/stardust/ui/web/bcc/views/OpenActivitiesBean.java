@@ -125,7 +125,7 @@ public class OpenActivitiesBean extends UIComponentBean implements ResourcePaths
 
       String[] participantname = null;
       List<OpenActivitiesUserObject> pendingActList = new ArrayList<OpenActivitiesUserObject>();
-      List< RoleItem > participantList = facade.getAllRoles();
+      List< RoleItem > participantList = facade.getAllRolesExceptCasePerformer();
 
       List<Object[]> data = new ArrayList<Object[]>();
 

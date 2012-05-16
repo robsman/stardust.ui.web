@@ -180,7 +180,7 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
     */
    private void initAllParticipants()
    {
-      List<RoleItem> allRoles = WorkflowFacade.getWorkflowFacade().getAllRoles();
+      List<RoleItem> allRoles = WorkflowFacade.getWorkflowFacade().getAllRolesExceptCasePerformer();
       roleSelectItem = new SelectItem[allRoles.size()];
       Collections.sort(allRoles, new Comparator<RoleItem>()
       {
@@ -233,7 +233,7 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
          return;
       }
       
-      List<RoleItem> allRoles = WorkflowFacade.getWorkflowFacade().getAllRoles();
+      List<RoleItem> allRoles = WorkflowFacade.getWorkflowFacade().getAllRolesExceptCasePerformer();
       
       if (event.getNewValue() != null)
       {

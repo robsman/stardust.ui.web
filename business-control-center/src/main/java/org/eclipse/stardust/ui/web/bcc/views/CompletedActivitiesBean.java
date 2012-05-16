@@ -113,7 +113,7 @@ public class CompletedActivitiesBean extends UIComponentBean implements Resource
 
       Users users = facade.getAllUsers((UserQuery) query);
       Iterator<UserItem> userIter = facade.getAllUsersAsUserItems(users).iterator();
-      Collection/* <RoleItem> */participants = facade.getAllRoles();
+      Collection/* <RoleItem> */participants = facade.getAllRolesExceptCasePerformer();
       List<CompletedActivityUserObject> completedActivitiesProcessList = new ArrayList<CompletedActivityUserObject>();
       List<CompletedActivityDynamicUserObject> complActiDyna;
       UserItem userItem;

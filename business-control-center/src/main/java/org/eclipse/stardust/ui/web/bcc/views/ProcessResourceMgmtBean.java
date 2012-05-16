@@ -265,7 +265,7 @@ public class ProcessResourceMgmtBean extends UIComponentBean implements Resource
    {
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
       List<ProcessResourceMgmtRoleTableEntry> processResourceRoleList = new ArrayList<ProcessResourceMgmtRoleTableEntry>();
-      List<RoleItem> roleItemList = facade.getAllRoles();      
+      List<RoleItem> roleItemList = facade.getAllRolesExceptCasePerformer();      
       DepartmentInfo departmentInfo;
       long departmentOid;
 

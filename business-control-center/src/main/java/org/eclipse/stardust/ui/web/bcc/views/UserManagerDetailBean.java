@@ -353,7 +353,7 @@ public class UserManagerDetailBean extends UIComponentBean
    {
       try
       {
-         List <RoleItem> roles =facade.getAllRoles();
+         List <RoleItem> roles =facade.getAllRolesExceptCasePerformer();
          List<Grant> grants = user.getUser().getAllGrants();
          roles.retainAll(grants);
          return roles;
@@ -372,7 +372,7 @@ public class UserManagerDetailBean extends UIComponentBean
    {
       try
       {
-         List<RoleItem> roles = facade.getAllRoles();
+         List<RoleItem> roles = facade.getAllRolesExceptCasePerformer();
          List<Grant> grants = user.getUser().getAllGrants();
          roles.removeAll(grants);
          return roles;
