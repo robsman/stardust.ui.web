@@ -185,7 +185,7 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
          DepartmentDetails deptDetail = (DepartmentDetails) department;
          if (deptDetail.getOrganization().isDepartmentScoped())
          {
-            deptString.append(" - ").append(department.getName()).toString();
+            deptString.append(" - ").append(department.getName()).append(" ");
          }
       }
       else
