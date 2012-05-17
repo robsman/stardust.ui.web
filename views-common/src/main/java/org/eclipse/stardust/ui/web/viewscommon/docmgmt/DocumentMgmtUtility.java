@@ -812,16 +812,36 @@ public class DocumentMgmtUtility
    /**
     * @return
     */
+   public static String getTimeStampString()
+   {
+      DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, getLocale());
+      return DMSUtils.replaceAllSpecialChars(format.format(new Date(System.currentTimeMillis())));
+   }
+
+   /**
+    * @return
+    */
    public static String getNewDocumentName(String contentType)
    {
-      DateFormat format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, getLocale());
       StringBuilder builder = new StringBuilder(MessagesViewsCommonBean.getInstance().getString(
             "views.genericRepositoryView.newFile.name"));
-      builder.append(" ").append(DMSUtils.replaceAllSpecialChars(format.format(new Date(System.currentTimeMillis())))).append(".")
-            .append(MimeTypesHelper.getExtension(contentType));
+      builder.append(" ").append(getTimeStampString()).append(".").append(MimeTypesHelper.getExtension(contentType));
       return builder.toString();
    }
 
+   /**
+    * append a document name with timestamp
+    * 
+    * @param documentName
+    * @return
+    */
+   public static String appendTimeStamp(String documentName)
+   {
+      String part1 = org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils.substringBeforeLast(documentName, ".");
+      String part2 = org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils.substringAfterLast(documentName, ".");
+      return part1 + " " + getTimeStampString() + "." + part2;
+   }
+   
    /**
     * @return
     */

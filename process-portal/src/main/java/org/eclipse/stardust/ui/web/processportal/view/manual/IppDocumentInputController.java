@@ -30,6 +30,7 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.processportal.common.MessagePropertiesBean;
+import org.eclipse.stardust.ui.web.processportal.view.ActivityDetailsBean.WorkflowAction;
 import org.eclipse.stardust.ui.web.processportal.view.manual.DocumentInputEventHandler.DocumentInputEvent;
 import org.eclipse.stardust.ui.web.processportal.view.manual.DocumentInputEventHandler.DocumentInputEvent.DocumentInputEventType;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
@@ -72,6 +73,8 @@ public class IppDocumentInputController extends DocumentInputController implemen
    private DocumentInputEventHandler handler;
    private boolean openDocument = true;
    private boolean enableOpenDocument = true;
+   private Document documentToBeMoved;
+   private Document documentToBeDeleted;
 
    /**
     * @param path
@@ -269,11 +272,11 @@ public class IppDocumentInputController extends DocumentInputController implemen
                   if (ConfirmationDialogWithOptionsBean.getInstance().getSelectedOption()
                         .contains(RemoveDocumentOptions.MOVE_TO_PROCESS_ATTACHMENTS.name()))
                   {
-                     processJCRDocument(RemoveDocumentOptions.MOVE_TO_PROCESS_ATTACHMENTS);
+                     handleDocumentToBeMoved(document);
                   }
                   else
                   {
-                     processJCRDocument(RemoveDocumentOptions.DELETE_PERMANENTLY);
+                     handleDocumentToBeDeleted(document);
                   }
                   updateActivityPanel();
                   return true;
@@ -296,7 +299,7 @@ public class IppDocumentInputController extends DocumentInputController implemen
 
                public boolean accept()
                {
-                  processJCRDocument(RemoveDocumentOptions.DELETE_PERMANENTLY);
+                  handleDocumentToBeDeleted(document);
                   updateActivityPanel();
                   return true;
                }
@@ -312,23 +315,51 @@ public class IppDocumentInputController extends DocumentInputController implemen
    }
 
    /**
-    * 
-    * @author Yogesh.Manware
+    * @param document
     */
-   private void processJCRDocument(RemoveDocumentOptions selectedRemoveDocumentOption)
+   private void handleDocumentToBeDeleted(Document document)
    {
-      switch (selectedRemoveDocumentOption)
+      if (null != documentToBeMoved || null != documentToBeDeleted)
       {
-         case MOVE_TO_PROCESS_ATTACHMENTS:
-            DMSHelper.addAndSaveProcessAttachment(activityInstance.getProcessInstance(), document);
-            break;
-   
-         case DELETE_PERMANENTLY:
-            DocumentMgmtUtility.getDocumentManagementService().removeDocument(document.getId());
-            break;
-   
-         default:
-            break;
+         DocumentMgmtUtility.getDocumentManagementService().removeDocument(documentToBeDeleted.getId());
+      }
+      else
+      {
+         documentToBeDeleted = document;
+      }
+   }
+
+   /**
+    * @param documentMoved
+    */
+   private void handleDocumentToBeMoved(Document documentMoved)
+   {
+      if (null != documentToBeMoved || null != documentToBeDeleted)
+      {
+         DMSHelper.addAndSaveProcessAttachment(activityInstance.getProcessInstance(), documentMoved, true);
+      }
+      else
+      {
+         documentToBeMoved = documentMoved;
+      }
+   }
+
+   /**
+    * @param action
+    */
+   private void processJCRDocuments(String action)
+   {
+      if (WorkflowAction.COMPLETE.name().equals(action) || WorkflowAction.SAVE.name().equals(action))
+      {
+         if (null != documentToBeDeleted)
+         {
+            DocumentMgmtUtility.getDocumentManagementService().removeDocument(documentToBeDeleted.getId());
+         }
+
+         if (null != documentToBeMoved)
+         {
+            DMSHelper.addAndSaveProcessAttachment(activityInstance.getProcessInstance(), documentToBeMoved, true);
+         }
       }
    }
 
@@ -344,9 +375,10 @@ public class IppDocumentInputController extends DocumentInputController implemen
    }
 
    @Override
-   public void destroy()
+   public void destroy(String action)
    {
-      super.destroy();
+      processJCRDocuments(action);
+      super.destroy(action);
       unregisterHandler();
    }
 

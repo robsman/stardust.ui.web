@@ -89,15 +89,14 @@ public class FileSystemJCRDocument extends FileSystemDocument
       {
          // CHECK if the file with same name already exist in Specific Documents folder
          Document existingDocument = DocumentMgmtUtility.getDocument(jcrParentFolder, file.getName());
+         String fileName = file.getName();
          if (null != existingDocument)
          {
-            // display error message
-            throw new I18NException(MessagesViewsCommonBean.getInstance().getParamString(
-                  "views.genericRepositoryView.specificDocument.reclassifyDocument.fileAlreadyExist", file.getName()));
+            fileName = DocumentMgmtUtility.appendTimeStamp(fileName);
          }
 
          // Create Document with Properties
-         concreteDocument = DocumentMgmtUtility.createDocument(typedDocFolder.getId(), file.getName(), contentBytes,
+         concreteDocument = DocumentMgmtUtility.createDocument(typedDocFolder.getId(), fileName, contentBytes,
                getDocumentType(), getMimeType().getType(), description, comments, getAnnotations(), getProperties());
 
          return concreteDocument;

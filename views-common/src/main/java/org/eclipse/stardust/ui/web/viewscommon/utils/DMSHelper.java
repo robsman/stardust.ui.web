@@ -40,6 +40,7 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.DocumentEvent;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.IppEventController;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.services.ContextPortalServices;
 
 
@@ -236,7 +237,9 @@ public class DMSHelper
       {
          processAttachments.add(document);
          DMSHelper.saveProcessAttachments(processInstance, processAttachments);
-
+         IppEventController.getInstance().notifyEvent(
+               new DocumentEvent(DocumentEvent.EventType.CREATED, DocumentEvent.EventMode.PROCESS_ATTACHMENTS,
+                     processInstance.getOID(), document, processAttachments));
          return true;
       }
 
@@ -255,20 +258,64 @@ public class DMSHelper
    {
       List<Document> processAttachments = DMSHelper
             .fetchProcessAttachments(processInstance);
-      if (!DMSHelper.containsProcessAttachment(processAttachments, document))
-      {
-         processAttachments.add(document);
-         DMSHelper.saveProcessAttachments(processInstance, processAttachments);
-
-         IppEventController.getInstance().notifyEvent(
-               new DocumentEvent(DocumentEvent.EventType.CREATED, DocumentEvent.EventMode.PROCESS_ATTACHMENTS,
-                     processInstance.getOID(), document, processAttachments));
-
-         return true;
-      }
-      return false;
+      
+      return addAndSaveProcessAttachment(processInstance, processAttachments, document);
    }
 
+   /**
+    * Renames the document to added with timeStamp if the attachment with same name already exists
+    * 
+    * @param processInstance
+    * @param documentToBeAdded
+    * @param renameIfDuplicate
+    * @return
+    */
+   public static boolean addAndSaveProcessAttachment(ProcessInstance processInstance, Document documentToBeAdded,
+         boolean renameIfDuplicate)
+   {
+      List<Document> processAttachments = DMSHelper.fetchProcessAttachments(processInstance);
+
+      if (renameIfDuplicate)
+      {
+         if (null != getProcessAttachment(processInstance, documentToBeAdded.getName(), processAttachments))
+         {
+            documentToBeAdded.setName(DocumentMgmtUtility.appendTimeStamp(documentToBeAdded.getName()));
+            documentToBeAdded = DocumentMgmtUtility.getDocumentManagementService().updateDocument(documentToBeAdded,
+                  false, "", false);
+         }
+      }
+
+      return addAndSaveProcessAttachment(processInstance, processAttachments, documentToBeAdded);
+   }
+
+   /**
+    * return the attachment with provided name for a process instance
+    * 
+    * @param processInstance
+    * @param docName
+    * @param processAttachments
+    *           (optional)
+    * @return
+    */
+   public static Document getProcessAttachment(ProcessInstance processInstance, String docName,
+         List<Document> processAttachments)
+   {
+
+      if (null == processAttachments)
+      {
+         processAttachments = DMSHelper.fetchProcessAttachments(processInstance);
+      }
+      // check in the process attachments (attachment may be resided in different
+      // location)
+      for (Document attachment : processAttachments)
+      {
+         if (null != attachment && (attachment.getName().equalsIgnoreCase(docName)))
+         {
+            return attachment;
+         }
+      }
+      return null;
+   }
   
    /**
     * deletes the process attachment from provided process instance

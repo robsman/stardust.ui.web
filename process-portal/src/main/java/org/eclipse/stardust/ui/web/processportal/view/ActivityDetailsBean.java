@@ -149,7 +149,7 @@ public class ActivityDetailsBean extends UIComponentBean
 
    private static final String MAPPED_DOC_WARN_INCLUDE = "/plugins/processportal/toolbar/workflowMappedDocMsgDialogInclude.xhtml";
 
-   private static enum WorkflowAction
+   public static enum WorkflowAction
    {
       COMPLETE,
       SUSPEND,
@@ -224,6 +224,8 @@ public class ActivityDetailsBean extends UIComponentBean
    private DataMapping singleDocumentDatgaMapping;
    private DocumentHandlerBean documentHandlerBean;
    List<ToolbarSection> documentViewToolbars;
+   
+   private WorkflowAction selectedAction = WorkflowAction.SUSPEND;
    
    public static IActivityInteractionController getInteractionController(Activity activity)
    {
@@ -542,7 +544,7 @@ public class ActivityDetailsBean extends UIComponentBean
          ManualActivityForm currentActivityForm = getCurrentManualActivityForm();
          if(null != currentActivityForm)
          {
-            currentActivityForm.destroy();
+            currentActivityForm.destroy(selectedAction.name());
          }
       }
       else if (ViewEventType.TO_BE_FULL_SCREENED == event.getType())
@@ -1518,6 +1520,8 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       try
       {
+         selectedAction = action;
+         
          Map<String, Object> params;
 
          switch (action)
@@ -1709,7 +1713,7 @@ public class ActivityDetailsBean extends UIComponentBean
                   
                   if (!fromViewEvent && null != activityForm)
                   {
-                     activityForm.destroy(); // If already exists destroy it first before creating again
+                     activityForm.destroy(selectedAction.name()); // If already exists destroy it first before creating again
                      activityForm = null;
                   }
 
