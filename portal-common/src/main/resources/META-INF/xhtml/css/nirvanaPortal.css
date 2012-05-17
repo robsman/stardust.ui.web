@@ -850,6 +850,13 @@ img
 	height: 16px;
 }
 
+.icon-style
+{
+	border: 1px dotted transparent;
+	margin: 2px;
+	padding: 2px;
+}
+
 .toolbar-button:hover 
 {
 	border: 1px dotted black;
