@@ -373,8 +373,30 @@ public class UserManagementBean extends PopupUIComponentBean
    public void openStrandedActivitiesAlert()
    {
       AdminMessagesPropertiesBean propsBean = AdminMessagesPropertiesBean.getInstance();
+      ConfirmationDialogHandler dialogHandler = new ConfirmationDialogHandler()
+      {
+         public boolean cancel()
+         {
+            userMgmtStrandedActConfirmationDialog = null;
+            return true;
+         }
+
+         public boolean accept()
+         {
+            try
+            {
+               userMgmtStrandedActConfirmationDialog = null;
+               showNotificationDialog();
+               return true;
+            }
+            catch (Exception e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
+      };
       userMgmtStrandedActConfirmationDialog = new ConfirmationDialog(DialogContentType.NONE,
-            DialogActionType.OK_CANCEL, DialogType.ACCEPT_ONLY, DialogStyle.COMPACT, null);
+            DialogActionType.OK_CANCEL, DialogType.ACCEPT_ONLY, DialogStyle.COMPACT, dialogHandler);
       userMgmtStrandedActConfirmationDialog.setTitle(propsBean.getString("common.strandedActivitiesAlert.title"));
       userMgmtStrandedActConfirmationDialog.setMessage(propsBean
             .getString("common.strandedActivitiesAlert.message.label"));
