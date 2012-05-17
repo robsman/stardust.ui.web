@@ -13,8 +13,11 @@ package org.eclipse.stardust.ui.web.viewscommon.process.history;
 import java.util.Date;
 
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.engine.api.dto.DepartmentDetails;
+import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
+import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.HistoricalEvent;
 import org.eclipse.stardust.engine.api.runtime.HistoricalEventDescriptionDelegation;
 import org.eclipse.stardust.engine.api.runtime.HistoricalEventDescriptionStateChange;
@@ -68,15 +71,30 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
          Participant from = delDescr.getFromPerformer();
          Participant to = delDescr.getToPerformer();
          StringBuffer buffer = new StringBuffer();
+         ModelParticipantInfo modelParticipant;
+         String deptName = null;
          String tmpDetail = I18nUtils.getParticipantName(from);
          if (from != null && !StringUtils.isEmpty(tmpDetail))
          {
-            buffer.append(tmpDetail).append(" ");
+            buffer.append(tmpDetail);
+            if (from instanceof ModelParticipantInfo)
+            {
+               modelParticipant = (ModelParticipantInfo) from;
+               deptName = getDepartmentLabel(modelParticipant.getDepartment());
+            }
+            buffer.append(StringUtils.isNotEmpty(deptName) ? deptName : " ");
          }
          tmpDetail = I18nUtils.getParticipantName(to);
+         deptName = null;
          if (to != null && !StringUtils.isEmpty(tmpDetail))
          {
             buffer.append("-> ").append(tmpDetail);
+            if (to instanceof ModelParticipantInfo)
+            {
+               modelParticipant = (ModelParticipantInfo) to;
+               deptName = getDepartmentLabel(modelParticipant.getDepartment());
+            }
+            buffer.append(StringUtils.isNotEmpty(deptName) ? deptName : "");
          }
          fullDetail = buffer.toString();
          break;
@@ -152,6 +170,29 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
       eventTime = event.getEventTime();
       user = event.getUser();
       performer = user != null ? I18nUtils.getUserLabel(user) : null;
+   }
+
+   /**
+    * 
+    * @param department
+    * @return
+    */
+   private String getDepartmentLabel(DepartmentInfo department)
+   {
+      StringBuffer deptString = new StringBuffer();
+      if (null != department)
+      {
+         DepartmentDetails deptDetail = (DepartmentDetails) department;
+         if (deptDetail.getOrganization().isDepartmentScoped())
+         {
+            deptString.append(" - ").append(department.getName()).toString();
+         }
+      }
+      else
+      {
+         return null;
+      }
+      return deptString.toString();
    }
 
    public String getName()
