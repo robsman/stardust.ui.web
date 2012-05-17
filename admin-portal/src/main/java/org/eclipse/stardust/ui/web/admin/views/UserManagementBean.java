@@ -116,6 +116,7 @@ public class UserManagementBean extends PopupUIComponentBean
    private List<FilterToolbarItem> userMgmtFilterToolbarItems;
    
    private ConfirmationDialog userMgmtConfirmationDialog;
+   private ConfirmationDialog userMgmtStrandedActConfirmationDialog;
    
    /**
     * 
@@ -372,11 +373,13 @@ public class UserManagementBean extends PopupUIComponentBean
    public void openStrandedActivitiesAlert()
    {
       AdminMessagesPropertiesBean propsBean = AdminMessagesPropertiesBean.getInstance();
-      userMgmtConfirmationDialog = new ConfirmationDialog(DialogContentType.NONE, DialogActionType.OK_CANCEL, DialogType.ACCEPT_ONLY,
-            DialogStyle.COMPACT, this);
-      userMgmtConfirmationDialog.setTitle(propsBean.getString("common.strandedActivitiesAlert.title"));
-      userMgmtConfirmationDialog.setMessage(propsBean.getString("common.strandedActivitiesAlert.message.label"));
-      userMgmtConfirmationDialog.openPopup();
+      userMgmtStrandedActConfirmationDialog = new ConfirmationDialog(DialogContentType.NONE,
+            DialogActionType.OK_CANCEL, DialogType.ACCEPT_ONLY, DialogStyle.COMPACT, null);
+      userMgmtStrandedActConfirmationDialog.setTitle(propsBean.getString("common.strandedActivitiesAlert.title"));
+      userMgmtStrandedActConfirmationDialog.setMessage(propsBean
+            .getString("common.strandedActivitiesAlert.message.label"));
+      userMgmtStrandedActConfirmationDialog.openPopup();
+      initialize();
    }
    
    /**
@@ -820,6 +823,11 @@ public class UserManagementBean extends PopupUIComponentBean
    public ConfirmationDialog getUserMgmtConfirmationDialog()
    {
       return userMgmtConfirmationDialog;
+   }
+
+   public ConfirmationDialog getUserMgmtStrandedActConfirmationDialog()
+   {
+      return userMgmtStrandedActConfirmationDialog;
    }
 
    /**

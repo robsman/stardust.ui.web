@@ -10,9 +10,14 @@
 		<ui:include src="createUser.xhtml" />
 		<ui:include src="confirmInvalidateUser.xhtml"/>
 		<ui:include src="/plugins/views-common/contentmgmt/views/notificationMessage.xhtml" />
-		<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
-				<ui:param name="dialogBean" value="#{userMgmtBean.userMgmtConfirmationDialog}" />
+		 <ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+				 <ui:param name="dialogBean" value="#{userMgmtBean.userMgmtConfirmationDialog}" /> 
 			</ui:include>
+	</ice:panelGroup>
+	<ice:panelGroup>
+		<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+				 <ui:param name="dialogBean" value="#{userMgmtBean.userMgmtStrandedActConfirmationDialog}" /> 
+		</ui:include>
 	</ice:panelGroup>
 
 	<ice:panelGroup>
