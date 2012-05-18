@@ -92,14 +92,10 @@ public class TIFFDocumentHolder
 
       try
       {
-         documentContent = docInfo.retrieveContent();         
+         documentContent = docInfo.retrieveContent();
 
-         Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName(TIFF_FORMAT_NAME);
-         if (!readers.hasNext())
-         {
-            throw new RuntimeException(MESSAGE_BEAN.getString("views.tiffViewer.error.noReaderFound"));
-         }
-         reader = (ImageReader) readers.next();
+         initTIFFReader();
+
          reader.setInput(ImageIO.createImageInputStream(new ByteArrayInputStream(getDocumentContent())));
          maxPageIndex = reader.getNumImages(true);
 
@@ -129,7 +125,7 @@ public class TIFFDocumentHolder
    public String getDefaultPagePath()
    {
       String pagePath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
-      pagePath += "/plugins/views-common/views/document/tiffViewer.xhtml?docId=" + getDocId() + "&pageNo="
+      pagePath += "/plugins/views-common/views/document/tiffViewer.html?docId=" + getDocId() + "&pageNo="
       + getDefaultPageIndex() + "&noOfPages=" + getNumberOfpages() + "&postFix="
       + System.currentTimeMillis();
       
@@ -360,6 +356,33 @@ public class TIFFDocumentHolder
 
       movePageUp(pageNo);
       setDocumentAnnotationPageIndex();
+   }
+
+   /**
+    * Scans for TIFF readers. Also, forces a re-scans of the classpath once if no reader
+    * is found the first time. (This is needed as a workaround for the classloading issues
+    * observed on JBoss that)
+    */
+   private void initTIFFReader()
+   {
+      final int TIFF_READER_SCAN_RETRY_COUNT_MAX = 1;
+      int retryCount = 0;
+      Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName(TIFF_FORMAT_NAME);      
+      while (!readers.hasNext())
+      {
+         if (retryCount < TIFF_READER_SCAN_RETRY_COUNT_MAX)
+         {
+            ImageIO.scanForPlugins();            
+            readers = ImageIO.getImageReadersByFormatName(TIFF_FORMAT_NAME);
+            retryCount++;
+         }
+         else
+         {
+            throw new RuntimeException(MESSAGE_BEAN.getString("views.tiffViewer.error.noReaderFound"));
+         }
+      }
+
+      reader = (ImageReader) readers.next();
    }
 
    /**
