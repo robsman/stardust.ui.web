@@ -12,12 +12,16 @@
 				style="border: none;" title="#{prefManagerBean.messages['modifyPreference.add.title']}" />
 			<f:attribute name="selectedView" value="#{prefManagerBean.selectedView}" />
 			<f:attribute name="selectedUser" value="#{prefManagerBean.userWrapperObj}" />
+			<pc:automationTag value="auto-ADM-PrefMngrView-ToolbarAdd"
+				standAlone="false" />
 		</ice:commandLink>	
 
 		<ice:commandLink actionListener="#{prefManagerBean.removePreference}">
 			<h:graphicImage value="/plugins/views-common/images/icons/delete.png"
 				style="border: none;" 
 				title="#{prefManagerBean.messages['modifyPreference.delete.label']}" />
+			<pc:automationTag value="auto-ADM-PrefMngrView-ToolbarRemove"
+				standAlone="false" />
 		</ice:commandLink>
 		
 		<ice:commandLink actionListener="#{createOrModifyPreference.openModifyPrefDialog}">
@@ -25,6 +29,8 @@
 				style="border: none;" 
 				title="#{prefManagerBean.messages['modifyPreference.edit.title']}" />
 			<f:attribute name="editRow" value="true" />
+			<pc:automationTag value="auto-ADM-PrefMngrView-ToolbarEdit"
+				standAlone="false" />
 		</ice:commandLink>	
 	</ice:panelGrid>	
 </f:view>
