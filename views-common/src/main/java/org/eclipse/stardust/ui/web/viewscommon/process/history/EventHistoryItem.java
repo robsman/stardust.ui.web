@@ -25,6 +25,7 @@ import org.eclipse.stardust.engine.api.runtime.HistoricalEventType;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
 import org.eclipse.stardust.ui.web.viewscommon.common.LocalizerKey;
+import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 
 
@@ -71,30 +72,13 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
          Participant from = delDescr.getFromPerformer();
          Participant to = delDescr.getToPerformer();
          StringBuffer buffer = new StringBuffer();
-         ModelParticipantInfo modelParticipant;
-         String deptName = null;
-         String tmpDetail = I18nUtils.getParticipantName(from);
-         if (from != null && !StringUtils.isEmpty(tmpDetail))
+         if (from != null)
          {
-            buffer.append(tmpDetail);
-            if (from instanceof ModelParticipantInfo)
-            {
-               modelParticipant = (ModelParticipantInfo) from;
-               deptName = getDepartmentLabel(modelParticipant.getDepartment());
-            }
-            buffer.append(StringUtils.isNotEmpty(deptName) ? deptName : " ");
+            buffer.append(ModelHelper.getParticipantName(from)).append(" ");
          }
-         tmpDetail = I18nUtils.getParticipantName(to);
-         deptName = null;
-         if (to != null && !StringUtils.isEmpty(tmpDetail))
+         if (to != null)
          {
-            buffer.append("-> ").append(tmpDetail);
-            if (to instanceof ModelParticipantInfo)
-            {
-               modelParticipant = (ModelParticipantInfo) to;
-               deptName = getDepartmentLabel(modelParticipant.getDepartment());
-            }
-            buffer.append(StringUtils.isNotEmpty(deptName) ? deptName : "");
+            buffer.append("-> ").append(ModelHelper.getParticipantName(to));
          }
          fullDetail = buffer.toString();
          break;
@@ -170,29 +154,6 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
       eventTime = event.getEventTime();
       user = event.getUser();
       performer = user != null ? I18nUtils.getUserLabel(user) : null;
-   }
-
-   /**
-    * 
-    * @param department
-    * @return
-    */
-   private String getDepartmentLabel(DepartmentInfo department)
-   {
-      StringBuffer deptString = new StringBuffer();
-      if (null != department)
-      {
-         DepartmentDetails deptDetail = (DepartmentDetails) department;
-         if (deptDetail.getOrganization().isDepartmentScoped())
-         {
-            deptString.append(" - ").append(department.getName()).append(" ");
-         }
-      }
-      else
-      {
-         return null;
-      }
-      return deptString.toString();
    }
 
    public String getName()
