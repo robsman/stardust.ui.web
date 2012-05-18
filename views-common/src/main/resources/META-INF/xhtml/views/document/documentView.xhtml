@@ -21,6 +21,9 @@
 		</c:if>
 		<ui:include src="/plugins/views-common/views/doctree/fileSaveDialog.xhtml" />
 		<ui:include src="/plugins/views-common/views/doctree/downloadPopupDialog.xhtml" />
+		<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+				<ui:param name="dialogBean" value="#{documentHandlerBean.confirmationDialog}" />
+		</ui:include>
 	</ice:panelGroup>
 	
 	<ice:panelGroup rendered="#{documentHandlerBean.loadSuccessful}">

@@ -31,6 +31,11 @@ import org.eclipse.stardust.ui.common.form.preferences.FormGenerationPreferences
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
 import org.eclipse.stardust.ui.web.common.event.ViewDataEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewDataEvent.ViewDataEventType;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
@@ -98,7 +103,8 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    private boolean embededView;
    private boolean loadSuccessful = false;
    private String loadUnsuccessfulMsg;
-
+   private ConfirmationDialog confirmationDialog;
+   
    /**
     * default constructor
     */
@@ -459,48 +465,85 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    /**
     * @param callback
     */
-   public void save(ICallbackHandler callback)
+   public void save(final ICallbackHandler callback)
    {
-      if (isSavable() && isModified())
+      if (isModified() || getDocumentContentInfo() instanceof FileSystemJCRDocument)
       {
-         try
-         {
-            FileSaveDialog fileSaveDialog = FileSaveDialog.getInstance();
-            fileSaveDialog.initialize();
-            if (documentContentInfo instanceof FileSystemJCRDocument)
-            {
-               fileSaveDialog.setComments(documentContentInfo.getComments());
-            }
-            fileSaveDialog.setCallbackHandler(new DCCallBackHandler(false, callback));
-            if (contentHandler instanceof ICustomDocumentSaveHandler
-                  && ((ICustomDocumentSaveHandler) contentHandler).usesCustomSaveDialog())
-            {
-               fileSaveDialog.setCustomDialog(true);
-               fileSaveDialog
-                     .setCustomDialogPosition(((ICustomDocumentSaveHandler) contentHandler).getDialogPosition());
-               fileSaveDialog.setCustomDialogSource(((ICustomDocumentSaveHandler) contentHandler).getCustomDialogURL());
-               ((ICustomDocumentSaveHandler) contentHandler).setCustomSaveDialogOptions();
-            }
-            fileSaveDialog.openPopup();
-         }
-         catch (Exception e)
-         {
-            ExceptionHandler.handleException(e);
-            callback.handleEvent(EventType.CANCEL);
-         }
+         saveDocument(callback);
       }
       else
       {
-         if (null == callback)
-         {
-            MessageDialog.addWarningMessage(propsBean.getString("views.documentView.saveDocumentDialog.notSaved"));
-         }
-         else
-         {
-            callback.handleEvent(EventType.APPLY);
-         }
+         confirmationDialog = new ConfirmationDialog(DialogContentType.WARNING, DialogActionType.YES_NO, null,
+               DialogStyle.COMPACT, new ConfirmationDialogHandler()
+               {
+                  public boolean cancel()
+                  {
+                     if (null != callback)
+                     {
+                        callback.handleEvent(EventType.CANCEL);
+                     }
+                     return true;
+                  }
+
+                  public boolean accept()
+                  {
+                     try
+                     {
+                        saveDocumentContents(null);
+                     }
+                     catch (ResourceNotFoundException e)
+                     {
+                        ExceptionHandler.handleException(e);
+                        fireDocumentDeletedEvent();
+                        loadSuccessful = false;
+                     }
+                     if (null != callback)
+                     {
+                        callback.handleEvent(EventType.APPLY);
+                     }
+
+                     return true;
+                  }
+               });
+         confirmationDialog.setTitle(propsBean.getString("common.confirm"));
+         confirmationDialog.setMessage(propsBean.getString("views.documentView.saveDocumentDialog.noChangesWarning"));
+         confirmationDialog.openPopup();
       }
    }
+   
+   /**
+    * @param callback
+    */
+   private void saveDocument(ICallbackHandler callback)
+   {
+      try
+      {
+         FileSaveDialog fileSaveDialog = FileSaveDialog.getInstance();
+         fileSaveDialog.initialize();
+         
+         if (documentContentInfo instanceof FileSystemJCRDocument)
+         {
+            fileSaveDialog.setComments(documentContentInfo.getComments());
+         }
+         fileSaveDialog.setCallbackHandler(new DCCallBackHandler(callback));
+        
+         if (contentHandler instanceof ICustomDocumentSaveHandler
+               && ((ICustomDocumentSaveHandler) contentHandler).usesCustomSaveDialog())
+         {
+            fileSaveDialog.setCustomDialog(true);
+            fileSaveDialog.setCustomDialogPosition(((ICustomDocumentSaveHandler) contentHandler).getDialogPosition());
+            fileSaveDialog.setCustomDialogSource(((ICustomDocumentSaveHandler) contentHandler).getCustomDialogURL());
+            ((ICustomDocumentSaveHandler) contentHandler).setCustomSaveDialogOptions();
+         }
+         fileSaveDialog.openPopup();
+      }
+      catch (Exception e)
+      {
+         ExceptionHandler.handleException(e);
+         callback.handleEvent(EventType.CANCEL);
+      }
+   }
+   
    
    /**
     * @param e
@@ -546,7 +589,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          fileSaveDialog.setTitle(MessagesViewsCommonBean.getInstance().getString(
                "views.documentView.saveDocumentDialog.saveDocument"));
          fileSaveDialog.setHeaderMessage(propsBean.getString("views.documentView.saveDocumentDialog.revert"));
-         fileSaveDialog.setCallbackHandler(new DCCallBackHandler(true));
+         fileSaveDialog.setCallbackHandler(new DCCallBackHandler(null));
          //check if the document type matches
          IDocumentContentInfo latestDocInfo = getVersionTracker().getLatestVersion();
          if (!StringUtils.areEqual(getDocumentContentInfo().getDocumentType(), latestDocInfo.getDocumentType()))
@@ -610,11 +653,9 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
     * @param force
     * @throws ResourceNotFoundException 
     */
-   private void saveDocumentContents(boolean force, String comments) throws ResourceNotFoundException 
+   private void saveDocumentContents(String comments) throws ResourceNotFoundException 
    {
-      if (force || isModified())
-      {
-         if (!(force && !documentContentInfo.getVersionTracker().isLatestVersion()) && contentHandler instanceof ICustomDocumentSaveHandler)
+         if (contentHandler instanceof ICustomDocumentSaveHandler)
          {
             documentContentInfo = ((ICustomDocumentSaveHandler) contentHandler).save();
          }
@@ -662,11 +703,6 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          documentContentInfo = documentContentInfo.save(contentByte);
 
          postSave(refreshViewer);
-      }
-      else
-      {
-         MessageDialog.addWarningMessage(propsBean.getString("views.documentView.saveDocumentDialog.notSaved"));
-      }
    }
 
    /**
@@ -736,9 +772,21 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
     */
    private boolean isModified()
    {
-      if ((contentHandler instanceof ICustomDocumentSaveHandler && ((ICustomDocumentSaveHandler) contentHandler).isModified())
-            || contentHandler instanceof IDocumentEditor
-            || isDescriptionChanged() || (null != documentForm && documentForm.isMetaDataAvailable()))
+      //Determine if document metadata is modified
+      boolean metaDataModified = false;
+      if (null != documentForm)
+      {
+         metaDataModified = documentForm.isModified();
+         if (metaDataModified && contentHandler instanceof ICustomDocumentSaveHandler)
+         {
+            ((ICustomDocumentSaveHandler) contentHandler).setDescriptionChanged(true);
+         }
+      }      
+      
+      if ((contentHandler instanceof ICustomDocumentSaveHandler && ((ICustomDocumentSaveHandler) contentHandler)
+            .isModified())
+            || (contentHandler instanceof IDocumentEditor && ((IDocumentEditor) contentHandler).isContentChanged())
+            || isDescriptionChanged() || metaDataModified)
       {
          return true;
       }
@@ -1082,18 +1130,11 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
     */
    class DCCallBackHandler extends FileSaveCallbackHandler
    {
-      private boolean force;
       private String comments;
       private ICallbackHandler callback;
       
-      public DCCallBackHandler(boolean force)
+      public DCCallBackHandler(ICallbackHandler callback)
       {
-         this(force, null);
-      }
-
-      public DCCallBackHandler(boolean force, ICallbackHandler callback)
-      {
-         this.force = force;
          this.callback = callback;
       }      
 
@@ -1103,7 +1144,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          {
             try
             {
-               saveDocumentContents(force, getComments());
+               saveDocumentContents(getComments());
                if (null != callback)
                {
                   callback.handleEvent(EventType.APPLY);
@@ -1163,5 +1204,15 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    public String getLoadUnsuccessfulMsg()
    {
       return loadUnsuccessfulMsg;
+   }
+
+   public ConfirmationDialog getConfirmationDialog()
+   {
+      return confirmationDialog;
+   }
+
+   public void setConfirmationDialog(ConfirmationDialog confirmationDialog)
+   {
+      this.confirmationDialog = confirmationDialog;
    }
 }
