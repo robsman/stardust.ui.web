@@ -91,7 +91,7 @@ public class AuditTrailBean extends PopupUIComponentBean
                .getAdministrationService();
          ProcessInstanceQuery query = ProcessInstanceQuery
                .findInState(new ProcessInstanceState[] {
-                     ProcessInstanceState.Active, ProcessInstanceState.Interrupted});
+                     ProcessInstanceState.Active, ProcessInstanceState.Interrupted, ProcessInstanceState.Aborting});
          ProcessInstances pi = queryService.getAllProcessInstances(query);
          Iterator<ProcessInstance> itr = pi != null ? pi.iterator() : null;
          while (itr != null && itr.hasNext())
