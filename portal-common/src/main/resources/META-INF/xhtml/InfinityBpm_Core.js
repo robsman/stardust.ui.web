@@ -483,15 +483,17 @@ if ( !InfinityBpm.Core) {
     	var scrollPos = getWindowScrollPosition(mainIppFrame);
     	var popupDivs = getElementsWithIDLike('div', divId);
     	if (popupDivs && (popupDivs.length > 0)) {
-    		try {
-	    		var popupDiv = popupDivs[0];
-	    		var widthOffset = (popupDiv.offsetWidth < windowSize.width) ? popupDiv.offsetWidth : 0;
-	    		var heightOffset = (popupDiv.offsetHeight < windowSize.height) ? popupDiv.offsetHeight : 0;
-	    		popupDiv.style.left = (((windowSize.width - widthOffset)/ 2) + scrollPos.x) + 'px';
-	    		popupDiv.style.top = (((windowSize.height - heightOffset)/ 2) + scrollPos.y) + 'px';
-    		} catch (e) {
-	    		popupDiv.style.left = (scrollPos.x + 200) + 'px';
-	    		popupDiv.style.top = (scrollPos.y + 200) + 'px';
+    		for (var i = 0; i < popupDivs.length; i++) {
+	    		try {
+		    		var popupDiv = popupDivs[i];
+		    		var widthOffset = (popupDiv.offsetWidth < windowSize.width) ? popupDiv.offsetWidth : 0;
+		    		var heightOffset = (popupDiv.offsetHeight < windowSize.height) ? popupDiv.offsetHeight : 0;
+		    		popupDiv.style.left = (((windowSize.width - widthOffset)/ 2) + scrollPos.x) + 'px';
+		    		popupDiv.style.top = (((windowSize.height - heightOffset)/ 2) + scrollPos.y) + 'px';
+	    		} catch (e) {
+		    		popupDiv.style.left = (scrollPos.x + 200) + 'px';
+		    		popupDiv.style.top = (scrollPos.y + 200) + 'px';
+	    		}
     		}
     	}
     }
