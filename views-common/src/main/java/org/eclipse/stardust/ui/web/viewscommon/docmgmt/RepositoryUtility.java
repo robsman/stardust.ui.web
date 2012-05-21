@@ -1152,6 +1152,32 @@ public class RepositoryUtility
       return comment;
    }
 
+   
+   
+   /**
+    * This method is temporary and needs to be removed after some time. This is kept here
+    * to provided backward compatibility to read description from old versions
+    * 
+    * @param document
+    * @return
+    */
+   public static String getDescription(Document document)
+   {
+      String description = "";
+      if (null != document && null != document.getProperties())
+      {
+         if (document.getProperties().containsKey(CommonProperties.DESCRIPTION))
+            description = (String) document.getProperties().get(CommonProperties.DESCRIPTION);
+      }
+      if (StringUtils.isEmpty(description))
+      {
+         description = document.getDescription();
+      }
+
+      return description;
+   }
+
+   
    /**
     * create process attachment node
     * 

@@ -139,7 +139,7 @@ public class JCRDocument extends AbstractDocumentContentInfo
       mimeType = MimeTypesHelper.detectMimeType(document.getName(), document.getContentType());
       properties = document.getProperties();
 
-      description = document.getDescription();
+      description = RepositoryUtility.getDescription(document);
       comments = RepositoryUtility.getVersionComment(document);
       annotations = document.getDocumentAnnotations();
       
