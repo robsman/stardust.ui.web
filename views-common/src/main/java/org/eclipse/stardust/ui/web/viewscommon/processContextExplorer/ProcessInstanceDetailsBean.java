@@ -134,7 +134,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    @Override
    public void initialize()
    {
-      trace.info("-----------> ProcessInstanceDetailsBean Initialize");
+      trace.debug("-----------> ProcessInstanceDetailsBean Initialize");
       if (processInstanceOID == null)
       {
          return;
@@ -178,7 +178,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       state = MessagesViewsCommonBean.getInstance().getString(
             STATE_PREFIX + processInstance.getState().getName().toLowerCase());
    
-      trace.info("<----------- ProcessInstanceDetailsBean Initialize");
+      trace.debug("<----------- ProcessInstanceDetailsBean Initialize");
    }
    
    /* (non-Javadoc)
@@ -439,7 +439,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
     */
    private void initializeProcessHistoryTree()
    {
-      trace.info("-----------> ProcessHistoryTree Initialize");
+      trace.debug("-----------> ProcessHistoryTree Initialize");
 
       ProcessHistoryTable processHistoryTable = ProcessHistoryTable.getCurrent();
       processHistoryTable.setCurrentProcessInstance(processInstance);
@@ -447,7 +447,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       processHistoryTable.initialize();
       processHistoryTreeInitialized = true;
 
-      trace.info("<----------- ProcessHistoryTree Initialize");
+      trace.debug("<----------- ProcessHistoryTree Initialize");
    }
 
    /**
@@ -455,7 +455,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
     */
    private void initializeParticipantsPanel()
    {
-      trace.info("-----------> Participant Panel Initialize");
+      trace.debug("-----------> Participant Panel Initialize");
       if (!processHistoryTreeInitialized)
       {
          initializeProcessHistoryTree();
@@ -469,7 +469,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
 
       participantsList.initialize();
       participantsPanelInitialized = true;
-      trace.info("-----------> Participant Panel Initialize");
+      trace.debug("-----------> Participant Panel Initialize");
    }
 
    /**
@@ -477,7 +477,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
     */
    private void initializeGenericRepositoryTree()
    {
-      trace.info("-----------> GenericRepositoryTree Initialize");
+      trace.debug("-----------> GenericRepositoryTree Initialize");
       GenericRepositoryTreeViewBean genericRepositoryTree = GenericRepositoryTreeViewBean.getInstance();
       if (genericRepositoryTree.isEditingModeOff())
       {
@@ -486,7 +486,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
          genericRepositoryTree.initialize();
          genericRepositoryTreeInitialized = true;
       }
-      trace.info("-----------> GenericRepositoryTree Initialize");
+      trace.debug("-----------> GenericRepositoryTree Initialize");
    }
 
    /**
@@ -563,7 +563,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
     */
    private void initializeProcessTable()
    {
-      trace.info("-----------> Linked Process Table Initialize");
+      trace.debug("-----------> Linked Process Table Initialize");
 
       processHelper = new ProcessTableHelper();
       processHelper.getColumnModelListener().setNeedRefresh(false);
@@ -576,7 +576,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       linkedProcessPanelInitialized = true;
       processHelper.getColumnModelListener().setNeedRefresh(true);
 
-      trace.info("<----------- Linked Process Table Initialized");
+      trace.debug("<----------- Linked Process Table Initialized");
    }
 
    /**
@@ -584,13 +584,13 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
     */
    private void initializeLinkedProcessPanel()
    {
-      trace.info("-----------> Linked Process Panel Initialize");
+      trace.debug("-----------> Linked Process Panel Initialize");
       if (!linkedProcessPanelInitialized)
       {
          initializeProcessTable();
       }
       processHelper.getProcessTable().refresh(true);
-      trace.info("-----------> Linked Process Panel Initialized");
+      trace.debug("-----------> Linked Process Panel Initialized");
    }
 
     /**

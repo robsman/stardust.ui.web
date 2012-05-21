@@ -66,7 +66,7 @@ public class ProcessHistoryTable extends UIViewComponentBean
    public void initialize()
    {
       initializePermissions();
-      trace.info("-----------> Process History Table Initialize");
+      trace.debug("-----------> Process History Table Initialize");
       List<ProcessInstance> processInstances;
        if (getCurrentProcessInstance() != null)
       {
@@ -100,7 +100,7 @@ public class ProcessHistoryTable extends UIViewComponentBean
       
       selectedRow = processTreeTable.getSelectedRow();
 
-      trace.info("<----------- Process History Table Initialize");
+      trace.debug("<----------- Process History Table Initialize");
    }
 
    /**
