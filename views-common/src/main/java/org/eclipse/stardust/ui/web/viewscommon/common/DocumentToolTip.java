@@ -11,15 +11,12 @@
 package org.eclipse.stardust.ui.web.viewscommon.common;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import org.eclipse.stardust.engine.api.model.TypeDeclaration;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
-import org.eclipse.stardust.ui.web.common.util.StringUtils;
-import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 
@@ -69,9 +66,7 @@ public class DocumentToolTip implements ToolTip, Serializable
 
          modificationDate = DateUtils.formatDateTime(document.getDateLastModified());
 
-         @SuppressWarnings("rawtypes")
-         Map properties = document.getProperties();
-         description = (String) properties.get(CommonProperties.DESCRIPTION);
+         description = document.getDescription();
          description = description == null || description.length() < 90 ? description : description.substring(0, 89)
                + "...";
       }

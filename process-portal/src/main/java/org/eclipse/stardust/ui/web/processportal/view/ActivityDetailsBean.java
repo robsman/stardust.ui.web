@@ -98,7 +98,6 @@ import org.eclipse.stardust.ui.web.viewscommon.common.event.IppEventController;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.NoteEvent;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.NoteEventObserver;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
-import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.AbortActivityBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
@@ -1621,10 +1620,6 @@ public class ActivityDetailsBean extends UIComponentBean
                      if (EventType.APPLY == eventType)
                      {
                         Document document = ((JCRDocument) documentHandlerBean.getDocumentContentInfo()).getDocument();
-   
-                        // This cleanup is required because issue - CRNT-20987
-                        document.getProperties().remove(CommonProperties.DESCRIPTION);
-                        document.getProperties().remove(CommonProperties.COMMENTS);
    
                         // Even Annotations needs to be cleared
                         document.setDocumentAnnotations(null);

@@ -1128,6 +1128,30 @@ public class RepositoryUtility
       }
    }
 
+   
+   /**
+    * This method is temporary and needs to be removed after some time. This is kept here
+    * to provided backward compatibility to read version comments from old versions
+    * 
+    * @param document
+    * @return
+    */
+   public static String getVersionComment(Document document)
+   {
+      String comment = "";
+      if (null != document && null != document.getProperties())
+      {
+         if (document.getProperties().containsKey(CommonProperties.COMMENTS))
+            comment = (String) document.getProperties().get(CommonProperties.COMMENTS);
+      }
+      if (StringUtils.isEmpty(comment))
+      {
+         comment = document.getRevisionComment();
+      }
+
+      return comment;
+   }
+
    /**
     * create process attachment node
     * 

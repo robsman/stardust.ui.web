@@ -20,6 +20,7 @@ import org.eclipse.stardust.engine.extensions.dms.data.DmsPrivilege;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
@@ -136,15 +137,10 @@ public class JCRDocument extends AbstractDocumentContentInfo
       name = document.getName();
 
       mimeType = MimeTypesHelper.detectMimeType(document.getName(), document.getContentType());
-      properties = this.document.getProperties();
+      properties = document.getProperties();
 
-      description = (String) properties.get(CommonProperties.DESCRIPTION);
-      
-      if (properties.containsKey(CommonProperties.COMMENTS))
-      {
-         comments = (String) properties.get(CommonProperties.COMMENTS);
-      }
-
+      description = document.getDescription();
+      comments = RepositoryUtility.getVersionComment(document);
       annotations = document.getDocumentAnnotations();
       
       if (readOnly)
@@ -257,15 +253,16 @@ public class JCRDocument extends AbstractDocumentContentInfo
    {
       if (!DocumentMgmtUtility.isDocumentVersioned(this.document))
       {
-         DocumentMgmtUtility.getDocumentManagementService().versionDocument(this.document.getId(),
+         this.document = DocumentMgmtUtility.getDocumentManagementService().versionDocument(this.document.getId(), "",
                CommonProperties.ZERO);
       }
-      properties.put(CommonProperties.DESCRIPTION, description);
-      properties.put(CommonProperties.COMMENTS, comments);
+      
+      this.document.setDescription(description);
+      
       this.document.setDocumentAnnotations(annotations);
       this.document.setOwner(DocumentMgmtUtility.getUser().getAccount());
       Document document = DocumentMgmtUtility.getDocumentManagementService().updateDocument(this.document, contentByte,
-            "", true, String.valueOf(this.versionTracker.getVersions().size() + 1), false);
+            "", true, comments, String.valueOf(this.versionTracker.getVersions().size() + 1), false);
       return new JCRDocument(document, new JCRVersionTracker(document));
    }
 

@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.views.doctree;
 
+import java.util.List;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.eclipse.stardust.engine.api.runtime.Document;
@@ -336,9 +338,24 @@ public class ReclassifyDocumentBean extends PanelConfirmation
       {
          docToBeDettached.getProperties().clear();
          docToBeDettached.setDocumentType(dType);
-         docToBeDettached.getProperties().put(CommonProperties.DESCRIPTION, getDescription());
-         docToBeDettached.getProperties().put(CommonProperties.COMMENTS, getComments());
-         return DocumentMgmtUtility.getDocumentManagementService().updateDocument(docToBeDettached, true, "", false);
+         docToBeDettached.setDescription(getDescription());
+
+         if (!DocumentMgmtUtility.isDocumentVersioned(docToBeDettached))
+         {
+            docToBeDettached = DocumentMgmtUtility.getDocumentManagementService().versionDocument(
+                  docToBeDettached.getId(), "", CommonProperties.ZERO);
+         }
+
+         @SuppressWarnings("rawtypes")
+         List versions = DocumentMgmtUtility.getDocumentVersions(docToBeDettached);
+         Integer version = 1;
+         if (null != versions)
+         {
+            version = versions.size() + 1;
+         }
+
+         return DocumentMgmtUtility.getDocumentManagementService().updateDocument(docToBeDettached, true,
+               getComments(), version.toString(), false);
       }
       return docToBeDettached;
    }

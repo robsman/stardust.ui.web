@@ -28,7 +28,6 @@ import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.TypeDeclaration;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
-import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.engine.core.struct.TypedXPath;
@@ -50,7 +49,6 @@ import org.eclipse.stardust.ui.common.introspection.xsd.XsdPath;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
-import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.utils.IppJsfFormGenerator;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 
@@ -178,15 +176,7 @@ public class ManualActivityForm extends Form
                {
                   value = getUnwrapValue(dataMapping.getId());
                }
-
-               // This cleanup is required because issue - CRNT-20987
-               if (value instanceof Document)
-               {
-                  ((Document)value).getProperties().remove(CommonProperties.DESCRIPTION);
-                  ((Document)value).getProperties().remove(CommonProperties.COMMENTS);
-               }
             }
-
             map.put(dataMapping.getId(), value);
          }
       }

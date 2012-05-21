@@ -150,9 +150,7 @@ public class TypedDocumentsUtil
    {
       try
       {
-         // updating the document to process before adding description and comments
-         // as kernel throws exception otherwise
-         // TODO: Due to kernel issue CRNT-20987
+         // CRNT-21235 - following code is kept for backward compatibility 
          if (null != document)
          {
             document.getProperties().remove(CommonProperties.DESCRIPTION);

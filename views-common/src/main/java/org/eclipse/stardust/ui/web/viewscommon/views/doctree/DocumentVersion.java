@@ -15,8 +15,8 @@ import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
-import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.FormatterUtils;
 
 
@@ -42,7 +42,7 @@ public class DocumentVersion extends DefaultRowModel
    public DocumentVersion(int version, Document document)
    {
       this.document = document;
-      this.comments = createComments();
+      this.comments = RepositoryUtility.getVersionComment(document);
       this.VersionNo = version;
       this.revisionId = document.getRevisionId();
       this.documentName = document.getName();
@@ -97,21 +97,6 @@ public class DocumentVersion extends DefaultRowModel
    public void setDocumentName(String documentName)
    {
       this.documentName = documentName;
-   }
-
-   /**
-    * pre-processes the document version comments
-    * 
-    * @return
-    */
-   private String createComments()
-   {
-      if (null != document && null != document.getProperties())
-      {
-         if (document.getProperties().containsKey(CommonProperties.COMMENTS))
-            return (String) document.getProperties().get(CommonProperties.COMMENTS);
-      }
-      return "";
    }
 
    public String getRevisionId()

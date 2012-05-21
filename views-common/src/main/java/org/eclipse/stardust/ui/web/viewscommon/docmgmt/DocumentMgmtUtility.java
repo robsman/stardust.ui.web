@@ -130,7 +130,9 @@ public class DocumentMgmtUtility
          docInfo.setContentType(contentType);
       }
       Document document = getDocumentManagementService().createDocument(targetId, docInfo);
-      document = getDocumentManagementService().versionDocument(document.getId(), CommonProperties.ZERO);
+      
+      document = getDocumentManagementService().versionDocument(document.getId(), "", CommonProperties.ZERO);
+      
       return document;
    }
 
@@ -210,10 +212,8 @@ public class DocumentMgmtUtility
             properties.putAll(metaDataProperties);
          }
          
-         properties.put(CommonProperties.DESCRIPTION, description);
-         properties.put(CommonProperties.COMMENTS, comments);
          doc = getDocumentManagementService().createDocument(targetId, docInfo, byteContents, null);
-         doc = getDocumentManagementService().versionDocument(doc.getId(), CommonProperties.ZERO);
+         doc = getDocumentManagementService().versionDocument(doc.getId(), comments, CommonProperties.ZERO);
       }
       return doc;
    }
@@ -221,12 +221,13 @@ public class DocumentMgmtUtility
    public static Document updateDocument(Document existingDocument, byte[] fileData, String description, String comments)
    {
       Document doc = null;
-      existingDocument.getProperties().put(CommonProperties.DESCRIPTION, description);
-      existingDocument.getProperties().put(CommonProperties.COMMENTS, comments);
+      
+      existingDocument.setDescription(description);
+      
       existingDocument.setOwner(getUser().getAccount());
       if (!isDocumentVersioned(existingDocument))
       {
-         getDocumentManagementService().versionDocument(existingDocument.getId(), CommonProperties.ZERO);
+         existingDocument = getDocumentManagementService().versionDocument(existingDocument.getId(), "", CommonProperties.ZERO);
       }
       
       if (null != fileData)
@@ -237,7 +238,7 @@ public class DocumentMgmtUtility
          {
             version = versions.size() + 1;
          }
-         doc = getDocumentManagementService().updateDocument(existingDocument, fileData, "", true,
+         doc = getDocumentManagementService().updateDocument(existingDocument, fileData, "", true, comments,
                (version.toString()), false);
       }
       return doc;
@@ -370,6 +371,7 @@ public class DocumentMgmtUtility
     * @param document
     * @return
     */
+   @SuppressWarnings("rawtypes")
    public static List getDocumentVersions(Document document)
    {
       if (isDocumentVersioned(document))
@@ -401,7 +403,7 @@ public class DocumentMgmtUtility
       docInfo.setDescription(srcDoc.getDescription());
       Document document = dms.createDocument(targetFolderPath, docInfo, dms.retrieveDocumentContent(srcDoc.getId()),
             null);
-      document = getDocumentManagementService().versionDocument(document.getId(), CommonProperties.ZERO);
+      document = getDocumentManagementService().versionDocument(document.getId(),"", CommonProperties.ZERO);
       return document;
    }
 
@@ -775,7 +777,6 @@ public class DocumentMgmtUtility
                   // use default encoding, should not be a problem
                   Document document = getDocumentManagementService().createDocument(folder.getId(), DmsUtils.createDocumentInfo(documentName),
                         documentContent, null);
-                  getDocumentManagementService().versionDocument(document.getId(), CommonProperties.ZERO);
                }
             }
          }
