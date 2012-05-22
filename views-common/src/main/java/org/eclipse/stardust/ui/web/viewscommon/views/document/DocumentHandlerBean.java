@@ -872,6 +872,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
 
       DocumentUploadHelper documentUploadHelper = new DocumentUploadHelper();
       documentUploadHelper.initializeVersionUploadDialog(existingDocument);
+      documentUploadHelper.setOpenDocumentOverride(false);
       FileUploadDialogAttributes attributes = documentUploadHelper.getFileUploadDialogAttributes();
       // In Document viewer document is already open, so no need to set Open Document
       attributes.setEnableOpenDocument(false);
