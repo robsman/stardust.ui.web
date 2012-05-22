@@ -27,16 +27,12 @@
 					renderCenter="true" renderWest="false" renderEast="false">
 					<f:facet name="center">
 						<ice:panelGroup>
-							<ui:include
-								src="/plugins/views-common/common/validationMessage.xhtml">
-								<ui:param name="validationMessageBean"
-									value="#{qualityAssuranceActivityBean.validationMessageBean}" />
-							</ui:include>
+							<ice:message for="qaCodeId" styleClass="iceMsgInline" />
 							<ice:panelGroup rendered="#{qualityAssuranceActivityBean.passQAActivity}">
 								<ice:outputText
 									value="#{processportal_msgPropsBean['views.qualityAssuranceActivityDialog.correction.msg']}"
 									styleClass="label-form" />
-								<ice:selectOneRadio partialSubmit="true" layout="pageDirection"
+								<ice:selectOneRadio  id="qaCodeId" partialSubmit="true" layout="pageDirection"
 									styleClass="label-form"
 									value="#{qualityAssuranceActivityBean.correctionMadeOption}">
 									<pc:automationTag value="auto-PP-QAActivityDlg-CorrectionsMade-RBtn"

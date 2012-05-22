@@ -114,13 +114,14 @@ public class QualityAssuranceActivityBean extends PopupUIComponentBean
    {
       // get selected QA codes
       Set<QualityAssuranceCode> selectedQACodes = getSelectedQualityAssuranceCodes();
-      
+ 
       // validate QA codes
       validationMessageBean.reset();
       if (isShowQACodesSection() && CollectionUtils.isEmpty(selectedQACodes))
       {
          validationMessageBean.addError(
-               MessagePropertiesBean.getInstance().get("views.qualityAssuranceActivityDialog.selectQACodesError"), "");
+               MessagePropertiesBean.getInstance().get("views.qualityAssuranceActivityDialog.selectQACodesError"),
+               "qaCodeId");
       }
 
       if (validationMessageBean.isContainMessages())
