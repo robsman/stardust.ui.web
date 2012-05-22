@@ -570,7 +570,7 @@ public class WorklistTableBean extends UIComponentBean
             FilterCriteria.SELECT_MANY, getAllStatus(), RenderType.LIST, 3, null)), false, false);
 
       ColumnPreference assignedToCol = new ColumnPreference(COL_ASSIGNED_TO,
-            "assignedTo", ColumnDataType.STRING, this.getMessages().getString("column.assignedTo"), false, true);
+            "assignedTo", ColumnDataType.STRING, this.getMessages().getString("column.assignedTo"), false, false);
 
       // Fixed Column 2
       ColumnPreference colActions = new ColumnPreference(COL_ACTIONS,
@@ -1215,14 +1215,6 @@ public class WorklistTableBean extends UIComponentBean
                CustomOrderCriterion o = ActivityInstanceQuery.ACTIVITY_NAME
                      .ascendig(sortCriterion.isAscending());
                query.orderBy(o);
-            }
-            else if ("assignedTo".equals(sortCriterion.getProperty()))
-            {
-
-               if (!worklistQuery)
-               {
-                  query.orderBy(ActivityInstanceQuery.CURRENT_USER_PERFORMER_OID, sortCriterion.isAscending());
-               }
             }
             // Is this a descriptor column?
             else if (sortCriterion.getProperty().startsWith("descriptorValues."))

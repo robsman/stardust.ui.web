@@ -992,9 +992,8 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
             }
             else if ("startingUser".equals(sortCriterion.getProperty()))
             {
-
-               query.orderBy(ProcessInstanceQuery.STARTING_USER_OID, sortCriterion
-                     .isAscending());
+               CustomOrderCriterion o = ProcessInstanceQuery.USER_ACCOUNT.ascendig(sortCriterion.isAscending());
+               query.orderBy(o);
             }
 
             else

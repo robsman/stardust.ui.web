@@ -438,7 +438,7 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
       ColumnPreference assignedToCol = new ColumnPreference(COL_ASSIGNED_TO,
             "currentPerformer", ColumnDataType.STRING, propsBean
                   .getString("views.activityTable.activityTable.column.assignedTo"),
-            true, true);
+            true, false);
       assignedToCol.setColumnDataFilterPopup(new TableDataFilterPopup(new ParticipantAutocompleteTableDataFilter()));
       
       ColumnPreference completedByCol = new ColumnPreference(COL_COMPLETED_BY,
@@ -963,11 +963,6 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
                CustomOrderCriterion o = ActivityInstanceQuery.ACTIVITY_NAME
                      .ascendig(sortCriterion.isAscending());
                query.orderBy(o);
-            }
-            else if ("currentPerformer".equals(sortCriterion.getProperty()))
-            {
-               query.orderBy(ActivityInstanceQuery.CURRENT_USER_PERFORMER_OID,
-                     sortCriterion.isAscending());
             }
             else if ("status".equals(sortCriterion.getProperty()))
             {
