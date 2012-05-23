@@ -17,9 +17,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.MessageFormat;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -29,27 +26,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.stardust.common.Base64;
-import org.eclipse.stardust.common.Function;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.config.ExtensionProviderUtils;
-import org.eclipse.stardust.common.config.Parameters;
-import org.eclipse.stardust.common.config.ParametersFacade;
-import org.eclipse.stardust.common.config.PropertyLayer;
 import org.eclipse.stardust.common.error.InternalException;
-import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.error.PublicException;
-import org.eclipse.stardust.engine.api.web.dms.DmsContentServlet.ExecutionServiceProvider;
-import org.eclipse.stardust.engine.core.persistence.Predicates;
-import org.eclipse.stardust.engine.core.persistence.QueryDescriptor;
-import org.eclipse.stardust.engine.core.persistence.jdbc.SessionFactory;
-import org.eclipse.stardust.engine.core.runtime.beans.ForkingService;
-import org.eclipse.stardust.engine.core.runtime.beans.ForkingServiceFactory;
-import org.eclipse.stardust.engine.core.runtime.beans.IUser;
-import org.eclipse.stardust.engine.core.runtime.beans.SynchronizationService;
-import org.eclipse.stardust.engine.core.runtime.beans.UserBean;
-import org.eclipse.stardust.engine.core.runtime.beans.UserSessionBean;
-import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
-import org.eclipse.stardust.engine.core.runtime.removethis.EngineProperties;
 
 /**
  * @author Yogesh.Manware
@@ -135,147 +114,59 @@ public class FileSystemDocumentServlet extends HttpServlet
    private int doDownloadFileContent(final String fileUri, final HttpServletResponse resp, final String sessionId)
          throws IOException
    {
-      Integer status = (Integer) getForkingService().isolate(new Function<Integer>()
+      int result = HttpServletResponse.SC_BAD_REQUEST;
+
+      final DecodedRequest request = decodeRequest(fileUri);
+
+      if (null != request)
       {
-         protected Integer invoke()
+         if (!(StringUtils.isNotEmpty(sessionId) && sessionId.equals(request.sessionId)))
          {
-            int result = HttpServletResponse.SC_BAD_REQUEST;
+            return HttpServletResponse.SC_FORBIDDEN;
+         }
 
-            final DecodedRequest request = decodeRequest(fileUri);
-
-            if (null != request)
+         try
+         {
+            try
             {
-               if (!(StringUtils.isNotEmpty(sessionId) && sessionId.equals(request.sessionId)))
+               File file = new File(request.resourcePath);
+               if (null != file)
                {
-                  return HttpServletResponse.SC_FORBIDDEN;
-               }
+                  resp.setContentLength((int) file.length());
+                  resp.setContentType(request.mimeType);
 
-               if (isAuthorized(request))
-               {
-                  IUser user = findUser(request);
+                  resp.setHeader("Content-Disposition", "inline; filename=" + file.getName() + ";");
 
-                  if (user != null)
+                  byte[] bbuf = new byte[4096];
+                  DataInputStream in = new DataInputStream(new FileInputStream(file));
+                  int length = 0;
+                  ServletOutputStream op = resp.getOutputStream();
+                  while ((in != null) && ((length = in.read(bbuf)) != -1))
                   {
-                     pushUserPropertyLayer(user);
+                     op.write(bbuf, 0, length);
                   }
-                  try
-                  {
-                     try
-                     {
-                        File file = new File(request.resourcePath);
-                        if (null != file)
-                        {
-                           resp.setContentLength((int) file.length());
-                           resp.setContentType(request.mimeType);
 
-                           resp.setHeader("Content-Disposition", "inline; filename=" + file.getName() + ";");
+                  in.close();
+                  op.flush();
+                  op.close();
 
-                           byte[] bbuf = new byte[4096];
-                           DataInputStream in = new DataInputStream(new FileInputStream(file));
-                           int length = 0;
-                           ServletOutputStream op = resp.getOutputStream();
-                           while ((in != null) && ((length = in.read(bbuf)) != -1))
-                           {
-                              op.write(bbuf, 0, length);
-                           }
-
-                           in.close();
-                           op.flush();
-                           op.close();
-
-                           result = HttpServletResponse.SC_OK;
-                        }
-                     }
-                     catch (IOException ioe)
-                     {
-                        throw new PublicException(MessageFormat.format("Failed retrieving content for file ''{0}''.",
-                              new Object[] {request.resourcePath}), ioe);
-                     }
-
-                  }
-                  finally
-                  {
-                     if (user != null)
-                     {
-                        ParametersFacade.popLayer();
-                     }
-                  }
-               }
-               else
-               {
-                  // no qualifying session is active
-                  result = HttpServletResponse.SC_FORBIDDEN;
+                  result = HttpServletResponse.SC_OK;
                }
             }
-            return result;
+            catch (IOException ioe)
+            {
+               throw new PublicException(MessageFormat.format("Failed retrieving content for file ''{0}''.",
+                     new Object[] {request.resourcePath}), ioe);
+            }
+
          }
-      });
+         finally
+         {
+         }
+      }
 
       // report outcome
-      return status.intValue();
-   }
-
-   /**
-    * @param user
-    */
-   private void pushUserPropertyLayer(IUser user)
-   {
-      PropertyLayer pushLayer = ParametersFacade.pushLayer(Collections.singletonMap(SecurityProperties.CURRENT_USER,
-            user));
-      pushLayer.setProperty(SecurityProperties.CURRENT_PARTITION_OID, user.getRealm().getPartition().getOID());
-      pushLayer.setProperty(SecurityProperties.CURRENT_DOMAIN_OID, user.getDomainOid());
-
-      pushLayer.setProperty(SynchronizationService.PRP_DISABLE_SYNCHRONIZATION, true);
-      pushLayer.setProperty(SecurityProperties.AUTHORIZATION_SYNC_LOAD_PROPERTY, false);
-   }
-
-   /**
-    * @param request
-    * @return
-    */
-   private static IUser findUser(DecodedRequest request)
-   {
-      QueryDescriptor query = QueryDescriptor.from(UserBean.class)//
-            .where(Predicates.isEqual(UserBean.FR__OID, request.userOid));
-
-      IUser user;
-      try
-      {
-         PropertyLayer pushLayer = ParametersFacade.pushLayer(new HashMap());
-
-         pushLayer.setProperty(SynchronizationService.PRP_DISABLE_SYNCHRONIZATION, true);
-         pushLayer.setProperty(SecurityProperties.AUTHORIZATION_SYNC_LOAD_PROPERTY, false);
-
-         user = (IUser) SessionFactory.getSession(SessionFactory.AUDIT_TRAIL).findFirst(query.getType(),
-               query.getQueryExtension());
-      }
-      catch (ObjectNotFoundException e)
-      {
-         user = null;
-      }
-      finally
-      {
-         ParametersFacade.popLayer();
-      }
-
-      return user;
-   }
-
-   /**
-    * @param request
-    * @return
-    */
-   private static boolean isAuthorized(DecodedRequest request)
-   {
-      QueryDescriptor query = QueryDescriptor.from(UserSessionBean.class).where(
-            Predicates.andTerm(Predicates.isEqual(UserSessionBean.FR__USER, request.userOid),
-                  Predicates.lessOrEqual(UserSessionBean.FR__START_TIME, request.timestamp),
-                  Predicates.greaterOrEqual(UserSessionBean.FR__EXPIRATION_TIME, System.currentTimeMillis())));
-
-      long nSessions = SessionFactory.getSession(SessionFactory.AUDIT_TRAIL).getCount(query.getType(),
-            query.getQueryExtension());
-
-      return 0 < nSessions;
+      return result;
    }
 
    /**
@@ -295,7 +186,6 @@ public class FileSystemDocumentServlet extends HttpServlet
          splitIdx = decodedToken.indexOf("/");
          if (-1 != splitIdx)
          {
-            result.userOid = Long.parseLong(decodedToken.substring(0, splitIdx));
             decodedToken = decodedToken.substring(splitIdx + 1);
 
             splitIdx = decodedToken.indexOf("/");
@@ -309,7 +199,6 @@ public class FileSystemDocumentServlet extends HttpServlet
 
                if (-1 != splitIdx)
                {
-                  result.timestamp = Long.parseLong(decodedToken.substring(0, splitIdx));
                   decodedToken = decodedToken.substring(splitIdx + 1);
 
                   splitIdx = decodedToken.indexOf("#");
@@ -329,34 +218,6 @@ public class FileSystemDocumentServlet extends HttpServlet
       }
 
       return result;
-   }
-
-   /**
-    * @return ForkingService
-    */
-   private ForkingService getForkingService()
-   {
-      ForkingServiceFactory factory = null;
-      ForkingService forkingService = null;
-      factory = (ForkingServiceFactory) Parameters.instance().get(EngineProperties.FORKING_SERVICE_HOME);
-      if (factory == null)
-      {
-         List<ExecutionServiceProvider> exProviderList = ExtensionProviderUtils
-               .getExtensionProviders(ExecutionServiceProvider.class);
-         for (ExecutionServiceProvider executionServiceProvider : exProviderList)
-         {
-            forkingService = executionServiceProvider.getExecutionService(context);
-            if (forkingService != null)
-            {
-               break;
-            }
-         }
-      }
-      else
-      {
-         forkingService = factory.get();
-      }
-      return forkingService;
    }
 
    /**
@@ -404,9 +265,7 @@ public class FileSystemDocumentServlet extends HttpServlet
     */
    private static class DecodedRequest
    {
-      public long userOid;
       public String sessionId;
-      public long timestamp;
       public String resourcePath;
       public String mimeType;
    }
