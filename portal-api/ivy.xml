@@ -19,12 +19,13 @@
 
    <configurations>
       <conf name="ipp-portal-api-compile" description="IPP Portal API - Compile Scope" />
+      <conf name="ipp-portal-api-compile-optional" description="IPP Portal API - Optional Compile Scope" />
       <conf name="ipp-portal-api-runtime" extends="ipp-portal-api-compile" description="IPP Portal API - Runtime Scope" />
       <conf name="ipp-portal-api-provided" description="IPP Portal API - Provided Scope" />
       
       <conf name="ipp-portal-api-sources" description="IPP Portal API - Sources" />
    
-      <conf name="compile" extends="ipp-portal-api-compile" visibility="private" description="IPP Portal API" />
+      <conf name="compile" extends="ipp-portal-api-compile, ipp-portal-api-compile-optional" visibility="private" description="IPP Portal API" />
       
       <conf name="test" visibility="private" description="Test dependencies" />
       
@@ -41,6 +42,7 @@
    <dependencies>
       <!-- ipp-portal-api-compile -->
       <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-api-compile->engine-module-compile" />
+      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-api-compile-optional->jcr-vfs-module-runtime" />
       <!-- ipp-portal-api-runtime -->
       <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-api-runtime->engine-module-runtime" />
  
