@@ -451,7 +451,7 @@
 	
 	<bean name="ippXPathCacheManager"
 		class="org.eclipse.stardust.ui.web.viewscommon.utils.XPathCacheManager"
-		scope="session" />
+		scope="singleton" />
 
 	<bean name="i18nFolderUtils"
 		class="org.eclipse.stardust.ui.web.viewscommon.docmgmt.I18nFolderUtils"
