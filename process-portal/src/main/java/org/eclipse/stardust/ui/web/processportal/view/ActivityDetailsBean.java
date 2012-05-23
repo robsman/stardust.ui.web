@@ -1802,8 +1802,9 @@ public class ActivityDetailsBean extends UIComponentBean
    
             Map<String, Object> docViewParams = new HashMap<String, Object>();
             docViewParams.put("documentInfo", documentContentInfo);
-            //docViewParams.put("processInstance", processInstance);
-            docViewParams.put("dataPathId", singleDocumentDatgaMapping.getDataId());
+            docViewParams.put("processInstance", processInstance);
+            docViewParams.put("dataPathId", singleDocumentDatgaMapping.getDataPath());
+            docViewParams.put("dataId", singleDocumentDatgaMapping.getDataId());
             docViewParams.put("baseFormBinding", "activityDetailsBean.documentHandlerBean");
             docViewParams.put("disableSaveAction", true);
             docViewParams.put("embededView", true);
