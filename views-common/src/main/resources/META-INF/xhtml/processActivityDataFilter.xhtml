@@ -1,0 +1,70 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates mandatory attributes)
+		filter* - Filter Object
+	 -->
+	<ice:panelGrid columns="1">
+		<ice:panelGrid columns="1">
+			<ice:outputLabel value="#{messages_admin['common.process']}"
+				styleClass="label-form" />
+
+			<ice:panelGroup>
+				<ui:repeat value="#{filter.processFilterToolbarItems}"
+					var="processFilterItem">
+					<h:commandLink name="#{processFilterItem.name}"
+						actionListener="#{filter.toggleProcessFilter}"
+						style="vertical-align: middle;">
+						<h:graphicImage value="#{processFilterItem.image}"
+							style="border: none; padding-right: 10px;"
+							styleClass="#{processFilterItem.styleClass}"
+							title="#{views_common_msgPropsBean[processFilterItem.messsageKey]}" />
+						<f:param value="#{processFilterItem.name}" name="name" />
+					</h:commandLink>
+				</ui:repeat>
+			</ice:panelGroup>
+
+			<ice:selectManyMenu partialSubmit="true"
+				style="height:75px; min-width:200px; max-width:350px"
+				valueChangeListener="#{filter.selectedProcessesChanged}"
+				value="#{filter.selectedProcesses}">
+				<f:selectItems value="#{filter.processes}" />
+			</ice:selectManyMenu>
+		</ice:panelGrid>
+
+
+		<ice:panelGrid columns="1" rendered="#{filter.showActivityFilter}">
+			<ice:outputLabel value="#{messages_admin['common.activity']}"
+				styleClass="label-form" />
+
+			<ice:panelGroup>
+				<ui:repeat value="#{filter.activityFilterToolbarItems}"
+					var="activityFilterItem">
+					<h:commandLink name="#{activityFilterItem.name}"
+						actionListener="#{filter.toggleActivityFilter}"
+						style="vertical-align: middle;">
+						<h:graphicImage value="#{activityFilterItem.image}"
+							style="border: none; padding-right: 10px;"
+							styleClass="#{activityFilterItem.styleClass}"
+							title="#{views_common_msgPropsBean[activityFilterItem.messsageKey]}" />
+						<f:param value="#{activityFilterItem.name}" name="name" />
+					</h:commandLink>
+				</ui:repeat>
+			</ice:panelGroup>
+
+			<ice:selectManyListbox size="5" value="#{filter.selectedActivities}"
+				style="height:75px; min-width:200px; max-width:350px">
+				<f:selectItems value="#{filter.activities}" />
+			</ice:selectManyListbox>
+			<ice:outputLabel
+				value="#{common_msgPropsBean['common.filterPopup.pickListFilter.pickMany.list.message']}"
+				styleClass="label-form" />
+		</ice:panelGrid>
+	</ice:panelGrid>
+</f:view>

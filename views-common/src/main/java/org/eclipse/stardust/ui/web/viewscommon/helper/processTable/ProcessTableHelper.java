@@ -67,6 +67,7 @@ import org.eclipse.stardust.ui.web.common.table.export.ExportType;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutoCompleteItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutocompleteTableDataFilter;
+import org.eclipse.stardust.ui.web.viewscommon.common.ProcessActivityDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppFilterHandler;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSortHandler;
@@ -86,7 +87,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.AbortProcessBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 
 
@@ -465,9 +465,8 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
                   .getString("views.processTable.column.processName"),
             ResourcePaths.V_PROCESS_TABLE_COLUMNS, true, true);
 
-      processNameCol.setColumnDataFilterPopup(new TableDataFilterPopup(
-            new TableDataFilterPickList(FilterCriteria.SELECT_MANY,
-                  ProcessDefinitionUtils.getAllUniqueProcessDefinitionItems(), RenderType.LIST, 5, null)));
+      processNameCol.setColumnDataFilterPopup(new TableDataFilterPopup(new ProcessActivityDataFilter(
+            ResourcePaths.V_PROCESS_ACTIVITY_FILTER, false)));
 
       ColumnPreference prioCol = new ColumnPreference("Priority", "priority", propsBean
             .getString("views.processTable.column.priority"),
@@ -843,22 +842,16 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
 
                else if ("ProcessName".equals(dataId))
                {
-                  if (((ITableDataFilterPickList) tableDataFilter).getSelected() != null)
+                  ProcessActivityDataFilter pfilter = (ProcessActivityDataFilter) tableDataFilter;
+                  List<String> selectedProcesses = pfilter.getSelectedProcessQIds();
+                  FilterOrTerm or = filter.addOrTerm();
+
+                  for (String processQId : selectedProcesses)
                   {
-                     FilterOrTerm or = filter.addOrTerm();
-                     if (((ITableDataFilterPickList) tableDataFilter).getSelected()
-                           .size() > 0)
-                     {
-                        for (int i = 0; i < ((ITableDataFilterPickList) tableDataFilter)
-                              .getSelected().size(); i++)
-                        {
-                           or.add(new ProcessDefinitionFilter(
-                                 ((ITableDataFilterPickList) tableDataFilter)
-                                       .getSelected().get(i).toString(), false));
-                        }
-                     }
+                     or.add(new ProcessDefinitionFilter(processQId, false));
                   }
                }
+               
                else if ("Priority".equals(dataId))
                {
                   PriorityAutocompleteTableDataFilter priorityfilter = (PriorityAutocompleteTableDataFilter) tableDataFilter;

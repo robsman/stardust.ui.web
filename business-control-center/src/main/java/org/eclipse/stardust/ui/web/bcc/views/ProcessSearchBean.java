@@ -441,7 +441,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       {
          for (Activity activity : processesActivities)
          {
-            String uniqueKey = getActivityKey(activity);
+            String uniqueKey = ActivityUtils.getActivityKey(activity);
             activityDefinitions.put(uniqueKey, activity);
             activities.add(new SelectItem(uniqueKey, I18nUtils.getActivityName(activity)));
          }
@@ -839,18 +839,6 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       activityTableHelper.getActivityTable().initialize();
    }
 
-   /**
-    * return activity's unique key
-    * 
-    * @param activity
-    * @return
-    */
-   private String getActivityKey(Activity activity)
-   {
-      return ProcessDefinitionUtils.getProcessDefinition(activity.getProcessDefinitionId()).getQualifiedId()
-            + activity.getQualifiedId();
-   }
-   
    private boolean isNonInteractiveActivitiesSwitchOn()
    {
       return isActivitySwitchOn(NONINTERACT_ACTIVITIES);

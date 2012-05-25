@@ -25,7 +25,9 @@ import javax.faces.model.SelectItem;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.CustomOrderCriterion;
 import org.eclipse.stardust.engine.api.query.DataOrder;
@@ -62,7 +64,7 @@ import org.eclipse.stardust.ui.web.common.table.SortCriterion;
 import org.eclipse.stardust.ui.web.common.table.export.DataTableExportHandler;
 import org.eclipse.stardust.ui.web.common.table.export.ExportType;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
-import org.eclipse.stardust.ui.web.viewscommon.common.ActivityNamesFilter;
+import org.eclipse.stardust.ui.web.viewscommon.common.ProcessActivityDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutoCompleteItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutocompleteTableDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
@@ -376,9 +378,8 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
                   .getString("views.activityTable.column.activityName"),
             ResourcePaths.V_ACTIVITY_TABLE_COLUMNS, true, true);
 
-      activityNameCol.setColumnDataFilterPopup(new TableDataFilterPopup(
-            new ActivityNamesFilter(
-                  "/plugins/views-common/activityNamesFilter.xhtml")));
+      activityNameCol.setColumnDataFilterPopup(new TableDataFilterPopup(new ProcessActivityDataFilter(
+            ResourcePaths.V_PROCESS_ACTIVITY_FILTER, true)));
 
       ColumnPreference aOIDCol = new ColumnPreference("ActivityOID", "activityOID",
               ColumnDataType.NUMBER, propsBean
@@ -718,15 +719,20 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
 
                else if (COL_ACTIVITY_NAME.equals(dataId))
                {
-                  ActivityNamesFilter pfilter = (ActivityNamesFilter) tableDataFilter;
-                  String[] selectedActivities = pfilter.getSelectedActivities();
-                  FilterOrTerm or = filter.addOrTerm();
-
-                  for (String activityId : selectedActivities)
+                  ProcessActivityDataFilter pfilter = (ProcessActivityDataFilter) tableDataFilter;
+                  List<Activity> selectedActivities = pfilter.getSelectedActivityDefs();
+                  
+                  if (CollectionUtils.isEmpty(selectedActivities))
                   {
-                     if (activityId != null)
+                     filter.add(ActivityFilter.forAnyProcess("-1"));
+                  }
+                  else
+                  {
+                     FilterOrTerm or = filter.addOrTerm();
+
+                     for (Activity activity : selectedActivities)
                      {
-                        or.add(org.eclipse.stardust.engine.api.query.ActivityFilter.forAnyProcess(activityId));
+                        or.add(ActivityInstanceQuery.ACTIVITY_OID.isEqual(activity.getRuntimeElementOID()));
                      }
                   } // for each
                }

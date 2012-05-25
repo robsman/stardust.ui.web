@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,15 @@ import org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl.IppUserProvi
 public class ActivityUtils
 {
 
+   public static final Comparator<Activity> ACTIVITY_ORDER = new Comparator<Activity>()
+   {
+      public int compare(Activity activity1, Activity activity2)
+      {
+         return I18nUtils.getActivityName(activity1).compareTo(I18nUtils.getActivityName(activity2));
+      }
+   };
+
+   
    /**
     * returns all activities from all version giving preference to latest version
     * 
@@ -184,4 +194,16 @@ public class ActivityUtils
       return result;
    }
 
+   /**
+    * Activity QID can be duplicate in the same model as it does not contain process related info.
+    * Duplicate Process in the same model is very rare.
+    * return activity's unique key
+    * 
+    * @param activity
+    * @return
+    */
+   public static String getActivityKey(Activity activity)
+   {
+      return activity.getProcessDefinitionId() + activity.getQualifiedId();
+   }
 }

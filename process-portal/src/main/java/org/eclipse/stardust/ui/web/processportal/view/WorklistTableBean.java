@@ -29,10 +29,12 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
+import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityStateFilter;
 import org.eclipse.stardust.engine.api.query.CustomOrderCriterion;
@@ -86,7 +88,7 @@ import org.eclipse.stardust.ui.web.processportal.EventController;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
 import org.eclipse.stardust.ui.web.processportal.common.Resources;
 import org.eclipse.stardust.ui.web.processportal.common.UserPreferencesEntries;
-import org.eclipse.stardust.ui.web.viewscommon.common.ActivityNamesFilter;
+import org.eclipse.stardust.ui.web.viewscommon.common.ProcessActivityDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutoCompleteItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutocompleteTableDataFilter;
@@ -96,6 +98,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCon
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppFilterHandler;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSortHandler;
+import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorColumnUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilterModel;
@@ -146,8 +149,6 @@ public class WorklistTableBean extends UIComponentBean
    private static final String COL_ACTIVITY_NAME = "Overview";
 
    private static final String COL_PROCESS_DEFINITION = "Process Definition";
-
-   private static final String COL_SELECT = "Select";
 
    private static final String COL_STATUS = "Status";
 
@@ -510,11 +511,11 @@ public class WorklistTableBean extends UIComponentBean
    {
 
       ColumnPreference activityNameCol = new ColumnPreference(COL_ACTIVITY_NAME,
-            "processName", this.getMessages().getString("column.overview"),
+            "activityName", this.getMessages().getString("column.overview"),
             Resources.VIEW_WORKLIST_COLUMNS, true, true);
 
-      activityNameCol.setColumnDataFilterPopup(new TableDataFilterPopup(
-            new ActivityNamesFilter("/plugins/views-common/activityNamesFilter.xhtml")));
+      activityNameCol.setColumnDataFilterPopup(new TableDataFilterPopup(new ProcessActivityDataFilter(
+            ResourcePaths.V_PROCESS_ACTIVITY_FILTER, true)));
 
       ColumnPreference colOid = new ColumnPreference(COL_OID, "oid", ColumnDataType.NUMBER, this.getMessages()
             .getString("column.oid"), new TableDataFilterPopup(new TableDataFilterNumber(COL_OID, "", DataType.LONG,
@@ -524,16 +525,15 @@ public class WorklistTableBean extends UIComponentBean
             "processDefinition", ColumnDataType.STRING, this.getMessages().getString(
                   "processName"), false, false);
       
+      processDefnCol.setColumnDataFilterPopup(new TableDataFilterPopup(new ProcessActivityDataFilter(
+            "/plugins/views-common/processActivityDataFilter.xhtml", false)));
+      
       ColumnPreference criticalityCol = new ColumnPreference("Criticality", "criticality",
             this.getMessages().getString("column.criticality"),
             Resources.VIEW_WORKLIST_COLUMNS, true, true);
       criticalityCol.setColumnAlignment(ColumnAlignment.CENTER);
       criticalityCol.setColumnDataFilterPopup(new TableDataFilterPopup(new CriticalityAutocompleteTableDataFilter()));
       
-      processDefnCol.setColumnDataFilterPopup(new TableDataFilterPopup(
-            new TableDataFilterPickList(FilterCriteria.SELECT_MANY,
-                  getAllProcessDefinitions(), RenderType.LIST, 5, null)));
-
       ColumnPreference colDescriptors = new ColumnPreference(COL_DESCRIPTORS,
             "processDescriptorsList", this.getMessages().getString("column.descriptors"),
             Resources.VIEW_WORKLIST_COLUMNS, true, false);
@@ -923,17 +923,23 @@ public class WorklistTableBean extends UIComponentBean
                String dataId = tableDataFilter.getName();
                if (COL_ACTIVITY_NAME.equals(dataId))
                {
-                  ActivityNamesFilter pfilter = (ActivityNamesFilter) tableDataFilter;
-                  String[] selectedActivities = pfilter.getSelectedActivities();
-                  FilterOrTerm or = filter.addOrTerm();
-
-                  for (String activityId : selectedActivities)
+                  ProcessActivityDataFilter pfilter = (ProcessActivityDataFilter) tableDataFilter;
+                  List<Activity> selectedActivities = pfilter.getSelectedActivityDefs();
+                  
+                  if (CollectionUtils.isEmpty(selectedActivities))
                   {
-                     if (activityId != null)
+                     filter.add(ActivityFilter.forAnyProcess("-1"));
+                  }
+                  else
+                  {
+                     FilterOrTerm or = filter.addOrTerm();
+                     for (Activity activity : selectedActivities)
                      {
-                        or.add(org.eclipse.stardust.engine.api.query.ActivityFilter.forAnyProcess(activityId));
-                     }
-                  } // for each
+                        or.add(org.eclipse.stardust.engine.api.query.ActivityFilter.forProcess(
+                              activity.getQualifiedId(), activity.getProcessDefinitionId()));
+                     } // for each
+                  }
+                  
                }
                else if (COL_OID.equals(dataId))
                {
@@ -965,40 +971,17 @@ public class WorklistTableBean extends UIComponentBean
                      }
                   }
                }
-               else if ("ProcessName".equals(dataId))
-               {
-                  if (((ITableDataFilterPickList) tableDataFilter).getSelected() != null)
-                  {
-                     FilterOrTerm or = filter.addOrTerm();
-                     if (((ITableDataFilterPickList) tableDataFilter).getSelected().size() > 0)
-                     {
-                        for (int i = 0; i < ((ITableDataFilterPickList) tableDataFilter)
-                              .getSelected().size(); i++)
-                        {
-                           or.add(new ProcessDefinitionFilter(
-                                 ((ITableDataFilterPickList) tableDataFilter).getSelected()
-                                       .get(i).toString(), false));
-                        }
-                     }
-                  }
-               }
+
                else if (COL_PROCESS_DEFINITION.equals(dataId))
                {
-                  if (((ITableDataFilterPickList) tableDataFilter).getSelected() != null)
+                  ProcessActivityDataFilter pfilter = (ProcessActivityDataFilter) tableDataFilter;
+                  List<String> selectedProcesses = pfilter.getSelectedProcessQIds();
+                  FilterOrTerm or = filter.addOrTerm();
+                  
+                  for (String processQId : selectedProcesses)
                   {
-                     FilterOrTerm or = filter.addOrTerm();
-                     if (((ITableDataFilterPickList) tableDataFilter).getSelected().size() > 0)
-                     {
-                        for (int i = 0; i < ((ITableDataFilterPickList) tableDataFilter)
-                              .getSelected().size(); i++)
-                        {
-                           or.add(new ProcessDefinitionFilter(
-                                 ((ITableDataFilterPickList) tableDataFilter).getSelected()
-                                       .get(i).toString(), false));
-                        }
-                     }
+                     or.add(new ProcessDefinitionFilter(processQId, false));
                   }
-
                }
                else if ("Criticality".equals(dataId))
                {

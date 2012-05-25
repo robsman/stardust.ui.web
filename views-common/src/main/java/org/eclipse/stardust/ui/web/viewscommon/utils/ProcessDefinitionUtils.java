@@ -56,6 +56,14 @@ public class ProcessDefinitionUtils
 {
    public static final Logger trace = LogManager.getLogger(ProcessDefinitionUtils.class);
    public static final String PROCESS_IS_AUXILIARY_ATT = "isAuxiliaryProcess";  
+
+   public static final Comparator<ProcessDefinition> PROCESS_ORDER = new Comparator<ProcessDefinition>()
+   {
+      public int compare(ProcessDefinition process1, ProcessDefinition process2)
+      {
+         return I18nUtils.getProcessName(process1).compareTo(I18nUtils.getProcessName(process2));
+      }
+   };
    
    private ProcessDefinitionUtils()
    {
