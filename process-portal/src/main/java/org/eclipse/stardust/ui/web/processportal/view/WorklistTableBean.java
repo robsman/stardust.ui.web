@@ -935,8 +935,8 @@ public class WorklistTableBean extends UIComponentBean
                      FilterOrTerm or = filter.addOrTerm();
                      for (Activity activity : selectedActivities)
                      {
-                        or.add(org.eclipse.stardust.engine.api.query.ActivityFilter.forProcess(
-                              activity.getQualifiedId(), activity.getProcessDefinitionId()));
+                        or.add(org.eclipse.stardust.engine.api.query.ActivityFilter.forAnyProcess(activity
+                              .getQualifiedId()));
                      } // for each
                   }
                   
