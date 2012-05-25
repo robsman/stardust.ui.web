@@ -120,4 +120,6 @@ public interface ResourcePaths
    static final String V_PANELTOOLTIP_URL = "/plugins/views-common/common/genericPanelToolTip.xhtml";
    
    static final String V_CONFIRMATION_DIALOG_OPTIONS = "/plugins/views-common/dialogs/confirmationDialogOptions.xhtml";
+   
+   static final String V_PROCESS_ACTIVITY_FILTER = "/plugins/views-common/processActivityDataFilter.xhtml";
 }
