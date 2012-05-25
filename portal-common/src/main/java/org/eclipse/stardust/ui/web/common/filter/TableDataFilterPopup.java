@@ -149,7 +149,8 @@ public class TableDataFilterPopup extends PopupDialog
    public void closePopup()
    {
       super.closePopup();
-      FacesUtils.refreshPage();
+   // To reset the UI Filter textbox on reset of Form data
+      FacesUtils.clearFacesTreeValues();
    }
 
    /**
@@ -160,7 +161,7 @@ public class TableDataFilterPopup extends PopupDialog
       reset();
       apply();
       // To reset the UI Filter textbox on reset of Form data
-      FacesUtils.refreshPage();
+      FacesUtils.clearFacesTreeValues();
    }
    
    public TableDataFilters getDataFilters()
