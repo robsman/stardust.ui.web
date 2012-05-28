@@ -55,7 +55,7 @@ public class TypedDocumentUploadHelper extends AbstractDocumentUploadHelper
     * and the Specific Document folder already contains a file with same name
     */
    @Override
-   protected boolean handleFileAlreadyExistInFolder(Folder parentFolder, String fileName)
+   public boolean handleFileAlreadyExistInFolder(Folder parentFolder, String fileName)
    {
       return false;
    }

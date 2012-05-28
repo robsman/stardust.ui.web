@@ -38,6 +38,14 @@ public class DocumentDragDropHelper extends AbstractDocumentUploadHelper
     */
    public void updateDocument(final Document existingDocument, final Document draggedDocument)
    {
+      
+      //if check if the version can be created
+      if (!handleFileAlreadyExistInFolder(null, existingDocument.getName()))
+      {
+         displayFileAlreadyExistError(existingDocument.getName());
+         return;
+      }
+      
       initializeSaveVersionConfirmationDialog(existingDocument);
 
       if (!StringUtils.areEqual(existingDocument.getDocumentType(), draggedDocument.getDocumentType()))
@@ -85,10 +93,10 @@ public class DocumentDragDropHelper extends AbstractDocumentUploadHelper
    {
       if (checkModifyPrivilege(existingDocument))
       {
-         // create version if not required
+         // create version if required
          if (!DocumentMgmtUtility.isDocumentVersioned(existingDocument))
          {
-            DocumentMgmtUtility.getDocumentManagementService().versionDocument(existingDocument.getId(),
+            DocumentMgmtUtility.getDocumentManagementService().versionDocument(existingDocument.getId(), "",
                   CommonProperties.ZERO);
          }
 

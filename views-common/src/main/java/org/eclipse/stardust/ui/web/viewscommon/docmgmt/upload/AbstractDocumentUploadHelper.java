@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.stardust.engine.api.runtime.Document;
@@ -30,6 +31,7 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog;
+import org.eclipse.stardust.ui.web.viewscommon.views.doctree.ProcessAttachmentUserObject;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryResourceUserObject;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadDialogAttributes;
@@ -155,14 +157,42 @@ public abstract class AbstractDocumentUploadHelper implements Serializable
       });
    }
 
-   /**
-    * @param parentFolder
-    * @param fileName
-    * @return
+   /*
+    * Process Attachment folder may contain a files which are not displayed on Process
+    * Instance Details screen. This is because in Document Reclassification, document is
+    * logically moved between Process Attachment and Specific Document Folder.
+    * 
+    * @see org.eclipse.stardust.ui.web.viewscommon.docmgmt.AbstractDocumentUploadHelper#
+    * isVersionPermissible(org.eclipse.stardust.engine.api.runtime.Folder,
+    * java.lang.String)
     */
-   protected boolean handleFileAlreadyExistInFolder(Folder parentFolder, String fileName)
+   public boolean handleFileAlreadyExistInFolder(Folder parentFolder, String fileName)
    {
-      return false;
+      boolean allowVersion = true;
+      if (null != repositoryResourceUserObject)
+      {
+         if (repositoryResourceUserObject instanceof ProcessAttachmentUserObject)
+         {
+            ProcessAttachmentUserObject attachmentUserObject = (ProcessAttachmentUserObject) repositoryResourceUserObject;
+            if (null == parentFolder)
+            {
+               parentFolder = DocumentMgmtUtility.getFolder(parentFolderPath);
+            }
+             
+            allowVersion = false;
+            List<Document> attachmentsList = DMSHelper.fetchProcessAttachments(attachmentUserObject
+                  .getProcessInstance());
+            for (Document document : attachmentsList)
+            {
+               if (document.getPath().equals(parentFolder.getPath() + "/" + fileName))
+               {
+                  allowVersion = true;
+                  break;
+               }
+            }
+         }
+      }
+      return allowVersion;
    }
 
    /**
@@ -306,10 +336,10 @@ public abstract class AbstractDocumentUploadHelper implements Serializable
    {
       if (checkModifyPrivilege(existingDocument))
       {
-         // create version if not required
+         // create version if required
          if (!DocumentMgmtUtility.isDocumentVersioned(existingDocument))
          {
-            DocumentMgmtUtility.getDocumentManagementService().versionDocument(existingDocument.getId(),
+            DocumentMgmtUtility.getDocumentManagementService().versionDocument(existingDocument.getId(), "",
                   CommonProperties.ZERO);
          }
 
@@ -364,7 +394,7 @@ public abstract class AbstractDocumentUploadHelper implements Serializable
    /**
     * @param fileName
     */
-   private void displayFileAlreadyExistError(String fileName)
+   protected void displayFileAlreadyExistError(String fileName)
    {
       MessageDialog.addErrorMessage(MessagesViewsCommonBean.getInstance().getParamString(
             "views.genericRepositoryView.specificDocument.reclassifyDocument.fileAlreadyExist", fileName));

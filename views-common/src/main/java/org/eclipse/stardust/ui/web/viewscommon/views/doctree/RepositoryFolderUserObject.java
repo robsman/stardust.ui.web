@@ -226,27 +226,25 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
                {
                   public void handleEvent(DocumentUploadEventType eventType)
                   {
-                     if (DocumentUploadEventType.VERSION_SAVED == eventType)
-                     {
-                        //handleFileUploadEvents(getDocument(), eventType);
-                        postDrop(valueNode);
-                     }
+                     postDrop(valueNode);
+                     handleFileUploadEvents(getDocument(), eventType);
                   }
                });
                uploadHelper.updateDocument(existingDocument, draggedDocument);
             }
             else
             {
+               Document document = null;
                if (this.wrapper.isNodeRelated(valueNode))
                {
-                  RepositoryUtility.moveDocument(this.wrapper, valueNode);
+                  document = RepositoryUtility.moveDocument(this.wrapper, valueNode);
                }
                else
                {
-                  RepositoryUtility.copyDocument(this.wrapper, valueNode);
+                  document = RepositoryUtility.copyDocument(this.wrapper, valueNode);
                }
-
-               afterUpload(docUserObject);
+               postDrop(valueNode);
+               handleFileUploadEvents(document, DocumentUploadEventType.DOCUMENT_CREATED);
             }
          }
       }
@@ -264,7 +262,6 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
          docUserObject.deleteResource();
       }
       this.refresh();
-      afterUpload(docUserObject);
    }
    
    /**
