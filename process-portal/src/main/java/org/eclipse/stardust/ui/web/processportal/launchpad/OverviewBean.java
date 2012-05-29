@@ -25,6 +25,7 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
 import org.eclipse.stardust.engine.api.query.Query;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.uielement.AbstractLaunchPanel;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
@@ -83,7 +84,7 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
    public void lastNSelectListener(ValueChangeEvent event)
    {
       String newValue = ((String) event.getNewValue());
-      Calendar calendar = new GregorianCalendar();
+      Calendar calendar = new GregorianCalendar(PortalApplication.getInstance().getTimeZone());
       if (newValue.equals(TODAY))
       {
          calendar.set(Calendar.HOUR_OF_DAY, 0);

@@ -11,9 +11,7 @@
 package org.eclipse.stardust.ui.web.viewscommon.views.chat;
 
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -338,10 +336,8 @@ public class ChatRoom implements Serializable
       // check if chat is already saved
       if (!isChatSaved() && isCurrentUserChatOwner() && getChatMessages().size() > 0)
       {
-         DateFormat format = DateFormat.getDateTimeInstance();
-
          String fileName = propsBean.getString("views.chatView.chatTranscript") + " "
-               + DMSUtils.replaceAllSpecialChars(format.format(new Date(System.currentTimeMillis())));
+               + DocumentMgmtUtility.getTimeStampString();
 
          Document document = DocumentMgmtUtility.createDocument(
                RepositoryUtility.getProcessAttachmentsFolder(processInstance).getPath(), fileName, getHTMLString()

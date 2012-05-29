@@ -25,6 +25,7 @@ import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 
 
@@ -75,7 +76,7 @@ public class TerminationTimeBasedCalculator implements ActivityTrafficLightCalcu
          minutes = new Integer(expectedTerminationTime.substring(2)).intValue();
       }
 
-      Calendar deadline = Calendar.getInstance();
+      Calendar deadline = Calendar.getInstance(PortalApplication.getInstance().getTimeZone());
       deadline.set(Calendar.HOUR_OF_DAY, hour);
       deadline.set(Calendar.MINUTE, minutes);
 
@@ -98,7 +99,7 @@ public class TerminationTimeBasedCalculator implements ActivityTrafficLightCalcu
 
    private Calendar getStartDate()
    {
-      Calendar startTime = Calendar.getInstance();
+      Calendar startTime = Calendar.getInstance(PortalApplication.getInstance().getTimeZone());
       startTime.set(Calendar.HOUR_OF_DAY, 0);
       startTime.set(Calendar.MINUTE, 0);
       startTime.set(Calendar.SECOND, 0);

@@ -18,7 +18,7 @@
 			<ice:commandLink
 				actionListener="#{trafficLightViewManagerBean.getProcessesAITable}">
 				<pc:automationTag value="auto-BCC-TrafficLgt-TraffLightTbl-Category" standAlone="false"/>
-				
+				<ice:outputText value="Symbol URL: #{row.symbolUrl}"/>
 				<img border="0"
 					src="#{facesContext.externalContext.requestContextPath}#{row.symbolUrl}" style="vertical-align:middle"/>
 				<f:attribute name="categoryValue" value="#{row.categoryValue}" />

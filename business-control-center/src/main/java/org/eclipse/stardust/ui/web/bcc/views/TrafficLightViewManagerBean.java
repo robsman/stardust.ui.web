@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -65,6 +64,7 @@ import org.eclipse.stardust.ui.web.bcc.legacy.traffic.IRowItem;
 import org.eclipse.stardust.ui.web.bcc.legacy.traffic.TrafficLightViewPropertyProvider;
 import org.eclipse.stardust.ui.web.bcc.messsages.MessagesBCCBean;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
@@ -594,7 +594,7 @@ public void init()
     */
    private ProcessInstances getProcessInstances(String processId, long startingDate)
    {
-      Calendar c = Calendar.getInstance();
+      Calendar c = Calendar.getInstance(PortalApplication.getInstance().getTimeZone());
       c.setTimeInMillis(startingDate);
 
       c.set(Calendar.HOUR_OF_DAY, 0);
@@ -608,7 +608,7 @@ public void init()
       c.set(Calendar.SECOND, 59);
       c.set(Calendar.MILLISECOND, 99);
       long end = c.getTimeInMillis();
-
+      
       ProcessInstanceQuery pQuery = ProcessInstanceQuery.findForProcess(processId, false);
       pQuery.getFilter().add(ProcessInstanceQuery.START_TIME.between(start, end));
       pQuery.setPolicy(SubsetPolicy.UNRESTRICTED);

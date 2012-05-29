@@ -96,6 +96,7 @@ public class DocumentMgmtUtility
 {
    public static final String DOCUMENTS = "/documents";
    private static final String YYYYMMDD_FORMAT = "yyyyMMdd";
+   private static final String DATE_TIME_SECONDS = "MM/dd/yy hh:mm:ss a";
    private static final String REALMS_FOLDER = "realms/";
    private static final String REPORT_DESIGNS = "/reports/designs";
    private static final String ARCHIVED_REPORTS = "/reports/archived";
@@ -815,8 +816,7 @@ public class DocumentMgmtUtility
     */
    public static String getTimeStampString()
    {
-      DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, getLocale());
-      return DMSUtils.replaceAllSpecialChars(format.format(new Date(System.currentTimeMillis())));
+      return DMSUtils.replaceAllSpecialChars(DateUtils.format(new Date(System.currentTimeMillis()), DATE_TIME_SECONDS));
    }
 
    /**

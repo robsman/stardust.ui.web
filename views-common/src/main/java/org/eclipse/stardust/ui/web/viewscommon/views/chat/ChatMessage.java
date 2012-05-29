@@ -11,12 +11,11 @@
 package org.eclipse.stardust.ui.web.viewscommon.views.chat;
 
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.util.Date;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
+import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
 
@@ -27,6 +26,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
  */
 public class ChatMessage implements Serializable
 {
+   public static final String TIME_FORMAT = "hh:mm:ss a";
+   
    private static final long serialVersionUID = 1L;
    private String timeStamp;
    private String user;
@@ -44,8 +45,7 @@ public class ChatMessage implements Serializable
    public ChatMessage(String user, int userIndex, String message)
    {
       super();
-      DateFormat format = DateFormat.getTimeInstance();
-      this.timeStamp = format.format(new Date(System.currentTimeMillis()));
+      this.timeStamp = DateUtils.format(new Date(), TIME_FORMAT);
       this.user = user;
       this.userIndex = userIndex;
       this.message = message;
@@ -59,8 +59,7 @@ public class ChatMessage implements Serializable
    public ChatMessage(String user, int userIndex, Document doc)
    {
       super();
-      DateFormat format = DateFormat.getTimeInstance();
-      this.timeStamp = format.format(new Date(System.currentTimeMillis()));
+      this.timeStamp = DateUtils.format(new Date(), TIME_FORMAT);
       this.user = user;
       this.userIndex = userIndex;
       this.attachedFile = doc;
