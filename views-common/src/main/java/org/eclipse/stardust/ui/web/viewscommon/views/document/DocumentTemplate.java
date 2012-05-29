@@ -12,13 +12,11 @@ package org.eclipse.stardust.ui.web.viewscommon.views.document;
 
 public interface DocumentTemplate
 {
-   public static final String DOCUMENT_TEMPLATE_PROPERTY = "DocumentTemplate";
-
    public static final String GENERIC_TEMPLATE = "Generic";
 
-   public static final String MESSAGE_TEMPLATE = "Message";
+   public static final String CHAT_TEMPLATE = "ChatTemplate";
 
-   public static final String CORRESPONDENCE_TEMPLATE_TEMPLATE = "CorrespondenceTemplate";
+   public static final String CORRESPONDENCE_TEMPLATE = "CorrespondenceTemplate";
 
    public static final String INSURANCE_CONTRACT_TEMPLATE = "InsuranceContract";
 

@@ -32,8 +32,6 @@ public class CommonProperties
 
    public final static String ZERO = "0";
 
-   public final static String FAX_EMAIL_MESSAGE_INFO = "faxEMailMessageInfo";
-
    public static final String ADMINISTRATORS = "administrators";
 
    public static final String EVERYONE = "everyone";

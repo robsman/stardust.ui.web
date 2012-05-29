@@ -21,6 +21,8 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.PrintDocumentAnnotations;
+import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.PrintDocumentAnnotationsImpl;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.autocomplete.IAutocompleteMultiSelector.IAutocompleteMultiSelectorListener;
 import org.eclipse.stardust.ui.web.common.message.AlertEntry;
@@ -36,10 +38,10 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserAutocompleteMultiSelector;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
-import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentTemplate;
 
 
 
@@ -339,9 +341,12 @@ public class ChatRoom implements Serializable
          String fileName = propsBean.getString("views.chatView.chatTranscript") + " "
                + DocumentMgmtUtility.getTimeStampString();
 
+         PrintDocumentAnnotations annotations = new PrintDocumentAnnotationsImpl();
+         annotations.setTemplateType(DocumentTemplate.CHAT_TEMPLATE);
+         
          Document document = DocumentMgmtUtility.createDocument(
                RepositoryUtility.getProcessAttachmentsFolder(processInstance).getPath(), fileName, getHTMLString()
-                     .getBytes(), null, MimeTypesHelper.HTML.getType(), null, null, null, null);
+                     .getBytes(), null, MimeTypesHelper.HTML.getType(), null, null, annotations, null);
 
          DMSHelper.addAndSaveProcessAttachment(processInstance, document);
 

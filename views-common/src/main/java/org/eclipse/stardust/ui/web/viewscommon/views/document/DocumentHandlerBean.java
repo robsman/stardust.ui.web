@@ -22,6 +22,8 @@ import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
+import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.CorrespondenceCapable;
+import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.PrintDocumentAnnotations;
 import org.eclipse.stardust.ui.common.form.FormGenerator;
 import org.eclipse.stardust.ui.common.form.jsf.DocumentForm;
 import org.eclipse.stardust.ui.common.form.jsf.DocumentObject;
@@ -68,8 +70,6 @@ import org.eclipse.stardust.ui.web.viewscommon.views.doctree.FileSaveDialog.File
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadDialogAttributes;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.OutputResource;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentEventListener.DocumentEventType;
-import org.eclipse.stardust.ui.web.viewscommon.views.document.helper.CorrespondenceMetaData;
-
 
 /**
  * @author Yogesh.Manware
@@ -82,7 +82,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    private static final long serialVersionUID = 1L;
    private static final String BEAN_NAME = "documentHandlerBean";
    private IDocumentContentInfo documentContentInfo;
-   private CorrespondenceMetaData correspondencInfo;
+   private CorrespondenceCapable correspondencInfo;
    private boolean correspondencInfoAvailble = false;
    private String description;
    private String inputDescription;
@@ -340,14 +340,12 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       {
          contentHandler = documentHandlersRegistryBean.getContentHandler(documentContentInfo, thisView);
 
-         if (CollectionUtils.isNotEmpty(documentContentInfo.getProperties()))
+         PrintDocumentAnnotations annotations = (PrintDocumentAnnotations) documentContentInfo.getAnnotations();
+         correspondencInfoAvailble = null != annotations
+               && DocumentTemplate.CORRESPONDENCE_TEMPLATE.equals(annotations.getTemplateType());
+         if (correspondencInfoAvailble)
          {
-            correspondencInfo = new CorrespondenceMetaData(documentContentInfo.getProperties());
-            correspondencInfoAvailble = correspondencInfo.isCorrespondencInfoAvailble();
-         }
-         else
-         {
-            correspondencInfoAvailble = false;
+            correspondencInfo = (CorrespondenceCapable) documentContentInfo.getAnnotations();
          }
 
          description = documentContentInfo.getDescription();
@@ -996,7 +994,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       return !getVersionTracker().isLatestVersion() && documentContentInfo.isModifyPrivilege();
    }
 
-   public CorrespondenceMetaData getCorrespondencInfo()
+   public CorrespondenceCapable getCorrespondencInfo()
    {
       return correspondencInfo;
    }

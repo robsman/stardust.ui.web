@@ -38,11 +38,12 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceExceptio
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.runtime.removethis.EngineProperties;
+import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.PrintDocumentAnnotations;
+import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.PrintDocumentAnnotationsImpl;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
-import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.core.EMailAddressValidator;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
@@ -56,10 +57,10 @@ import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDia
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadDialogAttributes;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryDocumentUserObject;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentTemplate;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentEditor;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRVersionTracker;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentEditor.DocumentEditingPolicy;
-import org.eclipse.stardust.ui.web.viewscommon.views.document.helper.CorrespondenceMetaData;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.pdf.PDFConverterHelper;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.pdf.PdfResource;
 import org.eclipse.stardust.ui.web.viewscommon.views.printer.PrinterDialogPopup;
@@ -680,12 +681,30 @@ public class CorrespondenceViewBean extends UIComponentBean
    {
       String docName = RepositoryUtility.createDocumentName(processAttachmentsFolder, DocumentMgmtUtility
             .stripOffSpecialCharacters(mailSubject), 0);
+      
       DocumentInfo docInfo = DmsUtils.createDocumentInfo(docName);
       docInfo.setContentType(MimeTypesHelper.HTML.getType());
+      docInfo.setOwner(ContextPortalServices.getUser().getAccount());
+
+      //set correspondence data
+      PrintDocumentAnnotations annotations = new PrintDocumentAnnotationsImpl();
+      annotations.setTemplateType(DocumentTemplate.CORRESPONDENCE_TEMPLATE);
+      annotations.setRecipients(getToMailAddress());
+      annotations.setBlindCarbonCopyRecipients(bccMailAddress);
+      annotations.setCarbonCopyRecipients(ccMailAddress);
+      annotations.setFaxNumber(getFaxMailAddress());
+      annotations.setSendDate(Calendar.getInstance().getTime());
+      annotations.setAttachments(attachmentInfo);
+      annotations.setSender(mailSender);
+      annotations.setSubject(getMailSubject());
+      annotations.setFaxEnabled(false);
+      annotations.setEmailEnabled(false);
+      
+      docInfo.setDocumentAnnotations(annotations);
+      
       Document mailDocument = DocumentMgmtUtility.getDocumentManagementService().createDocument(
             processAttachmentsFolder.getId(), docInfo, editor.getContent().getBytes(), null);
-      populateMetaData(mailDocument, attachmentInfo);
-      mailDocument = DocumentMgmtUtility.getDocumentManagementService().updateDocument(mailDocument, false, "", false);
+      
       DMSHelper.addAndSaveProcessAttachment(processInstance, mailDocument);
    }
 
@@ -710,42 +729,6 @@ public class CorrespondenceViewBean extends UIComponentBean
 
       // update process attachment
       DMSHelper.addAndSaveProcessAttachment(processInstance, document);
-   }
-
-   /**
-    * populate metadata for email document
-    * 
-    * @param document
-    * @param attachmentInfo
-    */
-   private void populateMetaData(Document document, String attachmentInfo)
-   {
-      // Set base metadata
-      document.setOwner(ContextPortalServices.getUser().getAccount());
-      // set correspondence metadata
-      Map properties = document.getProperties();
-      if (CollectionUtils.isEmpty(properties))
-      {
-         properties = new HashMap<String, Object>();
-         document.setProperties(properties);
-      }
-      Map correspondenceMD = (Map) properties.get(CommonProperties.FAX_EMAIL_MESSAGE_INFO);
-      if (CollectionUtils.isEmpty(correspondenceMD))
-      {
-         properties.put(CommonProperties.FAX_EMAIL_MESSAGE_INFO, new HashMap<String, Object>());
-      }
-      CorrespondenceMetaData cMetaData = new CorrespondenceMetaData(properties);
-      cMetaData.setRecipients(getToMailAddress());
-      cMetaData.setBlindCarbonCopyRecipients(bccMailAddress);
-      cMetaData.setCarbonCopyRecipients(ccMailAddress);
-      cMetaData.setFaxNumber(getFaxMailAddress());
-      cMetaData.setSendDate(Calendar.getInstance().getTime());
-      cMetaData.setAttachments(attachmentInfo);
-      cMetaData.setSender(mailSender);
-      cMetaData.setSubject(getMailSubject());
-      // by default fax and email checkbox should be unchecked.
-      cMetaData.setFaxEnabled(false);
-      cMetaData.setMailEnabled(false);
    }
 
    /**

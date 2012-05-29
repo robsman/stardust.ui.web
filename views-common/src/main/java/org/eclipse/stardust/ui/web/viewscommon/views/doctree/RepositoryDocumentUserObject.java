@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.views.doctree;
 
-import java.io.Serializable;
 import java.util.Map;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -19,11 +18,11 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.PrintDocumentAnnotations;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.viewscommon.common.DocumentToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.common.ToolTip;
-import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelper;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler;
@@ -36,6 +35,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentTemplate;
 
 
 
@@ -46,8 +46,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
 {
    private static final long serialVersionUID = 1296615449302077105L;
-   private static final String DOCUMENT_TEMPLATE_PROPERTY = "DocumentTemplate";
-   private static final String CORRESPONDENCE_TEMPLATE_TEMPLATE = "CorrespondenceTemplate";
    private boolean opened;
    private MIMEType mType = MimeTypesHelper.DEFAULT;
    private boolean sendFileAllowed = false;
@@ -61,18 +59,21 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
     * @param document
     */
    public RepositoryDocumentUserObject(DefaultMutableTreeNode defaultMutableTreeNode, Document document)
-   {
+   { 
       super(defaultMutableTreeNode, document);
       propsBean = MessagesViewsCommonBean.getInstance();
       this.mType = MimeTypesHelper.detectMimeType(document.getName(), document.getContentType());
-      Map<String, Serializable> properties = document.getProperties();
+      
+      PrintDocumentAnnotations annotations = (PrintDocumentAnnotations) document.getDocumentAnnotations();
 
-      if (null != properties && properties.containsKey(DOCUMENT_TEMPLATE_PROPERTY)
-            && properties.get(DOCUMENT_TEMPLATE_PROPERTY).equals(CORRESPONDENCE_TEMPLATE_TEMPLATE))
+      if (null != annotations
+            && (DocumentTemplate.CORRESPONDENCE_TEMPLATE.equals(annotations.getTemplateType()) || DocumentTemplate.CHAT_TEMPLATE
+                  .equals(annotations.getTemplateType())))
       {
          setLeafIcon(ResourcePaths.I_DOCUMENT);
+         setEditable(false);
       }
-      else
+     else
       {
          setLeafIcon(ResourcePaths.I_DOCUMENT_PATH + this.mType.getIconPath());
       }
@@ -80,18 +81,7 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
       defaultMutableTreeNode.setAllowsChildren(false);
       this.setLeaf(true);
       this.setCanUploadFile(false);
-      
-      if (null != properties)
-      {
-         Map<String, Object> correspondenceMetaData = (Map<String, Object>) properties
-               .get(CommonProperties.FAX_EMAIL_MESSAGE_INFO);
-         if ((null != correspondenceMetaData && !correspondenceMetaData.isEmpty())
-               || properties.containsKey("chatProtocolInfo"))
-         {
-            setEditable(false);
-         }
-      }
-      
+    
       documentToolTip = new DocumentToolTip(null, document);
    }
 
