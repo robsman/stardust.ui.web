@@ -11,10 +11,12 @@
 package org.eclipse.stardust.ui.web.admin.views;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import javax.faces.component.UIComponent;
 import javax.faces.event.ActionEvent;
@@ -36,7 +38,7 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserAutocompleteMultiSelector;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserWrapper;
 
-public class CreateOrModifyPreferenceBean extends PopupUIComponentBean
+public class CreateOrModifyPreferenceBean extends PopupUIComponentBean 
 {
 
    /**
@@ -58,6 +60,7 @@ public class CreateOrModifyPreferenceBean extends PopupUIComponentBean
       super();
       propsBean = AdminMessagesPropertiesBean.getInstance();
    }
+   
 
    /**
     * 
@@ -139,21 +142,26 @@ public class CreateOrModifyPreferenceBean extends PopupUIComponentBean
       if (null == prefs)
          return;
       else
+      {
          adminService.savePreferences(prefs);
+      }
+         
       PreferenceManagerBean.getCurrent().update();
       closePopup();
    }
-
+   
    private Preferences updatePreference(PreferenceScope prefScope, boolean partitionPrefSelected)
    {
       Preferences prefs = null;
       User user = null;
       Map<String, Serializable> preferenceMap = new HashMap<String, Serializable>();
-      preferenceMap.put(preferenceBean.getPreferenceName(), preferenceBean.getPreferenceValue());
+      preferenceMap.put(preferenceBean.getPreferenceName(), (Serializable) parsePreferenceValue(preferenceBean.getPreferenceValue()));
       UserWrapper userWrapper = getUserSelector().getSelectedValue();
-
+      
       if (partitionPrefSelected)
-         prefs = adminService.getPreferences(prefScope, preferenceBean.getModuleId(), preferenceBean.getPreferenceId());
+      {
+        prefs = adminService.getPreferences(prefScope, preferenceBean.getModuleId(), preferenceBean.getPreferenceId());
+      }
       else
       {
          // Add Preference with User selection
@@ -207,11 +215,40 @@ public class CreateOrModifyPreferenceBean extends PopupUIComponentBean
       }
       else
       {
-         prefs.getPreferences().put(preferenceBean.getPreferenceName(), preferenceBean.getPreferenceValue());
+         prefs.getPreferences().put(preferenceBean.getPreferenceName(), (Serializable) parsePreferenceValue(preferenceBean.getPreferenceValue()));
       }
       prefs.setUserId(preferenceBean.getUserId());
       prefs.setRealmId(preferenceBean.getRealmId());
       return prefs;
+   }
+   
+   private Object parsePreferenceValue(String preferenceValue)
+   {
+      if (null != preferenceValue)
+      {
+         String prefValue = preferenceValue.toString();
+         Scanner numberValidation = new Scanner(prefValue.toString());
+         if (numberValidation.hasNextBoolean())
+         {
+            return Boolean.valueOf(prefValue);
+         }
+         if (numberValidation.hasNextInt())
+         {
+            return Integer.valueOf(prefValue);
+         }
+         else if (numberValidation.hasNextFloat())
+         {
+            return Float.valueOf(prefValue);
+         }
+         else if (numberValidation.hasNextDouble())
+         {
+            return Double.valueOf(prefValue);
+         }
+         else
+            return prefValue;
+      }
+      else
+         return null;
    }
 
    @Override
@@ -257,5 +294,4 @@ public class CreateOrModifyPreferenceBean extends PopupUIComponentBean
    {
       return userValidationMsg;
    }
-
 }
