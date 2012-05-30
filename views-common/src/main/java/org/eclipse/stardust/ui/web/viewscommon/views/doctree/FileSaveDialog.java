@@ -28,17 +28,22 @@ public class FileSaveDialog extends PopupUIComponentBean
    public static final String COMMENTS = "comments";
 
    private FileSaveCallbackHandler callbackHandler;
+   private String description;
    private String comments;
    private String headerMessage;
    private String message;
 
+   //Description
+   private boolean viewDescription;
+   private boolean showDescription;
+   
    // To show/hide the comment section on the dialog (page section link
    // action)
    private boolean showComment;
    private boolean customDialog;
    private String customDialogSource;
    private ICustomDocumentSaveHandler.CustomDialogPosition customDialogPosition;
-
+   
    /**
     * default constructor
     */
@@ -60,14 +65,19 @@ public class FileSaveDialog extends PopupUIComponentBean
    {
       // FacesUtils.refreshPage();
       setTitle(MessagesViewsCommonBean.getInstance().getString("views.documentView.saveDocumentDialog.saveDocument"));
+      description = "";
       comments = "";
       headerMessage = "";
+      message = "";
       callbackHandler = null;
       showComment = false;
 
       customDialog = false;
       customDialogSource = null;
       customDialogPosition = null;
+      
+      viewDescription = false;
+      showDescription = false;
    }
 
    public void continueAction()
@@ -75,6 +85,11 @@ public class FileSaveDialog extends PopupUIComponentBean
       fireCallback(EventType.APPLY);
    }
 
+   public void toggleDescription()
+   {
+      showDescription = !showDescription;
+   }
+   
    public void toggleComment()
    {
       showComment = !showComment;
@@ -88,17 +103,48 @@ public class FileSaveDialog extends PopupUIComponentBean
       if (callbackHandler != null)
       {
          callbackHandler.setComments(getComments());
+         callbackHandler.setDescription(getDescription());
          callbackHandler.handleEvent(eventType);
       }
       initialize();
       closePopup();
    }
 
+   public String getDescription()
+   {
+      return description;
+   }
+
+   public void setDescription(String description)
+   {
+      this.description = description;
+   }
+   
    public String getComments()
    {
       return comments;
    }
+   
+   public boolean isViewDescription()
+   {
+      return viewDescription;
+   }
 
+   public void setViewDescription(boolean viewDescription)
+   {
+      this.viewDescription = viewDescription;
+   }
+
+   public boolean isShowDescription()
+   {
+      return showDescription;
+   }
+
+   public void setShowDescription(boolean showDescription)
+   {
+      this.showDescription = showDescription;
+   }
+   
    public void setComments(String comments)
    {
       this.comments = comments;
@@ -167,6 +213,7 @@ public class FileSaveDialog extends PopupUIComponentBean
    public static abstract class FileSaveCallbackHandler implements ICallbackHandler
    {
       private String comments;
+      private String description;
 
       public String getComments()
       {
@@ -176,6 +223,16 @@ public class FileSaveDialog extends PopupUIComponentBean
       public void setComments(String comments)
       {
          this.comments = comments;
+      }
+
+      public String getDescription()
+      {
+         return description;
+      }
+
+      public void setDescription(String description)
+      {
+         this.description = description;
       }
    }
 }

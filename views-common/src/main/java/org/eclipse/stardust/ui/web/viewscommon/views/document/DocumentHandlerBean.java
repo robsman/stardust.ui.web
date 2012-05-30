@@ -487,7 +487,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
                   {
                      try
                      {
-                        saveDocumentContents(null);
+                        saveDocumentContents(null, false);
                      }
                      catch (ResourceNotFoundException e)
                      {
@@ -523,7 +523,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          {
             fileSaveDialog.setComments(documentContentInfo.getComments());
          }
-         fileSaveDialog.setCallbackHandler(new DCCallBackHandler(callback));
+         fileSaveDialog.setCallbackHandler(new DCCallBackHandler(callback, false));
         
          if (contentHandler instanceof ICustomDocumentSaveHandler
                && ((ICustomDocumentSaveHandler) contentHandler).usesCustomSaveDialog())
@@ -584,10 +584,11 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          // get the version revision id and save it with new version using kernel API
          FileSaveDialog fileSaveDialog = FileSaveDialog.getInstance();
          fileSaveDialog.initialize();
+         fileSaveDialog.setViewDescription(true);
          fileSaveDialog.setTitle(MessagesViewsCommonBean.getInstance().getString(
                "views.documentView.saveDocumentDialog.saveDocument"));
          fileSaveDialog.setHeaderMessage(propsBean.getString("views.documentView.saveDocumentDialog.revert"));
-         fileSaveDialog.setCallbackHandler(new DCCallBackHandler(null));
+         fileSaveDialog.setCallbackHandler(new DCCallBackHandler(null, true));
          //check if the document type matches
          IDocumentContentInfo latestDocInfo = getVersionTracker().getLatestVersion();
          if (!StringUtils.areEqual(getDocumentContentInfo().getDocumentType(), latestDocInfo.getDocumentType()))
@@ -651,56 +652,67 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
     * @param force
     * @throws ResourceNotFoundException 
     */
-   private void saveDocumentContents(String comments) throws ResourceNotFoundException 
+   private void saveDocumentContents(String comments, boolean revert) throws ResourceNotFoundException 
    {
-         if (contentHandler instanceof ICustomDocumentSaveHandler)
-         {
-            documentContentInfo = ((ICustomDocumentSaveHandler) contentHandler).save();
-         }
-         
-         if (isDescriptionChanged())
-         {
-            documentContentInfo.setDescription(inputDescription);
-         }
-         // If Viewer get content from Repository else get it from Editor
-         byte[] contentByte = null;
-         if (contentHandler instanceof IDocumentEditor)
-         {
-            contentByte = contentHandler.getContent().getBytes();
-         }
-         else //for viewer and unsupported documents, retrieve content
-         {
-            contentByte = documentContentInfo.retrieveContent();
-         }
+      if (contentHandler instanceof ICustomDocumentSaveHandler)
+      {
+         documentContentInfo = ((ICustomDocumentSaveHandler) contentHandler).save();
+      }
+      
+      if (isDescriptionChanged())
+      {
+         documentContentInfo.setDescription(inputDescription);
+      }
+      // If Viewer get content from Repository else get it from Editor
+      byte[] contentByte = null;
+      if (contentHandler instanceof IDocumentEditor)
+      {
+         contentByte = contentHandler.getContent().getBytes();
+      }
+      else //for viewer and unsupported documents, retrieve content
+      {
+         contentByte = documentContentInfo.retrieveContent();
+      }
 
-         documentContentInfo.setComments(comments);
+      documentContentInfo.setComments(comments);
 
-         // Add Meta Data
-         // TODO look at following code later
+      // Add Meta Data
+      if (revert)
+      {
+         IDocumentContentInfo latestDocInfo = getVersionTracker().getLatestVersion();
+         if (!StringUtils.areEqual(documentContentInfo.getDocumentType(), latestDocInfo.getDocumentType()))
+         {
+            documentContentInfo.setDocumentType(documentContentInfo.getDocumentType());
+            documentContentInfo.getProperties().clear();
+         }
+      }
+      else
+      {
          Map<String, Object> metaData = documentForm.retrieveMetaData();
          if (null != metaData)
          {
             documentContentInfo.getProperties().putAll(metaData);
          }
+      }
 
-         /*
-          * In case of TIFF documents the view / tiff-iframe needs to be refreshed with the latest
-          * document id if the document being saved is a FileSystemJCRDocument.
-          * The refreshViewer flag is set if the document being save
-          * 
-          * TODO - review
-         */
-         boolean refreshViewer = false;
-         if (documentContentInfo instanceof FileSystemJCRDocument)
-         {
-            refreshViewer = true;
-         }
-         
-         beforeSave(refreshViewer);
-         
-         documentContentInfo = documentContentInfo.save(contentByte);
+      /*
+       * In case of TIFF documents the view / tiff-iframe needs to be refreshed with the latest
+       * document id if the document being saved is a FileSystemJCRDocument.
+       * The refreshViewer flag is set if the document being save
+       * 
+       * TODO - review
+      */
+      boolean refreshViewer = false;
+      if (documentContentInfo instanceof FileSystemJCRDocument)
+      {
+         refreshViewer = true;
+      }
+      
+      beforeSave(refreshViewer);
+      
+      documentContentInfo = documentContentInfo.save(contentByte);
 
-         postSave(refreshViewer);
+      postSave(refreshViewer);
    }
 
    /**
@@ -1129,12 +1141,13 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
     */
    class DCCallBackHandler extends FileSaveCallbackHandler
    {
-      private String comments;
       private ICallbackHandler callback;
+      private boolean revert;
       
-      public DCCallBackHandler(ICallbackHandler callback)
+      public DCCallBackHandler(ICallbackHandler callback, boolean revert)
       {
          this.callback = callback;
+         this.revert = revert;
       }      
 
       public void handleEvent(EventType eventType)
@@ -1143,7 +1156,11 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          {
             try
             {
-               saveDocumentContents(getComments());
+               if (revert)
+               {
+                  DocumentHandlerBean.this.setInputDescription(getDescription());
+               }
+               saveDocumentContents(getComments(), revert);
                if (null != callback)
                {
                   callback.handleEvent(EventType.APPLY);
@@ -1170,17 +1187,6 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
             }
          }
       }
-
-      public String getComments()
-      {
-         return comments;
-      }
-
-      public void setComments(String comments)
-      {
-         this.comments = comments;
-      }
-
    }
 
    public boolean isCorrespondencInfoAvailble()

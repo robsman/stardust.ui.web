@@ -32,6 +32,7 @@ public interface IDocumentContentInfo
    Date getDateCreated();
    long getSize();
    DocumentType getDocumentType();
+   void setDocumentType(DocumentType documentType);
 
    byte[] retrieveContent();
    MIMEType getMimeType();

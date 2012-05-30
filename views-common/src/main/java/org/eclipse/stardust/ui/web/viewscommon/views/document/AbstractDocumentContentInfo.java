@@ -154,4 +154,9 @@ public abstract class AbstractDocumentContentInfo implements IDocumentContentInf
    {
       return idLabel;
    }
+
+   public void setDocumentType(DocumentType documentType)
+   {
+      this.documentType = documentType;
+   }
 }

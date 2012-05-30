@@ -17,7 +17,6 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsPrivilege;
-import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
@@ -122,7 +121,6 @@ public class JCRDocument extends AbstractDocumentContentInfo
    
    public void initialize(Document doc, boolean readOnly, JCRVersionTracker vTracker)
    {
-
       this.document = doc;
       supportVersioning = true;
       if (null == vTracker)
@@ -142,6 +140,7 @@ public class JCRDocument extends AbstractDocumentContentInfo
       description = RepositoryUtility.getDescription(document);
       comments = RepositoryUtility.getVersionComment(document);
       annotations = document.getDocumentAnnotations();
+      documentType = document.getDocumentType();
       
       if (readOnly)
       {
@@ -258,9 +257,11 @@ public class JCRDocument extends AbstractDocumentContentInfo
       }
       
       this.document.setDescription(description);
+      this.document.setDocumentType(documentType);
       
       this.document.setDocumentAnnotations(annotations);
       this.document.setOwner(DocumentMgmtUtility.getUser().getAccount());
+      
       Document document = DocumentMgmtUtility.getDocumentManagementService().updateDocument(this.document, contentByte,
             "", true, comments, String.valueOf(this.versionTracker.getVersions().size() + 1), false);
       return new JCRDocument(document, new JCRVersionTracker(document));
@@ -298,10 +299,5 @@ public class JCRDocument extends AbstractDocumentContentInfo
    public long getSize()
    {
       return document.getSize();
-   }
-
-   public DocumentType getDocumentType()
-   {
-      return document.getDocumentType();
    }
 }

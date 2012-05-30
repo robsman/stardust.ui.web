@@ -52,6 +52,37 @@
 									value="#{fileSaveDialog.message}" />
 							</ice:panelGroup>
 
+
+							<!-- ***** DESCRIPTION ***** -->
+							<ice:panelGrid columns="2"
+								rendered="#{fileSaveDialog.viewDescription and !fileSaveDialog.showDescription}">
+								<ice:commandLink
+									action="#{fileSaveDialog.toggleDescription}">
+									<pc:automationTag value="auto-COM-FileUpdDlg-DescLink"
+										standAlone="false" />
+									<ice:graphicImage
+										value="/plugins/views-common/images/icons/add.png" />
+								</ice:commandLink>
+								<ice:commandLink
+									action="#{fileSaveDialog.toggleDescription}"
+									value="#{views_common_msgPropsBean['fileUpload.description.label']}"
+									styleClass="once-only-action-link" />
+							</ice:panelGrid>
+							<ice:panelGroup
+								rendered="#{fileSaveDialog.viewDescription and fileSaveDialog.showDescription}">
+								<ice:outputText
+									value="#{views_common_msgPropsBean['fileUpload.description.label']}"
+									styleClass="label-form" />
+								<ice:panelGroup scrollWidth="100%">
+									<ice:inputTextarea partialSubmit="true"
+										value="#{fileSaveDialog.description}"
+										rows="2" style="width: 300px;">
+										<pc:automationTag value="auto-COM-FileUpdDlg-Desc"
+											standAlone="false" />
+									</ice:inputTextarea>
+								</ice:panelGroup>
+							</ice:panelGroup>
+
 							<!-- ***** COMMENTS ***** -->
 							<ice:panelGrid columns="2"
 								rendered="#{!fileSaveDialog.showComment}">
@@ -101,7 +132,7 @@
 							styleClass="button" />
 						<ice:commandButton
 							value="#{views_common_msgPropsBean['common.cancel']}"
-							action="#{fileSaveDialog.closePopup}" immediate="true"
+							action="#{fileSaveDialog.closePopup}"
 							styleClass="button" />
 					</ice:panelGroup>
 				</f:facet>
