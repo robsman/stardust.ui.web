@@ -31,14 +31,16 @@
 				style="width:100%">
 				<f:facet name="center">
 					<ice:panelGroup>
-						<h:panelGrid columns="1" style="width: 100%; margin-bottom: 5px;">
-
+						<h:panelGrid columns="2" style="width: 100%; margin-bottom: 5px;">
+							<ice:graphicImage rendered="#{fileSaveDialog.viewWarning}" style="margin-left:2px; margin-right:5px"
+								url="/plugins/views-common/images/icons/dialog-icon-warning.jpg" />
 							<ice:outputText
 								rendered="#{not empty fileSaveDialog.headerMessage}"
 								value="#{fileSaveDialog.headerMessage}" escape="false"
 								styleClass="label-form" />
-							<ice:panelGroup styleClass="clearing" />
 
+							<ice:panelGroup styleClass="clearing" />
+							<ice:panelGroup>
 							<!-- Custom dialog (Before) -->
 							<ice:panelGroup
 								rendered="#{fileSaveDialog.customDialog and (fileSaveDialog.customDialogPosition eq 'ADD_BEFORE')}"
@@ -117,6 +119,7 @@
 								style="width: 350px;">
 								<ui:include src="#{fileSaveDialog.customDialogSource}">
 								</ui:include>
+							</ice:panelGroup>
 							</ice:panelGroup>
 						</h:panelGrid>
 

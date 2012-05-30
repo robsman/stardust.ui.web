@@ -585,6 +585,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          FileSaveDialog fileSaveDialog = FileSaveDialog.getInstance();
          fileSaveDialog.initialize();
          fileSaveDialog.setViewDescription(true);
+         fileSaveDialog.setViewWarning(true);
          fileSaveDialog.setTitle(MessagesViewsCommonBean.getInstance().getString(
                "views.documentView.saveDocumentDialog.saveDocument"));
          fileSaveDialog.setHeaderMessage(propsBean.getString("views.documentView.saveDocumentDialog.revert"));

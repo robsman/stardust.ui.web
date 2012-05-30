@@ -36,6 +36,7 @@ public class FileSaveDialog extends PopupUIComponentBean
    //Description
    private boolean viewDescription;
    private boolean showDescription;
+   private boolean viewWarning;
    
    // To show/hide the comment section on the dialog (page section link
    // action)
@@ -234,5 +235,15 @@ public class FileSaveDialog extends PopupUIComponentBean
       {
          this.description = description;
       }
+   }
+
+   public boolean isViewWarning()
+   {
+      return viewWarning;
+   }
+
+   public void setViewWarning(boolean viewWarning)
+   {
+      this.viewWarning = viewWarning;
    }
 }
