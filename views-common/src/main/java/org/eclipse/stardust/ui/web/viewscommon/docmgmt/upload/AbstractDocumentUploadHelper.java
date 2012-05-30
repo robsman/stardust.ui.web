@@ -382,7 +382,10 @@ public abstract class AbstractDocumentUploadHelper implements Serializable
                fileWrapper.getDescription(), fileWrapper.getComments(), fileWrapper.getDocumentType());
 
          informInitiator(DocumentUploadEventType.DOCUMENT_CREATED, updatedDocument);
-         openDocument(updatedDocument);
+         if (fileWrapper.isOpenDocument())
+         {
+            openDocument(updatedDocument);   
+         }
       }
       catch (Exception e)
       {
