@@ -26,8 +26,10 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.query.PreferenceQuery;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.core.preferences.IPreferenceCache;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
+import org.eclipse.stardust.engine.core.preferences.manager.IPreferencesManager;
 import org.eclipse.stardust.ui.web.admin.messages.AdminMessagesPropertiesBean;
 import org.eclipse.stardust.ui.web.admin.views.PreferenceManagerBean.PREF_VIEW_TYPE;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
@@ -144,8 +146,13 @@ public class CreateOrModifyPreferenceBean extends PopupUIComponentBean
       else
       {
          adminService.savePreferences(prefs);
+         IPreferencesManager prefMngr = SessionContext.findSessionContext().getPreferencesManager();
+         if (prefMngr instanceof org.eclipse.stardust.engine.core.preferences.IPreferenceCache)
+         {
+            IPreferenceCache cache = (IPreferenceCache) prefMngr;
+            cache.cleanCache(PreferenceScope.PARTITION, preferenceBean.getModuleId(), preferenceBean.getPreferenceId());
+         }
       }
-         
       PreferenceManagerBean.getCurrent().update();
       closePopup();
    }
