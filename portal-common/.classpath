@@ -21,5 +21,6 @@
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-core-3.0.5.RELEASE.jar" sourcepath="/Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-core-3.0.5.RELEASE-sources.jar"/>
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-context-3.0.5.RELEASE.jar" sourcepath="/Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-context-3.0.5.RELEASE-sources.jar" />
 	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-test-3.0.5.RELEASE.jar"  />
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/sun/jersey/1.1.5.1/jsr311-api-1.1.1.jar"/>
 	<classpathentry kind="output" path=".eclipse/classes"/>
 </classpath>

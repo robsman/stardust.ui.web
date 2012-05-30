@@ -39,9 +39,7 @@ function configurei18n()
 	
   	InfinityBPMI18N.initPluginProps({
   		pluginName : "graphicscommon",
-	    propFilePath : "../../../graphics-common/bundle/",
-		propFileBaseName : "graphics-common-client-messages",
-		locale : lang
+  		singleEndPoint : require('m_urlUtils').getContextName() + "/services/rest/properties/graphics-common-client-messages/" + lang
 	});
 }
 

@@ -9,9 +9,7 @@
 	<script>
 		InfinityBPMI18N.initPluginProps({
 			pluginName : "common",
-			propFilePath : "#{facesContext.externalContext.requestContextPath}/plugins/common/bundle/",
-			propFileBaseName : "portal-common-client-messages",
-			locale : "#{ippPortalApp.localeString}"
+			singleEndPoint : "#{facesContext.externalContext.requestContextPath}/services/rest/properties/portal-common-client-messages/#{ippPortalApp.localeString}"
 		});
 	</script>
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/plugins/common/InfinityBpm_Core.js" />

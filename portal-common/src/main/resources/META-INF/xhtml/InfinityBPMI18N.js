@@ -20,7 +20,26 @@ var InfinityBPMI18N = function() {
 			localeRetrievalURL : "",
 			locale : ""
 		};
-		
+
+		function initializeFromSingleEndPoint(initObj) {
+			initializePropertiesMapFromSingleEndPoint(initObj.singleEndPoint)
+			
+		}
+
+		function initializePropertiesMapFromSingleEndPoint(singleEndPoint) {
+			propertiesMap = {};
+			ajaxRequest("GET", singleEndPoint, false,  new function() {
+				return {
+					successCallback : function(val) {
+						populatePropertiesMap(val, true);
+					},
+					failureCallback : function(val) {
+						alert("InfinityBPMI18N loading properties failed.");
+					}
+				};
+			});
+		}
+
 		function initialize(initObj) {
 			for (var i in initObj) {
 				if (initProp.hasOwnProperty(i))
@@ -184,7 +203,11 @@ var InfinityBPMI18N = function() {
 			return val.replace(/((\s*\S+)*)\s*/, "$1");
 		}
 
-		initialize(initParam);
+		if (initParam.singleEndPoint) {
+			initializeFromSingleEndPoint(initParam);
+		} else {
+			initialize(initParam);
+		}
 
 		return {
 			getProperty : function(key, defaultValue) {
@@ -207,10 +230,9 @@ var InfinityBPMI18N = function() {
 		//	locale (Optional if localeRetrievalURL is provided) - locale
 		//	pluginName (Mandatory) - a plugin name with which to access properties
 		initPluginProps : function (initParam) {
-			if (initParam.pluginName
-					&& initParam.propFilePath
+			if (initParam.pluginName && ((initParam.propFilePath
 					&& initParam.propFileBaseName
-					&& (initParam.locale || initParam.localeRetrievalURL)) {
+					&& (initParam.locale || initParam.localeRetrievalURL)) || initParam.singleEndPoint)) {
 				this[initParam.pluginName] = createPlugin(initParam);
 			} else {
 				alert("InfinityBPMI18N initialialization failed. Mandatory parameter(s) missing.");
