@@ -174,7 +174,7 @@
       <delete dir="${project.webapp.dir}/WEB-INF/classes" failonerror="false"/>
       
       <war destfile="${build.deploy}/ipp-portal.war" basedir="${project.webapp.dir}"
-         webxml="${project.webapp.dir}/WEB-INF/web.xml" excludes="**/.gitignore">
+         webxml="${project.webapp.dir}/WEB-INF/web.xml" excludes="**/.gitignore,readme.txt">
       </war>
    </target>
 
