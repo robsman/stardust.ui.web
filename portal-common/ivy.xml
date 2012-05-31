@@ -23,7 +23,6 @@
 
    <configurations>
       <conf name="ipp-portal-common-compile" extends="icefaces" description="IPP Portal Common - Compile Scope" />
-      <conf name="ipp-portal-common-compile-optional" description="IPP Portal Common - Optional Compile Scope" />
       <conf name="ipp-portal-common-runtime" extends="ipp-portal-common-compile" description="IPP Portal Common - Runtime Scope" />
       <conf name="ipp-portal-common-provided" description="IPP Portal Common - Provided Scope" />
       
@@ -40,7 +39,7 @@
       <conf name="jsf-mojarra-module-compile" description="JSF API and Implementation Classes - Mojarra - Compile Scope" />
       <conf name="jsf-mojarra-module-runtime" description="JSF API and Implementation Classes - Mojarra - Runtime Scope" />
    
-      <conf name="compile" extends="ipp-portal-common-compile, ipp-portal-common-compile-optional" visibility="private" description="IPP Portal Common" />
+      <conf name="compile" extends="ipp-portal-common-compile" visibility="private" description="IPP Portal Common" />
       
       <conf name="test" visibility="private" description="Test dependencies" />
       
@@ -49,7 +48,7 @@
    </configurations>
 
    <publications>
-      <artifact name="ipp-portal-common" type="jar" conf="ipp-portal-common-compile, ipp-portal-common-compile-optional, ipp-portal-common-runtime, ipp-portal-common-provided" />
+      <artifact name="ipp-portal-common" type="jar" conf="ipp-portal-common-compile, ipp-portal-common-runtime, ipp-portal-common-provided" />
       <artifact name="ipp-portal-common" type="jar" conf="ipp-portal-common-sources" m:classifier="sources" />
       <artifact name="ipp-portal" type="war" conf="ipp-portal-web" />
       
@@ -67,9 +66,7 @@
       <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->spring-module-compile" />
       <dependency org="com.infinity.bpm" name="stardust-engine-base-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->logging-log4j-module-compile"/>
       <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->logging-slf4j-log4j-module-compile"/>
-      
-      <!-- ipp-portal-common-compile-optional -->
-      <dependency org="javax.ws.rs" name="jsr311-api" rev="1.1.1" conf="ipp-portal-common-compile-optional->default" />
+      <dependency org="javax.ws.rs" name="jsr311-api" rev="1.1.1" conf="ipp-portal-common-compile->default" />
 
       <!-- ipp-portal-common-runtime -->
       <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-runtime->engine-module-runtime" />
