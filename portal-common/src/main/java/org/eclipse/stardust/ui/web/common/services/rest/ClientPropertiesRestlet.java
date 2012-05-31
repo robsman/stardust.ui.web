@@ -21,6 +21,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
+
 /**
  * @author Subodh.Godbole
  *
@@ -28,6 +31,8 @@ import javax.ws.rs.core.Response.Status;
 @Path("properties/{bundleName}/{locale}")
 public class ClientPropertiesRestlet
 {
+   private static final Logger trace = LogManager.getLogger(ClientPropertiesRestlet.class);
+
    /**
     * @param bundleName
     * @param locale
@@ -54,7 +59,7 @@ public class ClientPropertiesRestlet
       }
       catch (Exception e)
       {
-         e.printStackTrace();
+         trace.error("Unable to retrieve bundle", e);
          return Response.status(Status.BAD_REQUEST).build();
       }
    }
