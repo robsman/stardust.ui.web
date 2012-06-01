@@ -29,11 +29,47 @@ public class ReflectionUtils
     * @param obj
     * @param methodName
     * @param params
+    * @return
+    */
+   @SuppressWarnings("rawtypes")
+   public static Object getMethod(Object obj, String methodName, Object... params)
+   {
+      if(obj != null && !StringUtils.isEmpty(methodName))
+      {
+         Class[] paramTypes = null;
+         
+         if(params != null)
+         {
+            paramTypes = new Class[params.length];
+            int i = 0;
+            for (Object object : params)
+            {
+               paramTypes[i++] = object.getClass();
+            }
+         }      
+         
+         try
+         {
+            return obj.getClass().getMethod(methodName, paramTypes);
+         }
+         catch (Exception e)
+         {
+            //NOP
+         }
+      }
+      
+      return null;
+   }
+
+   /**
+    * @param obj
+    * @param methodName
+    * @param params
     * @param paramTypes
     * @return
     * @throws Exception
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings("rawtypes")
    public static Object invokeMethod(Object obj, String methodName, Object[] params, Class[] paramTypes) throws Exception
    {
       if(obj != null && !StringUtils.isEmpty(methodName))
@@ -54,7 +90,7 @@ public class ReflectionUtils
     * @return
     * @throws Exception
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings("rawtypes")
    public static Object invokeMethod(Object obj, String methodName, Object... params) throws Exception
    {
       if(obj != null && !StringUtils.isEmpty(methodName))

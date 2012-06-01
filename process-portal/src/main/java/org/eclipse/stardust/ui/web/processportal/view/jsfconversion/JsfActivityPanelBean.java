@@ -94,7 +94,10 @@ public class JsfActivityPanelBean implements ViewEventHandler
       sessionRendererId += ":jsf-" + activityInstance.getOID();
    }
    
-   public void setData(HashMap<String, ? > data)
+   /**
+    * @param data
+    */
+   public void setData(HashMap<String, Object> data)
    {
       activityForm.setData();
    }

@@ -10,19 +10,26 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.faces.el.ValueBinding;
 import javax.faces.validator.ValidatorException;
 
+import org.eclipse.stardust.common.error.PublicException;
+import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
+import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.engine.core.pojo.data.JavaDataTypeUtils;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.PortalBackingBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
@@ -63,7 +70,65 @@ public class JsfBackingBeanUtils
 
       try
       {
-         ReflectionUtils.invokeMethod(targetObject, "setData", inData);
+         if (null != ReflectionUtils.getMethod(targetObject, "setData", inData))
+         {
+            if (trace.isDebugEnabled())
+            {
+               trace.debug("Performing Backing Bean In Data Mappings with new approach. Calling setData()");
+            }
+
+            ReflectionUtils.invokeMethod(targetObject, "setData", inData);
+         }
+         else
+         {
+            // Maintain Backword Compatibility
+            if (trace.isDebugEnabled())
+            {
+               trace.debug("Performing Backing Bean In Data Mappings with old approach.");
+            }
+
+            for (Iterator i = jsfContext.getAllInDataMappings().iterator(); i.hasNext();)
+            {
+               DataMapping mapping = (DataMapping) i.next();
+   
+               String mappingId = mapping.getId();
+               Object value = inData.get(mappingId);
+   
+               try
+               {
+                  if (trace.isDebugEnabled())
+                  {
+                     trace.debug("Value " + value + " retrieved for mapping " + mappingId);
+                  }
+                  
+                  if (StringUtils.isEmpty(mapping.getApplicationPath()))
+                  {
+                     JavaDataTypeUtils.evaluate(mapping.getApplicationAccessPoint().getId(),
+                           targetObject, value);
+                  }
+                  else
+                  {
+                     Object ap = JavaDataTypeUtils.evaluate(
+                           mapping.getApplicationAccessPoint().getId(), targetObject);
+                     JavaDataTypeUtils.evaluate(mapping.getApplicationPath(), ap, value);
+                  }
+               }
+               catch (InvocationTargetException e)
+               {
+                  // PortalException pe = new PortalException(e);
+                  // pe.setSummary(Localizer.getString(ProcessLocalizerKey.FAILED_EVALUATING_DATA_MAPPING));
+                  trace.error("Failed evaluating data mapping: " + e);
+                  // throw pe;
+               }
+               catch (PublicException e)
+               {
+                  // PortalException pe = new PortalException(e);
+                  // pe.setSummary(Localizer.getString(ProcessLocalizerKey.FAILED_EVALUATING_DATA_MAPPING)); 
+                  trace.error("Failed evaluating data mapping: " + e);
+                  // throw pe;
+               }
+            }
+         }
       }
       catch (Exception e)
       {
@@ -123,16 +188,79 @@ public class JsfBackingBeanUtils
 
          if (returnValue instanceof Map)
          {
+            if (trace.isDebugEnabled())
+            {
+               trace.debug("Performing Backing Bean Out Data Mappings with new approach.");
+            }
+
             return (Map)returnValue;
          }
          else
          {
-            StringBuffer msg = new StringBuffer("Failed evaluating out data mapping. Out Data Retrived is not an instance of Map");
-            msg.append("\nData: " + returnValue);
-            trace.warn(msg.toString());
+            // Maintain Backword Compatibility
+            if (trace.isDebugEnabled())
+            {
+               trace.debug("Performing Backing Bean Out Data Mappings with old approach.");
+            }
 
-            PortalException pe = new PortalException(ProcessPortalErrorClass.FAILED_EVALUATING_OUT_DATA_MAPPING);
-            throw pe;
+            Map outData = CollectionUtils.newMap();
+
+            for (Iterator i = jsfContext.getAllOutDataMappings().iterator(); i.hasNext();)
+            {
+               DataMapping mapping = (DataMapping) i.next();
+               String mappingID = mapping.getId();
+
+               if ("returnValue".equals(mapping.getApplicationAccessPoint().getId()))
+               {
+                  outData.put(mappingID, returnValue);
+               }
+               else
+               {
+                  try
+                  {
+                     Object outValue;
+                     if (StringUtils.isEmpty(mapping.getApplicationPath()))
+                     {
+                        outValue = JavaDataTypeUtils.evaluate(
+                              mapping.getApplicationAccessPoint().getId(), targetObject);
+                     }
+                     else
+                     {
+                        Object ap = JavaDataTypeUtils.evaluate(
+                              mapping.getApplicationAccessPoint().getId(), targetObject);
+                        outValue = JavaDataTypeUtils.evaluate(
+                              mapping.getApplicationPath(), ap);
+                     }
+                     
+                     if (trace.isDebugEnabled())
+                     {
+                        trace.debug("Value " + outValue + " retrieved for mapping "
+                              + mappingID);
+                     }
+                     outData.put(mappingID, outValue);
+                  }
+                  catch (InvocationTargetException e)
+                  {
+                     PortalException pe = new PortalException(
+                           ProcessPortalErrorClass.FAILED_EVALUATING_OUT_DATA_MAPPING, e);
+                     StringBuffer msg = new StringBuffer("Failed evaluating out data mapping (id: ");
+                     msg.append(mappingID).append("): ").append(e.getCause());
+                     trace.warn(msg.toString());
+                     throw pe;
+                  }
+                  catch (PublicException e)
+                  {
+                     PortalException pe = new PortalException(
+                           ProcessPortalErrorClass.FAILED_EVALUATING_OUT_DATA_MAPPING, e);
+                     StringBuffer msg = new StringBuffer("Failed evaluating out data mapping (id: ");
+                     msg.append(mappingID).append("): ").append(e.getCause());
+                     trace.warn(msg.toString());
+                     throw pe;
+                  }
+               }
+            }
+
+            return outData;
          }
       }
       catch (ValidatorException e)
