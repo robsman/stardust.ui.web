@@ -30,6 +30,7 @@ import org.eclipse.stardust.ui.web.common.app.View.ViewState;
 import org.eclipse.stardust.ui.web.common.configuration.ConfigurationConstants;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
+import org.eclipse.stardust.ui.web.common.event.PerspectiveEvent.PerspectiveEventType;
 import org.eclipse.stardust.ui.web.common.event.ViewDataEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewDataEventHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
@@ -208,7 +209,9 @@ public class PortalApplication
 
          getPortalUiController().broadcastVetoableViewEvent(getFocusView(),
                ViewEventType.LAUNCH_PANELS_ACTIVATED);
-   
+
+         getPortalUiController().broadcastNonVetoablePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
+
          if (isPinViewOpened())
          {
             getPortalUiController().broadcastVetoableViewEvent(getPinView(),
@@ -230,7 +233,9 @@ public class PortalApplication
 
          getPortalUiController().broadcastVetoableViewEvent(getFocusView(),
                ViewEventType.LAUNCH_PANELS_DEACTIVATED);
-   
+
+         getPortalUiController().broadcastNonVetoablePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_DEACTIVATED);
+
          if (isPinViewOpened())
          {
             getPortalUiController().broadcastVetoableViewEvent(getPinView(),
@@ -246,6 +251,8 @@ public class PortalApplication
    {
       if (!isFullScreenModeActivated())
       {
+         getPortalUiController().broadcastNonVetoablePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_DEACTIVATED);
+
          closeOverflowTabIframePopup();
 
          boolean success = getPortalUiController().broadcastVetoableViewEvent(getFocusView(),
@@ -319,6 +326,8 @@ public class PortalApplication
          // As this view already returned success for TO_BE_FULL_SCREENED
          getPortalUiController().broadcastNonVetoableViewEvent(getFocusView(),
                ViewEventType.RESTORED_TO_NORMAL);
+         getPortalUiController().broadcastNonVetoablePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
+         FacesUtils.refreshPage();
       }
    }
 

@@ -22,6 +22,8 @@ public class PerspectiveEvent
    {
       ACTIVATED,
       DEACTIVATED,
+      LAUNCH_PANELS_ACTIVATED,
+      LAUNCH_PANELS_DEACTIVATED
    }
 
    private final PerspectiveEventType type;

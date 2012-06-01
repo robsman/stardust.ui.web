@@ -1268,6 +1268,16 @@ public class PortalUiController
          }
       }
    }
+   
+   /**
+    * Broadcasts events for the "current perspective".
+    * 
+    * @param eventType
+    */
+   void broadcastNonVetoablePerspectiveEvent(PerspectiveEventType eventType)
+   {
+      broadcastNonVetoablePerspectiveEvent(currentPerspective, eventType);
+   }
 
    protected <I> I resolvePerspectiveController(IPerspectiveDefinition perspective, Class<I> clazz)
    {
