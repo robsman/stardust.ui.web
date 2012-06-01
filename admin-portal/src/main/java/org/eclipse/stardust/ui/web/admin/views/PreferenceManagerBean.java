@@ -188,34 +188,31 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
     */
    private void createTable()
    {
-      List<ColumnPreference> fixedCols = new ArrayList<ColumnPreference>();
+      List<ColumnPreference> cols = new ArrayList<ColumnPreference>();
       ColumnPreference scopeCol = new ColumnPreference("Scope", "scope", ColumnDataType.STRING, getMessages()
             .getString("scope.label"), null, true, false);
-      fixedCols.add(scopeCol);
+      cols.add(scopeCol);
 
       ColumnPreference moduleIdCol = new ColumnPreference("ModuleId", "moduleId", ColumnDataType.STRING, getMessages()
             .getString("moduleId.label"), null, true, true);
-      fixedCols.add(moduleIdCol);
+      cols.add(moduleIdCol);
 
       ColumnPreference preferenceIdCol = new ColumnPreference("PreferenceId", "preferenceId", ColumnDataType.STRING,
             getMessages().getString("preferenceId.label"), null, true, true);
-      fixedCols.add(preferenceIdCol);
+      cols.add(preferenceIdCol);
 
       ColumnPreference preferenceNameCol = new ColumnPreference("PreferenceName", "preferenceName",
             ColumnDataType.STRING, getMessages().getString("preferenceName.label"), null, true, true);
-      fixedCols.add(preferenceNameCol);
+      cols.add(preferenceNameCol);
 
       ColumnPreference preferenceValueCol = new ColumnPreference("PreferenceValue", "preferenceValue",
             ColumnDataType.STRING, getMessages().getString("preferenceValue.label"), null, true, true);
-      fixedCols.add(preferenceValueCol);
-
-      List<ColumnPreference> selectableCols = new ArrayList<ColumnPreference>();
-
-      IColumnModel columnModel = new DefaultColumnModel(selectableCols, fixedCols, null,
+      cols.add(preferenceValueCol);
+      
+      IColumnModel columnModel = new DefaultColumnModel(cols, null, null,
             UserPreferencesEntries.M_ADMIN, "prefManagerBean");
-      TableColumnSelectorPopup colSelecpopup = new TableColumnSelectorPopup(columnModel);
-
-      prefManagerTable = new SortableTable<PreferenceManagerTableEntry>(colSelecpopup, null,
+      
+      prefManagerTable = new SortableTable<PreferenceManagerTableEntry>(columnModel, null,
             new SortableTableComparator<PreferenceManagerTableEntry>("moduleId", true));
       prefManagerTable.setRowSelector(new DataTableRowSelector("selected"));
    }
