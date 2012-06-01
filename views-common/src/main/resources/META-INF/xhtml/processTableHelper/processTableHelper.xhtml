@@ -23,16 +23,17 @@
 	</c:if>
 
 	<ice:panelGroup rendered="#{includeHelpers}">
-		<ui:include src="/plugins/views-common/views/case/createCaseDialog.xhtml" />
 		<ui:include	src="/plugins/views-common/views/case/attachToCaseDialog.xhtml" />
 		<ui:include	src="/plugins/views-common/dialogs/switchProcessDialog.xhtml" />
 		<ui:include	src="/plugins/views-common/dialogs/joinProcessDialog.xhtml" />
 		<ui:include	src="/plugins/views-common/contentmgmt/views/notificationMessage.xhtml" />
 	</ice:panelGroup>
 	
-	<!-- included outside  ice:panelGroup to avoid double click issue   -->
+	<!-- included abortProcess outside  ice:panelGroup to avoid double click issue   -->
+	<!-- included createCase outside ice:panelGroup to avoid caseName going null  on CreateCase Submit -->
 	<c:if test="#{includeHelpers}" >
 		<ui:include src="/plugins/views-common/dialogs/abortProcess.xhtml"  />
+		<ui:include src="/plugins/views-common/views/case/createCaseDialog.xhtml" />
 	</c:if>
 	
 	<pc:automationTag value="auto-COM-ProcTbl-DataTable" />
