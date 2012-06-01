@@ -478,10 +478,10 @@ if ( !InfinityBpm.Core) {
 	  	return {'width' : winW, 'height' : winH};
     }
     
-    function positionMessageDialog(divId) {
+    function positionMessageDialog(divId, doc) {
     	var windowSize = getBrowserDimensions();
     	var scrollPos = getWindowScrollPosition(mainIppFrame);
-    	var popupDivs = getElementsWithIDLike('div', divId);
+    	var popupDivs = getElementsWithIDLike('div', divId, doc);
     	if (popupDivs && (popupDivs.length > 0)) {
     		for (var i = 0; i < popupDivs.length; i++) {
 	    		try {
@@ -498,17 +498,22 @@ if ( !InfinityBpm.Core) {
     	}
     }
     
-    function getElementsWithIDLike(tagName, elementId) {
-    	var allElems = document.getElementsByTagName(tagName);
+    function getElementsWithIDLike(tagName, elementId, doc) {
+    	var allElems;
+    	if (doc) {
+    		allElems = doc.getElementsByTagName(tagName);
+    	} else {
+    		allElems = document.getElementsByTagName(tagName);
+    	}
     	var selectedElems = [];    	
     	if (allElems) {
-    		for (var i = 0; i < allElems.length; i++) {    			
+    		for (var i = 0; i < allElems.length; i++) {
     			if (allElems[i].id && (allElems[i].id.indexOf(elementId) >= 0)) {
     				selectedElems.push(allElems[i]);
     			}
     		}    			
     	}
-    	
+
     	return selectedElems;
     }
     
@@ -613,8 +618,8 @@ if ( !InfinityBpm.Core) {
     	  setLogoutUri(uri);
       },
       
-      positionMessageDialog : function(divId) {
-    	  positionMessageDialog(divId);
+      positionMessageDialog : function(divId, doc) {
+    	  positionMessageDialog(divId, doc);
       },
       
       isFF : function() {
