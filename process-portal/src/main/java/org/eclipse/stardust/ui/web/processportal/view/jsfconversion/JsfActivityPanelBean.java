@@ -29,7 +29,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
  * @author Subodh.Godbole
  * 
  */
-public class JsfActivityPanelBean implements ViewEventHandler
+public class JsfActivityPanelBean implements IJsfActivityPanelBean, ViewEventHandler
 {
    protected ManualActivityForm activityForm;
    private String sessionRendererId;
@@ -94,8 +94,8 @@ public class JsfActivityPanelBean implements ViewEventHandler
       sessionRendererId += ":jsf-" + activityInstance.getOID();
    }
    
-   /**
-    * @param data
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.processportal.view.jsfconversion.IJsfActivityPanelBean#setData(java.util.HashMap)
     */
    public void setData(HashMap<String, Object> data)
    {
