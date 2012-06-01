@@ -801,7 +801,7 @@ public class ActivityDetailsBean extends UIComponentBean
          try
          {
             Object beanObject = getBackingBeanForJsfActivity();
-            if (null != beanObject)
+            if (null != beanObject && null != ReflectionUtils.getMethod(beanObject, "getActivityForm", (Object[]) null))
             {
                return (ManualActivityForm)ReflectionUtils.invokeMethod(beanObject, "getActivityForm");
             }
