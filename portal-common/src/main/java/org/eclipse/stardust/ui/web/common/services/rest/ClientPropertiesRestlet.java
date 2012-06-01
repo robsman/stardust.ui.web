@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.common.services.rest;
 
 import java.util.Enumeration;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import javax.ws.rs.GET;
@@ -23,8 +24,10 @@ import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 
 /**
+ * Serves Message Bundles via REST call. Restriction is bundle name should end with "client-messages" 
  * @author Subodh.Godbole
  *
  */
@@ -32,6 +35,8 @@ import org.eclipse.stardust.ui.web.common.log.Logger;
 public class ClientPropertiesRestlet
 {
    private static final Logger trace = LogManager.getLogger(ClientPropertiesRestlet.class);
+
+   private static final String POST_FIX = "client-messages";
 
    /**
     * @param bundleName
@@ -41,26 +46,36 @@ public class ClientPropertiesRestlet
    @GET
    public Response getRetrieve(@PathParam("bundleName") String bundleName, @PathParam("locale") String locale)
    {
-      // TODO have some naming convention for properties exposed over web
-      try
+      if (StringUtils.isNotEmpty(bundleName) && bundleName.endsWith(POST_FIX))
       {
-         StringBuffer bundleData = new StringBuffer();
-         ResourceBundle bundle = ResourceBundle.getBundle(bundleName, getLocaleObject(locale));
-
-         String key;
-         Enumeration<String> keys = bundle.getKeys();
-         while (keys.hasMoreElements())
+         try
          {
-            key = keys.nextElement();
-            bundleData.append(key).append("=").append(bundle.getString(key)).append("\n");
-         }
+            StringBuffer bundleData = new StringBuffer();
+            ResourceBundle bundle = ResourceBundle.getBundle(bundleName, getLocaleObject(locale));
    
-         return Response.ok(bundleData.toString(), MediaType.TEXT_PLAIN_TYPE).build();
+            String key;
+            Enumeration<String> keys = bundle.getKeys();
+            while (keys.hasMoreElements())
+            {
+               key = keys.nextElement();
+               bundleData.append(key).append("=").append(bundle.getString(key)).append("\n");
+            }
+      
+            return Response.ok(bundleData.toString(), MediaType.TEXT_PLAIN_TYPE).build();
+         }
+         catch (MissingResourceException mre)
+         {
+            return Response.status(Status.NOT_FOUND).build();
+         }
+         catch (Exception e)
+         {
+            trace.error("Unable to retrieve bundle", e);
+            return Response.status(Status.BAD_REQUEST).build();
+         }
       }
-      catch (Exception e)
+      else
       {
-         trace.error("Unable to retrieve bundle", e);
-         return Response.status(Status.BAD_REQUEST).build();
+         return Response.status(Status.FORBIDDEN).build();
       }
    }
    
