@@ -58,4 +58,5 @@ public interface IDocumentContentInfo
 
    boolean isSupportsVersioning();
    IVersionTracker getVersionTracker();
+   boolean isShowDetails();
 }

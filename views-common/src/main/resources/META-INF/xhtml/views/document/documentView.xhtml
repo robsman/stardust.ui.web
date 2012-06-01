@@ -28,7 +28,8 @@
 	
 	<ice:panelGroup rendered="#{documentHandlerBean.loadSuccessful}">
 		<ice:panelCollapsible id="detailsPanel"  expanded="#{documentHandlerBean.detailsPanelExpanded}"
-			actionListener="#{documentHandlerBean.detailsPanelCollapseListener}">
+			actionListener="#{documentHandlerBean.detailsPanelCollapseListener}"
+			rendered="#{documentHandlerBean.documentContentInfo.showDetails}">
 			<f:facet name="header">
 				<ice:panelGroup>
 					<ice:outputText

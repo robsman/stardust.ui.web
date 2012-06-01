@@ -44,6 +44,7 @@ public abstract class AbstractDocumentContentInfo implements IDocumentContentInf
    
    protected boolean contentEditable = true;
    protected boolean metaDataEditable = true;
+   protected boolean showDetails = true;
    
    public IDocumentContentInfo saveFile(String filePath)
    {
@@ -158,5 +159,10 @@ public abstract class AbstractDocumentContentInfo implements IDocumentContentInf
    public void setDocumentType(DocumentType documentType)
    {
       this.documentType = documentType;
+   }
+
+   public boolean isShowDetails()
+   {
+      return showDetails;
    }
 }

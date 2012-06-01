@@ -47,6 +47,7 @@ public class FileSystemJCRDocument extends FileSystemDocument
       this.description = description;
       this.comments = comments;
       this.metaDataEditable = true;
+      this.showDetails = true;
    }
 
    /**

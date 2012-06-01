@@ -47,14 +47,15 @@ public class FileSystemDocument extends AbstractDocumentContentInfo
       file = new File(resourcePath);
       this.documentType = documentType;
       this.name = file.getName();
-      mimeType = MimeTypesHelper.detectMimeType(getName(), "");
+      mimeType = MimeTypesHelper.detectMimeType(this.name, "");
       this.contentEditable = editable;
-      this.metaDataEditable = false;
       init();
    }
 
    private void init()
    {
+      this.metaDataEditable = false;
+      this.showDetails = false;
       MessagesViewsCommonBean viewBean = MessagesViewsCommonBean.getInstance();
       author = viewBean.getString("views.documentView.properties.author.default");
       id = file.getPath();
