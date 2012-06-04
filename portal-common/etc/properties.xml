@@ -1139,7 +1139,7 @@
             setups="production-withLiberation, development-withLiberation, build" />
          <property
             name="servlet[REST].init-param[JERSEY_PROP_CLASSNAMES].param-value"
-            value="com.infinity.bpm.rt.api.rest.interactions.UiInteractionsRestlet; org.eclipse.stardust.ui.web.graphics.service.rest.ImageViewerMetadataRestlet; org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentRepositoryRestlet; com.infinity.bpm.rt.api.rest.processinterface.ProcessesRestlet; com.infinity.bpm.rt.api.rest.processinterface.TypeDeclarationsRestlet; com.infinity.bpm.rt.api.rest.processinterface.RuntimeExceptionProvider"
+            value="com.infinity.bpm.rt.api.rest.interactions.UiInteractionsRestlet; org.eclipse.stardust.ui.web.common.services.rest.ClientPropertiesRestlet; org.eclipse.stardust.ui.web.graphics.service.rest.ImageViewerMetadataRestlet; org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentRepositoryRestlet; com.infinity.bpm.rt.api.rest.processinterface.ProcessesRestlet; com.infinity.bpm.rt.api.rest.processinterface.TypeDeclarationsRestlet; com.infinity.bpm.rt.api.rest.processinterface.RuntimeExceptionProvider"
             setups="production-withLiberation, development-withLiberation, build" />
 
          <property name="servlet[SPRING_REMOTING].servlet-name"
@@ -2263,7 +2263,7 @@
             setups="production-withLiberation, development-withLiberation, build" />
          <property
             name="servlet[REST].init-param[JERSEY_PROP_CLASSNAMES].param-value"
-            value="com.infinity.bpm.rt.api.rest.interactions.UiInteractionsRestlet; org.eclipse.stardust.ui.web.graphics.service.rest.ImageViewerMetadataRestlet; org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentRepositoryRestlet; com.infinity.bpm.rt.api.rest.processinterface.ProcessesRestlet; com.infinity.bpm.rt.api.rest.processinterface.TypeDeclarationsRestlet; com.infinity.bpm.rt.api.rest.processinterface.RuntimeExceptionProvider"
+            value="com.infinity.bpm.rt.api.rest.interactions.UiInteractionsRestlet; org.eclipse.stardust.ui.web.common.services.rest.ClientPropertiesRestlet; org.eclipse.stardust.ui.web.graphics.service.rest.ImageViewerMetadataRestlet; org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentRepositoryRestlet; com.infinity.bpm.rt.api.rest.processinterface.ProcessesRestlet; com.infinity.bpm.rt.api.rest.processinterface.TypeDeclarationsRestlet; com.infinity.bpm.rt.api.rest.processinterface.RuntimeExceptionProvider"
             setups="production-withLiberation, development-withLiberation, build" />
 
          <property
