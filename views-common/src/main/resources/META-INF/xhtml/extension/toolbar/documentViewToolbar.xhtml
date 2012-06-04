@@ -51,7 +51,7 @@
 
 		<ice:panelGroup rendered="#{not empty documentHandlerBean.fileOutputResource}"
 		title="#{documentHandlerBean.messages['download.label']}" styleClass="toolbar-button">
-			<ice:outputResource 
+			<ice:outputResource shared="false"
 				image="/plugins/views-common/images/icons/page_white_put.png"
 				resource="#{documentHandlerBean.fileOutputResource}"
 				label="#{documentHandlerBean.messages['download.label']}"

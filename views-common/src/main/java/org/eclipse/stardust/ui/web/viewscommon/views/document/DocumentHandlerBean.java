@@ -428,6 +428,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
                labelProvider);
 
          documentTypeName = null;
+         fileOutputResource = null;
       }
       catch (Exception e)
       {
@@ -824,7 +825,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    {
       this.inputDescription = inputDescription;
       if (isDescriptionChanged() && (contentHandler instanceof ICustomDocumentSaveHandler))
-      {
+      { 
          ((ICustomDocumentSaveHandler) contentHandler).setDescriptionChanged(true);
       }
    }
