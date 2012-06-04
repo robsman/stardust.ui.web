@@ -383,6 +383,34 @@ public class I18nUtils
    }
 
    /**
+    * @param keyEntry
+    * @param model
+    * @param defaultLabel
+    * @return
+    */
+   public static String getLabel(String keyEntry, Model model, String defaultLabel)
+   {
+      String label = null;
+
+      LocalizerKey key = new StringLocalizerKey(keyEntry, model);
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("use '" + key.getBundleName() + "' for label receivment");
+      }
+
+      try
+      {
+         label = Localizer.getString(key);
+      }
+      catch (Exception e)
+      {
+         // TODO when should logged the error?
+      }
+
+      return StringUtils.isEmpty(label) ? defaultLabel : label;
+   }
+
+   /**
     * @param typedXPath
     * @param model
     * @param defaultLabel

@@ -124,7 +124,17 @@ public class ManualActivityLabelProvider extends DefaultLabelProvider
          return MessagePropertiesBean.getInstance().getString(key);
       }
 
-      return super.getLabel(key);
+      String label = I18nUtils.getLabel(key, model, null);
+
+      // If I18N Label not found, then return from super Default Provider 
+      if(StringUtils.isNotEmpty(label))
+      {
+         return label;
+      }
+      else
+      {
+         return super.getLabel(key);
+      }
    }
 
    /* (non-Javadoc)
