@@ -57,16 +57,17 @@
 												</ice:commandLink>
 											</ice:panelGroup>
 										</ice:panelGrid>
-										<ice:selectBooleanCheckbox partialSubmit="true"
-											rendered="#{delegationBean.limitedSearchEnabled and !delegationBean.delegateCase}"
-											value="#{delegationBean.allUserRoles}" tabindex="1"
-											accesskey="1"
-											valueChangeListener="#{delegationBean.showAllUserRolesValueChangeListener}">
-											<pc:automationTag value="auto-COM-DelegateDlg-SrchAll" standAlone="false"/>
-										</ice:selectBooleanCheckbox>
-										<ice:outputLabel
-											value="#{views_common_msgPropsBean['delegation.showAllUserRoles']}"
-											styleClass="label-form" rendered="#{!delegationBean.delegateCase}" />
+										<ice:panelGroup rendered="#{delegationBean.limitedSearchEnabled and !delegationBean.delegateCase}">
+											<ice:selectBooleanCheckbox partialSubmit="true"
+												value="#{delegationBean.allUserRoles}" tabindex="1"
+												accesskey="1"
+												valueChangeListener="#{delegationBean.showAllUserRolesValueChangeListener}">
+												<pc:automationTag value="auto-COM-DelegateDlg-SrchAll" standAlone="false"/>
+											</ice:selectBooleanCheckbox>
+											<ice:outputLabel
+												value="#{views_common_msgPropsBean['delegation.showAllUserRoles']}"
+												styleClass="label-form" rendered="#{!delegationBean.delegateCase}" />
+										</ice:panelGroup>	
 									</ice:panelGroup>
 		
 									<pc:automationTag value="auto-COM-DelegateDlg-DataTable"/>
@@ -203,16 +204,17 @@
 											</ice:commandLink>
 											</ice:panelGroup>
 										</ice:panelGrid>
-										<ice:selectBooleanCheckbox partialSubmit="true"
-											rendered="#{delegationBean.limitedSearchEnabled and !delegationBean.delegateCase}"
-											value="#{delegationBean.allUserRoles}" tabindex="1"
-											accesskey="1"
-											valueChangeListener="#{delegationBean.showAllUserRolesValueChangeListener}">
-											<pc:automationTag value="auto-COM-DelegateDlg-SrchAll" standAlone="false"/>
-										</ice:selectBooleanCheckbox>
-										<ice:outputLabel
-											value="#{views_common_msgPropsBean['delegation.searchAllUserRoles']}"
-											styleClass="label-form" rendered="#{!delegationBean.delegateCase}" />
+										<ice:panelGroup rendered="#{delegationBean.limitedSearchEnabled and !delegationBean.delegateCase}">
+											<ice:selectBooleanCheckbox partialSubmit="true"
+												value="#{delegationBean.allUserRoles}" tabindex="1"
+												accesskey="1"
+												valueChangeListener="#{delegationBean.showAllUserRolesValueChangeListener}">
+												<pc:automationTag value="auto-COM-DelegateDlg-SrchAll" standAlone="false"/>
+											</ice:selectBooleanCheckbox>
+											<ice:outputLabel
+												value="#{views_common_msgPropsBean['delegation.searchAllUserRoles']}"
+												styleClass="label-form" rendered="#{!delegationBean.delegateCase}" />
+										</ice:panelGroup>	
 									</ice:panelGroup>
 									<ice:panelGroup styleClass="clearing" />
 		
