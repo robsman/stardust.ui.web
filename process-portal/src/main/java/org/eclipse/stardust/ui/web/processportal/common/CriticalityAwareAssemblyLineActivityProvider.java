@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.processportal.common;
 import java.util.Set;
 
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
+import org.eclipse.stardust.ui.web.viewscommon.common.provider.DefaultAssemblyLineActivityProvider;
 
 
 /**

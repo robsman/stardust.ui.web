@@ -18,6 +18,7 @@ import org.eclipse.stardust.common.error.ConcurrencyException;
 import org.eclipse.stardust.engine.api.model.ConditionalPerformer;
 import org.eclipse.stardust.engine.api.model.ModelParticipant;
 import org.eclipse.stardust.engine.api.model.Participant;
+import org.eclipse.stardust.engine.api.query.FilterTerm;
 import org.eclipse.stardust.engine.api.query.ParticipantWorklist;
 import org.eclipse.stardust.engine.api.query.PerformingParticipantFilter;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
@@ -25,9 +26,13 @@ import org.eclipse.stardust.engine.api.query.UserWorklist;
 import org.eclipse.stardust.engine.api.query.Worklist;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssuranceState;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.ui.web.viewscommon.common.AbstractProcessExecutionPortal;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
+import org.eclipse.stardust.ui.web.viewscommon.common.provider.IAssemblyLineActivityProvider;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
+
 
 
 /**
@@ -44,8 +49,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 public class DefaultAssemblyLineActivityProvider implements IAssemblyLineActivityProvider
 {
 
-   private WorklistQuery createWorklistQuery(AbstractProcessExecutionPortal portal, 
-         Set participantIds, boolean outline)
+   protected WorklistQuery createWorklistQuery(Set participantIds, boolean outline)
    {
       WorklistQuery query = new WorklistQuery();
       query.setUserContribution(SubsetPolicy.UNRESTRICTED);
@@ -56,12 +60,24 @@ public class DefaultAssemblyLineActivityProvider implements IAssemblyLineActivit
                PerformingParticipantFilter.forModelParticipant(participantId, false),
                outline ? new SubsetPolicy(0, true) : null);
       }
+      FilterTerm filter = query.getFilter().addAndTerm();
+      long caseActivityOID = ModelCache.findModelCache().getDefaultCaseActivity().getRuntimeElementOID();
+      filter.add(WorklistQuery.ACTIVITY_OID.notEqual(caseActivityOID));
       return query;
    }
    
    private boolean isAssemblyLineActivity(Set assemblyLineParticipants, ActivityInstance ai)
    {
-      ModelParticipant modelParticipant = ai.getActivity().getDefaultPerformer();
+      ModelParticipant modelParticipant = null ;
+      
+      if (QualityAssuranceState.IS_QUALITY_ASSURANCE.equals(ai.getQualityAssuranceState()))
+      {
+         modelParticipant = ai.getActivity().getQualityAssurancePerformer();
+      }
+      else
+      {
+         modelParticipant = ai.getActivity().getDefaultPerformer();
+      }
       
       if(modelParticipant != null)
       {
@@ -75,6 +91,7 @@ public class DefaultAssemblyLineActivityProvider implements IAssemblyLineActivit
                aiParticipantId = rp.getId();
             }
          }
+
          if(assemblyLineParticipants != null)
          {
             for (Iterator patIter = assemblyLineParticipants.iterator(); patIter.hasNext();)
@@ -94,12 +111,12 @@ public class DefaultAssemblyLineActivityProvider implements IAssemblyLineActivit
          AbstractProcessExecutionPortal portal, Set participantIds) throws PortalException
    {
       ActivityInstance result = null;
-      WorkflowService ws = portal.getWorkflowService();
 
+      WorkflowService ws = portal.getWorkflowService();
       if(ws != null)
       {
          Worklist wl = ws.getWorklist(
-               createWorklistQuery(portal, participantIds, false));
+               createWorklistQuery(participantIds, false));
    
          for (Iterator i = wl.getCumulatedItems().iterator(); i.hasNext() && result == null;)
          {
@@ -128,9 +145,8 @@ public class DefaultAssemblyLineActivityProvider implements IAssemblyLineActivit
          Set participantIds) throws PortalException
    {
       WorkflowService ws = portal.getWorkflowService();
-      
       Worklist worklist = ws != null ? ws.getWorklist(
-            createWorklistQuery(portal, participantIds, true)) : null;
+            createWorklistQuery(participantIds, true)) : null;
       long activityCount = 0;
       if(worklist != null)
       {
