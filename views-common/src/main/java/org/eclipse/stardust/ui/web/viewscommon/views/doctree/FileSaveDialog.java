@@ -72,6 +72,7 @@ public class FileSaveDialog extends PopupUIComponentBean
       message = "";
       callbackHandler = null;
       showComment = false;
+      viewWarning = false;
 
       customDialog = false;
       customDialogSource = null;
