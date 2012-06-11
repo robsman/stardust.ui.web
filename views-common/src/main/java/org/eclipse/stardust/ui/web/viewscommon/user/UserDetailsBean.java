@@ -19,6 +19,7 @@ import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
@@ -85,32 +86,50 @@ public class UserDetailsBean extends PopupUIComponentBean
      * @param ae
      * @throws PortalException
      */
-    public void openUserDetailsDialog(ActionEvent ae) throws PortalException
-    {
-        Map<?, ?> param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-        Object obj = param.get(USER_OID);
-        Long userOid = new Long(obj.toString());
-        
-        Object isModel = param.get(IS_MODEL);
-        if(isModel!=null){
-           model =Boolean.parseBoolean(isModel.toString());
-           setPopupAutocenter();
-        }else{
-           model=true;
-        }
-        
+   public void openUserDetailsDialog(ActionEvent ae) throws PortalException
+   {
+      Map< ? , ? > param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+      Object obj = param.get(USER_OID);
+      if (null == obj)
+      {
+         return;
+      }
 
-        UserService userService = ServiceFactoryUtils.getUserService();
+      try
+      {
+         Long userOid = Long.parseLong(obj.toString());
+         if (0 == userOid)
+         {
+            return;
+         }
 
-        if ((userOid != null) && (userService != null))
-        {
+         UserService userService = ServiceFactoryUtils.getUserService();
+         if ((userOid != null) && (userService != null))
+         {
             user = userService.getUser(userOid.longValue());
-        }
+         }
+      }
+      catch (Exception e)
+      {
+         ExceptionHandler.handleException(e);
+         return;
+      }
 
-        /* Sets the user image. If user is null will set to default image. */
-        userImageURI = MyPicturePreferenceUtils.getUsersImageURI(user);
-        super.openPopup();
-    }
+      Object isModel = param.get(IS_MODEL);
+      if (isModel != null)
+      {
+         model = Boolean.parseBoolean(isModel.toString());
+         setPopupAutocenter();
+      }
+      else
+      {
+         model = true;
+      }
+
+      /* Sets the user image. If user is null will set to default image. */
+      userImageURI = MyPicturePreferenceUtils.getUsersImageURI(user);
+      super.openPopup();
+   }
 
     /**
     * 

@@ -17,7 +17,6 @@ import java.util.List;
 import javax.faces.component.UIComponent;
 import javax.faces.event.ActionEvent;
 
-import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.LogEntryDetails;
@@ -29,7 +28,6 @@ import org.eclipse.stardust.ui.web.admin.AdminportalConstants;
 import org.eclipse.stardust.ui.web.admin.ResourcePaths;
 import org.eclipse.stardust.ui.web.admin.WorkflowFacade;
 import org.eclipse.stardust.ui.web.admin.common.configuration.UserPreferencesEntries;
-import org.eclipse.stardust.ui.web.admin.messages.AdminMessagesPropertiesBean;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
@@ -48,7 +46,6 @@ import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSortHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
-import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
 
 
@@ -63,8 +60,6 @@ public class OverviewBean extends PopupUIComponentBean
    private static final Logger trace = LogManager.getLogger(OverviewBean.class);
 
    private WorkflowFacade workflowFacade;
-
-   private AdminMessagesPropertiesBean propsBean;
 
    private PaginatorDataTable<LogTableEntry, LogEntry> logEntriesTable;
 
@@ -134,7 +129,6 @@ public class OverviewBean extends PopupUIComponentBean
        {         
            workflowFacade = (WorkflowFacade) SessionContext.findSessionContext().lookup(
                  AdminportalConstants.WORKFLOW_FACADE);
-           propsBean = AdminMessagesPropertiesBean.getInstance();
 
            initialize();
        }
@@ -177,16 +171,9 @@ public class OverviewBean extends PopupUIComponentBean
          try
          {
             LogEntryDetails logEntry = (LogEntryDetails) resultRow;
-            String accountName = UserUtils.getUserDisplayLabel(logEntry.getUser());
-            if (StringUtils.isNotEmpty(accountName))
-            {
-               int charIndex = accountName.indexOf(":");
-               accountName = accountName.substring(charIndex + 1, accountName.length());
-            }
-    
-   
-               return new LogTableEntry(logEntry.getTimeStamp(), logEntry.getType(), logEntry.getCode(), logEntry
-                  .getContext(), logEntry.getSubject(), accountName, logEntry.getUserOID());
+            
+            return new LogTableEntry(logEntry.getTimeStamp(), logEntry.getType(), logEntry.getCode(), logEntry
+                  .getContext(), logEntry.getSubject(), logEntry.getUser(), logEntry.getUserOID());
          }
          catch (Exception e)
          {

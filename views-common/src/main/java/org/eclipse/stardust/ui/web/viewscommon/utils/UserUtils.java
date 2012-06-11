@@ -52,6 +52,7 @@ import org.eclipse.stardust.engine.core.runtime.utils.Permissions;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 
 
@@ -265,7 +266,7 @@ public class UserUtils
 
       if (StringUtils.isEmpty(label))
       {
-         label = "<Unknown User>";
+         label = MessagesViewsCommonBean.getInstance().get("common.unknown");
       }
 
       return label;

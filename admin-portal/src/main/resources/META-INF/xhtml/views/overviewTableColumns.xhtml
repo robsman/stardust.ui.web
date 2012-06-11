@@ -8,12 +8,15 @@
 	
 	<ice:panelGroup style="margin: 0px; padding: 0px;">
 		<ice:panelGroup rendered="#{col.columnName == 'Account'}">
-			<ice:commandLink actionListener="#{userDetailsBean.openUserDetailsDialog}" rendered="#{not empty row.user}">
-				<pc:automationTag value="auto-ADM-Overview-LogTable-Account" standAlone="false"/>
-				<ice:outputText value="#{row.user}"/>
+			<ice:commandLink
+				actionListener="#{userDetailsBean.openUserDetailsDialog}"
+				rendered="#{not empty row.user}" disabled="#{row.linkDisabled}">
+				<pc:automationTag value="auto-ADM-Overview-LogTable-Account"
+					standAlone="false" />
+				<ice:outputText value="#{row.user}" />
 				<f:param name="userOid" value="#{row.userOID}" />
 				<f:param name="hideDetailTable" value="#{true}" />
-			</ice:commandLink>	
+			</ice:commandLink>
 		</ice:panelGroup>
 
 		<ice:panelGroup rendered="#{col.columnName == 'Subject'}" >

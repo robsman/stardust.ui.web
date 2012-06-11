@@ -12,12 +12,13 @@ package org.eclipse.stardust.ui.web.admin.views;
 
 import java.util.Date;
 
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.runtime.LogCode;
 import org.eclipse.stardust.engine.api.runtime.LogType;
+import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.admin.messages.AdminMessagesPropertiesBean;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
-
-
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
 /**
  * @author Ankita.Patel
@@ -44,6 +45,8 @@ public class LogTableEntry extends DefaultRowModel
    private Long userOID;
 
    private String toolTipSubject;
+   
+   private boolean linkDisabled;
 
    /**
     * 
@@ -60,7 +63,7 @@ public class LogTableEntry extends DefaultRowModel
     * @param user
     */
    public LogTableEntry(Date timeStamp, LogType type, LogCode code, String context,
-         String subject, String user, Long userOID)
+         String subject, User user, Long userOID)
    {
       super();
       AdminMessagesPropertiesBean propsBean = AdminMessagesPropertiesBean.getInstance();
@@ -69,11 +72,34 @@ public class LogTableEntry extends DefaultRowModel
       this.code = propsBean.getString(CODE_PREFIX + code.getValue());
       this.context = context;
       this.subject = subject;
-      this.user = user;
       this.userOID = userOID;
+      initUser(user);
       this.toolTipSubject = subject;
    }
 
+   /**
+    * set user
+    * 
+    * @param user
+    */
+   private void initUser(User user)
+   {
+      String accountName = "";
+      if (userOID == 0 || null == user)
+      {
+         linkDisabled = true;
+      }
+
+      accountName = UserUtils.getUserDisplayLabel(user);
+
+      if (!linkDisabled && StringUtils.isNotEmpty(accountName))
+      {
+         int charIndex = accountName.indexOf(":");
+         accountName = accountName.substring(charIndex + 1, accountName.length());
+      }
+      this.user = accountName;
+   }
+   
    public Date getTimeStamp()
    {
       return timeStamp;
@@ -116,5 +142,10 @@ public class LogTableEntry extends DefaultRowModel
    public String getToolTipSubject()
    {
       return toolTipSubject;
+   }
+
+   public boolean isLinkDisabled()
+   {
+      return linkDisabled;
    }
 }
