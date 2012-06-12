@@ -512,13 +512,13 @@ public class CriticalityConfigurationBean extends UIComponentBean implements Vie
       Preferences retrievedPrefs = adminService.getPreferences(PreferenceScope.PARTITION,
             PreferencesConstants.MODULE_ID_ENGINE_INTERNALS,
             PreferencesConstants.PREFERENCE_ID_WORKFLOW_CRITICALITES);
-      Boolean criteria = (Boolean) retrievedPrefs.getPreferences().get(ActivityInstanceStateChangeMonitor.CRITICALITY_PREF_RECALC_ONCREATE);
-      
-      if (null != criteria)
+      Object value = retrievedPrefs.getPreferences().get(
+            ActivityInstanceStateChangeMonitor.CRITICALITY_PREF_RECALC_ONCREATE);
+      if (null != value)
       {
-         return criteria.booleanValue();
+         return Boolean.parseBoolean(value.toString());
       }
-      
+
       return true; //default true
    }
    
@@ -531,13 +531,14 @@ public class CriticalityConfigurationBean extends UIComponentBean implements Vie
       Preferences retrievedPrefs = adminService.getPreferences(PreferenceScope.PARTITION,
             PreferencesConstants.MODULE_ID_ENGINE_INTERNALS,
             PreferencesConstants.PREFERENCE_ID_WORKFLOW_CRITICALITES);
-      Boolean criteria = (Boolean) retrievedPrefs.getPreferences().get(ActivityInstanceStateChangeMonitor.CRITICALITY_PREF_RECALC_ONSUSPEND);
-      
-      if (null != criteria)
+      Object value = retrievedPrefs.getPreferences().get(
+            ActivityInstanceStateChangeMonitor.CRITICALITY_PREF_RECALC_ONSUSPEND);
+
+      if (null != value)
       {
-         return criteria.booleanValue();
+         return Boolean.parseBoolean(value.toString());
       }
-      
+    
       return true; //default true
    }
    
@@ -550,11 +551,11 @@ public class CriticalityConfigurationBean extends UIComponentBean implements Vie
       Preferences retrievedPrefs = adminService.getPreferences(PreferenceScope.PARTITION,
             PreferencesConstants.MODULE_ID_ENGINE_INTERNALS,
             PreferencesConstants.PREFERENCE_ID_WORKFLOW_CRITICALITES);
-      Boolean criteria = (Boolean) retrievedPrefs.getPreferences().get(UpdateCriticalityAction.CRITICALITY_PREF_RECALC_ONPRIORITY);
-      
-      if (null != criteria)
+      Object value = retrievedPrefs.getPreferences().get(UpdateCriticalityAction.CRITICALITY_PREF_RECALC_ONPRIORITY);
+
+      if (null != value)
       {
-         return criteria.booleanValue();
+         return Boolean.parseBoolean(value.toString());
       }
       
       return true; //default true

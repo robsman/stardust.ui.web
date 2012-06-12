@@ -162,7 +162,7 @@ public class CreateOrModifyPreferenceBean extends PopupUIComponentBean
       Preferences prefs = null;
       User user = null;
       Map<String, Serializable> preferenceMap = new HashMap<String, Serializable>();
-      preferenceMap.put(preferenceBean.getPreferenceName(), (Serializable) parsePreferenceValue(preferenceBean.getPreferenceValue()));
+      preferenceMap.put(preferenceBean.getPreferenceName(), (Serializable) preferenceBean.getPreferenceValue());
       UserWrapper userWrapper = getUserSelector().getSelectedValue();
       
       if (partitionPrefSelected)
@@ -222,42 +222,13 @@ public class CreateOrModifyPreferenceBean extends PopupUIComponentBean
       }
       else
       {
-         prefs.getPreferences().put(preferenceBean.getPreferenceName(), (Serializable) parsePreferenceValue(preferenceBean.getPreferenceValue()));
+         prefs.getPreferences().put(preferenceBean.getPreferenceName(), (Serializable) preferenceBean.getPreferenceValue());
       }
       prefs.setUserId(preferenceBean.getUserId());
       prefs.setRealmId(preferenceBean.getRealmId());
       return prefs;
    }
    
-   private Object parsePreferenceValue(String preferenceValue)
-   {
-      if (null != preferenceValue)
-      {
-         String prefValue = preferenceValue.toString();
-         Scanner numberValidation = new Scanner(prefValue.toString());
-         if (numberValidation.hasNextBoolean())
-         {
-            return Boolean.valueOf(prefValue);
-         }
-         if (numberValidation.hasNextInt())
-         {
-            return Integer.valueOf(prefValue);
-         }
-         else if (numberValidation.hasNextFloat())
-         {
-            return Float.valueOf(prefValue);
-         }
-         else if (numberValidation.hasNextDouble())
-         {
-            return Double.valueOf(prefValue);
-         }
-         else
-            return prefValue;
-      }
-      else
-         return null;
-   }
-
    @Override
    public void initialize()
    {}

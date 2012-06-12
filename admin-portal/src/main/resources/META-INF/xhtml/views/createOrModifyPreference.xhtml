@@ -92,9 +92,9 @@
 								value="#{prefManagerBean.messages['preferenceValue.label']}#{messages_admin['common.colon']}"
 								styleClass="label-form" />
 
-							<ice:inputTextarea id="preferenceValue"
+							<ice:inputTextarea 
 								value="#{createOrModifyPreference.preferenceBean.preferenceValue}"
-								required="true" cols="36" rows="5" partialSubmit="true">
+								required="true" cols="36" rows="5">
 								<pc:automationTag
 										value="auto-ADM-PrefMngrView-PrefMngrPopup-PreferenceValTxt"
 										standAlone="false" />
@@ -145,11 +145,10 @@
 						<ice:panelGroup>
 							<pc:automationTag value="auto-ADM-PrefMngrView-PrefMngrPopup-BtnsBar" standAlone="false" />
 							<ice:commandButton value="#{messages_admin['common.ok']}"
-								action="#{createOrModifyPreference.apply}" styleClass="button"
-								title="#{messages_admin['common.ok']}" immediate="true" />
+								action="#{createOrModifyPreference.apply}" styleClass="button" />
 							<ice:commandButton value="#{messages_admin['common.cancel']}"
 								action="#{createOrModifyPreference.closePopup}" immediate="true"
-								styleClass="button" title="#{messages_admin['common.cancel']}" />
+								styleClass="button" />
 						</ice:panelGroup>
 					</f:facet>
 				</ice:panelBorder>
