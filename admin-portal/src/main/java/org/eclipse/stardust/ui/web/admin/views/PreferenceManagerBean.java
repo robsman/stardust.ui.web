@@ -27,8 +27,10 @@ import org.eclipse.stardust.engine.api.query.PreferenceQuery;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.core.preferences.IPreferenceCache;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
+import org.eclipse.stardust.engine.core.preferences.manager.IPreferencesManager;
 import org.eclipse.stardust.ui.web.admin.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.admin.messages.AdminMessagesPropertiesBean;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
@@ -36,7 +38,6 @@ import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
-import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
@@ -344,6 +345,12 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
 
       selPreference.getPreferences().remove(selectedPrefMngrObj.getPreferenceName());
       adminService.savePreferences(selPreference);
+      IPreferencesManager prefMngr = SessionContext.findSessionContext().getPreferencesManager();
+      if (prefMngr instanceof org.eclipse.stardust.engine.core.preferences.IPreferenceCache)
+      {
+         IPreferenceCache cache = (IPreferenceCache) prefMngr;
+         cache.cleanCache(PreferenceScope.PARTITION, selectedPrefMngrObj.getModuleId(), selectedPrefMngrObj.getPreferenceId());
+      }
       update();
       prefMngrConfirmationDialog = null;
       return true;
