@@ -840,6 +840,19 @@ public class PortalApplication
    }
 
    /**
+    * @param view
+    * @param force
+    */
+   public void closeView(View view, boolean force, boolean refresh)
+   {
+      View focusView = getFocusView();
+      if (getPortalUiController().closeView(view, force, refresh))
+      {
+         handleViewClose(view, focusView, force);
+      }
+   }
+   
+   /**
     * 
     */
    public void openPinViewHorizontal()
