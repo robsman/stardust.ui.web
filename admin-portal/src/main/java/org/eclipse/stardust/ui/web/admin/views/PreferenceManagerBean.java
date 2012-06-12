@@ -79,6 +79,7 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
    private PreferenceManagerTableEntry selectedPrefMngrObj;
    private QueryService qService;
    private UserWrapper userWrapperObj;
+   private String readOnly; // temp field added to make Toolbar icons disabled in 7.0
 
    public PreferenceManagerBean()
    {
@@ -438,5 +439,17 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
    {
       this.userWrapperObj = userWrapperObj;
    }
+
+   public String getReadOnly()
+   {
+      return readOnly;
+   }
+
+   public void setReadOnly(String readOnly)
+   {
+      this.readOnly = readOnly;
+   }
+   
+   
 
 }

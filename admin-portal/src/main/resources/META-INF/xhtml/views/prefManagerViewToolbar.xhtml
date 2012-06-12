@@ -7,26 +7,31 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
 	<ice:panelGrid columns="3">
-		<ice:commandLink actionListener="#{createOrModifyPreference.openModifyPrefDialog}">
+		<ice:commandLink
+			actionListener="#{createOrModifyPreference.openModifyPrefDialog}"
+			disabled="#{prefManagerBean.readOnly}">
 			<h:graphicImage value="/plugins/views-common/images/icons/add.png"
-				style="border: none;" title="#{prefManagerBean.messages['modifyPreference.add.title']}" />
-			<f:attribute name="selectedView" value="#{prefManagerBean.selectedView}" />
-			<f:attribute name="selectedUser" value="#{prefManagerBean.userWrapperObj}" />
+				style="border: none;" styleClass="#{!prefManagerBean.readOnly? '' : 'iceCmdBtn-dis'}"
+				title="#{prefManagerBean.messages['modifyPreference.add.title']}" />
+			<f:attribute name="selectedView"
+				value="#{prefManagerBean.selectedView}" />
+			<f:attribute name="selectedUser"
+				value="#{prefManagerBean.userWrapperObj}" />
 			<pc:automationTag value="auto-ADM-PrefMngrView-ToolbarAdd"
 				standAlone="false" />
-		</ice:commandLink>	
+		</ice:commandLink>
 
-		<ice:commandLink actionListener="#{prefManagerBean.removePreference}">
+		<ice:commandLink actionListener="#{prefManagerBean.removePreference}" disabled="#{prefManagerBean.readOnly}">
 			<h:graphicImage value="/plugins/views-common/images/icons/delete.png"
-				style="border: none;" 
+				style="border: none;" styleClass="#{!prefManagerBean.readOnly? '' : 'iceCmdBtn-dis'}"
 				title="#{prefManagerBean.messages['modifyPreference.delete.label']}" />
 			<pc:automationTag value="auto-ADM-PrefMngrView-ToolbarRemove"
 				standAlone="false" />
 		</ice:commandLink>
 		
-		<ice:commandLink actionListener="#{createOrModifyPreference.openModifyPrefDialog}">
+		<ice:commandLink actionListener="#{createOrModifyPreference.openModifyPrefDialog}" disabled="#{prefManagerBean.readOnly}">
 			<h:graphicImage value="/plugins/views-common/images/icons/pencil.png"
-				style="border: none;" 
+				style="border: none;" styleClass="#{!prefManagerBean.readOnly? '' : 'iceCmdBtn-dis'}"
 				title="#{prefManagerBean.messages['modifyPreference.edit.title']}" />
 			<f:attribute name="editRow" value="true" />
 			<pc:automationTag value="auto-ADM-PrefMngrView-ToolbarEdit"
