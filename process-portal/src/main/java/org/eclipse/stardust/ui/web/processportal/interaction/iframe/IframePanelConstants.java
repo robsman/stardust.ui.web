@@ -31,4 +31,6 @@ public class IframePanelConstants
 
    public static String KEY_VIEW_ID = "ippIframePanelViewId";
    
+   public static String QSTR_VIEW_URL = "vurl";
+   
 }

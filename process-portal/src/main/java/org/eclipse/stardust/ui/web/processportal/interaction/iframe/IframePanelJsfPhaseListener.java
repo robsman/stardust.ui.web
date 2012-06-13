@@ -23,6 +23,7 @@ import javax.faces.event.PhaseListener;
 import javax.faces.validator.ValidatorException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.eclipse.stardust.common.Base64;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
@@ -31,6 +32,8 @@ import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
 import org.eclipse.stardust.ui.web.common.app.PortalUiController;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.spring.scope.TabScopeUtils;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.utils.JsfBackingBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
@@ -60,7 +63,7 @@ public class IframePanelJsfPhaseListener implements PhaseListener
          return;
       }
       
-      if (isLoginOrMainPage(facesContext))
+      if (isIppPage(facesContext))
       {
          // login or main view, don't intercept
          return;
@@ -82,7 +85,7 @@ public class IframePanelJsfPhaseListener implements PhaseListener
          return;
       }
 
-      if (isLoginOrMainPage(facesContext))
+      if (isIppPage(facesContext))
       {
          return; // login or main view, don't intercept
       }
@@ -242,23 +245,17 @@ public class IframePanelJsfPhaseListener implements PhaseListener
    {
       if (null != facesContext.getExternalContext().getSession(false))
       {
-         // see if this session already contains a properly initialized UI controller
-         PortalUiController portalUiController = (PortalUiController) facesContext.getExternalContext().getSessionMap()
-               .get(PortalUiController.BEAN_NAME);
-         if (null != portalUiController)
+         // if there is an active view, use it for managing view scope
+         View activeView = getViewContext(facesContext);
+         if (null != activeView)
          {
-            // if there is an active view, use it for managing view scope
-            View activeView = portalUiController.getActiveView();
-            if (null != activeView)
+            if (doBind)
             {
-               if (doBind)
-               {
-                  TabScopeUtils.bindTabScope(activeView);
-               }
-               else
-               {
-                  TabScopeUtils.unbindTabScope(activeView);
-               }
+               TabScopeUtils.bindTabScope(activeView);
+            }
+            else
+            {
+               TabScopeUtils.unbindTabScope(activeView);
             }
          }
       }
@@ -268,13 +265,52 @@ public class IframePanelJsfPhaseListener implements PhaseListener
     * @param facesContext
     * @return
     */
-   private boolean isLoginOrMainPage(final FacesContext facesContext)
+   private boolean isIppPage(final FacesContext facesContext)
    {
       UIViewRoot viewRoot = facesContext.getViewRoot();
 
-      return (null != viewRoot)
-            && ("/plugins/common/login.xhtml".equals(viewRoot.getViewId()) || "/plugins/common/main.xhtml"
-                  .equals(viewRoot.getViewId()));
+      boolean ret = false;
+      if (null != viewRoot)
+      {
+         ret = viewRoot.getViewId().startsWith("/plugins/common")
+               || viewRoot.getViewId().startsWith("/plugins/admin-portal")
+               || viewRoot.getViewId().startsWith("/plugins/business-control-center")
+               || viewRoot.getViewId().startsWith("/plugins/processportal")
+               || viewRoot.getViewId().startsWith("/plugins/views-common");
+      }
+
+      return ret;
+   }
+
+   /**
+    * @param facesContext
+    * @return
+    */
+   private View getViewContext(final FacesContext facesContext)
+   {
+      View view = null;
+
+      // see if this session aleady contains a properly initialized UI controller
+      PortalUiController portalUiController = (PortalUiController) facesContext.getExternalContext().getSessionMap()
+            .get(PortalUiController.BEAN_NAME);
+      if (null != portalUiController)
+      {
+         String viewUrl = FacesUtils.getQueryParameterValue(facesContext, IframePanelConstants.QSTR_VIEW_URL);
+
+         if (StringUtils.isNotEmpty(viewUrl))
+         {
+            String decodedViewUrl = new String(Base64.decode(viewUrl.getBytes()));
+            view = portalUiController.getViewByUrl(decodedViewUrl);
+         }
+
+         // Fall back to Active View
+         if (null == view)
+         {
+            view = portalUiController.getActiveView();
+         }
+      }
+
+      return view;
    }
 
    /**

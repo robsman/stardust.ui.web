@@ -340,6 +340,24 @@ public class FacesUtils
    }
 
    /**
+    * @param facesContext
+    * @param paramName
+    * @return
+    */
+   public static String getQueryParameterValue(FacesContext facesContext, final String paramName)
+   {
+      ExternalContext ectx = facesContext.getExternalContext();
+      HttpServletRequest req = (HttpServletRequest) ectx.getRequest();
+
+      Map<String, List<String>> queryParameters = parseQueryString(req.getQueryString());
+      if (queryParameters.containsKey(paramName))
+      {
+         return queryParameters.get(paramName).get(0);
+      }
+      return null;
+   }
+   
+   /**
     * @param paramName
     * @return
     */

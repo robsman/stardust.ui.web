@@ -18,13 +18,16 @@ import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
+import org.eclipse.stardust.common.Base64;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
+import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
@@ -53,7 +56,7 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
       switch (event.getType())
       {
       case TO_BE_ACTIVATED:
-         String uri = provideIframePanelUri(activityInstance);
+         String uri = provideIframePanelUri(activityInstance, event.getView());
 
          JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
                "InfinityBpm.ProcessPortal.createOrActivateContentFrame('"
@@ -92,7 +95,7 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
       switch (event.getType())
       {
       case TO_BE_ACTIVATED:
-         String uri = provideIframePanelUri(activityInstance);
+         String uri = provideIframePanelUri(activityInstance, event.getView());
 
          eventScript = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('"
                + getContentFrameId(activityInstance) + "', '" + uri + "');";
@@ -133,7 +136,7 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
    }
 
    
-   public String provideIframePanelUri(ActivityInstance ai)
+   public String provideIframePanelUri(ActivityInstance ai, View view)
    {
       String uri = null;
 
@@ -160,6 +163,12 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
          trace.warn("Failed determining context root.", e);
       }
 
+      if (StringUtils.isNotEmpty(uri))
+      {
+         uri += (-1 == uri.indexOf("?")) ? "?" : "&";
+         uri += IframePanelConstants.QSTR_VIEW_URL + "=" + new String(Base64.encode(view.getUrl().getBytes()));
+      }
+      
       return uri;
    }   
    

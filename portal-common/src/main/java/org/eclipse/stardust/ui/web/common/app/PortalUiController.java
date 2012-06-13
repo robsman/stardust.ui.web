@@ -615,6 +615,15 @@ public class PortalUiController
       
       return null;
    }
+   
+   /**
+    * @param viewUrl
+    * @return
+    */
+   public View getViewByUrl(String viewUrl)
+   {
+      return views.get(viewUrl);
+   }   
 
    public View openView(ViewDefinition viewDef, String viewKey,
          Map<String, Object> params, AbstractMessageBean msgBean, boolean nestedView)

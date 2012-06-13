@@ -2985,6 +2985,10 @@ public class ActivityDetailsBean extends UIComponentBean
       return documentHandlerBean;
    }
 
+   public View getThisView()
+   {
+      return thisView;
+   }
    /**
     * @author subodh.godbole
     *

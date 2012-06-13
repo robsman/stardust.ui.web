@@ -113,7 +113,7 @@ public class ActivityPanelController extends UIComponentBean
          if (interactionController instanceof FaceletPanelInteractionController)
          {
             return ((FaceletPanelInteractionController) interactionController)
-                  .provideIframePanelUri(ai);
+                  .provideIframePanelUri(ai, activityDetailsBean.getThisView());
          }
       }
 
