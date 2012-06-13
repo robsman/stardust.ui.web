@@ -875,18 +875,9 @@ public class WorklistTableBean extends UIComponentBean
          // filters, sort criteria etc.
          query = QueryUtils.getClonedQuery((Query) getParamFromView(Query.class.getName()));         
          query.setPolicy(HistoricalStatesPolicy.WITH_LAST_USER_PERFORMER);
-         if (isFetchAllDescriptors())
-         {
-            query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
-         }
-         else if (CollectionUtils.isEmpty(getVisibleDescriptorsIds()))
-         {
-            query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
-         }
-         else
-         {
-            query.setPolicy(DescriptorPolicy.withIds(getVisibleDescriptorsIds()));
-         }
+         
+         applyDescriptorPolicy(query);
+         
          filtersAddedToQuery = false;
 
          return query;
@@ -898,6 +889,25 @@ public class WorklistTableBean extends UIComponentBean
          QueryResult queryResult = fetchQueryResult(query, participantInfo);
          processInstances = ProcessInstanceUtils.getProcessInstancesAsMap(queryResult, true);
          return queryResult;
+      }
+   }
+   
+   /**
+    * @param query
+    */
+   private void applyDescriptorPolicy(Query query)
+   {
+      if (isFetchAllDescriptors())
+      {
+         query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+      }
+      else if (CollectionUtils.isEmpty(getVisibleDescriptorsIds()))
+      {
+         query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
+      }
+      else
+      {
+         query.setPolicy(DescriptorPolicy.withIds(getVisibleDescriptorsIds()));
       }
    }
    
@@ -1111,7 +1121,7 @@ public class WorklistTableBean extends UIComponentBean
                }// Filtering by descriptors
                else if (allDescriptors.containsKey(dataId))
                {
-                  query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+                  applyDescriptorPolicy(query);
 
                   if (null == filterModel)
                   {

@@ -365,6 +365,25 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
          return;
       }
    }
+   
+   /**
+    * @param query
+    */
+   public void applyDescriptorPolicy(Query query)
+   {
+      if (isFetchAllDescriptors())
+      {
+         query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+      }
+      else if (CollectionUtils.isEmpty(getVisibleDescriptorsIds()))
+      {
+         query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
+      }
+      else
+      {
+         query.setPolicy(DescriptorPolicy.withIds(getVisibleDescriptorsIds()));
+      }
+   }
 
    /**
     * Initializes Activity table
@@ -678,7 +697,7 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
     * @author Subodh.Godbole
     *
     */
-   public static class ActivityTableFilterHandler extends IppFilterHandler
+   public class ActivityTableFilterHandler extends IppFilterHandler
    {
       private static final long serialVersionUID = 1L;
       private Map<String, DataPath> allDescriptors;
@@ -861,7 +880,7 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
                }
                else if (this.allDescriptors.containsKey(dataId))
                {
-                  query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+                  applyDescriptorPolicy(query);
 
                   if (null == filterModel)
                   {
@@ -891,7 +910,7 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
     * @author Subodh.Godbole
     *
     */
-   public static class ActivityTableSortHandler extends IppSortHandler
+   public class ActivityTableSortHandler extends IppSortHandler
    {
       private static final long serialVersionUID = 1L;
       private Map<String, DataPath> allDescriptors;
@@ -923,7 +942,7 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
 
                if (allDescriptors.containsKey(descriptorName))
                {
-                  query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+                  applyDescriptorPolicy(query);
                   String columnName = getDescriptorColumnName(descriptorName, allDescriptors);
                   if (CommonDescriptorUtils.isStructuredData(allDescriptors.get(descriptorName)))
                   {

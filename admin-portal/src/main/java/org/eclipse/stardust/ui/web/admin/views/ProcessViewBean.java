@@ -12,8 +12,6 @@ package org.eclipse.stardust.ui.web.admin.views;
 
 import java.util.List;
 
-import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
@@ -24,8 +22,6 @@ import org.eclipse.stardust.ui.web.admin.WorkflowFacade;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
-import org.eclipse.stardust.ui.web.common.log.LogManager;
-import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.common.UIViewComponentBean;
@@ -43,7 +39,6 @@ public class ProcessViewBean extends UIViewComponentBean
       implements ICallbackHandler,ViewEventHandler
 {
    private static final long serialVersionUID = 1L;
-   private static final Logger trace = LogManager.getLogger(ProcessViewBean.class);
 
    private WorkflowFacade workflowFacade;
 
@@ -178,19 +173,7 @@ public class ProcessViewBean extends UIViewComponentBean
       public Query createQuery()
       {
          ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
-         if (getProcessTableHelper().isFetchAllDescriptors())
-         {
-            query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
-         }
-         else if (CollectionUtils.isEmpty(getProcessTableHelper().getVisibleDescriptorsIds()))
-         {
-            query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
-         }
-         else
-         {
-            query.setPolicy(DescriptorPolicy.withIds(getProcessTableHelper().getVisibleDescriptorsIds()));
-         }
-
+         processTableHelper.applyDescriptorPolicy(query);
          return query;
       }
 

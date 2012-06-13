@@ -13,11 +13,7 @@ package org.eclipse.stardust.ui.web.admin.views;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
-import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
@@ -47,8 +43,6 @@ public class ActivityViewBean extends UIViewComponentBean implements ICallbackHa
 {
    private static final long serialVersionUID = 1L;
    
-   private static final Logger trace = LogManager.getLogger(ActivityViewBean.class);
-
    private WorkflowFacade workflowFacade;
 
    private List<ActivityInstance> selectedActivities;
@@ -184,18 +178,7 @@ public class ActivityViewBean extends UIViewComponentBean implements ICallbackHa
       public Query createQuery()
       {
          ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
-         if (getActivityHelper().isFetchAllDescriptors())
-         {
-            query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
-         }
-         else if (CollectionUtils.isEmpty(getActivityHelper().getVisibleDescriptorsIds()))
-         {
-            query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
-         }
-         else
-         {
-            query.setPolicy(DescriptorPolicy.withIds(getActivityHelper().getVisibleDescriptorsIds()));
-         }
+         activityHelper.applyDescriptorPolicy(query);
          return query;
       }
 

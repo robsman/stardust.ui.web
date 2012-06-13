@@ -444,6 +444,25 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
    }
 
    /**
+    * @param query
+    */
+   public void applyDescriptorPolicy(Query query)
+   {
+      if (isFetchAllDescriptors())
+      {
+         query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+      }
+      else if (CollectionUtils.isEmpty(getVisibleDescriptorsIds()))
+      {
+         query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
+      }
+      else
+      {
+         query.setPolicy(DescriptorPolicy.withIds(getVisibleDescriptorsIds()));
+      }
+   }
+   
+   /**
     * Initializes Process Table
     */
    public void initializeProcessTable()
@@ -737,7 +756,7 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
     * @author Subodh.Godbole
     * 
     */
-   public static class ProcessTableFilterHandler extends IppFilterHandler
+   public class ProcessTableFilterHandler extends IppFilterHandler
    {
       private static final long serialVersionUID = 1L;
       private Map<String, DataPath> allDescriptors;
@@ -877,7 +896,7 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
                }
                else if (this.allDescriptors.containsKey(dataId))
                {
-                  query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+                  applyDescriptorPolicy(query);
 
                   if (null == filterModel)
                   {
@@ -907,7 +926,7 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
     * @author Subodh.Godbole
     *
     */
-   public static class ProcessTableSortHandler extends IppSortHandler
+   public class ProcessTableSortHandler extends IppSortHandler
    {
       private static final long serialVersionUID = 1L;
       private Map<String, DataPath> allDescriptors;
@@ -939,7 +958,7 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
 
                if (allDescriptors.containsKey(descriptorName))
                {
-                  query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+                  applyDescriptorPolicy(query);
                   String columnName = getDescriptorColumnName(descriptorName, allDescriptors);
                   if (CommonDescriptorUtils.isStructuredData(allDescriptors.get(descriptorName)))
                   {
