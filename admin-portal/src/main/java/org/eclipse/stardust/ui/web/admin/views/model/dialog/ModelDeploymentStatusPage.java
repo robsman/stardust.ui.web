@@ -11,11 +11,11 @@
 package org.eclipse.stardust.ui.web.admin.views.model.dialog;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.tree.DefaultTreeModel;
 
+import org.eclipse.stardust.common.error.ConcurrencyException;
 import org.eclipse.stardust.engine.api.dto.DeploymentInfoDetails;
 import org.eclipse.stardust.engine.api.model.Inconsistency;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
@@ -555,7 +555,10 @@ public class ModelDeploymentStatusPage extends WizardPage implements TreeTableBe
                   list = new ArrayList<DeploymentInfo>(1);
                   list.add(info);
                   deploymentException = true;
-
+               }
+               catch (ConcurrencyException ce)
+               {
+                  ExceptionHandler.handleException(ce);
                }
             }
          }
