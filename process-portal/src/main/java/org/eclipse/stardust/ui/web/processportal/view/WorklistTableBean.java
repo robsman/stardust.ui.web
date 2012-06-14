@@ -945,7 +945,7 @@ public class WorklistTableBean extends UIComponentBean
                      FilterOrTerm or = filter.addOrTerm();
                      for (Activity activity : selectedActivities)
                      {
-                        or.add(ActivityInstanceQuery.ACTIVITY_OID.isEqual(activity.getRuntimeElementOID()));
+                        or.add(ActivityFilter.forAnyProcess(activity.getQualifiedId()));
                      }
                  }
                }
