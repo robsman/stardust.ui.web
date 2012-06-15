@@ -101,17 +101,13 @@
 							<ice:message id="modificationDateToMsg" for="modificationDateTo"
 								style="color:red;" />
 						</ice:column>
-					</ice:panelGrid> <ice:panelGrid columns="2" columnClasses="table-columnVertical"
-						style="vertical-align: top; white-space: nowrap; text-align:left;"
-						headerClass="heading">
-
+					
 						<ice:column>
 							<ice:outputText
 								value="#{documentSearchBean.messages['documentType.label']}#{documentSearchBean.messages['colon']}"
 								styleClass="label-form" />
 						</ice:column>
 						<ice:column>
-							<ice:panelGroup style="margin-left:38px;">
 								<ice:selectManyMenu id="txtDocumentType"
 									style="height:75px; width:210px;align:center;"
 									value="#{documentSearchBean.filterAttributes.selectedDocumentTypes}"
@@ -121,7 +117,6 @@
 									<f:selectItems id="txtDocumentTypes"
 										value="#{documentSearchBean.filterAttributes.documentTypes}" />
 								</ice:selectManyMenu>
-							</ice:panelGroup>
 							<ice:message for="txtDocumentType" />
 						</ice:column>
 
@@ -132,7 +127,6 @@
 						</ice:column>
 
 						<ice:column>
-							<ice:panelGroup style="margin-left:36px;">
 							<ice:panelGrid columns="2"
 								rendered="#{!documentSearchBean.filterAttributes.selectFileTypeAdvance}">
 								<ice:column>
@@ -173,13 +167,11 @@
 									</ice:commandLink>
 								</ice:column>
 							</ice:panelGrid>
-							</ice:panelGroup>
 						</ice:column>
-
+						
 						<ice:column>
 						</ice:column>
 						<ice:column>
-							<ice:panelGroup style="margin-left:37px;">
 								<ice:selectManyMenu
 									rendered="#{!documentSearchBean.filterAttributes.selectFileTypeAdvance}"
 									id="txtFileType" style="height:75px; width:210px;"
@@ -200,10 +192,7 @@
 									<pc:automationTag value="auto-COM-SrchDoc-FileType-AdvFileType"
 										standAlone="false" />
 								</ice:inputText>
-							</ice:panelGroup>
 						</ice:column>
-
-
 
 						<ice:column>
 							<ice:outputText
@@ -211,7 +200,6 @@
 								styleClass="label-form" />
 						</ice:column>
 						<ice:column>
-							<ice:panelGroup style="margin-left:36px;">
 								<ice:selectBooleanCheckbox id="SlctContent"
 									value="#{documentSearchBean.filterAttributes.searchContent}"
 									partialSubmit="true">
@@ -237,20 +225,17 @@
 										value="#{documentSearchBean.messages['advanced.label']} &amp;raquo;"
 										styleClass="action-link" escape="false" />
 								</ice:commandLink>
-							</ice:panelGroup>
 						</ice:column>
 
 						<ice:column>
 
 						</ice:column>
 						<ice:column>
-							<ice:panelGroup style="margin-left:36px;">
 								<ice:inputTextarea id="txtContainingText" style="width: 260px"
 									value="#{documentSearchBean.filterAttributes.containingText}"
 									rows="2" />
 								<ice:message id="txtContainingTextMsg" for="txtContainingText"
 									style="color:red;" />
-							</ice:panelGroup>
 						</ice:column>
 
 						<!-- <ice:column>
@@ -276,7 +261,7 @@
 							</ice:panelGroup>
 						</ice:column>
 						<ice:column>
-							<ice:panelGroup style="width:159px;margin-left:36px;">
+							<ice:panelGroup style="width:159px;">
 								<ui:include
 									src="#{documentSearchBean.autoCompleteSelector.autocompleteContentUrl}">
 									<ui:param name="component"
@@ -291,7 +276,6 @@
 								styleClass="label-form" />
 						</ice:column>
 						<ice:column>
-							<ice:panelGroup style="margin-left:36px;">
 								<ice:inputText id="txtDocumentName" size="26"
 									partialSubmit="true"
 									value="#{documentSearchBean.filterAttributes.documentName}">
@@ -300,7 +284,6 @@
 								</ice:inputText>
 								<ice:message id="txtDocumentNameMsg" for="txtDocumentName"
 									style="color:red;" />
-							</ice:panelGroup>
 						</ice:column>
 
 						<ice:column>
@@ -309,7 +292,6 @@
 								styleClass="label-form" />
 						</ice:column>
 						<ice:column>
-							<ice:panelGroup style="margin-left:36px;">
 								<ice:inputText id="txtDocumentId" size="26" partialSubmit="true"
 									value="#{documentSearchBean.filterAttributes.documentId}">
 									<pc:automationTag value="auto-COM-SrchDoc-DocId"
@@ -317,7 +299,6 @@
 								</ice:inputText>
 								<ice:message id="txtDocumentIdMsg" for="txtDocumentId"
 									style="color:red;" />
-							</ice:panelGroup>
 						</ice:column>
 
 					</ice:panelGrid>
