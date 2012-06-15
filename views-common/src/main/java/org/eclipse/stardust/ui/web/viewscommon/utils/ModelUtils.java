@@ -300,38 +300,40 @@ public class ModelUtils
     */
    public static DeployedModel getModelForDocumentType(DocumentType documentType)
    {
-      try
+      if(null != documentType)
       {
-         // For Internal XSDs
-         String schemaLocation = documentType.getSchemaLocation();
-         String modelNo = schemaLocation.substring(schemaLocation.indexOf("?") + 1);
-
-         long modelOID = Long.parseLong(modelNo);
-         return ModelCache.findModelCache().getModel(modelOID);
-      }
-      catch (Exception e)
-      {
-         // For External XSDs, Lookup all Models, starting with Active
-         
-         // Process Active Models
-         for (DeployedModel model : getActiveModels())
+         try
          {
-            if (null != model.getTypeDeclaration(documentType))
+            // For Internal XSDs
+            String schemaLocation = documentType.getSchemaLocation();
+            String modelNo = schemaLocation.substring(schemaLocation.indexOf("?") + 1);
+   
+            long modelOID = Long.parseLong(modelNo);
+            return ModelCache.findModelCache().getModel(modelOID);
+         }
+         catch (Exception e)
+         {
+            // For External XSDs, Lookup all Models, starting with Active
+            
+            // Process Active Models
+            for (DeployedModel model : getActiveModels())
             {
-               return model;
+               if (null != model.getTypeDeclaration(documentType))
+               {
+                  return model;
+               }
+            }
+   
+            // Process In-Active Models
+            for (DeployedModel model : getAllModels())
+            {
+               if (!model.isActive() && null != model.getTypeDeclaration(documentType))
+               {
+                  return model;
+               }
             }
          }
-
-         // Process In-Active Models
-         for (DeployedModel model : getAllModels())
-         {
-            if (!model.isActive() && null != model.getTypeDeclaration(documentType))
-            {
-               return model;
-            }
-         }
       }
-
       return null;
    }
 }

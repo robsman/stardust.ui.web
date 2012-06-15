@@ -70,13 +70,13 @@ public class DocumentSearchTableEntry extends DefaultRowModel
       processesDialog = new DocumentProcessesDialog();
    }
 
-   public DocumentSearchTableEntry(Document doc, String documentType)
+   public DocumentSearchTableEntry(Document doc)
    {
       this();
       this.documentId = doc.getId();
       this.documentName = doc.getName();
       this.fileType = doc.getContentType();
-      this.documentType = documentType;
+      this.documentType = TypedDocumentsUtil.getDocumentTypeLabel(doc.getDocumentType());
       this.createDate = doc.getDateCreated();
       this.modificationDate = doc.getDateLastModified();
       this.fileSize = doc.getSize();
@@ -151,7 +151,14 @@ public class DocumentSearchTableEntry extends DefaultRowModel
    public String getIconPath()
    {
       MIMEType mimeType = MimeTypesHelper.detectMimeType(documentName, fileType);
-      return ResourcePaths.MIME_TYPE_PATH + mimeType.getIconPath();
+      if (null != mimeType)
+      {
+         return ResourcePaths.MIME_TYPE_PATH + mimeType.getIconPath();
+      }
+      else
+      {
+         return MimeTypesHelper.DEFAULT.getIconPath();
+      }
    }
 
    public Date getModificationDate()

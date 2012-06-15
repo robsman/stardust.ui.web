@@ -20,8 +20,6 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.DocumentQuery;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterCriterion;
@@ -37,7 +35,6 @@ import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSortHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DocumentTypeWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
@@ -56,7 +53,6 @@ public class DocumentSearchProvider implements Serializable
    // ~ Constants
    // ================================================================================================
    private static final long serialVersionUID = 4819215015562743113L;
-   private static final Logger trace = LogManager.getLogger(DocumentSearchProvider.class);
 
    // ~ Instance fields
    // ================================================================================================
@@ -187,8 +183,7 @@ public class DocumentSearchProvider implements Serializable
 
          for (DocumentTypeWrapper documentTypeWrapper : declaredDocumentTypes)
          {
-            documentTypes.add(new SelectItem(documentTypeWrapper.getDocumentTypeId(), DocumentMgmtUtility
-                  .getDeclaredDocumentTypeLabel(documentTypeWrapper)));
+            documentTypes.add(new SelectItem(documentTypeWrapper.getDocumentTypeId(), documentTypeWrapper.getDocumentTypeI18nName()));
          }
       }
 

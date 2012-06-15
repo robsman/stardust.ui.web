@@ -12,13 +12,11 @@ package org.eclipse.stardust.ui.web.viewscommon.common;
 
 import java.io.Serializable;
 
-import org.eclipse.stardust.engine.api.model.TypeDeclaration;
-import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 
 /**
  * @author Yogesh.Manware
@@ -53,13 +51,12 @@ public class DocumentToolTip implements ToolTip, Serializable
       super();
       if (null == document)
       {
-         this.documentType = getDocumentTypeName(documentType);
+         this.documentType = TypedDocumentsUtil.getDocumentTypeLabel(documentType);
       }
       else
       {
+         this.documentType = TypedDocumentsUtil.getDocumentTypeLabel(document.getDocumentType());
          name = document.getName();
-         this.documentType = getDocumentTypeName(document.getDocumentType());
-
          fileType = MimeTypesHelper.detectMimeType(name, document.getContentType()).getUserFriendlyName();
 
          size = document.getSize();
@@ -70,28 +67,6 @@ public class DocumentToolTip implements ToolTip, Serializable
          description = description == null || description.length() < 90 ? description : description.substring(0, 89)
                + "...";
       }
-   }
-
-   /**
-    * @param docType
-    * @return
-    */
-   private String getDocumentTypeName(DocumentType docType)
-   {
-      String dType = "";
-      if (null != docType)
-      {
-         DeployedModel model = ModelUtils.getModelForDocumentType(docType);
-         if (null != model)
-         {
-            TypeDeclaration typeDeclaration = model.getTypeDeclaration(docType);
-            if (null != typeDeclaration)
-            {
-               dType = typeDeclaration.getName();
-            }
-         }
-      }
-      return dType;
    }
 
    public String getToolTipType()

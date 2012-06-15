@@ -21,7 +21,6 @@ import org.eclipse.stardust.common.Pair;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.User;
-import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
@@ -392,7 +391,7 @@ public class DocumentSearchBean extends UIComponentBean
 
       try
       {
-         documentSearchTableEntry = new DocumentSearchTableEntry(document, getDeclaredDocumentLabel(document));
+         documentSearchTableEntry = new DocumentSearchTableEntry(document);
       }
       catch (Exception e)
       {
@@ -431,28 +430,6 @@ public class DocumentSearchBean extends UIComponentBean
          }
       });
       processDialog.openPopup();
-   }
-
-   /**
-    * 
-    * @param document
-    * @return localized label
-    */
-   private String getDeclaredDocumentLabel(Document document)
-   {
-      DocumentType documentType = document.getDocumentType();
-      if (null != documentType)
-      {
-         for (DocumentTypeWrapper docTypeWrapper : declaredDocumentTypes)
-         {
-            String docTypeId = docTypeWrapper.getDocumentTypeId();
-            if (documentType.getDocumentTypeId().equalsIgnoreCase(docTypeId))
-            {
-               return DocumentMgmtUtility.getDeclaredDocumentTypeLabel(docTypeWrapper);
-            }
-         }
-      }
-      return "";
    }
 
    /**

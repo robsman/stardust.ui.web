@@ -33,7 +33,6 @@ import java.util.zip.ZipOutputStream;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.namespace.QName;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Direction;
@@ -42,7 +41,6 @@ import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
-import org.eclipse.stardust.engine.api.model.TypeDeclaration;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ProcessInstances;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
@@ -70,9 +68,7 @@ import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.DocumentTypeWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
-import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
@@ -529,21 +525,6 @@ public class DocumentMgmtUtility
          }
       }
       return processAttachments;
-   }
-
-   /**
-    * return localized label for declared document type
-    * 
-    * @param model
-    * @param docTypeId
-    * @return
-    */
-   public static String getDeclaredDocumentTypeLabel(DocumentTypeWrapper docTypeWrapper)
-   {
-      String docTypeId = docTypeWrapper.getDocumentTypeId();
-      Model model = docTypeWrapper.getModel();
-      TypeDeclaration typeDeclaration = model.getTypeDeclaration(QName.valueOf(docTypeId).getLocalPart());
-      return I18nUtils.getLabel(typeDeclaration, typeDeclaration.getName());
    }
 
    /**

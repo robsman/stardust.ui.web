@@ -25,6 +25,7 @@ public class DocumentTypeWrapper
    private DocumentType documentType;
    private TypeDeclaration typeDeclaration;
    private Model model;
+   private String documentTypeI18nName;
 
    /**
     * String Manipulation needed because DocumentType does not expose the method to get OID
@@ -48,6 +49,7 @@ public class DocumentTypeWrapper
          this.model = model;
          this.typeDeclaration = model.getTypeDeclaration(documentType);
       }
+      documentTypeI18nName = TypedDocumentsUtil.getDocumentTypeLabel(documentType);
    }
    
    /*
@@ -82,8 +84,7 @@ public class DocumentTypeWrapper
 
    public String getDocumentTypeI18nName()
    {
-      // TODO: Currently not supported
-      return getDocumentTypeName();
+      return documentTypeI18nName;
    }
 
    public String getDocumentTypeId()

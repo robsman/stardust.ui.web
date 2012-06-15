@@ -36,6 +36,7 @@ import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
+import org.eclipse.stardust.engine.extensions.xml.data.XPathUtils;
 import org.eclipse.stardust.ui.common.form.jsf.messages.DefaultLabelProvider;
 import org.eclipse.stardust.ui.common.introspection.Path;
 import org.eclipse.stardust.ui.common.introspection.xsd.XsdPath;
@@ -220,6 +221,35 @@ public class TypedDocumentsUtil
    }
 
 
+   /**
+    * Helps to retrieve I18ned DocumentType (Structured Data label)
+    * 
+    * @param docType
+    * @return
+    */
+   public static String getDocumentTypeLabel(DocumentType docType)
+   {
+      String label = "";
+      if (null != docType)
+      {
+         DeployedModel model = ModelUtils.getModelForDocumentType(docType);
+         if (null != model)
+         {
+            TypeDeclaration typeDeclaration = model.getTypeDeclaration(docType);
+            Set<TypedXPath> datpaths = XPathUtils.getXPaths(model, typeDeclaration.getId());
+            for (TypedXPath typedXPath : datpaths)
+            {
+               if (null == typedXPath.getParentXPath())
+               {
+                  label = I18nUtils.getLabel(typedXPath, model, typeDeclaration.getName());
+                  break;
+               }
+            }
+         }
+      }
+      return label;
+   }
+   
    /**
     * @param path
     * @param metadata
