@@ -313,6 +313,10 @@
     font-size: 1em;
 }
 
+.iceSelOneMnu, .iceSelMnyLb, .iceSelMnyMnu, .iceSelOneLb {
+    padding: 0px;
+}
+
 .iceSelInpDateInput {
 	width: 147px;
 	/* Below is same as .iceInpTxt, .iceInpSecrt, .iceInpTxtArea */
