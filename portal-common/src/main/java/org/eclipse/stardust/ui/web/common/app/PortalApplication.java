@@ -327,7 +327,6 @@ public class PortalApplication
          getPortalUiController().broadcastNonVetoableViewEvent(getFocusView(),
                ViewEventType.RESTORED_TO_NORMAL);
          getPortalUiController().broadcastNonVetoablePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
-         FacesUtils.refreshPage();
       }
    }
 
