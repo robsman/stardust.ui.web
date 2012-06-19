@@ -25,6 +25,7 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
+import org.springframework.util.CollectionUtils;
 
 import com.icesoft.faces.component.datapaginator.DataPaginator;
 
@@ -59,7 +60,8 @@ public class PaginatorDataTable<T extends IRowModel, E> extends DataTable<T>
    protected IQuery query;
 
    private boolean refreshed = false;
-   
+   private boolean totalCountSuported;
+  
    /**
     * @param columnModel
     * @param iSearchHandler
@@ -451,7 +453,17 @@ public class PaginatorDataTable<T extends IRowModel, E> extends DataTable<T>
    {
       this.dataPaginator = dataPaginator;
    } 
-   
+
+   public boolean isTotalCountSuported()
+   {
+      return totalCountSuported;
+   }
+
+   public void setTotalCountSuported(boolean totalCountSuported)
+   {
+      this.totalCountSuported = totalCountSuported;
+   }
+
    /**
     * @author Subodh.Godbole
     */
@@ -482,9 +494,40 @@ public class PaginatorDataTable<T extends IRowModel, E> extends DataTable<T>
                
                int totalCount = 0;
                if (queryResult != null)
-                  totalCount = (int)queryResult.getTotalCount();
+               {
+                  try
+                  {
+                     long queryCount = queryResult.getTotalCount();
+                     queryCount = Long.MAX_VALUE;
+                     if (Long.MAX_VALUE != queryCount)
+                     {
+                        totalCount = (int)queryCount;
+                        setTotalCountSuported(true);
+                     }
+                     else
+                     {
+                        if (trace.isDebugEnabled())
+                        {
+                           trace.debug("getTotalCount() not suported! Table will not display Full Pagnation.");
+                        }
+                        totalCount = Integer.MAX_VALUE;
+                        setTotalCountSuported(false);
+                     }
+                  }
+                  catch (UnsupportedOperationException uoe)
+                  {
+                     if (trace.isDebugEnabled())
+                     {
+                        trace.debug("getTotalCount() not suported! Table will not display Full Pagnation.");
+                     }
+                     totalCount = Integer.MAX_VALUE;
+                     setTotalCountSuported(false);
+                  }
+               }
                else
+               {
                   trace.error("QueryResult received is NULL");
+               }
    
                if (trace.isDebugEnabled())
                {
@@ -498,6 +541,24 @@ public class PaginatorDataTable<T extends IRowModel, E> extends DataTable<T>
                
                if (queryResult != null)
                {
+                  List<E> data = queryResult.getData();
+                  if (!isTotalCountSuported())
+                  {
+                     if (CollectionUtils.isEmpty(data))
+                     {
+                        totalCount = startRow;
+                     }
+                     else if (data.size() != pageSize)
+                     {
+                        totalCount = startRow + data.size();
+                     }
+                     
+                     // Limitation: If Last page data is exactly equal to pageSize then
+                     // there is no way to identify end of records situation, and -
+                     // - Still next page action will be active, and upon clicking, it will display next page with no data
+                     // - And on that page next page action will be disabled  
+                  }
+                  
                   for (Object result : queryResult.getData())
                   {
                      trace.debug("Adding Record");

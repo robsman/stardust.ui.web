@@ -189,24 +189,36 @@
 					style="width:100%; margin-top: 2px;">
 					
 				<pc:automationTag value="auto-DT-PaginatorInfo" />
-				<ice:dataPaginator
-						id="#{id}PaginatorInfo" for="#{id}"
-						rowsCountVar="rowsCount"
-						displayedRowsCountVar="displayedRowsCountVar"
-						firstRowIndexVar="firstRowIndex"
-						lastRowIndexVar="lastRowIndex"
-						pageCountVar="pageCount"
-						pageIndexVar="pageIndex">
-	               <ice:outputFormat styleClass="#{styleClass}PaginatorInfo"
-	               		value="#{common_msgPropsBean['common.genericDataTable.paginationInfo']}">
-	                   <f:param value="#{rowsCount}"/>
-	                   <f:param value="#{displayedRowsCountVar}"/>
-	                   <f:param value="#{firstRowIndex}"/>
-	                   <f:param value="#{lastRowIndex}"/>
-	                   <f:param value="#{pageIndex}"/>
-	                   <f:param value="#{pageCount}"/>
-	               </ice:outputFormat>
-				</ice:dataPaginator>
+				<c:if test="#{table.totalCountSuported}">
+					<ice:dataPaginator
+							id="#{id}PaginatorInfo" for="#{id}"
+							rowsCountVar="rowsCount"
+							displayedRowsCountVar="displayedRowsCountVar"
+							firstRowIndexVar="firstRowIndex"
+							lastRowIndexVar="lastRowIndex"
+							pageCountVar="pageCount"
+							pageIndexVar="pageIndex">
+		               <ice:outputFormat styleClass="#{styleClass}PaginatorInfo"
+		               		value="#{common_msgPropsBean['common.genericDataTable.paginationInfo']}">
+		                   <f:param value="#{rowsCount}"/>
+		                   <f:param value="#{displayedRowsCountVar}"/>
+		                   <f:param value="#{firstRowIndex}"/>
+		                   <f:param value="#{lastRowIndex}"/>
+		                   <f:param value="#{pageIndex}"/>
+		                   <f:param value="#{pageCount}"/>
+		               </ice:outputFormat>
+					</ice:dataPaginator>
+				</c:if>
+				<c:if test="#{not table.totalCountSuported}">
+					<ice:dataPaginator
+							id="#{id}PaginatorInfo" for="#{id}"
+							pageIndexVar="pageIndex">
+		               <ice:outputFormat styleClass="#{styleClass}PaginatorInfo"
+		               		value="#{common_msgPropsBean['common.genericDataTable.paginationInfo.noTotalCount']}">
+		                   <f:param value="#{pageIndex}"/>
+		               </ice:outputFormat>
+					</ice:dataPaginator>
+				</c:if>
 			</ice:panelGroup>
 
 			<!-- ********** ACTUAL DATA TABLE ********** -->
@@ -430,7 +442,7 @@
 				<ice:panelGroup style="width:100%; margin-top:2px;">
 					<pc:automationTag value="auto-DT-PaginatorBar" standAlone="false" requiredValue="#{styleClass}PaginatorBarSection" />
 					<ice:dataPaginator
-							id="#{id}Paginator" paginator="true"
+							id="#{id}Paginator" paginator="#{table.totalCountSuported}"
 							for="#{id}" binding="#{table.dataPaginator}"
 			                paginatorMaxPages="#{table.paginatorMaxPages}"
 			                fastStep="#{table.paginatorFastStep}">
@@ -439,18 +451,34 @@
 			            	<f:param name="fastStep" value="#{table.paginatorFastStep}" />
 			            </c:if>
 			            
-						<f:facet name="first">
-			            	<ice:graphicImage id="#{id}firstpage"
-									url="/plugins/common/images/icons/arrow-first.gif"
-			                        style="border:none;"
-			                        title="#{common_msgPropsBean['common.genericDataTable.paginator.first.title']}" />
-						</f:facet>
-			            <f:facet name="last">
-			            	<ice:graphicImage id="#{id}lastpage"
-									url="/plugins/common/images/icons/arrow-last.gif"
-									style="border:none;"
-									title="#{common_msgPropsBean['common.genericDataTable.paginator.last.title']}" />
-						</f:facet>
+			            <c:if test="#{table.totalCountSuported}">
+							<f:facet name="first">
+				            	<ice:graphicImage id="#{id}firstpage"
+										url="/plugins/common/images/icons/arrow-first.gif"
+				                        style="border:none;"
+				                        title="#{common_msgPropsBean['common.genericDataTable.paginator.first.title']}" />
+							</f:facet>
+				            <f:facet name="last">
+				            	<ice:graphicImage id="#{id}lastpage"
+										url="/plugins/common/images/icons/arrow-last.gif"
+										style="border:none;"
+										title="#{common_msgPropsBean['common.genericDataTable.paginator.last.title']}" />
+							</f:facet>
+							<c:if test="#{table.paginatorFastStep > 0}">
+								<f:facet name="fastforward">
+					            	<ice:graphicImage id="#{id}fastforward"
+											url="/plugins/common/images/icons/arrow-ff.gif"
+											style="border:none;"
+											title="#{common_msgPropsBean['common.genericDataTable.paginator.fastforward.title']}" />
+					               </f:facet>
+					               <f:facet name="fastrewind">
+					            	<ice:graphicImage id="#{id}fastrewind"
+											url="/plugins/common/images/icons/arrow-fr.gif"
+											style="border:none;"
+											title="#{common_msgPropsBean['common.genericDataTable.paginator.fastrewind.title']}" />
+					               </f:facet>
+							</c:if>
+						</c:if>
 						<f:facet name="previous">
 			            	<ice:graphicImage id="#{id}previouspage"
 									url="/plugins/common/images/icons/arrow-previous.gif"
@@ -463,20 +491,6 @@
 									style="border:none;"
 									title="#{common_msgPropsBean['common.genericDataTable.paginator.next.title']}" />
 						</f:facet>
-						<c:if test="#{table.paginatorFastStep > 0}">
-							<f:facet name="fastforward">
-				            	<ice:graphicImage id="#{id}fastforward"
-										url="/plugins/common/images/icons/arrow-ff.gif"
-										style="border:none;"
-										title="#{common_msgPropsBean['common.genericDataTable.paginator.fastforward.title']}" />
-				               </f:facet>
-				               <f:facet name="fastrewind">
-				            	<ice:graphicImage id="#{id}fastrewind"
-										url="/plugins/common/images/icons/arrow-fr.gif"
-										style="border:none;"
-										title="#{common_msgPropsBean['common.genericDataTable.paginator.fastrewind.title']}" />
-				               </f:facet>
-						</c:if>
 					</ice:dataPaginator>
 				</ice:panelGroup>
 			</c:if>
