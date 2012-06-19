@@ -498,7 +498,6 @@ public class PaginatorDataTable<T extends IRowModel, E> extends DataTable<T>
                   try
                   {
                      long queryCount = queryResult.getTotalCount();
-                     queryCount = Long.MAX_VALUE;
                      if (Long.MAX_VALUE != queryCount)
                      {
                         totalCount = (int)queryCount;
