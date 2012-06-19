@@ -1,0 +1,45 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<f:facet name="header">
+		<ice:columnGroup>
+			<ice:headerRow>
+				<ice:column>
+					<ice:panelGrid columns="1" width="100%" style="text-align: center;">
+						<ice:outputText
+							value="#{views_common_msgPropsBean['delegation.userOrRole']}" />
+						<ice:inputText
+							value="#{authorizationManagerBean.participantHelper.nameFilter}"
+							partialSubmit="true" id="searchPattern"
+							valueChangeListener="#{authorizationManagerBean.participantHelper.nameFilterValueChangeListener}"
+							onkeyup="submitForm_afterEnter(event, form);">
+							<pc:automationTag value="auto-COM-PartTbl-HeaderNameFilter" standAlone="false"/>
+						</ice:inputText>	
+					</ice:panelGrid>
+
+				</ice:column>
+
+				<ice:column>
+					<ice:panelGrid columns="1" width="100%" style="text-align: center;">
+						<ice:outputText
+							value="#{views_common_msgPropsBean['delegation.type']}" />
+						<ice:selectOneMenu
+							value="#{authorizationManagerBean.participantHelper.typeFilterList}"
+							partialSubmit="true"
+							valueChangeListener="#{authorizationManagerBean.participantHelper.typeFilterValueChangeListener}">
+							<pc:automationTag value="auto-COM-PartTbl-HeaderTypeFilter" standAlone="false"/>
+							<f:selectItems
+								value="#{authorizationManagerBean.participantHelper.typeFilters}" />
+						</ice:selectOneMenu>
+					</ice:panelGrid>
+
+				</ice:column>
+
+			</ice:headerRow>
+		</ice:columnGroup>
+	</f:facet>
+</f:view>

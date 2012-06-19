@@ -1,0 +1,182 @@
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+<!--
+  To execute this build script, you have to configure your environment as follows:
+  - Java property java.home must point to an existent JAVA_HOME (either via parameter 
+    (e.g. antit.bat -Djava.home=C:/Programme/Java15) or create a private.properties file
+    in the etc folder of the project and put the property in there)
+  - you need an Infinity installation or you have to execute at least the latakia build file
+  - set the Java property latakia.home to the corresponding installation or build location
+-->
+
+<project name="nirvana archives" default="deploy" basedir=".">
+
+	<property name="project.dir" value="${basedir}" />
+   <property name="project.etc" value="${project.dir}/etc" />
+	<property file="${project.etc}/private.properties"/>
+   
+   <import file="${project.dir}/../build.tools/commons-build.xml" />
+   
+   <property name="stardust.home" location="../"/>
+   <property name="ui.common.home" location="${stardust.home}/ui.common"/>
+
+	<target name="init" depends="initBuildDirectories"/>
+
+   <target name="initBuild">
+      <property name="nirvana.build.dir" location="${project.dir}/build"/>
+      <property name="build.lib" location="${nirvana.build.dir}/lib"/>
+      <property name="build.config" location="${nirvana.build.dir}/config/ipp-portal"/>
+      <property name="build.deploy" location="${nirvana.build.dir}/deploy"/>
+   </target>
+
+	<target name="initBuildDirectories" depends="initBuild">
+		<mkdir dir="${nirvana.build.dir}"/>
+		<mkdir dir="${build.lib}"/>
+	</target>
+
+   <target name="initLatakiaHome" unless="latakia.home">
+		<property name="latakia.home" location="${project.dir}/../latakia/build"/>
+	</target>
+
+   <!-- - - - - - - - - - -->
+   <!-- Nirvana projects  -->
+   <!-- - - - - - - - - - -->
+
+   <target name="portal-common" depends="init">
+      <ant dir="portal-common" antfile="build.xml" target="${subtarget}" inheritall="false">
+			<property name="latakia.home" value="${latakia.home}"/>
+         <property name="build.config" value="${build.config}"/>
+         <property name="build.lib" value="${build.lib}"/>
+         <property name="build.deploy" value="${build.deploy}"/>
+			<property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
+		</ant>
+   </target>  
+   
+
+   <target name="portal-api" depends="init">
+      <ant dir="portal-api" antfile="build.xml" target="${subtarget}" inheritall="false">
+			<property name="latakia.home" value="${latakia.home}"/>
+			<property name="build.lib" value="${build.lib}"/>
+         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
+		</ant>
+   </target>
+   
+   <target name="graphics-common" depends="init">
+      <ant dir="graphics-common" antfile="build.xml" target="${subtarget}" inheritall="false">
+         <property name="latakia.home" value="${latakia.home}"/>
+         <property name="build.lib" value="${build.lib}"/>
+         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
+      </ant>
+   </target>
+   
+   <target name="views-common" depends="init">
+      <ant dir="views-common" antfile="build.xml" target="${subtarget}" inheritall="false">
+         <property name="latakia.home" value="${latakia.home}"/>
+         <property name="build.lib" value="${build.lib}"/>
+         <property name="copyright.message" value="${copyright.message}"/>
+         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
+      </ant>
+   </target>
+
+   <target name="business-control-center" depends="init">
+      <ant dir="business-control-center" antfile="build.xml" target="${subtarget}" inheritall="false">
+			<property name="latakia.home" value="${latakia.home}"/>
+			<property name="build.lib" value="${build.lib}"/>
+         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
+		</ant>
+   </target>
+
+   <target name="admin-portal" depends="init">
+      <ant dir="admin-portal" antfile="build.xml" target="${subtarget}" inheritall="false">
+			<property name="latakia.home" value="${latakia.home}"/>
+			<property name="build.lib" value="${build.lib}"/>
+         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
+		</ant>
+   </target>
+
+   <target name="process-portal" depends="init">
+      <ant dir="process-portal" antfile="build.xml" target="${subtarget}" inheritall="false">
+			<property name="latakia.home" value="${latakia.home}"/>
+			<property name="build.lib" value="${build.lib}"/>
+         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
+		</ant>
+   </target> 
+
+   <!-- - - - - - - - - - -->
+   <!-- Stardust projects -->
+   <!-- - - - - - - - - - -->
+   
+   <target name="stardust-common-introspection" depends="init">
+      <ant dir="${ui.common.home}/stardust-common-introspection" antfile="build.xml" target="${subtarget}" inheritall="false">
+			<property name="latakia.home" value="${latakia.home}"/>
+			<property name="build.lib" value="${build.lib}"/>
+         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
+		</ant>
+   </target>
+   
+   <target name="stardust-common-introspection-xsd" depends="init">
+      <ant dir="${ui.common.home}/stardust-common-introspection-xsd" antfile="build.xml" target="${subtarget}" inheritall="false">
+			<property name="latakia.home" value="${latakia.home}"/>
+			<property name="build.lib" value="${build.lib}"/>
+         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
+		</ant>
+   </target>
+   
+   <target name="stardust-ui-form" depends="init">
+      <ant dir="${ui.common.home}/stardust-ui-form" antfile="build.xml" target="${subtarget}" inheritall="false">
+			<property name="latakia.home" value="${latakia.home}"/>
+			<property name="build.lib" value="${build.lib}"/>
+         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
+		</ant>
+   </target>
+   
+   <target name="stardust-ui-form-jsf" depends="init">
+      <ant dir="${ui.common.home}/stardust-ui-form-jsf" antfile="build.xml" target="${subtarget}" inheritall="false">
+			<property name="latakia.home" value="${latakia.home}"/>
+			<property name="build.lib" value="${build.lib}"/>
+         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
+		</ant>
+   </target>
+
+	<target name="package" depends="init, initLatakiaHome, portal-common,portal-api, 
+	   stardust-common-introspection, stardust-common-introspection-xsd, stardust-ui-form, stardust-ui-form-jsf,
+	   views-common, graphics-common, process-portal, business-control-center, admin-portal">
+	</target>
+
+   <!-- - - - - - - - -  -->
+   <!-- Compound targets -->
+   <!-- - - - - - - - -  -->
+   
+   <target name="clean" depends="init" description="removes all build results">
+      <antcall target="package">
+         <param name="subtarget" value="clean"/>
+      </antcall>
+      <delete dir="${nirvana.build.dir}" includeemptydirs="true" />
+   </target>
+
+	<target name="build" description="builds all subprojects">
+	   <antcall target="package">
+         <param name="subtarget" value="build"/>
+      </antcall>
+	</target>
+   
+	<target name="deploy" description="executes deploy target for each sub project">
+	   <antcall target="package">
+         <param name="subtarget" value="deploy"/>
+      </antcall>
+	</target>
+
+   <target name="dist" description="distribute all Jars">
+	   <antcall target="package">
+         <param name="subtarget" value="dist"/>
+      </antcall>
+   </target>
+</project>

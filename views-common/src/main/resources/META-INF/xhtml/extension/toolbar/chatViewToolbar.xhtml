@@ -1,0 +1,38 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid columns="2" cellspacing="0" cellpadding="0">
+		<pc:automationTag value="auto-COM-ChatView-ToolbarClose"/>
+		<ice:commandButton
+			image="/plugins/views-common/images/icons/cross.png"
+			panelConfirmation="endChat" 
+			actionListener="#{chatViewBean.handleLeaveChatRoomToolbarEvent}"
+			rendered="#{!chatViewBean.chatRoom.closed and chatViewBean.chatRoom.currentUserChatOwner and chatViewBean.chatRoom.userStillInChat}"
+			title="#{views_common_msgPropsBean['views.chatView.toolbar.close']}"
+			partialSubmit="true"
+			styleClass="toolbar-button" />
+		<pc:automationTag value="auto-COM-ChatView-ToolbarLeaveChat"/>	
+		<ice:commandButton
+			image="/plugins/views-common/images/icons/cross.png"
+			panelConfirmation="exitUser" 
+			actionListener="#{chatViewBean.handleLeaveChatRoomToolbarEvent}"
+			rendered="#{!chatViewBean.chatRoom.closed and !chatViewBean.chatRoom.currentUserChatOwner and chatViewBean.chatRoom.userStillInChat}"
+			title="#{views_common_msgPropsBean['views.chatView.toolbar.leaveChat']}"
+			partialSubmit="true"
+			styleClass="toolbar-button" />
+		<ice:panelConfirmation id="endChat" message="#{views_common_msgPropsBean['views.chatView.toolbar.close.confirmMsg']}"
+                    acceptLabel="#{views_common_msgPropsBean['views.chatView.toolbar.confirm.yes']}" cancelLabel="#{views_common_msgPropsBean['views.chatView.toolbar.confirm.no']}" title="#{views_common_msgPropsBean['views.chatView.toolbar.close.confirmTitle']}" style="text-align: left;">
+                    <pc:automationTag value="auto-COM-ToolbarEndChatConfMsg" standAlone="false" requiredValue="pnlConfirmation" />
+        </ice:panelConfirmation>
+		<ice:panelConfirmation id="exitUser" message="#{views_common_msgPropsBean['views.chatView.toolbar.leave.confirmMsg']}"
+                    acceptLabel="#{views_common_msgPropsBean['views.chatView.toolbar.confirm.yes']}" cancelLabel="#{views_common_msgPropsBean['views.chatView.toolbar.confirm.no']}" title="#{views_common_msgPropsBean['views.chatView.toolbar.leave.confirmTitle']}" style="text-align: left;">
+                    <pc:automationTag value="auto-COM-ToolbarExitUserChatConfMsg" standAlone="false" requiredValue="pnlConfirmation" />
+        </ice:panelConfirmation>
+	</ice:panelGrid>
+
+</f:view>

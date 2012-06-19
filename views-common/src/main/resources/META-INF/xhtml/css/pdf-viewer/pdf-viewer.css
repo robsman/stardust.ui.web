@@ -1,0 +1,150 @@
+.toolbarButton {
+	padding-left: 8px;
+}
+
+div.footer_content a {
+	
+}
+
+a.toolbarControl {
+	background-position: top;
+	display: block;
+}
+
+a.firstToolControl {
+	background-image: url('./images/resultset_first.png');
+}
+
+a.firstToolControl-disabled {
+	background-image: url('./images/resultset_first.png');
+	opacity: 0.4;
+	filter: alpha(opacity = 40)
+}
+
+a.firstToolControl:hover {
+	background-image: url('./images/resultset_first.png');
+}
+
+a.previousToolControl {
+	background-image: url('./images/resultset_previous.png');
+}
+
+a.previousToolControl-disabled {
+	background-image: url('./images/resultset_previous.png');
+	opacity: 0.4;
+	filter: alpha(opacity = 40)
+}
+
+a.previousToolControl:hover {
+	background-image: url('./images/resultset_previous.png');
+}
+
+a.forwardToolControl {
+    background-image: url('./images/resultset_next.png');
+}
+
+a.forwardToolControl-disabled {
+    background-image: url('./images/resultset_next.png');
+    opacity: 0.4;
+	filter: alpha(opacity=40)
+}
+
+a.forwardToolControl:hover {
+    background-image: url('./images/resultset_next.png');
+}
+
+a.lastToolControl {
+    background-image: url('./images/resultset_last.png');
+}
+
+a.lastToolControl-disabled {
+    background-image: url('./images/resultset_last.png');
+    opacity: 0.4;
+	filter: alpha(opacity=40)
+}
+
+a.lastToolControl:hover {
+    background-image: url('./images/resultset_last.png');
+}
+
+a.zoomInToolControl {
+    background-image: url('./images/zoom_in.png');
+}
+
+
+a.zoomInToolControl-disabled {
+    background-image: url('./images/zoom_in.png');
+    opacity: 0.4;
+	filter: alpha(opacity=40)
+}
+
+a.zoomInToolControl:hover {
+    background-image: url('./images/zoom_in.png');
+}
+
+a.zoomOutToolControl {
+    background-image: url('./images/zoom_out.png');
+}
+
+a.zoomOutToolControl-disabled {
+    background-image: url('./images/zoom_out.png');
+    opacity: 0.4;
+	filter: alpha(opacity=40)
+}
+
+a.zoomOutToolControl:hover {
+    background-image: url('./images/zoom_out.png');
+}
+
+a.leftToolControl {
+    background-image: url('./images/shape_rotate_anticlockwise.png');
+}
+
+a.leftToolControl:hover {
+    background-image: url('./images/shape_rotate_anticlockwise.png');
+}
+
+a.rightToolControl {
+    background-image: url('./images/shape_rotate_clockwise.png');
+}
+
+a.rightToolControl:hover {
+    background-image: url('./images/shape_rotate_clockwise.png');
+}
+
+a.outlineToolControl {
+    background-image: url('./images/application_side_tree.png');
+}
+
+a.outlineToolControl-disabled {
+    background-image: url('./images/application_side_tree.png');
+    opacity: 0.4;
+	filter: alpha(opacity=40)
+}
+
+a.outlineToolControl:hover {
+    background-image: url('./images/application_side_tree.png');
+}
+
+.popupHeaderWrapper {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.popupHeaderImage {
+    float: right;
+    margin-right: 2px;
+    margin-top: 2px;
+}
+
+.documentOutlineContainer {
+    overflow: auto;
+    width:550px; 
+    height:350px;
+}
+
+.outline-disabled {
+    background-image: url('./images/application_side_tree.png');
+    opacity: 0.4;
+	filter: alpha(opacity=40)
+}

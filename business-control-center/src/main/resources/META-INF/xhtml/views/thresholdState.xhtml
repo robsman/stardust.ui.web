@@ -1,0 +1,22 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	
+	<h:graphicImage title="#{messages_bcc['views.trafficLightView.critical']}" rendered="#{thresholdState eq 1}"
+		style="border: none;" value="/plugins/business-control-center/images/icons/traffic_light_red.png"
+		width="10px" height="10px" />	
+	
+	<h:graphicImage title="#{messages_bcc['views.trafficLightView.warning']}" rendered="#{thresholdState eq 2}"
+		style="border: none;" value="/plugins/business-control-center/images/icons/traffic_light_yellow.png"
+		width="10px" height="10px" />
+	
+	<h:graphicImage title="#{messages_bcc['views.trafficLightView.normal']}" rendered="#{thresholdState eq 3}"
+		style="border: none;" value="/plugins/business-control-center/images/icons/traffic_light_green.png"
+		width="10px" height="10px" />
+	
+</f:view>	

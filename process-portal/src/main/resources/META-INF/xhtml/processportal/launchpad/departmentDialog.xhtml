@@ -1,0 +1,68 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+	<ui:composition>
+		<ice:panelPopup modal="true" rendered="#{startDepartmentBean.visible}"
+			draggable="true" autoCentre="true" positionOnLoadOnly="true"
+			styleClass="popupDialog" width="30%" height="50%" clientOnly="true">
+		<f:facet name="header">
+			<ice:panelGroup>
+				<ice:outputText
+					value="#{startableProcessBean.messages['department.title']}"
+					styleClass="headerText" />
+				<ice:commandButton
+					image="/plugins/common/images/dialog-windowbttn-close.png"
+					title="#{common_msgPropsBean['common.close']}"
+					action="#{startDepartmentBean.closePopup}"
+					immediate="true" styleClass="windowClose" />
+			</ice:panelGroup>
+		</f:facet>
+
+		<f:facet name="body">
+			<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+				cellspacing="0" renderNorth="false" renderEast="false"
+				renderSouth="true" renderWest="false" renderCenter="true">
+				<f:facet name="center">
+					<ice:panelGroup>
+						<ice:outputLabel value="#{startableProcessBean.messages['selectDepartment.label']}" styleClass="label-item"/>
+					
+					<ice:tree value="#{startDepartmentBean.model}" hideRootNode="true" 
+						var="item" imageDir="../../xmlhttp/css/xp/css-images/" style="padding:7px; display: block;">
+						<ice:treeNode>
+							<!--<f:facet name="icon">
+								<ice:panelGroup style="display: inline;">
+									<ice:graphicImage value="#{item.userObject.icon}"></ice:graphicImage>
+								</ice:panelGroup>
+							</f:facet>
+							-->
+							<f:facet name="content">
+								<ice:panelGroup style="display: inline;">
+										<ice:commandLink value="#{item.userObject.text}" styleClass="action-link"
+											actionListener="#{item.userObject.selectDepartment}"
+											rendered="#{not empty item.userObject.department}">
+											<f:attribute name="department" value="#{item.userObject.department}" />
+										</ice:commandLink>
+									<ice:outputText value="#{item.userObject.text}" rendered="#{empty item.userObject.department}"/>
+								</ice:panelGroup>
+							</f:facet>
+						</ice:treeNode>
+					</ice:tree>
+					</ice:panelGroup>
+				</f:facet>
+
+				<f:facet name="south">
+					<ice:panelGroup>
+						<ice:commandButton
+							value="#{processportal_msgPropsBean['views.worklistPanel.popup.close']}"
+							action="#{startDepartmentBean.closePopup}"
+							immediate="true" styleClass="button"/>
+					</ice:panelGroup>
+				</f:facet>
+			</ice:panelBorder>
+		</f:facet>
+	</ice:panelPopup>
+	</ui:composition>
+</f:view>

@@ -1,0 +1,14 @@
+/* Additional stylesheet that alters the default styles to accommodate differences in CSS rendering in various user-agents/browsers. */
+.procSearchSelOneRadio {
+	text-align: left;
+	margin-left: -6px;
+	margin-top: -2px;
+}
+
+ .procSearchProcSelMenu {
+	width: auto;
+	height: 75px;
+	margin-left: 4px;
+	min-width: 147px;
+} 
+

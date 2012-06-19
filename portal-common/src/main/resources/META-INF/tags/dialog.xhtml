@@ -1,0 +1,67 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+	dialogBean -> Instance of PopupUIComponentBean
+	showAnchor -> true/false... Default true
+	widh ->
+	title  
+
+	# Popup Panels Attributes
+	draggable
+	resizable
+	modal
+	
+	# Facets
+	anchor -> to be displayed for Anchor. This overrides showAnchor
+	content* -> Popup's Body Facet
+	buttons ->
+	-->
+	
+<ui:composition>
+	<!-- ************** ANCHOR ************** -->
+	<ice:panelGroup>
+		<ui:insert name="anchor" />
+	</ice:panelGroup>
+
+
+	<!-- ************** POPUP ************** -->
+	<ice:panelPopup draggable="#{draggable}" resizable="#{resizable}" modal="#{modal}"
+			rendered="#{dialogBean.visible}"
+			style="z-index:1000; position:absolute; border:1px solid; #{width};" clientOnly="true">
+
+		<f:facet name="header">
+			<ice:panelGrid width="100%" columns="2" cellpadding="0" cellspacing="5">
+				<ice:outputText value="#{dialogBean.title}" />
+				<ice:panelGroup style="text-align: right; padding-right:5px;">
+					<ice:commandButton image="/plugins/common/images/icons/close-panel.gif"
+						action="#{dialogBean.closePopup}"
+						title="#{common_msgPropsBean['common.dialog.close']}" />
+				</ice:panelGroup>
+			</ice:panelGrid>
+		</f:facet>
+
+		<f:facet name="body">
+			<ice:panelGroup>
+				<!-- <ui:insert name="content" /> -->
+			</ice:panelGroup>
+
+			<ice:panelGrid width="100%" cellpadding="5" cellspacing="5" columns="2" style="text-align: center">
+				<ice:commandButton value="#{common_msgPropsBean['common.dialog.apply']}"
+					action="#{dialogBean.apply}" styleClass="button" />
+				<ice:commandButton  value="#{common_msgPropsBean['common.dialog.reset']}"
+					action="#{dialogBean.reset}" styleClass="button" />
+				<ice:commandButton  value="#{common_msgPropsBean['common.dialog.cancel']}"
+					action="#{dialogBean.closePopup}" styleClass="button" />
+			</ice:panelGrid>
+		</f:facet>
+	
+	</ice:panelPopup>
+</ui:composition>
+
+</f:view>

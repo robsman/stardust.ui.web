@@ -1,0 +1,214 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ui:include src="resubmissionActivityNotes.xhtml" />
+	<ui:include src="/plugins/views-common/dialogs/abortActivity.xhtml" />
+	<ui:include src="/plugins/views-common/dialogs/delegation.xhtml" />
+	<ui:include src="/plugins/views-common/dialogs/spawnProcessDialog.xhtml" />
+	<ui:include src="/plugins/views-common/contentmgmt/views/notificationMessage.xhtml" />
+	
+	
+	<ice:panelGroup width="100%">
+		<ice:panelGroup style="vertical-align: top; width:100%">
+			<ice:panelCollapsible
+				expanded="#{processInstanceDetailsBean.overviewPanelExpanded}">
+				<f:facet name="header">
+					<ice:panelGroup>
+						<ice:outputText
+							value="#{processInstanceDetailsBean.messages['processInstance.label']}">
+							<pc:automationTag value="auto-COM-PCEOverview" standAlone="false"/>	
+						</ice:outputText>	
+					</ice:panelGroup>
+				</f:facet>
+				<pc:automationTag value="auto-COM-PCEOverviewGrid" />
+				<ice:panelGrid columns="2" columnClasses="table-columnVertical, table-columnVertical">
+					<ice:column>
+						<ice:panelGrid columns="2" style="vertical-align: top;">
+							<ice:column>
+								<ice:outputLabel for="txtProcessName"
+									value="#{processInstanceDetailsBean.messages['processTable.ProcessLabel']}:"
+									styleClass="label-item" />
+							</ice:column>
+							<ice:column>
+								<ice:outputText
+									value="#{processInstanceDetailsBean.processName}" />
+
+								<ice:commandLink action="#{ippPortalApp.openView}">
+									<pc:automationTag value="auto-COM-PCEOverview-GanttChart" standAlone="false"/>
+									<h:graphicImage
+										value="/plugins/business-control-center/images/icons/gantt_diagram.gif"
+										style="border: none;" title="#{ippBCCDiagramBean.messages['tooltip.viewGanttChart.title']}"/>
+									<f:param name="viewId" value="ganttChartView" />
+									<f:param name="nested" value="true" />
+									<f:param name="viewParams"
+										value="processInstanceOId=#{processInstanceDetailsBean.processInstance.OID}" />
+								</ice:commandLink>
+								<ice:commandLink action="#{ippPortalApp.openView}">
+									<pc:automationTag value="auto-COM-PCEOverview-ProcessDiag" standAlone="false"/>
+									<h:graphicImage
+										rendered="#{ippBCCDiagramBean.diagramSupported}"
+										value="/plugins/business-control-center/images/icons/process_diagram.gif"
+										style="border: none;"
+										title="#{ippBCCDiagramBean.messages['tooltip.viewDiagram']}" />
+									<f:param name="viewId" value="processDiagramView" />
+									<f:param name="nested" value="true" />
+									<f:param name="viewParams"
+										value="processInstanceOId=#{processInstanceDetailsBean.processInstance.OID}" />
+								</ice:commandLink>
+							</ice:column>						
+
+							<ice:column>
+								<ice:outputLabel for="txtProcessOId"
+									value="#{messages_bcc['views.processOverviewView.processTable.column.pOID']}:"
+									styleClass="label-item" />
+							</ice:column>
+							<ice:column>
+								<ice:outputText
+									value="#{processInstanceDetailsBean.processInstance.OID}" />
+							</ice:column>
+						</ice:panelGrid>
+					</ice:column>
+
+					<ice:column>
+						<ice:panelGrid columns="2"
+							style="vertical-align: top; padding-left: 20px;">
+							<ice:column>
+								<ice:outputLabel for="txtStatus"
+									value="#{messages_bcc['views.common.column.status']}:"
+									styleClass="label-item" />
+							</ice:column>
+							<ice:column>
+								<ice:outputText
+									value="#{processInstanceDetailsBean.state}" />
+							</ice:column>
+
+							<ice:column>
+								<ice:outputLabel for="txtStart"
+									value="#{messages_bcc['views.processOverviewView.processTable.column.startTime']}:"
+									styleClass="label-item" />
+							</ice:column>
+							<ice:column>
+								<ice:outputText value="#{processInstanceDetailsBean.startTime}" />
+							</ice:column>
+
+							<ice:column>
+								<ice:outputText for="txtDuration"
+									value="#{messages_bcc['views.processOverviewView.processTable.column.startUser']}:"
+									styleClass="label-item" />
+							</ice:column>
+							<ice:column>
+								<ice:outputText
+									value="#{processInstanceDetailsBean.startingUser}" />
+							</ice:column>
+
+							<ice:column>
+								<ice:outputLabel for="txtDuration"
+									value="#{messages_bcc['views.processOverviewView.processTable.column.duration']}:"
+									styleClass="label-item" />
+							</ice:column>
+							<ice:column>
+								<ice:outputText value="#{processInstanceDetailsBean.duration}" />
+							</ice:column>
+						</ice:panelGrid>
+					</ice:column>
+				</ice:panelGrid>
+			</ice:panelCollapsible>
+		</ice:panelGroup>
+
+		<ice:panelCollapsible
+			expanded="#{processInstanceDetailsBean.descriptorPanelExpanded}">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText value="#{messages_bcc['common.descriptor.title']}">
+						<pc:automationTag value="auto-COM-PCEDescriptor" standAlone="false"/>	
+					</ice:outputText>
+				</ice:panelGroup>
+			</f:facet>
+			<ice:panelGroup>
+				<pc:automationTag value="auto-COM-PCEDescriptorTable"/>
+				<pc:genericDataTable bean="#{processInstanceDetailsBean}"
+					id="descriptorList"
+					table="#{processInstanceDetailsBean.descriptorTable}"
+					sortSupported="true" exportExcel="false" exportCsv="false" />
+			</ice:panelGroup>
+		</ice:panelCollapsible>
+		
+			<ice:panelCollapsible
+			expanded="#{processInstanceDetailsBean.linkedProcessPanelExpanded}">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText value="#{views_common_msgPropsBean['linkedProcessTable.table']}">
+					<pc:automationTag value="auto-COM-PCELinkedProcessPanel" standAlone="false"/>
+					</ice:outputText>
+				</ice:panelGroup>
+			</f:facet>
+			<ice:panelGroup>
+				<ui:include
+					src="/plugins/views-common/processTableHelper/processTableHelper.xhtml">
+					<!-- <ui:param name="title"
+						value="#{processSearchBean.messages['title']}" /> -->
+					<ui:param name="id" value="ctxProcessSearchList" />
+					<!--As createCaseDialog.xhtml and attachToCaseDialog.xhtml are already included
+					no need to again include in processTableHelper.xtml-->
+					<ui:param name="includeHelpers" value="false" />
+					<ui:param name="bean" value="#{processInstanceDetailsBean.processHelper}" />
+				</ui:include>
+			</ice:panelGroup>
+		</ice:panelCollapsible>
+		
+
+		<ice:panelCollapsible
+			expanded="#{processInstanceDetailsBean.processHistoryPanelExpanded}">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText
+						value="#{views_common_msgPropsBean['processHistoryTable.title']}" >
+						<pc:automationTag value="auto-COM-PCEHistoryPanel" standAlone="false"/>
+					</ice:outputText>	
+				</ice:panelGroup>
+			</f:facet>
+			<ice:panelGroup>
+				<ui:include src="/plugins/views-common/processhistory/processHistoryTableInclude.xhtml" />
+			</ice:panelGroup>
+		</ice:panelCollapsible>
+
+		<ice:panelCollapsible
+			expanded="#{processInstanceDetailsBean.genericRepositoryTreeExpanded}">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText
+						value="#{messages_bcc['views.processOverviewView.processTable.column.processDocuments']}" >
+						<pc:automationTag value="auto-COM-PCEDocumentsPanel" standAlone="false"/>
+					</ice:outputText>	
+				</ice:panelGroup>
+			</f:facet>
+			<ice:panelGroup scrollWidth="100%">
+				<pc:automationTag value="auto-COM-PCEDocumentTree" standAlone="false"/>
+				<ui:include
+					src="/plugins/views-common/views/doctree/genericRepositoryView.xhtml" />
+			</ice:panelGroup>
+		</ice:panelCollapsible>
+
+		<ice:panelCollapsible
+			expanded="#{processInstanceDetailsBean.participantsPanelExpanded}">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText
+						value="#{views_common_msgPropsBean['participantsTable.title']}">
+						<pc:automationTag value="auto-COM-PCEParticipantsPanel" standAlone="false"/>
+					</ice:outputText>
+				</ice:panelGroup>
+			</f:facet>
+			<ice:panelGroup>
+				<ui:include
+					src="/plugins/views-common/participantspanel/participantsPanel.xhtml" />
+			</ice:panelGroup>
+		</ice:panelCollapsible>
+	</ice:panelGroup>
+
+</f:view>

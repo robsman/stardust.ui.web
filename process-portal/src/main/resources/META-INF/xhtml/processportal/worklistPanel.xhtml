@@ -1,0 +1,26 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+
+	
+		<ui:include src="/plugins/views-common/dialogs/delegation.xhtml" />
+		<ui:include src="/plugins/views-common/dialogs/abortActivity.xhtml" />
+		<ui:include src="/plugins/views-common/contentmgmt/views/notificationMessage.xhtml" />
+	
+      
+      <ice:panelGroup>
+		<pc:automationTag value="auto-PP-WorkList-DataTable"/>			
+	    <!-- Removing id Parameter as unique id will be required for every worklist -->
+	    <!-- Framework will generate unique id if not provided -->					
+		<pc:genericDataTable exportExcel="true" exportCsv="true" resizable="false" style="width:100%"
+			bean="#{worklistTableBean}"
+			table="#{worklistTableBean.worklistTable}"
+			toolbarUrl="/plugins/processportal/toolbar/worklistViewToolbar.xhtml"
+			sortSupported="true" />
+	</ice:panelGroup>
+</f:view>

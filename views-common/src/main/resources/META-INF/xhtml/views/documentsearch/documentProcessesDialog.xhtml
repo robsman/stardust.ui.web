@@ -1,0 +1,65 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:composition>
+		<ice:panelPopup draggable="true" resizable="false" modal="false"
+			styleClass="popupDialog"
+			rendered="#{bean.processesDialog.visible}" clientOnly="true">
+			<f:facet name="header">
+
+				<table cellpadding="0" cellspacing="0" width="100%">
+					<tr>
+						<td style="text-align: right">
+						<pc:automationTag value="auto-COM-SrchDoc-DocSrchTbl-DocProcDlg-CloseBtn"/>
+						<ice:commandButton
+								image="/plugins/common/images/dialog-windowbttn-close.png"
+								action="#{bean.processesDialog.closePopup}" immediate="true"
+								title="#{common_msgPropsBean['common.filterPopup.close']}"
+								styleClass="windowClose">
+							</ice:commandButton></td>
+					</tr>
+				</table>
+			</f:facet>
+
+			<f:facet name="body">
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+					cellspacing="0" width="100%" renderNorth="false" renderEast="false"
+					renderSouth="true" renderWest="false" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>
+
+							<ice:panelGroup
+								rendered="#{not empty bean.processList}" style="white-space:nowrap;">
+								<ui:repeat value="#{bean.processList}"
+									var="processWrapper">
+									<h:graphicImage
+										url="/plugins/processportal/images/icons/process.png" />
+									<h:outputText value="&#160;" />
+									<ice:commandLink style="white-space:nowrap;"
+										value="#{processWrapper.processName} (##{processWrapper.processInstance.OID})"
+										title="#{documentSearchBean.messages['documentSearchTable.tooltip.processContextExplorer']}"
+										actionListener="#{bean.processesDialog.openProcess}">
+										<pc:automationTag value="auto-COM-SrchDoc-DocSrchTbl-DocProcDlg-OpenProc" standAlone="false"/>
+										<f:attribute name="processInstance"
+											value="#{processWrapper.processInstance}" />										
+									</ice:commandLink>
+									<br />
+								</ui:repeat>
+							</ice:panelGroup>
+
+							<ice:panelGroup
+								rendered="#{empty bean.processList}">
+								<h:outputText
+									value="#{documentSearchBean.messages['documentSearchTable.nofound']}" />
+							</ice:panelGroup>
+
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

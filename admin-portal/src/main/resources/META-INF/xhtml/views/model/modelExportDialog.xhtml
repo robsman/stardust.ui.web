@@ -1,0 +1,83 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ui:composition>
+		<ice:panelPopup modal="true"
+			rendered="#{modelExportDialogBean.visible}"
+			draggable="true"
+			autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-ADM-ModelExpDlg-Header"/>
+					<h:outputFormat
+						value="#{messages_admin['views.modelExportDialog.title']}" styleClass="headerText">
+						<f:param value="#{modelExportDialogBean.userObject.parent.label}" />
+						<f:param value="#{modelExportDialogBean.userObject.label}" />
+					</h:outputFormat>
+
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png"
+						action="#{modelExportDialogBean.closePopup}" immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+			<f:facet name="body">
+
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+					cellspacing="0" renderNorth="false" renderEast="false"
+					renderSouth="true" renderWest="false" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>
+							<ice:messages />
+
+							<ice:outputLabel
+								value="#{messages_admin['views.modelExportDialog.info']}" />
+							<ice:panelGroup>
+								<ice:panelGrid columns="1" style="text-align: left">
+									<ice:selectOneRadio 
+										value="#{modelExportDialogBean.selectedOption}"
+										valueChangeListener="#{modelExportDialogBean.modelSelectionListener}"
+										partialSubmit="true" layout="pageDirection">
+										<pc:automationTag value="auto-ADM-ModelExpDlg-ModelExport"
+											standAlone="false" />
+										<f:selectItems 
+											value="#{modelExportDialogBean.modelExportItems}" />
+									</ice:selectOneRadio>
+								</ice:panelGrid>
+							</ice:panelGroup>
+
+
+						</ice:panelGroup>
+
+					</f:facet>
+					<f:facet name="south">
+						<ice:panelGroup>
+
+							<ice:panelGrid columns="2" style="text-align: left">
+								<pc:automationTag value="auto-ADM-ModelExpDlg-BtnsBar"
+									standAlone="false" />
+								<ice:outputResource
+									resource="#{modelExportDialogBean.fileResource}"
+									label="#{ messages_admin['views.modelExportDialog.button.export']}"
+									fileName="#{modelExportDialogBean.fileName}" type="button"
+									styleClass="button" attachment="true" />
+
+								<ice:commandButton value="#{messages_admin['common.cancel']}"
+									action="#{modelExportDialogBean.closePopup}"
+									styleClass="button" style="width: 60px"
+									title="#{ messages_admin['common.cancel']}" />
+							</ice:panelGrid>
+						</ice:panelGroup>
+					</f:facet>
+
+				</ice:panelBorder>
+			</f:facet>
+
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

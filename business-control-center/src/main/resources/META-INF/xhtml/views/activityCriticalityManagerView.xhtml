@@ -1,0 +1,29 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ice:panelGroup>
+		<pc:automationTag value="auto-BCC-CriticalityMgr-CriticalityDataTable"/>
+		<pc:genericDataTable title="#{activityCriticalityManagerBean.messages['criticalityManagerTable.title']}"
+				bean="#{activityCriticalityManagerBean}" id="priorityView"
+				table="#{activityCriticalityManagerBean.treeTable}" treeColumn="Name"
+				exportExcel="true" exportCsv="true" toolbarUrl="/plugins/business-control-center/extensions/toolbar/activityCriticalityMgrTableToolbar.xhtml"/>
+		<ice:panelGroup styleClass="clearing" />
+		<ice:panelGroup styleClass="clearing" />
+	</ice:panelGroup>
+
+	<ice:panelGroup>
+		<c:if test="#{activityCriticalityManagerBean.activityTableVisible}">
+			<ui:include src="/plugins/views-common/activityTableHelper/activityTableHelper.xhtml">
+				<ui:param name="title" value="#{activityCriticalityManagerBean.messages['selectedActivitiesTable.title']}"/>
+				<ui:param name="id" value="activityList"/>
+				<ui:param name="bean" value="#{activityCriticalityManagerBean.activityTableHelper}"/>
+			</ui:include>
+		</c:if>
+		<ice:panelGroup styleClass="clearing" />
+	</ice:panelGroup>
+</f:view>

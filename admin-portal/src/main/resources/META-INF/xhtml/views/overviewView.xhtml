@@ -1,0 +1,122 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ice:panelGroup>
+		<ui:include src="inspectLogEntry.xhtml" />
+		<ui:include src="/plugins/views-common/user/userDetails.xhtml" />
+	</ice:panelGroup>
+	
+	<ice:panelGroup style="vertical-align: top; white-space: nowrap; text-align:left; width:100%;">
+		<ice:panelGroup styleClass="heading" style="width: 100%;">
+			<ice:outputText value="#{messages_admin['views.common.processes.label']}" />
+		</ice:panelGroup>
+		<ice:panelGroup style="width: 100%;">
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.total.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{overviewBean.totalProcessInstancesCount}">
+					<pc:automationTag value="auto-ADM-Overview-TotalProcCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+			
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.active.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{overviewBean.activeProcessInstancesCount}">
+					<pc:automationTag value="auto-ADM-Overview-ActiveProcCnt" standAlone="false"/>	
+				</ice:outputText>
+			</ice:panelGroup>
+			
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.interrupted.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{overviewBean.interruptedProcessInstancesCount}">
+					<pc:automationTag value="auto-ADM-Overview-IntProcCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+			
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.aborted.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{overviewBean.abortedProcessInstancesCount}"/>
+			</ice:panelGroup>
+		    <ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.completed.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{overviewBean.completedProcessInstancesCount}">
+					<pc:automationTag value="auto-ADM-Overview-CompProcCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+		</ice:panelGroup>
+		<ice:panelGroup styleClass="clearing" />
+		
+		<ice:panelGroup styleClass="heading" style="width: 100%;">
+			<ice:outputText value="#{messages_admin['views.common.activities.label']}"/>
+		</ice:panelGroup>
+		<ice:panelGroup style="width: 100%;">
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.total.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{overviewBean.totalActivityInstancesCount}">
+					<pc:automationTag value="auto-ADM-Overview-TotalActCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+			
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.active.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{overviewBean.activeActivityInstancesCount}">
+					<pc:automationTag value="auto-ADM-Overview-ActiveActCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+			
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.waiting.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{overviewBean.pendingActivityInstancesCount}">
+					<pc:automationTag value="auto-ADM-Overview-WaitActCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+			
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.aborted.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{overviewBean.abortedActivityInstancesCount}">
+					<pc:automationTag value="auto-ADM-Overview-AbortActCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+			
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.completed.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{overviewBean.completedActivityInstancesCount}">
+					<pc:automationTag value="auto-ADM-Overview-CompActCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+		</ice:panelGroup>
+		<ice:panelGroup styleClass="clearing" />
+		
+		<ice:panelGroup styleClass="heading" style="width: 100%;">
+			<ice:outputText value="#{messages_admin['views.common.users.label']}"/>
+		</ice:panelGroup>
+		<ice:panelGroup style="width: 100%;">
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.total.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{overviewBean.totalUsersCount}">
+					<pc:automationTag value="auto-ADM-Overview-TotalUserCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+			
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.valid.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{overviewBean.activeUsersCount}">
+					<pc:automationTag value="auto-ADM-Overview-ValidUserCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+		</ice:panelGroup>
+	</ice:panelGroup>
+	<ice:panelGroup styleClass="clearing" />
+
+	<ice:panelGroup>
+		<pc:automationTag value="auto-ADM-Overview-LogTable" />
+		<pc:genericDataTable title="#{overviewBean.messages['logTable.title']}"
+			bean="#{overviewBean}" id="logEntriesList"
+			table="#{overviewBean.logEntriesTable}" sortSupported="true" />
+	</ice:panelGroup>
+	
+</f:view>

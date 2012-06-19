@@ -1,0 +1,29 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates mandatory attributes)
+		filter* - Filter Object
+	 -->
+	<ice:panelGrid columns="2">
+		<ice:outputLabel
+			value="#{views_common_msgPropsBean['common.filterPopup.userName.firstName.label']}"
+			styleClass="label-form" />
+		<ice:inputText value="#{filter.firstName}">
+			<pc:automationTag value="auto-DT-DataFilterUserFirstName"
+				standAlone="false" />
+		</ice:inputText>
+		<ice:outputLabel
+			value="#{views_common_msgPropsBean['common.filterPopup.userName.lastName.label']}"
+			styleClass="label-form" />
+		<ice:inputText value="#{filter.lastName}">
+			<pc:automationTag value="auto-DT-DataFilterUserLastName"
+				standAlone="false" />
+		</ice:inputText>
+	</ice:panelGrid>
+</f:view>

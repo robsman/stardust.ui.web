@@ -1,0 +1,486 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		id* = Id of the Table
+		bean* = Backing Bean 
+		table* = Instance of DataTable or SortableTable or TreeTable or PaginatorDataTable
+		title = Title of the Table
+		sortSupported = "true/false" Default false
+		renderColumnHeaders = "true/false" Default true
+		renderColumns = "true/false" Default true. If false then Loop Row variable exposed by the component is row 
+		displayNoRecordsFoundLabel = "true/false" Default true.
+		
+		treeColumn = Value Mapping for Tree Column if it's a Tree Table 
+		treeLineStyle = SOLID / DOTTED / NONE (Default)
+		
+		exportExcel = "true/false"
+		exportCsv = "true/false"
+		
+		toolbarAlignment = "left|right" Default left
+		toolbarUrl = URL of Toolbar
+		
+		selectColumn = Name of the BOOLEAN Column which will represent checkbox
+		
+		forceColumnWidths = true/false -> Set to true if columns widths set in column model needs to be forced
+		
+		And Other attributes same like ice:dataTable (except value). Like: columnWidths, styleClass
+
+	# Facets
+	 	header -> Header for the Data Table
+	 	footer -> Footer for the Data Table
+	 	toolbar -> Table's Toolbar
+	 -->
+<ui:component>
+	<c:if test="#{(not empty bean) and (not empty table)}">
+	
+		<!-- ********** PARAMETER VALIDATION ********** -->
+		<c:if test="#{empty id}">
+			<c:set var="id" value="#{table.id}" />
+		</c:if>
+
+		<c:if test="#{table.columnSelectorPopup != null}">
+			<c:set var="columnModel" value="#{table.columnSelectorPopup.columnModel}" />
+		</c:if>
+		<c:if test="#{table.columnSelectorPopup == null}">
+			<c:set var="columnModel" value="#{table.columnModel}" />
+		</c:if>
+
+		<c:if test="#{empty renderColumns}">
+			<c:set var="renderColumns" value="true" />
+		</c:if>
+
+		<c:if test="#{empty renderColumnHeaders}">
+			<c:set var="renderColumnHeaders" value="true" />
+		</c:if>
+		
+		<c:if test="#{empty displayNoRecordsFoundLabel}">
+			<c:set var="displayNoRecordsFoundLabel" value="true" />
+		</c:if>
+
+		<c:if test="#{empty exportExcel}">
+			<c:set var="exportExcel" value="true" />
+		</c:if>
+		<c:if test="#{empty exportCsv}">
+			<c:set var="exportCsv" value="true" />
+		</c:if>
+
+		<c:if test="#{empty resizable}"> <!-- For Column Grouping resizable is false -->
+			<c:set var="resizable" value="#{columnModel.columnGropuing ? false : true}" />
+		</c:if>
+
+		<c:if test="#{empty styleClass}">
+			<c:set var="styleClass" value="genericTable" />
+		</c:if>
+
+		<c:if test="#{empty sortSupported}">
+			<c:set var="sortSupported" value="false" />
+		</c:if>
+
+		<c:if test="#{empty toolbarAlignment}">
+			<c:set var="toolbarAlignment" value="left" />
+		</c:if>
+		
+		<c:if test="#{empty showToolbar}">
+			<c:set var="showToolbar" value="false" />
+		</c:if>
+		
+		<c:if test="#{forceColumnWidths}">
+			<c:set var="columnWidths" value="#{table.columnWidths}" />
+		</c:if>
+
+		<!-- ********** VARIABLE INITIALIZATION ********** -->
+		<c:set var="paginatorTable"
+			value="#{pc:instanceOf(table, 'org.eclipse.stardust.ui.web.common.table.PaginatorDataTable')}" />
+
+		<c:set var="displayPaginator"
+			value="#{paginatorTable ? (table.rowCount > table.pageSize ? true : false) : false}" />
+
+		<c:if test="#{sortSupported}">
+			<c:set var="sortModel" value="#{paginatorTable ? table.sortModel : table.comparator}" />
+			<c:set var="sortColumn" value="#{sortModel.sortColumnProperty}" />
+			<c:set var="sortAscending" value="#{sortModel.ascending}" />
+		</c:if>
+		
+		<c:set var="emptyData" value="#{table.rowCount eq 0}" />
+
+		<!-- ********** DATA TABLE ********** -->
+		<ice:panelGrid columns="1" width="100%" cellpadding="0" cellspacing="0">
+		
+			<!-- ********** DATA TABLE TITLE ********** -->
+			<ice:panelGroup rendered="#{not empty title}" styleClass="heading"> <!-- #{styleClass}Title -->
+				<ice:outputText value="#{title}">
+					<pc:automationTag value="auto-DT-Heading" standAlone="false" />
+				</ice:outputText>
+			</ice:panelGroup>
+
+			<!-- ********** DATA TABLE TOOLBAR ********** -->
+			<c:set var="showDefaultToolbar" value="#{(!table.showFilterAtColumns) || (table.columnSelectorPopup != null) || exportExcel || exportCsv}" />
+			
+			<ice:panelGroup>
+				<pc:automationTag value="auto-DT-Toolbar" />
+				<table cellpadding="0" cellspacing="0" width="100%"><tr>
+					<td style="width: 2px; white-space: nowrap">
+						<ice:panelGrid columns="4" styleClass="#{styleClass}Toolbar" cellpadding="0" cellspacing="0"
+							rendered="#{showDefaultToolbar}">
+							<ice:panelGroup rendered="#{!table.showFilterAtColumns}">
+								<pc:tableFilter bean="#{bean}" filterPopup="#{table.dataFilterPopup}" /> <!-- disabled="#{emptyData}" -->
+							</ice:panelGroup>
+							
+							<ice:panelGroup rendered="#{table.columnSelectorPopup != null}">
+								<pc:columnSelectorFilter filterPopup="#{table.columnSelectorPopup}" disabled="#{emptyData}" />
+							</ice:panelGroup>
+				
+							<ice:panelGroup rendered="#{exportExcel}" >
+								<pc:automationTag value="auto-DT-ExportExcel" standAlone="false" />								
+								<ice:dataExporter
+									for="#{id}" rendered="#{table.supportExportToExcel and !emptyData}" 
+									type="excel" style="vertical-align:top; border:none; padding-left:5px;"
+									image="/plugins/common/images/icons/xls-icon.png"
+									label="#{common_msgPropsBean['common.genericDataTable.asExcel']}"
+									includeColumns="#{table.exportableColumns}"
+									outputTypeHandler="#{table.excelDataTableExporter}" />								
+								
+								<ice:commandLink rendered="#{!table.supportExportToExcel}" disabled="#{!table.supportExportToExcel}" >	
+									<ice:graphicImage style="vertical-align:top; border:none; padding-left:5px;"
+												value="/plugins/common/images/icons/xls-icon.png"
+												styleClass="iceCmdBtn-dis"
+												title="#{common_msgPropsBean['common.genericDataTable.asExcel']}" />
+								</ice:commandLink>
+							</ice:panelGroup>
+							
+							<ice:panelGroup rendered="#{exportCsv}" >
+								<pc:automationTag value="auto-DT-ExportCsv" standAlone="false" />
+								<ice:dataExporter
+									for="#{id}" rendered="#{not emptyData}"
+									type="csv" style="vertical-align:top; border:none; padding-left:5px;"
+									image="/plugins/common/images/icons/csv-icon.png"
+									label="#{common_msgPropsBean['common.genericDataTable.asCSV']}"
+									includeColumns="#{table.exportableColumns}"
+									outputTypeHandler="#{table.csvDataTableExporter}" />
+							</ice:panelGroup>
+						</ice:panelGrid>
+					</td>
+					<c:if test="#{not empty toolbarUrl}">
+						<c:if test="#{toolbarAlignment eq 'right'}">
+							<td width="100%" /> <!-- Filler TD -->
+						</c:if>	
+						<td class="#{styleClass}UserToolbar" style="width: 2px; white-space: nowrap">
+							<ui:include src="#{toolbarUrl}">
+								<ui:param name="bean" value="#{bean}" />
+							</ui:include>
+						</td>
+						<c:if test="#{toolbarAlignment eq 'left'}">
+							<td width="100%" /> <!-- Filler TD -->
+						</c:if>
+					</c:if>	
+				</tr></table>
+			</ice:panelGroup>
+
+			<!-- ********** DATA TABLE PAGIANTION INFO ********** -->
+			<ice:panelGroup
+					rendered="#{displayPaginator}"
+					style="width:100%; margin-top: 2px;">
+					
+				<pc:automationTag value="auto-DT-PaginatorInfo" />
+				<ice:dataPaginator
+						id="#{id}PaginatorInfo" for="#{id}"
+						rowsCountVar="rowsCount"
+						displayedRowsCountVar="displayedRowsCountVar"
+						firstRowIndexVar="firstRowIndex"
+						lastRowIndexVar="lastRowIndex"
+						pageCountVar="pageCount"
+						pageIndexVar="pageIndex">
+	               <ice:outputFormat styleClass="#{styleClass}PaginatorInfo"
+	               		value="#{common_msgPropsBean['common.genericDataTable.paginationInfo']}">
+	                   <f:param value="#{rowsCount}"/>
+	                   <f:param value="#{displayedRowsCountVar}"/>
+	                   <f:param value="#{firstRowIndex}"/>
+	                   <f:param value="#{lastRowIndex}"/>
+	                   <f:param value="#{pageIndex}"/>
+	                   <f:param value="#{pageCount}"/>
+	               </ice:outputFormat>
+				</ice:dataPaginator>
+			</ice:panelGroup>
+
+			<!-- ********** ACTUAL DATA TABLE ********** -->
+			<ice:panelGroup>
+				<pc:automationTag value="auto-DT-Content" />
+				<ice:dataTable
+					id="#{id}" 
+					var="row" value="#{paginatorTable ? table.dataModel : table.list}"
+					rows="#{displayPaginator ? table.pageSize : 0}"
+					sortColumn="#{sortColumn}" sortAscending="#{sortAscending}"
+					styleClass="#{styleClass}" resizable="#{resizable}" style="#{style}" columnWidths="#{columnWidths}"
+					headerClass="#{headerClass}" columnClasses="#{columnClasses}" border="#{border}"
+					scrollable="#{scrollable}" scrollHeight="#{scrollHeight}"
+					cellpadding="0" cellspacing="0" frame="none" clientOnly="false" rules="none">
+		
+					<!-- ********** COLUMN GROP HEADER ********** -->
+					<c:if test="#{renderColumnHeaders and columnModel.columnGropuing}">
+						<c:set var="depth" value="#{columnModel.columnGroupRowsCount}" />
+						<f:facet name="header">
+							<ice:columnGroup>
+								<c:forEach items="#{columnModel.columnGroupRows}" var="colList">
+									<ice:headerRow>
+										<c:forEach items="#{colList}" var="colPref">
+											<ice:column rendered="#{colPref != null}" 
+													rowspan="#{depth - colPref.childrenDepth}"
+													colspan="#{colPref.totalLeafCount}">
+												<ice:columnGroup>
+													<ice:panelGrid columns="1" width="100%">
+														<ice:panelGroup rendered="#{table.showFilterAtColumns and colPref.columnDataFilterPopup != null}">
+															<pc:tableFilter bean="#{bean}" filterPopup="#{colPref.columnDataFilterPopup}"
+																anchorStyle="border: none" showAnchorTitle="false" /> <!-- disabled="#{emptyData}" -->
+														</ice:panelGroup>
+														<ice:panelGroup>
+									                    	<c:if test="#{colPref.totalLeafCount > 1}">
+									                    		<f:attribute name="styleClass" value="#{styleClass}GroupHeader" />
+									                    	</c:if>
+															<c:choose>
+																<c:when test="#{sortSupported and colPref.sortable}">
+																	<ice:commandSortHeader columnName="#{colPref.columnProperty}">
+																		<pc:automationTag value="auto-DT-Col-Sorter" standAlone="false" />
+																		<c:choose>
+																			<c:when test="#{(selectColumn eq colPref.columnName) and (colPref.columnRenderType eq 'READ_WRITE')}">
+																				<ui:include src="includes/genericDataTableSelectAllNone.xhtml" />
+																			</c:when>
+																			<c:otherwise>
+													                    		<c:choose>
+													                    			<c:when test="#{sortColumn eq colPref.columnProperty}">
+													                    				<ice:outputText value="#{colPref.columnTitle}" />
+													                    			</c:when>
+													                    			<c:otherwise>
+													                    				<table>
+													                    					<tbody>
+														                    					<tr>
+														                    						<td><ice:outputText value="#{colPref.columnTitle}" /></td>
+														                    						<td><div class="#{styleClass}SortColHdr"></div></td>
+														                    					</tr>
+														                    				</tbody>
+													                    				</table>
+													                    			</c:otherwise>
+													                    		</c:choose>
+																			</c:otherwise>
+																		</c:choose>
+																	</ice:commandSortHeader>
+																</c:when>
+																<c:otherwise>
+																	<c:choose>
+																		<c:when test="#{(selectColumn eq colPref.columnName) and (colPref.columnRenderType eq 'READ_WRITE')}">
+																			<ui:include src="includes/genericDataTableSelectAllNone.xhtml" />																	</c:when>
+																		<c:otherwise>
+													                    	<ice:outputText value="#{colPref.columnTitle}" />
+																		</c:otherwise>
+																	</c:choose>
+																</c:otherwise>
+															</c:choose>
+														</ice:panelGroup>
+													</ice:panelGrid>
+												</ice:columnGroup>
+											</ice:column>
+										</c:forEach>
+									</ice:headerRow>
+									<c:set var="depth" value="#{depth - 1}" />
+								</c:forEach>
+							</ice:columnGroup>
+						</f:facet>
+					</c:if>
+		
+					<c:if test="#{renderColumns}">
+						<c:forEach items="#{columnModel.renderableLeafColumns}" var="item" varStatus="loopStatus">
+	
+							<ice:column style="text-align:#{item.columnAlignment}; #{item.noWrap ? 'white-space: nowrap' : ''}">
+
+								<!-- ********** ROW SELECTOR ********** -->
+								<c:if test="#{(not empty table.rowSelector) and loopStatus.first}">
+									<c:set var="rowSelectorValueMap"
+										value="#{pc:getObjectPropertyMapping(row, table.rowSelector.rowProperty)}" />
+									<c:set var="rowSelectorObject" value="#{rowSelectorValueMap['object']}" />
+									<c:set var="rowSelectorProperty" value="#{rowSelectorValueMap['property']}" />	
+
+									<ice:rowSelector value="#{rowSelectorObject[rowSelectorProperty]}"
+										multiple="#{table.rowSelector.multiple}"
+										enhancedMultiple="#{table.rowSelector.enhancedMultiple}"
+										dblClickDelay="#{table.rowSelector.dblClickDelay}"
+										preStyleOnSelection="#{table.rowSelector.preStyleOnSelection}"
+										toggleOnInput="false" clickedRow="#{table.rowSelector.clickedRow}"
+										clickAction="dummyAction"
+										clickListener="#{table.rowSelector.rowClicked}"
+										selectionListener="#{table.rowSelector.rowSelected}" />
+								</c:if> 
+								
+								<!-- ********** COLUMN HEADER ********** -->
+								<c:if test="#{renderColumnHeaders and not columnModel.columnGropuing}">
+									<f:facet name="header">
+										<ice:panelGrid columns="1" width="100%">
+											<ice:panelGroup rendered="#{table.showFilterAtColumns and item.columnDataFilterPopup != null}">
+												<pc:tableFilter bean="#{bean}" filterPopup="#{item.columnDataFilterPopup}"
+													anchorStyle="border: none" showAnchorTitle="false" /> <!-- disabled="#{emptyData}" -->
+											</ice:panelGroup>
+											<ice:panelGroup>
+												<c:choose>
+													<c:when test="#{sortSupported and item.sortable}">
+														<ice:commandSortHeader columnName="#{item.columnProperty}" styleClass="iceCmdSrtHdr">
+															<pc:automationTag value="auto-DT-Col-Sorter" standAlone="false" />
+															<c:choose>
+																<c:when test="#{(selectColumn eq item.columnName) and (item.columnRenderType eq 'READ_WRITE')}">
+																	<ui:include src="includes/genericDataTableSelectAllNone.xhtml" />
+																</c:when>
+																<c:otherwise>
+										                    		<c:choose>
+										                    			<c:when test="#{sortColumn eq item.columnProperty}">
+										                    				<ice:outputText value="#{item.columnTitle}" />
+										                    			</c:when>
+										                    			<c:otherwise>
+										                    				<table>
+										                    					<tbody>
+											                    					<tr>
+											                    						<td><ice:outputText value="#{item.columnTitle}" /></td>
+											                    						<td><div class="#{styleClass}SortColHdr"></div></td>
+											                    					</tr>
+											                    				</tbody>
+										                    				</table>
+										                    			</c:otherwise>
+										                    		</c:choose>
+																</c:otherwise>
+															</c:choose>
+														</ice:commandSortHeader>
+													</c:when>
+													<c:otherwise>
+														<c:choose>
+															<c:when test="#{(selectColumn eq item.columnName) and (item.columnRenderType eq 'READ_WRITE')}">
+																<ui:include src="includes/genericDataTableSelectAllNone.xhtml" />
+															</c:when>
+															<c:otherwise>
+										                    	<ice:outputText value="#{item.columnTitle}" />
+															</c:otherwise>
+														</c:choose>
+													</c:otherwise>
+												</c:choose>										
+											</ice:panelGroup>
+										</ice:panelGrid>
+									</f:facet>
+								</c:if>
+								<!-- ********** COLUMN DATA ********** -->
+		
+								<!-- ********** TREE COLUMN ********** -->
+								<c:if test="#{item.columnName == treeColumn}">
+									<pc:treeTableTreeColumn
+										bean="#{bean}" row="#{row}" title="#{item.columnTitle}"
+										renderHeader="#{renderColumnHeaders}" treeLineStyle="#{treeLineStyle}"
+										showFilter="#{table.showFilterAtColumns}" />
+								</c:if>
+								
+								<!-- ********** NON TREE COLUMNS ********** -->
+								<ice:panelGroup rendered="#{item.columnName != treeColumn}"
+										styleClass="#{row.styleClass}">
+	
+									<c:choose>
+										<!-- ********** SIMPLE COLUMN HANDLING ********** -->
+										<c:when test="#{!item.complexProperty}">
+											<c:set var="rowObject" value="#{row}" />
+											<c:set var="property" value="#{item.columnProperty}" />	
+										</c:when>
+	
+										<!-- ********** DYNAMIC COLUMN HANDLING ********** -->
+										<c:otherwise>
+											<c:set var="objectPropertyMap"
+												value="#{pc:getObjectPropertyMapping(row, item.columnProperty)}" />
+												
+											<c:set var="rowObject" value="#{objectPropertyMap['object']}" />
+											<c:set var="property" value="#{objectPropertyMap['property']}" />	
+										</c:otherwise>
+									</c:choose>
+	
+									<!-- ********** RENDER COLUMN ********** -->
+									<pc:genericDataTableColumn
+										bean="#{bean}" mainRow="#{row}" row="#{rowObject}" property="#{property}" columnPref="#{item}" />
+	
+								</ice:panelGroup>
+							</ice:column>
+		
+						</c:forEach>
+					</c:if>
+	
+					<ui:insert />
+				</ice:dataTable>
+			</ice:panelGroup>
+
+			<ice:panelGroup
+					rendered="#{displayNoRecordsFoundLabel}"
+					style="width:100%; margin-top:2px; margin-bottom:2px;">
+				<ice:outputText rendered="#{emptyData}"
+					value="#{common_msgPropsBean['common.genericDataTable.noRecordsFoundLabel']}" />
+			</ice:panelGroup>
+
+			<!-- ********** DATA TABLE PAGINATOR BAR ********** -->
+			<c:if test="#{displayPaginator}">
+				<ice:panelGroup style="width:100%; margin-top:2px;">
+					<pc:automationTag value="auto-DT-PaginatorBar" standAlone="false" />
+					<ice:dataPaginator
+							id="#{id}Paginator" paginator="true"
+							for="#{id}" 
+			                paginatorMaxPages="#{table.paginatorMaxPages}"
+			                fastStep="#{table.paginatorFastStep}">
+			                
+			            <c:if test="#{table.supportFastStep}">
+			            	<f:param name="fastStep" value="#{table.paginatorFastStep}" />
+			            </c:if>
+			            
+						<f:facet name="first">
+			            	<ice:graphicImage id="#{id}firstpage"
+									url="/plugins/common/images/icons/arrow-first.gif"
+			                        style="border:none;"
+			                        title="#{common_msgPropsBean['common.genericDataTable.paginator.first.title']}" />
+						</f:facet>
+			            <f:facet name="last">
+			            	<ice:graphicImage id="#{id}lastpage"
+									url="/plugins/common/images/icons/arrow-last.gif"
+									style="border:none;"
+									title="#{common_msgPropsBean['common.genericDataTable.paginator.last.title']}" />
+						</f:facet>
+						<f:facet name="previous">
+			            	<ice:graphicImage id="#{id}previouspage"
+									url="/plugins/common/images/icons/arrow-previous.gif"
+									style="border:none;"
+									title="#{common_msgPropsBean['common.genericDataTable.paginator.previous.title']}" />
+						</f:facet>
+			            <f:facet name="next">
+			            	<ice:graphicImage id="#{id}nextpage"
+									url="/plugins/common/images/icons/arrow-next.gif"
+									style="border:none;"
+									title="#{common_msgPropsBean['common.genericDataTable.paginator.next.title']}" />
+						</f:facet>
+						<c:if test="#{table.paginatorFastStep > 0}">
+							<f:facet name="fastforward">
+				            	<ice:graphicImage id="#{id}fastforward"
+										url="/plugins/common/images/icons/arrow-ff.gif"
+										style="border:none;"
+										title="#{common_msgPropsBean['common.genericDataTable.paginator.fastforward.title']}" />
+				               </f:facet>
+				               <f:facet name="fastrewind">
+				            	<ice:graphicImage id="#{id}fastrewind"
+										url="/plugins/common/images/icons/arrow-fr.gif"
+										style="border:none;"
+										title="#{common_msgPropsBean['common.genericDataTable.paginator.fastrewind.title']}" />
+				               </f:facet>
+						</c:if>
+					</ice:dataPaginator>
+				</ice:panelGroup>
+			</c:if>
+		</ice:panelGrid>
+	</c:if>
+	
+<c:if test="#{(empty bean) or (empty table)}">
+	<ice:outputText
+		value="#{common_msgPropsBean['common.genericDataTable.emptyData']}" />
+</c:if>	
+</ui:component>
+
+</f:view>

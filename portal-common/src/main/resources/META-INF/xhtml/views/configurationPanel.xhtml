@@ -1,0 +1,205 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup style="width: 100%">
+		<ice:panelGroup>
+			<ui:include
+				src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+				<ui:param name="dialogBean"
+					value="#{ippPortalConfigPanel.portalConfirmationDialog}" />
+			</ui:include>
+		</ice:panelGroup>
+		<table style="width: 100%">
+			<tr>
+				<td class="nowrap-table-column" colspan="3">
+					<ice:panelGroup styleClass="heading" style="width: 100%">
+						<ice:outputText value="#{common_msgPropsBean['views.configurationPanel.skins.title']}" />
+					</ice:panelGroup>
+				</td>
+			</tr>
+			<tr>
+				<td class="nowrap-table-column">
+					<ice:outputLabel value="#{common_msgPropsBean['views.configurationPanel.skins.availableList']}#{common_msgPropsBean['common.colon']}"
+						styleClass="label-form" />
+				</td>
+				<td>
+		            <ice:selectOneMenu value="#{ippPortalConfigPanel.selectedSkin}" disabled="#{not ippPortalApp.loggedInUser.administrator}"
+		            		layout="pageDirection" style="white-space:nowrap">
+		            	<pc:automationTag value="auto-FW-PortConf-Skin" standAlone="false"/>
+		            	<f:selectItems value="#{ippPortalConfigPanel.availableSkins}"/>
+		            </ice:selectOneMenu>
+				</td>
+				<td>
+					<ice:outputText value="" />
+				</td>
+			</tr>
+
+			<tr><td style="height: 15px"><ice:outputText value="" /></td></tr>
+
+			<tr>
+				<td class="nowrap-table-column" colspan="3">
+					<ice:panelGroup styleClass="heading" style="width: 100%">
+						<ice:outputText value="#{common_msgPropsBean['views.configurationPanel.perspectives.title']}" />
+					</ice:panelGroup>
+				</td>
+			</tr>
+			<tr>
+				<td class="nowrap-table-column">
+					<ice:outputLabel value="#{common_msgPropsBean['views.configurationPanel.perspectives.availableList']}#{common_msgPropsBean['common.colon']}"
+						styleClass="label-form" />
+				</td>
+				<td>
+		            <ice:selectOneMenu value="#{ippPortalConfigPanel.selectedPerspective}"
+		            		layout="pageDirection" style="white-space:nowrap">
+		            	<pc:automationTag value="auto-FW-PortConf-SelPerspective" standAlone="false"/>	
+		            	<f:selectItems value="#{ippPortalConfigPanel.availablePerspectives}"/>
+		            </ice:selectOneMenu>
+				</td>
+				<td>
+					<ice:outputText value="" />
+				</td>
+			</tr>
+
+			<tr><td style="height: 15px"><ice:outputText value="" /></td></tr>
+
+			<tr>
+				<td class="nowrap-table-column" colspan="3">
+					<ice:panelGroup styleClass="heading" style="width: 100%">
+						<ice:outputText value="#{common_msgPropsBean['views.configurationPanel.tabs.title']}" />
+					</ice:panelGroup>
+				</td>
+			</tr>
+			<tr>
+				<td class="nowrap-table-column">
+					<ice:outputLabel value="#{common_msgPropsBean['views.configurationPanel.tabs.maxTabsDisplay']}#{common_msgPropsBean['common.colon']}"
+						styleClass="label-form" />
+				</td>
+				<td>
+					<ice:inputText id="maxTabsDisplay" value="#{ippPortalConfigPanel.maxTabsDisplay}" partialSubmit="true" maxlength="1" immediate="true">
+						<pc:automationTag value="auto-FW-PortConf-MaxTabDisp" standAlone="false"/>
+						<f:validateLongRange 
+							minimum="#{ippPortalConfigPanel.configurationConstants.LOWER_LIMIT_MAX_TAB_DISPLAY}"
+							maximum="#{ippPortalConfigPanel.configurationConstants.UPPER_LIMIT_MAX_TAB_DISPLAY}" />
+					</ice:inputText>
+				</td>
+				<td>
+					<ice:outputText value="#{common_msgPropsBean['views.configurationPanel.tabs.maxTabsDisplay.desc']}" />
+				</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td colspan="2">
+					<ice:panelGroup styleClass="msgError">
+						<ice:message for="maxTabsDisplay" />
+					</ice:panelGroup>
+				</td>
+			</tr>
+			
+			<tr><td style="height: 15px"><ice:outputText value="" /></td></tr>
+			
+			<tr>
+				<td class="nowrap-table-column" colspan="3">
+					<ice:panelGroup styleClass="heading" style="width: 100%">
+						<ice:outputText value="#{common_msgPropsBean['views.configurationPanel.paginatorTable.title']}" />
+					</ice:panelGroup>
+				</td>
+			</tr>
+			<tr>
+				<td class="nowrap-table-column">
+					<ice:outputLabel value="#{common_msgPropsBean['views.configurationPanel.paginatorTable.pageSize']}#{common_msgPropsBean['common.colon']}"
+						styleClass="label-form" />
+				</td>
+				<td>
+					<ice:inputText id="pageSize" value="#{ippPortalConfigPanel.pageSize}" partialSubmit="true" maxlength="2" immediate="true">
+						<pc:automationTag value="auto-FW-PortConf-PageSize" standAlone="false"/>
+						<f:validateLongRange
+							minimum="#{ippPortalConfigPanel.configurationConstants.LOWER_LIMIT_PAGE_SIZE}"
+							maximum="#{ippPortalConfigPanel.configurationConstants.UPPER_LIMIT_PAGE_SIZE}" />
+					</ice:inputText>
+				</td>
+				<td>
+					<ice:outputText value="#{common_msgPropsBean['views.configurationPanel.paginatorTable.pageSize.desc']}" />
+				</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td colspan="2">
+					<ice:panelGroup styleClass="msgError">
+						<ice:message for="pageSize" />
+					</ice:panelGroup>
+				</td>
+			</tr>
+
+			<tr>
+				<td class="nowrap-table-column">
+					<ice:outputLabel value="#{common_msgPropsBean['views.configurationPanel.paginatorTable.paginatorMaxPages']}#{common_msgPropsBean['common.colon']}"
+						styleClass="label-form" />
+				</td>
+				<td>
+					<ice:inputText id="paginatorMaxPages" value="#{ippPortalConfigPanel.paginatorMaxPages}" partialSubmit="true" maxlength="2" immediate="true">
+						<pc:automationTag value="auto-FW-PortConf-MaxPages" standAlone="false"/>
+						<f:validateLongRange
+							minimum="#{ippPortalConfigPanel.configurationConstants.LOWER_LIMIT_MAX_PAGES}"
+							maximum="#{ippPortalConfigPanel.configurationConstants.UPPER_LIMIT_MAX_PAGES}" />
+					</ice:inputText>
+				</td>
+				<td>
+					<ice:outputText value="#{common_msgPropsBean['views.configurationPanel.paginatorTable.paginatorMaxPages.desc']}" />
+				</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td colspan="2">
+					<ice:panelGroup styleClass="msgError">
+						<ice:message for="paginatorMaxPages" />
+					</ice:panelGroup>
+				</td>
+			</tr>
+
+			<tr>
+				<td class="nowrap-table-column">
+					<ice:outputLabel value="#{common_msgPropsBean['views.configurationPanel.paginatorTable.paginatorFastStep']}#{common_msgPropsBean['common.colon']}"
+						styleClass="label-form" />
+				</td>
+				<td>
+					<ice:inputText id="paginatorFastStep" value="#{ippPortalConfigPanel.paginatorFastStep}" partialSubmit="true" maxlength="2" immediate="true">
+					<pc:automationTag value="auto-FW-PortConf-PagFastStp" standAlone="false"/>
+					<f:validateLongRange
+						minimum="#{ippPortalConfigPanel.configurationConstants.LOWER_LIMIT_FAST_STEP}"
+						maximum="#{ippPortalConfigPanel.configurationConstants.UPPER_LIMIT_FAST_STEP}" />
+				</ice:inputText>
+				</td>
+				<td>
+					<ice:outputText value="#{common_msgPropsBean['views.configurationPanel.paginatorTable.paginatorFastStep.desc']}" />
+				</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td colspan="2">
+					<ice:panelGroup styleClass="msgError">
+						<ice:message for="paginatorFastStep" />
+					</ice:panelGroup>
+				</td>
+			</tr>
+		</table>
+
+		<ice:panelGroup styleClass="clearing" />
+		<ice:panelGroup styleClass="clearing" />
+		<ice:panelGroup styleClass="clearing" />
+		<ice:panelGroup styleClass="clearing" />
+
+		<ice:panelGrid columns="3">
+			<pc:automationTag value="auto-FW-PortConf-BtnsBar" standAlone="false"/>
+			<ice:commandButton value="#{common_msgPropsBean['views.configurationPanel.button.save']}"
+				action="#{ippPortalConfigPanel.saveConfiguration}" styleClass="button" />
+			<ice:commandButton value="#{common_msgPropsBean['views.configurationPanel.button.reset']}" immediate="true"
+				action="#{ippPortalConfigPanel.openConfirmationDialog}" styleClass="button" />
+		</ice:panelGrid>
+	</ice:panelGroup>	
+
+</f:view>

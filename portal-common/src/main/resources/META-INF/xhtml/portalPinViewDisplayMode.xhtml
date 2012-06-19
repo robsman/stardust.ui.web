@@ -1,0 +1,47 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelDivider orientation="#{ippPortalApp.pinViewOrientation}" style="width: 100%; height: 100%" id="pnlDvr">
+		<f:facet name="first">
+			<ice:panelTabSet tabPlacement="top" summary="" style="width: 100%; height: 100%" id="tabSetPinView"
+				tabChangeListener="#{ippPortalApp.processPinViewTabChange}">
+				<ice:panelTab styleClass="portalViewTabs" id="tabPinView">
+					<f:facet name="label">
+						<ice:panelGroup>
+							<ice:panelGrid columns="4" cellpadding="0" cellspacing="0"
+									columnClasses="panel-tab-label,panel-tab-label">
+								<ice:graphicImage value="#{ippPortalApp.pinView.icon}" style="border: none;" />
+								<ice:panelGroup panelTooltip="viewLabelToolTip">
+									<ice:outputText value="#{ippPortalApp.pinView.label}"
+										styleClass="portalTbLbl #{ippPortalApp.pinView eq ippPortalApp.activeView ? 'portalTbActiveLbl' : ''}" />
+								</ice:panelGroup>
+							</ice:panelGrid>
+							<ice:panelTooltip id="viewLabelToolTip" hoverDelay="500"
+								styleClass="tooltip viewTooltipPanel">
+								<f:facet name="header"></f:facet>
+								<f:facet name="body">
+									<ice:outputText value="#{ippPortalApp.pinView.tooltip}" styleClass="viewTooltip"/>
+								</f:facet>
+							</ice:panelTooltip>
+						</ice:panelGroup>
+					</f:facet>
+                    <pc:tabScoped currentTab="#{ippPortalApp.pinView}">
+					    <ui:include src="portalUserDefinedInclude.xhtml">
+						    <ui:param name="includeFilePath" value="#{ippPortalApp.pinView.path}" />
+					    </ui:include>
+                    </pc:tabScoped>
+				</ice:panelTab>
+			</ice:panelTabSet>			
+		</f:facet>
+
+		<f:facet name="second">
+			<ui:include src="portalTabDisplayMode.xhtml" />
+		</f:facet>
+	</ice:panelDivider>
+
+</f:view>

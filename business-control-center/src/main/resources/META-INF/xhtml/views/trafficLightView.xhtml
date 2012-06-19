@@ -1,0 +1,83 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon"
+	xmlns:bc="http://www.sungard.de/carnot/web/portal-plugin/businesscontrolcenter">
+
+	<ice:panelGroup>
+			<ui:include src="/plugins/views-common/dialogs/delegation.xhtml" />
+			<ui:include src="/plugins/views-common/dialogs/abortActivity.xhtml" />
+			<ui:include src="/plugins/views-common/contentmgmt/views/notificationMessage.xhtml" />
+			<ui:include
+				src="/plugins/views-common/dialogs/switchProcessDialog.xhtml" />
+			<ui:include
+				src="/plugins/views-common/dialogs/joinProcessDialog.xhtml" />
+	</ice:panelGroup>
+		
+	<ice:panelGroup style="vertical-align: top; width:100%">
+		<ice:panelGrid columns="2">
+			<ice:outputLabel
+				value="#{messages_bcc['common.process']}#{messages_bcc['common.colon']}"
+				styleClass="label-form" />
+			<ice:selectOneMenu value="#{trafficLightViewManagerBean.processId}"
+				partialSubmit="true"
+				valueChangeListener="#{trafficLightViewManagerBean.processChangeListener}">
+				<pc:automationTag value="auto-BCC-TrafficLgt-Process" standAlone="false"/>
+				<f:selectItems value="#{trafficLightViewManagerBean.allProcesses}" />
+			</ice:selectOneMenu>
+
+			<ice:outputLabel
+				value="#{messages_bcc['views.trafficLightView.column.chooseCategory']}#{messages_bcc['common.colon']}"
+				styleClass="label-form" />
+			<ice:selectOneMenu
+				value="#{trafficLightViewManagerBean.categoryFilter}"
+				partialSubmit="true"
+				valueChangeListener="#{trafficLightViewManagerBean.categoriesChangeListener}">
+				<pc:automationTag value="auto-BCC-TrafficLgt-Category" standAlone="false"/>
+				<f:selectItems value="#{trafficLightViewManagerBean.allCategory}" />
+			</ice:selectOneMenu>
+		</ice:panelGrid>
+		<ice:panelGroup styleClass="clearing" />
+
+		<pc:automationTag value="auto-BCC-TrafficLgt-TraffLightTbl"/>
+		<pc:genericDataTable exportExcel="false"
+			title="#{messages_bcc['views.trafficLightView.trafficLightView']}"
+			bean="#{trafficLightViewManagerBean}"
+			id="ctxTrafficLightViewManagerList"
+			table="#{trafficLightViewManagerBean.trafficLightViewTable}"
+			sortSupported="true" />
+		<ice:panelGroup styleClass="clearing" />
+
+		<ice:panelGroup
+			rendered="#{trafficLightViewManagerBean.activityTable}">
+			
+			<c:if test="#{trafficLightViewManagerBean.passedActivityTableInitialized}">
+				<pc:automationTag value="auto-BCC-TrafficLgt-CompActTbl"/>
+				<pc:genericDataTable exportExcel="false"
+					title="#{trafficLightViewManagerBean.activityPassedListTableTitle}"
+					bean="#{trafficLightViewManagerBean.passedActivityHelper}"
+					id="passedActivityTableViewList"
+					table="#{trafficLightViewManagerBean.passedActivityTableView}"
+					toolbarUrl="/plugins/business-control-center/views/trafficLightCompletedActivityToolbar.xhtml"
+					sortSupported="true" />
+				<ice:panelGroup styleClass="clearing" />
+			</c:if>
+			
+			<c:if test="#{trafficLightViewManagerBean.notPassedActivityTableInitialized}">
+				<pc:automationTag value="auto-BCC-TrafficLgt-PendActTbl"/>
+				<pc:genericDataTable exportExcel="false"
+					title="#{trafficLightViewManagerBean.activityNotPassedListTableTitle}"
+					bean="#{trafficLightViewManagerBean.notPassedActivityHelper}"
+					id="notPassedActivityTableViewList"
+					table="#{trafficLightViewManagerBean.notPassedActivityTableView}"
+					toolbarUrl="/plugins/business-control-center/views/trafficLightPendingActivityToolbar.xhtml"
+					sortSupported="true" />
+			</c:if>
+			
+		</ice:panelGroup>
+		<ice:panelGroup styleClass="clearing" />
+	</ice:panelGroup>
+</f:view>

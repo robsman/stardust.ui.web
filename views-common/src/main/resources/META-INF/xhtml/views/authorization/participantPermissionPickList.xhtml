@@ -1,0 +1,106 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ice:panelGroup>
+		<ice:panelGroup styleClass="clearing" />
+
+		<ice:panelGrid columns="3"
+			style="vertical-align: top; white-space: nowrap; text-align:center;">
+			<ice:outputLabel
+				value="#{authorizationManagerBean.messages['participantDualList.available.header']}" />
+			<ice:outputLabel value="" />
+			<ice:outputLabel
+				value="#{authorizationManagerBean.messages['participantDualList.selected.header']}" />
+			<ice:column>
+				<ice:selectManyListbox size="10" styleClass="icon-menu"
+					value="#{authorizationManagerBean.permissionPickList.dualListModel.sourceSelected}"
+					readonly="#{false}" style="min-width: 400px;min-height:200px;"
+					disabled="#{false}">
+					<pc:automationTag value="auto-COM-PartPerms-ParticipantSrc" standAlone="false"/>
+					<c:forEach
+						items="#{authorizationManagerBean.permissionPickList.dualListModel.source}"
+						var="source">
+						<f:selectItem itemLabel="#{source.label}"
+							itemValue="#{source.value}" itemDisabled="#{source.disable}" />
+					</c:forEach>
+
+				</ice:selectManyListbox>
+			</ice:column>
+			<ice:column>
+				<ice:panelGrid columns="1"
+					style="vertical-align: top;margin-bottom: ">
+					<ice:panelGroup style="padding: 5px;width:80px;"
+						styleClass="button">
+						<ice:commandLink
+							actionListener="#{authorizationManagerBean.permissionPickList.add}"
+							disabled="#{false}">
+							<pc:automationTag value="auto-COM-PartPerms-AddLink" standAlone="false"/>
+							<ice:outputText
+								value="#{authorizationManagerBean.messages['participantDualList.add.label']}"
+								styleClass="action-link" escape="false" />
+						</ice:commandLink>
+					</ice:panelGroup>
+					<ice:panelGroup style="padding: 5px;width:80px;"
+						styleClass="button">
+						<ice:commandLink
+							actionListener="#{authorizationManagerBean.permissionPickList.addAll}"
+							disabled="#{false}">
+							<pc:automationTag value="auto-COM-PartPerms-AddAllLink" standAlone="false"/>
+							<ice:outputText
+								value="#{authorizationManagerBean.messages['participantDualList.addAll.label']}"
+								styleClass="action-link" escape="false" />
+
+						</ice:commandLink>
+					</ice:panelGroup>
+					<ice:panelGroup style="padding: 5px;width:80px;"
+						styleClass="button">
+						<ice:commandLink
+							actionListener="#{authorizationManagerBean.permissionPickList.remove}"
+							disabled="#{false}">
+							<pc:automationTag value="auto-COM-PartPerms-RemLink" standAlone="false"/>
+							<ice:outputText
+								value="#{authorizationManagerBean.messages['participantDualList.remove.label']}"
+								styleClass="action-link" escape="false" />
+
+						</ice:commandLink>
+					</ice:panelGroup>
+					<ice:panelGroup style="padding: 5px;width:80px;"
+						styleClass="button">
+						<ice:commandLink
+							actionListener="#{authorizationManagerBean.permissionPickList.removeAll}"
+							disabled="#{false}">
+							<pc:automationTag value="auto-COM-PartPerms-RemAllLink" standAlone="false"/>
+							<ice:outputText
+								value="#{authorizationManagerBean.messages['participantDualList.removeAll.label']}"
+								styleClass="action-link" escape="false" />
+
+						</ice:commandLink>
+					</ice:panelGroup>
+
+
+				</ice:panelGrid>
+			</ice:column>
+			<ice:column>
+				<ice:selectManyListbox size="10" styleClass="icon-menu"
+					value="#{authorizationManagerBean.permissionPickList.dualListModel.targetSelected}"
+					readonly="#{false}" style="min-width: 400px;min-height:200px; "
+					disabled="#{false}">
+					<pc:automationTag value="auto-COM-PartPerms-ParticipantTarget" standAlone="false"/>
+					<c:forEach
+						items="#{authorizationManagerBean.permissionPickList.dualListModel.target}"
+						var="target">
+						<f:selectItem itemLabel="#{target.label}"
+							itemValue="#{target.value}" itemDisabled="#{target.disable}" />
+					</c:forEach>
+
+				</ice:selectManyListbox>
+			</ice:column>
+		</ice:panelGrid>
+		<ice:panelGroup styleClass="clearing" />
+
+	</ice:panelGroup>
+</f:view>

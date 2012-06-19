@@ -1,0 +1,37 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates mandatory attributes)
+	row* = Row
+	col* = Column
+	-->
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+		<ice:panelGroup rendered="#{col.columnName == 'ProfileIcon'}">
+			<ice:outputText value="PIcon" />
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'OnlineIcon'}">
+			<ice:graphicImage rendered="#{row.online}"
+			 	value="/plugins/views-common/images/icons/user-online.png" />
+			<ice:graphicImage rendered="#{not row.online}" 
+				value="/plugins/views-common/images/icons/user-offline.png" />
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'UserName'}">
+			<ice:outputText value="#{row.user.lastName}, #{row.user.firstName}" />
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'Actions'}">
+			<ice:commandLink action="#{row.removeUser}"
+				rendered="#{row.removeable}">
+				<ice:graphicImage value="/plugins/common/images/tab-bttn-close.png"
+					styleClass="toolbar-button" />
+			</ice:commandLink>
+		</ice:panelGroup>
+	</ice:panelGroup>
+</f:view>

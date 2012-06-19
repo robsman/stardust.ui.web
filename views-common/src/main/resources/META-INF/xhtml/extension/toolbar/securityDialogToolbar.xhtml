@@ -1,0 +1,36 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid columns="3">
+		<ice:commandLink action="#{securityDialog.removeRoles}"
+			disabled="#{securityDialog.selectedRowCount eq 0 ? true : false}">
+			<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ToolbarRemove" standAlone="false"/>
+			<h:graphicImage
+				value="/plugins/views-common/images/icons/group_delete.png"
+				style="border: none;"
+				styleClass="#{securityDialog.selectedRowCount eq 0 ? 'iceCmdBtn-dis' : ''}"
+				title="#{securityDialog.messages['securityDialog.table.toolbar.delete']}" />
+		</ice:commandLink>
+		<ice:commandLink action="#{securityDialog.openAddEntryDialog}">
+			<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ToolbarAdd" standAlone="false"/>
+			<h:graphicImage
+				value="/plugins/business-control-center/images/icons/group_add.png"
+				style="border: none;"
+				title="#{securityDialog.messages['securityDialog.table.toolbar.addParticipants']}" />
+		</ice:commandLink>
+		<ice:commandLink action="#{securityDialog.editRoles}"
+			disabled="#{securityDialog.selectedRowCount eq 0 ? true : false}">
+			<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ToolbarEdit" standAlone="false"/>
+			<h:graphicImage
+				value="/plugins/views-common/images/icons/group_edit.png"
+				style="border: none;"
+				styleClass="#{securityDialog.selectedRowCount eq 0 ? 'iceCmdBtn-dis' : ''}"
+				title="#{securityDialog.messages['securityDialog.table.toolbar.editPermissions']}" />
+		</ice:commandLink>
+	</ice:panelGrid>
+</f:view>

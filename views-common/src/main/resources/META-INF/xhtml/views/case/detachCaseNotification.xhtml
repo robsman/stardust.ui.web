@@ -1,0 +1,19 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:component>
+
+		<ice:panelGrid>
+			<ice:outputText
+				value="#{views_common_msgPropsBean['views.detachCase.notification.msg']}" />
+
+			<ice:panelGroup styleClass="clearing" />
+			<ice:outputText
+				value="#{views_common_msgPropsBean['views.detachCase.notification.confirm']}" />
+		</ice:panelGrid>
+
+	</ui:component>
+</f:view>

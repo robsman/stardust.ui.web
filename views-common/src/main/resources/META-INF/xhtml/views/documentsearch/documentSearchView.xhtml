@@ -1,0 +1,347 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<ui:include src="/plugins/views-common/user/userDetails.xhtml" />
+	<ui:include
+		src="/plugins/views-common/views/documentsearch/selectProcessDialog.xhtml" />
+	<ui:include
+		src="/plugins/views-common/views/documentsearch/advancedTextSearch.xhtml" />
+	<ui:include
+			src="/plugins/views-common/views/doctree/downloadPopupDialog.xhtml" />
+	<ui:include
+			src="/plugins/views-common/views/doctree/documentVersionDialog.xhtml" />	
+	<html>
+<head>
+<link
+	href="#{facesContext.externalContext.requestContextPath}/plugins/views-common/css/context-portal.css"
+	rel="stylesheet" type="text/css" />
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"></meta>
+</head>
+<body>
+
+	<ice:panelCollapsible
+		expanded="#{documentSearchBean.exapndSearchCriteria}">
+		<f:facet name="header">
+			<ice:panelGroup>
+				<ice:outputText
+					value="#{documentSearchBean.messages['documentSearchCriteria.label']}" />
+			</ice:panelGroup>
+		</f:facet>
+		<table style="vertical-align: top;">
+			<tr>
+				<td style="vertical-align: top;"><ice:panelGrid columns="4"
+						columnClasses="table-columnVertical"
+						style="vertical-align: top; white-space: nowrap; text-align:left;"
+						headerClass="heading">
+
+						<ice:column>
+							<ice:outputText
+								value="#{documentSearchBean.messages['createDate.label']}#{documentSearchBean.messages['colon']}"
+								styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:selectInputDate renderAsPopup="true" id="createDateFrom"
+								value="#{documentSearchBean.filterAttributes.createDateFrom}">
+								<pc:automationTag value="auto-COM-SrchDoc-CreateFrmDate"
+									standAlone="false" />
+								<f:converter converterId="customDateTimeConverter" />
+							</ice:selectInputDate>
+							<ice:message id="createDateFromMsg" for="createDateFrom"
+								style="color:red;" />
+						</ice:column>
+
+						<ice:column>
+							<ice:outputText style="margin-left: 20px"
+								value="#{documentSearchBean.messages['createDateTo.label']}#{documentSearchBean.messages['colon']}"
+								styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:selectInputDate renderAsPopup="true" id="createDateTo"
+								value="#{documentSearchBean.filterAttributes.createDateTo}">
+								<pc:automationTag value="auto-COM-SrchDoc-CreateToDate"
+									standAlone="false" />
+								<f:converter converterId="customDateTimeConverter" />
+							</ice:selectInputDate>
+							<ice:message id="createDateToMsg" for="createDateTo"
+								style="color:red;" />
+						</ice:column>
+
+						<ice:column>
+							<ice:outputText
+								value="#{documentSearchBean.messages['modificationDate.label']}#{documentSearchBean.messages['colon']}"
+								styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:selectInputDate renderAsPopup="true"
+								id="modificationDateFrom"
+								value="#{documentSearchBean.filterAttributes.modificationDateFrom}">
+								<pc:automationTag value="auto-COM-SrchDoc-ModifFrmDate"
+									standAlone="false" />
+								<f:converter converterId="customDateTimeConverter" />
+							</ice:selectInputDate>
+							<ice:message id="modificationDateFromMsg"
+								for="modificationDateFrom" style="color:red;" />
+						</ice:column>
+
+						<ice:column>
+							<ice:outputText style="margin-left: 20px"
+								value="#{documentSearchBean.messages['modificationDateTo.label']}#{documentSearchBean.messages['colon']}"
+								styleClass="label-form" />
+						</ice:column>
+
+						<ice:column>
+							<ice:selectInputDate renderAsPopup="true" id="modificationDateTo"
+								value="#{documentSearchBean.filterAttributes.modificationDateTo}">
+								<pc:automationTag value="auto-COM-SrchDoc-ModifToDate"
+									standAlone="false" />
+								<f:converter converterId="customDateTimeConverter" />
+							</ice:selectInputDate>
+							<ice:message id="modificationDateToMsg" for="modificationDateTo"
+								style="color:red;" />
+						</ice:column>
+					</ice:panelGrid> <ice:panelGrid columns="2" columnClasses="table-columnVertical"
+						style="vertical-align: top; white-space: nowrap; text-align:left;"
+						headerClass="heading">
+
+						<ice:column>
+							<ice:outputText
+								value="#{documentSearchBean.messages['documentType.label']}#{documentSearchBean.messages['colon']}"
+								styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:selectManyMenu id="txtDocumentType"
+								style="height:75px; width:210px;"
+								value="#{documentSearchBean.filterAttributes.selectedDocumentTypes}"
+								partialSubmit="true">
+								<pc:automationTag value="auto-COM-SrchDoc-DocTypeSel" standAlone="false"/>
+								<f:selectItems id="txtDocumentTypes"
+									value="#{documentSearchBean.filterAttributes.documentTypes}" />
+							</ice:selectManyMenu>
+							<ice:message for="txtDocumentType" />
+						</ice:column>
+
+						<ice:column>
+							<ice:outputText
+								value="#{documentSearchBean.messages['fileType.label']}#{documentSearchBean.messages['colon']}"
+								styleClass="label-form" />
+						</ice:column>
+
+						<ice:column>
+							<ice:panelGrid columns="2"
+								rendered="#{!documentSearchBean.filterAttributes.selectFileTypeAdvance}">
+								<ice:column>
+									<ice:selectBooleanCheckbox id="SlctShowAll"
+										valueChangeListener="#{documentSearchBean.filterAttributes.showAllChangeListener}"
+										value="#{documentSearchBean.filterAttributes.showAll}"
+										partialSubmit="true" >
+										<pc:automationTag value="auto-COM-SrchDoc-FileType-ShowAll"
+											standAlone="false" />
+									</ice:selectBooleanCheckbox>	
+									<ice:outputLabel for="SlctShowAll"
+										value="#{documentSearchBean.messages['showAll.label']}" />
+								</ice:column>
+								<ice:column>
+									<ice:commandLink style="margin-left:70px"
+										action="#{documentSearchBean.filterAttributes.advanced}">
+										<pc:automationTag value="auto-COM-SrchDoc-FileType-Advanced"
+											standAlone="false" />
+										<ice:outputText
+											value="#{documentSearchBean.messages['advanced.label']} &amp;raquo;"
+											styleClass="action-link" escape="false" />
+									</ice:commandLink>
+								</ice:column>
+							</ice:panelGrid>
+							<ice:panelGrid columns="2"
+								rendered="#{documentSearchBean.filterAttributes.selectFileTypeAdvance}">
+								<ice:column>
+								</ice:column>
+								<ice:column>
+									<ice:commandLink style="margin-left:130px"
+										action="#{documentSearchBean.filterAttributes.advanced}">
+										<pc:automationTag
+											value="auto-COM-SrchDoc-FileType-SelFrmList"
+											standAlone="false" />
+										<ice:outputText
+											value="#{documentSearchBean.messages['pickFromList.label']} &amp;raquo;"
+											styleClass="action-link" escape="false" />
+									</ice:commandLink>
+								</ice:column>
+							</ice:panelGrid>
+						</ice:column>
+
+						<ice:column>
+						</ice:column>
+						<ice:column>
+							<ice:selectManyMenu
+								rendered="#{!documentSearchBean.filterAttributes.selectFileTypeAdvance}"
+								id="txtFileType" style="height:75px; width:210px;"
+								value="#{documentSearchBean.filterAttributes.selectedFileTypes}"
+								partialSubmit="true">
+								<pc:automationTag value="auto-COM-SrchDoc-FileType-TypeSel"
+									standAlone="false" />
+								<f:selectItems id="txtFileTypes"
+									value="#{documentSearchBean.filterAttributes.fileTypes}">
+								</f:selectItems>
+							</ice:selectManyMenu>
+							<ice:message for="txtFileType" />
+
+							<ice:inputText style="width:210px"
+								rendered="#{documentSearchBean.filterAttributes.selectFileTypeAdvance}"
+								id="advancedFileType" size="26" partialSubmit="true"
+								value="#{documentSearchBean.filterAttributes.advancedFileType}">
+								<pc:automationTag
+									value="auto-COM-SrchDoc-FileType-AdvFileType"
+									standAlone="false" />
+							</ice:inputText>
+						</ice:column>
+
+
+
+						<ice:column>
+							<ice:outputText
+								value="#{documentSearchBean.messages['containingText.label']}#{documentSearchBean.messages['colon']}"
+								styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:selectBooleanCheckbox id="SlctContent"
+								value="#{documentSearchBean.filterAttributes.searchContent}"
+								partialSubmit="true">
+								<pc:automationTag
+									value="auto-COM-SrchDoc-ContTxt-SrchContent"
+									standAlone="false" />
+							</ice:selectBooleanCheckbox>	
+							<ice:outputLabel for="SlctContent"
+								value="#{documentSearchBean.messages['searchContent.label']}" />
+							<ice:selectBooleanCheckbox style="margin-left:35px" id="SlctData"
+								value="#{documentSearchBean.filterAttributes.searchData}"
+								partialSubmit="true">
+								<pc:automationTag value="auto-COM-SrchDoc-ContTxt-SrchDate"
+									standAlone="false" />
+							</ice:selectBooleanCheckbox>	
+							<ice:outputLabel for="SlctData"
+								value="#{documentSearchBean.messages['searchData.label']}" />
+							<ice:commandLink style="margin-left:35px"
+								action="#{documentSearchBean.filterAttributes.advancedTextSearch}">
+								<pc:automationTag
+									value="auto-COM-SrchDoc-ContTxt-AdvTxtSrch"
+									standAlone="false" />
+								<ice:outputText
+									value="#{documentSearchBean.messages['advanced.label']} &amp;raquo;"
+									styleClass="action-link" escape="false" />
+							</ice:commandLink>
+						</ice:column>
+
+						<ice:column>
+
+						</ice:column>
+						<ice:column>
+							<ice:inputTextarea id="txtContainingText" style="width: 320px"
+								value="#{documentSearchBean.filterAttributes.containingText}"
+								rows="2" />
+							<ice:message id="txtContainingTextMsg" for="txtContainingText"
+								style="color:red;" />
+						</ice:column>
+
+						<!-- <ice:column>
+						<ice:outputText
+							value="#{documentSearchBean.messages['fileSize.label']}#{documentSearchBean.messages['colon']}"
+							styleClass="label-form" />
+					</ice:column>
+
+					<ice:column>
+						<ice:selectOneMenu style="width:150px" id="SlctFileSize" value="#{documentSearchBean.filterAttributes.selectedFileSize}"
+							partialSubmit="true">
+							<f:selectItems id="SlctFileTypeItms"
+								value="#{documentSearchBean.filterAttributes.fileSize}" />
+						</ice:selectOneMenu>
+						<ice:message for="SlctFileSize" />
+					</ice:column> -->
+
+						<ice:column>
+							<ice:outputText
+								value="#{documentSearchBean.messages['author.label']}#{documentSearchBean.messages['colon']}"
+								styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:panelGroup style="width:153px">
+								<ui:include
+									src="#{documentSearchBean.autoCompleteSelector.autocompleteContentUrl}">
+									<ui:param name="component"
+										value="#{documentSearchBean.autoCompleteSelector}" />
+								</ui:include>
+							</ice:panelGroup>
+						</ice:column>
+
+						<ice:column>
+							<ice:outputText
+								value="#{documentSearchBean.messages['documentName.label']}#{documentSearchBean.messages['colon']}"
+								styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:inputText id="txtDocumentName" size="26"
+								partialSubmit="true"
+								value="#{documentSearchBean.filterAttributes.documentName}">
+								<pc:automationTag value="auto-COM-SrchDoc-DocName"
+									standAlone="false" />
+							</ice:inputText>
+							<ice:message id="txtDocumentNameMsg" for="txtDocumentName"
+								style="color:red;" />
+						</ice:column>
+
+						<ice:column>
+							<ice:outputText
+								value="#{documentSearchBean.messages['documentId.label']}#{documentSearchBean.messages['colon']}"
+								styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:inputText id="txtDocumentId" size="26" partialSubmit="true"
+								value="#{documentSearchBean.filterAttributes.documentId}">
+								<pc:automationTag value="auto-COM-SrchDoc-DocId"
+									standAlone="false" />
+							</ice:inputText>
+							<ice:message id="txtDocumentIdMsg" for="txtDocumentId"
+								style="color:red;" />
+						</ice:column>
+
+					</ice:panelGrid>
+				</td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top;"><ice:panelGroup
+						style="white-space: nowrap;">
+						<pc:automationTag value="auto-COM-SrchDoc-BtnsBar"
+							standAlone="false" />
+						<ice:panelGrid columns="2" rendered="true">
+							<ice:commandButton id="submitSearch"
+								value="#{documentSearchBean.messages['button.searchDocuments']}"
+								action="#{documentSearchBean.searchDocuments}"
+								styleClass="button" />
+							<ice:commandButton id="resetSearch"
+								value="#{views_common_msgPropsBean['common.reset']}"
+								action="#{documentSearchBean.resetSearch}" styleClass="button" />
+						</ice:panelGrid>
+					</ice:panelGroup>
+				</td>
+			</tr>
+		</table>
+	</ice:panelCollapsible>
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+		<pc:automationTag value="auto-COM-SrchDoc-DocSrchTbl"/>
+		<pc:genericDataTable
+			title="#{documentSearchBean.messages['documents.title']}"
+			bean="#{documentSearchBean}" id="ctxDocumentSearchList"
+			toolbarUrl="/plugins/views-common/extension/toolbar/documentSearchViewTableToolbar.xhtml"
+			table="#{documentSearchBean.documentSearchTable}"
+			sortSupported="true" />
+	</ice:panelGroup>
+
+</body>
+	</html>
+
+</f:view>

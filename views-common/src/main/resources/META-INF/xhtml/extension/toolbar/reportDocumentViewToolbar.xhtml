@@ -1,0 +1,46 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ui:include
+		src="/plugins/views-common/views/report/archiveReportDialog.xhtml" />
+
+	<ice:panelGrid
+		columns="3">
+		<ice:commandLink
+			action="#{documentHandlerBean.contentHandler.updateFavoriteStatus}">
+			<pc:automationTag value="auto-COM-ReportDocView-ToolbarUpdateFav"
+				standAlone="false" />
+			<ice:graphicImage
+				value="#{documentHandlerBean.contentHandler.favoriteIcon}"
+				styleClass="document-tabs-toolbar"
+				title="#{documentHandlerBean.contentHandler.favoriteTitle}" />
+			<f:param name="reportUri"
+				value="#{documentHandlerBean.contentHandler.content}" />
+		</ice:commandLink>
+		
+		<ice:graphicImage
+			value="/plugins/views-common/images/icons/spacer.gif" width="5"
+			height="15" />
+
+		<ice:commandLink
+			action="#{documentHandlerBean.contentHandler.archiveReport}">
+			<pc:automationTag value="auto-COM-ReportDocView-ToolbarArchiveFav"
+				standAlone="false" />
+			<ice:graphicImage
+				value="/plugins/views-common/images/icons/ExportReport.gif"
+				styleClass="document-tabs-toolbar"
+				title="#{views_common_msgPropsBean['views.myReportsView.archiveReport.title']}" />
+			<f:param name="reportUri"
+				value="#{documentHandlerBean.contentHandler.content}" />
+		</ice:commandLink>
+
+	</ice:panelGrid>
+
+</f:view>
+
+

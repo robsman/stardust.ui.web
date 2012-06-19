@@ -1,0 +1,39 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates mandatory attributes)
+	component* = Instance of org.eclipse.stardust.ui.web.viewscommon.user.ParticipantAutocompleteSelector
+	-->
+	<c:choose>
+		<c:when
+			test="#{pc:instanceOf(component, 'org.eclipse.stardust.ui.web.viewscommon.user.ParticipantAutocompleteSelector')}">
+			<ice:selectInputText rows="#{component.maxRows}"
+				value="#{component.searchValue}"
+				valueChangeListener="#{component.searchValueChanged}"
+				disabled="#{component.disabled}" partialSubmit="false" width="95%"
+				listVar="user" listValue="#{component.matchingData}"
+				style="margin: 0px 0px 9px 2px;">
+				<pc:automationTag value="auto-COM-PartAutoSingleSel-PartSel" standAlone="false"/>
+				<c:if test="#{not empty component.matchingData}">
+					<f:facet name="selectInputText">
+						<ice:panelGrid columns="2">
+							<ice:panelGroup rendered="true">
+								<ice:graphicImage value="#{user.icon}" width="24px" height="24px" style="padding-right: 10px;" />
+							</ice:panelGroup>
+							<ice:outputText value="#{user.text}" escape="false" style="white-space:normal;" />
+						</ice:panelGrid>
+					</f:facet>
+				</c:if>
+			</ice:selectInputText>
+		</c:when>
+		<c:otherwise>
+			<ice:outputText
+				value="component is not instanceof org.eclipse.stardust.ui.web.viewscommon.user.ParticipantAutocompleteSelector" />
+		</c:otherwise>
+	</c:choose>
+</f:view>

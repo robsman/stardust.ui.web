@@ -1,0 +1,82 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<h:panelGroup
+		style="cell-padding: 0; cell-spacing: 0; white-space: nowrap; padding-bottom: 2px; padding-left: 5px;">
+		
+		<ice:commandLink actionListener="#{processHistoryTable.applyChanges}"
+			style="vertical-align: middle;"
+			disabled="#{!processHistoryTable.processTreeTable.priorityChanged}">
+			<pc:automationTag value="auto-COM-PCEHistoryTable-ToolbarSave" standAlone="false"/>
+			<ice:graphicImage
+				url="/plugins/business-control-center/images/icons/save_flag.png"
+				style="border:none;padding-right: 10px;padding-left: 5px;"
+				styleClass="#{!processHistoryTable.processTreeTable.priorityChanged ? 'iceCmdBtn-dis' : ''}"
+				title="#{views_common_msgPropsBean['processHistory.processTable.applyChanges']}" />
+		</ice:commandLink>
+
+		<ice:commandLink actionListener="#{caseDetailsBean.detachFromCase}"
+			style="vertical-align: middle;" rendered="#{processHistoryTable.enableCase and caseDetailsBean.canManageCase }"
+			disabled="#{caseDetailsBean.inactiveCase}">	
+			<pc:automationTag value="auto-COM-PCEHistoryTable-ToolbarDetachPI" standAlone="false"/>
+			<ice:graphicImage
+				url="/plugins/views-common/images/icons/case-detach.png"
+				style="border:none;padding-right: 10px;"
+				title="#{views_common_msgPropsBean['views.case.detachPI']}" 
+				styleClass="#{!caseDetailsBean.inactiveCase? '' : 'iceCmdBtn-dis'}" />
+			<f:attribute name="processInstance" value="#{processHistoryTable.selectedRow.processInstance}" />
+		</ice:commandLink>
+		
+		<ice:commandLink actionListener="#{processHistoryTable.attachToCase}"
+			style="vertical-align: middle;" rendered="#{processHistoryTable.enableCase and  caseDetailsBean.canManageCase}"
+			disabled="#{caseDetailsBean.inactiveCase}">	
+			<pc:automationTag value="auto-COM-PCEHistoryTable-ToolbarAttachPICase" standAlone="false"/>
+			<ice:graphicImage
+				url="/plugins/views-common/images/icons/case-attach.png"
+				style="border:none;padding-right: 5px;"
+				title="#{views_common_msgPropsBean['views.case.attachPI']}" 
+				styleClass="#{!caseDetailsBean.inactiveCase? '' : 'iceCmdBtn-dis'}" />
+		</ice:commandLink>
+
+		<span class="toolbarGroupRight" style="padding-left: 0px;" />
+
+		<ui:repeat
+			value="#{processHistoryTable.processTreeTable.processUIBuilder.processFilterToolbarItems}"
+			var="filterToolbarItem">
+			<h:commandLink name="#{filterToolbarItem.name}"
+				actionListener="#{processHistoryTable.processTreeTable.filterTable}"
+				rendered="#{filterToolbarItem.visible}"
+				style="vertical-align: middle;">
+				<pc:automationTag value="auto-COM-PCEHistoryTable-#{filterToolbarItem.name}" standAlone="false"/>
+				<h:graphicImage value="#{filterToolbarItem.image}"
+					style="border: none; padding-right: 10px;"
+					styleClass="#{filterToolbarItem.styleClass}"
+					title="#{views_common_msgPropsBean[filterToolbarItem.messsageKey]}" />
+			</h:commandLink>
+		</ui:repeat>
+				
+		<span class="toolbarGroupRight" style="padding-left: 0px;" />
+		<ice:commandLink name="expandAll"
+			actionListener="#{processHistoryTable.processTreeTable.treeTable.expandAll}"
+			style="vertical-align: middle;">
+			<pc:automationTag value="auto-COM-PCEHistoryTable-ToolbarExpandAll" standAlone="false"/>
+			<h:graphicImage value="/plugins/common/images/icons/expand_all.gif"
+				style="border: none;"
+				title="#{views_common_msgPropsBean['processHistory.processTable.expandAllLabel']}" />
+		</ice:commandLink>
+
+		<ice:commandLink name="collapseAll"
+			actionListener="#{processHistoryTable.processTreeTable.treeTable.collapseAll}"
+			style="vertical-align: middle;">
+			<pc:automationTag value="auto-COM-PCEHistoryTable-ToolbarCollapseAll" standAlone="false"/>
+			<h:graphicImage value="/plugins/common/images/icons/collapse_all.gif"
+				style="border: none; padding-left: 10px;"
+				title="#{views_common_msgPropsBean['processHistory.processTable.collapseAllLabel']}" />
+		</ice:commandLink>
+	</h:panelGroup>
+</f:view>

@@ -1,0 +1,31 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates mandatory attributes)
+	row* = Row
+	col* = Column
+	-->
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+		<ice:panelGroup rendered="#{col.columnName == 'ProfileIcon'}">
+			<ice:graphicImage value="#{row.icon}" width="24" height="24" />
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'ParticipantName'}">
+			<ice:outputText value="#{row.text}" />
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'Actions'}">
+			<ice:commandLink action="#{row.removeParticipant}"
+				disabled="#{not row.removeable}">
+				<pc:automationTag value="auto-COM-PartAutoMultiSel-PartTbl-ActionsRemove" standAlone="false"/>
+				<ice:graphicImage value="/plugins/common/images/tab-bttn-close.png"
+					styleClass="#{(not row.removeable) ? 'iceCmdBtn-dis' : 'toolbar-button'}"/>
+			</ice:commandLink>
+		</ice:panelGroup>
+	</ice:panelGroup>
+</f:view>

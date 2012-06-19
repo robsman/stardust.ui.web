@@ -1,0 +1,60 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup rendered="#{searchBean.currentPage eq 'ADVANCE'}"
+		style="vertical-align: top; white-space: nowrap; text-align:left;width:100%;">
+		<ice:panelGroup>
+
+			<ice:panelGrid columns="1" width="100%" style="text-align: right">
+				<ice:commandLink action="#{searchBean.toggleView}" immediate="true">
+					<pc:automationTag value="auto-COM-AttachCaseDlg-ToggleLink" standAlone="false"/>
+					<ice:outputText
+						value="#{views_common_msgPropsBean['views.joinProcessDialog.selectFromList.link.label']} &amp;raquo;"
+						styleClass="action-link" escape="false" />
+				</ice:commandLink>
+			</ice:panelGrid>
+
+			<ice:panelGroup styleClass="clearing" />
+
+			<ice:panelGrid columns="2">
+				<ice:outputLabel rendered="#{attachToCaseDialogBean.scope eq 'Process'}"
+					value="* #{views_common_msgPropsBean['views.attachToCase.caseOID.label']}"
+					styleClass="label-form" />
+				<ice:outputLabel rendered="#{attachToCaseDialogBean.scope eq 'Case'}"
+					value="* #{views_common_msgPropsBean['views.attachToCase.processOID.label']}"
+					styleClass="label-form" />					
+				
+				<ice:inputText style="width: 200px"
+					value="#{attachToCaseDialogBean.instanceOid}">
+					<pc:automationTag value="auto-COM-AttachCaseDlg-ProcOIDText" standAlone="false"/>
+				</ice:inputText>
+				
+			</ice:panelGrid>
+
+			<ice:panelGroup styleClass="clearing" />
+			<ice:panelGroup styleClass="clearing" />
+
+			<ice:panelGroup>
+				<ice:panelGrid columns="2">
+					<ice:graphicImage
+						url="/plugins/views-common/images/icons/information.png"
+						style="width:20px;heigth:20px;text-align: top;padding:0px;margin-right:5px;" />
+					<ice:outputText value="#{attachToCaseDialogBean.message}"
+						escape="false" />
+
+					<ice:panelGroup styleClass="clearing" />
+					<ice:panelGroup styleClass="clearing" />
+				</ice:panelGrid>
+
+			</ice:panelGroup>
+		</ice:panelGroup>
+		<ice:panelGroup styleClass="msgError" style="height:15px;">
+			<ice:messages />
+		</ice:panelGroup>
+
+	</ice:panelGroup>
+</f:view>

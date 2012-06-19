@@ -1,0 +1,1712 @@
+/* ************************** Login Page - START ************************ */
+div#loginBox{
+	width:300px;
+	height:auto;
+	position:relative;
+	margin:15% auto;
+	background:#FFFFFF;
+	border:1px solid #CCCCCC;
+	border-right:1px solid #999999;
+	border-bottom:1px solid #999999;
+	text-align: left;
+}
+
+div#loginBox .logo{
+	height:70px;
+	width:auto;
+	line-height:70px;
+	background:url(./css-images/login-logo.jpg) top left;
+	border-bottom:1px solid #CCCCCC;
+	color:#708090;
+	font-weight:bold;
+	clear:both;
+}
+
+div#loginBox .loginContent{
+	margin:20px;
+	margin-top:15px;
+	margin-bottom:15px;
+	padding:0;
+	width: 260px;
+}
+
+div#loginBox .portalTitle{
+	margin-bottom:10px;
+	color:#708090;
+	font-size:14px;
+	font-weight:bold;
+}
+
+div#loginBox td.label{
+	width:1%;
+	color:#999999;
+	padding:5px 10px 5px 0;
+	vertical-align: top;
+}
+
+div#loginBox td.data{
+	color:#000000;
+	padding:5px 0 5px 0;
+}
+
+div#loginBox .loginContent input{
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:11px;
+	width:160px;
+}
+
+div#loginBox .buttonContainer{
+	width:100%;
+	border-top:1px solid #CCCCCC;
+	background:url(../images/footer-BG.jpg) top repeat-x;
+	margin-top:15px;
+	clear:both;
+}
+
+div#loginBox .buttonContainer input{
+	border:1px solid #CCCCCC;
+	border-right:1px solid #999999;
+	border-bottom:1px solid #999999;
+	margin:5px;
+	padding:3px;
+	color:#333333;
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:11px;
+	font-weight:normal;
+	background:#FFFFFF url(../images/toolbar-BG.jpg) bottom repeat-x;
+	cursor:pointer;
+}
+
+.loginMessage{
+	margin-top: 5px;
+}
+
+.loginMsgError{
+	font-size: 10px;
+}
+
+/* ************************** Login Page - END ************************** */
+
+/* ************** Framework Layout Styles ************ */
+.banner{
+	height: 70px;
+	width 100%;
+	background: #FFFFFF url(../images/banner.jpg) left no-repeat;
+	border-bottom: 3px solid #FFFFFF;
+}
+
+.userConsole{
+	height: 40px;
+	width: 465px;
+	line-height: 25px;
+	background: url(../images/userConsole-BG.png) top right no-repeat;
+	text-align: right;
+}
+
+.userName{
+	padding-right: 10px;
+	text-decoration:none;
+	color: #000000;
+	border-right: 1px solid;
+	border-color: lightGray;
+}
+
+.portalAlerts{
+	padding-left: 8px;
+	padding-right: 10px;
+	text-decoration:none;
+	color: #000000;
+	border-right: 1px solid;
+	border-color: lightGray;
+}
+
+.portalAlertsLink .iceOutTxt{
+	color: #00629A;
+}
+
+.portalAlertsLink:hover .iceOutTxt{
+	color: #B0232B;
+}
+
+.portalAlertsPanel{
+	position: absolute;
+	right: 73px;
+	top: 26px;
+	z-index: 1001;
+	width: auto;
+	height: auto;
+	min-width: 100px;
+	max-height: 400px;
+	max-width: 300px;
+	overflow: auto;
+	background-color: #FAFAFA;
+	border-top: 1px solid #CCCCCC;
+	border-left: 1px solid #CCCCCC;
+	border-bottom: 1px solid #999999;
+	border-right: 1px solid #999999;
+	text-align: left;
+}
+
+.portalAlertsPanelBody{
+	width: 100%;
+}
+
+.portalAlertEntryImage{
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 8px;
+	border-bottom: 1px dotted;
+	border-color: #999999;
+	vertical-align: top;
+}
+
+.portalAlertEntryData{
+	padding: 5px;
+	border-bottom: 1px dotted;
+	border-color: #999999;
+	vertical-align: top;
+	line-height: 17px;
+	white-space: normal;
+}
+
+.portalAlertEntryUserName{
+	font-weight: normal;
+	color: #000000;
+}
+
+.portalAlertEntryHandler{
+}
+
+.portalAlertEntryTime{
+	color: gray;
+}
+
+.logout{
+	background:url(../images/userConsole-bttn-logOut.png) right no-repeat;
+	padding-right:20px;
+	margin: 10px;
+	text-decoration:none;
+	color:#00629A;
+	white-space: nowrap;
+}
+
+.logout:hover{
+	background:url(../images/userConsole-bttn-logOutHover.png) right no-repeat;
+}
+
+.topMenu{
+	height: 23px;
+	line-height:23px;
+	background:url(../images/menuTop-BG.jpg) top repeat-x;
+	border-top:1px solid #666666;
+	border-bottom:1px solid #000000;
+	color:#DDDDDD;
+}
+
+.topMenuTd{
+	border-left:1px solid #666666;
+	white-space: nowrap;
+	vertical-align: top;
+}
+
+.topMenuBar{ /* Overrides .iceMnuBar, .iceMnuBarVrt only for Top Menu */
+	background: none;
+	border-top: none;
+	border-bottom: none;
+	color: #DDDDDD;
+}
+
+.topMenuBarItem, .topMenuBarVrtItem {
+	display: inline;
+}
+
+/* Overrides .iceMnuBarItem */
+.topMenuBarItem a, .topMenuBarItem span, .topMenuBarItem a:hover, .topMenuBarVrtItem a, .topMenuBarVrtItem span, .topMenuBarVrtItem a:hover {
+	padding: 5px;
+	display: inline; /* This is required so that menu bar appears horizontal */
+}
+
+.topMenuBarSubMenu {
+	border: none;
+}
+
+.leftContentTd{
+	vertical-align: top;
+	width: 200px;
+	min-width: 200px;
+	border-right:1px solid #CCCCCC;
+	background:url(../images/toolbar-shadow.jpg) top repeat-x;
+}
+
+.rightContentTd{
+	vertical-align: top;
+	height: 100%;
+	background:url(../images/toolbar-shadow.jpg) top repeat-x;
+}
+
+.toolbar{
+	height: 25px;
+	line-height: 25px;
+	padding-right: 5px;
+	white-space: nowrap;
+	border-bottom: 1px solid #CCCCCC;
+	background: url(../images/toolbar-BG.jpg) bottom repeat-x;
+	color: #666666;
+}
+
+.toolbarTriggerLeft{
+	padding-left: 5px;
+	white-space: nowrap;
+}
+
+.toolbarGroupLeft {
+	background: url(../images/toolbar-separator.png) right no-repeat;
+	padding-top: 0px;
+	padding-left: 8px;
+	padding-right: 8px;
+	white-space: nowrap;
+	vertical-align: middle;
+}
+
+.toolbarGroupRight {
+	background: url(../images/toolbar-separator.png) left no-repeat;
+	padding-left: 8px;
+	padding-right: 8px;
+	white-space: nowrap;
+}
+
+.toolbar-show-launch-panel {
+	padding-left: 4px;
+	padding-right: 4px;
+	white-space: nowrap;
+	border-right:1px solid #CCCCCC;
+}
+
+.contentContainer {
+	width: 100%;
+	height: auto;
+	min-height: 80%;
+}
+
+html, body {
+	height: 100%;
+}
+
+* {
+	margin: 0;
+}
+
+.contentWrapper {
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin: 0 auto -3em;
+}
+
+.content{
+	padding: 0 10px;
+}
+
+.breadcrumbs{
+	border-bottom: 0 dotted #DDDDDD;
+	height: 25px;
+	line-height: 25px;
+	white-space: nowrap;
+	padding-left:15px;
+	width: auto;
+}
+
+.breadcrumbs a{
+	display:inline;
+	background:url(../images/breadcrumb-arrow.png) right no-repeat;
+	padding-right:10px;
+	text-decoration:none;
+	margin:0 5px 0 0;
+	color:#00629A;
+}
+
+.breadcrumbs a:hover{
+	color:#B0232B;
+	text-decoration:underline;
+}
+
+.breadcrumbsFocus{
+	display:inline;
+	background:none;
+	padding-right:10px;
+	text-decoration:none;
+	margin:0;
+	color:#333333;
+}
+
+.contentFiller{
+	height: 3em;
+}
+	
+.footer{
+	height:20px;
+	border-top:1px solid #CCCCCC;
+	background:url(../images/footer-BG.jpg) top repeat-x;
+	color:#CCCCCC;
+	font-size:10px;
+	text-align:center;
+	padding:5px 0;
+}
+
+.viewTooltipPanel .viewTooltipPanelBody{
+	width:auto;
+	max-width: 400px;
+	height: auto;
+}
+
+.viewTooltip {
+	white-space: normal;
+	text-align: left;
+	font-weight: normal;
+}
+
+/* ********** Overflow Disabled Tab Styles ***************** */
+
+.overflowViewTabsOff .LftTop-dis {
+	background-image: none;
+	background-color: #FFFFFF;
+}
+
+.overflowViewTabsOff .MidTop-dis {
+	background-image: none;
+	background-color: #FFFFFF;
+}
+
+.overflowViewTabsOff .RtTop-dis {
+	background-image: none;
+}
+
+.overflowViewTabsOff .LftMid-dis {
+	background-color: #FFFFFF;
+	padding-top: 0px;
+}
+
+.overflowViewTabsOff .MidMid-dis {
+	background-color: #FFFFFF;
+    padding: 5px;
+}
+
+.overflowViewTabsOff .RtMid-dis {
+	background-color: #FFFFFF;
+	padding-top: 0px;
+}
+
+.overflowViewTabsOff .LftBtm-dis {
+	background-color: #FFFFFF;
+	background-image: none;
+	background: #D9D9D9 none repeat scroll 0 0;
+}
+
+.overflowViewTabsOff .MidBtm-dis {
+	background-color: #FFFFFF;
+	background-image: none;
+	background: #D9D9D9 none repeat scroll 0 0;
+}
+
+.overflowViewTabsOff .RtBtm-dis {
+	background-color: #FFFFFF;
+	background-image: none;
+	background: #D9D9D9 none repeat scroll 0 0;
+}
+
+.overflowViewTabsOff .MidMid-dis a {
+    text-decoration: none;
+    color: #ABABAB;
+    cursor: hand;
+}
+
+/* ************************************************ */
+
+
+/* *********** OverflowMenu ********************** */
+.overflowViewMenuBar {
+	background-color: none;
+	background-image: none;
+	border: none;
+	text-align: left;
+}
+
+.overflowViewMenuBarItemLabel {
+	cursor: hand;
+	color: #000000;
+}
+
+.overflowViewMenuBarItem {
+	white-space: nowrap;
+}
+
+.overflowViewMenuBarItem a .overflowViewMnuItmLabel, .overflowViewMnuItmDisplayedLabel {
+	color:#000000;
+}
+
+.overflowViewMenuBarItem a, .overflowViewMenuBarItem span, .overflowViewMenuBarItem a:hover {
+	background-color: none;
+	background-image: none;
+	border: none;
+	padding: 0 5px;
+	margin: 0px;
+	cursor: hand;
+	color: #000000;
+}
+
+.overflowViewMenuBarItem a .iceOutTxt, .overflowViewMenuBarItem a .overflowViewMenuBarItemLabel {
+	color:#000000;
+}
+
+.overflowViewMenuBarItem a:hover .overflowViewMenuBarItemLabel {
+	color: #000000;
+}
+
+.overflowViewMenuBarSubMenu {
+	border: 1px solid #000000;
+	padding-top: 4px;
+	background: #FFFFE1;
+	width: auto;
+}
+
+.overflowViewMnuItm {
+	background: transparent;
+	color: #000000;
+	border: none;
+	padding-left: 5px;
+	padding-right: 15px; /* This is required other hover style background goes out*/
+	white-space: nowrap;
+}
+
+.overflowViewMnuItmSeparator a, .overflowViewMnuItmLink span {
+	background: transparent;
+	background-image: none;
+	color: #00629A;
+	border-top-color: #CCCCCC #999999 #999999 #CCCCCC;
+    border-top-style: solid;
+    border-top-width: 1px;
+	padding-left: 5px;
+	padding-right: 15px;  This is required other hover style background goes out
+	white-space: nowrap;
+}
+
+.overflowViewMnuItmDisplayed {
+	background: transparent;
+	color: #000000;
+	border: none;
+	padding-left: 5px;
+	padding-right: 15px; /* This is required other hover style background goes out*/
+	white-space: nowrap;
+}
+
+.overflowViewMnuItm a, .overflowViewMnuItm span, .overflowViewMnuItm a:hover, .overflowViewMnuItmLabel, .overflowViewMnuItmDisplayed a, .overflowViewMnuItmDisplayed span, .overflowViewMnuItmDisplayed a:hover, .overflowViewMnuItmDisplayedLabel {
+	background: transparent;
+	background-image: none;
+	color: #000000;
+	border: none;
+	padding: 0 5px;
+}
+
+.overflowViewMnuItmLabel {
+	background: transparent;
+	color: #000000;
+}
+
+.overflowViewMnuItmDisplayedLabel {
+	background: transparent;
+	font-weight: bold;
+	color: #000000;
+}
+
+.overflowViewMnuItm a:hover .iceOutTxt, .overflowViewMnuItmDisplayed a:hover, .overflowViewTabsOff a:hover,
+.overflowViewMnuItmDisplayed a:hover .iceOutTxt {
+	background: #EEECD9;
+	color: #000000;
+	cursor: pointer;
+}
+
+/* *************** PROCESS AND DOC TOOLBAR MENU - START *************** */
+.processAndDocsMnuItmPanel{
+	text-align: left;
+}
+
+.processAndDocsMenuBar {
+	background-color: none;
+	background-image: none;
+	border: none;
+	text-align: left;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	
+}
+
+.processAndDocsMenuBarItemLabel {
+	cursor: hand;
+	color: #000000;
+	white-space: nowrap;
+	width: auto;
+
+}
+
+.processAndDocsMenuBarItem {
+	white-space: nowrap;
+}
+
+.processAndDocsMenuBarItem a .processAndDocsMnuItmLabel, .processAndDocsMnuItmDisplayedLabel {
+	color:#000000;
+}
+
+.processAndDocsMenuBarItem a, .processAndDocsMenuBarItem span, .processAndDocsMenuBarItem a:hover {
+	background-color: none;
+	background-image: none;
+	border: none;
+	padding: 0 5px;
+	margin: 0px;
+	cursor: hand;
+	color: #000000;
+}
+
+.processAndDocsMenuBarItem a .iceOutTxt, .processAndDocsMenuBarItem a .processAndDocsMenuBarItemLabel {
+	color:#000000;
+}
+
+.processAndDocsMenuBarItem a:hover .processAndDocsMenuBarItemLabel {
+	color: #000000;
+}
+/***********end*******************/
+
+
+
+
+/* *************** NOTES AND DOC TOOLBAR MENU - START *************** */
+.notesAndDocsMnuItmPanel{
+	text-align: left;
+}
+
+.notesAndDocsMenuBar {
+	background-color: none;
+	background-image: none;
+	border: none;
+	text-align: left;
+}
+
+.notesAndDocsMenuBarItemLabel {
+	cursor: hand;
+	color: #000000;
+}
+
+.notesAndDocsMenuBarItem {
+	white-space: nowrap;
+}
+
+.notesAndDocsMenuBarItem a .notesAndDocsMnuItmLabel, .notesAndDocsMnuItmDisplayedLabel {
+	color:#000000;
+}
+
+.notesAndDocsMenuBarItem a, .notesAndDocsMenuBarItem span, .notesAndDocsMenuBarItem a:hover {
+	background-color: none;
+	background-image: none;
+	border: none;
+	padding: 0 5px;
+	margin: 0px;
+	cursor: hand;
+	color: #000000;
+}
+
+.notesAndDocsMenuBarItem a .iceOutTxt, .notesAndDocsMenuBarItem a .notesAndDocsMenuBarItemLabel {
+	color:#000000;
+}
+
+.notesAndDocsMenuBarItem a:hover .notesAndDocsMenuBarItemLabel {
+	color: #000000;
+}
+
+.notesAndDocsMenuBarSubMenu {
+	border: 1px solid;
+	border-top-color: #CCCCCC;
+	border-left-color: #CCCCCC;
+	border-bottom-color: #666666;
+	border-right-color: #666666;
+	padding-top: 4px;
+	background: #F7F7F7;
+	width: auto;
+}
+
+.notesAndDocsMnuItm {
+	background: transparent;
+	color: #000000;
+	border: none;
+	padding-left: 5px;
+	padding-right: 15px; /* This is required other hover style background goes out */
+	white-space: nowrap;
+}
+
+.notesAndDocsMnuItm a, .notesAndDocsMnuItmLink span, .notesAndDocsMnuItmLink2 span{
+	background: transparent;
+	background-image: none;
+	color: #00629A;
+	border-top-color: #CCCCCC #999999 #999999 #CCCCCC;
+    border-top-style: solid;
+    border-top-width: 1px;
+	padding-left: 5px;
+	padding-right: 5px;
+	white-space: nowrap;
+}
+
+.notesAndDocsMnuItm a, .notesAndDocsMnuItmLink span, .notesAndDocsMnuItmLink2 span{
+	background: transparent;
+	background-image: none;
+	color: #00629A;
+	border-top-color: #CCCCCC #999999 #999999 #CCCCCC;
+    border-top-style: solid;
+    border-top-width: 1px;
+	padding-left: 5px;
+	padding-right: 5px;
+	white-space: nowrap;
+}
+
+.notesAndDocsMnuItm {
+	background: transparent;
+	border: none;
+	padding-left: 5px;
+	padding-right: 15px; 
+	white-space: nowrap;
+}
+
+.notesAndDocsMnuItm span {
+	background: transparent;
+	background-image: none;
+	color: #000000;
+	border: none;
+	padding: 0 5px;
+}
+
+.notesAndDocsMnuItm a {
+	background: transparent;
+	background-image: none;
+	border: none;
+	color: #00629A;
+	padding: 0 5px;
+}
+
+.notesAndDocsMnuItm a:hover{
+	color: #B0232B;
+	background: transparent;
+	background-image: none;
+	border: none;
+	padding: 0 5px;
+}
+
+.notesAndDocsMnuItmLink{
+	border: none;
+	border-top: 1px solid #CCCCCC;
+	padding-left: 5px;
+	padding-right: 15px;
+	white-space: nowrap;
+	background-color: #EAEAEA;
+}
+
+.notesAndDocsMnuItmLink2{
+	border: none;
+	padding-left: 5px;
+	padding-right: 15px;
+	white-space: nowrap;
+	background-color: #EAEAEA;
+}
+
+.notesAndDocsMnuItmLink a, .notesAndDocsMnuItmLink span, .notesAndDocsMnuItmLink2 a, .notesAndDocsMnuItmLink2 span{
+	background: transparent;
+	background-image: none;
+	color: #00629A;
+	border: none;
+	padding: 0 5px;
+}
+
+.notesAndDocsMnuItmLink a:hover, .notesAndDocsMnuItmLink2 a:hover{
+	color: #B0232B;
+	background: transparent;
+	background-image: none;
+	border: none;
+	padding: 0 5px;
+}
+
+.notesAndDocsMnuItmLink a:hover .iceOutTxt, .notesAndDocsMnuItmLink a:hover .notesAndDocsMnuItmLabel, .notesAndDocsMnuItmLink2 a:hover .iceOutTxt, .notesAndDocsMnuItmLink2 a:hover .notesAndDocsMnuItmLabel{
+    color: #B0232B;
+}
+
+.notesAndDocsMnuItm a .notesAndDocsMnuItm a:hover{
+	background-color: #FFFFE1;
+	color: #000000;
+}
+
+.notesAndDocsMnuItm a:hover .iceOutTxt, .notesAndDocsMnuItm a:hover .notesAndDocsMnuItmLabel {
+    color: #B0232B;
+}
+/* *************** NOTES AND DOC TOOLBAR MENU - END *************** */
+
+.configCategoryTree {
+	padding: 5px;
+	background: white;
+	border: 1px solid #CCCCCC;
+	width: 35%;
+	height: 100%;
+	vertical-align: top;
+}
+
+.configViewPanel {
+	padding: 5px;
+	background: white;
+	border: 1px solid #CCCCCC;
+	width: 100%;
+	height: auto;
+	vertical-align: top;
+}
+
+.configViewPanelHeader {
+	text-align: center;
+	background-color: #FAFAFA;
+	border: 1px solid #DADADA;
+	font-weight: bold;
+	white-space: nowrap;
+	height: 25px;
+}
+
+/* ************** Standard Styles ************ */
+.nowrap-table-column
+{
+	white-space: nowrap;
+}
+
+
+/* ************** Common Styles ************ */
+body, table {
+	margin:0;
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:11px;
+}
+
+.panelHeader {
+	height: 20px;
+	line-height: 20px;
+	border-bottom: 1px solid #CCCCCC;
+	background: url(../images/panelHeader-BG.png) bottom repeat-x;
+	white-space: nowrap;
+	clear: both;
+	margin: 5px 0;
+}
+
+.panelHeaderTitle {
+	color: #708090;
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+.panelHeader .iceCmdLnk:hover {
+	cursor: hand;
+	text-decoration: none;
+}
+
+.iceCmdLnk .panelHeaderTitle:hover {
+	color: #B0232B;
+	font-weight: bold;
+}
+
+img
+{
+	border: none;
+}
+
+.clearing
+{
+	clear: both;
+	height: 10px;
+}
+
+.button, .button-dis
+{
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:11px;
+	color:#333333;
+	padding:3px 10px;
+	background: #FFFFFF url( "./css-images/button-background.png" ) bottom repeat-x;
+	border:1px solid #CCCCCC;
+	border-bottom:1px solid #999999;
+	border-right:1px solid #999999;		
+	/* min-width: 60px; */
+	cursor: pointer;
+}
+
+.toolbar-button
+{
+	border: none;
+	margin: 1px;
+	padding: 3px;
+}
+
+.toolbar-button:hover 
+{
+	border: 1px dotted black;
+	margin: 0px;
+	padding: 3px;
+}
+
+.toolbar-button-dis
+{
+	border: none;
+	margin: 1px;
+	padding: 3px;
+}
+
+.heading 
+{
+	height: 20px;
+	line-height: 20px;
+	border-bottom: 1px solid #CCCCCC;
+	background: url(../images/panelHeader-BG.png) bottom repeat-x;
+	white-space: nowrap;
+	clear: both;
+	margin: 5px 0;
+}
+
+.heading .iceOutTxt
+{
+	font-size: 11px;
+	font-weight: bold;
+	color: #708090;
+}
+
+.sub-heading .iceOutTxt
+{
+	font-size: 11px;
+	font-weight: bold;
+	color: #aaaaaa;
+}
+
+.label-form {
+	color: #708090;
+	padding: 3px 5px 3px 0;
+	white-space: nowrap;
+	font-weight: normal;
+}
+
+.label-desc {
+	color: #708090;
+	padding: 3px 5px 3px 0;
+	font-weight: normal;
+}
+
+.label-item {
+	color: #708090;
+	padding: 3px 5px 3px 0;
+	white-space: nowrap;
+	font-weight: normal;
+}
+
+.table-actions-column .iceCmdLnk {
+	text-decoration: none;
+	border: none;
+}
+
+.table-actions-column .iceCmdLnk:hover {
+	text-decoration: none;
+	border: none;
+}
+
+/* Common Pane */
+
+.pane-header
+{
+    background: #FFF url( "./css-images/table_col_header.gif" ) repeat-x bottom left;
+    border: 1px solid #d9d9d9;
+    width: 100%;
+    margin-bottom: 8px;
+	border-bottom: 1px solid #0a246a; 
+	padding-bottom: 2px;  
+	margin-right: 5px;  
+}
+
+.pane-header .iceOutTxt
+{
+    background-color: #d4d0c8;
+    color: #0a246a;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    padding: 0px;
+}
+
+.tooltip
+{
+	border: 1px solid black;
+	background-color: #ffffe1;
+}
+
+/* Category Tree Tree */
+
+.category-tree
+{
+    background-color: #ffffff;
+    padding: 5px; 
+    border: none;
+}
+
+.category-tree-document-description
+{
+	text-align: left;
+	padding: 0px;
+	margin: 0px;
+	background-color: #ffffe1;
+	color: #888888;
+	border: solid black 1px;
+}
+
+.category-tree-category-icon
+{
+	margin: 1px;
+}
+
+.category-tree-category-icon:hover
+{
+	cursor: help;
+	border: 1px dotted black;
+	margin: 0px;
+}
+
+.category-tree-category-label
+{
+	margin: 1px;
+}
+
+.category-tree-category-label:hover
+{
+	cursor: help;
+	border: 1px dotted black;
+	margin: 0px;
+}
+
+.category-tree-category-label .iceOutTxt
+{
+	text-decoration: none;
+}
+
+.category-tree-view-icon
+{
+	margin: 1px;
+}
+
+.category-tree-view-icon:hover
+{
+	cursor: help;
+	border: 1px dotted black;
+	margin: 0px;
+}
+
+.category-tree-view-label
+{
+	margin: 1px;
+}
+
+.category-tree-view-label:hover
+{
+	cursor: help;
+	border: 1px dotted black;
+	margin: 0px;
+}
+
+.category-tree-view-label .iceOutTxt
+{
+	text-decoration: none;
+}
+
+/* Table */
+
+.table-header
+{
+	font-size: 12px;
+	text-align: left;
+	background: none;
+	background-color: #cccccc;
+	border: none;
+	padding: 3px;
+}
+
+.table-column
+{
+	font-size: 12px;
+	vertical-align: top;
+	padding: 0px;
+	padding-left: 3px;
+	padding-right: 3px;
+	margin: 0px;
+	border: none;
+}
+
+.table-columnVertical
+{
+	vertical-align: top;
+}
+	
+.odd-table-row
+{
+	border: none;
+	background-color: #ffffff;
+}
+
+.even-table-row
+{
+	border: none;
+	background-color: #f0f0f0;
+}
+	
+.content-viewer
+{
+	/*background-color: #d4d0c8;*/	
+}
+
+/* Document Tabs Toolbar */
+
+.document-tabs-toolbar
+{
+}
+
+.document-tabs-toolbar .iceCmdBtn 
+{
+	margin: 5px;
+}
+
+/* Action Link */
+
+.action-link, .action-link .iceOutTxt, .action-link .iceOutLbl
+{
+	color: #00629A;
+}
+
+.action-link:hover, .action-link:hover .iceOutTxt, .action-link:hover .iceOutLbl
+{
+	color: #B0232B;
+	text-decoration: underline;
+}
+
+.grid-display-mode-cell
+{
+	width: 400px; 
+	height: 300px; 
+	border: 1px #bbbbbb solid;
+}
+
+.grid-display-mode-cell-header
+{
+	background-color: #eeeeee;
+	color: #888888;
+	padding: 5px;
+}
+
+.grid-display-mode-cell-header-selected
+{
+    background: #FCFCFC url( "./css-images/bottom_menu_bg.png" ) repeat-x bottom left;
+	border: 1px solid #DBDBDB;
+    font-weight: bold;
+    padding: 5px;
+}
+
+.panel-header
+{
+    background: #FCFCFC;
+	border: 1px solid #DBDBDB;
+	font-weight: bold;
+    padding: 5px;
+}
+
+.panel-header .iceOutTxt
+{
+	font-weight: normal;
+	color: #888888;
+	border: none;
+	background: none;
+}
+
+.panel-header-selected
+{
+    background: #FCFCFC url( "./css-images/bottom_menu_bg.png" ) repeat-x bottom left;
+    padding: 5px;
+    white-space: nowrap;
+}
+
+.panel-header-selected .iceOutTxt
+{
+	border: none;
+    margin: 3px;
+    text-decoration: none;
+    font-weight: bold;
+  	display: block;
+}
+
+.menu-background
+{
+	background: #808080 url( "./css-images/nav_main_bg.png" );
+    float: left;
+    white-space: nowrap;
+}
+
+.left-aligned-grid-cell
+{
+	text-align: left;	
+}
+
+.right-aligned-grid-cell
+{
+	text-align: right;	
+}
+.panel-tab-label
+{
+	padding-left: 8px;
+}
+
+.contentFullScreen{
+	padding:  15px;
+}
+
+/* Administration Perspective: Metrics columns */
+
+.metrics {
+	display: inline;
+	float: left;
+	padding-right: 10px;
+}
+
+/* BCC Perspective: Priority changed column */
+
+.priorityChanged {
+	background-color: #BDBDBD;
+}
+
+/* Notes - Input Text Area*/
+
+.notesContent textarea{
+	width:99%;
+	height:85px; /*adjust as needed */
+	border:1px solid #ffe570;
+	background:#FFFFE0;
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:11px;
+	
+	scrollbar-base-color: #FFFFE0;
+	scrollbar-arrow-color: #cc9900;
+	scrollbar-3dlight-color: #ffcc00;
+	scrollbar-darkshadow-color: #FFFFFF;
+	scrollbar-face-color: #FFFFE0;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-shadow-color: #ffcc00;
+	scrollbar-track-color: #fff7bf;
+}	
+
+/* ********** META WIDGET : GENERAL ALIGNMENT - START ********** */
+.table-form
+{
+	white-space: nowrap;
+	border: 1px solid #D8D8D8;
+	border-spacing: 10px;
+	width: 20%; /* So that table will fit the content */
+}
+
+.table-label-column
+{
+	white-space: nowrap;
+	font-weight: normal;
+	text-align: left;
+	width: 1%; /* So that table will fit the content */
+	color: #708090;
+}
+
+.table-component-column
+{
+	width: 3%; /* So that table will fit the content */
+}
+
+.table-required-column
+{
+	width: 3%;
+	padding-left: 0px;
+}
+
+.inline-error
+{
+	color: red !important;
+}
+
+.table-section /* Combination of heading and .heading and .heading .iceOutTxt */
+{
+	white-space: nowrap;
+	text-align: left;
+    border-bottom: 1px solid #8898c2;
+    font-size: 11px;
+    font-weight: bold;
+    color: #8898c2;
+}
+/* ********** META WIDGET : GENERAL ALIGNMENT - END ********** */
+
+
+/* ********** META WIDGET : MANUAL ACTIVITY LIST ADAPTER - START ********** */
+.manAvtyValAdprPnlBrdrWest {
+	width: 1%;
+	background-color: transparent;
+	padding: 0;
+	vertical-align: middle;
+	
+}
+
+.manAvtyValAdprPnlBrdrCenter {
+	white-space: nowrap;
+	background-color: transparent;
+	padding: 0;
+	cursor: default;
+	min-width: 200px;
+}
+
+.manAvtyValAdprPnlBrdrEast {
+	background-color: transparent;
+	padding: 0;
+	text-align: right;	
+}
+
+.manAvtyValAdprPnlPos .manAvtyValAdprPnlPosElem {
+	border: 1px dotted;
+	cursor: move;
+	margin: 1px;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-bottom: 10px;
+}
+
+.manAvtyValAdprPnlPos-dis .manAvtyValAdprPnlPosElem {
+	border: 1px dotted;
+	cursor: normal;
+	margin: 1px;
+	padding-left: 10px;
+	padding-right: 10px;
+	/*padding-bottom: 10px;*/
+}
+
+.manAvtyValAdprPnlClpsblColpsdCnt {
+	padding: 0px;
+	margin: 0px;
+}
+
+.manAvtyValAdprPnlClpsblCnt {
+	padding-bottom: 0px;
+}
+
+.manAvtyValAdprPnlClpsblHdr {
+	margin: 0 0 5px;
+}
+
+.manAvtyValAdprPnlClpsblHdr .manAvtyValAdprCmdLnk, .manAvtyValAdprPnlClpsblColpsdHdr .manAvtyValAdprCmdLnk {
+	padding-left: 10px;
+	color: #708090;
+	font-weight: bold;
+}
+
+/* ********** META WIDGET : MANUAL ACTIVITY LIST ADAPTER - END ********** */
+
+
+/* ********** NOTES TOOLTIP - START ********** */
+
+.notesTooltip .icePnlTlTip{
+	width:200px;
+	border:1px solid #FFCC00;
+	background: url('./css-images/notes-background.png') top repeat-x #FFFFE0;
+	clear:both;
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:11px;
+	color:#000000;
+	overflow: auto;
+	height: 300px;
+}
+
+.notesTooltip .icePnlTlTipHdr {
+    height: 2.0em;
+    font-weight: bold;
+    background: #FFF url( './css-images/PnlHdr_bgslice.gif' ) repeat-x top left;
+    border-bottom: 1px solid #d9d9d9;
+}
+
+.notesTooltip .icePnlTlTipBody {
+    padding: 0px;
+}
+
+.notesTooltip .icePnlTlTipFtr {
+    float: right;
+    height: auto;
+    background-color: #DDDDDD;
+}
+.notesTooltipPanel{
+	margin:10px;
+	border-bottom:1px dotted #FFCC00;
+}
+.notesTooltip .label{
+	vertical-align:top;
+	padding:3px 5px 3px 0;
+	color:#CC6600 !important;	
+}
+.notesTooltip .data{
+	vertical-align:top;
+	padding:3px 0;
+	color:#000000;	
+	white-space: normal;
+}
+
+.notesTooltipContent{
+	margin:0 10px 10px 10px;
+	white-space: normal;
+}
+
+/* ********** NOTES TOOLTIP - END ********** */
+
+/* ********** USER DETAILS PANEL - START ********** */
+.pnlPopUpBrdrUserDialog {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.pnlPopUpBrdrUserDialog .icePnlBrdrWest {
+	border: none;
+	padding-top: 10px;
+	font-weight: normal;
+	text-align: center;
+	vertical-align: top;
+}
+
+.pnlPopUpBrdrUserDialog .icePnlBrdrCenter {
+	border: none;
+	font-weight: nor;
+	text-align: left;
+	vertical-align: top;
+	line-height: 18px;
+}
+
+.pnlPopUpBrdrUserDialog .icePnlBrdrSouth {
+	border-top: 1px solid #CCCCCC;
+	padding: 5px;
+	font-weight: normal;
+	text-align: left;
+	vertical-align: middle;
+	background: transparent url(../images/footer-BG.jpg) repeat-x scroll
+		center top;
+}
+
+.pnlPopUpBrdrUserDialog .icePnlBrdrNorth {
+	border-bottom: 1px dotted grey;
+	height: auto;
+}
+
+/* ********* USER DETAILS PANEL - END ********** */
+
+.once-only-action-link {
+	color: #444444;
+	text-decoration: underline;
+} 
+
+.once-only-action-link .iceOutTxt {
+	color: #444444;
+	text-decoration: underline;
+} 
+
+/* ********* Process Quick access pop panel - Start ********** */
+.processQuickAccessPopup{
+	white-space: nowrap;
+	left:1178px;
+	position:absolute;	
+	width:auto;
+	border:1px solid #D9D9D9;
+	color:#666666;	
+	padding:0;z-index:1100;		
+
+}
+/* ********* Process Quick access pop panel - End ********** */
+
+/* *********** model management view ********************** */
+
+.modelMenuBar .iceMnuItm a{
+	background-color:white;
+	text-decoration:none;
+	}
+.modelMenuBar .iceMnuItm a:hover {
+    background-color: #DDEAF0;
+    text-decoration:none;
+}
+
+.modelMenuBar {
+	background-color: none;
+	background-image: none;
+	border: none;
+	text-align: left;
+}
+
+.modelMenuBarItemLabel {
+	cursor: hand;
+	color: #000000;
+}
+
+.modelMenuBarItem {
+	white-space: nowrap;
+}
+
+.modelMenuBarItem a .modelMnuItmLabel, .modelMnuItmDisplayedLabel {
+	color:#000000;
+}
+
+.modelMenuBarItem a, .modelMenuBarItem span, .modelMenuBarItem a:hover {
+	background-color: none;
+	background-image: none;
+	border: none;
+	padding: 0 5px;
+	margin: 0px;
+	cursor: hand;
+	color: #000000;
+}
+
+.modelMenuBarSubMenu {
+	border: 1px solid #000000;	
+	width: auto;
+}
+
+.modelMnuItm {
+	background: transparent;
+	color: #000000;
+	border: none;
+	background-color: white;
+	background-image: none;	
+	text-align: left;
+	
+}
+
+/* select option with icon */
+
+select.icon-menu option {
+	background-position: 1px 2px;
+ 	background-repeat: no-repeat;
+	padding: 2px 0 5px 20px;
+	vertical-align: middle;
+	background-image:url(../images/key.png);	
+}
+
+/* ********* Session Control - Start ********** */
+.portal-ui-session-control {
+	/* Place Holder */
+}
+/* ********* Session Control - End ********** */
+/* ********* Abort Process menu - Start ********** */
+.switchMenuBar {
+	background-color: none;
+	background-image: none;
+	border: none;
+	text-align: left;
+}
+
+.switchMnuItm {
+	background-color: #EAEAEA;
+	background-image: none;
+	text-align: left;
+}
+
+/* Style for MenuItem label */
+.switchMenuBarItem a .switchMnuItmLabel,.switchMnuItmDisplayedLabel {
+	color: #00629A;
+}
+
+.switchMenuBar .iceMnuItm a {
+	background-color: #EAEAEA;
+	text-decoration: none;
+}
+
+/* Style for hover on table column */
+.switchMenuBar .iceMnuItm a:hover {
+	color: #EAEAEA;
+}
+
+.switchMenuBarItem a,.switchMenuBarItem span,.switchMenuBarItem a:hover
+	{
+	background-color: none;
+	background-image: none;
+	border: none;
+	padding: 0 1px;
+	margin: 0px;
+	cursor: hand;
+	color: #00629A;
+}
+
+/* Style for menu bar box */
+.switchMenuBarSubMenu {
+	border: 1px solid #000000;
+	width: 12%;
+	position:absolute;
+}
+
+.switchMnuItm .iceOutTxt,.switchMnuItm .iceOutLbl {
+	color: #00629A;
+}
+
+/* Style for menu item hover */
+.switchMnuItm a:hover .iceOutTxt,.switchMnuItmVrt a:hover .iceOutTxt {
+	color: #00629A;
+	text-decoration: underline;
+}
+
+/* Style for menu item disabled */
+.switchMnuItm-dis {
+	color: black;
+	border: none;
+	background-image: none;
+	background-color: #EAEAEA;
+	padding: 3px;
+}
+
+/* Style for disabled menu item text */
+.switchMnuItmLabel-dis {
+	color: black;
+	text-decoration: none;
+	cursor: default;
+	padding: 5px;
+}
+/* ********* Abort Process menu - End ********** */
+
+/* Standard Menu bar starts*/
+.stdMenuBar {
+	background-color: none;
+	background-image: none;
+	border: none;
+	text-align: left;
+}
+
+.stdMenuBarSubMenu .iceMnuItmLabel{
+	white-space: wrap;
+	color: #000000;		
+}
+
+.stdMenuBar .iceMnuItm a {
+	background-color: #EAEAEA;
+	text-decoration: none;
+}
+.stdMenuBarItem a,.stdMenuBarItem span,.stdMenuBarItem a:hover
+	{
+	background-color: none;
+	background-image: none;
+	border: none;
+	padding: 0 1px;
+	margin: 0px;
+	cursor: hand;
+}
+
+.stdMenuBarSubMenu {
+	border: 1px solid #000000;
+	width: auto;
+	white-space: nowrap;
+	position:absolute;
+}
+
+.stdMenuBarSubMenu a .iceMnuItmLabel{
+	color: #000000;		
+}
+.stdMenuBarSubMenu a:hover .iceMnuItmLabel{
+	color: #000000;		
+}
+
+.stdMenuBarItem-dis a,.stdMenuBarItem-dis span,.stdMenuBarItem-dis a:hover
+	{
+	background-color: none;
+	background-image: none;
+	border: none;
+	padding: 0 1px;
+	margin: 0px;
+	cursor: hand;
+	opacity: 0.4;
+	filter: alpha(opacity=40)
+}
+
+/* Standard Menu bar ends*/
+
+.joinProcessCol1 {
+	width: 5%;
+}
+
+.joinProcessCol2 {	
+	padding-right: 0px;
+	margin-right: 0px;
+}
+
+.dropTargetHover
+{
+	background-color: #E1A142;
+}
+
+
+/* Multi-select autocomplete table when implemented with plain html tags. */
+.autoCompTable
+{
+	width: 100%;
+	font-family: Arial,Helvetica,sans-serif;
+}
+
+table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbody > tr > td
+{
+	border: 1px solid #CCCCCC;
+}
+
+.autoCompTableHeaderRow
+{
+	background-color: #F2F2F2;
+	text-align: center;
+	font-family: Arial,Helvetica,sans-serif;
+	font: bold 11px tahoma;
+}
+
+.autoCompTableRemoveCol
+{
+	text-align: center;
+}
+
+.autoCompTableTextCol
+{
+	text-align: center;
+	padding:3px;
+}
+
+.oddTabRow
+{
+	background-color: #F2F2F2;
+}
+
+.evenTabRow
+{
+	background-color: #fff;
+}
+
+/* ********* Tooltip for Process,Model ,Activity Details ********** */
+.processTooltip {
+	white-space: normal;
+	text-align: left;
+	font-weight: normal;
+	word-wrap: break-word;
+}
+
+.processTooltipPanel .processTooltipPanelBody{
+	width: auto;
+	max-width: 200px;
+	height: auto;
+	padding:6px;
+}
+
+/* ***********Process Search components **********/
+.procSearchSelOneRadio {
+	text-align: left;
+	margin-left: -9px;
+	margin-top: -2px;
+}
+
+.procSearchProcSelMenu {
+	height: 75px;
+	overflow: auto;
+	margin-left: 4px;
+	min-width:155px;
+}

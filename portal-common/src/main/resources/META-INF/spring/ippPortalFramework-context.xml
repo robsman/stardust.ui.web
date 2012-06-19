@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+      xmlns:aop="http://www.springframework.org/schema/aop"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:ippui="http://infinity.com/bpm/ui/common/uiDefinition"
+   xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+
+   <bean name="ippPortalApiPhaseListener" class="org.eclipse.stardust.ui.web.common.app.api.PortalApiPhaseListener" />
+
+   <bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+      <property name="scopes">
+         <map>
+            <entry key="portalTab">
+               <bean class="org.eclipse.stardust.ui.web.common.spring.scope.TabScope">
+                  <property name="tabScopeManager" ref="ippPortalTabScopeBridge" />
+               </bean>
+            </entry>
+         </map>
+      </property>
+   </bean>	
+
+   <bean name="ippPortalTabScopeBridge" class="org.eclipse.stardust.ui.web.common.spring.scope.TabScopeBridge"
+      scope="request">
+      <description>Adapt between singleton scope of tab scope handler
+         and the actual session scoped tab scope manager</description>
+      <aop:scoped-proxy proxy-target-class="false" />
+      <property name="tabScopeManager" ref="ippPortalUi" />
+   </bean>
+   
+   <bean name="ippPortalUi" class="org.eclipse.stardust.ui.web.common.app.PortalUiController"
+      scope="session">
+      <property name="userProvider" ref="userProvider"/>
+   </bean>
+      
+   <bean name="ippPortalApp" class="org.eclipse.stardust.ui.web.common.app.PortalApplication"
+      scope="session">
+      <property name="portalUiController" ref="ippPortalUi" />
+      <property name="userProvider" ref="userProvider"/>
+      <property name="portalConfiguration" ref="ippPortalConfig"/>
+      <property name="portalApplicationEventScript" ref="ippPortalAppEventScript"/>
+      <property name="runtimeEnvironmentInfoProvider" ref="runtimeEnvironmentInfoProvider"/>
+   </bean>
+
+   <bean name="ippPortalAppEventScript" class="org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript"
+      scope="session">
+   </bean>
+
+   <bean name="ippPortalParameters" class="org.eclipse.stardust.ui.web.common.app.PortalParameters"
+      scope="globalSession">
+   </bean>
+
+   <bean name="ippPortalConfig" class="org.eclipse.stardust.ui.web.common.views.PortalConfiguration"
+      scope="session">
+   </bean>
+
+   <bean name="ippPortalConfigPanel" class="org.eclipse.stardust.ui.web.common.views.PortalConfigurationPanel"
+      scope="session">
+      <property name="userProvider" ref="userProvider" />
+      <property name="themeProvider" ref="themeProvider" />
+   </bean>
+
+   <bean name="ippMessageDialog" class="org.eclipse.stardust.ui.web.common.message.MessageDialog"
+      scope="session">
+      <property name="portalUiController" ref="ippPortalUi" />
+   </bean>
+
+   <bean name="ippAlertManager" class="org.eclipse.stardust.ui.web.common.message.AlertManager"
+      scope="session">
+      <property name="userProvider" ref="userProvider"/>
+   </bean>
+
+   <bean name="ippUserPreferenceBean" class="org.eclipse.stardust.ui.web.common.configuration.UserPreferenceBean"
+      scope="session">
+      <property name="preferenceProvider" ref="preferenceProvider"/>
+   </bean>
+
+   <bean name="ippUserPreferencesHelperCache" class="org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelperCache"
+      scope="session" />
+
+	<bean name="uiController" class="org.eclipse.stardust.ui.web.common.app.UIController">
+		<property name="userProvider" ref="userProvider" />
+		<property name="themeProvider" ref="themeProvider" />
+		<property name="navigationProvider" ref="navigationProvider" />
+		<property name="preferenceProvider" ref="preferenceProvider"/>
+	</bean>
+</beans>

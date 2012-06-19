@@ -1,0 +1,345 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<html>
+	<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"></meta>
+	<link
+		href="#{facesContext.externalContext.requestContextPath}/plugins/views-common/css/context-portal.css"
+		rel="stylesheet" type="text/css" />
+	<title>Correspondence</title>
+	</head>
+	<body>
+	<ice:panelGroup>
+		<ui:include
+			src="/plugins/views-common/views/doctree/commonFileUploadDialog.xhtml" />
+		<ui:include
+			src="/plugins/views-common/views/correspondence/correspondenceAddressPickerDialog.xhtml" />
+		<ui:include
+			src="/plugins/views-common/views/printer/printerDialogPopup.xhtml" />
+		<ui:include
+			src="/plugins/views-common/views/correspondence/correspondenceViewAttachments.xhtml">
+			<ui:param name="bean" value="#{correspondenceViewBean.correspondenceAttachments}" />
+		</ui:include>
+	</ice:panelGroup>
+
+	<ice:panelGroup>
+		<ice:panelGroup>
+			<ice:panelGroup style="float: right;">
+				<ice:commandButton
+					image="/plugins/views-common/images/icons/email_go.png"
+					actionListener="#{correspondenceViewBean.sendMessage}"
+					partialSubmit="true"
+					title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.correspondenceSend']}"
+					styleClass="toolbar-button">
+					<pc:automationTag value="auto-COM-CorrView-ToolbarSend"
+						standAlone="false" />
+				</ice:commandButton>
+				<ice:commandButton
+					image="/plugins/views-common/images/icons/printer.png"
+					disabled="#{!correspondenceViewBean.printAvailable}"
+					action="#{correspondenceViewBean.print}" partialSubmit="true"
+					title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.print']}"
+					styleClass="toolbar-button">
+					<pc:automationTag value="auto-COM-CorrView-ToolbarPrint"
+						standAlone="false" />
+				</ice:commandButton>
+			</ice:panelGroup>
+
+			<ice:panelCollapsible id="detailsPanel" expanded="true"
+				styleClass="actionPanel">
+				<f:facet name="header">
+					<ice:panelGroup>
+						<ice:outputText
+							value="#{correspondenceViewBean.messages['details.Label']}" />
+					</ice:panelGroup>
+				</f:facet>
+
+				<ice:panelGrid columns="2" styleClass="documentviewer-subpanel"
+					style="width:100%;" columnClasses="formLabel, formInput">
+
+					<!-- From address field -->
+					<ice:panelGroup>
+						<ice:outputLabel
+							value="#{correspondenceViewBean.messages['details.from']}"
+							styleClass="label-form" />
+					</ice:panelGroup>
+					<ice:panelGroup>
+						<ice:inputText id="mailSender" name="From"
+							value="#{correspondenceViewBean.mailSender}" partialSubmit="true">
+							<pc:automationTag value="auto-COM-CorrView-Sender"
+								standAlone="false" />
+						</ice:inputText>
+						<ice:panelGroup styleClass="msgError">
+							<ice:message for="mailSender" />
+						</ice:panelGroup>
+					</ice:panelGroup>
+					<!-- end of From address field -->
+
+
+					<!--  To address field -->
+					<ice:panelGroup>
+						<ice:commandLink action="#{correspondenceViewBean.openAddressPickerDialog}" immediate="true">
+							<pc:automationTag value="auto-COM-CorrView-ToAddrPicker"
+								standAlone="false" />
+							<ice:outputText
+								value="#{correspondenceViewBean.messages['details.to']}"
+								escape="false" />
+							<f:param name="from" value="To" />
+							<f:param name="toaddressess"
+								value="#{correspondenceViewBean.toMailAddress}" />
+						</ice:commandLink>
+					</ice:panelGroup>
+					<ice:panelGroup>
+						<ice:inputTextarea id="toMailAddress" name="To"
+							value="#{correspondenceViewBean.toMailAddress}" rows="1"
+							style="overflow: auto;" partialSubmit="true">
+							<pc:automationTag value="auto-COM-CorrView-ToMailAddr"
+								standAlone="false" />
+							<f:validator validatorId="eMailAddressValidator" />
+						</ice:inputTextarea>
+						<ice:panelGroup styleClass="msgError">
+							<ice:message for="toMailAddress" />
+						</ice:panelGroup>
+					</ice:panelGroup>
+					<!--  end of To field -->
+
+					<!--  Cc Field -->
+					<ice:panelGroup>
+						<ice:commandLink action="#{correspondenceViewBean.openAddressPickerDialog}" immediate="true"
+							rendered="#{correspondenceViewBean.showCc}">
+							<pc:automationTag value="auto-COM-CorrView-CCAddrPicker"
+								standAlone="false" />
+							<ice:outputText
+								value="#{correspondenceViewBean.messages['details.cc']}"
+								escape="false" />
+							<f:param name="from" value="Cc" />
+							<f:param name="ccaddressess"
+								value="#{correspondenceViewBean.ccMailAddress}" />
+						</ice:commandLink>
+					</ice:panelGroup>
+					<ice:panelGroup>
+						<ice:inputTextarea id="ccMailAddress" name="Cc"
+							value="#{correspondenceViewBean.ccMailAddress}" rows="1"
+							rendered="#{correspondenceViewBean.showCc}"
+							style="overflow: auto;" partialSubmit="true">
+							<pc:automationTag value="auto-COM-CorrView-CCMailAddr"
+								standAlone="false" />
+							<f:validator validatorId="eMailAddressValidator" />
+						</ice:inputTextarea>
+						<ice:panelGroup styleClass="msgError">
+							<ice:message for="ccMailAddress" />
+						</ice:panelGroup>
+					</ice:panelGroup>
+					<!--  end of Cc field -->
+
+					<!-- Bcc field -->
+					<ice:panelGroup>
+						<ice:commandLink action="#{correspondenceViewBean.openAddressPickerDialog}" immediate="true"
+							rendered="#{correspondenceViewBean.showBcc}">
+							<pc:automationTag value="auto-COM-CorrView-BCCAddrPicker"
+								standAlone="false" />
+							<ice:outputText
+								value="#{correspondenceViewBean.messages['details.bcc']}"
+								escape="false" />
+							<f:param name="from" value="Bcc" />
+							<f:param name="bccaddressess"
+								value="#{correspondenceViewBean.bccMailAddress}" />
+						</ice:commandLink>
+					</ice:panelGroup>
+					<ice:panelGroup>
+						<ice:inputTextarea id="bccMailAddress" name="Bcc"
+							value="#{correspondenceViewBean.bccMailAddress}" rows="1"
+							rendered="#{correspondenceViewBean.showBcc}"
+							style="overflow: auto;" partialSubmit="true">
+							<pc:automationTag value="auto-COM-CorrView-BCCMailAddr"
+								standAlone="false" />
+							<f:validator validatorId="eMailAddressValidator" />
+						</ice:inputTextarea>
+						<ice:panelGroup styleClass="msgError">
+							<ice:message for="bccMailAddress" />
+						</ice:panelGroup>
+					</ice:panelGroup>
+					<!--  end of Bcc field -->
+
+					<!-- Fax field -->
+					<ice:panelGroup>
+						<ice:commandLink action="#{correspondenceViewBean.openAddressPickerDialog}" immediate="true"
+							rendered="#{correspondenceViewBean.showFax}">
+							<pc:automationTag value="auto-COM-CorrView-FaxAddrPicker"
+								standAlone="false" />
+							<ice:outputText
+								value="#{correspondenceViewBean.messages['details.fax']}"
+								escape="false" />
+							<f:param name="from" value="Fax" />
+							<f:param name="faxaddressess"
+								value="#{correspondenceViewBean.faxMailAddress}" />
+						</ice:commandLink>
+					</ice:panelGroup>
+					<ice:panelGroup>
+						<ice:inputTextarea id="faxMailAddress" name="Fax"
+							value="#{correspondenceViewBean.faxMailAddress}" rows="1"
+							rendered="#{correspondenceViewBean.showFax}"
+							style="overflow: auto;" partialSubmit="true">
+							<pc:automationTag value="auto-COM-CorrView-FaxMailAddr"
+								standAlone="false" />
+							<f:validator validatorId="eMailAddressValidator" />
+						</ice:inputTextarea>
+						<ice:panelGroup styleClass="msgError">
+							<ice:message for="faxMailAddress" />
+						</ice:panelGroup>
+					</ice:panelGroup>
+					<!--  end of Fax field -->
+
+					<!--  for compact link -->
+					<ice:panelGroup>
+						<ice:outputText value=" " />
+					</ice:panelGroup>
+
+					<ice:panelGroup columns="5" styleClass="actionPanel">
+						<ice:commandLink action="#{correspondenceViewBean.selectCc}" immediate="true"
+							rendered="#{!correspondenceViewBean.showCc}">
+							<pc:automationTag value="auto-COM-CorrView-ActionsAddCC"
+								standAlone="false" />
+							<ice:outputText
+								value="#{correspondenceViewBean.messages['details.addCc']}"
+								rendered="#{!correspondenceViewBean.showCc}" />
+						</ice:commandLink>
+						<ice:outputText value="|"
+							rendered="#{!correspondenceViewBean.showCc and !(correspondenceViewBean.showBcc and correspondenceViewBean.showFax)}" />
+						<ice:commandLink action="#{correspondenceViewBean.selectBcc}" immediate="true"
+							rendered="#{!correspondenceViewBean.showBcc}">
+							<pc:automationTag value="auto-COM-CorrView-ActionsAddBCC"
+								standAlone="false" />
+							<ice:outputText
+								value="#{correspondenceViewBean.messages['details.addBcc']}"
+								rendered="#{!correspondenceViewBean.showBcc}" />
+						</ice:commandLink>
+						<ice:outputText value="|"
+							rendered="#{!correspondenceViewBean.showBcc and !correspondenceViewBean.showFax}" />
+						<ice:commandLink action="#{correspondenceViewBean.selectFax}" immediate="true"
+							rendered="#{!correspondenceViewBean.showFax}">
+							<pc:automationTag value="auto-COM-CorrView-ActionsAddFax"
+								standAlone="false" />
+							<ice:outputText
+								value="#{correspondenceViewBean.messages['details.addFax']}"
+								rendered="#{!correspondenceViewBean.showFax}" />
+						</ice:commandLink>
+					</ice:panelGroup>
+					<!--  end of Compact fields -->
+
+					<!--  Subject field -->
+					<ice:panelGroup>
+						<ice:outputLabel
+							value="#{correspondenceViewBean.messages['details.subject']}"
+							styleClass="label-form" />
+					</ice:panelGroup>
+					<ice:panelGroup>
+						<ice:inputText id="mailSubject"
+							value="#{correspondenceViewBean.mailSubject}" partialSubmit="true">
+							<pc:automationTag value="auto-COM-CorrView-MailSubj"
+								standAlone="false" />
+						</ice:inputText>	
+						<ice:panelGroup styleClass="msgError">
+							<ice:message for="mailSubject" />
+						</ice:panelGroup>
+					</ice:panelGroup>
+					<!--  end of Subject field -->
+
+					<!--  attachments fields -->
+					<ice:panelGroup>
+						<ice:outputText value=" " />
+					</ice:panelGroup>
+					<ice:panelGroup styleClass="actionPanel">
+						<ice:commandLink action="#{correspondenceViewBean.selectAttachments}" immediate="true">
+							<pc:automationTag value="auto-COM-CorrView-ActionsAddAtt"
+								standAlone="false" />
+							<ice:outputText value="#{correspondenceViewBean.messages['details.addAttachments']}" />
+						</ice:commandLink>
+						<ice:outputText value=" |" />
+						<ice:commandLink
+							value="#{correspondenceViewBean.messages['details.uploadAttachments']}"
+							action="#{correspondenceViewBean.attachFile}" immediate="true">
+							<pc:automationTag value="auto-COM-CorrView-ActionsUploadAtt"
+								standAlone="false" />
+						</ice:commandLink>	
+					</ice:panelGroup>
+
+					<ice:panelGroup>
+						<ice:outputLabel
+							value="#{correspondenceViewBean.messages['details.attachments']}"
+							styleClass="label-form" />
+					</ice:panelGroup>
+					<ice:panelGroup id="attachmentsPanel" scrollHeight="50px"
+						styleClass="attachments-panel" dropTarget="true" dropListener="#{correspondenceViewBean.dropAttachment}"
+						style="border: 1px solid #D9D9D9; width: 97%; height: 50px; padding: 3px; margin: 2px;"
+						hoverclass="dropTargetHover">
+						<ice:panelSeries id="icePnlSrsForAttacments"
+							value="#{correspondenceViewBean.attachments}" var="attachment">
+							<ice:commandLink id="removeAttachment" alt="Delete Attachment"
+								action="#{correspondenceViewBean.removeAttachment}" immediate="true"
+								style="text-decoration: none;">
+								<pc:automationTag value="auto-COM-CorrView-DelAtt"
+								standAlone="false" />
+								<f:param name="documentKey" value="#{attachment.documentKey}" />
+								<ice:graphicImage
+									value="/plugins/views-common/images/icons/cross-delete.png" />
+
+								<ice:graphicImage
+									value="/plugins/views-common/images/icons/spacer.gif" width="5"
+									height="15" />
+								<ice:outputText value="#{attachment.name};" />
+							</ice:commandLink>
+							<ice:graphicImage
+								value="/plugins/views-common/images/icons/spacer.gif" width="5"
+								height="15" />
+						</ice:panelSeries>
+					</ice:panelGroup>
+					<!--  end of attachments fields -->
+
+					<!-- templates field -->
+					<ice:panelGroup>
+						<ice:outputLabel styleClass="label-form"
+							value="#{correspondenceViewBean.messages['details.templates']}" />
+					</ice:panelGroup>
+					<ice:panelGrid columns="2">
+						<ice:panelGroup id="templatesPanel" styleClass="attachments-panel"
+							dropTarget="true"
+							dropListener="#{correspondenceViewBean.onTemplateDropped}"
+							style="border: 1px solid #D9D9D9; width: 35px; height: 100%; padding: 3px; margin: 2px;"
+							dragMask="hover_start, dragging, hover_end, drag_cancel"
+							hoverclass="dropTargetHover"
+							effect="#{correspondenceViewBean.dropBoxEffect}"
+							title="#{correspondenceViewBean.messages['details.templates.title']}">
+							<ice:graphicImage
+								value="/plugins/views-common/images/icons/dropBox.png"
+								styleClass="toolbar-button" />
+						</ice:panelGroup>
+						<ice:panelGroup styleClass="actionPanel">
+							<ice:commandLink action="#{correspondenceViewBean.selectTemplates}" immediate="true">
+								<pc:automationTag value="auto-COM-CorrView-SelTemplate"
+								standAlone="false" /> 
+								<ice:outputText value="#{correspondenceViewBean.messages['details.useTemplates']}" />
+							</ice:commandLink>
+						</ice:panelGroup>
+					</ice:panelGrid>
+					<!--  end of templates field -->
+				</ice:panelGrid>
+			</ice:panelCollapsible>
+		</ice:panelGroup>
+
+		<ice:panelGroup dropTarget="false">
+			<ui:include src="#{correspondenceViewBean.editor.contentUrl}">
+				<ui:param name="contentHandler"
+					value="#{correspondenceViewBean.editor}" />
+			</ui:include>
+		</ice:panelGroup>
+	</ice:panelGroup>
+	</body>
+	</html>
+</f:view>

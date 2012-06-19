@@ -1,0 +1,113 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ice:panelGroup>
+		<ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
+			<ui:param name="bean" value="#{ippAdmAllManagementViews}" />
+			<ui:param name="title" value="#{ippAdmAllManagementViews.messages['title']}" />
+			<ui:param name="collapsible" value="true" />
+			<ui:param name="showRefreshLink" value="false" />
+			<ui:param name="automationTag" value="auto-ADM-viewsPanel" />
+		</ui:include>
+	</ice:panelGroup>
+	<ice:panelGrid columns="1" rendered="#{ippAdmAllManagementViews.expanded}">
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-ADM-overview" standAlone="false"/>
+			<f:param name="viewId" value="overview" />
+			<ice:outputText value="#{messages_admin['views.overview.label']} &amp;raquo;"
+				styleClass="action-link" escape="false"/>
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-ADM-processView" standAlone="false"/>
+			<f:param name="viewId" value="processView" />
+			<ice:outputText value="#{messages_admin['views.processView.label']} &amp;raquo;"
+				styleClass="action-link" escape="false"/>
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-ADM-activityView" standAlone="false"/>
+			<f:param name="viewId" value="activityView" />
+			<ice:outputText value="#{messages_admin['views.activityView.label']} &amp;raquo;"
+				styleClass="action-link" escape="false"/>
+		</ice:commandLink>
+		
+		<ice:commandLink action="#{ippPortalApp.openView}">		
+			<pc:automationTag value="auto-ADM-LP-AuthMgrView" standAlone="false"/>
+			<f:param name="viewId" value="authorizationManagerView" />
+			<ice:outputText value="#{views_common_msgPropsBean['views.authorizationManagerView.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+		
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-ADM-userGroupMgmt" standAlone="false"/>
+			<f:param name="viewId" value="userGroupMgmt" />
+			<ice:outputText value="#{messages_admin['views.userGroupMgmt.label']} &amp;raquo;"
+				styleClass="action-link" escape="false"/>
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-ADM-realmMgmt" standAlone="false"/>
+			<f:param name="viewId" value="realmMgmt" />
+			<ice:outputText value="#{messages_admin['views.realmMgmt.label']} &amp;raquo;"
+				styleClass="action-link" escape="false"/>
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-ADM-daemons" standAlone="false"/>
+			<f:param name="viewId" value="daemons" />
+			<ice:outputText value="#{messages_admin['views.daemons.label']} &amp;raquo;"
+				styleClass="action-link" escape="false"/>
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-ADM-LP-ModelMgmtView" standAlone="false"/>
+			<f:param name="viewId" value="modelManagementView" />
+			<ice:outputText value="#{messages_admin['views.modelManagementView.label']} &amp;raquo;"
+				styleClass="action-link" escape="false"/>
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-ADM-LP-ConfigVarView" standAlone="false"/>
+			<f:param name="viewId" value="configurationVariablesView" />
+			<ice:outputText value="#{messages_admin['views.configurationVariablesView.label']} &amp;raquo;"
+				styleClass="action-link" escape="false"/>
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-ADM-resourceMgmt" standAlone="false"/>
+			<f:param name="viewId" value="resourceMgmtTreeView" />
+			<ice:outputText value="#{views_common_msgPropsBean['views.resourceMgmtTreeView.label']} &amp;raquo;"
+				styleClass="action-link" escape="false"/>
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-ADM-genericRep" standAlone="false"/>
+			<f:param name="viewId" value="genericRepositoryView" />
+			<ice:outputText value="#{views_common_msgPropsBean['views.genericRepositoryView.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-ADM-participantMgmt" standAlone="false"/>
+			<f:param name="viewId" value="participantMgmt" />
+			<ice:outputText value="#{messages_admin['views.participantMgmt.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-ADM-passwordMgmt" standAlone="false"/>
+			<f:param name="viewId" value="passwordMgmt" />
+			<ice:outputText value="#{messages_admin['views.passwordMgmt.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-ADM-criticalityConf" standAlone="false" />
+			<f:param name="viewId" value="criticalityConf" />
+			<ice:outputText
+				value="#{messages_admin['views.criticalityConf.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-ADM-qaManagement" standAlone="false"/>
+			<f:param name="viewId" value="qaManagementView" />
+			<ice:outputText value="#{messages_admin['views.qaManagementView.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+	</ice:panelGrid>
+</f:view>

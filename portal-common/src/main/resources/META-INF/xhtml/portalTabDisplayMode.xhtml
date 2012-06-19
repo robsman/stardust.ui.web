@@ -1,0 +1,94 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup style="width: 100%; height: 100%;">
+		<ice:panelTabSet id="tabSet"
+			tabPlacement="top" summary="" style="width: 100%; height: 100%;"
+			tabChangeListener="#{ippPortalApp.processTabChange}"
+			selectedIndex="#{ippPortalApp.viewIndex}"
+			rendered="#{ippPortalApp.openViewsSize > 0}">
+
+			<c:set var="displayTabCount" value="#{ippPortalApp.displayedViewsSize}" />
+			<c:set var="tabIndex" value="1" />
+
+			<c:forEach items="#{ippPortalApp.displayedViews}" var="tab" varStatus="loopStatus">
+				<!-- **** Some how this does not work **** -->
+				<!--  <c:set var="overflowTab" value="#{ippPortalApp.showOverflowTabs and loopStatus.last}" /> -->
+				<c:set var="overflowTab" value="#{ippPortalApp.showOverflowTabs and (tabIndex eq displayTabCount)}" />
+			
+				<ice:panelTab styleClass="#{overflowTab ? 'overflowViewTabs' : 'portalViewTabs'}" disabled="#{overflowTab}" id="tab">
+					<f:facet name="label">
+						<ice:panelGroup>
+							<!-- ************* OVERFLOW TAB MANAGEMENT ************* -->
+							<ice:panelGroup rendered="#{overflowTab}" >
+									<ice:commandLink
+										action="#{ippPortalApp.toggleOverflowTabIframePopup}"
+										displayOnClick="true"
+										value="#{common_msgPropsBean['portalFramework.overflowViewTabs.label']} #{ippPortalApp.overflowedViewsSize}"
+										title="#{common_msgPropsBean['portalFramework.overflowViewTabs.tooltip']}">
+
+									</ice:commandLink>
+									<div id="ippOverflowTabAnchor" style="width: 1px; height: 1px;"></div>
+								</ice:panelGroup>
+
+								<!-- ************* NORMAL TAB MANAGEMENT ************* -->
+							<ice:panelGrid rendered="#{not overflowTab}"
+									columns="4" cellpadding="0" cellspacing="0"
+									columnClasses="panel-tab-label,panel-tab-label,panel-tab-label,panel-tab-label">
+								<ice:graphicImage value="#{tab.icon}" style="border: none;" />
+								<ice:panelGroup panelTooltip="viewLabelToolTip#{tabIndex}">
+									<pc:automationTag value="auto-FW-TabLabel" />
+									<ice:outputText value="#{tab.label}"
+										styleClass="portalTbLbl #{tab eq ippPortalApp.activeView ? 'portalTbActiveLbl' : ''}" />
+								</ice:panelGroup>
+								<ice:panelGroup>
+									<pc:automationTag value="auto-FW-TabFullScreen" />
+									<ice:commandLink rendered="#{ippPortalApp.focusView.identityUrl eq tab.identityUrl}" immediate="false"
+										action="#{ippPortalApp.activateFullScreenMode}" 
+										styleClass="toolbar-button">
+										<f:param name="identityUrl" value="#{tab.identityUrl}" />
+										<ice:graphicImage value="/plugins/common/images/tab-bttn-maximize.png"
+											style="border: none;" 
+											title="#{common_msgPropsBean['portalFramework.view.fullScreen']}"/>
+									</ice:commandLink>
+								</ice:panelGroup>
+								<ice:panelGroup>
+									<pc:automationTag value="#{ippPortalApp.focusView.identityUrl eq tab.identityUrl ? 'auto-FW-TabActiveClose' : 'auto-FW-TabInActiveClose'}" />
+									<ice:commandLink action="#{ippPortalApp.closeView}" immediate="false"
+										styleClass="toolbar-button viewCloseLink">
+										<f:param name="identityUrl" value="#{tab.identityUrl}" />
+										<ice:graphicImage value="/plugins/common/images/tab-bttn-close.png"
+											style="border: none;" 
+											title="#{common_msgPropsBean['portalFramework.view.close']}"/>
+									</ice:commandLink>
+								</ice:panelGroup>
+							</ice:panelGrid>
+							<ice:panelTooltip id="viewLabelToolTip#{tabIndex}" hoverDelay="500"
+								styleClass="tooltip viewTooltipPanel">
+								<f:facet name="header"></f:facet>
+								<f:facet name="body">
+									<ice:outputText value="#{tab.tooltip}" styleClass="viewTooltip" escape="false"/>
+								</f:facet>
+							</ice:panelTooltip>
+						</ice:panelGroup>
+					</f:facet>
+					<ice:panelGroup>
+	                    <pc:tabScoped currentTab="#{tab}">
+						    <ui:include src="portalUserDefinedInclude.xhtml">
+							    <ui:param name="includeFilePath" value="#{tab.path}" />
+						    </ui:include>
+	                    </pc:tabScoped>
+					</ice:panelGroup>
+				</ice:panelTab>
+
+				<c:set var="tabIndex" value="#{tabIndex + 1}" />
+			</c:forEach>
+		</ice:panelTabSet>
+	</ice:panelGroup>
+
+</f:view>

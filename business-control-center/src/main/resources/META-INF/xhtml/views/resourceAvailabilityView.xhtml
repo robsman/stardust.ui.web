@@ -1,0 +1,27 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon"
+	xmlns:bc="http://www.sungard.de/carnot/web/portal-plugin/businesscontrolcenter">
+
+	<ice:panelGroup style="vertical-align: top; width:100%">
+
+		<pc:automationTag value="auto-BCC-ResAvailability-RolesOrgTbl"/>
+		<pc:genericDataTable exportExcel="true"
+			title="#{processResourceMgmtBean.messages['rolesTable.title']}"
+			bean="#{processResourceMgmtBean}" id="ctxProcessResourceRoleList"
+			table="#{processResourceMgmtBean.processResourceRoleMgmtTable}"
+			sortSupported="true" />
+		<ice:panelGroup styleClass="clearing" />
+
+		<pc:automationTag value="auto-BCC-ResAvailability-UserTbl"/>
+		<pc:genericDataTable exportExcel="true"
+			title="#{processResourceMgmtBean.messages['accountTable.title']}"
+			bean="#{processResourceMgmtBean}" id="ctxProcessResourceUserList"
+			table="#{processResourceMgmtBean.processResourceUserMgmtTable}"
+			sortSupported="true" />
+	</ice:panelGroup>
+</f:view>

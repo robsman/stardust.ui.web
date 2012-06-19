@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<ivy-module version="2.0"
+   xmlns:m="http://ant.apache.org/ivy/maven"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+
+   <info organisation="com.infinity.bpm" module="ipp-graphics-common"
+      revision="${ipp.version.full}" />
+
+   <configurations>
+      <conf name="ipp-graphics-common-compile" description="Graphics Common - Compile Scope" />
+      <conf name="ipp-graphics-common-runtime" extends="ipp-graphics-common-compile" description="Graphics Common - Runtime Scope" />
+      <conf name="ipp-graphics-common-provided" description="Graphics Common - Provided Scope" />
+      
+      <conf name="ipp-graphics-common-sources" description="Graphics Common - Sources" />
+   
+      <conf name="compile" extends="ipp-graphics-common-compile, ipp-graphics-common-provided" visibility="private" description="Graphics Common" />
+      <conf name="test" visibility="private" description="Test dependencies" />
+      <conf name="pom" description="Graphics Common POMs" />
+   </configurations>
+
+   <publications>
+      <artifact name="ipp-graphics-common" type="jar" conf="ipp-graphics-common-compile, ipp-graphics-common-runtime, ipp-graphics-common-provided" />
+      <artifact name="ipp-graphics-common" type="jar" conf="ipp-graphics-common-sources" m:classifier="sources" />
+      <artifact name="ipp-graphics-common" type="pom" conf="pom" ext="pom" />
+   </publications>
+
+   <dependencies>
+      <!-- ipp-graphics-common-compile -->
+      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-graphics-common-compile->web-client-module-compile" />
+      <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-graphics-common-compile->spring-module-compile" />
+      <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-graphics-common-compile->ipp-views-common-compile" />
+      <dependency org="com.google.code.gson" name="gson" rev="1.6" conf="ipp-graphics-common-compile->default" />
+      <dependency org="javax.ws.rs" name="jsr311-api" rev="1.1" conf="ipp-graphics-common-compile->default" />
+      
+      <!-- ipp-graphics-common-runtime -->
+      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-graphics-common-runtime->web-client-module-runtime" />
+      <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-graphics-common-runtime->ipp-views-common-runtime" />
+      <dependency org="com.sun.jersey" name="jersey-core" rev="1.1.5.1" conf="ipp-graphics-common-runtime->default" />
+      <dependency org="com.sun.jersey" name="jersey-server" rev="1.1.5.1" conf="ipp-graphics-common-runtime->default" />
+      
+      <!-- ipp-graphics-common-provided -->
+      <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="ipp-graphics-common-provided->default" />
+      
+      <!-- test -->
+      <dependency org="junit" name="junit" rev="3.8.1" conf="test->default" />
+      
+      <override org="commons-beanutils" module="commons-beanutils" rev="1.8.0" />
+      <override org="commons-logging" module="commons-logging" rev="1.1.1" />
+      <override org="javax.ws.rs" module="jsr311-api" rev="1.1" />
+   </dependencies>
+   
+</ivy-module>

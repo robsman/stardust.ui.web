@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ippui="http://infinity.com/bpm/portal/common/uiDefinition"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
+
+	<ippui:perspectiveExtension targetPerspective="*" id="ippPortalFrameworkPerspective" messageBundles="portal-common-messages">
+
+		<!--
+		<ippui:toolbarExtension>
+			<ippui:toolbarSection name="configurationPanelToolbar"
+			include="/plugins/common/views/toolbar/configurationPanelToolbar.xhtml"
+         	requiredView="configurationPanel" />
+        </ippui:toolbarExtension>
+        -->
+
+		<ippui:viewsExtension>
+			<ippui:view name="configurationTreeView" include="/plugins/common/views/configurationTree.xhtml"
+				controller="ippPortalConfig" />
+			<ippui:view name="configurationPanel" include="/plugins/common/views/configurationPanel.xhtml" />
+		</ippui:viewsExtension>
+
+	</ippui:perspectiveExtension>
+
+</beans>

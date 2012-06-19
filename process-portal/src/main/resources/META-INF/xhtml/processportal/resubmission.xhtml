@@ -1,0 +1,78 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelPopup modal="true" rendered="#{resubmissionBean.visible}"
+		draggable="true" styleClass="popupDialog" autoCentre="true" positionOnLoadOnly="true" clientOnly="true">
+		<f:facet name="header">
+			<table cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td style="text-align: left">
+						<ice:outputText value="#{processportal_msgPropsBean['popups.resubmission.label']}"
+							styleClass="headerText" />
+					</td>
+					<td>
+						<ice:panelGroup style="text-align: right;">
+							<pc:automationTag value="auto-PP-ReSubDlg-Header"/>
+							<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+								image="/plugins/common/images/dialog-windowbttn-close.png" 
+								action="#{resubmissionBean.closePopup}"
+								styleClass="windowClose" />
+						</ice:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</f:facet>
+		<f:facet name="body">
+			<ice:panelBorder  styleClass="pnlPopUpBrdrDialog" cellpadding="0" cellspacing="0"
+				renderNorth="false" renderSouth="true" renderCenter="true"
+				renderWest="false" renderEast="false">
+
+				<f:facet name="center">
+					<ice:panelGroup>
+						<ice:panelGrid columns="2">
+							<ice:outputLabel value="#{processportal_msgPropsBean['popups.resubmission.resubmissionDate']}"
+								styleClass="label-form" />
+							<ice:selectInputDate value="#{resubmissionBean.resubmissionDate}" id="resubmissionDate"
+								renderAsPopup="true" converter="customDateTimeConverter" partialSubmit="true">
+								<pc:automationTag value="auto-PP-ReSubDlg-ReSubDate" standAlone="false"/>
+							</ice:selectInputDate>	
+							<ice:panelGroup/>
+							<ice:panelGroup styleClass="msgError">
+								<ice:message for="resubmissionDate" />
+							</ice:panelGroup>
+							
+							<ice:panelGroup>
+								<ice:selectBooleanCheckbox value="#{resubmissionBean.addNote}" partialSubmit="true">
+									<pc:automationTag value="auto-PP-ReSubDlg-AddNote" standAlone="false"/>
+								</ice:selectBooleanCheckbox>
+								<ice:outputLabel value="#{processportal_msgPropsBean['popups.resubmission.resubmissionNote']}"
+									styleClass="label-form" />
+							</ice:panelGroup>
+							<ice:inputTextarea value="#{resubmissionBean.note}"
+								disabled="#{!resubmissionBean.addNote}" rows="4" cols="35">
+								<pc:automationTag value="auto-PP-ReSubDlg-Note" standAlone="false"/>	
+							</ice:inputTextarea>	
+						</ice:panelGrid>
+						<ice:panelGroup styleClass="clearing" />
+						<ice:outputText value="#{resubmissionBean.validationMessage}" styleClass="msgError" />
+					</ice:panelGroup>
+				</f:facet>
+
+				<f:facet name="south">
+					<ice:panelGrid columns="2" cellspacing="0" cellpadding="0">
+						<pc:automationTag value="auto-PP-ReSubDlg-BtnsBar" standAlone="false"/>
+						<ice:commandButton value="#{common_msgPropsBean['common.ok']}" 
+							action="#{resubmissionBean.apply}" styleClass="button" />
+						<ice:commandButton value="#{common_msgPropsBean['common.close']}" 
+							action="#{resubmissionBean.closePopup}" styleClass="button" />
+					</ice:panelGrid>
+				</f:facet>
+			</ice:panelBorder>
+		</f:facet>
+	</ice:panelPopup>
+</f:view>

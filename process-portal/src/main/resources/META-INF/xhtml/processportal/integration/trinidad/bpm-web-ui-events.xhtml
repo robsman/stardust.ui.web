@@ -1,0 +1,54 @@
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:tr="http://myfaces.apache.org/trinidad"
+	xmlns:trh="http://myfaces.apache.org/trinidad/html">
+
+	<!-- subform does not generate any HTML, thus keeping the page's markup slim -->
+
+	<tr:subform id="bpmEvents" binding="#{infinityBpmEventsController.ctrlBpmEvents}">
+
+		<tr:subform id="worklistSelectionEvent" binding="#{infinityBpmEventsController.ctrlWorklistSelectionEvent}">
+
+			<tr:subform id="selected" />
+         <tr:subform id="instance_selected" />
+
+		</tr:subform>
+
+		<tr:subform id="processEvent" binding="#{infinityBpmEventsController.ctrlProcessEvent}">
+
+			<tr:subform id="started" />
+			<tr:subform id="completed" />
+
+		</tr:subform>
+
+		<tr:subform id="activityEvent" binding="#{infinityBpmEventsController.ctrlActivityEvent}">
+
+			<tr:subform id="started" />
+			<tr:subform id="activated" />
+			<tr:subform id="suspended" />
+			<tr:subform id="completed" />
+			<tr:subform id="aborted" />
+
+		</tr:subform>
+
+		<tr:subform id="modelEvent" binding="#{infinityBpmEventsController.ctrlModelEvent}">
+
+			<tr:subform id="deployed" />
+			<tr:subform id="updated" />
+			<tr:subform id="new_active_model" />
+			<tr:subform id="removed" />
+
+		</tr:subform>
+
+		<tr:subform id="refreshEvent" binding="#{infinityBpmEventsController.ctrlRefreshEvent}">
+
+			<tr:subform id="full" />
+			<tr:subform id="worklistOutline" />
+			<tr:subform id="workarea" />
+
+		</tr:subform>
+
+	</tr:subform>
+
+</f:view>

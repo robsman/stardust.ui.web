@@ -1,0 +1,33 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon"
+	xmlns:ap="http://www.sungard.de/carnot/web/portal-plugin/adminportal">
+	
+	<ui:composition>
+		<ice:panelPopup modal="true" rendered="#{userProfileBean.visible}"
+			draggable="true" autoCentre="true" positionOnLoadOnly="true"
+			styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-ADM-PartMgmt-UserPopupHeader"/>
+					<ice:outputText value="#{userProfileBean.headerTitle}" styleClass="headerText" />
+					<pc:automationTag value="auto-ADM-UserMgmt-UserPopup-CloseLink" standAlone="false"/>
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png" 
+						action="#{userProfileBean.closePopup}"
+						immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+			<f:facet name="body">
+				<ice:panelGroup>
+					<ui:include src="/plugins/views-common/user/userProfile.xhtml" />
+				</ice:panelGroup>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

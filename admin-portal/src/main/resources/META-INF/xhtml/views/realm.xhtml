@@ -1,0 +1,88 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:composition>
+	
+		<ice:panelPopup modal="true" rendered="#{realmMgmtBean.visible}"
+			draggable="true" autoCentre="true" positionOnLoadOnly="true"
+			styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText value="#{realmMgmtBean.modifyRealm ? realmMgmtBean.messages['modifyRealm.title']  : realmMgmtBean.messages['createRealm.title']}"
+						styleClass="headerText" />
+					<pc:automationTag value="auto-ADM-RealmMgmt-RealmPopup-ClsPopup" standAlone="false"/>
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png" 
+						action="#{realmMgmtBean.closePopup}"
+						immediate="true"
+						styleClass="windowClose"/>
+				</ice:panelGroup>
+			</f:facet>
+		
+			<f:facet name="body">
+				<ice:panelBorder  styleClass="pnlPopUpBrdrDialog" cellpadding="0" cellspacing="0"
+					renderNorth="false" renderEast="false" renderSouth="true"  renderWest="false" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>
+							<ice:panelGroup styleClass="msgError">
+								<ice:message for="applyRealm"/>
+							</ice:panelGroup>
+							<ice:panelGrid columns="2" headerClass="heading">
+								<ice:column>
+									<ice:outputLabel value="* #{realmMgmtBean.messages['userRealmsTable.column.id']}#{messages_admin['common.colon']}" 
+										styleClass="label-form" />
+								</ice:column>
+								<ice:column>
+									<ice:inputText id="id" value="#{realmMgmtBean.id}" required="true" disabled="#{realmMgmtBean.modifyRealm}"
+										validator="#{fieldsValidator.validateId}">
+										<pc:automationTag value="auto-ADM-RealmMgmt-RealmPopup-ID" standAlone="false" />
+									</ice:inputText>
+									<ice:panelGroup styleClass="msgError">
+										<ice:message for="id" />
+									</ice:panelGroup>
+								</ice:column>
+								
+								<ice:column>
+									<ice:outputLabel value="* #{realmMgmtBean.messages['userRealmsTable.column.name']}#{messages_admin['common.colon']}"
+										styleClass="label-form" />
+								</ice:column>
+								<ice:column>
+									<ice:inputText id="name" value="#{realmMgmtBean.name}" required="true" disabled="#{realmMgmtBean.modifyRealm}"
+										validator="#{fieldsValidator.validateName}">
+										<pc:automationTag value="auto-ADM-RealmMgmt-ReamlPopup-Name" standAlone="false" />
+									</ice:inputText>
+									<ice:panelGroup styleClass="msgError">
+										<ice:message for="name" />
+									</ice:panelGroup>
+								</ice:column>
+								
+								<ice:column>
+									<ice:outputLabel value="#{realmMgmtBean.messages['userRealmsTable.column.descr']}#{messages_admin['common.colon']}"
+										styleClass="label-form" />
+								</ice:column>
+								<ice:column>
+									<ice:inputTextarea value="#{realmMgmtBean.description}" rows="5" disabled="#{realmMgmtBean.modifyRealm}">
+										<pc:automationTag value="auto-ADM-RealmMgmt-RealmPopup-Desc" standAlone="false" />
+									</ice:inputTextarea>
+								</ice:column>
+							</ice:panelGrid>
+						</ice:panelGroup>
+					</f:facet>
+		
+					<f:facet name="south">
+						<ice:panelGroup>
+							<pc:automationTag value="auto-ADM-RealmMgmt-RealmPopup-BtnsBar" standAlone="false"/>
+							<ice:commandButton value="#{messages_admin['common.apply']}" action="#{realmMgmtBean.onApply}"
+								id="applyRealm" styleClass="button" title="#{messages_admin['common.apply']}"/>
+							<ice:commandButton value="#{messages_admin['common.cancel']}" action="#{realmMgmtBean.closePopup}"
+								immediate="true" id="cancel" styleClass="button" title="#{messages_admin['common.cancel']}"/>
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

@@ -1,0 +1,18 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid style="text-align: left;margin-right:-3px;">
+		<ice:commandButton disabled="#{processportal_NotesBean.editMode}"
+			action="#{processportal_NotesBean.addNote}"
+			image="/plugins/processportal/images/icons/note-add.png"
+			title="#{processportal_NotesBean.messages['button.addNote']}"
+			style="vertical-align:middle;padding:0px;" >
+			<pc:automationTag value="auto-PP-NotesView-AddNote" standAlone="false"/>
+		</ice:commandButton>
+	</ice:panelGrid>
+</f:view>

@@ -1,0 +1,25 @@
+/* Additional stylesheet that alters the default styles to accommodate differences in CSS rendering in various user-agents/browsers. */
+
+/* Here max width is required otherwise in IE7 if Menu Popup contains sub menu then it takes whole page width */
+/* This will be a limitation for IE7 that menu popup will always take max-width */
+.iceMnuPopVrtTopSubMenu {
+	max-width: 350px;
+}
+
+/* Here max width is required otherwise in IE7 if Menu Popup contains sub menu then it takes whole page width */
+/* This will be a limitation for IE7 that menu popup will always take max-width */
+.iceMnuPopVrtItem {
+	max-width: 350px;
+}
+
+/* Here max width is required otherwise in IE7 if Menu Popup contains sub menu then it takes whole page width */
+/* This will be a limitation for IE7 that menu popup will always take max-width */
+.iceMnuPopVrtSubMenu .iceMnuItm a {
+    max-width: 350px;
+}
+
+/* This class is required for sub menu item text/background, etc to span properly as per sub menu width */
+.iceMnuPopVrtSubMenu .iceMnuItm a {
+    width: auto;
+    min-width: 160px;
+}

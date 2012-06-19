@@ -1,0 +1,69 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		row*= Instance of Row Class
+		col*= Instance of ColumnPreference 
+	 -->
+
+	<ice:panelGroup style="margin: 0px; padding: 0px; overflow: hidden;">
+
+		<ice:panelGroup rendered="#{col.columnName == 'Info'}">
+			<ice:graphicImage value="/plugins/common/images/icons/process-history/active/descriptor.png"
+				title="#{row.progressStatus.descriptorText}" longdesc="#{row.progressStatus.descriptorText}" />
+			<ice:graphicImage value="/plugins/common/images/icons/process-history/active/notes-filled.png"
+				title="#{row.progressStatus.noteText}" styleClass="#{row.progressStatus.noteIconStatus ? '' : 'iceCmdBtn-dis'}"/>
+			<ice:graphicImage value="/plugins/business-control-center/images/icons/active/complete.gif"
+				title="#{row.progressStatus.completeText}" rendered="#{row.progressStatus.completeIconStatus}"/>
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'ProgressBar'}"
+			styleClass="diagram" style="width: 100%; overflow: hidden; #{row.progressStatus.completed};">
+			<ice:panelGroup styleClass="barframe">
+
+				<ice:panelGroup rendered="#{ganttChartSelectionBean.ganttChart.showStatusBar}">
+					<ice:panelGroup styleClass="bar #{row.progressStatus.color}"
+						style="left: #{row.progressStatus.barLeft}px; height: 18px; width: #{row.progressStatus.barWidth}px;"></ice:panelGroup>
+				</ice:panelGroup>
+
+				<ice:panelGroup
+					styleClass="progressbar #{row.progressStatus.progressColor}"
+					style="left: #{row.progressStatus.progressLeft}px; height: 10px; width: #{row.progressStatus.progressWidth}px;">
+				</ice:panelGroup>
+				<ice:panelGroup styleClass="durationbar greyColor"
+					style="left: #{row.progressStatus.progressLeft}px; height: 10px; width: #{row.progressStatus.durationWidth}px;"></ice:panelGroup>
+
+				<ice:panelGroup style="left: #{row.progressStatus.progressLeft}px;">
+					<ice:outputText value="#{row.progressStatus.progress}"
+						styleClass="bartext"
+						rendered="#{(ganttChartSelectionBean.ganttChart.showPercentageValue) and row.progressStatus.progressCalculated}">
+						<f:convertNumber type="number" pattern="0.00%" locale="en-US"/>
+					</ice:outputText>
+				</ice:panelGroup>
+				<ice:panelGroup
+					rendered="#{(ganttChartSelectionBean.ganttChart.showDependencyBar) and (row.progressStatus.dependencyWidth == 1)}">
+					<div
+						style="z-index: 6; top: 8px; #top: 6px; left: #{row.progressStatus.barLeft + row.progressStatus.barWidth - 5}px;">
+						<ice:graphicImage value="/plugins/business-control-center/images/kreis_trans.gif"
+							width="#{row.progressStatus.dependencyWidth * 10}px"
+							height="10px" />
+					</div>
+					<div class="dependencyBar blackColor"
+						style="top: -#{row.progressStatus.dependencyHeight - 8}px; left: #{row.progressStatus.barLeft + row.progressStatus.barWidth}px; width: #{row.progressStatus.dependencyWidth}px; height: #{row.progressStatus.dependencyHeight}px;"></div>
+					<div
+						style="z-index: 6; top: -#{row.progressStatus.dependencyHeight - 8}px; #top: -#{row.progressStatus.dependencyHeight - 6}px; left: #{row.progressStatus.barLeft + row.progressStatus.barWidth - 5}px;">
+						<ice:graphicImage value="/plugins/business-control-center/images/kreis_trans.gif"
+							width="#{row.progressStatus.dependencyWidth * 10}px"
+							height="10px" />
+					</div>
+				</ice:panelGroup>
+			</ice:panelGroup>
+		</ice:panelGroup>
+	</ice:panelGroup>
+</f:view>

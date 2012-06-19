@@ -1,0 +1,56 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+		<ice:panelGroup rendered="#{col.columnName == 'VersionNo'}">
+			<ice:commandLink value="#{row.versionNo}"
+				actionListener="#{documentVersionDialog.openSelectedVersion}">
+				<pc:automationTag value="auto-COM-DocVersionDlg-DocVersionTbl-VersionNo" standAlone="false"/>
+				<f:attribute name="documentVersion" value="#{row}" />
+			</ice:commandLink>
+		</ice:panelGroup>
+
+
+		<ice:panelGroup rendered="#{col.columnName == 'DocumentName'}">
+			<ice:outputText value="#{row.documentName}" />
+		</ice:panelGroup>
+
+
+		<ice:panelGroup rendered="#{col.columnName == 'Author'}">
+		<ice:commandLink actionListener="#{userDetailsBean.openUserDetailsDialog}"
+				rendered="#{row.user != null}">
+				<pc:automationTag
+					value="auto-COM-DocVersionDlg-DocVersionTbl-Author"
+					standAlone="false" />
+				<ice:outputText value="#{row.author}" />
+				<f:param name="userOid" value="#{row.user.OID}" />
+				<f:param name="hideDetailTable" value="#{true}" />
+				<f:param name="isModel" value="#{false}" />
+			</ice:commandLink>
+			<ice:outputText value="#{row.author}" rendered="#{row.user == null}"/>
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'ModifiedDate'}">
+			<ice:outputText value="#{row.modifiedDate}">
+				<pc:automationTag
+					value="auto-COM-DocVersionDlg-DocVersionTbl-ModDate"
+					standAlone="false" />
+			</ice:outputText>
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'Comments'}">
+			<ice:outputText value="#{row.comments}" escape="false">
+				<pc:automationTag
+					value="auto-COM-DocVersionDlg-DocVersionTbl-Comments"
+					standAlone="false" />
+			</ice:outputText>
+		</ice:panelGroup>
+
+	</ice:panelGroup>
+
+</f:view>

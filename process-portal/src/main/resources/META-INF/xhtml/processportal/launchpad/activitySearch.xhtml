@@ -1,0 +1,125 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
+			<ui:param name="bean" value="#{activitySearchPanel}" />
+			<ui:param name="title" value="#{activitySearchPanel.messages['title']}" />
+			<ui:param name="collapsible" value="true" />
+			<ui:param name="showRefreshLink" value="false" />
+			<ui:param name="automationTag" value="auto-PP-LP-ActSrchPnl" />
+		</ui:include> 
+	</ice:panelGroup>
+	<ice:panelGroup rendered="#{activitySearchPanel.expanded}">
+		<ice:panelGrid columns="2">
+			<ice:outputText
+				value="#{activitySearchPanel.messages['description']}" />
+		</ice:panelGrid>
+		<ice:panelGrid columns="1">
+
+			<ice:commandLink styleClass="action-link"
+				action="#{activitySearchPanel.searchAllResubmissionActivityInstancesAction}"
+				value="#{activitySearchPanel.messages['resubmission']}">
+				<pc:automationTag value="auto-PP-LP-ActReSubmission"/>
+			</ice:commandLink>	
+
+			<ice:commandLink styleClass="action-link"
+				action="#{activitySearchPanel.searchAllActivityInstancesAction}"
+				value="#{activitySearchPanel.messages['allActivities']}">
+				<pc:automationTag value="auto-PP-LP-AllAvailActivity"/>
+			</ice:commandLink>	
+			<ice:commandLink styleClass="action-link"
+				action="#{activitySearchPanel.searchUserWorklistAction}"
+				value="#{activitySearchPanel.messages['userWorklist']}">
+				<pc:automationTag value="auto-PP-LP-UserWorklist"/>
+			</ice:commandLink>	
+		</ice:panelGrid>
+
+		<ice:panelGroup
+			style="margin-left: 10px;border-left: 1px solid #DDD;border-top: 1px solid #DDD;"
+			rendered="#{activitySearchPanel.userWorklistSearchPanelVisible}">
+			<ice:panelGrid columns="2">
+				<ice:outputLabel styleClass="label-form"
+					value="#{activitySearchPanel.messages['firstName']}:" />
+				<ice:outputLabel styleClass="label-form"
+					value="#{activitySearchPanel.messages['lastName']}:" />
+				<ice:inputText value="#{activitySearchPanel.firstNameFilter}"
+					partialSubmit="true">
+					<pc:automationTag value="auto-PP-LP-UserWorklist-FName"
+						standAlone="false" />
+				</ice:inputText>	
+				<ice:inputText value="#{activitySearchPanel.lastNameFilter}"
+					partialSubmit="true">
+					<pc:automationTag value="auto-PP-LP-UserWorklist-LName"
+						standAlone="false" />
+				</ice:inputText>	
+				<ice:outputText />
+				<ice:panelGrid columns="2">
+					<ice:commandLink styleClass="action-link" style="float:right;"
+						action="#{activitySearchPanel.queryForUsersAction}">
+						<pc:automationTag value="auto-PP-LP-UserWorklist-SrchBtn"/>
+						<ice:panelGrid columns="2">
+							<ice:graphicImage style="margin-left:4px;"
+								value="/plugins/processportal/images/icons/search.png" />
+							<ice:outputText styleClass="action-link" style="margin-left:4px;"
+								value="#{activitySearchPanel.messages['search']}" />
+						</ice:panelGrid>
+					</ice:commandLink>
+					<ice:commandLink styleClass="action-link" style="float:right;"
+						action="#{activitySearchPanel.clearUsersAction}">
+						<pc:automationTag value="auto-PP-LP-UserWorklist-ClearBtn"/>
+						<ice:panelGrid columns="2">
+							<ice:graphicImage style="margin-left:4px;margin-top:2px;"
+								value="/plugins/common/images/icons/close-panel.gif" />
+							<ice:outputText styleClass="action-link" style="margin-left:4px;"
+								value="#{activitySearchPanel.messages['clear']}" />
+						</ice:panelGrid>
+					</ice:commandLink>
+				</ice:panelGrid>
+			</ice:panelGrid>
+			<ice:panelGroup rendered="#{not empty activitySearchPanel.users}"
+				scrollHeight="100px">
+				<ice:panelSeries var="item" value="#{activitySearchPanel.users}">
+					<ice:panelGrid columns="2">
+						<ice:outputText value="#{activitySearchPanel.messages['user']}: " />
+						<ice:commandLink styleClass="action-link"
+							value="#{item.userDisplayLabel}"
+							action="#{item.selectAction}">
+							<pc:automationTag value="auto-PP-LP-UserWorklist-UserLink"/>
+							<!--<ice:outputText value="#{item.firstName} #{item.lastName}" />
+						-->
+						</ice:commandLink>
+					</ice:panelGrid>
+				</ice:panelSeries>
+			</ice:panelGroup>
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{not empty activitySearchPanel.items}">
+			<ice:panelGrid columns="2">
+				<ice:outputText
+					value="#{activitySearchPanel.messages['recentSearchResults']}" />
+				<ice:commandLink styleClass="action-link"
+					action="#{activitySearchPanel.clearAction}"
+					value="(#{activitySearchPanel.messages['clear']})">
+					<pc:automationTag value="auto-PP-LP-ClearLink"/>	
+				</ice:commandLink>	
+			</ice:panelGrid>
+			<ice:panelSeries var="item" value="#{activitySearchPanel.items}">
+				<ice:panelGrid columns="2">
+					<ice:outputText value="#{item.name}:" styleClass="label-form" />
+					<ice:commandLink styleClass="action-link" action="#{item.select}">
+						<pc:automationTag value="auto-PP-LP-ActForResubCountLink"/>
+						<ice:outputFormat value="#{worklistsBean.messages['items']}">
+							<f:param value="#{item.totalCount}" />
+						</ice:outputFormat>
+					</ice:commandLink>
+				</ice:panelGrid>
+			</ice:panelSeries>
+		</ice:panelGroup>
+	</ice:panelGroup>
+</f:view>

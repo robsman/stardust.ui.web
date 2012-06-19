@@ -1,0 +1,65 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:composition>
+		<ice:panelPopup modal="true" rendered="#{abortProcessBean.visible}"
+			draggable="true" autoCentre="true" positionOnLoadOnly="true"
+			styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup style="width: auto">
+					<ice:outputText
+						value="#{views_common_msgPropsBean['views.common.process.abortProcess.label']}"
+						styleClass="headerText" />
+					<ice:commandButton
+						title="#{views_common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png"
+						action="#{abortProcessBean.closePopup}" immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+
+			<f:facet name="body">
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+					cellspacing="0" renderNorth="false" renderEast="false"
+					renderSouth="true" renderWest="false" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup style="width: auto">
+							<ice:panelGroup
+								rendered="#{not empty abortProcessBean.headerMsgLines}">
+								<c:forEach items="#{abortProcessBean.headerMsgLines}"
+									var="messageLine">
+									<ice:outputText value="#{messageLine}">
+									</ice:outputText>
+									<ice:panelGroup style="	clear: both; height: 3px;" />
+								</c:forEach>
+							</ice:panelGroup>
+
+							<ice:panelGroup styleClass="clearing" />
+							<ice:panelGroup
+								rendered="#{!abortProcessBean.confirmationDialog}">
+								<ice:selectOneRadio layout="pageDirection"
+									value="#{abortProcessBean.selectedAbortScope}">
+									<f:selectItems value="#{abortProcessBean.abortScopes}" />
+								</ice:selectOneRadio>
+							</ice:panelGroup>
+						</ice:panelGroup>
+					</f:facet>
+
+					<f:facet name="south">
+						<ice:panelGroup style="width: auto">
+							<ice:commandButton value="#{abortProcessBean.acceptLabel}"
+								action="#{abortProcessBean.abortProcessAction}"
+								styleClass="button" />
+							<ice:commandButton value="#{abortProcessBean.cancelLabel}"
+								action="#{abortProcessBean.closePopup}" immediate="true"
+								styleClass="button" />
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

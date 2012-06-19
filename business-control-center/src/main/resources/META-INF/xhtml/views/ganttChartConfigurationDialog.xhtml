@@ -1,0 +1,237 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+
+	<ice:panelGroup style="width:100%;" rendered="#{ippPortalApp.loggedInUser.administrator}">
+		<ui:include
+			src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+			<ui:param name="dialogBean"
+				value="#{ganttChartconfigurationBean.ganttChartConfirmationDialog}" />
+		</ui:include>
+		<ice:panelGroup>
+			<ice:panelGroup styleClass="heading">
+				<ice:outputText
+					value="#{views_common_msgPropsBean['views.ganttChartView.configure.selectProcessesCaptionText.label']}" />
+			</ice:panelGroup>
+			<ice:panelGroup
+				style="max-height: 7em; height: auto !important; height: 7em; overflow-y: auto; overflow-x: visible; border: 1px solid #D3D3D3">
+				<ice:selectManyCheckbox
+					value="#{ganttChartconfigurationBean.selectedProcesses}"
+					valueChangeListener="#{ganttChartconfigurationBean.selectedAllProcessList}"
+					partialSubmit="true" layout="pageDirection"
+					style="padding-left:3px; padding-right:3px; white-space:nowrap">
+					<pc:automationTag value="auto-BCC-GanttChartConf-ProcSel"
+						standAlone="false" />
+					<f:selectItems
+						value="#{ganttChartconfigurationBean.allProcessDefinitions}" />
+				</ice:selectManyCheckbox>
+			</ice:panelGroup>
+		</ice:panelGroup>
+		<ice:panelGroup styleClass="clearing" />
+
+		<ice:panelGrid columns="2">
+			<ice:panelGroup>
+				<ice:outputLabel for="txtselectProcess"
+					value="#{views_common_msgPropsBean['views.ganttChartView.configure.chooseProcess.label']}:"
+					styleClass="label-form" style="text-align: right;" />
+			</ice:panelGroup>
+			<ice:panelGroup>
+				<ice:panelGroup>
+					<ice:selectOneMenu id="selectProcessDefinition"
+						partialSubmit="true"
+						value="#{ganttChartconfigurationBean.selectedProcessQId}"
+						valueChangeListener="#{ganttChartconfigurationBean.processChangeListener}">
+						<pc:automationTag value="auto-BCC-GanttChartConf-Process"
+							standAlone="false" />
+						<f:selectItems
+							value="#{ganttChartconfigurationBean.selectedConfigProcesses}" />
+					</ice:selectOneMenu>
+				</ice:panelGroup>
+			</ice:panelGroup>
+
+			<ice:panelGroup>
+				<ice:outputLabel for="txtDescr"
+					value="#{views_common_msgPropsBean['views.ganttChartView.configure.chooseDescriptorValue.label']}:"
+					styleClass="label-form" style="text-align: right;" />
+			</ice:panelGroup>
+			<ice:panelGroup>
+				<ice:panelGroup>
+					<ice:selectOneMenu id="selectProcessDescriptorValues"
+						partialSubmit="true"
+						value="#{ganttChartconfigurationBean.selectedDescriptorValue}"
+						valueChangeListener="#{ganttChartconfigurationBean.descriptorChangeListener}">
+						<pc:automationTag value="auto-BCC-GanttChartConf-SelDescVal"
+							standAlone="false" />
+						<f:selectItems
+							value="#{ganttChartconfigurationBean.descriptorValueList}" />
+					</ice:selectOneMenu>
+				</ice:panelGroup>
+			</ice:panelGroup>
+
+			<ice:panelGroup>
+				<ice:outputLabel for="txtstart"
+					value="#{views_common_msgPropsBean['views.ganttChartView.configure.plannedStartTime.label']}:"
+					styleClass="label-form" style="text-align: right;" />
+			</ice:panelGroup>
+			<ice:panelGroup>
+				<ice:inputText id="plannedTimeId" partialSubmit="true"
+					value="#{ganttChartconfigurationBean.plannedStartTime}"
+					validator="#{ganttChartconfigurationBean.validatePlannedStartTime}" immediate="true">
+					<pc:automationTag value="auto-BCC-GanttChartConf-PlanStrtDate"
+							standAlone="false" />
+				</ice:inputText>	
+				<ice:panelGroup styleClass="msgError">
+					<ice:message for="plannedTimeId" />
+				</ice:panelGroup>
+			</ice:panelGroup>
+
+			<ice:panelGroup>
+				<ice:outputLabel for="txtTerminate"
+					value="#{views_common_msgPropsBean['views.ganttChartView.configure.plannedTerminationTime.label']}:"
+					styleClass="label-form" style="text-align: right;" />
+			</ice:panelGroup>
+			<ice:panelGroup>
+				<ice:inputText id="terminateId" partialSubmit="true"
+					value="#{ganttChartconfigurationBean.plannedTerminationTime}"
+					validator="#{ganttChartconfigurationBean.validatePlannedTerminationTime}" immediate="true">
+					<pc:automationTag value="auto-BCC-GanttChartConf-PlanTermDate"
+							standAlone="false" />
+				</ice:inputText>	
+				<ice:panelGroup styleClass="msgError">
+					<ice:message for="terminateId" />
+				</ice:panelGroup>
+			</ice:panelGroup>
+
+			<ice:panelGroup>
+				<ice:outputLabel for="txtEstimate"
+					value="#{views_common_msgPropsBean['views.ganttChartView.configure.estimatedDurationSeconds.label']}:"
+					styleClass="label-form" style="text-align: right;" />
+			</ice:panelGroup>
+			<ice:panelGroup>
+				<ice:inputText id="estimate" partialSubmit="true"
+					value="#{ganttChartconfigurationBean.estimatedDurationSeconds}"
+					validator="#{ganttChartconfigurationBean.validateDurationSeconds}" immediate="true">
+					<pc:automationTag value="auto-BCC-GanttChartConf-EstDurSec"
+							standAlone="false" />
+				</ice:inputText>	
+				<ice:panelGroup styleClass="msgError">
+					<ice:message for="estimate" />
+				</ice:panelGroup>
+			</ice:panelGroup>
+
+			<ice:panelGroup>
+				<ice:outputLabel for="txtthreshold"
+					value="#{views_common_msgPropsBean['views.ganttChartView.configure.thresholdPercentage.label']}:"
+					styleClass="label-form" style="text-align: right;" />
+			</ice:panelGroup>
+			<ice:panelGroup>
+				<ice:inputText id="thresholdId" partialSubmit="true"
+					value="#{ganttChartconfigurationBean.thresholdPercentage}"
+					validator="#{ganttChartconfigurationBean.validateThresholdPercentage}" immediate="true">
+					<pc:automationTag value="auto-BCC-GanttChartConf-ThresPerc"
+							standAlone="false" />
+				</ice:inputText>	
+				<ice:panelGroup styleClass="msgError">
+					<ice:message for="thresholdId" />
+				</ice:panelGroup>
+			</ice:panelGroup>
+
+			<ice:panelGroup>
+				<ice:outputLabel for="txtsuccessor"
+					value="#{views_common_msgPropsBean['views.ganttChartView.configure.successor.label']}:"
+					styleClass="label-form" style="text-align: right;" />
+			</ice:panelGroup>
+			<ice:panelGroup>
+				<ice:panelGroup>
+					<ice:selectOneMenu partialSubmit="true"
+						value="#{ganttChartconfigurationBean.successor}">
+						<pc:automationTag value="auto-BCC-GanttChartConf-Successor"
+							standAlone="false" />	
+						<f:selectItems
+							value="#{ganttChartconfigurationBean.successorProcessDefinitionIds}" />
+					</ice:selectOneMenu>
+				</ice:panelGroup>
+			</ice:panelGroup>
+
+			<ice:panelGroup>
+				<ice:outputLabel for="txtPrede"
+					value="#{views_common_msgPropsBean['views.ganttChartView.configure.predecessor.label']}:"
+					styleClass="label-form" style="text-align: right;" />
+			</ice:panelGroup>
+			<ice:panelGroup>
+				<ice:panelGroup>
+					<ice:selectOneMenu id="selectPredeValues" partialSubmit="true"
+						value="#{ganttChartconfigurationBean.predecessor}">
+						<pc:automationTag value="auto-BCC-GanttChartConf-PreDecessor"
+							standAlone="false" />
+						<f:selectItems
+							value="#{ganttChartconfigurationBean.predecessorProcessDefinitionIds}" />
+					</ice:selectOneMenu>
+				</ice:panelGroup>
+			</ice:panelGroup>
+
+			<ice:panelGroup>
+				<ice:outputLabel for="txtDescrId"
+					value="#{views_common_msgPropsBean['views.ganttChartView.configure.descriptorId.label']}:"
+					styleClass="label-form" style="text-align: right;" />
+			</ice:panelGroup>
+			<ice:panelGroup>
+				<ice:panelGroup>
+					<ice:selectOneMenu id="selectDescriptorIdValues"
+						partialSubmit="true"
+						value="#{ganttChartconfigurationBean.descriptorKey}">
+						<pc:automationTag value="auto-BCC-GanttChartConf-SelDescIdVal"
+							standAlone="false" />
+						<f:selectItems value="#{ganttChartconfigurationBean.descriptors}" />
+					</ice:selectOneMenu>
+				</ice:panelGroup>
+			</ice:panelGroup>
+
+			<ice:panelGroup>
+				<ice:outputLabel for="txtDescrValues"
+					value="#{views_common_msgPropsBean['views.ganttChartView.configure.descriptorValues.label']}:"
+					styleClass="label-form" style="text-align: right;" />
+			</ice:panelGroup>
+			<ice:panelGroup>
+				<ice:inputText
+					value="#{ganttChartconfigurationBean.descriptorValues}"
+					partialSubmit="true">
+					<pc:automationTag value="auto-BCC-GanttChartConf-DescVal"
+							standAlone="false" />
+				</ice:inputText>	
+			</ice:panelGroup>
+		</ice:panelGrid>
+		<ice:panelGroup styleClass="clearing" />
+
+		<ice:panelGrid columns="3" style="text-align: left">
+			<pc:automationTag value="auto-BCC-GanttChartConf-BtnsBar"
+				standAlone="false" />
+			<ice:commandButton
+				value="#{views_common_msgPropsBean['views.ganttChartView.configure.button.save']}"
+				action="#{ganttChartconfigurationBean.applyConfiguration}"
+				partialSubmit="true" id="applyConfiguration" styleClass="button"
+				title="#{views_common_msgPropsBean['views.ganttChartView.configure.button.save']}" />
+			<ice:commandButton
+				value="#{views_common_msgPropsBean['views.ganttChartView.configure.button.reset']}"
+				action="#{ganttChartconfigurationBean.openConfirmationDialog}"
+				immediate="true" id="cancelProp" styleClass="button"
+				title="#{views_common_msgPropsBean['views.ganttChartView.configure.button.reset']}" />
+			<ice:panelGroup styleClass="msgError" style="display: inline;">
+				<ice:outputText
+					value="#{ganttChartconfigurationBean.warningMessage}"
+					styleClass="msgError" />
+			</ice:panelGroup>
+		</ice:panelGrid>
+
+	</ice:panelGroup>
+	<ice:panelGroup style="width:100%;"	rendered="#{not ippPortalApp.loggedInUser.administrator}">
+		<ice:outputText
+			value="#{views_common_msgPropsBean['views.ganttChartView.configure.authorize.label']}" />
+	</ice:panelGroup>
+
+</f:view>

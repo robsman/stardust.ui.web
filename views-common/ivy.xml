@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<ivy-module version="2.0"
+   xmlns:m="http://ant.apache.org/ivy/maven"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+
+   <info organisation="com.infinity.bpm" module="ipp-views-common"
+      revision="${ipp.version.full}" />
+
+   <configurations>
+      <conf name="ipp-views-common-compile" description="Views Common - Compile Scope" />
+      <conf name="ipp-views-common-runtime" extends="ipp-views-common-compile" description="Views Common - Runtime Scope" />
+      <conf name="ipp-views-common-provided" description="Views Common - Provided Scope" />
+      
+      <conf name="ipp-views-common-sources" description="Views Common - Sources" />
+   
+      <conf name="compile" extends="ipp-views-common-compile" visibility="private" description="Views Common" />
+      
+      <conf name="test" visibility="private" description="Test dependencies" />
+      
+      <conf name="pom" description="Views Common POMs" />
+   </configurations>
+
+   <publications>
+      <artifact name="ipp-views-common" type="jar" conf="ipp-views-common-compile, ipp-views-common-runtime, ipp-views-common-provided" />
+      <artifact name="ipp-views-common" type="jar" conf="ipp-views-common-sources" m:classifier="sources" />
+      
+      <artifact name="ipp-views-common" type="pom" conf="pom" ext="pom" />
+   </publications>
+
+   <dependencies>
+      <!-- ipp-views-common-compile -->
+      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-views-common-compile->engine-module-compile" />
+      <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-views-common-compile->spring-module-compile" />
+      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-views-common-compile->ipp-portal-common-compile" />      
+      <dependency org="com.infinity.bpm" name="ipp-portal-api" rev="${ipp.version.full}" conf="ipp-views-common-compile->ipp-portal-api-compile" />
+
+      <dependency org="com.infinity.bpm" name="stardust-common-introspection" rev="${ipp.version.full}" conf="ipp-views-common-compile->stardust-common-introspection-compile" />
+      <dependency org="com.infinity.bpm" name="stardust-common-introspection-xsd" rev="${ipp.version.full}" conf="ipp-views-common-compile->stardust-common-introspection-xsd-compile" />
+      <dependency org="com.infinity.bpm" name="stardust-ui-form" rev="${ipp.version.full}" conf="ipp-views-common-compile->stardust-ui-form-compile" />
+      <dependency org="com.infinity.bpm" name="stardust-ui-form-jsf" rev="${ipp.version.full}" conf="ipp-views-common-compile->stardust-ui-form-jsf-compile" />
+
+      <dependency org="javax.mail" name="mail" rev="1.4" conf="ipp-views-common-compile->default" />
+      <dependency org="commons-lang" name="commons-lang" rev="2.4" conf="ipp-views-common-compile->default" />
+      <dependency org="org.icefaces" name="icefaces-ee-infinity04" rev="EE-1.8.2.GA_P03" conf="ipp-views-common-compile->default">
+         <exclude org="javax.faces" module="jsf-api" />
+         <exclude org="javax.faces" module="jsf-impl" />
+         <exclude org="commons-logging" module="commons-logging-api"/>
+         <exclude org="commons-beanutils" module="commons-beanutils"/>
+         <exclude org="backport-util-concurrent" module="backport-util-concurrent"/>
+      </dependency>
+      <dependency org="org.icefaces" name="icefaces-comps-ee-infinity04" rev="EE-1.8.2.GA_P03" conf="ipp-views-common-compile->default">
+         <exclude org="org.icefaces" module="icefaces-ee" />
+      </dependency>
+      <dependency org="org.icefaces" name="icefaces-facelets-ee-infinity04" rev="EE-1.8.2.GA_P03" conf="ipp-views-common-compile->default">
+         <exclude org="org.icefaces" module="icefaces-ee" />
+      </dependency>
+      <dependency org="org.icepdf" name="icepdf-core" rev="4.0.1" conf="ipp-views-common-compile->default" />
+      <dependency org="net.sourceforge.htmlcleaner" name="htmlcleaner" rev="2.1" conf="ipp-views-common-compile->default" />
+      <dependency org="javax.ws.rs" name="jsr311-api" rev="1.1" conf="ipp-views-common-compile->default" />
+      <dependency org="javax.media" name="jai_imageio-infinity01" rev="1.1" conf="ipp-views-common-compile->default" />
+
+      <!-- ipp-views-common-runtime -->
+      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-views-common-runtime->engine-module-runtime" />
+      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-views-common-runtime->ipp-portal-common-runtime" />
+      <dependency org="com.infinity.bpm" name="ipp-portal-api" rev="${ipp.version.full}" conf="ipp-views-common-runtime->ipp-portal-api-runtime" />
+      <dependency org="com.sun.jersey" name="jersey-core" rev="1.1.5.1" conf="ipp-views-common-runtime->default" />
+      <dependency org="com.sun.jersey" name="jersey-server" rev="1.1.5.1" conf="ipp-views-common-runtime->default" />
+      <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-views-common-runtime->spring-module-runtime" />
+
+      <!-- ipp-views-common-provided -->
+      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-views-common-provided->jsf-api-module-compile" />
+      <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="ipp-views-common-provided, compile->default" />
+      <dependency org="javax.el" name="el-api" rev="1.0" conf="ipp-views-common-provided, compile->default" />
+     <dependency org="javax.servlet" name="jsp-api" rev="2.0" conf="ipp-views-common-provided, compile->default" />
+
+      <!-- compile -->
+      <dependency org="javax.faces" name="jsf-api" rev="1.1_02" conf="compile->default" />
+
+      <!-- test -->
+      <dependency org="junit" name="junit" rev="3.8.1" conf="test->default" />
+      
+      <override org="commons-beanutils" module="commons-beanutils" rev="1.8.0" />
+      <override org="commons-digester" module="commons-digester" rev="1.8" />
+      <override org="commons-logging" module="commons-logging" rev="1.1.1" />
+      <override org="javax.ws.rs" module="jsr311-api" rev="1.1" />
+   </dependencies>
+</ivy-module>

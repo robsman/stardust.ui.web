@@ -1,0 +1,305 @@
+<html>
+<head>
+  <title>Pharmacy Canvas</title> 
+  <LINK REL=StyleSheet HREF="../../../graphics-common/css/thirdparty/humanity/jquery-ui.css" TYPE="text/css">
+  <LINK REL=StyleSheet HREF="../../../graphics-common/css/jquery-ui-custom_nirvana.css" TYPE="text/css">
+  <script type="text/javascript" src="../../../common/InfinityBPMI18N.js"></script>
+  <script type="text/javascript" src="../../../graphics-common/js/thirdparty/json2.js"></script>
+  <script type="text/javascript" src="../../../graphics-common/js/thirdparty/raphael.js"></script>
+  <script type="text/javascript" src="../../../graphics-common/js/thirdparty/raphael.zoom.js"></script>
+  <script type="text/javascript" src="../../../graphics-common/js/raphael.invert.js"></script>
+  <script type="text/javascript" src="../../../graphics-common/js/raphael.desaturate.js"></script>
+  <script type="text/javascript" src="../../../graphics-common/js/thirdparty/jquery-1.4.1.min.js"></script>
+  <script type="text/javascript" src="../../../graphics-common/js/thirdparty/jquery-ui-1.8.16.custom.min.js"></script>
+  <script type="text/javascript" src="../../../graphics-common/js/thirdparty/jquery.mousewheel.js"></script>
+  <script type="text/javascript" src="../../../graphics-common/js/thirdparty/jquery.jeditable.js"></script>
+  <script type="text/javascript" data-main="../../../graphics-common/js/main" src="../../../graphics-common/js/thirdparty/require.js"></script>
+  <script type="text/javascript" src="../../js/pharmacy_page_script.js"></script>
+  
+  <style>
+  	.settingsText {
+  		font-family: Arial, Helvetica, sans-serif;
+  		font-size: 11px;
+  		color: #00629A;
+  	}
+  	.toolbarText {
+  		font-family: Arial, Helvetica, sans-serif;
+  		font-size: 12px;
+  		color: #00629A;
+  	}
+  	.stickyColourOption {
+  		width: 10px;
+  		height: 10px;
+  		border: 1px solid #333333;
+  	}
+  	.highlighterColourOption {
+  		width: 10px;
+  		height: 10px;
+  		border: 1px solid #333333;
+  	}
+  	.settingsMenuTD {
+  		border-bottom: 1px solid #CCCCCC;
+  	}
+  	.toolBarCtrl {
+  		width : 16px;
+  		height : 16px;
+  		margin-left: 2px;
+  	}  	
+  	.toolOnHoverStyle {
+  		background-image:url(../../images/icons/toolbarIconSelectHover.png); 
+  	}
+  	.toolSelectedStyle {
+  		background-image:url(../../images/icons/toolbarIconSelectHover.png); 
+  	}
+  	.buttonHolder {
+  		width: 20;
+  		cursor:pointer;
+  	}
+  	.stampButtonHolder {
+  		cursor:pointer;
+  	}
+  	td.buttonHolder:hover {
+		background: url(../../images/icons/toolbarIconSelectHover.png) center repeat-x #ffd700;
+  	}
+  	tr.stampSelector:hover {
+		background: url(../../images/icons/toolbarIconSelectHover.png) center repeat-x #ffd700;
+  	}
+  </style>
+</head>
+<body style='overflow: hidden'>
+	<div id="toolbar">		
+		<table cellspacing="3">
+		 <tr height="22px">
+		 	<td class="buttonHolder">
+		 		<img id="firstPage" src="../../images/icons/resultset_first.png" title="First Page" i18nPropKey="tiffViewer.toolBar.tool.firstPage" class="toolBarCtrl" />
+			</td>
+			<td class="buttonHolder">
+				<img id="previousPage" src="../../images/icons/resultset_previous.png" title="Previous Page" i18nPropKey="tiffViewer.toolBar.tool.previousPage" class="toolBarCtrl" />
+			</td>
+			<td cellpadding-bottom="5">
+				<input id="currentPageNumTextBox" type="text" style="width: 25px; height: 19px;" class="toolbarText" />
+			</td>
+			<td cellpadding-bottom="5" class="toolbarText" >
+				<label id="numOfPagesLabel" ></label>
+			</td>
+			<td class="buttonHolder">
+				<img id="nextPage" src="../../images/icons/resultset_next.png" title="Next Page" i18nPropKey="tiffViewer.toolBar.tool.nextPage" class="toolBarCtrl" />
+			</td>
+			<td class="buttonHolder">
+				<img id="lastPage" src="../../images/icons/resultset_last.png" title="Last Page" i18nPropKey="tiffViewer.toolBar.tool.lastPage" class="toolBarCtrl" />
+			</td>
+			<td>
+				<img src="../../../common/images/toolbar-separator.png" />
+			</td>
+			<td class="toolbarText" >
+				<div title="Zoom" i18nPropKey="tiffViewer.toolBar.tool.zoomLevel" style="width : auto; text-align : right">
+					<label id="zoomLevel"></label>
+				</div>
+			</td>
+			<td class="buttonHolder">			
+				<img id="zoomOut" src="../../images/icons/zoom_out.png" title="Zoom Out" i18nPropKey="tiffViewer.toolBar.tool.zoomOut" class="toolBarCtrl" />
+			</td>
+			<td>
+				<div id="slider" title="Zoom" style='width : 100px' >
+				</div>
+			</td>
+			<td class="buttonHolder">
+				<img id="zoomIn" src="../../images/icons/zoom_in.png" title="Zoom In" i18nPropKey="tiffViewer.toolBar.tool.zoomIn" class="toolBarCtrl" />
+			</td>
+			<td>
+				<img src="../../../common/images/toolbar-separator.png" />
+			</td>
+			<td class="buttonHolder">
+				<img id="fitToWindow" src="../../images/icons/document-resize-actual.png" title="Fit To Window" i18nPropKey="tiffViewer.toolBar.tool.fitToWindow" class="toolBarCtrl" />
+			</td>
+			<td class="buttonHolder">
+				<img id="fitToHeight" src="../../images/icons/fit-to-height.png" title="Fit To Height" i18nPropKey="tiffViewer.toolBar.tool.fitToHeight" class="toolBarCtrl" />
+			</td>
+			<td class="buttonHolder">
+				<img id="fitToWidth" src="../../images/icons/fit-to-width.png" title="Fit To Width" i18nPropKey="tiffViewer.toolBar.tool.fitToWidth" class="toolBarCtrl" />
+			</td>
+			<td>
+				<img src="../../../common/images/toolbar-separator.png" />
+			</td>
+			<td class="buttonHolder">
+				<img id="rotateRight" src="../../images/icons/arrow_rotate_clockwise.png" title="Rotate Right" i18nPropKey="tiffViewer.toolBar.tool.rotateRight" class="toolBarCtrl" />
+			</td>
+			<td class="buttonHolder">
+				<img id="rotateLeft" src="../../images/icons/arrow_rotate_anticlockwise.png" title="Rotate Left" i18nPropKey="tiffViewer.toolBar.tool.rotateLeft" class="toolBarCtrl" />
+			</td>
+			<td>
+				<img src="../../../common/images/toolbar-separator.png" />
+			</td>
+			<td class="buttonHolder">
+				<img id="grayScale" src="../../images/icons/gradient.png" title="Grayscale" i18nPropKey="tiffViewer.toolBar.tool.grayscale" class="toolBarCtrl" />
+			</td>
+			<td class="buttonHolder">
+				<img id="invert" src="../../images/icons/ui-color-picker-switch.png" title="Invert" i18nPropKey="tiffViewer.toolBar.tool.invert" class="toolBarCtrl" />
+			</td>
+			<td>
+				<img src="../../../common/images/toolbar-separator.png" />
+			</td>
+			<td class="buttonHolder">
+				<img id="stickyNote" src="../../images/icons/note.png" title="Note" i18nPropKey="tiffViewer.toolBar.tool.note" class="toolBarCtrl" /> <!-- style="opacity: 0.3; filter:alpha(opacity=30);"  -->
+			</td>
+			<td class="buttonHolder">
+				<img id="highlighter" src="../../images/icons/paintbrush.png" title="Highlighter" i18nPropKey="tiffViewer.toolBar.tool.highlighter" class="toolBarCtrl" /> <!-- style="opacity: 0.3; filter:alpha(opacity=30);" -->
+			</td>
+			<td class="buttonHolder">
+				<img id="stamp" src="../../images/icons/stamp.png" title="Stamps" i18nPropKey="tiffViewer.toolBar.tool.stamps" class="toolBarCtrl" />
+			</td>
+			<td>
+				<table cellpadding="0" cellspacing="0" style="margin:0px; padding-left: 1px;">
+					<tr class="stampSelector" height="20px">
+						<td style="padding-left: 1px;" class="stampButtonHolder">
+							<img id="selectedStamp" i18nPropKey="tiffViewer.toolBar.tool.selectStamp" title="Selected Stamps" width="70px" height="18px" />
+						</td>
+						<td class="stampButtonHolder">
+							<img id="stampsDialog" src="../../images/icons/downArrow.png" title="Select Stamps" i18nPropKey="tiffViewer.toolBar.tool.selectStamps" style="margin: 0px;" />
+						</td>
+					</tr>
+				</table>
+			</td>
+			<td class="buttonHolder">
+				<img id="showHideAnnotations" src="../../images/icons/eye.png" title="Show Hide Annotations" i18nPropKey="tiffViewer.toolBar.tool.showHideAnnotations" class="toolBarCtrl" />
+			</td>
+		 </tr>
+		</table>			
+	</div>
+	<div id="canvas" style="offsetLeft : 1px; border: 5px solid #666666; overflow: hidden;">
+	</div>
+    <div id="editable" style="visibility : hidden;"></div>
+    <div id="stampGallery"></div>
+    <div id="highlighterColourPalette" width="150px" height="50px" style="visibility : hidden; background: url(../../images/icons/menuBG.png);">
+    	<table width="150px" height="50px">
+			<tr>
+				<td align="right"width='20' height='20'>
+					<img id="closeMenuDialogHighlighter" height='12' width='12' src='../../images/icons/menuClose.png' style="border: 1px solid #333333;" />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table>
+				    	<tr>
+				    		<td class="settingsText">
+				    			<span i18nPropKey="tiffViewer.annotation.settingsMenu.color"></span>:
+				    		</td>
+							<td width='20'>
+								<div style="background-color: #FF0000;" class="highlighterColourOption" />
+							</td>
+							<td width='20'>
+								<div style="background-color: #00FF00;" class="highlighterColourOption" />
+							</td>
+							<td width='20'>
+								<div style="background-color: #FFFF00;" class="highlighterColourOption" />
+							</td>
+							<td width='20'>
+								<div style="background-color: #00FFFF;" class="highlighterColourOption" />
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+    </div>
+   	<div id="stickyNoteColourPalette" width="170px" height="70px" style="visibility : hidden; background: url(../../images/icons/menuBG.png);">
+		<table>
+			<tr>
+				<td align="right" width='20' height='20'>
+					<img id="closeMenuDialogStickyNote" height='12' width='12' src='../../images/icons/menuClose.png' style="border: 1px solid #333333;" />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table width="165px" height="60px" style="border-spacing: 0px 2px;">
+						<tr>
+							<td width='40' class="settingsText settingsMenuTD"><span i18nPropKey="tiffViewer.annotation.settingsMenu.color"></span>:</td>
+							<td width='20' class="settingsMenuTD">
+							<div style="background-color: #FAE067;" selectedColour="yellow"
+								class="stickyColourOption" />
+							</td>
+							<td width='20' class="settingsMenuTD">
+							<div style="background-color: #E0EFFF;" selectedColour="blue"
+								class="stickyColourOption" />
+							</td>
+							<td width='20' class="settingsMenuTD">
+							<div style="background-color: #D2FFD2;" selectedColour="green"
+								class="stickyColourOption" />
+							</td>
+							<td width='45' class="settingsMenuTD">
+							<div style="background-color: #FFE5E5;" selectedColour="pink"
+								class="stickyColourOption" />
+							</td>
+						</tr>
+						<tr>
+							<td width='40' class="settingsText settingsMenuTD"><span i18nPropKey="tiffViewer.annotation.settingsMenu.text"></span>:</td>
+							<td width='20' height='30' class="settingsMenuTD">
+							<div><img height='16' width='16'
+								src='../../images/icons/text_bold.png' class="stickyTextBold"
+								style="border: 1px solid #333333;" /></div>
+							</td>
+							<td width='20' height='30' class="settingsMenuTD">
+							<div><img height='16' width='16'
+								src='../../images/icons/text_italic.png' class="stickyTextItalic"
+								style="border: 1px solid #333333;" /></div>
+							</td>
+							<td width='20' height='30'>
+							</td>
+							<!-- <td width='20' height='30' class="settingsMenuTD">
+							<div><img height='16' width='16'
+								src='../../images/icons/text_underline.png'
+								class="stickyTextUnderline" style="border: 1px solid #333333;" /></div>
+							</td> -->
+							<td width='45' height='30' class="settingsMenuTD">
+							<div><select style="font-size: 10px;"
+								id="selectStickyFontsize" name="select">
+								<option>8</option>
+								<option>9</option>
+								<option selected="selected">10</option>
+								<option>11</option>
+								<option>12</option>
+								<option>14</option>
+								<option>16</option>
+								<option>18</option>
+								<option>20</option>
+								<option>24</option>
+								<option>28</option>
+								<option>32</option>
+								<option>40</option>
+								<option>60</option>
+								<option>72</option>
+							</select></div>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</div>
+    <div id="annotationInfoPanel" width="170px" height="70px" style="visibility : hidden; background: url(../../images/icons/menuBG.png);">
+    	<table width="170px" height="70px">
+			<tr>
+				<td align="right" width='20' height='20'>
+					<img id="closeMenuDialogInfo" height='12' width='12' src='../../images/icons/menuClose.png' style="border: 1px solid #333333;" />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table>
+				    	<tr>
+				    		<td id='action' width='20' style = 'border-bottom : 1px solid #CCCCCC; border-right : 1px solid #CCCCCC;' class="settingsText" />
+							<td id='user' style = 'border-bottom : 1px solid #CCCCCC;' class="settingsText" />
+						</tr>
+						<tr>
+							<td width='20' style = 'border-bottom : 1px solid #CCCCCC; border-right : 1px solid #CCCCCC;' class="settingsText" >
+								<span i18nPropKey="tiffViewer.annotation.info.timeStamp"></span>:
+							</td>
+							<td id='timeStamp' style = 'border-bottom : 1px solid #CCCCCC;' class="settingsText"/>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:form partialSubmit="false">
+		<ice:panelPopup modal="true" rendered="#{ippMessageDialog.visible}"
+			draggable="true" styleClass="popupDialog" autoCentre="true" positionOnLoadOnly="true" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGrid width="100%" columns="2" cellpadding="0" cellspacing="0">
+					<ice:outputText value="#{ippMessageDialog.title}" styleClass="headerText">
+						<pc:automationTag value="auto-FW-ComMsgDlg-Title" standAlone="false"/>
+					</ice:outputText>
+					<ice:panelGroup style="text-align: right;">
+						<pc:automationTag value="auto-FW-ComMsgDlg-CloseBtn" standAlone="false"/>
+						<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+							image="/plugins/common/images/dialog-windowbttn-close.png" 
+							action="#{ippMessageDialog.closePopup}"
+							styleClass="windowClose" />
+					</ice:panelGroup>
+				</ice:panelGrid>
+			</f:facet>
+			<f:facet name="body">
+				<ice:panelBorder  styleClass="pnlPopUpMsgBrdrDialog" cellpadding="0" cellspacing="0"
+					renderNorth="false" renderSouth="true" renderCenter="true"
+					renderWest="true" renderEast="false">
+	
+					<f:facet name="west">
+						<ice:panelGroup>
+							<ice:graphicImage url="/plugins/common/images/dialog-icon-error.jpg"
+								rendered="#{ippMessageDialog.messageType eq 'ERROR'}" />
+							<ice:graphicImage url="/plugins/common/images/dialog-icon-warning.jpg"
+								rendered="#{ippMessageDialog.messageType eq 'WARNING'}" />
+							<ice:graphicImage url="/plugins/common/images/dialog-icon-info.jpg"
+								rendered="#{ippMessageDialog.messageType eq 'INFO'}" />
+						</ice:panelGroup>
+					</f:facet>
+	
+					<f:facet name="center">
+						<ice:panelGroup>
+							<ice:panelGroup rendered="#{not empty ippMessageDialog.details}">
+								<c:forEach items="#{ippMessageDialog.detailsLines}" var="detailsLine">
+									<ice:outputText value="#{detailsLine}">
+										<pc:automationTag value="auto-FW-ComMsgDlg-Details" standAlone="false"/>
+									</ice:outputText>
+									<ice:panelGroup styleClass="clearing" />
+								</c:forEach>
+							</ice:panelGroup>
+							<!--
+							<ice:outputText 
+								value="#{ippMessageDialog.exceptionMessage}" />
+							-->
+							<ice:panelCollapsible expanded="false" toggleOnClick="true"
+								rendered="#{not empty ippMessageDialog.exception}">
+								<f:facet name="header">
+									<ice:panelGroup>
+										<ice:outputText value="#{common_msgPropsBean['portalFramework.error.unhandledError.technicalDetails']}" />
+									</ice:panelGroup>
+								</f:facet>
+								<ice:panelGroup styleClass="pnlPopUpMsgExceptionStackTrace">
+									<ice:outputText value="#{pc:getStackTrace(ippMessageDialog.exception)}" />
+								</ice:panelGroup>
+							</ice:panelCollapsible>
+						</ice:panelGroup>
+					</f:facet>
+	
+					<f:facet name="south">
+						<ice:panelGrid columns="2" cellspacing="0" cellpadding="0">
+							<pc:automationTag value="auto-FW-ComMsgDlg-BtnsBar" standAlone="false"/>
+							<ice:commandButton value="#{common_msgPropsBean['common.close']}" 
+								action="#{ippMessageDialog.closePopup}" styleClass="button" />
+						</ice:panelGrid>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ice:form>
+</f:view>

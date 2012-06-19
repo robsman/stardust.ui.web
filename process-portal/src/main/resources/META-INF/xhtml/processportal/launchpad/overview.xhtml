@@ -1,0 +1,84 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+			<ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
+			<ui:param name="bean" value="#{processportal_overviewPanel}" />
+			<ui:param name="title" value="#{processportal_overviewPanel.messages['title']}" />
+			<ui:param name="collapsible" value="false" />
+			<ui:param name="showRefreshLink" value="false" />
+		</ui:include>
+	</ice:panelGroup>
+	<ice:panelGrid columns="1">
+		<ice:panelGroup>
+			<ice:outputText
+				value="#{processportal_overviewPanel.messages['directWorkItems']} " />
+			<ice:commandLink styleClass="action-link"
+				action="#{processportal_overviewPanel.selectDirectUserWorkAction}">
+				<pc:automationTag value="auto-PP-LP-Overview-DirectWorkItems"
+					standAlone="true"/>
+				<ice:outputFormat
+					value="#{processportal_overviewPanel.messages['directWorkItemsLink']}">
+					<f:param value="#{processportal_overviewPanel.directUserWorkCount}" />
+				</ice:outputFormat>
+			</ice:commandLink>
+			<ice:outputText value="." />
+		</ice:panelGroup>
+	</ice:panelGrid>
+	<!--
+	<ice:panelGrid columns="1">
+		<ice:panelGroup>
+			<ice:outputText
+				value="#{processportal_overviewPanel.messages['workItemsPrefix']}" />
+			<ice:commandLink styleClass="action-link"
+				action="#{processportal_overviewPanel.selectPriorityActivityInstancesAction}">
+				<ice:outputFormat
+					value="#{processportal_overviewPanel.messages['workItemsLink']}">
+					<f:param
+						value="#{processportal_overviewPanel.priorityActivityInstancesCount}" />
+				</ice:outputFormat>
+			</ice:commandLink>
+			<ice:outputText
+				value="#{processportal_overviewPanel.messages['workItemsSuffix']}" />
+		</ice:panelGroup>
+	</ice:panelGrid>
+	-->
+	<ice:panelGrid columns="1">
+		<ice:panelGroup>
+			<ice:outputText value="#{processportal_overviewPanel.messages['pastProcessInstances']}" />
+			<ice:selectOneMenu partialSubmit="true"
+				valueChangeListener="#{processportal_overviewPanel.lastNSelectListener}">
+				<pc:automationTag value="auto-PP-LP-Overview-LastNSelect" standAlone="false"/>
+				<f:selectItem itemLabel="" itemValue="-" />
+				<f:selectItem
+					itemLabel="#{processportal_overviewPanel.messages['pastProcessInstances.today']}"
+					itemValue="today" />
+				<f:selectItem
+					itemLabel="#{processportal_overviewPanel.messages['pastProcessInstances.thisWeek']}"
+					itemValue="thisWeek" />
+				<f:selectItem
+					itemLabel="#{processportal_overviewPanel.messages['pastProcessInstances.thisMonth']}"
+					itemValue="thisMonth" />
+				<f:selectItem
+					itemLabel="#{processportal_overviewPanel.messages['pastProcessInstances.thisQuarter']}"
+					itemValue="thisQuarter" />
+				<f:selectItem
+					itemLabel="#{processportal_overviewPanel.messages['pastProcessInstances.lastSixMonths']}"
+					itemValue="lastSixMonths" />
+				<f:selectItem
+					itemLabel="#{processportal_overviewPanel.messages['pastProcessInstances.lastYear']}"
+					itemValue="lastYear" />
+				<f:selectItem
+					itemLabel="#{processportal_overviewPanel.messages['pastProcessInstances.all']}"
+					itemValue="all" />
+			</ice:selectOneMenu>
+		</ice:panelGroup>
+	</ice:panelGrid>
+
+
+</f:view>

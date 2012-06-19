@@ -1,0 +1,116 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:composition>
+
+		<ice:panelGroup>
+			<ui:include
+				src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+				<ui:param name="dialogBean"
+					value="#{switchProcessDialogBean.switchProcessConfirmationDialog}" />
+			</ui:include>
+		</ice:panelGroup>
+
+		<ice:panelPopup modal="true"
+			rendered="#{switchProcessDialogBean.visible}" draggable="true"
+			autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-COM-SwitchProcDlg-Header"/>
+					<ice:outputText styleClass="headerText"
+						value="#{views_common_msgPropsBean['views.switchProcessDialog.title']}" />
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png"
+						action="#{switchProcessDialogBean.closePopup}" immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+
+			<f:facet name="body">
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="2"
+					cellspacing="2" renderNorth="false" renderEast="true"
+					renderSouth="true" renderWest="true" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>
+
+							<ice:panelGroup
+								rendered="#{switchProcessDialogBean.showStartProcessView}"
+								style="vertical-align: top; white-space: nowrap; text-align:left;">
+
+								<ice:panelGrid columns="2" style="text-align: left">
+									<ice:outputLabel style="vertical-align: top;"
+										styleClass="label-form"
+										value="#{views_common_msgPropsBean['views.switchProcessDialog.selectProcess']}" />
+
+									<ice:selectOneMenu partialSubmit="true"
+										value="#{switchProcessDialogBean.selectedProcessId}"
+										style="vertical-align: middle;">
+										<pc:automationTag value="auto-COM-SwitchProcDlg-SelStartableProc" standAlone="false"/>
+										<c:forEach
+											items="#{switchProcessDialogBean.switchableProcessItems}"
+											var="source">
+											<f:selectItem itemLabel="#{source.label}"
+												itemValue="#{source.value}" />
+										</c:forEach>
+
+									</ice:selectOneMenu>
+
+
+									<ice:outputLabel style="vertical-align: top;"
+										styleClass="label-form"
+										value="#{views_common_msgPropsBean['views.switchProcessDialog.linkComment']}" />
+
+									<ice:inputTextarea style="width: 320px"
+										value="#{switchProcessDialogBean.linkComment}" rows="4" >
+										<pc:automationTag value="auto-COM-SwitchProcDlg-LinkComments" standAlone="false"/>
+									</ice:inputTextarea>	
+
+									<ice:panelGroup styleClass="clearing" />
+									<ice:panelGroup styleClass="clearing" />
+
+								</ice:panelGrid>
+
+								<ice:panelGroup expanded="true" style="white-space:normal">
+									<ice:panelGrid columns="2" style="text-align: left">
+
+										<ice:graphicImage
+											url="/plugins/views-common/images/icons/information.png"
+											style="width:20px;heigth:20px;text-align: top;padding:0px;" />
+										<ice:outputText
+											value="#{views_common_msgPropsBean['views.switchProcessDialog.switchProcessmessage']}" escape="false"/>
+
+									</ice:panelGrid>
+								</ice:panelGroup>
+
+							</ice:panelGroup>
+
+						</ice:panelGroup>
+
+
+					</f:facet>
+					<f:facet name="south">
+						<ice:panelGroup>
+							<ice:panelGroup
+								rendered="#{switchProcessDialogBean.showStartProcessView}">
+								<pc:automationTag value="auto-COM-SwitchProcDlg-OkCancelBtnsBar" />
+								<ice:commandButton
+									value="#{views_common_msgPropsBean['common.ok']}"
+									disabled="#{empty switchProcessDialogBean.switchableProcessItems}"
+									action="#{switchProcessDialogBean.switchProcesses}"
+									styleClass="button" />
+								<ice:commandButton
+									value="#{views_common_msgPropsBean['common.cancel']}"
+									action="#{switchProcessDialogBean.closeSwitchProcessPopup}" immediate="true"
+									styleClass="button" />
+							</ice:panelGroup>
+
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

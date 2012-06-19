@@ -1,0 +1,50 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates mandatory attributes)
+	component* = Instance of org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityAutocompleteSelector
+	-->
+	<c:choose>
+		<c:when
+			test="#{pc:instanceOf(component, 'org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityAutocompleteSelector')}">
+			<ice:selectInputText rows="#{component.maxRows}"
+				value="#{component.searchValue}"
+				valueChangeListener="#{component.searchValueChanged}"
+				disabled="#{component.disabled}" partialSubmit="false" width="95%"
+				listVar="criticality" listValue="#{component.matchingData}"
+				style="margin: 0px 0px 9px 2px;">
+				<f:facet name="selectInputText">
+					<ice:panelGrid columns="2">
+						<ice:outputText value="#{criticality.label}" escape="false"
+							styleClass="formLabel" style="padding-left: 0" />
+						<ice:panelGroup>
+							<ice:graphicImage value="#{criticality.icon}" width="16px"
+								height="16px" />
+							<ice:graphicImage value="#{criticality.icon}"
+								rendered="#{criticality.iconCount ge 2}" width="16px"
+								height="16px" />
+							<ice:graphicImage value="#{criticality.icon}"
+								rendered="#{criticality.iconCount ge 3}" width="16px"
+								height="16px" />
+							<ice:graphicImage value="#{criticality.icon}"
+								rendered="#{criticality.iconCount ge 4}" width="16px"
+								height="16px" />
+							<ice:graphicImage value="#{criticality.icon}"
+								rendered="#{criticality.iconCount eq 5}" width="16px"
+								height="16px" />
+						</ice:panelGroup>
+					</ice:panelGrid>
+				</f:facet>
+			</ice:selectInputText>
+		</c:when>
+		<c:otherwise>
+			<ice:outputText
+				value="component is not instanceof org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityAutocompleteSelector" />
+		</c:otherwise>
+	</c:choose>
+</f:view>

@@ -1,0 +1,167 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		bean* -> Bean
+		filter* -> Instance of ITableDataFilter
+	 -->
+<ui:composition>
+	<c:choose>
+		<c:when test="#{pc:instanceOf(filter, 'org.eclipse.stardust.ui.web.common.filter.ITableDataFilterCustom')}">
+			<ui:include src="#{filter.contentUrl}">
+				<ui:param name="bean" value="#{bean}" />
+				<ui:param name="filter" value="#{filter}" />
+			</ui:include>
+		</c:when>
+		<c:otherwise>
+			<ice:panelGrid width="100%" columns="2" cellpadding="2" cellspacing="0"
+				style="white-space: nowrap;">
+				
+				<c:if test="#{filter.filterCriteria == 'SEARCH' and filter.dataType == 'STRING'}">
+					<ice:outputLabel value="#{common_msgPropsBean['common.filterPopup.searchFilter.like']}" styleClass="label-form" />
+					<ice:inputText value="#{filter.value}">
+						<pc:automationTag value="auto-DT-DataFilterSrchVal" standAlone="false"/>
+					</ice:inputText>
+				</c:if>
+
+					<c:if test="#{filter.dataType == 'BOOLEAN'}">
+						<ice:outputLabel
+							value="#{common_msgPropsBean['common.filterPopup.onOffFilter.message']}"
+							styleClass="label-form" />
+						<ice:selectOneRadio partialSubmit="true" layout="lineDirection"
+							styleClass="label-form" value="#{filter.value}">
+							<pc:automationTag value="auto-DT-DataFilterOnOffVal" standAlone="false"/>
+							<f:selectItem itemValue="true" itemLabel="#{common_msgPropsBean['common.filterPopup.onOffFilter.ON']}" />
+							<f:selectItem itemValue="false" itemLabel="#{common_msgPropsBean['common.filterPopup.onOffFilter.OFF']}" />
+						</ice:selectOneRadio>
+					</c:if>
+					
+					<c:if test="#{filter.filterCriteria == 'NUMBER'}">
+						<!-- Row 1 -->
+						<ice:outputLabel
+							value="#{common_msgPropsBean['common.filterPopup.searchFilter.is']}"
+							styleClass="label-form" />
+						<ice:inputText value="#{filter.startValue}" id="start#{filter.id}"
+							partialSubmit="true" converter="#{filter.converter}">
+							<pc:automationTag value="auto-DT-DataFilterNumVal"
+								standAlone="false" />
+						</ice:inputText>
+						<!-- Row 2 -->
+						<ice:panelGroup />
+						<ice:panelGroup styleClass="msgError">
+							<ice:message for="start#{filter.id}" />
+						</ice:panelGroup>
+						
+					</c:if>
+
+					<c:if test="#{filter.filterCriteria == 'BETWEEN_NUMBER'}">
+						<!-- Row 1 -->
+						<ice:outputLabel
+							value="#{common_msgPropsBean['common.filterPopup.betweenFilter.first']}"
+							styleClass="label-form" />
+						<ice:inputText value="#{filter.startValue}" id="start#{filter.id}"
+							partialSubmit="true" converter="#{filter.converter}">
+							<pc:automationTag value="auto-DT-DataFilterBetNumStartVal"
+								standAlone="false" />
+						</ice:inputText>
+						<!-- Row 2 -->
+						<ice:panelGroup />
+						<ice:panelGroup styleClass="msgError">
+							<ice:message for="start#{filter.id}" />
+						</ice:panelGroup>
+
+						<!-- Row 3 -->
+						<ice:outputLabel
+							value="#{common_msgPropsBean['common.filterPopup.betweenFilter.last']}"
+							styleClass="label-form" />
+						<ice:inputText value="#{filter.endValue}" id="end#{filter.id}"
+							partialSubmit="true" converter="#{filter.converter}">
+							<pc:automationTag value="auto-DT-DataFilterBetNumEndVal"
+								standAlone="false" />
+						</ice:inputText>
+						<!-- Row 4 -->
+						<ice:panelGroup />
+						<ice:panelGroup styleClass="msgError">
+							<ice:message for="end#{filter.id}" />
+						</ice:panelGroup>
+					</c:if>
+
+					<c:if test="#{filter.filterCriteria == 'BETWEEN_DATE'}">
+					<!-- Row 1 -->
+					<ice:outputLabel value="#{common_msgPropsBean['common.filterPopup.betweenFilter.first']}" styleClass="label-form" />
+					<ice:selectInputDate value="#{filter.startValue}" id="start#{filter.id}"
+						renderAsPopup="true" converter="#{filter.converter}" >
+						<pc:automationTag value="auto-DT-DataFilterDateBetStartVal"
+								standAlone="false" />
+					</ice:selectInputDate>	
+					<!-- Row 2 -->
+					<ice:panelGroup/>
+					<ice:panelGroup styleClass="msgError">
+						<ice:message for="start#{filter.id}" />
+					</ice:panelGroup>
+					
+					<!-- Row 3 -->
+					<ice:outputLabel value="#{common_msgPropsBean['common.filterPopup.betweenFilter.last']}" styleClass="label-form" />
+					<ice:selectInputDate value="#{filter.endValue}" id="end#{filter.id}"
+						renderAsPopup="true" converter="#{filter.converter}">
+						<pc:automationTag value="auto-DT-DataFilterDateBetEndVal"
+								standAlone="false" />
+					</ice:selectInputDate>	
+					<!-- Row 4 -->
+					<ice:panelGroup/>
+					<ice:panelGroup styleClass="msgError">
+						<ice:message for="end#{filter.id}" />
+					</ice:panelGroup>
+				</c:if>
+				
+				<c:if test="#{filter.filterCriteria == 'SELECT_MANY' and filter.renderType == 'LIST'}">
+		            <ice:selectManyListbox value="#{filter.selected}" size="#{filter.visibleSize}" style="width: 100%">
+		            	<pc:automationTag value="auto-DT-DataFilterSelManyListVal"
+								standAlone="false" />
+		            	<f:selectItems value="#{filter.all}"/>
+		            </ice:selectManyListbox>
+		            <ice:panelGroup />
+		            
+		            <ice:outputLabel styleClass="label-form" style="margin: 3px;"
+						value="#{common_msgPropsBean['common.filterPopup.pickListFilter.pickMany.list.message']}" />
+					<ice:panelGroup />
+				</c:if>
+				
+				<c:if test="#{filter.filterCriteria == 'SELECT_MANY' and filter.renderType == 'CHECKBOX'}">
+					<ice:selectManyCheckbox value="#{filter.selected}" size="#{filter.visibleSize}"
+		            		layout="pageDirection" style="padding-left:3px; padding-right:3px; white-space:nowrap">
+		            		<pc:automationTag value="auto-DT-DataFilterSelManyCBoxVal"
+								standAlone="false" />
+		            	<f:selectItems value="#{filter.all}"/>
+		            </ice:selectManyCheckbox>
+		            <ice:panelGroup />
+		
+		            <ice:outputLabel styleClass="label-form" style="margin: 3px;"
+						value="#{common_msgPropsBean['common.filterPopup.pickListFilter.pickMany.checkbox.message']}" />
+					<ice:panelGroup />
+				</c:if>
+				
+				<c:if test="#{filter.filterCriteria == 'SELECT_ONE' and filter.renderType == 'LIST'}">
+		            <ice:selectOneListbox value="#{filter.selected}" size="#{filter.visibleSize}"
+		            		layout="pageDirection" style="width:100%; display:block; white-space:nowrap">
+		            		<pc:automationTag value="auto-DT-DataFilterSelOneListVal"
+								standAlone="false" />
+		            	<f:selectItems value="#{filter.all}"/>
+		            </ice:selectOneListbox>
+		            <ice:panelGroup />
+		            
+		            <ice:outputLabel styleClass="label-form" style="margin: 2px;"
+						value="#{common_msgPropsBean['common.filterPopup.pickListFilter.pickOne.message']}" />
+					<ice:panelGroup />
+				</c:if>
+			</ice:panelGrid>				
+		</c:otherwise>
+	</c:choose>
+
+</ui:composition>
+</f:view>

@@ -1,0 +1,105 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup
+		style="cell-padding: 0; cell-spacing: 0; white-space: nowrap;padding-right: 0px">
+		<ice:panelGrid columns="3">
+
+			<ice:panelGroup	styleClass="genericTableUserToolbar" style="padding-top: 1px;padding-left: 3px;">
+				<ui:repeat value="#{modelManagementBean.filterToolbarItems}"
+					var="filterToolbarItem">
+					<ice:commandLink name="#{filterToolbarItem.name}"
+						actionListener="#{modelManagementBean.filterTable}"
+						rendered="#{filterToolbarItem.visible}">
+						<pc:automationTag
+							value="auto-ADM-ModelMgmt-ModelTreeTbl-#{filterToolbarItem.name}"
+							standAlone="false" />
+						<ice:graphicImage value="#{filterToolbarItem.image}"
+							style="#{filterToolbarItem.style}"
+							title="#{modelManagementBean.messages[filterToolbarItem.messsageKey]}" />
+						<f:attribute name="type" value="#{filterToolbarItem.name}" />
+					</ice:commandLink>
+
+					<ice:graphicImage
+						rendered="#{not filterToolbarItem.visible and not filterToolbarItem.neverVisible}"
+						style="border: none; padding-right: 10px;"
+						value="/plugins/common/images/t.gif" width="15px" height="15px" />
+				</ui:repeat>
+			</ice:panelGroup>
+			<ice:panelGroup	styleClass="genericTableUserToolbar" style="padding-top: 1px;padding-left: 3px;">
+
+				<ice:commandLink name="#{modelManagementBean.messages['expandAll']}"
+					actionListener="#{modelManagementBean.modelTreeTable.expandAll}"
+					style="vertical-align: middle;">
+					<pc:automationTag
+						value="auto-ADM-ModelMgmt-ModelTreeTbl-ToolbarExpandAll"
+						standAlone="false" />
+					<h:graphicImage value="/plugins/common/images/icons/expand_all.gif"
+						style="border: none;"
+						title="#{modelManagementBean.messages['expandAll']}" />
+				</ice:commandLink>
+
+				<ice:commandLink
+					name="#{modelManagementBean.messages['collapseAll']}"
+					actionListener="#{modelManagementBean.modelTreeTable.collapseAll}"
+					style="vertical-align: middle;padding-right: 0px;">
+					<pc:automationTag
+						value="auto-ADM-ModelMgmt-ModelTreeTbl-ToolbarCollapseAll"
+						standAlone="false" />
+					<h:graphicImage
+						value="/plugins/common/images/icons/collapse_all.gif"
+						style="border: none;"
+						title="#{modelManagementBean.messages['collapseAll']}" />
+				</ice:commandLink>
+
+
+			</ice:panelGroup>
+			<ice:panelGroup
+				style="cell-padding: 0; cell-spacing: 0; white-space: nowrap;padding-right: 0px;padding-top: 1px;padding-left: 0px;">
+
+				
+
+				<ice:commandLink name="#{modelManagementBean.messages['report']}"		
+				 	action="#{modelManagementBean.openActiveModelsReport}"			
+					style="vertical-align: middle;">
+					<pc:automationTag
+						value="auto-ADM-ModelMgmt-ModelTreeTbl-ToolbarOpenActiveRpt"
+						standAlone="false" />
+					<h:graphicImage
+					   
+						value="/plugins/admin-portal/images/icons/report.png"
+						style="border: none;"
+						title="#{modelManagementBean.messages['report']}" />
+				</ice:commandLink>
+
+				<ice:commandLink
+					name="#{modelManagementBean.messages['deploymodel']}"
+					actionListener="#{modelManagementBean.openDeployModel}"
+					style="vertical-align: middle;padding-left: 3px;">
+					<pc:automationTag
+						value="auto-ADM-ModelMgmt-ModelTreeTbl-ToolbarDeployRpt"
+						standAlone="false" />
+					<h:graphicImage
+						value="/plugins/admin-portal/images/icons/server_go.png"
+						style="border: none;"
+						title="#{modelManagementBean.messages['deploymodel']}" />
+				</ice:commandLink>
+
+			</ice:panelGroup>
+		</ice:panelGrid>
+
+
+	</ice:panelGroup>
+
+
+
+
+
+
+
+</f:view>

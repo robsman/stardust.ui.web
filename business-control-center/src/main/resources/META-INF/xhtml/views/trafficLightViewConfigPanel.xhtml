@@ -1,0 +1,197 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		row*= Instance of Row Class
+		col*= Instance of ColumnPreference 
+	 -->
+	
+		<ice:panelGroup rendered="#{ippPortalApp.loggedInUser.administrator}">
+		<ui:include
+			src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+			<ui:param name="dialogBean"
+				value="#{trafficLightViewConfigurationBean.trafficLightConfirmationDialog}" />
+		</ui:include>
+			<ice:panelGrid columns="1" width="100%" style="vertical-align: top;">
+				<ice:panelGroup styleClass="heading">
+					<ice:outputText
+						value="#{messages_bcc['views.trafficLightView.selectProcessDefinitionsforconfiguration']}" />
+				</ice:panelGroup>
+				<ice:panelGroup style="max-height: 7em; height: auto !important; height: 7em; overflow-y: auto; overflow-x: visible; border: 1px solid #D3D3D3">
+					<ice:selectManyCheckbox layout="pageDirection"
+						value="#{trafficLightViewConfigurationBean.selectedProcessDefinition}"
+						valueChangeListener="#{trafficLightViewConfigurationBean.effectChangeListener}"
+						partialSubmit="true"
+						style="padding-left:3px; padding-right:3px; white-space:nowrap">
+						<pc:automationTag value="auto-BCC-TrafLightConf-SelProcDef" standAlone="false"/>
+						<f:selectItems 
+							value="#{trafficLightViewConfigurationBean.allProcessDefinition}" />
+					</ice:selectManyCheckbox>
+				</ice:panelGroup>
+			</ice:panelGrid>
+		<ice:panelGroup>
+			<ice:panelGrid columns="2" width="100%" style="vertical-align: top;">
+
+				<ice:outputLabel
+					value="#{messages_bcc['common.process']}#{messages_bcc['common.colon']}" styleClass="label-form" />
+				<ice:selectOneMenu
+					value="#{trafficLightViewConfigurationBean.processId}"
+					partialSubmit="true"
+					valueChangeListener="#{trafficLightViewConfigurationBean.processChangeListener}">
+					<pc:automationTag value="auto-BCC-TrafLightConf-Process" standAlone="false"/>
+					<f:selectItems
+						value="#{trafficLightViewConfigurationBean.allSelectedProcesses}" />
+				</ice:selectOneMenu>
+
+				<ice:outputLabel
+					value="#{messages_bcc['views.trafficLightView.statecalculator']}#{messages_bcc['common.colon']}" styleClass="label-form" />
+				<ice:panelGroup>
+					<ice:inputText id="stateProcessName" partialSubmit="true" disabled="#{trafficLightViewConfigurationBean.processId == null}"
+						value="#{trafficLightViewConfigurationBean.stateCalculator}"						
+						validator="#{trafficLightViewConfigurationBean.validateStateCalculator}"
+						valueChangeListener="#{trafficLightViewConfigurationBean.stateCalculatorChange}" immediate="true">
+						<pc:automationTag value="auto-BCC-TrafLightConf-StateCalc" standAlone="false"/>
+					</ice:inputText>	
+					<ice:panelGroup styleClass="msgError">
+						<ice:message for="stateProcessName" />
+					</ice:panelGroup>
+				</ice:panelGroup>
+
+				<ice:outputLabel
+					value="#{messages_bcc['views.trafficLightView.descriptorFilter']}#{messages_bcc['common.colon']}" styleClass="label-form" />
+				<ice:panelGroup>
+					<ice:inputText id="descriptorFilterName" partialSubmit="true" disabled="#{trafficLightViewConfigurationBean.processId == null}"
+						value="#{trafficLightViewConfigurationBean.descriptorFilter}"												
+						validator="#{trafficLightViewConfigurationBean.validateDescFilter}"
+						valueChangeListener="#{trafficLightViewConfigurationBean.descriptorFilterChange}" immediate="true">
+						<pc:automationTag value="auto-BCC-TrafLightConf-DescFilterName" standAlone="false"/>
+					</ice:inputText>	
+					<ice:panelGroup styleClass="msgError">
+						<ice:message for="descriptorFilterName" />
+					</ice:panelGroup>
+				</ice:panelGroup>
+
+				<ice:outputLabel
+					value="#{messages_bcc['views.trafficLightView.displayTotalRow']}#{messages_bcc['common.colon']}" styleClass="label-form" />
+				<ice:selectBooleanCheckbox disabled="#{trafficLightViewConfigurationBean.processId == null}"
+					value="#{trafficLightViewConfigurationBean.displayTotalRow}"
+					partialSubmit="false"
+					valueChangeListener="#{trafficLightViewConfigurationBean.displayTotalChange}">
+					<pc:automationTag value="auto-BCC-TrafLightConf-DispTotRow" standAlone="false"/>
+				</ice:selectBooleanCheckbox>	
+			</ice:panelGrid>
+
+		</ice:panelGroup>
+
+		<ice:panelGroup style="width:100%"
+			rendered="#{trafficLightViewConfigurationBean.processId != null}">
+			<ice:panelGrid columns="1" style="width:100%"
+				rendered="#{trafficLightViewConfigurationBean.displayRowData}">
+				<pc:automationTag value="auto-BCC-TrafLightConf-RowDataTbl" />
+				<ice:dataTable var="rowData"
+					value="#{trafficLightViewConfigurationBean.rowDataList}"
+					width="100%">
+					<f:facet name="header">
+						<ice:columnGroup>
+							<ice:headerRow>
+								<ice:column rowspan="2">
+									<ice:outputLabel value="#{messages_bcc['views.trafficLightView.column.descriptorName']}" />
+								</ice:column>
+
+								<ice:column rowspan="2">
+									<ice:outputLabel value="#{messages_bcc['views.trafficLightView.column.descriptorValues']}" />
+								</ice:column>
+							</ice:headerRow>
+						</ice:columnGroup>
+					</f:facet>
+					<ice:column>
+						<ice:outputText value="#{rowData.name}" />
+					</ice:column>
+					<ice:column>
+						<ice:inputText partialSubmit="true" value="#{rowData.values}"
+							valueChangeListener="#{rowData.valueChanged}"
+							size="50">
+							<pc:automationTag value="auto-BCC-TrafLightConf-RowDataTbl-Value" standAlone="false"/>
+						</ice:inputText>	
+					</ice:column>
+				</ice:dataTable>
+			</ice:panelGrid>
+
+			<ice:panelGrid columns="1" style="width:100%"
+				rendered="#{trafficLightViewConfigurationBean.displayProcessingThreshold}">
+				<pc:automationTag value="auto-BCC-TrafLightConf-ThresholdTbl" />
+				<ice:dataTable var="processingThreshold"
+					value="#{trafficLightViewConfigurationBean.processingThresholdList}"
+					width="100%">
+					<f:facet name="header">
+						<ice:columnGroup>
+							<ice:headerRow>
+								<ice:column colspan="2">
+									<ice:outputText
+										value="#{messages_bcc['views.trafficLightView.column.threshold']}" />
+								</ice:column>
+							</ice:headerRow>
+							<ice:headerRow>
+								<ice:column>
+									<ice:outputLabel
+										value="#{messages_bcc['views.trafficLightView.column.ActivityName']}" />
+								</ice:column>
+
+								<ice:column>
+									<ice:outputLabel
+										value="#{messages_bcc['views.trafficLightView.column.value']}" />
+								</ice:column>
+							</ice:headerRow>
+						</ice:columnGroup>
+					</f:facet>
+					<ice:column>
+						<ice:outputText value="#{processingThreshold.name}" />
+					</ice:column>
+					<ice:column>
+						<ice:inputText id="threshold" partialSubmit="true"
+							value="#{processingThreshold.value}"
+							valueChangeListener="#{processingThreshold.valueChanged}" 
+							validator="#{trafficLightViewConfigurationBean.validateProcessingThreshold}" immediate="true">
+							<pc:automationTag value="auto-BCC-TrafLightConf-ThresholdTbl-Value" standAlone="false"/>
+						</ice:inputText>	
+						<ice:panelGroup styleClass="msgError">
+							<ice:message for="threshold" />
+						</ice:panelGroup>
+					</ice:column>
+				</ice:dataTable>
+			</ice:panelGrid>
+		</ice:panelGroup>
+		<ice:panelGroup styleClass="clearing" />
+
+		<ice:panelGroup style="vertical-align: top;">
+			<pc:automationTag value="auto-BCC-TrafLightConf-BtnsBar" standAlone="false"/>
+			<ice:panelGrid columns="3" rendered="true"
+				style="vertical-align: top;">
+				
+				<ice:commandButton
+					value="#{messages_bcc['views.trafficLightView.button.save']}"
+					action="#{trafficLightViewConfigurationBean.applyConfiguration}"
+					styleClass="button" />
+
+				<ice:commandButton
+					value="#{messages_bcc['common.button.reset']}"
+					action="#{trafficLightViewConfigurationBean.openConfirmationDialog}"
+					immediate="true" styleClass="button" />
+				<ice:panelGroup styleClass="msgError" style="display: inline;">
+					<ice:outputText value="#{trafficLightViewConfigurationBean.warningMessage}" styleClass="msgError"/>
+				</ice:panelGroup>
+			</ice:panelGrid>
+
+		</ice:panelGroup>
+	</ice:panelGroup>
+	<ice:panelGroup rendered="#{not ippPortalApp.loggedInUser.administrator}">
+		<ice:outputText value="#{messages_bcc['views.trafficLightView.authorized.title']}"/>
+	</ice:panelGroup>
+
+</f:view>

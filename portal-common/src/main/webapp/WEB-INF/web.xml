@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<web-app id="WebApp_ID" version="2.4"
+	xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>SunGard CSA LLC - IPP Portal</display-name>
+	<context-param>
+		<param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+		<param-value>server</param-value>
+	</context-param>
+	<context-param>
+		<param-name>facelets.DEVELOPMENT</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>facelets.SKIP_COMMENTS</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>facelets.VIEW_MAPPINGS</param-name>
+		<param-value>*.xhtml;*.jspx</param-value>
+	</context-param>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath*:META-INF/spring/*-context.xml</param-value>
+	</context-param>
+	<context-param>
+		<param-name>carnot.SESSION_LISTENERS</param-name>
+		<param-value>ippAdmPortalSessionListenerBean,businessControlCenterInitializer</param-value>
+	</context-param>
+	<context-param>
+		<param-name>carnot.login.APPLICATION_ID</param-name>
+		<param-value>processPlatform</param-value>
+	</context-param>
+	<context-param>
+		<param-name>carnot.login.ADMINISTRATOR_ROLE_REQUIRED</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	<context-param>
+		<param-name>carnot.login.MODEL_REQUIRED</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>carnot.login.HEADING</param-name>
+		<param-value>portal-common-messages#portalFramework.title</param-value>
+	</context-param>
+	<context-param>
+		<param-name>HTML_ENABLE_AGENTSTYLE_ENGINE</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>javax.faces.DEFAULT_SUFFIX</param-name>
+		<param-value>.xhtml</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.icesoft.faces.delegateNonIface</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.icesoft.faces.synchronousUpdate</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.icesoft.faces.concurrentDOMViews</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.icesoft.faces.ignoreUserRoleAttributes</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.infinity.bpm.portal.common.logoutURI</param-name>
+		<param-value>/ipp/common/ippPortalLogout.jsp</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.icesoft.faces.uploadMaxFileSize</param-name>
+		<param-value>10485760</param-value>
+	</context-param>
+	<context-param>
+		<param-name>facelets.RESOURCE_RESOLVER</param-name>
+		<param-value>org.eclipse.stardust.ui.web.plugin.support.PortalPluginFaceletsResourceResolver</param-value>
+	</context-param>
+	<context-param>
+		<param-name>facelets.REFRESH_PERIOD</param-name>
+		<param-value>-1</param-value>
+	</context-param>
+	<context-param>
+		<param-name>org.apache.myfaces.trinidad.DISABLE_DIALOG_OUTCOMES</param-name>
+		<param-value>true</param-value>
+	</context-param>
+
+	<filter>
+		<filter-name>IppPortalLoginFilter</filter-name>
+		<filter-class>org.eclipse.stardust.ui.web.viewscommon.login.filter.LoginFilter</filter-class>
+	</filter>
+	<filter>
+		<filter-name>portalPluginContentFilter</filter-name>
+		<filter-class>
+			org.eclipse.stardust.ui.web.plugin.support.PortalPluginContentFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>portalPluginContentFilter</filter-name>
+		<url-pattern>/plugins/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>IppPortalLoginFilter</filter-name>
+		<url-pattern>*.iface</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>IppPortalLoginFilter</filter-name>
+		<url-pattern>*.jspx</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>IppPortalLoginFilter</filter-name>
+		<url-pattern>*.xhtml</url-pattern>
+	</filter-mapping>
+	<listener>
+		<listener-class>org.eclipse.stardust.ui.web.viewscommon.common.listener.SessionContextListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>
+			com.icesoft.faces.util.event.servlet.ContextEventRepeater</listener-class>
+	</listener>
+	<listener>
+		<listener-class>
+			org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
+	<servlet>
+		<servlet-name>faces</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
+		<servlet-name>Persistent Faces Servlet</servlet-name>
+		<servlet-class>
+			com.icesoft.faces.webapp.xmlhttp.PersistentFacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
+		<servlet-name>Blocking Servlet</servlet-name>
+		<servlet-class>com.icesoft.faces.webapp.xmlhttp.BlockingServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
+		<servlet-name>IppUploadServlet</servlet-name>
+		<servlet-class>
+			com.icesoft.faces.component.inputfile.FileUploadServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet>
+		<servlet-name>FsdContentServlet</servlet-name>
+		<servlet-class>org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileSystemDocumentServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>FsdContentServlet</servlet-name>
+		<url-pattern>/fsd-content/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>faces</servlet-name>
+		<url-pattern>/faces/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Persistent Faces Servlet</servlet-name>
+		<url-pattern>*.iface</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Persistent Faces Servlet</servlet-name>
+		<url-pattern>/xmlhttp/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Blocking Servlet</servlet-name>
+		<url-pattern>/block/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>IppUploadServlet</servlet-name>
+		<url-pattern>/uploadHtml</url-pattern>
+	</servlet-mapping>
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+	<resource-ref>
+		<res-ref-name>jdbc/AuditTrail.DataSource</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+		<res-sharing-scope>Shareable</res-sharing-scope>
+	</resource-ref>
+</web-app>

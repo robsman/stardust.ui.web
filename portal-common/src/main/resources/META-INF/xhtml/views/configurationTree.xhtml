@@ -1,0 +1,92 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid columns="2" rendered="#{ippPortalApp.loggedInUser.administrator}">
+		<ice:outputLabel value="#{common_msgPropsBean['common.preferenceScope.label']}#{common_msgPropsBean['common.colon']}" 
+			styleClass="label-form" />
+		<ice:selectOneMenu partialSubmit="true" converter="#{ippPortalConfig.prefScopesHelper}" 
+			value="#{ippPortalConfig.prefScopesHelper.selectedPreferenceScope}"
+			valueChangeListener="#{ippPortalConfig.preferenceScopeValueChanged}"> 
+			<pc:automationTag value="auto-FW-PortConf-PrefScope" standAlone="false"/>
+			<f:selectItems  value="#{ippPortalConfig.prefScopesHelper.allPreferenceScopes}"/>
+		</ice:selectOneMenu>
+	</ice:panelGrid>
+
+	<table style="width: 100%"><tr>
+		<td class="configCategoryTree">
+			<pc:automationTag value="auto-FW-PortConf-ConfigTree"/>
+			<ice:tree id="configTree" value="#{ippPortalConfig.tree.model}" var="item"
+				hideRootNode="true" hideNavigation="true">
+				<ice:treeNode>
+					<f:facet name="icon">
+						<ice:panelGroup style="display: inline;">
+							<ice:panelGroup style="display: inline;"
+								styleClass="category-tree-category-icon"
+								rendered="#{item.userObject.referencingCategory}">
+								<ice:commandLink action="#{item.userObject.toggleExpansion}" immediate="true">
+									<h:graphicImage value="#{item.userObject.icon}" />
+								</ice:commandLink>
+							</ice:panelGroup>
+							<ice:panelGroup style="display: inline"
+								rendered="#{item.userObject.referencingItem}"
+								styleClass="category-tree-view-icon">
+								<ice:commandLink action="#{item.userObject.itemClicked}" immediate="true">
+									<h:graphicImage value="#{item.userObject.icon}" />
+								</ice:commandLink>
+							</ice:panelGroup>
+						</ice:panelGroup>
+					</f:facet>
+					<f:facet name="content">
+						<ice:panelGroup style="display: inline;" >
+							<ice:panelGroup style="display: inline;"
+								styleClass="category-tree-category-label"
+								rendered="#{item.userObject.referencingCategory}">
+								<ice:panelGroup style="display: inline">
+									<ice:commandLink action="#{item.userObject.toggleExpansion}" immediate="true">
+											<pc:automationTag
+												value="auto-FW-PortConf-ConfigTree-Category"
+												standAlone="false" />
+											<ice:outputText value="#{item.userObject.category.label}" />
+									</ice:commandLink>
+								</ice:panelGroup>
+							</ice:panelGroup>
+							<ice:panelGroup style="display: inline;"
+								styleClass="category-tree-view-label"
+								rendered="#{item.userObject.referencingItem}">
+								<ice:panelGroup style="display: inline">
+									<ice:commandLink action="#{item.userObject.itemClicked}" immediate="true">
+											<pc:automationTag
+												value="auto-FW-PortConf-ConfigTree-CategItem"
+												standAlone="false" />
+											<ice:outputText value="#{item.userObject.item.label}"
+											escape="false" />
+									</ice:commandLink>
+								</ice:panelGroup>
+							</ice:panelGroup>
+						</ice:panelGroup>
+					</f:facet>
+				</ice:treeNode>
+			</ice:tree>
+		</td>
+		<td class="configViewPanel">
+			<c:if test="#{ippPortalConfig.configSelected}">
+				<table cellspacing="0" cellpadding="0" style="width: 100%">
+					<tr><td class="configViewPanelHeader">
+						<ice:outputText value="#{ippPortalConfig.configTitle}" />
+					</td></tr>
+					<tr><td style="height: 15px"><ice:outputText value="" /></td></tr>
+					<tr><td>
+						<ui:include src="/plugins/common/portalUserDefinedInclude.xhtml">
+							<ui:param name="includeFilePath" value="#{ippPortalConfig.configInclude}" />
+						</ui:include>
+					</td></tr>
+				</table>
+			</c:if>
+		</td>
+	</tr></table>	
+</f:view>

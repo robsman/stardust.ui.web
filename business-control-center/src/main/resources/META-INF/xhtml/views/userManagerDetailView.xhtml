@@ -1,0 +1,135 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+
+	<ice:panelGroup width="100%">
+		<ice:panelGroup>
+			<ice:panelGroup styleClass="clearing" />
+
+			<ice:panelGroup styleClass="heading">
+				<ice:outputText
+					value="#{userManagerDetail.messages['details.label']}" />
+			</ice:panelGroup>
+		</ice:panelGroup>
+
+		<table>
+			<tr>
+				<td style="vertical-align: top;"><ice:panelGrid columns="2"
+					style="float:right;">
+					<ice:column>
+						<ice:outputLabel
+							value="#{userManagerDetail.messages['column.name']}#{userManagerDetail.messages['colon']}"
+							styleClass="label-item" />
+					</ice:column>
+					<ice:column>
+						<ice:outputText value="#{userManagerDetail.userFullName}" />
+					</ice:column>
+
+					<ice:column>
+						<ice:outputLabel
+							value="#{userManagerDetail.messages['account.label']}#{userManagerDetail.messages['colon']}"
+							styleClass="label-item" />
+					</ice:column>
+					<ice:column>
+						<ice:outputText value="#{userManagerDetail.userAccount}" />
+					</ice:column>
+
+					<ice:column>
+						<ice:outputLabel
+							value="#{userManagerDetail.messages['eMail.label']}#{userManagerDetail.messages['colon']}"
+							styleClass="label-item" />
+					</ice:column>
+					<ice:column>
+						<ice:outputText value="#{userManagerDetail.userEmailId}" />
+					</ice:column>
+
+					<ice:column>
+						<ice:outputLabel
+							value="#{userManagerDetail.messages['accountTable.column.directItems']}#{userManagerDetail.messages['colon']}"
+							styleClass="label-item" />
+					</ice:column>
+					<ice:column>
+						<ice:outputText value="#{userManagerDetail.directCountItem}" />
+					</ice:column>
+
+					<ice:column>
+						<ice:outputLabel
+							value="#{userManagerDetail.messages['accountTable.column.indirectItems']}#{userManagerDetail.messages['colon']}"
+							styleClass="label-item" />
+					</ice:column>
+					<ice:column>
+						<ice:outputText value="#{userManagerDetail.inDirectCountItem}" />
+					</ice:column>
+
+					<ice:column>
+						<ice:outputLabel
+							value="#{userManagerDetail.messages['accountTable.column.rolesCount']}#{userManagerDetail.messages['colon']}"
+							styleClass="label-item" />
+					</ice:column>
+					<ice:column>
+						<ice:outputText value="#{userManagerDetail.roleCount}" />
+					</ice:column>
+				</ice:panelGrid></td>
+			</tr>
+		</table>
+		<ice:panelGroup styleClass="clearing" />
+
+		<ice:panelGroup id="tabSetTabs">
+			<ice:panelTabSet id="userManagerDetailDialogTab"
+				tabChangeListener="#{userManagerDetail.processTabChange}"
+				selectedIndex="#{userManagerDetail.selectedTabIndex}">
+				<!-- Panel Tab 1 defined -->
+				<ice:panelTab rendered="true"
+					label="#{userManagerDetail.messages['roleAssignment.label']}">
+					
+					<pc:automationTag value="auto-BCC-UserMgrDet-RoleAssignedTbl"/>
+					<pc:genericDataTable exportExcel="true"
+						title="#{userManagerDetail.messages['assignedRole.title']}"
+						bean="#{userManagerDetail}" id="roleAssignedList"
+						table="#{userManagerDetail.roleAssignedTable}"
+						sortSupported="true" 
+						toolbarUrl="/plugins/business-control-center/views/userManagerDetailViewAssignedRolesToolbar.xhtml"/>
+					<ice:panelGroup styleClass="clearing" /><!--
+
+					<ice:commandButton id="removeRoleFromUser"
+						disabled="#{userManagerDetail.disableRemoveRole}"
+						action="#{userManagerDetail.removeRoleFromUser}"
+						value="#{userManagerDetail.messages['button.removeRoleFromUser']}"
+						partialSubmit="true" styleClass="button" />
+					<ice:panelGroup styleClass="clearing" />-->
+					<pc:automationTag value="auto-BCC-UserMgrDet-RoleAssignableTbl"/>
+					<pc:genericDataTable exportExcel="true"
+						title="#{userManagerDetail.messages['button.assignableRoles']}"
+						bean="#{userManagerDetail}" id="roleAssignableList"
+						table="#{userManagerDetail.roleAssignableTable}"
+						sortSupported="true" 
+						toolbarUrl="/plugins/business-control-center/views/userManagerDetailViewAssignableRolesToolbar.xhtml" />
+					<ice:panelGroup styleClass="clearing" />
+
+					<!--<ice:commandButton id="addRoleToUser"
+						disabled="#{userManagerDetail.disableAddRole}"
+						action="#{userManagerDetail.addRoleToUser}"
+						value="#{userManagerDetail.messages['button.addRoleToUser']}"
+						partialSubmit="true" styleClass="button" />-->
+				</ice:panelTab>
+
+				<ice:panelTab rendered="true"
+					label="#{userManagerDetail.messages['activityList.label']}">
+					<ui:include src="/plugins/views-common/activityTableHelper/activityTableHelper.xhtml">
+						<ui:param name="title"
+							value="#{userManagerDetail.messages['activityList.table.title']} #{userManagerDetail.userAccount}" />
+						<ui:param name="id" value="activityList"/>
+						<ui:param name="bean" value="#{userManagerDetail.activityHelper}"/>
+					</ui:include>
+					<ice:panelGroup styleClass="clearing" />
+				</ice:panelTab>
+			</ice:panelTabSet>
+		</ice:panelGroup>
+	</ice:panelGroup>
+
+</f:view>

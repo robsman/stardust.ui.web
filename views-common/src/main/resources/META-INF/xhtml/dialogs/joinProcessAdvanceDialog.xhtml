@@ -1,0 +1,68 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup
+		rendered="#{searchBean.currentPage eq 'ADVANCE'}"
+		style="vertical-align: top; white-space: nowrap; text-align:left;width:100%;">
+		<ice:panelGroup>
+
+			<ice:panelGrid columns="1" width="100%" style="text-align: right">
+				<ice:commandLink action="#{searchBean.toggleView}"
+					immediate="true">
+					<pc:automationTag value="auto-COM-JoinProcDlg-AdvSearchLink" standAlone="false"/>
+					<ice:outputText
+						value="#{views_common_msgPropsBean['views.joinProcessDialog.selectFromList.link.label']} &amp;raquo;"
+						styleClass="action-link" escape="false" />
+				</ice:commandLink>
+			</ice:panelGrid>
+			
+			<ice:outputText rendered="#{joinProcessDialogBean.scope eq 'Process'}"
+				value="#{views_common_msgPropsBean['views.joinProcessDialog.specifyProcessToAbort.message']}"
+				escape="false" />
+			<ice:outputText rendered="#{joinProcessDialogBean.scope eq 'Case'}"
+				value="#{views_common_msgPropsBean['views.joinCaseDialog.specifyCaseToAbort.message']}"
+				escape="false" />
+				
+			<ice:panelGroup styleClass="clearing" />
+
+			<ice:panelGrid columns="2">
+				<ice:outputLabel rendered="#{joinProcessDialogBean.scope eq 'Process'}"
+					value="* #{views_common_msgPropsBean['views.joinProcessDialog.processOID.label']}"
+					styleClass="label-form" />
+				<ice:outputLabel rendered="#{joinProcessDialogBean.scope eq 'Case'}"
+					value="* #{views_common_msgPropsBean['views.attachToCase.caseOID.label']}"
+					styleClass="label-form" />
+					
+				<ice:inputText style="width: 300px"
+					value="#{searchBean.processOid}">
+				<pc:automationTag value="auto-COM-JoinProcDlg-ProcessOID" standAlone="false"/>	
+				</ice:inputText>
+
+				<ice:outputLabel
+					value="#{views_common_msgPropsBean['views.joinProcessDialog.linkComment.label']}"
+					styleClass="label-form" />
+
+				<ice:inputTextarea style="width: 300px"
+					value="#{searchBean.linkComment}" rows="2" >
+				<pc:automationTag value="auto-COM-JoinProcDlg-AdvDlgLinkComment" standAlone="false"/>	
+				</ice:inputTextarea>
+			</ice:panelGrid>
+		</ice:panelGroup>
+
+
+
+		<ice:panelGroup styleClass="clearing" />
+		<ice:panelGroup styleClass="clearing" />
+
+
+
+		<ice:panelGroup styleClass="msgError" style="height:15px;">
+			<ice:messages />
+		</ice:panelGroup>
+
+	</ice:panelGroup>
+</f:view>

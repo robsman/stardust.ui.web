@@ -1,0 +1,33 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+
+	<ice:panelGroup rendered="#{col.columnName == 'Value'}">
+		<ice:panelGroup rendered="#{empty row.modelName}"
+			style="white-space: nowrap;display:inline;">
+			<ice:inputText partialSubmit="true" value="#{row.value}" 
+				valueChangeListener="#{bean.valueChange}">
+				<pc:automationTag
+					value="auto-ADM-ConfigVariable-ConfigTreeTbl-Value" standAlone="false" />
+				<f:attribute name="row" value="#{row}" />
+			</ice:inputText>
+
+			<ice:outputText value="*" rendered="#{row.edited}"
+				style="color: red;padding-left: 0.5px;font-size: 15px; display:inline;" />
+		</ice:panelGroup>
+
+		<ice:graphicImage style="display:inline; "
+			url="/plugins/admin-portal/images/t.gif" rendered="#{not row.edited}" />
+
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'Description'}">
+		<ice:outputText value="#{row.description}" escape="false" />
+	</ice:panelGroup>
+
+</f:view>

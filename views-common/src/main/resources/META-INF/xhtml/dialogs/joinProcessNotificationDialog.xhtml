@@ -1,0 +1,26 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:component>
+
+		<ice:panelGrid style="text-align:left;" width="100%">
+			<ice:panelGroup>
+				<ice:outputText value="#{joinProcessDialogBean.joinProcessMessage}"
+					escape="false" />
+				<pc:automationTag value="auto-DT-DTCol-StringVal" />
+			</ice:panelGroup>
+
+			<ice:panelGroup styleClass="clearing" />
+			
+			<ice:outputText
+				rendered="#{joinProcessDialogBean.scope eq 'Process'}"
+				value="#{views_common_msgPropsBean['views.joinProcessDialog.viewprocessJoined']}" />
+			<ice:outputText rendered="#{joinProcessDialogBean.scope eq 'Case'}"
+				value="#{views_common_msgPropsBean['views.attachToCase.showCase.message']}" />
+		</ice:panelGrid>
+
+	</ui:component>
+</f:view>

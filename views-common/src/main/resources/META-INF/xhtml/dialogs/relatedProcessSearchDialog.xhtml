@@ -1,0 +1,94 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:composition>	
+	<ui:include src="/plugins/views-common/views/case/createCaseDialog.xhtml" />
+	<ui:include	src="/plugins/views-common/views/case/attachToCaseDialog.xhtml" />
+	
+		<ice:panelPopup modal="true" 
+			rendered="#{relatedProcessSearchBean.visible}" draggable="true"
+			autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText styleClass="headerText"
+						rendered="#{relatedProcessSearchBean.currentPage eq 'SEARCH'}"
+						value="#{views_common_msgPropsBean['views.relatedProcessSearch.title']}" />
+					<ice:outputText styleClass="headerText"
+						rendered="#{relatedProcessSearchBean.currentPage eq 'ADVANCE'}"
+						value="#{views_common_msgPropsBean['views.relatedProcessSearchAdvanced.title']}" />
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png"
+						action="#{relatedProcessSearchBean.closePopup}" immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+
+			<f:facet name="body">
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="2" 
+					cellspacing="2" renderNorth="false" renderEast="true"
+					renderSouth="true" renderWest="true" renderCenter="true">
+					<f:facet name="center">
+					
+					<c:set var="searchBean" value="#{relatedProcessSearchBean}" />
+					
+						<ice:panelGroup style="width:600px;">
+							<ice:panelGroup 
+								 rendered="#{relatedProcessSearchBean.currentPage eq 'SEARCH'}">
+								 <ui:include src="/plugins/views-common/dialogs/joinProcessSearchDialog.xhtml" />
+							</ice:panelGroup>
+							<ice:panelGroup
+								rendered="#{relatedProcessSearchBean.currentPage eq 'ADVANCE'}"
+								style="vertical-align: top; white-space: nowrap; text-align:left;">
+								<ui:include src="/plugins/views-common/dialogs/joinProcessAdvanceDialog.xhtml" />
+							</ice:panelGroup>
+							<ice:panelGroup
+								rendered="#{relatedProcessSearchBean.currentPage eq 'NOTIFICATION'}"
+								style="vertical-align: top; white-space: nowrap; text-align:left;">
+								 <ui:include src="/plugins/views-common/dialogs/joinProcessNotificationDialog.xhtml" />
+							</ice:panelGroup>
+
+						</ice:panelGroup>
+					</f:facet>
+					<f:facet name="south">
+						<ice:panelGroup>
+							<ice:panelGroup rendered="#{relatedProcessSearchBean.currentPage ne 'NOTIFICATION'}">
+								<ice:commandButton
+									value="#{views_common_msgPropsBean['views.joinProcessDialog.abortAndJoin.button.label']}"
+									action="#{relatedProcessSearchBean.abortAndJoin}"
+									styleClass="button" />
+								<ice:commandButton
+									value="#{views_common_msgPropsBean['views.relatedProcessSearch.createCase.button.label']}"
+									action="#{relatedProcessSearchBean.createCase}"
+									styleClass="button" />
+								<ice:commandButton
+									value="#{views_common_msgPropsBean['views.relatedProcessSearch.addToCase.button.label']}"
+									action="#{relatedProcessSearchBean.abortAndJoin}"
+									styleClass="button" />
+								<ice:commandButton
+									value="#{views_common_msgPropsBean['common.cancel']}"
+									action="#{relatedProcessSearchBean.closePopup}"
+									immediate="true" styleClass="button" />
+							</ice:panelGroup>
+							
+							<ice:panelGroup
+								rendered="#{relatedProcessSearchBean.currentPage eq 'NOTIFICATION'}">
+								<ice:commandButton
+									value="#{views_common_msgPropsBean['common.yes']}"
+									action="#{relatedProcessSearchBean.openProcess}" 
+									styleClass="button" />
+								<ice:commandButton
+									value="#{views_common_msgPropsBean['common.no']}"
+									action="#{relatedProcessSearchBean.closePopup}" 
+									immediate="true"
+									styleClass="button" />
+							</ice:panelGroup>
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

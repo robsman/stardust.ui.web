@@ -1,0 +1,44 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ui:include src="/plugins/processportal/launchpad/departmentDialog.xhtml" />
+	
+	<ice:panelGroup>
+		<ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
+			<ui:param name="bean" value="#{startableProcessBean}" />
+			<ui:param name="title"
+				value="#{startableProcessBean.messages['title']}" />
+			<ui:param name="collapsible" value="true" />
+			<ui:param name="showRefreshLink" value="true" />
+			<ui:param name="automationTag" value="auto-PP-LP-StartableProc-ColPnl" />
+		</ui:include>
+	</ice:panelGroup>
+	<ice:panelGroup rendered="#{startableProcessBean.expanded}">
+		<ice:panelGroup effect="#{startableProcessBean.effect}" rendered="#{not empty startableProcessBean.items}">
+			<pc:automationTag value="auto-PP-LP-StartableProc-Tbl" standAlone="false"/>
+			<ice:panelSeries var="item" value="#{startableProcessBean.items}">
+				<ice:panelGrid columns="2">
+					<ice:graphicImage
+						value="/plugins/processportal/images/icons/process.png"  />
+					<ice:panelGroup style="display:inline;" panelTooltip="procToolTip">
+						<ice:commandLink value="#{item.name}" styleClass="action-link"
+							action="#{item.selectAction}">
+						</ice:commandLink>
+					</ice:panelGroup>
+				</ice:panelGrid>
+				<ui:include src="/plugins/views-common/common/processToolTip.xhtml">
+					<ui:param name="tooltip" value="#{item.title}" />
+				</ui:include>
+			</ice:panelSeries>
+		</ice:panelGroup>
+		<ice:panelGroup effect="#{startableProcessBean.effect}" rendered="#{empty startableProcessBean.items}">
+			<ice:outputText value="#{startableProcessBean.messages['noneItems.message']}"/>
+		</ice:panelGroup>
+	</ice:panelGroup>
+
+</f:view>

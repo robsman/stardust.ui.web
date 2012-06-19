@@ -1,0 +1,16 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+		<ice:panelGroup rendered="#{col.columnName == 'Duration'}">
+			<ice:outputText rendered="true" 
+                     value="#{empty row.terminationTime ? '-' : (row.terminationTime.time - row.startTime.time) / 1000.0 / 60.0 / 60.0}" 
+                     converter="doubleStringDateConverter"/>
+		</ice:panelGroup>
+	</ice:panelGroup>
+</f:view>

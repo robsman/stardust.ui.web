@@ -1,0 +1,109 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<!-- Input Params
+		bean* - Bean Reference
+		row* - Row Object
+		col* - ColumnPreference Reference
+	 -->
+
+	<ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'CriticalityValue'}">
+			<ice:panelGroup rendered="#{row.editable}">
+				<ice:inputText if="rangeFrm" value="#{row.rangeFrom}" style="width : 2.5em;" partialSubmit="true">
+				</ice:inputText>
+			</ice:panelGroup>
+			<ice:outputText value="#{row.rangeFrom}" rendered="#{!row.editable}" />
+		</ice:panelGroup>
+		
+		<ice:panelGroup rendered="#{col.columnName == 'RangeFrom'}">
+			<ice:panelGroup rendered="#{row.editable}">
+				<ice:inputText if="rangeFrm" value="#{row.rangeFrom}" style="width : 2.5em;" partialSubmit="true">
+				</ice:inputText>
+			</ice:panelGroup>
+			<ice:outputText value="#{row.rangeFrom}" rendered="#{!row.editable}" />
+		</ice:panelGroup>
+		
+		<ice:panelGroup rendered="#{col.columnName == 'RangeTo'}">
+			<ice:panelGroup rendered="#{row.editable}">
+				<ice:inputText value="#{row.rangeTo}" size="1" style="width : 2.5em;" partialSubmit="true">
+				</ice:inputText>
+			</ice:panelGroup>
+			<ice:outputText value="#{row.rangeTo}" rendered="#{!row.editable}" />
+		</ice:panelGroup>
+		
+		<ice:panelGroup rendered="#{col.columnName == 'Label'}">
+			<ice:panelGroup rendered="#{row.editable}">
+				<ice:inputText value="#{row.label}" size="1" style="width : 90%;" partialSubmit="true">
+				</ice:inputText>
+			</ice:panelGroup>
+			<ice:outputText value="#{row.label}" rendered="#{!row.editable}" />
+		</ice:panelGroup>
+		
+		<ice:panelGroup rendered="#{col.columnName == 'Icon'}">
+			<ice:panelGroup rendered="#{row.editable}">
+				<ice:commandLink actionListener="#{row.openIconSelector}" onclick="Event.stop(event);" immediate="true">
+					<pc:automationTag value="auto-ADM-CriticalityConfig-CatagoriesTable-IconSelector" standAlone="false" />
+					<ice:graphicImage value="#{row.icon}" />
+	 			</ice:commandLink>
+				<ui:include src="/plugins/admin-portal/views/criticalityIconSelectorPopup.xhtml">
+					<ui:param name="row" value="#{row}" />					
+				</ui:include>
+			</ice:panelGroup>
+			<ice:graphicImage value="#{row.icon}" rendered="#{!row.editable}"/>
+		</ice:panelGroup>
+		
+		<ice:panelGroup rendered="#{col.columnName == 'IconDisplay'}">			
+			<ice:panelGroup rendered="#{row.editable}">
+				<ice:commandLink actionListener="#{row.setIconCount}" onclick="Event.stop(event);" immediate="true">
+					<pc:automationTag value="auto-ADM-CriticalityConfig-CatagoriesTable-IconCountSelector-One" standAlone="false" />
+	 				<ice:graphicImage value="#{row.defaultIcon}" rendered="#{1 gt row.iconCount}" />
+	 				<ice:graphicImage value="#{row.icon}" rendered="#{1 le row.iconCount}" />
+	 				<f:attribute name="displayCount" value="1" />
+	 			</ice:commandLink>
+				<ice:commandLink actionListener="#{row.setIconCount}" onclick="Event.stop(event);" immediate="true">
+					<pc:automationTag value="auto-ADM-CriticalityConfig-CatagoriesTable-IconCountSelector-Two" standAlone="false" />			
+					<ice:graphicImage value="#{row.defaultIcon}" rendered="#{2 gt row.iconCount}" />
+					<ice:graphicImage value="#{row.icon}" rendered="#{2 le row.iconCount}" />
+	 				<f:attribute name="displayCount" value="2" />
+	 			</ice:commandLink>
+				<ice:commandLink actionListener="#{row.setIconCount}" onclick="Event.stop(event);" immediate="true">
+					<pc:automationTag value="auto-ADM-CriticalityConfig-CatagoriesTable-IconCountSelector-Three" standAlone="false" />
+					<ice:graphicImage value="#{row.defaultIcon}" rendered="#{3 gt row.iconCount}" />
+					<ice:graphicImage value="#{row.icon}" rendered="#{3 le row.iconCount}" />
+	 				<f:attribute name="displayCount" value="3" />
+	 			</ice:commandLink>
+				<ice:commandLink actionListener="#{row.setIconCount}" onclick="Event.stop(event);" immediate="true">
+					<pc:automationTag value="auto-ADM-CriticalityConfig-CatagoriesTable-IconCountSelector-Four" standAlone="false" />
+					<ice:graphicImage value="#{row.defaultIcon}" rendered="#{4 gt row.iconCount}" />
+					<ice:graphicImage value="#{row.icon}" rendered="#{4 le row.iconCount}" />
+	 				<f:attribute name="displayCount" value="4" />
+	 			</ice:commandLink>
+				<ice:commandLink actionListener="#{row.setIconCount}" onclick="Event.stop(event);" immediate="true">
+					<pc:automationTag value="auto-ADM-CriticalityConfig-CatagoriesTable-IconCountSelector-Five" standAlone="false" />
+					<ice:graphicImage value="#{row.defaultIcon}" rendered="#{5 gt row.iconCount}" />
+					<ice:graphicImage value="#{row.icon}" rendered="#{5 le row.iconCount}" />
+	 				<f:attribute name="displayCount" value="5" />
+	 			</ice:commandLink>
+ 			</ice:panelGroup>
+			<ice:panelGroup rendered="#{!row.editable}">
+ 				<ice:graphicImage value="#{row.defaultIcon}" rendered="#{1 gt row.iconCount}" />
+ 				<ice:graphicImage value="#{row.icon}" rendered="#{1 le row.iconCount}" />
+				<ice:graphicImage value="#{row.defaultIcon}" rendered="#{2 gt row.iconCount}" />
+				<ice:graphicImage value="#{row.icon}" rendered="#{2 le row.iconCount}" />
+				<ice:graphicImage value="#{row.defaultIcon}" rendered="#{3 gt row.iconCount}" />
+				<ice:graphicImage value="#{row.icon}" rendered="#{3 le row.iconCount}" />
+				<ice:graphicImage value="#{row.defaultIcon}" rendered="#{4 gt row.iconCount}" />
+				<ice:graphicImage value="#{row.icon}" rendered="#{4 le row.iconCount}" />
+				<ice:graphicImage value="#{row.defaultIcon}" rendered="#{5 gt row.iconCount}" />
+				<ice:graphicImage value="#{row.icon}" rendered="#{5 le row.iconCount}" />
+			</ice:panelGroup>
+		</ice:panelGroup>
+	</ice:panelGroup>
+</f:view>

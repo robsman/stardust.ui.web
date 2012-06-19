@@ -1,0 +1,106 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		row*= Instance of Row Class
+		col*= Instance of ColumnPreference 
+	 -->
+
+	<ice:panelGroup rendered="#{col.columnName == 'Event Details'}">
+		<ice:outputText value="#{row.details}" escape="false"
+			rendered="#{!row.moreDetailsAvailable}" />
+		<ice:outputText value="#{row.details}" title="#{row.fullDetails}"
+			escape="false" rendered="#{row.moreDetailsAvailable}" />
+	</ice:panelGroup>
+	
+	<ice:panelGroup rendered="#{col.columnName == 'Criticality'}">
+		<ice:panelGroup rendered="#{row.refersToActivity}">
+			<ice:panelGroup panelTooltip="criticalityTootip">
+					<ice:graphicImage value="#{row.criticality.icon}" rendered="#{1 le row.criticality.iconCount}" />
+					<ice:graphicImage value="#{row.criticality.icon}" rendered="#{2 le row.criticality.iconCount}" />
+				<ice:graphicImage value="#{row.criticality.icon}" rendered="#{3 le row.criticality.iconCount}" />
+				<ice:graphicImage value="#{row.criticality.icon}" rendered="#{4 le row.criticality.iconCount}" />
+				<ice:graphicImage value="#{row.criticality.icon}" rendered="#{5 le row.criticality.iconCount}" />
+			</ice:panelGroup>
+			<ice:panelTooltip id="criticalityTootip"
+				style="background: #FFFFFF; background-color: #F0F0F2; border: 2px solid black;">
+				<f:facet name="body">
+					<ice:panelGrid columns="2" style="width: 100%; height: 100%;">
+						<ice:outputText
+							value="#{views_common_msgPropsBean['processHistory.activityTable.criticalityTooltip.criticality']}#{views_common_msgPropsBean['common.colon']}"
+							styleClass="label-form"
+							style="text-align: left; padding-left: 0px;" />
+						<ice:outputText value="#{row.criticality.label}"
+							style="text-align: left; font-weight: bold; padding-left: 0px;" />
+						<ice:outputText
+							value="#{views_common_msgPropsBean['processHistory.activityTable.criticalityTooltip.value']}#{views_common_msgPropsBean['common.colon']}"
+							styleClass="label-form"
+							style="text-align: left; padding-left: 0px;" />
+						<ice:outputText value="#{row.criticalityValue}"
+							style="text-align: left; font-weight: bold; padding-left: 0px;" />
+					</ice:panelGrid>
+				</f:facet>
+			</ice:panelTooltip>
+		</ice:panelGroup>
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'Actions'}">
+		<ice:panelGrid columns="4">
+			<ice:commandLink actionListener="#{ippActivityHelper.openActivity}"
+				rendered="#{row.refersToActivity}"
+				disabled="#{not (row.refersToActivity and row.activatable) }">
+				<pc:automationTag value="auto-COM-ACTHistoryTable-ActionsOpen" standAlone="false"/>
+				<f:param name="oid" value="#{row.tableEntry.OID}" />
+				<ice:graphicImage url="/plugins/common/images/activate_activity.png"
+					styleClass="#{not (row.refersToActivity and row.activatable) ? 'iceCmdBtn-dis' : ''}"
+					title="#{common_msgPropsBean['common.activity.activate']}" />
+			</ice:commandLink>
+
+			<ice:commandLink
+				actionListener="#{row.activityTreeTable.openAbortActivityDialog}"
+				rendered="#{row.refersToActivity}"
+				disabled="#{not (row.refersToActivity and row.abortActivity)}">
+				<pc:automationTag value="auto-COM-ACTHistoryTable-ActionsAbort" standAlone="false"/>
+				<h:graphicImage
+					value="/plugins/common/images/icons/process-history/active/abort.png"
+					title="#{common_msgPropsBean['common.activity.abort']}"
+					styleClass="#{not (row.refersToActivity and row.abortActivity) ? 'iceCmdBtn-dis' : ''}" />
+				<f:attribute name="row" value="#{row}" />
+			</ice:commandLink>
+
+			<ice:commandLink
+				actionListener="#{row.activityTreeTable.activityUIBuilder.openDelegateDialog}"
+				rendered="#{row.refersToActivity}"
+				disabled="#{not (row.refersToActivity and row.delegable)}">
+				<pc:automationTag value="auto-COM-ACTHistoryTable-ActionsDelegate" standAlone="false"/>
+				<h:graphicImage
+					value="/plugins/common/images/icons/process-history/active/delegate.png"
+					title="#{views_common_msgPropsBean['delegation.tooltip.title']}"
+					styleClass="#{not (row.refersToActivity and row.delegable) ? 'iceCmdBtn-dis' : ''}" />
+				<f:attribute name="row" value="#{row}" />
+			</ice:commandLink>
+			
+			<ice:panelGroup rendered="#{row.refersToActivity and row.qualityAssuranceCodesBean.qualityAssuranceCodesVisible}"
+				style="text-align:right;">
+				<ice:menuBar displayOnClick="true"
+					style="text-align: left; width: auto" immediate="false"
+					styleClass="stdMenuBar">
+					<ice:menuItem
+						disabled="#{row.qualityAssuranceCodesBean.qualityAssuranceCodesDisabled}"
+						icon="/plugins/views-common/images/icons/wrench_exclamation_menu.png"
+						style="border:none;" value=""
+						title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.qaCodes']}">
+						<ice:menuItems
+							value="#{row.qualityAssuranceCodesBean.qualityACItems}" />
+					</ice:menuItem>
+				</ice:menuBar>
+			</ice:panelGroup>
+		</ice:panelGrid>
+	</ice:panelGroup>
+</f:view>

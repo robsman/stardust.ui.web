@@ -1,0 +1,49 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
+			<ui:param name="bean" value="#{myProcessesPanel}" />
+			<ui:param name="title"
+				value="#{myProcessesPanel.messages['title']}" />
+			<ui:param name="collapsible" value="true" />
+			<ui:param name="showRefreshLink" value="true" />
+			<ui:param name="automationTag" value="auto-PP-LP-MyProcesses-ColPnl" />
+		</ui:include>
+	</ice:panelGroup>
+	<ice:panelGroup rendered="#{myProcessesPanel.expanded}">
+		<ice:panelGroup rendered="#{not empty myProcessesPanel.items}">
+			<ice:outputText
+				value="#{myProcessesPanel.messages['description']}" />
+			<pc:automationTag value="auto-PP-LP-MyProcesses-MyProcTbl" standAlone="false"/>
+			<ice:panelSeries var="item" value="#{myProcessesPanel.items}">
+				<ice:panelGrid columns="3">
+					<ice:graphicImage
+						value="/plugins/processportal/images/icons/process.png" />
+					<ice:panelGroup style="display:inline;" panelTooltip="procToolTip">
+						<ice:outputText value="#{item.name}:" />
+					</ice:panelGroup>
+					<ice:commandLink styleClass="action-link" action="#{item.select}" 
+						disabled="#{(item.totalCount eq 0) ? true : false}">
+						<ice:outputFormat style="white-space: nowrap;"
+							value="#{myProcessesPanel.messages['items']}">
+							<f:param value="#{item.totalCount}" />
+						</ice:outputFormat>
+					</ice:commandLink>
+				</ice:panelGrid>
+				<ui:include src="/plugins/views-common/common/processToolTip.xhtml">
+					<ui:param name="tooltip" value="#{item.title}" />
+				</ui:include>
+			</ice:panelSeries>
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{empty myProcessesPanel.items}">
+			<ice:outputText value="#{myProcessesPanel.messages['noneItems.message']}"/>
+		</ice:panelGroup>
+	</ice:panelGroup>
+
+</f:view>

@@ -1,0 +1,29 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+<html>
+<head>
+	<ice:outputStyle href="/plugins/business-control-center/css/ganttChart.css" />
+</head>
+<body>
+
+	<ice:panelGroup>
+		<ui:include src="/plugins/views-common/views/processContextExplorer/resubmissionActivityNotes.xhtml" />
+	</ice:panelGroup>
+	
+	<ice:panelGroup>
+		<ui:include src="/plugins/views-common/processTableHelper/processTableHelper.xhtml">
+			<ui:param name="title" value="#{businessProcessManager.messages['processTable.title']}"/>
+			<ui:param name="id" value="processList"/>
+			<ui:param name="bean" value="#{businessProcessManager.processHelper}"/>
+		</ui:include>
+	</ice:panelGroup>
+
+</body>
+</html>
+</f:view>

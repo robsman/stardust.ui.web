@@ -1,0 +1,38 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Generic Abort and Start Menu Bar *****
+		# Attributes ('*' indicates mandatory attributes)
+		bean* = Instance of bean having action methods 
+		processInstance = ProcessInstance Name.
+		activityInstance = ActivityInstance Name (when called from ActivityTable actions column)
+		-->
+	<ice:panelGroup style="text-align:center;">
+		<ice:menuBar displayOnClick="true" style="text-align: left;"
+				immediate="false"  styleClass="switchMenuBar"  >
+				<ice:menuItem 
+					icon="/plugins/views-common/images/icons/case-menu.png"
+					style="border:none;" value="" title="#{views_common_msgPropsBean['views.case.tooltip.menu']}">
+					<ice:menuItem styleClass="switchMnuItm" 
+						value="#{views_common_msgPropsBean['views.createCase.menubar.attachToCase']}"
+						actionListener="#{bean.attachToCase}" icon="">
+						<pc:automationTag value="auto-COM-CaseMenu-AttachToCase" standAlone="false"/>
+						<f:attribute name="processInstance" value="#{processInstance}" />
+						<f:attribute name="activityInstance" value="#{activityInstance}" />
+					</ice:menuItem>
+					<ice:menuItem styleClass="switchMnuItm"  disabled="#{!bean.canCreateCase}"
+						value="#{views_common_msgPropsBean['views.createCase.menubar.createCase']}"
+						actionListener="#{bean.openCreateCase}" icon="">
+						<pc:automationTag value="auto-COM-CaseMenu-CreateCase" standAlone="false"/>
+						<f:attribute name="processInstance" value="#{processInstance}" />
+						<f:attribute name="activityInstance" value="#{activityInstance}" />
+					</ice:menuItem>					
+				</ice:menuItem>
+			</ice:menuBar>
+	</ice:panelGroup>
+</f:view>

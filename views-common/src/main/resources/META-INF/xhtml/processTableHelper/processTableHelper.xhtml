@@ -1,0 +1,45 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		id* = Id of the Table
+		title* = Title of the Table
+		bean* = Table instance
+		processDetailsView = true/false.Default false
+		includeHelpers = true/false. Default true
+	-->
+
+	<ui:include src="/plugins/views-common/common/panelConfirmation.xhtml" />
+
+
+
+	<c:if test="#{empty includeHelpers}">
+		<c:set var="includeHelpers" value="true" />
+	</c:if>
+
+	<ice:panelGroup rendered="#{includeHelpers}">
+		<ui:include src="/plugins/views-common/views/case/createCaseDialog.xhtml" />
+		<ui:include	src="/plugins/views-common/views/case/attachToCaseDialog.xhtml" />
+		<ui:include	src="/plugins/views-common/dialogs/switchProcessDialog.xhtml" />
+		<ui:include	src="/plugins/views-common/dialogs/joinProcessDialog.xhtml" />
+		<ui:include	src="/plugins/views-common/contentmgmt/views/notificationMessage.xhtml" />
+	</ice:panelGroup>
+	
+	<!-- included outside  ice:panelGroup to avoid double click issue   -->
+	<c:if test="#{includeHelpers}" >
+		<ui:include src="/plugins/views-common/dialogs/abortProcess.xhtml"  />
+	</c:if>
+	
+	<pc:automationTag value="auto-COM-ProcTbl-DataTable" />
+	<pc:genericDataTable exportExcel="true"
+		title="#{title}"
+		bean="#{bean}" id="#{id}"
+		table="#{bean.processTable}" sortSupported="true"		
+		toolbarUrl="/plugins/views-common/processTableHelper/processTableHelperToolbar.xhtml"/>
+	
+</f:view>

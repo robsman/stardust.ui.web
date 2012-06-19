@@ -1,0 +1,129 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<html>
+	<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"></meta>
+	<link
+		href="#{facesContext.externalContext.requestContextPath}/plugins/views-common/css/context-portal.css"
+		rel="stylesheet" type="text/css" />
+
+	<title>Chat Panel</title>
+	</head>
+	<body>
+	<ice:panelGroup>
+		<ui:include src="/plugins/views-common/views/chat/chatCloseConfirmationPopup.xhtml" />
+	</ice:panelGroup>
+	<ice:panelGroup styleClass="pnlBrdrDemo">
+		<ice:panelBorder renderNorth="false" renderSouth="false"
+			renderCenter="true" renderWest="true" renderEast="false">
+			<f:facet name="west">
+				<ice:panelGroup>
+					<ice:panelGroup rendered="#{chatViewBean.chatRoom.currentUserChatOwner}">
+						<ui:include
+							src="#{chatViewBean.chatRoom.autoCompleteSelector.autocompleteContentUrl}">
+							<ui:param name="component"
+								value="#{chatViewBean.chatRoom.autoCompleteSelector}" />
+						</ui:include>
+					</ice:panelGroup>
+					<ice:panelGroup
+						rendered="#{chatViewBean.chatRoom.userStillInChat}">
+						<ui:include
+							src="#{chatViewBean.chatRoom.autoCompleteSelector.selectedDataContentUrl}">
+							<ui:param name="component"
+								value="#{chatViewBean.chatRoom.autoCompleteSelector}" />
+						</ui:include>
+					</ice:panelGroup>
+					<ice:panelGroup
+						rendered="#{!chatViewBean.chatRoom.userStillInChat}">
+						
+						<ice:dataTable value="#{chatViewBean.afterLogoutList}"
+							var="chatMember" width="100%" columnClasses="chatPartColClass1, chatPartColClass2, chatPartColClass3">
+							<h:column>
+								<f:facet name="header">
+									<ice:outputText value="" />
+								</f:facet>
+								<ice:graphicImage value="#{chatMember.imageURL}" width="24px"
+									height="24px" />
+							</h:column>
+							<h:column>
+								<f:facet name="header">
+									<ice:outputText value="#{chatViewBean.messages['userName']}" />
+								</f:facet>
+								<ice:outputText value="#{chatMember.fullName}" />
+							</h:column>
+							<h:column>
+								<f:facet name="header">
+									<ice:outputText value="" />
+								</f:facet>
+								<ice:graphicImage
+									value="/plugins/common/images/tab-bttn-close.png"
+									styleClass="iceCmdBtn-dis" />
+							</h:column>
+						</ice:dataTable>
+					</ice:panelGroup>
+				</ice:panelGroup>
+			</f:facet>
+
+			<f:facet name="center">
+				<ice:panelGroup>
+					<ice:panelGroup styleClass="panelHeader">
+						<ice:outputText styleClass="panelHeaderTitle"
+							value="#{chatViewBean.messages['chat']}" />
+					</ice:panelGroup>
+					<ice:panelGroup dropTarget="true"
+						dropListener="#{chatViewBean.onDocumentDropped}"
+						dragMask="hover_start, dragging, hover_end, drag_cancel"
+						hoverclass="dropTargetHover" scrollHeight="300px"
+						scrollWidth="100%" styleClass="chatEntryPanel">
+						<ice:panelSeries styleClass="chatEntryPanelSeries"
+							value="#{chatViewBean.chatRoom.userStillInChat ? chatViewBean.chatRoom.chatMessages : chatViewBean.afterLogoutChatMessages}"
+							var="chatMessage">
+							<ice:panelGroup>
+								<ice:panelGroup>
+									<ice:outputLabel value="#{chatMessage.user}"
+										rendered="#{chatMessage.userNotBlank}" styleClass="chat-messageeditor-user#{chatMessage.userIndex}" style="font-weight: bold;" />
+									<ice:outputText value="#{chatMessage.timeStamp}" styleClass="chat-messageeditor-user#{chatMessage.userIndex}" style="font-weight: bold;" />
+								</ice:panelGroup>
+								<ice:outputText value="#{chatMessage.message}"
+									rendered="#{!chatMessage.fileTransfr}" escape="false" />
+								<ice:commandLink actionListener="#{chatViewBean.showAttachments}"
+									rendered="#{chatMessage.fileTransfr}">
+									<pc:automationTag value="auto-COM-ChatView-ShowAttach"
+										standAlone="false" />
+									<f:attribute name="attachment"
+										value="#{chatMessage.attachedFile}" />
+									<ice:outputText
+										value="#{chatViewBean.messages['fileSent']} "
+										escape="false" />
+									<ice:graphicImage value="#{chatMessage.documentIcon}" />
+								</ice:commandLink>
+							</ice:panelGroup>
+						</ice:panelSeries>
+					</ice:panelGroup>
+
+					<ice:panelGroup styleClass="chatMessageEditor">
+						<ui:include src="#{chatViewBean.messenger.contentUrl}">
+							<ui:param name="messenger" value="#{chatViewBean.messenger}" />
+						</ui:include>
+						<ice:panelGroup styleClass="chatSendButtonContainer">
+							<pc:automationTag value="auto-COM-ChatView-BtnsBar"
+								standAlone="false" />
+							<ice:commandButton value="#{views_common_msgPropsBean['common.send']}"
+								disabled="#{!chatViewBean.canSendMessage}"
+								actionListener="#{chatViewBean.sendMessage}" />
+						</ice:panelGroup>
+					</ice:panelGroup>
+				</ice:panelGroup>
+			</f:facet>
+		</ice:panelBorder>
+	</ice:panelGroup>
+	</body>
+	</html>
+
+</f:view>

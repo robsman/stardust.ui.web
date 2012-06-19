@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="WINDOWS-1252"?>
+<jardesc>
+<jar path="ipp-business-control-center.jar"/>
+<options buildIfNeeded="true" compress="true" descriptionLocation="/business-control-center/business-control-center.jardesc" exportErrors="false" exportWarnings="true" includeDirectoryEntries="true" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+<storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+<selectedProjects/>
+<manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+<sealing sealJar="false">
+<packagesToSeal/>
+<packagesToUnSeal/>
+</sealing>
+</manifest>
+<selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+<javaElement handleIdentifier="=business-control-center/src\/main\/java"/>
+<javaElement handleIdentifier="=business-control-center/src\/main\/resources"/>
+</selectedElements>
+<fatjar builder="org.eclipse.jdt.ui.plain_jar_builder" launchConfig=""/>
+</jardesc>

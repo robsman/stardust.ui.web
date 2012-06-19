@@ -1,0 +1,20 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ice:panelGroup>
+		<ui:include src="realm.xhtml" />	
+	</ice:panelGroup>
+	<ice:panelGroup styleClass="clearing" />
+	
+	<pc:automationTag value="auto-ADM-RealmMgmt-DataTable"/>
+	<pc:genericDataTable
+		bean="#{realmMgmtBean}" id="userRealmsList" title="#{realmMgmtBean.messages['userRealmsTable.title']}"
+		table="#{realmMgmtBean.userRealmsTable}" sortSupported="true" 
+		toolbarUrl="/plugins/admin-portal/views/realmMgmtViewToolbar.xhtml" />
+	
+</f:view>

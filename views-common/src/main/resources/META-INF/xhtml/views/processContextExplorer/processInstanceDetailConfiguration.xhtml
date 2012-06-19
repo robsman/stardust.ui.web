@@ -1,0 +1,124 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup style="padding-left: 5px;">
+		<ui:include
+			src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+			<ui:param name="dialogBean"
+				value="#{processInstanceDetailConfigurationBean.processDetailConfirmationDialog}" />
+		</ui:include>
+		<ice:panelGroup styleClass="heading">
+			<ice:outputText
+				value="#{views_common_msgPropsBean['processHistoryTable.processHistoryFilters']}" />
+		</ice:panelGroup>
+
+		<ice:panelGrid style="text-align:left;" columns="2">
+			<ice:outputLabel
+				value="#{views_common_msgPropsBean['processHistoryTable.filtersLabel']}#{common_msgPropsBean['common.colon']}"
+				styleClass="label-item" />
+			<ice:panelGroup>
+				<ui:repeat
+					value="#{processInstanceDetailConfigurationBean.filterToolbarItems}"
+					var="filterToolbarItem">
+					<h:commandLink name="#{filterToolbarItem.name}"
+						actionListener="#{processInstanceDetailConfigurationBean.toggleFilter}"
+						style="vertical-align: middle;">
+						<pc:automationTag
+							value="auto-COM-ProcDetConf-#{filterToolbarItem.name}"
+							standAlone="false" />
+						<h:graphicImage value="#{filterToolbarItem.image}"
+							style="border: none; padding-right: 10px;"
+							title="#{views_common_msgPropsBean[filterToolbarItem.messsageKey]}" />
+						<f:param value="#{filterToolbarItem.name}" name="name" />
+					</h:commandLink>
+
+					<h:graphicImage
+						rendered="#{not filterToolbarItem.visible and not filterToolbarItem.neverVisible}"
+						style="border: none; padding-right: 10px;"
+						value="/plugins/common/images/t.gif" width="15px" height="15px" />
+				</ui:repeat>
+			</ice:panelGroup>
+
+			<ice:panelGroup />
+			<ice:panelGroup styleClass="clearing" />
+
+			<ice:panelGroup />
+			<pc:automationTag value="auto-COM-ProcDetConf-ProcFilterTbl" />
+			<ice:dataTable
+				value="#{processInstanceDetailConfigurationBean.filterToolbarItems}"
+				var="row">
+				<ice:column>
+					<f:facet name="header">
+						<ice:outputText
+							value="#{views_common_msgPropsBean['processHistoryTable.filtersLabel']}" />
+					</f:facet>
+					<ice:panelGroup
+						style="padding: 2px 3px 2px 3px; white-space:nowrap">
+						<pc:automationTag
+							value="auto-COM-ProcDetConf-ProcFilterTbl-FilterName"
+							standAlone="false" />
+						<h:commandLink
+							name="#{processInstanceDetailConfigurationBean.messages[row.name]}"
+							actionListener="#{processInstanceDetailConfigurationBean.toggleFilter}"
+							style="vertical-align: middle;">
+
+							<h:graphicImage value="#{row.image}"
+								style="border: none; padding-right: 10px;"
+								title="#{views_common_msgPropsBean[row.messsageKey]}" />
+							<f:param value="#{row.name}" name="name" />
+						</h:commandLink>
+						<h:commandLink value="#{row.name}" styleClass="action-link"
+							actionListener="#{processInstanceDetailConfigurationBean.toggleFilter}"
+							style="vertical-align: middle;">
+							<f:param value="#{row.name}" name="name" />
+						</h:commandLink>
+					</ice:panelGroup>
+				</ice:column>
+				<ice:column style="text-align: center;">
+					<f:facet name="header">
+						<ice:outputText
+							value="#{processInstanceDetailConfigurationBean.messages['visibility']}" />
+					</f:facet>
+					<pc:automationTag
+						value="auto-COM-ProcDetConf-ProcFilterTbl-FilterIcon"
+						standAlone="false" />
+					<ice:commandButton name="#{row.name}"
+						actionListener="#{processInstanceDetailConfigurationBean.toggleFilter}"
+						title="#{processInstanceDetailConfigurationBean.messages['visibile']}"
+						image="/plugins/views-common/images/icons/eye.png"
+						rendered="#{row.active}" style="vertical-align: middle;">
+						<f:attribute value="#{row.name}" name="testName" />
+					</ice:commandButton>
+					<ice:commandButton name="#{row.name}" styleClass="iceCmdBtn-dis"
+						actionListener="#{processInstanceDetailConfigurationBean.toggleFilter}"
+						title="#{processInstanceDetailConfigurationBean.messages['invisibile']}"
+						image="/plugins/views-common/images/icons/eye.png"
+						rendered="#{!row.active}" style="vertical-align: middle;">
+						<f:attribute value="#{row.name}" name="testName" />
+					</ice:commandButton>
+				</ice:column>
+			</ice:dataTable>
+		</ice:panelGrid>
+		<ice:panelGroup styleClass="clearing" />
+
+		<ice:panelGrid columns="2" style="text-align: left">
+			<pc:automationTag value="auto-COM-ProcDetConf-BtnsBar"
+				standAlone="false" />
+			<ice:commandButton
+				value="#{processInstanceDetailConfigurationBean.messages['configure.button.save']}"
+				action="#{processInstanceDetailConfigurationBean.save}"
+				partialSubmit="true" id="applyConfiguration" styleClass="button"
+				title="#{processInstanceDetailConfigurationBean.messages['configure.button.save']}" />
+			<ice:commandButton
+				value="#{processInstanceDetailConfigurationBean.messages['configure.button.reset']}"
+				action="#{processInstanceDetailConfigurationBean.openConfirmationDialog}"
+				partialSubmit="true" id="cancelProp" styleClass="button"
+				title="#{processInstanceDetailConfigurationBean.messages['configure.button.reset']}" />
+		</ice:panelGrid>
+	</ice:panelGroup>
+</f:view>

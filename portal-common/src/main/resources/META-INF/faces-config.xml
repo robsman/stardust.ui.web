@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<!DOCTYPE faces-config PUBLIC "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN" "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config>
+
+	<!-- ************* NIRVANA INTEGRATION: EL Var Spring Context ************* -->
+	<application>
+        <message-bundle>facesOverride</message-bundle>		
+        <!-- other application child elements -->
+        <variable-resolver>org.springframework.web.jsf.SpringBeanVariableResolver</variable-resolver>
+ 	</application> 	    <lifecycle>
+    	<phase-listener>org.eclipse.stardust.ui.web.common.app.PortalApplicationPhaseListener</phase-listener>
+    	<phase-listener>org.eclipse.stardust.ui.web.common.app.BlockSaveListener</phase-listener>
+
+        <!-- support Spring Bean based phase listeners -->
+   	    <phase-listener>org.springframework.web.jsf.DelegatingPhaseListenerMulticaster</phase-listener>
+    </lifecycle>
+
+	<managed-bean>
+		<managed-bean-name>common_msgPropsBean</managed-bean-name>
+		<managed-bean-class>
+			org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean
+		</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+
+   <navigation-rule>
+      <navigation-case>
+         <from-outcome>ippPortalLogout</from-outcome>
+         <to-view-id>/ipp/common/ippPortalLogout.jsp</to-view-id>
+         <redirect />
+      </navigation-case>
+   </navigation-rule>
+	
+   <navigation-rule>
+      <from-view-id>/plugins/common/main.xhtml</from-view-id>
+      <navigation-case>
+         <from-outcome>pageRefresh</from-outcome>
+         <to-view-id>/plugins/common/main.iface</to-view-id>
+         <redirect/>
+      </navigation-case>
+   </navigation-rule>
+
+   <navigation-rule>
+      <from-view-id>/plugins/common/portalMain.xhtml</from-view-id>
+      <navigation-case>
+         <from-outcome>pageRefresh</from-outcome>
+         <to-view-id>/plugins/common/portalMain.iface</to-view-id>
+         <redirect/>
+      </navigation-case>
+   </navigation-rule>
+
+   <navigation-rule>
+      <from-view-id>/businessControlCenter.xhtml</from-view-id>
+      <navigation-case>
+         <from-outcome>pageRefresh</from-outcome>
+         <to-view-id>/faces/businessControlCenter.iface</to-view-id>
+         <redirect/>
+      </navigation-case>
+   </navigation-rule>
+
+<!-- ****************** Converters ****************** -->
+    <converter>
+		<converter-id>customDateTimeConverter</converter-id>
+			<converter-class>
+				org.eclipse.stardust.ui.web.common.util.CustomDateTimeConverter
+			</converter-class>
+	</converter>
+    
+    <converter>
+		<converter-id>customDateConverter</converter-id>
+			<converter-class>
+				org.eclipse.stardust.ui.web.common.util.CustomDateConverter
+			</converter-class>
+	</converter>
+	
+    <converter>
+		<converter-id>customTimeConverter</converter-id>
+			<converter-class>
+				org.eclipse.stardust.ui.web.common.util.CustomTimeConverter
+			</converter-class>
+	</converter>
+
+    <converter>
+		<converter-id>ippByteConverter</converter-id>
+			<converter-class>
+				org.eclipse.stardust.ui.web.common.util.ByteConverter
+			</converter-class>
+	</converter>
+
+   <!-- Components -->
+   <component>
+      <component-type>org.eclipse.stardust.ui.web.common.app.tags.TabScopedComponent</component-type>
+      <component-class>org.eclipse.stardust.ui.web.common.app.tags.TabScopedComponent</component-class>
+   </component>
+
+</faces-config>

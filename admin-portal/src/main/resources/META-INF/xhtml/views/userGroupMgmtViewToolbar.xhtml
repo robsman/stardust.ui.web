@@ -1,0 +1,25 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid columns="2">
+		<ice:commandLink actionListener="#{createOrModifyUserGroupBean.openUserGroupDialog}">
+			<pc:automationTag value="auto-ADM-UserGrpMgmt-ToolbarCreateUserGrp" standAlone="false"/>
+			<h:graphicImage value="/plugins/admin-portal/images/icons/group_add.png"
+				style="border: none;" title="#{messages_admin['common.create']}" />
+			<f:attribute name="editable" value="all" />
+		</ice:commandLink>	
+
+		<ice:commandLink actionListener="#{userGroupMgmtBean.invalidateUserGroup}" disabled="#{userGroupMgmtBean.selectedItemCount eq 0 ? true : false}">
+			<pc:automationTag value="auto-ADM-UserGrpMgmt-ToolbarInvalidateUserGrp" standAlone="false"/>
+			<h:graphicImage value="/plugins/admin-portal/images/icons/group_delete.png"
+				style="border: none;" 
+				styleClass="#{userGroupMgmtBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}"
+				title="#{userGroupMgmtBean.messages['invalidateUserGroup.tooltip.title']}" />
+		</ice:commandLink>	
+	</ice:panelGrid>	
+</f:view>

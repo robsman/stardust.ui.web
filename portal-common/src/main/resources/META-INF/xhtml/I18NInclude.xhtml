@@ -1,0 +1,18 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/plugins/common/InfinityBPMI18N.js" />
+	<script>
+		InfinityBPMI18N.initPluginProps({
+			pluginName : "common",
+			propFilePath : "#{facesContext.externalContext.requestContextPath}/plugins/common/propertyBundle/",
+			propFileBaseName : "portal-common-js",
+			locale : "#{ippPortalApp.localeString}"
+		});
+	</script>
+</f:view>

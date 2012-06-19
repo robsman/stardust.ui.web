@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<ivy-module version="2.0"
+   xmlns:m="http://ant.apache.org/ivy/maven"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+
+   <info organisation="com.infinity.bpm" module="ipp-process-portal"
+      revision="${ipp.version.full}" />
+
+   <configurations>
+      <conf name="ipp-workflow-perspective-compile" description="Process Portal - Compile Scope" />
+      <conf name="ipp-workflow-perspective-runtime" extends="ipp-workflow-perspective-compile" description="Process Portal - Runtime Scope" />
+      <conf name="ipp-workflow-perspective-provided" description="Process Portal - Provided Scope" />
+      
+      <conf name="ipp-workflow-perspective-sources" description="Process Portal - Sources" />
+      
+      <conf name="compile" extends="ipp-workflow-perspective-compile" visibility="private" description="Process Portal" />
+
+      <conf name="test" visibility="private" description="Test dependencies" />
+      
+      <conf name="pom" description="Process Portal POMs" />
+   </configurations>
+
+   <publications>
+      <artifact name="ipp-workflow-perspective" type="jar" conf="ipp-workflow-perspective-compile, ipp-workflow-perspective-runtime, ipp-workflow-perspective-provided" />
+      <artifact name="ipp-workflow-perspective" type="jar" conf="ipp-workflow-perspective-sources" m:classifier="sources" />
+      
+      <artifact name="ipp-workflow-perspective" type="pom" conf="pom" ext="pom" />
+   </publications>
+
+   <dependencies>
+      <!-- ipp-workflow-perspective-compile -->
+      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->web-client-module-compile" />
+      <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->spring-module-compile" />
+      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->ipp-portal-common-compile" />
+      <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->ipp-views-common-compile" />
+      <dependency org="com.infinity.bpm" name="ipp-portal-api" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->ipp-portal-api-compile" />
+      
+      <dependency org="com.infinity.bpm" name="stardust-common-introspection" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->stardust-common-introspection-compile" />
+      <dependency org="com.infinity.bpm" name="stardust-common-introspection-xsd" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->stardust-common-introspection-xsd-compile" />
+      <dependency org="com.infinity.bpm" name="stardust-ui-form" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->stardust-ui-form-compile" />
+      <dependency org="com.infinity.bpm" name="stardust-ui-form-jsf" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->stardust-ui-form-jsf-compile" />
+      
+      <dependency org="org.icefaces" name="icefaces-ee-infinity04" rev="EE-1.8.2.GA_P03" conf="ipp-workflow-perspective-compile->default">
+         <exclude org="javax.faces" module="jsf-api" />
+         <exclude org="javax.faces" module="jsf-impl" />
+         <exclude org="commons-logging" module="commons-logging-api"/>
+         <exclude org="commons-beanutils" module="commons-beanutils"/>
+         <exclude org="backport-util-concurrent" module="backport-util-concurrent"/>
+      </dependency>
+      <dependency org="org.icefaces" name="icefaces-comps-ee-infinity04" rev="EE-1.8.2.GA_P03" conf="ipp-workflow-perspective-compile->default">
+         <exclude org="org.icefaces" module="icefaces-ee" />
+      </dependency>
+      <dependency org="org.icefaces" name="icefaces-facelets-ee-infinity04" rev="EE-1.8.2.GA_P03" conf="ipp-workflow-perspective-compile->default">
+         <exclude org="org.icefaces" module="icefaces-ee" />
+      </dependency>
+
+      <!-- ipp-workflow-perspective-runtime -->
+      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-workflow-perspective-runtime->web-client-module-runtime" />
+      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-runtime->ipp-portal-common-runtime" />
+      <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-runtime->ipp-views-common-runtime" />
+      <dependency org="com.infinity.bpm" name="ipp-portal-api" rev="${ipp.version.full}" conf="ipp-workflow-perspective-runtime->ipp-portal-api-runtime" />
+      <dependency org="com.infinity.bpm" name="ipp-graphics-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-runtime->ipp-graphics-common-runtime" />
+   
+      <!-- ipp-workflow-perspective-provided -->
+      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-provided->jsf-api-module-compile" />
+      <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="ipp-workflow-perspective-provided, compile->default" />
+      <dependency org="javax.el" name="el-api" rev="1.0" conf="ipp-workflow-perspective-provided, compile->default" />
+   
+      <!-- compile -->
+      <dependency org="javax.faces" name="jsf-api" rev="1.1_02" conf="compile->default" />
+   
+      <!-- test -->
+      <dependency org="junit" name="junit" rev="3.8.1" conf="test->default" />
+
+      <override org="commons-beanutils" module="commons-beanutils" rev="1.8.0" />
+      <override org="commons-digester" module="commons-digester" rev="1.8" />
+      <override org="commons-logging" module="commons-logging" rev="1.1.1" />
+      <conflict org="commons-collections" module="commons-collections" rev="3.2" />
+   </dependencies>
+</ivy-module>

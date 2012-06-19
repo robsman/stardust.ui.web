@@ -1,0 +1,89 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates Mandatory attributes)
+		dialogBean = Instance of ConfirmationDialog Bean
+	-->
+
+	<ui:composition>
+		<ice:panelPopup modal="true" rendered="#{dialogBean.visible}"
+			draggable="true" styleClass="popupDialog" autoCentre="true" positionOnLoadOnly="true" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGrid width="100%" columns="2" cellpadding="0" cellspacing="0">
+					<ice:outputText value="#{dialogBean.title}" styleClass="headerText">
+						<pc:automationTag value="auto-COM-ConfirmMsgDlg-Title" standAlone="false"/>
+					</ice:outputText>
+					<ice:panelGroup style="text-align: right;">
+						<pc:automationTag value="auto-COM-ConfirmMsgDlg-CloseBtn" standAlone="false"/>
+						<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+							image="/plugins/common/images/dialog-windowbttn-close.png" 
+							action="#{dialogBean.cancelAction}"
+							styleClass="windowClose" />
+					</ice:panelGroup>
+				</ice:panelGrid>
+			</f:facet>
+			
+			<f:facet name="body">
+				<ice:panelBorder  styleClass="#{dialogBean.styleClass}" cellpadding="0" cellspacing="0"
+					renderNorth="false" renderSouth="true" renderCenter="true"
+					renderWest="true" renderEast="false" >
+
+					<c:if test="#{dialogBean.contentTypeAsString != 'NONE'}">
+						<f:facet name="west">
+							<ice:panelGroup>
+								<ice:graphicImage url="/plugins/common/images/dialog-icon-error.jpg"
+									rendered="#{dialogBean.contentTypeAsString eq 'ERROR'}" />
+								<ice:graphicImage url="/plugins/common/images/dialog-icon-warning.jpg"
+									rendered="#{dialogBean.contentTypeAsString eq 'WARNING'}" />
+								<ice:graphicImage url="/plugins/common/images/dialog-icon-info.jpg"
+									rendered="#{dialogBean.contentTypeAsString eq 'INFO'}" />
+							</ice:panelGroup>
+						</f:facet>
+					</c:if>
+
+					<f:facet name="center">
+						<ice:panelGroup>
+							<ice:panelGroup rendered="#{not empty dialogBean.message}">
+								<ice:outputText value="#{dialogBean.message}" />
+							</ice:panelGroup>
+	
+							<ice:panelGroup rendered="#{not empty dialogBean.includePath}">
+								<ui:include src="#{dialogBean.includePath}">
+									<ui:param name="dialogBean" value="#{dialogBean}" />
+								</ui:include>
+							</ice:panelGroup>
+						</ice:panelGroup>
+					</f:facet>
+
+					<f:facet name="south">
+						<ice:panelGrid columns="3" style="text-align: left">
+							<ice:panelGroup>
+								<pc:automationTag value="auto-COM-ConfDlg-YesNoBtnsBar" />
+								<ice:commandButton value="#{dialogBean.acceptLabel}"
+									action="#{dialogBean.acceptAction}" styleClass="button"
+									style="width: 60px"
+									rendered="#{dialogBean.dialogTypeAsString ne 'CANCEL_ONLY'}">
+								</ice:commandButton>
+							</ice:panelGroup>
+							<ice:panelGroup>
+								<pc:automationTag value="auto-COM-ConfDlg-YesNoBtnsBar" />
+								<ice:commandButton value="#{dialogBean.cancelLabel}"
+									action="#{dialogBean.cancelAction}" styleClass="button"
+									style="width: 60px"
+									rendered="#{dialogBean.dialogTypeAsString ne 'ACCEPT_ONLY'}">
+
+								</ice:commandButton>
+							</ice:panelGroup>
+						</ice:panelGrid>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

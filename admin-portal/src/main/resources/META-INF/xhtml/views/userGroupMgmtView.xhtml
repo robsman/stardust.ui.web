@@ -1,0 +1,59 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ice:panelGroup>
+		<ui:include src="createOrModifyUserGroup.xhtml" />
+		<ui:include src="/plugins/views-common/contentmgmt/views/notificationMessage.xhtml" />
+	</ice:panelGroup>
+	
+	<ice:panelGroup>
+		<ice:panelGroup styleClass="heading" style="width: 100%;">
+			<ice:outputText value="#{userGroupMgmtBean.messages['userGroups.label']}" />
+		</ice:panelGroup>
+		<ice:panelGroup style="width: 100%;">
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.total.label']}#{messages_admin['common.colon']}" styleClass="label-item"/>
+				<ice:outputText value="#{userGroupMgmtBean.totalUserGroupsCount}">
+					<pc:automationTag value="auto-ADM-UserGrpMgmt-TotalCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+			
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.active.label']}#{messages_admin['common.colon']}" styleClass="label-item"/>
+				<ice:outputText value="#{userGroupMgmtBean.activeUserGroupsCount}">
+					<pc:automationTag value="auto-ADM-UserGrpMgmt-ActiveCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+		</ice:panelGroup>
+	</ice:panelGroup>
+	<ice:panelGroup styleClass="clearing" />
+	
+	<pc:automationTag value="auto-ADM-UserGrpMgmt-DataTable"/>
+	<pc:genericDataTable exportExcel="true" exportCsv="true"
+		bean="#{userGroupMgmtBean}" id="userGroupsList" title="#{userGroupMgmtBean.messages['userGroupTable.title']}"
+		table="#{userGroupMgmtBean.userGroupsTable}" sortSupported="true" 
+		toolbarUrl="/plugins/admin-portal/views/userGroupMgmtViewToolbar.xhtml">
+
+		<!--
+		<f:facet name="toolbar">
+			<ice:panelGrid columns="2">
+				<ice:commandLink actionListener="#{userGroupMgmtBean.openConfirmInvalidateDialog}">
+					<h:graphicImage value="/plugins/admin-portal/images/icons/group_delete.png"
+						style="border: none;" title="#{userGroupMgmtBean.messages['invalidateUserGroup.tooltip.title']}" />
+				</ice:commandLink>	
+		
+				<ice:commandLink actionListener="#{createOrModifyUserGroupBean.openUserGroupDialog}">
+					<ice:outputText value="#{messages_admin['common.create']} &amp;raquo;"
+						styleClass="action-link" escape="false" style="font-weight: bold;"/>
+					<f:attribute name="editable" value="all" />
+				</ice:commandLink>
+			</ice:panelGrid>
+		</f:facet>
+		-->
+	</pc:genericDataTable>
+</f:view>

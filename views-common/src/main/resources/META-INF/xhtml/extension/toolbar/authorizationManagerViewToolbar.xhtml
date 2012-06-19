@@ -1,0 +1,35 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid columns="1">
+		<ice:commandLink name="#{messages_admin['common.button.save']}"
+			action="#{authorizationManagerBean.save}"
+			rendered="#{authorizationManagerBean.dirty}">
+			<pc:automationTag value="auto-COM-AuthMgr-ToolbarSave"
+				standAlone="false" />
+			<h:graphicImage value="/plugins/views-common/images/icons/disk.png"
+				styleClass="toolbar-button"
+				title="#{messages_admin['common.button.save']}" />
+
+		</ice:commandLink>
+		
+		<ice:commandLink name="#{messages_admin['common.button.save']}"
+			action="#{authorizationManagerBean.save}"
+			rendered="#{!authorizationManagerBean.dirty}" disabled="true">
+			<pc:automationTag value="auto-COM-AuthMgr-ToolbarSave"
+				standAlone="false" />
+			<h:graphicImage value="/plugins/views-common/images/icons/disk.png"
+				styleClass="toolbar-button"
+				style="opacity: 0.3;filter: alpha(opacity=30);"
+				title="#{messages_admin['common.button.save']}" />
+
+		</ice:commandLink>
+
+	</ice:panelGrid>
+
+</f:view>

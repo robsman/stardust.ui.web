@@ -1,0 +1,121 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ice:panelPopup modal="true"
+		rendered="#{correspondenceAddressPickerDialog.visible}"
+		draggable="true" autoCentre="true" positionOnLoadOnly="true"
+		styleClass="popupDialog" clientOnly="true">
+		<f:facet name="header">
+			<ice:panelGroup>
+				<pc:automationTag value="auto-COM-CorrView-AddrPickDlg-Header"/>
+				<ice:outputText value="#{messages_admin['common.confirmation']}"
+					styleClass="headerText" />
+				<ice:commandButton
+					image="/plugins/common/images/dialog-windowbttn-close.png" 
+					title="#{common_msgPropsBean['common.close']}"
+					action="#{correspondenceAddressPickerDialog.close}"
+					immediate="true" styleClass="windowClose" />
+			</ice:panelGroup>
+		</f:facet>
+
+		<f:facet name="body">
+			<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+				cellspacing="0" renderNorth="false" renderEast="false"
+				renderSouth="true" renderWest="false" renderCenter="true">
+				<f:facet name="center">
+					<ice:panelGroup>
+						<ice:outputLabel
+							value="#{correspondenceAddressPickerDialog.messages['popup.choose']}" />
+						<ice:outputText value=" " />
+						<ice:panelGroup>
+							<ice:panelGroup styleClass="datePickerPanelHeader"
+								style="width: 400px;">
+								<ice:outputLabel
+									value="#{correspondenceAddressPickerDialog.messages['popup.contacts']}"
+									styleClass="label-form" />
+							</ice:panelGroup>
+							<ice:panelGroup
+								style="border:1px solid #dbdbdb;background-color:white;"
+								scrollHeight="150px" scrollWidth="100%">
+								<ice:panelSeries id="icePnlSrsForEmailRecipients"
+									value="#{correspondenceAddressPickerDialog.dataPathContacts}"
+									var="contact">
+									<ice:panelGroup style="border-bottom: 1px solid #dbdbdb;"
+										styleClass="datePicker">
+										<ice:panelGrid columns="2" styleClass="datePicker">
+											<ice:graphicImage
+												value="/plugins/views-common/images/icons/tick.png"
+												rendered="#{contact.selected}" />
+											<ice:graphicImage
+												value="/plugins/views-common/images/icons/spacer.gif"
+												width="16" height="15" rendered="#{!contact.selected}" />
+											<ice:commandLink
+												actionListener="#{correspondenceAddressPickerDialog.selectContact}">
+												<pc:automationTag
+													value="auto-COM-CorrView-AddrPickDlg-SelContact"
+													standAlone="false" />
+												<ice:outputText value="#{contact.dataPathName}" />
+												<ice:panelGroup styleClass="clearing" />
+
+												<ice:outputText value="#{contact.dataPathValue}"
+													style="color:grey;" />
+												<f:attribute name="dataPathValue" value="#{contact}" />
+											</ice:commandLink>
+										</ice:panelGrid>
+									</ice:panelGroup>
+								</ice:panelSeries>
+
+							</ice:panelGroup>
+						</ice:panelGroup>
+						<ice:panelGroup>
+							<ice:panelGroup style="width: 400px;"
+								styleClass="datePickerPanelHeader">
+								<ice:outputText
+									value="#{correspondenceAddressPickerDialog.label} (#{correspondenceAddressPickerDialog.enteredValuesSize})"
+									style="font-size: 14px;	font-weight: bold;" />
+							</ice:panelGroup>
+
+							<ice:panelGroup scrollHeight="80px" scrollWidth="408px"
+								style="border:1px solid #dbdbdb;background-color:white;">
+								<ice:panelSeries id="icePnlSrsForSelectedEmailRecipients"
+									value="#{correspondenceAddressPickerDialog.enteredValues}"
+									var="contact">
+									<ice:commandLink
+										actionListener="#{correspondenceAddressPickerDialog.removeContact}"
+										styleClass="datePicker">
+										<pc:automationTag
+											value="auto-COM-CorrView-AddrPickDlg-DelContact"
+											standAlone="false" />
+										<ice:outputText value="#{contact.dataPathValue}&#59; " />
+										<f:attribute name="dataPathValue" value="#{contact}" />
+									</ice:commandLink>
+								</ice:panelSeries>
+							</ice:panelGroup>
+						</ice:panelGroup>
+					</ice:panelGroup>
+				</f:facet>
+
+				<f:facet name="south">
+					<ice:panelGroup>
+						<pc:automationTag
+							value="auto-COM-CorrView-AddrPickDlg-BtnsBar"
+							standAlone="false" />
+						<ice:commandButton
+							value="#{correspondenceAddressPickerDialog.messages['popup.done']}"
+							action="#{correspondenceAddressPickerDialog.done}"
+							styleClass="button"
+							title="#{correspondenceAddressPickerDialog.messages['popup.done']}" />
+						<ice:commandButton value="#{messages_admin['common.close']}"
+							action="#{correspondenceAddressPickerDialog.close}"
+							immediate="true" styleClass="button"
+							title="#{messages_admin['common.close']}" />
+					</ice:panelGroup>
+				</f:facet>
+			</ice:panelBorder>
+		</f:facet>
+	</ice:panelPopup>
+</f:view>

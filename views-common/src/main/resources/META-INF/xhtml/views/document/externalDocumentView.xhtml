@@ -1,0 +1,60 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<html>
+	<head>
+		<title>#{common_msgPropsBean['portalFramework.title']}</title>
+		<ui:include src="/plugins/common/portalHead.xhtml" />
+		<script type="text/javascript">
+			window.onbeforeunload = onWindowUnload;
+		</script>
+	</head>
+	<body>
+	<!--  Document Content Panel -->
+	<ice:form id="externalViewer" partialSubmit="false">
+		<ice:panelTabSet>
+			<ice:panelTab>
+				<f:facet name="label">
+					<ice:panelGrid columns="2">
+						<ice:panelGroup>
+							<ice:graphicImage style="border: none;"
+								value="#{externalDocumentViewerBean.icon}" />
+						</ice:panelGroup>
+						<ice:panelGroup>
+							<ice:outputText value="#{externalDocumentViewerBean.label}" />
+						</ice:panelGroup>
+					</ice:panelGrid>
+				</f:facet>
+
+				<ice:panelGroup>
+					<pc:automationTag value="auto-COM-DocView-ExtDocView-ToolbarClose"/>
+					<ice:commandButton style="margin-left:98%;"
+						image="/plugins/views-common/images/icons/external_sw.png"
+						title="#{views_common_msgPropsBean['views.documentView.popIn.title']}"
+						onclick="window.close();"
+						styleClass="toolbar-button" />
+					<ice:panelGroup id="documentContentViewer"
+						hoverclass="dropTargetHover" styleClass="documentviewer-subpanel">
+						<ui:include src="#{externalDocumentViewerBean.contentHandler.contentUrl}">
+							<ui:param name="contentHandler"
+								value="#{externalDocumentViewerBean.contentHandler}" />
+						</ui:include>
+					</ice:panelGroup>
+				</ice:panelGroup>
+			</ice:panelTab>
+		</ice:panelTabSet>
+
+		<ice:inputHidden id="windowUnloaded" value="false"
+			valueChangeListener="#{externalDocumentViewerBean.closeWindowListener}"
+			partialSubmit="true" immediate="true">
+			<pc:automationTag value="auto-COM-DocView-ExtDocView-ToolbarWindUploaded"/>
+		</ice:inputHidden>	
+	</ice:form>
+	</body>
+	</html>
+</f:view>

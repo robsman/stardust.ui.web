@@ -1,0 +1,314 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ui:include src="/plugins/views-common/dialogs/abortActivity.xhtml" />
+	<ui:include src="/plugins/views-common/dialogs/delegation.xhtml" />
+	<ui:include
+		src="/plugins/views-common/contentmgmt/views/notificationMessage.xhtml" />
+	<ui:include src="/plugins/views-common/common/panelConfirmation.xhtml" />
+	<ui:include
+				src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+				<ui:param name="dialogBean"
+					value="#{caseDetailsBean.detachCaseConfirmationDialog}" />
+			</ui:include>
+	<ui:include	src="/plugins/views-common/views/case/attachToCaseDialog.xhtml" />
+
+	<ice:panelGroup width="100%">
+		<ice:panelGroup style="vertical-align: top; width:100%">
+			<ice:panelCollapsible
+				expanded="#{caseDetailsBean.overviewPanelExpanded}">
+				<f:facet name="header">
+					<ice:panelGroup>
+						<ice:outputText
+							value="#{views_common_msgPropsBean['views.processInstanceDetailsView.processInstance.label']}">
+							<pc:automationTag value="auto-COM-CaseDetViewOverviewPanel" standAlone="false"/>	
+						</ice:outputText>
+					</ice:panelGroup>
+				</f:facet>
+				
+				<pc:automationTag value="auto-COM-CaseDetViewOverviewGrid" />
+				<ice:panelGrid columns="2"
+					columnClasses="table-columnVertical, table-columnVertical">
+					<ice:column>
+						<ice:panelGrid columns="3" columnClasses="table-columnVertical" >
+							<ice:column>
+								<ice:outputLabel for="txtProcessName"
+									value="#{views_common_msgPropsBean['overview.CaseName']}"
+									styleClass="label-item" />
+							</ice:column>
+							
+							<ice:column>
+								<ice:panelGroup rendered="#{!caseDetailsBean.editProcessName}">
+									<ice:outputText value="#{caseDetailsBean.processName}" />
+								</ice:panelGroup>
+
+								<ice:panelGroup rendered="#{caseDetailsBean.editProcessName}">
+									<ice:inputText value="#{caseDetailsBean.processName}"
+										partialSubmit="true" >
+										<pc:automationTag value="auto-COM-CaseDetView-CaseName"
+											standAlone="false" />
+									</ice:inputText>	
+								</ice:panelGroup>
+							</ice:column>
+
+							<ice:column>
+								<ice:panelGroup rendered="#{!caseDetailsBean.editProcessName}">
+									<ice:commandLink
+										action="#{caseDetailsBean.enableEditProcessName}"
+										rendered="#{caseDetailsBean.canManageCase}">
+										<pc:automationTag value="auto-COM-CaseDetView-EnableEditCaseName"
+											standAlone="false" />
+										<h:graphicImage
+											value="/plugins/views-common/images/icons/pencil.png"
+											style="border: none;"
+											title="#{views_common_msgPropsBean['views.case.tooltip.updateName']}" />
+									</ice:commandLink>
+								</ice:panelGroup>
+								<ice:panelGroup rendered="#{caseDetailsBean.editProcessName}">
+									<pc:automationTag value="auto-COM-CaseDetView-EditCaseBtnsBar"/>
+
+									<ice:commandLink
+										action="#{caseDetailsBean.updateProcessName}">
+										<h:graphicImage
+											value="/plugins/admin-portal/images/icons/rename-accept.gif"
+											style="border: none;" />
+									</ice:commandLink>
+									<ice:commandLink
+										action="#{caseDetailsBean.cancelEditProcessName}">
+										<h:graphicImage
+											value="/plugins/admin-portal/images/icons/rename-decline.gif"
+											style="border: none;" />
+									</ice:commandLink>
+
+								</ice:panelGroup>
+							</ice:column>
+
+
+							<ice:column>
+								<ice:outputLabel for="txtProcessOId"
+									value="#{views_common_msgPropsBean['overview.CaseOID']}"
+									styleClass="label-item" />
+							</ice:column>
+							<ice:column>
+								<ice:outputText
+									value="#{caseDetailsBean.processInstance.OID}" />
+							</ice:column>
+							<ice:panelGroup/>
+							
+							<ice:column>
+								<ice:outputLabel for="txtCaseOwner"
+									value="#{views_common_msgPropsBean['overview.CaseOwner']}:"
+									styleClass="label-item" />
+							</ice:column>
+							<ice:column>
+								<ice:outputText
+									value="#{caseDetailsBean.caseOwnerLabel}" />
+							</ice:column>
+							<ice:column>
+								<ice:commandLink
+									actionListener="#{caseDetailsBean.openDelegateDialog}"
+									rendered="#{caseDetailsBean.canManageCase}">
+									<pc:automationTag value="auto-COM-CaseDetView-OpenDelegateCase"
+											standAlone="false" />
+									<h:graphicImage
+										value="/plugins/views-common/images/icons/pencil.png"
+										style="border: none;"
+										title="#{views_common_msgPropsBean['views.case.tooltip.delegateCase']}" />
+								</ice:commandLink>
+							</ice:column>
+
+							<ice:column >
+								<ice:outputLabel for="txtDescription"
+									value="#{views_common_msgPropsBean['overview.caseDescription']}"
+									styleClass="label-item" />
+							</ice:column>
+							<ice:column>
+								<ice:panelGroup rendered="#{!caseDetailsBean.editDescription}">
+									<ice:inputTextarea value="#{caseDetailsBean.description}" readonly="true"/>
+								</ice:panelGroup>
+
+								<ice:panelGroup rendered="#{caseDetailsBean.editDescription}">
+									<ice:inputTextarea value="#{caseDetailsBean.description}"
+										style="width: 150px;padding: 2px" rows="5"
+										partialSubmit="true" >
+										<pc:automationTag value="auto-COM-CaseDetView-CaseDescription"
+											standAlone="false" />
+									</ice:inputTextarea>	
+								</ice:panelGroup>
+							</ice:column>
+
+							<ice:column>
+								<ice:panelGroup rendered="#{!caseDetailsBean.editDescription}" >
+									<ice:commandLink
+										action="#{caseDetailsBean.enableEditDescription}"
+										rendered="#{caseDetailsBean.canManageCase}">
+										<pc:automationTag value="auto-COM-CaseDetView-EnableEditDescription"
+											standAlone="false" />
+										<h:graphicImage
+											value="/plugins/views-common/images/icons/pencil.png"
+											style="border: none;"
+											title="#{views_common_msgPropsBean['views.case.tooltip.updateDescription']}" />
+									</ice:commandLink>
+								</ice:panelGroup>
+
+								<ice:panelGroup rendered="#{caseDetailsBean.editDescription}">
+									<pc:automationTag value="auto-COM-CaseDetView-EditDescriptionBtnsBar"/>
+									<ice:commandLink action="#{caseDetailsBean.updateDescription}">
+										<h:graphicImage
+											value="/plugins/admin-portal/images/icons/rename-accept.gif"
+											style="border: none;" />
+									</ice:commandLink>
+									<ice:commandLink
+										action="#{caseDetailsBean.cancelEditDescription}">
+										<h:graphicImage
+											value="/plugins/admin-portal/images/icons/rename-decline.gif"
+											style="border: none;" />
+									</ice:commandLink>
+
+								</ice:panelGroup>
+							</ice:column>
+
+						</ice:panelGrid>
+					</ice:column>
+
+					<ice:column>
+						<ice:panelGrid columns="2"
+							style="vertical-align: top; padding-left: 20px;" columnClasses="table-columnVertical">
+							<ice:column>
+								<ice:outputLabel for="txtStatus"
+									value="#{messages_bcc['views.common.column.status']}:"
+									styleClass="label-item" />
+							</ice:column>
+							<ice:column>
+								<ice:outputText value="#{caseDetailsBean.state}" />
+							</ice:column>
+
+							<ice:column>
+								<ice:outputLabel for="txtStart"
+									value="#{messages_bcc['views.processOverviewView.processTable.column.startTime']}:"
+									styleClass="label-item" />
+							</ice:column>
+							<ice:column>
+								<ice:outputText value="#{caseDetailsBean.startTime}" />
+							</ice:column>
+
+							<ice:column>
+								<ice:outputText for="txtDuration"
+									value="#{messages_bcc['views.processOverviewView.processTable.column.startUser']}:"
+									styleClass="label-item" />
+							</ice:column>
+							<ice:column>
+								<ice:outputText
+									value="#{caseDetailsBean.startingUser}" />
+							</ice:column>
+
+							<ice:column>
+								<ice:outputLabel for="txtDuration"
+									value="#{messages_bcc['views.processOverviewView.processTable.column.duration']}:"
+									styleClass="label-item" />
+							</ice:column>
+							<ice:column>
+								<ice:outputText value="#{caseDetailsBean.duration}" />
+							</ice:column>
+						</ice:panelGrid>
+					</ice:column>
+				</ice:panelGrid>
+			</ice:panelCollapsible>
+		</ice:panelGroup>
+		
+		<ice:panelCollapsible
+			expanded="#{caseDetailsBean.descriptorPanelExpanded}">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText value="#{messages_bcc['common.descriptor.title']}">
+					<pc:automationTag value="auto-COM-CaseDetViewDescriptionPanel" standAlone="false"/>
+					</ice:outputText>
+				</ice:panelGroup>
+			</f:facet>
+			<ice:panelGroup>
+				<pc:automationTag value="auto-COM-CaseDescriptorTbl"/>
+				<pc:genericDataTable bean="#{caseDetailsBean}"
+					id="descriptorList"
+					table="#{caseDetailsBean.descriptorTable}"
+					sortSupported="true" exportExcel="false" exportCsv="false" 
+					toolbarUrl="/plugins/views-common/views/case/caseDescriptorsToolbar.xhtml"/>
+			</ice:panelGroup>
+		</ice:panelCollapsible>
+
+		<ice:panelCollapsible
+			expanded="#{caseDetailsBean.linkedProcessPanelExpanded}">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText
+						value="#{views_common_msgPropsBean['linkedCasesTable.table']}">
+					<pc:automationTag value="auto-COM-CaseDetViewLinkedProcessPanel" standAlone="false"/>		
+					</ice:outputText>
+				</ice:panelGroup>
+			</f:facet>
+			<ice:panelGroup>
+				<ui:include
+					src="/plugins/views-common/processTableHelper/processTableHelper.xhtml">
+					<!-- <ui:param name="title"
+						value="#{processSearchBean.messages['title']}" /> -->
+					<ui:param name="id" value="ctxProcessSearchList" />
+					<ui:param name="includeHelpers" value="false" />
+					<ui:param name="bean"
+						value="#{caseDetailsBean.processHelper}" />
+				</ui:include>
+			</ice:panelGroup>
+		</ice:panelCollapsible>
+
+		<ice:panelCollapsible
+			expanded="#{caseDetailsBean.processHistoryPanelExpanded}">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText
+						value="#{views_common_msgPropsBean['caseHistoryTable.title']}">
+					<pc:automationTag value="auto-COM-CaseDetViewCaseHistoryPanel" standAlone="false"/>
+					</ice:outputText>
+				</ice:panelGroup>
+			</f:facet>
+			<ice:panelGroup>
+				<ui:include
+					src="/plugins/views-common/processhistory/processHistoryTableInclude.xhtml" />
+			</ice:panelGroup>
+		</ice:panelCollapsible>
+
+		<ice:panelCollapsible
+			expanded="#{caseDetailsBean.genericRepositoryTreeExpanded}">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText
+						value="#{views_common_msgPropsBean['caseDocumentTable.title']}">
+						<pc:automationTag value="auto-COM-CaseDetViewDocumentsPanel" standAlone="false"/>
+					</ice:outputText>
+				</ice:panelGroup>
+			</f:facet>
+			<ice:panelGroup scrollWidth="100%">
+				<pc:automationTag value="auto-COM-CaseDetViewDocumentTree" standAlone="false"/>
+				<ui:include
+					src="/plugins/views-common/views/doctree/genericRepositoryView.xhtml" />
+			</ice:panelGroup>
+		</ice:panelCollapsible>
+		<ice:panelCollapsible
+			expanded="#{caseDetailsBean.participantsPanelExpanded}">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText
+						value="#{views_common_msgPropsBean['participantsTable.title']}">
+					<pc:automationTag value="auto-COM-CaseDetViewParticipantPanel" standAlone="false"/>	
+					</ice:outputText>
+				</ice:panelGroup>
+			</f:facet>
+			<ice:panelGroup>
+				<ui:include
+					src="/plugins/views-common/participantspanel/participantsPanel.xhtml" />
+			</ice:panelGroup>
+		</ice:panelCollapsible>
+	</ice:panelGroup>
+</f:view>

@@ -1,0 +1,45 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates mandatory attributes)
+		value* -> Unique Value
+		standAlone -> default true.
+			If true renders UIComponentTag and adds Attribute to the same
+			Else assumes that UIComponentTag will be provided by caller 
+		requiredValue -> Mandatory Value irrespective of Automation. Only valid in case of standAlone = false
+			If automation is enabled then value included will be "#{requiredValue} #{value}"
+			Else "#{requiredValue}"
+	-->
+	
+	<c:if test="#{ippPortalParameters.automationEnabled}">
+		<!-- Set Defaults -->
+		<c:if test="#{empty standAlone}">
+			<c:set var="standAlone" value="true" />
+		</c:if>
+		
+		<!-- Inject The Automation Attribute -->
+		<c:choose>
+			<c:when test="#{standAlone}">
+				<ice:outputText value="">
+					<f:attribute name="styleClass" value="#{value}" />
+				</ice:outputText>
+			</c:when>
+			<c:otherwise>
+				<c:if test="#{empty requiredValue}">
+					<f:attribute name="styleClass" value="#{value}" />
+				</c:if>
+				<c:if test="#{not empty requiredValue}">
+					<f:attribute name="styleClass" value="#{requiredValue} #{value}" />
+				</c:if>
+			</c:otherwise>
+		</c:choose>
+	</c:if>
+	<c:if test="#{(not ippPortalParameters.automationEnabled) and (not empty requiredValue)}">
+		<f:attribute name="styleClass" value="#{requiredValue}" />
+	</c:if>
+
+</f:view>

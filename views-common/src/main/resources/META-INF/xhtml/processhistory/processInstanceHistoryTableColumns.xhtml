@@ -1,0 +1,185 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		row*= Instance of Row Class
+		col*= Instance of ColumnPreference 
+	 -->
+
+
+	<ice:panelGroup rendered="#{col.columnName == 'Descriptors'}">
+		<ice:panelGroup rendered="#{not empty row.processDescriptorsList}">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<ui:repeat value="#{row.processDescriptorsList}" var="info">
+					<tr>
+						<td
+							style="text-align: left; white-space: nowrap; padding-right: 5px; width: 10%;"><ice:outputText
+							value="#{info.key}#{messages_bcc['common.colon']}" /></td>
+						<td style="text-align: left; white-space: nowrap; width: 90%;"><ice:outputText
+							value="#{info.value}" escape="false" /></td>
+					</tr>
+				</ui:repeat>
+			</table>
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{empty row.processDescriptorsList}">
+			<ice:outputLabel value="-" />
+		</ice:panelGroup>
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'Priority'}"
+		styleClass="#{row.oldPriority eq row.priority ? '' : 'priorityChanged'}">
+		<ice:panelGroup rendered="#{row.canModifyProcessInstance}">
+			<ice:selectOneMenu partialSubmit="true" value="#{row.priority}"
+				onclick="Event.stop(event);"
+				readOnly="#{!row.canModifyProcessInstance}">
+				<pc:automationTag value="auto-COM-PCEHistoryTable-Priority" standAlone="false"/>
+				<f:selectItems
+					value="#{processHistoryTable.processTreeTable.processUIBuilder.priorityItems}" />
+			</ice:selectOneMenu>
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{!row.canModifyProcessInstance}">
+			<ice:outputText value="#{row.priority}">
+				<f:converter converterId="priorityConverter" />
+			</ice:outputText>
+		</ice:panelGroup>
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'ColumnSelect'}">
+		<ice:commandLink actionListener="#{processHistoryTable.selectRow}"
+			rendered="#{row.selected}">
+			<pc:automationTag value="auto-COM-PCEHistoryTable-Select" standAlone="false"/>
+			<f:attribute name="selectedRow" value="#{row}" />
+			<ice:graphicImage value="/plugins/common/images/radio-on.png" />
+		</ice:commandLink>
+		<ice:commandLink actionListener="#{bean.selectRow}"
+			rendered="#{not row.selected}">
+			<pc:automationTag value="auto-COM-PCEHistoryTable-Select" standAlone="false"/>
+			<f:attribute name="selectedRow" value="#{row}" />
+			<ice:graphicImage value="/plugins/common/images/radio-off.png" />
+		</ice:commandLink>
+
+	</ice:panelGroup>
+
+
+	<ice:panelGroup rendered="#{col.columnName == 'ActionsColumn'}">
+		<ice:panelGrid columns="9" style="float: right;">
+			<ice:commandLink action="#{ippPortalApp.openView}" rendered="#{!row.caseInstance}">
+				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsProcDetail" standAlone="false"/>
+				<h:graphicImage
+					value="/plugins/common/images/icons/process-history/active/process.png"
+					style="border: none;"
+					title="#{messages_bcc['common.tooltip.contextExplorer']}" />
+				<f:param name="viewId" value="processInstanceDetailsView" />
+				<f:param name="nested" value="true" />
+				<f:param name="viewParams"
+					value="processInstanceOID=#{row.OID}&amp;processInstanceName=#{row.text}" />
+			</ice:commandLink>
+			<ice:commandLink action="#{ippPortalApp.openView}" rendered="#{row.caseInstance}">
+				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsProcDetail" standAlone="false"/>
+				<h:graphicImage
+					value="/plugins/common/images/icons/process-history/active/process.png"
+					style="border: none;"
+					title="#{messages_bcc['common.tooltip.contextExplorer']}" />
+				<f:param name="viewId" value="caseDetailsView" />
+				<f:param name="nested" value="true" />
+				<f:param name="viewParams"
+					value="processInstanceOID=#{row.OID}&amp;processInstanceName=#{row.text}" />
+			</ice:commandLink>
+			<ice:commandLink 
+				actionListener="#{processHistoryTable.processTreeTable.processUIBuilder.terminateProcess}"
+				disabled="#{not row.enableTerminate}">
+				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsTerminate" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/business-control-center/images/icons/abort_process.png"
+					title="#{views_common_msgPropsBean['common.tooltip.terminate']}"
+					styleClass="#{row.enableTerminate? '' : 'iceCmdBtn-dis'}" />
+				<f:attribute name="processInstance" value="#{row.processInstance}" />
+			</ice:commandLink>
+			<ice:panelGroup rendered="#{!(row.enableTerminate)}">
+				<ice:graphicImage styleClass="iceCmdBtn-dis"
+					value="/plugins/common/images/panelHeader-triggerCollapse.png" />
+			</ice:panelGroup>
+			<ice:panelGroup rendered="#{(row.enableTerminate)}">
+				<c:set var="processInstance" value="#{row.processInstance}" />
+				<ui:include
+					src="/plugins/views-common/common/switchProcessMenuBar.xhtml" />
+				<ui:param name="bean" value="#{processHistoryTable}" />
+			</ice:panelGroup>
+			<ice:commandLink
+				actionListener="#{processHistoryTable.processTreeTable.processUIBuilder.recoverProcess}"
+				disabled="#{not row.enableRecover}">
+				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsRecover" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/business-control-center/images/icons/recover_process.png"
+					title="#{messages_bcc['common.tooltip.recover']}"
+					styleClass="#{row.enableRecover ? '' : 'iceCmdBtn-dis'}" />
+				<f:attribute name="processInstance" value="#{row.processInstance}" />
+			</ice:commandLink>
+			<ice:commandLink
+				actionListener="#{processHistoryTable.openSpawnProcess}"
+				rendered="#{!processHistoryTable.enableCase}"
+				disabled="#{not row.enableTerminate}">
+				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsSpawn" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/cog_add.png"
+					style="border: none;"
+					styleClass="#{row.enableTerminate? '' : 'iceCmdBtn-dis'}" 
+					title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}" />
+				<f:attribute name="processInstance" value="#{row.processInstance}" />
+			</ice:commandLink>
+			<ice:commandLink action="#{ippPortalApp.openView}">
+				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsProcDiag" standAlone="false"/>
+				<h:graphicImage rendered="#{ippBCCDiagramBean.diagramSupported}"
+					value="/plugins/business-control-center/images/icons/process_diagram.gif"
+					style="border: none;"
+					title="#{ippBCCDiagramBean.messages['tooltip.viewDiagram']}" />
+				<f:param name="viewId" value="processDiagramView" />
+				<f:param name="nested" value="true" />
+				<f:param name="viewParams" value="processInstanceOId=#{row.OID}" />
+			</ice:commandLink>
+			<ice:commandLink action="#{ippPortalApp.openView}">
+				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsGanttChart" standAlone="false"/>
+				<h:graphicImage
+					value="/plugins/business-control-center/images/icons/gantt_diagram.gif"
+					style="border: none;"
+					title="#{messages_bcc['views.processSearchView.tooltip.viewGanttChart']}" />
+				<f:param name="viewId" value="ganttChartView" />
+				<f:param name="nested" value="true" />
+				<f:param name="viewParams" value="processInstanceOId=#{row.OID}" />
+			</ice:commandLink>
+			<ice:commandLink rendered="#{row.notesCount gt 0}"
+				actionListener="#{processHistoryTable.processTreeTable.processUIBuilder.openNotes}">
+				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsNote" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/processportal/images/icons/notes-filled.png"
+					title="#{messages_bcc['common.tooltip.notes']}" />
+				<f:attribute name="processInstance" value="#{row.processInstance}" />
+			</ice:commandLink>
+			<ice:commandLink rendered="#{row.notesCount le 0}"
+				actionListener="#{processHistoryTable.processTreeTable.processUIBuilder.openNotes}">
+				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsNote" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/processportal/images/icons/notes-blank.png"
+					title="#{messages_bcc['common.tooltip.notes']}" />
+				<f:attribute name="processInstance" value="#{row.processInstance}" />
+			</ice:commandLink>
+			<ice:commandLink 
+				actionListener="#{caseDetailsBean.detachFromCase}" rendered="#{processHistoryTable.enableCase and row.enableDetach}" 
+				disabled="#{caseDetailsBean.inactiveCase}">	
+				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsDetachCase" standAlone="false"/>		
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/case-detach.png"
+					title="#{views_common_msgPropsBean['views.case.detachPI']}" 
+					styleClass="#{!caseDetailsBean.inactiveCase? '' : 'iceCmdBtn-dis'}" />
+				<f:attribute name="processInstance" value="#{row.processInstance}" />
+			</ice:commandLink>			
+		</ice:panelGrid>
+	</ice:panelGroup>
+
+</f:view>

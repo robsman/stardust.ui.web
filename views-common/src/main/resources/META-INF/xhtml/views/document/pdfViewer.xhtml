@@ -1,0 +1,298 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<html>
+	<head>
+	<link
+		href="#{facesContext.externalContext.requestContextPath}/plugins/views-common/css/pdf-viewer/pdf-viewer.css"
+		rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+	<ice:panelGroup styleClass="content-viewer" rendered="#{empty contentHandler.pdfDocumentHandler.errorMessage}">
+		<ice:panelGrid columns="3" styleClass="toolbar">
+			<ice:panelGrid columns="5" style="border-right:1px solid #8898c2;">
+				<ice:panelGroup styleClass="toolbarButton">
+					<ice:commandLink styleClass="toolbarControl firstToolControl"
+						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState != null and !contentHandler.pdfDocumentHandler.firstPage}"
+						actionListener="#{contentHandler.pdfDocumentHandler.goToFirstPage}"
+						partialSubmit="false">
+						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarFirst" standAlone="false"/>
+						<ice:graphicImage
+							value="/plugins/views-common/images/icons/spacer.gif" alt="First"
+							title="#{views_common_msgPropsBean['common.tooltip.first']}" width="15" height="15" />
+					</ice:commandLink>
+					<ice:commandLink styleClass="toolbarControl firstToolControl-disabled"
+						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState == null or ( (contentHandler.pdfDocumentHandler.currentDocumentState != null) and (contentHandler.pdfDocumentHandler.firstPage))}"
+						partialSubmit="false">
+						<ice:graphicImage
+							value="/plugins/views-common/images/icons/spacer.gif" alt="First"
+							title="#{views_common_msgPropsBean['common.tooltip.first']}" width="15" height="15" />
+					</ice:commandLink>
+				</ice:panelGroup>
+
+				<!-- previous page -->
+				<ice:panelGroup styleClass="toolbarButton">
+					<ice:commandLink styleClass="toolbarControl previousToolControl"
+						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState != null and !contentHandler.pdfDocumentHandler.firstPage}"
+						actionListener="#{contentHandler.pdfDocumentHandler.previousPage}"
+						partialSubmit="false">
+						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarPrevious" standAlone="false"/>
+						<ice:graphicImage
+							value="/plugins/views-common/images/icons/spacer.gif"
+							alt="Previous" title="#{views_common_msgPropsBean['common.tooltip.previous']}" width="15" height="15" />
+					</ice:commandLink>
+					<ice:commandLink styleClass="toolbarControl previousToolControl-disabled"
+						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState == null or ( (contentHandler.pdfDocumentHandler.currentDocumentState != null) and (contentHandler.pdfDocumentHandler.firstPage))}"
+						partialSubmit="false">
+						<ice:graphicImage
+							value="/plugins/views-common/images/icons/spacer.gif"
+							alt="Previous" title="#{views_common_msgPropsBean['common.tooltip.previous']}" width="15" height="15" />
+					</ice:commandLink>
+				</ice:panelGroup>
+
+				<!-- manual page entry-->
+				<ice:panelGroup styleClass="toolbarButton">
+					<ice:outputLabel value="#{msgs['command.page.entry.label']}" />
+					<ice:inputText id="idPageNumber" maxlength="5" size="2"
+						partialSubmit="false" style="text-align:center;"
+						actionListener="#{contentHandler.pdfDocumentHandler.goToPage}"
+						disabled="#{contentHandler.pdfDocumentHandler.currentDocumentState == null}"
+						value="#{contentHandler.pdfDocumentHandler.currentDocumentState.pageCursor}">
+						<pc:automationTag value="auto-COM-DocView-PdfView-PageNum" standAlone="false"/>
+					</ice:inputText>	
+					<ice:outputLabel
+						value=" #{myDocumentsPanelBean.messages['pdfContentViewerPanel.of']} " />
+					<ice:outputText
+						value="#{contentHandler.pdfDocumentHandler.currentDocumentState.documentLength}"
+						style="font-size: 12px;" />
+				</ice:panelGroup>
+
+				<!-- next page -->
+				<ice:panelGroup styleClass="toolbarButton">
+					<ice:commandLink styleClass="toolbarControl forwardToolControl"
+						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState != null and !contentHandler.pdfDocumentHandler.lastPage}"
+						actionListener="#{contentHandler.pdfDocumentHandler.nextPage}"
+						partialSubmit="false">
+						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarForward" standAlone="false"/>
+						<ice:graphicImage
+							value="/plugins/views-common/images/icons/spacer.gif" alt="Next"
+							title="#{views_common_msgPropsBean['common.tooltip.next']}" width="15" height="15" />
+					</ice:commandLink>
+					<ice:commandLink styleClass="toolbarControl forwardToolControl-disabled"
+						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState == null or ( (contentHandler.pdfDocumentHandler.currentDocumentState != null) and (contentHandler.pdfDocumentHandler.lastPage))}"
+						partialSubmit="false">
+						<ice:graphicImage
+							value="/plugins/views-common/images/icons/spacer.gif" alt="Next"
+							title="#{views_common_msgPropsBean['common.tooltip.next']}" width="15" height="15" />
+					</ice:commandLink>
+				</ice:panelGroup>
+
+				<ice:panelGroup styleClass="toolbarButton">
+					<ice:commandLink styleClass="toolbarControl lastToolControl"
+						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState != null and !contentHandler.pdfDocumentHandler.lastPage}"
+						actionListener="#{contentHandler.pdfDocumentHandler.goToLastPage}"
+						partialSubmit="false">
+						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarLast" standAlone="false"/>
+						<ice:graphicImage
+							value="/plugins/views-common/images/icons/spacer.gif" alt="Last"
+							title="#{views_common_msgPropsBean['common.tooltip.last']}" width="15" height="15" />
+					</ice:commandLink>
+					<ice:commandLink styleClass="toolbarControl lastToolControl-disabled"
+						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState == null or ( (contentHandler.pdfDocumentHandler.currentDocumentState != null) and (contentHandler.pdfDocumentHandler.lastPage))}"
+						partialSubmit="false">
+						<ice:graphicImage
+							value="/plugins/views-common/images/icons/spacer.gif" alt="Last"
+							title="#{views_common_msgPropsBean['common.tooltip.last']}" width="15" height="15" />
+					</ice:commandLink>
+				</ice:panelGroup>
+			</ice:panelGrid>
+			<ice:panelGrid columns="3" style="border-right:1px solid #8898c2;">
+				<!-- document zoom -->
+				<ice:panelGroup styleClass="toolbarButton">
+					<ice:commandLink styleClass="toolbarControl zoomInToolControl"
+						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState != null and !contentHandler.pdfDocumentHandler.maxZoom}"
+						action="#{contentHandler.pdfDocumentHandler.zoomIn}" partialSubmit="false">
+						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarZoomIn" standAlone="false"/>
+						<ice:graphicImage
+							value="/plugins/views-common/images/icons/spacer.gif"
+							alt="Zoom In" title="#{views_common_msgPropsBean['common.tooltip.zoomIn']}" width="16" height="16" />
+					</ice:commandLink>
+					<ice:commandLink styleClass="toolbarControl zoomInToolControl-disabled"
+						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState == null or (contentHandler.pdfDocumentHandler.currentDocumentState != null and contentHandler.pdfDocumentHandler.maxZoom)}">
+						<ice:graphicImage
+							value="/plugins/views-common/images/icons/spacer.gif"
+							alt="Zoom In" title="#{views_common_msgPropsBean['common.tooltip.zoomIn']}" width="16" height="16" />
+					</ice:commandLink>
+				</ice:panelGroup>
+
+				<ice:panelGroup styleClass="toolbarButton">
+					<ice:commandLink styleClass="toolbarControl zoomOutToolControl"
+						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState != null and !contentHandler.pdfDocumentHandler.minZoom}"
+						action="#{contentHandler.pdfDocumentHandler.zoomOut}" partialSubmit="false">
+						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarZoomOut" standAlone="false"/>
+						<ice:graphicImage
+							value="/plugins/views-common/images/icons/spacer.gif"
+							alt="Zoom Out" title="#{views_common_msgPropsBean['common.tooltip.zoomOut']}" width="16" height="16" />
+					</ice:commandLink>
+					<ice:commandLink styleClass="toolbarControl zoomOutToolControl-disabled"
+						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState == null or (contentHandler.pdfDocumentHandler.currentDocumentState != null and contentHandler.pdfDocumentHandler.minZoom)}">
+						<ice:graphicImage
+							value="/plugins/views-common/images/icons/spacer.gif"
+							alt="Zoom Out" title="#{views_common_msgPropsBean['common.tooltip.zoomOut']}" width="16" height="16" />
+					</ice:commandLink>
+				</ice:panelGroup>
+
+				<ice:panelGroup styleClass="toolbarButton"
+					style="padding-right:2px;">
+					<ice:selectOneMenu id="idZoomSize" partialSubmit="true"
+						disabled="#{contentHandler.pdfDocumentHandler.currentDocumentState == null}"
+						value="#{contentHandler.pdfDocumentHandler.currentDocumentState.zoom1}"
+						valueChangeListener="#{contentHandler.pdfDocumentHandler.documentZoomLevelChange}">
+						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarZoomLevel" standAlone="false"/>
+						<f:selectItems
+							value="#{contentHandler.pdfDocumentHandler.currentDocumentState.zoomLevels}" />
+					</ice:selectOneMenu>
+				</ice:panelGroup>
+
+			</ice:panelGrid>
+			<ice:panelGrid columns="3">
+
+				<!-- rotate right -->
+				<ice:panelGroup styleClass="toolbarButton">
+					<ice:commandLink styleClass="toolbarControl rightToolControl"
+						disabled="#{contentHandler.pdfDocumentHandler.currentDocumentState == null}"
+						actionListener="#{contentHandler.pdfDocumentHandler.rotateDocumentRight}"
+						partialSubmit="false">
+						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarRotRight" standAlone="false"/>
+						<ice:graphicImage
+							value="/plugins/views-common/images/icons/spacer.gif" alt="Right"
+							title="#{views_common_msgPropsBean['common.tooltip.rightRotation']}" width="16" height="16" />
+					</ice:commandLink>
+				</ice:panelGroup>
+
+				<!-- rotate left -->
+				<ice:panelGroup styleClass="toolbarButton">
+					<ice:commandLink styleClass="toolbarControl leftToolControl"
+						disabled="#{contentHandler.pdfDocumentHandler.currentDocumentState == null}"
+						actionListener="#{contentHandler.pdfDocumentHandler.rotateDocumentLeft}"
+						partialSubmit="false">
+						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarRotLeft" standAlone="false"/>
+						<ice:graphicImage
+							value="/plugins/views-common/images/icons/spacer.gif"
+							alt="Left Rotation" title="#{views_common_msgPropsBean['common.tooltip.leftRotation']}" width="16" height="16" />
+					</ice:commandLink>
+				</ice:panelGroup>
+
+				<ice:panelGroup styleClass="toolbarButton">
+					<ice:commandLink styleClass="toolbarControl outlineToolControl"
+						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState != null and contentHandler.pdfDocumentHandler.havingOutline}"
+						actionListener="#{contentHandler.pdfDocumentHandler.showOutlinePopup}"
+						partialSubmit="false">
+						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarOutlinePopUp" standAlone="false"/>
+						<ice:graphicImage
+							value="/plugins/views-common/images/icons/spacer.gif"
+							alt="Show Outline" title="#{views_common_msgPropsBean['common.tooltip.showOutline']}" width="16" height="16" />
+					</ice:commandLink>
+					<ice:graphicImage styleClass="outline-disabled"
+						value="/plugins/views-common/images/icons/spacer.gif"
+						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState == null or(contentHandler.pdfDocumentHandler.currentDocumentState != null and !contentHandler.pdfDocumentHandler.havingOutline)}"
+						alt="Show Outline" title="#{views_common_msgPropsBean['common.tooltip.showOutline']}" width="16" height="16" />
+
+				</ice:panelGroup>
+			</ice:panelGrid>
+		</ice:panelGrid>
+
+		<!--  Content -->
+		<ice:panelGroup style="height: 100%;" rendered="#{empty contentHandler.pdfDocumentHandler.errorMessage}">
+			<ice:graphicImage
+				value="/IppPdfRenderer?documentId=#{contentHandler.pdfDocumentHandler.documentId}&amp;page=#{contentHandler.pdfDocumentHandler.currentDocumentState.pageCursor}_rotation=#{contentHandler.pdfDocumentHandler.currentDocumentState.rotation}_zoom=#{contentHandler.pdfDocumentHandler.currentDocumentState.zoom}"
+				width="#{contentHandler.pdfDocumentHandler.currentDocumentState.pageWidth}"
+				height="#{contentHandler.pdfDocumentHandler.currentDocumentState.pageHeight}"
+				style="border-top:1px solid #8898c2;" alt="#{views_common_msgPropsBean['views.common.imageViewer.loadingImage']}"/>
+		</ice:panelGroup>
+		<ice:panelGroup>
+			<ice:message for="idPageNumber" />
+		</ice:panelGroup>
+
+		<!-- Outline popup -->
+		<ice:panelPopup id="modalPnlPop" modal="true"
+			rendered="#{contentHandler.pdfDocumentHandler.showOutlinePopup}" draggable="true"
+			autoCentre="true" styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag
+						value="auto-COM-DocView-PdfView-OutlineDlg-Header"
+						standAlone="false" />
+					<ice:outputText
+						value="#{myDocumentsPanelBean.messages['pdfOutline.outline']}"
+						styleClass="headerText" />
+					<ice:commandButton
+						image="/plugins/common/images/dialog-windowbttn-close.png"
+						title="#{common_msgPropsBean['common.close']}"
+						action="#{contentHandler.pdfDocumentHandler.toggleShowOutline}" immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+
+			<f:facet name="body">
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+					cellspacing="0" renderNorth="false" renderEast="false"
+					renderSouth="true" renderWest="false" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup styleClass="documentOutlineContainer">
+							<pc:automationTag
+								value="auto-COM-DocView-PdfView-OutlineDlg-OutlineTree" />
+							<ice:tree
+								rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState.outline != null}"
+								value="#{contentHandler.pdfDocumentHandler.currentDocumentState.outline}"
+								var="node" hideRootNode="true" hideNavigation="false"
+								imageDir="../../xmlhttp/css/xp/css-images/">
+								<ice:treeNode>
+									<f:facet name="icon">
+										<ice:panelGroup style="display: inline">
+											<ice:graphicImage
+												value="../../xmlhttp/css/rime/css-images/#{node.userObject.icon}" />
+										</ice:panelGroup>
+									</f:facet>
+									<f:facet name="content">
+										<ice:panelGroup style="display: inline">
+											<ice:commandLink
+												actionListener="#{contentHandler.pdfDocumentHandler.goToDestination}">
+												<pc:automationTag
+													value="auto-COM-DocView-PdfView-OutlineDlg-OutlineTree-GotoPage"
+													standAlone="false" />
+												<f:param name="pageNumber"
+													value="#{node.userObject.goToPage}" />
+												<ice:outputText value="#{node.userObject.text}"
+													nospan="true" />
+											</ice:commandLink>
+										</ice:panelGroup>
+									</f:facet>
+								</ice:treeNode>
+							</ice:tree>
+						</ice:panelGroup>
+					</f:facet>
+
+					<f:facet name="south">
+						<ice:panelGroup>
+							<pc:automationTag value="auto-COM-DocView-PdfView-OutlineDlg-BtnsBar" standAlone="false"/>
+							<ice:commandButton value="#{views_common_msgPropsBean['common.close']}"
+								action="#{contentHandler.pdfDocumentHandler.toggleShowOutline}"
+								styleClass="button" />
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ice:panelGroup>
+	
+	<ice:panelGroup rendered="#{not empty contentHandler.pdfDocumentHandler.errorMessage}">
+		<ice:outputText value="#{contentHandler.pdfDocumentHandler.errorMessage}" styleClass="msgError"/>
+	</ice:panelGroup>
+	</body>
+	</html>
+</f:view>

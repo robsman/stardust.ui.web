@@ -1,0 +1,93 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:composition>
+		<ice:panelPopup modal="true" rendered="#{selectProcessDialog.visible}"
+			draggable="true"
+			autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-COM-SelProcDlg-Header"/>
+					<ice:outputText styleClass="headerText"
+						value="#{views_common_msgPropsBean['views.documentSearchView.documentSearchTable.attachToProcess']}"/>
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png"
+						action="#{selectProcessDialog.closePopup}" immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+
+			<f:facet name="body">
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="2"
+					cellspacing="2" renderNorth="false" renderEast="true"
+					renderSouth="true" renderWest="true" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>
+							<ice:outputText styleClass="panelHeaderTitle"
+								value="#{views_common_msgPropsBean['views.common.process.destination.label']}" />
+							<ice:panelGrid columns="2" style="width: 100%" cellspacing="0" cellpadding="0">
+								<ice:panelGroup>
+									<ice:selectOneRadio layout="pageDirection" partialSubmit="true" style="white-space:nowrap;"
+										value="#{selectProcessDialog.selectedOption}"
+										valueChangeListener="#{selectProcessDialog.optionChanged}">
+										<pc:automationTag value="auto-COM-SelProcDlg-SelProc"
+											standAlone="false" />
+										<f:selectItem 
+											itemDisabled="#{!selectProcessDialog.openActivityAvailable}"
+											itemLabel="#{views_common_msgPropsBean['views.common.process.selectProcess.label']}"
+											itemValue="SELECT" />
+										<f:selectItem 
+											itemLabel="#{views_common_msgPropsBean['views.common.process.specifyProcess.label']}"
+											itemValue="SPECIFY" />
+									</ice:selectOneRadio>
+								</ice:panelGroup>
+								<ice:panelGroup>
+									<ice:panelGroup>
+										<ice:selectOneMenu style="white-space:nowrap;"
+											disabled="#{!selectProcessDialog.select or !selectProcessDialog.openActivityAvailable}"
+											value="#{selectProcessDialog.selectedProcess}">
+											<pc:automationTag value="auto-COM-SelProcDlg-AvailProcDefs"
+												standAlone="false" />
+											<f:selectItems
+												value="#{selectProcessDialog.availableProcessDefs}" />
+										</ice:selectOneMenu>
+									</ice:panelGroup>
+									<ice:panelGroup>
+										<ice:inputText disabled="#{selectProcessDialog.select}"
+											id="Processid" size="30" maxlength="30"
+											value="#{selectProcessDialog.specifiedProcess}" required="true">
+											<pc:automationTag value="auto-COM-SelProcDlg-SpecifyProc"
+												standAlone="false" />
+										</ice:inputText>
+										<ice:message style="color: red;" id="errormsgProcess"
+											for="Processid" />
+									</ice:panelGroup>
+								</ice:panelGroup>
+							</ice:panelGrid>
+						</ice:panelGroup>
+					</f:facet>
+					<f:facet name="south">
+						<ice:panelGroup>
+							<pc:automationTag value="auto-COM-SelProcDlg-BtnsBar"
+								standAlone="false" />
+							<ice:commandButton
+								value="#{views_common_msgPropsBean['common.ok']}"
+								action="#{selectProcessDialog.processSelected}"
+								title="#{views_common_msgPropsBean['common.ok']}"
+								styleClass="button" />
+							<ice:commandButton
+								value="#{views_common_msgPropsBean['common.cancel']}"
+								action="#{selectProcessDialog.closePopup}" immediate="true"
+								id="cancel"
+								title="#{views_common_msgPropsBean['common.cancel']}"
+								styleClass="button" />
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

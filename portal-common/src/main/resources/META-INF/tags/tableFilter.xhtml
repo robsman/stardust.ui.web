@@ -1,0 +1,165 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		bean* -> Bean
+		filterPopup* -> Instance of TableFilterPopup
+		width -> Width of the Popup
+		anchorWidth -> Width of the Anchor
+		anchorStyle -> Style
+		showAnchorTitle -> "true/false" Default: true
+		disabled -> true/false, default: false
+	 -->
+	<ui:composition>
+		<c:if test="#{not empty width}">
+			<c:set var="width" value="width:#{width}" />
+		</c:if>
+		<c:if test="#{not empty anchorWidth}">
+			<c:set var="anchorWidth" value="width:#{anchorWidth}" />
+		</c:if>
+		<c:if test="#{empty anchorStyle}">
+			<c:set var="anchorStyle" value="border:1px solid; vertical-align:top;" />
+		</c:if>
+		<c:if test="#{empty showAnchorTitle}">
+			<c:set var="showAnchorTitle" value="true" />
+		</c:if>
+
+		<c:if test="#{empty disabled}">
+			<c:set var="disabled" value="#{false}" />
+		</c:if>
+
+		<!-- Anchor to Launch Filter -->
+		<ice:panelGrid columns="3" cellpadding="0" cellspacing="5"
+				style="white-space:nowrap; #{anchorStyle}; #{anchorWidth};">
+	
+			<ice:panelGrid columns="2" style="white-space:nowrap;">
+	   			<ice:commandLink rendered="#{filterPopup.dataFilters.filtersSet}"
+	   				action="#{filterPopup.resetAndApply}" disabled="#{disabled}">
+	   				<pc:automationTag value="auto-DT-ColFilterReset" standAlone="false" />
+		   			<ice:graphicImage value="/plugins/common/images/icons/filter-reset.png"
+		   				title="#{common_msgPropsBean['common.filterPopup.resetFilter.tooltip']}"
+						style="vertical-align:top; border:none;"
+						styleClass="#{disabled ? 'iceCmdBtn-dis' : ''}" />
+				</ice:commandLink>
+	   			<ice:commandLink rendered="#{not filterPopup.dataFilters.filtersSet}"
+	   				action="#{filterPopup.openPopup}" disabled="#{disabled}">
+	   				<pc:automationTag value="auto-DT-ColFilterOpen" standAlone="false" />
+		   			<ice:graphicImage value="/plugins/common/images/icons/filter.png"
+		   				title="#{common_msgPropsBean['common.filterPopup.showFilter.tooltip']}"
+						style="vertical-align:top; border:none;"
+						styleClass="#{disabled ? 'iceCmdBtn-dis' : ''}" />
+				</ice:commandLink>
+
+	   			<ice:commandLink action="#{filterPopup.openPopup}" disabled="#{disabled}">
+	   				<pc:automationTag value="auto-DT-ColFilterOpen" standAlone="false" />
+	   				<ice:panelGrid columns="2" style="white-space:nowrap;">
+		  				<ice:outputText value="#{filterPopup.title}" style="vertical-align:top;" 
+		  					rendered="#{showAnchorTitle}" />
+						<c:if test="#{filterPopup.dataFilters.count == 1}">
+							<ice:outputText rendered="#{not filterPopup.dataFilters.filtersSet}" styleClass="dataFilterSummaryText" 
+								value="#{common_msgPropsBean['common.filterPopup.filterNotSet']}" 
+								title="#{common_msgPropsBean['common.filterPopup.showFilter.tooltip']}" />
+			  				<ice:outputText rendered="#{filterPopup.dataFilters.filtersSet}" styleClass="dataFilterSummaryText"
+			  					value="#{filterPopup.dataFilters.filterSummaryTitle}"
+			  					title="#{common_msgPropsBean['common.filterPopup.showFilter.tooltip']}" />
+						</c:if>
+					</ice:panelGrid>
+				</ice:commandLink>
+	  		</ice:panelGrid>
+
+	  		<c:if test="#{filterPopup.dataFilters.count > 1}"> <!-- Only if Popup covers more than one Filters -->
+				<ice:panelGroup rendered="#{filterPopup.dataFilters.filtersSet}">
+					<img src="/plugins/common/images/icons/ok.gif" />
+				</ice:panelGroup>
+				<ice:panelGroup rendered="#{filterPopup.dataFilters.filtersSet}">
+					<ice:commandButton image="/plugins/common/images/icons/close-panel.gif" action="#{filterPopup.resetAndApply}"
+						title="#{common_msgPropsBean['common.filterPopup.resetAllFilters']}" />
+				</ice:panelGroup>
+			</c:if>
+		</ice:panelGrid>
+	
+	<!-- TODO:
+		1. Position Popup at Anchor Position i.e./or at Cursor Position
+		2. Modal Popups
+			a. Are always centered. This is resolved in 1.8.2 which is yet to be released
+			(http://jira.icefaces.org/browse/ICE-4578)
+			b. Grays out background. Need to look if this is acceptable or need to change the style
+	-->
+	
+		<!-- Popup Filter -->
+		<ice:panelPopup draggable="true" resizable="false" modal="false"
+			rendered="#{filterPopup.visible}"
+			styleClass="popupDialog" style="#{width};" clientOnly="true">
+		
+			<f:facet name="header">
+				<table cellpadding="0" cellspacing="0" width="100%"><tr>
+					<td>
+						<ice:outputText value="#{filterPopup.title}"
+							styleClass="headerText" />
+					</td>
+					<td style="text-align: right">
+						<ice:commandButton image="/plugins/common/images/dialog-windowbttn-close.png"
+							action="#{filterPopup.closePopup}" immediate="true"
+							title="#{common_msgPropsBean['common.filterPopup.close']}"
+							styleClass="windowClose">
+							<pc:automationTag value="auto-DT-ColFilterClose" standAlone="false" />
+						</ice:commandButton>	
+					</td>
+				</tr></table>
+			</f:facet>
+		
+			<f:facet name="body">
+				<ice:panelBorder  styleClass="pnlPopUpBrdrDialog" cellpadding="0" cellspacing="0" width="100%"
+					renderNorth="false" renderEast="false" renderSouth="true"  renderWest="false" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>
+							<c:forEach items="#{filterPopup.displayDataFilters.list}" var="item">
+								<c:if test="#{filterPopup.displayDataFilters.count == 1}">
+									<pc:tableFilterData bean="#{bean}" filter="#{item}" />
+								</c:if>
+								<c:if test="#{filterPopup.displayDataFilters.count > 1}">
+									<ice:panelCollapsible expanded="false" rendered="#{item.visible}">
+										<f:facet name="header">
+											<ice:panelGrid width="100%" columns="2" cellpadding="0" cellspacing="0">
+												<ice:outputText value="#{item.title}" style="font-weight:bold" />
+												<ice:panelGroup style="text-align: right;" rendered="#{item.filterSet}">
+													<img src="/plugins/common/images/icons/ok.gif" />
+												</ice:panelGroup>
+											</ice:panelGrid>
+										</f:facet>
+										<pc:tableFilterData bean="#{bean}" filter="#{item}" />
+									</ice:panelCollapsible>
+								</c:if>
+							</c:forEach>
+							
+							
+							<c:forEach items="#{filterPopup.validationMessags}" var="message">
+								<ice:outputText value="#{message}" styleClass="msgError" />
+							</c:forEach>
+							
+						</ice:panelGroup>
+					</f:facet>
+		
+					<f:facet name="south">
+						<ice:panelGroup style="white-space: nowrap;">
+							<pc:automationTag value="auto-DT-ColFilterBtnsBar" standAlone="false" />
+							<ice:commandButton value="#{common_msgPropsBean['common.filterPopup.applyFilter']}"
+								action="#{filterPopup.apply}" styleClass="button" />
+							<ice:commandButton rendered="#{filterPopup.displayDataFilters.count > 1}"
+								value="#{common_msgPropsBean['common.filterPopup.resetFilter']}"
+								action="#{filterPopup.reset}" styleClass="button" />
+							<ice:commandButton rendered="#{filterPopup.displayDataFilters.count == 1}"
+								value="#{common_msgPropsBean['common.filterPopup.resetFilter']}"
+								action="#{filterPopup.resetAndApply}" immediate="true" styleClass="button" />
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

@@ -1,0 +1,38 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<ui:include src="#{genericPopup.includePath}" />
+	</ice:panelGroup>
+
+	<ice:panelGroup>
+	<!-- 	<ui:include src="modelDeploymentDialog.xhtml" />  -->
+		<ui:include src="modelImplementationDialog.xhtml" />
+		<ui:include src="modelExportDialog.xhtml" />
+		<ui:include
+			src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+			<ui:param name="dialogBean"
+				value="#{modelManagementBean.modelMgmtConfirmationDialog}" />
+		</ui:include>
+	</ice:panelGroup>
+	
+	
+		<pc:wizard bean="#{modelDeploymentDialogBean}" />		
+	
+
+	<c:if test="#{not empty modelManagementBean.modelTreeTable}">
+		<pc:automationTag value="auto-ADM-ModelMgmt-ModelTreeTbl" />
+		<pc:genericDataTable bean="#{modelManagementBean}"  id="modelMgmtView"
+			title="#{modelManagementBean.messages['table.title']}"
+			table="#{modelManagementBean.modelTreeTable}" treeColumn="Model"
+			exportExcel="true" exportCsv="true" 
+			toolbarUrl="/plugins/admin-portal/views/model/modelManagementToolbar.xhtml">
+		</pc:genericDataTable>
+
+	</c:if>
+
+</f:view>

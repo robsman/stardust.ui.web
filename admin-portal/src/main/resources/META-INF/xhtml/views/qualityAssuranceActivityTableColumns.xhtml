@@ -1,0 +1,71 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		id* = Id of the Table
+		title* = Title of the Table
+		bean* = Table instance
+		includeHelpers = true/false. Default true
+	-->
+	
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+		<ice:panelGroup rendered="#{col.columnName == 'modelName'}" style="display:inline;" panelTooltip="procToolTip">
+			<ice:outputText style="display: inline;" value="#{row.modelName}">
+				<h:graphicImage rendered="#{row.oldModel}"
+					value="/plugins/admin-portal/images/icons/model.gif"
+					style="vertical-align: middle; margin-right:5px; opacity: 0.3;filter: alpha(opacity=30);  display: inline;" />
+				<h:graphicImage rendered="#{!row.oldModel}"
+					value="/plugins/admin-portal/images/icons/model.gif"
+					style="vertical-align: middle; margin-right:5px;  display: inline;" />
+			</ice:outputText>
+
+		</ice:panelGroup>
+		<ice:panelGrid columns="2"
+			rendered="#{col.columnName == 'qaPercentage'}">
+			<ice:panelGroup>
+				<ice:inputText rendered="#{row.editOn}" id="qaPercentage"
+					partialSubmit="true" immediate="true" maxlength="3"
+					style="margin-left:10px; width: 30px" value="#{row.qaPercentage}">
+					<pc:automationTag value="auto-ADM-QAMgmt-Activity-QAProbability"
+						standAlone="false" />
+					<h:graphicImage rendered="#{row.modified}"
+						value="/plugins/views-common/images/icons/asterisk-small.png"
+						style="vertical-align: top; display: inline;" />
+				</ice:inputText>
+				<ice:outputText rendered="#{!row.editOn}"
+					value="#{row.qaPercentage}" />
+			</ice:panelGroup>
+		</ice:panelGrid>
+
+		<ice:panelGroup rendered="#{col.columnName == 'defaultPerformer'}">
+			<ice:outputText value="#{row.defaultPerformer}">
+				<h:graphicImage value="#{row.performerIconPath}"
+					style="vertical-align: middle; margin-right:5px" />
+			</ice:outputText>
+		</ice:panelGroup>
+		
+		<ice:panelGroup rendered="#{col.columnName == 'processName'}">
+			<ice:outputText value="#{row.processName}">
+				<h:graphicImage value="/plugins/views-common/images/icons/process.png"
+					style="vertical-align: middle; margin-right:5px" />
+			</ice:outputText>
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'activityName'}">
+			<ice:outputText value="#{row.activityName}">
+				<h:graphicImage
+					value="/plugins/common/images/icons/process-history/active/activity_manual.png"
+					style="vertical-align: middle; margin-right:5px" />
+			</ice:outputText>
+		</ice:panelGroup>
+		
+	</ice:panelGroup>
+	<ui:include src="/plugins/views-common/common/processToolTip.xhtml">
+		<ui:param name="tooltip" value="#{row.modelDescription}" />
+	</ui:include>
+</f:view>

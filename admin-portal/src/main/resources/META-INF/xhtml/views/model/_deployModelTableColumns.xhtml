@@ -1,0 +1,55 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'FileName'}"
+			style="text-align: center">
+
+			<ice:panelGrid columns="2">
+				<h:graphicImage url="/plugins/admin-portal/images/icons/model.gif" />
+				<ice:outputLabel value="#{row.fileName}" />
+			</ice:panelGrid>
+
+		</ice:panelGroup>
+
+
+		<ice:panelGroup rendered="#{col.columnName == 'DeploymentAction'}"
+			style="text-align: center">
+			<ice:outputLabel
+				value="#{ messages_admin['views.deploymodel.createVersion']}"
+				rendered="#{row.deploymentAction==1}" />
+
+			<h:outputFormat
+				value="#{messages_admin['views.deploymodel.title.overwrite']}"
+				rendered="#{row.deploymentAction!=1}">
+				<f:param value="#{modelDeploymentDialogBean.deploymentPage.modelName}" />
+				<f:param value="#{modelDeploymentDialogBean.deploymentPage.version}" />
+				<f:param value="#{modelDeploymentDialogBean.deploymentPage.modelOID}" />
+			</h:outputFormat>
+		</ice:panelGroup>
+
+
+		<ice:panelGroup rendered="#{col.columnName == 'Delete'}"
+			style="text-align: center">
+			<ice:commandLink
+				actionListener="#{modelDeploymentDialogBean.deploymentPage.removeUploadedFile}">
+				<pc:automationTag
+					value="auto-ADM-ModelDeployDlg-DeployModelTbl-RemFile" standAlone="false" />
+				<h:graphicImage
+					value="/plugins/processportal/images/delete.png"
+					style="border: none;" />
+				<f:attribute name="row" value="#{row}" />
+			</ice:commandLink>
+
+
+		</ice:panelGroup>
+
+
+	</ice:panelGroup>
+</f:view>

@@ -1,0 +1,210 @@
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<project name="portal-common" default="build" basedir="." xmlns:ipp="com.infinity.bpm.ant.macros">
+
+   <property name="project.dir" value="${basedir}" />
+   <property name="project.src" value="${project.dir}/src/main/java" />
+   <property name="resources.src" value="${project.dir}/src/main/resources" />
+   <property name="project.etc" value="${project.dir}/etc" />
+   <property name="project.lib" value="${project.dir}/src/main/lib" />
+   <property name="project.webapp.dir" value="${project.dir}/src/main/webapp" />
+   <property file="${project.etc}/private.properties" />
+
+   <property name="organizationId" value="com.infinity.bpm" />
+   <property name="artifactId" value="ipp-portal-common" />
+   <property name="webArtifactId" value="ipp-portal" />
+	
+   <import file="../../build.tools/commons-build.xml" />
+
+   <target name="initOnDevelopment" if="setup.development">
+      <echo message="Performing a development build ..." />
+
+      <property name="javac.debuglevel" value="lines,source,vars" />
+   </target>
+
+   <target name="initOnProduction" unless="setup.development">
+      <echo message="Performing a production build ..." />
+
+      <property name="javac.debuglevel" value="lines,source" />
+   </target>
+
+   <target name="init" depends="initOnDevelopment, initOnProduction, initBuildDir, initLatakiaHome">
+      <property name="build.dir" value="${build.home}" />
+   </target>
+
+   <target name="clean" depends="init" description="removes all build results">
+      <delete dir="${build.dir}" />
+   </target>
+
+   <target name="initBuildDir" unless="build.home">
+      <property name="build.home" value="${project.dir}/build" />
+   </target>
+
+   <target name="initLatakiaHome" unless="latakia.home">
+      <property name="latakia.home" value="${project.dir}/../latakia/build" />
+   </target>
+
+   <target name="initBuild" depends="init, initBuildDir">
+      <property name="build.dir" value="${build.home}" />
+      <property name="build.classes" value="${build.dir}/classes" />
+      <property name="build.lib" value="${build.dir}/lib" />
+      <property name="build.src" value="${build.dir}/src" />
+      <property name="build.deploy" value="${build.dir}/deploy" />
+      <property name="build.config" value="${build.dir}/etc" />
+
+      <property name="portal.common.jarfile" value="ipp-portal-common.jar" />
+      <property name="portal.common.jar" value="${build.lib}/${portal.common.jarfile}" />
+      <property name="portal.common.src-jarfile" value="ipp-portal-common-sources.jar" />
+      <property name="portal.common.src-jar" value="${build.lib}/${portal.common.src-jarfile}" />
+   </target>
+
+   <target name="initBuildDirectories" depends="initBuild">
+      <mkdir dir="${build.classes}" />
+      <mkdir dir="${build.lib}" />
+      <mkdir dir="${build.src}" />
+      <mkdir dir="${build.deploy}" />
+      <mkdir dir="${build.config}"/>
+   </target>
+
+   <target name="prepareSources" depends="initBuild">
+      <echo message="Preparing sources for a safe but slow build." />
+      <copy todir="${build.src}">
+         <fileset dir="${project.src}">
+            <include name="**/*.java" />
+         </fileset>
+      </copy>
+   </target>
+
+   <target name="init.ivy" if="dependencies.mode.ivy">
+      <echo message="Using Ivy for dependency management." />
+      <init-ivy />
+   </target>
+   
+   <target name="initClasspath" if="dependencies.mode.ivy" depends="init, init.ivy">
+      <init-ivy-classpath />
+
+      <path id="portal.common.classpath">
+         <path refid="compile.deps" />
+      </path>
+   </target>
+   
+   <target name="compile.jdk16" depends="init" description="Compiling Java 6 code.">
+      <ipp:javac-java6 srcdir="${build.src}" destdir="${build.classes}">
+         <include name="**/*.java" />
+         <classpath id="compile6.classpath">
+            <path path="${build.classes}" />
+            <path refid="portal.common.classpath" />
+         </classpath>
+      </ipp:javac-java6>
+   </target>
+
+   <target name="compile" depends="prepareSources, initBuildDirectories, initClasspath, compile.jdk16" description="compiles the portal common classes" />
+
+   <target name="copyDatFiles" depends="initBuildDirectories">
+      <copy todir="${build.classes}">
+         <fileset dir="${project.src}">
+            <include name="**/*.properties" />
+         </fileset>
+         <fileset dir="${resources.src}">
+            <include name="**/*.*" />
+         </fileset>
+      </copy>
+      <copy todir="${build.src}">
+         <fileset dir="${project.src}">
+            <include name="**/*.properties" />
+         </fileset>
+         <fileset dir="${resources.src}">
+            <include name="**/*.*" />
+         </fileset>
+      </copy>
+      <copy todir="${build.config}">
+	      <fileset dir="${project.etc}">
+	         <include name="properties.xml"/>
+	      </fileset>
+	   </copy>
+   </target>
+
+   <target name="jar" depends="compile, copyDatFiles">
+      <ipp:jar jarfile="${portal.common.jar}" implementationTitle="Infinity Process Engine - Portal Common">
+         <fileset dir="${build.classes}" id="fileset.carnot.base.jar">
+            <include name="**/*.*" />
+         </fileset>
+      </ipp:jar>
+   </target>
+
+   <target name="jar.src" depends="compile">
+      <delete file="${portal.common.src-jar}" />
+      <ipp:jar jarfile="${portal.common.src-jar}" implementationTitle="Infinity Process Engine - Portal Common Sources">
+         <fileset dir="${build.src}">
+            <include name="**/*.*" />
+         </fileset>
+      </ipp:jar>
+   </target>
+   
+   <target name="retrieve-war-deps.ivy" if="dependencies.mode.ivy" xmlns:ivy="antlib:org.apache.ivy.ant">
+      <!-- drop folder if it already exists by a previous build -->
+      <delete dir="${project.webapp.dir}/WEB-INF/lib" failonerror="false"/>
+      <mkdir dir="${project.webapp.dir}/WEB-INF/lib"/>
+      
+      <ivy:retrieve pattern="${project.webapp.dir}/WEB-INF/lib/[artifact]-[revision].[ext]"
+         conf="ipp-portal-base-lib-module-runtime"/>
+   </target>
+
+   <target name="war" depends="retrieve-war-deps.ivy">
+      <!-- drop folder if it already exists by a previous build -->
+      <delete dir="${project.webapp.dir}/WEB-INF/classes" failonerror="false"/>
+      <mkdir dir="${project.webapp.dir}/WEB-INF/classes"/>
+      
+      <copy todir="${project.webapp.dir}/WEB-INF/classes">
+         <!-- currently only japanese property files -->
+         <fileset dir="${latakia.home}/etc/i18n" >
+            <!-- currently only japanese property files -->
+            <include name="*_ja.properties*" />
+         </fileset>
+      </copy>
+
+      <war destfile="${build.deploy}/ipp-portal.war" basedir="${project.webapp.dir}"
+         webxml="${project.webapp.dir}/WEB-INF/web.xml">
+      </war>
+   </target>
+
+   <target name="build" if="dependencies.mode.ivy" depends="jar, jar.src, war">
+      <copy file="${build.deploy}/${webArtifactId}.war" todir="${build.lib}"/>
+      <ivy:makepom xmlns:ivy="antlib:org.apache.ivy.ant"
+         ivyfile="${ivy.dep.file}" pomfile="${build.lib}/${webArtifactId}.pom" 
+         artifactId="${webArtifactId}" packaging="war">
+         <mapping conf="test" scope="test" />
+      </ivy:makepom>
+      <ivy-make-nirvana-module-poms ivyFile="${ivy.dep.file}" pomFilePath="${build.lib}" />
+      <ivy-publish-local artifactId="${artifactId}" artifactDir="${build.lib}"/>
+      <delete file="${build.lib}/${webArtifactId}.war"/>
+   </target>
+
+   <target name="deploy" depends="build" />
+
+   <target name="initMoonglowHome" unless="moonglow.home">
+      <property name="moonglow.home" value="${project.dir}/../../../moonglow" />
+   </target>
+
+   <target name="copyToMoonglow" depends="initBuildDirectories, initMoonglowHome">
+      <property name="processportal.lib.dir" value="${moonglow.home}/../stardust/ide.wst/org.eclipse.stardust.ide.wst.facet.portal/lib" />
+      <mkdir dir="${processportal.lib.dir}" />
+      <copy todir="${processportal.lib.dir}">
+         <fileset dir="${build.lib}">
+            <include name="${portal.common.jarfile}" />
+         </fileset>
+      </copy>
+   </target>
+
+   <target name="dist" depends="build, copyToMoonglow" />
+
+</project>

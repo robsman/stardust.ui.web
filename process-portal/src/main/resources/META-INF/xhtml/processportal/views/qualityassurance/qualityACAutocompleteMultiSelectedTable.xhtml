@@ -1,0 +1,40 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates mandatory attributes)
+	component* = Instance of org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityACAutocompleteMultiSelector
+	-->
+	<c:choose>
+		<c:when
+			test="#{pc:instanceOf(component, 'org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityACAutocompleteMultiSelector')}">
+			<ice:panelCollapsible expanded="true" toggleOnClick="true">
+				<f:facet name="header">
+					<ice:panelGroup>
+						<ice:outputText style="padding-left: 5px;"
+							value="#{processportal_msgPropsBean['views.qualityAssuranceActivityDialog.selectedQACodes']}" />
+					</ice:panelGroup>
+				</f:facet>
+
+				<pc:automationTag value="auto-PP-QualityAssuranceCodesMultiSel-Table" />
+				<pc:genericDataTable exportExcel="false" exportCsv="false"
+					renderColumnHeaders="false" bean="#{component}"
+					table="#{component.selectedQACodesTable}" sortSupported="false">
+					<ui:include
+						src="/plugins/views-common/dialogs/hideBlankTableHeaders.xhtml">
+						<ui:param name="columnCount" value="2" />
+						<ui:param name="rowCount" value="#{component.selectedQACodesTable.rowCount}" />
+					</ui:include>
+				</pc:genericDataTable>
+			</ice:panelCollapsible>
+		</c:when>
+		<c:otherwise>
+			<ice:outputText
+				value="component is not instance of org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityACAutocompleteMultiSelector" />
+		</c:otherwise>
+	</c:choose>
+</f:view>

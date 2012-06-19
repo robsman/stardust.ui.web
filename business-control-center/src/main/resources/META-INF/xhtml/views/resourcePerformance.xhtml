@@ -1,0 +1,23 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid columns="2" style="display:inline;border: none;">
+		<ice:outputLabel value="#{resourcePerformance.messages['roleOrOrg.label']}#{resourcePerformance.messages['colon']}" styleClass="label-item" />
+		<ice:selectOneMenu value="#{resourcePerformance.selectedComponent}"
+	 		partialSubmit="true" valueChangeListener="#{resourcePerformance.updateUserStatistics}"> 
+	 		<pc:automationTag value="auto-BCC-ResPerf-RoleOrg" standAlone="false"/>
+			<f:selectItems  value="#{resourcePerformance.allModelParticipants}"/>
+		</ice:selectOneMenu>
+ 	</ice:panelGrid>
+ 	
+ 	<pc:automationTag value="auto-BCC-ResPerf-StatsTbl"/>
+	<pc:genericDataTable
+			bean="#{resourcePerformance}" id="resPerList"
+			table="#{resourcePerformance.statisticsTable}" sortSupported="true"/>
+
+</f:view>	

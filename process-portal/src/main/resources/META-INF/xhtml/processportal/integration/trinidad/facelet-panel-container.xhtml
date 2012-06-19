@@ -1,0 +1,35 @@
+<f:view xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:tr="http://myfaces.apache.org/trinidad"
+    xmlns:trh="http://myfaces.apache.org/trinidad/html"
+    xmlns:ppc="http://www.sungard.de/carnot/web/portal-plugin/common">
+    
+	<f:loadBundle basename="ProcessPortalMessages" var="localeBundle" />
+    <f:loadBundle basename="web-ui-common-messages" var="commonMsg" />
+
+	<tr:document id="processPortal" title="#{localeBundle.carnotTitle}">
+
+        <trh:script source="/plugins/processportal/integration/trinidad/util.js" type="text/javascript"/>
+        <trh:script source="/plugins/processportal/IppProcessPortal.js" />
+
+        <trh:script source="/plugins/processportal/integration/iframe/iframe-panel-server-support.js" />
+
+		<tr:form id="processPortalForm" 
+            usesUpload="#{true}">
+            
+            <ui:include src="bpm-web-ui-events.xhtml" />
+            
+			<tr:panelGroupLayout layout="vertical">
+
+				<ui:include src="workarea.xhtml" />
+
+			</tr:panelGroupLayout>
+
+		</tr:form>
+
+	</tr:document>
+   
+</f:view>

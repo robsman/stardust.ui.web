@@ -1,0 +1,43 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ice:panelGroup>
+
+		<ice:panelGroup expanded="true">
+
+			<pc:genericDataTable id="testing" bean="#{dialogBean.currentPage}" resizable="false"
+				title="#{ messages_admin['views.deploymodel.deploymentStatus.table.title']}"
+				table="#{dialogBean.currentPage.deploymentStatus}"
+				exportExcel="false" exportCsv="false">
+			</pc:genericDataTable>
+		</ice:panelGroup>
+		
+
+
+		<ice:panelGroup expanded="true"  >
+
+			<ice:panelCollapsible
+				expanded="#{dialogBean.currentPage.containsErrors or dialogBean.currentPage.containsWarnings }" style="white-space;normal" >
+
+				<f:facet name="header">
+					<ice:panelGroup style="text-align: left">
+						<ice:outputText style="text-align: left"
+							value="#{ messages_admin['views.deploymodel.deploymentStatus.errorwarning.table.title']}" />
+					</ice:panelGroup>
+				</f:facet>
+
+				<ice:panelGroup expanded="true" scrollHeight="200px;">
+					<pc:genericDataTable bean="#{dialogBean.currentPage}" title=""
+						id="deploymentStatusPageTable"
+						table="#{dialogBean.currentPage.treeTable}" treeColumn="Message"
+						exportExcel="false" exportCsv="false">
+					</pc:genericDataTable>
+				</ice:panelGroup>				
+			</ice:panelCollapsible>
+		</ice:panelGroup>
+		
+	</ice:panelGroup>
+</f:view>

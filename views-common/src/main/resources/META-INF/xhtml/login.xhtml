@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
+<jsp:root version="2.0"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:jsp="http://java.sun.com/JSP/Page"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ice="http://www.icesoft.com/icefaces/component"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<ui:composition>
+    <f:view>
+        <ice:loadBundle basename="portal-common-messages" var="localeBundle" />
+        <html xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+	        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	        <title>#{localeBundle['portalFramework.title']}</title>
+	        <link rel="shortcut icon"
+				href="#{facesContext.externalContext.requestContextPath}/plugins/common/images/icons/favicon.ico"></link>
+			<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/plugins/common/InfinityBpm_Core.js" />
+	        <script src="#{facesContext.externalContext.requestContextPath}/plugins/views-common/scripts/loginUtil.js" type="text/javascript"/>
+	        <link href="#{facesContext.externalContext.requestContextPath}/plugins/common/css/nirvanaRime.css" rel="stylesheet" type="text/css" />
+	        <link href="#{facesContext.externalContext.requestContextPath}/plugins/common/css/nirvanaRime-override.css" rel="stylesheet" type="text/css" />
+	        <link href="#{facesContext.externalContext.requestContextPath}/plugins/common/css/nirvanaPortal.css" rel="stylesheet" type="text/css" />
+	        <link href="#{facesContext.externalContext.requestContextPath}/plugins/common/css/portalComponentStyle.css" rel="stylesheet" type="text/css" />
+        </head>
+        <body style="background:#f5f5f5; text-align: center; height: auto;" onload="onLoginPageLoad();">
+        <ice:form id="loginForm" onkeyup="default_portalCommon_loginuser(event);">
+            <div id="loginBox">
+              <div class="logo"></div>
+              <div class="loginContent">
+              	<div class="portalTitle">#{ippLoginDialog.loginHeader}</div>
+                <ice:panelGrid columns="2" style="width: 100%" cellspacing="0" cellpadding="0" columnClasses="label, data">
+                  <ice:outputLabel for="j_username" value="#{localeBundle['loginDialog.account']}:" 
+                     styleClass="label-form"/>
+                  <ice:panelGroup>
+                  	<h:inputText id="j_username" value="#{ippLoginDialog.account}"
+                    	onkeydown="submitOnEnter(this);">
+                    	<pc:automationTag value="auto-Login-AcctField" standAlone="false"/>
+                    </h:inputText>
+                  </ice:panelGroup>
+                  <ice:outputLabel for="j_password" value="#{localeBundle['loginDialog.password']}:" 
+                     styleClass="label-form"/>
+                  <ice:panelGroup>
+                  	<h:inputSecret id="j_password" value="#{ippLoginDialog.password}"
+                    	 onkeydown="submitOnEnter(this);">
+                    	 <pc:automationTag value="auto-Login-PwdField" standAlone="false"/>
+                    </h:inputSecret>
+                  </ice:panelGroup>
+                  <ice:outputLabel for="realm" value="#{localeBundle['loginDialog.realm']}:" 
+                     styleClass="label-form" rendered="#{ippLoginDialog.promptForRealm}"/>
+                  <h:inputText id="realm" value="#{ippLoginDialog.realm}" 
+                      rendered="#{ippLoginDialog.promptForRealm}">
+                      <pc:automationTag value="auto-Login-RealmField" standAlone="false"/>
+                  </h:inputText>
+                  <ice:outputLabel for="domain" value="#{localeBundle['loginDialog.domain']}:" 
+                     styleClass="label-form" rendered="#{ippLoginDialog.promptForDomain}"/>
+                  <h:inputText id="domain" value="#{ippLoginDialog.domain}" 
+                      rendered="#{ippLoginDialog.promptForDomain}">
+                      <pc:automationTag value="auto-Login-DomainField" standAlone="false"/>
+                  </h:inputText>   
+                  <ice:outputLabel for="partition" value="#{localeBundle['loginDialog.partition']}:" 
+                     styleClass="label-form" rendered="#{ippLoginDialog.promptForPartition}"/>
+                  <h:inputText id="partition" value="#{ippLoginDialog.partition}" 
+                     rendered="#{ippLoginDialog.promptForPartition}">
+                     <pc:automationTag value="auto-Login-PartField" standAlone="false"/>
+                  </h:inputText>
+                </ice:panelGrid>
+                <ice:panelGroup styleClass="loginMessage">
+                	<ice:inputHidden id="commonMessage" value="" />
+					<ice:message for="commonMessage" styleClass="loginMsg" />
+					
+					<ice:panelGroup rendered="#{param['failed']}" >
+						<ice:outputText styleClass="iceMsgError loginMsgError" value="#{localeBundle['loginDialog.error.principalAuthFailed']}" />
+					</ice:panelGroup>
+				</ice:panelGroup>
+              </div>
+              <div class="buttonContainer">
+              	<table cellpadding="0" cellspacing="0" width="100%">
+              		<tr>
+              			<td>
+	                		<h:commandButton id="loginBtn"
+	                    		value="#{localeBundle['loginDialog.buttonLabel']}"
+	                    		action="#{ippLoginDialog.login}">
+	                    		<pc:automationTag value="auto-Login-LoginBtn" standAlone="false"/>
+	                    	</h:commandButton>
+	                    	<ice:inputHidden id="returnUrl" value="#{ippLoginDialog.returnUrl}" />
+	                    </td>
+	                    <td style="text-align: right">
+			                <ice:commandLink id="resetPwd" style="margin: 5px;" styleClass="action-link"
+			                    value="#{localeBundle['loginDialog.action.resetPassword']}"
+			                    action="#{ippLoginDialog.resetPwdDialog.openPopup}"
+			                    rendered="#{not ippLoginDialog.principalLogin}"/>
+	                    </td>
+	            	</tr>
+                </table>
+              </div>
+            </div>
+        </ice:form>
+        <script type="text/javascript">
+        	try {
+        		document.getElementById("loginForm:j_username").focus();
+        	}
+        	catch (e) {
+        		// Ignore
+			}
+        </script>
+        
+		<ui:include src="resetPassword.xhtml" />
+		<ui:include src="changePassword.xhtml" />
+
+        </body>
+        </html>
+    </f:view>
+</ui:composition>
+</jsp:root>

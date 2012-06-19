@@ -1,0 +1,30 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<c:if test="#{not empty processHistoryTable.processTreeTable.treeTable}">
+		<pc:automationTag value="auto-COM-PCEHistoryTable"/>
+		<pc:genericDataTable id="processtable"
+			bean="#{processHistoryTable}"  title="#{views_common_msgPropsBean['processHistory.processTable.label']}"
+			table="#{processHistoryTable.processTreeTable.treeTable}"	treeColumn="Process Name"
+			exportExcel="true" exportCsv="true" toolbarUrl="/plugins/views-common/processhistory/processInstanceHistoryTableToolbar.xhtml">
+		</pc:genericDataTable>
+
+	</c:if>
+	<c:if test="#{not empty processHistoryTable.activityTreeTable.treeTable}">
+		<ice:panelGroup styleClass="clearing" />
+		<ice:panelGroup styleClass="clearing" />
+		
+		<pc:automationTag value="auto-COM-ACTHistoryTable" />
+		<pc:genericDataTable id="activityTable"
+			bean="#{processHistoryTable}"  title="#{processHistoryTable.activityTreeTable.tableTitle}"
+			table="#{processHistoryTable.activityTreeTable.treeTable}"	treeColumn="Activity Name"
+			exportExcel="true" exportCsv="true" toolbarUrl="/plugins/views-common/processhistory/activityInstanceHistoryTableToolbar.xhtml">
+		</pc:genericDataTable>
+	</c:if>		
+	<ice:outputText rendered="#{empty processHistoryTable.processTreeTable.treeTable}"
+		value="#{views_common_msgPropsBean['processHistoryTable.NotApplicable']}" />
+</f:view>

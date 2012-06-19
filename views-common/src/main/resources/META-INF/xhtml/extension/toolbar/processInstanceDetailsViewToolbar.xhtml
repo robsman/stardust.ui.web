@@ -1,0 +1,94 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:include src="/plugins/views-common/dialogs/abortProcess.xhtml" />
+	<ui:include	src="/plugins/views-common/dialogs/switchProcessDialog.xhtml" />
+	<ui:include	src="/plugins/views-common/dialogs/joinProcessDialog.xhtml" />
+	<ui:include	src="/plugins/views-common/views/case/attachToCaseDialog.xhtml" />
+	<ui:include	src="/plugins/views-common/views/case/createCaseDialog.xhtml" />
+	
+	<ice:panelGrid columns="16" cellspacing="0" cellpadding="2" style="padding-right: 10px;">
+		<pc:automationTag value="auto-COM-PCETerminate"/>
+		<ice:commandButton
+			image="/plugins/business-control-center/images/icons/abort_process.png"
+			action="#{processInstanceDetailsBean.terminateProcess}" 
+			disabled="#{!processInstanceDetailsBean.abortProcess}"
+			partialSubmit="true"
+			title="#{views_common_msgPropsBean['common.tooltip.terminate']}"
+			styleClass="toolbar-button" />
+		<!-- Rendered when process termination is allowed -->
+		<ice:panelGroup
+			rendered="#{(processInstanceDetailsBean.abortProcess)}">
+			<c:set var="bean" value="#{processInstanceDetailsBean}" />
+			<c:set var="processInstance" value="#{processInstanceDetailsBean.processInstance}" />
+			<ui:include
+				src="/plugins/views-common/common/switchProcessMenuBar.xhtml" />
+		</ice:panelGroup>
+		<!-- Rendered when process termination is not allowed -->
+		<ice:panelGroup
+			rendered="#{!(processInstanceDetailsBean.abortProcess)}">
+			<ice:graphicImage styleClass="iceCmdBtn-dis"
+				value="/plugins/common/images/panelHeader-triggerCollapse.png" />
+		</ice:panelGroup>
+		
+		<!-- Case Menu -->
+		<ice:panelGroup
+			rendered="#{processInstanceDetailsBean.processInstanceOID==processInstanceDetailsBean.processInstance.rootProcessInstanceOID}">
+			<c:set var="bean" value="#{processInstanceDetailsBean}" />
+			<c:set var="processInstance" value="#{processInstanceDetailsBean.processInstance}" />
+			<ui:include src="/plugins/views-common/common/caseMenuBar.xhtml" />
+			<ui:param name="bean" value="#{bean}" />			
+		</ice:panelGroup>
+
+		<ice:commandLink action="#{spawnProcessDialogBean.openPopup}"
+			immediate="true" disabled="#{!processInstanceDetailsBean.abortProcess}">
+			<pc:automationTag value="auto-COM-PCESpawnProcess" standAlone="false" />
+			<ice:graphicImage
+				value="/plugins/views-common/images/icons/cog_add.png"
+				styleClass="#{processInstanceDetailsBean.abortProcess? '' : 'iceCmdBtn-dis'}"
+				title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}" />
+			<f:param name="processInstanceOID"
+				value="#{processInstanceDetailsBean.processInstanceOID}" />
+		</ice:commandLink>
+
+		<pc:automationTag value="auto-COM-PCERecover"/>
+		<ice:commandButton
+			image="/plugins/business-control-center/images/icons/recover_process.png"
+			action="#{processInstanceDetailsBean.recoverProcess}"
+			partialSubmit="true"
+			title="#{messages_bcc['common.tooltip.recover']}"
+			styleClass="toolbar-button" />
+					
+		<ice:graphicImage value="/plugins/common/images/toolbar-separator.png"/>	
+
+		<pc:automationTag value="auto-COM-PCEOpenCorrespondence"/>
+		<ice:commandButton
+			image="/plugins/views-common/images/icons/email_add.png"
+			disabled="#{!processInstanceDetailsBean.supportsProcessAttachments}"
+			action="#{processInstanceDetailsBean.openCorrespondence}"
+			partialSubmit="true"
+			title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.correspondence']}"
+			styleClass="toolbar-button" />
+			
+		<pc:automationTag value="auto-COM-PCEOpenChat"/>
+		<ice:commandButton
+			image="/plugins/views-common/images/icons/user_comment.png"
+			disabled="#{!processInstanceDetailsBean.supportsProcessAttachments}"
+			action="#{processInstanceDetailsBean.openChat}" partialSubmit="true"
+			title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.chat']}"
+			styleClass="toolbar-button" />
+		<ice:graphicImage value="/plugins/common/images/toolbar-separator.png"/>
+		
+		<pc:automationTag value="auto-COM-PCEUpdate"/>
+		<ice:commandButton
+			image="/plugins/business-control-center/images/icons/arrow_refresh.png"
+			action="#{processInstanceDetailsBean.update}" partialSubmit="true"
+			title="#{messages_bcc['toolbars.common.tooltip.update']}"
+			styleClass="toolbar-button" />
+	</ice:panelGrid>
+
+</f:view>

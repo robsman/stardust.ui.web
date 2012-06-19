@@ -1,0 +1,61 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
+			<ui:param name="bean" value="#{worklistsBean}" />
+			<ui:param name="title"
+				value="#{worklistsBean.messages['title']}" />
+			<ui:param name="collapsible" value="true" />
+			<ui:param name="showRefreshLink" value="true" />
+			<ui:param name="automationTag" value="auto-PP-LP-MyAssign-ColPnl" />
+		</ui:include>
+	</ice:panelGroup>
+	<ice:panelGroup rendered="#{worklistsBean.expanded}">
+		<ice:panelGroup effect="#{worklistsBean.effect}" rendered="#{not empty worklistsBean.treeModel}">
+		
+			<ice:panelGroup style="display: inline; white-space: nowrap">
+				<ice:selectBooleanCheckbox partialSubmit="true"
+						value="#{worklistsBean.showEmptyWorklist}"
+						valueChangeListener="#{worklistsBean.showEmptyWorklist}">
+						<pc:automationTag value="auto-PP-LP-MyAssign-ShowHideChkbox" standAlone="false"/>
+				</ice:selectBooleanCheckbox>
+				<ice:outputLabel value="#{worklistsBean.messages['showEmptyWorklist']}" styleClass="label-item" />
+			</ice:panelGroup>
+			<pc:automationTag value="auto-PP-LP-MyAssign-Tree" standAlone="false"/>
+			<ice:tree hideRootNode="true" hideNavigation="true" value="#{worklistsBean.treeModel}" 
+				var="item" imageDir="../../xmlhttp/css/xp/css-images/" style="padding:7px; display: block;">
+				<ice:treeNode>
+					<f:facet name="icon">
+						<ice:panelGroup style="display: inline;">
+							<ice:graphicImage value="#{item.userObject.icon}" width="16px" height="16px"></ice:graphicImage>
+						</ice:panelGroup>
+					</f:facet>
+					<f:facet name="content">
+						<ice:panelGroup style="display: inline;">
+							<ice:outputText value="#{item.userObject.text}" />
+							<ice:commandLink styleClass="action-link"
+								actionListener="#{item.userObject.select}">
+								<pc:automationTag value="auto-PP-LP-MyAssign-ItemsCnt" standAlone="true"/>
+								<ice:outputFormat
+									value="#{worklistsBean.messages['items']}">
+									<f:param value="#{item.userObject.activityCount}" />
+								</ice:outputFormat>
+							</ice:commandLink>
+						</ice:panelGroup>
+					</f:facet>
+				</ice:treeNode>
+			</ice:tree>
+			
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{empty worklistsBean.treeModel}">
+			<ice:outputText value="#{worklistsBean.messages['noneItems.message']}"/>
+		</ice:panelGroup>
+	</ice:panelGroup>
+
+</f:view>

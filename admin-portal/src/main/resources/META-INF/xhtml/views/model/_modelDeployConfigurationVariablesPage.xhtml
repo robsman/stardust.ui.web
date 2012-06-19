@@ -1,0 +1,24 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+
+		<pc:genericDataTable
+			bean="#{dialogBean.currentPage.configurationVariablesBean}"
+			id="ctxDeployModelConfiguration"
+			title="#{ messages_admin['views.configurationVariablesView.missingConfigurationVariables.title']}"
+			table="#{dialogBean.currentPage.configurationVariablesBean.treeTable}"
+			treeColumn="Model" exportExcel="false" exportCsv="false">
+			<!-- scrollable="true" scrollHeight="400px" columnWidths="250px,100px,100px,90px"  -->
+
+		</pc:genericDataTable>
+
+	</ice:panelGroup>
+
+
+
+</f:view>

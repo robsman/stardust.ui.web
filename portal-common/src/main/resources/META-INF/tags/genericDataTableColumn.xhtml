@@ -1,0 +1,65 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		bean = Backing Bean
+		mainRow = Main Row Object
+		row = Row Object		
+		property = Property of row to be displayed
+		columnPref = Instance of ColumnPreference
+	 -->
+<ui:composition>
+	<c:if test="#{not empty item.columnContentUrl}">
+    	<ui:include src="#{item.columnContentUrl}">
+			<ui:param name="bean" value="#{bean}" />
+			<ui:param name="mainRow" value="#{mainRow}"/>
+        	<ui:param name="row" value="#{row}"/>
+        	<ui:param name="col" value="#{columnPref}"/>
+		</ui:include>
+	</c:if>
+
+	<c:if test="#{empty item.columnContentUrl}">
+		<!-- ********** STRING COLUMN ********** -->
+		<c:if test="#{item.columnDataType eq 'STRING'}">
+			<ice:outputText value="#{row[property]}" escape="#{columnPref.escape}"
+				rendered="#{item.columnRenderType eq 'READ_ONLY'}" />
+			<pc:automationTag value="auto-DT-DTCol-StringVal" />
+			<ice:inputText value="#{row[property]}" partialSubmit="true"
+				rendered="#{item.columnRenderType eq 'READ_WRITE'}" />
+		</c:if>
+
+		<!-- ********** DATE COLUMN ********** -->
+		<c:if test="#{item.columnDataType eq 'DATE'}">
+			<ice:outputText value="#{row[property]}" rendered="#{item.columnRenderType eq 'READ_ONLY'}">
+				<f:convertDateTime
+					pattern="#{columnPref.columnFormatter}"
+					locale="#{ippPortalApp.localeObject}"
+					timeZone="#{ippPortalApp.timeZone}" />
+			</ice:outputText>
+		</c:if>
+
+		<!-- ********** NUMBER COLUMN ********** -->
+		<c:if test="#{item.columnDataType eq 'NUMBER'}">
+			<ice:outputText value="#{row[property]}"
+				rendered="#{item.columnRenderType eq 'READ_ONLY'}" />
+			<pc:automationTag value="auto-DT-DTCol-NumberVal" />	
+			<ice:inputText value="#{row[property]}" partialSubmit="true"
+				rendered="#{item.columnRenderType eq 'READ_WRITE'}" />
+		</c:if>
+
+		<!-- ********** BOOLEAN COLUMN ********** -->
+		<c:if test="#{item.columnDataType eq 'BOOLEAN'}">
+			<ice:outputText value="#{row[property]}"
+				rendered="#{item.columnRenderType eq 'READ_ONLY'}" />
+			<pc:automationTag value="auto-DT-DTCol-BooleanVal" />	
+			<ice:selectBooleanCheckbox partialSubmit="true" value="#{row[property]}"
+				rendered="#{item.columnRenderType eq 'READ_WRITE'}" />
+		</c:if>
+	</c:if>
+</ui:composition>
+</f:view>

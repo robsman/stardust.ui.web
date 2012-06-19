@@ -1,0 +1,75 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<pc:automationTag value="auto-FW-Alerts" standAlone="false" />
+		<ice:graphicImage style="margin-right: 8px; vertical-align: middle;" rendered="#{not ippAlertManager.newAlert}"
+			value="/plugins/common/images/bell.png" />
+		<ice:graphicImage style="margin-right: 8px; vertical-align: middle;" rendered="#{ippAlertManager.newAlert}"
+			value="/plugins/common/images/bell-ringing.gif" />
+		<ice:commandLink action="#{ippAlertManager.toggleAlertsPanel}" styleClass="portalAlertsLink">
+			<ice:panelGroup effect="#{ippAlertManager.alertEffect}" style="display: inline;">
+				<ice:outputText value="#{common_msgPropsBean['portalFramework.alerts.label']}" />
+				<ice:outputText value="(#{ippAlertManager.alertsCount})"
+					rendered="#{ippAlertManager.alertsAvailable}" style="font-weight: bold" />
+			</ice:panelGroup>
+		</ice:commandLink>
+		<ice:commandLink action="#{ippAlertManager.toggleAlertsPanel}" styleClass="portalAlertsLink">
+			<ice:graphicImage style="margin-left: 4px;"
+				value="/plugins/common/images/arrow-down.png" />
+		</ice:commandLink>
+	</ice:panelGroup>
+	
+	<ice:panelPopup draggable="false" resizable="false" modal="false"
+		rendered="#{ippAlertManager.visible}" styleClass="portalAlertsPanel" clientOnly="true">
+
+		<f:facet name="header">
+		</f:facet>
+		
+		<f:facet name="body">
+			<ice:panelGroup>
+				<ice:panelGroup rendered="#{ippAlertManager.alertsCount > 0}">
+					<table width="100%" cellpadding="0" cellspacing="0">
+						<c:forEach items="#{ippAlertManager.alerts}" var="alert">
+							<tr>
+								<td class="portalAlertEntryImage">
+									<ice:graphicImage value="#{alert.iconUrl}" height="32" width="32" />
+								</td>
+								<td class="portalAlertEntryData">
+									<ice:panelGroup>
+										<ice:outputText value="#{alert.senderFullName} - " styleClass="portalAlertEntryUserName" />
+										<ice:panelGroup style="display: inline;"> <!-- panelTooltip="alertToolTip" -->
+											<ice:commandLink actionListener="#{ippAlertManager.processAlertAction}" styleClass="action-link">
+												<pc:automationTag value="auto-FW-Alerts-ProcessActionLink" />
+												<ice:outputText value="#{alert.displayText}" styleClass="action-link portalAlertEntryHandler" />
+												<f:attribute name="alertItem" value="#{alert}" />
+											</ice:commandLink>
+										</ice:panelGroup>
+									</ice:panelGroup>
+									<ice:outputText value="#{alert.humanReadableTimeStamp}" styleClass="portalAlertEntryTime" />
+
+									<!--
+									<ice:panelTooltip id="alertToolTip" hoverDelay="500"
+										styleClass="tooltip viewTooltipPanel" style="position: absolute;">
+										<f:facet name="header"></f:facet>
+										<f:facet name="body">
+											<ice:outputText value="#{alert.text}" styleClass="viewTooltip"/>
+										</f:facet>
+									</ice:panelTooltip>
+									-->
+								</td>
+							</tr>
+						</c:forEach>
+					</table>
+				</ice:panelGroup>
+				<ice:panelGroup rendered="#{ippAlertManager.alertsCount eq 0}">
+					<ice:outputText value="#{common_msgPropsBean['portalFramework.alerts.noAlerts']}" />
+				</ice:panelGroup>
+			</ice:panelGroup>
+		</f:facet>
+	</ice:panelPopup>			
+</f:view>

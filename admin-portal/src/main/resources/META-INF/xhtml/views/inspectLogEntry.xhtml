@@ -1,0 +1,82 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:composition>
+	
+		<ice:panelPopup modal="true" rendered="#{overviewBean.visible}"
+			draggable="true" autoCentre="true" positionOnLoadOnly="true"
+			styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-ADM-Overview-InspectLogDlg-Header"/>
+					<ice:outputText value="#{messages_admin['views.logEntry.title']}"
+						styleClass="headerText" />
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png" 
+						action="#{overviewBean.closePopup}"
+						immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+		
+			<f:facet name="body">
+				<ice:panelBorder  styleClass="pnlPopUpBrdrDialog" cellpadding="0" cellspacing="0"
+					renderNorth="false" renderEast="false" renderSouth="true"  renderWest="false" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>
+							<ice:panelGrid columns="3">
+								<ice:column>
+									<ice:outputLabel value="#{messages_admin['views.overview.logTable.column.timeStamp']}" 
+										styleClass="label-form" />
+								</ice:column>
+								<ice:column>
+									<ice:outputText value="  "/>
+								</ice:column>
+								<ice:column>
+									<ice:outputText value="#{overviewBean.log.timeStamp}">
+										<f:convertDateTime timeZone="#{ippPortalApp.timeZone}" locale="#{ippPortalApp.localeObject}" pattern="#{dateUtils.dateTimeFormatter}" />
+									</ice:outputText>
+								</ice:column>
+								
+								<ice:column>
+									<ice:outputLabel value="#{messages_admin['views.logEntry.scope.label']}"
+										styleClass="label-form" />
+								</ice:column>
+								<ice:column>
+									<ice:outputText value="  "/>
+								</ice:column>
+								<ice:column>
+									<ice:outputText value="#{overviewBean.log.context}" />
+								</ice:column>
+								
+								<ice:column>
+									<ice:outputLabel value="#{messages_admin['views.logEntry.content.label']}"
+										styleClass="label-form" />
+								</ice:column>
+								<ice:column>
+									<ice:outputText value="  "/>
+								</ice:column>
+								<ice:column>
+									<ice:inputTextarea value="#{overviewBean.log.subject}" disabled="true" rows="6">
+										<pc:automationTag value="auto-ADM-Overview-InspectLogDlg-Comment" standAlone="false"/>
+									</ice:inputTextarea>	
+								</ice:column>
+							</ice:panelGrid>
+						</ice:panelGroup>
+					</f:facet>
+		
+					<f:facet name="south">
+						<ice:panelGroup>
+							<pc:automationTag value="auto-ADM-Overview-InspectLogDlg-BtnsBar" standAlone="false"/>
+							<ice:commandButton value="#{messages_admin['common.close']}" action="#{overviewBean.closePopup}"
+								id="close" styleClass="button" title="#{messages_admin['common.close']}"/>
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

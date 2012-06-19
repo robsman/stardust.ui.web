@@ -1,0 +1,17 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<!--
+	Input parameter: messenger (implementation of IMessenger)
+	 -->
+
+	<ice:inputRichText value="#{messenger.content}"
+		 skin="silver" language="#{ippPortalApp.localeObject.language}"
+		toolbar="richTextChatToolbar"
+		customConfigPath="/plugins/views-common/contentmgmt/views/richText/richTextChat.js"
+		width="100%" height="100px" saveOnSubmit="true" />
+</f:view>		

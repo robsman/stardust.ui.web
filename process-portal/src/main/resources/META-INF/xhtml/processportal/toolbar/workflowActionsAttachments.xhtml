@@ -1,0 +1,46 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<ui:include
+			src="/plugins/views-common/views/doctree/commonFileUploadDialog.xhtml" />
+	</ice:panelGroup>
+
+	<ice:panelGrid columns="4"
+		rendered="#{ippActivityPanelController.loadSuccessful}">
+		<ice:panelGroup>			
+			<ice:commandLink
+				action="#{ippActivityPanelController.toggleNotesIframePopup}"
+				title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.notes']}">
+				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarNotes" standAlone="false"/>
+				<ice:graphicImage value="#{ippActivityPanelController.notesIcon}"/> 
+			</ice:commandLink>
+			<div id="ippNotesAnchor" style="width: 1px; height: 1px;"></div>
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{ippActivityPanelController.supportsProcessAttachments or ippActivityPanelController.supportsProcessDocuments}">			
+			<ice:commandLink
+				action="#{ippActivityPanelController.toggleProcessAttachmentsIframePopup}"
+				title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.processDocuments']}">
+				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarProcAttach" standAlone="false"/>
+				<ice:graphicImage value="#{ippActivityPanelController.processAttachmentsIcon}" /> 
+			</ice:commandLink>
+			<div id="ippProcessAttachmentsAnchor" style="width: 1px; height: 1px;"></div>
+		</ice:panelGroup>
+		
+		<ice:panelGroup>			
+			<ice:commandLink
+				action="#{ippActivityPanelController.toggleLinkedProcessIframePopup}"
+				title="#{views_common_msgPropsBean['linkedProcessTable.table']}">
+				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarProcAttach" standAlone="false"/>
+				<ice:graphicImage value="/plugins/views-common/images/icons/link.png" /> 
+			</ice:commandLink>
+			<div id="ippLinkedProcessAnchor" style="width: 1px; height: 1px;"></div>
+		</ice:panelGroup>		
+	</ice:panelGrid>
+
+</f:view>

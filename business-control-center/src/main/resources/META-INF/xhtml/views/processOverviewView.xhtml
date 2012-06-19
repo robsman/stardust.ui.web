@@ -1,0 +1,28 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ice:panelGroup>
+		<pc:automationTag value="auto-BCC-ProcMgr-PrioDataTable"/>
+		<pc:genericDataTable title="#{businessProcessManager.messages['priorityTable.title']}"
+				bean="#{businessProcessManager}" id="priorityView"
+				table="#{businessProcessManager.treeTable}" treeColumn="Name"
+				exportExcel="true" exportCsv="true" toolbarUrl="/plugins/business-control-center/extensions/toolbar/processOverviewTableToolbar.xhtml"/>
+		<ice:panelGroup styleClass="clearing" />
+		<ice:panelGroup styleClass="clearing" />
+	</ice:panelGroup>
+
+	<ice:panelGroup>
+		<c:if test="#{businessProcessManager.processTableVisible}">
+			<ui:include src="processOverviewViewProcessTable.xhtml" />
+		</c:if>
+		<c:if test="#{businessProcessManager.activityTableVisible}">
+			<ui:include src="processOverviewViewActivityTable.xhtml" />
+		</c:if>
+		<ice:panelGroup styleClass="clearing" />
+	</ice:panelGroup>
+</f:view>

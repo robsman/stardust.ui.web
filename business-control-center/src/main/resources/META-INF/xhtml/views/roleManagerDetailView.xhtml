@@ -1,0 +1,137 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup width="100%">
+		<ice:panelGroup>
+			<ice:panelGroup styleClass="clearing" />
+
+			<ice:panelGroup styleClass="heading">
+				<ice:outputText
+					value="#{roleManagerDetail.messages['details.label']}" />
+			</ice:panelGroup>
+		</ice:panelGroup>
+		<table>
+			<tr>
+				<td style="vertical-align: top;"><ice:panelGrid columns="2"
+					style="float:right;">
+					<ice:column>
+						<ice:outputLabel
+							value="#{roleManagerDetail.messages['column.name']}#{roleManagerDetail.messages['colon']}"
+							styleClass="label-item" />
+					</ice:column>
+					<ice:column>
+						<ice:outputText value="#{roleManagerDetail.roleName}" />
+					</ice:column>
+
+					<ice:column>
+						<ice:outputLabel
+							value="#{roleManagerDetail.messages['items.label']}#{roleManagerDetail.messages['colon']}"
+							styleClass="label-item" />
+					</ice:column>
+					<ice:column>
+						<ice:outputText value="#{roleManagerDetail.items}" />
+					</ice:column>
+
+					<ice:column>
+						<ice:outputLabel
+							value="#{roleManagerDetail.messages['account.label']}#{roleManagerDetail.messages['colon']}"
+							styleClass="label-item" />
+					</ice:column>
+					<ice:column>
+						<ice:outputText value="#{roleManagerDetail.account}" />
+					</ice:column>
+
+					<ice:column>
+						<ice:outputLabel
+							value="#{roleManagerDetail.messages['itemsPerUser.label']}#{roleManagerDetail.messages['colon']}"
+							styleClass="label-item" />
+					</ice:column>
+					<ice:column>
+						<ice:outputText value="#{roleManagerDetail.itemsPerUser}" />
+					</ice:column>
+				</ice:panelGrid></td>
+			</tr>
+		</table>
+		<ice:panelGroup styleClass="clearing" />
+
+		<ice:panelGroup id="tabSetTabs">
+			<ice:panelTabSet id="roleManagerDetailDialogTab"
+				tabChangeListener="#{roleManagerDetail.processTabChange}"
+				selectedIndex="#{roleManagerDetail.selectedTabIndex}">
+				<!-- Panel Tab 1 defined -->
+				<ice:panelTab rendered="true"
+					label="#{roleManagerDetail.messages['userAssignment.label']}">
+
+					<ice:outputLabel
+						value="#{roleManagerDetail.messages['showLoggedInUser.label']}#{roleManagerDetail.messages['colon']}"
+						styleClass="label-form" />
+					<ice:selectBooleanCheckbox partialSubmit="true"
+						value="#{roleManagerDetail.onlyLoggedInUserVisibleOnAssigned}"
+						valueChangeListener="#{roleManagerDetail.showAllUserAssignedChangeListener}">
+					<pc:automationTag value="auto-BCC-RoleMgrDet-AssignedLogInUser" standAlone="false"/>
+					</ice:selectBooleanCheckbox>	
+					
+					<pc:automationTag value="auto-BCC-RoleMgrDet-AssignedUserTbl"/>
+					<pc:genericDataTable exportExcel="true"
+						title="#{roleManagerDetail.messages['assignedUser.title']}"
+						bean="#{roleManagerDetail}" id="userAssignedList"
+						table="#{roleManagerDetail.userAssignedTable}"
+						sortSupported="true" 
+						toolbarUrl="/plugins/business-control-center/views/roleManagerDetailViewAssignedUserToolbar.xhtml" />
+					<ice:panelGroup styleClass="clearing" />
+					<ice:panelGroup styleClass="clearing" />
+
+					<!--<ice:commandButton id="removeUserFromRole"
+						disabled="#{roleManagerDetail.disableRemoveUser}"
+						action="#{roleManagerDetail.removeUserFromRole}"
+						value="#{roleManagerDetail.messages['button.removeUserFromRole']}"
+						partialSubmit="true" styleClass="button" />-->
+					<ice:panelGroup styleClass="clearing" />
+
+					<ice:outputLabel
+						value="#{roleManagerDetail.messages['showLoggedInUser.label']}#{roleManagerDetail.messages['colon']}"
+						styleClass="label-form" />
+					<ice:selectBooleanCheckbox partialSubmit="true"
+						value="#{roleManagerDetail.onlyLoggedInUserVisibleOnAssignable}"
+						valueChangeListener="#{roleManagerDetail.showAllUserAssignableChangeListener}">
+						<pc:automationTag value="auto-BCC-RoleMgrDet-AssignableLogInUser" standAlone="false"/>
+					</ice:selectBooleanCheckbox>	
+					
+					<pc:automationTag value="auto-BCC-RoleMgrDet-AssignableUserTbl"/>
+					<pc:genericDataTable exportExcel="true"
+						title="#{roleManagerDetail.messages['assignableUsers.title']}"
+						bean="#{roleManagerDetail}" id="userAssignableList"
+						table="#{roleManagerDetail.userAssignableTable}"
+						sortSupported="true" 
+						toolbarUrl="/plugins/business-control-center/views/roleManagerDetailViewAssignableUserToolbar.xhtml" />
+					<ice:panelGroup styleClass="clearing" />
+
+					<ice:panelGroup styleClass="clearing" />
+
+					<!--<ice:commandButton id="addUserToRole"
+						disabled="#{roleManagerDetail.disableAddUser}"
+						action="#{roleManagerDetail.addUserToRole}"
+						value="#{roleManagerDetail.messages['button.addUserToRole']}"
+						partialSubmit="true" styleClass="button" /> -->
+
+				</ice:panelTab>
+				<ice:panelTab rendered="true"
+					label="#{roleManagerDetail.messages['activityList.label']}">
+
+					<ui:include src="/plugins/views-common/activityTableHelper/activityTableHelper.xhtml">
+						<ui:param name="title" value="#{roleManagerDetail.messages['acitivityInstance.label']} #{roleManagerDetail.roleName}"/>
+						<ui:param name="id" value="activityList"/>
+						<ui:param name="bean" value="#{roleManagerDetail.activityHelper}"/>
+					</ui:include>
+					<ice:panelGroup styleClass="clearing" />
+
+				</ice:panelTab>
+			</ice:panelTabSet>
+		</ice:panelGroup>
+	</ice:panelGroup>
+</f:view>

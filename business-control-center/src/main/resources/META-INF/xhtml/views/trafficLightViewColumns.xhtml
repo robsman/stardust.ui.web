@@ -1,0 +1,41 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		row*= Instance of Row Class
+		col*= Instance of ColumnPreference 
+	 -->
+
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+
+		<ice:panelGroup rendered="#{row.activePIs}">
+			<ice:commandLink
+				actionListener="#{trafficLightViewManagerBean.getProcessesAITable}">
+				<pc:automationTag value="auto-BCC-TrafficLgt-TraffLightTbl-Category" standAlone="false"/>
+				<img width="10" height="10" border="0"
+					src="#{facesContext.externalContext.requestContextPath}#{row.symbolUrl}" />
+				<f:attribute name="categoryValue" value="#{row.categoryValue}" />
+				<f:attribute name="processActivityId" value="#{row.processActivityId}" />
+				<f:attribute name="processActivityQualifiedId" value="#{row.processActivityQualifiedId}" />
+			</ice:commandLink>
+			<ice:outputLabel value=" " />
+			<ice:outputLabel value="#{row.symbolName}" />
+			<ice:outputLabel value=" " />
+			<img width="15" height="15" border="0"
+				src="#{facesContext.externalContext.requestContextPath}#{row.completedIcon}" />
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{!row.activePIs}">
+			<img width="10" height="10" border="0" src="#{facesContext.externalContext.requestContextPath}#{row.symbolUrl}" />
+			<ice:outputLabel value=" " />
+			<ice:outputLabel value="#{row.symbolName}" />
+			<ice:outputLabel value=" " />
+			<img width="15" height="15" border="0" src="#{facesContext.externalContext.requestContextPath}#{row.completedIcon}" />
+		</ice:panelGroup>
+	</ice:panelGroup>
+</f:view>

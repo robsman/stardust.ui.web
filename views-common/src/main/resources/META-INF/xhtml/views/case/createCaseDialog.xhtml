@@ -1,0 +1,118 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:composition>
+		<c:if test="#{createCaseDialogBean.visible}">
+			<ice:panelPopup modal="true"
+				rendered="#{createCaseDialogBean.visible}" draggable="true"
+				autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
+				<f:facet name="header">
+					<ice:panelGroup>
+						<pc:automationTag value="auto-COM-CreateCaseDlg-Header"/>
+						<ice:outputText styleClass="headerText"
+							value="#{views_common_msgPropsBean['views.createCase.title']}" />
+
+						<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+							image="/plugins/common/images/dialog-windowbttn-close.png"
+							action="#{createCaseDialogBean.closePopup}" immediate="true"
+							styleClass="windowClose" />
+					</ice:panelGroup>
+				</f:facet>
+
+				<f:facet name="body">
+					<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="2"
+						cellspacing="2" renderNorth="false" renderEast="true"
+						renderSouth="true" renderWest="true" renderCenter="true">
+						<f:facet name="center">
+														
+							<ice:panelGroup style="width:410px;">
+								 <ice:panelGroup styleClass="msgError" rendered="#{createCaseDialogBean.caseName!=null}">
+									<ice:messages />
+								</ice:panelGroup>
+								<ice:panelGroup styleClass="clearing" />
+
+								<ice:panelGrid columns="2">
+									<ice:outputLabel
+										value="* #{views_common_msgPropsBean['views.createCase.caseName.label']}"
+										styleClass="label-form" />
+									<ice:panelGroup>
+										<ice:inputText id="caseName" style="width: 295px;padding: 2px"
+											required="true" value="#{createCaseDialogBean.caseName}">
+											<pc:automationTag value="auto-COM-CreateCaseDlg-CaseName" standAlone="false"/>
+											<f:validateLength minimum="1" />
+										</ice:inputText>
+										<ice:message for="caseName" styleClass="iceMsgImage"
+											showSummary="false" showDetail="false" />
+									</ice:panelGroup>
+									<ice:panelGroup rendered="#{createCaseDialogBean.caseName==null}"/>
+									<ice:message for="caseName" styleClass="iceMsgInline" rendered="#{createCaseDialogBean.caseName==null}"/>
+									
+									<ice:outputLabel
+										value=" #{views_common_msgPropsBean['views.createCase.owner.label']}"
+										styleClass="label-form" />
+
+									<ice:inputText style="width: 295px;padding: 2px"
+										value="#{createCaseDialogBean.userLabel}" disabled="true">
+									</ice:inputText>
+									<ice:outputLabel
+										value="#{views_common_msgPropsBean['views.createCase.description.label']}"
+										styleClass="label-form" />
+
+									<ice:inputTextarea style="width: 295px;padding: 2px"
+										value="#{createCaseDialogBean.description}" rows="4" >
+										<pc:automationTag value="auto-COM-CreateCaseDlg-Description"
+											standAlone="false" />
+									</ice:inputTextarea>	
+
+									<ice:outputLabel
+										value="#{views_common_msgPropsBean['views.createCase.note.label']}"
+										styleClass="label-form" />
+
+									<ice:inputTextarea style="width: 295px;padding: 2px"
+										value="#{createCaseDialogBean.note}" rows="4" >
+										<pc:automationTag value="auto-COM-CreateCaseDlg-Note"
+											standAlone="false" />
+									</ice:inputTextarea>	
+								</ice:panelGrid>
+
+								<ice:panelGroup styleClass="clearing" />
+
+								<ice:panelGrid columns="2" style="text-align: left">
+									<ice:selectBooleanCheckbox
+										value="#{createCaseDialogBean.openCaseDetail}">
+										<pc:automationTag value="auto-COM-CreateCaseDlg-OpenCaseChkBox"
+											standAlone="false" />
+									</ice:selectBooleanCheckbox>
+									<ice:outputLabel styleClass="label-form"
+										value="#{views_common_msgPropsBean['views.createCase.openCaseDetail.label']}" />
+								</ice:panelGrid>
+
+								<ice:panelGroup styleClass="clearing" />
+
+							</ice:panelGroup>
+
+						</f:facet>
+						<f:facet name="south">
+							<ice:panelGroup>
+
+								<ice:panelGroup>
+									<pc:automationTag value="auto-COM-CreateCaseDlg-OkCancelBtnsBar" />
+									<ice:commandButton
+										value="#{views_common_msgPropsBean['common.ok']}"
+										action="#{createCaseDialogBean.apply}" styleClass="button" />
+									<ice:commandButton
+										value="#{views_common_msgPropsBean['common.cancel']}"
+										action="#{createCaseDialogBean.closePopup}" immediate="true"
+										styleClass="button" />
+								</ice:panelGroup>
+							</ice:panelGroup>
+						</f:facet>
+					</ice:panelBorder>
+				</f:facet>
+			</ice:panelPopup>
+		</c:if>
+	</ui:composition>
+</f:view>

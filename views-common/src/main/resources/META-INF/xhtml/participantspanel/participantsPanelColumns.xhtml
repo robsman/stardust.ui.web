@@ -1,0 +1,25 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		row*= Instance of Row Class
+		col*= Instance of ColumnPreference 
+	 -->
+
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+
+		<ice:panelGroup rendered="#{col.columnName == 'Icon'}">
+			<ice:graphicImage rendered="#{row.online}"
+				value="/plugins/common/images/icons/online.gif" style="padding: 3px;"/>
+			<ice:graphicImage rendered="#{!row.online}"
+				value="/plugins/common/images/icons/offline.gif" style="padding: 3px;"/>
+		</ice:panelGroup>
+
+	</ice:panelGroup>
+</f:view>

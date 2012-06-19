@@ -1,0 +1,120 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ui:composition>
+		<ice:panelPopup modal="true" rendered="#{createOrModifyUserGroupBean.visible}"
+			draggable="true" autoCentre="true" positionOnLoadOnly="true"
+			styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText value="#{createOrModifyUserGroupBean.modifyMode ? userGroupMgmtBean.messages['modifyUserGroup.title'] : userGroupMgmtBean.messages['createUserGroup.title']}"
+						styleClass="headerText" />
+					<pc:automationTag value="auto-ADM-UserGrpMgmt-UserGrpPopup-CloseLink" standAlone="false"/>
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png" 
+						action="#{createOrModifyUserGroupBean.closePopup}"
+						immediate="true"
+						styleClass="windowClose"/>
+				</ice:panelGroup>
+			</f:facet>
+		
+			<f:facet name="body">
+				<ice:panelBorder  styleClass="pnlPopUpBrdrDialog" cellpadding="0" cellspacing="0"
+					renderNorth="false" renderEast="false" renderSouth="true"  renderWest="false" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>
+							<ice:panelGroup styleClass="msgError">
+								<ice:message for="applyUserGroup" />
+							</ice:panelGroup>
+							<ice:panelGrid columns="2" headerClass="heading">
+								<ice:outputLabel
+									value="* #{messages_admin['views.common.id.label']}#{messages_admin['common.colon']}"
+									styleClass="label-form" />
+								<ice:panelGroup>
+									<ice:inputText id="id"
+										value="#{createOrModifyUserGroupBean.id}"
+										disabled="#{(createOrModifyUserGroupBean.modifyMode) ? true : (not createOrModifyUserGroupBean.globalEnable)}"
+										required="true" 
+										validator="#{fieldsValidator.validateId}">
+										<pc:automationTag value="auto-ADM-UserGrpMgmt-UserGrpPopup-Id" standAlone="false"/>
+									</ice:inputText>
+									<ice:panelGroup styleClass="msgError">
+										<ice:message for="id" />
+									</ice:panelGroup>
+								</ice:panelGroup>
+
+								<ice:outputLabel
+									value="* #{messages_admin['views.common.name.label']}#{messages_admin['common.colon']}"
+									styleClass="label-form" />
+								<ice:panelGroup>
+									<ice:inputText id="name"
+										value="#{createOrModifyUserGroupBean.name}"
+										disabled="#{not createOrModifyUserGroupBean.globalEnable}"
+										required="true" 
+										validator="#{fieldsValidator.validateName}">
+										<pc:automationTag value="auto-ADM-UserGrpMgmt-UserGrpPopup-Name" standAlone="false"/>
+									</ice:inputText>
+									<ice:panelGroup styleClass="msgError">
+										<ice:message for="name" />
+									</ice:panelGroup>
+								</ice:panelGroup>
+
+								<ice:outputLabel
+									value="#{messages_admin['views.common.validFrom.label']}#{messages_admin['common.colon']}"
+									styleClass="label-form" />
+								<ice:panelGroup>
+									<ice:selectInputDate renderAsPopup="true" id="from"
+										value="#{createOrModifyUserGroupBean.validFrom}"
+										disabled="#{not createOrModifyUserGroupBean.globalEnable}">
+										<f:converter converterId="customDateTimeConverter" />
+										<pc:automationTag value="auto-ADM-UserGrpMgmt-UserGrpPopup-ValidFrom" standAlone="false"/>
+									</ice:selectInputDate>
+									<ice:message id="startTimeMsg" for="from"
+										style="color:red;" />
+								</ice:panelGroup>
+
+								<ice:outputLabel
+									value="#{messages_admin['views.common.validTo.label']}#{messages_admin['common.colon']}"
+									styleClass="label-form" />
+								<ice:panelGroup>
+									<ice:selectInputDate renderAsPopup="true" id="to"
+										value="#{createOrModifyUserGroupBean.validTo}"
+										disabled="#{not createOrModifyUserGroupBean.globalEnable}">
+										<f:converter converterId="customDateTimeConverter" />
+										<pc:automationTag value="auto-ADM-UserGrpMgmt-UserGrpPopup-ValidTo" standAlone="false"/>
+									</ice:selectInputDate>
+									<ice:message id="endTimeMsg" for="to"
+										style="color:red;" />
+								</ice:panelGroup>
+
+								<ice:outputLabel
+									value="#{messages_admin['views.common.descr.label']}#{messages_admin['common.colon']}"
+									styleClass="label-form" />
+								<ice:inputTextarea id="Description"
+									value="#{createOrModifyUserGroupBean.description}" rows="5"
+									disabled="#{not createOrModifyUserGroupBean.globalEnable}">
+									<pc:automationTag value="auto-ADM-UserGrpMgmt-UserGrpPopup-Desc" standAlone="false"/>
+								</ice:inputTextarea>
+							</ice:panelGrid>
+						</ice:panelGroup>
+					</f:facet>
+		
+					<f:facet name="south">
+						<ice:panelGroup>
+							<pc:automationTag value="auto-ADM-UserGrpMgmt-UserGrpPopup-BtnsBar" standAlone="false"/>
+							<ice:commandButton value="#{messages_admin['common.apply']}" action="#{createOrModifyUserGroupBean.apply}"
+								rendered="#{createOrModifyUserGroupBean.globalEnable}" id="applyUserGroup" styleClass="button" title="#{messages_admin['common.apply']}"/>
+							<ice:commandButton value="#{messages_admin['common.cancel']}" action="#{createOrModifyUserGroupBean.closePopup}"
+								immediate="true" id="cancel" styleClass="button" title="#{messages_admin['common.cancel']}"/>
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

@@ -1,0 +1,184 @@
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+<!--
+  To execute this build script, you have to configure your environment as follows:
+  - Java property java.home must point to an existent JAVA_HOME (either via parameter 
+    (e.g. antit.bat -Djava.home=C:/Programme/Java15) or create a private.properties file
+    in the etc folder of the project and put the property in there)
+  - portal-common and portal-api have to be build before this build can be executed
+  - you need an Infinity installation or you have to execute at least the latakia build file
+  - set the Java property latakia.home to the corresponding installation or build location
+-->
+
+<project name="portal-persistence-jpa" default="build" basedir="." xmlns:ipp="com.infinity.bpm.ant.macros">
+
+   <property name="project.dir" value="." />
+   <property name="project.src" value="${project.dir}/src/main/java" />
+   <property name="resources.src" value="${project.dir}/src/main/resources" />
+   <property name="project.etc" value="${project.dir}/etc" />
+   <property file="${project.etc}/private.properties" />
+
+   <property name="organizationId" value="com.infinity.bpm" />
+   <property name="artifactId" value="ipp-persistence-jpa" />
+
+   <import file="../../stardust/build.tools/commons-build.xml" />
+
+   <target name="initOnDevelopment" if="setup.development">
+      <echo message="Performing a development build ..." />
+
+      <property name="javac.debuglevel" value="lines,source,vars" />
+
+      <property name="optional.win.class.dir" value="%CARNOT_HOME%\classes;" />
+      <property name="optional.unix.class.dir" value="$CARNOT_HOME/classes:" />
+   </target>
+
+   <target name="initOnProduction" unless="setup.development">
+      <echo message="Performing a production build ..." />
+
+      <property name="javac.debuglevel" value="lines,source" />
+
+      <property name="optional.win.class.dir" value="" />
+      <property name="optional.unix.class.dir" value="" />
+   </target>
+
+   <target name="init" depends="initOnDevelopment, initOnProduction, initBuildDir, initLatakiaHome">
+      <property name="build.dir" value="${build.home}" />
+   </target>
+
+   <target name="clean" depends="init" description="removes all build results">
+      <delete dir="${build.dir}" />
+   </target>
+
+   <target name="initBuildDir" unless="build.home">
+      <property name="build.home" value="${project.dir}/build" />
+   </target>
+
+   <target name="initLatakiaHome" unless="latakia.home">
+      <property name="latakia.home" value="${project.dir}/../../latakia/build" />
+   </target>
+
+   <target name="initBuild" depends="init, initBuildDir">
+      <property name="build.dir" value="${build.home}" />
+      <property name="build.classes" value="${build.dir}/classes" />
+      <property name="build.lib" value="${build.dir}/lib" />
+      <property name="build.src" value="${build.dir}/src" />
+
+      <property name="persistence-jpa.jarfile" value="ipp-persistence-jpa.jar" />
+      <property name="persistence-jpa.jar" value="${build.lib}/${persistence-jpa.jarfile}" />
+      <property name="persistence-jpa.src-jarfile" value="ipp-persistence-jpa-sources.jar" />
+      <property name="persistence-jpa.src-jar" value="${build.lib}/${persistence-jpa.src-jarfile}" />
+   </target>
+
+   <target name="initBuildDirectories" depends="initBuild">
+      <mkdir dir="${build.classes}" />
+      <mkdir dir="${build.lib}" />
+      <mkdir dir="${build.src}" />
+   </target>
+
+   <target name="prepareSources" depends="initBuild">
+      <echo message="Preparing sources for a safe but slow build." />
+      <copy todir="${build.src}">
+         <fileset dir="${project.src}">
+            <include name="**/*.java" />
+         </fileset>
+      </copy>
+   </target>
+
+   <target name="initClasspath" depends="init, initClasspath.ivy" />
+   
+   <target name="init.ivy" if="dependencies.mode.ivy">
+      <echo message="Using Ivy for dependency management." />
+      <init-ivy />
+   </target>
+
+   <target name="initClasspath.ivy" if="dependencies.mode.ivy"
+      depends="init, init.ivy" >
+
+      <init-ivy-classpath />
+
+      <path id="persistence-jpa.classpath">
+         <path refid="compile.deps" />
+      </path>
+   </target>
+
+   <target name="compile.jdk15" depends="init" description="Compiling Java 5 code.">
+      <ipp:javac-java5 srcdir="${build.src}" destdir="${build.classes}">
+         <include name="**/*.java" />
+         <classpath id="compile5.classpath">
+            <path path="${build.classes}" />
+            <path refid="persistence-jpa.classpath" />
+         </classpath>
+      </ipp:javac-java5>
+   </target>
+
+   <target name="compile" depends="prepareSources, initBuildDirectories, initClasspath, compile.jdk15" />
+
+   <target name="copyDatFiles" depends="initBuildDirectories">
+      <copy todir="${build.classes}">
+         <fileset dir="${project.src}">
+            <include name="**/*.properties" />
+         </fileset>
+         <fileset dir="${resources.src}">
+            <include name="**/*.*" />
+         </fileset>
+      </copy>
+      <copy todir="${build.src}">
+         <fileset dir="${project.src}">
+            <include name="**/*.properties" />
+         </fileset>
+         <fileset dir="${resources.src}">
+            <include name="**/*.*" />
+         </fileset>
+      </copy>
+   </target>
+
+   <target name="jar" depends="compile, copyDatFiles">
+      <ipp:jar jarfile="${persistence-jpa.jar}" implementationTitle="Infinity Portal - JPA Persistence Support">
+         <fileset dir="${build.classes}" id="fileset.carnot.base.jar">
+            <include name="**/*.*" />
+         </fileset>
+      </ipp:jar>
+   </target>
+
+   <target name="jar.src" depends="compile">
+      <delete file="${persistence-jpa.src-jar}" />
+      <ipp:jar jarfile="${persistence-jpa.src-jar}" implementationTitle="Infinity Portal - JPA Persistence Support (Sources)">
+         <fileset dir="${build.src}">
+            <include name="**/*.*" />
+         </fileset>
+      </ipp:jar>
+   </target>
+
+   <target name="build" depends="jar, jar.src, build.ivy" />
+
+   <target name="build.ivy" if="dependencies.mode.ivy"
+      depends="jar, jar.src">
+      
+      <ivy-publish-local artifactId="${artifactId}" artifactDir="${build.lib}" />
+   </target>
+
+   <target name="initMoonglowHome" unless="moonglow.home">
+      <property name="moonglow.home" value="${project.dir}/../../moonglow" />
+      <available file="${moonglow.home}" property="moonglow.home.present" type="dir" />
+   </target>
+
+   <target name="dist" depends="build, initMoonglowHome">
+      <property name="pjpa.lib.dir" value="${moonglow.home}/../stardust/ide.wst/org.eclipse.stardust.ide.wst.facet.portal/lib" />
+      <mkdir dir="${pjpa.lib.dir}" />
+      <copy todir="${pjpa.lib.dir}">
+         <fileset dir="${build.lib}">
+            <include name="${persistence-jpa.jarfile}" />
+         </fileset>
+      </copy>
+   </target>
+
+   <target name="deploy" depends="jar" />
+</project>

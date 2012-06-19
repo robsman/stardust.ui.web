@@ -1,0 +1,119 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid columns="3">
+
+
+
+		<ice:panelGrid styleClass="#{styleClass}UserToolbar" columns="2">
+
+			<ice:commandLink
+				name="#{configurationVariablesBean.messages['import']}"
+				actionListener="#{configurationVariablesBean.importVariables}"
+				style="vertical-align: middle;">
+				<pc:automationTag
+					value="auto-ADM-ConfigVariable-ConfigTreeTbl-ToolbarImport"
+					standAlone="false" />
+				<h:graphicImage
+					value="/plugins/views-common/images/icons/page_white_get.png"
+					style="border: none;"
+					title="#{configurationVariablesBean.messages['import']}" />
+			</ice:commandLink>
+			<!-- action="#{configurationVariablesBean.downloadFile}" target="_blank" -->
+
+			<ice:panelGroup
+				rendered="#{configurationVariablesBean.containPreferences}"
+				title="#{configurationVariablesBean.messages['export']}">
+				<ice:outputResource
+					rendered="#{configurationVariablesBean.containPreferences}"
+					resource="#{configurationVariablesBean.fileResource}"
+					fileName="Preferences.zip" type="link"
+					image="/plugins/views-common/images/icons/page_white_put.png" />
+			</ice:panelGroup>
+
+			<ice:commandLink
+				name="#{configurationVariablesBean.messages['export']}"				
+				style="vertical-align: middle;" rendered="#{!configurationVariablesBean.containPreferences}">
+				<pc:automationTag
+					value="auto-ADM-ConfigVariable-ConfigTreeTbl-ToolbarExport"
+					standAlone="false" />
+				<h:graphicImage
+					value="/plugins/views-common/images/icons/page_white_put.png"
+					style="border: none;opacity: 0.3;filter: alpha(opacity=30);"
+					title="#{configurationVariablesBean.messages['export']}" />
+			</ice:commandLink>
+			
+			
+		</ice:panelGrid>
+		
+		<ice:panelGrid styleClass="#{styleClass}UserToolbar" columns="1">
+		<ice:commandLink
+				name="#{configurationVariablesBean.messages['show.all']}"
+				actionListener="#{configurationVariablesBean.toggleVersion}"
+					rendered="#{!configurationVariablesBean.showActiveModel}"
+				style="vertical-align: middle;">
+				<pc:automationTag
+					value="auto-ADM-ConfigVariable-ConfigTreeTbl-ToolbarAllConfig"
+					standAlone="false" />
+				<h:graphicImage value="/plugins/views-common/images/icons/eye.png"
+					style="border: none;"
+					title="#{configurationVariablesBean.messages['show.all']}" />
+			</ice:commandLink>
+			
+			<ice:commandLink
+				rendered="#{configurationVariablesBean.showActiveModel}"
+				name="#{configurationVariablesBean.messages['show.active']}"
+				actionListener="#{configurationVariablesBean.toggleVersion}"
+				style="vertical-align: middle;">
+				<pc:automationTag
+					value="auto-ADM-ConfigVariable-ConfigTreeTbl-ToolbarShowActMdl"
+					standAlone="false" />
+				<h:graphicImage value="/plugins/views-common/images/icons/eye.png"
+					style="border: none;opacity: 0.3;filter: alpha(opacity=30);"
+					title="#{configurationVariablesBean.messages['show.active']}" />
+			</ice:commandLink>
+		
+		
+		</ice:panelGrid>
+		<ice:panelGrid  columns="2">
+		
+			
+			<ice:commandLink
+				name="#{configurationVariablesBean.messages['expandAll']}"
+				actionListener="#{configurationVariablesBean.treeTable.expandAll}"
+				style="vertical-align: middle;">
+				<pc:automationTag
+					value="auto-ADM-ConfigVariable-ConfigTreeTbl-ToolbarExpandAll"
+					standAlone="false" />
+				<h:graphicImage value="/plugins/common/images/icons/expand_all.gif"
+					style="border: none;"
+					title="#{configurationVariablesBean.messages['expandAll']}" />
+			</ice:commandLink>
+
+			<ice:commandLink
+				name="#{configurationVariablesBean.messages['collapseAll']}"
+				actionListener="#{configurationVariablesBean.treeTable.collapseAll}"
+				style="vertical-align: middle;">
+				<pc:automationTag
+					value="auto-ADM-ConfigVariable-ConfigTreeTbl-ToolbarCollapseAll"
+					standAlone="false" />
+				<h:graphicImage
+					value="/plugins/common/images/icons/collapse_all.gif"
+					style="border: none;"
+					title="#{configurationVariablesBean.messages['collapseAll']}" />
+			</ice:commandLink>
+		</ice:panelGrid>
+
+		
+
+	</ice:panelGrid>
+
+
+
+
+</f:view>

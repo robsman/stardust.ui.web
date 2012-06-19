@@ -1,0 +1,29 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+		<ice:panelGroup draggable="true" dragOptions="dragGhost"
+			dragValue="#{row.user}"
+			dragMask="dragging,drag_cancel,hover_start,hover_end"
+			dropMask="dragging,drag_cancel,hover_start,hover_end"
+			dragListener="#{participantTree.dragObjectListener}"
+			rendered="#{col.columnName == 'Name'}">
+			<ice:graphicImage
+				value="/plugins/admin-portal/images/icons/grippy.png"
+				style="float: left; margin-right: 5px; cursor: move;" />
+			<ice:commandLink onclick="Event.stop(event);"
+				actionListener="#{userMgmtBean.openModifyUserDialog}"
+				title="#{messages_admin['views.userTable.columnLink.title']}">
+				<pc:automationTag value="auto-ADM-PartMgmt-DataTable-Name"
+					standAlone="false" />
+				<ice:outputText value="#{row.name}" />
+				<f:attribute name="user" value="#{row.user}" />
+			</ice:commandLink>
+		</ice:panelGroup>
+	</ice:panelGroup>
+</f:view>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ippui="http://infinity.com/bpm/portal/common/uiDefinition"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
+
+	<!-- Workflow Execution Perspective -->
+	<ippui:perspective id="WorkflowExecution" messageBundles="processportal" default="true">
+		<ippui:preferences>
+			<ippui:preferencePage name="helpDocumentation"
+				include="/plugins/doc/handbooks/execution-clients/pp_renovated/process-portal.html" />
+			<ippui:preferencePage name="configuration" include="/plugins/processportal/workflowExecutionConfiguration.xhtml" />
+		</ippui:preferences>
+
+		<!-- <ippui:menuSection name="workflowExecutionMenuItem"
+			include="/plugins/processportal/menu/workflowExecution.xhtml" /> -->
+
+		<ippui:launchPanel name="overview" collapsible="false"
+			include="/plugins/processportal/launchpad/overview.xhtml" />
+		<ippui:launchPanel name="processes"
+			include="/plugins/processportal/launchpad/processes.xhtml" />
+		<ippui:launchPanel name="worklists"
+			include="/plugins/processportal/launchpad/worklists.xhtml" />
+
+		<ippui:launchPanel name="myProcesses"
+			include="/plugins/processportal/launchpad/myProcesses.xhtml" />
+
+		<!-- For time being refer from BCC Plugin -->
+		<ippui:launchPanel name="myDocuments"
+			include="/plugins/business-control-center/extensions/launchpad/myDocuments.xhtml"  />
+
+		<ippui:launchPanel name="activitySearch"
+			include="/plugins/processportal/launchpad/activitySearch.xhtml" />
+		<ippui:launchPanel name="extensions" />
+
+		<ippui:toolbarSection name="workflowActions"
+			include="/plugins/processportal/toolbar/workflowActions.xhtml"
+			requiredView="activityPanel" />
+
+		<ippui:toolbarSection name="workflowActionsAttachments"
+			include="/plugins/processportal/toolbar/workflowActionsAttachments.xhtml"
+			requiredView="activityPanel" />
+		
+		<ippui:toolbarSection name="activityPanelViewToolbar"
+			include="/plugins/processportal/toolbar/activityPanelViewToolbar.xhtml"
+			requiredView="activityPanel" />
+			
+		<ippui:toolbarSection name="worklistPanelViewToolbar"
+			include="/plugins/processportal/toolbar/worklistPanelViewToolbar.xhtml"
+			requiredView="worklistPanel" />
+			
+		<ippui:view name="worklistPanel" include="/plugins/processportal/worklistPanel.xhtml" controller="worklistTableBean">
+			<ippui:preferences>
+				<ippui:preferencePage name="icon" include="/plugins/processportal/images/icons/clipboard-task.png" />
+				<ippui:preferencePage name="configuration"
+					include="/plugins/processportal/worklistPanelConfiguration.xhtml" />
+			</ippui:preferences>
+		</ippui:view>
+
+		<ippui:view name="activityPanel" include="/plugins/processportal/activityPanel.xhtml"
+            controller="activityDetailsBean">
+			<ippui:preferences>
+				<ippui:preferencePage name="icon" include="/plugins/processportal/images/icons/activity.png" />
+				<ippui:preferencePage name="configuration" include="/plugins/processportal/activityPanelConfiguration.xhtml" />
+			</ippui:preferences>
+		</ippui:view>
+
+		<ippui:view name="notesPanel" include="/plugins/processportal/notesPanel.xhtml"  controller="processportal_NotesBean" 
+		/>
+
+	</ippui:perspective>
+
+</beans>

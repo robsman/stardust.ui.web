@@ -1,0 +1,117 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		bean* -> Backing Bean
+		row* - > row Level Iterator
+		treeLineStyle -> SOLID / DOTTED / NONE (Default)
+		rendered -> "true/false" Default true
+	 -->
+	<ui:composition>
+		<ui:include src="/plugins/views-common/common/processToolTip.xhtml">
+			<ui:param name="tooltip" value="#{row.tooltip}" />
+		</ui:include>
+		<c:if test="#{empty treeLineStyle}">
+			<c:set var="treeLineStyle" value="NONE" />
+		</c:if>
+		<c:if test="#{empty rendered}">
+			<c:set var="rendered" value="#{true}" />
+		</c:if>
+		
+		<c:set var="spacerImg" value="#{facesContext.externalContext.requestContextPath}/plugins/common/images/t.gif" />
+		<c:choose>
+			<c:when test="#{treeLineStyle == 'SOLID'}">
+				<c:set var="treeLineStyleVerticalImg" value="../../xmlhttp/css/xp/css-images/tree_line_vertical.gif" />
+				<c:set var="treeLineStyleMiddleImg" value="../../xmlhttp/css/xp/css-images/tree_line_middle_node.gif" />
+			</c:when>
+			<c:when test="#{treeLineStyle == 'DOTTED'}">
+				<c:set var="treeLineStyleVerticalImg" value="../../xmlhttp/css/rime/css-images/tree_line_vertical.gif" />
+				<c:set var="treeLineStyleMiddleImg" value="../../xmlhttp/css/rime/css-images/tree_line_middle_node.gif" />
+			</c:when>
+			<c:when test="#{treeLineStyle == 'NONE'}">
+				<c:set var="treeLineStyleMiddleImgPlus" value="/plugins/common/images/nav-plus.gif" />
+				<c:set var="treeLineStyleMiddleImgMinus" value="/plugins/common/images/nav-minus.gif" />
+			</c:when>
+		</c:choose>
+		
+		<!-- *** COLUMN DATA *** -->
+		<ice:panelGroup style="white-space: nowrap;" dropTarget="#{!row.leaf}" rendered="#{rendered}"
+						dropMask="dragging,drag_cancel,hover_start,hover_end" hoverclass="dropTarget"
+						dropListener="#{row.nodeMoved}" dragValue="#{row}" dropValue="#{row}">
+
+			<ice:panelGrid style="display:inline; cellpadding:0px; cellspacing:0px; white-space: nowrap;"
+					styleClass="#{row.styleClass}">
+				<!-- *** LINE 1 *** -->
+				<ice:panelGroup styleClass="#{styleClass}TreeLine1">
+					<ui:repeat value="#{row.levelList}" var="level">
+						<c:choose>					
+							<c:when test="#{treeLineStyle == 'NONE'}">
+								<img src="#{spacerImg}" width="15px" />
+							</c:when>
+							<c:otherwise>
+								<img src="#{treeLineStyleVerticalImg}" />
+							</c:otherwise>
+						</c:choose>
+					</ui:repeat>							
+					<c:choose>					
+						<c:when test="#{treeLineStyle == 'NONE'}">
+							<ice:panelGroup rendered="#{!row.leaf and !row.expanded}" style="display:inline;">
+								<ice:commandButton image="#{treeLineStyleMiddleImgPlus}" action="#{row.toggleRow}" />
+							</ice:panelGroup>
+							<ice:panelGroup rendered="#{row.leaf or row.expanded}" style="display:inline;">
+								<ice:panelGroup rendered="#{row.leaf}" style="display:inline;">
+									<img src="#{spacerImg}" width="15px" />
+								</ice:panelGroup>
+								<ice:commandButton image="#{treeLineStyleMiddleImgMinus}"
+									action="#{row.toggleRow}" rendered="#{not row.leaf}" />
+							</ice:panelGroup>
+						</c:when>
+						<c:otherwise>
+							<img src="#{treeLineStyleMiddleImg}" />
+						</c:otherwise>
+					</c:choose>
+					
+					<ice:commandButton disabled="#{row.leaf}" image="#{row.icon}" action="#{row.toggleRow}"
+						style="#{row.leaf ? 'cursor: default; opacity: 1' : ''}; padding-left:3px; background:transparent;" />
+					<ice:outputText value=" " escape="false" style="vertical-align: super;display:inline;padding:0px;margin:0px;" />
+					<ice:panelGroup style="display:inline;" panelTooltip="procToolTip">
+						<ice:outputText value="#{row.line1Text}" escape="false"
+							style="vertical-align: super;display:inline;" />
+					</ice:panelGroup>
+				</ice:panelGroup>
+
+				<!-- *** LINE 2 *** -->
+				<ice:panelGroup styleClass="#{styleClass}TreeLine2" rendered="#{not empty row.line2Text}">
+					<img src="#{spacerImg}" width="5px" />
+					<ui:repeat value="#{row.levelList}" var="level">
+						<c:choose>					
+							<c:when test="#{treeLineStyle == 'NONE'}">
+								<img src="#{spacerImg}" width="15px" />
+							</c:when>
+							<c:otherwise>
+								<img src="#{treeLineStyleVerticalImg}" />
+							</c:otherwise>
+						</c:choose>
+					</ui:repeat>
+					<c:choose>					
+						<c:when test="#{treeLineStyle == 'NONE'}">
+							<img src="#{spacerImg}" width="15px" />
+						</c:when>
+						<c:otherwise>
+							<img src="#{treeLineStyleVerticalImg}" />
+						</c:otherwise>
+					</c:choose>
+					
+					<img src="#{spacerImg}" width="24px" />
+					<ice:outputText value="#{row.line2Text}" escape="false" style="vertical-align: super;display:inline;" styleClass="#{styleClass}Line2" />
+				</ice:panelGroup>
+			</ice:panelGrid>
+
+		</ice:panelGroup>
+	</ui:composition>
+</f:view>

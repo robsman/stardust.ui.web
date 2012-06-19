@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+   <!-- example of how to define a custom data source mapping -->
+   <bean class="org.eclipse.stardust.ui.web.rt.persistence.jpa.spring.DataSourceMapping">
+      <property name="dataSourceName" value="TestJtaDs" />
+      <property name="dataSource" ref="carnotXaAuditTrailDataSource" />
+   </bean>
+
+   <bean id="testEntityManagerFactory" parent="abstractPortalEntityManagerFactory">
+
+      <property name="persistenceUnitManager">
+         <!--
+            a persistence unit manager that merges all persistence.xml files
+            it finds in the classpath into one PU with the name specified
+            below
+         -->
+         <bean class="org.eclipse.stardust.ui.web.rt.persistence.jpa.spring.MultiModulePersistenceUnitManager">
+
+            <property name="persistenceUnitNameOverride" value="test-portal-jpa-persistence" />
+
+            <!-- all entities will be stored into the audit trail DB -->            
+            <property name="jtaDataSource" ref="carnotXaAuditTrailDataSource" />
+         </bean>
+      </property>
+
+   </bean>
+
+</beans>

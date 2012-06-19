@@ -1,0 +1,424 @@
+.genericTable
+{
+	width: 100%;
+	border: none /* 1px solid gray */ /* #d9d9d9 */ ;
+	margin-top: 4px;
+	padding: 0px;
+	spacing: 0px;
+}
+
+.genericTableTitle /* Depricated: Used as heading class in portal.css */ 
+{
+}
+
+.genericTableToolbar
+{
+	cell-padding: 0;
+	cell-spacing: 0;
+	white-space: nowrap;
+	padding-bottom: 2px;
+	padding-right: 8px;
+	background: transparent url(../images/toolbar-separator.png) no-repeat scroll right center;
+}	
+
+.genericTableUserToolbar
+{
+	cell-padding: 0;
+	cell-spacing: 0;
+	white-space: nowrap;
+	padding-bottom: 2px;
+	padding-right: 8px;
+	background: transparent url(../images/toolbar-separator.png) no-repeat scroll right center;
+}
+
+.genericTableRow1
+{
+	background-color: #FFFFFF;
+}
+
+.genericTableRow2
+{
+	background-color: #F4F4F4;
+}
+
+.genericTableTreeLine1
+{
+	white-space: nowrap !important;
+}
+
+.genericTableTreeLine2
+{
+	color:  gray !important;
+	white-space: nowrap !important;
+}
+
+.genericTableGroupHeader
+{
+	
+}
+
+.genericTablePaginatorInfo
+{
+	font-size: 9px;
+	color: #999999;
+}
+
+.genericTableSortColHdr
+{
+	background: transparent url("./css-images/colHeader-Sort.png") no-repeat scroll right center;
+	height: 20px;
+	width: 10px;
+	padding-left: 4px;
+}
+
+/* Overrides the ICEfaces Default Styles in connection with above style */
+.iceCmdSrtHdrAsc 
+{
+	background: transparent url("./css-images/colHeader-Sort-Acending.png") no-repeat scroll right center;
+	height: 20px;
+	width: 10px;
+	padding-left: 4px;
+}
+
+.iceCmdSrtHdrDesc
+{
+	background: transparent url("./css-images/colHeader-Sort-Decending.png") no-repeat scroll right center;
+	height: 20px;
+	width: 10px;
+	padding-left: 4px;
+}
+
+.dataFilterSummaryText
+{
+	font-weight: normal;
+	color: gray !important;
+	white-space: nowrap !important;
+}
+	
+.msgFatal
+{
+	color: red;
+}
+
+.msgError
+{
+	color: red !important;
+	font-weight: normal;
+}
+
+.msgWarning
+{
+	color: orange !important;
+	font-weight: normal;
+}	
+
+.msgInfo
+{
+	color: blue !important;
+	font-weight: normal;
+}	
+
+.breadCrumbTitle
+{
+	font-size: 8pt;
+	color: #5c5b5b;
+}
+
+.breadCrumbTitleLink
+{
+	font-size: 8pt;
+	color: #5c5b5b;
+	text-decoration:underline; 
+}
+
+.breadCrumbImage
+{
+	border: none;
+	width: 25px;
+	height: 12px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.completed-process-history-row
+{
+	padding-left: 5px;
+	overflow: auto;
+}
+
+.active-process-history-row
+{
+	padding-left: 5px;
+	overflow: auto;
+	font-weight: bold;
+}
+
+/* *********** Dialogs - START *********** */
+
+.popupDialog {
+	position: absolute;
+	z-index: 1001;
+	width: auto;
+	height: auto;
+	background-color: #FFFFFF;
+	border-top: 1px solid #CCCCCC;
+	border-left: 1px solid #CCCCCC;
+	border-bottom: 1px solid #999999;
+	border-right: 1px solid #999999;
+}
+
+.popupDialogHdr {
+	width: auto;
+	background-image: none;
+	font-weight: bold;
+	color: #333333;
+	background: #FFFFFF url(../images/panelHeader-BG.png) repeat-x scroll center bottom;
+}
+
+.popupDialogHdr .headerText {
+	color: #333333;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	padding: 0px;
+	line-height: 20px;
+	text-align: left;
+	white-space: nowrap;
+	float: left;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+/* This is required for Pop ups under data table, like Table Filter Popup */
+.iceDatTbl td span.iceOutTxt {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+/* Following style is added to appropriate the calendar popup size */
+.iceSelInpDateDay .iceCmdLnk .iceOutTxt {
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+.popupDialogHdr .windowClose {
+	float: right;
+	padding-top: 6px;
+	padding-right: 10px;
+}
+
+.popupDialogBody {
+	width: auto;
+	text-align: center;
+	vertical-align: middle;
+	padding: 0px;
+}
+
+.pnlPopUpBrdrDialog, .pnlPopUpMsgBrdrDialog {
+	display: block;
+	float: left;
+	background: #FFFFFF;
+	cell-spacing: 0px;
+	cell-padding: 0px;
+}
+
+.pnlPopUpBrdrDialogWest, .pnlPopUpMsgBrdrDialogWest {
+	border: none;
+	padding: 5px;
+	font-weight: normal;
+	text-align: center;
+	vertical-align: top;
+	width: 50px;
+	height: 222px;
+	padding-top: 20px;
+}
+
+.pnlPopUpBrdrDialogCenter {
+	border: none;
+	font-weight: nor;
+	text-align: left;
+	vertical-align: top;
+	padding: 10px 10px 10px 10px;
+	line-height: 18px;
+}
+
+.pnlPopUpMsgBrdrDialogCenter {
+	border: none;
+	padding: 5px;
+	font-weight: nor;
+	text-align: left;
+	vertical-align: top;
+	width: 380px;
+	height: 222px;
+	padding-top: 25px;
+	line-height: 18px;
+}
+
+.pnlPopUpBrdrDialogSouth, .pnlPopUpMsgBrdrDialogSouth {
+	border-top: 1px solid #CCCCCC;
+	padding: 5px;
+	font-weight: normal;
+	text-align: left;
+	vertical-align: middle;
+	background: transparent url(../images/footer-BG.jpg) repeat-x scroll center top;
+}
+
+.pnlPopUpBrdrDialogSouth input, .pnlPopUpBrdrMsgDialogSouth input {
+	margin: 5px;
+}
+
+.pnlPopUpMsgExceptionStackTrace{
+	max-height: 500px;
+	max-width: 800px;
+	width: 650px;
+	overflow: scroll;
+}
+
+/* *********** Dialogs - END *********** */
+
+/* *********** Confirmation Panel - START *********** */
+
+.pnlConfirmation {
+	z-index: 1000;
+	color: #000000;
+	background-color: #FFFFFF;
+	border-top: 1px solid #999999;
+	border-left: 1px solid #999999;
+	border-bottom: 1px solid #000000;
+	border-right: 1px solid #000000;
+	width: 300px;
+	padding: 0px;
+}
+
+.pnlConfirmationHdr {
+	background: #FFFFFF url(../images/panelHeader-BG.png) repeat-x scroll center bottom;
+	color: #333333;
+	padding: 0px 10px 0px 10px;
+	border-bottom: 1px solid #D9D9D9;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	text-align: left;
+	vertical-align: middle;
+}
+
+.pnlConfirmationBody {
+	padding: 10px 10px 10px 10px;
+	font-size: 1em;
+	font-weight: normal;
+	text-align: left;
+}
+
+.pnlConfirmationBtns {
+	border-top: 1px solid #CCCCCC;
+	padding: 5px;
+	font-weight: normal;
+	text-align: left;
+	vertical-align: middle;
+	background: transparent url(../images/footer-BG.jpg) repeat-x scroll center top;
+}
+
+.pnlConfirmationBtns input {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #333333;
+	background: #FFFFFF url( "./css-images/button-background.png" ) bottom repeat-x;
+	border: 1px solid #CCCCCC;
+	border-bottom: 1px solid #999999;
+	border-right: 1px solid #999999;		
+	min-width: 60px;
+	cursor: pointer;
+	margin: 5px;
+	padding: 3px;
+}
+
+/* *********** Confirmation Panel - END ********** */
+
+/********* Custom Confirmation Panel -START ********/
+
+.pnlPopUpBrdrDialog, .pnlPopUpMsgBrdrCnfDialog {
+	display: block;
+	float: left;
+	background: #FFFFFF;
+	cell-spacing: 0px;
+	cell-padding: 0px;
+}
+
+.pnlPopUpBrdrDialogWest, .pnlPopUpMsgBrdrCnfDialogWest {
+	border: none;
+	padding: 5px;
+	font-weight: normal;
+	text-align: center;
+	vertical-align: top;
+	width: 50px;
+	height: auto;
+	padding-top: 10px;
+}
+
+.pnlPopUpMsgBrdrCnfDialogCenter {
+	border: none;
+	padding: 5px;
+	font-weight: nor;
+	text-align: left;
+	vertical-align: top;
+	width: 380px;
+	height: auto;
+	padding-top: 10px;
+	line-height: 18px;
+}
+
+.pnlPopUpBrdrDialogSouth, .pnlPopUpMsgBrdrCnfDialogSouth {
+	border-top: 1px solid #CCCCCC;
+	padding: 5px;
+	font-weight: normal;
+	text-align: left;
+	vertical-align: middle;
+	background: transparent url(../images/footer-BG.jpg) repeat-x scroll center top;
+}
+
+.pnlPopUpBrdrDialogSouth input, .pnlPopUpBrdrMsgDialogSouth input {
+	margin: 5px;
+}
+
+
+/********* Custom Confirmation Panel -END **********
+/
+/* *********** Column Selector - START *********** */
+
+.columnItemBox{
+	/* width: 170px; */ /*set as needed*/
+	height: auto;
+	padding: 5px 10px 5px 5px;
+	margin: 2px 0;
+	border: 1px solid #DDDDDD;
+	border-bottom-color: #999999;
+	border-right-color: #999999;
+	background: url(../images/icons/colItemBox-grip.png) top right no-repeat #FFFFFF;
+	cursor: n-resize;
+}
+
+div.columnItemBoxInput{
+	float: left;
+	cursor: default;
+}
+
+div.columnItemBoxInput input{
+	margin: 0;
+	height: 13px;
+	width: 13px;
+	overflow: hidden;
+}
+
+div.columnItemBoxLabel{
+	margin-left: 20px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #333333;
+	white-space: nowrap;
+}
+
+div.columnsListBox {
+	max-height: 500px;
+	overflow: auto;
+}
+/* *********** Column Selector - END ************* */

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+      xmlns:aop="http://www.springframework.org/schema/aop"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:ippui="http://infinity.com/bpm/ui/common/uiDefinition"
+   xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+
+   <!-- **************************************************
+   		********** BCC BEANS ********** 
+   	************************************************** -->
+
+   <!-- ********** APPLICATION BEANS ********** -->
+   <bean name="messages_bcc" class="org.eclipse.stardust.ui.web.bcc.messsages.MessagesBCCBean"
+        scope="session">
+   </bean>
+   
+   <bean name="businessControlCenterInitializer" class="org.eclipse.stardust.ui.web.bcc.jsf.BusinessControlCenterSessionInitializer"
+        scope="globalSession">
+   </bean>
+
+   <bean name="businessControlCenterPerspectiveEventHandler" class="org.eclipse.stardust.ui.web.bcc.BusinessControlCenterPerspectiveEventHandler"
+        scope="session">
+   </bean>
+
+   <!-- ********** SESSION BEANS ********** -->
+   <bean name="categoryTree" class="org.eclipse.stardust.ui.web.bcc.CategoryTree"
+        scope="session">
+   </bean>
+  
+   <bean name="managementViews" class="org.eclipse.stardust.ui.web.bcc.launchpad.ManagementViews"
+        scope="session">
+   </bean>
+
+   <bean name="favoriteManagementViews" class="org.eclipse.stardust.ui.web.bcc.launchpad.FavoriteManagementViews"
+        scope="session">
+   </bean>  
+   
+   <bean name="businessProcessManager" class="org.eclipse.stardust.ui.web.bcc.views.BusinessProcessManagerBean"
+        scope="session">
+        <property name="processDefinitionSearchHandler" ref="bccProcessDefinitionSearchHandler" />
+        <property name="processInstancePrioritySearchHandler" ref="bccProcessInstancePrioritySearchHandler" />
+   </bean>
+   
+   <bean name="bccProcessDefinitionSearchHandler" class="org.eclipse.stardust.ui.web.bcc.jsf.ProcessDefinitionSearchHandler"
+        scope="prototype">
+        <property name="activityStatisticsSearchHandler" ref="bccActivityStatisticsSearchHandler" />
+        <property name="processInstancePrioritySearchHandler" ref="bccProcessInstancePrioritySearchHandler" />
+   </bean>
+   
+   <bean name="bccProcessInstancePrioritySearchHandler" class="org.eclipse.stardust.ui.web.bcc.jsf.ProcessInstancesPrioritySearchHandler"
+        scope="prototype">
+   </bean>
+   
+   <bean name="bccActivityStatisticsSearchHandler" class="org.eclipse.stardust.ui.web.bcc.jsf.ActivityDefinitionDetailSearchHandler"
+        scope="prototype">
+        <property name="activityPrioritySearchHandler" ref="bccActivityPrioritySearchHandler" />
+   </bean>
+   
+    <bean name="bccActivityPrioritySearchHandler" class="org.eclipse.stardust.ui.web.bcc.jsf.ProcessActivitiesSearchHandler"
+        scope="prototype">
+   </bean>
+   
+   <bean name="resourcePerformance" class="org.eclipse.stardust.ui.web.bcc.views.ResourcePerformanceBean"
+        scope="session">
+   </bean>
+   <bean name="resourceLogin" class="org.eclipse.stardust.ui.web.bcc.views.LoginTimeBean"
+        scope="portalTab">
+   </bean>
+   
+   <bean name="roleAssignment" class="org.eclipse.stardust.ui.web.bcc.views.RoleAssignmentBean"
+        scope="session">
+   </bean>
+   <bean name="performanceTeamleader" class="org.eclipse.stardust.ui.web.bcc.views.PerformanceTeamLeaderBean"
+        scope="session">
+   </bean>
+   <bean name="postponedActivities" class="org.eclipse.stardust.ui.web.bcc.views.PostponedActivitiesBean"
+        scope="session">
+   </bean>
+   
+   <bean name="processSearchBean"
+		class="org.eclipse.stardust.ui.web.bcc.views.ProcessSearchBean"
+		scope="portalTab">
+	</bean>
+	
+   <bean name="processResourceMgmtBean" class="org.eclipse.stardust.ui.web.bcc.views.ProcessResourceMgmtBean"
+        scope="portalTab">
+   </bean>
+   <bean name="completedActivitiesBean" class="org.eclipse.stardust.ui.web.bcc.views.CompletedActivitiesBean"
+        scope="session">
+   </bean>
+   <bean name="openActivitiesBean" class="org.eclipse.stardust.ui.web.bcc.views.OpenActivitiesBean"
+        scope="session">
+   </bean>
+   <bean name="costsBean" class="org.eclipse.stardust.ui.web.bcc.views.CostsBean"
+        scope="session">
+   </bean>
+   
+   <bean name="trafficLightViewManagerBean" class="org.eclipse.stardust.ui.web.bcc.views.TrafficLightViewManagerBean"
+        scope="portalTab">
+   </bean>
+   
+   <bean name="trafficLightViewConfigurationBean" class="org.eclipse.stardust.ui.web.bcc.views.TrafficLightViewConfigurationBean"
+        scope="session">
+   </bean>
+
+   <bean name="strandedActivitiesBean" class="org.eclipse.stardust.ui.web.bcc.views.StrandedActivitiesBean"
+        scope="session">
+   </bean>
+   
+   <!-- ********** VIEW SCOPE BEANS ********** -->
+   <bean name="ganttChartSelectionBean" class="org.eclipse.stardust.ui.web.bcc.views.GanttChartSelectionBean"
+        scope="portalTab">
+   </bean>
+
+   <bean name="ganttChartconfigurationBean" class="org.eclipse.stardust.ui.web.bcc.views.GanttChartConfigurationBean"
+        scope="portalTab">
+   </bean>
+   
+   <bean name="userManagerDetail" class="org.eclipse.stardust.ui.web.bcc.views.UserManagerDetailBean"
+        scope="portalTab">
+   </bean>
+   
+    <bean name="roleManagerDetail" class="org.eclipse.stardust.ui.web.bcc.views.RoleManagerDetailBean"
+        scope="portalTab">
+   </bean>
+   
+   <bean name="ippBCCDiagramBean" class="org.eclipse.stardust.ui.web.bcc.views.ProcessDiagramBean"
+        scope="portalTab">
+   </bean>   
+
+   <bean name="categoryTreeMessageBean" class="org.eclipse.stardust.ui.web.bcc.CategoryTreeMessageBean"
+        scope="session">
+   </bean>         
+
+   <!-- **************************************************
+   		********** REPORTING BEANS ********** 
+   	************************************************** -->
+
+	<bean name="myReportsPanelBean"
+		class="org.eclipse.stardust.ui.web.bcc.views.report.MyReportsPanelBean"
+		scope="session">
+	</bean>
+	
+   <bean name="activityCriticalityManagerBean" class="org.eclipse.stardust.ui.web.bcc.views.criticalityManager.ActivityCriticalityManagerBean"
+        scope="session">
+   </bean>
+</beans>

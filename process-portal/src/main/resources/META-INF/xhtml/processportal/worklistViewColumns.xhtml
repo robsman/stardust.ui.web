@@ -1,0 +1,183 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		row*= Instance of Row Class
+		col*= Instance of ColumnPreference 
+	 -->
+
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+
+		<!--	Overview	-->
+		<ice:panelGroup rendered="#{col.columnName == 'Overview'}">
+			<ice:panelGrid columns="2" style="width:100%">
+				<ice:panelGrid columns="1">
+					<ice:commandLink disabled="#{!row.activatable}"
+						value="#{row.processName}" style="white-space: nowrap;"
+						actionListener="#{worklistTableBean.openActivity}"
+						title="#{worklistTableBean.messages['tooltip.openActivity']}">
+						<pc:automationTag value="auto-PP-WorkList-DataTable-Overview" standAlone="false"/>
+						<f:param name="oid" value="#{row.oid}" />
+						<f:param name="processName" value="#{row.processName}" />
+						<ice:graphicImage rendered="#{row.renderIcon}" style="margin-left:5px; vertical-align:middle"
+							value="#{row.iconPath}"
+							title="" />
+					</ice:commandLink>
+					
+					<!-- <ice:panelGroup
+						style="border-left: 1px solid #DDD;border-top: 1px solid #DDD">
+						<ice:panelSeries value="#{row.descriptors}" var="descitem">
+							<ice:outputText
+								value="#{descitem}: #{row.descriptorValues[descitem]}" />
+						</ice:panelSeries>
+					</ice:panelGroup>-->
+				</ice:panelGrid>
+			</ice:panelGrid>
+		</ice:panelGroup>
+
+		<!--	Priority	-->
+		<ice:panelGroup rendered="#{col.columnName == 'Priority'}">
+			<ice:panelGroup panelTooltip="priorityTootip">
+			<h:graphicImage
+				value="/plugins/processportal/images/icons/priority-#{row.priority}.png"
+				title="" />
+			</ice:panelGroup>
+			<ice:panelTooltip id="priorityTootip"
+				styleClass="tooltip viewTooltipPanel">
+				<f:facet name="body">
+					<ice:panelGrid columns="2">
+						<ice:outputText
+							value="#{views_common_msgPropsBean['views.activityTable.priorityFilter.table.priorityColumn.name']}:"
+							style="text-align: left; padding-left: 0px;font-weight: bold;" />
+						<ice:outputText value="#{row.priority}"
+							style="text-align: left; font-weight: bold; padding-left: 0px;text-transform: capitalize"/>
+
+					</ice:panelGrid>
+				</f:facet>
+			</ice:panelTooltip>	
+		</ice:panelGroup>
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'Descriptors'}">
+		<ice:panelGroup rendered="#{not empty row.processDescriptorsList}">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<ui:repeat value="#{row.processDescriptorsList}" var="info">
+				<tr>
+					<td style="text-align: left; white-space: nowrap; padding-right: 5px; width: 10%;"><ice:outputText value="#{info.key}:"/></td>
+					<td style="text-align: left; white-space: nowrap; width: 90%;"><ice:outputText value="#{info.value}" escape="false"/></td>
+				</tr>
+				</ui:repeat>
+			</table>
+		</ice:panelGroup>
+	</ice:panelGroup>
+
+
+	<ice:panelGroup rendered="#{col.columnName == 'Criticality'}">
+		<ice:panelGroup panelTooltip="criticalityTootip">
+			<ice:graphicImage value="#{row.criticality.icon}"
+				rendered="#{1 le row.criticality.iconCount}" />
+			<ice:graphicImage value="#{row.criticality.icon}"
+				rendered="#{2 le row.criticality.iconCount}" />
+			<ice:graphicImage value="#{row.criticality.icon}"
+				rendered="#{3 le row.criticality.iconCount}" />
+			<ice:graphicImage value="#{row.criticality.icon}"
+				rendered="#{4 le row.criticality.iconCount}" />
+			<ice:graphicImage value="#{row.criticality.icon}"
+				rendered="#{5 le row.criticality.iconCount}" />
+		</ice:panelGroup>
+		<ice:panelTooltip id="criticalityTootip"
+			style="background: #FFFFFF; background-color: #F0F0F2; border: 2px solid black;">
+			<f:facet name="body">
+				<ice:panelGrid columns="2" style="width: 100%; height: 100%;">
+					<ice:outputText
+						value="#{worklistTableBean.messages['column.criticality.tooltip.criticalityLabel']}:"
+						styleClass="label-form"
+						style="text-align: left; padding-left: 0px;" />
+					<ice:outputText value="#{row.criticality.label}"
+						style="text-align: left; font-weight: bold; padding-left: 0px;" />
+					<ice:outputText
+						value="#{worklistTableBean.messages['column.criticality.tooltip.valueLabel']}:"
+						styleClass="label-form"
+						style="text-align: left; padding-left: 0px;" />
+					<ice:outputText value="#{row.criticalityValue}"
+						style="text-align: left; font-weight: bold; padding-left: 0px;" />
+				</ice:panelGrid>
+			</f:facet>
+		</ice:panelTooltip>
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'Actions'}">
+		<ice:panelGroup styleClass="table-actions-column" style="float:right" rendered="#{row.loaded}">
+			<ice:panelGrid columns="4" style="float: right;">
+			<ice:commandLink action="#{ippPortalApp.openView}">
+				<pc:automationTag value="auto-PP-WorkList-ActionsProcDetails" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/processportal/images/icons/process.png"
+					title="#{worklistTableBean.messages['tooltip.processContextExplorer']}" />
+									
+				<f:param name="viewId" value="#{row.defaultCaseActivity ? 'caseDetailsView' : 'processInstanceDetailsView'}" />
+				<f:param name="nested" value="true" />
+				<f:param name="viewParams"
+					value="processInstanceOID=#{row.processInstanceOid}&amp;processInstanceName=#{row.activityInstance.processInstance.processName}" />
+			</ice:commandLink>
+
+			<!--	Delegate Dialog		-->
+			<ice:commandLink
+				actionListener="#{worklistTableBean.openDelegateDialog}"
+				disabled="#{!row.delegable and row.defaultCaseActivity}">
+				<pc:automationTag value="auto-PP-WorkList-ActionsDelegate" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/processportal/images/icons/delegate.png"
+					style="border:none;"
+					styleClass="#{row.delegable ? '' : 'iceCmdBtn-dis'}"
+					title="#{worklistTableBean.messages['tooltip.delegate']}" />
+				<f:attribute name="activityInstance" value="#{row.activityInstance}" />
+				<f:param name="oid" value="#{row.oid}" />
+			</ice:commandLink>
+
+			<!--	Abort Dialog		-->
+
+			<ice:commandLink actionListener="#{worklistTableBean.openAbortDialog}"
+				disabled="#{!row.abortActivity and row.defaultCaseActivity}">
+				<pc:automationTag value="auto-PP-WorkList-ActionsAbort" standAlone="false"/>
+				<ice:graphicImage
+					url="/plugins/processportal/images/icons/abort.png"
+					style="border:none;"
+					styleClass="#{row.abortActivity ? '' : 'iceCmdBtn-dis'}"
+					title="#{worklistTableBean.messages['tooltip.abort']}"/>
+				<f:attribute name="activityInstance" value="#{row.activityInstance}" />
+			</ice:commandLink>
+
+			<!--	Notes	-->
+			<ice:panelGroup rendered="#{row.defaultCaseActivity }">
+					<ice:graphicImage styleClass="iceCmdBtn-dis"
+						value="/plugins/processportal/images/icons/notes-blank.png" />
+			</ice:panelGroup>
+						
+			<ice:commandLink rendered="#{row.notesCount gt 0 and !row.defaultCaseActivity}" 
+				actionListener="#{worklistTableBean.openNotes}">
+				<pc:automationTag value="auto-PP-WorkList-ActionsNotes" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/processportal/images/icons/notes-filled.png"
+					title="#{worklistTableBean.messages['tooltip.notes']}" />
+				<f:param name="oid" value="#{row.oid}" />
+			</ice:commandLink>
+			<ice:commandLink rendered="#{row.notesCount le 0 and !row.defaultCaseActivity}" 
+				actionListener="#{worklistTableBean.openNotes}">
+				<pc:automationTag value="auto-PP-WorkList-ActionsNotes" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/processportal/images/icons/notes-blank.png"
+					title="#{worklistTableBean.messages['tooltip.notesEmpty']}" />
+				<f:param name="oid" value="#{row.oid}" />
+			</ice:commandLink>
+		</ice:panelGrid>
+		</ice:panelGroup>
+	</ice:panelGroup>
+
+</f:view>

@@ -1,0 +1,35 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+		<ice:panelGroup rendered="#{col.columnName == 'Icon'}">
+			<ice:graphicImage
+				value="/plugins/views-common/images/icons/chat-initiator.png"
+				rendered="#{row.inviter and row.online}" />
+			<ice:graphicImage
+				value="/plugins/views-common/images/icons/user-offline.png"
+				rendered="#{!row.online and !row.inviter}" />
+			<ice:graphicImage
+				value="/plugins/views-common/images/icons/user-online.png"
+				rendered="#{row.online and !row.inviter}" />
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'ParticipantName'}">
+			<ice:outputText value="#{row.lastName}, #{row.firstName}" />
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'CloseIcon'}">
+			<ice:commandLink actionListener="#{chatViewBean.leave}"
+				rendered="#{(documentRepo.user == chatViewBean.chatRoom.initiatingUser) || (row == documentRepo.user)}">
+				<f:attribute name="user" value="#{row}" />
+				<ice:graphicImage value="/plugins/common/images/tab-bttn-close.png"
+					styleClass="toolbar-button" />
+			</ice:commandLink>
+		</ice:panelGroup>
+	</ice:panelGroup>
+</f:view>

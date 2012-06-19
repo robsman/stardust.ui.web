@@ -1,0 +1,51 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		row*= Instance of Row Class
+		col*= Instance of ColumnPreference 
+	 -->
+
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+
+		<!--	Overview	-->
+		<ice:panelGroup rendered="#{col.columnName == 'Notes'}"
+			panelTooltip="noteToolTip">
+			<ice:commandLink rendered="#{row.loaded}">
+				<pc:automationTag value="auto-PP-NotesView-DataTable-Preview"
+					standAlone="false" />
+				<f:attribute name="noteTimestamp" value="#{row.created}" />
+				<ice:panelGrid columns="2">
+					<ice:graphicImage
+						value="/plugins/processportal/images/icons/notes-filled.png" />
+					<ice:outputText value="#{row.notePreview}" />
+				</ice:panelGrid>
+			</ice:commandLink>
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'CreatorName'}">
+			<ice:panelGrid columns="2">
+				<ice:graphicImage value="#{row.noteInfo.userImageURL}" width="16px"
+					height="16px" />
+				<ice:outputText value="#{row.creatorName}" />
+			</ice:panelGrid>
+		</ice:panelGroup>
+
+		<ice:panelGroup style="display: inline;" styleClass="notesTooltip">
+			<ice:panelTooltip id="noteToolTip" hideOn="mouseout" hoverDelay="500"
+				styleClass="notesTooltip">
+				<ui:include src="/plugins/views-common/views/doctree/toolTip.xhtml">
+					<ui:param name="noteTip" value="#{row.noteInfo}" />
+				</ui:include>
+			</ice:panelTooltip>
+
+		</ice:panelGroup>
+	</ice:panelGroup>
+
+</f:view>

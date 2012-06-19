@@ -1,0 +1,26 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates mandatory attributes)
+	row* = Row
+	col* = Column
+	-->
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+		<ice:panelGroup rendered="#{col.columnName == 'codeDesc'}">
+			<ice:outputText value="#{row.code} - #{row.description}" />
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{col.columnName == 'actions'}">
+			<ice:commandLink action="#{row.remove}">
+				<pc:automationTag value="auto-PP-QualityAssuranceCodesMultiSel-ActionsRemove"
+					standAlone="false" />
+				<ice:graphicImage value="/plugins/common/images/tab-bttn-close.png"
+					styleClass="toolbar-button" />
+			</ice:commandLink>
+		</ice:panelGroup>
+	</ice:panelGroup>
+</f:view>

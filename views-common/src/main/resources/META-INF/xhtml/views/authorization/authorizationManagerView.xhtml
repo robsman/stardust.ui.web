@@ -1,0 +1,89 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<ui:include
+			src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+			<ui:param name="dialogBean"
+				value="#{authorizationManagerBean.authMngrConfirmationDialog}" />
+		</ui:include>
+	</ice:panelGroup>
+	
+	<ice:panelGroup>
+		<ice:panelGrid columns="2">
+			<ice:selectOneRadio value="#{authorizationManagerBean.selectedView}"
+				style="text-align: left;"
+				valueChangeListener="#{authorizationManagerBean.viewSelectionListener}"
+				partialSubmit="true" layout="pageDirection" styleClass="label-form">
+				<pc:automationTag value="auto-COM-AuthMgr-SelView" standAlone="false"/>
+				<f:selectItem value="#{authorizationManagerBean.viewSelection[0]}" />
+				<f:selectItem value="#{authorizationManagerBean.viewSelection[1]}" />
+			</ice:selectOneRadio>
+
+			<ice:panelGroup style="padding-top: 10px;width:auto;min-width: 220px; "
+				rendered="#{authorizationManagerBean.selectedView eq 'PARTICIPANT'}">
+				<ui:include
+					src="#{authorizationManagerBean.permissionPickList.participantSelector.autocompleteContentUrl}">
+					<ui:param name="component"
+						value="#{authorizationManagerBean.permissionPickList.participantSelector}" />
+				</ui:include>
+			</ice:panelGroup>
+
+		</ice:panelGrid>
+	</ice:panelGroup>
+
+	<ice:panelGrid headerClass="heading"
+		style="vertical-align: top; white-space: nowrap; width: 100%;"
+		rendered="#{authorizationManagerBean.showPermissionView}">
+		<f:facet name="header">
+		<ice:panelGroup style="text-align: left">
+			<ice:outputText
+				value="#{authorizationManagerBean.messages['permissions.label']}" />
+		</ice:panelGroup>
+		</f:facet>
+
+		<ice:panelBorder id="page" style="width: 100%;border-color:white" rules="all" 
+			border="0" renderCenter="true" renderWest="true" cellpadding="10" 
+			cellspacing="3" align="left">
+
+			<f:facet name="west">
+				<ice:panelGroup style="min-width: 500px;">
+					<ui:include src="permissionTree.xhtml" />
+				</ice:panelGroup>
+			</f:facet>
+			
+				<f:facet name="center">
+					<ice:panelGroup	>
+						<ui:include src="participantTable.xhtml" />
+					</ice:panelGroup>
+				</f:facet>
+			
+		</ice:panelBorder>
+
+	</ice:panelGrid>
+
+
+	<ice:panelGrid headerClass="heading"
+		style="vertical-align: top; white-space: nowrap; width: 100%;"
+		rendered="#{authorizationManagerBean.showParticipantView}">
+		<f:facet name="header">
+			<ice:panelGroup style="text-align: left">
+				<ice:outputText
+					value="#{authorizationManagerBean.messages['participantPermissions.title']} #{authorizationManagerBean.permissionPickList.participantLabel} " />
+			</ice:panelGroup>
+		</f:facet>
+
+		<ice:panelGroup>
+			<ui:include src="participantPermissionPickList.xhtml" />
+		</ice:panelGroup>
+
+	</ice:panelGrid>
+
+
+
+</f:view>

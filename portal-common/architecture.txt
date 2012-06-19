@@ -1,0 +1,24 @@
+h1. Java Package Structure
+
+org.eclipse.stardust.ui.web.common holds all components being used across the different portals (Process Portal, Administration Portal, Business Control Center, Context Portal).
+
+Components for the different portals are contained
+
+com.infinity.bpm.portal.process_portal 
+com.infinity.bpm.portal.admin_portal 
+com.infinity.bpm.portal.bcc 
+com.infinity.bpm.portal.context_portal 
+
+Subpackages contain the Backing Beans and other utility classes for a specific component (e.g. proces_history_table).
+
+h1. Web Content Structure
+
+h1. Backing Beans
+
+Backing bean names 
+
+<Deployment Unit Name>_<Component Name>
+
+e.g.
+
+common_processHistoryTable

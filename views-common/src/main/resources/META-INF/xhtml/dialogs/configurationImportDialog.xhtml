@@ -1,0 +1,89 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation *****
+	# Parameter ('*' indicates mandatory parameters)
+	title* = Customized title for the dialog
+	message* = Customized message for the dialog
+	warning* = Customized title for the dialog
+	-->
+	<ui:composition>
+		<ice:panelPopup modal="true"
+			rendered="#{configurationImportDialogBean.visible}"
+			draggable="true"
+			autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-ADM-ConfigImportDlg-Header"/>
+					<ice:outputText
+						value="#{title}"
+						styleClass="headerText" />
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png"
+						action="#{configurationImportDialogBean.closePopup}"
+						immediate="true" styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+			<f:facet name="body">
+
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+					cellspacing="0" renderNorth="false" renderEast="false"
+					renderSouth="true" renderWest="false" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>
+
+							<ice:panelGrid columns="1" style="text-align: left">
+								<ice:outputText
+									value="#{message}" />
+								<ice:panelGrid columns="2" style="padding: 0px;text-align: left;">							
+										<h:graphicImage
+											value="/plugins/views-common/images/icons/warning.png"
+											styleClass="toolbar-button" style="padding: 0px;text-align: left;"
+											title="#{modelManagementBean.messages['save']}" />
+										<ice:outputText 
+											value="#{warning}" />
+									</ice:panelGrid>
+									
+									<br />
+									<ice:outputLabel
+										value="#{views_common_msgPropsBean['views.configurationImportDialog.uploadFile']}#{views_common_msgPropsBean['common.colon']}" />
+
+									<!-- added  submitOnUpload="postUpload" ,   http://jira.icefaces.org/browse/ICE-4456 -->
+									<pc:automationTag value="auto-ADM-ConfigImportDlg-UploadFile" />
+									<ice:inputFile id="inputFileComponent" autoUpload="#{true}"
+										submitOnUpload="postUpload"
+										actionListener="#{configurationImportDialogBean.uploadFile}"
+										progressListener="#{configurationImportDialogBean.progressListener}" />
+									<ice:message for="inputFileComponent" />
+									<ice:outputProgress
+										labelComplete="#{configurationImportDialogBean.currentFile.fileName}"
+										value="#{configurationImportDialogBean.fileProgress}" />
+								</ice:panelGrid>
+						</ice:panelGroup>
+
+					</f:facet>
+
+					<f:facet name="south">
+						<ice:panelGroup>
+							<ice:panelGrid columns="1" style="text-align: left">
+								<pc:automationTag value="auto-ADM-ConfigImportDlg-BtnsBar"
+									standAlone="false" />
+								<ice:commandButton value="#{ views_common_msgPropsBean['common.ok']}"
+									disabled="#{configurationImportDialogBean.fileProgress!='100'}"
+									action="#{configurationImportDialogBean.importPreferences}"
+									styleClass="button" title="#{ views_common_msgPropsBean['common.ok']}" />
+							</ice:panelGrid>
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+
+
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

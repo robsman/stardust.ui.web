@@ -1,0 +1,139 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		filterPopup* -> Instance of TableColumnSelectorPopup
+		width -> Width of the Popup
+		anchorWidth -> Width of the Anchor ** Deprecated
+		disabled = true/false Default false
+	 -->
+	<ui:composition>
+		<c:if test="#{not empty width}">
+			<c:set var="width" value="width:#{width}" />
+		</c:if>
+		
+		<c:if test="#{empty disabled}">
+			<c:set var="disabled" value="#{false}" />
+		</c:if>
+
+		<c:set var="disabled" value="#{disabled ? true : (empty filterPopup.columns)}" />
+		
+		<!--
+		<c:if test="#{empty anchorWidth}">
+			<c:set var="anchorWidth" value="70px" />
+		</c:if>
+		-->
+
+		<!-- Anchor to Launch Filter -->
+		<ice:panelGroup>
+			<ice:commandLink action="#{filterPopup.openPopup}" disabled="#{disabled}">
+				<pc:automationTag value="auto-DT-ColSelector" standAlone="false" />
+				<ice:graphicImage value="/plugins/common/images/icons/adjust-columns.png"
+						style="vertical-align:top; border:none;"
+						styleClass="#{disabled ? 'iceCmdBtn-dis' : ''}"
+						title="#{filterPopup.title}" />
+			</ice:commandLink>
+		</ice:panelGroup>
+
+<!-- TODO:
+	1. Position Popup at Anchor Position i.e./or at Cursor Position
+	2. Modal Popups
+		a. Are always centered. This is resolved in 1.8.2 which is yet to be released
+		(http://jira.icefaces.org/browse/ICE-4578)
+		b. Grays out background. Need to look if this is acceptable or need to change the style
+-->
+    
+		<!-- Popup Filter -->
+		<ice:panelPopup draggable="true" resizable="false" modal="false"
+			rendered="#{filterPopup.visible}"
+			styleClass="popupDialog" style="#{width};" clientOnly="true">
+			<f:facet name="header">
+				<pc:automationTag value="auto-DT-ColSelector-Header"/>
+				<table cellpadding="0" cellspacing="0" width="100%"><tr>
+					<td>
+						<ice:outputText value="#{filterPopup.title}"
+							styleClass="headerText" />
+					</td>
+					<td style="text-align: right">
+						<pc:automationTag value="auto-DT-ColSelector-CloseLink" standAlone="false"/>
+						<ice:commandButton title="#{common_msgPropsBean['common.filterPopup.close']}"
+							image="/plugins/common/images/dialog-windowbttn-close.png" 
+							action="#{filterPopup.closePopup}"
+							styleClass="windowClose" />
+					</td>
+				</tr></table>
+			</f:facet>
+
+			<f:facet name="body">
+				<ice:panelBorder  styleClass="pnlPopUpBrdrDialog" cellpadding="0" cellspacing="0" width="100%"
+					renderNorth="false" renderEast="false" renderSouth="true" renderWest="false" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>
+							<ice:panelGrid columns="2" cellpadding="0" cellspacing="0">
+								<ice:panelGrid columns="2" rendered="#{ippPortalApp.loggedInUser.administrator}"
+									styleClass="toolbarGroupLeft" style="padding-left: 0px;"
+									cellpadding="0" cellspacing="0">
+									<ice:outputLabel value="#{common_msgPropsBean['common.preferenceScope.label']}#{common_msgPropsBean['common.colon']}" 
+										styleClass="label-form" />
+									<ice:selectOneMenu partialSubmit="true" converter="#{filterPopup.prefScopesHelper}" 
+										value="#{filterPopup.selectedPreferenceScope}"
+										valueChangeListener="#{filterPopup.preferenceScopeValueChanged}">
+										<pc:automationTag value="auto-DT-ColSelector-ApplyTo" standAlone="false"/>
+										<f:selectItems  value="#{filterPopup.prefScopesHelper.allPreferenceScopes}"/>
+									</ice:selectOneMenu>
+								</ice:panelGrid>
+								<ice:panelGrid columns="1" styleClass="toolbarGroupLeft" 
+									style="#{ippPortalApp.loggedInUser.administrator ? '' : 'padding-left: 0px;'}">
+									<ice:commandLink action="#{filterPopup.reset}" panelConfirmation="resetConfirm#{filterPopup.id}">
+										<pc:automationTag value="auto-DT-ColSelector-Reset" standAlone="false"/>
+										<ice:graphicImage value="/plugins/common/images/arrow_rotate_anticlockwise.png"
+											style="border: none;" 
+											title="#{common_msgPropsBean['common.reset']}"/>
+									</ice:commandLink>
+								</ice:panelGrid>
+							</ice:panelGrid>
+
+							<ice:panelGroup styleClass="clearing" />
+		
+							<pc:automationTag value="auto-DT-ColSelector-ColumnsList" standAlone="false"/>
+							<ice:panelPositioned var="item" styleClass="columnsListBox"
+								value="#{filterPopup.columns}" constraint="vertical">
+								<ice:panelGroup styleClass="columnItemBox">
+									<ice:panelGroup styleClass="columnItemBoxInput">
+										<ice:selectBooleanCheckbox value="#{item.visible}" tabindex="1" accesskey="1" />
+									</ice:panelGroup>
+									<ice:panelGroup styleClass="columnItemBoxLabel">
+										<ice:outputText id="name" value="#{item.columnTitle}" />
+									</ice:panelGroup>
+								</ice:panelGroup>
+							</ice:panelPositioned>
+						</ice:panelGroup>
+					</f:facet>
+		
+					<f:facet name="south">
+						<ice:panelGroup style="white-space: nowrap;">
+							<pc:automationTag value="auto-DT-ColSelector-Buttons" standAlone="false" />
+							<ice:commandButton value="#{common_msgPropsBean['common.apply']}" 
+								action="#{filterPopup.apply}" styleClass="button" title="#{common_msgPropsBean['common.apply']}" />
+							<ice:commandButton value="#{common_msgPropsBean['common.filterPopup.close']}" 
+								action="#{filterPopup.closePopup}" styleClass="button" title="#{common_msgPropsBean['common.filterPopup.close']}" />
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+
+		<ice:panelConfirmation id="resetConfirm#{filterPopup.id}" 
+			title="#{views_common_msgPropsBean['common.confirm']}"
+			message="#{common_msgPropsBean['common.preferenceScope.resetConfimation']}"
+	       	acceptLabel="#{common_msgPropsBean['common.yes']}" cancelLabel="#{common_msgPropsBean['common.no']}" >
+	       	<pc:automationTag value="auto-DT-ColSelector-ResetConfMsg" standAlone="false" requiredValue="pnlConfirmation" />
+	    </ice:panelConfirmation>
+
+	</ui:composition>
+</f:view>

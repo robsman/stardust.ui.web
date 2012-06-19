@@ -1,0 +1,31 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid columns="3">
+		<ice:commandLink
+			disabled="#{worklistTableBean.selectedItemCount eq 0 ? true : false}"
+			actionListener="#{worklistTableBean.openDelegateDialog}">
+			<pc:automationTag value="auto-PP-WorkList-ToolbarDelegate" standAlone="false"/>
+			<h:graphicImage
+				value="/plugins/processportal/images/icons/delegate.png"
+				style="border: none;"
+				styleClass="#{worklistTableBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}"
+				title="#{processportal_msgPropsBean['toolbars.worklistView.tooltip.delegate']}" />
+		</ice:commandLink>
+
+		<ice:commandLink actionListener="#{worklistTableBean.openAbortDialog}" 
+			disabled="#{worklistTableBean.selectedItemCount eq 0 ? true : false}">
+			<pc:automationTag value="auto-PP-WorkList-ToolbarAbort" standAlone="false"/>
+			<ice:graphicImage
+				url="/plugins/common/images/icons/process-history/active/abort.png"
+                   style="border:none;" styleClass="#{worklistTableBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}" 
+                   title="#{processportal_msgPropsBean['toolbars.worklistView.tooltip.abort']}"/>
+		</ice:commandLink>
+
+	</ice:panelGrid>
+</f:view>

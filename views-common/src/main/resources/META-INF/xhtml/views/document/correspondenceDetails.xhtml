@@ -1,0 +1,52 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+	<ice:panelGroup>
+		<ice:panelGrid columns="2" style="padding: 5px;">
+			<ice:outputLabel for="faxNumber"
+				value="#{documentHandlerBean.messages['correspondenceDetails.faxNumber']}"
+				styleClass="label" />
+			<ice:outputText id="faxNumber"
+				value="#{documentHandlerBean.correspondencInfo.faxNumber}" />
+			<ice:outputLabel for="subject"
+				value="#{documentHandlerBean.messages['correspondenceDetails.subject']}"
+				styleClass="label" />
+			<ice:outputText id="subject"
+				value="#{documentHandlerBean.correspondencInfo.subject}" />
+			<ice:outputLabel for="recipients"
+				value="#{documentHandlerBean.messages['correspondenceDetails.recipients']}"
+				styleClass="label" />
+			<ice:outputText id="recipients"
+				value="#{documentHandlerBean.correspondencInfo.recipients}" />
+			<ice:outputLabel for="carbonCopyRecipients"
+				value="#{documentHandlerBean.messages['correspondenceDetails.carbonCopyRecipents']}"
+				styleClass="label" />
+			<ice:outputText id="carbonCopyRecipients"
+				value="#{documentHandlerBean.correspondencInfo.carbonCopyRecipients}" />
+			<ice:outputLabel for="blindCarbonCopyRecipients"
+				value="#{documentHandlerBean.messages['correspondenceDetails.blindCarbonCopyRecipents']}"
+				styleClass="label" />
+			<ice:outputText id="blindCarbonCopyRecipients"
+				value="#{documentHandlerBean.correspondencInfo.blindCarbonCopyRecipients}" />
+			<ice:outputLabel for="sender"
+				value="#{documentHandlerBean.messages['correspondenceDetails.sender']}"
+				styleClass="label" />
+			<ice:outputText id="sender"
+				value="#{documentHandlerBean.correspondencInfo.sender}" />
+			<ice:outputLabel for="sendDate"
+				value="#{documentHandlerBean.messages['correspondenceDetails.senderData']}"
+				styleClass="label" />
+			<ice:outputText id="sendDate"
+				value="#{documentHandlerBean.correspondencInfo.sendDate}" />
+			<ice:outputLabel for="attachments"
+				value="#{documentHandlerBean.messages['correspondenceDetails.attachments']}"
+				styleClass="label" />
+			<ice:outputText id="attachments"
+				value="#{documentHandlerBean.correspondencInfo .attachments}" />
+
+		</ice:panelGrid>
+	</ice:panelGroup>
+</f:view>

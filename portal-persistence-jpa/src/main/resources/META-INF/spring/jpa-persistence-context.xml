@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+   <bean id="portalEntityManagerFactory" parent="abstractPortalEntityManagerFactory">
+
+      <property name="persistenceUnitManager">
+         <!--
+            a persistence unit manager that merges all persistence.xml files
+            it finds in the classpath into one PU with the name specified
+            below
+         -->
+         <bean class="org.eclipse.stardust.ui.web.rt.persistence.jpa.spring.MultiModulePersistenceUnitManager">
+
+            <property name="persistenceUnitNameOverride" value="default-portal-jpa-persistence" />
+
+            <!-- all entities will be stored into the audit trail DB -->            
+            <property name="jtaDataSource" ref="carnotXaAuditTrailDataSource" />
+         </bean>
+      </property>
+
+   </bean>
+
+   <bean id="abstractPortalEntityManagerFactory"
+      class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+      abstract="true"
+      autowire-candidate="false">
+
+      <property name="jpaPropertyMap">
+         <map>
+            <!-- by default use JTA -->
+            <entry key="javax.persistence.transactionType" value="JTA" />
+
+            <!--  -->
+            <entry key="toplink.ddl-generation" value="drop-and-create-tables" />
+            
+            <!-- hook into the environment's JTA TX manager -->
+            <entry key="toplink.target-server" value="org.eclipse.stardust.ui.web.rt.persistence.jpa.toplink.SpringJtaTxController" />
+            <!--entry key="toplink.target-server" value="oracle.toplink.essentials.transaction.JTATransactionController" /-->
+
+            <entry key="eclipselink.target-server" value="org.eclipse.stardust.ui.web.rt.persistence.jpa.eclipselink.SpringJtaTxController" />
+            <!--entry key="eclipselink.target-server" value="org.eclipse.persistence.transaction.JTATransactionController" /-->
+         </map>
+      </property>
+
+      <property name="jpaVendorAdapter">
+<!-- 
+         <bean class="org.springframework.orm.jpa.vendor.TopLinkJpaVendorAdapter">
+ -->
+         <bean class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
+            <property name="showSql" value="true" />
+            <property name="generateDdl" value="true" />
+            
+            <!-- this is typically autodetected -->
+            <!--property name="database" value="MYSQL" /-->
+            <!--property name="databasePlatform" value="oracle.toplink.essentials.platform.database.MySQL4Platform" /-->
+            <!--property name="databasePlatform" value="oracle.toplink.essentials.platform.database.DerbyPlatform" /-->
+         </bean>
+      </property>
+
+      <property name="loadTimeWeaver">
+         <bean class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
+      </property>
+
+   </bean>
+
+</beans>

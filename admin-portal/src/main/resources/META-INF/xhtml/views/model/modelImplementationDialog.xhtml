@@ -1,0 +1,99 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ui:composition>
+		<ice:panelPopup modal="true"
+			rendered="#{modelImplementationDialogBean.visible}" draggable="true"
+			autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-ADM-ModelImplDlg-Header"/>
+					<h:outputFormat
+						value="#{messages_admin['views.modifyModelImplementationDialog.title']}">
+						<f:param value="#{modelImplementationDialogBean.modelName}" />
+					</h:outputFormat>
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png"
+						action="#{modelImplementationDialogBean.closePopup}"
+						immediate="true" styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+			<f:facet name="body">
+
+
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+					cellspacing="0" renderNorth="false" renderEast="false"
+					renderSouth="true" renderWest="false" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>						
+							
+							<h:outputFormat
+								value="#{messages_admin['views.modifyModelImplementationDialog.info']}">
+								<f:param value="#{modelImplementationDialogBean.modelName}" />
+								<f:param value="#{modelImplementationDialogBean.version}" />
+								<f:param value="#{modelImplementationDialogBean.modelOID}" />
+
+							</h:outputFormat>
+
+
+							<ice:panelGroup expanded="true">
+								<pc:automationTag value="auto-ADM-ModelImplDlg-ImplTbl"/>
+								<pc:genericDataTable bean="#{modelImplementationDialogBean}"
+									title="#{messages_admin['views.modifyModelImplementationDialog.table.title']}"									
+									table="#{modelImplementationDialogBean.implementationTable}"
+									exportExcel="false" exportCsv="false" sortSupported="true">
+
+								</pc:genericDataTable>
+
+							</ice:panelGroup>
+
+							<ice:panelGroup>
+								<ice:panelGrid columns="1" style="text-align: left">
+									<ice:outputLabel
+										value="#{ messages_admin['views.modifyModelImplementationDialog.comment.label']}" />
+									<ice:inputTextarea
+										value="#{modelImplementationDialogBean.comment}" cols="80"
+										rows="5">
+										<pc:automationTag value="auto-ADM-ModelImplDlg-Comment"
+											standAlone="false" />
+									</ice:inputTextarea>	
+								</ice:panelGrid>
+							</ice:panelGroup>
+
+							<ice:panelGroup styleClass="msgError">							
+								<ice:messages />
+								<!-- <ice:inputHidden id="singleSelectionMsg"  value="" />
+								<ice:message for="singleSelectionMsg" styleClass="msgError" /> -->
+							</ice:panelGroup>
+						
+						</ice:panelGroup>					
+
+					</f:facet>
+					<f:facet name="south">
+
+						<ice:panelGroup>
+						<pc:automationTag value="auto-ADM-ModelImplDlg-BtnsBar" standAlone="false"/>
+							<ice:commandButton
+								value="#{ messages_admin['common.button.save']}"
+								action="#{modelImplementationDialogBean.save}"
+								styleClass="button" style="width: 60px"
+								title="#{ messages_admin['common.button.save']}" />
+
+							<ice:commandButton value="#{messages_admin['common.cancel']}"
+								action="#{modelImplementationDialogBean.closePopup}"
+								styleClass="button" style="width: 60px"
+								title="#{ messages_admin['common.cancel']}}" />
+						</ice:panelGroup>
+					</f:facet>
+
+				</ice:panelBorder>
+			</f:facet>
+
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

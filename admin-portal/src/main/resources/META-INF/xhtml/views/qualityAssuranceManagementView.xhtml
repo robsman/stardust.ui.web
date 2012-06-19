@@ -1,0 +1,43 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ui:include
+		src="/plugins/views-common/contentmgmt/views/notificationMessage.xhtml" />
+	<ice:panelGroup>
+		<ice:panelGroup styleClass="clearing" />
+		<ice:panelCollapsible expanded="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText
+						value="#{messages_admin['views.qaManagementView.activities.label']}" />
+				</ice:panelGroup>
+			</f:facet>
+			<pc:automationTag value="auto-ADM-QAMgmt-Activity-DataTable" />
+			<pc:genericDataTable bean="#{qaManagementBean}" id="qaActivities"
+				table="#{qaManagementBean.activityTable}" sortSupported="true"
+				toolbarUrl="/plugins/admin-portal/extensions/toolbar/qualityAssuranceActivityTableToolbar.xhtml"
+				exportExcel="false" exportCsv="false" />
+		</ice:panelCollapsible>
+
+		<ice:panelCollapsible
+			rendered="#{qaManagementBean.departmentTable.rowCount > 0}"
+			expanded="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText
+						value="#{messages_admin['views.qaManagementView.departments.label']}" />
+				</ice:panelGroup>
+			</f:facet>
+			<pc:automationTag value="auto-ADM-QAMgmt-Department-DataTable" />
+			<pc:genericDataTable bean="#{qaManagementBean}" id="qaDepartments"
+				table="#{qaManagementBean.departmentTable}" sortSupported="true"
+				toolbarUrl="/plugins/admin-portal/extensions/toolbar/qualityAssuranceDepartmentTableToolbar.xhtml"
+				exportExcel="false" exportCsv="false" />
+		</ice:panelCollapsible>
+	</ice:panelGroup>
+</f:view>

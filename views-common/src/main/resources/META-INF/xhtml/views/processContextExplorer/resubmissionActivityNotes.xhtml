@@ -1,0 +1,45 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ice:panelGroup style="width:100%;">
+		<ice:panelPopup modal="true" rendered="#{processInstanceDetailsBean.visible}"
+			draggable="true" autoCentre="true" positionOnLoadOnly="true"
+			styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-COM-ReSubActNotesDlg-Header"/>
+					<ice:outputText value="#{messages_bcc['common.resubmission.title']}"
+						styleClass="headerText" />
+					<ice:commandButton
+						image="/plugins/common/images/dialog-windowbttn-close.png" 
+						title="#{common_msgPropsBean['common.close']}"
+						action="#{processInstanceDetailsBean.closePopup}"
+						immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+		
+			<f:facet name="body">
+				<ice:panelBorder  styleClass="pnlPopUpBrdrDialog" cellpadding="0" cellspacing="0"
+					renderNorth="false" renderEast="false" renderSouth="false" renderWest="false" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>
+							<ice:panelGroup styleClass="heading">
+								<ice:outputText value="#{messages_bcc['common.note.label']}" />	
+							</ice:panelGroup>
+							<ice:inputTextarea value="#{processInstanceDetailsBean.activityNotes}" readonly="true" partialSubmit="true"
+								id="rnotes" rows="8" cols="40">
+								<pc:automationTag value="auto-COM-ReSubActNotesDlg-Notes" standAlone="false"/>
+							</ice:inputTextarea>	
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ice:panelGroup>
+</f:view>

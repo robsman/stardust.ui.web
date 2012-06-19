@@ -1,0 +1,22 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+		<ice:panelGroup rendered="#{col.columnName == 'UserName'}">
+			<ice:commandLink value="#{row.name}"
+				action="#{ippPortalApp.openView}" title="#{messages_bcc['views.userManagerDetailView.title']}">
+				<pc:automationTag
+					value="auto-BCC-ResLogin-TotLogInTimeTbl-TeamMember" standAlone="false" />
+				<f:param name="viewId" value="userManagerDetailView" />
+				<f:param name="nested" value="true" />
+				<f:param name="viewParams"
+					value="userOid=#{row.userOid}&amp;userId=#{row.userId}" />
+			</ice:commandLink>
+		</ice:panelGroup>
+	</ice:panelGroup>
+</f:view>

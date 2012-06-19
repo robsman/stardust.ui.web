@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ippui="http://infinity.com/bpm/portal/common/uiDefinition"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
+
+	<ippui:perspective id="ippAdminPerspective"
+		messageBundles="admin-portal-messages" requiredRoles="Administrator">
+		<ippui:preferences>
+			<ippui:preferencePage name="helpDocumentation"
+				include="/plugins/doc/handbooks/execution-clients/admin-portal/admin-portal.html" />
+		</ippui:preferences>
+
+		<!--  MENU -->
+		<!--
+			<ippui:menuSection name="adminMenu"
+			include="/plugins/admin-portal/extensions/menu/adminMenu.xhtml" />
+		-->
+
+		<!-- LAUNCH PANELS -->
+		<ippui:launchPanel name="ippAdmAdministrativeActions"
+			include="/plugins/admin-portal/extensions/launchpad/administrativeActions.xhtml" />
+		<ippui:launchPanel name="ippAdmAllManagementViews"
+			include="/plugins/admin-portal/extensions/launchpad/administrativeViews.xhtml" />
+
+		<!--  TOOLBARS -->
+		<ippui:toolbarSection name="userGroupMgmtViewToolbar"
+			include="/plugins/admin-portal/extensions/toolbar/userGroupMgmtViewToolbar.xhtml"
+			requiredView="userGroupMgmt" />
+		<ippui:toolbarSection name="modelManagementViewToolbar"
+			include="/plugins/admin-portal/extensions/toolbar/modelManagementViewToolbar.xhtml"
+			requiredView="modelManagementView" />			
+		<ippui:toolbarSection name="configurationVariablesViewToolbar"
+			include="/plugins/admin-portal/extensions/toolbar/configurationVariablesViewToolbar.xhtml"
+			requiredView="configurationVariablesView" />			
+		<ippui:toolbarSection name="activityViewToolbar"
+			include="/plugins/admin-portal/extensions/toolbar/activityViewToolbar.xhtml"
+			requiredView="activityView" />
+		<ippui:toolbarSection name="processViewToolbar"
+			include="/plugins/admin-portal/extensions/toolbar/processViewToolbar.xhtml"
+			requiredView="processView" />
+		<ippui:toolbarSection name="overviewViewToolbar"
+			include="/plugins/admin-portal/extensions/toolbar/overviewViewToolbar.xhtml"
+			requiredView="overview" />
+		<ippui:toolbarSection name="realmMgmtToolbar"
+			include="/plugins/admin-portal/extensions/toolbar/realmMgmtToolbar.xhtml"
+			requiredView="realmMgmt" />
+		<ippui:toolbarSection name="daemonsToolbar"
+			include="/plugins/admin-portal/extensions/toolbar/daemonsToolbar.xhtml"
+			requiredView="daemons" />
+		<ippui:toolbarSection name="participantMgmtViewToolbar"
+			include="/plugins/admin-portal/extensions/toolbar/participantMgmtViewToolbar.xhtml"
+			requiredView="participantMgmt" />
+		<ippui:toolbarSection name="qaManagementViewToolbar"
+			include="/plugins/admin-portal/extensions/toolbar/qualityAssuranceManagementViewToolbar.xhtml"
+			requiredView="qaManagementView" />
+		<ippui:toolbarSection name="criticalityConfViewToolbar"
+			include="/plugins/admin-portal/views/criticalityConfigurationViewToolbar.xhtml"
+			requiredView="criticalityConf" />
+		<ippui:toolbarSection name="passwordMgmtViewToolbar"
+			include="/plugins/admin-portal/views/passwordMgmtViewToolbar.xhtml"
+			requiredView="passwordMgmt" />	
+
+		<!-- VIEWS -->
+		<ippui:view name="overview"
+			include="/plugins/admin-portal/views/overviewView.xhtml" controller="overviewBean" />
+		<ippui:view name="realmMgmt"
+			include="/plugins/admin-portal/views/realmMgmtView.xhtml" controller="realmMgmtBean"/>
+		<ippui:view name="daemons"
+			include="/plugins/admin-portal/views/daemonsView.xhtml" controller="daemonsBean"/>
+	
+		<ippui:view name="userGroupMgmt"
+			include="/plugins/admin-portal/views/userGroupMgmtView.xhtml" controller="userGroupMgmtBean"/>
+		<ippui:view name="activityView"
+			include="/plugins/admin-portal/views/activityView.xhtml"  controller="ippAdmActivityView"/>
+		<ippui:view name="processView"
+			include="/plugins/admin-portal/views/processView.xhtml" controller="processViewBean"/>
+
+			
+		<ippui:view name="modelManagementView"
+			include="/plugins/admin-portal/views/model/modelManagementView.xhtml" controller="modelManagementBean"/>	
+		
+		<ippui:view name="deployModelView"
+			include="/plugins/admin-portal/views/model/deployModelView.xhtml" controller="deployModelBean"/>
+
+		<ippui:view name="configurationVariablesView"
+			include="/plugins/admin-portal/views/model/configurationVariablesView.xhtml" controller="configurationVariablesBean"/>			
+			
+		<ippui:view name="participantMgmt" 
+			include="/plugins/admin-portal/views/participantMgmtView.xhtml" 
+			controller="participantMgmtBean">
+			<ippui:preferences>
+				<ippui:preferencePage name="configuration"
+					include="/plugins/admin-portal/views/participantMgtConfiguration.xhtml" />
+			</ippui:preferences>
+		</ippui:view>
+		<ippui:view name="passwordMgmt"
+			include="/plugins/admin-portal/views/passwordMgmtView.xhtml" controller="passwordMgmtBean"/>
+		<ippui:view name="criticalityConf"
+			include="/plugins/admin-portal/views/criticalityConfigurationView.xhtml" controller="criticalityConfigurationBean"/>			
+
+		<ippui:view name="qaManagementView" 
+			include="/plugins/admin-portal/views/qualityAssuranceManagementView.xhtml" 
+			controller="qaManagementBean"/>
+			
+	</ippui:perspective>
+
+</beans>

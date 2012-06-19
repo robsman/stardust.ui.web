@@ -1,0 +1,67 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:composition>
+		<ice:panelPopup modal="true" rendered="#{abortActivityBean.visible}"
+			draggable="true" autoCentre="true" positionOnLoadOnly="true"
+			styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup style="min-width:400px">
+					<pc:automationTag value="auto-COM-AbortDlg-Header"/>
+					<ice:outputText value="#{views_common_msgPropsBean['views.common.activity.abortActivity.label']}"
+						styleClass="headerText" />
+					<ice:commandButton
+						title="#{views_common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png"
+						action="#{abortActivityBean.closePopup}" immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+
+			<f:facet name="body">
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+					cellspacing="0" renderNorth="false" renderEast="false"
+					renderSouth="true" renderWest="false" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup style="min-width:400px">
+							<ice:panelGroup
+								rendered="#{not empty abortActivityBean.headerMsgLines}">
+								<c:forEach items="#{abortActivityBean.headerMsgLines}"
+									var="messageLine">
+									<ice:outputText value="#{messageLine}">
+									</ice:outputText>
+									<ice:panelGroup style="	clear: both; height: 3px;" />
+								</c:forEach>
+							</ice:panelGroup>
+
+							<ice:panelGroup styleClass="clearing" />
+							<ice:panelGroup
+								rendered="#{!abortActivityBean.confirmationDialog}">
+								<ice:selectOneRadio layout="pageDirection"
+									value="#{abortActivityBean.selectedAbortScope}">
+									<pc:automationTag value="auto-COM-AbortDlg-SelScope" standAlone="false"/>
+									<f:selectItems value="#{abortActivityBean.abortScopes}" />
+								</ice:selectOneRadio>
+							</ice:panelGroup>
+						</ice:panelGroup>
+					</f:facet>
+
+					<f:facet name="south">
+						<ice:panelGroup  style="min-width:400px">
+							<pc:automationTag value="auto-COM-AbortDlg-BtnsBar" standAlone="false"/>
+							<ice:commandButton value="#{abortActivityBean.acceptLabel}"
+								action="#{abortActivityBean.abortActivityAction}"
+								styleClass="button" />
+							<ice:commandButton value="#{abortActivityBean.cancelLabel}"
+								action="#{abortActivityBean.closePopup}" immediate="true"
+								styleClass="button" />
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

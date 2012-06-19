@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:ippui="http://infinity.com/bpm/portal/common/uiDefinition"
+      xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
+
+   <!-- BCC provided extension of process portal perspective -->
+   <ippui:perspectiveExtension id="ippBccExtensions" targetPerspective="ippProcessPortalPerspective">
+   
+      <ippui:menuExtension before="administration">
+         <ippui:menuSection name="bccMenu"
+            include="/business-control-center/extensions/process-portal/menu/bccMenu.xhtml" />
+      </ippui:menuExtension>
+
+      <ippui:launchpadExtension after="myProcesses">
+
+         <ippui:launchPanel name="myFavoriteManagementViews"
+            include="/business-control-center/extensions/process-portal/launchpad/favoriteViews.xhtml" />
+         <ippui:launchPanel name="searchManagementViews"
+            include="/business-control-center/extensions/process-portal/launchpad/searchViews.xhtml"  />
+
+      </ippui:launchpadExtension>
+
+      <ippui:toolbarExtension before="workflowActions">
+
+         <!-- alternatively just define buttons directly? -->
+         <ippui:toolbarSection name="nasenTools"
+            requiredView="ACTIVITY_VIEW" />
+<!-- 
+            <ippui:toolbarButton handler="processPortal#completeActivity"
+               icon="/css/css-images/complete.gif"
+               disabledIcon="/css/css-images/complete-disabled.gif" />
+            <ippui:toolbarButton handler="processPortal#suspendActivity"
+               icon="/css/css-images/suspend.gif"
+               disabledIcon="/css/css-images/suspend-disabled.gif" />
+            <ippui:toolbarButton handler="processPortal#suspendAndSaveActivity"
+               icon="/css/css-images/suspendandsave.gif"
+               disabledIcon="/css/css-images/suspendandsave-disabled.gif" />
+            <ippui:toolbarButton handler="processPortal#delegateActivity"
+               icon="/css/css-images/delegate.gif"
+               disabledIcon="/css/css-images/delegate-disabled.gif" />
+         </ippui:toolbarSection>
+ -->         
+      
+      </ippui:toolbarExtension>
+
+      <ippui:viewsExtension>
+         <ippui:view name="blaubart" include="empty" />
+      </ippui:viewsExtension>
+
+<!-- 
+      <ippui:defaultViewsExtension after="statusPage" before="myPrivateWorklist">
+         <ippui:viewRef name="bccStatusPage" />
+      </ippui:defaultViewsExtension>
+ -->
+
+   </ippui:perspectiveExtension>
+
+</beans>

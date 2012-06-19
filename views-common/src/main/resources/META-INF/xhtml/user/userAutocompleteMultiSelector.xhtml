@@ -1,0 +1,30 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates mandatory attributes)
+	component* = Instance of org.eclipse.stardust.ui.web.viewscommon.user.UserAutocompleteMultiSelector
+	-->
+	<c:choose>
+		<c:when test="#{pc:instanceOf(component, 'org.eclipse.stardust.ui.web.viewscommon.user.UserAutocompleteMultiSelector')}">
+			<ice:panelCollapsible expanded="#{component.showAutocompletePanel}" toggleOnClick="true">
+				<f:facet name="header">
+					<ice:panelGroup>
+						<ice:outputText style="padding-left: 5px;"
+							value="#{views_common_msgPropsBean['views.userAutocomplete.selectUser']} (#{views_common_msgPropsBean[component.onlyActiveUsers ? 'views.userAutocomplete.selectUser.active' : 'views.userAutocomplete.selectUser.all']})" />
+					</ice:panelGroup>
+				</f:facet>
+				<ui:include src="/plugins/views-common/user/userAutocompleteSingleSelector.xhtml">
+					<ui:param name="component" value="#{component}"/>
+				</ui:include>
+			</ice:panelCollapsible>
+		</c:when>
+		<c:otherwise>
+			<ice:outputText value="component is not instanceof org.eclipse.stardust.ui.web.viewscommon.user.AutocompleteUserSelector" />		
+		</c:otherwise>
+	</c:choose>
+</f:view>

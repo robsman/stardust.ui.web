@@ -1,0 +1,92 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:composition>
+		<ice:panelPopup modal="#{userDetailsBean.model}" rendered="#{userDetailsBean.visible}"
+			draggable="true"
+			autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog"
+			style="width:400px;" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-COM-UserDetailDlg-Header"/>				
+					<ice:outputText
+						value="#{views_common_msgPropsBean['views.userDetails.title']}"
+						styleClass="headerText" />
+					<ice:commandButton title="#{views_common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png"
+						action="#{userDetailsBean.closePopup}" immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+			<f:facet name="body">
+				<ice:panelGroup styleClass="pnlPopUpBrdrUserDialog">
+					<ice:panelBorder cellpadding="0" cellspacing="0" renderNorth="true"
+						renderEast="false" renderSouth="true" renderWest="true"
+						renderCenter="true" style="width: 380px;">
+						<f:facet name="north">
+							<ice:outputLabel
+								value="#{userDetailsBean.userDisplayLabel}"
+								style="float:left;" />
+						</f:facet>
+						<f:facet name="west">
+							<ice:panelGroup style="width: 128px; height: 128px; border: 1px solid #CCCCCC;">
+								<ice:graphicImage
+									value="#{userDetailsBean.userImageURI}" height="128px" width="128px" />
+							</ice:panelGroup>
+						</f:facet>
+						<f:facet name="center">
+							<ice:panelGroup>
+								<ice:panelGrid columns="2" headerClass="heading">
+
+									<ice:outputLabel
+										value="#{views_common_msgPropsBean['views.userDetails.descr.label']}#{views_common_msgPropsBean['common.colon']}"
+										styleClass="label-item" />
+									<ice:outputText value="#{userDetailsBean.user.description}" />
+
+									<ice:outputLabel
+										value="#{views_common_msgPropsBean['views.userDetails.account.label']}#{views_common_msgPropsBean['common.colon']}"
+										styleClass="label-item" />
+									<ice:outputText value="#{userDetailsBean.user.account}" />
+
+									<ice:outputLabel
+										value="#{views_common_msgPropsBean['views.userDetails.realm.label']}#{views_common_msgPropsBean['common.colon']}"
+										styleClass="label-item" />
+									<ice:outputText value="#{userDetailsBean.user.realmId}" />
+
+									<ice:outputLabel
+										value="#{views_common_msgPropsBean['views.userDetails.validFrom.label']}#{views_common_msgPropsBean['common.colon']}"
+										styleClass="label-item" />
+									<ice:outputText value="#{userDetailsBean.user.validFrom}">
+										<f:convertDateTime timeZone="#{ippPortalApp.timeZone}"
+											locale="#{ippPortalApp.localeObject}"
+											pattern="#{dateUtils.dateTimeFormatter}" />
+									</ice:outputText>
+
+									<ice:outputLabel
+										value="#{views_common_msgPropsBean['views.userDetails.validTo.label']}#{views_common_msgPropsBean['common.colon']}"
+										styleClass="label-item" />
+									<ice:outputText value="#{userDetailsBean.user.validTo}">
+										<f:convertDateTime timeZone="#{ippPortalApp.timeZone}"
+											locale="#{ippPortalApp.localeObject}"
+											pattern="#{dateUtils.dateTimeFormatter}" />
+									</ice:outputText>
+
+									<ice:outputLabel
+										value="#{views_common_msgPropsBean['views.userDetails.email.label']}#{views_common_msgPropsBean['common.colon']}"
+										styleClass="label-item" />
+									<ice:outputLink value="#{views_common_msgPropsBean['common.mailto']}#{userDetailsBean.user.EMail}">
+										<ice:outputText value="#{userDetailsBean.user.EMail}" styleClass="action-link" />
+									</ice:outputLink>
+								</ice:panelGrid>
+								<ice:panelGroup styleClass="clearing" />
+							</ice:panelGroup>
+						</f:facet>
+					</ice:panelBorder>
+				</ice:panelGroup>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

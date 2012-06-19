@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="WINDOWS-1252"?>
+<jardesc>
+<jar path="ipp-graphics-common.jar"/>
+<options buildIfNeeded="true" compress="true" descriptionLocation="/graphics-common/graphics-common.jardesc" exportErrors="false" exportWarnings="true" includeDirectoryEntries="true" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+<storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+<selectedProjects/>
+<manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+<sealing sealJar="false">
+<packagesToSeal/>
+<packagesToUnSeal/>
+</sealing>
+</manifest>
+<selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+<javaElement handleIdentifier="=graphics-common/src\/main\/resources"/>
+<javaElement handleIdentifier="=graphics-common/src\/main\/java"/>
+<file path="/graphics-common/build.xml"/>
+<file path="/graphics-common/graphics-common.jardesc"/>
+<file path="/graphics-common/.project"/>
+<folder path="/graphics-common/target"/>
+<file path="/graphics-common/.classpath"/>
+</selectedElements>
+<fatjar builder="org.eclipse.jdt.ui.plain_jar_builder" launchConfig=""/>
+</jardesc>

@@ -1,0 +1,95 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ui:composition>
+		<ice:panelPopup modal="true"
+			rendered="#{configurationValidationDialogBean.visible}"
+			draggable="true"
+			positionOnLoadOnly="true" styleClass="popupDialog" autoCentre="false" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-ADM-ConfigValidationDlg-Header"/>
+					<ice:outputText value="#{ messages_admin['views.configurationValidationDialog.title']}" 
+						styleClass="headerText" />
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png"
+						action="#{configurationValidationDialogBean.closePopup}" immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+			<f:facet name="body">
+
+
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+					cellspacing="0" renderNorth="false" renderEast="false"
+					renderSouth="true" renderWest="false" renderCenter="true">
+					<f:facet name="center">
+
+
+						<ice:panelGroup style="min-width:600px;">					
+							
+								<pc:automationTag value="auto-ADM-ConfigValidationDlg-ValidationTbl"/>
+								<pc:genericDataTable id="deploymentStatusTable"
+									bean="#{configurationValidationDialogBean}" resizable="false"
+									title="#{messages_admin['views.configurationValidationDialog.validationStatus.table.title']}"
+									table="#{configurationValidationDialogBean.deploymentStatus}"
+									exportExcel="false" exportCsv="false">
+								</pc:genericDataTable>
+								
+							
+				
+							<ice:panelGroup expanded="true">
+
+								<ice:panelCollapsible
+									expanded="#{configurationValidationDialogBean.containsErrors or configurationValidationDialogBean.containsWarnings }">
+
+									<f:facet name="header">
+										<ice:panelGroup style="text-align: left">
+											<ice:outputText style="text-align: left"
+												value="#{ messages_admin['views.deploymodel.deploymentStatus.errorwarning.table.title']}" />
+										</ice:panelGroup>
+									</f:facet>
+									<ice:panelGroup scrollHeight="200px;">
+											<pc:automationTag value="auto-ADM-ConfigValidationDlg-ErrorTbl"/>
+											<pc:genericDataTable
+												bean="#{configurationValidationDialogBean}" id="errorwarningTable"
+												title=""
+												table="#{configurationValidationDialogBean.treeTable}"
+												treeColumn="Message" exportExcel="false" exportCsv="false">
+											</pc:genericDataTable>
+									</ice:panelGroup>									
+								</ice:panelCollapsible>
+							</ice:panelGroup>
+
+						</ice:panelGroup>
+
+
+					</f:facet>
+					<f:facet name="south">
+						<ice:panelGroup>
+							<pc:automationTag value="auto-ADM-ConfigValidationDlg-BtnsBar" standAlone="false"/>
+							<ice:commandButton
+								value="#{ messages_admin['common.ok']}"
+								action="#{configurationValidationDialogBean.continueSave}"								
+								styleClass="button" immediate="true"
+								title="#{ messages_admin['common.ok']}" />
+								
+							<ice:commandButton value="#{messages_admin['common.cancel']}"
+									action="#{configurationValidationDialogBean.closePopup}"				
+								styleClass="button" style="width: 60px"
+								title="#{ messages_admin['common.cancel']}}" />							
+
+						</ice:panelGroup>
+					</f:facet>
+
+				</ice:panelBorder>
+
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

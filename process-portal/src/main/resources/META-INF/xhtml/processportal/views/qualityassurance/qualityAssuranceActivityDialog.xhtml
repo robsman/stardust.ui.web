@@ -1,0 +1,153 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ui:composition>
+		<ice:panelPopup modal="true" rendered="#{qualityAssuranceActivityBean.visible}"
+			draggable="true" autoCentre="true" positionOnLoadOnly="true"
+			styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText value="#{qualityAssuranceActivityBean.header}"
+						styleClass="headerText" />
+					<pc:automationTag value="auto-PP-QADialog-CloseLink"
+						standAlone="false" />
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png"
+						action="#{qualityAssuranceActivityBean.closePopup}" immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+			<f:facet name="body">
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+					cellspacing="0" renderNorth="false" renderSouth="true"
+					renderCenter="true" renderWest="false" renderEast="false">
+					<f:facet name="center">
+						<ice:panelGroup>
+							<ui:include
+								src="/plugins/views-common/common/validationMessage.xhtml">
+								<ui:param name="validationMessageBean"
+									value="#{qualityAssuranceActivityBean.validationMessageBean}" />
+							</ui:include>
+							<ice:panelGroup rendered="#{qualityAssuranceActivityBean.passQAActivity}">
+								<ice:outputText
+									value="#{processportal_msgPropsBean['views.qualityAssuranceActivityDialog.correction.msg']}"
+									styleClass="label-form" />
+								<ice:selectOneRadio partialSubmit="true" layout="pageDirection"
+									styleClass="label-form"
+									value="#{qualityAssuranceActivityBean.correctionMadeOption}">
+									<pc:automationTag value="auto-PP-QAActivityDlg-CorrectionsMade-RBtn"
+										standAlone="false" />
+									<f:selectItem itemValue="false"
+										itemLabel="#{processportal_msgPropsBean['views.qualityAssuranceActivityDialog.correction.option1']}" />
+									<f:selectItem itemValue="true"
+										itemLabel="#{processportal_msgPropsBean['views.qualityAssuranceActivityDialog.correction.option2']}" />
+								</ice:selectOneRadio>
+							</ice:panelGroup>
+							<ice:panelGroup
+								rendered="#{qualityAssuranceActivityBean.showQACodesSection}">
+								<ice:panelGroup
+									rendered="#{qualityAssuranceActivityBean.autoCompleteMode}">
+									<ice:panelGrid columns="1" width="100%"
+										style="text-align: right">
+										<ice:commandLink
+											action="#{qualityAssuranceActivityBean.toggleAutocompleteOrSelectFromList}">
+											<pc:automationTag value="auto-PP-QAActivityDlg-SelectQACodes"
+												standAlone="false" />
+											<ice:outputText
+												value="#{processportal_msgPropsBean['views.qualityAssuranceActivityDialog.pickFromList']} &amp;raquo;"
+												styleClass="action-link" escape="false" />
+										</ice:commandLink>
+									</ice:panelGrid>
+									<ice:panelGroup
+										style="padding:6px; border: 1px solid; border-color: #D9D9D9; height:auto; width: 400px; overflow: auto;">
+										<ui:include
+											src="#{qualityAssuranceActivityBean.qualityACAutocompleteMultiSelector.autocompleteContentUrl}">
+											<ui:param name="component"
+												value="#{qualityAssuranceActivityBean.qualityACAutocompleteMultiSelector}" />
+										</ui:include>
+										<ui:include
+											src="#{qualityAssuranceActivityBean.qualityACAutocompleteMultiSelector.selectedDataContentUrl}">
+											<ui:param name="component"
+												value="#{qualityAssuranceActivityBean.qualityACAutocompleteMultiSelector}" />
+										</ui:include>
+									</ice:panelGroup>
+								</ice:panelGroup>
+
+								<ice:panelGroup rendered="#{qualityAssuranceActivityBean.listMode}">
+									<ice:panelGrid columns="1" width="100%"
+										style="text-align: right">
+										<ice:commandLink
+											action="#{qualityAssuranceActivityBean.toggleAutocompleteOrSelectFromList}">
+											<pc:automationTag value="auto-PP-QAActivityDlg-Toggle-AutocompleteAndSelectFromList"
+												standAlone="false" />
+											<ice:outputText
+												value="#{processportal_msgPropsBean['views.qualityAssuranceActivityDialog.autoCompleteQACodes']} &amp;raquo;"
+												styleClass="action-link" escape="false" />
+										</ice:commandLink>
+									</ice:panelGrid>
+									<ice:outputText
+										value="#{processportal_msgPropsBean['views.qualityAssuranceActivityDialog.selectQACodes']}"
+										styleClass="label-form" />
+									<ice:panelGroup>
+										<pc:genericDataTable bean="#{qualityAssuranceActivityBean}"
+											id="descriptorList"
+											table="#{qualityAssuranceActivityBean.qualityAssuranceCodesList}"
+											sortSupported="true" exportExcel="false" exportCsv="false" />
+									</ice:panelGroup>
+									<ice:outputText
+										value="#{processportal_msgPropsBean['views.qualityAssuranceActivityDialog.selectMultiple']}"
+										style="font-weight:bold; color:#80AEEF" />
+								</ice:panelGroup>
+							</ice:panelGroup>
+							<ice:panelGroup styleClass="clearing" />
+							<ice:outputText
+								value="#{processportal_msgPropsBean['views.qualityAssuranceActivityDialog.addNote']}"
+								styleClass="label-form" />
+							<ice:panelGroup scrollWidth="100%">
+								<ice:inputTextarea value="#{qualityAssuranceActivityBean.note}" rows="2"
+									style="width: 400px;">
+									<pc:automationTag value="auto-PP-QAActivityDlg-AddNote"
+										standAlone="false" />
+								</ice:inputTextarea>
+							</ice:panelGroup>
+							<ice:panelGroup styleClass="clearing" />
+							<ice:panelGroup rendered="#{qualityAssuranceActivityBean.failQAActivity}">
+								<ice:selectBooleanCheckbox id="assignToLP"
+									value="#{qualityAssuranceActivityBean.assignToLastPerformer}"
+									tabindex="1" accesskey="1">
+									<pc:automationTag
+										value="auto-PP-QAActivityDlg-Checkbox-assignToLastPerformer"
+										standAlone="false" />
+								</ice:selectBooleanCheckbox>
+								<ice:outputLabel
+									value="#{processportal_msgPropsBean['views.qualityAssuranceActivityDialog.assignToLastPerformer']}"
+									for="assignToLP" styleClass="label-form" />
+							</ice:panelGroup>
+						</ice:panelGroup>
+					</f:facet>
+					<f:facet name="south">
+						<ice:panelGrid columns="2" cellspacing="0" cellpadding="0">
+							<ice:commandButton value="#{common_msgPropsBean['common.ok']}"
+								action="#{qualityAssuranceActivityBean.completeAction}"
+								styleClass="button">
+								<pc:automationTag value="auto-PP-QAActivityDlg-Btn-Ok"
+									standAlone="false" />
+							</ice:commandButton>	
+							<ice:commandButton
+								value="#{common_msgPropsBean['common.cancel']}"
+								action="#{qualityAssuranceActivityBean.closePopup}" styleClass="button" >
+								<pc:automationTag value="auto-PP-QAActivityDlg-Btn-Cancel"
+									standAlone="false" />
+							</ice:commandButton>	
+						</ice:panelGrid>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

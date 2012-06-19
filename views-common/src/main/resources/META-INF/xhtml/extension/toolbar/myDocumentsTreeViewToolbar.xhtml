@@ -1,0 +1,19 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid columns="1" cellspacing="0" cellpadding="0">
+		<ice:commandButton
+			image="/plugins/views-common/images/icons/arrow_refresh.png"
+			action="#{myDocumentsTreeViewBean.update}" partialSubmit="true"
+			title="#{views_common_msgPropsBean['common.update']}"
+			styleClass="toolbar-button">
+			<pc:automationTag value="auto-COM-MyDoc-ToolbarRefresh"/>
+		</ice:commandButton>	
+	</ice:panelGrid>
+
+</f:view>

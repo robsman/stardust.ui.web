@@ -1,0 +1,129 @@
+/* Gantt Chart Settings */
+
+.scheduledColor {
+	background-color: #999999;
+}
+
+.waitingColor {
+	background-color: #3366CC;
+}
+
+.runningColor {
+	background-color: #009900;
+}
+
+.runningCompletedColor {
+	background-color: #009900;
+}
+
+.runningLateColor {
+	background-color: #FFFF00;
+}
+
+.runningLateCompletedColor {
+	background-color: #FFFF00;
+}
+
+.runningCriticalColor {
+	background-color: #FF0000;
+}
+
+.runningCriticalCompletedColor {
+	background-color: #FF0000;
+}
+
+.completedColor {
+	background-color: #33CC66;
+}
+
+.darkGreyColor {
+	background-color: #666666;
+}
+
+.greyColor {
+	background-color: #CCCCCC;
+}
+
+.redColor {
+	background-color: #FF3333;
+}
+
+.blackColor {
+	background-color: #000000;
+}
+
+.diagram {
+	height: 35px;
+	width: 400px;
+	position: relative;
+	padding-top: 0px;
+	text-align: left;
+}
+
+.diagram div {
+	position: absolute;
+	width: 35px;
+	height: 35px;
+}
+
+.barframe {
+	height: 35px;
+	width: 400px;
+	position: relative;
+	clear: both;
+	bottom: 0px;
+}
+
+.progressbar {
+	position: absolute;
+	bottom: 0px;
+	top: 8px;
+	z-index: 4;
+	line-height: 1em;
+	font-size: 0px;
+}
+
+.timebar {
+	position: absolute;
+	bottom: 0px;
+	top: 16px;
+	z-index: 5;
+}
+
+.dependencyBar {
+	position: absolute;
+	bottom: 0px;
+	top: 13px;
+	z-index: 6;
+}
+
+.dependencyDot {
+	position: absolute;
+	bottom: 0px;
+	top: 8px;
+	z-index: 6;
+}
+
+.durationbar {
+	position: absolute;
+	bottom: 0px;
+	top: 8px;
+	z-index: 3;
+	line-height: 1em;
+	font-size: 0px;
+}
+
+.bar {
+	position: absolute;
+	bottom: 0px;
+	top: 4px;
+	z-index: 2;
+}
+
+.bartext {
+	position: absolute;
+	bottom: 0px;
+	top: 22px;
+	z-index: 5;
+	text-align: center;
+}

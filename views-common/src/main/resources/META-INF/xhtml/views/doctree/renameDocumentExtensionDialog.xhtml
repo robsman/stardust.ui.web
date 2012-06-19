@@ -1,0 +1,47 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:composition>
+		<ice:panelPopup modal="true" rendered="#{renameDocumentExtensionDialog.visible}"
+			draggable="true" autoCentre="true" positionOnLoadOnly="true"
+			styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-COM-RenameDlg-Header"/>
+					<ice:outputText value="#{views_common_msgPropsBean['common.confirmRenameExt.title']}"
+						styleClass="headerText" />
+					<ice:commandButton 
+						title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png" 
+						action="#{renameDocumentExtensionDialog.closePopup}"
+						immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+		
+			<f:facet name="body">
+				<ice:panelBorder  styleClass="pnlPopUpBrdrDialog" cellpadding="0" cellspacing="0"
+					renderNorth="false" renderEast="false" renderSouth="true"  renderWest="false" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>
+							<ice:outputText value="#{views_common_msgPropsBean['common.SaveOrNotMessage']}"/>
+						</ice:panelGroup>
+					</f:facet>
+		
+					<f:facet name="south">
+						<ice:panelGroup>
+							<pc:automationTag value="auto-COM-RenameDlg-BtnsBar" standAlone="false"/>
+							<ice:commandButton value="#{views_common_msgPropsBean['common.yes']}" action="#{renameDocumentExtensionDialog.save}"
+								id="apply" title="#{views_common_msgPropsBean['common.yes']}" styleClass="button" />
+							<ice:commandButton value="#{views_common_msgPropsBean['common.no']}" action="#{renameDocumentExtensionDialog.closePopup}"
+								immediate="true" id="cancel" title="#{views_common_msgPropsBean['common.no']}" styleClass="button" />
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>	
+	</ui:composition>
+</f:view>

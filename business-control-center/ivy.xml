@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<ivy-module version="2.0"
+   xmlns:m="http://ant.apache.org/ivy/maven"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+
+   <info organisation="com.infinity.bpm" module="ipp-business-control-center"
+      revision="${ipp.version.full}" />
+
+   <configurations>
+      <conf name="ipp-business-control-center-compile" description="Business Control Center - Compile Scope" />
+      <conf name="ipp-business-control-center-runtime" extends="ipp-business-control-center-compile" description="Business Control Center - Runtime Scope" />
+      <conf name="ipp-business-control-center-provided" description="Business Control Center - Provided Scope" />
+      
+      <conf name="ipp-business-control-center-sources" description="Business Control Center - Sources" />
+
+      <conf name="compile" extends="ipp-business-control-center-compile" visibility="private" description="Business Control Center" />
+      
+      <conf name="test" visibility="private" description="Test dependencies" />
+
+      <conf name="pom" description="Business Control Center POMs" />
+   </configurations>
+
+   <publications>
+      <artifact name="ipp-business-control-center" type="jar" conf="ipp-business-control-center-compile, ipp-business-control-center-runtime, ipp-business-control-center-provided" />
+      <artifact name="ipp-business-control-center" type="jar" conf="ipp-business-control-center-sources" m:classifier="sources" />
+      
+      <artifact name="ipp-business-control-center" type="pom" conf="pom" ext="pom" />
+   </publications>
+
+   <dependencies>
+      <!-- ipp-business-control-center-compile -->
+      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-business-control-center-compile->web-client-module-compile" />
+      <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-business-control-center-compile->spring-module-compile" />
+      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-business-control-center-compile->ipp-portal-common-compile" />
+      <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-business-control-center-compile->ipp-views-common-compile" />
+      <dependency org="org.icepdf" name="icepdf-core" rev="4.0.1" conf="ipp-business-control-center-compile->default" />
+      <dependency org="org.icefaces" name="icefaces-ee-infinity04" rev="EE-1.8.2.GA_P03" conf="ipp-business-control-center-compile->default" >
+         <exclude org="javax.faces" module="jsf-api" />
+         <exclude org="javax.faces" module="jsf-impl" />
+         <exclude org="commons-logging" module="commons-logging-api"/>
+         <exclude org="commons-beanutils" module="commons-beanutils"/>
+         <exclude org="backport-util-concurrent" module="backport-util-concurrent"/>
+      </dependency>
+      <dependency org="org.icefaces" name="icefaces-comps-ee-infinity04" rev="EE-1.8.2.GA_P03" conf="ipp-business-control-center-compile->default">
+         <exclude org="org.icefaces" module="icefaces-ee" />
+      </dependency>
+      <dependency org="org.icefaces" name="icefaces-facelets-ee-infinity04" rev="EE-1.8.2.GA_P03" conf="ipp-business-control-center-compile->default">
+         <exclude org="org.icefaces" module="icefaces-ee" />
+      </dependency>
+
+      <!-- ipp-business-control-center-runtime -->
+      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-business-control-center-runtime->web-client-module-runtime" />
+      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-business-control-center-runtime->ipp-portal-common-runtime" />
+      <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-business-control-center-runtime->ipp-views-common-runtime" />
+      <dependency org="com.infinity.bpm" name="ipp-graphics-common" rev="${ipp.version.full}" conf="ipp-business-control-center-runtime->ipp-graphics-common-runtime" />
+      <dependency org="net.sourceforge.jexcelapi" name="jxl" rev="2.6.10" conf="ipp-business-control-center-runtime->default">
+         <exclude org="log4j" module="log4j"/>
+      </dependency>
+
+      <!-- ipp-business-control-center-provided -->
+      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-business-control-center-provided->jsf-api-module-compile" />
+      <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="ipp-business-control-center-provided, compile->default" />
+      <dependency org="javax.el" name="el-api" rev="1.0" conf="ipp-business-control-center-provided, compile->default" />
+
+      <!-- compile -->
+      <dependency org="javax.faces" name="jsf-api" rev="1.1_02" conf="compile->default" />
+
+      <!-- test -->
+      <dependency org="junit" name="junit" rev="3.8.1" conf="test->default" />
+
+      <override org="commons-beanutils" module="commons-beanutils" rev="1.8.0" />
+      <override org="commons-collections" module="commons-collections" rev="3.1" />
+      <override org="commons-digester" module="commons-digester" rev="1.8" />
+      <override org="commons-logging" module="commons-logging" rev="1.1.1" />
+   </dependencies>
+</ivy-module>

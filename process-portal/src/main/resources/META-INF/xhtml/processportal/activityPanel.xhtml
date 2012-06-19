@@ -1,0 +1,64 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+<ice:panelGroup rendered="#{ippActivityPanelController.loadSuccessful}">
+	<pc:automationTag value="auto-PP-ActivityPnl-Frm" standAlone="false"/>
+	<ice:panelGroup>
+      <c:choose>
+         <c:when test="#{('ui:include' == ippActivityPanelController.panelIntegrationStrategy) and not empty ippActivityPanelController.panelUrl}">
+            <c:choose>
+               <c:when test="#{'manual' == ippActivityPanelController.panelUrl}">
+               	  <!-- For now use the default style from new form generation -->
+	              <ice:outputStyle href="/plugins/stardust-ui-form-jsf/public/css/stardust-ui-form-jsf.css" />
+ 				  <ice:outputStyle href="/plugins/processportal/css/stardust-ui-form-jsf-override.css" />
+	              <f:subview id="#{activityDetailsBean.formId}">
+					<ice:panelGrid binding="#{activityDetailsBean.rootGrid}" style="width: 100%;" />
+                  </f:subview>
+               </c:when>
+               <c:otherwise>
+                  <ui:insert name="faceletsActivityPanel">
+                     <ui:include id="activityPanel-workAreaInclude"
+                        src="#{ippActivityPanelController.panelUrl}" />
+                  </ui:insert>
+               </c:otherwise>
+            </c:choose>
+         </c:when>
+   
+         <c:when test="#{('iframe' == ippActivityPanelController.panelIntegrationStrategy) or ('redirect' == ippActivityPanelController.panelIntegrationStrategy)}">
+            <!-- provide hooks to submit page per Javascript -->
+            <div id="ippProcessPortalActivityPanelRemoteControl">
+               <h:inputHidden value="#{ippActivityPanelController.remoteControlActivityStateChangeCommandId}" />
+            </div>
+            
+            <c:if test="#{('iframe' == ippActivityPanelController.panelIntegrationStrategy)}">
+	            <c:set var="framePanelUrl" value="#{ippActivityPanelController.iframePanelUrl}" />
+	        </c:if>
+            <c:if test="#{('redirect' == ippActivityPanelController.panelIntegrationStrategy)}">
+	            <c:set var="framePanelUrl" value="#{facesContext.externalContext.requestContextPath}/#{ippActivityPanelController.iframePanelUrl}" />
+	        </c:if>
+
+			<!-- this blank element will be used to position the content iFrame overlay -->
+			<div id="ippActivityPanelAnchor" style="width: 100%; height: 1500px;"></div>
+         </c:when>
+
+         <c:otherwise>
+		 </c:otherwise>
+      </c:choose>
+
+	</ice:panelGroup>
+</ice:panelGroup>
+<ice:panelGroup rendered="#{not ippActivityPanelController.loadSuccessful}">
+    <ice:panelGroup styleClass="clearing" />
+    <ice:outputText styleClass="msgError" rendered="#{not ippActivityPanelController.supportsWeb}"
+    	value="#{processportal_msgPropsBean['views.activityPanel.notSupportedOnWeb']}" />
+    <ice:outputText styleClass="msgError" rendered="#{not empty activityDetailsBean.loadUnsuccessfulMsg}"
+    	value="#{activityDetailsBean.loadUnsuccessfulMsg}" /> 
+    <ice:panelGroup styleClass="clearing" />
+</ice:panelGroup>
+         
+</f:view>

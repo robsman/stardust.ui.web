@@ -1,0 +1,68 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates mandatory attributes)
+	component* = Instance of org.eclipse.stardust.ui.web.viewscommon.user.UserAutocompleteMultiSelector
+	-->
+	<c:choose>
+		<c:when test="#{pc:instanceOf(component, 'org.eclipse.stardust.ui.web.viewscommon.user.UserAutocompleteMultiSelector')}">
+			<c:if test="#{not component.singleSelect}">
+				<ice:panelCollapsible expanded="#{component.showSelectedList}" toggleOnClick="true">
+					<f:facet name="header">
+						<ice:panelGroup>
+							<ice:outputText style="padding-left: 5px;"
+								value="#{views_common_msgPropsBean['views.userAutocomplete.selectedUsers']}" />
+						</ice:panelGroup>
+					</f:facet>
+					
+					<pc:automationTag value="auto-COM-UserMultiSel-UserTable"/>
+						<table class="autoCompTable">
+							<tbody>
+								<tr class="autoCompTableHeaderRow">
+									<td><ice:outputText
+											value="" />
+									</td>
+									<td><ice:outputText
+											value="#{views_common_msgPropsBean['views.participantAutocomplete.user.table.column.name']}" />
+									</td>
+									<td><ice:outputText
+											value="" />
+									</td>
+								</tr>
+								<c:forEach var="user" items="#{component.selectedUsersTable.list}" varStatus="loopStatus">
+									<tr class="${loopStatus.index % 2 == 0 ? 'evenTabRow' : 'oddTabRow'}">
+										<td>
+											<ice:graphicImage value="#{user.imageURL}" width="24px"
+												height="24px" />
+										</td>
+										<td>
+											<ice:outputText value="#{user.displayLabel}" />
+										</td>
+										<td class="autoCompTableRemoveCol">
+											<ice:commandLink
+												action="#{user.removeUser}" disabled="#{not user.removeable}">
+											<pc:automationTag value="auto-COM-UserMultiSel-ActionsRemove"
+												standAlone="false" />
+											<ice:graphicImage
+												value="/plugins/common/images/tab-bttn-close.png"
+												styleClass="#{(not user.removeable) ? 'iceCmdBtn-dis' : 'toolbar-button'}" />
+											</ice:commandLink>
+										</td>
+								</tr>
+								</c:forEach>
+							</tbody>
+						</table>
+				
+				</ice:panelCollapsible>
+			</c:if>
+		</c:when>
+		<c:otherwise>
+			<ice:outputText value="component is not instanceof org.eclipse.stardust.ui.web.viewscommon.user.UserAutocompleteMultiSelector" />		
+		</c:otherwise>
+	</c:choose>
+</f:view>

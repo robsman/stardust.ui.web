@@ -1,0 +1,18 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid columns="1">
+		<ice:commandLink title="#{overviewBean.messages['update']}" 
+	            action="#{overviewBean.update}" partialSubmit="true">
+	        <pc:automationTag value="auto-ADM-Overview-Refresh" standAlone="false"/>
+			<ice:graphicImage value="/plugins/admin-portal/images/icons/arrow_refresh.png"
+				styleClass="toolbar-button" />
+		</ice:commandLink>
+	</ice:panelGrid>
+
+</f:view>

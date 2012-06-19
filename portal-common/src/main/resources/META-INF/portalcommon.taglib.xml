@@ -1,0 +1,116 @@
+<?xml version="1.0"?><!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<!DOCTYPE facelet-taglib PUBLIC
+  "-//Sun Microsystems, Inc.//DTD Facelet Taglib 1.0//EN"
+  "http://java.sun.com/dtd/facelet-taglib_1_0.dtd">
+
+<facelet-taglib>
+    <namespace>http://www.sungard.de/carnot/web/portal-plugin/portalcommon</namespace>
+    
+   <!-- ********** CLASS TAGS ********** -->
+   <tag>
+      <tag-name>tabScoped</tag-name>
+      <component>
+         <component-type>org.eclipse.stardust.ui.web.common.app.tags.TabScopedComponent</component-type>
+         <handler-class>org.eclipse.stardust.ui.web.common.app.tags.TabScopedHandler</handler-class>
+      </component>
+   </tag>
+
+	<!-- ********** FACET TAGS ********** -->
+    <tag>
+        <tag-name>genericDataTable</tag-name>
+        <source>tags/genericDataTable.xhtml</source>
+    </tag>
+    <tag>
+        <tag-name>genericDataTableColumn</tag-name>
+        <source>tags/genericDataTableColumn.xhtml</source>
+    </tag>
+    <tag>
+        <tag-name>treeTableTreeColumn</tag-name>
+        <source>tags/treeTableTreeColumn.xhtml</source>
+    </tag>
+    <tag>
+        <tag-name>tableFilter</tag-name>
+        <source>tags/tableFilter.xhtml</source>
+    </tag>
+    <tag>
+        <tag-name>tableFilterData</tag-name>
+        <source>tags/tableFilterData.xhtml</source>
+    </tag>
+    <tag>
+        <tag-name>columnSelectorFilter</tag-name>
+        <source>tags/columnSelectorFilter.xhtml</source>
+    </tag>
+    <tag>
+        <tag-name>automationTag</tag-name>
+        <source>tags/automationTag.xhtml</source>
+    </tag>
+	<tag>
+		<tag-name>wizard</tag-name>
+		 <source>tags/wizard.xhtml</source>	 
+	</tag>    
+
+    <!-- ********** FUNCTIONS ********** -->
+    <function>
+        <function-name>getStackTrace</function-name>
+        <function-class>org.eclipse.stardust.ui.web.common.util.FacesUtils</function-class>
+        <function-signature>java.lang.String getStackTrace(java.lang.Throwable)</function-signature>
+    </function>
+    
+    <function>
+        <function-name>invokeMethod</function-name>
+        <function-class>org.eclipse.stardust.ui.web.common.util.ReflectionUtils</function-class>
+        <function-signature>java.lang.Object invokeMethod(java.lang.Object, java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <function-name>invokeGetterMethod</function-name>
+        <function-class>org.eclipse.stardust.ui.web.common.util.ReflectionUtils</function-class>
+        <function-signature>java.lang.Object invokeGetterMethod(java.lang.Object, java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <function-name>isToolbarEnabledForView</function-name>
+        <function-class>org.eclipse.stardust.ui.web.common.util.FacesUtils</function-class>
+        <function-signature>java.lang.Boolean isToolbarEnabledForView(org.eclipse.stardust.ui.web.common.app.View, org.eclipse.stardust.ui.web.common.ToolbarSection)</function-signature>
+    </function>
+
+	<function>
+		<function-name>instanceOf</function-name>
+		<function-class>org.eclipse.stardust.ui.web.common.util.FacesUtils</function-class>
+		<function-signature>java.lang.Boolean instanceOf(java.lang.Object, java.lang.String)</function-signature>
+	</function>
+	
+    <function>
+        <function-name>contains</function-name>
+        <function-class>org.eclipse.stardust.ui.web.common.util.FacesUtils</function-class>
+        <function-signature>java.lang.Boolean contains(java.util.List, java.lang.Object)</function-signature>
+    </function>
+
+    <function>
+        <function-name>contains</function-name>
+        <function-class>org.eclipse.stardust.ui.web.common.util.FacesUtils</function-class>
+        <function-signature>java.lang.Boolean contains(java.lang.String, java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <function-name>endsWith</function-name>
+        <function-class>org.eclipse.stardust.ui.web.common.util.FacesUtils</function-class>
+        <function-signature>java.lang.Boolean endsWith(java.lang.String, java.lang.String)</function-signature>
+    </function>
+
+	<function>
+		<function-name>getObjectPropertyMapping</function-name>
+		<function-class>org.eclipse.stardust.ui.web.common.util.FacesUtils</function-class>
+		<function-signature>java.util.Map getObjectPropertyMapping(java.lang.Object, java.lang.String)</function-signature>
+	</function>
+</facelet-taglib>

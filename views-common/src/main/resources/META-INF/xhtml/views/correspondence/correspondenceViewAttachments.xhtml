@@ -1,0 +1,124 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<!--  Required Parameters -
+		bean* - Instance of CorrespondenceAttachments.java 		
+	 -->
+
+<ice:panelPopup draggable="true" resizable="false" modal="true"
+	rendered="#{bean.visible}"
+	styleClass="popupDialog" style="width:500px; height:450px;"
+	autoCentre="true" positionOnLoadOnly="true" clientOnly="true">
+
+	<f:facet name="header">
+		<table cellpadding="0" cellspacing="0" width="475px;"><tr>
+			<td width="100%">
+				<ice:outputText styleClass="headerText" rendered="#{bean.showProcessDocuments}"
+					value="#{views_common_msgPropsBean['views.common.documentpicker.selectAttachments.title']}" />
+				<ice:outputText styleClass="headerText" rendered="#{!bean.showProcessDocuments}"
+					value="#{views_common_msgPropsBean['views.common.documentpicker.selectTemplates.title']}" />
+			</td>
+			<td style="text-align: right">
+				<pc:automationTag value="auto-COM-CorrView-ViewAtt-Header"/>
+				<ice:commandButton image="/plugins/common/images/dialog-windowbttn-close.png"
+					action="#{bean.closePopup}" immediate="true"
+					title="#{common_msgPropsBean['common.close']}"
+					styleClass="windowClose" />
+			</td>
+		</tr></table>
+	</f:facet>
+
+	<f:facet name="body">
+		<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+			cellspacing="0" renderNorth="false" renderEast="false"
+			renderSouth="true" renderWest="false" renderCenter="true" style="width: 100%; height: auto;">
+			<f:facet name="center">
+				<ice:panelGrid columns="1"
+					style="text-align: left; width:100%; height:auto;">
+					<ice:panelGroup style="height:#{bean.showProcessDocuments ? '355px' : '320px'}; width:470px; overflow:auto; border:1px solid lightgray;">
+						<pc:automationTag value="auto-COM-CorrView-ViewAtt-ProcDocTree" />
+						<ice:tree value="#{bean.tree.model}" var="item"
+							hideRootNode="true" hideNavigation="true">
+							<ice:treeNode>
+								<f:facet name="icon">
+									<ice:panelGroup style="display: inline;">
+										<ice:panelGroup style="display: inline;"
+											styleClass="category-tree-category-icon"
+											rendered="#{item.userObject.referencingCategory}">
+											<ice:commandLink action="#{item.userObject.toggleExpansion}" immediate="true">
+												<h:graphicImage value="#{item.userObject.icon}" />
+											</ice:commandLink>
+										</ice:panelGroup>
+										<ice:panelGroup style="display: inline"
+											rendered="#{item.userObject.referencingItem}"
+											styleClass="category-tree-view-icon">
+											<ice:commandLink action="#{item.userObject.itemClicked}" immediate="true"
+												disabled="#{!item.userObject.item.itemObject.selectable}">
+												<h:graphicImage value="#{item.userObject.icon}" />
+											</ice:commandLink>
+										</ice:panelGroup>
+									</ice:panelGroup>
+								</f:facet>
+								<f:facet name="content">
+									<ice:panelGroup style="display: inline;" >
+										<ice:panelGroup style="display: inline;"
+											styleClass="category-tree-category-label"
+											rendered="#{item.userObject.referencingCategory}">
+											<ice:panelGroup style="display: inline">
+												<ice:commandLink action="#{item.userObject.toggleExpansion}" immediate="true">
+														<pc:automationTag
+															value="auto-COM-CorrView-ViewAtt-ProcDocTree-RefCategory"
+															standAlone="false" />
+														<ice:outputText value="#{item.userObject.category.label}" />
+												</ice:commandLink>
+											</ice:panelGroup>
+										</ice:panelGroup>
+										<ice:panelGroup style="display: inline;"
+											styleClass="category-tree-view-label"
+											rendered="#{item.userObject.referencingItem}">
+											<ice:panelGroup style="display: inline" effect="#{item.userObject.item.itemObject.clickEffect}">
+												<ice:commandLink action="#{item.userObject.itemClicked}" immediate="true"
+													disabled="#{!item.userObject.item.itemObject.selectable}">
+													<pc:automationTag
+															value="auto-COM-CorrView-ViewAtt-ProcDocTree-RefItem"
+															standAlone="false" />
+													<ice:outputText value="#{item.userObject.item.label}"
+														escape="false" />
+												</ice:commandLink>
+											</ice:panelGroup>
+										</ice:panelGroup>
+									</ice:panelGroup>
+								</f:facet>
+							</ice:treeNode>
+						</ice:tree>
+					</ice:panelGroup>
+					<ice:panelGroup rendered="#{!bean.showProcessDocuments}">
+						<ice:selectOneRadio partialSubmit="true"
+							value="#{bean.addTemplatePosition}">
+								<pc:automationTag
+									value="auto-COM-CorrView-ViewAtt-ProcDocTree-AddTemplate"
+									standAlone="false" />
+								<f:selectItem itemLabel="#{views_common_msgPropsBean['views.common.documentpicker.addTop.label']}"
+								itemValue="TOP" />
+							<f:selectItem itemLabel="#{views_common_msgPropsBean['views.common.documentpicker.addBottom.label']}"
+								itemValue="BOTTOM" />
+						</ice:selectOneRadio>
+					</ice:panelGroup>
+				</ice:panelGrid>
+			</f:facet>
+			<f:facet name="south">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-COM-CorrView-ViewAtt-ProcDocTree-BtnsBar" standAlone="false" />
+					<ice:commandButton value="#{common_msgPropsBean['common.close']}"
+						action="#{bean.closePopup}" immediate="true"
+						styleClass="button" />
+				</ice:panelGroup>
+			</f:facet>
+		</ice:panelBorder>
+	</f:facet>
+</ice:panelPopup>
+</f:view>

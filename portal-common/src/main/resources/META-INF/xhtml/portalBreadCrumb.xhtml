@@ -1,0 +1,27 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<div class="breadcrumbs">
+		<c:if test="#{not empty ippPortalApp.activeViewBreadCrumb}">
+			<ice:form partialSubmit="false">
+				<c:forEach items="#{ippPortalApp.activeViewBreadCrumb}" var="view" varStatus="loopStatus">
+					<ice:commandLink
+							action="#{ippPortalApp.openView}"
+							value="#{view.label}">
+						<pc:automationTag value="auto-FW-ViewBreadCrumbLink" standAlone="false" />
+						<f:param name="viewId" value="#{view.viewId}" />
+						<f:param name="viewIdentity" value="#{view.identityParams}" />
+						<f:param name="createView" value="#{false}" />
+					</ice:commandLink>
+				</c:forEach>
+				<ice:outputText value="#{ippPortalApp.activeView.label}" styleClass="breadcrumbsFocus" />
+			</ice:form>
+		</c:if>
+	</div>
+
+</f:view>

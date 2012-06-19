@@ -1,0 +1,44 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates mandatory attributes)
+	component* = Instance of org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityACAutocompleteMultiSelector
+	-->
+	<c:choose>
+		<c:when
+			test="#{pc:instanceOf(component, 'org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityACAutocompleteMultiSelector')}">
+			<ice:panelCollapsible expanded="#{component.showAutocompletePanel}"
+				toggleOnClick="true">
+				<f:facet name="header">
+					<ice:panelGroup>
+						<ice:outputText style="padding-left: 5px;"
+							value="#{processportal_msgPropsBean['views.qualityAssuranceActivityDialog.selectQACodes']}" />
+					</ice:panelGroup>
+				</f:facet>
+				<ice:selectInputText rows="#{component.maxRows}"
+					value="#{component.searchValue}"
+					valueChangeListener="#{component.searchValueChanged}"
+					disabled="#{component.disabled}" partialSubmit="false" width="95%"
+					listVar="qualityACode" listValue="#{component.matchingData}">
+					<pc:automationTag value="auto-PP-QualityAssuranceCodesMultiSel"
+						standAlone="false" />
+					<f:facet name="selectInputText">
+						<ice:panelGrid columns="2">
+							<ice:outputText value="#{qualityACode.code} - #{qualityACode.description}"
+								escape="false" style="white-space:normal;" />
+						</ice:panelGrid>
+					</f:facet>
+				</ice:selectInputText>
+			</ice:panelCollapsible>
+		</c:when>
+		<c:otherwise>
+			<ice:outputText
+				value="component is not instanceof org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityACAutocompleteMultiSelector" />
+		</c:otherwise>
+	</c:choose>
+</f:view>

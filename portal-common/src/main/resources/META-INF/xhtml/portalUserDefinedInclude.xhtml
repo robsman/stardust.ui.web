@@ -1,0 +1,37 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ********** Documentation **********
+	# Attributes ('*' indicates mandatory attributes)
+		includeFilePath -> Include File Path
+	-->
+
+	<c:catch var="catchException">
+		<ui:include src="#{includeFilePath}" />
+	</c:catch>
+	<c:if test="#{catchException != null}">
+		<h3>#{common_msgPropsBean['portalFramework.error.unhandledError.header']}</h3>
+		<ice:outputText value="#{catchException}" />
+		<ice:panelGroup styleClass="clearing" />
+		
+		<ice:outputText style="color: red" 
+			value="#{common_msgPropsBean['portalFramework.error.unhandledError.footer']}" />
+		
+		<ice:panelGroup styleClass="clearing" />
+		<ice:panelCollapsible expanded="false" toggleOnClick="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText value="#{common_msgPropsBean['portalFramework.error.unhandledError.technicalDetails']}" />
+				</ice:panelGroup>
+			</f:facet>
+			<ice:panelGroup>
+				<ice:outputText value="#{pc:getStackTrace(catchException)}" />
+			</ice:panelGroup>
+		</ice:panelCollapsible>
+	</c:if>
+</f:view>

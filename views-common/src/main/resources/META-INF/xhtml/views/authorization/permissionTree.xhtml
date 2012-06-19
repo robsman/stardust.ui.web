@@ -1,0 +1,188 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<!-- Authorization Search box
+		<ice:panelGroup>
+			<ice:inputText value="Search" disabled="true" />
+		</ice:panelGroup> 	
+	-->
+	<ice:panelGroup styleClass="clearing" />
+
+	<!-- Authorization Tree -->
+
+	<pc:automationTag value="auto-COM-PermsTree" />
+	<ice:tree id="tree"
+		value="#{authorizationManagerBean.permissionTreeModel}" var="item"
+		hideRootNode="true" hideNavigation="false"
+		imageDir="../../xmlhttp/css/xp/css-images/"
+		actionListener="#{authorizationManagerBean.nodeExpandCollapse}">
+		<ice:treeNode>
+			<!-- Tree node icons -->
+			<f:facet name="icon">
+				<ice:panelGroup style="display: inline;">
+
+					<ice:panelGroup style="display: inline; cursor: move;"
+						draggable="true" dragOptions="dragGhost"
+						dragValue="#{item.userObject}"
+						dragMask="dragging,drag_cancel,hover_start,hover_end"
+						dropMask="dragging,drag_cancel,hover_start,hover_end"
+						dragListener="#{authorizationManagerBean.dragObjectListener}"
+						rendered="#{item.userObject.nodeType eq 'ROLE_UNSCOPED'}"
+						menuPopup="menuPopupUser">
+
+						<ice:commandLink
+							actionListener="#{authorizationManagerBean.permissionNodeSelected}"
+							style="text-decoration: none">
+							<pc:automationTag value="auto-COM-PermsTree-User"
+								standAlone="false" />
+							<f:attribute name="node" value="#{item.userObject}" />
+							<h:graphicImage value="#{item.userObject.icon}"
+								style="margin-right: 5px;" />
+
+						</ice:commandLink>
+
+
+						<ice:menuPopup id="menuPopupUser" hideOn="mouseout">
+							<ice:menuItem id="removeParticipant"
+								icon="/plugins/admin-portal/images/icons/user_delete.png"
+								value="#{authorizationManagerBean.messages['permission.contextMenu.removeParticipant']}"
+								actionListener="#{authorizationManagerBean.contextMenuAction}">
+								<pc:automationTag
+									value="auto-COM-PermsTree-User-Rem"
+									standAlone="false" />
+								<f:attribute name="node" value="#{item.userObject}" />
+								<f:attribute name="action" value="#{authorizationManagerBean.CONTEXT_ACTION.REMOVE_PARTICIPANT}" />
+							</ice:menuItem>
+							<ice:menuItem id="copy"
+								value="#{authorizationManagerBean.messages['permission.contextMenu.copy']}"
+								rendered="true" actionListener="#{authorizationManagerBean.contextMenuAction}">
+								<pc:automationTag
+									value="auto-COM-PermsTree-User-Copy"
+									standAlone="false" />
+								<f:attribute name="node" value="#{item.userObject}" />
+								<f:attribute name="action" value="#{authorizationManagerBean.CONTEXT_ACTION.COPY}" />
+							</ice:menuItem>
+
+						</ice:menuPopup>
+					</ice:panelGroup>
+
+				</ice:panelGroup>
+			</f:facet>
+
+			<!-- Tree node content -->
+			<f:facet name="content">
+				<ice:panelGroup style="display: inline;">
+
+					<!-- Permission Node -->
+					<ice:panelGroup style="display: inline;"
+						rendered="#{item.userObject.nodeType eq 'PERMISSION'}"
+						menuPopup="menuPopupRoot">
+
+						<ice:commandLink
+							actionListener="#{authorizationManagerBean.permissionNodeSelected}"
+							style="text-decoration: none">
+							<pc:automationTag value="auto-COM-PermsTree-Permission"
+								standAlone="false" />
+							<f:attribute name="node" value="#{item.userObject}" />
+							<h:graphicImage value="#{item.userObject.icon}"
+								style="margin-right: 5px;" />
+							<ice:outputText value="#{item.userObject.text}"
+								rendered="#{item.userObject.selected}"
+								style="font-weight: bold;" />
+							<ice:outputText value="#{item.userObject.text}"
+								rendered="#{!item.userObject.selected}" />								
+						</ice:commandLink>
+
+						<ice:menuPopup id="menuPopupRoot"  styleClass="menuPopupMed">							
+							<ice:menuItem id="addAllParticipants" 
+								disabled="#{item.userObject.containsAllParticipants}"
+								icon="/plugins/views-common/images/icons/world_go.png"
+								value="#{authorizationManagerBean.messages['permission.contextMenu.addAllParticipants']}"
+								actionListener="#{authorizationManagerBean.contextMenuAction}">
+								<pc:automationTag
+									value="auto-COM-PermsTree-Perms-AddAll"
+									standAlone="false" />
+								<f:attribute name="node" value="#{item.userObject}" />
+								<f:param name="action" value="ADD_ALL_PARTICIPANT" />								
+							</ice:menuItem>
+							 <ice:menuItem id="restoreDefaultParticipant" 
+								icon="/plugins/views-common/images/icons/world_default.png"
+								disabled="#{item.userObject.containsDefaultParticipants}"
+								value="#{authorizationManagerBean.messages['permission.contextMenu.restoreDefaultParticipant']}"
+								actionListener="#{authorizationManagerBean.contextMenuAction}">
+								<pc:automationTag
+									value="auto-COM-PermsTree-Perms-RestoreDef"
+									standAlone="false" />
+								<f:attribute name="node" value="#{item.userObject}" />
+								<f:param name="action" value="RESTORE_DEFAULT_PARTICIPANT" />								
+							</ice:menuItem>  
+							<ice:menuItem id="paste" 
+								icon="/plugins/views-common/images/icons/paste_plain.png"
+								disabled="#{!authorizationManagerBean.pasteActionEnable}"
+								value="#{authorizationManagerBean.messages['permission.contextMenu.paste']}"
+								actionListener="#{authorizationManagerBean.contextMenuAction}">
+								<pc:automationTag
+									value="auto-COM-PermsTree-Perms-Paste"
+									standAlone="false" />
+								<f:attribute name="node" value="#{item.userObject}" />
+								<f:param name="action" value="PASTE" />
+							</ice:menuItem>
+						</ice:menuPopup>
+					</ice:panelGroup>
+
+					<!-- User Node -->
+
+					<ice:panelGroup style="display: inline;"
+						rendered="#{item.userObject.nodeType eq 'ROLE_UNSCOPED'}"
+						menuPopup="menuPopupUser">
+
+						<ice:commandLink
+							actionListener="#{authorizationManagerBean.permissionNodeSelected}"
+							style="text-decoration: none">
+							<pc:automationTag value="auto-COM-PermsTree-User"
+								standAlone="false" />
+							<f:attribute name="node" value="#{item.userObject}" />
+							<ice:outputText value="#{item.userObject.text}"
+								rendered="#{item.userObject.selected}"
+								style="font-weight: bold;" />
+							<ice:outputText value="#{item.userObject.text}"
+								rendered="#{!item.userObject.selected}" />
+						</ice:commandLink>
+
+
+						<ice:menuPopup id="menuPopupUser" hideOn="mouseout">
+							<ice:menuItem id="removeParticipant"
+								icon="/plugins/views-common/images/icons/world_remove.png"
+								value="#{authorizationManagerBean.messages['permission.contextMenu.removeParticipant']}"
+								action="#{participantTree.removeUserFromParticipant}">
+								<pc:automationTag
+									value="auto-COM-PermsTree-User-Rem"
+									standAlone="false" />
+								<f:attribute name="node" value="#{item.userObject}" />
+								<f:param name="action" value="REMOVE_PARTICIPANT" />
+							</ice:menuItem>
+							<ice:menuItem id="copy"
+								icon="/plugins/views-common/images/icons/copy.gif"
+								value="#{authorizationManagerBean.messages['permission.contextMenu.copy']}"
+								action="#{participantTree.modifyUser}">
+								<pc:automationTag
+									value="auto-COM-PermsTree-User-Copy"
+									standAlone="false" />
+								<f:attribute name="node" value="#{item.userObject}" />
+								<f:param name="action" value="COPY" />
+							</ice:menuItem>
+
+						</ice:menuPopup>
+					</ice:panelGroup>
+
+
+				</ice:panelGroup>
+			</f:facet>
+		</ice:treeNode>
+	</ice:tree>
+</f:view>

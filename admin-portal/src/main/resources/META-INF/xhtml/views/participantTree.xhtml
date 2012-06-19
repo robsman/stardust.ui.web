@@ -1,0 +1,340 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<ui:include src="createOrModifyDepartment.xhtml" />
+		<ui:include src="#{genericPopup.includePath}" />
+		<ui:include src="/plugins/views-common/common/panelConfirmation.xhtml" />
+	</ice:panelGroup>
+
+	<link
+		href="#{facesContext.externalContext.requestContextPath}/plugins/views-common/css/context-portal.css"
+		rel="stylesheet" type="text/css" />
+	
+	<!-- Participant Tree Heading -->
+	<ice:panelGroup styleClass="heading">
+		<ice:outputText
+			value="#{participantMgmtBean.messages['participantTree.title']}" />
+	</ice:panelGroup>
+
+	<!-- Participant Tree Filter Bar -->
+	<ice:panelGroup>
+	<ui:repeat value="#{participantTree.onOffFilters}"
+			var="filterItem">
+			<ice:commandLink id="id_#{filterItem.name}" name="#{filterItem.name}"
+				actionListener="#{participantTree.applyFilter}"
+				style="vertical-align: middle;">
+				<pc:automationTag
+					value="auto-ADM-PartMgmtToolbar-#{filterItem.name}"
+					standAlone="false" />
+				<ice:graphicImage value="#{filterItem.imagePath}"
+					style="border: none; padding-right: 5px;" styleClass="#{filterItem.styleClass}"
+					title="#{filterItem.title}" />
+				<ice:message for="id_#{filterItem.name}"/>	
+			</ice:commandLink>
+			
+			<span class="toolbarGroupRight" style="padding-left: 2px; "/>
+		</ui:repeat>
+
+
+	</ice:panelGroup>
+	<ice:panelGroup styleClass="clearing" />
+	
+	<!-- Participant Tree -->
+	<pc:automationTag value="auto-ADM-PartMgmt-Tree"/>
+	<ice:tree id="tree"
+		value="#{participantTree.model}"
+		var="item"
+		hideRootNode="false"
+		hideNavigation="false"
+		imageDir="../../xmlhttp/css/xp/css-images/"
+		actionListener="#{participantTree.nodeExpandCollapse}">
+		<ice:treeNode>
+			<!-- Tree node icons -->
+			<f:facet name="icon">
+				<ice:panelGroup style="display: inline;">
+					<ice:panelGroup style="display: inline;"
+						rendered="#{item.userObject.referencesRoot}"
+						menuPopup="menuPopupRoot">
+						<h:graphicImage value="#{item.userObject.icon}" />
+					</ice:panelGroup>
+					<ice:panelGroup style="display: inline;"
+						rendered="#{item.userObject.referencesModel}">
+						<h:graphicImage value="#{item.userObject.icon}" />
+					</ice:panelGroup>
+					<ice:panelGroup style="display: inline;"
+						rendered="#{item.userObject.referencesScopedOrganization}">
+						<h:graphicImage value="#{item.userObject.icon}" />
+					</ice:panelGroup>
+					<ice:panelGroup style="display: inline;"
+						rendered="#{item.userObject.referencesImplicitlyScopedOrganization}">
+						<h:graphicImage value="#{item.userObject.icon}" />
+					</ice:panelGroup>
+					<ice:panelGroup style="display: inline;"
+						rendered="#{item.userObject.referencesScopedRole}">
+						<h:graphicImage value="#{item.userObject.icon}" />
+					</ice:panelGroup>
+					<ice:panelGroup style="display: inline;"
+						rendered="#{item.userObject.referencesUnscopedOrganization}">
+						<h:graphicImage value="#{item.userObject.icon}" />
+					</ice:panelGroup>
+					<ice:panelGroup style="display: inline;"
+						rendered="#{item.userObject.referencesUnscopedRole}">
+						<h:graphicImage value="#{item.userObject.icon}" />
+					</ice:panelGroup>
+					<ice:panelGroup style="display: inline;"
+						rendered="#{item.userObject.referencesUserGroup}"
+						menuPopup="menuPopupUserGroup">
+						<h:graphicImage value="#{item.userObject.icon}" />
+					</ice:panelGroup>
+					<ice:panelGroup style="display: inline; cursor: move;"
+						draggable="true"
+						dragOptions="dragGhost"
+						dragValue="#{item.userObject.user}"
+						dragMask="dragging,drag_cancel,hover_start,hover_end"
+						dropMask="dragging,drag_cancel,hover_start,hover_end"
+						dragListener="#{participantTree.dragObjectListener}"
+						rendered="#{item.userObject.referencesUser}"
+						menuPopup="menuPopupUser">
+						<h:graphicImage value="#{item.userObject.icon}" />
+					</ice:panelGroup>
+					<ice:panelGroup style="display: inline;"
+						rendered="#{item.userObject.referencesDepartment}"
+						menuPopup="menuPopupDepartment">
+						<h:graphicImage value="#{item.userObject.icon}" />
+					</ice:panelGroup>
+					<ice:panelGroup style="display: inline;"
+						rendered="#{item.userObject.referencesDefaultDepartment}">
+						<h:graphicImage value="#{item.userObject.icon}" />
+					</ice:panelGroup>
+				</ice:panelGroup>
+			</f:facet>
+			
+			<!-- Tree node content -->
+			<f:facet name="content">
+				<ice:panelGroup style="display: inline;">
+
+					<ice:menuPopup id="participantTreeMenuPopup" hideOn="mouseout">
+						<ice:menuItem id="createUser"
+							icon="/plugins/admin-portal/images/icons/user_add.png"
+							value="#{participantMgmtBean.messages['participantTree.contextMenu.createUser']}"
+							actionListener="#{item.userObject.createUser}">
+							<pc:automationTag
+								value="auto-ADM-PartMgmt-Tree-MenuDlg-CreateUser"
+								standAlone="false" />
+						</ice:menuItem>
+					</ice:menuPopup>
+
+					<!-- Root Node -->
+					<ice:panelGroup
+						style="display: inline;"
+						rendered="#{item.userObject.referencesRoot}"
+						menuPopup="menuPopupRoot">
+						<ice:outputText value="#{item.userObject.text}"/>
+
+						<ice:menuPopup id="menuPopupRoot"
+							hideOn="mouseout">
+							<!-- This function is disabled intentionally as currently it is not supported -->
+							<ice:menuItem id="createUserGroup"
+								value="#{participantMgmtBean.messages['participantTree.contextMenu.createUserGroup']}"
+								rendered="false"
+								action="#{participantTree.createUserGroup}">
+							</ice:menuItem>
+						</ice:menuPopup>
+					</ice:panelGroup>
+
+					<!-- Model Node -->
+					<ice:panelGroup
+						style="display: inline;"
+						rendered="#{item.userObject.referencesModel}">
+						<ice:outputText value="#{item.userObject.text}"/>
+					</ice:panelGroup>
+
+					<!-- Non-Scoped Organization Node -->
+					<ice:panelGroup
+						style="display: inline;"
+						dropTarget="true"
+						dropValue="#{item.userObject}"
+						hoverclass="dropTargetHover"
+						rendered="#{item.userObject.referencesUnscopedOrganization}"
+						menuPopup="participantTreeMenuPopup">
+						<ice:outputText value="#{item.userObject.text}"/>
+					</ice:panelGroup>
+
+					<!-- Scoped Organization Node -->
+					<ice:panelGroup
+						style="display: inline;"
+						rendered="#{item.userObject.referencesScopedOrganization}"
+						menuPopup="menuPopupScopedOrganization">
+						<ice:outputText value="#{item.userObject.text}"/>
+
+						<ice:menuPopup id="menuPopupScopedOrganization"
+							hideOn="mouseout">
+							<ice:menuItem id="createDepartment"
+								value="#{participantMgmtBean.messages['participantTree.contextMenu.createDepartment']}"
+								actionListener="#{createOrModifyDepartmentBean.openDepartmentDialog}">
+								<pc:automationTag
+									value="auto-ADM-PartMgmt-Tree-MenuDlg-CreateDept"
+									standAlone="false" />
+								<f:attribute name="userObject"
+									value="#{item.userObject}" />
+							</ice:menuItem>
+						</ice:menuPopup>
+					</ice:panelGroup>
+
+					<!-- Implicitly Scoped Organization Node -->
+					<ice:panelGroup
+						style="display: inline;"
+						dropTarget="true"
+						dropValue="#{item.userObject}"
+						hoverclass="dropTargetHover"
+						rendered="#{item.userObject.referencesImplicitlyScopedOrganization}"
+						menuPopup="participantTreeMenuPopup">
+						<ice:outputText value="#{item.userObject.text}"/>
+					</ice:panelGroup>
+
+					<!-- Role Node -->
+					<ice:panelGroup
+						style="display: inline;"
+						dropTarget="true"
+						dropValue="#{item.userObject}"
+						hoverclass="dropTargetHover"
+						rendered="#{item.userObject.referencesUnscopedRole || item.userObject.referencesScopedRole}"
+						menuPopup="participantTreeMenuPopup">
+						<ice:outputText value="#{item.userObject.text}"/>
+					</ice:panelGroup>
+
+					<!-- UserGroup Node -->
+					<ice:panelGroup
+						style="display: inline;"
+						dropTarget="true"
+						dropValue="#{item.userObject}"
+						hoverclass="dropTargetHover"
+						rendered="#{item.userObject.referencesUserGroup}"
+						menuPopup="menuPopupUserGroup">
+						<ice:outputText value="#{item.userObject.text}"/>
+
+						<ice:menuPopup id="menuPopupUserGroup"
+							hideOn="mouseout">
+							<!-- This function is disabled intentionally as currently it is not supported -->
+							<ice:menuItem id="modifyUserGroup"
+								value="#{participantMgmtBean.messages['participantTree.contextMenu.modifyUserGroup']}"
+								rendered="false"
+								action="#{participantTree.modifyUserGroup}">
+								<f:param name="uuid"
+									value="#{item.userObject.uuid}" />
+							</ice:menuItem>
+							<!-- This function is disabled intentionally as currently it is not supported -->
+							<ice:menuItem id="invalidateUserGroup"
+								value="#{participantMgmtBean.messages['participantTree.contextMenu.invalidateUserGroup']}"
+								rendered="false"
+								action="#{participantTree.deleteUserGroup}">
+								<f:param name="uuid"
+									value="#{item.userObject.uuid}" />
+							</ice:menuItem>
+							<ice:menuItem id="createUser"
+								icon="/plugins/admin-portal/images/icons/user_add.png"
+								value="#{participantMgmtBean.messages['participantTree.contextMenu.createUser']}"
+								actionListener="#{item.userObject.createUser}">
+								<pc:automationTag
+									value="auto-ADM-PartMgmt-Tree-MenuDlg-CreateUser"
+									standAlone="false" />
+							</ice:menuItem>
+						</ice:menuPopup>
+					</ice:panelGroup>
+
+					<!-- User Node -->
+					<ice:panelGroup
+						style="display: inline;"
+						rendered="#{item.userObject.referencesUser}"
+						menuPopup="menuPopupUser">
+						<ice:outputText styleClass="#{item.userObject.highlightStyleClass}" value="#{item.userObject.text}"/>
+
+						<ice:menuPopup id="menuPopupUser"
+							hideOn="mouseout">
+							<ice:menuItem id="removeUser" 
+								icon="/plugins/admin-portal/images/icons/user_delete.png"
+								value="#{participantMgmtBean.messages['participantTree.contextMenu.removeUserGrant']}"
+								action="#{participantTree.removeUserFromParticipant}">
+								<pc:automationTag
+									value="auto-ADM-PartMgmt-Tree-MenuDlg-RemoveUser"
+									standAlone="false" />
+								<f:param name="uuid"
+									value="#{item.userObject.uuid}" />
+							</ice:menuItem>
+							<!-- This function is disabled intentionally as currently it is not supported -->
+							<ice:menuItem id="modifyUser"
+								value="#{participantMgmtBean.messages['participantTree.contextMenu.modifyUser']}"
+								rendered="false"
+								action="#{participantTree.modifyUser}">
+								<f:param name="uuid"
+									value="#{item.userObject.uuid}" />
+							</ice:menuItem>
+							<!-- This function is disabled intentionally as currently it is not supported -->
+							<ice:menuItem id="invalidateUser"
+								value="#{participantMgmtBean.messages['participantTree.contextMenu.invalidateUser']}"
+								rendered="false"
+								action="#{participantTree.deleteUser}">
+								<f:param name="uuid"
+									value="#{item.userObject.uuid}" />
+							</ice:menuItem>
+						</ice:menuPopup>
+					</ice:panelGroup>
+
+					<!-- Department Node -->
+					<ice:panelGroup
+						style="display: inline;"
+						dropTarget="true"
+						dropValue="#{item.userObject}"
+						hoverclass="dropTargetHover"
+						rendered="#{item.userObject.referencesDepartment}"
+						menuPopup="menuPopupDepartment">
+						<ice:outputText value="#{item.userObject.text}"/>
+
+						<ice:menuPopup id="menuPopupDepartment"
+							hideOn="mouseout">
+							<ice:menuItem id="modifyDepartment"
+								value="#{participantMgmtBean.messages['participantTree.contextMenu.modifyDepartment']}"
+								actionListener="#{createOrModifyDepartmentBean.openDepartmentDialog}">
+								<pc:automationTag
+									value="auto-ADM-PartMgmt-Tree-MenuDlg-ModifyDept"
+									standAlone="false" />
+								<f:attribute name="userObject"
+									value="#{item.userObject}" />
+							</ice:menuItem>
+							<ice:menuItem id="deleteDepartment"
+								value="#{participantMgmtBean.messages['participantTree.contextMenu.deleteDepartment']}"
+								actionListener="#{participantTree.deleteDepartment}">
+								<pc:automationTag
+									value="auto-ADM-PartMgmt-Tree-MenuDlg-DeleteDept"
+									standAlone="false" />
+								<f:attribute name="uuid"
+									value="#{item.userObject.uuid}" />
+							</ice:menuItem>
+							<ice:menuItem id="createUser"
+								icon="/plugins/admin-portal/images/icons/user_add.png"
+								value="#{participantMgmtBean.messages['participantTree.contextMenu.createUser']}"
+								actionListener="#{item.userObject.createUser}">
+							</ice:menuItem>
+						</ice:menuPopup>
+					</ice:panelGroup>
+					
+					<!-- Default Department Node -->
+					<ice:panelGroup
+						style="display: inline;"
+						dropTarget="true"
+						dropValue="#{item.userObject}"
+						hoverclass="dropTargetHover"
+						rendered="#{item.userObject.referencesDefaultDepartment}">
+						<ice:outputText value="#{item.userObject.text}"/>
+					</ice:panelGroup>
+				</ice:panelGroup>
+			</f:facet>
+		</ice:treeNode>
+	</ice:tree>
+</f:view>

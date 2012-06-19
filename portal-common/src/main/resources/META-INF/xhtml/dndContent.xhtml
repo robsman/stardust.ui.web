@@ -1,0 +1,28 @@
+<html>
+<head>
+<script>
+	function init()
+	{
+		parent.iDnD.setImageDragCallback(imgDragCallback);
+	}
+	
+	var imgDragCallback = function(imgSrc, txt)
+	{
+		document.getElementById('imgDiv').src = imgSrc;
+		document.getElementById('dragText').textContent = txt;
+		document.getElementById('dragText').innerText = txt;
+	}
+	
+</script>
+</head>
+<body onload="init();" style="height: 86%; width: 86%; overflow: hidden; margin-top: 5px; margin-left: 5px; margin-right: 5px; margin-bottom: 5px">
+	<div style="height: 100%; width: 100%;">
+		<table border="0px" width="100%" style="BACKGROUND-COLOR: transparent;">
+			<tr>
+				<td width="20%"><img id="imgDiv" src="" style="" /></td>
+				<td width="80%"><span id="dragText" style="font-family: Arial,Helvetica,sans-serif; font-size: 11px;"></span></td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

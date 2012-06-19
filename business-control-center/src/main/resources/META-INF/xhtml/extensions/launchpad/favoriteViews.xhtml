@@ -1,0 +1,65 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		 <ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
+			<ui:param name="bean" value="#{favoriteManagementViews}" />
+			<ui:param name="title" value="#{favoriteManagementViews.messages['title']}" />
+			<ui:param name="collapsible" value="true" />
+			<ui:param name="showRefreshLink" value="false" />
+			<ui:param name="automationTag" value="auto-BCC-LP-MyFavViewPnl" />
+		</ui:include> 
+	</ice:panelGroup>
+	<ice:panelGrid columns="1" rendered="#{favoriteManagementViews.expanded}">
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-BCC-LP-ProcOverviewView" standAlone="false"/>
+			<f:param name="viewId" value="processOverviewView" />
+			<ice:outputText value="#{messages_bcc['views.processOverviewView.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-BCC-LP-ProcSrchView" standAlone="false"/>
+			<f:param name="viewId" value="processSearchView" />
+			<ice:outputText value="#{messages_bcc['views.processSearchView.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-BCC-LP-CompActView" standAlone="false"/>
+			<f:param name="viewId" value="completedActivities" />
+			<ice:outputText value="#{messages_bcc['views.completedActivities.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-BCC-LP-ResAvailabilityView" standAlone="false"/>
+			<f:param name="viewId" value="resourceAvailabilityView" />
+			<ice:outputText value="#{messages_bcc['views.resourceAvailabilityView.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" /> 
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-BCC-LP-RoleAssignmentView" standAlone="false"/>
+			<f:param name="viewId" value="roleAssignmentView" />
+			<ice:outputText value="#{messages_bcc['views.roleAssignmentView.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-BCC-LP-ReportMgrView" standAlone="false"/>
+			<f:param name="viewId" value="myReportsView" />
+			<ice:outputText
+				value="#{myReportsPanelBean.messages['reportManager.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-BCC-LP-ActivityCriticalityMgrView" standAlone="false"/>
+			<f:param name="viewId" value="activityCriticalityManagerView" />
+			<ice:outputText
+				value="#{messages_bcc['views.activityCriticalityManagerView.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+	</ice:panelGrid>
+	
+</f:view>

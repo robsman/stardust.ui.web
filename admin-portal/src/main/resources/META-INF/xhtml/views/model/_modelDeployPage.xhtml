@@ -1,0 +1,128 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+
+
+	<!-- model file upload -->
+	<ice:panelGroup>
+		<ice:panelCollapsible expanded="true">
+
+			<f:facet name="header">
+				<ice:panelGroup style="text-align: left">
+					<ice:outputText style="text-align: left"
+						value="#{ messages_admin['views.deploymodel.selectFile']}" />
+				</ice:panelGroup>
+			</f:facet>
+
+
+
+			<!-- added  submitOnUpload="postUpload" ,   http://jira.icefaces.org/browse/ICE-4456 -->
+			<pc:automationTag value="auto-ADM-ModelDeployDlg-FileSel"/>
+			<ice:inputFile width="600" autoUpload="#{true}"
+				disabled="#{!modelDeploymentDialogBean.deploymentPage.fileUploadEnable }"
+				submitOnUpload="postUpload"
+				actionListener="#{modelDeploymentDialogBean.deploymentPage.uploadFile}" rendered="#{modelDeploymentDialogBean.allowBrowse}"/>
+			
+			<pc:automationTag value="auto-ADM-ModelDeployDlg-DeployModelTbl"/>
+			<pc:genericDataTable
+				bean="#{modelDeploymentDialogBean.deploymentPage}"
+				id="modelDeploymentTable"
+				table="#{modelDeploymentDialogBean.deploymentPage.deployModelTable}"
+				displayNoRecordsFoundLabel="false" exportExcel="false"
+				exportCsv="false">
+			</pc:genericDataTable>
+
+
+
+		</ice:panelCollapsible>
+		<ice:panelGroup>
+			<ice:panelCollapsible id="linkPanel" expanded="true">
+				<f:facet name="header">
+					<ice:panelGroup style="text-align: left">
+						<ice:outputText id="linkHeader" style="text-align: left"
+							value="#{ messages_admin['views.deployModelView.deploymentOption.title']}" />
+					</ice:panelGroup>
+				</f:facet>
+
+				<ice:panelGroup>
+					<ice:panelGroup styleClass="msgError">
+						<ice:messages />
+					</ice:panelGroup>
+					<ice:panelGrid columns="2">
+						<ice:outputLabel
+							value="#{ messages_admin['views.deployModelView.validFrom.label']}#{messages_admin['common.colon']}"
+							styleClass="label-form" />
+						<ice:selectInputDate renderAsPopup="true" id="validFromDate"
+							value="#{modelDeploymentDialogBean.deploymentPage.deploymentOptions.validFrom}">
+							<pc:automationTag value="auto-ADM-ModelDeployDlg-ValidFrom" standAlone="false"/>
+							<f:converter converterId="customDateConverter" />
+						</ice:selectInputDate>
+
+						<ice:outputLabel
+							value="#{ messages_admin['views.deployModelView.ignoreWarning.label']}#{messages_admin['common.colon']}"
+							styleClass="label-form" />
+						
+						<pc:automationTag value="auto-ADM-ModelDeployDlg-IgnoreWarnings"/>
+						<ice:selectBooleanCheckbox
+							value="#{modelDeploymentDialogBean.deploymentPage.deploymentOptions.ignoreWarnings}"
+							partialSubmit="true" />
+
+
+
+
+
+					</ice:panelGrid>
+				</ice:panelGroup>
+				<br />
+				<ice:panelGroup>
+					<ice:panelGrid columns="1">
+						<ice:outputLabel
+							value="#{ messages_admin['views.deployModelView.deploymentComments.label']}#{messages_admin['common.colon']}"
+							styleClass="label-form" style="text-align: left" />
+					</ice:panelGrid>
+
+
+					<ice:panelGrid columns="1">
+						<ice:inputTextarea id="DeploymentComments"
+							value="#{modelDeploymentDialogBean.deploymentPage.deploymentOptions.comment}"
+							cols="100" rows="5">
+							<pc:automationTag value="auto-ADM-ModelDeployDlg-Comments" standAlone="false"/>
+							<f:validateLength maximum="300" />
+						</ice:inputTextarea>
+						<ice:message for="DeploymentComments" />
+					</ice:panelGrid>
+				</ice:panelGroup>
+
+
+			</ice:panelCollapsible>
+		</ice:panelGroup>
+
+		<ice:panelGrid columns="2">
+
+		</ice:panelGrid>
+	</ice:panelGroup>
+
+
+	<!-- 		<f:facet name="south">
+			<ice:panelGroup>
+				<ice:commandButton
+					value="#{ messages_admin['views.deployModelView.deployment.button.deploy']}"
+					disabled="#{not modelDeploymentDialogBean.deploymentPage.modelUploaded}"
+					action="#{modelDeploymentDialogBean.nextPage}" styleClass="button"
+					title="#{ messages_admin['views.deployModelView.deployment.button.deploy']}" />
+
+				<ice:commandButton
+					value="#{ messages_admin['views.deployModelView.deployment.button.cancel']}"
+					action="#{modelDeploymentDialogBean.closePopup}"
+					styleClass="button"
+					title="#{ messages_admin['views.deployModelView.deployment.button.cancel']}" />
+			</ice:panelGroup>
+		</f:facet>  -->
+
+
+
+</f:view>

@@ -1,0 +1,20 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ice:panelGrid columns="1">
+		<ice:commandLink actionListener="#{documentSearchBean.attachDocumentsToProcess}" disabled="#{documentSearchBean.selectedItemCount eq 0}">
+			<pc:automationTag
+				value="auto-COM-SrchDoc-DocSrchTbl-ToolbarAttachDocToProc" standAlone="false" />
+			<h:graphicImage value="/plugins/views-common/images/icons/page_attach.png"
+				style="border: none;" 
+				styleClass="#{documentSearchBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}"
+				title="#{documentSearchBean.messages['documentSearchTable.attachToProcess']}" />
+		</ice:commandLink>
+			
+	</ice:panelGrid>
+</f:view>

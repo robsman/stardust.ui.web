@@ -1,0 +1,33 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+   xmlns:h="http://java.sun.com/jsf/html"
+   xmlns:ui="http://java.sun.com/jsf/facelets"
+   xmlns:ice="http://www.icesoft.com/icefaces/component">
+
+   <ice:outputHtml>
+
+      <ui:insert name="pageHeader">
+
+         <ice:outputHead>
+            <ice:outputStyle href="/xmlhttp/css/xp/xp.css" />
+
+            <script src="#{facesContext.externalContext.requestContextPath}/ipp/integration/icefaces/ipp-icefaces-server-support.js" />
+         </ice:outputHead>
+
+      </ui:insert>
+
+      <ui:insert name="pageBody">
+
+         <ice:outputBody>
+            
+            <ice:form id="ippIcefacesPanelForm" partialSubmit="true">
+            
+               <ui:insert name="pageContent" />
+
+            </ice:form>
+         </ice:outputBody>
+
+      </ui:insert>
+
+   </ice:outputHtml>
+
+</f:view>

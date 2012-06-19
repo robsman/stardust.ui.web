@@ -1,0 +1,71 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:composition>
+		<ice:panelGroup>
+			<ui:include
+				src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+				<ui:param name="dialogBean"
+					value="#{joinProcessDialogBean.joinProcessConfirmationDialog}" />
+			</ui:include>
+		</ice:panelGroup>
+		<ice:panelPopup modal="true" 
+			rendered="#{joinProcessDialogBean.visible}" draggable="true"
+			autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-COM-JoinProcDlg-Header"/>
+					<ice:outputText styleClass="headerText"					
+						value="#{joinProcessDialogBean.dialogTitle}" />
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png"
+						action="#{joinProcessDialogBean.closePopup}" immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+
+			<f:facet name="body">
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="2" 
+					cellspacing="2" renderNorth="false" renderEast="true"
+					renderSouth="true" renderWest="true" renderCenter="true">
+					<f:facet name="center">
+						<c:set var="searchBean" value="#{joinProcessDialogBean}" />
+						<ice:panelGroup style="width:600px;overflow: auto;">
+							<ice:panelGroup 
+								 rendered="#{joinProcessDialogBean.currentPage eq 'SEARCH'}">
+								 <ui:include src="/plugins/views-common/dialogs/joinProcessSearchDialog.xhtml" />
+							</ice:panelGroup>
+							<ice:panelGroup
+								rendered="#{joinProcessDialogBean.currentPage eq 'ADVANCE'}"
+								style="vertical-align: top; white-space: nowrap; text-align:left;">
+								<ui:include src="/plugins/views-common/dialogs/joinProcessAdvanceDialog.xhtml" />
+							</ice:panelGroup>
+
+						</ice:panelGroup>
+					</f:facet>
+					<f:facet name="south">
+						<ice:panelGroup>
+							<ice:panelGroup rendered="#{joinProcessDialogBean.currentPage ne 'NOTIFICATION'}">
+								<pc:automationTag value="auto-COM-JoinProcDlg-OkCancelBtnsBar"/>	
+								<ice:commandButton
+									value="#{views_common_msgPropsBean['views.joinProcessDialog.abortAndJoin.button.label']}"
+									action="#{joinProcessDialogBean.abortAndJoin}" 
+									disabled="#{!joinProcessDialogBean.enableAbortAndJoin}"
+									styleClass="button" />
+								<ice:commandButton
+									value="#{views_common_msgPropsBean['common.cancel']}"
+									action="#{joinProcessDialogBean.closeJoinProcessPopup}" 
+									immediate="true"
+									styleClass="button" />
+							</ice:panelGroup>
+							
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

@@ -1,0 +1,48 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:composition>
+		<ice:panelPopup modal="true" rendered="#{panelConfirmation.visible}"
+			draggable="true" autoCentre="true" positionOnLoadOnly="true"
+			styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup style="min-width: 300px">
+					<pc:automationTag value="auto-COM-ConfirmDlg-Header"/>
+					<ice:outputText value="#{panelConfirmation.title}"
+						styleClass="headerText" />
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png"
+						action="#{panelConfirmation.closePopup}" immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+
+			<f:facet name="body">
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+					cellspacing="0" renderNorth="false" renderEast="false"
+					renderSouth="true" renderWest="false" renderCenter="true" style="width:100%">
+					<f:facet name="center">
+						<ice:panelGroup>
+							<ice:outputText value="#{panelConfirmation.message}" />
+						</ice:panelGroup>
+					</f:facet>
+
+					<f:facet name="south">
+						<ice:panelGroup>
+							<pc:automationTag value="auto-COM-ConfirmDlg-BtnsBar" standAlone="false"/>
+							<ice:commandButton value="#{panelConfirmation.acceptLabel}"
+								action="#{panelConfirmation.apply}" id="apply"
+								styleClass="button" />
+							<ice:commandButton value="#{panelConfirmation.cancelLabel}"
+								action="#{panelConfirmation.closePopup}" immediate="true"
+								id="cancel" styleClass="button" />
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

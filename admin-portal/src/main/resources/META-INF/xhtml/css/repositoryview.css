@@ -1,0 +1,63 @@
+.selectedNodetrue span {
+font-weight:bold;
+}
+
+
+.ippPnlGrdColBottom {
+vertical-align:bottom;
+}
+
+
+/* Styles for ice:menuPopup */
+
+.iceMnuPopVrtTopSubMenu {
+    background-color: #FCFCFC;
+    border-color: #DBDBDB #6B6B6B #6B6B6B #DBDBDB;
+    border: thin solid 1px;
+	z-index:255;
+}
+
+.iceMnuPopVrtItem a {
+	padding-left: 10px;
+    padding-right: 3px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    margin-bottom: 0px;
+    font-size: 11px;
+}
+
+.iceMnuPopVrtItem a:hover {
+/* was iceMenu_verticalItem */
+    background-color: #4591A1;
+    color: #4591A1;
+    text-decoration: none;
+}
+
+.iceMnuPopVrtItem a:hover {
+    background-color: #DDEAF0;
+}
+
+.iceMnuPopVrtItem-dis {
+    width: 160px;
+    display: block;
+    margin: 2px 0px 2px 0px; !important;
+    font-size: 1em;
+}
+
+.iceMnuPopVrtItem-dis .iceCmdLnk-dis {
+    border-bottom: 0px; !important;
+    margin: 0px 0px 0px 17px;
+    font-size: 11px;
+}
+
+.iceMnuItmLabel-dis {
+    color: #B9B5AE !important;
+}
+
+.treeClass .iceMnuItmLabel {
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 7px;
+    font-weight: normal;
+    color: #000000 !important;
+}

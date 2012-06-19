@@ -1,0 +1,34 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		id* = Id of the Table
+		title* = Title of the Table
+		bean* = Table Instance
+		includeHelpers = true/false. Default true
+	-->
+	<c:if test="#{empty includeHelpers}">
+		<c:set var="includeHelpers" value="true" />
+	</c:if>
+	<ui:include src="/plugins/views-common/dialogs/abortActivity.xhtml" />
+	<ui:include	src="/plugins/views-common/dialogs/switchProcessDialog.xhtml" />
+	<ui:include	src="/plugins/views-common/dialogs/joinProcessDialog.xhtml" />
+
+	<ice:panelGroup rendered="#{includeHelpers}">
+		<ui:include src="/plugins/views-common/dialogs/delegation.xhtml" />
+		<ui:include src="/plugins/views-common/contentmgmt/views/notificationMessage.xhtml" />
+	</ice:panelGroup>
+
+	<pc:automationTag value="auto-COM-ActivityTbl-DataTable"/>
+	<pc:genericDataTable exportExcel="true"
+		title="#{title}"
+		bean="#{bean}" id="#{id}"
+		table="#{bean.activityTable}" sortSupported="true"		
+		toolbarUrl="/plugins/views-common/activityTableHelper/activityTableHelperToolbar.xhtml"/>
+
+</f:view>

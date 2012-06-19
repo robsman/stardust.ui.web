@@ -1,0 +1,81 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"></meta>
+<link
+	href="#{facesContext.externalContext.requestContextPath}/plugins/views-common/css/context-portal.css"
+	rel="stylesheet" type="text/css" />
+</head>
+<body>
+	
+	<ice:panelGroup>
+		<table class="autoCompTable" style="border-collapse:collapse;">
+			<tbody>
+				<tr class="autoCompTableHeaderRow">
+					<c:choose>
+						<c:when test="#{!switchProcessDialogBean.showAbortDailog}">
+							<td><ice:outputText
+									value="#{views_common_msgPropsBean['views.switchProcessDialog.switchedProcess.column.abortedProcesses']}" />
+							</td>
+							<td><ice:outputText
+									value="#{views_common_msgPropsBean['views.switchProcessDialog.switchedProcess.column.startedProcesses']}" />
+							</td>
+						</c:when>
+						<c:otherwise>
+							<td><ice:outputText
+									value="#{views_common_msgPropsBean['views.switchProcessDialog.notification.column.process']}"/></td>
+						</c:otherwise>
+					</c:choose>
+					<td><ice:outputText
+							value="#{views_common_msgPropsBean['views.switchProcessDialog.switchedProcess.column.status']}" />
+					</td>
+				</tr>
+				<c:forEach var="switchProcessTable"
+					items="#{switchProcessDialogBean.switchedProcessTable}"
+					varStatus="status">
+					<c:choose>
+						<c:when test='${(status.index)%2 eq 0}'>
+							<c:set var="rowColor" value="evenTabRow" scope="page"/>
+						</c:when>
+						<c:otherwise>
+							<c:set var="rowColor" value="oddTabRow" scope="page"/>
+						</c:otherwise>
+					</c:choose>
+					<tr class="${rowColor}">
+					<c:choose>
+						<c:when test="#{!switchProcessDialogBean.showAbortDailog}">
+							<td class="autoCompTableTextCol"><ice:outputText
+									value="#{switchProcessTable.abortedProcessName}" />
+									<pc:automationTag value="auto-DT-DTCol-StringVal" />
+							</td>
+							<td class="autoCompTableTextCol"><ice:outputText
+									value="#{switchProcessTable.switchedProcessName}" />
+									<pc:automationTag value="auto-DT-DTCol-StringVal" />
+							</td>
+						</c:when>
+						<c:otherwise>
+							<td class="autoCompTableTextCol"><ice:outputText
+									value="#{switchProcessTable.abortedProcessInstance}" />
+									<pc:automationTag value="auto-DT-DTCol-StringVal" />
+							</td>
+						</c:otherwise>
+					</c:choose>
+					<td class="autoCompTableTextCol"><ice:outputText
+							value="#{switchProcessTable.statusMessage}" />
+							<pc:automationTag value="auto-DT-DTCol-StringVal" />
+					</td>
+					</tr>
+
+				</c:forEach>
+			</tbody>
+		</table>
+	</ice:panelGroup>
+</body>
+	</html>
+</f:view>

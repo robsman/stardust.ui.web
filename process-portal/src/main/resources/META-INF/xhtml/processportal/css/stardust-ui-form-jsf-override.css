@@ -1,0 +1,91 @@
+.form-panel-primitive-container
+{
+	padding: 5px 5px 5px 10px;
+	margin-top: 5px;
+}
+
+.form-panel-group
+{
+	padding: 5px 5px 5px 15px;
+}
+
+.form-panel
+{
+	border: none;
+	padding: 0px;
+	margin-top: 0px;
+	background: none;
+}
+
+.form-panel-label /* Inherits nirvanaPortal.css/label-form */
+{
+	color: #708090;
+	padding: 3px 5px 3px 0;
+	white-space: nowrap;
+	font-weight: normal;
+}
+
+.form-panel-label-column
+{
+	padding-left: 5px;
+}
+
+.form-panel-input
+{
+	border: 1px solid #AAAAAA;
+}
+
+.form-panel-number-input
+{
+	border: 1px solid #AAAAAA;
+	text-align: left;
+}
+
+.form-panel-heading
+{
+    padding: 5px 5px 5px 0px;
+    border-bottom: 1px solid #CCCCCC;
+}
+
+.form-panel-heading-text
+{
+	white-space: nowrap;
+	text-align: left;
+    font-size: 10px;
+    font-weight: bold;
+    color: #000000;
+}
+
+.form-panel-heading-text1
+{
+	white-space: nowrap;
+	text-align: left;
+    font-size: 11px;
+    font-weight: bold;
+    color: #708090;
+}
+
+.form-panel-table-toolbar-section
+{
+	padding-left: 0px;
+}
+
+.form-panel-table-section
+{
+	padding: 0px 5px 5px 0px;
+}
+
+.form-panel-table-header
+{
+	height: 25px;
+}
+
+.form-panel-table-cell input
+{
+    border: 1px solid #AAAAAA;
+}
+
+.form-panel-table-cell input[type=image]
+{
+	 border: none;
+}

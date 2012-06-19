@@ -1,0 +1,121 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup rendered="#{col.columnName == 'ValidFrom'}"
+		style="text-align: center;">
+		<ice:outputLabel value="#{row.validFrom}"
+			rendered="#{row.type=='MODEL_VERSION' }" style="font-weight:normal">
+			<f:converter converterId="customDateConverter" />
+		</ice:outputLabel>
+
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'Comment'}"
+		style="text-align: left">
+
+		<ice:outputText rendered="#{row.type!='MODEL'}"
+			value="#{row.commentTrim }" title="#{row.comment}" />
+
+
+		<!-- 
+	<c:set var="originalString" value="#{row.comment}" />
+		<c:set var="limit" value="100" />
+		<c:set var="quit" value="false" />
+		<c:set var="finalString" value=""/>
+		<c:forEach items="#{fn:split(originalString,' ')}" var="current">
+		  <c:choose>
+		    <c:when test="#{fn:length(finalString) + fn:length(current) le  limit and  !quit}" >
+		         <c:set var="finalString" value="#{finalString} #{current}" />
+		    </c:when>
+		    <c:otherwise>
+		         <c:set var="quit" value="true" />
+		    </c:otherwise>
+		  </c:choose>
+		</c:forEach>
+	
+		<ice:outputLabel value="#{fn:trim(finalString)}" rendered="#{row.type!='MODEL'}"/>  -->
+
+
+		<!-- 	<h:outputText value="#{row.comment}" rendered="#{row.type!='MODEL'}">
+			<ipp:truncateOutput truncateAt="35" continuationMark="..." />
+		</h:outputText>
+ -->
+		<!-- <ice:outputLabel value="#{row.comment}" rendered="#{row.type!='MODEL'}"/> -->
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'Actions' }"
+		style="text-align:center;">
+		<ice:menuBar displayOnClick="true" style="text-align: center;"
+			styleClass="modelMenuBar" immediate="false"
+			rendered="#{row.type=='MODEL_VERSION' and row.actionAllowed }">
+			<ice:menuItem id="menuPopup" styleClass=""
+				icon="/plugins/admin-portal/images/icons/wrench_closed.png"
+				 value="">
+				<ice:menuItem icon="/plugins/views-common/images/icons/cross.png" styleClass="modelMnuItm"
+					value="#{modelManagementBean.messages['actions.delete']}"
+					actionListener="#{modelManagementBean.popUpActionListener}">
+					 <pc:automationTag
+						value="auto-ADM-ModelMgmt-ModelTreeTbl-ActionsDelete" standAlone="false"/>
+					<f:attribute name="row" value="#{row}" />
+					<f:attribute name="type" value="DELETE" />
+				</ice:menuItem>
+				<ice:menuItem
+					icon="/plugins/admin-portal/images/icons/server_go.png" styleClass="modelMnuItm"
+					value="#{modelManagementBean.messages['actions.overwrite']}"
+					actionListener="#{modelManagementBean.popUpActionListener}">
+					<pc:automationTag
+						value="auto-ADM-ModelMgmt-ModelTreeTbl-ActionsOverwrite"
+						standAlone="false" />
+					<f:attribute name="row" value="#{row}" />
+					<f:attribute name="type" value="OVERWRITE" />
+				</ice:menuItem>
+				<ice:menuItem
+					icon="/plugins/views-common/images/icons/page_white_put.png" styleClass="modelMnuItm"
+					value="#{modelManagementBean.messages['actions.export']}"
+					actionListener="#{modelManagementBean.popUpActionListener}">
+					<pc:automationTag
+						value="auto-ADM-ModelMgmt-ModelTreeTbl-ActionsExport"
+						standAlone="false" />
+					<f:attribute name="row" value="#{row}" />
+					<f:attribute name="type" value="EXPORT" />
+				</ice:menuItem>
+				<ice:menuItem icon="/plugins/admin-portal/images/icons/report.png" styleClass="modelMnuItm"
+					value="#{modelManagementBean.messages['actions.runreport']}"
+					actionListener="#{modelManagementBean.popUpActionListener}">
+					<pc:automationTag
+						value="auto-ADM-ModelMgmt-ModelTreeTbl-ActionsRunRprt"
+						standAlone="false" />
+					<f:attribute name="row" value="#{row}" />
+					<f:attribute name="type" value="RUN_REPORT" />
+				</ice:menuItem>
+
+
+			</ice:menuItem>
+		</ice:menuBar>
+
+		<ice:commandLink name="" rendered="#{row.type=='PRIMARY_INTERFACE'}"
+			actionListener="#{modelManagementBean.openModifyImplementation}"
+			style="vertical-align: middle;">
+				<pc:automationTag value="auto-ADM-ModelMgmt-ModelTreeTbl-EditImpl"
+					standAlone="false" />
+			<h:graphicImage
+				value="/plugins/admin-portal/images/icons/cog_edit.png"
+				style="border: none;"
+				title="#{modelManagementBean.messages['primaryinterface.modify']}" />
+			<f:attribute name="row" value="#{row}" />
+		</ice:commandLink>
+
+
+
+
+	</ice:panelGroup>
+
+
+
+
+</f:view>

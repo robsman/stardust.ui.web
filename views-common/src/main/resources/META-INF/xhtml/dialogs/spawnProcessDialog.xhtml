@@ -1,0 +1,125 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ui:composition>
+		<ice:panelGroup>
+			<ui:include
+				src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+				<ui:param name="dialogBean"
+					value="#{spawnProcessDialogBean.confirmationDlg}" />
+			</ui:include>
+		</ice:panelGroup>
+		<ice:panelPopup modal="true"
+			rendered="#{spawnProcessDialogBean.visible}" draggable="true"
+			autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-COM-SpawnProcDlg-Header"/>
+					<ice:outputText styleClass="headerText"
+						value="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}" />
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png"
+						action="#{spawnProcessDialogBean.closePopup}" immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+
+			<f:facet name="body">
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="2"
+					cellspacing="2" renderNorth="false" renderEast="true"
+					renderSouth="true" renderWest="true" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>
+
+							<ice:panelGroup
+								rendered="#{spawnProcessDialogBean.showStartProcessView}"
+								expanded="true">
+
+
+
+								<ice:outputText styleClass="panelHeaderTitle"
+									value="#{views_common_msgPropsBean['views.spawnProcessDialog.selectProcess']}" />
+
+								<ice:panelGroup expanded="true">
+									<ice:panelGrid columns="1">
+										<ice:selectManyListbox size="10" partialSubmit="true"
+											value="#{spawnProcessDialogBean.selectedProcess}"
+											readonly="#{false}"
+											style="min-width: 400px;min-height:200px;padding: 2px 5px 5px 2px;vertical-align: middle;">
+											<pc:automationTag value="auto-COM-SpawnProcDlg-SelProcess" standAlone="false"/>
+											<c:forEach
+												items="#{spawnProcessDialogBean.spawnableProcessItems}"
+												var="source">
+												<f:selectItem itemLabel="#{source.label}"
+													itemValue="#{source.value}" />
+											</c:forEach>
+
+										</ice:selectManyListbox>
+
+										<ice:outputText
+											value="#{views_common_msgPropsBean['views.spawnProcessDialog.selectMultiple']}"
+											style="text-align: right" />
+									</ice:panelGrid>
+								</ice:panelGroup>
+
+								<ice:panelGroup styleClass="clearing" />
+
+							</ice:panelGroup>
+
+						<!-- 	<ice:panelGroup expanded="true"
+								rendered="#{!spawnProcessDialogBean.showStartProcessView}">
+								<ice:panelGrid columns="2">
+									<ice:graphicImage
+										url="/plugins/common/images/dialog-icon-info.jpg"
+										style="width:20px;heigth:20px;text-align: top;padding:0px;" />
+									<ice:outputText styleClass="panelHeaderTitle"
+										value="#{views_common_msgPropsBean['views.spawnProcessDialog.processesStarted']}" />
+									<ice:column></ice:column>
+										<ice:panelGroup style="max-height: 100px; overflow: auto;">
+											<pc:automationTag value="auto-COM-SpawnProcDlg-SpawnResultTbl" />
+											<pc:genericDataTable bean="#{spawnProcessDialogBean}"
+												id="spawnedProcess"
+												table="#{spawnProcessDialogBean.spawnProcessHelper.spawnedProcessTable}"
+												exportExcel="false" exportCsv="false" sortSupported="false"
+												renderColumnHeaders="false" style="border-left:1px solid #d9d9d9;">
+												<ui:include src="/plugins/views-common/dialogs/hideBlankTableHeaders.xhtml" />
+											</pc:genericDataTable>
+										</ice:panelGroup>
+									<ice:panelGroup styleClass="clearing" />
+									<ice:panelGroup styleClass="clearing" />
+									<ice:panelGroup styleClass="clearing" />
+									<ice:outputText styleClass="panelHeaderTitle"
+										value="#{views_common_msgPropsBean['views.spawnProcessDialog.viewSpawnedActivities']}" />
+								</ice:panelGrid>
+							</ice:panelGroup> -->
+						</ice:panelGroup>
+
+
+					</f:facet>
+					<f:facet name="south">
+						<ice:panelGroup>
+							<ice:panelGroup
+								rendered="#{spawnProcessDialogBean.showStartProcessView}">
+								<pc:automationTag value="auto-COM-SpawnProcDlg-OkCancelBtnsBar" />
+								<ice:commandButton
+									value="#{views_common_msgPropsBean['common.ok']}" 
+									action="#{spawnProcessDialogBean.startSpawnProcesses}"
+									disabled="#{!spawnProcessDialogBean.enableSpawnProcess}"									
+									styleClass="button" />
+								<ice:commandButton
+									value="#{views_common_msgPropsBean['common.cancel']}"
+									action="#{spawnProcessDialogBean.closePopup}" immediate="true"									
+									styleClass="button" />
+							</ice:panelGroup>
+
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

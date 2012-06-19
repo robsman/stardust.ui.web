@@ -1,0 +1,38 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates mandatory attributes)
+	component* = Instance of org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutocompleteSelector
+	-->
+	<c:choose>
+		<c:when
+			test="#{pc:instanceOf(component, 'org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutocompleteSelector')}">
+			<ice:selectInputText rows="#{component.maxRows}"
+				value="#{component.searchValue}"
+				valueChangeListener="#{component.searchValueChanged}"
+				disabled="#{component.disabled}" partialSubmit="false" width="95%"
+				listVar="priorityItem" listValue="#{component.matchingData}"
+				style="margin: 0px 0px 9px 2px;">
+				<f:facet name="selectInputText">
+					<ice:panelGrid columns="2">
+						<ice:outputText value="#{priorityItem.label}" escape="false"
+							styleClass="formLabel" style="padding-left: 0" />
+						<ice:panelGroup>
+							<ice:graphicImage value="#{priorityItem.icon}" width="16px"
+								height="16px" />
+						</ice:panelGroup>
+					</ice:panelGrid>
+				</f:facet>
+			</ice:selectInputText>
+		</c:when>
+		<c:otherwise>
+			<ice:outputText
+				value="component is not instanceof org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutocompleteSelector" />
+		</c:otherwise>
+	</c:choose>
+</f:view>

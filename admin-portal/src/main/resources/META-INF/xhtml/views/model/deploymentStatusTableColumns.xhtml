@@ -1,0 +1,63 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup rendered="#{col.columnName == 'DeploymentProgress'}"
+		style="text-align: center;padding-left:50px; ">
+
+		<ice:panelGroup styleClass="iceOutProgBg" style="position: relative;"
+			rendered="#{!dialogBean.currentPage.modelDeployed}">
+			<ice:panelGroup styleClass="iceOutProgIndetActv"
+				style="position: absolute; width: 100%;">
+			</ice:panelGroup>
+			<ice:panelGroup styleClass="iceOutProgTxt"
+				style="text-align: center; position: relative; background-color: transparent; width: 100%; z-index: 1;font-weight: bold;">#{ messages_admin['views.deploymodel.deploymentStatus.inProgress']}</ice:panelGroup>
+
+		</ice:panelGroup>
+
+		<ice:panelGroup styleClass="iceOutProgBg" style="position: relative;"
+			rendered="#{dialogBean.currentPage.modelDeployed}">
+			<ice:panelGroup styleClass="iceOutProgIndetInactv"
+				style="position: absolute; width: 100%;">
+			</ice:panelGroup>
+			<ice:panelGroup styleClass="iceOutProgTxt"
+				rendered="#{dialogBean.currentPage.modelDeployed}"
+				style="text-align: center; position: relative; background-color: transparent; width: 100%; z-index: 1;font-weight: bold;">#{ messages_admin['views.deploymodel.deploymentStatus.completed']}</ice:panelGroup>
+
+		</ice:panelGroup>
+
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'Status'}"
+		style="text-align: center;">
+		<ice:outputText value="-"
+			rendered="#{!dialogBean.currentPage.modelDeployed}" />
+		<h:graphicImage url="/plugins/views-common/images/icons/accept.png"
+			rendered="#{row.errors == 0 and dialogBean.currentPage.modelDeployed and !dialogBean.currentPage.deploymentException }"
+			title="#{ messages_admin['views.deploymodel.deploymentStatus.success']}" />
+		<h:graphicImage url="/plugins/views-common/images/icons/cancel.png"
+			rendered="#{row.errors > 0 or dialogBean.currentPage.deploymentException }"
+			title="#{ messages_admin['views.deploymodel.deploymentStatus.failed']}" />
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'Errors'}"
+		style="text-align: center;">
+		<ice:outputText value="#{row.errors}"
+			rendered="#{dialogBean.currentPage.modelDeployed}" />
+		<ice:outputText value="-"
+			rendered="#{!dialogBean.currentPage.modelDeployed}" />
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'Warnings'}"
+		style="text-align: center;">
+		<ice:outputText value="#{row.warnings}"
+			rendered="#{dialogBean.currentPage.modelDeployed}" />
+		<ice:outputText value="-"
+			rendered="#{!dialogBean.currentPage.modelDeployed}" />
+	</ice:panelGroup>
+
+</f:view>

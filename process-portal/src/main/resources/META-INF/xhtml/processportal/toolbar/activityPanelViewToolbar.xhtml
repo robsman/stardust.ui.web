@@ -1,0 +1,31 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid columns="2" cellpadding="0" cellspacing="0">
+	<ice:commandLink
+		action="#{ippActivityPanelController.openCorrespondence}"
+		rendered="#{activityDetailsBean.loadSuccessful and ippActivityPanelController.supportsProcessAttachments}"
+		partialSubmit="true">
+		<pc:automationTag value="auto-PP-ActivityPnl-ToolbarCorres" standAlone="false"/>
+		<ice:graphicImage
+			value="/plugins/views-common/images/icons/email_add.png"
+			styleClass="toolbar-button"
+			title="#{processportal_msgPropsBean['toolbars.activityPanelViewToolbar.tooltip.correspondence']}" />
+	</ice:commandLink>
+
+	<ice:commandLink action="#{ippActivityPanelController.openChat}"
+		rendered="#{activityDetailsBean.loadSuccessful and ippActivityPanelController.supportsProcessAttachments}"
+		partialSubmit="true">
+		<pc:automationTag value="auto-PP-ActivityPnl-ToolbarChat" standAlone="false"/>
+		<ice:graphicImage
+			value="/plugins/views-common/images/icons/user_comment.png"
+			styleClass="toolbar-button"
+			title="#{processportal_msgPropsBean['toolbars.activityPanelViewToolbar.tooltip.chat']}" />
+	</ice:commandLink>
+	</ice:panelGrid>
+</f:view>

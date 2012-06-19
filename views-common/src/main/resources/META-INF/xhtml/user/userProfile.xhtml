@@ -1,0 +1,387 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon"
+	xmlns:ap="http://www.sungard.de/carnot/web/portal-plugin/adminportal">
+
+	<ui:composition>
+		<ice:panelGroup>
+			<ui:include
+				src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+				<ui:param name="dialogBean"
+					value="#{userProfileBean.userProfileConfirmationDlg}" />
+			</ui:include>
+		</ice:panelGroup>	
+		<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+			cellspacing="0" renderNorth="false" renderEast="false"
+			renderSouth="#{!userProfileBean.modifyProfileConfiguration}"
+			renderWest="false" renderCenter="true">
+			<f:facet name="center">
+				<ice:panelGroup>
+					<ice:panelGroup id="tabSetTabs">
+						<ice:panelGroup styleClass="msgError">
+							<ice:message for="applyUser" />
+						</ice:panelGroup>
+						<ice:panelTabSet id="userManagementDialog"
+							selectedIndex="#{userProfileBean.focusIndex}"
+							partialSubmit="false">
+
+							<!-- Basic -->
+							<ice:panelTab rendered="true"
+								label="#{messages_admin['views.createUser.basicPanel.title']}"
+								title="#{messages_admin['views.createUser.basicPanel.title']}">
+								<pc:automationTag value="auto-ADM-PartMgmt-UserPopupBasicTab" standAlone="false"/>
+
+								<div style="min-width: 400px; min-height: 400px; overflow: auto;">
+								<ice:panelGrid columns="2"
+									style="vertical-align: top; white-space: nowrap; text-align:left"
+									headerClass="heading">
+									<ice:outputLabel
+										value="* #{messages_admin['views.createUser.basicPanel.account.label']}#{messages_admin['common.colon']}"
+										styleClass="label-form" />
+									<ice:panelGroup>
+										<ice:inputText id="id"
+											value="#{userProfileBean.account}"
+											disabled="#{userProfileBean.modifyMode || userProfileBean.modifyProfileConfiguration}"
+											required="#{userProfileBean.createMode || userProfileBean.copyMode}"
+											validator="#{fieldsValidator.validateId}">
+											<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-Acct" standAlone="false"/>
+										</ice:inputText>
+										<ice:panelGroup styleClass="msgError">
+											<ice:message for="id" />
+										</ice:panelGroup>
+									</ice:panelGroup>
+
+									<ice:outputLabel
+										value="* #{messages_admin['views.createUser.basicPanel.firstName.label']}#{messages_admin['common.colon']}"
+										styleClass="label-form" />
+									<ice:panelGroup>
+										<ice:inputText id="name" partialSubmit="true"
+											value="#{userProfileBean.firstName}"
+											disabled="#{not (userProfileBean.userEditable)}"
+											required="#{userProfileBean.userEditable}"
+											validator="#{fieldsValidator.validateName}"
+											valueChangeListener="#{userProfileBean.nameChangeListener}" >
+											<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-FirstName" standAlone="false"/>
+										</ice:inputText>
+										<ice:panelGroup styleClass="msgError">
+											<ice:message for="name" />
+										</ice:panelGroup>
+									</ice:panelGroup>
+
+									<ice:outputLabel
+										value="* #{messages_admin['views.createUser.basicPanel.lastName.label']}#{messages_admin['common.colon']}"
+										styleClass="label-form" />
+									<ice:panelGroup>
+										<ice:inputText id="lastName" partialSubmit="true"
+											value="#{userProfileBean.lastName}"
+											disabled="#{not (userProfileBean.userEditable)}"
+											required="#{userProfileBean.userEditable}"
+											valueChangeListener="#{userProfileBean.nameChangeListener}" >
+											<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-LastName" standAlone="false"/>
+										</ice:inputText>
+										<ice:panelGroup styleClass="msgError">
+											<ice:message for="lastName" />
+										</ice:panelGroup>
+									</ice:panelGroup>
+
+									<ice:outputLabel
+										value="* #{messages_admin['views.createUser.basicPanel.name.displayAs']}#{messages_admin['common.colon']}"
+										styleClass="label-form" />
+									<ice:selectOneMenu partialSubmit="true" value="#{userProfileBean.selectedDisplayFormat}"
+										disabled="#{userProfileBean.modifyProfileConfiguration}">
+										<f:selectItems value="#{userProfileBean.displayFormats}" />
+									</ice:selectOneMenu>
+									
+									<ice:outputLabel
+										value="#{messages_admin['views.createUser.basicPanel.changePwd.label']}#{messages_admin['common.colon']}"
+										styleClass="label-form" />
+									<ice:panelGroup>
+										<ice:selectBooleanCheckbox partialSubmit="true"
+											value="#{userProfileBean.changePassword}"
+											disabled="#{!userProfileBean.passwordEnabled}">	
+											<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-ChangePasswd" standAlone="false"/>										
+										</ice:selectBooleanCheckbox>
+									</ice:panelGroup>
+
+									<ice:panelGroup
+										rendered="#{userProfileBean.modifyProfileConfiguration}">
+										<ice:outputLabel value="* #{messages_admin['views.createUser.basicPanel.oldPwd.label']}#{messages_admin['common.colon']}"
+											styleClass="label-form" />
+									</ice:panelGroup>
+									<ice:panelGroup
+										rendered="#{userProfileBean.modifyProfileConfiguration}">
+										<ice:inputSecret id="oldPWD" maxlength="20" size="20"
+											value="#{userProfileBean.oldPassword}"
+											partialSubmit="true" redisplay="true">
+											<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-OldPwd" standAlone="false"/>
+										</ice:inputSecret>
+									</ice:panelGroup>
+
+									<ice:outputLabel
+										value="* #{messages_admin['views.createUser.basicPanel.pwd.label']}#{messages_admin['common.colon']}"
+										styleClass="label-form" />
+									<ice:panelGroup>
+										<ice:inputSecret id="password" maxlength="20" size="20"
+											value="#{userProfileBean.password}" redisplay="true"
+											required="#{userProfileBean.createMode || userProfileBean.copyMode}"
+											disabled="#{(userProfileBean.modifyMode || userProfileBean.modifyProfileConfiguration) &amp;&amp; (!userProfileBean.changePassword)}">
+											<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-Pwd" standAlone="false"/>
+										</ice:inputSecret>
+										<ice:panelGroup styleClass="msgError">
+											<ice:message for="password" />
+										</ice:panelGroup>
+									</ice:panelGroup>
+
+									<ice:outputLabel
+										value="* #{messages_admin['views.createUser.basicPanel.cPwd.label']}#{messages_admin['common.colon']}"
+										styleClass="label-form" />
+									<ice:panelGroup>
+										<ice:inputSecret id="cPWD" maxlength="20" size="20"
+											value="#{userProfileBean.confirmPassword}"
+											redisplay="true"
+											required="#{userProfileBean.createMode || userProfileBean.copyMode}"
+											disabled="#{(userProfileBean.modifyMode || userProfileBean.modifyProfileConfiguration) &amp;&amp; (!userProfileBean.changePassword)}">
+											<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-PwdConfirm" standAlone="false"/>
+										</ice:inputSecret>
+										<ice:panelGroup styleClass="msgError">
+											<ice:message for="cPWD" />
+										</ice:panelGroup>
+									</ice:panelGroup>
+
+									<ice:panelGroup />
+									<ice:panelGroup styleClass="msgError"
+										style="padding-left: 4px;">
+										<ice:outputText
+											value="#{userProfileBean.passwordValidationMsg}"
+											styleClass="msgError" escape="false" />
+									</ice:panelGroup>
+
+									<ice:outputLabel
+										value="#{messages_admin['views.createUser.basicPanel.realm.label']}#{messages_admin['common.colon']}"
+										styleClass="label-form" />
+									<ice:selectOneMenu
+										disabled="#{!(userProfileBean.createMode || userProfileBean.copyMode)}" id="realmId"
+										partialSubmit="true" value="#{userProfileBean.realmId}">
+										<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-PwdRealm" standAlone="false"/>
+										<f:selectItems value="#{userProfileBean.allRealms}" />
+									</ice:selectOneMenu>
+
+									<ice:outputLabel
+										value="#{messages_admin['views.createUser.basicPanel.email.label']}#{messages_admin['common.colon']}"
+										styleClass="label-form" />
+									<ice:inputText id="email" name="Email"
+										value="#{userProfileBean.email}"
+										disabled="#{not (userProfileBean.userEditable)}">
+										<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-Email" standAlone="false"/>
+										<f:validator validatorId="eMailAddressValidator" />
+									</ice:inputText>
+									<ice:panelGroup>
+									</ice:panelGroup>
+									<ice:panelGroup styleClass="msgError">
+										<ice:message for="email" />
+									</ice:panelGroup>
+									<ice:outputLabel
+										value="#{messages_admin['views.createUser.basicPanel.validFrom.label']}#{messages_admin['common.colon']}"
+										styleClass="label-form" />
+									<ice:panelGroup>
+										<ice:selectInputDate renderAsPopup="true" id="from"
+											value="#{userProfileBean.validFrom}"
+											disabled="#{userProfileBean.modifyProfileConfiguration}">
+											<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-ValidFrom" standAlone="false"/>
+											<f:converter converterId="customDateTimeConverter" />
+										</ice:selectInputDate>
+										<ice:message id="startTimeMsg" for="from" style="color:red;" />
+									</ice:panelGroup>
+
+									<ice:outputLabel
+										value="#{messages_admin['views.createUser.basicPanel.validTo.label']}#{messages_admin['common.colon']}"
+										styleClass="label-form" />
+									<ice:panelGroup>
+										<ice:selectInputDate renderAsPopup="true" id="to"
+											value="#{userProfileBean.validTo}"
+											disabled="#{userProfileBean.modifyProfileConfiguration}">
+											<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-ValidTo" standAlone="false"/>
+											<f:converter converterId="customDateTimeConverter" />
+										</ice:selectInputDate>
+										<ice:message id="endTimeMsg" for="to" style="color:red;" />
+									</ice:panelGroup>
+
+									<ice:outputLabel
+										value="#{messages_admin['views.createUser.basicPanel.qaOverride.label']}#{messages_admin['common.colon']}"
+										styleClass="label-form" />
+										<ice:panelGroup>
+											<ice:inputText partialSubmit="true" immediate="true"
+												disabled="#{userProfileBean.modifyProfileConfiguration}"
+												id="qaOverride" maxlength="3" style="width: 30px"
+												value="#{userProfileBean.qaOverride}">
+												<f:validateLongRange maximum="100" minimum="0" />
+												<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-QAProbability"
+													standAlone="false" />
+												<ice:message styleClass="iceMsgImage"
+													id="qaOverrideErrorImage" for="qaOverride"
+													showDetail="false" showSummary="false" />
+											</ice:inputText>
+											<ice:panelGroup styleClass="msgError">
+												<ice:message id="qaOverrideError" for="qaOverride" />
+											</ice:panelGroup>
+										</ice:panelGroup>
+
+										<ice:outputLabel
+										value="#{messages_admin['views.createUser.basicPanel.desc.label']}#{messages_admin['common.colon']}"
+										styleClass="label-form" />
+									<ice:inputTextarea
+										value="#{userProfileBean.description}" rows="5"
+										disabled="#{userProfileBean.modifyProfileConfiguration}">
+										<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-Desc" standAlone="false"/>
+									</ice:inputTextarea>
+								</ice:panelGrid></div>
+							</ice:panelTab>
+							
+							<!-- My picture tab. -->
+							<ice:panelTab
+								rendered="#{userProfileBean.modifyProfileConfiguration}"
+								label="#{messages_admin['views.createUser.myPicturePanel.title']}"
+								title="#{messages_admin['views.createUser.myPicturePanel.title']}">
+								<ice:panelGroup styleClass="clearing" />
+								<ice:outputLabel styleClass="label-form"
+									value="#{messages_admin['views.createUser.myPicturePanel.choosePicture']}" />
+								<ice:panelGrid columns="1">
+									<ice:selectOneRadio
+										value="#{userProfileBean.myPicturePreference.currentPicturePreference}"
+										partialSubmit="true"
+										valueChangeListener="#{userProfileBean.myPicturePreference.selectionChangeListener}">
+										<f:selectItem itemValue="NoPicture"
+											itemLabel="#{messages_admin['views.createUser.myPicturePanel.option.noPicture.label']}" />
+										<f:selectItem itemValue="MonsterID"
+											itemLabel="#{messages_admin['views.createUser.myPicturePanel.option.monsterId.label']}" />
+										<f:selectItem itemValue="ImageURL"
+											itemLabel="#{messages_admin['views.createUser.myPicturePanel.option.imageURL.label']}" />
+										<f:selectItem itemValue="MyComputer"
+											itemLabel="#{messages_admin['views.createUser.myPicturePanel.option.myComputer.label']}" />
+									</ice:selectOneRadio>
+									<ice:panelGroup styleClass="clearing" />
+									<ice:panelGroup
+										rendered="#{userProfileBean.myPicturePreference.noPictureSelected}">
+										<ice:outputText
+											value="#{messages_admin['views.createUser.myPicturePanel.picturePreview']}"
+											styleClass="label-form" />
+										<ice:panelGroup styleClass="clearing" />
+										<ice:graphicImage
+											url="/plugins/views-common/images/icons/user-default.png"
+											height="128px" width="128px" />
+									</ice:panelGroup>
+									<ice:panelGroup
+										rendered="#{userProfileBean.myPicturePreference.imageURLSelected}">
+										<ice:panelGroup>
+											<ice:outputText
+												value="#{messages_admin['views.createUser.myPicturePanel.option.imageURL.URL.label']}" />
+											<ice:inputText
+												value="#{userProfileBean.myPicturePreference.currentHTTPImageURL}"
+												partialSubmit="true" size="75" />
+										</ice:panelGroup>
+										<ice:panelGroup styleClass="clearing" />
+										<ice:outputText
+											value="#{messages_admin['views.createUser.myPicturePanel.option.imageURLGuidanceText']}" />
+										<ice:panelGroup styleClass="clearing" />
+										<ice:panelGroup styleClass="clearing" />
+										<ice:outputText
+											value="#{messages_admin['views.createUser.myPicturePanel.picturePreview']}"
+											styleClass="label-form" />
+										<ice:panelGroup styleClass="clearing" />
+										<ice:graphicImage
+											value="#{userProfileBean.myPicturePreference.currentHTTPImageURL}"
+											alt="#{messages_admin['views.createUser.myPicturePanel.picturePreview.noImage']}"
+											height="128px" width="128px" />
+									</ice:panelGroup>
+									<ice:panelGroup
+										rendered="#{userProfileBean.myPicturePreference.myComputerSelected}">
+										<ice:inputFile id="imageUploadComponent"
+											label="#{views_common_msgPropsBean['views.myDocumentsTreeView.fileUploadDialog.upload']}"
+											actionListener="#{userProfileBean.myPicturePreference.uploadActionListener}" />
+										<ice:panelGroup styleClass="msgError">
+											<ice:message for="imageUploadComponent" />
+										</ice:panelGroup>
+										<ice:panelGroup styleClass="clearing" />
+										<ice:outputText
+											value="#{messages_admin['views.createUser.myPicturePanel.option.myComputerGuidancetext']}" />
+										<ice:panelGroup styleClass="clearing" />
+										<ice:panelGroup>
+											<ice:outputText
+												value="#{messages_admin['views.createUser.myPicturePanel.picturePreview']}"
+												styleClass="label-form" />
+										</ice:panelGroup>
+										<ice:panelGroup styleClass="clearing" />
+										<ice:panelGroup>
+											<ice:graphicImage
+												value="#{userProfileBean.myPicturePreference.currentImage}"
+												alt="#{messages_admin['views.createUser.myPicturePanel.picturePreview.noImage']}"
+												height="128px" width="128px" />
+										</ice:panelGroup>
+									</ice:panelGroup>
+									<ice:panelGroup
+										rendered="#{userProfileBean.myPicturePreference.monsterIdSelected}">
+										<ice:panelGroup>
+											<ice:outputText styleClass="label-form"
+												value="#{messages_admin['views.createUser.myPicturePanel.picturePreview']}" />
+										</ice:panelGroup>
+										<ice:panelGroup styleClass="clearing" />
+										<ice:graphicImage
+											value="#{userProfileBean.myPicturePreference.currentMonsterImageURL}"
+											height="128px" width="128px" />
+									</ice:panelGroup>
+									<ice:panelGroup styleClass="clearing" />
+									<ice:outputLabel styleClass="label-form"
+										value="#{messages_admin['views.createUser.myPicturePanel.corporatePolicyNote']}" />
+								</ice:panelGrid>
+							</ice:panelTab>
+							<!-- My picture tab ends here. -->
+
+						</ice:panelTabSet>
+					</ice:panelGroup>
+					<ice:panelGroup styleClass="clearing" />
+					<ice:panelGrid columns="4" style="text-align: left"
+						rendered="#{userProfileBean.modifyProfileConfiguration}">
+						<ice:commandButton value="#{messages_admin['common.button.save']}"
+							action="#{userProfileBean.onApply}" id="applyUser"
+							styleClass="button"/>
+						<ice:commandButton value="#{messages_admin['common.reset']}"
+							action="#{userProfileBean.openConfirmationDialog}" partialSubmit="true" immediate="true"
+							id="cancel" styleClass="button" />
+						<ice:panelGroup styleClass="msgError">
+							<ice:outputText value="#{userProfileBean.validationMsg}"
+								styleClass="msgError" />
+						</ice:panelGroup>
+						<ice:panelGroup styleClass="msgError">
+							<ice:outputText
+								value="#{userProfileBean.myPicturePreference.validationMsg}"
+								styleClass="msgError" />
+						</ice:panelGroup>
+					</ice:panelGrid>
+				</ice:panelGroup>
+			</f:facet>
+
+			<f:facet name="south">
+				<ice:panelGrid columns="3" style="text-align: left">
+					<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-BtnsBar" standAlone="false"/>
+					<ice:commandButton value="#{messages_admin['common.apply']}"
+						action="#{userProfileBean.onApply}" id="applyUser"
+						styleClass="button" title="#{messages_admin['common.apply']}" />
+					<ice:commandButton value="#{messages_admin['common.cancel']}"
+						action="#{userProfileBean.closePopup}" immediate="true"
+						id="cancelUserProfile" styleClass="button"
+						title="#{messages_admin['common.cancel']}" />
+					<ice:panelGroup styleClass="msgError">
+						<ice:outputText value="#{userProfileBean.validationMsg}"
+							styleClass="msgError">
+							<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-ErrorMsg" standAlone="false"/>
+						</ice:outputText>
+					</ice:panelGroup>
+				</ice:panelGrid>
+			</f:facet>
+		</ice:panelBorder>
+	</ui:composition>
+</f:view>

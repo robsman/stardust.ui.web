@@ -1,0 +1,36 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<div class="toolbar">
+		<ice:form partialSubmit="false">
+			<ice:panelGrid columns="2" columnClasses="toolbarTriggerLeft" cellpadding="0" cellspacing="0">
+				<ice:commandLink
+					action="#{ippPortalApp.deactivateLaunchPanels}">
+					<pc:automationTag value="auto-FW-HideLPs" standAlone="false" />
+					<ice:graphicImage url="/plugins/common/images/pane-collapse.png"
+		                   style="border:none;" title="#{common_msgPropsBean['portalFramework.launchPanels.minimize']}"/>
+				</ice:commandLink>
+		        <ice:outputText value="#{common_msgPropsBean['portalFramework.launchPanels.title']}" />
+			</ice:panelGrid>
+		</ice:form>
+    </div>
+
+	<div class="content">
+		<c:forEach items="#{ippPortalUi.perspective.launchPanels}" var="launchPanel">
+			<ice:form partialSubmit="false">
+				<ui:include src="portalUserDefinedInclude.xhtml">
+					<ui:param name="includeFilePath" value="#{launchPanel.include}" />
+				</ui:include>
+				<ice:panelGroup styleClass="clearing" />
+			</ice:form>
+       </c:forEach>
+	</div>
+
+	<div id="ippPortalEndLP"></div>
+
+</f:view>

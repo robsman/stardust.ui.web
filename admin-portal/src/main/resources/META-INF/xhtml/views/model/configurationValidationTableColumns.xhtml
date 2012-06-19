@@ -1,0 +1,33 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<ice:panelGroup rendered="#{col.columnName == 'Status'}"
+		style="text-align: center;">
+		<h:graphicImage url="/plugins/views-common/images/icons/accept.png"
+			rendered="#{row.errors == 0 and row.warnings==0   }"
+			title="#{ messages_admin['views.configurationVariablesView.validation.success']}" />
+		<h:graphicImage url="/plugins/views-common/images/icons/warning.png"
+			rendered="#{row.errors == 0 and row.warnings > 0   }"
+			title="#{ messages_admin['views.configurationVariablesView.validation.failed']}" />			
+		<h:graphicImage url="/plugins/views-common/images/icons/cancel.png"
+			rendered="#{row.errors > 0  }"
+			title="#{ messages_admin['views.configurationVariablesView.validation.failed']}" />
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'Errors'}"
+		style="text-align: center;">
+		<ice:outputText value="#{row.errors}" />
+
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'Warnings'}"
+		style="text-align: center;">
+		<ice:outputText value="#{row.warnings}" />
+
+	</ice:panelGroup>
+
+</f:view>

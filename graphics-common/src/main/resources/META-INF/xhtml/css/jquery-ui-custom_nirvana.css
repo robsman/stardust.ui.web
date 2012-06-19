@@ -1,0 +1,8 @@
+.ui-slider .ui-slider-handle { width: 10px; height: 22px; }
+.ui-slider-horizontal .ui-slider-handle { margin-left: -0.35em; }
+.ui-slider-horizontal { height: 13px; }
+.ui-dialog-titlebar-close { position: absolute; right: .3em; width: 19px; padding: 1px; height: 18px; }
+.ui-widget-header { border: 1px solid #BBBBBB; color: #BBBBBB; font-weight: bold; background : url("images/ui-bg_glass_25_cb842e_1x400.png") repeat-x scroll 50% 50% #BBBBBB;}
+.ui-corner-all {
+    border-radius: 0px 0px 0px 0px;
+}

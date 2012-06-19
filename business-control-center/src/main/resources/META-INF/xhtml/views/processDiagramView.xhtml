@@ -1,0 +1,35 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ice:panelGrid columns="1">
+		<ice:panelGrid columns="2">
+			<ice:commandLink actionListener="#{ippBCCDiagramBean.moveProcessUp}"
+				disabled="#{ippBCCDiagramBean.rootProcess}">
+				<pc:automationTag value="auto-BCC-ProcDiagram-MoveProcUp"
+					standAlone="false" />
+				<h:graphicImage
+					value="#{ippBCCDiagramBean.rootProcess ? '/plugins/business-control-center/images/icons/active/upLight.gif' : '/plugins/business-control-center/images/icons/active/upGrey.gif'}"
+					style="border: none;"
+					title="#{ippBCCDiagramBean.messages['moveProcessUp.title']}" />
+			</ice:commandLink>
+			<ice:commandLink
+				actionListener="#{ippBCCDiagramBean.moveProcessDown}"
+				disabled="#{ippBCCDiagramBean.noSubProcessAvailable}">
+				<pc:automationTag value="auto-BCC-ProcDiagram-MoveProcDown"
+					standAlone="false" />
+				<h:graphicImage
+					value="#{ippBCCDiagramBean.noSubProcessAvailable ? '/plugins/business-control-center/images/icons/active/downLight.gif' : '/plugins/business-control-center/images/icons/active/downGrey.gif'}"
+					style="border: none;"
+					title="#{ippBCCDiagramBean.messages['moveProcessDown.title']}" />
+			</ice:commandLink>
+		</ice:panelGrid>
+		<ice:panelGroup styleClass="clearing" />
+		<img
+			src="#{facesContext.externalContext.requestContextPath}#{ippBCCDiagramBean.diagramUrl}"
+			onload="InfinityBpm.Core.resizePortalMainWindow(new Date().getTime());" />
+	</ice:panelGrid>
+</f:view>

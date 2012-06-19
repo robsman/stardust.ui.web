@@ -1,0 +1,30 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ui:component>
+		<ice:panelGrid>
+			<ice:outputText styleClass="panelHeaderTitle"
+				value="#{views_common_msgPropsBean['views.spawnProcessDialog.processesStarted']}" />
+
+			<ice:panelGroup style="max-height: 100px; overflow: auto;">
+				<pc:automationTag value="auto-COM-SpawnProcDlg-SpawnResultTbl" />
+				<pc:genericDataTable bean="#{spawnProcessDialogBean}"
+					id="spawnedProcess"
+					table="#{spawnProcessDialogBean.spawnProcessHelper.spawnedProcessTable}"
+					exportExcel="false" exportCsv="false" sortSupported="false"
+					renderColumnHeaders="false" style="border-left:1px solid #d9d9d9;">
+					<ui:include
+						src="/plugins/views-common/dialogs/hideBlankTableHeaders.xhtml" />
+				</pc:genericDataTable>
+			</ice:panelGroup>
+			<ice:outputText styleClass="panelHeaderTitle"
+				value="#{views_common_msgPropsBean['views.spawnProcessDialog.viewSpawnedActivities']}" />
+		</ice:panelGrid>
+		
+		
+	</ui:component>
+</f:view>

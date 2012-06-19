@@ -1,0 +1,465 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<ui:include src="/plugins/views-common/common/validationMessage.xhtml">
+		<ui:param name="validationMessageBean"
+			value="#{processSearchBean.validationMessageBean}" />
+	</ui:include>
+	<ice:panelCollapsible expanded="#{processSearchBean.expandSearchCriteria}">
+		<pc:automationTag value="auto-BCC-ProcSrch-SearchCriteriaHeader" standAlone="false"/>
+		<f:facet name="header">
+			<ice:panelGroup>
+				<ice:outputText value="#{processSearchBean.messages['searchCriteria.label']}" />
+			</ice:panelGroup>
+		</f:facet>
+		<table style="vertical-align: top;">
+			<tr>
+				<td style="vertical-align: top;">
+					<ice:panelGrid columns="2">
+						<ice:outputText value="#{processSearchBean.messages['searchFor.label']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
+						<ice:selectOneMenu partialSubmit="true" valueChangeListener="#{processSearchBean.searchOptionChangeListener}"
+							value="#{processSearchBean.selectedSearchOption}">
+							<pc:automationTag value="auto-BCC-ProcSrch-SearchFor" standAlone="false"/>
+							<f:selectItems value="#{processSearchBean.searchOptions}" />
+						</ice:selectOneMenu>
+					</ice:panelGrid>
+				</td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top;">
+					<ice:panelGrid columns="2" columnClasses="table-columnVertical" style="vertical-align: top; white-space: nowrap; text-align:left;" headerClass="heading">
+						<f:facet name="header">
+						<ice:panelGroup style="text-align:left;">
+						   <ice:outputText value="#{processSearchBean.messages['processCriteria.label']}"/>
+						 </ice:panelGroup>  
+						</f:facet>
+	
+						<ice:column>	
+							<ice:outputText value="#{processSearchBean.messages['startedFrom.label']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:panelGrid columns="2">
+								<ice:selectInputDate
+									disabled="#{processSearchBean.selectedSearchOption eq 1}"
+									renderAsPopup="true" id="startedFrom"
+									value="#{processSearchBean.filterAttributes.startedFrom}">
+									<pc:automationTag value="auto-BCC-ProcSrch-StartedFrom"
+										standAlone="false" />
+									<f:converter converterId="customDateTimeConverter" />
+								</ice:selectInputDate>
+								<ice:message for="startedFrom" styleClass="iceMsgImage"
+									showSummary="false" showDetail="false"/>
+							</ice:panelGrid>
+							<ice:message for="startedFrom" styleClass="iceMsgInline" />
+						</ice:column>
+	
+						<ice:column>	
+							<ice:outputText value="#{processSearchBean.messages['startedTo.label']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:panelGrid columns="2">
+								<ice:selectInputDate disabled="#{processSearchBean.selectedSearchOption eq 1}" renderAsPopup="true" id="startedTo"
+									value="#{processSearchBean.filterAttributes.startedTo}">
+									<pc:automationTag value="auto-BCC-ProcSrch-StartedTo" standAlone="false"/>
+									<f:converter converterId="customDateTimeConverter" />
+								</ice:selectInputDate>
+								<ice:message for="startedTo" styleClass="iceMsgImage"
+									showSummary="false" showDetail="false" />
+							</ice:panelGrid>
+							<ice:message for="startedTo" styleClass="iceMsgInline" />	
+						</ice:column>
+		
+						<ice:column>	
+							<ice:outputText value="#{processSearchBean.messages['endTimeFrom.label']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:panelGrid columns="2">
+								<ice:selectInputDate disabled="#{(processSearchBean.selectedSearchOption eq 1) or (processSearchBean.caseSpecificSearch)}" renderAsPopup="true" id="endTimeFrom"
+									value="#{processSearchBean.filterAttributes.endTimeFrom}">
+									<pc:automationTag value="auto-BCC-ProcSrch-EndTimeFrom" standAlone="false"/>
+									<f:converter converterId="customDateTimeConverter" />
+								</ice:selectInputDate>
+								<ice:message for="endTimeFrom" styleClass="iceMsgImage"
+									showSummary="false" showDetail="false" />
+							</ice:panelGrid>
+							<ice:message for="endTimeFrom" styleClass="iceMsgInline" />	
+						</ice:column>
+						
+						<ice:column>	
+							<ice:outputText value="#{processSearchBean.messages['endTimeTo.label']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:panelGrid columns="2">
+								<ice:selectInputDate disabled="#{(processSearchBean.selectedSearchOption eq 1) or (processSearchBean.caseSpecificSearch)}" renderAsPopup="true" id="endTimeTo"
+									value="#{processSearchBean.filterAttributes.endTimeTo}">
+									<pc:automationTag value="auto-BCC-ProcSrch-EndTimeTo" standAlone="false"/>
+									<f:converter converterId="customDateTimeConverter" />
+								</ice:selectInputDate>
+								<ice:message for="endTimeTo" styleClass="iceMsgImage"
+									showSummary="false" showDetail="false" />
+							</ice:panelGrid>
+							<ice:message for="endTimeTo" styleClass="iceMsgInline" />		
+						</ice:column>
+						
+						
+						<ice:column style="vertical-align: top;">
+							<ice:panelGroup style="vertical-align: top;">
+								<ice:outputText value="#{processSearchBean.messages['chooseProcess.label']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
+							</ice:panelGroup>
+						</ice:column>
+						<ice:column>
+						<ice:panelGroup>
+							<ui:repeat
+								value="#{processSearchBean.processFilterToolbarItems}"
+								var="processFilterItem">
+								<h:commandLink name="#{processFilterItem.name}"
+									actionListener="#{processSearchBean.toggleProcessFilter}"
+									style="vertical-align: middle;	">
+									<pc:automationTag
+										value="auto-BCC-ProcSrch-#{processFilterItem.name}"
+										standAlone="false" />
+									<h:graphicImage value="#{processFilterItem.image}"
+										style="border: none; padding-right: 10px;margin:3px;"
+										styleClass="#{processFilterItem.styleClass}"
+										title="#{views_common_msgPropsBean[processFilterItem.messsageKey]}" />
+									<f:param value="#{processFilterItem.name}" name="name" />
+								</h:commandLink>
+							</ui:repeat>
+						</ice:panelGroup>
+						<ice:panelGroup>
+							<ice:selectManyMenu id="SlctProcess"
+								value="#{processSearchBean.selectedProcesses}"
+								styleClass="procSearchProcSelMenu" partialSubmit="true"
+								valueChangeListener="#{processSearchBean.selectedProcessesChangeListener}">
+								<pc:automationTag value="auto-BCC-ProcSrch-Process"
+									standAlone="false" />
+								<f:selectItems id="SlctProcessItms"
+									value="#{processSearchBean.processes}" />
+							</ice:selectManyMenu>
+						</ice:panelGroup>
+					</ice:column>
+
+					<ice:column>
+						<ice:outputText
+							value="#{processSearchBean.messages['processHierarchy.label']}#{processSearchBean.messages['colon']}"
+							styleClass="label-form" />
+					</ice:column>
+
+					<ice:column>
+						<ice:panelGrid columns="1" styleClass="procSearchSelOneRadio">
+							<ice:selectOneRadio readOnly="#{processSearchBean.selectedSearchOption eq 1}"
+								value="#{processSearchBean.hierarchyFilter}"
+								partialSubmit="true" disabled="#{(processSearchBean.selectedSearchOption eq 1)}"
+								valueChangeListener="#{processSearchBean.updateHierarchy}" layout="pageDirection">
+								<f:selectItem
+									itemValue="ALL_PROCESS"
+									itemLabel="#{processSearchBean.messages['processHierarchy.options.allPIs']}" />
+								<f:selectItem
+									itemValue="CASE"
+									itemLabel="#{processSearchBean.messages['processHierarchy.options.cases']}" />
+								<f:selectItem
+									itemValue="ROOT_PROCESS"
+									itemLabel="#{processSearchBean.messages['processHierarchy.options.rootProc']}" />	
+							</ice:selectOneRadio>
+						</ice:panelGrid>
+					</ice:column>
+
+					<ice:column>						
+							<ice:outputText value="#{processSearchBean.messages['processState.label']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:selectOneMenu disabled="#{processSearchBean.selectedSearchOption eq 1}" id="SlctProcessState" partialSubmit="true"
+								value="#{processSearchBean.filterAttributes.state}" style="margin:4px;margin-left:5px;">
+								<pc:automationTag value="auto-BCC-ProcSrch-State" standAlone="false"/>
+								<f:selectItems id="SlctProcessStateItms"
+									value="#{processSearchBean.processStates}" />
+							</ice:selectOneMenu>
+						</ice:column>
+					<ice:column>
+						<ice:outputText
+							value="#{processSearchBean.messages['activityTable.column.priority']}#{processSearchBean.messages['colon']}"
+							styleClass="label-form" />
+					</ice:column>
+					<ice:column>
+						<ice:selectOneMenu  
+							value="#{processSearchBean.filterAttributes.priority}" valueChangeListener="#{processSearchBean.priorityChangeListener}" partialSubmit="true" style="margin:4px;margin-left:5px;">
+							<pc:automationTag value="auto-BCC-ProcessSrch-Priority"
+								standAlone="false" />
+							<f:selectItems value="#{processSearchBean.priorityList}" />
+						</ice:selectOneMenu>
+					</ice:column>
+ 					<ice:column>
+						<ice:panelGroup style="margin-top:6px;">
+						<ice:outputText
+							value="#{views_common_msgPropsBean['overview.CaseOwner']}#{processSearchBean.messages['colon']}"
+							styleClass="label-form" />
+						</ice:panelGroup>	
+					</ice:column>
+					<ice:column>
+							<ice:panelGrid>
+								<ice:panelGroup style="width:159px;vertical-align:top;margin-top:-3px;">
+									<ui:include
+										src="#{processSearchBean.ownerSelector.autocompleteContentUrl}">
+										<ui:param name="component"
+											value="#{processSearchBean.ownerSelector}" />
+									</ui:include>
+								</ice:panelGroup>
+							</ice:panelGrid>
+						</ice:column>
+
+					<ice:column>
+							<ice:outputText	value="#{messages_bcc['views.processOverviewView.processTable.column.rootPOID']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
+					</ice:column>
+					<ice:column>
+						<ice:panelGrid columns="2">
+							<ice:inputText id="txtRootProcessOID" size="26" maxlength="20" partialSubmit="true"
+								disabled="#{(processSearchBean.selectedSearchOption eq 1) or (processSearchBean.caseSpecificSearch)}"
+								value="#{processSearchBean.filterAttributes.rootOid}">
+								<f:validateLongRange minimum="1"/>
+								<pc:automationTag value="auto-BCC-ProcSrch-RootPOID"
+									standAlone="false" />
+							</ice:inputText>
+							<ice:message for="txtRootProcessOID" styleClass="iceMsgImage"
+								showSummary="false" showDetail="false" />
+						</ice:panelGrid>
+						<ice:message for="txtRootProcessOID" styleClass="iceMsgInline" />
+					</ice:column>	
+	
+						<ice:column>
+							<ice:outputText value="#{messages_bcc['views.processOverviewView.processTable.column.pOID']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:panelGrid columns="2">
+								<ice:inputText id="txtProcessOID" maxlength="20" size="26" partialSubmit="true"
+									disabled="#{processSearchBean.selectedSearchOption eq 1}"
+									value="#{processSearchBean.filterAttributes.oid}">
+									<f:validateLongRange minimum="1"/>
+									<pc:automationTag value="auto-BCC-ProcSrch-POID" standAlone="false"/>
+								</ice:inputText>
+								<ice:message id="txtProcessOIDMsg" for="txtProcessOID"
+									styleClass="iceMsgImage" showSummary="false" showDetail="false" />
+							</ice:panelGrid>
+							<ice:message for="txtProcessOID" styleClass="iceMsgInline" />	
+						</ice:column>
+					</ice:panelGrid>
+				</td>
+				<td style="vertical-align: top;">
+					<ice:panelGrid columns="2"  rendered="#{processSearchBean.selectedSearchOption eq 1}" columnClasses="table-columnVertical" style="white-space: nowrap; text-align:left;" headerClass="heading">
+						<f:facet name="header">
+							<ice:panelGroup style="text-align:left;">
+								<ice:outputText value="#{processSearchBean.messages['activityCriteria.label']}" />
+							</ice:panelGroup>
+						</f:facet>
+						<ice:column>	
+							<ice:outputText value="#{processSearchBean.messages['startedFrom.label']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:panelGrid columns="2">
+								<ice:selectInputDate renderAsPopup="true" id="actStartedFrom"
+									value="#{processSearchBean.activityFilterAttributes.startedFrom}">
+									<pc:automationTag value="auto-BCC-ActivitySrch-StartedFrom" standAlone="false"/>
+									<f:converter converterId="customDateTimeConverter" />
+								</ice:selectInputDate>
+								<ice:message for="actStartedFrom" styleClass="iceMsgImage"
+									showSummary="false" showDetail="false" />
+							</ice:panelGrid>
+							<ice:message for="actStartedFrom" styleClass="iceMsgInline" />
+						</ice:column>
+	
+						<ice:column>	
+							<ice:outputText value="#{processSearchBean.messages['startedTo.label']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:panelGrid columns="2">
+								<ice:selectInputDate renderAsPopup="true" id="actStartedTo"
+									value="#{processSearchBean.activityFilterAttributes.startedTo}">
+									<pc:automationTag value="auto-BCC-ActivitySrch-StartedTo" standAlone="false"/>
+									<f:converter converterId="customDateTimeConverter" />
+								</ice:selectInputDate>
+								<ice:message for="actStartedTo" styleClass="iceMsgImage"
+									showSummary="false" showDetail="false" />
+							</ice:panelGrid>
+							<ice:message for="actStartedTo" styleClass="iceMsgInline" />	
+						</ice:column>
+	
+	
+						<ice:column>	
+							<ice:outputText value="#{processSearchBean.messages['modifyTimeFrom.label']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:panelGrid columns="2">
+								<ice:selectInputDate renderAsPopup="true" id="actModifyTimeFrom"
+									value="#{processSearchBean.activityFilterAttributes.modifyTimeFrom}">
+									<pc:automationTag value="auto-BCC-ActivitySrch-modifyTimeFrom" standAlone="false"/>
+									<f:converter converterId="customDateTimeConverter" />
+								</ice:selectInputDate>
+								<ice:message for="actModifyTimeFrom" styleClass="iceMsgImage"
+									showSummary="false" showDetail="false" />
+							</ice:panelGrid>	
+							<ice:message for="actModifyTimeFrom" styleClass="iceMsgInline" />
+						</ice:column>
+						
+						<ice:column>	
+							<ice:outputText value="#{processSearchBean.messages['modifyTimeTo.label']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:panelGrid columns="2">
+								<ice:selectInputDate renderAsPopup="true" id="actModifyTimeTo"
+									value="#{processSearchBean.activityFilterAttributes.modifyTimeTo}">
+									<pc:automationTag value="auto-BCC-ActivitySrch-modifyTimeTo" standAlone="false"/>
+									<f:converter converterId="customDateTimeConverter" />
+								</ice:selectInputDate>
+								<ice:message for="actModifyTimeTo" styleClass="iceMsgImage"
+									showSummary="false" showDetail="false" />
+							</ice:panelGrid>
+							<ice:message for="actModifyTimeTo" styleClass="iceMsgInline" />	
+						</ice:column>
+						
+						<ice:column>	
+							<ice:outputText value="#{processSearchBean.messages['activity.label']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:panelGroup>
+								<pc:automationTag value="auto-BCC-ActivitySrch-ActivityFilter" standAlone="false"/>
+								<ui:repeat
+									value="#{processSearchBean.activityFilterToolbarItems}"
+									var="activityFilterItem">
+									<h:commandLink name="#{activityFilterItem.name}"
+										actionListener="#{processSearchBean.toggleActivityFilter}"
+										style="vertical-align: middle;">
+										<h:graphicImage value="#{activityFilterItem.image}"
+											style="border: none; padding-right: 10px;margin-left:3px;"
+											styleClass="#{activityFilterItem.styleClass}"
+											title="#{views_common_msgPropsBean[activityFilterItem.messsageKey]}" />
+										<f:param value="#{activityFilterItem.name}" name="name" />
+									</h:commandLink>
+				
+									<h:graphicImage
+										rendered="#{not activityFilterItem.visible and not activityFilterItem.neverVisible}"
+										style="border: none; padding-right: 10px;"
+										value="/plugins/common/images/t.gif" width="15px" height="15px" />
+								</ui:repeat>
+							</ice:panelGroup>
+							<ice:panelGroup style="clear: both; height:3px;"/>
+							<ice:panelGroup>
+								<ice:selectManyMenu id="SlctActivities"
+									value="#{processSearchBean.selectedActivities}" styleClass="procSearchProcSelMenu">
+									<pc:automationTag value="auto-BCC-ActivitySrch-Activity" standAlone="false"/>
+									<f:selectItems id="SlctActivitiesItems"
+										value="#{processSearchBean.activities}" />
+								</ice:selectManyMenu>
+								<ice:panelGroup style="clear: both; height:4px;"/>
+							</ice:panelGroup>
+						</ice:column>
+						<ice:column>						
+							<ice:outputText value="#{processSearchBean.messages['processState.label']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:selectOneMenu
+								value="#{processSearchBean.activityFilterAttributes.state}" style="margin:4px;margin-left:6px;">
+								<pc:automationTag value="auto-BCC-ActivitySrch-State" standAlone="false"/>
+								<f:selectItems id="SlctActivityStates"
+									value="#{processSearchBean.activityStates}" />
+							</ice:selectOneMenu>
+						</ice:column>
+						<ice:column>
+							<ice:outputText
+								value="#{processSearchBean.messages['activityTable.column.criticality']}#{processSearchBean.messages['colon']}"
+								styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:selectOneMenu value="#{processSearchBean.activityFilterAttributes.criticality}" style="margin:4px;margin-left:6px;">
+								<pc:automationTag value="auto-BCC-ActivitySrch-Criticality"
+									standAlone="false" />
+								<f:selectItems
+									value="#{processSearchBean.criticalityList}" />
+							</ice:selectOneMenu>
+						</ice:column>
+						<ice:column>						
+							<ice:outputText value="#{processSearchBean.messages['activityTable.column.aoid']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:panelGrid columns="2">
+								<ice:inputText id="txtActivityOID" maxlength="20" size="26"
+									partialSubmit="true"
+									value="#{processSearchBean.activityFilterAttributes.activityOID}">
+									<pc:automationTag value="auto-BCC-ActivitySrch-AOID" standAlone="false"/>
+									<f:validateLongRange minimum="1"/>
+								</ice:inputText>
+								<ice:message id="txtActivityOIDMsg" for="txtActivityOID"
+									styleClass="iceMsgImage" showSummary="false" showDetail="false" />
+							</ice:panelGrid>
+							<ice:message for="txtActivityOID" styleClass="iceMsgInline" />
+						</ice:column>
+						<ice:column>
+							<ice:panelGroup style="margin-top:3px;">
+								<ice:outputText
+									value="#{processSearchBean.messages['activityCriteria.performer']}#{processSearchBean.messages['colon']}"
+									styleClass="label-form" />
+							</ice:panelGroup>
+						</ice:column>
+						<ice:column>
+							<ice:panelGrid columns="2">
+								<ice:panelGroup id="performerId" style="width:159px;vertical-align:top;margin-top:-4px">
+									<ui:include
+										src="#{processSearchBean.performerSelector.autocompleteContentUrl}">
+										<ui:param name="component"
+											value="#{processSearchBean.performerSelector}" />
+									</ui:include>
+								</ice:panelGroup>
+								<ice:message styleClass="iceMsgImage"  
+									id="performerIdError" for="performerId" showDetail="false"
+									showSummary="false" />
+							</ice:panelGrid>
+						</ice:column>
+				</ice:panelGrid>
+				</td>
+				<td style="vertical-align: top;">
+					<ice:panelGroup>
+						<ui:include
+							src="/plugins/business-control-center/views/processSearch-descriptors.xhtml">
+							<ui:param name="descriptorItems" value="#{processSearchBean.descriptorItems}" />
+						</ui:include>
+					</ice:panelGroup>	
+				</td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top;">
+					<ice:panelGroup style="white-space: nowrap;">
+						<pc:automationTag value="auto-BCC-ProcSrch-SearchBtn" standAlone="false"/>
+						<ice:panelGrid columns="2" rendered="true">
+							<ice:commandButton id="submitSearch"
+								value="#{processSearchBean.messages['button.searchProcess']}"
+								action="#{processSearchBean.performSearch}" styleClass="button" />
+							
+							<ice:commandButton id="resetSearch"
+								value="#{views_common_msgPropsBean['common.reset']}"
+								action="#{processSearchBean.resetSearch}" styleClass="button" />									
+						</ice:panelGrid>
+					</ice:panelGroup>
+				</td>
+			</tr>
+		</table>
+	</ice:panelCollapsible>
+	<ice:panelGroup styleClass="clearing"/>
+	<ice:panelGroup style="margin: 0px; padding: 0px;" rendered="#{processSearchBean.selectedSearchOption eq 0 and processSearchBean.processTableInitialized}">
+		<ui:include src="/plugins/views-common/processTableHelper/processTableHelper.xhtml">
+			<ui:param name="title" value="#{processSearchBean.messages['title']}"/>
+			<ui:param name="id" value="ctxProcessSearchList"/>
+			<ui:param name="bean" value="#{processSearchBean.processTableHelper}"/>
+		</ui:include>
+	</ice:panelGroup>
+
+	<ice:panelGroup style="margin: 0px; padding: 0px;" rendered="#{processSearchBean.selectedSearchOption eq 1 and processSearchBean.activityTableInitialized}">
+		<ui:include src="/plugins/views-common/activityTableHelper/activityTableHelper.xhtml">
+			<ui:param name="title" value="#{processSearchBean.messages['activityTable.title']}"/>
+			<ui:param name="id" value="activitiesList"/>
+			<ui:param name="bean" value="#{processSearchBean.activityTableHelper}"/>
+		</ui:include>
+	</ice:panelGroup>
+</f:view>

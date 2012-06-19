@@ -1,0 +1,100 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates mandatory attributes)
+		row*= Instance of Row Class
+		col*= Instance of ColumnPreference
+		bean*=Instance of table bean class 
+	 -->
+
+	<ice:panelGroup rendered="#{col.columnName == 'to'}" style="text-align: center;" >
+		<ice:inputText partialSubmit="true" value="#{row.pageTo}" style="width: 25px;height: 10px;" valueChangeListener="#{bean.toValueChange}" >
+			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-PageTo" standAlone="false"/>
+		 	<f:attribute name="row" value="#{row}" />
+		</ice:inputText>
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'from'}" style="text-align: center;">
+		<ice:inputText partialSubmit="true" value="#{row.pageFrom}" style="width: 25px;height: 10px" valueChangeListener="#{bean.fromValueChange}" >
+			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-PageFrom" standAlone="false"/>
+			<f:attribute name="row" value="#{row}" />
+		</ice:inputText>
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'startProcess'}" style="text-align: center;">
+		<ice:selectOneMenu partialSubmit="true" valueChangeListener="#{bean.processChange}"	
+			onclick="Event.stop(event);" value="#{row.spawnProcessFQID}">
+				<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-StartableProc" standAlone="false"/>
+				<f:selectItems value="#{bean.processItems}"/>			
+			<f:attribute name="row" value="#{row}" />
+		</ice:selectOneMenu>
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'documentType'}" style="text-align: center;" >
+		<ice:selectOneMenu  partialSubmit="true"  onclick="Event.stop(event);"	valueChangeListener="#{bean.documentTypeChange}"	
+			value="#{row.docTypeId}">
+			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-DocType" standAlone="false"/>
+			<f:selectItems value="#{row.docTypeItems}"/>
+			<f:attribute name="row" value="#{row}" />
+		</ice:selectOneMenu>
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'documentData'}"
+		style="text-align: right;">
+		<ice:selectOneMenu partialSubmit="true"  onclick="Event.stop(event);" style="min-width:180px;" 
+			value="#{row.dataId}">
+			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-DocData" standAlone="false"/>
+			<f:selectItems value="#{row.dataItems}" />
+		</ice:selectOneMenu>
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'deletePages' and bean.deletePageEnable}" style="text-align: center;">
+		<ice:commandLink actionListener="#{row.toggleDeletePages}" rendered="#{bean.deletePageEnable}" partialSubmit="true" immediate="true" >
+			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-DeletePage" standAlone="false"/>			
+			<ice:graphicImage value="/plugins/common/images/checkbox-off.gif" rendered="#{not row.deletePages}" />
+			<ice:graphicImage value="/plugins/common/images/checkbox-on.gif" rendered="#{row.deletePages}" />
+		</ice:commandLink>	   
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'copyImageData'}" style="text-align: center;">
+		
+		<ice:commandLink actionListener="#{row.toggleCopyImageData}" partialSubmit="true" immediate="true" >
+			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-CopyImgData" standAlone="false"/>			
+			<ice:graphicImage value="/plugins/common/images/checkbox-off.gif" rendered="#{not row.copyImageData}" />
+			<ice:graphicImage value="/plugins/common/images/checkbox-on.gif" rendered="#{row.copyImageData}" />
+		</ice:commandLink>
+			
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'copyProcessData'}" style="text-align: center;" >
+	
+		<ice:commandLink actionListener="#{row.toggleCopyProcessData}" partialSubmit="true" immediate="true" rendered="#{bean.processContextAvailable}">
+			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-CopyProcessData" standAlone="false"/>			
+			<ice:graphicImage value="/plugins/common/images/checkbox-off.gif" rendered="#{not row.copyProcessData}" />
+			<ice:graphicImage value="/plugins/common/images/checkbox-on.gif" rendered="#{row.copyProcessData}" />			
+		</ice:commandLink>	
+			
+		<ice:graphicImage value="/plugins/common/images/checkbox-off.gif" style="opacity: 0.5; filter:alpha(opacity=50)" rendered="#{not bean.processContextAvailable}"/>
+			
+	</ice:panelGroup>
+	
+	<ice:panelGroup rendered="#{col.columnName == 'documentDescription'}" style="text-align: left;">
+		<ice:inputTextarea style="width: 150px" value="#{row.docDecription}" partialSubmit="true" 
+			rows="2" >
+			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-DocDescription" standAlone="false"/>
+		</ice:inputTextarea>	
+	</ice:panelGroup>
+	<ice:panelGroup rendered="#{col.columnName == 'versionComment'}" style="text-align: left;">
+		<ice:inputTextarea style="width: 150px" value="#{row.versionComment}" partialSubmit="true" 
+			rows="2" >
+			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-VersionComment" standAlone="false"/>
+		</ice:inputTextarea>	
+	</ice:panelGroup>
+
+</f:view>

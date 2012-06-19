@@ -1,0 +1,196 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+	dialogBean -> Instance of PopupUIComponentBean
+	showAnchor -> true/false... Default true
+	width ->
+	title  
+
+	# Popup Panels Attributes
+	draggable
+	resizable
+	modal	
+	popupX - x coordinate of the pop-up (needed and used only when the pop-up is NOT a modal pop-up)
+	popupY - y coordinate of the pop-up (needed and used only when the pop-up is NOT a modal pop-up)
+	
+	# button panel Attributes
+	buttonsUrl
+	nextLabel
+	backLabel
+	nextVisible
+	backVisible
+	
+	# Facets
+	anchor -> to be displayed for Anchor. This overrides showAnchor
+	content* -> Popup's Body Facet
+	buttons ->
+	-->
+
+	<ui:composition>
+
+		<c:if test="#{not empty width}">
+			<c:set var="width" value="width:#{width}" />
+		</c:if>
+
+		<c:if test="#{empty disabled}">
+			<c:set var="disabled" value="#{false}" />
+		</c:if>
+
+		<c:if test="#{empty resizable}">
+			<c:set var="resizable" value="#{false}" />
+		</c:if>
+
+		<c:if test="#{empty modal}">
+			<c:set var="modal" value="#{true}" />
+		</c:if>
+
+		<c:if test="#{empty draggable}">
+			<c:set var="draggable" value="#{true}" />
+		</c:if>
+
+		<c:if test="#{not empty bean}">
+			<c:set var="dialogBean" value="#{bean}" />
+		</c:if>
+
+		<c:if test="#{empty breadcrumb}">
+			<c:set var="breadcrumb" value="#{false}" />
+		</c:if>
+
+		<c:if test="#{empty popupX}">
+			<c:set var="popupX" value="300" />
+		</c:if>
+
+		<c:if test="#{empty popupY}">
+			<c:set var="popupY" value="200" />
+		</c:if>
+
+		<c:choose>
+			<c:when test="#{modal}">
+				<c:set var="autoPos" value="" />
+			</c:when>
+			<c:otherwise>
+				<c:set var="autoPos" value="#{popupX}, #{popupY}" />
+			</c:otherwise>
+		</c:choose>
+
+		<!-- ************** ANCHOR ************** -->
+		<ice:panelGroup>
+			<ui:insert name="anchor" />
+		</ice:panelGroup>
+
+
+		<!-- ************** POPUP ************** -->
+
+		<c:if test="#{dialogBean.visible}">
+
+			<ice:panelPopup draggable="#{draggable}" resizable="#{resizable}"
+				modal="#{modal}" rendered="#{dialogBean.visible}"
+				positionOnLoadOnly="true" styleClass="popupDialog" autoCenter="true"
+				autoPosition="#{autoPos}" style="min-width:600px;" clientOnly="true">
+
+				<f:facet name="header">
+
+					<ice:panelGroup>
+						<pc:automationTag value="auto-FW-WIZ-Header"/>
+						<ice:outputText value="#{dialogBean.title}"
+							styleClass="headerText" />
+						<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+							image="/plugins/common/images/dialog-windowbttn-close.png"
+							action="#{dialogBean.closePopup}" immediate="true"
+							styleClass="windowClose" />
+					</ice:panelGroup>
+				</f:facet>
+
+				<f:facet name="body">
+					<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+						cellspacing="0" renderNorth="false" renderEast="false"
+						renderSouth="true" renderWest="false" renderCenter="true">
+						<f:facet name="center">
+							<ice:panelGroup style="min-width:600px;">
+								<c:if test="${breadcrumb=='true'}">
+									<div class="breadcrumbs">
+										<c:forEach items="#{dialogBean.breadcrumb}" var="wizardPage"
+											varStatus="loopStatus">
+											<ice:commandLink value="#{wizardPage.name} "
+												title="#{wizardPage.name}">
+												<pc:automationTag value="auto-FW-WIZ-Name"
+													standAlone="false" />
+											</ice:commandLink>	
+										</c:forEach>
+									</div>
+								</c:if>
+								<ui:include src="#{dialogBean.currentPage.path}"
+									rendered="#{dialogBean.visible}" />
+
+								<ice:commandButton id="onLoadActionButton"
+									actionListener="#{dialogBean.onActionListener}"
+									value="hiddenOnLoadActionButton" visible="false">
+									<f:attribute name="ACTION" value="PAGE_ONLOAD" />
+								</ice:commandButton>
+
+								<script type="text/javascript" language="javascript">
+									softClick('input', 'onLoadActionButton');
+								</script>
+							</ice:panelGroup>
+						</f:facet>
+
+						<f:facet name="south">
+							<ice:panelGroup>
+								<ice:panelGrid cellpadding="0" cellspacing="0" columns="3"
+									style="text-align: left">
+									<ice:panelGrid cellpadding="0" cellspacing="0"
+										style="text-align: left" columns="2">
+										<ice:commandButton value="#{dialogBean.previousLabel}"
+											rendered="#{dialogBean.previousRender}"
+											disabled="#{!dialogBean.previousEnable}"
+											actionListener="#{dialogBean.flowActionListener}"
+											styleClass="button">
+											<pc:automationTag value="auto-FW-WIZ-ActionsPrev"
+												standAlone="false" />
+											<f:attribute name="ACTION" value="PREVIOUS" />
+										</ice:commandButton>
+										<ice:commandButton value="#{dialogBean.nextLabel}"
+											rendered="#{dialogBean.nextRender}"
+											disabled="#{!dialogBean.nextEnable}"
+											actionListener="#{dialogBean.flowActionListener}"
+											styleClass="button">
+											<pc:automationTag value="auto-FW-WIZ-ActionsNext"
+												standAlone="false" />
+											<f:attribute name="ACTION" value="NEXT" />
+										</ice:commandButton>
+									</ice:panelGrid>
+
+									<ice:panelGrid cellpadding="0" cellspacing="0"
+										style="text-align: left">
+										<ui:include src="#{dialogBean.currentPage.toolbar}"
+											rendered="#{!empty dialogBean.currentPage.toolbar}" />
+									</ice:panelGrid>
+
+									<ice:panelGrid cellpadding="0" cellspacing="0" columns="1"
+										style="text-align: right;">
+										<ice:commandButton value="#{dialogBean.finishLabel}"
+											rendered="#{dialogBean.finishRender}"
+											disabled="#{!dialogBean.finishEnable}"
+											actionListener="#{dialogBean.flowActionListener}"
+											styleClass="button" style="text-align: right;">
+											<pc:automationTag value="auto-FW-WIZ-ActionsFinish"
+												standAlone="false" />
+											<f:attribute name="ACTION" value="FINISH" />
+										</ice:commandButton>
+									</ice:panelGrid>
+								</ice:panelGrid>
+							</ice:panelGroup>
+						</f:facet>
+					</ice:panelBorder>
+				</f:facet>
+			</ice:panelPopup>
+		</c:if>
+	</ui:composition>
+
+</f:view>

@@ -1,0 +1,77 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<ui:include
+			src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+			<ui:param name="dialogBean"
+				value="#{ippWorkflowExecutionConfigurationBean.workflowConfirmationDialog}" />
+		</ui:include>
+	</ice:panelGroup>
+	<ice:panelGroup styleClass="heading" style="width: 100%">
+    	<ice:outputText value="#{processportal_msgPropsBean['views.workflowExecution.config.descriptors.label']}" />
+    </ice:panelGroup>
+    <ice:panelGroup style="width: 100%">
+    	<ice:selectBooleanCheckbox value="#{ippWorkflowExecutionConfigurationBean.suppressBlankDescriptors}">
+    		<pc:automationTag value="auto-PP-WflowExConf-SuppressBlnk" standAlone="false"/>
+    	</ice:selectBooleanCheckbox>
+    	<ice:outputText value="#{processportal_msgPropsBean['views.workflowExecution.config.suppressDisplay.label']}" />
+	</ice:panelGroup>
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="heading" style="width: 100%">
+    	<ice:outputText value="#{processportal_msgPropsBean['views.workflowExecution.config.priority.label']}" />
+    </ice:panelGroup>
+    <ice:panelGroup style="width: 100%">
+    	<ice:selectBooleanCheckbox value="#{ippWorkflowExecutionConfigurationBean.propagatePriority}">
+    		<pc:automationTag value="auto-PP-WflowExConf-PropPriority" standAlone="false"/>
+    	</ice:selectBooleanCheckbox>
+    	<ice:outputText value="#{processportal_msgPropsBean['views.workflowExecution.config.propagatePriority.label']}" />
+	</ice:panelGroup>
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="heading" style="width: 100%">
+    	<ice:outputText value="#{processportal_msgPropsBean['views.workflowExecution.config.abortProcess.label']}" />
+    </ice:panelGroup>
+	<ice:outputText
+		value="#{processportal_msgPropsBean['views.workflowExecution.config.abortProcess.header']}" />
+	<ice:selectOneMenu disabled="#{not ippPortalApp.loggedInUser.administrator}"
+		value="#{ippWorkflowExecutionConfigurationBean.selectedAbortProcessScope}">
+		<f:selectItems
+			value="#{ippWorkflowExecutionConfigurationBean.abortProcessScopes}" />
+	</ice:selectOneMenu>
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="heading" style="width: 100%">
+    	<ice:outputText value="#{processportal_msgPropsBean['views.workflowExecution.config.abortActivity.label']}" />
+    </ice:panelGroup>
+	<ice:outputText
+		value="#{processportal_msgPropsBean['views.workflowExecution.config.abortActivity.header']}" />
+	<ice:selectOneMenu disabled="#{not ippPortalApp.loggedInUser.administrator}"
+		value="#{ippWorkflowExecutionConfigurationBean.selectedAbortActivityScope}">
+		<f:selectItems
+			value="#{ippWorkflowExecutionConfigurationBean.abortActivityScopes}" />
+	</ice:selectOneMenu>
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGrid columns="3">
+		<pc:automationTag value="auto-PP-WflowExConf-BtnsBar" standAlone="false"/>
+		<ice:commandButton value="#{processportal_msgPropsBean['views.workflowExecution.config.saveButtonLabel']}"
+			action="#{ippWorkflowExecutionConfigurationBean.saveConfiguration}" styleClass="button" />
+		<ice:commandButton value="#{processportal_msgPropsBean['views.workflowExecution.config.resetButtonLabel']}" immediate="true"
+			action="#{ippWorkflowExecutionConfigurationBean.openConfirmationDialog}" styleClass="button" />
+	</ice:panelGrid>
+</f:view>

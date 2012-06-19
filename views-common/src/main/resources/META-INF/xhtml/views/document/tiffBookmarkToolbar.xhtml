@@ -1,0 +1,91 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- Input Params
+		bean* - Bean Reference
+	 -->
+
+	<ice:panelGroup>
+		<ice:panelGrid columns="10">
+			<ice:commandLink actionListener="#{bean.addNewBookmark}"
+				disabled="#{bean.inEditMode} or !bean.documentEditable">
+				<pc:automationTag
+					value="auto-COM-DocView-TiffDocView-BookmarkTbl-ToolbarAdd"
+					standAlone="false" />
+				<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.addBookmark']}" 
+					value="/plugins/views-common/images/icons/bookmark-add.png"
+					style="#{bean.inEditMode or !bean.documentEditable? 'opacity: 0.4; filter:alpha(opacity=40)' : 'opacity: 1; filter:alpha(opacity=100)'}" />
+			</ice:commandLink>
+			<ice:commandLink actionListener="#{bean.deleteSelectedBookmarks}"				
+				disabled="#{!bean.atLeastOneRowSelected or bean.inEditMode or !bean.documentEditable}">
+				<pc:automationTag
+					value="auto-COM-DocView-TiffDocView-BookmarkTbl-ToolbarDel"
+					standAlone="false" />
+				<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.deleteBookmark']}"
+					value="/plugins/views-common/images/icons/bookmark--minus.png"
+					style="#{(!bean.atLeastOneRowSelected or bean.inEditMode or !bean.documentEditable) ?  'opacity: 0.4; filter:alpha(opacity=40)' : 'opacity: 1; filter:alpha(opacity=100)'}" />
+			</ice:commandLink>
+			<ice:commandLink actionListener="#{bean.enterEditMode}"
+				disabled="#{bean.inEditMode or !bean.exactlyOneRowSelected or !bean.documentEditable}">
+				<pc:automationTag
+					value="auto-COM-DocView-TiffDocView-BookmarkTbl-ToolbarEdit"
+					standAlone="false" />
+				<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.editBookmark']}"
+					value="/plugins/views-common/images/icons/bookmark--pencil.png"
+					style="#{(bean.inEditMode or !bean.exactlyOneRowSelected or !bean.documentEditable) ? 'opacity: 0.4; filter:alpha(opacity=40)' : 'opacity: 1; filter:alpha(opacity=100)'}" />
+			</ice:commandLink>
+			<ice:commandLink actionListener="#{bean.toggleDefaultBookMark}"				
+				disabled="#{!bean.exactlyOneRowSelected or bean.inEditMode or !bean.documentEditable}">
+				<pc:automationTag
+					value="auto-COM-DocView-TiffDocView-BookmarkTbl-ToolbarDefaultBookmark"
+					standAlone="false" />
+				<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.defaultBookmark']}"
+					value="/plugins/views-common/images/icons/book-open-bookmark.png"
+					style="#{(!bean.exactlyOneRowSelected or bean.inEditMode or !bean.documentEditable) ? 'opacity: 0.4; filter:alpha(opacity=40)' : 'opacity: 1; filter:alpha(opacity=100)'}"/>
+			</ice:commandLink>
+			<ice:commandLink actionListener="#{bean.extractPageBookmark}"
+				disabled="#{contentHandler.modified or !bean.documentEditable or not bean.extractEnable}">
+				<ice:graphicImage
+					title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.extractPages']}"
+					value="/plugins/views-common/images/icons/page_go.png"
+					style="#{contentHandler.modified or !bean.documentEditable or not bean.extractEnable ? 'opacity: 0.4; filter:alpha(opacity=40)' : 'opacity: 1; filter:alpha(opacity=100)'}" />
+			</ice:commandLink>
+			<ice:graphicImage
+				value="/plugins/common/images/toolbar-separator.png" />
+			<ice:commandLink actionListener="#{bean.moveUp}"
+				disabled="#{!bean.atLeastOneRowSelected or bean.inEditMode or bean.firstBMSelected or !bean.documentEditable}">
+				<pc:automationTag
+					value="auto-COM-DocView-TiffDocView-BookmarkTbl-ToolbarMoveUp"
+					standAlone="false" />
+				<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.moveUp']}"
+					value="/plugins/views-common/images/icons/arrow-skip-090.png"
+					style="#{(!bean.atLeastOneRowSelected or bean.inEditMode or bean.firstBMSelected or !bean.documentEditable) ? 'opacity: 0.4; filter:alpha(opacity=40)' : 'opacity: 1; filter:alpha(opacity=100)'}" />
+			</ice:commandLink>
+			<ice:commandLink actionListener="#{bean.moveDown}"
+				disabled="#{!bean.atLeastOneRowSelected or bean.inEditMode or bean.lastBMSelected or !bean.documentEditable}">
+				<pc:automationTag
+					value="auto-COM-DocView-TiffDocView-BookmarkTbl-ToolbarMoveDown"
+					standAlone="false" />
+				<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.moveDown']}"
+					value="/plugins/views-common/images/icons/arrow-skip-270.png"
+					style="#{(!bean.atLeastOneRowSelected or bean.inEditMode or bean.lastBMSelected or !bean.documentEditable) ? 'opacity: 0.4; filter:alpha(opacity=40)' : 'opacity: 1; filter:alpha(opacity=100)'}" />
+			</ice:commandLink>
+			<ice:graphicImage
+				value="/plugins/common/images/toolbar-separator.png" />
+			<ice:commandLink actionListener="#{bean.exitEditMode}"
+				disabled="#{!bean.inEditMode or !bean.documentEditable}">
+				<pc:automationTag
+					value="auto-COM-DocView-TiffDocView-BookmarkTbl-ToolbarExitEdit"
+					standAlone="false" />
+				<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.exitEditMode']}"
+					value="/plugins/views-common/images/icons/tick.png"
+					style="#{(!bean.inEditMode or !bean.documentEditable) ? 'opacity: 0.4; filter:alpha(opacity=40)' : 'opacity: 1; filter:alpha(opacity=100)'}" />
+			</ice:commandLink>
+		</ice:panelGrid>
+	</ice:panelGroup>
+</f:view>

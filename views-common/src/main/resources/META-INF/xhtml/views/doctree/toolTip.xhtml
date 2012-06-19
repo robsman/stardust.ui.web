@@ -1,0 +1,25 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component">
+	<f:facet name="header">
+	</f:facet>
+	<f:facet name="body">
+		<ice:panelGroup>
+			<ice:panelGrid columns="2" styleClass="notesTooltipPanel"
+				columnClasses="label, data">
+				<ice:outputText styleClass="label"
+					value="#{views_common_msgPropsBean['common.user.label']}" />
+				<ice:outputText styleClass="data" value="#{noteTip.user}" />
+				<ice:outputText styleClass="label"
+					value="#{views_common_msgPropsBean['common.time.label']}" />
+				<ice:outputText styleClass="data" value="#{noteTip.timeStamp}" />
+				<ice:outputText styleClass="label"
+					value="#{views_common_msgPropsBean['common.scope.label']}" />
+				<ice:outputText styleClass="data" value="#{noteTip.scopeType}" />
+			</ice:panelGrid>
+			<ice:panelGroup styleClass="notesTooltipContent">
+				<ice:outputText value="#{noteTip.toolTipContent}" />
+			</ice:panelGroup>
+		</ice:panelGroup>
+	</f:facet>
+</f:view>

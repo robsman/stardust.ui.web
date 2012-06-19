@@ -1,0 +1,50 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid columns="5">
+		<ice:commandLink actionListener="#{userMgmtBean.openCreateUserDialog}">
+			<pc:automationTag value="auto-ADM-PartMgmt-ToolbarCreateUser" standAlone="false"/>
+			<h:graphicImage value="/plugins/admin-portal/images/icons/user_add.png"
+				style="border: none;" title="#{messages_admin['common.create']}" />
+		</ice:commandLink>
+
+		<ice:commandLink action="#{userMgmtBean.copyUser}"
+			disabled="#{!(userMgmtBean.selectedItemCount eq 1)}">
+			<pc:automationTag value="auto-ADM-PartMgmt-ToolbarCopyUser" standAlone="false"/>
+			<h:graphicImage
+				value="/plugins/admin-portal/images/icons/user_go.png"
+				style="border: none;" title="#{messages_admin['common.copy']}"
+				styleClass="#{!(userMgmtBean.selectedItemCount eq 1) ? 'iceCmdBtn-dis' : ''}"/>
+		</ice:commandLink>
+
+		<ice:commandLink actionListener="#{userMgmtBean.invalidateUser}" disabled="#{userMgmtBean.selectedItemCount eq 0}">
+			<pc:automationTag value="auto-ADM-PartMgmt-ToolbarInvalidateUser" standAlone="false"/>
+			<h:graphicImage value="/plugins/admin-portal/images/icons/user_delete.png"
+				style="border: none;" 
+				styleClass="#{userMgmtBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}"
+				title="#{userMgmtBean.messages['invalidateUser.title']}" />
+		</ice:commandLink>	
+		<span class="toolbarGroupLeft" style="padding-right: 0px; "/>
+
+		<ui:repeat value="#{userMgmtBean.userMgmtFilterToolbarItems}"
+			var="filterToolbarItem">
+			<h:commandLink name="#{filterToolbarItem.name}"
+				actionListener="#{userMgmtBean.applyFilter}"
+				rendered="#{filterToolbarItem.visible}">
+				<pc:automationTag
+					value="auto-ADM-PartMgmt-#{filterToolbarItem.name}"
+					standAlone="false" />
+				<h:graphicImage value="#{filterToolbarItem.image}"
+					style="border: none;"
+					styleClass="#{filterToolbarItem.styleClass}"
+					title="#{messages_admin[filterToolbarItem.messsageKey]}" />
+			</h:commandLink>
+		</ui:repeat>
+
+	</ice:panelGrid>	
+</f:view>

@@ -1,0 +1,31 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid columns="5">
+		<ice:commandLink action="#{qaManagementBean.showHideAbsActivities}">
+			<pc:automationTag
+				value="auto-ADM-QAMgmt-Activity-Toolbar-ShowHideABSActivities"
+				standAlone="false" />
+			<h:graphicImage
+				value="/plugins/admin-portal/images/icons/book_open.png"
+				style="border: none;"
+				title="#{messages_admin['views.qaManagementView.toolbar.showHideAbsActivites.title']}"
+				styleClass="#{!(qaManagementBean.showAbsoleteActivities) ? 'iceCmdBtn-dis' : ''}" />
+		</ice:commandLink>
+
+		<ice:commandLink action="#{qaManagementBean.editActivityQA}"
+			disabled="#{qaManagementBean.selectedActivitiesCount eq 0}">
+			<pc:automationTag value="auto-ADM-QAMgmt-Activity-Toolbar-EditQA"
+				standAlone="false" />
+			<h:graphicImage value="/plugins/views-common/images/icons/pencil.png"
+				style="border: none;"
+				title="#{messages_admin['views.qaManagementView.toolbar.editQA.title']}"
+				styleClass="#{(qaManagementBean.selectedActivitiesCount eq 0) ? 'iceCmdBtn-dis' : ''}" />
+		</ice:commandLink>
+	</ice:panelGrid>
+</f:view>

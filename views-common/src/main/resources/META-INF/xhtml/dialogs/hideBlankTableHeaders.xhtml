@@ -1,0 +1,30 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<!-- ***** Documentation for Custom Tag *****
+		columnCount* = number of headers to rendered as blank
+		rowCount* = row count, if the table is empty - do not render these blank headers
+	 -->
+	<c:if test="#{empty columnCount}">
+		<c:set var="columnCount" value="1" />
+	</c:if>
+	<c:if test="#{empty rowCount}">
+		<c:set var="rowCount" value="1" />
+	</c:if>
+	<c:if test="#{rowCount ne 0}">
+		<f:facet name="header">
+			<ice:columnGroup>
+				<ice:headerRow>
+					<c:forEach var="i" begin="1" end="#{columnCount}" step="1">
+						<ice:column>
+						</ice:column>
+					</c:forEach>
+				</ice:headerRow>
+			</ice:columnGroup>
+		</f:facet>
+	</c:if>
+</f:view>

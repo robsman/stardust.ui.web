@@ -1,0 +1,75 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:include src="/plugins/views-common/dialogs/abortProcess.xhtml" />
+	<ui:include
+		src="/plugins/views-common/dialogs/switchProcessDialog.xhtml" />
+	<ui:include src="/plugins/views-common/dialogs/joinProcessDialog.xhtml" />
+
+	<ice:panelGrid cellspacing="0" cellpadding="2"
+		style="padding-right: 10px;" columns="14">
+		<pc:automationTag value="auto-COM-CaseDetView-ToolbarTerminate"/>
+		<ice:commandButton
+			image="/plugins/business-control-center/images/icons/abort_process.png"
+			action="#{caseDetailsBean.terminateProcess}"
+			disabled="#{!caseDetailsBean.abortProcess}" partialSubmit="true"
+			title="#{views_common_msgPropsBean['common.tooltip.terminate']}"
+			styleClass="toolbar-button" />
+
+		<!-- Rendered when process termination is allowed -->
+		<ice:panelGroup
+			rendered="#{(caseDetailsBean.abortProcess)}">
+			<c:set var="bean" value="#{caseDetailsBean}" />
+			<c:set var="processInstance"
+				value="#{caseDetailsBean.processInstance}" />
+			<ui:include
+				src="/plugins/views-common/common/switchProcessMenuBar.xhtml" />
+		</ice:panelGroup>
+		<!-- Rendered when process termination is not allowed -->
+		<ice:panelGroup
+			rendered="#{!(caseDetailsBean.abortProcess)}">
+			<ice:graphicImage styleClass="iceCmdBtn-dis"
+				value="/plugins/common/images/panelHeader-triggerCollapse.png" />
+		</ice:panelGroup>
+
+		<pc:automationTag value="auto-COM-CaseDetView-ToolbarRecover"/>
+		<ice:commandButton
+			image="/plugins/business-control-center/images/icons/recover_process.png"
+			action="#{caseDetailsBean.recoverProcess}"
+			partialSubmit="true"
+			title="#{messages_bcc['common.tooltip.recover']}"
+			styleClass="toolbar-button" />
+					
+		<ice:graphicImage value="/plugins/common/images/toolbar-separator.png"/>	
+		
+		<pc:automationTag value="auto-COM-CaseDetView-ToolbarOpenCorrespondence"/>
+		<ice:commandButton
+			image="/plugins/views-common/images/icons/email_add.png"
+			disabled="#{!caseDetailsBean.supportsProcessAttachments}"
+			action="#{caseDetailsBean.openCorrespondence}"
+			partialSubmit="true"
+			title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.correspondence']}"
+			styleClass="toolbar-button" />
+			
+		<pc:automationTag value="auto-COM-CaseDetView-ToolbarOpenChat"/>
+		<ice:commandButton
+			image="/plugins/views-common/images/icons/user_comment.png"
+			disabled="#{!caseDetailsBean.supportsProcessAttachments}"
+			action="#{caseDetailsBean.openChat}" partialSubmit="true"
+			title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.chat']}"
+			styleClass="toolbar-button" />
+		<ice:graphicImage value="/plugins/common/images/toolbar-separator.png"/>
+		
+		<pc:automationTag value="auto-COM-CaseDetView-ToolbarRefresh"/>
+		<ice:commandButton
+			image="/plugins/business-control-center/images/icons/arrow_refresh.png"
+			action="#{caseDetailsBean.update}" partialSubmit="true"
+			title="#{messages_bcc['toolbars.common.tooltip.update']}"
+			styleClass="toolbar-button" />
+	</ice:panelGrid>
+</f:view>	
+	

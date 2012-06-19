@@ -1,0 +1,77 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ui:component>
+		<ice:panelGrid style="text-align: left"
+			rendered="#{switchProcessDialogBean.showAbortDailog}">
+
+			<ice:outputText
+				value="#{views_common_msgPropsBean['views.switchProcessDialog.cannotAbortMessage']}"
+				styleClass="panelHeaderTitle" />
+
+			<ice:panelGroup>
+				<pc:automationTag value="auto-COM-SwitchProcDlg-AbortSrcTbl" />
+				<ui:include
+					src="/plugins/views-common/dialogs/switchNotificationTable.xhtml" />
+				<ui:param name="bean" value="#{switchProcessDialogBean}" />
+			</ice:panelGroup>
+
+			<ice:outputText value="#{switchProcessDialogBean.notificationLabel}"
+				styleClass="panelHeaderTitle" />
+
+		</ice:panelGrid>
+
+		<ice:panelGrid style="text-align: left"
+			rendered="#{(switchProcessDialogBean.multiSelected) and (!switchProcessDialogBean.showAbortDailog)}">
+
+			<c:forEach items="#{switchProcessDialogBean.switchedProcessMessage}"
+				var="messageLine">
+				<ice:outputText value="#{messageLine}" styleClass="panelHeaderTitle"
+					escape="false">
+				</ice:outputText>
+			</c:forEach>
+			
+			<ice:panelGroup styleClass="clearing" />
+			
+			<ice:panelGroup>
+				<pc:automationTag value="auto-COM-SwitchProcDlg-SwitchProcResultTbl" />
+				<ui:include
+					src="/plugins/views-common/dialogs/switchNotificationTable.xhtml" />
+				<ui:param name="bean" value="#{switchProcessDialogBean}" />
+			</ice:panelGroup>
+			
+			<ice:panelGroup styleClass="clearing" />
+			
+			<ice:outputText
+				rendered="#{not empty switchProcessDialogBean.startedProcessInstances}"
+				value="#{views_common_msgPropsBean['views.switchProcessDialog.viewSwitchedActivities']}" />
+
+		</ice:panelGrid>
+
+		<ice:panelGrid style="text-align: left"
+			rendered="#{!switchProcessDialogBean.multiSelected}">
+
+			<ice:panelGroup
+				rendered="#{!empty switchProcessDialogBean.switchedProcessMessage}">
+				<c:forEach items="#{switchProcessDialogBean.switchedProcessMessage}"
+					var="messageLine">
+					<ice:outputText value="#{messageLine}" escape="false" style="overflow:auto">
+					</ice:outputText>
+					<pc:automationTag value="auto-DT-DTCol-StringVal" />
+					<ice:panelGroup style="	clear: both; height: 3px;" />
+				</c:forEach>
+			</ice:panelGroup>
+			
+			<ice:panelGroup styleClass="clearing" />
+			
+			<ice:outputText
+				rendered="#{not empty switchProcessDialogBean.startedProcessInstances}"
+				value="#{views_common_msgPropsBean['views.switchProcessDialog.viewSwitchedActivities']}" />
+
+		</ice:panelGrid>
+	</ui:component>
+</f:view>

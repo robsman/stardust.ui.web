@@ -1,0 +1,32 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+		<ice:panelGroup rendered="#{col.columnName == 'Select'}" style="text-align: center;">
+			<ice:panelGroup rendered="#{col.columnName == 'Select'}">
+				<pc:automationTag value="auto-ADM-UserGrpMgmt-DataTable-Sel" standAlone="false"/>
+				<ice:selectBooleanCheckbox partialSubmit="true" 
+					value="#{row.selectedRow}"/>
+			</ice:panelGroup>
+			<!--<ice:commandLink actionListener="#{createOrModifyUserGroupBean.openUserGroupDialog}">
+				<h:graphicImage value="/plugins/common/images/tabIcon-generic.png"
+					style="border: none; padding-left: 10px;" title="#{messages_admin['views.userGroupMgmt.detailsUserGroup.tooltip.title']}" />
+				<f:attribute name="userGroup" value="#{row.userGroup}" />
+			</ice:commandLink>	
+			-->
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{col.columnName == 'Name'}">
+			<ice:commandLink actionListener="#{createOrModifyUserGroupBean.openUserGroupDialog}" title="#{messages_admin['views.userGroupMgmt.userGroups.title']}">
+				 <pc:automationTag value="auto-ADM-UserGrpMgmt-DataTable-Name" standAlone="false"/>
+				 <ice:outputText value="#{row.name}"/>
+				 <f:attribute name="userGroup" value="#{row.userGroup}" />
+				 <f:attribute name="editable" value="all" />
+			</ice:commandLink>
+		</ice:panelGroup>
+	</ice:panelGroup>
+</f:view>

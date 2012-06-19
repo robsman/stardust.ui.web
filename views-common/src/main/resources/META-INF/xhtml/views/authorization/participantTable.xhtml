@@ -1,0 +1,151 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ice:panelGroup>
+		<ice:panelBorder renderNorth="true" renderSouth="true"
+			style="width:100%">
+			<f:facet name="north">
+				<ice:panelGroup style="overflow: auto;font-weight: normal;">
+					<ice:panelGroup style="text-align: right"
+						rendered="#{authorizationManagerBean.participantHelper.viewType == 'LIST'}">
+
+						<ice:commandLink
+							action="#{authorizationManagerBean.participantHelper.toggleView}"
+							style="margin-left:2px;margin-right:4px;vertical-align:top;font-weight: bold;">
+							<pc:automationTag value="auto-COM-PartTblView-SrchParticipant" standAlone="false"/>
+							<ice:outputText
+								value="#{authorizationManagerBean.messages['searchParticipant']} &amp;raquo;"
+								styleClass="action-link" escape="false" />
+						</ice:commandLink>
+
+						<pc:automationTag value="auto-COM-PartTbl" />
+						<pc:genericDataTable id="paricipantTable" resizable="false"
+							displayNoRecordsFoundLabel="false" exportExcel="false"
+							renderColumnHeaders="false" exportCsv="false"
+							bean="#{authorizationManagerBean}"
+							table="#{authorizationManagerBean.participantHelper.participantTable}"
+							sortSupported="false" >
+							<ui:include src="participantTableColumnHeader.xhtml" />
+						</pc:genericDataTable>
+					</ice:panelGroup>
+
+
+					<ice:panelGroup style="overflow: auto;font-weight: normal;"
+						rendered="#{authorizationManagerBean.participantHelper.viewType == 'AUTOCOMPLETE'}">
+
+						<ice:panelGrid columns="1" width="100%" style="text-align: right">
+							<ice:commandLink
+								style="margin-left:2px;margin-right:4px;vertical-align:top;font-weight: bold;"
+								action="#{authorizationManagerBean.participantHelper.toggleView}">
+								<pc:automationTag value="auto-COM-PartTblView-PickfromList" standAlone="false"/>
+								<ice:outputText
+									value="#{authorizationManagerBean.messages['pickfromList']} &amp;raquo;"
+									styleClass="action-link" escape="false" />
+							</ice:commandLink>
+						</ice:panelGrid>
+
+
+
+						<ice:panelGroup
+							style="border: 1px solid; border-color: #D9D9D9; width: 400px; overflow: auto;">
+							<ice:panelGrid columns="2" style="width: 400px; overflow: auto;"
+								styleClass="iceDatTblColHdr">
+								<ice:panelGroup style="text-align: center;">
+									<ice:outputText
+										value="#{views_common_msgPropsBean['delegation.userOrRole']}"
+										style="font-weight: bold; " />
+								</ice:panelGroup>
+								<ice:panelGroup style="text-align: center;">
+									<ice:outputText
+										value="#{views_common_msgPropsBean['delegation.type']}"
+										style="font-weight: bold; " />
+								</ice:panelGroup>
+								<ice:panelGroup style="text-align: left;">
+									<ui:include
+										src="#{authorizationManagerBean.participantHelper.participantSelector.autocompleteContentUrl}">
+										<ui:param name="component"
+											value="#{authorizationManagerBean.participantHelper.participantSelector}" />
+									</ui:include>
+
+								</ice:panelGroup>
+								<ice:panelGroup style="text-align: center;">
+									<ice:selectOneMenu
+										value="#{authorizationManagerBean.participantHelper.typeFilterAutoComplete}"
+										partialSubmit="true"
+										valueChangeListener="#{authorizationManagerBean.participantHelper.typeFilterValueChangeListener}">
+										<pc:automationTag value="auto-COM-PartTblView-TypeFilters" standAlone="false"/>
+										<f:selectItems
+											value="#{authorizationManagerBean.participantHelper.typeFilters}" />
+									</ice:selectOneMenu>
+								</ice:panelGroup>
+							</ice:panelGrid>
+						</ice:panelGroup>
+
+
+						<ice:panelGroup styleClass="clearing" />
+						<ice:panelGroup styleClass="clearing" />
+						<ice:panelGroup>
+							<ice:panelGroup styleClass="heading">
+								<ice:panelGroup style="text-align: left">
+									<ice:outputText
+										value="#{authorizationManagerBean.messages['participantTable.autocomplete.selectedParticipants.title']}" />
+								</ice:panelGroup>
+							</ice:panelGroup>
+
+							<ice:dataTable
+								value="#{authorizationManagerBean.participantHelper.selectedParticipantList}"
+								var="participant" width="45%"
+								columnClasses="chatPartColClass1, chatPartColClass2, chatPartColClass3">
+								<h:column>
+									<f:facet name="header">
+										<ice:outputText value="" />
+									</f:facet>
+									<ice:graphicImage value="#{participant.icon}" width="24px"
+										height="24px" />
+								</h:column>
+								<h:column>
+									<f:facet name="header">
+										<ice:outputText
+											value="#{authorizationManagerBean.messages['participantTable.autocomplete.participantName']}" />
+									</f:facet>
+									<ice:outputText value="#{participant.text}" />
+								</h:column>
+								<h:column>
+									<f:facet name="header">
+										<ice:outputText value="" />
+									</f:facet>
+									<ice:commandLink
+										actionListener="#{authorizationManagerBean.participantHelper.removeRow}">
+										<ice:graphicImage
+											value="/plugins/common/images/tab-bttn-close.png"
+											styleClass="iceCmdBtn" />
+										<f:attribute name="participant" value="#{participant}" />
+									</ice:commandLink>
+								</h:column>
+							</ice:dataTable>
+						</ice:panelGroup>
+					</ice:panelGroup>
+
+
+
+				</ice:panelGroup>
+
+
+			</f:facet>
+			<f:facet name="south">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-COM-PartTblView-AddPartBtn" standAlone="false"/>
+					<ice:commandButton
+						value="#{views_common_msgPropsBean['common.add']}"
+						actionListener="#{authorizationManagerBean.addParticipants}"
+						partialSubmit="true" styleClass="button" style="margin-right:5px;"
+						title="#{views_common_msgPropsBean['common.add']}" />
+				</ice:panelGroup>
+			</f:facet>
+		</ice:panelBorder>
+	</ice:panelGroup>
+</f:view>

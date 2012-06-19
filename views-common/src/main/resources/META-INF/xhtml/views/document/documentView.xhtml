@@ -1,0 +1,202 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ui:include
+		src="/plugins/views-common/views/doctree/commonFileUploadDialog.xhtml" />
+
+	<ice:panelGroup>
+		<ice:commandLink style="float: right;"
+			title="#{documentHandlerBean.messages['save.label']}"
+			rendered="#{documentHandlerBean.savable}"
+			action="#{documentHandlerBean.save}">
+			<pc:automationTag value="auto-COM-DocView-SaveBtn" standAlone="false"/>
+			<ice:graphicImage value="/plugins/views-common/images/icons/disk.png"
+				styleClass="toolbar-button" />
+		</ice:commandLink>
+
+		<ice:panelCollapsible id="detailsPanel"  expanded="#{documentHandlerBean.detailsPanelExpanded}"
+			actionListener="#{documentHandlerBean.detailsPanelCollapseListener}">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText
+						value="#{documentHandlerBean.messages['details.label']}" />
+				</ice:panelGroup>
+			</f:facet>
+			<ice:panelGroup styleClass="documentviewer-subpanel" style="padding: 5px;">
+			
+				<!--  Properties -->
+				<ice:panelGroup style="padding-bottom: 5px;">
+					<ice:panelGrid columns="2">
+						<ice:commandLink
+							action="#{documentHandlerBean.togglePropertiesPanel}">
+							<pc:automationTag value="auto-COM-DocView-Properties" standAlone="false" />
+							<ice:graphicImage url="/plugins/common/images/arrow-down-box.png"
+								rendered="#{!documentHandlerBean.propertiesPanelExpanded}"
+				                style="border:none;" />
+							<ice:graphicImage url="/plugins/common/images/arrow-up-box.png"
+								rendered="#{documentHandlerBean.propertiesPanelExpanded}"
+				                style="border:none;" />
+						</ice:commandLink>
+						<ice:panelGroup styleClass="sub-heading">
+							<ice:outputText
+								value="#{documentHandlerBean.messages['properties.label']}" />
+						</ice:panelGroup>
+					</ice:panelGrid>
+					<ice:panelGroup style="padding-left: 5px;" 
+						rendered="#{documentHandlerBean.propertiesPanelExpanded}">
+						<ice:panelGrid columns="4" style="padding: 5px;" columnClasses="table-columnVertical">
+							<ice:outputLabel
+								value="#{documentHandlerBean.messages['properties.id.label']}"
+								styleClass="label-form" />
+							<ice:outputText value="#{documentHandlerBean.documentContentInfo.id}" />
+							<ice:outputLabel
+								value="#{documentHandlerBean.messages['properties.author.label']}"
+								styleClass="label-form" style="padding-left: 5px;" />
+							<ice:outputText value="#{documentHandlerBean.userLabel}" />
+
+							<ice:outputLabel
+								value="#{documentHandlerBean.messages['properties.fileSize.label']}"
+								styleClass="label-form" />
+							<ice:outputText value="#{documentHandlerBean.documentContentInfo.size}">
+								<f:converter converterId="fileSizeConverter" />
+							</ice:outputText>
+							<ice:outputLabel
+								value="#{documentHandlerBean.messages['properties.modificationDate.label']}"
+								styleClass="label-form" style="padding-left: 5px;" />
+							<ice:outputText
+								value="#{documentHandlerBean.documentContentInfo.dateLastModified}">
+								<f:convertDateTime pattern="#{dateUtils.dateTimeFormatter}"
+									locale="#{ippPortalApp.localeObject}"
+									timeZone="#{ippPortalApp.timeZone}" />
+							</ice:outputText>
+
+							<ice:outputLabel
+								value="#{documentHandlerBean.messages['properties.createDate.label']}"
+								styleClass="label-form" />
+							<ice:outputText
+								value="#{documentHandlerBean.documentContentInfo.dateCreated}">
+								<f:convertDateTime pattern="#{dateUtils.dateTimeFormatter}"
+									locale="#{ippPortalApp.localeObject}"
+									timeZone="#{ippPortalApp.timeZone}" />
+							</ice:outputText>
+							<ice:outputLabel value="" styleClass="label-form" />
+							<ice:outputText value="" />
+
+							<ice:outputLabel
+								value="#{documentHandlerBean.messages['properties.description.label']}" 
+								styleClass="label-form" />
+							<ice:inputTextarea disabled="#{!documentHandlerBean.savable}"
+								value="#{documentHandlerBean.inputDescription}"
+								style="width: 300px;">
+								<pc:automationTag value="auto-COM-DocView-Desc"
+									standAlone="false" />
+							</ice:inputTextarea>	
+						</ice:panelGrid>
+					</ice:panelGroup>
+				</ice:panelGroup>
+
+				<!--  Document Meta-data -->
+				<!-- rendered attribute does not work here, if used "binding" attribute causes issues -->
+				<c:if test="#{documentHandlerBean.metaDataAvailable}">
+					<ice:panelGroup style="padding-bottom: 5px;">
+						<ice:panelGrid columns="2">
+							<ice:commandLink
+								action="#{documentHandlerBean.toggleMetaDataPanel}">
+								<pc:automationTag value="auto-COM-DocView-DocMetaData"
+									standAlone="false" />
+								<ice:graphicImage
+									url="/plugins/common/images/arrow-down-box.png"
+									rendered="#{!documentHandlerBean.metaDataPanelExpanded}"
+									style="border:none;" />
+								<ice:graphicImage url="/plugins/common/images/arrow-up-box.png"
+									rendered="#{documentHandlerBean.metaDataPanelExpanded}"
+									style="border:none;" />
+							</ice:commandLink>
+							<ice:panelGroup styleClass="sub-heading">
+								<ice:outputText styleClass="sub-heading"
+									value="#{documentHandlerBean.messages['documentData.label']}" />
+							</ice:panelGroup>
+						</ice:panelGrid>
+						<ice:panelGrid columns="1" style="padding-left: 10px; width: 100%;"
+							rendered="#{documentHandlerBean.metaDataPanelExpanded}">
+							<ice:panelGrid columns="2">
+								<ice:outputLabel
+									value="#{documentHandlerBean.messages['documentData.documentType.label']}"
+									styleClass="label-form" />
+								<ice:outputText value="#{documentHandlerBean.documentTypeName}" />
+							</ice:panelGrid>
+							<ice:panelGroup>
+								<f:subview id="#{documentHandlerBean.documentForm.formId}">
+									<ice:outputStyle
+										href="/plugins/stardust-ui-form-jsf/public/css/stardust-ui-form-jsf.css" />
+									<ice:outputStyle
+										href="/plugins/processportal/css/stardust-ui-form-jsf-override.css" />
+									<ice:panelGrid binding="#{documentHandlerBean.metaDataRootGrid}" style="width: 100%;" />
+								</f:subview>
+							</ice:panelGroup>
+						</ice:panelGrid>
+					</ice:panelGroup>
+				</c:if>
+
+				<!--  fax/Email Meta-data -->
+				<ice:panelGroup
+					rendered="#{documentHandlerBean.correspondencInfoAvailble}"
+					style="padding-bottom: 5px;">
+					<ice:panelGroup styleClass="sub-heading">
+						<ice:outputText
+							value="#{documentHandlerBean.messages['faxEMailInfo.label']}" />
+					</ice:panelGroup>
+					<ice:panelGroup>
+						<ui:include
+							src="/plugins/views-common/views/document/correspondenceDetails.xhtml" />
+					</ice:panelGroup>
+				</ice:panelGroup>
+
+				<!--  Spacer -->
+				<ice:panelGroup>
+					<ice:panelGroup styleClass="clearing" />
+					<hr style="color: lightblue;" />
+					<ice:panelGroup styleClass="clearing" />
+				</ice:panelGroup>
+			</ice:panelGroup>
+		</ice:panelCollapsible>
+
+		<ice:panelGroup styleClass="clearing" />
+
+		<!--  Document Content Panel -->
+		<ice:panelGroup id="contentPanel">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText
+						value="#{documentHandlerBean.messages['content.label']}" />
+				</ice:panelGroup>
+			</f:facet>
+			<ice:panelGroup id="documentContentViewer" rendered="#{!documentHandlerBean.poppedOut and (documentHandlerBean.contentHandler != null)}" 
+				 styleClass="documentviewer-subpanel">
+				<ui:include src="#{documentHandlerBean.contentHandler.contentUrl}">
+					<ui:param name="contentHandler"
+						value="#{documentHandlerBean.contentHandler}" />
+				</ui:include>
+			</ice:panelGroup>
+			
+			<ice:panelGroup rendered="#{documentHandlerBean.contentHandler == null}">
+				<f:subview>
+					<ice:panelGroup dropTarget="false">
+						<ice:inputTextarea disabled="true"
+							value="#{views_common_msgPropsBean['views.documentView.message.unsupportedContentMsg']}" cols="10" rows="20"
+							style="width:99%;height:400px;overflow: auto;" />
+					</ice:panelGroup>
+				</f:subview>
+			</ice:panelGroup>
+			<ice:panelGroup 
+				rendered="#{documentHandlerBean.poppedOut}">
+				<ice:outputText value="#{documentHandlerBean.messages['popout.message']}" />				 
+			</ice:panelGroup>
+		</ice:panelGroup>
+	</ice:panelGroup>
+</f:view>

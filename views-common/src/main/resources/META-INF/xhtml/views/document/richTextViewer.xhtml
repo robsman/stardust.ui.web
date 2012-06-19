@@ -1,0 +1,27 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+	
+	<html>
+	<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"></meta>
+	</head>
+	<body>
+	<!--
+	Input parameter: contentHandler (implementation of IDocumentEditor/IDocumentViewer)
+	 -->
+	
+	<ice:panelGroup>
+		<f:subview>
+			<ice:panelGroup style="background-color: white; padding: 5px;">
+				<ice:outputText value="#{contentHandler.content}"
+					escape="false" />
+			</ice:panelGroup>
+		</f:subview>
+	</ice:panelGroup>
+	</body>
+	</html>
+</f:view>

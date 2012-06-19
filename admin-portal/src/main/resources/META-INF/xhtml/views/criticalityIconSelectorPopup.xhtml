@@ -1,0 +1,79 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<!-- Input Params
+		row* - Criticality configuration table row object reference
+	 -->
+	<ui:composition>
+		<ice:panelPopup rendered="#{row.criticalityIconsSelectorPopup.visible}"
+			draggable="true" resizable="false" styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText
+						value="#{messages_admin['views.criticalityConf.criticality.categories.iconColor.selectPopup.title']}"
+						styleClass="headerText" />
+					<pc:automationTag value="auto-ADM-CriticalityConfig-CatagoriesTable-IconSelectorPopup-Close" standAlone="false" />
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png"
+						actionListener="#{row.closeIconSelectionPopup}" 
+						styleClass="windowClose" immediate="true" />
+				</ice:panelGroup>
+			</f:facet>
+			<f:facet name="body">
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+					cellspacing="0" renderNorth="false" renderSouth="true"
+					renderCenter="true" renderWest="true" renderEast="false">
+
+					<f:facet name="center">
+						<ice:panelGroup style="height: 50px; width: 75px; overflow: auto;">
+							<ice:panelGrid columns="4">
+								<ice:commandLink actionListener="#{row.setSelectedIcon}" title="#{messages_admin['views.criticalityConf.criticality.categories.iconColor.red']}" immediate="true">
+									<pc:automationTag value="auto-ADM-CriticalityConfig-CatagoriesTable-IconSelectorPopup-IconRed" standAlone="false" />
+				 					<ice:graphicImage value="/plugins/views-common/images/icons/criticality/flag_red.png" />
+				 					<f:attribute name="selectedColor" value="RED" />
+				 				</ice:commandLink>
+								<ice:commandLink actionListener="#{row.setSelectedIcon}" title="#{messages_admin['views.criticalityConf.criticality.categories.iconColor.green']}" immediate="true">
+									<pc:automationTag value="auto-ADM-CriticalityConfig-CatagoriesTable-IconSelectorPopup-IconGreen" standAlone="false" />
+				 					<ice:graphicImage value="/plugins/views-common/images/icons/criticality/flag_green.png" />
+				 					<f:attribute name="selectedColor" value="GREEN" />
+				 				</ice:commandLink>
+								<ice:commandLink actionListener="#{row.setSelectedIcon}" title="#{messages_admin['views.criticalityConf.criticality.categories.iconColor.blue']}" immediate="true">
+									<pc:automationTag value="auto-ADM-CriticalityConfig-CatagoriesTable-IconSelectorPopup-IconBlue" standAlone="false" />
+				 					<ice:graphicImage value="/plugins/views-common/images/icons/criticality/flag_blue.png" />
+				 					<f:attribute name="selectedColor" value="BLUE" />
+				 				</ice:commandLink>
+								<ice:commandLink actionListener="#{row.setSelectedIcon}" title="#{messages_admin['views.criticalityConf.criticality.categories.iconColor.yellow']}" immediate="true">
+									<pc:automationTag value="auto-ADM-CriticalityConfig-CatagoriesTable-IconSelectorPopup-IconYellow" standAlone="false" />
+				 					<ice:graphicImage value="/plugins/views-common/images/icons/criticality/flag_yellow.png" />
+				 					<f:attribute name="selectedColor" value="YELLOW" />
+				 				</ice:commandLink>
+								<ice:commandLink actionListener="#{row.setSelectedIcon}" title="#{messages_admin['views.criticalityConf.criticality.categories.iconColor.purple']}" immediate="true">
+									<pc:automationTag value="auto-ADM-CriticalityConfig-CatagoriesTable-IconSelectorPopup-IconPurple" standAlone="false" />
+				 					<ice:graphicImage value="/plugins/views-common/images/icons/criticality/flag_purple.png" />
+				 					<f:attribute name="selectedColor" value="PURPLE" />
+				 				</ice:commandLink>
+								<ice:commandLink actionListener="#{row.setSelectedIcon}" title="#{messages_admin['views.criticalityConf.criticality.categories.iconColor.pink']}" immediate="true">
+									<pc:automationTag value="auto-ADM-CriticalityConfig-CatagoriesTable-IconSelectorPopup-IconPink" standAlone="false" />
+				 					<ice:graphicImage value="/plugins/views-common/images/icons/criticality/flag_pink.png" />
+				 					<f:attribute name="selectedColor" value="PINK" />
+				 				</ice:commandLink>
+								<ice:commandLink actionListener="#{row.setSelectedIcon}" title="#{messages_admin['views.criticalityConf.criticality.categories.iconColor.orange']}" immediate="true">
+									<pc:automationTag value="auto-ADM-CriticalityConfig-CatagoriesTable-IconSelectorPopup-IconOrange" standAlone="false" />
+				 					<ice:graphicImage value="/plugins/views-common/images/icons/criticality/flag_orange.png" />
+				 					<f:attribute name="selectedColor" value="ORANGE" />
+				 				</ice:commandLink>				 				
+							</ice:panelGrid>
+						</ice:panelGroup>
+					</f:facet>
+					<f:facet name="south">
+						<ice:panelGroup>
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

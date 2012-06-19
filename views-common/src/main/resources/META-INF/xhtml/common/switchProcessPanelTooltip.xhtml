@@ -1,0 +1,32 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<!-- Abort and start panel tool tip -->
+	<ice:panelTooltip id="switchPanelToolTip" hideOn="mousedown"
+		hoverDelay="1000" draggable="false" displayOn="hover" 
+		style="margin-top: 6px;margin-left:-76px;" styleClass="switchTooltip">
+		<f:facet name="body">
+		 	 <ice:panelGroup>
+			 	<ice:panelGrid columns="1">
+					<ice:commandLink styleClass="action-link" immediate="true"
+						actionListener="#{bean.openSwitchProcess}">
+						<ice:panelGrid columns="1">
+							<ice:outputText style="white-space: nowrap;"
+								value="#{views_common_msgPropsBean['views.switchProcessDialog.Menu.abortandstart']}" />
+						</ice:panelGrid>
+					</ice:commandLink>
+					<ice:commandLink styleClass="action-link" disabled="true">
+						<ice:panelGrid columns="1">
+							<ice:outputText style="white-space: nowrap;"
+								value="#{views_common_msgPropsBean['views.switchProcessDialog.Menu.abortandjoin']}" />
+						</ice:panelGrid>
+					</ice:commandLink>
+				</ice:panelGrid> 
+			</ice:panelGroup>
+		</f:facet>
+	</ice:panelTooltip>
+</f:view>

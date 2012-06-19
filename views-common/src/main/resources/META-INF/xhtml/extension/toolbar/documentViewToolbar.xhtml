@@ -1,0 +1,104 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ui:include
+		src="/plugins/views-common/views/doctree/downloadPopupDialog.xhtml" />
+	<ice:panelGrid
+		columns="11" cellspacing="0" cellpadding="0">
+		<ice:commandLink disabled="#{!documentHandlerBean.showPrev}"
+			action="#{documentHandlerBean.showPreviousVersion}">
+			<pc:automationTag value="auto-COM-DocView-ToolbarShowPrevVersion"
+				standAlone="false" />
+			<ice:graphicImage
+				value="/plugins/views-common/images/icons/book_previous.png"
+				title="#{documentHandlerBean.messages['versionToolBar.showPreviousVersion']}"
+				styleClass="#{documentHandlerBean.showPrev ? 'document-tabs-toolbar' : 'iceCmdBtn-dis'}" />
+		</ice:commandLink>
+
+		<ice:graphicImage
+			value="/plugins/views-common/images/icons/spacer.gif" width="7"
+			height="15" />
+
+		<ice:commandLink disabled="#{!documentHandlerBean.showNext}"
+			action="#{documentHandlerBean.showNextVersion}"
+			styleClass="document-tabs-toolbar">
+			<pc:automationTag value="auto-COM-DocView-ToolbarShowNextVersion"
+				standAlone="false" />
+			<ice:graphicImage
+				value="/plugins/views-common/images/icons/book_next.png"
+				styleClass="#{documentHandlerBean.showNext ? 'document-tabs-toolbar' : 'iceCmdBtn-dis'}"
+				title="#{documentHandlerBean.messages['versionToolBar.showNextVersion']}" />
+		</ice:commandLink>
+
+		<ice:graphicImage
+			value="/plugins/views-common/images/icons/spacer.gif" width="7"
+			height="15" />
+		<ice:commandLink disabled="#{!documentHandlerBean.revertible}"
+			action="#{documentHandlerBean.revertToVersion}">
+			<pc:automationTag value="auto-COM-DocView-ToolbarRevertToVersion"
+				standAlone="false" />
+			<ice:graphicImage
+				value="/plugins/views-common/images/icons/arrow_switch.png"
+				title="#{documentHandlerBean.messages['versionToolBar.revertToVersion']}"
+				styleClass="#{documentHandlerBean.revertible ? 'document-tabs-toolbar' : 'iceCmdBtn-dis'}" />
+		</ice:commandLink>
+
+		<ice:graphicImage
+			value="/plugins/views-common/images/icons/spacer.gif" width="7"
+			height="15" />
+		<ice:commandLink
+			disabled="#{!documentHandlerBean.documentContentInfo.supportsVersioning}"
+			action="#{documentHandlerBean.uploadNewVersion}"
+			styleClass="document-tabs-toolbar">
+			<pc:automationTag value="auto-COM-DocView-ToolbarUploadNewVersion"
+				standAlone="false" />
+			<ice:graphicImage
+				value="/plugins/views-common/images/icons/page_white_get.png"
+				title="#{views_common_msgPropsBean['views.genericRepositoryView.treeMenuItem.newVersion']}"
+				styleClass="#{documentHandlerBean.documentContentInfo.supportsVersioning ? 'document-tabs-toolbar' : 'iceCmdBtn-dis'}"/>
+		</ice:commandLink>
+
+		<ice:graphicImage
+			value="/plugins/views-common/images/icons/spacer.gif" width="7"
+			height="15" />
+		<ice:panelGroup title="#{documentHandlerBean.messages['download.label']}">
+			<ice:outputResource
+				image="/plugins/views-common/images/icons/download.png"
+				resource="#{documentHandlerBean.fileOutputResource}"
+				label="#{documentHandlerBean.messages['download.label']}"
+				fileName="#{documentHandlerBean.documentContentInfo.name}" type="link">
+				<pc:automationTag value="auto-COM-DocView-ToolbarDownload"
+					standAlone="false" />
+			</ice:outputResource>	
+		</ice:panelGroup>
+
+		<ice:graphicImage
+			value="/plugins/views-common/images/icons/spacer.gif" width="4"
+			height="15" />
+		<ice:commandButton rendered="#{!documentHandlerBean.poppedOut}"
+			image="/plugins/views-common/images/icons/external.png"
+			title="#{documentHandlerBean.messages['popOut.title']}"
+			action="#{documentHandlerBean.popOutDocument}"
+			styleClass="toolbar-button">
+			<pc:automationTag value="auto-COM-DocView-ToolbarPopOutDoc"
+				standAlone="false" />
+		</ice:commandButton>	
+
+		<ice:commandButton rendered="#{documentHandlerBean.poppedOut}"
+			image="/plugins/views-common/images/icons/external_sw.png"
+			title="#{documentHandlerBean.messages['popIn.title']}" 
+			action="#{documentHandlerBean.popInDocument}"
+			styleClass="toolbar-button">
+			<pc:automationTag value="auto-COM-DocView-ToolbarPopInDoc"
+				standAlone="false" />
+		</ice:commandButton>	
+	</ice:panelGrid>
+
+</f:view>
+
+

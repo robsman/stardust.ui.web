@@ -1,0 +1,32 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+		<ice:panelGroup rendered="#{col.columnName == 'Actions'}" styleClass="table-actions-column" style="text-align: center;">
+			<ice:panelGroup rendered="#{not row.running}" style="text-align: center;">
+				<ice:commandLink actionListener="#{daemonsBean.startDaemon}" disabled="#{not daemonsBean.authorizedForDaemonAction}">
+					<pc:automationTag value="auto-ADM-Daemon-ActionsStart" standAlone="false"/>
+					<h:graphicImage value="/plugins/admin-portal/images/icons/control_play.png"
+						style="border: none;" title="#{daemonsBean.messages['startDaemon']}" />
+					<f:attribute name="daemon" value="#{row.daemon}" />
+				</ice:commandLink>
+			</ice:panelGroup>
+			<ice:panelGroup rendered="#{row.running}" style="text-align: center;">
+				<ice:commandLink actionListener="#{daemonsBean.stopDaemon}" disabled="#{not daemonsBean.authorizedForDaemonAction}">
+					<pc:automationTag value="auto-ADM-Daemon-ActionsStop" standAlone="false"/>
+					<h:graphicImage value="/plugins/admin-portal/images/icons/control_stop.png"
+						style="border: none;" title="#{daemonsBean.messages['stopDaemon']}" />
+					<f:attribute name="daemon" value="#{row.daemon}" />
+				</ice:commandLink>
+			</ice:panelGroup>
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{col.columnName == 'Status'}">
+			<ice:outputText value="#{row.running ? messages_admin['views.daemons.status.column.running'] : messages_admin['views.daemons.status.column.stopped']}"/>
+		</ice:panelGroup>
+	</ice:panelGroup>
+</f:view>

@@ -1,0 +1,194 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ice:panelGroup style="margin: 0px; padding: 0px;" rendered="#{row.loaded}">
+		<ice:panelGroup rendered="#{col.columnName == 'ActivityName'}">
+			<ice:commandLink value="#{row.activityName}"
+				action="#{ippPortalApp.openView}" rendered="#{!row.caseInstance}"
+				title="#{messages_bcc['common.tooltip.contextExplorer']}">
+				<pc:automationTag
+					value="auto-COM-ActivityTbl-DataTable-ActivityName"
+					standAlone="false" />
+				<f:param name="viewId" value="processInstanceDetailsView" />
+				<f:param name="nested" value="true" />
+				<f:param name="viewParams"
+					value="processInstanceOID=#{row.processOID}&amp;processInstanceName=#{row.processInstanceName}" />
+			</ice:commandLink>
+
+			<ice:commandLink value="#{row.activityName}"
+				action="#{ippPortalApp.openView}" rendered="#{row.caseInstance}"
+				title="#{messages_bcc['common.tooltip.contextExplorer']}">
+				<pc:automationTag
+					value="auto-COM-ActivityTbl-DataTable-ActivityName"
+					standAlone="false" />
+				<f:param name="viewId" value="caseDetailsView" />
+				<f:param name="nested" value="true" />
+				<f:param name="viewParams"
+					value="processInstanceOID=#{row.processOID}&amp;processInstanceName=#{row.processInstanceName}" />
+			</ice:commandLink>
+		</ice:panelGroup>
+		
+		
+
+		<ice:panelGroup rendered="#{col.columnName == 'Descriptors'}">
+			<ice:panelGroup rendered="#{not empty row.processDescriptorsList}">
+				<table border="0" cellpadding="0" cellspacing="0" width="100%">
+					<ui:repeat value="#{row.processDescriptorsList}" var="info">
+						<tr>
+							<td style="text-align: left; white-space: nowrap; padding-right: 5px; width: 10%;"><ice:outputText value="#{info.key}#{messages_bcc['common.colon']}" /></td>
+							<td style="text-align: left; white-space: nowrap; width: 90%;"><ice:outputText value="#{info.value}" escape="false"/></td>
+						</tr>
+					</ui:repeat>
+				</table>
+			</ice:panelGroup>
+		</ice:panelGroup>
+		
+		<ice:panelGroup rendered="#{col.columnName == 'Criticality'}">
+			<ice:panelGroup panelTooltip="criticalityTootip">
+ 				<ice:graphicImage value="#{row.criticality.icon}" rendered="#{1 le row.criticality.iconCount}" />
+ 				<ice:graphicImage value="#{row.criticality.icon}" rendered="#{2 le row.criticality.iconCount}" />
+				<ice:graphicImage value="#{row.criticality.icon}" rendered="#{3 le row.criticality.iconCount}" />
+				<ice:graphicImage value="#{row.criticality.icon}" rendered="#{4 le row.criticality.iconCount}" />
+				<ice:graphicImage value="#{row.criticality.icon}" rendered="#{5 le row.criticality.iconCount}" />
+			</ice:panelGroup>
+			<ice:panelTooltip id="criticalityTootip"
+				style="background: #FFFFFF; background-color: #F0F0F2; border: 2px solid black;">
+				<f:facet name="body">
+					<ice:panelGrid columns="2" style="width: 100%; height: 100%;">
+						<ice:outputText
+							value="#{messages_bcc['views.processSearchView.activityTable.column.criticality.tooltip.criticalityLabel']}#{messages_bcc['common.colon']}"
+							styleClass="label-form"
+							style="text-align: left; padding-left: 0px;" />
+						<ice:outputText value="#{row.criticality.label}"
+							style="text-align: left; font-weight: bold; padding-left: 0px;" />
+						<ice:outputText
+							value="#{messages_bcc['views.processSearchView.activityTable.column.criticality.tooltip.valueLabel']}#{messages_bcc['common.colon']}"
+							styleClass="label-form"
+							style="text-align: left; padding-left: 0px;" />
+						<ice:outputText value="#{row.criticalityValue}"
+							style="text-align: left; font-weight: bold; padding-left: 0px;" />
+					</ice:panelGrid>
+				</f:facet>
+			</ice:panelTooltip>
+		</ice:panelGroup>
+		
+		<ice:panelGroup rendered="#{col.columnName == 'Priority'}" styleClass="#{row.oldPriority eq row.priority ? '' : 'priorityChanged'}" >
+			<ice:panelGroup
+				rendered="#{row.modifyProcessInstance}">
+				<ice:selectOneMenu partialSubmit="true" value="#{row.priority}"  onclick="Event.stop(event);"
+					readOnly="#{!row.modifyProcessInstance}">
+					<pc:automationTag value="auto-COM-ActivityTbl-DataTable-Priority" standAlone="false"/>
+					<f:selectItems value="#{bean.allPriorities}" />
+				</ice:selectOneMenu>
+			</ice:panelGroup>
+			<ice:panelGroup
+				rendered="#{!row.modifyProcessInstance}">
+				<ice:outputText value="#{row.priority}">
+					<f:converter converterId="priorityConverter" />
+				</ice:outputText>
+			</ice:panelGroup>
+		</ice:panelGroup>
+		
+		<ice:panelGroup rendered="#{col.columnName == 'Actions'}">
+			<ice:panelGrid columns="6" style="float: right;" rendered="#{row.loaded}">
+				<ice:commandLink action="#{ippPortalApp.openView}" rendered="#{!row.caseInstance}">
+					<pc:automationTag value="auto-COM-ActivityTbl-ActionsProcDetails" standAlone="false"/>
+					<h:graphicImage value="/plugins/common/images/icons/process-history/active/process.png"
+						style="border: none;" title="#{messages_bcc['common.tooltip.contextExplorer']}"/>
+					<f:param name="viewId" value="processInstanceDetailsView" />
+					<f:param name="nested" value="true" />
+	                <f:param name="viewParams"
+						value="processInstanceOID=#{row.processOID}&amp;processInstanceName=#{row.processInstanceName}" />
+				</ice:commandLink>
+				
+				<ice:commandLink action="#{ippPortalApp.openView}" rendered="#{row.caseInstance}">
+					<pc:automationTag value="auto-COM-ActivityTbl-ActionsProcDetails" standAlone="false"/>
+					<h:graphicImage value="/plugins/common/images/icons/process-history/active/process.png"
+						style="border: none;" title="#{messages_bcc['common.tooltip.contextExplorer']}"/>
+					<f:param name="viewId" value="caseDetailsView" />
+					<f:param name="nested" value="true" />
+	                <f:param name="viewParams"
+						value="processInstanceOID=#{row.processOID}&amp;processInstanceName=#{row.processInstanceName}" />
+				</ice:commandLink>
+				
+				<ice:commandLink actionListener="#{ippActivityHelper.openActivity}"
+					disabled="#{not row.activatable or row.caseInstance}">
+					<pc:automationTag value="auto-COM-ActivityTbl-ActionsActivate" standAlone="false"/>
+					<f:param name="oid" value="#{row.activityOID}" />
+					<ice:graphicImage
+						url="/plugins/common/images/activate_activity.png"
+	                    style="border:none;" 
+	                    styleClass="#{row.activatable and !row.caseInstance ? '' : 'iceCmdBtn-dis'}"
+	                    title="#{messages_bcc['common.tooltip.activate']}"/>
+				</ice:commandLink>
+				<ice:commandLink actionListener="#{bean.performDefaultDelegation}"
+					rendered="#{bean.strandedActivityView}" disabled="#{row.caseInstance}">
+					<pc:automationTag value="auto-COM-ActivityTbl-ActionsDefaultDelegate" standAlone="false"/>
+					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
+					<ice:graphicImage
+						url="/plugins/views-common/images/icons/delegate_default.png"
+						style="border:none;"
+						title="#{messages_bcc['views.strandedActivities.toolTip.delegateToDefaultPerformer']}" />
+				</ice:commandLink>
+				<ice:commandLink actionListener="#{bean.openDelegateDialog}" disabled="#{!row.delegable or row.caseInstance}">
+					<pc:automationTag value="auto-COM-ActivityTbl-ActionsDelegate" standAlone="false"/>
+					<h:graphicImage value="/plugins/common/images/icons/process-history/active/delegate.png"
+						style="border: none;" 
+						styleClass="#{row.delegable and !row.caseInstance ? '' : 'iceCmdBtn-dis'}"
+						title="#{messages_bcc['common.tooltip.delegate']}"/>
+					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
+				</ice:commandLink>
+				<ice:commandLink actionListener="#{bean.openAbortDialog}" disabled="#{not row.abortActivity}">
+					<pc:automationTag value="auto-COM-ActivityTbl-ActionsAbort" standAlone="false"/>
+					<ice:graphicImage
+						url="/plugins/common/images/icons/process-history/active/abort.png"
+	                    style="border:none;" styleClass="#{row.abortActivity ? '' : 'iceCmdBtn-dis'}" 
+	                    title="#{messages_bcc['common.tooltip.abort']}"/>
+	                 <f:attribute name="activityInstance" value="#{row.activityInstance}" />
+				</ice:commandLink>
+				
+				<!-- Rendered when process termination is not allowed -->
+				<ice:panelGroup rendered="#{!row.abortProcess or row.caseInstance }">
+					<ice:graphicImage styleClass="iceCmdBtn-dis"
+						value="/plugins/common/images/panelHeader-triggerCollapse.png" />
+				</ice:panelGroup>
+				<!-- Rendered when process termination is allowed -->
+				<ice:panelGroup rendered="#{row.abortProcess and !row.caseInstance}">
+					<c:set var="activityInstance" value="#{row.activityInstance}" />
+					<ui:include
+						src="/plugins/views-common/common/switchProcessMenuBar.xhtml" />
+					<ui:param name="bean" value="#{bean}" />
+				</ice:panelGroup>
+				
+				<!--	Notes	-->
+				<ice:panelGroup rendered="#{row.caseInstance }">
+					<ice:graphicImage styleClass="iceCmdBtn-dis"
+						value="/plugins/processportal/images/icons/notes-blank.png" />
+				</ice:panelGroup>
+				
+				<ice:commandLink rendered="#{row.notesCount gt 0 and !row.caseInstance}"
+					actionListener="#{bean.openNotes}">
+					<pc:automationTag value="auto-COM-ActivityTbl-ActionsNotes" standAlone="false"/>
+					<ice:graphicImage
+						value="/plugins/processportal/images/icons/notes-filled.png"
+						title="#{messages_bcc['common.tooltip.notes']}" />
+					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
+				</ice:commandLink>
+				<ice:commandLink rendered="#{row.notesCount le 0 and !row.caseInstance}"
+					actionListener="#{bean.openNotes}">
+					<pc:automationTag value="auto-COM-ActivityTbl-ActionsNotes" standAlone="false"/>
+					<ice:graphicImage
+						value="/plugins/processportal/images/icons/notes-blank.png"
+						title="#{messages_bcc['common.tooltip.notes']}" />
+					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
+				</ice:commandLink>
+			</ice:panelGrid>
+		</ice:panelGroup>
+		
+	</ice:panelGroup>
+</f:view>

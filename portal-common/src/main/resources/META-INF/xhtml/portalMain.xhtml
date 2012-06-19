@@ -1,0 +1,68 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<ice:outputDeclaration doctypeRoot="HTML"
+	doctypePublic="-//W3C//DTD HTML 4.01 Transitional//EN"
+	doctypeSystem="http://www.w3.org/TR/html4/loose.dtd" />
+<html>
+<head>
+
+	<ui:include src="portalHead.xhtml" />
+
+	<c:if test="#{not ippPortalApp.clientTimeZoneSet}">
+	    <script type="text/javascript">
+	    	function loaded()
+	    	{
+		       	var visitortime = new Date();
+		       	document.getElementById("clientZone:timeZone").value = visitortime.getTimezoneOffset();
+				iceSubmitPartial(document.getElementById("clientZone"), document
+						.getElementById("clientZone:timeZone"));
+	    	}
+	    </script>
+	</c:if>
+	
+	<c:if test="#{ippPortalApp.clientTimeZoneSet}">
+	    <script type="text/javascript">
+	    	function loaded()
+	    	{
+	    		InfinityBpm.Core.setLogoutUri('#{ippPortalApp.logoutUri}');
+	    		InfinityBpm.ProcessPortal.init();
+	    	}
+	    </script>
+	</c:if>
+
+</head>
+<body onresize="InfinityBpm.Core.onPortalMainResized();" onload="loaded()" style="overflow:hidden;">
+	<c:if test="#{ippPortalApp.clientTimeZoneSet}">
+		<div style="width: 100%; height: 100%">
+			<table style="width:100%; height: 100%;" cellpadding="0" cellspacing="0">
+				<tr>
+					<td style="width:100%; height: 100%; vertical-align: top;">
+						<ui:include src="portalHeader.xhtml" />
+						<ui:include src="portalContent.xhtml" />
+						<ui:include src="portalFooter.xhtml" />
+						<ui:include src="portalMessageDialog.xhtml" />
+					</td>
+					<td>
+						<div id="ippPortalContentWidthEnd"></div>
+					</td>
+				</tr>
+			</table>			
+		<script id="postScripts" lang="javascript">
+			#{ippPortalApp.eventScripts}
+		</script>
+		</div>
+	</c:if>
+	<c:if test="#{not ippPortalApp.clientTimeZoneSet}">
+		<ice:form id="clientZone">
+	       	<ice:inputHidden id="timeZone" value=""
+	   			valueChangeListener="#{ippPortalApp.timeZoneChangeListener}"
+	   			partialSubmit="true" immediate="true" />
+	   	</ice:form>
+	</c:if>
+</body>
+</html>	
+</f:view>

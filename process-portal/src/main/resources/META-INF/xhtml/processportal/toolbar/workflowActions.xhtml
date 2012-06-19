@@ -1,0 +1,191 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup rendered="#{ippActivityPanelController.loadSuccessful}">
+		<ice:panelGroup>
+			<ui:include src="/plugins/processportal/views/qualityassurance/qualityAssuranceActivityDialog.xhtml" />
+		</ice:panelGroup>
+		<ice:panelGroup>
+			<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+				<ui:param name="dialogBean" value="#{activityDetailsBean.mappedDocumentConfirmationDialog}" />
+			</ui:include>
+		</ice:panelGroup>
+	</ice:panelGroup>
+
+	<ice:panelGrid columns="2" cellpadding="0" cellspacing="0"
+		rendered="#{ippActivityPanelController.loadSuccessful}">
+
+		<ice:panelGroup styleClass="toolbarGroupLeft"
+			style="padding-left:2px; margin-left:4px; margin-right:4px"
+			rendered="#{activityDetailsBean.showAssemblyLinePushServiceControls}">
+			<ice:commandLink
+				action="#{activityDetailsBean.toggleAssemblyLinePushService}">
+				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarAssemblyFeeds"
+					standAlone="false" />
+				<ice:graphicImage
+					rendered="#{activityDetailsBean.assemblyLinePushService}"
+					value="/plugins/processportal/images/icons/lightning_delete.png"
+					styleClass="toolbar-button"
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.disableAssemblyLineFeedIn']}" />
+				<ice:graphicImage
+					rendered="#{not activityDetailsBean.assemblyLinePushService}"
+					value="/plugins/processportal/images/icons/lightning.png"
+					styleClass="toolbar-button"
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.enableAssemblyLineFeedIn']}" />
+			</ice:commandLink>
+		</ice:panelGroup>
+		<ice:panelGrid columns="12">
+			<ice:panelGroup
+				rendered="#{activityDetailsBean.qaCodeIframeBean.qualityAssuranceCodesVisible}">
+				<ice:commandLink disabled="#{activityDetailsBean.qaCodeIframeBean.qualityAssuranceCodesDisabled}"
+					action="#{activityDetailsBean.toggleQualityAssuranceCodesIframePopup}"
+					style="padding:0px;"
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.qaCodes']}">
+					<pc:automationTag value="auto-PP-ActivityPnl-Toolbar-QACodes"
+						standAlone="false" />
+					<ice:graphicImage style="padding-right:5px;" styleClass="#{activityDetailsBean.qaCodeIframeBean.qualityAssuranceCodesDisabled ? 'iceCmdBtn-dis' : ''}"
+						value="/plugins/views-common/images/icons/wrench_exclamation_menu.png" />
+				</ice:commandLink>
+				<div id="ippQualityAssuranceCodesAnchor" style="width: 1px; height: 1px;"></div>
+				<td class="toolbarGroupRight" style="padding-left: 0px;" />
+			</ice:panelGroup>
+
+			<ice:commandLink rendered="#{activityDetailsBean.qaCodeIframeBean.qualityAssuranceActivityInstance}"
+				action="#{activityDetailsBean.completeQualityAssurancePass}">
+				<pc:automationTag value="auto-PP-ActivityPnl-Toolbar-QAPass" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/processportal/images/icons/QA_Pass.png"
+					styleClass="toolbar-button"
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.qaPass']}" />
+			</ice:commandLink>
+			
+			<ice:commandLink rendered="#{activityDetailsBean.qaCodeIframeBean.qualityAssuranceActivityInstance}"
+				action="#{activityDetailsBean.completeQualityAssuranceFail}">
+				<pc:automationTag value="auto-PP-ActivityPnl-Toolbar-QAFail" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/processportal/images/icons/QA_Fail.png"
+					styleClass="toolbar-button"
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.qaFail']}" />
+			</ice:commandLink>
+			
+			<ice:commandLink rendered="#{!activityDetailsBean.qaCodeIframeBean.qualityAssuranceActivityInstance}"
+				actionListener="#{activityDetailsBean.completeAction}">
+				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarComplete" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/processportal/images/icons/activity_completed.png"
+					styleClass="toolbar-button"
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.complete']}" />
+			</ice:commandLink>
+
+			<ice:commandLink
+				actionListener="#{activityDetailsBean.suspendAction}"
+				immediate="true">
+				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSuspend" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/processportal/images/icons/clock.png"
+					styleClass="toolbar-button"
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspend']}" />
+			</ice:commandLink>
+
+			<ice:commandLink actionListener="#{activityDetailsBean.saveAction}">
+				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSave" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/processportal/images/icons/clock_save.png"
+					styleClass="toolbar-button"
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspendAndSave']}" />
+			</ice:commandLink>
+
+			<ice:commandLink
+				actionListener="#{activityDetailsBean.resubmitAction}"
+				immediate="true" rendered="#{activityDetailsBean.resubmitable}">
+				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarResubmit" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/processportal/images/icons/resubmission.gif"
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.resubmit']}" />
+			</ice:commandLink>
+
+			<ice:commandLink actionListener="#{activityDetailsBean.abortAction}"
+				immediate="true" disabled="#{!activityDetailsBean.abortable}">
+				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarAbort" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/processportal/images/icons/abort.png"
+					styleClass="toolbar-button #{!activityDetailsBean.abortable ? 'iceCmdBtn-dis' : ''}"
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.abort']}" />
+			</ice:commandLink>
+			<ice:panelGroup>
+				<ice:commandLink
+					action="#{activityDetailsBean.toggleSwitchProcessIframePopup}"
+					style="padding:0px;"
+					title="#{views_common_msgPropsBean['views.abortProcess.menu.tooltip']}"
+					disabled="#{!activityDetailsBean.abortableProcess}">
+					<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSwitchJoin" standAlone="false"/>
+					<ice:graphicImage style="padding:0px;"
+						value="/plugins/common/images/panelHeader-triggerCollapse.png"
+						styleClass="toolbar-button #{!activityDetailsBean.abortableProcess ? 'iceCmdBtn-dis' : ''}" />
+				</ice:commandLink>
+				<div id="ippSwitchAnchor" style="width: 1px; height: 1px;"></div>
+			</ice:panelGroup>
+
+			<ice:panelGroup rendered="#{activityDetailsBean.caseEnabled}">
+				<ice:commandLink
+					action="#{activityDetailsBean.toggleCaseIframePopup}"
+					style="padding:0px;"
+					title="#{views_common_msgPropsBean['views.case.tooltip.menu']}">
+					<pc:automationTag value="auto-PP-ActivityPnl-ToolbarCase" standAlone="false"/>
+					<ice:graphicImage style="padding:0px;"
+						value="/plugins/views-common/images/icons/case-menu.png" />
+				</ice:commandLink>
+				<div id="ippCaseAnchor" style="width: 1px; height: 1px;"></div>
+			</ice:panelGroup>
+
+			<ice:commandLink action="#{ippPortalApp.openView}">
+				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarProcDetails" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/processportal/images/icons/process.png"
+					styleClass="toolbar-button"
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.processContextExplorer']}" />
+				<f:param name="viewId" value="processInstanceDetailsView" />
+				<f:param name="nested" value="true" />
+				<f:param name="viewParams"
+					value="processInstanceOID=#{activityDetailsBean.activityInstance.processInstanceOID}&amp;processInstanceName=#{activityDetailsBean.activityInstance.processInstance.processName}" />
+			</ice:commandLink>
+	
+			<ice:commandLink action="#{spawnProcessDialogBean.openPopup}"	immediate="true" >								
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/cog_add.png"
+					styleClass="toolbar-button"
+					title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}" />
+				<f:param name="processInstanceOID"
+					value="#{activityDetailsBean.activityInstance.processInstanceOID}" />					
+			</ice:commandLink>
+
+			<ice:commandLink
+				actionListener="#{activityDetailsBean.openDelegateDialog}"
+				disabled="#{!activityDetailsBean.delegable}">
+				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarDelegate" standAlone="false"/>
+				<ice:graphicImage
+					value="/plugins/processportal/images/icons/delegate.png"
+					styleClass="toolbar-button #{!activityDetailsBean.delegable ? 'iceCmdBtn-dis' : ''}"
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.delegate']}" />
+			</ice:commandLink>
+			
+			<ice:panelGroup style="width:100%;">
+				<ui:include src="/plugins/views-common/dialogs/delegation.xhtml" />
+				<ui:include src="/plugins/views-common/dialogs/spawnProcessDialog.xhtml" />
+				<ui:include src="/plugins/views-common/dialogs/switchProcessDialog.xhtml" />
+				<ui:include src="/plugins/views-common/dialogs/joinProcessDialog.xhtml" />
+				<ui:include src="/plugins/views-common/dialogs/relatedProcessSearchDialog.xhtml" />
+				<ui:include src="/plugins/views-common/dialogs/abortActivity.xhtml" />
+				<ui:include src="/plugins/views-common/contentmgmt/views/notificationMessage.xhtml" />
+				<ui:include src="/plugins/processportal/resubmission.xhtml" />
+			</ice:panelGroup>					
+			
+		</ice:panelGrid>
+		
+	</ice:panelGrid>
+</f:view>

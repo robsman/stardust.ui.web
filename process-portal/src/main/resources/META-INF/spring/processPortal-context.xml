@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ippui="http://infinity.com/bpm/portal/common/uiDefinition"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
+
+	<bean name="ippProcessPortalBpmEventController"
+		class="org.eclipse.stardust.ui.web.processportal.EventController"
+		scope="session" destroy-method="destroy" />
+
+	<bean name="ippBpmEventsPhaseListener"
+		class="org.eclipse.stardust.ui.web.processportal.web.BpmEventsPhaseListener" />
+
+	<bean name="ippRequestScopedBpmEventBridge"
+		class="org.eclipse.stardust.ui.web.processportal.view.BpmEventsBridge"
+		scope="request" init-method="init" destroy-method="destroy">
+		<property name="eventController" ref="ippProcessPortalBpmEventController" />
+	</bean>
+
+	<bean name="processportal_msgPropsBean"
+		class="org.eclipse.stardust.ui.web.processportal.common.MessagePropertiesBean"
+		scope="session" />
+
+	<bean name="sessionContext"
+		class="org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext"
+		scope="session" />
+
+	<bean name="worklistsBean"
+		class="org.eclipse.stardust.ui.web.processportal.launchpad.WorklistsBean"
+		scope="session">
+	</bean>
+
+	<bean name="startableProcessBean"
+		class="org.eclipse.stardust.ui.web.processportal.launchpad.StartableProcessBean"
+		scope="session">
+	</bean>
+	
+	<bean name="startDepartmentBean"
+		class="org.eclipse.stardust.ui.web.processportal.launchpad.DepartmentDialogBean"
+		scope="session">
+	</bean>
+
+	<bean name="processportal_overviewPanel"
+		class="org.eclipse.stardust.ui.web.processportal.launchpad.OverviewBean"
+		scope="session">
+	</bean>
+
+	<bean name="myProcessesPanel"
+		class="org.eclipse.stardust.ui.web.processportal.launchpad.MyProcessesPanelBean"
+		scope="session">
+	</bean>
+	
+	<bean name="activitySearchPanel"
+		class="org.eclipse.stardust.ui.web.processportal.launchpad.ActivitySearchPanelBean"
+		scope="session" />
+
+	<bean name="worklistTableBean"
+		class="org.eclipse.stardust.ui.web.processportal.view.WorklistTableBean"
+		scope="portalTab">
+		<property name="processPortalContext" ref="clientContextBean" />
+		<property name="eventController" ref="ippProcessPortalBpmEventController" />
+	</bean>
+	
+	<bean name="worklistConfigurationBean"
+		class="org.eclipse.stardust.ui.web.processportal.view.WorklistConfigurationBean"
+		scope="session">
+	</bean>
+
+	<bean name="activityDetailsBean"
+		class="org.eclipse.stardust.ui.web.processportal.view.ActivityDetailsBean"
+		scope="portalTab">
+		<property name="eventController" ref="ippProcessPortalBpmEventController" />
+		<property name="ippEventController" ref="ippEventController" />
+	</bean>
+
+	<bean name="ippActivityPanelController"
+		class="org.eclipse.stardust.ui.web.processportal.view.ActivityPanelController"
+		scope="portalTab">
+		<constructor-arg index="0" ref="activityDetailsBean" />
+	</bean>
+
+	<bean name="ippActivityPanelConfigurationBean"
+		class="org.eclipse.stardust.ui.web.processportal.view.ActivityPanelConfigurationBean"
+		scope="session" />
+
+	<bean name="processportal_NotesBean" class="org.eclipse.stardust.ui.web.processportal.view.NotesBean"
+		scope="portalTab" />
+
+	<bean name="ippRADProcessPortalSessionInitializer"
+		class="org.eclipse.stardust.ui.web.processportal.legacy.RADProcessPortalSessionInitializer"
+		scope="singleton" />
+
+	<bean name="resubmissionBean"
+		class="org.eclipse.stardust.ui.web.processportal.view.ResubmissionBean"
+		scope="session" />
+
+	<bean name="ippWorkflowExecutionConfigurationBean"
+		class="org.eclipse.stardust.ui.web.processportal.view.WorkflowExecutionConfigurationBean"
+		scope="session">
+		<property name="userProvider" ref="userProvider" />
+	</bean>
+		
+	<bean name="dateUtils"
+		class="org.eclipse.stardust.ui.web.common.util.DateUtils"
+		scope="singleton" />
+	
+	<bean name="qualityAssuranceActivityBean"
+		class="org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityAssuranceActivityBean"
+		scope="portalTab">
+	</bean>			
+
+	<bean name="pollingProperties"
+		class="org.eclipse.stardust.ui.web.processportal.PollingProperties"
+		scope="session" />
+
+</beans>

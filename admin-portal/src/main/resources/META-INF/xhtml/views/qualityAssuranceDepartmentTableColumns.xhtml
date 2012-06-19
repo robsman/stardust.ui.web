@@ -1,0 +1,42 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		id* = Id of the Table
+		title* = Title of the Table
+		bean* = Table instance
+		includeHelpers = true/false. Default true
+	-->
+
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+		<ice:panelGrid columns="2"
+			rendered="#{col.columnName == 'qaPercentageD'}">
+			<ice:panelGroup>
+				<ice:inputText rendered="#{row.editOn}" id="qaPercentageD"
+					partialSubmit="true" immediate="true" maxlength="3" style="margin-left:10px; width: 30px"
+					value="#{row.qaPercentageD}">
+					<pc:automationTag value="auto-ADM-QAMgmt-Department-QAProbability"
+						standAlone="false" />
+					<h:graphicImage rendered="#{row.modified}"
+						value="/plugins/views-common/images/icons/asterisk-small.png"
+						style="vertical-align: top; display: inline;" />
+				</ice:inputText>
+				<ice:outputText rendered="#{!row.editOn}"
+					value="#{row.qaPercentageD}" />
+			</ice:panelGroup>
+		</ice:panelGrid>
+
+		<ice:panelGroup rendered="#{col.columnName == 'deptName'}">
+			<ice:outputText value="#{row.deptName}">
+				<h:graphicImage
+					value="/plugins/admin-portal/images/icons/department.png"
+					style="vertical-align: middle; margin-right:5px" />
+			</ice:outputText>
+		</ice:panelGroup>
+	</ice:panelGroup>
+</f:view>

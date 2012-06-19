@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ippui="http://infinity.com/bpm/portal/common/uiDefinition"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
+
+	<ippui:perspectiveExtension
+		targetPerspective="*" id="ippViewsCommonPerspective" messageBundles="views-common-messages">
+
+		<!-- Tool bars -->
+		<ippui:toolbarExtension>
+			<!--<ippui:toolbarSection name="notesToolBar"
+				include="/plugins/views-common/contentmgmt/extensions/toolbar/notesToolBar.xhtml"
+				requiredView="notesView" />
+
+			--><ippui:toolbarSection name="documentSearchViewToolbar"
+				include="/plugins/views-common/extension/toolbar/documentSearchViewToolbar.xhtml"
+				requiredView="documentSearchView" />
+
+			<ippui:toolbarSection name="chatViewToolbar"
+				include="/plugins/views-common/extension/toolbar/chatViewToolbar.xhtml"
+				requiredView="chatView" />
+
+			<ippui:toolbarSection name="repositoryViewToolbar"
+				include="/plugins/views-common/extension/toolbar/repositoryViewToolbar.xhtml"
+				requiredView="genericRepositoryView" />
+
+			<ippui:toolbarSection name="myDocumentsTreeViewToolbar"
+				include="/plugins/views-common/extension/toolbar/myDocumentsTreeViewToolbar.xhtml"
+				requiredView="myDocumentsTreeView" />
+
+			<ippui:toolbarSection name="documentViewToolbar"
+				include="/plugins/views-common/extension/toolbar/documentViewToolbar.xhtml"
+				requiredView="documentView" />
+				
+			<ippui:toolbarSection name="documentViewSpecificToolBar"
+				include="/plugins/views-common/extension/toolbar/documentViewSpecificToolbar.xhtml"
+				requiredView="documentView" />
+
+			<ippui:toolbarSection name="resourceMgmtTreeViewToolbar"
+				include="/plugins/views-common/extension/toolbar/resourceMgmtTreeViewToolbar.xhtml"
+				requiredView="resourceMgmtTreeView" />
+
+			<ippui:toolbarSection name="processInstanceDetailsViewToolbar"
+				include="/plugins/views-common/extension/toolbar/processInstanceDetailsViewToolbar.xhtml"
+				requiredView="processInstanceDetailsView" />
+				
+			<ippui:toolbarSection name="caseDetailsViewToolbar"
+				include="/plugins/views-common/views/case/caseDetailsViewToolbar.xhtml"
+				requiredView="caseDetailsView" />
+				
+			<ippui:toolbarSection name="myReportsViewToolbar"
+				include="/plugins/views-common/extension/toolbar/myReportsViewToolbar.xhtml"
+				requiredView="myReportsView" />
+				
+			<ippui:toolbarSection name="authorizationManagerViewToolbar"
+			include="/plugins/views-common/extension/toolbar/authorizationManagerViewToolbar.xhtml"
+			requiredView="authorizationManagerView" />			
+				
+					
+				
+		</ippui:toolbarExtension>
+
+		<!--  VIEWS -->
+		<ippui:viewsExtension>
+
+			<!--<ippui:view name="notesView"
+				include="/plugins/views-common/contentmgmt/views/noteContentView.xhtml" />
+
+			--><ippui:view name="genericRepositoryView"
+				include="/plugins/views-common/views/doctree/genericRepositoryView.xhtml"
+				controller="genericRepositoryTreeViewBean" />
+
+			<ippui:view name="myDocumentsTreeView"
+				include="/plugins/views-common/views/mydoctree/myDocumentsTreeView.xhtml"
+				controller="myDocumentsTreeViewBean" />
+
+			<ippui:view name="documentView"
+				include="/plugins/views-common/views/document/documentView.xhtml"
+				controller="documentHandlerBean" />
+
+			<ippui:view name="correspondenceView"
+				include="/plugins/views-common/views/correspondence/correspondenceView.xhtml" />
+
+			<ippui:view name="chatView"
+				include="/plugins/views-common/views/chat/chatView.xhtml"
+				controller="chatViewBean" />
+
+			<ippui:view name="resourceMgmtTreeView"
+				include="/plugins/views-common/views/resourcemgmttree/resourceMgmtTreeView.xhtml"
+				controller="resourceMgmtTreeViewBean" />
+
+			<ippui:view name="documentSearchView"
+				include="/plugins/views-common/views/documentsearch/documentSearchView.xhtml"
+				controller="documentSearchBean">
+				<ippui:preferences>
+					<ippui:preferencePage name="icon"
+						include="/plugins/views-common/images/icons/document_find.png" />
+				</ippui:preferences>
+			</ippui:view>
+
+			<ippui:view name="userProfileView"
+				include="/plugins/views-common/user/userProfile.xhtml">
+				<ippui:preferences>
+					<ippui:preferencePage name="configuration"
+						include="/plugins/views-common/user/userProfile.xhtml" />
+				</ippui:preferences>
+			</ippui:view>
+
+			<ippui:view name="processInstanceDetailsView"
+				include="/plugins/views-common/views/processContextExplorer/processInstanceDetailsView.xhtml"
+				controller="processInstanceDetailsBean" identityParams="processInstanceOID">
+				<ippui:preferences>
+					<ippui:preferencePage name="icon"
+						include="/plugins/views-common/images/process.png" />
+					<ippui:preferencePage name="configuration"
+						include="/plugins/views-common/views/processContextExplorer/processInstanceDetailConfiguration.xhtml" />
+				</ippui:preferences>
+			</ippui:view>
+			
+			<ippui:view name="caseDetailsView"
+				include="/plugins/views-common/views/case/caseDetailsView.xhtml"
+				controller="caseDetailsBean" identityParams="processInstanceOID">
+				<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/plugins/views-common/images/icons/envelope.png" />
+				</ippui:preferences>
+			</ippui:view>
+			
+			<ippui:view name="ganttChartView"
+				include="/plugins/business-control-center/views/ganttChartView.xhtml"
+				controller="ganttChartSelectionBean" identityParams="processInstanceOId">
+				<ippui:preferences>
+					<ippui:preferencePage name="configuration"
+						include="/plugins/business-control-center/views/ganttChartConfigurationDialog.xhtml" />
+				</ippui:preferences>
+			</ippui:view>
+			<ippui:view name="processDiagramView" identityParams="processInstanceOId"
+				include="/plugins/business-control-center/views/processDiagramView.xhtml" />
+				
+			<ippui:view name="myReportsView"
+			include="/plugins/views-common/views/report/myReportsView.xhtml"
+			controller="myReportsViewBean" >			<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/business-control-center/images/icons/chart-pie.png" />			</ippui:preferences>			</ippui:view>
+				
+			<ippui:view name="imageViewerConfig"
+				include="/plugins/views-common/views/document/imageViewerConfiguration.xhtml">
+				<ippui:preferences>
+					<ippui:preferencePage name="configuration"
+						include="/plugins/views-common/views/document/imageViewerConfiguration.xhtml" />
+				</ippui:preferences>
+			</ippui:view>
+			
+			<ippui:view name="authorizationManagerView"
+			include="/plugins/views-common/views/authorization/authorizationManagerView.xhtml" controller="authorizationManagerBean"/>			
+		
+<!-- 			<ippui:view name="caseManagerView"
+			include="/plugins/views-common/views/case/caseManagerView.xhtml" controller="authorizationManagerBean"/>	 -->		
+			
+			
+		</ippui:viewsExtension>
+
+
+	</ippui:perspectiveExtension>
+
+</beans>

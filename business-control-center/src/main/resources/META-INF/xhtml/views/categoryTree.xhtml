@@ -1,0 +1,108 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<html>
+	<head>
+	<link
+		href="#{facesContext.externalContext.requestContextPath}/plugins/views-common/css/context-portal.css"
+		rel="stylesheet" type="text/css" />
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"></meta>
+	</head>
+	<body>
+
+	<ui:include src="#{genericPopup.includePath}" />
+
+	<ice:panelGroup
+		style="padding: 5px; background: white; border: 1px solid #CCCCCC;">
+		
+		
+		<pc:automationTag value="auto-COM-CategoryTree" />
+		<ice:tree id="configTree" value="#{categoryTree.tree.model}" var="item"
+				hideRootNode="true" hideNavigation="true">
+				<ice:treeNode>
+					<f:facet name="icon">
+						<ice:panelGroup style="display: inline;">
+							<ice:panelGroup style="display: inline;"
+								styleClass="category-tree-category-icon"								
+								rendered="#{item.userObject.referencingCategory}">
+								<ice:commandLink action="#{item.userObject.toggleExpansion}" immediate="true">
+									<h:graphicImage value="#{item.userObject.icon}" />
+								</ice:commandLink>
+							</ice:panelGroup>
+							<ice:panelGroup style="display: inline"
+								rendered="#{item.userObject.referencingItem}"
+								panelTooltip="viewToolTip"
+								styleClass="category-tree-view-icon">
+								<ice:commandLink action="#{item.userObject.itemClicked}" immediate="true">
+									<h:graphicImage value="#{item.userObject.icon}" />
+								</ice:commandLink>
+							</ice:panelGroup>
+						<ice:panelTooltip id="viewToolTip"
+							rendered="#{item.userObject.item.id != null}" hoverDelay="1500"
+							style="width: 700px; height: 75px;" styleClass="tooltip">
+							<f:facet name="header">
+							</f:facet>
+							<f:facet name="body">
+								<ice:outputText value="#{item.userObject.item.itemObject['description']}"
+									style="width: 700px;" />
+							</f:facet>
+						</ice:panelTooltip>							
+						</ice:panelGroup>
+					</f:facet>
+					<f:facet name="content">
+						<ice:panelGroup style="display: inline;" >
+							<ice:panelGroup style="display: inline;"
+								styleClass="category-tree-category-label"
+								rendered="#{item.userObject.referencingCategory}" 
+								panelTooltip="viewToolTip">
+								<ice:panelGroup style="display: inline">
+									<ice:commandLink action="#{item.userObject.toggleExpansion}" immediate="true">
+										<pc:automationTag value="auto-BCC-CategoryTree-Category" standAlone="false"/>
+										<ice:outputText value="#{item.userObject.category.label}" />
+									</ice:commandLink>
+								</ice:panelGroup>
+							</ice:panelGroup>
+							<ice:panelGroup style="display: inline;"
+								styleClass="category-tree-view-label"
+								rendered="#{item.userObject.referencingItem}" 
+								panelTooltip="viewToolTip">
+								<ice:panelGroup style="display: inline">
+									<ice:commandLink action="#{item.userObject.itemClicked}" immediate="true">
+										<pc:automationTag value="auto-BCC-CategoryTree-CategoryItem" standAlone="false"/>
+										<ice:outputText value="#{item.userObject.item.label}"
+											escape="false" />
+									</ice:commandLink>
+								</ice:panelGroup>
+							</ice:panelGroup>
+							
+							<ice:panelTooltip id="viewToolTip"
+							rendered="#{item.userObject.referencingItem}" hoverDelay="1500"
+							style="width: 700px; height: 75px;" styleClass="tooltip">
+							<f:facet name="header">
+							</f:facet>
+							<f:facet name="body">
+								<ice:panelGroup>
+									<ice:outputText value="#{item.userObject.item.label}"
+										style="font-weight: bold;" />
+									<ice:panelGroup styleClass="clearing" />
+									<ice:outputText value="#{item.userObject.item.itemObject['description']}"
+										style="width: 700px;"/>
+								</ice:panelGroup>
+							</f:facet>
+						</ice:panelTooltip>
+						</ice:panelGroup>
+					</f:facet>
+				</ice:treeNode>
+			</ice:tree>
+		
+		
+		
+	</ice:panelGroup>
+	</body>
+	</html>
+</f:view>

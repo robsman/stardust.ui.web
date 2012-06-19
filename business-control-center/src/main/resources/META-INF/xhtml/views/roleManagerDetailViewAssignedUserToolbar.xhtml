@@ -1,0 +1,24 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid columns="1">
+		<ice:commandLink
+			disabled="#{(roleManagerDetail.removeUser > 0) and (roleManagerDetail.roleModifiable)
+						? false : true}"
+			action="#{roleManagerDetail.removeUserFromRole}">
+			<pc:automationTag
+				value="auto-BCC-RoleMgrDet-AssignedUserTbl-ToolbarRemove" standAlone="false" />
+			<h:graphicImage
+				value="/plugins/business-control-center/images/icons/group_delete.png"
+				style="border: none;"
+				styleClass="#{(roleManagerDetail.removeUser > 0) and (roleManagerDetail.roleModifiable) 
+							? '' : 'iceCmdBtn-dis'}"
+				title="#{roleManagerDetail.messages['button.removeUserFromRole']}" />
+		</ice:commandLink>
+	</ice:panelGrid>
+</f:view>

@@ -1,0 +1,121 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ui:composition>
+		<ice:panelPopup modal="true" rendered="#{createOrModifyDepartmentBean.visible}"
+			draggable="true" autoCentre="true" positionOnLoadOnly="true"
+			styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-ADM-PartMgmt-CreateModDept-Header"/>
+					<ice:outputText
+						value="#{createOrModifyDepartmentBean.modifyMode ?
+							participantMgmtBean.messages['modifyDepartment.title'] : 
+							participantMgmtBean.messages['createDepartment.title']}"
+						styleClass="headerText" />
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png" 
+						action="#{createOrModifyDepartmentBean.closePopup}"
+						immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+		
+			<f:facet name="body">
+				<ice:panelBorder  styleClass="pnlPopUpBrdrDialog" cellpadding="0" cellspacing="0"
+					renderNorth="false" renderEast="false" renderSouth="true"  renderWest="false" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>
+							<ice:panelGroup styleClass="msgError">
+								<ice:messages />
+							</ice:panelGroup>
+							<ice:panelGrid columns="2">
+								<ice:outputLabel
+									value="#{participantMgmtBean.messages['modifyDepartment.organization.label']}#{messages_admin['common.colon']}"
+									styleClass="label-form" />
+								<ice:panelGroup>
+									<c:if test="#{not empty createOrModifyDepartmentBean.organization}">
+										<ice:outputText value="#{createOrModifyDepartmentBean.organizationName}" />
+									</c:if>
+								</ice:panelGroup>
+
+								<ice:outputLabel
+									value="#{participantMgmtBean.messages['modifyDepartment.parentDepartment.label']}#{messages_admin['common.colon']}"
+									styleClass="label-form" />
+								<ice:panelGroup>
+									<c:choose>
+										<c:when test="#{not empty createOrModifyDepartmentBean.parentDepartment}">
+											<ice:outputText value="#{createOrModifyDepartmentBean.parentDepartment.name}" />
+										</c:when>
+										<c:otherwise>
+											<ice:outputText value="#{participantMgmtBean.messages['modifyDepartment.parentDepartment.none']}" />
+										</c:otherwise>
+									</c:choose>
+								</ice:panelGroup>
+
+								<ice:outputLabel
+									value="* #{messages_admin['views.common.id.label']}#{messages_admin['common.colon']}"
+									styleClass="label-form" />
+								<ice:panelGroup>
+									<ice:inputText id="id"
+										value="#{createOrModifyDepartmentBean.id}"
+										disabled="#{(createOrModifyDepartmentBean.modifyMode) ? true : false}"
+										required="true" 
+										validator="#{fieldsValidator.validateId}">
+										<pc:automationTag value="auto-ADM-PartMgmt-CreateModDept-Id" standAlone="false"/>
+									</ice:inputText>	
+									<ice:panelGroup styleClass="msgError">
+										<ice:message for="id" />
+									</ice:panelGroup>
+								</ice:panelGroup>
+
+								<ice:outputLabel
+									value="* #{messages_admin['views.common.name.label']}#{messages_admin['common.colon']}"
+									styleClass="label-form" />
+								<ice:panelGroup>
+									<ice:inputText id="name"
+										value="#{createOrModifyDepartmentBean.name}"
+										required="true" 
+										validator="#{fieldsValidator.validateName}">
+										<pc:automationTag value="auto-ADM-PartMgmt-CreateModDept-Name" standAlone="false"/>
+									</ice:inputText>	
+									<ice:panelGroup styleClass="msgError">
+										<ice:message for="name" />
+									</ice:panelGroup>
+								</ice:panelGroup>
+
+								<ice:outputLabel
+									value="#{messages_admin['views.common.descr.label']}#{messages_admin['common.colon']}"
+									styleClass="label-form" />
+								<ice:panelGroup>
+									<ice:inputTextarea id="description"
+										value="#{createOrModifyDepartmentBean.description}" rows="5">
+										<pc:automationTag value="auto-ADM-PartMgmt-CreateModDept-Desc" standAlone="false"/>
+									</ice:inputTextarea>	
+									<ice:panelGroup styleClass="msgError">
+										<ice:message for="description" />
+									</ice:panelGroup>
+								</ice:panelGroup>
+							</ice:panelGrid>
+						</ice:panelGroup>
+					</f:facet>
+		
+					<f:facet name="south">
+						<ice:panelGroup>
+							<pc:automationTag value="auto-ADM-PartMgmt-CreateModDept-BtnsBar" standAlone="false"/>
+							<ice:commandButton value="#{messages_admin['common.apply']}" action="#{createOrModifyDepartmentBean.apply}"
+								id="apply" styleClass="button" title="#{messages_admin['common.apply']}"/>
+							<ice:commandButton value="#{messages_admin['common.cancel']}" action="#{createOrModifyDepartmentBean.closePopup}"
+								immediate="true" id="cancel" styleClass="button" title="#{messages_admin['common.cancel']}"/>
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

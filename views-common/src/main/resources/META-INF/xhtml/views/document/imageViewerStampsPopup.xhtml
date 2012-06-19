@@ -1,0 +1,64 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ice:panelPopup modal="true"
+		rendered="#{imageViewerStampsBean.visible}" draggable="true"
+		autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog" style="width: 350px; height: 370px;" clientOnly="true">
+		<f:facet name="header">
+			<ice:panelGroup>
+				<ice:outputText value="#{views_common_msgPropsBean['views.imageViewerConfig.stamps.panel.header']}" />
+			</ice:panelGroup>
+		</f:facet>
+		<f:facet name="body">
+			<ice:panelBorder cellpadding="0" cellspacing="0" renderNorth="false"
+				renderSouth="true" renderCenter="true" renderWest="true"
+				renderEast="false">
+				<f:facet name="center">
+					<ice:panelGroup
+						style="height: 300px; width: 340px; overflow: auto; text-align: left;">
+						<pc:automationTag value="auto-COM-StampDlg-Stamp" standAlone="false"/>
+						<c:forEach items="#{imageViewerStampsBean.stamps}" var="stmaps">
+							<ice:panelCollapsible expanded="false" rendered="true">
+								<f:facet name="header">
+									<ice:outputText value="#{stmaps.key}"/>
+								</f:facet>
+								<c:forEach items="#{stmaps.value}" var="stmapEntry">
+									<c:choose>
+										<c:when test="#{views_common_msgPropsBean['views.imageViewerConfig.stamps.uncategorized'] != stmapEntry.key}">
+											<ice:outputLabel value="#{stmapEntry.key}" styleClass="label-item"/>
+										</c:when>
+									</c:choose>
+									<ice:panelGrid columns="3">
+										<c:forEach items="#{stmapEntry.value}" var="stampData">
+											<ice:commandLink
+												actionListener="#{imageViewerStampsBean.selectStamp}">
+												<ice:graphicImage value="#{stampData.docContent}"
+													width="100px" height="50px" style="border: 1px solid gray;"/>
+												<f:attribute name="selectedStamp" value="#{stampData}" />
+											</ice:commandLink>
+										</c:forEach>
+									</ice:panelGrid>
+								</c:forEach>
+							</ice:panelCollapsible>
+						</c:forEach>
+					</ice:panelGroup>
+				</f:facet>
+				<f:facet name="south">
+					<ice:panelGroup>
+						<pc:automationTag value="auto-COM-StampDlg-BtnsBar" standAlone="false"/>
+						<ice:commandButton
+							value="#{views_common_msgPropsBean['views.imageViewerConfig.button.cancel']}"
+							actionListener="#{imageViewerConfigurationBean.closeStampsDialog}"
+							partialSubmit="true" id="cancel" styleClass="button"
+							title="#{views_common_msgPropsBean['views.imageViewerConfig.button.cancel']}"
+							immediate="true" />
+					</ice:panelGroup>
+				</f:facet>
+			</ice:panelBorder>
+		</f:facet>
+	</ice:panelPopup>
+</f:view>

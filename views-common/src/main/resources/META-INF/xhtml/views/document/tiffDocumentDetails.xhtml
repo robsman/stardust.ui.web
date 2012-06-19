@@ -1,0 +1,282 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ui:include src="/plugins/views-common/views/document/extractPageDialog.xhtml" />
+	<ui:include
+		src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+		<ui:param name="dialogBean"
+			value="#{extractPageDialogBean.extractPageConfirmationDialog}" />
+	</ui:include>
+	<ice:panelGroup style="border: 5px">
+    <style>
+      .icePnlGrdCol1 {
+           vertical-align: top;
+      }
+      .icePnlGrdCol2 {
+           vertical-align: top;
+      }
+      .highlightedPage {
+      		border : 3px solid #EABC33;
+      }
+      .selectedPage {
+      		border : 4px solid #FFFC33;
+      }
+      .unSelectedPage {
+      		border : 3px solid #999999;
+      }
+      </style>
+		<ice:panelGrid columns="5" style="border: 1px solid; border-color: #CCCCCC; height: 100%" cellspacing="0" cellpadding="0">
+			<ice:panelGroup>
+				<ice:panelGroup styleClass="clearing" />
+				<ice:panelGroup>
+					<ice:commandLink
+						action="#{contentHandler.toggleShowHideFlag}">
+						<pc:automationTag
+							value="auto-COM-DocView-TiffDocView-ShowHideFlag"
+							standAlone="false" />
+						<ice:graphicImage
+							value="/plugins/views-common/images/icons/spacer_5_5.gif" />
+					</ice:commandLink>
+				</ice:panelGroup>
+			</ice:panelGroup>
+			<ice:panelGroup>
+				<ice:panelGroup styleClass="clearing" />
+				<ice:panelGroup>
+					<ice:commandLink
+						action="#{contentHandler.toggleShowHideFlag}">
+						<pc:automationTag
+							value="auto-COM-DocView-TiffDocView-ShowHideFlag"
+							standAlone="false" />
+						<ice:graphicImage
+							value="#{contentHandler.tiffDocumentHolder.showHideFlag ? '/plugins/views-common/images/icons/thumbnailsPanel-triggerCollapse.png' : '/plugins/views-common/images/icons/thumbnailsPanel-triggerExpand.png'}" />
+					</ice:commandLink>
+					<ice:outputText value="  " />
+				</ice:panelGroup>
+			</ice:panelGroup>
+			<ice:panelGroup>
+				<ice:panelGroup styleClass="clearing" />
+				<ice:panelGroup>
+					<ice:commandLink
+						action="#{contentHandler.toggleShowHideFlag}">
+						<pc:automationTag
+							value="auto-COM-DocView-TiffDocView-ShowHideFlag"
+							standAlone="false" />
+						<ice:graphicImage
+							value="/plugins/views-common/images/icons/spacer_5_5.gif" />
+					</ice:commandLink>
+				</ice:panelGroup>
+			</ice:panelGroup>
+			<ice:panelGroup>
+				<ice:panelTabSet
+					rendered="#{contentHandler.tiffDocumentHolder.showHideFlag}" style="height: 100%"
+					selectedIndex="#{contentHandler.tiffDocumentHolder.focusIndex}">
+					<ice:panelTab label="#{views_common_msgPropsBean['views.tiffViewer.sidePanel.pagesTab.label']}" style="background-color: transparent;">
+						<ice:panelGroup>
+							<ice:commandLink
+								actionListener="#{contentHandler.tiffDocumentHolder.copyPage}"
+								disabled="#{!contentHandler.tiffDocumentHolder.editable}">
+								<pc:automationTag value="auto-COM-DocView-TiffDocView-CopyPage" standAlone="false" />
+								<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.cut']}"
+									rendered="#{contentHandler.tiffDocumentHolder.documentContent != null}"
+									value="/plugins/views-common/images/icons/cut.png"
+									style="#{!contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
+							</ice:commandLink>
+							<ice:outputLabel value=" " />
+							<ice:commandLink
+								actionListener="#{contentHandler.tiffDocumentHolder.pastePage}"
+								disabled="#{!contentHandler.tiffDocumentHolder.insertEnabled or !contentHandler.tiffDocumentHolder.editable}">
+								<pc:automationTag value="auto-COM-DocView-TiffDocView-PastePage" standAlone="false" />
+								<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.paste']}"
+									rendered="#{contentHandler.tiffDocumentHolder.documentContent != null}"
+									value="/plugins/views-common/images/icons/paste_plain.png"
+									style="#{(!contentHandler.tiffDocumentHolder.insertEnabled) or !contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
+							</ice:commandLink>
+							<ice:outputLabel value=" " />
+							<ice:graphicImage
+								value="/plugins/common/images/toolbar-separator.png" />
+							<ice:outputLabel value=" " />
+							<ice:commandLink
+								actionListener="#{contentHandler.tiffDocumentHolder.movePageUp}"
+								disabled="#{!(contentHandler.tiffDocumentHolder.selectedPageNumber gt contentHandler.tiffDocumentHolder.minPageIndex) or !contentHandler.tiffDocumentHolder.editable}">
+								<pc:automationTag
+									value="auto-COM-DocView-TiffDocView-MovePageUp"
+									standAlone="false" />
+								<ice:graphicImage
+									title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.movePageUp']}"
+									rendered="#{contentHandler.tiffDocumentHolder.documentContent != null}"
+									value="/plugins/views-common/images/icons/arrow-skip-090.png"
+									style="#{!(contentHandler.tiffDocumentHolder.selectedPageNumber gt contentHandler.tiffDocumentHolder.minPageIndex) or !contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
+							</ice:commandLink>
+							<ice:outputLabel value=" " />
+							<ice:commandLink
+								actionListener="#{contentHandler.tiffDocumentHolder.movePageDown}"
+								disabled="#{!(contentHandler.tiffDocumentHolder.selectedPageNumber lt contentHandler.tiffDocumentHolder.maxPageIndex) or !contentHandler.tiffDocumentHolder.editable}">
+								<pc:automationTag value="auto-COM-DocView-TiffDocView-MovePageDown" standAlone="false" />
+								<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.movePageDown']}"
+									rendered="#{contentHandler.tiffDocumentHolder.documentContent != null}"
+									value="/plugins/views-common/images/icons/arrow-skip-270.png"
+									style="#{!(contentHandler.tiffDocumentHolder.selectedPageNumber lt contentHandler.tiffDocumentHolder.maxPageIndex) or !contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
+							</ice:commandLink>
+							<ice:outputLabel value=" " />
+							<ice:commandLink
+								actionListener="#{contentHandler.tiffDocumentHolder.reversePageOrder}"
+								disabled="#{!contentHandler.tiffDocumentHolder.editable}">
+								<pc:automationTag value="auto-COM-DocView-TiffDocView-ReversePageOrder" standAlone="false" />
+								<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.reversePageOrder']}"
+									rendered="#{contentHandler.tiffDocumentHolder.documentContent != null}"
+									value="/plugins/views-common/images/icons/blue-document-convert.png"
+									style="#{!contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
+							</ice:commandLink>
+							<ice:outputLabel value=" " />
+							<ice:graphicImage
+								value="/plugins/common/images/toolbar-separator.png" />
+							<ice:outputLabel value="  " />
+							<ice:commandLink
+								actionListener="#{contentHandler.tiffDocumentHolder.addBookmark}"
+								disabled="#{!contentHandler.tiffDocumentHolder.editable}">
+								<pc:automationTag value="auto-COM-DocView-TiffDocView-AddBookmark" standAlone="false" />
+								<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.addBookmark']}"
+									rendered="#{contentHandler.tiffDocumentHolder.documentContent != null}"
+									value="/plugins/views-common/images/icons/bookmark-add.png"
+									style="#{!contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
+							</ice:commandLink>
+						</ice:panelGroup>
+						<ice:panelGroup scrollWidth="200px" scrollHeight="1050px">
+							<ice:panelSeries var="page" first="0" rows="0"
+								value="#{contentHandler.tiffDocumentHolder.pageOrder}">
+								<ice:panelGroup menuPopup="thumbnailsMenu"
+									style="text-align: center;">
+									<ice:commandLink
+										actionListener="#{contentHandler.tiffDocumentHolder.setSelectedPageNumber}"
+										partialSubmit="true">
+										<pc:automationTag value="auto-COM-DocView-TiffDocView-setSelPageNos" standAlone="false" />
+										<ice:graphicImage
+											rendered="#{contentHandler.tiffDocumentHolder.documentContent != null}"
+											value="/IppTiffRenderer?docId=#{contentHandler.tiffDocumentHolder.docId}&amp;pageNo=#{page.currentPageIndex}&amp;origPageNo=#{page.originalPageIndex}&amp;isThumbnail=true&amp;randomPostFix=#{page.randomNo}"
+											styleClass="#{page.selected ? 'selectedPage' : 'unSelectedPage'}"
+											onmouseover="this.className='highlightedPage';"
+											onmouseout="#{page.pageClass};"
+											alt="#{page.pageToolTip}"
+											title="#{page.pageToolTip}"
+											onclick="window.parent.EventHub.events.publish('page_click_event', '#{contentHandler.tiffDocumentHolder.docId}', #{page.currentPageIndex}, #{page.originalPageIndex});" />
+										<f:attribute name="pageNo" value="#{page.currentPageIndex}" />
+									</ice:commandLink>
+									<br />
+									<ice:outputLabel value="#{page.currentPageIndex}" />
+								</ice:panelGroup>
+								<ice:menuPopup id="thumbnailsMenu" rendered="#{contentHandler.tiffDocumentHolder.editable}">
+									<ice:menuItem
+										value="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.cut']}"
+										icon="/plugins/views-common/images/icons/cut.png"
+										actionListener="#{contentHandler.tiffDocumentHolder.copyPage}">
+										<pc:automationTag
+											value="auto-COM-DocView-TiffDocView-ThumbNailMnu-Copy"
+											standAlone="false" />
+										<f:attribute name="pageNo" value="#{page.currentPageIndex}" />
+									</ice:menuItem>
+									<ice:menuItem
+										value="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.paste']}"
+										icon="/plugins/views-common/images/icons/paste_plain.png"
+										actionListener="#{contentHandler.tiffDocumentHolder.pastePage}"
+										disabled="#{!contentHandler.tiffDocumentHolder.insertEnabled}">
+										<pc:automationTag
+											value="auto-COM-DocView-TiffDocView-ThumbNailMnu-Paste"
+											standAlone="false" />
+										<f:attribute name="pageNo" value="#{page.currentPageIndex}" />
+									</ice:menuItem>
+									<ice:menuItem
+										value="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.movePageUp']}"
+										icon="/plugins/views-common/images/icons/arrow-skip-090.png"
+										actionListener="#{contentHandler.tiffDocumentHolder.movePageUp}"
+										disabled="#{!(page.currentPageIndex gt contentHandler.tiffDocumentHolder.minPageIndex)}">
+										<pc:automationTag
+											value="auto-COM-DocView-TiffDocView-ThumbNailMnu-MoveUp"
+											standAlone="false" />
+										<f:attribute name="pageNo" value="#{page.currentPageIndex}" />
+									</ice:menuItem>
+									<ice:menuItem
+										value="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.movePageDown']}"
+										icon="/plugins/views-common/images/icons/arrow-skip-270.png"
+										actionListener="#{contentHandler.tiffDocumentHolder.movePageDown}"
+										disabled="#{!(page.currentPageIndex lt contentHandler.tiffDocumentHolder.maxPageIndex)}">
+										<pc:automationTag
+											value="auto-COM-DocView-TiffDocView-ThumbNailMnu-MoveDown"
+											standAlone="false" />
+										<f:attribute name="pageNo" value="#{page.currentPageIndex}" />
+									</ice:menuItem>
+									<ice:menuItem
+										value="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.reversePageOrder']}"
+										icon="/plugins/views-common/images/icons/blue-document-convert.png"
+										actionListener="#{contentHandler.tiffDocumentHolder.reversePageOrder}">
+										<pc:automationTag
+											value="auto-COM-DocView-TiffDocView-ThumbNailMnu-Reverse"
+											standAlone="false" />
+									</ice:menuItem>
+									<ice:menuItem
+										value="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.addBookmark']}"
+										icon="/plugins/views-common/images/icons/bookmark-add.png"
+										actionListener="#{contentHandler.tiffDocumentHolder.addBookmark}">
+										<pc:automationTag
+											value="auto-COM-DocView-TiffDocView-ThumbNailMnu-AddBookmark"
+											standAlone="false" />
+										<f:attribute name="pageNo" value="#{page.currentPageIndex}" />
+									</ice:menuItem>
+								</ice:menuPopup>
+							</ice:panelSeries>
+						</ice:panelGroup>
+					</ice:panelTab>
+					<ice:panelTab label="#{views_common_msgPropsBean['views.tiffViewer.sidePanel.bookmarksTab.label']}">
+						<ice:panelGroup scrollWidth="200px" scrollHeight="1050px">
+							<pc:automationTag value="auto-COM-DocView-TiffDocView-BookmarkTbl" />
+							<pc:genericDataTable exportExcel="false" exportCsv="false"
+								bean="#{contentHandler.tiffDocumentHolder.bookmarkManager}"
+								id="bookmarksTable"
+								table="#{contentHandler.tiffDocumentHolder.bookmarkManager.bookmarksTable}"
+								sortSupported="false"
+								toolbarUrl="/plugins/views-common/views/document/tiffBookmarkToolbar.xhtml" />
+							<ice:panelGroup styleClass="clearing" />
+							<ice:panelGrid columns="2">
+								<ice:commandLink actionListener="#{contentHandler.tiffDocumentHolder.bookmarkManager.addNewBookmark}"
+									disabled="#{!contentHandler.tiffDocumentHolder.editable}">
+									<pc:automationTag
+										value="auto-COM-DocView-TiffDocView-BookmarkTbl-AddBookmark"
+										standAlone="false" />
+									<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.addBookmark']}" 
+										value="/plugins/views-common/images/icons/add.png"
+										style="#{!contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
+								</ice:commandLink>
+								<ice:outputText value="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.addBookmark']}" style="font-weight: bold;"/>
+							</ice:panelGrid>
+							<ice:panelGroup styleClass="msgError">
+								<ice:messages />
+							</ice:panelGroup>
+						</ice:panelGroup>
+						<ice:outputLabel styleClass="label-form"
+							rendered="#{contentHandler.tiffDocumentHolder.bookmarkManager.inEditMode}"
+							value="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.editModeMsg']}" />
+					</ice:panelTab>
+				</ice:panelTabSet>
+			</ice:panelGroup>
+			<ice:panelGroup
+				style="border-left: 1px solid; border-color: #CCCCCC; height: 100%; width: 100%">
+				<ice:panelGroup>
+					<c:choose>
+						<c:when test="#{documentHandlerBean.poppedOut}">
+							<iframe src="#{contentHandler.tiffDocumentHolder.defaultPagePath} + '&amp;canvasWidth=725px&amp;canvasHeight=800px&amp;isPoppedOut=Y&amp;'" width="750px" height="800px">
+								<p>Your browser does not support iframes.</p>
+							</iframe>
+						</c:when>
+						<c:otherwise>
+							<div id="tiffViewerIframe" />
+						</c:otherwise>
+					</c:choose>
+				</ice:panelGroup>
+			</ice:panelGroup>
+		</ice:panelGrid>
+	</ice:panelGroup>
+</f:view>

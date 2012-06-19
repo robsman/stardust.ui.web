@@ -1,0 +1,62 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:composition>
+		<ice:panelGroup>
+			<ice:panelGrid columns="1" width="100%" style="text-align: right">
+				<ice:commandLink action="#{searchBean.toggleView}" immediate="true">
+					<pc:automationTag value="auto-COM-JoinProcDlg-ToggleView" standAlone="false"/>	
+					<ice:outputText
+						value="#{views_common_msgPropsBean['views.joinProcessAdvanced.advanced.link.label']} &amp;raquo;"
+						styleClass="action-link" escape="false" />
+				</ice:commandLink>
+			</ice:panelGrid>
+
+			<ice:panelGroup styleClass="clearing" />
+
+			<ice:panelGrid columns="2" style="text-align: right">
+
+
+				<ice:panelGrid columns="2"
+					rendered="#{not searchBean.relatedProcessSearchHelper.matchAny}">
+					<ice:outputText style="font-weight: bold;"
+						value="#{views_common_msgPropsBean['views.joinProcessDialog.descriptorAllMatching.message']}" />
+					<ice:commandButton
+						value="#{views_common_msgPropsBean['views.joinProcessDialog.descriptorMatchAny.button.label']}"
+						action="#{searchBean.toggleMatch}" styleClass="button" immediate="true"
+						style="margin-left:10px;">
+						<pc:automationTag value="auto-COM-JoinProcDlg-MatchAll" standAlone="false"/>
+					</ice:commandButton>
+				</ice:panelGrid>
+
+				<ice:panelGrid columns="2"
+					rendered="#{searchBean.relatedProcessSearchHelper.matchAny}">
+					<ice:outputText style="font-weight: bold;"
+						value="#{views_common_msgPropsBean['views.joinProcessDialog.descriptorAnyMatching.message']}" />
+					<ice:commandButton
+						rendered="#{searchBean.relatedProcessSearchHelper.matchAny}"
+						value="#{views_common_msgPropsBean['views.joinProcessDialog.descriptorMatchAll.button.label']}"
+						action="#{searchBean.toggleMatch}" styleClass="button" immediate="true"
+						style="margin-left:10px;" >
+						<pc:automationTag value="auto-COM-JoinProcDlg-MatchAny" standAlone="false"/>
+					</ice:commandButton>	
+				</ice:panelGrid>
+
+
+			</ice:panelGrid>
+			<ice:panelGroup
+				scrollHeight="#{ (fn:length(searchBean.relatedProcessSearchHelper.relatedProcessTable.list) gt 5) ? '300px':'130px'}">
+				<pc:automationTag value="auto-COM-JoinProcDlg-RelatedProcSearch" />	
+				<pc:genericDataTable bean="#{joinProcessDialogBean}" title=""
+					id="relatedProcessSearchTable"
+					table="#{searchBean.relatedProcessSearchHelper.relatedProcessTable}"
+					exportExcel="false" resizable="false" exportCsv="false"
+					sortSupported="false">
+				</pc:genericDataTable>
+			</ice:panelGroup>
+		</ice:panelGroup>
+	</ui:composition>
+</f:view>

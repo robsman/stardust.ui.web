@@ -1,0 +1,66 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<!-- Input Params
+		bean* - Bean Reference
+		row* - Row Object
+		col* - ColumnPreference Reference
+	 -->
+
+	<ice:panelGroup>
+		<ice:panelGroup rendered="#{col.columnName == 'BookmarkText'}">
+			<ice:inputText title="editableBookmark" value="#{row.bookmarkText}" partialSubmit="true" rendered="#{row.editable}" style="width : 5.5em;">
+				<pc:automationTag value="auto-COM-DocView-TiffDocView-BookmarkTbl-BookmarkText" standAlone="false"/>
+			</ice:inputText>
+			<ice:graphicImage value="/plugins/views-common/images/icons/book-open-bookmark.png" rendered="#{row.defaultBookmark and !row.editable}" />
+			<ice:outputLabel value="  " rendered="#{row.defaultBookmark and !row.editable}" />
+			<ice:commandLink value="#{row.bookmarkText}" onclick="javascript: window.parent.EventHub.events.publish('page_click_event', '', #{row.fromPageNo});" rendered="#{!row.editable}">
+				<pc:automationTag value="auto-COM-DocView-TiffDocView-BookmarkTbl-Bookmark" standAlone="false"/>
+			</ice:commandLink>
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{col.columnName == 'FromPageNo'}">
+			<ice:inputText value="#{row.fromPageNo}" size="1" partialSubmit="true" rendered="#{row.editable}" style="width : 1.25em;">
+				<pc:automationTag value="auto-COM-DocView-TiffDocView-BookmarkTbl-FromPageNo" standAlone="false"/>
+			</ice:inputText>
+			<ice:outputText value="#{row.fromPageNo}" rendered="#{!row.editable}" />
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{col.columnName == 'ToPageNo'}">
+			<ice:inputText value="#{row.toPageNo}" size="1" partialSubmit="true" rendered="#{row.editable}" style="width : 1.25em;">
+				<pc:automationTag value="auto-COM-DocView-TiffDocView-BookmarkTbl-ToPageNo" standAlone="false"/>
+			</ice:inputText>
+			<ice:outputText value="#{row.toPageNo}" rendered="#{!row.editable}" />
+		</ice:panelGroup>
+	</ice:panelGroup>
+    <script type="text/javascript">
+		var elems = document.getElementsByTagName("input");
+		var i = 0;		
+		while (i != elems.length)
+		{
+			if (undefined != elems[i].getAttribute('title'))
+			{
+			    if (parseInt(elems[i].getAttribute('title').indexOf("editableBookmark")) != -1) {
+			    	elems[i].focus();	    	
+			        if(document.selection) { 
+			            /* For IE we need not do anythign as the default cursor position
+			            is at the start of the text. */ 
+			            //var range = document.selection.createRange();
+			            //var range = elems[i].createTextRange();
+			            //range.move("word", -1);
+			            //range.collapse(true);
+			            //range.select(); 
+			        } else if(elems[i].selectionStart) { 
+			            /* For FF */ 
+			            elems[i].setSelectionRange(0, 0); 
+			        } 
+			        break;
+			    }
+			}
+		    i++;
+		}
+    </script>
+</f:view>

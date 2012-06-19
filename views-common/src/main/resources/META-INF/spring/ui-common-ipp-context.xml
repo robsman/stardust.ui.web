@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ippui="http://infinity.com/bpm/ui/common/uiDefinition"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+
+   <!-- ****************** LOGIN PANEL ****************** -->
+   <bean name="ippLoginDialog" class="org.eclipse.stardust.ui.web.viewscommon.login.dialogs.LoginDialogBean"
+      scope="session">
+   </bean>
+
+   <bean name="ippExceptionHandler" class="org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler"
+      scope="session">
+   </bean>
+
+</beans>

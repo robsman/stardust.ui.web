@@ -1,0 +1,31 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates Mandatory attributes)
+		dialogBean = Instance of ConfirmationDialog Bean
+	-->
+
+	<ui:component>
+		<ice:panelGrid columns="1" cellpadding="0" cellspacing="0">
+			<ice:outputText style="white-space: normal" 
+				value="#{processportal_msgPropsBean['toolbars.workflowActions.mappedDocWarnDialog.message']}" />
+			<ice:panelGroup styleClass="clearing" />
+			<ice:panelGrid columns="2" cellpadding="0" cellspacing="0">
+				<ice:selectBooleanCheckbox partialSubmit="true"
+					value="#{dialogBean.doNotShowMsgAgain}">
+					<pc:automationTag value="auto-PP-ActivityPnl-Toolbar-DoNotShowMappedDocWarnMsg"
+						standAlone="false" />
+				</ice:selectBooleanCheckbox>
+				<ice:outputText style="white-space: normal; padding-left: 5px;" 
+					value="#{processportal_msgPropsBean['toolbars.workflowActions.mappedDocWarnDialog.doNotShowMsgAgain']}" />
+			</ice:panelGrid>
+		</ice:panelGrid>
+	</ui:component>
+
+</f:view>

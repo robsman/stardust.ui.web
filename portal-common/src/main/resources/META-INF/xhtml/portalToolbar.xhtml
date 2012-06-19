@@ -1,0 +1,93 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup styleClass="toolbar">
+		<ice:form partialSubmit="false">		
+			<table cellpadding="0" cellspacing="0" style="width: 100%; height: 100%;">
+				<tr>
+					<!-- ***** LAUNCH PANELS LINKS ***** -->
+					<c:if test="#{!ippPortalApp.fullScreenModeActivated and !ippPortalApp.launchPanelsActivated}">
+						<td style="white-space: nowrap; width: 2px; vertical-align: top" class="toolbar-show-launch-panel">
+							<ice:commandLink
+								action="#{ippPortalApp.activateLaunchPanels}">
+								<pc:automationTag value="auto-FW-ShowLPs" standAlone="false" />
+								<ice:graphicImage
+									url="/plugins/common/images/pane-expand.png"
+				                    styleClass="toolbar-button" 
+				                    title="#{common_msgPropsBean['portalFramework.launchPanels.show']}"/>
+							</ice:commandLink>
+						</td>
+					</c:if>
+	
+					<!-- ***** GENERAL TOOLBAR ***** -->
+					<td style="white-space: nowrap; vertical-align: top" class="toolbarGroupLeft">
+						<ice:commandLink action="#{ippPortalApp.closeFocusView}"
+							disabled="#{ippPortalApp.openViewsSize lt 1}">
+							<pc:automationTag value="auto-FW-CloseFocusView" standAlone="false" />
+							<ice:graphicImage
+								url="/plugins/common/images/close.gif"
+			                    styleClass="toolbar-button #{(ippPortalApp.openViewsSize lt 1) ? 'iceCmdBtn-dis' : ''}"
+			                    title="#{common_msgPropsBean['portalFramework.toolbar.view.close']}"/>
+						</ice:commandLink>
+						<ice:commandLink action="#{ippPortalApp.closeAllViews}"
+							disabled="#{ippPortalApp.openViewsSize lt 1}">
+							<pc:automationTag value="auto-FW-CloseAllViews" standAlone="false" />
+							<ice:graphicImage
+								url="/plugins/common/images/close-all.gif"
+			                    styleClass="toolbar-button #{(ippPortalApp.openViewsSize lt 1) ? 'iceCmdBtn-dis' : ''}"
+			                    title="#{common_msgPropsBean['portalFramework.toolbar.view.closeAll']}"/>
+						</ice:commandLink>
+					</td>
+	
+					<td style="white-space: nowrap; vertical-align: top" class="toolbarGroupLeft">
+						<c:if test="#{not ippPortalApp.pinViewOpened}">
+							<ice:commandLink disabled="#{ippPortalApp.openViewsSize lt 2}"
+								action="#{ippPortalApp.openPinViewHorizontal}">
+								<pc:automationTag value="auto-FW-PinHorizontal" standAlone="false" />
+								<ice:graphicImage
+									url="/plugins/common/images/pinView-horizontal-open.png"
+									styleClass="toolbar-button #{ippPortalApp.openViewsSize lt 2 ? 'iceCmdBtn-dis' : ''}"
+				                    title="#{common_msgPropsBean['portalFramework.toolbar.view.openPinViewHorizontal']}"/>
+							</ice:commandLink>
+							<ice:commandLink disabled="#{ippPortalApp.openViewsSize lt 2}"
+								action="#{ippPortalApp.openPinViewVertical}">
+								<pc:automationTag value="auto-FW-PinVertical" standAlone="false" />
+								<ice:graphicImage
+									url="/plugins/common/images/pinView-vertical-open.png"
+									styleClass="toolbar-button #{ippPortalApp.openViewsSize lt 2 ? 'iceCmdBtn-dis' : ''}"
+				                    title="#{common_msgPropsBean['portalFramework.toolbar.view.openPinViewVertical']}"/>
+							</ice:commandLink>
+						</c:if>
+						<c:if test="#{ippPortalApp.pinViewOpened}">
+							<ice:commandLink action="#{ippPortalApp.restorePinView}">
+								<pc:automationTag value="auto-FW-RestorePin" standAlone="false" />
+								<ice:graphicImage rendered="#{ippPortalApp.pinViewOrientation eq 'horizontal'}"
+									url="/plugins/common/images/pinView-horizontal-close.png"
+									styleClass="toolbar-button" 
+				                    title="#{common_msgPropsBean['portalFramework.toolbar.view.closePinViewHorizontal']}"/>
+								<ice:graphicImage rendered="#{ippPortalApp.pinViewOrientation eq 'vertical'}"
+									url="/plugins/common/images/pinView-vertical-close.png"
+									styleClass="toolbar-button"
+				                    title="#{common_msgPropsBean['portalFramework.toolbar.view.closePinViewVertical']}"/>
+							</ice:commandLink>
+						</c:if>
+					</td>
+	
+					<!-- ***** Filler TD ***** -->
+					<td style="width: 100%" />
+	
+					<!-- ***** VIEW SPECIFIC TOOLBAR ***** -->
+					<td style="text-align: right; white-space: nowrap">
+						<ui:include src="portalViewToolbar.xhtml" />
+					</td>
+				</tr>
+			</table>
+		</ice:form>
+	</ice:panelGroup>
+
+</f:view>

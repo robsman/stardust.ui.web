@@ -1,0 +1,16 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:component>
+		<c:if
+			test="#{(not empty validationMessageBean) and (validationMessageBean.containMessages)}">
+			<ice:panelSeries var="message"
+				value="#{validationMessageBean.messages}">
+				<h:outputText value="#{message}" style="color:red;" />
+				<ice:panelGroup styleClass="clearing" />
+			</ice:panelSeries>
+		</c:if>
+	</ui:component>
+</f:view>

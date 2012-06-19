@@ -1,0 +1,83 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon"
+	xmlns:ap="http://www.sungard.de/carnot/web/portal-plugin/adminportal">
+	<ice:panelGroup>
+		<ui:include src="/plugins/views-common/dialogs/configurationImportDialog.xhtml">
+			<ui:param name="title" value="#{messages_admin['views.criticalityConf.importDialog.title']}" />
+			<ui:param name="message" value="#{messages_admin['views.criticalityConf.importDialog.info']}" />
+			<ui:param name="warning" value="#{messages_admin['views.criticalityConf.importDialog.warning']}" />
+		</ui:include>
+	</ice:panelGroup>
+	<ice:panelGroup style="vertical-align: top; white-space: nowrap; text-align:left; width:100%;">
+		<ice:panelGroup styleClass="heading" style="width: 100%;">
+			<ice:outputText value="#{messages_admin['views.criticalityConf.criticality.categories.title']}" />
+		</ice:panelGroup>
+		<ice:panelGroup style="width: 100%;">
+			<ice:panelGroup styleClass="clearing" />
+			<pc:automationTag value="auto-ADM-CriticalityConfig-Categories-Table"/>
+			<pc:genericDataTable exportExcel="false" exportCsv="false"
+				bean="#{criticalityConfigurationBean}"
+				id="citicalityConfiguration"
+				table="#{criticalityConfigurationBean.criticalityConfEntryTable}"
+				sortSupported="false"
+				toolbarUrl="/plugins/admin-portal/views/criticalityConfigurationTableToolbar.xhtml" />
+		</ice:panelGroup>
+		<ice:panelGroup styleClass="clearing" />
+		<ice:panelGroup styleClass="msgError">
+			<ice:outputText escape="false"
+				value="#{criticalityConfigurationBean.validationMsg}"
+				styleClass="msgError" />
+		</ice:panelGroup>
+		<ice:panelGroup styleClass="clearing" />
+		<ice:panelGroup styleClass="heading" style="width: 100%;">
+			<ice:outputText value="#{messages_admin['views.criticalityConf.recalculationEvents.label']}" />
+		</ice:panelGroup>
+		<ice:panelGroup style="width: 100%;">
+			<ice:panelGroup styleClass="clearing" />
+			<ice:outputText value="#{messages_admin['views.criticalityConf.recalculationEvents.titleMessage']}" styleClass="label-form" />
+			<ice:panelGroup styleClass="clearing" />
+			<ice:panelGroup>
+				<ice:selectBooleanCheckbox partialSubmit="true" value="#{criticalityConfigurationBean.onActivityCreation}">
+					<pc:automationTag value="auto-ADM-CriticalityConfig-ReCalc-ActivityCreation" standAlone="false" />
+				</ice:selectBooleanCheckbox>
+				<ice:outputLabel value="#{messages_admin['views.criticalityConf.recalculationEvents.activityCreation']}" styleClass="label-form" />
+			</ice:panelGroup>
+			<ice:panelGroup styleClass="clearing" />
+			<ice:panelGroup>
+				<ice:selectBooleanCheckbox partialSubmit="true" value="#{criticalityConfigurationBean.onActivitySuspendAndSave}">
+					<pc:automationTag value="auto-ADM-CriticalityConfig-ReCalc-ActivitySuspendSave" standAlone="false" />
+				</ice:selectBooleanCheckbox>
+				<ice:outputLabel value="#{messages_admin['views.criticalityConf.recalculationEvents.activitySuspend']}" styleClass="label-form" />
+			</ice:panelGroup>
+			<ice:panelGroup styleClass="clearing" />
+			<ice:panelGroup>
+				<ice:selectBooleanCheckbox partialSubmit="true" value="#{criticalityConfigurationBean.onProcessPriorityChange}">
+					<pc:automationTag value="auto-ADM-CriticalityConfig-ReCalc-ProcessPrioChange" standAlone="false" />
+				</ice:selectBooleanCheckbox>
+				<ice:outputLabel value="#{messages_admin['views.criticalityConf.recalculationEvents.processPriorityChange']}" styleClass="label-form" />
+			</ice:panelGroup>
+			<ice:panelGroup styleClass="clearing" />
+		</ice:panelGroup>
+		<ice:panelGroup styleClass="heading" style="width: 100%;">
+			<ice:outputText
+				value="#{messages_admin['views.criticalityConf.criticality.formula.default.label']}" />
+		</ice:panelGroup>
+		<ice:panelGroup style="width: 100%;">
+			<ice:panelGroup styleClass="clearing" />
+			<ice:inputTextarea value="#{criticalityConfigurationBean.defaultCriticalityFormula}" partialSubmit="true" style="width: 97%; height: 70px;" />
+			<ice:panelGroup styleClass="clearing" />
+			<ice:panelGrid columns="2">
+			<ice:graphicImage value="/plugins/views-common/images/icons/information.png" />
+			<ice:outputText
+				value="#{messages_admin['views.criticalityConf.criticality.defaultformula.infoMessage']}"
+				styleClass="label-form" />
+			</ice:panelGrid>
+			<ice:panelGroup styleClass="clearing" />
+		</ice:panelGroup>
+	</ice:panelGroup>
+</f:view>

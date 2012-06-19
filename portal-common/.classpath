@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/main/resources"/>
+	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry kind="src" path="src/test/resources"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/2.5.6/spring.jar" sourcepath="/Q-ARCHIVE/thirdparty/spring/framework/2.5.6/spring-sources.jar"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javax/servlet/2.4/servlet-2.4.jar" sourcepath="/Q-ARCHIVE/thirdparty/javax/servlet/2.4/servlet-2.4-sources.jar"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-comps-ee-infinity04-EE-1.8.2.GA_P03.jar" sourcepath="/Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-comps-src.zip"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-facelets-ee-infinity04-EE-1.8.2.GA_P03.jar"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-ee-infinity04-EE-1.8.2.GA_P03.jar" sourcepath="/Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/just-ice-src.zip"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/2.5.6/spring-test.jar"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/log4j/1.2.14/log4j-1.2.14.jar"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/junit/4.4/junit-4.4.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javax/jsf/1.1_02/jsf-api.jar"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/jsp/2.0/jsp-2.0.jar" sourcepath="/Q-ARCHIVE/thirdparty/javax/jsp/2.0/jsp-2.0-sources.jar"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javax/el/facelets-1.1.14/el-api.jar"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/org.apache/slf4j/1.5.3/slf4j-api-1.5.3.jar"/>
+	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/org.apache/slf4j/1.5.3/slf4j-log4j12-1.5.3.jar"/>
+	<classpathentry kind="output" path=".eclipse/classes"/>
+</classpath>

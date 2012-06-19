@@ -1,0 +1,121 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'Select'}"
+			style="text-align: center;">
+			<ice:selectBooleanCheckbox partialSubmit="true"
+				value="#{row.selectedRow}" />
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'documentName'}">
+			<table>
+				<tr style="vertical-align: top;">
+					<td><h:graphicImage url="#{row.iconPath}" /></td>
+					<td><ice:commandLink value="#{row.documentName}"
+							action="#{documentSearchBean.openDocument}">
+							<pc:automationTag value="auto-COM-SrchDoc-DocSrchTbl-DocName"
+								standAlone="false" />
+							<f:param name="documentId" value="#{row.documentId }" />
+						</ice:commandLink></td>
+				</tr>
+			</table>
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'path'}"
+			style="text-align: left;">
+			<table>
+				<tr style="vertical-align: top;">
+					<td><h:graphicImage
+							url="/plugins/views-common/images/icons/folder.png" /></td>
+					<td><ice:outputText value="#{row.documentPath}" /></td>
+				</tr>
+			</table>
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'authorFullName'}"
+			style="text-align: left;">
+			<ice:commandLink
+				actionListener="#{userDetailsBean.openUserDetailsDialog}"
+				rendered="#{row.user != null}">
+				<pc:automationTag value="auto-COM-SrchDoc-DocSrchTbl-Author"
+					standAlone="false" />
+				<ice:outputText value="#{row.authorFullName}" />
+				<f:param name="userOid" value="#{row.user.OID}" />
+				<f:param name="hideDetailTable" value="#{true}" />
+			</ice:commandLink>
+			<ice:outputText value="#{row.author}" rendered="#{row.user == null}" />
+
+		</ice:panelGroup>
+		
+		<ice:panelGroup rendered="#{col.columnName == 'fileSize'}"
+			style="text-align: left;">
+			<ice:outputText value="#{row.fileSize}">
+				<f:converter converterId="fileSizeConverter" />
+			</ice:outputText>
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'Actions'}"
+			style="float:right">
+
+			<ice:panelGroup styleClass="processAndDocsMnuItmPanel"
+				rendered="#{row.loaded}" >
+			
+			<ice:panelGrid columns="5" style="float: right;">
+					
+				<ice:commandButton onclick="Event.stop(event);"
+					image="/plugins/views-common/images/icons/process-filled-dropPanel.png"
+					actionListener="#{documentSearchBean.openProcessesDialog}"
+					title="#{documentSearchBean.messages['documentSearchTable.tooltip.process']}">
+					<pc:automationTag
+						value="auto-COM-SrchDoc-DocSrchTbl-ActionsOpenProc"
+						standAlone="false" />
+					<f:attribute name="row" value="#{row}" />
+				</ice:commandButton>
+				<ui:include
+					src="/plugins/views-common/views/documentsearch/documentProcessesDialog.xhtml">
+					<ui:param name="bean" value="#{row}" />
+				</ui:include>
+
+				<ice:commandButton
+					image="/plugins/views-common/images/icons/page_attach.png"
+					actionListener="#{documentSearchBean.attachDocumentsToProcess}"
+					title="#{documentSearchBean.messages['documentSearchTable.attachToProcess']}">
+					<pc:automationTag
+						value="auto-COM-SrchDoc-DocSrchTbl-ActionsAttachDocToProc" standAlone="false" />
+					<f:attribute name="row" value="#{row}" />
+				</ice:commandButton>
+				
+				
+					<ice:commandButton
+						image="/plugins/views-common/images/icons/page_white_put.png"
+						actionListener="#{documentSearchBean.downloadDocument}"
+						title="#{views_common_msgPropsBean['views.myDocumentsTreeView.documentTree.downloadFile']}">
+						<pc:automationTag
+							value="auto-COM-SrchDoc-DocSrchTbl-ActionsDownload"
+							standAlone="false" />
+						<f:attribute name="row" value="#{row}" />
+					</ice:commandButton>
+
+					<ice:commandButton
+						image="/plugins/views-common/images/icons/book_open.png"
+						actionListener="#{documentSearchBean.documentVersionHistory}"
+						title="#{views_common_msgPropsBean['views.myDocumentsTreeView.documentTree.versionHistory']}">
+						<pc:automationTag
+							value="auto-COM-SrchDoc-DocSrchTbl-ActionsVersionHistory"
+							standAlone="false" />
+						<f:attribute name="row" value="#{row}" />
+					</ice:commandButton>
+					
+			</ice:panelGrid>
+			</ice:panelGroup>
+		</ice:panelGroup>
+
+	</ice:panelGroup>
+
+</f:view>

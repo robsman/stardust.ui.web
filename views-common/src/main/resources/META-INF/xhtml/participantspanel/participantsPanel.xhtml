@@ -1,0 +1,22 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+		<c:if test="#{not empty common_participantsPanelBean.currentProcessInstance}">
+			<pc:automationTag value="auto-COM-PCEParticipantsTable"/>
+			<pc:genericDataTable 
+				title="#{common_participantsPanelBean.showTitle ? views_common_msgPropsBean['participantsTable.title'] : ''}"
+				bean="#{common_participantsPanelBean}" id="ctxPartList"
+				table="#{common_participantsPanelBean.userTable}" sortSupported="true" />
+		</c:if>
+		
+		<ice:outputText rendered="#{empty common_participantsPanelBean.currentProcessInstance}"
+			value="#{views_common_msgPropsBean['participantsTable.NotApplicable']}" />
+
+	</ice:panelGroup>
+</f:view>

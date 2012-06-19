@@ -1,0 +1,62 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<ui:include src="createUser.xhtml" />
+		<ui:include src="confirmInvalidateUser.xhtml"/>
+		<ui:include src="/plugins/views-common/contentmgmt/views/notificationMessage.xhtml" />
+		<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+				<ui:param name="dialogBean" value="#{userMgmtBean.userMgmtConfirmationDialog}" />
+			</ui:include>
+	</ice:panelGroup>
+
+	<ice:panelGroup>
+		<ice:panelGroup styleClass="heading" style="width: 100%;">
+			<ice:outputText value="#{messages_admin['views.common.users.label']}" />
+		</ice:panelGroup>
+		<ice:panelGroup style="width: 100%;">
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel
+					value="#{messages_admin['views.common.total.label']}#{messages_admin['common.colon']}"
+					styleClass="label-item" />
+				<ice:outputText value="#{userMgmtBean.totalUsersCount}">
+					<pc:automationTag value="auto-ADM-PartMgmt-TotalUserCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel
+					value="#{messages_admin['views.common.valid.label']}#{messages_admin['common.colon']}"
+					styleClass="label-item" />
+				<ice:outputText value="#{userMgmtBean.activeUsersCount}">
+					<pc:automationTag value="auto-ADM-PartMgmt-ValidUserCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+		</ice:panelGroup>
+	</ice:panelGroup>
+	<ice:panelGroup styleClass="clearing" />
+
+
+	<ice:panelCollapsible expanded="true">
+		<f:facet name="header">
+			<ice:panelGroup>
+				<ice:outputText value="#{userMgmtBean.messages['table.title']}" />
+			</ice:panelGroup>
+		</f:facet>
+		<pc:automationTag value="auto-ADM-PartMgmt-DataTable"/>
+		<pc:genericDataTable
+			bean="#{userMgmtBean}" id="userRealmsList"
+			table="#{userMgmtBean.userDetailsTable}" sortSupported="true" 
+			toolbarUrl="/plugins/admin-portal/views/userMgmtViewToolbar.xhtml">
+		</pc:genericDataTable>
+	</ice:panelCollapsible>
+
+	<ice:panelGroup>
+		<ui:include src="participantTree.xhtml" />
+	</ice:panelGroup>
+</f:view>

@@ -1,0 +1,24 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid columns="2">
+		<ice:commandLink actionListener="#{extractPageDialogBean.add}" >
+			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-ToolbarAdd" standAlone="false"/>
+			<ice:graphicImage value="/plugins/views-common/images/icons/add.png"				
+				title="#{views_common_msgPropsBean['common.add']}" />
+		</ice:commandLink>
+		<ice:commandLink actionListener="#{extractPageDialogBean.delete}" disabled="#{!extractPageDialogBean.rowSelected}">
+			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-ToolbarDelete" standAlone="false"/>		
+			<ice:graphicImage value="/plugins/processportal/images/delete.png"
+				styleClass="#{!extractPageDialogBean.rowSelected ? 'iceCmdBtn-dis' : ''}"
+				title="#{views_common_msgPropsBean['common.delete']}" />
+		</ice:commandLink>
+
+	</ice:panelGrid>
+
+</f:view>

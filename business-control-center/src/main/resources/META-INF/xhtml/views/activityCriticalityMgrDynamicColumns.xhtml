@@ -1,0 +1,29 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		mainRow = Instance of the object representing the table row
+		row*= Instance of Row Class
+		col*= Instance of ColumnPreference 
+	 -->
+
+	<ice:panelGroup>
+		<ice:commandLink
+			value="#{mainRow.criticalityDetailsMap[col.columnName].count}"
+			actionListener="#{mainRow.doCriticalityAction}"
+			disabled="#{(mainRow.criticalityDetailsMap[col.columnName].count eq 0) ? true : false}"
+			 title="#{(mainRow.criticalityDetailsMap[col.columnName].count eq 0) ? null: messages_bcc['views.processOverviewView.tooltip.activityTable']}">
+			<pc:automationTag
+				value="auto-BCC-CriticalityMgr-CriticalityDataTable-#{col.columnName}"
+				standAlone="false" />
+			<f:param name="selectedCriticalityCategory" value="#{col.columnName}" />
+		</ice:commandLink>
+	</ice:panelGroup>
+
+</f:view>

@@ -1,0 +1,153 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ice:panelPopup modal="true" rendered="#{printerDialogPopup.visible}"
+		draggable="true"
+		autoCentre="true" positionOnLoadOnly="true" styleClass="popupDialog" clientOnly="true">
+		<f:facet name="header">
+			<ice:panelGroup>
+				<pc:automationTag value="auto-COM-PrintDlg-Header"/>
+				<ice:outputText
+					value="#{printerDialogPopup.messages['printerDialog.printSettings']}"
+					styleClass="headerText" />
+				<ice:commandButton
+					image="/plugins/common/images/dialog-windowbttn-close.png"
+					title="#{common_msgPropsBean['common.close']}"
+					action="#{printerDialogPopup.closePopup}"
+					immediate="true"
+					styleClass="windowClose" />
+			</ice:panelGroup>
+		</f:facet>
+
+		<f:facet name="body">
+			<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+				cellspacing="0" renderNorth="false" renderEast="false"
+				renderSouth="true" renderWest="false" renderCenter="true">
+				<f:facet name="center">
+					<ice:panelGroup>
+						<ice:panelGrid columns="2" style="vertical-align: top;">
+							<ice:panelGroup style="vertical-align: top;">
+								<ice:panelGrid columns="1">
+									<ice:outputText
+										value="#{printerDialogPopup.messages['printerDialog.orientation']}"
+										style="font-weight: bold;" />
+									<!-- spacer -->
+									<ice:graphicImage
+										value="/plugins/views-common/images/icons/spacer.gif"
+										width="5" height="15" />
+									<ice:selectOneRadio id="pageOrientation" layout="pageDirection"
+										value="#{printerDialogPopup.printingPreferences.orientation}"
+										valueChangeListener="#{printerDialogPopup.orientationChanged}"
+										partialSubmit="true">
+										<pc:automationTag value="auto-COM-PrintDlg-Orientation"
+											standAlone="false" />
+										<f:selectItem itemValue="portrait"
+											itemLabel="#{printerDialogPopup.messages['printerDialog.portrait']}"
+											styleClass="label-form" />
+										<f:selectItem itemValue="landscape"
+											itemLabel="#{printerDialogPopup.messages['printerDialog.landscape']}"
+											styleClass="label-form" />
+									</ice:selectOneRadio>
+									<!-- spacer -->
+									<ice:graphicImage
+										value="/plugins/views-common/images/icons/spacer.gif"
+										width="5" height="15" />
+								</ice:panelGrid>
+							</ice:panelGroup>
+
+							<ice:panelGroup style="vertical-align: top;">
+								<ice:panelGrid columns="1">
+									<ice:outputText
+										value="#{printerDialogPopup.messages['printerDialog.margin']}"
+										style="font-weight: bold;" />
+									<ice:graphicImage
+										value="/plugins/views-common/images/icons/spacer.gif"
+										width="2" height="10" />
+									<ice:panelGrid columns="5">
+										<ice:outputLabel
+											value="#{printerDialogPopup.messages['printerDialog.left']}"
+											styleClass="label-form" />
+										<ice:selectOneMenu partialSubmit="true" size="1"
+											valueChangeListener="#{printerDialogPopup.leftMarginChanged}">
+											<pc:automationTag value="auto-COM-PrintDlg-LeftMar"
+												standAlone="false" />
+											<f:selectItems value="#{printerDialogPopup.printingPreferences.margin}" />
+										</ice:selectOneMenu>
+										<ice:outputLabel
+											value="#{printerDialogPopup.messages['printerDialog.right']}"
+											styleClass="label-form" />
+										<ice:graphicImage
+											value="/plugins/views-common/images/icons/spacer.gif"
+											width="6px" height="6px" />
+										<ice:selectOneMenu partialSubmit="true" size="1"
+											valueChangeListener="#{printerDialogPopup.rightMarginChanged}">
+											<pc:automationTag value="auto-COM-PrintDlg-RightMar"
+												standAlone="false" />
+											<f:selectItems value="#{printerDialogPopup.printingPreferences.margin}" />
+										</ice:selectOneMenu>
+									</ice:panelGrid>
+									<ice:panelGrid columns="4">
+										<ice:outputLabel
+											value="#{printerDialogPopup.messages['printerDialog.top']}"
+											styleClass="label-form" />
+										<ice:selectOneMenu partialSubmit="true" size="1"
+											valueChangeListener="#{printerDialogPopup.topMarginChanged}">
+											<pc:automationTag value="auto-COM-PrintDlg-TopMar"
+												standAlone="false" />
+											<f:selectItems value="#{printerDialogPopup.printingPreferences.margin}" />
+										</ice:selectOneMenu>
+										<ice:outputLabel
+											value="#{printerDialogPopup.messages['printerDialog.bottom']}"
+											styleClass="label-form" />
+										<ice:selectOneMenu partialSubmit="true" size="1"
+											valueChangeListener="#{printerDialogPopup.bottomMarginChanged}">
+											<pc:automationTag value="auto-COM-PrintDlg-BottomMar"
+												standAlone="false" />
+											<f:selectItems value="#{printerDialogPopup.printingPreferences.margin}" />
+										</ice:selectOneMenu>
+									</ice:panelGrid>
+								</ice:panelGrid>
+							</ice:panelGroup>
+						</ice:panelGrid>
+						<ice:outputLabel
+							value="#{printerDialogPopup.messages['printerDialog.paperSize']}:"
+							styleClass="label-form" />
+						<ice:selectOneMenu id="pageSize"
+							value="#{printerDialogPopup.printingPreferences.pageSize}"
+							valueChangeListener="#{printerDialogPopup.pageSizeChanged}"
+							partialSubmit="true">
+							<pc:automationTag value="auto-COM-PrintDlg-PageSize"
+												standAlone="false" />
+							<f:selectItem itemValue="letter"
+								itemLabel="#{printerDialogPopup.messages['printerDialog.letter']}" />
+							<f:selectItem itemValue="legal"
+								itemLabel="#{printerDialogPopup.messages['printerDialog.legal']}" />
+							<f:selectItem itemValue="A4"
+								itemLabel="#{printerDialogPopup.messages['printerDialog.a4']}" />
+						</ice:selectOneMenu>
+					</ice:panelGroup>
+				</f:facet>
+
+				<f:facet name="south">
+					<ice:panelGroup>
+					<ice:panelGrid columns="2" style="vertical-align: top;">
+						<pc:automationTag value="auto-COM-PrintDlg-BtnsBar" standAlone="false" />
+						<ice:outputResource id="pdfRsource"
+							resource="#{printerDialogPopup.pdfResource}"
+							label="#{printerDialogPopup.messages['printerDialog.print']}" fileName="download.pdf" type="button"
+							styleClass="button" mimeType="application/pdf" attachment="true" />
+						<ice:commandButton
+							value="#{messages_admin['common.cancel']}"
+							action="#{printerDialogPopup.closePopup}" styleClass="button"
+							title="#{messages_admin['common.cancel']}" />
+					</ice:panelGrid>		
+					</ice:panelGroup>
+				</f:facet>
+			</ice:panelBorder>
+		</f:facet>
+	</ice:panelPopup>
+</f:view>

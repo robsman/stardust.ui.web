@@ -1,0 +1,51 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:composition>
+		<ice:panelGroup
+			style="vertical-align: top; white-space: nowrap; text-align:left;">
+			<ice:panelGroup>
+				 
+				 <ui:include src="/plugins/views-common/dialogs/relatedProcessSearchTable.xhtml" />
+				 				
+				<ice:panelGroup styleClass="clearing" />
+				<ice:panelGrid columns="2" style="width: 100%;" columnClasses="icePnlGrdCol joinProcessCol1,icePnlGrdCol joinProcessCol2"
+				rendered="#{not empty searchBean.relatedProcessSearchHelper.relatedProcessTable.list}">
+					<ice:outputLabel
+						value="#{views_common_msgPropsBean['views.joinProcessDialog.linkComment.label']}"
+						styleClass="label-form" />
+					<ice:inputTextarea style="width: 98%;"
+						value="#{searchBean.linkComment}" rows="2">
+					<pc:automationTag value="auto-COM-JoinProcDlg-LinkComment" standAlone="false"/>	
+					</ice:inputTextarea>	
+				</ice:panelGrid>
+			</ice:panelGroup>
+
+			<ice:panelGroup styleClass="clearing" />
+			<ice:panelGroup styleClass="clearing" />
+
+			<ice:panelGroup expanded="true" style="white-space:normal"
+				rendered="#{not empty searchBean.relatedProcessSearchHelper.relatedProcessTable.list}">
+
+				<ice:panelGrid columns="2">
+
+					<ice:graphicImage
+						url="/plugins/views-common/images/icons/information.png"
+						style="width:20px;heigth:20px;text-align: top;padding:0px;margin-right:5px;" />
+					<ice:outputText
+						value="#{views_common_msgPropsBean['views.switchProcessDialog.joinProcessMessage.message']}"
+						escape="false" />
+
+
+					<ice:panelGroup styleClass="clearing" />
+					<ice:panelGroup styleClass="clearing" />
+				</ice:panelGrid>
+
+			</ice:panelGroup>
+
+		</ice:panelGroup>
+	</ui:composition>
+</f:view>

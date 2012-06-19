@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ippui="http://infinity.com/bpm/ui/common/uiDefinition"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+
+	<!-- From ProcessPortal -->
+	
+
+	<bean name="views_common_msgPropsBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean"
+		scope="session">
+	</bean>
+
+	<bean name="ippMimeTypesHelper"
+		class="org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper"
+		scope="prototype">
+	</bean>
+
+	<!--  This is for primary navigation menu option -->
+	<bean name="myDocumentsPanelBean"
+		class="org.eclipse.stardust.ui.web.bcc.MyDocumentsPanelBean"
+		scope="session">
+	</bean>
+
+	<!-- ********** Helper ContentMgmt Beans **************** -->
+	<bean name="commonProperties"
+		class="org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties"
+		scope="portalTab">
+	</bean>
+
+	<bean name="documentTemplate"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentTemplate"
+		scope="portalTab">
+	</bean>
+
+	<bean name="processInstanceDetailConfigurationBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.core.ProcessInstanceDetailConfigurationBean"
+		scope="portalTab">
+	</bean>
+	<!-- ********** Helper ContentMgmt Beans: End *********** -->
+
+	<!--
+		****************** Document Repository Beans: start ******************
+	-->
+
+	<bean name="genericRepositoryTreeViewBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.doctree.GenericRepositoryTreeViewBean"
+		destroy-method="destroy"
+		scope="portalTab">
+		<property name="ippEventController" ref="ippEventController" />
+	</bean>
+
+	<bean name="genericPopup" class="org.eclipse.stardust.ui.web.viewscommon.dialogs.GenericPopup"
+		scope="portalTab">
+	</bean>
+	
+	<bean name="panelConfirmation" class="org.eclipse.stardust.ui.web.viewscommon.dialogs.PanelConfirmation"
+		scope="portalTab">
+	</bean>
+	
+	<bean name="commonFileUploadDialog"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog"
+		scope="portalTab">
+	</bean>
+
+	<bean name="tiffCustomSaveDialog"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.document.TIFFCustomSaveDialog"
+		scope="portalTab">
+	</bean>
+	
+	<bean name="renameDocumentExtensionDialog"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.doctree.RenameDocumentExtensionDialog"
+		scope="portalTab">
+	</bean>
+
+	<bean name="downloadPopupDialog"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.doctree.DownloadPopupDialog"
+		scope="portalTab">
+	</bean>
+
+	<bean name="documentVersionDialog"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.doctree.DocumentVersionDialog"
+		scope="portalTab">
+	</bean>
+
+	<bean name="myDocumentsTreeViewBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.mydoctree.MyDocumentsTreeViewBean"
+		scope="portalTab">
+	</bean>
+
+	<bean name="documentHandlerBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentHandlerBean"
+		scope="portalTab">
+	</bean>
+
+	<bean name="documentHandlersRegistryBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentHandlersRegistryBean"
+		scope="globalSession">
+		<property name="registeredContentHandlers">
+			<list>
+				<value>org.eclipse.stardust.ui.web.viewscommon.views.document.RichTextViewer</value>
+				<value>org.eclipse.stardust.ui.web.viewscommon.views.document.RichTextEditor</value>
+				<value>org.eclipse.stardust.ui.web.viewscommon.views.document.TIFFViewer</value>
+				<value>org.eclipse.stardust.ui.web.viewscommon.views.document.ImageViewer</value>
+				<value>org.eclipse.stardust.ui.web.viewscommon.views.document.MediaPlayer</value>
+				<value>org.eclipse.stardust.ui.web.viewscommon.views.document.PdfViewer</value>
+				<value>org.eclipse.stardust.ui.web.viewscommon.views.document.PlainTextViewer</value>
+				<value>org.eclipse.stardust.ui.web.viewscommon.views.document.PlainTextEditor</value>
+				<value>org.eclipse.stardust.ui.web.viewscommon.views.document.ReportViewer</value>
+			</list>
+		</property>
+		<property name="ippMimeTypesHelper" ref="ippMimeTypesHelper" />
+	</bean>
+
+	<bean name="securityDialog"
+		class="org.eclipse.stardust.ui.web.viewscommon.security.SecurityDialog"
+		scope="portalTab">
+	</bean>
+
+	<bean name="resourceMgmtTreeViewBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.resourcemgmttree.ResourceMgmtTreeViewBean"
+		scope="portalTab">
+	</bean>
+
+	<bean name="selectProcessDialog"
+		class="org.eclipse.stardust.ui.web.viewscommon.dialogs.SelectProcessDialog"
+		scope="portalTab">
+	</bean>
+
+	<bean name="reclassifyDocumentBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.doctree.ReclassifyDocumentBean"
+		scope="portalTab">
+	</bean>
+
+	<!--
+		****************** Document Repository Beans: end ******************
+	-->
+
+	<bean name="correspondenceViewBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.correspondence.CorrespondenceViewBean"
+		scope="portalTab">
+		<property name="editor" ref="richTextEditor" />
+		<property name="mailService" ref="mailService" />
+	</bean>
+
+	<bean name="richTextEditor"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.document.RichTextEditor"
+		scope="portalTab">
+	</bean>
+
+	<bean name="mailService"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.correspondence.MailServiceImpl"
+		scope="portalTab">
+	</bean>
+
+	<bean name="chatViewBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.chat.ChatViewBean"
+		scope="portalTab">
+		<property name="messenger" ref="richTextMessenger" />
+		<property name="confirmationPopup" ref="chatCloseConfirmationPopup" />
+	</bean>
+
+	<bean name="chatCloseConfirmationPopup"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.chat.ChatCloseConfirmationPopup"
+		scope="portalTab">
+	</bean>
+
+	<bean name="richTextMessenger"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.chat.RichTextMessenger"
+		scope="portalTab">
+	</bean>
+
+	<bean name="correspondenceAddressPickerDialog"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.correspondence.CorrespondenceAddressPickerDialog"
+		scope="portalTab">
+	</bean>
+
+	<bean name="printerDialogPopup"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.printer.PrinterDialogPopup"
+		scope="portalTab">
+	</bean>
+
+	<bean name="documentSearchBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.documentsearch.DocumentSearchBean"
+		scope="session">
+		<property name="filterHandler" ref="documentSearchFilterHandler" />
+	</bean>
+
+	<bean name="documentSearchFilterHandler"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.documentsearch.DocumentSearchFilterHandler"
+		scope="prototype">
+	</bean>
+	<bean name="userDetailsBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.user.UserDetailsBean"
+		scope="session">
+	</bean>
+
+	<bean name="ippActivityHelper"
+		class="org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils"
+		scope="session">
+	</bean>
+
+	<bean name="userProfileBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.user.UserProfileBean"
+		scope="portalTab">
+	</bean>
+
+	<bean name="notificationBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.common.notification.NotificationMessageBean"
+		scope="portalTab">
+	</bean>
+
+	<bean name="fieldsValidator"
+		class="org.eclipse.stardust.ui.web.viewscommon.common.FieldsValidator"
+		scope="session">
+	</bean>
+
+	<bean name="processInstanceDetailsBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.processContextExplorer.ProcessInstanceDetailsBean"
+		scope="portalTab">
+	</bean>
+
+	<!-- ****************** PROCESS HISTORY ****************** -->
+	<bean name="processHistoryDataModel"
+		class="org.eclipse.stardust.ui.web.viewscommon.process.history.ProcessHistoryDataModel"
+		scope="prototype">
+	</bean>
+
+	<bean name="processHistoryTable"
+		class="org.eclipse.stardust.ui.web.viewscommon.process.history.ProcessHistoryTable"
+		scope="portalTab">
+		<property name="processHistoryDataModel" ref="processHistoryDataModel" />		
+	</bean>
+
+	<!-- ****************** PARTICIPANTS PANEL ****************** -->
+	<bean name="common_participantsPanelBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.participantspanel.ParticipantsPanelBean"
+		scope="portalTab">		
+	</bean>
+
+	<!-- ****************** Abort Activity ****************** -->
+	<bean name="abortActivityBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.dialogs.AbortActivityBean"
+		scope="portalTab">
+	</bean>
+
+	<!-- ****************** Activity Delegation ****************** -->
+	<bean name="delegationBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.dialogs.DelegationBean"
+		scope="portalTab">
+		<property name="defaultDelegationHandler" ref="portalDefaultDelegationHandler" />
+		<property name="delegatesProvider" ref="delegatesProvider" />
+		<property name="departmentDelegatesProvider" ref="departmentDelegatesProvider" />
+		<property name="notesEnabled" value="false" />
+		<property name="buildDefaultNotes" value="false" />
+		<property name="limitedSearchEnabled" value="true" />
+		<property name="strictMode" value="true" />
+		<property name="disableAdministrator" value="false" />
+	</bean>
+
+	<bean name="portalDefaultDelegationHandler"
+		class="org.eclipse.stardust.ui.web.viewscommon.dialogs.DelegationHandlerBean"
+		scope="prototype">
+		<property name="dataModelIds">
+			<list>
+				<value>modelIdStoredinSessionContext
+				</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean name="delegatesProvider"
+		class="org.eclipse.stardust.ui.web.viewscommon.dialogs.DefaultDelegatesProvider"
+		scope="prototype">
+	</bean>
+
+	<bean name="departmentDelegatesProvider"
+		class="org.eclipse.stardust.ui.web.viewscommon.dialogs.DepartmentDelegatesProvider"
+		scope="prototype">
+	</bean>
+
+	<!-- ****************** ACTIVITY CRITICALITY****************** -->
+	<bean name="criticalityConfigurationHelper"
+		class="org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationHelper"
+		scope="session">
+	</bean>
+	<!-- ********************************************************* -->
+
+	<bean name="processInstanceUtils"
+		class="org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils"
+		scope="session">
+	</bean>
+
+	<bean name="ippProcessContextCacheManager"
+		class="org.eclipse.stardust.ui.web.viewscommon.utils.ProcessContextCacheManager"
+		scope="session">
+	</bean>
+
+	<bean name="externalSecurityUtils"
+		class="org.eclipse.stardust.ui.web.viewscommon.utils.ExternalSecurityUtils"
+		scope="session">
+	</bean>
+
+	<bean name="sessionSharedObjectsMap"
+		class="org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap"
+		scope="session">
+	</bean>
+
+	<bean name="archiveReportDialog"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.reports.ArchiveReportDialog"
+		scope="portalTab">
+	</bean>
+	
+	<bean name="myReportsViewBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.reports.MyReportsViewBean"
+		scope="portalTab">
+	</bean>
+	
+	<bean name="advancedTextSearchBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.documentsearch.AdvancedTextSearchBean"
+		scope="portalTab">
+	</bean>
+	
+	<bean name="externalDocumentViewerBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.document.ExternalDocumentViewerBean"
+		scope="session">
+		<property name="portalUiController" ref="ippPortalUi" />
+	</bean>
+		
+	<bean name="ippEventController"
+		class="org.eclipse.stardust.ui.web.viewscommon.common.event.IppEventController"
+		destroy-method="destroy"
+		scope="session">
+	</bean>
+
+	<bean name="ippParticipantWorklistCacheManager"
+		class="org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager"
+		scope="session">
+	</bean>
+		
+	<bean name="ippProcessWorklistCacheManager"
+		class="org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager"
+		scope="session">
+	</bean>
+		
+	<bean name="imageViewerConfigurationBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.document.ImageViewerConfigurationBean"
+		scope="portalTab">
+	</bean>
+		
+	<bean name="imageViewerStampsBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.document.ImageViewerStampsBean"
+		scope="portalTab">		
+	</bean>
+		
+	<bean name="authorizationManagerBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.authorization.AuthorizationManagerBean"
+		scope="session">
+	</bean>
+	
+	<bean name="spawnProcessDialogBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.dialogs.SpawnProcessDialogBean"
+		scope="portalTab">
+	</bean>	
+	
+	<bean name="switchProcessDialogBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.dialogs.SwitchProcessDialogBean"
+		scope="portalTab">
+	</bean>
+	
+	<bean name="joinProcessDialogBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.dialogs.JoinProcessDialogBean"
+		scope="portalTab">
+	</bean>	
+	
+	<bean name="relatedProcessSearchBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.search.RelatedProcessSearchBean"
+		scope="portalTab">
+	</bean>	
+	
+	<bean name="extractPageDialogBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.extract.ExtractPageDialog"
+		scope="portalTab">
+	</bean>	
+	
+	<bean name="linkedProcessBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.dialogs.LinkedProcessBean"
+		scope="portalTab">
+	</bean>	
+	
+	<bean name="createCaseDialogBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.casemanagement.CreateCaseDialogBean"
+		scope="portalTab">
+	</bean>	
+	
+	<bean name="caseManagerBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.casemanagement.CaseManagerBean"
+		scope="portalTab">
+	</bean>	
+	
+	<bean name="attachToCaseDialogBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.casemanagement.AttachToCaseDialogBean"
+		scope="portalTab">
+	</bean>	
+	
+	<bean name="caseDetailsBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.casemanagement.CaseDetailsBean"
+		scope="portalTab">
+	</bean>
+	
+	<bean name="clientContextBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean"
+		scope="session">		
+	</bean>
+	
+	<bean name="abortProcessBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.utils.AbortProcessBean"
+		scope="portalTab">
+	</bean>
+	
+	<bean name="ippXPathCacheManager"
+		class="org.eclipse.stardust.ui.web.viewscommon.utils.XPathCacheManager"
+		scope="session" />
+
+	<bean name="i18nFolderUtils"
+		class="org.eclipse.stardust.ui.web.viewscommon.docmgmt.I18nFolderUtils"
+		scope="singleton">	
+	</bean>
+	
+	 <bean name="configurationImportDialogBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.dialogs.ConfigurationImportDialogBean"
+		scope="portalTab">
+	</bean>  
+</beans>

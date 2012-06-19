@@ -1,0 +1,45 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<ice:outputDeclaration doctypeRoot="HTML"
+	doctypePublic="-//W3C//DTD HTML 4.01 Transitional//EN"
+	doctypeSystem="http://www.w3.org/TR/html4/loose.dtd" />
+	
+<html>
+<head>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/plugins/processportal/IppProcessPortalClient.js"></script>
+	<script type="text/javascript">
+		function executeCommand() {
+			var commandId = '#{param.key}';
+			if ('complete' == commandId) {
+				IppProcessPortalClient.completeActivity();
+			}
+			else if ('qaPass' == commandId) {
+				IppProcessPortalClient.qaPassActivity();
+			}
+			else if ('qaFail' == commandId) {
+				IppProcessPortalClient.qaFailActivity();
+			}
+			else if ('suspend' == commandId) {
+				IppProcessPortalClient.suspendActivity();
+			}
+			else if ('suspendAndSave' == commandId) {
+				IppProcessPortalClient.suspendActivity(true);
+			}
+			else if ('abort' == commandId) {
+				IppProcessPortalClient.abortActivity();
+			}
+			else {
+				alert("#{processportal_msgPropsBean['views.activityPanel.executorSupport.message.commandError']} " + commandId);
+			}
+		}
+	</script>
+</head>
+<body onload="executeCommand();">
+<b>#{processportal_msgPropsBean['views.activityPanel.executorSupport.message.processing']}</b>
+</body>
+</html>
+</f:view>

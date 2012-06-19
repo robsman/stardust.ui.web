@@ -1,0 +1,107 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+<ice:outputDeclaration doctypeRoot="HTML"
+	doctypePublic="-//W3C//DTD HTML 4.01 Transitional//EN"
+	doctypeSystem="http://www.w3.org/TR/html4/loose.dtd" />
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+		<ui:include src="/plugins/common/I18NInclude.xhtml" />
+		<script type="text/javascript"
+			src="#{facesContext.externalContext.requestContextPath}/plugins/processportal/IppProcessPortal.js" />
+
+		<ice:outputStyle href="/plugins/common/css/nirvanaRime.css" />
+		<ice:outputStyle href="/plugins/common/css/nirvanaRime-override.css" />
+		<ice:outputStyle href="/plugins/common/css/nirvanaPortal.css" />
+		<ice:outputStyle href="/plugins/common/css/portalComponentStyle.css" />
+	
+		<c:forEach items="#{ippPortalApp.skinFiles}" var="skinFile">
+			<ice:outputStyle href="#{skinFile}" />
+		</c:forEach>
+		
+		<script>
+			function windowLoaded()
+			{
+				var iFrameId = #{activityDetailsBean.processAttachmentsIframePopupId};
+
+				if (iFrameId != '')
+				{
+					var advanceArgs = #{activityDetailsBean.processAttachmentsIframePopupArgs};
+					advanceArgs.width = document.documentElement.scrollWidth + 20;
+					advanceArgs.height = document.documentElement.scrollHeight + 20;
+	
+					parent.ippPortalMain.InfinityBpm.ProcessPortal.resizeAndRepositionContentFrame(iFrameId, advanceArgs);
+				}
+			}
+		</script>
+	</head>
+	<body style="width: 100%; height:100%; background-color: #F7F7F7;" onLoad="if(windowLoaded){windowLoaded()}">
+		<ice:form>
+			<ice:panelGroup rendered="#{ippActivityPanelController.supportsProcessAttachments}" style="background-color: #EAEAEA;">
+				<ice:panelGrid columns="1" > <!-- Added to give same spacing -->
+					<ice:commandLink styleClass="action-link"
+						action="#{ippActivityPanelController.uploadDocument}">
+						<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarUpload" />
+						<ice:panelGrid columns="2">
+							<ice:graphicImage value="/plugins/processportal/images/icons/document_up.png" />
+							<ice:outputText style="white-space: nowrap;"
+								value="#{processportal_msgPropsBean['toolbars.workflowActions.upload.document']}" />
+						</ice:panelGrid>
+					</ice:commandLink>
+					<ice:commandLink styleClass="action-link"
+						action="#{ippActivityPanelController.createDocument}">
+						<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarCreate"/>
+						<f:param name="folderId"
+							value="#{ippActivityPanelController.processAttachmentsFolderId}" />
+						<ice:panelGrid columns="2">
+							<ice:graphicImage value="/plugins/processportal/images/icons/document_add.png" />
+							<ice:outputText style="white-space: nowrap;"
+								value="#{processportal_msgPropsBean['toolbars.workflowActions.create.new.file']}" />
+						</ice:panelGrid>
+					</ice:commandLink>
+				</ice:panelGrid>
+			</ice:panelGroup>
+			<ice:panelGroup>
+				<ice:panelSeries rendered="#{ippActivityPanelController.supportsProcessAttachments}"
+					value="#{ippActivityPanelController.processAttachments}" var="processAttachment">
+					<ice:panelGrid columns="1"> <!-- Added to give same spacing -->
+						<ice:commandLink styleClass="action-link"
+							action="#{ippActivityPanelController.openDocument}">
+							<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarOpenAttachment" />
+							<f:param name="documentId" value="#{processAttachment.id}" />
+							<f:param name="documentName" value="#{processAttachment.name}" />
+							<ice:panelGrid columns="2">
+								<ice:graphicImage value="#{processAttachment.documentIcon}" />
+								<ice:outputText value="#{processAttachment.name}" style="white-space: nowrap;" />
+							</ice:panelGrid>
+						</ice:commandLink>
+					</ice:panelGrid>
+				</ice:panelSeries>
+
+				<ice:panelSeries rendered="#{ippActivityPanelController.supportsProcessDocuments}"
+					value="#{ippActivityPanelController.processDocuments}" var="processDocument">
+					<ice:panelGrid columns="1"> <!-- Added to give same spacing -->
+						<ice:commandLink styleClass="action-link"
+							action="#{ippActivityPanelController.openDocument}">
+							<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarOpenNewDocument" />
+							<f:param name="documentId" value="#{processDocument.id}" />
+							<f:param name="documentName" value="#{processDocument.name}" />
+							<ice:panelGrid columns="2">
+								<ice:graphicImage value="#{processDocument.documentIcon}" />
+								<ice:outputText value="#{processDocument.name}" style="white-space: nowrap;" />
+							</ice:panelGrid>
+						</ice:commandLink>
+					</ice:panelGrid>
+				</ice:panelSeries>
+			</ice:panelGroup>
+		</ice:form>
+	</body>
+</html>
+</f:view>

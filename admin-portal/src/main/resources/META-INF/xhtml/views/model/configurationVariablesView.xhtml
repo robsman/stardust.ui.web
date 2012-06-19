@@ -1,0 +1,37 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<ui:include src="/plugins/views-common/dialogs/configurationImportDialog.xhtml">
+			<ui:param name="title" value="#{messages_admin['views.configurationImportDialog.title']}" />
+			<ui:param name="message" value="#{messages_admin['views.configurationImportDialog.info']}" />
+			<ui:param name="warning" value="#{messages_admin['views.configurationImportDialog.warning']}" />
+		</ui:include>
+		<ui:include src="configurationValidationDialog.xhtml" />
+		<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+				<ui:param name="dialogBean" value="#{configurationVariablesBean.configVariableConfirmationDialog}" />
+			</ui:include> 
+	</ice:panelGroup>
+
+	<ice:panelGroup>
+		<pc:automationTag value="auto-ADM-ConfigVariable-ConfigTreeTbl"/>
+		<pc:genericDataTable bean="#{configurationVariablesBean}"
+			id="ctxConfigurationVariables"
+			title="#{configurationVariablesBean.messages['configurationVariablesTable.title']}"
+			table="#{configurationVariablesBean.treeTable}"
+			toolbarUrl="/plugins/admin-portal/views/model/configurationVariablesToolbar.xhtml"
+			treeColumn="Model" exportExcel="false" exportCsv="false">
+			<!-- columnWidths="100px,100px,100px,100px,100px"    scrollable="true" scrollHeight="500px"  -->
+
+		</pc:genericDataTable>
+
+	</ice:panelGroup>
+
+
+
+
+</f:view>

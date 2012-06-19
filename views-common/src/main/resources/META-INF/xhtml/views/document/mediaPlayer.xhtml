@@ -1,0 +1,29 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<html>
+	<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"></meta>
+	</head>
+	<body>
+	<!--
+	Input parameter: contentHandler (implementation of IDocumentEditor/IDocumentViewer)
+	 -->
+	<ice:panelGroup>
+		<f:subview>
+			<ice:outputMedia id="outputMedia"
+				player="#{contentHandler.player}"
+				source="#{contentHandler.downloadToken}"
+				style="width:300px;height:270px;">
+				<pc:automationTag value="auto-COM-DocView-MediaPlayer" standAlone="false"/>
+			</ice:outputMedia>
+		</f:subview>
+	</ice:panelGroup>
+	</body>
+	</html>
+</f:view>

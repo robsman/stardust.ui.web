@@ -1,0 +1,189 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- Activity Open Section -->
+	<ice:panelGroup styleClass="heading" style="width: 100%">
+		<ice:outputText
+			value="#{ippActivityPanelConfigurationBean.messages['config.openView.label']}" />
+	</ice:panelGroup>
+	<ice:panelGroup>
+		<ui:include
+			src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+			<ui:param name="dialogBean"
+				value="#{ippActivityPanelConfigurationBean.activityPnlConfirmationDialog}" />
+		</ui:include>
+		<ice:panelGrid columns="2">
+			<ice:selectBooleanCheckbox partialSubmit="true"
+				value="#{ippActivityPanelConfigurationBean.displayDocuments}">
+				<pc:automationTag value="auto-PP-ActPnlConf-DispDocs"
+					standAlone="false" />
+			</ice:selectBooleanCheckbox>	
+			<ice:outputLabel styleClass="label-form"
+				value="#{ippActivityPanelConfigurationBean.messages['config.openView.displayDocuments']}" />
+		</ice:panelGrid>
+		<ice:panelGrid style="margin-left:25px" columns="1"
+			rendered="#{ippActivityPanelConfigurationBean.displayDocuments}">
+			<ice:outputText styleClass="label-form"
+				value="#{ippActivityPanelConfigurationBean.messages['config.openView.whichDocumentToDisplay']}" />
+			<ice:panelGrid columns="1">
+				<ice:selectOneRadio partialSubmit="true" layout="lineDirection"
+					styleClass="label-form"
+					value="#{ippActivityPanelConfigurationBean.displayDocumentType}">
+					<pc:automationTag value="auto-PP-ActPnlConf-DispDocType"
+					standAlone="false" />
+					<f:selectItem itemValue="OLDEST"
+						itemLabel="#{ippActivityPanelConfigurationBean.messages['config.openView.displayDocuments.oldest']}" />
+					<f:selectItem itemValue="ALL"
+						itemLabel="#{ippActivityPanelConfigurationBean.messages['config.openView.displayDocuments.all']}" />
+				</ice:selectOneRadio>
+			</ice:panelGrid>
+
+			<ice:outputText styleClass="label-form"
+				value="#{ippActivityPanelConfigurationBean.messages['config.openView.whereToDisplay']}" />
+			<ice:panelGrid columns="1">
+				<ice:selectOneRadio partialSubmit="true" layout="lineDirection"
+					styleClass="label-form"
+					value="#{ippActivityPanelConfigurationBean.documentDisplayMode}">
+					<pc:automationTag value="auto-PP-ActPnlConf-DispDocMode"
+					standAlone="false" />
+					<f:selectItem itemValue="PORTAL"
+						itemLabel="#{ippActivityPanelConfigurationBean.messages['config.openView.displayMode.portal']}" />
+					<f:selectItem itemValue="NEWBROWSER"
+						itemLabel="#{ippActivityPanelConfigurationBean.messages['config.openView.displayMode.newBrowser']}" />
+				</ice:selectOneRadio>
+			</ice:panelGrid>
+		</ice:panelGrid>
+	</ice:panelGroup>
+
+	<ice:panelGrid columns="2">
+		<ice:selectBooleanCheckbox partialSubmit="true" value="#{ippActivityPanelConfigurationBean.displayMappedDocuments}">
+			<pc:automationTag value="auto-PP-ActPnlConf-DispMappedDocs" standAlone="false" />
+		</ice:selectBooleanCheckbox>
+		<ice:outputLabel styleClass="label-form"
+			value="#{ippActivityPanelConfigurationBean.messages['config.openView.displayMappedDocuments']}"  />
+
+		<ice:selectBooleanCheckbox partialSubmit="true" value="#{ippActivityPanelConfigurationBean.displayNotes}">
+			<pc:automationTag value="auto-PP-ActPnlConf-DispNotes" standAlone="false" />
+		</ice:selectBooleanCheckbox>
+		<ice:outputLabel styleClass="label-form"
+			value="#{ippActivityPanelConfigurationBean.messages['config.openView.displayNotes']}"  />
+
+		<ice:selectBooleanCheckbox partialSubmit="true" value="#{ippActivityPanelConfigurationBean.displayProcessDetails}">
+			<pc:automationTag value="auto-PP-ActPnlConf-DispProcDet" standAlone="false" />
+		</ice:selectBooleanCheckbox>
+		<ice:outputLabel styleClass="label-form"
+			value="#{ippActivityPanelConfigurationBean.messages['config.openView.displayProcessDetails']}"  />
+
+		<ice:selectBooleanCheckbox partialSubmit="true" value="#{ippActivityPanelConfigurationBean.minimizeLaunchPanels}">
+			<pc:automationTag value="auto-PP-ActPnlConf-MinLaunchPnl" standAlone="false" />
+		</ice:selectBooleanCheckbox>
+		<ice:outputLabel styleClass="label-form"
+			value="#{ippActivityPanelConfigurationBean.messages['config.openView.minimizeLaunchPanels']}"  />
+
+		<ice:selectBooleanCheckbox partialSubmit="true" value="#{ippActivityPanelConfigurationBean.maximizeView}">
+			<pc:automationTag value="auto-PP-ActPnlConf-MaxView" standAlone="false" />
+		</ice:selectBooleanCheckbox>
+		<ice:outputLabel styleClass="label-form"
+			value="#{ippActivityPanelConfigurationBean.messages['config.openView.maximizeView']}"  />
+	</ice:panelGrid>
+	<ice:panelGroup>
+		<ice:panelGrid columns="2">
+			<ice:selectBooleanCheckbox partialSubmit="true"
+				value="#{ippActivityPanelConfigurationBean.pinActivityView}">
+				<pc:automationTag value="auto-PP-ActPnlConf-PinActView"
+					standAlone="false" />
+			</ice:selectBooleanCheckbox>	
+			<ice:outputLabel styleClass="label-form"
+				value="#{ippActivityPanelConfigurationBean.messages['config.openView.pinActivityView']}" />
+		</ice:panelGrid>
+		<ice:panelGrid style="margin-left:25px" columns="1"
+			rendered="#{ippActivityPanelConfigurationBean.pinActivityView}">
+			<ice:panelGrid columns="1">
+				<ice:selectOneRadio partialSubmit="true" layout="lineDirection"
+					styleClass="label-form"
+					value="#{ippActivityPanelConfigurationBean.pinActivityViewType}">
+					<pc:automationTag value="auto-PP-ActPnlConf-PinActViewType"
+					standAlone="false" />
+					<f:selectItem itemValue="VERTICAL"
+						itemLabel="#{ippActivityPanelConfigurationBean.messages['config.openView.pinActivityView.vertically']}" />
+					<f:selectItem itemValue="HPRIZONTAL"
+						itemLabel="#{ippActivityPanelConfigurationBean.messages['config.openView.pinActivityView.horizontally']}" />
+				</ice:selectOneRadio>
+			</ice:panelGrid>
+		</ice:panelGrid>
+	</ice:panelGroup>
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+
+	<!-- Activity Closes Section -->
+	<ice:panelGroup styleClass="heading" style="width: 100%">
+		<ice:outputText
+			value="#{ippActivityPanelConfigurationBean.messages['config.closeView.label']}" />
+	</ice:panelGroup>
+	<ice:panelGrid columns="2">
+		<ice:selectBooleanCheckbox partialSubmit="true" value="#{ippActivityPanelConfigurationBean.closeRelatedViews}">
+			<pc:automationTag value="auto-PP-ActPnlConf-CloseRelViews" standAlone="false" />
+		</ice:selectBooleanCheckbox>
+		<ice:outputLabel styleClass="label-form"
+			value="#{ippActivityPanelConfigurationBean.messages['config.closeView.closeRelatedViews']}"  />
+	</ice:panelGrid>
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+
+	<!-- Messages Section -->
+	<ice:panelGroup styleClass="heading" style="width: 100%">
+		<ice:outputText
+			value="#{ippActivityPanelConfigurationBean.messages['config.messages.label']}" />
+	</ice:panelGroup>
+	<ice:panelGrid columns="2">
+		<ice:selectBooleanCheckbox partialSubmit="true" value="#{ippActivityPanelConfigurationBean.showMappedDocumentWarning}">
+			<pc:automationTag value="auto-PP-ActPnlConf-MappedDocWarn" standAlone="false" />
+		</ice:selectBooleanCheckbox>
+		<ice:outputLabel styleClass="label-form"
+			value="#{ippActivityPanelConfigurationBean.messages['config.messages.mappedDocumentWarning']}"  />
+	</ice:panelGrid>
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+
+	<!-- Auto-Generation Section -->
+	<ice:panelGroup styleClass="heading" style="width: 100%">
+		<ice:outputText
+			value="#{ippActivityPanelConfigurationBean.messages['config.autoGeneration.label']}" />
+	</ice:panelGroup>
+	<ice:panelGrid columns="2">
+		<ice:outputLabel styleClass="label-form"
+			value="#{ippActivityPanelConfigurationBean.messages['config.autoGeneration.noOfColumnsInTable']}" />
+		<ice:selectOneMenu layout="pageDirection"
+			value="#{ippActivityPanelConfigurationBean.noOfColumnsInTable}">
+			<pc:automationTag value="auto-PP-ActPnlConf-AutoGeneration-NoOfColumnsInTable" standAlone="false" />
+			<f:selectItems value="#{ippActivityPanelConfigurationBean.availableNoOfColumnsInTable}" />
+		</ice:selectOneMenu>
+
+		<ice:outputLabel styleClass="label-form"
+			value="#{ippActivityPanelConfigurationBean.messages['config.autoGeneration.noOfColumnsInColumnLayout']}" />
+		<ice:selectOneMenu layout="pageDirection"
+			value="#{ippActivityPanelConfigurationBean.noOfColumnsInColumnLayout}">
+			<pc:automationTag value="auto-PP-ActPnlConf-AutoGeneration-NoOfColumnsInColumnLayout" standAlone="false" />
+			<f:selectItems value="#{ippActivityPanelConfigurationBean.availableNoOfColumnsInColumnLayout}" />
+		</ice:selectOneMenu>
+	</ice:panelGrid>
+	
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+
+	<ice:panelGrid columns="3">
+		<pc:automationTag value="auto-PP-ActPnlConf-BtnsBar" standAlone="false" />
+		<ice:commandButton value="#{common_msgPropsBean['views.configurationPanel.button.save']}"
+			action="#{ippActivityPanelConfigurationBean.saveConfiguration}" styleClass="button" />
+		<ice:commandButton value="#{common_msgPropsBean['views.configurationPanel.button.reset']}" immediate="true"
+			action="#{ippActivityPanelConfigurationBean.openConfirmationDialog}" styleClass="button" />
+	</ice:panelGrid>
+
+</f:view>

@@ -1,0 +1,216 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		row*= Instance of Row Class
+		col*= Instance of ColumnPreference 
+	 -->
+
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+		<ice:panelGroup rendered="#{col.columnName == 'Select'}"
+			style="text-align: center;">
+			<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-Sel"/>
+			<ice:selectBooleanCheckbox partialSubmit="true"
+				value="#{row.selectedRow}" />
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{col.columnName == 'Participant'}"
+			style="text-align: left;">
+			<ice:outputText value="#{row.participant.name}" />
+		</ice:panelGroup>
+
+		<ice:panelGroup
+			rendered="#{col.columnName == 'Create'}">
+			<ice:panelGroup>
+				<ice:panelGrid columns="2" rendered="#{!row.edit}">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/dot_green.gif"
+						rendered="#{row.create}" />
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.allow']}"
+						rendered="#{row.create}" />
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/dot_red.gif"
+						rendered="#{!row.create}" />
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.deny']}"
+						rendered="#{!row.create}" />
+				</ice:panelGrid>
+				<ice:panelGroup rendered="#{row.edit}">
+					<ice:selectOneMenu onclick="Event.stop(event);"
+						valueChangeListener="#{securityDialog.policyChanged}"
+						partialSubmit="true" value="#{row.createPolicyChangedValue}">
+						<pc:automationTag
+							value="auto-COM-SecurityDlg-SecurityDlgTbl-Create"
+							standAlone="false" />
+						<f:selectItems value="#{securityDialog.permission}" />
+						<f:attribute name="acb" value="#{row}" />
+						<f:attribute name="property" value="Create" />
+					</ice:selectOneMenu>
+				</ice:panelGroup>
+			</ice:panelGroup>
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'Read'}">
+			<ice:panelGrid columns="2" rendered="#{!row.edit}">
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/dot_green.gif"
+					rendered="#{row.read}" />
+				<ice:outputText
+					value="#{securityDialog.messages['securityDialog.columnValue.allow']}"
+					rendered="#{row.read}" />
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/dot_red.gif"
+					rendered="#{!row.read}" />
+				<ice:outputText
+					value="#{securityDialog.messages['securityDialog.columnValue.deny']}"
+					rendered="#{!row.read}" />
+			</ice:panelGrid>
+			<ice:panelGroup rendered="#{row.edit}">
+				<ice:selectOneMenu onclick="Event.stop(event);"
+					valueChangeListener="#{securityDialog.policyChanged}"
+					partialSubmit="true" value="#{row.readPolicyChangedValue}">
+					<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-Read"
+						standAlone="false" />
+					<f:selectItems value="#{securityDialog.permission}" />
+					<f:attribute name="acb" value="#{row}" />
+					<f:attribute name="property" value="Read" />
+				</ice:selectOneMenu>
+			</ice:panelGroup>
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'Modify'}">
+			<ice:panelGrid columns="2" rendered="#{!row.edit}">
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/dot_green.gif"
+					rendered="#{row.modify}" />
+				<ice:outputText
+					value="#{securityDialog.messages['securityDialog.columnValue.allow']}"
+					rendered="#{row.modify}" />
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/dot_red.gif"
+					rendered="#{!row.modify}" />
+				<ice:outputText
+					value="#{securityDialog.messages['securityDialog.columnValue.deny']}"
+					rendered="#{!row.modify}" />
+			</ice:panelGrid>
+			<ice:panelGroup rendered="#{row.edit}">
+				<ice:selectOneMenu onclick="Event.stop(event);"
+					valueChangeListener="#{securityDialog.policyChanged}"
+					partialSubmit="true" value="#{row.modifyPolicyChangedValue}">
+					<pc:automationTag
+						value="auto-COM-SecurityDlg-SecurityDlgTbl-Modify"
+						standAlone="false" />
+					<f:selectItems value="#{securityDialog.permission}" />
+					<f:attribute name="acb" value="#{row}" />
+					<f:attribute name="property" value="Modify" />
+				</ice:selectOneMenu>
+			</ice:panelGroup>
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'Delete'}">
+			<ice:panelGrid columns="2" rendered="#{!row.edit}">
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/dot_green.gif"
+					rendered="#{row.delete}" />
+				<ice:outputText
+					value="#{securityDialog.messages['securityDialog.columnValue.allow']}"
+					rendered="#{row.delete}" />
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/dot_red.gif"
+					rendered="#{!row.delete}" />
+				<ice:outputText
+					value="#{securityDialog.messages['securityDialog.columnValue.deny']}"
+					rendered="#{!row.delete}" />
+			</ice:panelGrid>
+			<ice:panelGroup rendered="#{row.edit}">
+				<ice:selectOneMenu onclick="Event.stop(event);"
+					valueChangeListener="#{securityDialog.policyChanged}"
+					partialSubmit="true" value="#{row.deletePolicyChangedValue}">
+					<pc:automationTag
+						value="auto-COM-SecurityDlg-SecurityDlgTbl-Delete"
+						standAlone="false" />
+					<f:selectItems value="#{securityDialog.permission}" />
+					<f:attribute name="acb" value="#{row}" />
+					<f:attribute name="property" value="Delete" />
+				</ice:selectOneMenu>
+			</ice:panelGroup>
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'ReadACL'}">
+			<ice:panelGrid columns="2" rendered="#{!row.edit}">
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/dot_green.gif"
+					rendered="#{row.readAcl}" />
+				<ice:outputText
+					value="#{securityDialog.messages['securityDialog.columnValue.allow']}"
+					rendered="#{row.readAcl}" />
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/dot_red.gif"
+					rendered="#{!row.readAcl}" />
+				<ice:outputText
+					value="#{securityDialog.messages['securityDialog.columnValue.deny']}"
+					rendered="#{!row.readAcl}" />
+			</ice:panelGrid>
+			<ice:panelGroup rendered="#{row.edit}">
+				<ice:selectOneMenu onclick="Event.stop(event);"
+					valueChangeListener="#{securityDialog.policyChanged}" 
+					partialSubmit="true" value="#{row.readACLPolicyChangedValue}">
+					<pc:automationTag
+						value="auto-COM-SecurityDlg-SecurityDlgTbl-ReadACL"
+						standAlone="false" />
+					<f:selectItems value="#{securityDialog.permission}" />
+					<f:attribute name="acb" value="#{row}" />
+					<f:attribute name="property" value="Read ACL" />
+				</ice:selectOneMenu>
+			</ice:panelGroup>
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'ModifyACL'}">
+			<ice:panelGrid columns="2" rendered="#{!row.edit}">
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/dot_green.gif"
+					rendered="#{row.modifyAcl}" />
+				<ice:outputText
+					value="#{securityDialog.messages['securityDialog.columnValue.allow']}"
+					rendered="#{row.modifyAcl}" />
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/dot_red.gif"
+					rendered="#{!row.modifyAcl}" />
+				<ice:outputText
+					value="#{securityDialog.messages['securityDialog.columnValue.deny']}"
+					rendered="#{!row.modifyAcl}" />
+			</ice:panelGrid>
+			<ice:panelGroup rendered="#{row.edit}">
+				<ice:selectOneMenu onclick="Event.stop(event);"
+					valueChangeListener="#{securityDialog.policyChanged}"
+					partialSubmit="true" value="#{row.modifyACLPolicyChangedValue}">
+					<pc:automationTag
+						value="auto-COM-SecurityDlg-SecurityDlgTbl-ModifyACL"
+						standAlone="false" />
+					<f:selectItems value="#{securityDialog.permission}" />
+					<f:attribute name="acb" value="#{row}" />
+					<f:attribute name="property" value="Modify ACL" />
+				</ice:selectOneMenu>
+			</ice:panelGroup>
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'Actions'}">
+			<ice:commandLink value="#{views_common_msgPropsBean['common.edit']}" styleClass="action-link" disabled="#{!securityDialog.modifyACL}"
+				actionListener="#{row.editClicked}" style="padding-right:15px;" >
+				<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ActionsEdit" standAlone="false"/>
+			</ice:commandLink>	
+			<ice:commandLink value="#{views_common_msgPropsBean['common.remove']}" styleClass="action-link" disabled="#{!securityDialog.modifyACL}"
+				actionListener="#{securityDialog.removeRole}" style="padding-right:15px;" >
+				<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ActionsRemove" standAlone="false"/>
+				<f:attribute name="acb" value="#{row}" />
+			</ice:commandLink>	
+		</ice:panelGroup>
+	</ice:panelGroup>
+
+</f:view>

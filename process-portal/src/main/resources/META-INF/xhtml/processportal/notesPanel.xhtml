@@ -1,0 +1,90 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<ui:include src="/plugins/views-common/user/userDetails.xhtml" />
+	</ice:panelGroup>
+	<pc:automationTag value="auto-PP-NotesView-DataTable"/>
+	<pc:genericDataTable exportExcel="false" exportCsv="false"
+		resizable="false" style="width:100%"
+		title="#{processportal_NotesBean.messages['title']}"
+		bean="#{processportal_NotesBean}" id="ProcessPortalNotesTable"
+		table="#{processportal_NotesBean.notesTable}" sortSupported="true" 
+		toolbarUrl="/plugins/processportal/toolbar/notesTableToolbar.xhtml"/>
+
+	<ice:panelGroup styleClass="clearing" />
+
+	<ice:panelGroup
+		rendered="#{(processportal_NotesBean.notesCount gt 0) and !processportal_NotesBean.editMode}">
+		<ice:panelGrid columns="2">
+			<ice:graphicImage
+				value="#{processportal_NotesBean.currentUserImageURL}" width="16px"
+				height="16px" />
+			<ice:panelGroup style="vertical-align:center;">
+				<ice:commandLink value="#{processportal_NotesBean.userLabel}"
+					styleClass="action-link"
+					actionListener="#{userDetailsBean.openUserDetailsDialog}">
+					<f:param name="userOid"
+						value="#{processportal_NotesBean.lastValidNote.user.OID}" />
+					<f:param name="hideDetailTable" value="#{true}" />
+				</ice:commandLink>
+				<ice:outputText value="#{processportal_NotesBean.notesTitle}" />
+			</ice:panelGroup>
+		</ice:panelGrid>
+	</ice:panelGroup>
+	<ice:panelGroup rendered="#{processportal_NotesBean.editMode}"
+		styleClass="heading">
+		<ice:outputText
+			value="#{processportal_NotesBean.messages['header.addNote']}" />
+	</ice:panelGroup>
+	<f:subview>
+		<ice:panelGroup
+			rendered="#{processportal_NotesBean.editMode or (processportal_NotesBean.notesCount gt 0)}"
+			styleClass="notesContent">
+
+			<ice:inputTextarea style="height: 300px;"
+				readonly="#{!processportal_NotesBean.editMode}" immediate="true"
+				value="#{processportal_NotesBean.editText}">
+				<pc:automationTag value="auto-PP-NotesView-EditTxtBox" standAlone="false"/>
+			</ice:inputTextarea>
+			<!--			<ice:inputRichText saveOnSubmit="true" immediate="true"-->
+			<!--				disabled="#{!processportal_NotesBean.editMode}" height="250px" customConfigPath="/plugins/processportal/richtext/richTextEditor.js"-->
+			<!--				skin="silver" toolbar="#{processportal_NotesBean.editMode?'default':'none'}"-->
+			<!--				value="#{processportal_NotesBean.editText}" />-->
+			<!--							valueChangeListener="#{processportal_NotesBean.contentsChanged}"-->
+
+		</ice:panelGroup>
+	</f:subview>
+	<ice:panelGroup effect="#{processportal_NotesBean.effect}">
+		<ice:panelGrid columns="3">
+			<ice:commandLink rendered="#{processportal_NotesBean.editMode}"
+				style="font-weight: bold;"
+				action="#{processportal_NotesBean.saveNote}">
+				<pc:automationTag value="auto-PP-NotesView-Save" standAlone="false"/>
+				<ice:panelGrid columns="2">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/disk.png" />
+					<ice:outputText
+						value="#{processportal_NotesBean.messages['button.save']}" />
+				</ice:panelGrid>
+			</ice:commandLink>
+			<ice:commandLink rendered="#{processportal_NotesBean.editMode}"
+				style="font-weight: bold;"
+				action="#{processportal_NotesBean.cancelNote}">
+				<pc:automationTag value="auto-PP-NotesView-Cancel" standAlone="false"/>
+				<ice:panelGrid columns="2">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/cross.png"  title="#{processportal_NotesBean.messages['button.cancel']}"/>
+					<ice:outputText
+						value="#{processportal_NotesBean.messages['button.cancel']}" />
+				</ice:panelGrid>
+			</ice:commandLink>
+		</ice:panelGrid>
+	</ice:panelGroup>
+
+</f:view>

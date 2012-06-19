@@ -1,0 +1,566 @@
+/* Style overrides to rime.css */
+
+/* Styles for ice:menuBar */
+
+.iceMnuBarSubMenu, .iceMnuBarVrtSubMenu {
+	margin-top: 5px;
+	width: 165px;
+}
+
+.iceMnuBarItem a, /*.iceMnuBarItem span,*/ .iceMnuBarVrtItem a /*, .iceMnuBarVrtItem span*/ {
+	white-space: nowrap;
+	padding: 0 10px;
+	margin: 0 1px; /* 1px to compensate for borders on hover */
+	color: #DDDDDD;
+	text-decoration: none;
+}
+
+.iceMnuBarItem a:hover, /*.iceMnuBarItem span,*/ .iceMnuBarVrtItem a:hover /*, .iceMnuBarVrtItem span*/ {
+	white-space: nowrap;
+	padding: 0 10px;
+	margin: 0 1px; /* 1px to compensate for borders on hover */
+	color: #FFFFFF;
+	text-decoration: none;
+}
+
+.iceMnuBarItem a, .iceMnuBarVrtItem a {
+	/*
+    background-image: url( "./css-images/nav_main_bg.png" );
+    */
+}
+
+.iceMnuBarItem a:hover, .iceMnuBarVrtItem a:hover {
+    /* background-image: url( "./css-images/nav_main_selected.png" ); */
+	color: #FFFFFF;
+	background: url(../images/menuTop-item-hover.jpg) top repeat-x;
+	border-left: 1px solid #666666;
+	border-right: 1px solid #666666;
+	margin: 0;
+}
+
+.iceMnuBarItem a .iceOutTxt, .iceMnuBarVrtItem a .iceOutTxt, .iceMnuBarItem a .iceMnuBarItemLabel {
+    color: #DDDDDD;
+}
+
+.iceMnuBarItem a:hover .iceOutTxt, .iceMnuBarVrtItem a:hover .iceOutTxt, .iceMnuBarItem a:hover .iceMnuBarItemLabel {
+    color: #FFFFFF;
+}
+
+.iceMnuItmImage, .iceMnuBarItemImage, .iceMnuBarVrtItemImage {
+	vertical-align: middle;
+}
+
+/* Styles for Sub Menu */
+
+.iceMnuBarSubMenu {
+	background-color: #999999;
+	border: #666666;
+	/* width: auto; */ /* This causes issues in IE for hover color */
+}
+
+.iceMnuItm a{
+	background-color: #999999;
+	border-top: #BBBBBB;
+	border-bottom: #BBBBBB;
+	color:#DDDDDD;
+}
+
+.iceMnuItm a:hover{
+	background-color: #666666;
+}
+
+.iceMnuItmImage, .iceMnuItmLabel {
+	color: #DDDDDD;
+}
+
+.iceMnuPopVrt .iceMnuPopVrtTopSubMenu .iceMnuPopVrtItem  .iceMnuItmLabel{
+	color: #00629A;
+}
+
+/* Styles for ice:panelTabSet */
+
+.icePnlTbOff .portalTbLbl
+{
+	color: gray;
+}
+
+.icePnlTbOn .portalTbLbl
+{
+	color: gray;
+}
+
+.icePnlTbOn .portalTbActiveLbl
+{
+	color: black;
+}
+
+.icePnlTbSetCnt {
+	padding: 5px 10px 10px;
+	vertical-align: top;
+}
+
+.portalViewTabsOff .MidMid .viewCloseLink {
+	visibility: hidden;
+}
+
+.portalViewTabsOver .MidMid .viewCloseLink {
+	visibility: visible;
+}
+
+/* Styles for ice:panelCollapsible */
+
+.icePnlClpsbl, .icePnlClpsbl-dis {
+    border: none;
+}
+
+.icePnlClpsblColpsd, .icePnlClpsblColpsd-dis {
+    border: none;
+}
+
+.icePnlClpsblHdr {
+	height: 20px;
+	line-height: 20px;
+	border-bottom: 1px solid #CCCCCC;
+	background: url(../images/panelHeader-BG.png) bottom repeat-x;
+	white-space: nowrap;
+	clear: both;
+	margin: 5px 0;
+}
+
+.icePnlClpsblColpsdHdr {
+	height: 20px;
+	line-height: 20px;
+	border-bottom: 1px solid #CCCCCC;
+	background: url(../images/panelHeader-BG.png) bottom repeat-x;
+	white-space: nowrap;
+	clear: both;
+	margin: 5px 0;
+}
+
+.icePnlClpsblHdr div {
+    background: url( '../images/panelHeader-triggerCollapse.png' ) no-repeat top left;
+    background-position: 0px 10px;   
+}
+
+
+.icePnlClpsblHdr-dis div {
+    background: url( '../images/panelHeader-triggerCollapse.png' ) no-repeat top left;
+    background-position: 0px 10px;     
+}
+
+.icePnlClpsblColpsdHdr div {
+    background: url( '../images/panelHeader-triggerExpand.png' ) no-repeat top left;
+    background-position: 0px 10px;     
+}
+
+.icePnlClpsblColpsdHdr-dis div {
+    background: url( '../images/panelHeader-triggerExpand.png' ) no-repeat top left;
+    background-position: 0px 10px;    
+}
+
+.icePnlClpsblCnt, .icePnlClpsblCnt-dis {
+	background-color: transparent;
+	padding: 0px 0px 0px 4px;
+}
+
+.icePnlClpsblCnt, .icePnlClpsblColpsdCnt, .icePnlClpsblColpsdCnt-dis, .icePnlClpsblCnt-dis {
+	border: none;
+	border-top: none;
+	padding-left: 0px;
+	padding-right: 0px;
+	padding-bottom: 5px;
+}
+
+.icePnlClpsblColpsdHdr .iceOutTxt, .icePnlClpsblHdr .iceOutTxt, .icePnlClpsblColpsdHdr-dis .iceOutTxt, .icePnlClpsblHdr-dis .iceOutTxt {
+	color: #708090;
+	padding-left: 5px;
+}
+
+.icePnlClpsblColpsdHdr .iceOutTxt:hover, .icePnlClpsblHdr .iceOutTxt:hover {
+	color: #B0232B;
+} 
+
+/* Styles for ice:tree */
+
+.iceTreeRow a, .iceTreeRow a .iceOutTxt {
+	color: #00629A;
+}
+
+.iceTreeRow a:hover {
+	color: #B0232B;
+}
+
+.iceTreeRow a .iceOutTxt:hover {
+	color: #B0232B;
+	text-decoration: none;
+}	
+
+/* Styles for ice:commandButton */
+
+.iceCmdBtn-dis {
+	opacity: 0.4;
+	filter: alpha(opacity=40)
+}
+
+/* Styles for ice:menuPopup */
+
+.iceMnuPopVrtTopSubMenu {
+    background-color: #FCFCFC;
+    border-color: #DBDBDB #6B6B6B #6B6B6B #DBDBDB;
+    border: thin solid 1px;
+	z-index:255;
+}
+
+.iceMnuPopVrtItem a {
+	padding-left: 10px;
+    padding-right: 3px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    margin-bottom: 0px;
+    font-size: 11px;
+}
+
+.iceMnuPopVrtItem a:hover {
+    background-color: #DDEAF0;
+}
+
+.iceMnuPopVrtItem-dis {
+    width: 160px;
+    display: block;
+    margin: 2px 0px 2px 0px; !important;
+    font-size: 1em;
+}
+
+.iceMnuPopVrtItem-dis .iceCmdLnk-dis {
+    border-bottom: 0px; !important;
+    padding:3px 3px 3px 10px;
+    font-size: 11px;
+}
+
+.iceMnuItmLabel-dis {
+    color: #B9B5AE !important;
+}
+
+.iceMnuPopVrtItemLabel {
+	padding-left: 7px;
+	color: #00629A;	
+}
+
+/* Sub Menu Styles START */
+.iceMnuPopVrtSubMenu {
+    border-color: #DBDBDB #6B6B6B #6B6B6B #DBDBDB;
+    border: thin solid 1px;
+}
+
+
+.iceMnuPopVrtSubMenu .iceMnuItm a {
+	background-color: #FCFCFC;
+	padding-left: 10px;
+    padding-right: 3px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    width: auto;
+}
+
+.iceMnuPopVrtSubMenu .iceMnuItm a:hover {
+	background-color: #DDEAF0;
+}
+
+.iceMnuPopVrtSubMenu .iceMnuItm a:hover .iceMnuItmLabel {
+	background-color: #DDEAF0;
+	color: #B0232B;
+	text-decoration: underline;
+}
+  
+.iceMnuPopVrtItem a:hover .iceMnuItmLabel, a:hover .iceMnuPopVrtItemLabel{
+	background-color: #DDEAF0;
+	color: #B0232B;
+	text-decoration: underline;
+}
+
+.iceMnuPopVrtItem-dis .iceMnuItmLabel-dis{
+	padding-left: 7px;	
+}
+
+.iceMnuPopVrtTopSubMenu .iceMnuPopVrtItem a:hover .iceMnuPopVrtItemLabel {
+	color: #B0232B;
+}
+
+.iceMnuPopVrtItem .iceMnuPopVrtItemImage {
+    width: auto;
+}
+
+.iceMnuPopVrtSubMenu .iceMnuPopVrtItem a:hover .iceMnuPopVrtItemLabel {
+	color: #B0232B;
+}
+/* Sub Menu Styles END */
+
+/* Overridden Input Controls */
+
+.iceInpTxt, .iceInpSecrt, .iceInpTxtArea,
+.iceSelOneMnu, .iceSelMnyLb, .iceSelMnyMnu, .iceSelOneLb,
+.iceInpTxtArea {
+    border-color: #AAAAAA;
+}
+
+.iceInpTxt-dis, .iceInpSecrt-dis, .iceInpTxtArea-dis,
+.iceSelOneMnu-dis, .iceSelMnyLb-dis, .iceSelMnyMnu-dis, .iceSelOneLb-dis {
+    background-color: #F0F0F0;
+    border: 1px solid #B6B6B6;
+    color: #AAAAAA;
+    margin: 2px;
+    padding: 3px;
+    font-size: 1em;
+}
+
+.iceSelInpDateInput {
+	width: 147px;
+	/* Below is same as .iceInpTxt, .iceInpSecrt, .iceInpTxtArea */
+    margin: 2px;
+    padding: 3px;
+    font: 11px tahoma;
+    background: #FFFFFF;
+    border: 1px solid #AAAAAA;
+}
+
+.iceSelInpDateInput-dis {
+    width: 147px;
+    background-color: #F0F0F0;
+    border: 1px solid #B6B6B6;
+    font: 11px tahoma;
+    color: #AAAAAA;
+    margin: 2px;
+    padding: 3px;
+    font-size: 1em;
+}
+
+.icePnlDvrFst, .icePnlDvrSnd {
+	vertical-align: top;
+}
+
+/* Styles for ice:commandLink */
+
+.iceDatTblCol .iceCmdLnk {
+	color: #00629A;
+	font-weight: normal;
+	text-decoration: none;
+}
+
+.iceDatTblCol .iceCmdLnk:hover {
+	color: #B0232B;
+	text-decoration: underline;
+}
+
+.iceDatTblCol .iceCmdLnk span.iceOutTxt {
+	color: #00629A;
+	text-decoration: none;
+}
+
+.iceDatTblCol .iceCmdLnk span.iceOutTxt:hover {
+	color: #B0232B;
+	text-decoration: underline;
+}
+
+.iceCmdLnk:hover, .iceOutLnk:hover {
+	color: #B0232B;
+	text-decoration: underline;
+}
+
+.iceCmdLnk-dis {
+	border-bottom: 0px none;
+}
+
+/* Styles for ice:commandSortHeader */
+/* Center align sortable column header */
+
+.iceCmdSrtHdr{
+	cursor: pointer; /* Requires for IE */
+}
+
+.iceCmdSrtHdr table {
+	margin: 0 auto;
+	width: auto;
+}
+
+/* Styles for FileUpload Component ice:inputFile */
+
+.iceInpFileTxt {
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:11px;
+	color:#333333;
+}
+
+/* This style is same as that of .button in nirvanaPortal.css */
+.iceInpFileBtn {
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:11px;
+	color:#333333;
+	padding:3px 10px;
+	background: #FFFFFF url( "./css-images/button-background.png" ) bottom repeat-x;
+	border:1px solid #CCCCCC;
+	border-bottom:1px solid #999999;
+	border-right:1px solid #999999;		
+	/* min-width: 60px; */
+	cursor: pointer;
+}
+
+/* messages */
+ 
+.iceMsgImageError {
+	background: url('../images/exclamation.png') no-repeat 0;
+	padding-left: 16px !important;
+	padding-bottom: 1px; 
+	margin-left: 5px;
+	background-size: 100%;
+}
+
+.iceMsgImageInfo {
+	padding-left: 16px !important;
+	padding-bottom: 1px;
+	margin-left: 5px;
+	background: url('../images/exclamation.png') no-repeat 0; 
+}
+
+.iceMsgError {
+	color:red;
+	line-height:200%;
+	padding-left:5px;
+}
+
+.iceMsgInfo{
+	color:red;
+	line-height:200%;
+	padding-left:15px;
+}
+
+.iceMsgInlineError {
+	color:red;
+	line-height:200%;
+	padding-left:5px;
+	white-space: nowrap;
+}
+
+.iceMsgInlineInfo {
+	color:red;
+	line-height:200%;
+	padding-left:5px;
+	white-space: nowrap;
+}
+
+
+/* Styles for ice:dataTable */
+
+.iceDatTblColHdr, .iceDatTblColHdr1, .iceDatTblColHdr2, .iceDatTblColGrpHdrCol, .iceDatTblFtr {
+	padding: 0px;
+}
+
+.iceSelInpDatePopup {
+	white-space: nowrap;
+}
+
+/* Style for Autocomplete Component */
+.iceSelInpTxtList {
+    z-index: 8888;
+}
+
+.participant-tree-highlight-style-common{
+	color: #000000;
+    font-family: Arial,Helvetica,sans-serif;
+    padding: 2px 0;
+}
+
+.participant-tree-highlight-style1{
+    background-color:#D9D9D9;
+}
+.participant-tree-highlight-style2{
+    background-color:#FF8080;
+}
+.participant-tree-highlight-style3{
+    background-color:#FF99FF;
+}
+.participant-tree-highlight-style4{
+    background-color:#FFF0B3;
+}
+.participant-tree-highlight-style5{
+    background-color:#FFB48F;
+}
+.participant-tree-highlight-style6{
+    background-color:#E67300;
+}
+.participant-tree-highlight-style7{
+    background-color:#80FF80;
+}
+.participant-tree-highlight-style8{
+    background-color:#FFFF66;
+}
+.participant-tree-highlight-style9{
+    background-color:#FFE5F3;
+}
+.participant-tree-highlight-style10{
+    background-color:#99FFFF;
+}
+.participant-tree-highlight-style11{
+    background-color:#CCFFCC;
+}
+.participant-tree-highlight-style12{
+    background-color:#CDCCFF;
+}
+
+/* Style for popup menu -medium width (220px)  */
+
+.menuPopupMedVrtTopSubMenu{
+	width: 220px;
+}
+
+.menuPopupMedVrtItem-dis {
+    display: block;
+    font-size: 1em;
+    margin: 2px 0;
+    width: 220px;
+    padding: 3px 3px 3px 10px;
+}
+.menuPopupMedVrtItem-dis .iceCmdLnk-dis{
+   padding: 0px 3px 3px 10px;
+   display: block;  
+  
+}
+.menuPopupMedVrtItem-dis .iceMnuItmLabel-dis {
+    font-weight: normal;
+    padding-bottom: 0;
+    padding-left: 7px;
+    padding-top: 0;
+    font-size: 11px;
+
+}
+
+/* Style for ICE Row Selector - START */
+
+.iceRowSelMouseOver {
+	color: black;
+	border-left: 1px solid #D9D9D9;
+	background: none repeat scroll 0 0 #FFFFE0
+}
+
+.iceRowSelMouseOver .iceOutTxt {
+	color: black;
+}
+
+.iceRowSelSelected {
+	color: black;
+	background: #FFFFE0 url("./css-images/row-selected.png") bottom repeat-x !important;
+}
+
+.iceRowSelSelected .iceOutTxt {
+	color: black;
+}
+
+.iceRowSelSelectedMouseOver {
+	color: black;
+	background: #FFF09D url("./css-images/row-selectedHover.png") bottom repeat-x !important;
+}
+
+.iceRowSelSelectedMouseOver .iceOutTxt {
+	color: black;
+}
+
+/* Style for ICE Row Selector - END */

@@ -1,0 +1,43 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Generic Abort and Start Menu Bar *****
+		# Attributes ('*' indicates mandatory attributes)
+		bean* = Instance of bean having action methods 
+		processInstance = ProcessInstance Name.
+		activityInstance = ActivityInstance Name (when called from ActivityTable actions column)
+		multiSelect = boolean value to check table row is multi selected or not (multiSelect is not allowed to Join)
+		-->
+	<c:if test="#{empty multiSelect}">
+		<c:set var="multiSelect" value="false" />
+	</c:if>
+	<ice:panelGroup style="text-align:center;">
+		<ice:menuBar displayOnClick="true" style="text-align: left;"
+			immediate="false"  styleClass="switchMenuBar" >
+			<ice:menuItem id="menuPopup"
+				icon="/plugins/common/images/panelHeader-triggerCollapse.png"
+				style="border:none;" value="" title="#{views_common_msgPropsBean['views.abortProcess.menu.tooltip']}">
+
+				<ice:menuItem styleClass="switchMnuItm"
+					value="#{views_common_msgPropsBean['views.switchProcessDialog.Menu.abortandstart']}"
+					actionListener="#{bean.openSwitchProcess}" icon="">
+					<pc:automationTag value="auto-COM-SwitchProcMenuBar-SelAbortStart" standAlone="false"/>
+					<f:attribute name="processInstance" value="#{processInstance}" />
+					<f:attribute name="activityInstance" value="#{activityInstance}" />
+				</ice:menuItem>
+				<ice:menuItem styleClass="switchMnuItm" disabled="#{multiSelect}"
+					value="  #{views_common_msgPropsBean['views.switchProcessDialog.Menu.abortandjoin']}"
+					actionListener="#{bean.openJoinProcess}"		icon="" >
+					<pc:automationTag value="auto-COM-SwitchProcMenuBar-SelAbortJoin" standAlone="false"/>
+					<f:attribute name="processInstance" value="#{processInstance}" />
+					<f:attribute name="activityInstance" value="#{activityInstance}" />					
+				</ice:menuItem>
+			</ice:menuItem>
+		</ice:menuBar>
+	</ice:panelGroup>
+</f:view>

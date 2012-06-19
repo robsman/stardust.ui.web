@@ -1,0 +1,112 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ui:composition>
+	
+		<ice:panelPopup modal="true" rendered="#{notificationBean.visible}"
+			draggable="true" autoCentre="true" positionOnLoadOnly="true"
+			styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-COM-NotifyDlg-Msg"/>
+					<ice:outputText value="#{messages_admin['common.notification.title']}"
+						styleClass="headerText"/>
+					<pc:automationTag value="auto-COM-NotifyDlg-MsgCloseBtn"/>
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						image="/plugins/common/images/dialog-windowbttn-close.png" 
+						action="#{notificationBean.closePopup}"
+						immediate="true"
+						styleClass="windowClose">
+					</ice:commandButton>
+				</ice:panelGroup>
+			</f:facet>
+		
+			<f:facet name="body">
+				<ice:panelBorder  styleClass="pnlPopUpBrdrDialog" cellpadding="0" cellspacing="0"
+					renderNorth="false" renderEast="false" renderSouth="true"  renderWest="false" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup style="min-width: 500px; max-height: 400px; overflow:auto;">
+							<pc:automationTag value="auto-COM-NotifyDlg-MsgSpan" standAlone="false"/>
+							<c:forEach items="#{notificationBean.notifications}" var="item">
+								
+								<ice:outputText value="#{item.message}:" styleClass="label-form" rendered="#{not empty item.message and item.showColonAtEnd}"/>
+								<ice:outputText value="#{item.message}" styleClass="label-form"  rendered="#{not empty item.message and not item.showColonAtEnd}"/>
+								
+								<ice:panelGroup styleClass="clearing" />
+								
+								<ice:outputText value="#{messages_admin['common.notification.message.title']}" rendered="#{empty item.notificationItem and item.displayNoRecordsFound}"/>
+								<ice:panelGroup rendered="#{!empty item.notificationItem}">
+									<pc:automationTag value="auto-COM-NotifyDlg-MsgTbl"/>
+									<ice:dataTable
+										value="#{item.notificationItem}" var="row">
+										<ice:column>
+											<f:facet name="header">
+												<ice:outputText value="#{item.keyTitle}" />
+											</f:facet>
+											<ice:outputText value="#{row.key}" />
+										</ice:column>
+										<ice:column>
+											<f:facet name="header">
+												<ice:outputText value="#{item.valueTitle}" />
+											</f:facet>
+											<ice:outputText value="#{row.description}" />
+										</ice:column>
+									</ice:dataTable>
+								</ice:panelGroup>
+								<ice:panelGroup styleClass="clearing" />
+								<ice:panelGroup styleClass="clearing" />
+							</c:forEach>
+							<ice:panelGroup styleClass="clearing" />
+							
+						</ice:panelGroup>
+					</f:facet>
+		
+					<f:facet name="south">
+						<ice:panelGroup>
+							<pc:automationTag value="auto-COM-NotifyDlg-OkBtn" standAlone="false"/>
+
+							<c:if test="#{notificationBean.buttonType eq 'OK_CANCEL'}">
+								
+								<ice:commandButton value="#{messages_admin['common.ok']}"
+									action="#{notificationBean.apply}" immediate="true"
+									styleClass="button" />
+								<ice:commandButton value="#{messages_admin['common.cancel']}"
+									action="#{notificationBean.closePopup}" immediate="true"
+									styleClass="button" />	
+																	
+							</c:if>
+							<c:if test="#{notificationBean.buttonType eq 'OK'}">
+							
+								<ice:commandButton value="#{messages_admin['common.ok']}"
+									action="#{notificationBean.closePopup}" immediate="true"
+									styleClass="button" />
+									
+							</c:if>
+							<c:if test="#{notificationBean.buttonType eq 'CLOSE'}">
+							
+								<ice:commandButton value="#{messages_admin['common.close']}"
+									action="#{notificationBean.closePopup}" immediate="true"
+									styleClass="button" />
+									
+							</c:if>
+							<c:if test="#{notificationBean.buttonType eq 'YES_NO'}">
+							
+								<ice:commandButton value="#{messages_admin['common.yes']}"
+									action="#{notificationBean.apply}" immediate="true"
+									styleClass="button" />
+								<ice:commandButton value="#{messages_admin['common.no']}"
+									action="#{notificationBean.closePopup}" immediate="true"
+									styleClass="button" />									
+									
+							</c:if>
+	
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

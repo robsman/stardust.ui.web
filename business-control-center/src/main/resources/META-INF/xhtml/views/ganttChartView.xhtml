@@ -1,0 +1,151 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<html>
+<head>
+	<ice:outputStyle href="/plugins/business-control-center/css/ganttChart.css" />
+</head>
+<body>
+
+	<ice:panelGroup width="100%">
+		<ice:panelGroup rendered="#{not (empty ganttChartSelectionBean.processes[ganttChartSelectionBean.processId])}">
+		<ice:panelGrid columns="3" cellpadding="0" cellspacing="0">
+		  <ice:panelGroup>
+			<fieldset style="margin-bottom: 1em; border: 1px solid #d9d9d9; width: 700px;">
+			    <legend style="text-align: left;font: 11px;
+  						font-weight: bold;">#{ganttChartSelectionBean.ganttChart.messages['visibilityCaptionText.label']}</legend>
+			    	<ice:panelGrid columns="6" style="display:inline;">
+					<ice:panelGroup>
+						<ice:outputLabel value="#{ganttChartSelectionBean.ganttChart.messages['infoColumn.label']} " styleClass="label-form" />
+						<ice:selectBooleanCheckbox id="showInfoColumn" title="#{ganttChartSelectionBean.ganttChart.messages['infoColumn.label']}"
+							value="#{ganttChartSelectionBean.ganttChart.showInfoColumn}" partialSubmit="true" valueChangeListener="#{ganttChartSelectionBean.ganttChart.toggleInfoColumn}">
+							<pc:automationTag value="auto-BCC-GanttChart-ShowInfoCol" standAlone="false"/>
+						</ice:selectBooleanCheckbox>
+					</ice:panelGroup>
+					<ice:panelGroup>
+						<ice:outputLabel value="#{ganttChartSelectionBean.ganttChart.messages['percentageValue.label']} " styleClass="label-form" />
+						<ice:selectBooleanCheckbox id="showPercentageValue"
+							title="#{ganttChartSelectionBean.ganttChart.messages['percentageValue.label']}" value="#{ganttChartSelectionBean.ganttChart.showPercentageValue}"
+							partialSubmit="true" >
+							<pc:automationTag value="auto-BCC-GanttChart-ShowPercentValue" standAlone="false"/>
+						</ice:selectBooleanCheckbox>
+					</ice:panelGroup>
+					<ice:panelGroup>
+						<ice:outputLabel value="#{ganttChartSelectionBean.ganttChart.messages['statusBar.label']} " styleClass="label-form" />
+						<ice:selectBooleanCheckbox id="showStatusBar" title="#{ganttChartSelectionBean.ganttChart.messages['statusBar.label']}"
+							value="#{ganttChartSelectionBean.ganttChart.showStatusBar}" partialSubmit="true">
+							<pc:automationTag value="auto-BCC-GanttChart-ShowStatusBar" standAlone="false"/>
+						</ice:selectBooleanCheckbox>
+					</ice:panelGroup>
+					<ice:panelGroup>
+						<ice:outputLabel value="#{ganttChartSelectionBean.ganttChart.messages['dependencyBar.label']} " styleClass="label-form" />
+						<ice:selectBooleanCheckbox id="showDependencyBar"
+							title="#{ganttChartSelectionBean.ganttChart.messages['dependencyBar.label']}" value="#{ganttChartSelectionBean.ganttChart.showDependencyBar}"
+							partialSubmit="true">
+							<pc:automationTag value="auto-BCC-GanttChart-ShowDependencyBar" standAlone="false"/>
+						</ice:selectBooleanCheckbox>
+					</ice:panelGroup>
+					<ice:panelGroup>
+						<ice:outputLabel value="#{ganttChartSelectionBean.ganttChart.messages['activity.label']} " styleClass="label-form" />
+						<ice:selectBooleanCheckbox id="showActiveInstances"
+							title="#{ganttChartSelectionBean.ganttChart.messages['activity.label']}" value="#{ganttChartSelectionBean.ganttChart.showActiveInstances}"
+							partialSubmit="true" valueChangeListener="#{ganttChartSelectionBean.ganttChart.updateForAI}">
+							<pc:automationTag value="auto-BCC-GanttChart-ShowActiveInst" standAlone="false"/>
+						</ice:selectBooleanCheckbox>
+					</ice:panelGroup>
+					<ice:panelGroup>
+						<ice:outputLabel value="#{ganttChartSelectionBean.ganttChart.messages['completed.label']} " styleClass="label-form" />
+						<ice:selectBooleanCheckbox id="showCompletedInstances"
+							title="#{ganttChartSelectionBean.ganttChart.messages['completed.label']}"
+							value="#{ganttChartSelectionBean.ganttChart.showCompletedInstances}" partialSubmit="true" 
+							valueChangeListener="#{ganttChartSelectionBean.ganttChart.updateForCompletedAI}">
+							<pc:automationTag value="auto-BCC-GanttChart-ShowCompInst" standAlone="false"/>
+						</ice:selectBooleanCheckbox>
+					</ice:panelGroup>
+				</ice:panelGrid>
+			</fieldset>
+		  </ice:panelGroup>
+		  <ice:panelGroup>
+			<fieldset style="margin-bottom: 1em; border: 1px solid #d9d9d9; width: 200px;">
+				 <legend style="text-align: left;font: 11px; font-weight: bold;">#{ganttChartSelectionBean.ganttChart.messages['timeunit.label']}</legend>
+				<ice:panelGroup>
+					<ice:selectOneMenu partialSubmit="true" value="#{ganttChartSelectionBean.ganttChart.timeUnit}" valueChangeListener="#{ganttChartSelectionBean.ganttChart.updateTimeElements}">
+					 	<pc:automationTag value="auto-BCC-GanttChart-ShowTimeUnit" standAlone="false"/>
+						<f:selectItems value="#{ganttChartSelectionBean.ganttChart.timeElementsTypes}"/>
+					</ice:selectOneMenu>
+				</ice:panelGroup>
+			</fieldset>
+		</ice:panelGroup>
+		<!-- ice:panelGroup>
+			<fieldset style="margin-bottom: 1em; border: 1px solid #d9d9d9; width: 200px;">
+				<legend style="text-align: left;font: 11px; font-weight: bold;">Refresh: </legend>
+				<ice:panelGroup>
+					<ice:selectOneMenu id="Intervals" partialSubmit="true" value="#{ganttChartSelectionBean.ganttChart.refreshInterval}"> 
+					<f:selectItem itemLabel="Explicitly" itemValue="2147483647"/>
+					<f:selectItem itemLabel="Every 15s" itemValue="#{15 * 1000}"/>
+					<f:selectItem itemLabel="Every 30s" itemValue="#{30 * 1000}"/>
+				</ice:selectOneMenu>
+				</ice:panelGroup>
+			</fieldset>
+		</ice:panelGroup-->
+	</ice:panelGrid>
+	</ice:panelGroup>
+	<ice:panelGroup styleClass="clearing" />
+	
+	<ice:panelGroup rendered="#{not (empty ganttChartSelectionBean.processes[ganttChartSelectionBean.processId])}">
+	<c:if test="#{not empty ganttChartSelectionBean.ganttChart.treeTable}">
+		<pc:automationTag value="auto-BCC-GanttChart-GanttChrtTbl"/>
+		<pc:genericDataTable renderColumnHeaders="false"
+			bean="#{ganttChartSelectionBean.ganttChart}" id="ganttChart" table="#{ganttChartSelectionBean.ganttChart.treeTable}"
+			treeColumn="Name" exportExcel="false" exportCsv="false"
+			toolbarUrl="/plugins/business-control-center/views/ganttChartViewTableToolbar.xhtml">
+			<f:facet name="header">
+				<ice:columnGroup>
+					<ice:headerRow>
+						<ice:column style="width:20%;">
+							<ice:outputText value="#{ganttChartSelectionBean.ganttChart.messages['column.name']}" />
+						</ice:column>
+						<ice:column rendered="#{ganttChartSelectionBean.ganttChart.showInfoColumn}" style="width:5%;">
+							<ice:outputText value="#{ganttChartSelectionBean.ganttChart.messages['column.info']}" />
+						</ice:column>
+						<ice:column style="width:75%; noWrap:true;">
+							<ice:panelGroup styleClass="diagram" style="width: 100%; overflow: hidden;">
+								<ice:panelGroup styleClass="barframe">
+									<ui:repeat var="item"
+										value="#{ganttChartSelectionBean.ganttChart.timeElements.elements}">
+										<ice:panelGroup style="left: #{item.left}px; top: 0px;">
+											<ice:outputText value="#{item.date}" style="font-size: 10px;">
+											</ice:outputText>
+										</ice:panelGroup>
+										<ice:panelGroup styleClass="progressbar darkGreyColor"
+											style="left: #{item.left}px; top: 20px; height: 15px; width: 1px;"></ice:panelGroup>
+										<ice:panelGroup style="left: #{item.left + 2}px; top: 20px;">
+											<ice:outputText value="#{item.time}" style="font-size: 10px;">
+											</ice:outputText>
+										</ice:panelGroup>
+									</ui:repeat>
+									<ice:panelGroup styleClass="timebar redColor"
+										style="top: 38px; left: #{ganttChartSelectionBean.ganttChart.now}px; height: #{ganttChartSelectionBean.ganttChart.nowHeight}px; width: 1px;"></ice:panelGroup>
+								</ice:panelGroup>
+							</ice:panelGroup>
+						</ice:column>
+					</ice:headerRow>
+				</ice:columnGroup>
+			</f:facet>
+		</pc:genericDataTable>
+	</c:if>
+	</ice:panelGroup>
+	
+	<ice:panelGroup rendered="#{empty ganttChartSelectionBean.processes[ganttChartSelectionBean.processId]}">
+		<ice:outputText value="#{ganttChartSelectionBean.ganttChart.messages['processNotConfigured.label']}"/>
+	</ice:panelGroup>
+	
+	</ice:panelGroup>
+</body>
+</html>
+
+</f:view>

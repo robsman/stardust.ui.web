@@ -1,0 +1,57 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<ice:panelGroup styleClass="heading" style="width: 100%;">
+			<ice:outputText value="#{messages_admin['views.common.processes.label']}" />
+		</ice:panelGroup>
+		<ice:panelGroup style="width: 100%;">
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.total.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{processViewBean.totalProcessInstancesCount}">
+					<pc:automationTag value="auto-ADM-ProcView-TotalProcCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+			
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.active.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{processViewBean.activeProcessInstancesCount}">
+					<pc:automationTag value="auto-ADM-ProcView--ActiveProcCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.interrupted.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{processViewBean.interruptedProcessInstancesCount}">
+					<pc:automationTag value="auto-ADM-ProcView-IntProcCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.completed.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{processViewBean.completedProcessInstancesCount}">
+					<pc:automationTag value="auto-ADM-ProcView-CompProcCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.aborted.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{processViewBean.abortedProcessInstancesCount}">
+					<pc:automationTag value="auto-ADM-ProcView-AbortProcCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+		</ice:panelGroup>
+	</ice:panelGroup>
+	<ice:panelGroup styleClass="clearing" />
+				
+	<ui:include src="/plugins/views-common/processTableHelper/processTableHelper.xhtml">
+		<ui:param name="title" value="#{messages_admin['views.common.processTable.title']}"/>
+		<ui:param name="id" value="processList"/>
+		<ui:param name="bean" value="#{processViewBean.processTableHelper}"/>
+	</ui:include>
+</f:view>

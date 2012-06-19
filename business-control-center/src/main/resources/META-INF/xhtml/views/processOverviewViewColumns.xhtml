@@ -1,0 +1,114 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		row*= Instance of Row Class
+		col*= Instance of ColumnPreference 
+	 -->
+
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+		<ice:panelGroup rendered="#{col.columnName == 'Status'}">
+			 <ui:include src="thresholdState.xhtml">
+                 <ui:param name="thresholdState" value="#{row.thresholdState}"/>
+             </ui:include>
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{col.columnName == 'highPriority'}">
+			<ice:commandLink value="#{row.highPriority}"
+				actionListener="#{row.doPriorityAction}"
+				disabled="#{(row.highPriority eq 0) ? true : false}"
+				title="#{(row.highPriority eq 0) ? null: row.title}">
+				<pc:automationTag value="auto-BCC-ProcMgr-PrioDataTable-High"
+					standAlone="false" />
+				<f:param name="selectedPriorityForDetails" value="#{1}" />
+				<f:param name="selectedCriticalForDetails" value="#{false}" />
+			</ice:commandLink>
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{col.columnName == 'criticalHighPriority'}">
+			<ice:commandLink value="#{row.criticalHighPriority}"
+				actionListener="#{row.doPriorityAction}"
+				disabled="#{(row.criticalHighPriority eq 0) ? true : false}"
+				title="#{(row.criticalHighPriority eq 0) ? null: row.title}">
+				<pc:automationTag value="auto-BCC-ProcMgr-PrioDataTable-CritHigh"
+					standAlone="false" />
+				<f:param name="selectedPriorityForDetails" value="#{1}" />
+				<f:param name="selectedCriticalForDetails" value="#{true}" />
+			</ice:commandLink>
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{col.columnName == 'normalPriority'}">
+			<ice:commandLink value="#{row.normalPriority}"
+				actionListener="#{row.doPriorityAction}"
+				disabled="#{(row.normalPriority eq 0) ? true : false}"
+				title="#{(row.normalPriority eq 0) ? null: row.title}">
+				<pc:automationTag value="auto-BCC-ProcMgr-PrioDataTable-Normal"
+					standAlone="false" />
+				<f:param name="selectedPriorityForDetails" value="#{0}" />
+				<f:param name="selectedCriticalForDetails" value="#{false}" />
+			</ice:commandLink>
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{col.columnName == 'criticalNormalPriority'}">
+			<ice:commandLink value="#{row.criticalNormalPriority}"
+				actionListener="#{row.doPriorityAction}"
+				disabled="#{(row.criticalNormalPriority eq 0) ? true : false}"
+				title="#{(row.criticalNormalPriority eq 0) ? null: row.title}">
+				<pc:automationTag value="auto-BCC-ProcMgr-PrioDataTable-CritNormal"
+					standAlone="false" />
+				<f:param name="selectedPriorityForDetails" value="#{0}" />
+				<f:param name="selectedCriticalForDetails" value="#{true}" />
+			</ice:commandLink>
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{col.columnName == 'lowPriority'}">
+			<ice:commandLink value="#{row.lowPriority}"
+				actionListener="#{row.doPriorityAction}"
+				disabled="#{(row.lowPriority eq 0) ? true : false}"
+				title="#{(row.lowPriority eq 0) ? null: row.title}">
+				<pc:automationTag value="auto-BCC-ProcMgr-PrioDataTable-Low"
+					standAlone="false" />
+				<f:param name="selectedPriorityForDetails" value="#{-1}" />
+				<f:param name="selectedCriticalForDetails" value="#{false}" />
+			</ice:commandLink>
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{col.columnName == 'criticalLowPriority'}">
+			<ice:commandLink value="#{row.criticalLowPriority}"
+				actionListener="#{row.doPriorityAction}"
+				disabled="#{(row.criticalLowPriority eq 0) ? true : false}"
+				title="#{(row.criticalLowPriority eq 0) ? null: row.title}">
+				<pc:automationTag value="auto-BCC-ProcMgr-PrioDataTable-CritLow"
+					standAlone="false" />
+				<f:param name="selectedPriorityForDetails" value="#{-1}" />
+				<f:param name="selectedCriticalForDetails" value="#{true}" />
+			</ice:commandLink>
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{col.columnName == 'totalPriority'}">
+			<ice:commandLink value="#{row.totalPriority}"
+				actionListener="#{row.doPriorityAction}"
+				disabled="#{(row.totalPriority eq 0) ? true : false}"
+				title="#{(row.totalPriority eq 0) ? null: row.title}">
+				<pc:automationTag value="auto-BCC-ProcMgr-PrioDataTable-Total"
+					standAlone="false" />
+				<f:param name="selectedPriorityForDetails" value="#{null}" />
+				<f:param name="selectedCriticalForDetails" value="#{false}" />
+			</ice:commandLink>
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{col.columnName == 'criticalTotalPriority'}">
+			<ice:commandLink value="#{row.criticalTotalPriority}"
+				actionListener="#{row.doPriorityAction}"
+				disabled="#{(row.criticalTotalPriority eq 0) ? true : false}"
+				title="#{(row.criticalTotalPriority eq 0) ? null: row.title}">
+				<pc:automationTag value="auto-BCC-ProcMgr-PrioDataTable-CritTotal"
+					standAlone="false" />
+				<f:param name="selectedPriorityForDetails" value="#{null}" />
+				<f:param name="selectedCriticalForDetails" value="#{true}" />
+			</ice:commandLink>
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{col.columnName == 'PerformerName'}">
+			<ice:outputText value="#{row.defaultPerformerName}" />
+		</ice:panelGroup>
+	</ice:panelGroup>
+	
+</f:view>

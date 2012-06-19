@@ -1,0 +1,13 @@
+/* Additional stylesheet that alters the default styles to accommodate differences in CSS rendering in various user-agents/browsers. */
+
+.button, .button-dis
+{
+	padding:3px 5px;
+}
+
+.procSearchSelOneRadio {
+	text-align: left;
+	margin-left: -6px;
+	margin-top: -2px;
+}
+

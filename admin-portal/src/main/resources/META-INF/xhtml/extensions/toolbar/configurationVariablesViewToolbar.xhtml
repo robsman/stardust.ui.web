@@ -1,0 +1,32 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid columns="2">
+		<ice:commandLink			
+			action="#{configurationVariablesBean.update}" partialSubmit="true" style="vertical-align:middle;">
+			<pc:automationTag value="auto-ADM-ConfigVariable-ToolbarRefresh"
+				standAlone="false" />
+			<ice:graphicImage
+				value="/plugins/admin-portal/images/icons/arrow_refresh.png"
+				styleClass="toolbar-button" title="#{messages_admin['common.refresh']}" />
+		</ice:commandLink>
+	
+		<ice:commandLink name="#{configurationVariablesBean.messages['save']}"
+			action="#{configurationVariablesBean.saveConfigurationValue}"
+			style="vertical-align:middle;" >
+			<pc:automationTag value="auto-ADM-ConfigVariable-ToolbarSave"
+				standAlone="false" />
+			<h:graphicImage value="/plugins/views-common/images/icons/disk.png"
+				styleClass="toolbar-button"
+				title="#{configurationVariablesBean.messages['save']}" />
+
+		</ice:commandLink>
+
+	</ice:panelGrid>
+
+</f:view>

@@ -1,0 +1,64 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ice:panelGrid columns="5">
+		<ice:commandLink actionListener="#{bean.performDefaultDelegation}" 
+			rendered="#{bean.strandedActivityView}"
+			disabled="#{bean.selectedItemCount eq 0 ? true : false}"
+			panelConfirmation="delegateToDefaultPerformer">
+			<pc:automationTag value="auto-COM-ActivityTbl-ToolbarDefaultDelegate" standAlone="false"/>
+			<h:graphicImage value="/plugins/views-common/images/icons/delegate_default.png"
+				style="border: none;" styleClass="#{bean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}"
+				title="#{views_common_msgPropsBean['common.toolTip.delegateToDefaultPerformer']}"/>
+		</ice:commandLink>
+		<ice:commandLink actionListener="#{bean.openDelegateDialog}" disabled="#{bean.selectedItemCount eq 0 ? true : false}">
+			<pc:automationTag value="auto-COM-ActivityTbl-ToolbarDelegate" standAlone="false"/>
+			<h:graphicImage value="/plugins/common/images/icons/process-history/active/delegate.png"
+				style="border: none;" styleClass="#{bean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}"
+				title="#{views_common_msgPropsBean['common.tooltip.delegate']}"/>
+		</ice:commandLink>
+		<ice:commandLink actionListener="#{bean.openAbortDialog}" disabled="#{bean.selectedItemCount eq 0 ? true : false}">
+			<pc:automationTag value="auto-COM-ActivityTbl-ToolbarAbort" standAlone="false"/>
+			<ice:graphicImage
+				url="/plugins/common/images/icons/process-history/active/abort.png"
+                   style="border:none;" styleClass="#{bean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}" 
+                   title="#{views_common_msgPropsBean['common.tooltip.abort']}"/>
+		</ice:commandLink>
+		<!-- Rendered when no row is selected -->
+		<ice:panelGroup
+			rendered="#{(bean.selectedItemCount eq 0 ? true : false)}">
+			<ice:graphicImage styleClass="iceCmdBtn-dis"
+				value="/plugins/common/images/panelHeader-triggerCollapse.png" />
+		</ice:panelGroup>
+		<!-- Rendered when some row is selected -->
+		<ice:panelGroup
+			rendered="#{!(bean.selectedItemCount eq 0 ? true : false)}">
+			<c:set var="multiSelect" value="#{bean.selectedItemCount ne 1}" />
+			<ui:include
+				src="/plugins/views-common/common/switchProcessMenuBar.xhtml" />
+			<ui:param name="bean" value="#{bean}" />
+		</ice:panelGroup>
+
+		<ice:commandLink actionListener="#{bean.applyChanges}" 
+			disabled="#{!bean.priorityChanged}">
+			<pc:automationTag value="auto-COM-ActivityTbl-ToolbarSavePrio" standAlone="false"/>
+			<ice:graphicImage
+				url="/plugins/business-control-center/images/icons/save_flag.png"
+                   style="border:none;" styleClass="#{!bean.priorityChanged ? 'iceCmdBtn-dis' : ''}"
+                   title="#{views_common_msgPropsBean['common.tooltip.savePriorityChanges']}"/>
+		</ice:commandLink>
+		<ice:panelConfirmation id="delegateToDefaultPerformer" 
+					title="#{views_common_msgPropsBean['common.confirm']}"
+					message="#{views_common_msgPropsBean['common.confirmDefaultDelegate']}"
+                    acceptLabel="#{views_common_msgPropsBean['common.yes']}" cancelLabel="#{views_common_msgPropsBean['common.no']}">
+                    <pc:automationTag value="auto-COM-ActivityTbl-ToolbarDelegateConfMsg" standAlone="false" requiredValue="pnlConfirmation" />
+        </ice:panelConfirmation>            
+
+	</ice:panelGrid>	
+	
+</f:view>

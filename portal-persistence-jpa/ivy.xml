@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<ivy-module version="2.0"
+   xmlns:m="http://ant.apache.org/ivy/maven"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+
+   <info organisation="com.infinity.bpm" module="ipp-portal-persistence-jpa"
+      revision="${ipp.version.full}" />
+
+   <configurations>
+      <conf name="ipp-persistence-jpa-compile" description="Portal Persistence JPA - Compile Scope" />
+      <conf name="ipp-persistence-jpa-runtime" extends="ipp-persistence-jpa-compile" description="Portal Persistence JPA - Runtime Scope" />
+      <conf name="ipp-persistence-jpa-provided" description="Portal Persistence JPA - Provided Scope" />
+      
+      <conf name="ipp-persistence-jpa-sources" description="Portal Persistence JPA - Sources" />
+   
+      <conf name="compile" extends="ipp-persistence-jpa-compile, ipp-persistence-jpa-provided" visibility="private" description="Portal Persistence JPA" />
+      
+      <conf name="test" visibility="private" description="Test dependencies" />
+      
+      <conf name="pom" description="Portal Persistence JPA POMs" />
+   </configurations>
+
+   <publications>
+      <artifact name="ipp-persistence-jpa" type="jar" conf="ipp-persistence-jpa-compile, ipp-persistence-jpa-runtime, ipp-persistence-jpa-provided" />
+      <artifact name="ipp-persistence-jpa" type="jar" conf="ipp-persistence-jpa-sources" m:classifier="sources" />
+      
+      <artifact name="ipp-persistence-jpa" type="pom" conf="pom" ext="pom" />
+   </publications>
+
+   <dependencies>
+      <!-- ipp-persistence-jpa-compile -->
+      <dependency org="org.springframework" name="spring" rev="2.5.6" conf="ipp-persistence-jpa-compile->default" />
+      <dependency org="org.eclipse.persistence" name="eclipselink" rev="2.0.0" conf="ipp-persistence-jpa-compile->default" />
+      <dependency org="toplink.essentials" name="toplink-essentials" rev="2.0-58g" conf="ipp-persistence-jpa-compile->default" />
+
+      <!-- ipp-persistence-jpa-runtime -->
+      <!-- nothing to add -->
+
+      <!-- ipp-persistence-jpa-provided -->
+      <dependency org="javax.transaction" name="jta" rev="1.0.1B" conf="ipp-persistence-jpa-provided->default" />
+
+      <!-- test -->
+      <dependency org="junit" name="junit" rev="3.8.1" conf="test->default" />
+   </dependencies>
+   
+</ivy-module>

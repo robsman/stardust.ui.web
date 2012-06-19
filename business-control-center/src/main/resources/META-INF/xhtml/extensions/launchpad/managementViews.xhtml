@@ -1,0 +1,48 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
+			<ui:param name="bean" value="#{managementViews}" />
+			<ui:param name="title" value="#{managementViews.messages['title']}" />
+			<ui:param name="collapsible" value="true" />
+			<ui:param name="showRefreshLink" value="false" />
+			<ui:param name="automationTag" value="auto-BCC-LP-MgmtViewPnl" />
+		</ui:include>
+	</ice:panelGroup>
+	
+	<ice:panelGrid columns="1" rendered="#{managementViews.expanded}">
+
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-BCC-LP-AllMgmtView" standAlone="false"/>
+			<f:param name="viewId" value="categoryTree" />
+			<ice:outputText value="#{messages_bcc['launchPanels.managementViews.allManagement.title']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+		
+		<ice:commandLink action="#{managementViews.openAllProcessManagement}">
+			<pc:automationTag value="auto-BCC-LP-AllProcMgmtView" standAlone="false"/>
+			<ice:outputText value="#{messages_bcc['launchPanels.managementViews.allProcessManagement.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+
+		<ice:commandLink action="#{managementViews.openAllActivityManagement}">
+			<pc:automationTag value="auto-BCC-LP-AllActMgmtView" standAlone="false"/>
+			<ice:outputText value="#{messages_bcc['launchPanels.managementViews.allActivityManagement.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+
+		<ice:commandLink action="#{managementViews.openAllResourceManagement}">
+			<pc:automationTag value="auto-BCC-LP-AllResMgmtView" standAlone="false"/>
+			<ice:outputText value="#{messages_bcc['launchPanels.managementViews.allResourceManagement.label']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
+
+	</ice:panelGrid>
+
+</f:view>

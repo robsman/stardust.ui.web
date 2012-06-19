@@ -1,0 +1,67 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- Input Params
+		bean* - Bean Reference
+	 -->
+
+	<ice:panelGroup>
+		<ice:panelGrid columns="2">
+			<ice:panelGrid columns="2" styleClass="#{styleClass}UserToolbar">
+				<ice:commandLink name="#{messages_admin['views.criticalityConf.criticality.categories.toolbar.import']}"
+					actionListener="#{bean.importVariables}"
+					style="vertical-align: middle;">
+					<pc:automationTag
+						value="auto-ADM-CriticalityConfig-CategoriesTableToolbar-Import"
+						standAlone="false" />
+					<h:graphicImage
+						value="/plugins/views-common/images/icons/page_white_get.png"
+						style="border: none;" title="#{messages_admin['views.criticalityConf.criticality.categories.toolbar.import']}" />
+				</ice:commandLink>
+				<ice:panelGroup
+					title="#{messages_admin['views.criticalityConf.criticality.categories.toolbar.export']}">
+					<ice:outputResource
+						resource="#{bean.fileResource}"
+						fileName="CriticalityCategories.zip" type="link"
+						image="/plugins/views-common/images/icons/page_white_put.png" />
+				</ice:panelGroup>
+			</ice:panelGrid>
+			<ice:panelGrid columns="3">
+				<ice:commandLink actionListener="#{bean.addRow}"
+					title="#{messages_admin['views.criticalityConf.criticality.categories.toolbar.add']}"
+					immediate="true">
+					<pc:automationTag
+						value="auto-ADM-CriticalityConfig-CategoriesTableToolbar-Add"
+						standAlone="false" />
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/add.png" />
+				</ice:commandLink>
+				<ice:commandLink actionListener="#{bean.removeRows}"
+					title="#{messages_admin['views.criticalityConf.criticality.categories.toolbar.delete']}"
+					disabled="#{!bean.deleteEnabled}" immediate="true">
+					<pc:automationTag
+						value="auto-ADM-CriticalityConfig-CategoriesTableToolbar-Delete"
+						standAlone="false" />
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/delete.png"
+						styleClass="#{bean.deleteEnabled ? '' : 'iceCmdBtn-dis'}" />
+				</ice:commandLink>
+				<ice:commandLink actionListener="#{bean.editRow}"
+					title="#{messages_admin['views.criticalityConf.criticality.categories.toolbar.edit']}"
+					disabled="#{!bean.editEnabled}" immediate="true">
+					<pc:automationTag
+						value="auto-ADM-CriticalityConfig-CategoriesTableToolbar-Edit"
+						standAlone="false" />
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/pencil.png"
+						styleClass="#{bean.editEnabled ? '' : 'iceCmdBtn-dis'}" />
+				</ice:commandLink>
+			</ice:panelGrid>
+		</ice:panelGrid>
+	</ice:panelGroup>
+</f:view>

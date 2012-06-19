@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<xsd:schema xmlns="http://infinity.com/bpm/portal/common/uiDefinition"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   xmlns:beans="http://www.springframework.org/schema/beans"
+   targetNamespace="http://infinity.com/bpm/portal/common/uiDefinition"
+   elementFormDefault="qualified"
+   attributeFormDefault="unqualified">
+   
+   <xsd:import namespace="http://www.springframework.org/schema/beans" />
+
+   <xsd:element name="perspective">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="beans:identifiedType">
+            
+               <xsd:sequence>
+               
+               	  <xsd:element name="preferences" type="Preferences" minOccurs="0" maxOccurs="1" />
+
+                  <xsd:element name="menuSection" type="MenuSection" minOccurs="0" maxOccurs="unbounded" />
+               
+                  <xsd:element name="launchPanel" type="LaunchPanel" minOccurs="0" maxOccurs="unbounded" />
+
+                  <xsd:element name="toolbarSection" type="ToolbarSection" minOccurs="0" maxOccurs="unbounded" />
+
+                  <xsd:element name="view" type="View" minOccurs="0" maxOccurs="unbounded" />
+               
+<!-- 
+                  <xsd:element name="defaultViews">
+                     <xsd:complexType>
+                        <xsd:sequence>
+                           <xsd:element name="viewRef" minOccurs="0" maxOccurs="unbounded">
+                              <xsd:complexType>
+                                 <xsd:attribute name="name" type="xsd:string" use="required" />
+                              </xsd:complexType>
+                           </xsd:element>
+                        </xsd:sequence>
+                     </xsd:complexType>
+                  </xsd:element>
+ -->                  
+               </xsd:sequence>
+            
+               <xsd:attribute name="name" type="xsd:string" />
+               
+               <xsd:attribute name="messageBundles" type="xsd:string" use="optional" />
+               
+               <xsd:attribute name="requiredRoles" type="xsd:string" />
+               
+               <xsd:attribute name="excludeRoles" type="xsd:string" />
+
+			   <xsd:attribute name="default" type="xsd:boolean" use="optional" />
+
+			   <xsd:attribute name="controller" type="xsd:string" use="optional" />
+
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+   
+   <xsd:element name="perspectiveExtension">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="beans:identifiedType">
+            
+               <xsd:sequence>
+                  <xsd:element name="menuExtension" type="MenuExtension" minOccurs="0" maxOccurs="unbounded" />
+
+                  <xsd:element name="launchpadExtension" type="LaunchpadExtension" minOccurs="0" maxOccurs="unbounded" />
+
+                  <xsd:element name="toolbarExtension" type="ToolbarExtension" minOccurs="0" maxOccurs="unbounded" />
+
+                  <xsd:element name="viewsExtension" type="ViewsExtension" minOccurs="0" maxOccurs="unbounded" />
+<!-- 
+                  <xsd:element name="defaultViewsExtension" type="DefaultViewsExtension" minOccurs="0" maxOccurs="unbounded" />
+ -->
+               </xsd:sequence>
+            
+               <xsd:attribute name="name" type="xsd:string" />
+
+               <xsd:attribute name="targetPerspective" type="xsd:string" use="required" />
+               
+               <xsd:attribute name="messageBundles" type="xsd:string" use="optional" />
+               
+               <xsd:attribute name="requiredRoles" type="xsd:string" />
+               
+               <xsd:attribute name="excludeRoles" type="xsd:string" />
+
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+   
+   <xsd:complexType name="AbstractSectionDefinition" abstract="true">
+      <xsd:complexContent>
+         <xsd:extension base="beans:identifiedType">
+         
+            <xsd:attribute name="name" type="xsd:string" use="required" />
+         
+            <xsd:attribute name="requiredRoles" type="xsd:string" />
+            
+            <xsd:attribute name="excludeRoles" type="xsd:string" />
+            
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+
+   <xsd:complexType name="Preferences">
+      <xsd:complexContent>
+         <xsd:extension base="AbstractSectionExtension">
+            <xsd:sequence>
+               <xsd:element name="preferencePage" type="PreferencePage" minOccurs="0" maxOccurs="unbounded" />
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   
+   <xsd:complexType name="PreferencePage">
+      <xsd:complexContent>
+         <xsd:extension base="AbstractSectionDefinition">
+            <xsd:attribute name="include" type="xsd:string" use="required" />
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   
+   <xsd:complexType name="View">
+      <xsd:complexContent>
+         <xsd:extension base="AbstractSectionDefinition">
+             <xsd:sequence>
+             	<xsd:element name="preferences" type="Preferences" minOccurs="0" maxOccurs="1" />
+             </xsd:sequence>
+            <xsd:attribute name="include" type="xsd:string" use="required" />
+
+            <xsd:attribute name="controller" type="xsd:string" use="optional" />
+            
+            <xsd:attribute name="closingPolicy" type="xsd:string" use="optional" />
+            
+            <xsd:attribute name="administrative" type="xsd:boolean" use="optional" />
+            
+            <xsd:attribute name="identityParams" type="xsd:string" use="optional" />
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   
+   <xsd:complexType name="MenuSection">
+      <xsd:complexContent>
+         <xsd:extension base="AbstractSectionDefinition">
+            <xsd:attribute name="include" type="xsd:string" use="required" />
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   
+   <xsd:complexType name="LaunchPanel">
+      <xsd:complexContent>
+         <xsd:extension base="AbstractSectionDefinition">
+            <xsd:attribute name="collapsible" type="xsd:boolean" />
+            <xsd:attribute name="include" type="xsd:string" />
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   
+   <xsd:complexType name="ToolbarSection">
+      <xsd:complexContent>
+         <xsd:extension base="AbstractSectionDefinition">
+         
+            <xsd:sequence>
+<!-- 
+               <xsd:element name="toolbarButton" minOccurs="0" maxOccurs="unbounded">
+                  <xsd:complexType>
+                     <xsd:attribute name="handler" type="xsd:string" use="required" />
+                     <xsd:attribute name="icon" type="xsd:string" use="required" />
+                     <xsd:attribute name="disabledIcon" type="xsd:string" use="required" />
+                  </xsd:complexType>
+               </xsd:element>
+ -->
+            </xsd:sequence>
+         
+            <xsd:attribute name="requiredView" type="xsd:string" />
+            <xsd:attribute name="include" type="xsd:string" />
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   
+   <xsd:complexType name="AbstractSectionExtension" abstract="true">
+      <xsd:complexContent>
+         <xsd:extension base="beans:identifiedType">
+         
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+
+   <xsd:complexType name="AbstractPositionedSectionExtension" abstract="true">
+      <xsd:complexContent>
+         <xsd:extension base="AbstractSectionExtension">
+         
+            <xsd:attribute name="before" type="xsd:string" />
+            <xsd:attribute name="after" type="xsd:string" />
+
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+
+   <xsd:complexType name="MenuExtension">
+      <xsd:complexContent>
+         <xsd:extension base="AbstractPositionedSectionExtension">
+            <xsd:sequence>
+               <xsd:element name="menuSection" type="MenuSection" minOccurs="0" maxOccurs="unbounded" />
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   
+   <xsd:complexType name="LaunchpadExtension">
+      <xsd:complexContent>
+         <xsd:extension base="AbstractPositionedSectionExtension">
+            <xsd:sequence>
+               <xsd:element name="launchPanel" type="LaunchPanel" minOccurs="0" maxOccurs="unbounded" />
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   
+   <xsd:complexType name="ToolbarExtension">
+      <xsd:complexContent>
+         <xsd:extension base="AbstractPositionedSectionExtension">
+            <xsd:sequence>
+               <xsd:element name="toolbarSection" type="ToolbarSection" minOccurs="0" maxOccurs="unbounded" />
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+
+   <xsd:complexType name="ViewsExtension">
+      <xsd:complexContent>
+         <xsd:extension base="AbstractSectionExtension">
+            <xsd:sequence>
+               <xsd:element name="view" type="View" minOccurs="0" maxOccurs="unbounded" />
+
+<!-- 
+               <xsd:element name="viewOverride" type="ViewOverride" minOccurs="0" maxOccurs="unbounded" />
+ -->
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+
+   <xsd:complexType name="ViewOverride">
+      <xsd:complexContent>
+         <xsd:extension base="View">
+               <xsd:attribute name="targetView" type="xsd:string" use="required" />
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+
+<!-- 
+   <xsd:complexType name="DefaultViewsExtension">
+      <xsd:complexContent>
+         <xsd:extension base="AbstractSectionExtension">
+            <xsd:sequence>
+               <xsd:element name="viewRef" type="ViewRef" minOccurs="0" maxOccurs="unbounded" />
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   
+   <xsd:complexType name="ViewRef">
+      <xsd:complexContent>
+         <xsd:extension base="beans:identifiedType">
+         
+            <xsd:attribute name="name" type="xsd:string" use="required" />
+         
+            <xsd:attribute name="requiredRoles" type="xsd:string" />
+            
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+ -->
+   
+</xsd:schema>

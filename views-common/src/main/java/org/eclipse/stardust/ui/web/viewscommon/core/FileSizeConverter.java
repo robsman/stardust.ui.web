@@ -1,0 +1,36 @@
+/*******************************************************************************
+ * Copyright (c) 2011 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
+package org.eclipse.stardust.ui.web.viewscommon.core;
+
+
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.convert.Converter;
+import javax.faces.convert.ConverterException;
+
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+
+
+public class FileSizeConverter implements Converter
+{
+   public Object getAsObject(FacesContext arg0, UIComponent arg1, String arg2)
+         throws ConverterException
+   {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+   public String getAsString(FacesContext context, UIComponent component, Object value)
+         throws ConverterException
+   {
+     return DocumentMgmtUtility.getHumanReadableFileSize(Long.parseLong(value.toString()));
+   }
+}

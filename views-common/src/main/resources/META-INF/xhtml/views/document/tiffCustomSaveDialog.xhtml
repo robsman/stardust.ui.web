@@ -1,0 +1,53 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ice:panelGroup style="width: 350px;">
+		<ice:outputText
+			value="#{views_common_msgPropsBean['views.documentView.saveDocumentDialog.tiff.saveOptionsLabel']}"
+			styleClass="label-form" />
+		<ice:panelGrid columns="2">
+			<ice:selectBooleanCheckbox
+				value="#{tiffCustomSaveDialog.saveBookmarks}" partialSubmit="true"
+				disabled="#{!tiffCustomSaveDialog.showSaveBookmarks}" />
+			<ice:outputText
+				value="#{views_common_msgPropsBean['views.documentView.saveDocumentDialog.tiff.saveBookmarks']}"
+				styleClass="label-form" />
+			<ice:selectBooleanCheckbox
+				value="#{tiffCustomSaveDialog.savePageOrder}" partialSubmit="true"
+				disabled="#{!tiffCustomSaveDialog.showSavePageOrder}" />
+			<ice:outputText
+				value="#{views_common_msgPropsBean['views.documentView.saveDocumentDialog.tiff.savePageOrder']}"
+				styleClass="label-form" />
+			<ice:selectBooleanCheckbox
+				value="#{tiffCustomSaveDialog.savePageRotation}"
+				partialSubmit="true"
+				disabled="#{!tiffCustomSaveDialog.showSavePageRotation}" />
+			<ice:outputText
+				value="#{views_common_msgPropsBean['views.documentView.saveDocumentDialog.tiff.saveRotation']}"
+				styleClass="label-form" />
+			<ice:selectBooleanCheckbox
+				value="#{tiffCustomSaveDialog.saveAnnotations}"
+				partialSubmit="true"
+				disabled="#{!tiffCustomSaveDialog.showSaveAnnotations}" />
+			<ice:outputText
+				value="#{views_common_msgPropsBean['views.documentView.saveDocumentDialog.tiff.saveAnnotations']}"
+				styleClass="label-form" />
+			<ice:selectBooleanCheckbox
+				value="#{tiffCustomSaveDialog.saveDocumentData}"
+				partialSubmit="true"
+				disabled="#{!tiffCustomSaveDialog.showSaveDocumentData}" />
+			<ice:outputText
+				value="#{views_common_msgPropsBean['views.documentView.saveDocumentDialog.tiff.saveDocumentData']}"
+				styleClass="label-form" />
+		</ice:panelGrid>
+		<ice:panelGroup styleClass="clearing" />
+		<ice:outputText
+			value="#{views_common_msgPropsBean['views.documentView.saveDocumentDialog.tiff.saveAtLeastOne']}"
+			rendered="#{tiffCustomSaveDialog.tiffSaveNone and !tiffCustomSaveDialog.fileSystemDocument}"
+			styleClass="msgError" />
+	</ice:panelGroup>
+</f:view>

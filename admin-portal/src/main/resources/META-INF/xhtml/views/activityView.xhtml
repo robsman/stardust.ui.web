@@ -1,0 +1,61 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<ui:include src="/plugins/views-common/common/panelConfirmation.xhtml" />	
+	<ice:panelGroup>
+		<ice:panelGroup styleClass="heading" style="width: 100%;">
+			<ice:outputText value="#{messages_admin['views.common.activities.label']}" />
+		</ice:panelGroup>
+		<ice:panelGroup style="width: 100%;">
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.total.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{ippAdmActivityView.totalActivityInstancesCount}">
+					<pc:automationTag value="auto-ADM-ActivityView-TotalActCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+			
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.active.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{ippAdmActivityView.activeActivityInstancesCount}">
+					<pc:automationTag value="auto-ADM-ActivityView-ActiveActCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.waiting.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{ippAdmActivityView.pendingActivityInstancesCount}">
+					<pc:automationTag value="auto-ADM-ActivityView-WaitActCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.aborted.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{ippAdmActivityView.abortedActivityInstancesCount}">
+					<pc:automationTag value="auto-ADM-ActivityView-AbortActCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+
+			<ice:panelGroup styleClass="metrics">
+				<ice:outputLabel value="#{messages_admin['views.common.completed.label']}#{messages_admin['common.colon']}" styleClass="label-item" />
+				<ice:outputText value="#{ippAdmActivityView.completedActivityInstancesCount}">
+					<pc:automationTag value="auto-ADM-ActivityView-CompActCnt" standAlone="false"/>
+				</ice:outputText>
+			</ice:panelGroup>
+		</ice:panelGroup>
+	</ice:panelGroup>
+	<ice:panelGroup styleClass="clearing" />
+
+	<ice:panelGroup>
+		<ui:include src="/plugins/views-common/activityTableHelper/activityTableHelper.xhtml">
+			<ui:param name="title" value="#{messages_admin['views.common.activityTable.title']}"/>
+			<ui:param name="id" value="activityList"/>
+			<ui:param name="bean" value="#{ippAdmActivityView.activityHelper}"/>
+		</ui:include>
+
+	</ice:panelGroup>
+</f:view>
