@@ -183,43 +183,45 @@
 			</ice:panelGroup>
 
 			<!-- ********** DATA TABLE PAGIANTION INFO ********** -->
-			<ice:panelGroup
-					rendered="#{displayPaginator}"
-					styleClass="#{styleClass}PaginatorInfoSection"
-					style="width:100%; margin-top: 2px;">
-					
-				<pc:automationTag value="auto-DT-PaginatorInfo" />
-				<c:if test="#{table.totalCountSuported}">
-					<ice:dataPaginator
-							id="#{id}PaginatorInfo" for="#{id}"
-							rowsCountVar="rowsCount"
-							displayedRowsCountVar="displayedRowsCountVar"
-							firstRowIndexVar="firstRowIndex"
-							lastRowIndexVar="lastRowIndex"
-							pageCountVar="pageCount"
-							pageIndexVar="pageIndex">
-		               <ice:outputFormat styleClass="#{styleClass}PaginatorInfo"
-		               		value="#{common_msgPropsBean['common.genericDataTable.paginationInfo']}">
-		                   <f:param value="#{rowsCount}"/>
-		                   <f:param value="#{displayedRowsCountVar}"/>
-		                   <f:param value="#{firstRowIndex}"/>
-		                   <f:param value="#{lastRowIndex}"/>
-		                   <f:param value="#{pageIndex}"/>
-		                   <f:param value="#{pageCount}"/>
-		               </ice:outputFormat>
-					</ice:dataPaginator>
-				</c:if>
-				<c:if test="#{not table.totalCountSuported}">
-					<ice:dataPaginator
-							id="#{id}PaginatorInfo" for="#{id}"
-							pageIndexVar="pageIndex">
-		               <ice:outputFormat styleClass="#{styleClass}PaginatorInfo"
-		               		value="#{common_msgPropsBean['common.genericDataTable.paginationInfo.noTotalCount']}">
-		                   <f:param value="#{pageIndex}"/>
-		               </ice:outputFormat>
-					</ice:dataPaginator>
-				</c:if>
-			</ice:panelGroup>
+			<c:if test="#{displayPaginator}">
+				<ice:panelGroup
+						rendered="#{displayPaginator}"
+						styleClass="#{styleClass}PaginatorInfoSection"
+						style="width:100%; margin-top: 2px;">
+						
+					<pc:automationTag value="auto-DT-PaginatorInfo" />
+					<c:if test="#{table.totalCountSuported}">
+						<ice:dataPaginator
+								id="#{id}PaginatorInfo" for="#{id}"
+								rowsCountVar="rowsCount"
+								displayedRowsCountVar="displayedRowsCountVar"
+								firstRowIndexVar="firstRowIndex"
+								lastRowIndexVar="lastRowIndex"
+								pageCountVar="pageCount"
+								pageIndexVar="pageIndex">
+			               <ice:outputFormat styleClass="#{styleClass}PaginatorInfo"
+			               		value="#{common_msgPropsBean['common.genericDataTable.paginationInfo']}">
+			                   <f:param value="#{rowsCount}"/>
+			                   <f:param value="#{displayedRowsCountVar}"/>
+			                   <f:param value="#{firstRowIndex}"/>
+			                   <f:param value="#{lastRowIndex}"/>
+			                   <f:param value="#{pageIndex}"/>
+			                   <f:param value="#{pageCount}"/>
+			               </ice:outputFormat>
+						</ice:dataPaginator>
+					</c:if>
+					<c:if test="#{not table.totalCountSuported}">
+						<ice:dataPaginator
+								id="#{id}PaginatorInfo" for="#{id}"
+								pageIndexVar="pageIndex">
+			               <ice:outputFormat styleClass="#{styleClass}PaginatorInfo"
+			               		value="#{common_msgPropsBean['common.genericDataTable.paginationInfo.noTotalCount']}">
+			                   <f:param value="#{pageIndex}"/>
+			               </ice:outputFormat>
+						</ice:dataPaginator>
+					</c:if>
+				</ice:panelGroup>
+			</c:if>
 
 			<!-- ********** ACTUAL DATA TABLE ********** -->
 			<ice:panelGroup styleClass="#{styleClass}DataSection">
