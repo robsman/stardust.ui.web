@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.stardust.ui.web.common.ToolbarSection;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -438,13 +439,20 @@ public class FacesUtils
    }
 
    /**
-    * 
+    * @deprecated
     */
    public static void refreshPage()
    {
-      handleNavigation("pageRefresh");
+      refreshPage(PortalApplication.getInstance().isPageRefreshOn());
    }
 
+   public static void refreshPage(boolean refresh)
+   {
+      if (refresh)
+      {
+         handleNavigation("pageRefresh");
+      }
+   }
    /**
     * 
     */

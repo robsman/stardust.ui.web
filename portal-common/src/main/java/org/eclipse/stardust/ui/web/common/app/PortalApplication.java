@@ -128,6 +128,7 @@ public class PortalApplication
 
    private String logoutUri;
 
+   private boolean pageRefreshOn = false;
    /**
     *
     */
@@ -288,7 +289,7 @@ public class PortalApplication
                   ViewEventType.FULL_SCREENED);
       
             // Required to refresh page
-            FacesUtils.refreshPage();
+            FacesUtils.refreshPage(true);
          }
       }
    }
@@ -327,6 +328,7 @@ public class PortalApplication
          getPortalUiController().broadcastNonVetoableViewEvent(getFocusView(),
                ViewEventType.RESTORED_TO_NORMAL);
          getPortalUiController().broadcastNonVetoablePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
+         FacesUtils.refreshPage(true);
       }
    }
 
@@ -1708,5 +1710,15 @@ public class PortalApplication
    public String getLocaleString()
    {
       return getLocaleObject().toString();
+   }
+   
+   public void setPageRefreshOn(boolean pageRefreshOn)
+   {
+      this.pageRefreshOn = pageRefreshOn;
+   }
+
+   public boolean isPageRefreshOn()
+   {
+      return pageRefreshOn;
    }
 }

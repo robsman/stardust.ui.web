@@ -86,7 +86,7 @@
 			
 			<ice:panelGrid columns="5" style="float: right;">
 					
-				<ice:commandButton onclick="Event.stop(event);"
+				<ice:commandButton onclick="Event.stop(event);" immediate="true"
 					image="/plugins/views-common/images/icons/process-filled-dropPanel.png"
 					actionListener="#{documentSearchBean.openProcessesDialog}"
 					title="#{documentSearchBean.messages['documentSearchTable.tooltip.process']}">

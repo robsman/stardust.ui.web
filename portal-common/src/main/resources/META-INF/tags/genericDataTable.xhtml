@@ -227,7 +227,7 @@
 			<ice:panelGroup styleClass="#{styleClass}DataSection">
 				<pc:automationTag value="auto-DT-Content" />
 				<ice:dataTable
-					id="#{id}" binding="#{table.tableUI}"
+					id="#{id}" 
 					var="row" value="#{paginatorTable ? table.dataModel : table.list}"
 					rows="#{displayPaginator ? table.pageSize : 0}"
 					sortColumn="#{sortColumn}" sortAscending="#{sortAscending}"
@@ -445,7 +445,7 @@
 					<pc:automationTag value="auto-DT-PaginatorBar" standAlone="false" requiredValue="#{styleClass}PaginatorBarSection" />
 					<ice:dataPaginator
 							id="#{id}Paginator" paginator="#{table.totalCountSuported}"
-							for="#{id}" binding="#{table.dataPaginator}"
+							for="#{id}"
 			                paginatorMaxPages="#{table.paginatorMaxPages}"
 			                fastStep="#{table.paginatorFastStep}">
 			                

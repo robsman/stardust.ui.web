@@ -841,7 +841,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          
          if (isMetaDataAvailable())
          {
-            FacesUtils.refreshPage(); // This is needed otherwise Meta Data is not rendered correctly
+            FacesUtils.refreshPage(true); // This is needed otherwise Meta Data is not rendered correctly
          }
       }
       catch (Exception e)
@@ -861,7 +861,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
 
          if (isMetaDataAvailable())
          {
-            FacesUtils.refreshPage(); // This is needed otherwise Meta Data is not rendered correctly
+            FacesUtils.refreshPage(true); // This is needed otherwise Meta Data is not rendered correctly
          }
       }
       catch (Exception e)

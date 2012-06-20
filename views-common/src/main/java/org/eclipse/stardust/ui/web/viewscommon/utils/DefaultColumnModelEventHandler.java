@@ -35,10 +35,7 @@ public class DefaultColumnModelEventHandler implements IColumnModelListener
     */
    public void columnsRearranged(IColumnModel columnModel)
    {
-      if (needRefresh)
-      {
-         FacesUtils.refreshPage();
-      }
+      FacesUtils.refreshPage(needRefresh);
    }
 
    /**

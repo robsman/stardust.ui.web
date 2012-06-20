@@ -195,7 +195,7 @@ public class TabScopedComponent extends UIComponentBase implements MyFacesRestor
    {
       try
       {
-         bindViewScope();
+         bindTabScope();
 
          Class< ? > clazz = ReflectionUtils
                .getClassFromClassName("org.apache.myfaces.shared_impl.util.RestoreStateUtils");
@@ -219,25 +219,7 @@ public class TabScopedComponent extends UIComponentBase implements MyFacesRestor
       }
       finally
       {
-         unbindViewScope();
-      }
-   }
-
-   private void bindViewScope()
-   {
-      Object currentView = getAttributes().get(ATTR_CURRENT_TAB);
-      if (currentView instanceof View)
-      {
-         TabScopeUtils.bindTabScope((View) currentView);
-      }
-   }
-
-   private void unbindViewScope()
-   {
-      Object currentView = getAttributes().get(ATTR_CURRENT_TAB);
-      if (currentView instanceof View)
-      {
-         TabScopeUtils.unbindTabScope((View) currentView);
+         unbindTabScope();
       }
    }
 
