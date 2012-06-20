@@ -17,7 +17,6 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsPrivilege;
-import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
@@ -252,8 +251,7 @@ public class JCRDocument extends AbstractDocumentContentInfo
    {
       if (!DocumentMgmtUtility.isDocumentVersioned(this.document))
       {
-         this.document = DocumentMgmtUtility.getDocumentManagementService().versionDocument(this.document.getId(), "",
-               CommonProperties.ZERO);
+         this.document = DocumentMgmtUtility.getDocumentManagementService().versionDocument(this.document.getId(), "", null);
       }
       
       this.document.setDescription(description);
@@ -263,7 +261,7 @@ public class JCRDocument extends AbstractDocumentContentInfo
       this.document.setOwner(DocumentMgmtUtility.getUser().getAccount());
       
       Document document = DocumentMgmtUtility.getDocumentManagementService().updateDocument(this.document, contentByte,
-            "", true, comments, String.valueOf(this.versionTracker.getVersions().size() + 1), false);
+            "", true, comments, null, false);
       return new JCRDocument(document, new JCRVersionTracker(document));
    }
 

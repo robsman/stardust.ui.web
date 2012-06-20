@@ -23,7 +23,6 @@ import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsPrivilege;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
-import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler.DocumentUploadEventType;
@@ -336,13 +335,6 @@ public abstract class AbstractDocumentUploadHelper implements Serializable
    {
       if (checkModifyPrivilege(existingDocument))
       {
-         // create version if required
-         if (!DocumentMgmtUtility.isDocumentVersioned(existingDocument))
-         {
-            DocumentMgmtUtility.getDocumentManagementService().versionDocument(existingDocument.getId(), "",
-                  CommonProperties.ZERO);
-         }
-
          existingDocument.setName(fileWrapper.getFileInfo().getFileName());
          existingDocument.setOwner(DocumentMgmtUtility.getUser().getAccount());
          existingDocument.setContentType(fileWrapper.getFileInfo().getContentType());

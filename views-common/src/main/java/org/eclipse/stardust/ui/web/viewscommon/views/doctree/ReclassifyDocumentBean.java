@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.views.doctree;
 
-import java.util.List;
-
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.eclipse.stardust.engine.api.runtime.Document;
@@ -20,7 +18,6 @@ import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
-import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.PanelConfirmation;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
@@ -343,19 +340,11 @@ public class ReclassifyDocumentBean extends PanelConfirmation
          if (!DocumentMgmtUtility.isDocumentVersioned(docToBeDettached))
          {
             docToBeDettached = DocumentMgmtUtility.getDocumentManagementService().versionDocument(
-                  docToBeDettached.getId(), "", CommonProperties.ZERO);
-         }
-
-         @SuppressWarnings("rawtypes")
-         List versions = DocumentMgmtUtility.getDocumentVersions(docToBeDettached);
-         Integer version = 1;
-         if (null != versions)
-         {
-            version = versions.size() + 1;
+                  docToBeDettached.getId(), "", null);
          }
 
          return DocumentMgmtUtility.getDocumentManagementService().updateDocument(docToBeDettached, true,
-               getComments(), version.toString(), false);
+               getComments(), null, false);
       }
       return docToBeDettached;
    }

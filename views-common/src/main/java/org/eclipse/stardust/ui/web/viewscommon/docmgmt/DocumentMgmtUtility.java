@@ -64,7 +64,6 @@ import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
-import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
@@ -128,7 +127,7 @@ public class DocumentMgmtUtility
       }
       Document document = getDocumentManagementService().createDocument(targetId, docInfo);
       
-      document = getDocumentManagementService().versionDocument(document.getId(), "", CommonProperties.ZERO);
+      document = getDocumentManagementService().versionDocument(document.getId(), "", null);
       
       return document;
    }
@@ -210,7 +209,7 @@ public class DocumentMgmtUtility
          }
          
          doc = getDocumentManagementService().createDocument(targetId, docInfo, byteContents, null);
-         doc = getDocumentManagementService().versionDocument(doc.getId(), comments, CommonProperties.ZERO);
+         doc = getDocumentManagementService().versionDocument(doc.getId(), comments, null);
       }
       return doc;
    }
@@ -224,19 +223,13 @@ public class DocumentMgmtUtility
       existingDocument.setOwner(getUser().getAccount());
       if (!isDocumentVersioned(existingDocument))
       {
-         existingDocument = getDocumentManagementService().versionDocument(existingDocument.getId(), "", CommonProperties.ZERO);
+         existingDocument = getDocumentManagementService().versionDocument(existingDocument.getId(), "", null);
       }
       
       if (null != fileData)
       {
-         List versions = getDocumentVersions(existingDocument);
-         Integer version = 1;
-         if (null != versions)
-         {
-            version = versions.size() + 1;
-         }
-         doc = getDocumentManagementService().updateDocument(existingDocument, fileData, "", true, comments,
-               (version.toString()), false);
+         doc = getDocumentManagementService().updateDocument(existingDocument, fileData, "", true, comments, null,
+               false);
       }
       return doc;
    }
@@ -400,7 +393,7 @@ public class DocumentMgmtUtility
       docInfo.setDescription(srcDoc.getDescription());
       Document document = dms.createDocument(targetFolderPath, docInfo, dms.retrieveDocumentContent(srcDoc.getId()),
             null);
-      document = getDocumentManagementService().versionDocument(document.getId(),"", CommonProperties.ZERO);
+      document = getDocumentManagementService().versionDocument(document.getId(),"", null);
       return document;
    }
 

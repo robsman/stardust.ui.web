@@ -30,8 +30,6 @@ public class CommonProperties
 
    public static final String COMMON_STAMPS_FOLDER = "/documents/stamps";
 
-   public final static String ZERO = "0";
-
    public static final String ADMINISTRATORS = "administrators";
 
    public static final String EVERYONE = "everyone";

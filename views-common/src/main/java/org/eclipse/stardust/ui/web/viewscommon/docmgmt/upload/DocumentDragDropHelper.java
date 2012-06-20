@@ -16,7 +16,6 @@ import java.io.IOException;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
-import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler.DocumentUploadEventType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
@@ -93,13 +92,6 @@ public class DocumentDragDropHelper extends AbstractDocumentUploadHelper
    {
       if (checkModifyPrivilege(existingDocument))
       {
-         // create version if required
-         if (!DocumentMgmtUtility.isDocumentVersioned(existingDocument))
-         {
-            DocumentMgmtUtility.getDocumentManagementService().versionDocument(existingDocument.getId(), "",
-                  CommonProperties.ZERO);
-         }
-
          existingDocument.setOwner(draggedDocument.getOwner());
          existingDocument.setContentType(draggedDocument.getContentType());
          existingDocument.setDocumentAnnotations(draggedDocument.getDocumentAnnotations());
