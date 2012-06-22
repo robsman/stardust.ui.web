@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.processportal.view.jsfconversion;
 
-import java.util.HashMap;
 
 /**
  * @author Subodh.Godbole
@@ -18,10 +17,4 @@ import java.util.HashMap;
  */
 public interface IJsfActivityPanelBean
 {
-   /**
-    * Method will be called with IN data as a Map
-    * Bean will be responsible for retrieving individual IN data and assigning it to local variables if any
-    * @param data
-    */
-   void setData(HashMap<String, Object> data);
 }

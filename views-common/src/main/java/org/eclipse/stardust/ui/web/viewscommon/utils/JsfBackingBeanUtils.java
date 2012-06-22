@@ -70,63 +70,50 @@ public class JsfBackingBeanUtils
 
       try
       {
-         if (null != ReflectionUtils.getMethod(targetObject, "setData", inData))
+         if (trace.isDebugEnabled())
          {
-            if (trace.isDebugEnabled())
-            {
-               trace.debug("Performing Backing Bean In Data Mappings with new approach. Calling setData()");
-            }
-
-            ReflectionUtils.invokeMethod(targetObject, "setData", inData);
+            trace.debug("Performing Backing Bean In Data Mappings with old approach.");
          }
-         else
-         {
-            // Maintain Backword Compatibility
-            if (trace.isDebugEnabled())
-            {
-               trace.debug("Performing Backing Bean In Data Mappings with old approach.");
-            }
 
-            for (Iterator i = jsfContext.getAllInDataMappings().iterator(); i.hasNext();)
+         for (Iterator i = jsfContext.getAllInDataMappings().iterator(); i.hasNext();)
+         {
+            DataMapping mapping = (DataMapping) i.next();
+
+            String mappingId = mapping.getId();
+            Object value = inData.get(mappingId);
+
+            try
             {
-               DataMapping mapping = (DataMapping) i.next();
-   
-               String mappingId = mapping.getId();
-               Object value = inData.get(mappingId);
-   
-               try
+               if (trace.isDebugEnabled())
                {
-                  if (trace.isDebugEnabled())
-                  {
-                     trace.debug("Value " + value + " retrieved for mapping " + mappingId);
-                  }
-                  
-                  if (StringUtils.isEmpty(mapping.getApplicationPath()))
-                  {
-                     JavaDataTypeUtils.evaluate(mapping.getApplicationAccessPoint().getId(),
-                           targetObject, value);
-                  }
-                  else
-                  {
-                     Object ap = JavaDataTypeUtils.evaluate(
-                           mapping.getApplicationAccessPoint().getId(), targetObject);
-                     JavaDataTypeUtils.evaluate(mapping.getApplicationPath(), ap, value);
-                  }
+                  trace.debug("Value " + value + " retrieved for mapping " + mappingId);
                }
-               catch (InvocationTargetException e)
+               
+               if (StringUtils.isEmpty(mapping.getApplicationPath()))
                {
-                  // PortalException pe = new PortalException(e);
-                  // pe.setSummary(Localizer.getString(ProcessLocalizerKey.FAILED_EVALUATING_DATA_MAPPING));
-                  trace.error("Failed evaluating data mapping: " + e);
-                  // throw pe;
+                  JavaDataTypeUtils.evaluate(mapping.getApplicationAccessPoint().getId(),
+                        targetObject, value);
                }
-               catch (PublicException e)
+               else
                {
-                  // PortalException pe = new PortalException(e);
-                  // pe.setSummary(Localizer.getString(ProcessLocalizerKey.FAILED_EVALUATING_DATA_MAPPING)); 
-                  trace.error("Failed evaluating data mapping: " + e);
-                  // throw pe;
+                  Object ap = JavaDataTypeUtils.evaluate(
+                        mapping.getApplicationAccessPoint().getId(), targetObject);
+                  JavaDataTypeUtils.evaluate(mapping.getApplicationPath(), ap, value);
                }
+            }
+            catch (InvocationTargetException e)
+            {
+               // PortalException pe = new PortalException(e);
+               // pe.setSummary(Localizer.getString(ProcessLocalizerKey.FAILED_EVALUATING_DATA_MAPPING));
+               trace.error("Failed evaluating data mapping: " + e);
+               // throw pe;
+            }
+            catch (PublicException e)
+            {
+               // PortalException pe = new PortalException(e);
+               // pe.setSummary(Localizer.getString(ProcessLocalizerKey.FAILED_EVALUATING_DATA_MAPPING)); 
+               trace.error("Failed evaluating data mapping: " + e);
+               // throw pe;
             }
          }
       }
@@ -186,82 +173,74 @@ public class JsfBackingBeanUtils
                   ProcessPortalErrorClass.FAILED_INVOKING_COMPLETION_METHOD, e);
          }
 
-         if (returnValue instanceof Map)
+         if (trace.isDebugEnabled())
          {
-            if (trace.isDebugEnabled())
-            {
-               trace.debug("Performing Backing Bean Out Data Mappings with new approach.");
-            }
-
-            return (Map)returnValue;
+            trace.debug("Performing Backing Bean Out Data Mappings with old approach.");
          }
-         else
+
+         Map outData = CollectionUtils.newMap();
+
+         for (Iterator i = jsfContext.getAllOutDataMappings().iterator(); i.hasNext();)
          {
-            // Maintain Backword Compatibility
-            if (trace.isDebugEnabled())
+            DataMapping mapping = (DataMapping) i.next();
+            String mappingID = mapping.getId();
+
+            if ("returnValue".equals(mapping.getApplicationAccessPoint().getId()))
             {
-               trace.debug("Performing Backing Bean Out Data Mappings with old approach.");
+               outData.put(mappingID, returnValue);
             }
-
-            Map outData = CollectionUtils.newMap();
-
-            for (Iterator i = jsfContext.getAllOutDataMappings().iterator(); i.hasNext();)
+            else
             {
-               DataMapping mapping = (DataMapping) i.next();
-               String mappingID = mapping.getId();
-
-               if ("returnValue".equals(mapping.getApplicationAccessPoint().getId()))
+               try
                {
-                  outData.put(mappingID, returnValue);
+                  Object outValue;
+                  if (StringUtils.isEmpty(mapping.getApplicationPath()))
+                  {
+                     outValue = JavaDataTypeUtils.evaluate(
+                           mapping.getApplicationAccessPoint().getId(), targetObject);
+                  }
+                  else
+                  {
+                     Object ap = JavaDataTypeUtils.evaluate(
+                           mapping.getApplicationAccessPoint().getId(), targetObject);
+                     outValue = JavaDataTypeUtils.evaluate(
+                           mapping.getApplicationPath(), ap);
+                  }
+                  
+                  if (trace.isDebugEnabled())
+                  {
+                     trace.debug("Value " + outValue + " retrieved for mapping "
+                           + mappingID);
+                  }
+                  outData.put(mappingID, outValue);
                }
-               else
+               catch (InvocationTargetException e)
                {
-                  try
-                  {
-                     Object outValue;
-                     if (StringUtils.isEmpty(mapping.getApplicationPath()))
-                     {
-                        outValue = JavaDataTypeUtils.evaluate(
-                              mapping.getApplicationAccessPoint().getId(), targetObject);
-                     }
-                     else
-                     {
-                        Object ap = JavaDataTypeUtils.evaluate(
-                              mapping.getApplicationAccessPoint().getId(), targetObject);
-                        outValue = JavaDataTypeUtils.evaluate(
-                              mapping.getApplicationPath(), ap);
-                     }
-                     
-                     if (trace.isDebugEnabled())
-                     {
-                        trace.debug("Value " + outValue + " retrieved for mapping "
-                              + mappingID);
-                     }
-                     outData.put(mappingID, outValue);
-                  }
-                  catch (InvocationTargetException e)
-                  {
-                     PortalException pe = new PortalException(
-                           ProcessPortalErrorClass.FAILED_EVALUATING_OUT_DATA_MAPPING, e);
-                     StringBuffer msg = new StringBuffer("Failed evaluating out data mapping (id: ");
-                     msg.append(mappingID).append("): ").append(e.getCause());
-                     trace.warn(msg.toString());
-                     throw pe;
-                  }
-                  catch (PublicException e)
-                  {
-                     PortalException pe = new PortalException(
-                           ProcessPortalErrorClass.FAILED_EVALUATING_OUT_DATA_MAPPING, e);
-                     StringBuffer msg = new StringBuffer("Failed evaluating out data mapping (id: ");
-                     msg.append(mappingID).append("): ").append(e.getCause());
-                     trace.warn(msg.toString());
-                     throw pe;
-                  }
+                  PortalException pe = new PortalException(
+                        ProcessPortalErrorClass.FAILED_EVALUATING_OUT_DATA_MAPPING, e);
+                  StringBuffer msg = new StringBuffer("Failed evaluating out data mapping (id: ");
+                  msg.append(mappingID).append("): ").append(e.getCause());
+                  trace.warn(msg.toString());
+                  throw pe;
+               }
+               catch (PublicException e)
+               {
+                  PortalException pe = new PortalException(
+                        ProcessPortalErrorClass.FAILED_EVALUATING_OUT_DATA_MAPPING, e);
+                  StringBuffer msg = new StringBuffer("Failed evaluating out data mapping (id: ");
+                  msg.append(mappingID).append("): ").append(e.getCause());
+                  trace.warn(msg.toString());
+                  throw pe;
                }
             }
-
-            return outData;
          }
+
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("OUT DATA = " + outData);
+         }
+
+         return outData;
       }
       catch (ValidatorException e)
       {

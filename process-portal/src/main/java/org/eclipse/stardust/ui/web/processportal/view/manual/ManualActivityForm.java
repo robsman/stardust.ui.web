@@ -106,6 +106,12 @@ public class ManualActivityForm extends Form
       this.applicationContext = applicationContext;
       this.documentInputEventHandler = documentInputEventHandler;
 
+      // If not specified use this as default as just a flow layout, controls just be one below the other 
+      if (null == generationPreferences)
+      {
+         generationPreferences = new FormGenerationPreferences(1, 0);
+      }
+
       this.formGenerator = new IppJsfFormGenerator(generationPreferences, formBinding);
       generateForm();
    }
@@ -125,6 +131,10 @@ public class ManualActivityForm extends Form
             clientId = (String)clientIds.next();
             if (null != clientId && clientId.contains(getFormId()))
             {
+               if (trace.isDebugEnabled())
+               {
+                  trace.debug("Validation Error Present for clientId = " + clientId);
+               }
                return true;
             }
          }

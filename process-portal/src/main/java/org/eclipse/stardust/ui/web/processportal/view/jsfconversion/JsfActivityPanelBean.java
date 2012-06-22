@@ -10,11 +10,13 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.processportal.view.jsfconversion;
 
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
-import org.eclipse.stardust.ui.common.form.preferences.FormGenerationPreferences;
+import org.eclipse.stardust.ui.common.form.InputController;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
@@ -48,11 +50,7 @@ public class JsfActivityPanelBean implements IJsfActivityPanelBean, ViewEventHan
             
             if (null != activityInstance)
             {
-               // This field does not have any effect. Preferences set at the time of
-               // conversion are already used in generating the sources
-               FormGenerationPreferences formPref = new FormGenerationPreferences(1, 1);
-      
-               activityForm = new ManualActivityForm(formPref, "activityDetailsBean.activityForm", activityInstance,
+               activityForm = new ManualActivityForm(null, "activityDetailsBean.activityForm", activityInstance,
                      ServiceFactoryUtils.getWorkflowService(), activityInstance.getActivity().getApplicationContext("jsf"));
 
                setSessionRendererId(activityInstance);
@@ -93,24 +91,71 @@ public class JsfActivityPanelBean implements IJsfActivityPanelBean, ViewEventHan
       sessionRendererId = SessionRendererHelper.getPortalSessionRendererId(PortalApplication.getInstance().getLoggedInUser());
       sessionRendererId += ":jsf-" + activityInstance.getOID();
    }
-   
-   /* (non-Javadoc)
-    * @see org.eclipse.stardust.ui.web.processportal.view.jsfconversion.IJsfActivityPanelBean#setData(java.util.HashMap)
+
+   /**
+    * @return
     */
-   public void setData(HashMap<String, Object> data)
+   public String getFormId()
    {
-      activityForm.setData();
+      return activityForm.getFormId();
    }
 
    /**
-    * This is default 'complete' method called by framework
-    * If implementation changes the name of 'complete' method then the same method must be implemented
-    * And this method can be called to retrieve Out Data in there
     * @return
     */
-   public Object complete()
+   public boolean isFormValidationsPresent()
    {
-      return activityForm.retrieveData();
+      return activityForm.isFormValidationsPresent();
+   }
+
+   /**
+    * @return
+    */
+   public Map<String, InputController> getFullPathInputControllerMap()
+   {
+      return activityForm.getFullPathInputControllerMap();
+   }
+
+   /**
+    * For JSF Apps - The List data is maintained with activityForm, where as rest Structure data is maintained with Backing Bean
+    * This method merges/copies List data to map maintained with Backing Bean.
+    * Calling this method in complete() is responsibility of Backing Bean.
+    * @param dataMap
+    * @param mapWithListData
+    */
+   @SuppressWarnings({"unchecked", "rawtypes"})
+   protected void mergeDataForList(Map<String, Object> dataMap, Map<String, Object> mapWithListData)
+   {
+      for (Entry<String, Object> entry : dataMap.entrySet())
+      {
+         if (entry.getValue() instanceof List)
+         {
+            // For now only one level of list data is supported on UI. Hence this does not need recursion
+            entry.setValue(mapWithListData.get(entry.getKey()));
+         }
+         else if (entry.getValue() instanceof Map)
+         {
+            mergeDataForList((Map)entry.getValue(), (Map)mapWithListData.get(entry.getKey()));
+         }
+      }
+   }
+
+   /**
+    * @param id
+    * @return
+    */
+   protected Object getData(String id)
+   {
+      return activityForm.getValue(id);
+   }
+
+   /**
+    * @param id
+    * @param value
+    */
+   protected void setData(String id, Object value)
+   {
+      activityForm.setValue(id, value);
    }
 
    public ManualActivityForm getActivityForm()
