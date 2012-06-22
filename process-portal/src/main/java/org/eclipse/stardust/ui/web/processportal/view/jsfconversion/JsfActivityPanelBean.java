@@ -126,16 +126,19 @@ public class JsfActivityPanelBean implements IJsfActivityPanelBean, ViewEventHan
    @SuppressWarnings({"unchecked", "rawtypes"})
    protected void mergeDataForList(Map<String, Object> dataMap, Map<String, Object> mapWithListData)
    {
-      for (Entry<String, Object> entry : dataMap.entrySet())
+      if (null != dataMap && null != mapWithListData)
       {
-         if (entry.getValue() instanceof List)
+         for (Entry<String, Object> entry : dataMap.entrySet())
          {
-            // For now only one level of list data is supported on UI. Hence this does not need recursion
-            entry.setValue(mapWithListData.get(entry.getKey()));
-         }
-         else if (entry.getValue() instanceof Map)
-         {
-            mergeDataForList((Map)entry.getValue(), (Map)mapWithListData.get(entry.getKey()));
+            if (entry.getValue() instanceof List)
+            {
+               // For now only one level of list data is supported on UI. Hence this does not need recursion
+               entry.setValue(mapWithListData.get(entry.getKey()));
+            }
+            else if (entry.getValue() instanceof Map)
+            {
+               mergeDataForList((Map)entry.getValue(), (Map)mapWithListData.get(entry.getKey()));
+            }
          }
       }
    }
