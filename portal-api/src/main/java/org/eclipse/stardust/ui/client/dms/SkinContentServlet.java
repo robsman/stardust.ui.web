@@ -24,7 +24,6 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.config.ExtensionProviderUtils;
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.error.PublicException;
-import org.eclipse.stardust.engine.api.web.dms.DmsContentServlet;
 import org.eclipse.stardust.engine.api.web.dms.DmsContentServlet.ExecutionServiceProvider;
 import org.eclipse.stardust.engine.core.preferences.IPreferenceStorageManager;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
@@ -70,6 +69,8 @@ public class SkinContentServlet extends AbstractVfsContentServlet
    public static final String SKIN_PREF_MODULE_ID = "ipp-portal-common";
    public static final String SKIN_PREF_ID = "preference";
    public static final String SKIN_PREF_KEY = "ipp-portal-common.configuration.prefs.skin";
+   public static final String EJB = "ejb"; 
+   private boolean ejbEnvironment = false;
 
    private String context;
 
@@ -106,7 +107,8 @@ public class SkinContentServlet extends AbstractVfsContentServlet
                            AuditTrailPartitionBean.findById(request.partitionId));
 
                      String skinFolder = getDefaultSkinId(rtEnv);
-                     if (StringUtils.isNotEmpty(skinFolder))
+                     
+                     if (!ejbEnvironment && StringUtils.isNotEmpty(skinFolder))
                      {
                         IDocumentRepositoryService vfs = rtEnv.getDocumentRepositoryService();
                         if (vfs == null)
@@ -264,6 +266,11 @@ public class SkinContentServlet extends AbstractVfsContentServlet
 
       context = config.getInitParameter(CLIENT_CONTEXT_PARAM);
       context = context != null ? context.toLowerCase() : null;
+      
+      if (EJB.equalsIgnoreCase(context))
+      {
+         ejbEnvironment = true;
+      }
    }
 
    /**
