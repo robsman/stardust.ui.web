@@ -226,8 +226,8 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
                {
                   public void handleEvent(DocumentUploadEventType eventType)
                   {
-                     postDrop(valueNode);
                      handleFileUploadEvents(getDocument(), eventType);
+                     postDrop(valueNode);
                   }
                });
                uploadHelper.updateDocument(existingDocument, draggedDocument);
@@ -243,8 +243,8 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
                {
                   document = RepositoryUtility.copyDocument(this.wrapper, valueNode);
                }
-               postDrop(valueNode);
                handleFileUploadEvents(document, DocumentUploadEventType.DOCUMENT_CREATED);
+               postDrop(valueNode);
             }
          }
       }
