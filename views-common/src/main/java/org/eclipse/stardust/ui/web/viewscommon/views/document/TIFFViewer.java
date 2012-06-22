@@ -228,10 +228,11 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
    {
       switch (event.getType())
       {
-      case TO_BE_ACTIVATED:
-         activate();
+      case CREATED:
+         readImageViewerConfiguration();
          break;
       case ACTIVATED:
+         activate();
          break;
       case TO_BE_DEACTIVATED:
          deActivateIframe();
@@ -330,11 +331,7 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
       {
          String pagePath = docHolder.getDefaultPagePath();
          pagePath += "&isEditable=" + documentInfo.isContentEditable();
-         Map<String, String> imageViewerConfigOptions = readImageViewerConfiguration();
-         SessionSharedObjectsMap.getCurrent().setObject(imgConfigMapKey, imageViewerConfigOptions);
-         docHolder.setShowHideFlag(Boolean.valueOf(imageViewerConfigOptions.get("showSidePanel")));
-         FacesContext facesContext = FacesContext.getCurrentInstance();
-
+         
          restoreTiffIframe();
          String anchor = "tiffViewerIframe";
 
@@ -484,7 +481,7 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
       PortalApplication.getInstance().addEventScript(closeIframeJS);
    }
    
-   private Map<String, String> readImageViewerConfiguration()
+   private void readImageViewerConfiguration()
    {
       Map<String, String> imageConfig = new HashMap<String, String>();
       ImageViewerConfigurationBean imgConfigBean = ImageViewerConfigurationBean.getCurrent();
@@ -504,8 +501,9 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
       imageConfig.put("dataHighlightColour", imgConfigBean.getDataFieldHighlightColour());
       imageConfig.put("dataHighlightOpacity", imgConfigBean.getDataFieldHighlightOpacity());
       imageConfig.put("magnifyFields", String.valueOf(imgConfigBean.isMagnifyFields()));
-      
-      return imageConfig;
+
+      SessionSharedObjectsMap.getCurrent().setObject(imgConfigMapKey, imageConfig);
+      docHolder.setShowHideFlag(Boolean.valueOf(imageConfig.get("showSidePanel")));
    }
    
    private void cleanViewerStateShareMap()
