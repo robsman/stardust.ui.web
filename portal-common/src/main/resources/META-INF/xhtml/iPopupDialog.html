@@ -4,49 +4,24 @@
 <link type="text/css" rel="stylesheet" href="css/iPopupDialogStyle.css">
 </link>
 <script>
-	function init()
-	{
-		parent.iPopupDialog.setPopupContentCallback(popupContentCallback);
-	}
-	
-	var popupContentCallback = function(obj)
-	{
-		document.getElementById('titleText').innerHTML = obj.title;
-		document.getElementById('contentText').innerHTML = obj.message;
-		document.getElementById('cancelButton').value = obj.cancelButtonText;
-		document.getElementById('acceptButton').value = obj.acceptButtonText;		
-		document.getElementById('cancelButton').onclick = obj.cancelFunction;
-		document.getElementById('dialogCloseIcon').onclick = obj.cancelFunction;
-		document.getElementById('acceptButton').onclick = obj.acceptFunction;
-	}
-	
+function init()
+{
+	var popupAttrs = parent.iPopupDialog.getPopupData().attributes;
+	var popupContent = document.getElementById("iframePopupDialog");
+	popupContent.style.width = popupAttrs.width;
+	popupContent.style.height = popupAttrs.height	
+	popupContent.innerHTML = "<iframe id='contentIframe' src='" + popupAttrs.src + "' width='100%' height='100%' frameborder='0'></iframe>";
+	var iElem = document.getElementById("contentIframe");
+	iElem.contentWindow.payloadObj = parent.iPopupDialog.getPopupData().payload;
+	iElem.contentWindow.closePopup = parent.iPopupDialog.closePopup;
+	parent.iPopupDialog.centerPopup();
+}
 </script>
 </head>
 <body onload="init();" style="height: 100%; width: 100%; overflow: hidden; margin: 0px;">
 	<div class="iPopupDialogBackgroundScreen">
 	</div>
-	<div id="iframePopupDialog" class="iPopupDialog">
-		<div id="titleBar" class="iPopupDialogTitleBar">			
-			<span id="titleText" class="iPopupDialogTitleText"></span>
-			<input id="dialogCloseIcon" type="button" title="Close" class="iPopupDialogCloseControl" />
-		</div>
-		<div id="contentArea" class="iPopupDialogContentArea">
-			<div class="iPopupDialogSpacerDiv"></div>
-			<table border="0">
-				<tr>
-					<td class="iPopupDialogContentTabCol1">
-						<img src="images/icons/dialog-icon-warning.jpg" />
-					</td>
-					<td class="iPopupDialogContentTabCol2">
-						<span id="contentText" class="iPopupDialogContentText"></span>
-					</td>
-				</tr>
-			</table>
-		</div>
-		<div id="controlsBar" class="iPopupDialogControlsArea">
-			<input id="acceptButton" type="button" value="OK" class="iPopupDialogControlButton" />
-			<input id="cancelButton" type="button" value="Cancel" class="iPopupDialogControlButton" />
-		</div>
+	<div id="iframePopupDialog" class="iPopupDialog">		
 	</div>
 </body>
 </html>

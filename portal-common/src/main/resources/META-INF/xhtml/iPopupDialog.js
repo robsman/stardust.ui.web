@@ -1,6 +1,8 @@
+/*
+ * Supports creation of modal pop-up dialogs from child iframes.
+ * 
+ * */
 var iPopupDialog = function() {
-	var id;
-	var isModal;
 	var popupData;
 	var popupDialogDiv;
 	var popupDialogIFrame;
@@ -16,9 +18,11 @@ var iPopupDialog = function() {
 	
 	function openDialog(data) {
 		if (!popupDialogDiv) {
-			createDialog(popupData);
+			createDialog();
 		}
-		popupData = data
+		
+		popupData = data;
+		
 		popupDialogIFrame.style.visibility = "visible";
 		popupDialogIFrame.style.position = 'absolute';
 		popupDialogIFrame.style.left = "0px";
@@ -26,7 +30,6 @@ var iPopupDialog = function() {
 		var p = InfinityBpm.Core.getIppWindow();
 		popupDialogIFrame.style.width = p.document.body.scrollWidth + "px";
 		popupDialogIFrame.style.height = p.document.body.scrollHeight + "px";
-		centerPopup();
 	}
 	
 	function closePopup() {
@@ -37,23 +40,6 @@ var iPopupDialog = function() {
 		popupDialogDiv = undefined;
 	}
 	
-	function setPopupContentCallback(callback) {
-		callback({
-			title : popupData.title,
-			message : popupData.message,
-			acceptButtonText : popupData.acceptButtonText,
-			cancelButtonText : popupData.cancelButtonText,
-			cancelFunction : function () {
-				closePopup();
-			},
-			acceptFunction : function () {
-				popupData.acceptCallback();
-				closePopup();
-			}
-		});
-		centerPopup();
-	}
-	
 	function centerPopup() {
 		var innerDoc = (popupDialogIFrame.contentDocument) ? popupDialogIFrame.contentDocument : popupDialogIFrame.contentWindow.document;
 		InfinityBpm.Core.positionMessageDialog("iframePopupDialog", innerDoc);
@@ -61,6 +47,10 @@ var iPopupDialog = function() {
 	
 	return {
 		openPopup : openDialog,
-		setPopupContentCallback : setPopupContentCallback
+		closePopup : closePopup,
+		centerPopup : centerPopup,
+		getPopupData : function () {
+			return popupData;
+		}
 	};
 }();
