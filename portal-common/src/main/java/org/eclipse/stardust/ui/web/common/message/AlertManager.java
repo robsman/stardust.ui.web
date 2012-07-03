@@ -47,6 +47,7 @@ public class AlertManager extends PopupUIComponentBean
     */
    public AlertManager()
    {
+      firePerspectiveEvents = false;
    }
 
    @Override
