@@ -1268,7 +1268,7 @@ public class PortalUiController
       return null;
    }
 
-   void broadcastNonVetoablePerspectiveEvent(IPerspectiveDefinition perspective, PerspectiveEventType eventType)
+   public void broadcastNonVetoablePerspectiveEvent(IPerspectiveDefinition perspective, PerspectiveEventType eventType)
    {
       if (null != perspective)
       {
@@ -1291,7 +1291,7 @@ public class PortalUiController
     * 
     * @param eventType
     */
-   void broadcastNonVetoablePerspectiveEvent(PerspectiveEventType eventType)
+   public void broadcastNonVetoablePerspectiveEvent(PerspectiveEventType eventType)
    {
       broadcastNonVetoablePerspectiveEvent(currentPerspective, eventType);
    }

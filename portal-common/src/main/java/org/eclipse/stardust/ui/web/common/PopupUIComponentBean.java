@@ -15,6 +15,7 @@ import javax.faces.context.FacesContext;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.PortalUiController;
 import org.eclipse.stardust.ui.web.common.app.View;
+import org.eclipse.stardust.ui.web.common.event.PerspectiveEvent.PerspectiveEventType;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 
@@ -22,6 +23,12 @@ import com.icesoft.faces.context.effects.JavascriptContext;
 
 
 /**
+ * Class used to allow the dynamic opening and closing of modal panelPopups That means the
+ * visibility status is tracked, as well as supporting methods for button clicks on the
+ * page.
+ * 
+ * This should be used for "modal popups".
+ * 
  * @author Ankita.Patel
  * @version $Revision: $
  */
@@ -32,6 +39,8 @@ public abstract class PopupUIComponentBean extends UIComponentBean
    private boolean visible = false;
    private String title;
    private boolean popupAutoCenter = true;
+
+   protected boolean firePerspectiveEvents = true;
   
    /**
     * 
@@ -61,6 +70,7 @@ public abstract class PopupUIComponentBean extends UIComponentBean
    public void closePopup()
    {
       View focusView = PortalApplication.getInstance().getFocusView();
+      firePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
       if ((null != focusView) && !PortalUiController.getInstance().broadcastVetoableViewEvent(focusView, ViewEventType.TO_BE_ACTIVATED))
       {
          // TODO trace
@@ -81,6 +91,7 @@ public abstract class PopupUIComponentBean extends UIComponentBean
    public void openPopup()
    {
       View focusView = PortalApplication.getInstance().getFocusView();
+      firePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_DEACTIVATED);
       if ((null != focusView) && !PortalUiController.getInstance().broadcastVetoableViewEvent(focusView, ViewEventType.TO_BE_DEACTIVATED))
       {
          // TODO trace
@@ -105,6 +116,17 @@ public abstract class PopupUIComponentBean extends UIComponentBean
          String positionPopupScript = "InfinityBpm.Core.positionMessageDialog('" + divId + "');";
          JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), positionPopupScript);
          PortalApplication.getInstance().addEventScript(positionPopupScript);
+      }
+   }
+
+   /**
+    * @param event
+    */
+   private void firePerspectiveEvent(PerspectiveEventType event)
+   {
+      if (firePerspectiveEvents)
+      {         
+         PortalApplication.getInstance().getPortalUiController().broadcastNonVetoablePerspectiveEvent(event);
       }
    }
 

@@ -52,7 +52,8 @@ public class MessageDialog extends PopupDialog
     */
    public MessageDialog()
    {
-      super(""); // Title not known at this stage     
+      super(""); // Title not known at this stage
+      firePerspectiveEvents = true;
    }
    
    /**

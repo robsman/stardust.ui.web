@@ -14,9 +14,11 @@ import java.io.Serializable;
 
 import javax.faces.context.FacesContext;
 
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript;
 import org.eclipse.stardust.ui.web.common.app.PortalUiController;
 import org.eclipse.stardust.ui.web.common.app.View;
+import org.eclipse.stardust.ui.web.common.event.PerspectiveEvent.PerspectiveEventType;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
 
 import com.icesoft.faces.context.effects.JavascriptContext;
@@ -24,9 +26,11 @@ import com.icesoft.faces.context.effects.JavascriptContext;
 
 
 /**
- * Class used to allow the dynamic opening and closing of panelPopups That means the
+ * Class used to allow the dynamic opening and closing of non-modal panelPopups That means the
  * visibility status is tracked, as well as supporting methods for button clicks on the
- * page
+ * page.
+ * 
+ * This should be used for "non-modal popups".
  */
 public abstract class PopupDialog implements Serializable
 {
@@ -38,6 +42,7 @@ public abstract class PopupDialog implements Serializable
    protected String title;
    
    protected boolean fireViewEvents = true;
+   protected boolean firePerspectiveEvents = false;
 
    public abstract void apply();
    public abstract void reset();
@@ -68,6 +73,7 @@ public abstract class PopupDialog implements Serializable
    {
       // TODO remove duplicate code, see CRNT-16380
       PortalUiController portalUiController = null;
+      firePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
       View focusView = null;
       if(fireViewEvents)
       {
@@ -97,6 +103,7 @@ public abstract class PopupDialog implements Serializable
    public void openPopup()
    {
       PortalUiController portalUiController = null;
+      firePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_DEACTIVATED);
       View focusView = null;
       if(fireViewEvents)
       {
@@ -129,6 +136,17 @@ public abstract class PopupDialog implements Serializable
          String positionPopupScript = "InfinityBpm.Core.positionMessageDialog('" + getBeanId() + "');";
          JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), positionPopupScript);
          PortalApplicationEventScript.getInstance().addEventScript(positionPopupScript);
+      }
+   }
+
+   /**
+    * @param event
+    */
+   private void firePerspectiveEvent(PerspectiveEventType event)
+   {
+      if (firePerspectiveEvents)
+      {         
+         PortalApplication.getInstance().getPortalUiController().broadcastNonVetoablePerspectiveEvent(event);
       }
    }
 
