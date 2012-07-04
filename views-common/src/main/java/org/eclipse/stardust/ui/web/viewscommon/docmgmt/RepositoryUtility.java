@@ -372,8 +372,15 @@ public class RepositoryUtility
    public static void expandTree(DefaultMutableTreeNode node)
    {
       // refresh the selected node
-      Folder refreshedFolder = getUpdatedFolder(node);
       RepositoryFolderUserObject folderUserObject = (RepositoryFolderUserObject) node.getUserObject();
+      
+      if (folderUserObject instanceof ProcessAttachmentUserObject)
+      {
+         ((ProcessAttachmentUserObject) folderUserObject).refresh();
+         return;
+      }
+
+      Folder refreshedFolder = getUpdatedFolder(node);
       folderUserObject.setResource(refreshedFolder);
       // Remove existing children if any
       node.removeAllChildren();
