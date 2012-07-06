@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<head>
+<title>Modeler Canvas</title>
+<link rel="stylesheet" type="text/css"
+	href="../../css/jquery-ui-1.8.20.custom.css">
+</link>
+<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript"
+	src="../../js/xsdStructuredDataTypeViewPageInitializer.js"></script>
+<script type="text/javascript" data-main="xsdStructuredDataTypeViewMain"
+	src="../../js/requireplugins-jquery-1.4.3.js"></script>
+</head>
+<body>
+	<div class="panel">
+		<table cellpadding="0" cellspacing="0" class="layoutTable"
+			style="width: 800px;">
+			<tr>
+				<td>
+					<div style="margin-bottom: 10px;">
+						<table cellpadding="0" cellspacing="0" class="layoutTable">
+							<tr>
+								<td><label for="dataStructureNameTextInput">Data
+										Structure Name</label>
+								</td>
+								<td><input id="dataStructureNameTextInput" type="text" style="width: 200px;"/>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div style="margin-bottom: 10px;">
+						<table cellpadding="0" cellspacing="0" class="layoutTable">
+							<tr>
+								<td><input id="defineManuallyRadioButton" type="radio" />
+								</td>
+								<td>Define manually</td>
+								<td><input id="importFromUrlRadioButton" type="radio" />
+								</td>
+								<td>Import from URL</td>
+							</tr>
+						</table>
+					</div></td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div style="margin-bottom: 10px;">
+						<table cellpadding="0" cellspacing="0" class="layoutTable">
+							<tr>
+								<td><input id="urlTextInput" type="text"
+									style="width: 400px;" />
+								</td>
+								<td><input id="loadFromUrlButton" type="button"
+									value="Load" />
+								</td>
+							</tr>
+						</table>
+					</div></td>
+			</tr>
+			<tr>
+				<td><div class="heading">Data Structure Elements</div></td>
+			</tr>
+			<tr>
+				<td><div id="structureDefinitionHintPanel"
+						style="margin-bottom: 10px;">Select a type declaration from
+						the imported schema.</div>
+					<div id="manualDefinitionRadioButtonPanel"
+						style="margin-bottom: 10px;">
+						<table cellpadding="0" cellspacing="0" class="layoutTable">
+							<tr>
+								<td colspan="2">Create a type definition manually by adding
+									schema elements, specifying their names and cardinalities. A
+									name for the Type Declaration has to be provided.</td>
+							</tr>
+							<tr>
+								<td>
+									<table cellpadding="0" cellspacing="0" class="layoutTable"
+										style="margin-top: 10px;">
+										<tr>
+											<td><input id="structureRadioButton" type="radio" />
+											</td>
+											<td>Structure</td>
+											<td><input id="enumerationRadioButton" type="radio" />
+											</td>
+											<td>Enumeration</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</div></td>
+			</tr>
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tr>
+							<td>
+								<div class="panelBorder">
+									<div class="dataTable">
+										<table id="typeDeclarationsTable" cellpadding="0"
+											cellspacing="0" class="treeTable" style="width: 600px;">
+											<thead>
+												<tr>
+													<th style="width: 30px;"></th>
+													<th style="width: 400px;">Element</th>
+													<th style="width: 100px;">Type</th>
+													<th class="last" style="width: 100px;">Cardinality</th>
+												</tr>
+											</thead>
+											<tbody />
+										</table>
+									</div>
+								</div></td>
+							<td valign="top"><div style="margin-left: 10px;">
+									<table cellpadding="0" cellspacing="0" class="layoutTable">
+										<tr>
+											<td><input id="upButton" type="button" value="Up"
+												style="width: 100px; margin-bottom: 10px;" /></td>
+										</tr>
+										<tr>
+											<td><input id="downButton" type="button" value="Down"
+												style="width: 100px;" />
+											</td>
+										</tr>
+									</table>
+								</div></td>
+						</tr>
+						<tr>
+							<td align="left"><div class="heading"
+									style="margin-top: 10px;">Field Properties</div>
+							</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td align="left">
+								<div class="panelBorder">
+									<div class="dataTable">
+										<table id="fieldPropertiesTable" cellpadding="0"
+											cellspacing="0" class="treeTable"
+											style="width: 600px; text-align: left;">
+											<thead>
+												<tr>
+													<th style="width: 400px;">Property</th>
+													<th class="last" style="width: 200px;">Value</th>
+												</tr>
+											</thead>
+											<tbody />
+										</table>
+									</div>
+								</div></td>
+							<td></td>
+						</tr>
+					</table></td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

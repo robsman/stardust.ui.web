@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:ippui="http://infinity.com/bpm/ui/common/uiDefinition"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+		http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
+
+	<context:annotation-config />
+	<context:component-scan base-package="org.eclipse.stardust.ui.web.modeler" />
+
+	<bean name="bpmModelerMessages" class="org.eclipse.stardust.ui.web.modeler.portal.messages.Messages"
+		scope="session">
+	</bean>
+
+	<bean id="defaultModelManagementStrategy" class="org.eclipse.stardust.ui.web.modeler.service.DefaultModelManagementStrategy"
+		scope="session">
+	</bean>
+
+	<bean id="modelService" class="org.eclipse.stardust.ui.web.modeler.service.ModelService"
+		scope="session">
+		<aop:scoped-proxy />
+		<property name="modelManagementStrategy" ref="defaultModelManagementStrategy" />
+	</bean>
+
+	<bean id="testModelManagementStrategy" class="org.eclipse.stardust.ui.web.modeler.service.TestModelManagementStrategy"
+		scope="session">
+		<property name="modelService" ref="modelService" />
+	</bean>
+
+	<bean id="modelerResource" class="org.eclipse.stardust.ui.web.modeler.rest.ModelerResource">
+		<property name="modelService" ref="modelService" />
+	</bean>
+
+	<bean id="uiMashupApplicationView" class="org.eclipse.stardust.ui.web.modeler.portal.UIMashupApplicationView">
+		<property name="modelService" ref="modelService" />
+	</bean>
+
+	<bean id="modelView"
+		class="org.eclipse.stardust.ui.web.modeler.portal.ModelView">
+		<property name="modelService" ref="modelService" />
+	</bean>
+
+	<bean id="webServiceApplicationView"
+		class="org.eclipse.stardust.ui.web.modeler.portal.WebServiceApplicationView">
+		<property name="modelService" ref="modelService" />
+	</bean>
+
+	<bean id="messageTransformationApplicationView"
+		class="org.eclipse.stardust.ui.web.modeler.portal.MessageTransformationApplicationView">
+		<property name="modelService" ref="modelService" />
+	</bean>
+
+	<bean id="camelApplicationView"
+		class="org.eclipse.stardust.ui.web.modeler.portal.CamelApplicationView">
+		<property name="modelService" ref="modelService" />
+	</bean>
+
+	<bean id="xsdStructuredDataTypeView"
+		class="org.eclipse.stardust.ui.web.modeler.portal.XsdStructuredDataTypeView">
+		<property name="modelService" ref="modelService" />
+	</bean>
+
+	<bean id="modelingWorklistView" class="org.eclipse.stardust.ui.web.modeler.portal.ModelingWorklistView">
+		<property name="modelService" ref="modelService" />
+	</bean>
+
+	<bean id="modelingWorkAssignmentView"
+		class="org.eclipse.stardust.ui.web.modeler.portal.ModelingWorkAssignmentView">
+		<property name="modelService" ref="modelService" />
+	</bean>
+	
+	<bean id="inviteParticipantsDialog"
+		class="org.eclipse.stardust.ui.web.modeler.portal.InviteParticipantsDialog">
+		<property name="modelService" ref="modelService" />
+	</bean>
+
+</beans>

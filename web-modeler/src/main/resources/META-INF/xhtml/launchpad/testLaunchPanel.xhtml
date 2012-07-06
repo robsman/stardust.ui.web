@@ -1,0 +1,20 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ice:panelGrid columns="1">
+	    <ice:commandLink action="#{ippPortalApp.openView}" styleClass="action-link">
+	      <f:param name="viewId" value="modelView" />
+	      <f:param name="viewIdentity" value="/process-models/Test.xpdl" />
+	      <f:param name="viewParams" value="modelId=#{testModelManagementStrategy.firstModelId}" />
+		<ice:outputText value="Open Test Model View &amp;raquo;" escape="false"/>
+		</ice:commandLink>
+	    <ice:commandLink action="#{testModelManagementStrategy.deactivate}" styleClass="action-link">
+		<ice:outputText value="Reset to Directory Mode &amp;raquo;" escape="false"/>
+		</ice:commandLink>
+	</ice:panelGrid>
+</html>

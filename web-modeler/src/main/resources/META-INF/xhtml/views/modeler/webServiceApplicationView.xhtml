@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ice="http://www.icesoft.com/icefaces/component">
+<head>
+<ice:outputStyle href="../../css/lightdust-modeler.css" />
+</head>
+<body>
+	<ice:panelGroup style="margin: 10px;">
+		<ice:panelGroup styleClass="heading">
+			<ice:outputText value="Web Service Definition" />
+		</ice:panelGroup>
+		<ice:panelGrid columns="1" cellpadding="0" cellspacing="0" style="margin-top: 10px; margin-bottom: 20px;">
+			<ice:outputText
+				value="Select a WSDL URL. All necessary information is obtained automatically from there." />
+		</ice:panelGrid>
+		<ice:panelGrid columns="3" cellpadding="0" cellspacing="0">
+			<ice:outputLabel for="wsdlUrlInputText" value="WSDL Url:" styleClass="form-label"/>
+			<ice:inputText id="wsdlUrlInputText"
+				value="#{webServiceApplicationView.wsdlUrl}" size="100" />
+			<ice:commandButton value="Load"
+				action="#{webServiceApplicationView.loadWsdl}" />
+		</ice:panelGrid>
+		<ice:panelGrid columns="2" cellpadding="0" cellspacing="0"
+			style="margin-top: 20px;">
+			<ice:outputLabel for="serviceListbox" value="Service:" styleClass="form-label"/>
+			<ice:selectOneListbox id="serviceListbox"
+				valueChangeListener="#{webServiceApplicationView.serviceChanged}"
+				partialSubmit="true" size="1" style="min-width: 250px;">
+				<f:selectItems value="#{webServiceApplicationView.serviceItems}" />
+			</ice:selectOneListbox>
+			<ice:outputLabel for="portListbox" value="Port:" styleClass="form-label"/>
+			<ice:selectOneListbox id="portListbox"
+				valueChangeListener="#{webServiceApplicationView.portChanged}"
+				partialSubmit="true" size="1" style="min-width: 250px;">
+				<f:selectItems value="#{webServiceApplicationView.portItems}" />
+			</ice:selectOneListbox>
+			<ice:outputLabel for="operationListbox" value="Operation:" />
+			<ice:selectOneListbox id="operationListbox"
+				valueChangeListener="#{webServiceApplicationView.operationChanged}"
+				partialSubmit="true" size="1" style="min-width: 250px;">
+				<f:selectItems value="#{webServiceApplicationView.operationItems}" />
+			</ice:selectOneListbox>
+		</ice:panelGrid>
+		<ice:panelGrid columns="2" cellpadding="0" cellspacing="0" rowClasses="form-row"
+			style="margin-top: 20px;">
+			<ice:outputLabel for="styleOutputText" value="Style:" styleClass="form-label"/>
+			<ice:outputText id="styleOutputText" value="#{webServiceApplicationView.style}" style="height: 30px;"/>
+			<ice:outputLabel for="useOutputText" value="Use:" styleClass="label"/>
+			<ice:outputText id="useOutputText"
+				value="#{webServiceApplicationView.use}" style="height: 20px;"/>
+			<ice:outputLabel for="protocolOutputText" value="Protocol:" styleClass="form-label"/>
+			<ice:outputText id="protocolOutputText" value="#{webServiceApplicationView.protocol}" style="height: 30px;"/>
+		</ice:panelGrid>
+		<ice:panelGrid columns="2" cellpadding="0" cellspacing="0"
+			style="margin-top: 20px;">
+			<ice:selectBooleanCheckbox id="includeWebServiceAddressingCheckbox"
+				value="#{webServiceApplicationView.includeWebServiceAddressing}" />
+			<ice:outputLabel for="includeWebServiceAddressingCheckbox"
+				value="Include WS Addressing" styleClass="label"/>
+		</ice:panelGrid>
+		<ice:panelGrid columns="2" cellpadding="0" cellspacing="0"
+			style="margin-top: 20px;">
+			<ice:selectBooleanCheckbox id="authenticationRequiredCheckbox"
+				value="#{webServiceApplicationView.authenticationRequired}" />
+			<ice:outputLabel for="authenticationRequiredCheckbox"
+				value="Authentication Required" styleClass="form-label"/>
+			<ice:outputText value="" />
+			<ice:panelGrid columns="2" cellpadding="0" cellspacing="0"
+				style="margin-top: 20px;">
+				<ice:outputLabel for="authenticationMechanismListbox" value="Mechanism:" styleClass="form-label"/>
+				<ice:selectOneListbox id="authenticationMechanismListbox"
+					valueChangeListener="#{webServiceApplicationView.authenticationMechanismChanged}"
+					partialSubmit="true" size="1" style="min-width: 250px;">
+					<f:selectItems
+						value="#{webServiceApplicationView.authenticationMechanisms}" />
+				</ice:selectOneListbox>
+				<ice:outputLabel for="authenticationVariantListbox" value="Variant:" styleClass="form-label"/>
+				<ice:selectOneListbox id="authenticationVariantListbox"
+					valueChangeListener="#{webServiceApplicationView.authenticationVariantChanged}"
+					partialSubmit="true" size="1" style="min-width: 250px;">
+					<f:selectItems
+						value="#{webServiceApplicationView.authenticationVariants}" />
+				</ice:selectOneListbox>
+			</ice:panelGrid>
+		</ice:panelGrid>
+		<ice:panelGrid columns="3" cellpadding="0" cellspacing="0"
+			style="margin-top: 20px;">
+			<ice:outputLabel for="numberOfRetriesInputText" value="Numberof Retries:" styleClass="form-label"/>
+			<ice:inputText id="numberOfRetriesInputText" value="#{webServiceApplicationView.numberOfRetries}" style="text-align: right;"/>
+			<ice:outputText value="" />
+			<ice:outputLabel for="timeBetweenRetriesInputText" value="Time between Retries:" styleClass="form-label"/>
+			<ice:inputText id="timeBetweenRetriesInputText"
+				value="#{webServiceApplicationView.timeBetweenRetries}" style="text-align: right;"/>
+			<ice:outputText value="Seconds" style="margin-left: 10px;"/>
+		</ice:panelGrid>
+	</ice:panelGroup>
+</body>
+</html>

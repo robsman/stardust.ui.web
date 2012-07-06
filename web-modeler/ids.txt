@@ -1,0 +1,32 @@
+h1. REST Protocol
+
+h2. General Structure
+
+h3. Creation
+
+HTTP Command: POST
+URL: models/{modelId}/process/
+Data: JSON Object
+
+h3. Update
+
+HTTP Command: POST
+URL: models/{modelId}/process/{processId}
+Data: JSON Object
+
+h3. Deletion
+
+HTTP Command: DELETE
+URL: models/{modelId}/process/{processId}
+
+h3. Other Functions and Shortcuts
+
+HTTP Command: POST
+URL: models/{modelId}/process/{processId}/rename/_parameter_
+Data: null
+
+?
+
+Icon Licenses
+
+add.gif Creative Commons Attribution (by)

@@ -1,0 +1,8 @@
+All attributes private to base class
+
+Access to method of base class
+
+function Symbol
+{
+	
+}

@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ice="http://www.icesoft.com/icefaces/component">
+
+<body>
+	<ice:panelGroup style="margin: 10px;">
+		<ice:panelGroup styleClass="heading">
+			<ice:outputText value="Modeling Work Assignment" />
+		</ice:panelGroup>
+		<ice:panelGrid columns="1" cellpadding="0" cellspacing="0"
+			style="margin-top: 10px; margin-bottom: 20px;">
+			<ice:outputText
+				value="You can use our &lt;b&gt;Consulting Network&lt;/b&gt; to get help with modeling work. Describe your request below and submit the request."
+				escape="false" />
+		</ice:panelGrid>
+		<ice:panelGrid columns="1" cellpadding="0" cellspacing="0">
+			<ice:inputRichText />
+		</ice:panelGrid>
+		<ice:panelGroup styleClass="heading">
+			<ice:outputText value="Consulting Fee Models" />
+		</ice:panelGroup>
+		<ice:panelGroup>
+			<ice:outputText
+				value="The following consulting fee models apply to modeling support. Please select your preference" />
+		</ice:panelGroup>
+		<ice:panelGrid columns="1" cellpadding="0" cellspacing="0"
+			style="margin-top: 20px;">
+			<ice:selectOneRadio layout="pageDirection">
+				<f:selectItem itemLabel="$100/hour, no minimum order"
+					itemValue="Item1" />
+				<f:selectItem itemLabel="$90/hour, 10 hours minimum order"
+					itemValue="Item2" />
+				<f:selectItem itemLabel="$80/hour, 20 hours minimum order"
+					itemValue="Item2" />
+			</ice:selectOneRadio>
+		</ice:panelGrid>
+		<ice:panelGroup styleClass="heading">
+			<ice:outputText value="Terms and Conditions" />
+		</ice:panelGroup>
+		<ice:panelGrid columns="2" cellpadding="0" cellspacing="0"
+			style="margin-top: 20px;">
+			<ice:selectBooleanCheckbox id="acknowledgeTermsAndConditionsCheckbox" />
+			<ice:panelGroup>
+				<ice:outputText value="Confirm that you have read and accept the " />
+				<ice:outputLink value="http://www.sungard.com">Terms and Conditions.</ice:outputLink>
+			</ice:panelGroup>
+		</ice:panelGrid>
+	</ice:panelGroup>
+</body>
+</html>

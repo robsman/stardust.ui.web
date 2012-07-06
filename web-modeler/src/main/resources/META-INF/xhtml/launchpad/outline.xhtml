@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css"
+	href="../css/jstree/default/style.css"></link>
+<link href="../css/lightdust.css" rel="stylesheet" type="text/css" />
+<style>
+.jstree a,.modelLinks a {
+	color: #00629A !important;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	cursor: pointer;
+}
+
+.jstree-default .jstree-clicked {
+	border: 1px solid navy;
+	color: white;
+	padding: 0 2px 0 1px;
+}
+
+#vakata-contextmenu.jstree-default-context a {
+	color: #00629A !important;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+
+#vakata-contextmenu.jstree-default-context,#vakata-contextmenu.jstree-default-context li ul
+	{
+	background: none repeat scroll 0 0 #FFFFFF !important;
+	border: 1px solid #979797;
+}
+
+#vakata-contextmenu li {
+	border: 1px solid #E7E7E7;
+}
+
+#vakata-contextmenu {
+	min-width: 200px !important;
+}
+
+input {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+
+div#outline {
+	height: 500px;
+	overflow: auto;
+	border: none;
+}
+
+td#toolbar div.toolDiv {
+	margin: 2px 4px 5px;
+	padding: 3px;
+	cursor: pointer;
+	float: left;
+}
+
+div.toolDiv:hover {
+	background:
+		url(../../views-common/images/icons/toolbarIconSelectHover.png) center
+		repeat-x #ffd700;
+}
+
+td#toolbar div.toolSeparator {
+	float: left;
+	margin-top: 4px;
+}
+</style>
+<script type="text/javascript" src="../js/outline.js"></script>
+<script type="text/javascript" data-main="outline_main"
+	src="../js/requireplugins-jquery-1.4.3.js"></script>
+</head>
+<body>
+	<table style="width: 100%;">
+		<tr>
+			<td id="toolbar">
+				<div id="outlineToolbar">
+					<div class="toolDiv">
+						<img id="createModel"
+							src="../../views-common/images/icons/add.png"
+							title="Create Model" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="importModel"
+							src="../../views-common/images/icons/page_white_get.png"
+							title="Import Model" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="saveModel" src="../../views-common/images/icons/disk.png"
+							style="cursor: pointer" title="Save Model" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="saveAllModels"
+							src="../../views-common/images/icons/disk_multiple.png"
+							style="cursor: pointer" title="Save All Models" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="refreshModels" src="../images/icons/refresh.png"
+							title="Refresh models" />
+					</div>
+				</div></td>
+		</tr>
+		<tr>
+			<td>
+				<div id="outline"
+					style="text-align: left; list-style-type: none; background-color: white;">
+					<li id="models_root" />
+				</div>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

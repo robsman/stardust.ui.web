@@ -1,0 +1,1529 @@
+/*******************************************************************************
+ * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
+ * documentation
+ ******************************************************************************/
+
+define(
+		[ "m_utils", "m_constants", "m_urlUtils", "m_communicationController",
+				"m_commandsController", "m_command", "m_canvasManager",
+				"m_messageDisplay", "m_symbol", "m_poolSymbol",
+				"m_activitySymbol", "m_dataSymbol", "m_eventSymbol",
+				"m_gatewaySymbol", "m_connection", "m_propertiesPanel",
+				"m_processPropertiesPanel", "m_activityPropertiesPanel",
+				"m_dataPropertiesPanel", "m_eventPropertiesPanel",
+				"m_gatewayPropertiesPanel", "m_swimlanePropertiesPanel",
+				"m_controlFlowPropertiesPanel", "m_dataFlowPropertiesPanel",
+				"m_model", "m_process", "m_data" ],
+		function(m_utils, m_constants, m_urlUtils, m_communicationController,
+				m_commandsController, m_command, m_canvasManager,
+				m_messageDisplay, m_symbol, m_poolSymbol, m_activitySymbol,
+				m_dataSymbol, m_eventSymbol, m_gatewaySymbol, m_connection,
+				m_propertiesPanel, m_processPropertiesPanel,
+				m_activityPropertiesPanel, m_dataPropertiesPanel,
+				m_eventPropertiesPanel, m_gatewayPropertiesPanel,
+				m_swimlanePropertiesPanel, m_controlFlowPropertiesPanel,
+				m_dataFlowPropertiesPanel, m_model, m_process, m_data) {
+
+			var X_OFFSET = 7; // Set fpr #panningSensor
+			var Y_OFFSET = 115; // Set for #toolbar + #messageDisplay
+			// Adjustments for Editable Text on Symbol
+			var WIDTH_ADJUSTMENT = 60;
+
+			return {
+				createDiagram : function(divId) {
+					return new Diagram("canvas");
+				}
+			};
+
+			var currentDiagram = null;
+			var panningIntervalId = null;
+			var currentPanningSensor = null;
+			var symbolEditMode = false;
+			
+
+			/**
+			 * 
+			 */
+			function panCurrentDiagramNorth() {
+				if (currentDiagram != null) {
+					currentDiagram.panNorth();
+				}
+			}
+
+			/**
+			 * 
+			 */
+			function panCurrentDiagramEast() {
+				if (currentDiagram != null) {
+					currentDiagram.panEast();
+				}
+			}
+
+			/**
+			 * 
+			 */
+			function panCurrentDiagramSouth() {
+				if (currentDiagram != null) {
+					currentDiagram.panSouth();
+				}
+			}
+
+			/**
+			 * 
+			 */
+			function panCurrentDiagramWest() {
+				if (currentDiagram != null) {
+					currentDiagram.panWest();
+				}
+			}
+
+			/**
+			 * 
+			 */
+			function Diagram(newDivId) {
+				currentDiagram = this;
+				// Constants
+
+				var SNAP_LINE_THRESHOLD = 15;
+
+				// Public constants
+
+				this.NORMAL_MODE = "NORMAL_MODE";
+				this.RUBBERBAND_MODE = "RUBBERBAND_MODE";
+				this.CONNECTION_MODE = "CONNECTION_MODE";
+				this.X_OFFSET = X_OFFSET;
+				this.Y_OFFSET = Y_OFFSET;
+				this.width = m_canvasManager.getCanvasWidth();
+				this.height = m_canvasManager.getCanvasHeight();
+				this.flowOrientation = m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL;
+				this.zoomFactor = 1;
+				this.divId = newDivId;
+				this.modelId = null;
+				this.processId = null;
+				this.process = null;
+				this.mode = this.NORMAL_MODE;
+				this.symbols = [];
+
+				// Activity symbols by OIDs
+
+				this.activitySymbols = {};
+
+				// Gateway symbols by OIDs
+
+				this.gatewaySymbols = {};
+
+				// Event symbols by OIDs
+
+				this.eventSymbols = {};
+
+				// Data symbols by OIDs
+
+				this.dataSymbols = {};
+				this.connections = [];
+				this.currentSelection = [];
+				this.currentConnection = null;
+				this.newSymbol = null;
+				// Caches the last newly created Symbol for server callbacks
+				this.newSymbol = null;
+
+				this.background = m_canvasManager.drawRectangle(0, 0,
+						m_canvasManager.getCanvasWidth(), m_canvasManager
+								.getCanvasHeight(), {
+							"stroke-width" : 0,
+							"fill" : "white"
+						});
+
+				this.background.auxiliaryProperties = {
+					diagram : this
+				};
+
+				this.background.click(Diagram_clickClosure);
+				
+				// Register with Command Controller
+
+				m_commandsController.registerCommandHandler(this);
+
+				// Bind DOM elements
+
+				// === Start Toolbar ===
+
+				var selectModeButton = jQuery("#selectModeButton");
+
+				selectModeButton.click({
+					"diagram" : this
+				}, function(event) {
+					event.data.diagram.setSelectMode();
+				});
+
+				// === End Toolbar
+
+				this.canvas = jQuery('#' + this.divId);
+				this.scrollPane = jQuery("#scrollpane");
+
+				// Define event handling for DOM elements
+
+				this.canvas.mousedown({
+					"diagram" : this
+				},
+						function(event) {
+							event.data.diagram
+									.onGlobalMouseDown(event.pageX
+											- X_OFFSET
+											+ event.data.diagram.scrollPane
+													.scrollLeft(), event.pageY
+											- Y_OFFSET
+											+ event.data.diagram.scrollPane
+													.scrollTop());
+						});
+
+				this.canvas.mousemove({
+					"diagram" : this
+				},
+						function(event) {
+							event.data.diagram
+									.onGlobalMouseMove(event.pageX
+											- X_OFFSET
+											+ event.data.diagram.scrollPane
+													.scrollLeft(), event.pageY
+											- Y_OFFSET
+											+ event.data.diagram.scrollPane
+													.scrollTop());
+						});
+
+				this.canvas.mouseup({
+					"diagram" : this
+				}, function(event) {
+					event.data.diagram
+							.onGlobalMouseUp(event.pageX - X_OFFSET,
+									event.pageX
+											- X_OFFSET
+											+ event.data.diagram.scrollPane
+													.scrollLeft(), event.pageY
+											- Y_OFFSET
+											+ event.data.diagram.scrollPane
+													.scrollTop());
+				});
+
+				this.panningSensorNorthWest = {};
+				this.panningSensorNorth = {};
+				this.panningSensorNorthEast = {};
+				this.panningSensorEast = {};
+				this.panningSensorSouthEast = {};
+				this.panningSensorSouth = {};
+				this.panningSensorSouthWest = {};
+				this.panningSensorWest = {};
+
+				this.panningSensorNorthWest.x = 0;
+				this.panningSensorNorthWest.y = 0;
+				this.panningSensorNorthWest.width = m_constants.PANNING_SENSOR_WIDTH;
+				this.panningSensorNorthWest.height = m_constants.PANNING_SENSOR_WIDTH;
+
+				this.panningSensorNorth.x = m_constants.PANNING_SENSOR_WIDTH;
+				this.panningSensorNorth.y = 0;
+				this.panningSensorNorth.width = m_constants.VIEWPORT_WIDTH - 2
+						* m_constants.PANNING_SENSOR_WIDTH;
+				this.panningSensorNorth.height = m_constants.PANNING_SENSOR_WIDTH;
+
+				this.panningSensorNorthEast.x = m_constants.VIEWPORT_WIDTH
+						- m_constants.PANNING_SENSOR_WIDTH;
+				this.panningSensorNorthEast.y = 0;
+				this.panningSensorNorthEast.width = m_constants.PANNING_SENSOR_WIDTH;
+				this.panningSensorNorthEast.height = m_constants.PANNING_SENSOR_WIDTH;
+
+				this.panningSensorEast.x = m_constants.VIEWPORT_WIDTH
+						- m_constants.PANNING_SENSOR_WIDTH;
+				this.panningSensorEast.y = m_constants.PANNING_SENSOR_WIDTH;
+				this.panningSensorEast.width = m_constants.PANNING_SENSOR_WIDTH;
+				this.panningSensorEast.height = m_constants.VIEWPORT_HEIGHT - 2
+						* m_constants.PANNING_SENSOR_WIDTH;
+
+				this.panningSensorSouthEast.x = m_constants.VIEWPORT_WIDTH
+						- m_constants.PANNING_SENSOR_WIDTH;
+				this.panningSensorSouthEast.y = m_constants.VIEWPORT_HEIGHT
+						- m_constants.PANNING_SENSOR_WIDTH;
+				this.panningSensorSouthEast.width = m_constants.PANNING_SENSOR_WIDTH;
+				this.panningSensorSouthEast.height = m_constants.PANNING_SENSOR_WIDTH;
+
+				this.panningSensorSouth.x = m_constants.PANNING_SENSOR_WIDTH;
+				this.panningSensorSouth.y = m_constants.VIEWPORT_HEIGHT
+						- m_constants.PANNING_SENSOR_WIDTH;
+				this.panningSensorSouth.width = m_constants.VIEWPORT_WIDTH - 2
+						* m_constants.PANNING_SENSOR_WIDTH;
+				this.panningSensorSouth.height = m_constants.PANNING_SENSOR_WIDTH;
+
+				this.panningSensorSouthWest.x = 0;
+				this.panningSensorSouthWest.y = m_constants.VIEWPORT_HEIGHT
+						- m_constants.PANNING_SENSOR_WIDTH;
+				this.panningSensorSouthWest.width = m_constants.PANNING_SENSOR_WIDTH;
+				this.panningSensorSouthWest.height = m_constants.PANNING_SENSOR_WIDTH;
+
+				this.panningSensorWest.x = 0;
+				this.panningSensorWest.y = m_constants.PANNING_SENSOR_WIDTH;
+				this.panningSensorWest.width = m_constants.PANNING_SENSOR_WIDTH;
+				this.panningSensorWest.height = m_constants.VIEWPORT_HEIGHT - 2
+						* m_constants.PANNING_SENSOR_WIDTH;
+
+				this.horizontalSnapLinePosition = this.height * 0.5;
+				this.isHorizontalSnap = false;
+				this.horizontalSnapLine = m_canvasManager.drawPath("", {
+					"stroke" : m_constants.SNAP_LINE_COLOR,
+					"stroke-width" : m_constants.SNAP_LINE_STROKE_WIDTH,
+					'stroke-dasharray' : m_constants.SNAP_LINE_DASHARRAY
+				});
+				this.verticalSnapLinePosition = this.width * 0.5;
+				this.isVerticalSnap = false;
+				this.verticalSnapLine = m_canvasManager.drawPath("", {
+					"stroke" : m_constants.SNAP_LINE_COLOR,
+					"stroke-width" : m_constants.SNAP_LINE_STROKE_WIDTH,
+					'stroke-dasharray' : m_constants.SNAP_LINE_DASHARRAY
+				});
+
+				this.rubberBand = m_canvasManager.drawRectangle(0, 0, 0, 0, {
+					'stroke' : m_constants.RUBBERBAND_COLOR,
+					'fill' : m_constants.RUBBERBAND_COLOR,
+					'fill-opacity' : 0.1,
+					'stroke-width' : m_constants.RUBBERBAND_STROKE_WIDTH,
+					'stroke-dasharray' : m_constants.RUBBERBAND_DASHARRAY
+				});
+
+				this.rubberBand.hide();
+
+				this.rubberBandX = 0;
+				this.rubberBandY = 0;
+				this.rubberBandWidth = 0;
+				this.rubberBandHeight = 0;
+
+				 this.editableText = jQuery("#editable").editable(
+				 function(value, settings) {
+				 return value;
+				 },
+				 {
+				 type : "text",
+				 event : "dblclick",
+				 onblur : "submit",
+				 onreset : function(settings, value) {  //On Reset hide the text box and reset the value
+					 jQuery.data(document, "diagram").cancelEditable();
+					},
+				 onsubmit : function(settings,value) {
+					jQuery.data(document, "diagram").submitEditable($('input', this).val());
+			     }
+				 }).css("font-family", m_constants.DEFAULT_FONT_FAMILY)
+				 .css("font-size", m_constants.DEFAULT_FONT_SIZE);
+
+				jQuery.data(document, "diagram", this);
+
+				this.currentTextPrimitive = null;
+				this.poolSymbol = null;
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.toString = function() {
+					return "Lightdust.Diagram";
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.initialize = function() {
+					// Load all models to populate Properties Panels
+
+					m_model.loadModels();
+
+					m_utils.debug("===> Loaded Models");
+					m_utils.debug(m_model.getModels());
+
+					// Initialize Properties Panels
+
+					m_processPropertiesPanel.initialize(m_model.getModels(),
+							this);
+					m_activityPropertiesPanel.initialize(m_model.getModels());
+					m_dataPropertiesPanel.initialize(m_model.getModels());
+					m_eventPropertiesPanel.initialize(m_model.getModels());
+					m_gatewayPropertiesPanel.initialize(m_model.getModels());
+					m_swimlanePropertiesPanel.initialize(m_model.getModels());
+					m_controlFlowPropertiesPanel
+							.initialize(m_model.getModels());
+					m_dataFlowPropertiesPanel.initialize(m_model.getModels());
+
+					// TODO Bind against loaded models
+
+					this.modelId = jQuery.url.setUrl(window.location.search)
+							.param("modelId");
+					this.processId = jQuery.url.setUrl(window.location.search)
+							.param("processId");
+					this.model = m_model.findModel(this.modelId);
+					this.process = this.model.processes[this.processId];
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.getEndpointUrl = function() {
+					return m_urlUtils.getContextName()
+							+ "/services/rest/modeler/" + new Date().getTime();
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.createTransferObject = function() {
+					var transferObject = {};
+
+					// Copy and prepare children
+
+					transferObject.poolSymbols = {};
+
+					transferObject.poolSymbols[this.poolSymbol.id] = this.poolSymbol
+							.createTransferObject();
+
+					return transferObject;
+				};
+
+				/**
+				 * The diagram serves as a dispatcher for all changes on model
+				 * elements.
+				 */
+				Diagram.prototype.processCommand = function(command) {
+					m_utils.debug("===> Diagram Process Command");
+					m_utils.debug(command.type);
+
+					if (command.type == m_constants.CREATE_COMMAND) {
+						// The following is for the case that the symbol has been created directly from the toolbar and already exists
+						// although not registered with the diagram and the process
+						
+						if (command.newObject.modelElement == null) {
+							// Swimlanes
+							
+							m_utils.debug("Last symbol "
+									+ this.lastSymbol);							
+							this.lastSymbol.oid = command.newObject.oid;
+
+							this.lastSymbol = null;
+						}
+						else if (this.lastSymbol.modelElement.id == command.newObject.modelElement.id) {
+							m_utils.debug("Setting element OID to "
+									+ command.newObject.oid);
+							this.lastSymbol.oid = command.newObject.oid;
+
+							this.lastSymbol.register();
+
+							this.lastSymbol = null;
+						} else {
+							m_utils.debug("Wrong ID for last symbol.");
+							// TODO Here we need to react to symbol creation pushed from other sources
+							// Create object from json and register with diagram
+						}
+					} else {
+						var element = this.findElementByPath(command.path);
+
+						if (element != null) {
+							if (command.type == m_constants.CREATE_COMMAND) {
+							} else if (command.type == m_constants.RENAME_COMMAND) {
+								element.modelElement.id = command.newObject.modelElement.id;
+								element.modelElement.name = command.newObject.modelElement.name;
+
+								element.refreshFromModelElement();
+							} else if (command.type == m_constants.UPDATE_GEOMETRY_COMMAND) {
+								element.move(command.newObject.x,
+										command.newObject.y);
+								// TODO Stretch
+							} else if (command.type == m_constants.DELETE_COMMAND) {
+								element.remove();
+							}
+						} else {
+							m_utils.debug("Element " + command.path
+									+ " not found.");
+						}
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.undoCommand = function(command) {
+					if (command.type == m_constants.DELETE_COMMAND) {
+						if (command.oldObject.modelElement != null) {
+							if (command.oldObject.modelElement.type == m_constants.ACTIVITY) {
+								var lane = this
+										.findLane(command.oldObject.parentSymbolId);
+
+								m_utils.debug("Lane: ");
+								m_utils.debug(lane);
+
+								m_activitySymbol.createActivitySymbolFromJson(
+										this, lane, command.oldObject);
+							}
+						}
+					} else {
+						var element = this.findElementByPath(command.path);
+
+						if (element != null) {
+							if (command.type == m_constants.CREATE_COMMAND) {
+								element.remove();
+							} else if (command.type == m_constants.RENAME_COMMAND) {
+								element.modelElement.id = command.oldObject.id;
+								element.modelElement.name = command.oldObject.name;
+
+								element.refreshFromModelElement();
+							} else if (command.type == m_constants.UPDATE_GEOMETRY_COMMAND) {
+								element.move(command.oldObject.x,
+										command.oldObject.y);
+								// TODO Stretch
+							}
+						}
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.findElementByPath = function(path) {
+					var steps = path.split("/");
+					var type = steps[steps.length - 2];
+					var id = steps[steps.length - 1];
+
+					m_utils.debug("step-1: " + steps[steps.length - 2]);
+					m_utils.debug("step-0: " + steps[steps.length - 1]);
+
+					var symbol = null;
+
+					if (type == "activities") {
+						return this.findActivitySymbolById(id);
+					} else if (type == "events") {
+						return this.findEventSymbolById(id)
+					} else if (type == "gateways") {
+						return this.findGatewaySymbolById(id);
+					} else if (type == "data") {
+						return this.findDataSymbolById(id);
+					}
+
+					// TODO Connector
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.findActivitySymbolById = function(id) {
+					for ( var n in this.activitySymbols) {
+						var activitySymbol = this.activitySymbols[n];
+
+						if (activitySymbol.modelElement.id == id) {
+							return activitySymbol;
+						}
+					}
+
+					return null;
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.findGatewaySymbolById = function(id) {
+					for ( var n in this.gatewaySymbols) {
+						var gatewaySymbol = this.gatewaySymbols[n];
+
+						if (gatewaySymbol.modelElement.id == id) {
+							return gatewaySymbol;
+						}
+					}
+
+					return null;
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.findEventSymbolById = function(id) {
+					for ( var n in this.eventSymbols) {
+						var eventSymbol = this.eventSymbols[n];
+
+						if (eventSymbol.modelElement.id == id) {
+							return eventSymbol;
+						}
+					}
+
+					return null;
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.findDataSymbolById = function(id) {
+					for ( var n in this.dataSymbols) {
+						var dataSymbol = this.dataSymbols[n];
+
+						if (dataSymbol.dataId == id) {
+							return dataSymbol;
+						}
+					}
+
+					return null;
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.submitUpdate = function() {
+					// TODO Incomplete
+					m_commandsController.submitCommand(m_command.
+							createUpdateCommand("/models/"
+									+ this.model.id + "/processes/" + this.process.id
+									+ "/diagrams/4711", null, this.createTransferObject()));
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.onUpdate = function() {
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.addActivitySymbol = function() {
+					this.newSymbol = m_activitySymbol.createActivitySymbol(
+							this, m_constants.MANUAL_ACTIVITY_TYPE);
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.isInConnectionMode = function() {
+					return this.mode == this.CONNECTION_MODE;
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.setSelectMode = function() {
+					this.clearCurrentSelection();
+					this.mode = this.NORMAL_MODE;
+					this.newSymbol = null;
+
+					if (this.currentConnection != null) {
+						this.currentConnection.remove();
+
+						this.currentConnection = null;
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.isInNormalMode = function() {
+					return this.mode == this.NORMAL_MODE;
+				};
+
+				/**
+				 * Used for initial symbol drawing and DnD
+				 */
+				Diagram.prototype.onGlobalMouseDown = function(x, y) {
+					if (this.mode == this.NORMAL_MODE) {
+						this.mode = this.RUBBERBAND_MODE;
+
+						this.rubberBandX = x * this.zoomFactor;
+						this.rubberBandY = y * this.zoomFactor;
+						this.rubberBand.attr({
+							"x" : this.rubberBandX,
+							"y" : this.rubberBandY,
+							"width" : 0,
+							"height" : 0
+						});
+						this.rubberBand.show();
+						this.rubberBand.toFront();
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.onGlobalMouseMove = function(x, y) {
+					if (this.newSymbol != null) {
+						if (this.newSymbol.isPrepared()) {
+							this.newSymbol.move(x * this.zoomFactor, y
+									* this.zoomFactor);
+						} else {
+							this.newSymbol.prepare(x * this.zoomFactor, y
+									* this.zoomFactor);
+						}
+
+						this.checkPan(x, y);
+
+					} else if (this.mode == this.RUBBERBAND_MODE) {
+						this.rubberBandWidth = x * this.zoomFactor
+								- this.rubberBandX;
+						this.rubberBandHeight = y * this.zoomFactor
+								- this.rubberBandY;
+
+						this.rubberBand.attr({
+							"width" : this.rubberBandWidth,
+							"height" : this.rubberBandHeight
+						});
+
+						this.checkPan(x, y);
+					} else if (this.isInConnectionMode()) {
+						if (this.currentConnection != null) {
+
+							// TODO Can we guarantee that Raphael objects always
+							// get their events first
+
+							if (this.currentConnection.toAnchorPoint.symbol == null) {
+								m_utils
+										.debug("this.currentConnection.toAnchorPoint.symbol == null");
+
+								this.currentConnection.toAnchorPoint.moveTo(x
+										* this.zoomFactor, y * this.zoomFactor);
+								this.currentConnection.reroute();
+								this.checkPan(x, y);
+							}
+						}
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.onGlobalMouseUp = function(x, y) {
+					if (this.mode == this.RUBBERBAND_MODE) {
+						this.clearCurrentSelection();
+
+						var n = 0;
+
+						while (n < this.symbols.length) {
+							if (this.symbols[n].isInRectangle(this.rubberBandX
+									* this.zoomFactor, this.rubberBandY,
+									this.rubberBandWidth * this.zoomFactor,
+									this.rubberBandHeight)) {
+								this.symbols[n].select();
+							}
+
+							++n;
+						}
+
+						this.mode = this.NORMAL_MODE;
+
+						this.rubberBand.hide();
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.getSymbolContainingCoordinates = function(x,
+						y) {
+					for ( var n in this.symbols) {
+						if (this.symbols[n].isInBoundingBox(x, y)) {
+							return this.symbols[n];
+						}
+					}
+
+					return null;
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.getSymbolContainingCoordinatesExcludeContainerSymbols = function(
+						x, y) {
+					for ( var n in this.symbols) {
+						if (!this.symbols[n].isContainerSymbol()
+								&& this.symbols[n].isInBoundingBox(x, y)) {
+							return this.symbols[n];
+						}
+					}
+
+					return null;
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.checkSnapLines = function(symbol) {
+					this.verticalSnapLine.hide();
+
+					this.isVerticalSnap = false;
+
+					for ( var n in this.symbols) {
+						if (symbol == this.symbols[n]) {
+							continue;
+						}
+
+						if (Math.abs(symbol.getXCenter()
+								- this.symbols[n].getXCenter()) < SNAP_LINE_THRESHOLD) {
+							this.adjustVerticalSnapLine(this.symbols[n]
+									.getXCenter());
+							this.verticalSnapLine.show();
+							this.verticalSnapLine.toFront();
+
+							this.isVerticalSnap = true;
+
+							break;
+						}
+					}
+
+					this.horizontalSnapLine.hide();
+
+					this.isHorizontalSnap = false;
+
+					for ( var n in this.symbols) {
+						if (symbol == this.symbols[n]) {
+							continue;
+						}
+
+						if (Math.abs(symbol.getYCenter()
+								- this.symbols[n].getYCenter()) < SNAP_LINE_THRESHOLD) {
+							this.adjustHorizontalSnapLine(this.symbols[n]
+									.getYCenter());
+							this.horizontalSnapLine.show();
+							this.horizontalSnapLine.toFront();
+
+							this.isHorizontalSnap = true;
+
+							break;
+						}
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.hideSnapLines = function(symbol) {
+					this.verticalSnapLine.hide();
+					this.isVerticalSnap = false;
+
+					this.horizontalSnapLine.hide();
+					this.isHorizontalSnap = false;
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.adjustVerticalSnapLine = function(newPosition) {
+					this.verticalSnapLinePosition = newPosition;
+					this.verticalSnapLine
+							.attr("path", "M" + this.verticalSnapLinePosition
+									+ " 0L" + this.verticalSnapLinePosition
+									+ " " + this.height);
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.adjustHorizontalSnapLine = function(
+						newPosition) {
+					this.horizontalSnapLinePosition = newPosition;
+					this.horizontalSnapLine.attr("path", "M0 "
+							+ this.horizontalSnapLinePosition + "L"
+							+ this.width + " "
+							+ this.horizontalSnapLinePosition);
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.snapSymbol = function(symbol) {
+					if (this.isVerticalSnap) {
+						symbol.moveBy(this.verticalSnapLinePosition
+								- symbol.getXCenter(), 0);
+
+					}
+
+					if (this.isHorizontalSnap) {
+						symbol.moveBy(0, this.horizontalSnapLinePosition
+								- symbol.getYCenter());
+
+					}
+
+					this.isVerticalSnap = false;
+					this.isHorizontalSnap = false;
+					this.verticalSnapLine.hide();
+					this.horizontalSnapLine.hide();
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.onClick = function(x, y) {
+					if (this.newSymbol != null) {
+						this.placeNewSymbol(x * this.zoomFactor, y
+								* this.zoomFactor);
+
+						// If the symbol was created with a connection traversal
+						// the connection needs to be completed, too
+
+						if (this.currentConnection != null) {
+							this.currentConnection.complete();
+
+							this.currentConnection = null;
+						}
+					} else if (this.mode == this.NORMAL_MODE) {
+						this.clearCurrentSelection();
+						m_messageDisplay.clear();
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.placeNewSymbol = function(x, y) {
+					this.newSymbol.complete();
+					// If symbol is not contained in swimlane, return
+					if (!this.newSymbol.isCompleted()) {
+						this.newSymbol = null;
+						return false;
+					}
+				
+					this.snapSymbol(this.newSymbol);
+
+					this.lastSymbol = this.newSymbol;
+					this.newSymbol = null;
+					return true;
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.flipFlowOrientation = function(anchorPoint) {
+					if (this.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+						this.flowOrientation = m_constants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL;
+					} else {
+						this.flowOrientation = m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL;
+					}
+
+					this.poolSymbol.flipFlowOrientation(this.flowOrientation);
+					this.poolSymbol.recalculateBoundingBox();
+					this.poolSymbol.adjustGeometry();
+
+					// Rotate anchor points
+
+					for ( var n in this.connections) {
+						this.connections[n]
+								.flipFlowOrientation(this.flowOrientation);
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.print = function(anchorPoint) {
+					jQuery("#scrollpane").print();
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.connectSymbol = function(symbol) {
+					this.mode = this.CONNECTION_MODE;
+
+					if (this.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+						this.currentConnection = m_connection.createConnection(
+								this, symbol.anchorPoints[2]);
+					} else {
+						this.currentConnection = m_connection.createConnection(
+								this, symbol.anchorPoints[1]);
+					}
+
+					m_messageDisplay
+							.showMessage("Select second anchor point for connection.");
+
+					// Set dummy anchor point
+
+					this.currentConnection.setDummySecondAnchorPoint();
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.connectToActivity = function(symbol) {
+					this.addAndConnectSymbol(symbol, m_activitySymbol
+							.createActivitySymbol(this));
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.connectToGateway = function(symbol) {
+					this.addAndConnectSymbol(symbol, m_gatewaySymbol
+							.createGatewaySymbol(this));
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.connectToStopEvent = function(symbol) {
+					this.addAndConnectSymbol(symbol, m_eventSymbol
+							.createStopEventSymbol(this));
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.addAndConnectSymbol = function(startSymbol,
+						targetSymbol) {
+					this.newSymbol = targetSymbol;
+
+					if (this.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+						this.newSymbol.prepare(startSymbol.x,
+								startSymbol.y + 200);
+						this.currentConnection = m_connection.createConnection(
+								this, startSymbol.anchorPoints[2]);
+						this.currentConnection.prepare();
+						this.currentConnection
+								.setSecondAnchorPointNoComplete(this.newSymbol.anchorPoints[0]);
+					} else {
+						this.newSymbol.prepare(startSymbol.x + 200,
+								startSymbol.y);
+						this.currentConnection = m_connection.createConnection(
+								this, startSymbol.anchorPoints[1]);
+						this.currentConnection.prepare();
+						this.currentConnection
+								.setSecondAnchorPointNoComplete(this.newSymbol.anchorPoints[3]);
+					}
+
+					// TODO Is this needed
+					this.mode = this.NORMAL_MODE;
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.setAnchorPoint = function(anchorPoint) {
+					if (this.currentConnection == null) {
+						this.currentConnection = this
+								.createConnection(anchorPoint);
+
+						// Set dummy anchor point
+
+						this.currentConnection.setDummySecondAnchorPoint();
+					} else {
+						this.currentConnection
+								.setSecondAnchorPoint(anchorPoint);
+						this.currentConnection.select();
+
+						this.currentConnection = null;
+						this.mode = this.NORMAL_MODE;
+					}
+				};
+
+				/**
+				 * TODO Review
+				 */
+				Diagram.prototype.createConnection = function(anchorPoint) {
+					return m_connection.createConnection(this, anchorPoint);
+				};
+				/**
+				 * 
+				 */
+				Diagram.prototype.addToCurrentSelection = function(drawable) {
+					this.currentSelection.push(drawable);
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.clearCurrentSelection = function() {
+					for ( var item in this.currentSelection) {
+						this.currentSelection[item].deselect();
+					}
+
+					this.currentSelection = [];
+
+					m_processPropertiesPanel.getInstance().setElement(
+							this.process);
+
+					m_propertiesPanel
+							.initializeProcessPropertiesPanel(m_processPropertiesPanel
+									.getInstance());
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.moveSelectedSymbolsBy = function(dX, dY) {
+					for ( var n in this.currentSelection) {
+						this.currentSelection[n].moveBy(dX, dY);
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.showEditable = function(textPrimitive) {
+					this.currentTextPrimitive = textPrimitive;
+					//Use the Symbol's x co-ordinate to decide the width  of textbox
+					var textboxWidth = textPrimitive.auxiliaryProperties.callbackScope.width
+							- WIDTH_ADJUSTMENT;
+					m_utils.debug("text primitive set");
+					this.editableText.css("width", parseInt(textboxWidth
+							.valueOf()));
+					this.editableText
+							.css("visibility", "visible")
+							.html(textPrimitive.attr("text"))
+							.moveDiv(
+									{
+										"x" : textPrimitive.auxiliaryProperties.callbackScope.x
+												+ X_OFFSET + 27,
+										"y" : textPrimitive.auxiliaryProperties.callbackScope.y
+												+ Y_OFFSET -5
+									}).show().trigger("dblclick");
+					this.symbolEditMode = true;
+					m_utils.debug("editable activated");
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.submitEditable = function(content) {
+					if (content == '') {
+						this.cancelEditable();
+					} else {
+						this.editableText.css("visibility", "hidden").hide()
+								.trigger("blur");
+						this.currentTextPrimitive.attr("text", content);
+						m_utils.debug("text set");
+						this.currentTextPrimitive.show();
+						this.symbolEditMode = false;
+						m_utils.debug("text primitive shown");
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.cancelEditable = function() {
+					this.editableText.css("visibility", "hidden").hide()
+							.trigger("blur");
+					this.currentTextPrimitive.show();
+					this.symbolEditMode = false;
+					m_utils.debug("text primitive hidden");
+				};
+				
+				/**
+				 * 
+				 */
+				Diagram.prototype.zoomIn = function() {
+					this.zoomFactor = Math.max(this.zoomFactor
+							- m_constants.ZOOM_INCREMENT, 1);
+
+					m_canvasManager.setViewBox(this.scrollPane.scrollLeft(),
+							this.scrollPane.scrollTop(), this.zoomFactor);
+
+					// Only zoom viewbox
+
+					m_canvasManager.setCanvasSize(this.width / this.zoomFactor,
+							this.height / this.zoomFactor);
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.zoomOut = function() {
+					this.zoomFactor = this.zoomFactor
+							+ m_constants.ZOOM_INCREMENT;
+
+					m_canvasManager.setViewBox(this.scrollPane.scrollLeft(),
+							this.scrollPane.scrollTop(), this.zoomFactor);
+
+					// Only zoom viewbox
+
+					m_canvasManager.setCanvasSize(this.width / this.zoomFactor,
+							this.height / this.zoomFactor);
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.loadProcess = function() {
+					m_communicationController.syncGetData({
+						url : this.getEndpointUrl() + "/models/" + this.modelId
+								+ "/process/" + this.processId + "/loadModel",
+						callbackScope : this
+					}, new function() {
+						return {
+							success : function(json) {
+								this.callbackScope.loadFromJson(json);
+
+								// resetState();
+							},
+							failure : function() {
+								alert('Hey');
+							}
+						};
+					});
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.loadFromJson = function(json) {
+					m_utils.debug("===> Process/Diagram JSON");
+					m_utils.debug(json);
+
+					// Create pools and lanes
+
+					// TODO Multiple pool symbols
+
+					for ( var n in json.poolSymbols) {
+						m_poolSymbol.createPoolSymbolFromJson(this,
+								json.poolSymbols[n]);
+					}
+
+					if (this.poolSymbol == null) {
+						m_messageDisplay
+								.showErrorMessage("Process diagram does not contain any pools. Possibly not well-formed BPMN.");
+					}
+
+					this.setSize(this.poolSymbol.width, this.poolSymbol.height);
+					this.flowOrientation = this.poolSymbol.orientation;
+
+					m_utils.debug("===> Diagram JSON");
+					m_utils.debug(this);
+
+					// Create connections
+
+					for ( var n in json.connections) {
+						m_connection.createConnectionFromJson(this,
+								json.connections[n]);
+					}
+
+					m_processPropertiesPanel.getInstance().setElement(
+							this.process);
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.setSize = function(width, height) {
+					this.width = width;
+					this.height = height;
+					this.background.attr({
+						"width" : width,
+						"height" : height
+					});
+					m_canvasManager.setCanvasSize(width, height);
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.checkPan = function(x, y) {
+					if (this.panningSensorNorth.x <= x
+							&& this.panningSensorNorth.x
+									+ this.panningSensorNorth.width >= x
+							&& this.panningSensorNorth.y <= y
+							&& this.panningSensorNorth.y
+									+ this.panningSensorNorth.height >= y) {
+						if (currentPanningSensor != this.panningSensorNorth) {
+							currentPanningSensor = this.panningSensorNorth;
+
+							if (panningIntervalId) {
+								window.clearInterval(panningIntervalId);
+							}
+
+							panningIntervalId = window.setInterval(function() {
+								panCurrentDiagramNorth();
+							}, m_constants.DIAGRAM_PANNING_INTERVAL_MILLIS);
+						}
+					} else if (this.panningSensorEast.x <= x
+							&& this.panningSensorEast.x
+									+ this.panningSensorEast.width >= x
+							&& this.panningSensorEast.y <= y
+							&& this.panningSensorEast.y
+									+ this.panningSensorEast.height >= y) {
+						if (currentPanningSensor != this.panningSensorEast) {
+							currentPanningSensor = this.panningSensorEast;
+
+							if (panningIntervalId) {
+								window.clearInterval(panningIntervalId);
+							}
+
+							panningIntervalId = window.setInterval(function() {
+								panCurrentDiagramEast();
+							}, m_constants.DIAGRAM_PANNING_INTERVAL_MILLIS);
+						}
+					} else if (this.panningSensorSouth.x <= x
+							&& this.panningSensorSouth.x
+									+ this.panningSensorSouth.width >= x
+							&& this.panningSensorSouth.y <= y
+							&& this.panningSensorSouth.y
+									+ this.panningSensorSouth.height >= y) {
+						if (currentPanningSensor != this.panningSensorSouth) {
+							currentPanningSensor = this.panningSensorSouth;
+
+							if (panningIntervalId) {
+								window.clearInterval(panningIntervalId);
+							}
+
+							panningIntervalId = window.setInterval(function() {
+								panCurrentDiagramSouth();
+							}, m_constants.DIAGRAM_PANNING_INTERVAL_MILLIS);
+						}
+					} else if (this.panningSensorWest.x <= x
+							&& this.panningSensorWest.x
+									+ this.panningSensorWest.width >= x
+							&& this.panningSensorWest.y <= y
+							&& this.panningSensorWest.y
+									+ this.panningSensorWest.height >= y) {
+						if (currentPanningSensor != this.panningSensorWest) {
+							currentPanningSensor = this.panningSensorWest;
+
+							if (panningIntervalId) {
+								window.clearInterval(panningIntervalId);
+							}
+
+							panningIntervalId = window.setInterval(function() {
+								panCurrentDiagramWest();
+							}, m_constants.DIAGRAM_PANNING_INTERVAL_MILLIS);
+						}
+					} else {
+						if (panningIntervalId != null) {
+							window.clearInterval(panningIntervalId);
+						}
+
+						panningIntervalId = null;
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.panNorth = function() {
+					if (this.scrollPane.scrollTop() > 0) {
+						this.scrollPane.animate({
+							scrollTop : this.scrollPane.scrollTop()
+									- m_constants.DIAGRAM_PANNING_INCREMENT
+						}, m_constants.DIAGRAM_PANNING_INTERVAL_MILLIS);
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.panEast = function() {
+					if (this.scrollPane.scrollLeft() < this.width) {
+						this.scrollPane.animate({
+							scrollLeft : this.scrollPane.scrollLeft()
+									+ m_constants.DIAGRAM_PANNING_INCREMENT
+						}, m_constants.DIAGRAM_PANNING_INTERVAL_MILLIS);
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.panSouth = function() {
+					if (this.scrollPane.scrollTop() < this.height) {
+						this.scrollPane.animate({
+							scrollTop : this.scrollPane.scrollTop()
+									+ m_constants.DIAGRAM_PANNING_INCREMENT
+						}, m_constants.DIAGRAM_PANNING_INTERVAL_MILLIS);
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.panWest = function() {
+					if (this.scrollPane.scrollLeft() > 0) {
+						this.scrollPane.animate({
+							scrollLeft : this.scrollPane.scrollLeft()
+									- m_constants.DIAGRAM_PANNING_INCREMENT
+						}, m_constants.DIAGRAM_PANNING_INTERVAL_MILLIS);
+					}
+				};
+
+				// === Move to m_toolbar.js ===
+
+				var dialog = jQuery("#dialog").dialog({
+					autoOpen : false,
+					draggable : false
+				});
+
+				var dialogCloseButton = jQuery("#dialog #closeButton");
+
+				dialogCloseButton.click(function() {
+					dialog.dialog("close");
+				});
+
+				var dialogApplyButton = jQuery("#dialog #applyButton");
+				var dummy = this;
+				dialogApplyButton.click(function() {
+					m_commandsController.submitImmediately(m_command
+							.createRetrieveCommand("/models/" + this.modelId
+									+ "/processes/" + this.processId
+									+ "/decorations/" + decorationId, {
+							// Parameters from dialog
+							}), {
+						"callbackScope" : dummy,
+						"method" : "applyDecoration"
+					});
+					dialog.dialog("close");
+				});
+
+				// Decoration list
+
+				var decorationList = jQuery("#decorationList");
+
+				decorationList.change(function() {
+					decorationId = decorationList.val();
+					dialog.dialog('open');
+				});
+
+				var decorationConfigurationButton = jQuery("#decorationConfigurationButton");
+
+				decorationConfigurationButton.click(function() {
+					dialog.dialog('open');
+				});
+
+				// === End move to m_toolbar.js ===
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.applyDecoration = function(decoration) {
+					for ( var decorationElement in decoration.elements) {
+						for ( var symbol in this.symbols) {
+							if ((decoration.elements[decorationElement].type != null && decoration.elements[decorationElement].type == this.symbols[symbol].type)
+									|| ((this.symbols[symbol].id != null && this.symbols[symbol].id == decoration.elements[decorationElement].id) || (this.symbols[symbol].modelElement != null
+											&& this.symbols[symbol].modelElement.id != null && this.symbols[symbol].modelElement.id == decoration.elements[decorationElement].id))
+									|| (decoration.elements[decorationElement].oid != null && decoration.elements[decorationElement].oid == this.symbols[symbol].oid)) {
+								if (decoration.elements[decorationElement]["graphicsDecoration"] != null) {
+									for ( var primitive in decoration.elements[decorationElement]["graphicsDecoration"]) {
+										this.symbols[symbol][primitive]
+												.attr(decoration.elements[decorationElement]["graphicsDecoration"][primitive]);
+									}
+								}
+								if (decoration.elements[decorationElement]["dashboardContent"] != null) {
+									this.symbols[symbol]
+											.showDashboard(decoration.elements[decorationElement]["dashboardContent"]);
+								}
+							}
+						}
+
+						for ( var connection in this.connections) {
+							if ((decoration.elements[decorationElement].oid != null && decoration.elements[decorationElement].oid == this.connections[connection].oid)) {
+								if (decoration.elements[decorationElement]["graphicsDecoration"] != null) {
+									for ( var primitive in decoration.elements[decorationElement]["graphicsDecoration"]) {
+										this.connections[connection][primitive]
+												.attr(decoration.elements[decorationElement]["graphicsDecoration"][primitive]);
+									}
+								}
+								if (decoration.elements[decorationElement]["dashboardContent"] != null) {
+									this.connections[connection]
+											.showDashboard(decoration.elements[decorationElement]["dashboardContent"]);
+								}
+							}
+						}
+
+					}
+				};
+
+				/**
+				 * TODO Is this really needed?
+				 */
+				Diagram.prototype.getAllDataSymbols = function() {
+					var dataSymbols = [];
+
+					return this.poolSymbol.getAllDataSymbols(dataSymbols);
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.findLane = function(id) {
+					return this.poolSymbol.findLane(id);
+				};
+
+				Diagram.prototype.findSymbolByPath = function(path) {
+					// TODO is not implemented!
+					// var steps = path.split("/");
+					//
+					// if (steps[0] != "models") {
+					// m_utils.debug("Path must contain /models element ("
+					// + path + ").");
+					// }
+					//
+					// var model = getModels()[step[1]];
+					//
+					// if (steps.length == 2) {
+					// return model;
+					// }
+					//
+					// if (steps[2] == "processes") {
+					// if (steps.length == 4) {
+					// return model.processes[steps[3]];
+					// }
+					//
+					// if (steps[4] == "activities") {
+					// return model.processes[steps[3]].activities[steps[5]];
+					// }
+					// } else if (steps[2] == "applications") {
+					// if (steps.length < 5) {
+					// m_utils
+					// .debug("Path to application must contain 6 steps ("
+					// + path + ").");
+					// return null;
+					// }
+					//
+					// return model.applications[steps[4]];
+					// } else if (steps[2] == "structuredDataTypes") {
+					// return model.structuredDataTypes[steps[3]];
+					// } else if (steps[2] == "data") {
+					// return model.dataItems[steps[3]];
+					// } else if (steps[2] == "participants") {
+					// return model.participants[steps[3]];
+					// } else {
+					// m_utils.debug("Unsupported model element " + steps[2]
+					// + " in path " + path)
+					// + ".";
+					// }
+				}
+
+			}
+
+			function Diagram_clickClosure(event) {
+				this.auxiliaryProperties.diagram.onClick(event.pageX
+						- X_OFFSET
+						+ this.auxiliaryProperties.diagram.scrollPane
+								.scrollLeft(), event.pageY
+						- Y_OFFSET
+						+ this.auxiliaryProperties.diagram.scrollPane
+								.scrollTop());
+			}
+
+			function Diagram_mouseDownClosure(event) {
+				this.auxiliaryProperties.diagram.onMouseDown(event.pageX
+						- X_OFFSET
+						+ this.auxiliaryProperties.diagram.scrollPane
+								.scrollLeft(), event.pageY
+						- Y_OFFSET
+						+ this.auxiliaryProperties.diagram.scrollPane
+								.scrollTop());
+			}
+
+			function Diagram_mouseMoveClosure(event) {
+				this.auxiliaryProperties.diagram.onMouseMove(event.pageX
+						- X_OFFSET
+						+ this.auxiliaryProperties.diagram.scrollPane
+								.scrollLeft(), event.pageY
+						- Y_OFFSET
+						+ this.auxiliaryProperties.diagram.scrollPane
+								.scrollTop());
+			}
+
+			function Diagram_mouseUpClosure(event) {
+				this.auxiliaryProperties.diagram.onMouseUp(event.pageX
+						- X_OFFSET
+						+ this.auxiliaryProperties.diagram.scrollPane
+								.scrollLeft(), event.pageY
+						- Y_OFFSET
+						+ this.auxiliaryProperties.diagram.scrollPane
+								.scrollTop());
+			}
+		});

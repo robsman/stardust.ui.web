@@ -1,0 +1,649 @@
+/**
+ * @author Marc.Gille
+ */
+define(
+		[ "m_utils", "m_constants", "m_commandsController", "m_command", "m_canvasManager", "m_messageDisplay"],
+		function(m_utils, m_constants, m_commandsController, m_command, m_canvasManager, m_messageDisplay) {
+			var PROXIMITY_SENSOR_MARGIN = 20;
+
+			return {
+				createDrawable : function() {
+
+					return new Drawable();
+				},
+
+				PROXIMITY_SENSOR_MARGIN : PROXIMITY_SENSOR_MARGIN
+			};
+
+			/**
+			 * Does not have a position and a bounding box.
+			 * 
+			 * Supports Flyout Menu layout.
+			 */
+			function Drawable() {
+				// TODO Put in constants
+				var FLY_OUT_MENU_FILL = "#f2f2f2";
+				var FLY_OUT_MENU_START_OPACITY = 0;
+				var FLY_OUT_MENU_END_OPACITY = 1;
+				var FLY_OUT_MENU_CONTENT_MARGIN = 30;
+				var FLY_OUT_MENU_EMPTY_MARGIN = 10;
+				var FLY_OUT_MENU_ITEM_MARGIN = 5;
+
+				this.properties = [];
+				this.selected = false;
+				this.primitives = [];
+				this.editableTextPrimitives = [];
+				this.proximitySensor = null;
+				this.flyOutMenuBackground = null;
+				this.leftFlyOutMenuItems = [];
+				this.rightFlyOutMenuItems = [];
+				this.bottomFlyOutMenuItems = [];
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.submitCreation = function() {
+					m_commandsController.submitCommand(m_command.
+							createCreateCommand(this.getPath(), this.createTransferObject()));
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.submitDeletion = function() {
+					m_commandsController.submitCommand(m_command.createDeleteCommand(this.getPath(true),
+							this.createTransferObject()));
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.onCreate = function(transferObject) {
+					this.oid = transferObject.oid;
+					
+					this.register();
+					
+					m_messageDisplay.markModified();
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.onUpdate = function(transferObject) {
+					m_messageDisplay.markModified();
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.onDelete = function(transferObject) {
+					m_messageDisplay.markModified();
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.addToPrimitives = function(element) {
+					this.primitives.push(element);
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.hoverIn = function() {
+					this.showPointerCursor();
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.hoverOut = function() {
+					this.showDefaultCursor();
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.showPointerCursor = function() {
+					for ( var n in this.primitives) {
+						this.primitives[n].attr("cursor", "pointer");
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.showDefaultCursor = function() {
+					for ( var n in this.primitives) {
+						this.primitives[n].attr("cursor", "default");
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.showMoveCursor = function() {
+					for ( var n in this.primitives) {
+						this.primitives[n].attr("cursor", "move");
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.addToEditableTextPrimitives = function(
+						element) {
+					this.editableTextPrimitives.push(element);
+
+					element.auxiliaryProperties = {
+						callbackScope : this
+					};
+
+					// Event handling
+
+					element
+							.dblclick(Drawable_doubleClickEditableTextPrimitiveClosure);
+				};
+
+				Drawable.prototype.createProximitySensor = function() {
+					this.proximitySensor = this
+							.createProximitySensorPrimitive();
+
+					// Initialize return pointer for closure
+
+					this.proximitySensor.auxiliaryProperties = {
+						callbackScope : this
+					};
+
+					// this.proximitySensor.mouseover(mouseOverClosure);
+					this.proximitySensor.hover(
+							Drawable_proximityHoverInClosure,
+							Drawable_proximityHoverOutClosure);
+				};
+
+				/**
+				 * Adjusts all auxiliary graphics elements to changes caused by
+				 * drag, textchange etc.
+				 */
+				Drawable.prototype.adjustGeometry = function() {
+					this.refreshFromModelElement();
+				};
+
+				/**
+				 * Refreshes all graphics elements e.g. text, icons against the
+				 * model element properties e.g. names, types.
+				 * 
+				 * To be overloaded for subclasses.
+				 */
+				Drawable.prototype.refreshFromModelElement = function() {
+				};
+
+				Drawable.prototype.adjustProximitySensor = function(x, y,
+						width, height) {
+					this.proximitySensor.attr({
+						x : x - PROXIMITY_SENSOR_MARGIN,
+						y : y - PROXIMITY_SENSOR_MARGIN,
+						width : width + 2 * PROXIMITY_SENSOR_MARGIN,
+						height : height + 2 * PROXIMITY_SENSOR_MARGIN
+					});
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.showProximitySensor = function() {
+					this.proximitySensor.show();
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.hideProximitySensor = function() {
+					this.proximitySensor.hide();
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.adjustFlyOutMenu = function(x, y, width,
+						height) {
+					this.flyOutMenuBackground.attr({
+						'x' : x - FLY_OUT_MENU_CONTENT_MARGIN,
+						'y' : y - FLY_OUT_MENU_EMPTY_MARGIN,
+						'width' : width + 2 * FLY_OUT_MENU_CONTENT_MARGIN,
+						'height' : height + FLY_OUT_MENU_EMPTY_MARGIN
+								+ FLY_OUT_MENU_CONTENT_MARGIN
+					});
+
+					this.adjustFlyOutMenuItems(x, y, width, height);
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.adjustFlyOutMenuItems = function(x, y,
+						width, height) {
+					var n = 0;
+
+					while (n < this.leftFlyOutMenuItems.length) {
+						this.leftFlyOutMenuItems[n].attr({
+							x : x - FLY_OUT_MENU_CONTENT_MARGIN
+									+ FLY_OUT_MENU_ITEM_MARGIN,
+							y : y - FLY_OUT_MENU_EMPTY_MARGIN
+									+ FLY_OUT_MENU_ITEM_MARGIN + n
+									* (16 + FLY_OUT_MENU_ITEM_MARGIN)
+						});
+
+						++n;
+					}
+
+					n = 0;
+
+					while (n < this.rightFlyOutMenuItems.length) {
+						this.rightFlyOutMenuItems[n].attr({
+							x : x + width + FLY_OUT_MENU_CONTENT_MARGIN
+									- FLY_OUT_MENU_ITEM_MARGIN - 16,
+							y : y - FLY_OUT_MENU_EMPTY_MARGIN
+									+ FLY_OUT_MENU_ITEM_MARGIN + n
+									* (16 + FLY_OUT_MENU_ITEM_MARGIN)
+						});
+
+						++n;
+					}
+
+					n = 0;
+
+					while (n < this.bottomFlyOutMenuItems.length) {
+						this.bottomFlyOutMenuItems[n].attr({
+							x : x - FLY_OUT_MENU_CONTENT_MARGIN
+									+ FLY_OUT_MENU_ITEM_MARGIN + n
+									* (16 + FLY_OUT_MENU_ITEM_MARGIN),
+							y : y + height + FLY_OUT_MENU_CONTENT_MARGIN
+									- FLY_OUT_MENU_ITEM_MARGIN - 16
+						});
+
+						++n;
+					}
+				}
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.showFlyOutMenu = function() {
+					this.flyOutMenuBackground.show();
+					this.flyOutMenuBackground.animate({
+						"fill-opacity" : FLY_OUT_MENU_END_OPACITY
+					}, m_constants.DRAWABLE_FLY_OUT_MENU_FADE_TIME, '<');
+
+					var n = 0;
+
+					while (n < this.leftFlyOutMenuItems.length) {
+						this.leftFlyOutMenuItems[n].show();
+						this.leftFlyOutMenuItems[n].toFront();
+						this.leftFlyOutMenuItems[n].animate({
+							"fill-opacity" : FLY_OUT_MENU_END_OPACITY
+						}, m_constants.DRAWABLE_FLY_OUT_MENU_FADE_TIME, '<');
+
+						++n;
+					}
+
+					n = 0;
+
+					while (n < this.rightFlyOutMenuItems.length) {
+						this.rightFlyOutMenuItems[n].show();
+						this.rightFlyOutMenuItems[n].toFront();
+						this.rightFlyOutMenuItems[n].animate({
+							"fill-opacity" : FLY_OUT_MENU_END_OPACITY
+						}, m_constants.DRAWABLE_FLY_OUT_MENU_FADE_TIME, '>');
+
+						++n;
+					}
+
+					n = 0;
+
+					while (n < this.bottomFlyOutMenuItems.length) {
+						this.bottomFlyOutMenuItems[n].show();
+						this.bottomFlyOutMenuItems[n].toFront();
+						this.bottomFlyOutMenuItems[n].animate({
+							"fill-opacity" : FLY_OUT_MENU_END_OPACITY
+						}, m_constants.DRAWABLE_FLY_OUT_MENU_FADE_TIME, '>');
+
+						++n;
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.hideFlyOutMenu = function() {
+					this.flyOutMenuBackground.animate({
+						"fill-opacity" : FLY_OUT_MENU_START_OPACITY
+					}, m_constants.DRAWABLE_FLY_OUT_MENU_FADE_TIME, '<');
+					this.flyOutMenuBackground.hide();
+
+					var n = 0;
+
+					while (n < this.leftFlyOutMenuItems.length) {
+						this.leftFlyOutMenuItems[n].animate({
+							"fill-opacity" : FLY_OUT_MENU_START_OPACITY
+						}, m_constants.DRAWABLE_FLY_OUT_MENU_FADE_TIME, '>');
+						this.leftFlyOutMenuItems[n].hide();
+
+						++n;
+					}
+
+					n = 0;
+
+					while (n < this.rightFlyOutMenuItems.length) {
+						this.rightFlyOutMenuItems[n].animate({
+							"fill-opacity" : FLY_OUT_MENU_START_OPACITY
+						}, m_constants.DRAWABLE_FLY_OUT_MENU_FADE_TIME, '>');
+						this.rightFlyOutMenuItems[n].hide();
+
+						++n;
+					}
+
+					n = 0;
+
+					while (n < this.bottomFlyOutMenuItems.length) {
+						this.bottomFlyOutMenuItems[n].animate({
+							"fill-opacity" : FLY_OUT_MENU_START_OPACITY
+						}, m_constants.DRAWABLE_FLY_OUT_MENU_FADE_TIME, '>');
+						this.bottomFlyOutMenuItems[n].hide();
+
+						++n;
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.addFlyOutMenuItems = function(left, right,
+						bottom) {
+
+					this.leftFlyOutMenuItems = new Array();
+
+					var n = 0;
+
+					while (n < left.length) {
+						this.leftFlyOutMenuItems[n] = this
+								.createFlyOutMenuItem(left[n].imageUrl,
+										left[n].imageWidth,
+										left[n].imageHeight,
+										left[n].clickHandler);
+
+						++n;
+					}
+
+					this.rightFlyOutMenuItems = new Array();
+
+					n = 0;
+
+					while (n < right.length) {
+						this.rightFlyOutMenuItems[n] = this
+								.createFlyOutMenuItem(right[n].imageUrl,
+										right[n].imageWidth,
+										right[n].imageHeight,
+										right[n].clickHandler);
+
+						++n;
+					}
+
+					this.bottomFlyOutMenuItems = new Array();
+
+					n = 0;
+
+					while (n < bottom.length) {
+						this.bottomFlyOutMenuItems[n] = this
+								.createFlyOutMenuItem(bottom[n].imageUrl,
+										bottom[n].imageWidth,
+										bottom[n].imageHeight,
+										bottom[n].clickHandler);
+
+						++n;
+					}
+				};
+
+				Drawable.prototype.createFlyOutMenuItem = function(imageUrl,
+						imageWidth, imageHeight, clickHandler) {
+					var item = m_canvasManager.drawImageAt(imageUrl, 0, 0,
+							imageWidth, imageHeight);
+
+					item.attr({
+						"fill-opacity" : FLY_OUT_MENU_START_OPACITY
+					});
+
+					item.auxiliaryProperties = {
+						callbackScope : this
+					};
+
+					item.click(clickHandler);
+					item.hover(Drawable_hoverInFlyMenuItemClosure,
+							Drawable_hoverOutFlyMenuItemClosure);
+					item.hover(Drawable_hoverInFlyMenuItemClosure,
+							Drawable_hoverOutFlyMenuItemClosure);
+
+					return item;
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.proximityHoverIn = function(event) {
+					this.showFlyOutMenu();
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.proximityHoverOut = function(event) {
+					this.hideFlyOutMenu();
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.removeProximitySensor = function() {
+					this.proximitySensor.remove();
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.removeFlyOutMenu = function() {
+					this.flyOutMenuBackground.remove();
+
+					var n = 0;
+
+					while (n < this.leftFlyOutMenuItems.length) {
+						this.leftFlyOutMenuItems[n].remove();
+
+						++n;
+					}
+
+					n = 0;
+
+					while (n < this.rightFlyOutMenuItems.length) {
+						this.rightFlyOutMenuItems[n].remove();
+
+						++n;
+					}
+
+					n = 0;
+
+					while (n < this.bottomFlyOutMenuItems.length) {
+						this.bottomFlyOutMenuItems[n].remove();
+
+						++n;
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.deselect = function() {
+					this.selected = false;
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.doubleClickEditableTextPrimitive = function(
+						element) {
+					element.hide();
+					this.diagram.showEditable(element);
+				};
+
+				/**
+				 * 
+				 */
+				Drawable.prototype.showDashboard = function(dashboardContent) {
+					m_canvasManager.drawRectangle(
+							this.getDashboardX(), this.getDashboardY(), 220,
+							120, {
+								"stroke" : "#bbbbbb",
+								"stroke-width" : 2.0,
+								"fill" : "#fcf7bf",
+								"r" : 3.0,
+								"fill-opacity" : 0.5
+							}).show();
+
+					var yOffset = 15;
+
+					for ( var contentItem in dashboardContent) {
+						if (dashboardContent[contentItem].type == "valueList") {
+							m_canvasManager
+									.drawTextNode(this.getDashboardX() + 10,
+											this.getDashboardY() + yOffset,
+											dashboardContent[contentItem].title)
+									.attr(
+											{
+												"text-anchor" : "start",
+												"font-family" : m_constants.DEFAULT_FONT_FAMILY,
+												"font-weight" : "bold",
+												"font-size" : m_constants.DEFAULT_FONT_SIZE
+											}).show();
+
+							yOffset += 25;
+
+							var attributes = dashboardContent[contentItem].attributes;
+							for ( var attribute in attributes) {
+								m_canvasManager
+										.drawTextNode(
+												this.getDashboardX() + 10,
+												this.getDashboardY() + yOffset,
+												attribute + ":")
+										.attr(
+												{
+													"text-anchor" : "start",
+													"font-family" : m_constants.DEFAULT_FONT_FAMILY,
+													"font-weight" : "bold",
+													"font-size" : m_constants.DEFAULT_FONT_SIZE - 1
+												}).show();
+								m_canvasManager
+										.drawTextNode(
+												this.getDashboardX() + 160,
+												this.getDashboardY() + yOffset,
+												attributes[attribute])
+										.attr(
+												{
+													"text-anchor" : "start",
+													"font-family" : m_constants.DEFAULT_FONT_FAMILY,
+													"font-size" : m_constants.DEFAULT_FONT_SIZE
+												}).show();
+
+								yOffset += 20;
+							}
+						} else if (dashboardContent[contentItem].type == "plot") {
+							m_canvasManager
+									.drawTextNode(this.getDashboardX() + 10,
+											this.getDashboardY() + yOffset,
+											dashboardContent[contentItem].title)
+									.attr(
+											{
+												"text-anchor" : "start",
+												"font-family" : m_constants.DEFAULT_FONT_FAMILY,
+												"font-weight" : "bold",
+												"font-size" : m_constants.DEFAULT_FONT_SIZE
+											}).show();
+
+							yOffset += 100;
+
+							// Draw axis
+
+							var pathString = "";
+							
+							pathString += "M" + (this.getDashboardX() + 10) + " " + (this.getDashboardY() + yOffset);
+							pathString += "L" + (this.getDashboardX() + 10) + " " + (this.getDashboardY() + yOffset - 80);
+
+							m_canvasManager.drawPath(pathString, {
+								"arrow-end" : "block-wide-long",
+								"stroke" : "#333333",
+								"stroke-width" : 1.0
+							}).show();
+
+							pathString = "";
+							
+							pathString += "M" + (this.getDashboardX() + 10) + " " + (this.getDashboardY() + yOffset);
+							pathString += "L" + (this.getDashboardX() + 210) + " " + (this.getDashboardY() + yOffset);
+
+							m_canvasManager.drawPath(pathString, {
+								"arrow-end" : "block-wide-long",
+								"stroke" : "#333333",
+								"stroke-width" : 1.0
+							}).show();
+
+							var data = dashboardContent[contentItem].data;
+							
+							pathString = "";
+
+							for ( var n in data) {
+								if (n == 0) {
+									pathString += ("M" + (this.getDashboardX() + 10 + data[n][0]) + " " + (this.getDashboardY() + yOffset - data[n][1]));
+								} else {
+									pathString += ("L" + (this.getDashboardX() + 10 + data[n][0]) + " " + (this.getDashboardY() + yOffset - data[n][1]));
+								}
+							}
+							
+							m_canvasManager.drawPath(pathString, {
+								"stroke" : "red",
+								"stroke-width" : 1.5
+							}).show();
+						}
+
+					}
+				};
+			}
+
+			function Drawable_proximityHoverInClosure(event) {
+				this.auxiliaryProperties.callbackScope.proximityHoverIn(event);
+			}
+
+			function Drawable_proximityHoverOutClosure(event) {
+				this.auxiliaryProperties.callbackScope.proximityHoverOut(event);
+			}
+
+			function Drawable_hoverInFlyMenuItemClosure(event) {
+				this.attr({
+					"fill" : "white",
+					"fill-opacity" : 0
+				});
+				this.auxiliaryProperties.callbackScope.showFlyOutMenu(event);
+			}
+
+			function Drawable_hoverOutFlyMenuItemClosure(event) {
+				this.attr({
+					"fill" : "white",
+					"fill-opacity" : 1
+				});
+				this.auxiliaryProperties.callbackScope.hideFlyOutMenu(event);
+			}
+
+			/**
+			 * 
+			 */
+			function Drawable_doubleClickEditableTextPrimitiveClosure() {
+				this.auxiliaryProperties.callbackScope
+						.doubleClickEditableTextPrimitive(this);
+			}
+		});

@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<head>
+<title>Modeler Canvas</title>
+<link rel="stylesheet" type="text/css"
+	href="../../../graphics-common/css/smoothness/jquery-ui-1.8.12.custom.css">
+</link>
+<link href="../../css/jquery.treeTable.css" rel="stylesheet"
+	type="text/css" />
+<link href="../../css/jquery.tablescroll.css" rel="stylesheet"
+	type="text/css" />
+<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript"
+	src="../../js/camelApplicationViewPageInitializer.js"></script>
+<script type="text/javascript" data-main="camelApplicationViewMain"
+	src="../../js/requireplugins-jquery-1.4.3.js"></script>
+</head>
+<body>
+	<div class="panel">
+		<table cellpadding="0" cellspacing="0" class="layoutTable"
+			style="width: 800px;">
+			<tr>
+				<td>
+					<table>
+						<tr>
+							<td>
+								<table cellpadding="0" cellspacing="0" class="layoutTable"
+									style="margin-bottom: 10px;">
+									<tr>
+										<td><label for="applicationName">Application Name</label>
+										</td>
+										<td><input type="text"></input>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<table>
+									<tr>
+										<td><label for="endpointTypeSelectInput">Endpoint
+												Type</label>
+										</td>
+										<td><select id="endpointTypeSelectInput">
+												<option value="genericEndpoint">Generic</option>
+												<!-->option value="fileEndpoint">File Endpoint</option>
+												<option value="ftpEndpoint">FTP Endpoint</option>
+												<option value="pop3Endpoint">Mail Endpoint (POP3)</option>
+												<option value="smtpEndpoint">Mail Endpoint (SMTP)</option>
+												<option value="imapEndpoint">Mail Endpoint (IMAP)</option>
+												<option value="jmsEndpoint">JMS Endpoint</option>
+												<option value="webServiceEndpoint">Web Service
+													Endpoint</option>
+												<option value="restletEndpoint">REST Endpoint</option>
+												<option value="quickfixEndpoint">Fix Endpoint
+													(QuickFix)</option>
+												<option value="hazelcastEndpoint">Caching Endpoint
+													(Hazelcast)</option>
+												<option value="quartzEndpoint">Timer Endpoint
+													(quartz)</option-->
+										</select>
+										</td>
+									</tr>
+								</table></td>
+						</tr>
+						<tr>
+							<td><div id="endpointUriPrefix" class="code">&lt;route&gt;</div></td>
+						</tr>
+						<tr>
+							<td><textarea id="routeTextarea" cols="50" rows="5"
+									class="code">
+																</textarea></td>
+						</tr>
+						<tr>
+							<td><div class="code" style="margin-bottom: 10px;">&lt;/route&gt;</div></td>
+						</tr>
+						<tr>
+							<td><label for="additionalBeanSpecificationTextarea">Additional Bean Specification</label></td>
+						</tr>
+						<tr>
+							<td><textarea id="additionalBeanSpecificationTextarea" cols="50" rows="5"
+									class="code">
+								</textarea></td>
+						</tr>
+						<tr>
+							<td>
+								<table>
+									<tr>
+										<td><label for="directionInput">Direction</label>
+										</td>
+										<td><select id="directionInput">
+												<option value="requestOnly">Request Only</option>
+												<option value="requestResponse">Request/Response</option>
+										</select>
+										</td>
+									</tr>
+								</table></td>
+						</tr>
+					</table></td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:ippui="http://infinity.com/bpm/portal/common/uiDefinition"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
+
+	<ippui:perspective id="ippBpmModeler" messageBundles="bpm-modeler-messages"
+		controller="processesView">
+		<ippui:preferences>
+			<ippui:preferencePage name="configuration"
+				include="/plugins/bpm-modeler/preferences/modelingConfigurationPanel.xhtml" />
+		</ippui:preferences>
+		<ippui:launchPanel name="ippAdmAdministrativeActions"
+			include="/plugins/bpm-modeler/launchpad/modelerLauncher.xhtml" />
+		<ippui:toolbarSection name="modelerViewToolbar"
+			include="/plugins/bpm-modeler/toolbars/modelerViewToolbar.xhtml"
+			requiredView="modelerView" />
+		<ippui:toolbarSection name="messageTransfomationApplicationViewToolbar"
+			include="/plugins/bpm-modeler/toolbars/messageTransformationApplicationViewToolbar.xhtml"
+			requiredView="messageTransformationApplicationView" />
+		<ippui:toolbarSection name="camelApplicationViewToolbar"
+			include="/plugins/bpm-modeler/toolbars/camelApplicationViewToolbar.xhtml"
+			requiredView="camelApplicationView" />
+		<ippui:toolbarSection name="xsdStructuredDataTypeViewToolbar"
+			include="/plugins/bpm-modeler/toolbars/xsdStructuredDataTypeViewToolbar.xhtml"
+			requiredView="xsdStructuredDataTypeView" />
+		<ippui:view name="modelView"
+			include="/plugins/bpm-modeler/views/modeler/modelView.xhtml"
+			controller="modelView" />
+		<ippui:view name="modelerView"
+			include="/plugins/bpm-modeler/views/modeler/modelerView.xhtml"
+			controller="modelerView" />
+		<!-- TODO Controller not bound -->
+		<ippui:view name="uiMashupApplicationView"
+			include="/plugins/bpm-modeler/views/modeler/uiMashupApplicationView.xhtml"
+			controller="uiMashupApplicationView" />
+		<ippui:view name="webServiceApplicationView"
+			include="/plugins/bpm-modeler/views/modeler/webServiceApplicationView.xhtml"
+			controller="webServiceApplicationView" />
+		<ippui:view name="xsdStructuredDataTypeView"
+			include="/plugins/bpm-modeler/views/modeler/xsdStructuredDataTypeView.xhtml"
+			controller="xsdStructuredDataTypeView" />
+		<ippui:view name="messageTransformationApplicationView"
+			include="/plugins/bpm-modeler/views/modeler/messageTransformationApplicationView.xhtml"
+			controller="messageTransformationApplicationView" />
+		<ippui:view name="camelApplicationView"
+			include="/plugins/bpm-modeler/views/modeler/camelApplicationView.xhtml"
+			controller="camelApplicationView" />
+		<ippui:view name="modelingWorklistView"
+			include="/plugins/bpm-modeler/views/modeler/modelingWorklistView.xhtml"
+			controller="modelingWorklistView" />
+		<ippui:view name="modelingWorkAssignmentView"
+			include="/plugins/bpm-modeler/views/modeler/modelingWorkAssignmentView.xhtml"
+			controller="modelingWorkAssignmentView" />
+	</ippui:perspective>
+	<ippui:perspective id="test" messageBundles="bpm-modeler-messages">
+		<ippui:launchPanel name="testLaunchPanel"
+			include="/plugins/bpm-modeler/launchpad/testLaunchPanel.xhtml" />
+	</ippui:perspective>
+</beans>

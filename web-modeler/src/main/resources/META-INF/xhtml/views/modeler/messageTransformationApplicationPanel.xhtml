@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<head>
+<title>Modeler Canvas</title>
+<link rel="stylesheet" type="text/css"
+	href="../../css/jquery-ui-1.8.20.custom.css"></link>
+<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript"
+	src="../../js/messageTransformationApplicationViewPageInitializer.js"></script>
+<script type="text/javascript"
+	data-main="messageTransformationApplicationViewMain"
+	src="../../js/requireplugins-jquery-1.4.3.js"></script>
+</head>
+<body>
+	<div class="panel">
+		<table cellpadding="0" cellspacing="0" class="layoutTable">
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="layoutTable"
+						style="margin-bottom: 10px;">
+						<tr>
+							<td><label for="nameInput">Application Name</label></td>
+							<td><input id="nameInput" type="text" style="width: 200px;"></input>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tr valign="top">
+							<td>
+								<div class="heading" style="margin-bottom: 5px;">Source
+									Message</div></td>
+							<td><div class="heading" style="margin-bottom: 5px;">Target
+									Message</div></td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<div class="panelBorder">
+									<table cellpadding="0" cellspacing="0" class="layoutTable">
+										<tr>
+											<td>
+												<div class="toolBar">
+													<table cellpadding="0" cellspacing="5" class="layoutTable">
+														<tr>
+															<td><input id="addInputDataButton" type="button"
+																value="Add Input ..." /></td>
+															<td><input id="filterHighlightedSourceFieldsInput" type="image" height="16" width="16"
+																src="../../images/bulb-on.gif" title="Display only highlighted fields"/>
+															</td>
+															<td><input id="showAllSourceFieldsInput" type="image" height="16" width="16"
+																src="../../images/bulb-off.gif" title="Display highlighted and non-highlighted fields"/>
+															</td>
+															<td><input id="sourceFilterInput" type="text" style="width: 100%;" /></td>
+														</tr>
+													</table>
+												</div></td>
+										</tr>
+										<tr>
+											<td>
+												<div class="dataTable">
+													<table id="sourceTable" class="treeTable"
+														style="width: 300px;">
+														<thead>
+															<tr>
+																<th style="width: 200px;">Element</th>
+																<th style="width: 100px;">Type</th>
+															</tr>
+														</thead>
+														<tbody />
+													</table>
+												</div></td>
+										</tr>
+									</table>
+								</div>
+							</td>
+							<td>
+								<div style="margin-left: 10px;">
+									<div class="panelBorder">
+										<table cellpadding="0" cellspacing="0" class="layoutTable">
+											<tr>
+												<td>
+													<div class="toolBar">
+														<table cellpadding="0" cellspacing="5" class="layoutTable">
+															<tr>
+																<td><input id="addOutputDataButton" type="button"
+																	value="Add Output ..." />
+																</td>
+																<td><input id="filterFieldsWithMappingInput" type="image" height="16" width="16"
+																	src="../../images/mapping.gif" title="Display only fields with mapping expressions"/>
+																</td>
+																<td><input id="filterFieldsWithNoMappingInput" type="image" height="16" width="16"
+																	src="../../images/no-mapping.gif" title="Display only fields with no mapping expression"/></td>
+																<td><input id="filterHighlightedTargetFieldsInput" type="image" height="16" width="16"
+																	src="../../images/bulb-on.gif" title="Display only highlighted fields"/>
+																</td>
+																<td><input id="showAllTargetFieldsInput" type="image" height="16" width="16"
+																	src="../../images/bulb-off.gif" title="Display highlighted and non-highlighted fields"/>
+																</td>
+																<td><input type="image" height="16" width="16"
+																	src="../../images/error.gif" title="Display only fields whose mapping expression is invalid"/></td>
+																<td><input id="targetFilterInput" type="text" style="width: 100%;" title="Filter fields"/></td>
+															</tr>
+														</table>
+													</div></td>
+											</tr>
+											<tr>
+												<td>
+													<div class="dataTable">
+														<table id="targetTable" class="treeTable"
+															style="width: 600px;">
+															<thead>
+																<tr>
+																	<th>Element</th>
+																	<th>Type</th>
+																	<th>Mapping</th>
+																	<th>Problem</th>
+																</tr>
+															</thead>
+															<tbody />
+														</table>
+													</div></td>
+											</tr>
+										</table>
+									</div>
+								</div></td>
+						</tr>
+						<tr>
+							<td colspan="2"><div class="heading"
+									style="margin-top: 10px;">Advanced Mapping</div></td>
+						</tr>
+						<tr>
+							<td colspan="2"><div id="elementIndicatorText">&nbsp;</div>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2"><textarea id="expressionTextArea" cols="80"
+									rows="10"></textarea>
+							</td>
+						</tr>
+					</table></td>
+			</tr>
+		</table>
+	</div>
+	<div id="inputDataDialog" title="Input Data"
+		style="min-width: 300px; min-height: 200px;">
+		<table>
+			<tr>
+				<td><label for="typeSelectInput">Type:</label>
+				</td>
+				<td><select id="typeSelectInput">
+				</select>
+				</td>
+			</tr>
+			<tr>
+				<td><label for="nameTextInput">Name:</label>
+				</td>
+				<td><input id="nameTextInput" type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<table>
+						<tr>
+							<td><input id="applyButton" type="button" value="Apply" />
+							</td>
+							<td><input id="closeButton" type="button" value="Close" />
+							</td>
+						</tr>
+					</table></td>
+			</tr>
+		</table>
+	</div>
+	<div id="outputDataDialog" title="Output Data"
+		style="min-width: 300px; min-height: 200px;">
+		<table>
+			<tr>
+				<td><label for="typeSelectInput">Type:</label>
+				</td>
+				<td><select id="typeSelectInput">
+				</select>
+				</td>
+			</tr>
+			<tr>
+				<td><label for="nameTextInput">Name:</label>
+				</td>
+				<td><input id="nameTextInput" type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<table>
+						<tr>
+							<td><input id="applyButton" type="button" value="Apply" />
+							</td>
+							<td><input id="closeButton" type="button" value="Close" />
+							</td>
+						</tr>
+					</table></td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

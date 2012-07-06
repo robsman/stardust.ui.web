@@ -1,0 +1,158 @@
+<html>
+<head>
+<link type="text/css" rel="stylesheet"
+	href="../../../common/css/iPopupDialogStyle.css">
+</link>
+<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
+<style>
+.swWizardPopupDialogCloseControl {
+	background:
+		url("../../../common/images/icons/dialog-windowbttn-close.png")
+		no-repeat scroll 0 50% transparent !important;
+	border: medium none !important;
+	cursor: pointer;
+	float: right;
+	padding: 5px 10px;
+}
+
+.swWizardPopupDialogContentArea {
+	background-color: white;
+	height: 400px;
+	width: 100%;
+}
+</style>
+<script type="text/javascript"
+	src="../../js/serviceWrapperWizardPageInitializer.js"></script>
+<script type="text/javascript" data-main="serviceWrapperWizardMain"
+	src="../../js/requireplugins-jquery-1.4.3.js"></script>
+</head>
+<body style="width: 100%; height: 100%; overflow: auto; margin: 0px;">
+	<div id="titleBar" class="iPopupDialogTitleBar">
+		<span id="titleText" class="iPopupDialogTitleText"></span> <input
+			id="dialogCloseIcon" type="button" title="Close"
+			class="swWizardPopupDialogCloseControl" />
+	</div>
+	<div id="contentArea" class="swWizardPopupDialogContentArea">
+		<div class="iPopupDialogSpacerDiv"></div>
+		<div style="margin: 10px;">
+			<table border="0">
+				<tr>
+					<td>
+						<table>
+							<tr>
+								<td><img src="../../images/icons/wand.png" />
+								</td>
+								<td><label>Create a wrapper Process Definition for
+										the Application with the following data:</label>
+								</td>
+							</tr>
+						</table></td>
+				</tr>
+				<tr>
+					<td>
+						<table>
+							<tr>
+								<td valign="top">
+									<table>
+										<tr>
+											<td><label for="modelInput">Model</label>
+											</td>
+											<td><select id="modelInput" style="min-width: 250px;">
+											</select>
+											</td>
+										</tr>
+										<tr>
+											<td><label for="processDefinitionNameInput">Process
+													Definition Name</label>
+											</td>
+											<td><input id="processDefinitionNameInput" type="text" style="min-width: 250px;"></input>
+											</td>
+										</tr>
+										<tr>
+											<td><label for="requestParameterDataNameInput">Request
+													Parameter Data Name</label>
+											</td>
+											<td><input id="requestParameterDataNameInput"
+												type="text" style="min-width: 250px;"></input>
+											</td>
+										</tr>
+										<tr>
+											<td><label for="requestTransformationActivityNameInput">Request
+													Transformation Activity Name</label>
+											</td>
+											<td><input id="requestTransformationActivityNameInput"
+												type="text" style="min-width: 250px;"></input>
+											</td>
+										</tr>
+										<tr>
+											<td><label for="serviceRequestParameterTypeInput">Service
+													Request Parameter Type</label>
+											</td>
+											<td><select id="serviceRequestParameterTypeInput" style="min-width: 250px;">
+											</select>
+											</td>
+										</tr>
+										<tr>
+											<td><label for="serviceInvocationActivityNameInput">Service
+													Invocation Activity Name</label>
+											</td>
+											<td><input id="serviceInvocationActivityNameInput"
+												type="text" style="min-width: 250px;"></input>
+											</td>
+										</tr>
+										<tr>
+											<td><label for="serviceResponseParameterTypeInput">Service
+													Request Parameter Type</label>
+											</td>
+											<td><select id="serviceResponseParameterTypeInput" style="min-width: 250px;">
+											</select>
+											</td>
+										</tr>
+										<tr>
+											<td><label for="responseTransformationActivityNameInput">Response
+													Transformation Activity Name</label>
+											</td>
+											<td><input id="responseTransformationActivityNameInput"
+												type="text" style="min-width: 250px;"></input>
+											</td>
+										</tr>
+										<tr>
+											<td><label for="responseParameterDataNameInput">Response
+													Parameter Data Name</label>
+											</td>
+											<td><input id="responseParameterDataNameInput"
+												type="text" style="min-width: 250px;"></input>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td valign="top"><table>
+										<tr>
+											<td><label for="createWebServiceInput">Expose
+													Web Service</label>
+											</td>
+											<td><input id="createWebServiceInput" type="checkbox"></input>
+											</td>
+										</tr>
+										<tr>
+											<td><label for="createRestServiceInput">Expose
+													REST Service</label>
+											</td>
+											<td><input id="createRestServiceInput" type="checkbox"></input>
+											</td>
+										</tr>
+									</table></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div id="controlsBar" class="iPopupDialogControlsArea">
+		<input id="createButton" type="button" value="Create"
+			class="iPopupDialogControlButton" /> <input id="cancelButton"
+			type="button" value="Cancel" class="iPopupDialogControlButton" />
+	</div>
+</body>
+</html>

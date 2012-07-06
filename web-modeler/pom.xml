@@ -1,0 +1,124 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <groupId>org.eclipse.stardust.ui.web</groupId>
+   <artifactId>stardust-web-modeler</artifactId>
+
+   <packaging>jar</packaging>
+
+   <parent>
+      <groupId>com.infinity.bpm.pepper</groupId>
+      <artifactId>pepper-common</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+      <relativePath>../pepper-common/pom.xml</relativePath>
+   </parent>
+
+   <dependencyManagement>
+      <dependencies>
+<!--
+         <dependency>
+            <groupId>com.infinity.bpm</groupId>
+            <artifactId>carnot-common</artifactId>
+            <version>${ipp.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+         </dependency>
+         <dependency>
+            <groupId>com.infinity.bpm.rtenv</groupId>
+            <artifactId>rtenv-common</artifactId>
+            <version>${ipp.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+         </dependency>
+ -->
+      </dependencies>
+   </dependencyManagement>
+
+   <dependencies>
+      <dependency>
+         <groupId>com.infinity.bpm</groupId>
+         <artifactId>carnot-engine</artifactId>
+         <version>${ipp.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>com.infinity.bpm</groupId>
+         <artifactId>ipp-engine-ws-metro</artifactId>
+         <version>${ipp.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>wsdl4j</groupId>
+         <artifactId>wsdl4j</artifactId>
+         <version>1.6.2</version>
+      </dependency>
+
+      <dependency>
+         <groupId>com.infinity.bpm</groupId>
+         <artifactId>ipp-bpm-model</artifactId>
+         <version>${ipp.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.stardust.modeling.model</groupId>
+         <artifactId>org.eclipse.stardust.model.xpdl.builder</artifactId>
+         <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>com.infinity.bpm</groupId>
+         <artifactId>ipp-portal-common</artifactId>
+         <version>${ipp.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>com.infinity.bpm</groupId>
+         <artifactId>ipp-views-common</artifactId>
+         <version>${ipp.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.apache.myfaces.core</groupId>
+         <artifactId>myfaces-api</artifactId>
+         <version>1.2.9</version>
+      </dependency>
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>servlet-api</artifactId>
+         <version>2.5</version>
+      </dependency>
+
+      <dependency>
+         <groupId>com.google.code.gson</groupId>
+         <artifactId>gson</artifactId>
+         <version>1.6</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.eclipse.emf</groupId>
+         <artifactId>emf-ecore</artifactId>
+         <version>${emf.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.emf</groupId>
+         <artifactId>emf-ecore-xmi</artifactId>
+         <version>${emf.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.emf</groupId>
+         <artifactId>emf-ecore-change</artifactId>
+         <version>${emf.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.xsd</groupId>
+         <artifactId>xsd</artifactId>
+         <version>${xsd.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <version>${junit.version}</version>
+         <scope>test</scope>
+      </dependency>
+
+   </dependencies>
+
+</project>
