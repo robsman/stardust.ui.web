@@ -3218,6 +3218,13 @@ public class ModelService {
 					connectionsJson.add(
 							extractString(modelElementJson, ID_PROPERTY),
 							connectionJson);
+					
+					//For end event symbol the anchorpoint orientation is set to "bottom", in the eclipse modeler.
+					//This causes wrong routing of the the connector.
+					//Hence overriding the property with "center" / or "undefined"
+					connectionJson.remove(TO_ANCHOR_POINT_ORIENTATION_PROPERTY);
+		            connectionJson.addProperty(
+		                        TO_ANCHOR_POINT_ORIENTATION_PROPERTY, UNDEFINED_ORIENTATION_KEY);
 				}
 			}
 		}
