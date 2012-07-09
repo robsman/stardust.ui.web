@@ -1196,7 +1196,10 @@ define(
 				 *
 				 */
 				Symbol.prototype.stretchStop = function() {
-					this.submitUpdate();
+					var newGeometry = {"x": this.x, "y" : this.y, "oid" : this.oid, "width" : this.width , "height" :this.height};
+
+					var command = m_command.createMoveNodeSymbolCommand(this.getPath(true), {oid: this.oid}, newGeometry, this);
+					m_commandsController.submitCommand(command);
 				};
 
 				/**
