@@ -222,7 +222,21 @@ define(
 				 */
 				Symbol.prototype.complete = function() {
 					this.completeNoTransfer(this);
-					this.submitCreation();
+					var commandType = null;
+					if (this.type == m_constants.ACTIVITY_SYMBOL) {
+						commandType = "activitySymbol.create";
+					} else if (this.type == m_constants.GATEWAY_SYMBOL) {
+						commandType = "gateSymbol.create";
+					} else if (this.type == m_constants.EVENT_SYMBOL) {
+						commandType = "eventSymbol.create";
+					} else if (this.type == m_constants.DATA_SYMBOL) {
+						commandType = "dataSymbol.create";
+					}
+					var command = m_command.createNodeSymbolCommand(
+							commandType, this.getPath(true), {
+								oid : this.parentSymbol.oid
+							}, this.createTransferObject(), this);
+					m_commandsController.submitCommand(command);
 
 					if (this.requiresParentSymbol())
 					{

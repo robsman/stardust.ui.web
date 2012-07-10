@@ -392,8 +392,16 @@ define(
 				Diagram.prototype.processCommand = function(command) {
 					m_utils.debug("===> Diagram Process Command");
 					m_utils.debug(command.type);
+					// parse the response JSON from command pattern
+					var obj = jQuery.parseJSON(command);
+					
+					if (null != obj && null != obj.changes) {
 
-					if (command.type == m_constants.CREATE_COMMAND) {
+						for ( var i = 0; i < obj.changes.added.length; i++) {
+							this.lastSymbol.oid = obj.changes.added[i].oid;
+						}
+						this.lastSymbol = null;
+					} else if (command.type == m_constants.CREATE_COMMAND) {
 						// The following is for the case that the symbol has been created directly from the toolbar and already exists
 						// although not registered with the diagram and the process
 						

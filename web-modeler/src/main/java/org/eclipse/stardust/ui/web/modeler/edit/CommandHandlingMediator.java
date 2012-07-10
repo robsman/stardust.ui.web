@@ -15,6 +15,9 @@ import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.CreateActivityCommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.CreateEventCommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.CreateGatewayCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.MoveNodeSymbolHandler;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -40,7 +43,18 @@ public class CommandHandlingMediator
       {
          handler = new MoveNodeSymbolHandler();
       }
-
+      if ("activitySymbol.create".equals(commandId))
+      {
+         handler = new CreateActivityCommandHandler();
+      }
+      if ("eventSymbol.create".equals(commandId))
+      {
+         handler = new CreateEventCommandHandler();
+      }
+      if ("gateSymbol.create".equals(commandId))
+      {
+         handler = new CreateGatewayCommandHandler();
+      }
       Modification change = null;
       EObject changeRoot;
       if (null != handler)
@@ -142,6 +156,11 @@ public class CommandHandlingMediator
          EObject rootCandidate = null;
          for (List<EObject> path : paths)
          {
+            // To check if depth exceeds the path size
+            if (depth > (path.size() - 1))
+            {
+               continue;
+            }
             if (null == rootCandidate)
             {
                // no candidate yet, so assume one

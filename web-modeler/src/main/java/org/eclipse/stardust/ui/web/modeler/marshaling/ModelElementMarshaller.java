@@ -1,5 +1,6 @@
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
@@ -66,7 +67,7 @@ public class ModelElementMarshaller
                   + ModelService.POOL_SWIMLANE_TOP_BOX_HEIGHT);
 
       JsonObject eventJson = new JsonObject();
-      eventSymbolJson.add(ModelService.MODEL_ELEMENT_PROPERTY, eventJson);
+      eventSymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, eventJson);
 
       eventJson.addProperty(ModelService.TYPE_PROPERTY, ModelService.EVENT_KEY);
       eventJson.addProperty(ModelService.EVENT_TYPE_PROPERTY, ModelService.START_EVENT);
