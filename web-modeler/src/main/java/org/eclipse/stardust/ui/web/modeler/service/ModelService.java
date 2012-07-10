@@ -27,6 +27,7 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractIn
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLong;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -771,7 +772,10 @@ public class ModelService {
 	 * 
 	 */
 	public void saveAllModels() {
-	   Set<String> changedModels = UnsavedModelsTracker.getInstance().getUnsavedModels();
+	   //TODO
+	   //Temporarily commenting selective save as not all changes have moved to change protocol yet.
+	   // After that this can be uncommented
+/*	   Set<String> changedModels = UnsavedModelsTracker.getInstance().getUnsavedModels();
 	   for (String modelId : changedModels) {
 	        ModelType model = getModelManagementStrategy().getModels().get(modelId);
 	        if (null != model) {
@@ -780,7 +784,15 @@ public class ModelService {
 	   }
 	   
 	   //Clear the unsaved models' list.
-	   UnsavedModelsTracker.getInstance().notifyAllModelsSaved();
+	   UnsavedModelsTracker.getInstance().notifyAllModelsSaved();*/
+	   
+	 //TODO
+	   //Temporarily saving all models as not all changes have moved to change protocol yet.
+	   //After that happens this code can be deleted.
+	   Collection<ModelType> models = getModelManagementStrategy().getModels().values();
+	   for (ModelType model : models) {
+	      getModelManagementStrategy().saveModel(model);
+	   }
 	}
 
 	/**
