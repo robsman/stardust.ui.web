@@ -54,6 +54,11 @@ define( function() {
 		{
 			m_constants = require("m_constants");
 			return this.getContextName() + m_constants.DMS_RESTLET_PATH + m_constants.DOCUMENT_DOWNLOAD_TOKEN_URL;
+		},
+		
+		getModelerEndpointUrl : function()
+		{
+			return this.getContextName() + "/services/rest/modeler/" + new Date().getTime();
 		}
 	};
 });

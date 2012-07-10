@@ -1182,14 +1182,29 @@ define(
 						createModel();
 					} else if ("importModel" == data.id) {
 						alert("Funtionality not implemented yet");
-					} else if ("saveModel" == data.id) {
-						alert("Funtionality not implemented yet");
 					} else if ("saveAllModels" == data.id) {
-						alert("Funtionality not implemented yet");
+						saveAllModels();
 					} else if ("refreshModels" == data.id) {
 						refresh();
 					}
 				};
+
+				function saveAllModels() {
+					m_communicationController
+							.syncGetData(
+									{
+										url : require("m_urlUtils").getModelerEndpointUrl() + "/models/save"
+									},
+									new function() {
+										return {
+											success : function(data) {
+												alert("All models saved successfully to /process-models/");
+											},
+											failure : function(data) {
+											}
+										}
+									});
+				}
 
 				/**
 				 * 

@@ -756,11 +756,26 @@ public class ModelerResource {
 
 			return response.build();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+		    // TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}
+
+    @GET
+    @Path("models/save")
+    public Response saveAllModels() {
+        try {
+            getModelService().saveAllModels();
+
+            ResponseBuilder response = Response.ok("Saved");
+
+            return response.build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
 
 	@GET
 	@Path("models/{modelId}/processes/{processId}/undo")

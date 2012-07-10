@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import javax.annotation.Resource;
@@ -105,6 +106,7 @@ import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.model.xpdl.xpdl2.XpdlFactory;
 import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
+import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
 import org.eclipse.stardust.ui.web.modeler.edit.EditingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
@@ -763,6 +765,22 @@ public class ModelService {
 		ModelType model = getModelManagementStrategy().getModels().get(modelId);
 
 		getModelManagementStrategy().saveModel(model);
+	}
+	
+	/**
+	 * 
+	 */
+	public void saveAllModels() {
+	   Set<String> changedModels = UnsavedModelsTracker.getInstance().getUnsavedModels();
+	   for (String modelId : changedModels) {
+	        ModelType model = getModelManagementStrategy().getModels().get(modelId);
+	        if (null != model) {
+	            getModelManagementStrategy().saveModel(model);
+	        }
+	   }
+	   
+	   //Clear the unsaved models' list.
+	   UnsavedModelsTracker.getInstance().notifyAllModelsSaved();
 	}
 
 	/**

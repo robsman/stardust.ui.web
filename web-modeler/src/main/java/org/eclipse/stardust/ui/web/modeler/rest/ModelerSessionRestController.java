@@ -26,6 +26,7 @@ import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
 import org.eclipse.stardust.ui.web.modeler.edit.CommandHandlingMediator;
 import org.eclipse.stardust.ui.web.modeler.edit.EditingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
@@ -184,6 +185,8 @@ public class ModelerSessionRestController
       Modification change = commandHandlerRegistry().handleCommand(processDefinition, commandId, changeDescriptors);
       if (null != change)
       {
+         //Notify unsaved models tracker of the change to the model. 
+         UnsavedModelsTracker.getInstance().notifyModelModfied(modelId);
          return Response.created(toChangeUri(change)) //
                .entity(jsonIo().writeJsonObject(toJson(change)))
                .build();
