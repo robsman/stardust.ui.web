@@ -27,7 +27,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.ICommandHandler;
 
 import com.google.gson.JsonObject;
 
-public class CreateEventCommandHandler implements ICommandHandler
+public class EventCommandHandler implements ICommandHandler
 {
 
    @Override
@@ -38,6 +38,14 @@ public class CreateEventCommandHandler implements ICommandHandler
 
    @Override
    public void handleCommand(String commandId, IModelElement targetElement, JsonObject request)
+   {
+      if ("eventSymbol.create".equals(commandId))
+      {
+         createEvent(targetElement, request);
+      }
+   }
+
+   private void createEvent(IModelElement targetElement, JsonObject request)
    {
       LaneSymbol parentLaneSymbol = (LaneSymbol) targetElement;
       ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);

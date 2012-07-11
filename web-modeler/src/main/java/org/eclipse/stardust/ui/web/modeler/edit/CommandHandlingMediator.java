@@ -15,9 +15,9 @@ import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.CreateActivityCommandHandler;
-import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.CreateEventCommandHandler;
-import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.CreateGatewayCommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.ActivityCommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.EventCommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.GatewayCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.MoveNodeSymbolHandler;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -45,15 +45,15 @@ public class CommandHandlingMediator
       }
       if ("activitySymbol.create".equals(commandId))
       {
-         handler = new CreateActivityCommandHandler();
+         handler = new ActivityCommandHandler();
       }
       if ("eventSymbol.create".equals(commandId))
       {
-         handler = new CreateEventCommandHandler();
+         handler = new EventCommandHandler();
       }
       if ("gateSymbol.create".equals(commandId))
       {
-         handler = new CreateGatewayCommandHandler();
+         handler = new GatewayCommandHandler();
       }
       Modification change = null;
       EObject changeRoot;

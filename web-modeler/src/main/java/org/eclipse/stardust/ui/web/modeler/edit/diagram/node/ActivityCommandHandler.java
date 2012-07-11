@@ -16,6 +16,7 @@ import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
+import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
@@ -26,13 +27,13 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 import com.google.gson.JsonObject;
 
-public class CreateActivityCommandHandler implements ICommandHandler
+public class ActivityCommandHandler implements ICommandHandler
 {
 
    @Override
    public boolean isValidTarget(Class< ? > type)
    {
-      return LaneSymbol.class.isAssignableFrom(type);
+      return IIdentifiableElement.class.isAssignableFrom(type);
    }
 
    @Override
@@ -41,12 +42,21 @@ public class CreateActivityCommandHandler implements ICommandHandler
       LaneSymbol parentLaneSymbol = (LaneSymbol) targetElement;
       ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
+      if ("activitySymbol.create".equals(commandId))
+      {
+         createActivity(parentLaneSymbol, model, processDefinition, request);
+      }
+   }
+
+   private void createActivity(LaneSymbol parentLaneSymbol, ModelType model, ProcessDefinitionType processDefinition,
+         JsonObject request)
+   {
+
       String activityType = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
             ModelerConstants.ACTIVITY_TYPE);
-      String activityId = extractString(request,
-            ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
-      String activityName = extractString(request,
-            ModelerConstants.MODEL_ELEMENT_PROPERTY,
+      String activityId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
+
+      String activityName = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
             ModelerConstants.NAME_PROPERTY);
       String participantFullID = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
             ModelerConstants.PARTICIPANT_FULL_ID);

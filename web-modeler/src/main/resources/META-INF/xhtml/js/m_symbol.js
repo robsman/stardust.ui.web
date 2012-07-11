@@ -222,18 +222,8 @@ define(
 				 */
 				Symbol.prototype.complete = function() {
 					this.completeNoTransfer(this);
-					var commandType = null;
-					if (this.type == m_constants.ACTIVITY_SYMBOL) {
-						commandType = "activitySymbol.create";
-					} else if (this.type == m_constants.GATEWAY_SYMBOL) {
-						commandType = "gateSymbol.create";
-					} else if (this.type == m_constants.EVENT_SYMBOL) {
-						commandType = "eventSymbol.create";
-					} else if (this.type == m_constants.DATA_SYMBOL) {
-						commandType = "dataSymbol.create";
-					}
 					var command = m_command.createNodeSymbolCommand(
-							commandType, this.getPath(true), {
+							this.commandType("create"), this.getPath(true), {
 								oid : this.parentSymbol.oid
 							}, this.createTransferObject(), this);
 					m_commandsController.submitCommand(command);
@@ -246,6 +236,23 @@ define(
 				};
 
 				/**
+				 * generate command type based on i/p . i.e create,remove
+				 */
+				Symbol.prototype.commandType = function(str) {
+					var commandType = null;
+					if (this.type == m_constants.ACTIVITY_SYMBOL) {
+						commandType = "activitySymbol." + str;
+					} else if (this.type == m_constants.GATEWAY_SYMBOL) {
+						commandType = "gateSymbol." + str;
+					} else if (this.type == m_constants.EVENT_SYMBOL) {
+						commandType = "eventSymbol." + str;
+					} else if (this.type == m_constants.DATA_SYMBOL) {
+						commandType = "dataSymbol." + str;
+					}
+					return commandType;
+				}
+				/**
+				 * 
 				 * Registers symbol in specific lists in the diagram.
 				 */
 				Symbol.prototype.register = function() {

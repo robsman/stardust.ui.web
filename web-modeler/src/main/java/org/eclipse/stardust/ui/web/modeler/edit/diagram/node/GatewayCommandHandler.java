@@ -25,7 +25,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.ICommandHandler;
 
 import com.google.gson.JsonObject;
 
-public class CreateGatewayCommandHandler implements ICommandHandler
+public class GatewayCommandHandler implements ICommandHandler
 {
 
    @Override
@@ -40,6 +40,15 @@ public class CreateGatewayCommandHandler implements ICommandHandler
       LaneSymbol parentLaneSymbol = (LaneSymbol) targetElement;
       ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
+      if ("gateSymbol.create".equals(commandId))
+      {
+         createGateway(parentLaneSymbol, model, processDefinition, request);
+      }
+   }
+
+   private void createGateway(LaneSymbol parentLaneSymbol, ModelType model, ProcessDefinitionType processDefinition,
+         JsonObject request)
+   {
       synchronized (model)
       {
          long maxOid = XpdlModelUtils.getMaxUsedOid(model);
@@ -66,7 +75,6 @@ public class CreateGatewayCommandHandler implements ICommandHandler
          processDefinition.getDiagram().get(0).getActivitySymbol().add(gatewaySymbol);
          parentLaneSymbol.getActivitySymbol().add(gatewaySymbol);
       }
-
    }
 
 }
