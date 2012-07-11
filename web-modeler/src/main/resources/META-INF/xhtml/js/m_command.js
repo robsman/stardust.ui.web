@@ -50,6 +50,9 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 		createNodeSymbolCommand : function(commandType, baseUri, targetElement, newObject, context) {
 			return new ChangeDescriptor(commandType, [{oid: targetElement.oid, changes: newObject}], context);
 		},
+		createRemoveNodeSymbolCommand : function(commandType, baseUri, targetElement, newObject, context) {
+			return new ChangeDescriptor(commandType, [{oid: targetElement.oid, changes: newObject}], context);
+		},
 		// TODO Might be simple Request causing command to be broadcasted
 		createRequestJoinCommand : function(prospect) {
 			return new ChangeEvent(m_constants.REQUEST_JOIN_COMMAND, "/users", "requestJoin", null, prospect);

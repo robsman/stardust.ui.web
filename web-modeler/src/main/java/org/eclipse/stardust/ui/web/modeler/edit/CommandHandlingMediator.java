@@ -43,15 +43,15 @@ public class CommandHandlingMediator
       {
          handler = new MoveNodeSymbolHandler();
       }
-      if ("activitySymbol.create".equals(commandId))
+      if ("activitySymbol.create".equals(commandId) || "activitySymbol.delete".equals(commandId))
       {
          handler = new ActivityCommandHandler();
       }
-      if ("eventSymbol.create".equals(commandId))
+      if ("eventSymbol.create".equals(commandId) || "eventSymbol.delete".equals(commandId))
       {
          handler = new EventCommandHandler();
       }
-      if ("gateSymbol.create".equals(commandId))
+      if ("gateSymbol.create".equals(commandId) || "gateSymbol.delete".equals(commandId))
       {
          handler = new GatewayCommandHandler();
       }

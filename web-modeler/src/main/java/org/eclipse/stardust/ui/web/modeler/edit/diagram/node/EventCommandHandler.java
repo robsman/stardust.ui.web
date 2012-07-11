@@ -43,6 +43,10 @@ public class EventCommandHandler implements ICommandHandler
       {
          createEvent(targetElement, request);
       }
+      else if ("eventSymbol.delete".equals(commandId))
+      {
+         //TODO : add impl code
+      }
    }
 
    private void createEvent(IModelElement targetElement, JsonObject request)

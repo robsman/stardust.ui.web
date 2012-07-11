@@ -12,6 +12,7 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERT
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
+import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
@@ -44,6 +45,10 @@ public class GatewayCommandHandler implements ICommandHandler
       {
          createGateway(parentLaneSymbol, model, processDefinition, request);
       }
+      if ("gateSymbol.delete".equals(commandId))
+      {
+         deleteGateway(parentLaneSymbol, model, processDefinition, request);
+      }
    }
 
    private void createGateway(LaneSymbol parentLaneSymbol, ModelType model, ProcessDefinitionType processDefinition,
@@ -74,6 +79,29 @@ public class GatewayCommandHandler implements ICommandHandler
          gateway.getActivitySymbols().add(gatewaySymbol);
          processDefinition.getDiagram().get(0).getActivitySymbol().add(gatewaySymbol);
          parentLaneSymbol.getActivitySymbol().add(gatewaySymbol);
+      }
+   }
+   
+   /**
+    * 
+    * @param parentLaneSymbol
+    * @param model
+    * @param processDefinition
+    * @param request
+    */
+   private void deleteGateway(LaneSymbol parentLaneSymbol, ModelType model, ProcessDefinitionType processDefinition,
+         JsonObject request)
+   {
+      String gatewayId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
+      ActivityType gateway = MBFacade.findActivity(processDefinition, gatewayId);
+      ActivitySymbolType gatewaySymbol = gateway.getActivitySymbols().get(0);
+      synchronized (model)
+      {
+         processDefinition.getActivity().remove(gateway);
+         processDefinition.getDiagram().get(0).getActivitySymbol().remove(gatewaySymbol);
+
+         parentLaneSymbol.getActivitySymbol().remove(gatewaySymbol);
+
       }
    }
 

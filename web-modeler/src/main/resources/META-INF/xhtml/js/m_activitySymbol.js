@@ -524,7 +524,7 @@ define(
 			 * 
 			 */
 			function ActivitySymbol_removeClosure() {
-				this.auxiliaryProperties.callbackScope.submitDeletion();
+				this.auxiliaryProperties.callbackScope.remove();
 			}
 
 			/**

@@ -46,8 +46,19 @@ public class ActivityCommandHandler implements ICommandHandler
       {
          createActivity(parentLaneSymbol, model, processDefinition, request);
       }
+      else if ("activitySymbol.delete".equals(commandId))
+      {
+         deleteActivity(parentLaneSymbol, model, processDefinition, request);
+      }
    }
 
+   /**
+    * 
+    * @param parentLaneSymbol
+    * @param model
+    * @param processDefinition
+    * @param request
+    */
    private void createActivity(LaneSymbol parentLaneSymbol, ModelType model, ProcessDefinitionType processDefinition,
          JsonObject request)
    {
@@ -81,6 +92,32 @@ public class ActivityCommandHandler implements ICommandHandler
          ActivitySymbolType activitySymbol = MBFacade.createActivitySymbol(processDefinition, parentLaneSymbol.getId(),
                xProperty, yProperty, widthProperty, heightProperty, maxOid, activity);
       }
+   }
+   
+   /**
+    * 
+    * @param parentLaneSymbol
+    * @param model
+    * @param processDefinition
+    * @param request
+    */
+   private void deleteActivity(LaneSymbol parentLaneSymbol, ModelType model, ProcessDefinitionType processDefinition,
+         JsonObject request)
+   {
+      String activityId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
+      ActivityType activity = MBFacade.findActivity(processDefinition, activityId);
+      ActivitySymbolType activitySymbol = activity.getActivitySymbols().get(0);
+
+      synchronized (model)
+      {
+
+         processDefinition.getActivity().remove(activity);
+         processDefinition.getDiagram().get(0).getActivitySymbol().remove(activitySymbol);
+
+         parentLaneSymbol.getActivitySymbol().remove(activitySymbol);
+
+      }
+
    }
 
 }

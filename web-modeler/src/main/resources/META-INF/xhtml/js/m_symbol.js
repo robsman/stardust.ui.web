@@ -1178,6 +1178,10 @@ define(
 					m_utils.removeItemFromArray(
 							this.parentSymbol.containedSymbols, this);
 					m_utils.removeItemFromArray(this.diagram.symbols, this);
+					
+					var command = m_command.createRemoveNodeSymbolCommand(this.commandType("delete"), this.getPath(true),
+							{oid : this.parentSymbol.oid}, this.createTransferObject(), this);
+					m_commandsController.submitCommand(command);
 				};
 				
 
