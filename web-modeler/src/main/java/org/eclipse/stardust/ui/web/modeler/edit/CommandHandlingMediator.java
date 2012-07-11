@@ -46,28 +46,17 @@ public class CommandHandlingMediator
       {
          handler = new MoveNodeSymbolHandler();
       }
-      else if ("activitySymbol.create".equals(commandId))
-      if ("activitySymbol.create".equals(commandId) || "activitySymbol.delete".equals(commandId))
+      else if ("activitySymbol.create".equals(commandId) || "activitySymbol.delete".equals(commandId))
       {
          handler = new ActivityCommandHandler();
       }
-      else if ("eventSymbol.create".equals(commandId))
-      if ("eventSymbol.create".equals(commandId) || "eventSymbol.delete".equals(commandId))
+      else if ("eventSymbol.create".equals(commandId) || "eventSymbol.delete".equals(commandId))
       {
          handler = new EventCommandHandler();
       }
-      else if ("gateSymbol.create".equals(commandId))
-      if ("gateSymbol.create".equals(commandId) || "gateSymbol.delete".equals(commandId))
+      else if ("gateSymbol.create".equals(commandId) || "gateSymbol.delete".equals(commandId))
       {
          handler = new GatewayCommandHandler();
-      }
-      else if ("process.update".equals(commandId))
-      {
-         handler = new UpdateProcessCommandHandler();
-      }
-      else if ("activitySymbol.update".equals(commandId))
-      {
-         handler = new UpdateActivityCommandHandler();
       }
       
       Modification change = null;
