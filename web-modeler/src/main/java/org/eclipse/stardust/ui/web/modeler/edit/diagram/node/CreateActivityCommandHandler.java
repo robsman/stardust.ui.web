@@ -59,7 +59,7 @@ public class CreateActivityCommandHandler implements ICommandHandler
          String modelId = model.getId();
 
          ActivityType activity = MBFacade.createActivity(modelId, processDefinition, activityType, participantFullID,
-               modelId, model.getName(), applicationFullID, subProcessID, maxOid);
+               modelId, model.getName(), applicationFullID, subProcessID, maxOid++);
 
          ModelService.setDescription(activity, request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
 
