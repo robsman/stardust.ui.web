@@ -136,7 +136,6 @@ public class ModelService {
 	public static final String Y_PROPERTY = "y";
 	public static final String WIDTH_PROPERTY = "width";
 	public static final String HEIGHT_PROPERTY = "height";
-	public static final String ID_PROPERTY = "id";
 	private static final String DESCRIPTION_PROPERTY = "description";
 	private static final String MODEL_ID_PROPERTY = "modelId";
 	private static final String PARENT_SYMBOL_ID_PROPERTY = "parentSymbolId";
@@ -483,7 +482,7 @@ public class ModelService {
 				.getAsJsonObject(NEW_OBJECT_PROPERTY);
 
 		ModelType model = newBpmModel().withIdAndName(
-				newObjectJson.get(ID_PROPERTY).getAsString(),
+				newObjectJson.get(ModelerConstants.ID_PROPERTY).getAsString(),
 				newObjectJson.get(ModelerConstants.NAME_PROPERTY).getAsString()).build();
 		long maxOid = XpdlModelUtils.getMaxUsedOid(model);
 		AttributeUtil.setAttribute(model, PredefinedConstants.VERSION_ATT, "1");
@@ -498,7 +497,7 @@ public class ModelService {
 
 		getModelManagementStrategy().getModels().put(model.getId(), model);
 
-		newObjectJson.addProperty(ID_PROPERTY, model.getId());
+		newObjectJson.addProperty(ModelerConstants.ID_PROPERTY, model.getId());
 		newObjectJson.addProperty(ModelerConstants.NAME_PROPERTY, model.getName());
 
 		return postedData.toString();
@@ -635,7 +634,7 @@ public class ModelService {
 		JsonObject newObjectJson = commandJson
 				.getAsJsonObject(NEW_OBJECT_PROPERTY);
 		String newName = newObjectJson.get(ModelerConstants.NAME_PROPERTY).getAsString();
-		newObjectJson.addProperty(ID_PROPERTY, MBFacade.createIdFromName(newName));
+		newObjectJson.addProperty(ModelerConstants.ID_PROPERTY, MBFacade.createIdFromName(newName));
 
 		ModelType model = getModelManagementStrategy().getModels().get(modelId);
 
@@ -643,7 +642,7 @@ public class ModelService {
 
 		String oldName = model.getName();
 		model.setName(newName);
-		model.setId(newObjectJson.get(ID_PROPERTY).getAsString());
+		model.setId(newObjectJson.get(ModelerConstants.ID_PROPERTY).getAsString());
 		// TODO Use corresponding modeler function for auto ID generation
 
 		getModelManagementStrategy().getModels().put(model.getId(), model);
@@ -673,7 +672,7 @@ public class ModelService {
 				NEW_OBJECT_PROPERTY, ModelerConstants.NAME_PROPERTY));
 
 		commandJson.getAsJsonObject(NEW_OBJECT_PROPERTY).addProperty(
-				ID_PROPERTY, processDefinition.getId());
+				ModelerConstants.ID_PROPERTY, processDefinition.getId());
 
 		return commandJson.toString();
 	}
@@ -697,7 +696,7 @@ public class ModelService {
 				.getAsString()));
 		application.setName(newObject.get(ModelerConstants.NAME_PROPERTY).getAsString());
 
-		newObject.addProperty(ID_PROPERTY, application.getId());
+		newObject.addProperty(ModelerConstants.ID_PROPERTY, application.getId());
 
 		return commandJson.toString();
 	}
@@ -720,7 +719,7 @@ public class ModelService {
 				.getAsString()));
 		participant.setName(newObject.get(ModelerConstants.NAME_PROPERTY).getAsString());
 
-		newObject.addProperty(ID_PROPERTY, participant.getId());
+		newObject.addProperty(ModelerConstants.ID_PROPERTY, participant.getId());
 
 		return commandJson.toString();
 	}
@@ -745,7 +744,7 @@ public class ModelService {
 				.getAsString()));
 		structuredDataType.setName(newObject.get(ModelerConstants.NAME_PROPERTY).getAsString());
 
-		newObject.addProperty(ID_PROPERTY, structuredDataType.getId());
+		newObject.addProperty(ModelerConstants.ID_PROPERTY, structuredDataType.getId());
 
 		return commandJson.toString();
 	}
@@ -870,7 +869,7 @@ public class ModelService {
 		JsonObject processDefinitionJson = new JsonObject();
 
 		processDefinitionJson.addProperty(TYPE_PROPERTY, "process");
-		processDefinitionJson.addProperty(ID_PROPERTY, id);
+		processDefinitionJson.addProperty(ModelerConstants.ID_PROPERTY, id);
 		processDefinitionJson.addProperty(ModelerConstants.NAME_PROPERTY, name);
 		processDefinitionJson.addProperty(MODEL_ID_PROPERTY, modelId);
 		processDefinitionJson.addProperty(TYPE_PROPERTY, "process");
@@ -907,7 +906,7 @@ public class ModelService {
 		String participantFullID = extractString(activitySymbolJson, ModelerConstants.MODEL_ELEMENT_PROPERTY,
               ModelerConstants.PARTICIPANT_FULL_ID);
 		String modelID = extractString(activitySymbolJson,
-              ModelerConstants.MODEL_ELEMENT_PROPERTY, ID_PROPERTY);
+              ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
 		String modelName = extractString(activitySymbolJson,
               ModelerConstants.MODEL_ELEMENT_PROPERTY,
               ModelerConstants.NAME_PROPERTY);
@@ -978,7 +977,7 @@ public class ModelService {
 			// TODO Auto-generate ID
 			activity.setId(extractString(newNameJson, ModelerConstants.NAME_PROPERTY));
 			activity.setName(extractString(newNameJson, ModelerConstants.NAME_PROPERTY));
-			newNameJson.addProperty(ID_PROPERTY, activity.getId());
+			newNameJson.addProperty(ModelerConstants.ID_PROPERTY, activity.getId());
 
 			// TODO For testing
 
@@ -1185,7 +1184,7 @@ public class ModelService {
 			gateway = newManualActivity(processDefinition)
 					.withIdAndName(
 							extractString(gatewaySymbolJson,
-									ModelerConstants.MODEL_ELEMENT_PROPERTY, ID_PROPERTY),
+									ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY),
 							extractString(gatewaySymbolJson,
 									ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.NAME_PROPERTY))
 					.havingDefaultPerformer(ADMINISTRATOR_ROLE).build();
@@ -1559,7 +1558,7 @@ public class ModelService {
 		transition.setElementOid(++maxOid);
 		transition.setFrom(sourceActivitySymbol.getActivity());
 		transition.setTo(targetActivitySymbol.getActivity());
-		transition.setId(extractString(controlFlowJson, ID_PROPERTY));
+		transition.setId(extractString(controlFlowJson, ModelerConstants.ID_PROPERTY));
 
 		if (extractBoolean(controlFlowJson, OTHERWISE_PROPERTY)) {
 			transition.setCondition(OTHERWISE_KEY);
@@ -1960,7 +1959,7 @@ public class ModelService {
 
          laneSymbolJson.addProperty(OID_PROPERTY, laneSymbol.getElementOid());
 
-         laneSymbol.setId(extractString(laneSymbolJson, ID_PROPERTY));
+         laneSymbol.setId(extractString(laneSymbolJson, ModelerConstants.ID_PROPERTY));
          laneSymbol.setName(extractString(laneSymbolJson, ModelerConstants.NAME_PROPERTY));
          laneSymbol.setXPos(extractInt(laneSymbolJson, X_PROPERTY));
          laneSymbol.setYPos(extractInt(laneSymbolJson, Y_PROPERTY));
@@ -2190,7 +2189,7 @@ public class ModelService {
 			model.getApplication().add(webServiceApplication);
 
 			webServiceApplication.setId(extractString(
-					webServiceApplicationJson, ID_PROPERTY));
+					webServiceApplicationJson, ModelerConstants.ID_PROPERTY));
 			webServiceApplication.setName(extractString(
 					webServiceApplicationJson, ModelerConstants.NAME_PROPERTY));
 			webServiceApplication.setType(MBFacade.findApplicationTypeType(model,
@@ -2234,7 +2233,7 @@ public class ModelService {
 			model.getApplication().add(messageTransformationApplication);
 
 			messageTransformationApplication.setId(extractString(
-					messageTransformationApplicationJson, ID_PROPERTY));
+					messageTransformationApplicationJson, ModelerConstants.ID_PROPERTY));
 			messageTransformationApplication.setName(extractString(
 					messageTransformationApplicationJson, ModelerConstants.NAME_PROPERTY));
 			// messageTransformationApplication.setType(ModelBuilderFascade.findApplicationTypeType(model,
@@ -2388,7 +2387,7 @@ public class ModelService {
 			model.getApplication().add(camelApplication);
 
 			camelApplication.setId(extractString(camelApplicationJson,
-					ID_PROPERTY));
+					ModelerConstants.ID_PROPERTY));
 			camelApplication.setName(extractString(camelApplicationJson,
 					ModelerConstants.NAME_PROPERTY));
 			// messageTransformationApplication.setType(ModelBuilderFascade.findApplicationTypeType(model,
@@ -2404,7 +2403,7 @@ public class ModelService {
 			JsonObject accessPoint = new JsonObject();
 			accessPoints.add("InputMessage", accessPoint);
 
-			accessPoint.addProperty(ID_PROPERTY, "RequestMessage");
+			accessPoint.addProperty(ModelerConstants.ID_PROPERTY, "RequestMessage");
 			accessPoint.addProperty(ModelerConstants.NAME_PROPERTY, "Request Message");
 			accessPoint.addProperty(ACCESS_POINT_TYPE_PROPERTY,
 					JAVA_CLASS_ACCESS_POINT_KEY);
@@ -2413,7 +2412,7 @@ public class ModelService {
 			accessPoint = new JsonObject();
 			accessPoints.add("OutputMessage", accessPoint);
 
-			accessPoint.addProperty(ID_PROPERTY, "ResponseMessage");
+			accessPoint.addProperty(ModelerConstants.ID_PROPERTY, "ResponseMessage");
 			accessPoint.addProperty(ModelerConstants.NAME_PROPERTY, "Response Message");
 			accessPoint.addProperty(ACCESS_POINT_TYPE_PROPERTY,
 					JAVA_CLASS_ACCESS_POINT_KEY);
@@ -2492,7 +2491,7 @@ public class ModelService {
 			model.getApplication().add(externalWebApplication);
 
 			externalWebApplication.setId(extractString(
-					externalWebApplicationJson, ID_PROPERTY));
+					externalWebApplicationJson, ModelerConstants.ID_PROPERTY));
 			externalWebApplication.setName(extractString(
 					externalWebApplicationJson, ModelerConstants.NAME_PROPERTY));
 			// TODO
@@ -2536,7 +2535,7 @@ public class ModelService {
 			// editSession.beginEdit();
 
 			ApplicationType application = MBFacade.findApplication(model,
-					extractString(webServiceApplicationJson, ID_PROPERTY));
+					extractString(webServiceApplicationJson, ModelerConstants.ID_PROPERTY));
 
 			application.setName(extractString(webServiceApplicationJson,
 					ModelerConstants.NAME_PROPERTY));
@@ -2572,7 +2571,7 @@ public class ModelService {
 					.createTypeDeclarationType();
 
 			structuredDataType.setId(extractString(structuredDataTypeJson,
-					ID_PROPERTY));
+					ModelerConstants.ID_PROPERTY));
 			structuredDataType.setName(extractString(structuredDataTypeJson,
 					ModelerConstants.NAME_PROPERTY));
 
@@ -2765,7 +2764,7 @@ public class ModelService {
 			// editSession.beginEdit();
 
 			RoleType role = newRole(model).withIdAndName(
-					extractString(roleJson, ID_PROPERTY),
+					extractString(roleJson, ModelerConstants.ID_PROPERTY),
 					extractString(roleJson, ModelerConstants.NAME_PROPERTY)).build();
 		}
 
@@ -2802,7 +2801,7 @@ public class ModelService {
 
 			poolSymbolJson
 					.addProperty(OID_PROPERTY, poolSymbol.getElementOid());
-			poolSymbolJson.addProperty(ID_PROPERTY, poolSymbol.getId());
+			poolSymbolJson.addProperty(ModelerConstants.ID_PROPERTY, poolSymbol.getId());
 			poolSymbolJson.addProperty(ModelerConstants.NAME_PROPERTY, poolSymbol.getName());
 			poolSymbolJson.addProperty(X_PROPERTY, poolSymbol.getXPos());
 			poolSymbolJson.addProperty(Y_PROPERTY, poolSymbol.getYPos());
@@ -2827,7 +2826,7 @@ public class ModelService {
 
 				laneSymbolJson.addProperty(OID_PROPERTY,
 						laneSymbol.getElementOid());
-				laneSymbolJson.addProperty(ID_PROPERTY, laneSymbol.getId());
+				laneSymbolJson.addProperty(ModelerConstants.ID_PROPERTY, laneSymbol.getId());
 				laneSymbolJson.addProperty(ModelerConstants.NAME_PROPERTY, laneSymbol.getName());
 				laneSymbolJson.addProperty(X_PROPERTY, laneSymbol.getXPos());
 				laneSymbolJson.addProperty(Y_PROPERTY, laneSymbol.getYPos());
@@ -2872,7 +2871,7 @@ public class ModelService {
 
 					activitySymbolJson
 							.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, activityJson);
-					activityJson.addProperty(ID_PROPERTY, activity.getId());
+					activityJson.addProperty(ModelerConstants.ID_PROPERTY, activity.getId());
 					activityJson.addProperty(ModelerConstants.NAME_PROPERTY, activity.getName());
 					loadDescription(activityJson, activity);
 					loadAttributes(activity, activityJson);
@@ -2962,7 +2961,7 @@ public class ModelService {
 
 							accessPointsJson.add(accessPoint.getId(),
 									accessPointJson);
-							accessPointJson.addProperty(ID_PROPERTY,
+							accessPointJson.addProperty(ModelerConstants.ID_PROPERTY,
 									accessPoint.getId());
 							accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
 									accessPoint.getName());
@@ -3078,7 +3077,7 @@ public class ModelService {
 				connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, dataFlowJson);
 
 				dataFlowJson.addProperty(TYPE_PROPERTY, DATA_FLOW_LITERAL);
-				dataFlowJson.addProperty(ID_PROPERTY, ""
+				dataFlowJson.addProperty(ModelerConstants.ID_PROPERTY, ""
 						+ dataMappingConnection.getElementOid());
 
 				// if (dataMappingC.getDirection() ==
@@ -3099,7 +3098,7 @@ public class ModelService {
 				// dataMapping.getApplicationPath());
 				// dataFlow.put(APPLICATION_PATH_PROPERTY,
 				// dataMapping.getApplicationPath());
-				connectionsJson.add(extractString(dataFlowJson, ID_PROPERTY),
+				connectionsJson.add(extractString(dataFlowJson, ModelerConstants.ID_PROPERTY),
 						connectionJson);
 			}
 
@@ -3132,7 +3131,7 @@ public class ModelService {
 
 					modelElementJson.addProperty(TYPE_PROPERTY,
 							CONTROL_FLOW_LITERAL);
-					modelElementJson.addProperty(ID_PROPERTY,
+					modelElementJson.addProperty(ModelerConstants.ID_PROPERTY,
 							transition.getId());
 
 					if (transition.getCondition().equals("CONDITION")) {
@@ -3180,7 +3179,7 @@ public class ModelService {
 					}
 
 					connectionsJson.add(
-							extractString(modelElementJson, ID_PROPERTY),
+							extractString(modelElementJson, ModelerConstants.ID_PROPERTY),
 							connectionJson);
 				} else if (transitionConnection.getSourceNode() instanceof StartEventSymbol) {
 
@@ -3193,7 +3192,7 @@ public class ModelService {
 							CONTROL_FLOW_LITERAL);
 					modelElementJson
 							.addProperty(
-									ID_PROPERTY,
+									ModelerConstants.ID_PROPERTY,
 									transitionConnection.getSourceNode()
 											.getElementOid()
 											+ "-"
@@ -3212,7 +3211,7 @@ public class ModelService {
 					connectionJson.addProperty(TO_MODEL_ELEMENT_TYPE,
 							ACTIVITY_KEY);
 					connectionsJson.add(
-							extractString(modelElementJson, ID_PROPERTY),
+							extractString(modelElementJson, ModelerConstants.ID_PROPERTY),
 							connectionJson);
 				} else if (transitionConnection.getTargetNode() instanceof EndEventSymbol) {
 					connectionJson.addProperty(OID_PROPERTY,
@@ -3222,7 +3221,7 @@ public class ModelService {
 					modelElementJson.addProperty(TYPE_PROPERTY,
 							CONTROL_FLOW_LITERAL);
 					modelElementJson.addProperty(
-							ID_PROPERTY,
+							ModelerConstants.ID_PROPERTY,
 							((ActivitySymbolType) transitionConnection
 									.getSourceActivitySymbol()).getActivity()
 									.getId()
@@ -3240,7 +3239,7 @@ public class ModelService {
 					connectionJson
 							.addProperty(TO_MODEL_ELEMENT_TYPE, EVENT_KEY);
 					connectionsJson.add(
-							extractString(modelElementJson, ID_PROPERTY),
+							extractString(modelElementJson, ModelerConstants.ID_PROPERTY),
 							connectionJson);
 					
 					//For end event symbol the anchorpoint orientation is set to "bottom", in the eclipse modeler.
@@ -3317,7 +3316,7 @@ public class ModelService {
 	private JsonObject loadModelOutline(ModelType model) {
 		JsonObject modelJson = new JsonObject();
 
-		modelJson.addProperty(ID_PROPERTY, model.getId());
+		modelJson.addProperty(ModelerConstants.ID_PROPERTY, model.getId());
 		modelJson.addProperty(ModelerConstants.NAME_PROPERTY, model.getName());
 
 		if (model.getDescription() != null) {
@@ -3338,7 +3337,7 @@ public class ModelService {
 			JsonObject processJson = new JsonObject();
 			processesJson.add(processDefinition.getId(), processJson);
 
-			processJson.addProperty(ID_PROPERTY, processDefinition.getId());
+			processJson.addProperty(ModelerConstants.ID_PROPERTY, processDefinition.getId());
 			processJson.addProperty(ModelerConstants.NAME_PROPERTY, processDefinition.getName());
 			loadDescription(processJson, processDefinition);
 
@@ -3352,7 +3351,7 @@ public class ModelService {
 				JsonObject activityJson = new JsonObject();
 				activitiesJson.add(activity.getId(), activityJson);
 
-				activityJson.addProperty(ID_PROPERTY, activity.getId());
+				activityJson.addProperty(ModelerConstants.ID_PROPERTY, activity.getId());
 				activityJson.addProperty(ModelerConstants.NAME_PROPERTY, activity.getName());
 				loadDescription(activityJson, activity);
 			}
@@ -3377,7 +3376,7 @@ public class ModelService {
 			JsonObject participantJson = new JsonObject();
 			participantsJson.add(role.getId(), participantJson);
 
-			participantJson.addProperty(ID_PROPERTY, role.getId());
+			participantJson.addProperty(ModelerConstants.ID_PROPERTY, role.getId());
 			participantJson.addProperty(ModelerConstants.NAME_PROPERTY, role.getName());
 			loadDescription(participantJson, role);
 		}
@@ -3386,7 +3385,7 @@ public class ModelService {
 			JsonObject participantJson = new JsonObject();
 			participantsJson.add(organization.getId(), participantJson);
 
-			participantJson.addProperty(ID_PROPERTY, organization.getId());
+			participantJson.addProperty(ModelerConstants.ID_PROPERTY, organization.getId());
 			participantJson.addProperty(ModelerConstants.NAME_PROPERTY, organization.getName());
 			loadDescription(participantJson, organization);
 		}
@@ -3396,7 +3395,7 @@ public class ModelService {
 			JsonObject participantJson = new JsonObject();
 			participantsJson.add(conditionalPerformer.getId(), participantJson);
 
-			participantJson.addProperty(ID_PROPERTY,
+			participantJson.addProperty(ModelerConstants.ID_PROPERTY,
 					conditionalPerformer.getId());
 			participantJson.addProperty(ModelerConstants.NAME_PROPERTY,
 					conditionalPerformer.getName());
@@ -3411,7 +3410,7 @@ public class ModelService {
 			JsonObject applicationJson = new JsonObject();
 			applicationsJson.add(application.getId(), applicationJson);
 
-			applicationJson.addProperty(ID_PROPERTY, application.getId());
+			applicationJson.addProperty(ModelerConstants.ID_PROPERTY, application.getId());
 			applicationJson.addProperty(ModelerConstants.NAME_PROPERTY, application.getName());
 			loadDescription(applicationJson, application);
 
@@ -3461,7 +3460,7 @@ public class ModelService {
 				structuredDataTypesJson.add(typeDeclaration.getId(),
 						structuredDataTypeJson);
 
-				structuredDataTypeJson.addProperty(ID_PROPERTY,
+				structuredDataTypeJson.addProperty(ModelerConstants.ID_PROPERTY,
 						typeDeclaration.getId());
 				structuredDataTypeJson.addProperty(ModelerConstants.NAME_PROPERTY,
 						typeDeclaration.getName());
@@ -3579,7 +3578,7 @@ public class ModelService {
 	private JsonObject loadData(ModelType model, DataType data) {
 		JsonObject dataJson = new JsonObject();
 
-		dataJson.addProperty(ID_PROPERTY, data.getId());
+		dataJson.addProperty(ModelerConstants.ID_PROPERTY, data.getId());
 		dataJson.addProperty(ModelerConstants.NAME_PROPERTY, data.getName());
 		loadDescription(dataJson, data);
 		if(data.getType() != null)
@@ -3812,7 +3811,7 @@ public class ModelService {
 			long maxOid = XpdlModelUtils.getMaxUsedOid(model);
 
 			DataType data;
-            String id = MBFacade.stripFullId(extractString(dataJson, ID_PROPERTY));
+            String id = MBFacade.stripFullId(extractString(dataJson, ModelerConstants.ID_PROPERTY));
             String name = MBFacade.stripFullId(extractString(dataJson, ModelerConstants.NAME_PROPERTY));
             String typeKey = extractString(dataJson, TYPE_PROPERTY);
             String primitiveType = extractString(dataJson, ModelerConstants.PRIMITIVE_TYPE);
@@ -3825,7 +3824,7 @@ public class ModelService {
 			} else if (typeKey.equals(
 			      ModelerConstants.STRUCTURED_DATA_TYPE_KEY)) {
   
-            id = extractString(dataJson, ID_PROPERTY);
+            id = extractString(dataJson, ModelerConstants.ID_PROPERTY);
             name = extractString(dataJson, ModelerConstants.NAME_PROPERTY);
             MBFacade.createStructuredData(model, stripFullId_, id, name, structuredDataFullId);
 			}
@@ -3992,7 +3991,7 @@ public class ModelService {
 		JsonObject processDefinitionJson = (JsonObject) createProcessJson(
 				modelId, json);
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
-				extractString(json, NEW_OBJECT_PROPERTY, ID_PROPERTY));
+				extractString(json, NEW_OBJECT_PROPERTY, ModelerConstants.ID_PROPERTY));
 		LaneSymbol parentLaneSymbol = MBFacade.findLaneInProcess(processDefinition,
 				DEF_LANE_ID);
 

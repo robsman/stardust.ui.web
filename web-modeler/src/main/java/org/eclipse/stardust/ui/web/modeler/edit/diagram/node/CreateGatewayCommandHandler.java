@@ -8,7 +8,6 @@ import static org.eclipse.stardust.engine.api.model.PredefinedConstants.ADMINIST
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newManualActivity;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.ID_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
@@ -48,7 +47,8 @@ public class CreateGatewayCommandHandler implements ICommandHandler
 
          // TODO Should be Route
          gateway = newManualActivity(processDefinition)
-               .withIdAndName(extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ID_PROPERTY),
+               .withIdAndName(
+                     extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY),
                      extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.NAME_PROPERTY))
                .havingDefaultPerformer(ADMINISTRATOR_ROLE).build();
 

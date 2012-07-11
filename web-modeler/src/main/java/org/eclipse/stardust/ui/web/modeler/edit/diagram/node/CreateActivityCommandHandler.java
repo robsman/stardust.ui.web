@@ -43,6 +43,11 @@ public class CreateActivityCommandHandler implements ICommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
       String activityType = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
             ModelerConstants.ACTIVITY_TYPE);
+      String activityId = extractString(request,
+            ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
+      String activityName = extractString(request,
+            ModelerConstants.MODEL_ELEMENT_PROPERTY,
+            ModelerConstants.NAME_PROPERTY);
       String participantFullID = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
             ModelerConstants.PARTICIPANT_FULL_ID);
       String applicationFullID = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
@@ -59,7 +64,7 @@ public class CreateActivityCommandHandler implements ICommandHandler
          String modelId = model.getId();
 
          ActivityType activity = MBFacade.createActivity(modelId, processDefinition, activityType, participantFullID,
-               modelId, model.getName(), applicationFullID, subProcessID, maxOid++);
+               activityId, activityName, applicationFullID, subProcessID, maxOid++);
 
          ModelService.setDescription(activity, request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
 
