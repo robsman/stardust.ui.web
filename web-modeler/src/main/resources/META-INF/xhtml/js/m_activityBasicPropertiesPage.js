@@ -9,10 +9,10 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_command",
-				"m_commandsController", "m_propertiesPage", "m_activity" ],
-		function(m_utils, m_constants, m_command,
-				m_commandsController, m_propertiesPage, m_activity) {
+		[ "m_utils", "m_constants", "m_command", "m_commandsController",
+				"m_propertiesPage", "m_activity" ],
+		function(m_utils, m_constants, m_command, m_commandsController,
+				m_propertiesPage, m_activity) {
 			return {
 				createPropertiesPage : function(propertiesPanel) {
 					return new ActivityBasicPropertiesPage(propertiesPanel);
@@ -49,29 +49,106 @@ define(
 									"page" : this
 								},
 								function(event) {
-									m_commandsController
-											.submitCommand(m_command
-													.createRenameCommand(
-															event.data.page.propertiesPanel.element.getPath(true),
-															{
-																"id" : event.data.page.propertiesPanel.element.modelElement.id,
-																"name" : event.data.page.propertiesPanel.element.modelElement.name
-															},
-															{
-																"name" : event.data.page.nameInput
-																.val()
-															}));
-								});
+									var page = event.data.page;
 
+									if (!page.validate()) {
+										return;
+									}
+
+									if (page.propertiesPanel.element.modelElement.name != page.nameInput
+											.val()) {
+										page.propertiesPanel.element.modelElement.name = page.nameInput
+												.val();
+										page.submitChanges();
+									}
+								});
+				this.descriptionInput
+						.change(
+								{
+									"page" : this
+								},
+								function(event) {
+									var page = event.data.page;
+
+									if (!page.validate()) {
+										return;
+									}
+
+									if (page.propertiesPanel.element.modelElement.description != page.descriptionInput
+											.val()) {
+										page.propertiesPanel.element.modelElement.description = page.descriptionInput
+												.val();
+										page.submitChanges();
+									}
+								});
+				this.applicationList
+						.change(
+								{
+									"page" : this
+								},
+								function(event) {
+									var page = event.data.page;
+
+									if (!page.validate()) {
+										return;
+									}
+
+									if (page.applicationList.val() == m_constants.AUTO_GENERATED_UI) {
+										page.propertiesPanel.element.modelElement.activityType = m_constants.MANUAL_ACTIVITY_TYPE;
+										page.propertiesPanel.element.modelElement.applicationFullId = null;
+										page.propertiesPanel.element.modelElement.subprocessFullId = null;
+									} else {
+										page.propertiesPanel.element.modelElement.activityType = m_constants.APPLICATION_ACTIVITY_TYPE;
+
+										if (page.applicationList.val() == m_constants.TO_BE_DEFINED) {
+											page.propertiesPanel.element.modelElement.applicationFullId = null;
+
+											page.propertiesPanel
+													.showHelpPanel();
+										} else {
+											page.propertiesPanel.element.modelElement.applicationFullId = page.applicationList
+													.val();
+										}
+
+										page.propertiesPanel.element.modelElement.subprocessFullId = null;
+									}
+
+									page.submitChanges();
+								});
+				this.subprocessList
+						.change(
+								{
+									"page" : this
+								},
+								function(event) {
+									var page = event.data.page;
+
+									if (!page.validate()) {
+										return;
+									}
+
+									page.propertiesPanel.element.modelElement.activityType = m_constants.SUBPROCESS_ACTIVITY_TYPE;
+
+									if (page.subprocessList.val() == m_constants.TO_BE_DEFINED) {
+										page.propertiesPanel.element.modelElement.subprocessFullId = null;
+
+										page.propertiesPanel.showHelpPanel();
+									} else {
+										this.propertiesPanel.element.modelElement.subprocessFullId = this.subprocessList
+												.val();
+									}
+
+									page.propertiesPanel.element.modelElement.applicationFullId = null;
+
+									page.submitChanges();
+								});
 				this.applicationInput.click({
-					"callbackScope" : this
+					"page" : this
 				}, function(event) {
-					if (event.data.callbackScope.applicationInput
-							.is(":checked")) {
-						event.data.callbackScope.setApplicationType();
+					if (event.data.page.applicationInput.is(":checked")) {
+						event.data.page.setApplicationType();
 					}
 				});
-
 				this.subprocessInput.click({
 					"callbackScope" : this
 				},
@@ -136,6 +213,11 @@ define(
 					this.subprocessList.val(m_constants.TO_BE_DEFINED);
 					this.applicationInput.attr("checked", true);
 					this.applicationList.removeAttr("disabled");
+
+					this.propertiesPanel.element.modelElement.activityType = m_constants.APPLICATION_ACTIVITY_TYPE;
+					this.propertiesPanel.element.modelElement.applicationFullId = null;
+					this.propertiesPanel.showHelpPanel();
+					this.submitChanges();
 				};
 
 				/**
@@ -147,6 +229,11 @@ define(
 					this.applicationInput.attr("checked", false);
 					this.applicationList.attr("disabled", true);
 					this.applicationList.val(m_constants.TO_BE_DEFINED);
+
+					this.propertiesPanel.element.modelElement.activityType = m_constants.SUBPROCESS_ACTIVITY_TYPE;
+					this.propertiesPanel.element.modelElement.subprocessFullId = null;
+					this.propertiesPanel.showHelpPanel();
+					this.submitChanges();
 				};
 
 				/**
@@ -200,54 +287,25 @@ define(
 						this.propertiesPanel.errorMessages
 								.push("Activity name must not be empty.");
 						this.nameInput.addClass("error");
+
+						return false;
 					}
+
+					return true;
 				};
 
 				/**
 				 * 
 				 */
-				ActivityBasicPropertiesPage.prototype.apply = function() {
-					this.propertiesPanel.hideHelpPanel();
-
-					this.propertiesPanel.element.modelElement.name = this.nameInput
-							.val();
-					this.propertiesPanel.element.modelElement.description = this.descriptionInput
-							.val();
-					this.saveDocumentUrl();
-
-					if (this.applicationInput.is(":checked")) {
-						if (this.applicationList.val() == m_constants.AUTO_GENERATED_UI) {
-							this.propertiesPanel.element.modelElement.activityType = m_constants.MANUAL_ACTIVITY_TYPE;
-							this.propertiesPanel.element.modelElement.applicationFullId = null;
-							this.propertiesPanel.element.modelElement.subprocessFullId = null;
-						} else {
-							this.propertiesPanel.element.modelElement.activityType = m_constants.APPLICATION_ACTIVITY_TYPE;
-
-							if (this.applicationList.val() == m_constants.TO_BE_DEFINED) {
-								this.propertiesPanel.element.modelElement.applicationFullId = null;
-
-								this.propertiesPanel.showHelpPanel();
-							} else {
-								this.propertiesPanel.element.modelElement.applicationFullId = this.applicationList
-										.val();
-							}
-
-							this.propertiesPanel.element.modelElement.subprocessFullId = null;
-						}
-					} else if (this.subprocessInput.is(":checked")) {
-						this.propertiesPanel.element.modelElement.activityType = m_constants.SUBPROCESS_ACTIVITY_TYPE;
-
-						if (this.subprocessList.val() == m_constants.TO_BE_DEFINED) {
-							this.propertiesPanel.element.modelElement.subprocessFullId = null;
-
-							this.propertiesPanel.showHelpPanel();
-						} else {
-							this.propertiesPanel.element.modelElement.subprocessFullId = this.subprocessList
-									.val();
-						}
-
-						this.propertiesPanel.element.modelElement.applicationFullId = null;
-					}
+				ActivityBasicPropertiesPage.prototype.submitChanges = function() {
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementCommand(
+									this.propertiesPanel.element
+											.getPath(false),
+									this.propertiesPanel.element,
+									this.propertiesPanel.element
+											.createTransferObject(),
+									this.propertiesPanel.element));
 				};
 			}
 		});
