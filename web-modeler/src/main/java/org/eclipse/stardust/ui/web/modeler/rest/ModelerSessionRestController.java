@@ -132,6 +132,7 @@ public class ModelerSessionRestController
 
    private Response applyChange(String modelId, String processId, JsonObject commandJson)
    {
+	   System.out.println("applyChange: " + commandJson);
       String commandId = extractString(commandJson, "commandId");
 
       ModelType model = modelService().findModel(modelId);
