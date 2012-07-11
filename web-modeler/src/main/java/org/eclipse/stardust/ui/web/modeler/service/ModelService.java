@@ -2458,22 +2458,18 @@ public class ModelService {
 		ModelType model = getModelManagementStrategy().getModels().get(modelId);
 		JsonObject structuredDataTypeJson = commandJson
 				.getAsJsonObject(NEW_OBJECT_PROPERTY);
+		
+		String typeId = extractString(structuredDataTypeJson,
+              ModelerConstants.ID_PROPERTY);
+		String typeName = extractString(structuredDataTypeJson,
+              ModelerConstants.NAME_PROPERTY);
 
 		synchronized (model) {
 			// EditingSession editSession = model.getEditSession();
 			//
 			// editSession.beginEdit();
 
-			TypeDeclarationType structuredDataType = XpdlFactory.eINSTANCE
-					.createTypeDeclarationType();
-
-			structuredDataType.setId(extractString(structuredDataTypeJson,
-					ModelerConstants.ID_PROPERTY));
-			structuredDataType.setName(extractString(structuredDataTypeJson,
-					ModelerConstants.NAME_PROPERTY));
-
-			model.getTypeDeclarations().getTypeDeclaration()
-					.add(structuredDataType);
+			MBFacade.createTypeDeclaration(model, typeId, typeName);
 
 			structuredDataTypeJson
 					.addProperty(MODEL_ID_PROPERTY, model.getId());
@@ -2490,6 +2486,8 @@ public class ModelService {
 			return commandJson;
 		}
 	}
+
+
 
 	/**
 	 *
