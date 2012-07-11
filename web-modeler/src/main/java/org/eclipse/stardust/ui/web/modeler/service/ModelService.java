@@ -194,9 +194,6 @@ public class ModelService {
 	private static final String OTHERWISE_KEY = "OTHERWISE";
 	private static final String POOL_SYMBOLS = "poolSymbols";
 	private static final String LANE_SYMBOLS = "laneSymbols";
-	private static final String ORIENTATION_PROPERTY = "orientation";
-	private static final String DIAGRAM_FLOW_ORIENTATION_HORIZONTAL = "DIAGRAM_FLOW_ORIENTATION_HORIZONTAL";
-	private static final String DIAGRAM_FLOW_ORIENTATION_VERTICAL = "DIAGRAM_FLOW_ORIENTATION_VERTICAL";
 	private static final String FROM_MODEL_ELEMENT_OID = "fromModelElementOid";
 	private static final String FROM_MODEL_ELEMENT_TYPE = "fromModelElementType";
 	private static final String TO_MODEL_ELEMENT_OID = "toModelElementOid";
@@ -216,8 +213,6 @@ public class ModelService {
 	 * TODO - may need to be handled on the client side down the line. */
 	public static final int START_END_SYMBOL_LEFT_OFFSET = 12;
 	private static final String MODEL_DOCUMENTATION_TEMPLATES_FOLDER = "/documents/templates/modeling/";
-	private static final String DEF_LANE_ID = "DefaultLane";
-	private static final String DEF_LANE_NAME = "Default Lane";
 
 	private ServiceFactory serviceFactory;
 	private DocumentManagementService documentManagementService;	
@@ -820,49 +815,7 @@ public class ModelService {
 		String name = extractString(postedData, NEW_OBJECT_PROPERTY,
 				ModelerConstants.NAME_PROPERTY);
 		String id = MBFacade.createIdFromName(name);
-		ProcessDefinitionType processDefinition = newProcessDefinition(model)
-				.withIdAndName(id, name).build();
-
-		// Create diagram bits too
-
-		DiagramType diagram = AbstractElementBuilder.F_CWM.createDiagramType();
-		diagram.setMode(DiagramModeType.MODE_400_LITERAL);
-		diagram.setOrientation(OrientationType.VERTICAL_LITERAL);
-		long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-		diagram.setElementOid(++maxOid);
-		diagram.setName("Diagram 1");
-
-		PoolSymbol poolSymbol = AbstractElementBuilder.F_CWM.createPoolSymbol();
-
-		diagram.getPoolSymbols().add(poolSymbol);
-
-		poolSymbol.setElementOid(++maxOid);
-		poolSymbol.setXPos(0);
-		poolSymbol.setYPos(0);
-		poolSymbol.setWidth(500);
-		poolSymbol.setHeight(600);
-		poolSymbol.setName("DEFAULT_POOL");
-		poolSymbol.setId("DEFAULT_POOL");
-		poolSymbol.setOrientation(OrientationType.VERTICAL_LITERAL);
-
-		LaneSymbol laneSymbol = AbstractElementBuilder.F_CWM.createLaneSymbol();
-
-		poolSymbol.getChildLanes().add(laneSymbol);
-		laneSymbol.setParentPool(poolSymbol);
-
-		laneSymbol.setElementOid(++maxOid);
-		laneSymbol.setId(DEF_LANE_ID);
-		laneSymbol.setName(DEF_LANE_NAME);
-		laneSymbol.setXPos(10);
-		laneSymbol.setYPos(10);
-		laneSymbol.setWidth(480);
-		laneSymbol.setHeight(580);
-		laneSymbol.setOrientation(OrientationType.VERTICAL_LITERAL);
-
-		processDefinition.getDiagram().add(diagram);
-
-		newManualTrigger(processDefinition).accessibleTo(ADMINISTRATOR_ROLE)
-				.build();
+		ProcessDefinitionType processDefinition = MBFacade.createProcess(model, name, id);
 
 		editingSessionManager.createEditingSession(processDefinition);
 
@@ -1945,78 +1898,22 @@ public class ModelService {
       ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model, processId);
       EditingSession editSession = getEditingSession(model, processDefinition);
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
+      
+      String laneId = extractString(laneSymbolJson, ModelerConstants.ID_PROPERTY);
+      String laneName = extractString(laneSymbolJson, ModelerConstants.NAME_PROPERTY);
+      int xPos = extractInt(laneSymbolJson, X_PROPERTY);
+      int yPos = extractInt(laneSymbolJson, Y_PROPERTY); 
+      int width = extractInt(laneSymbolJson, WIDTH_PROPERTY);
+      int height = extractInt(laneSymbolJson, HEIGHT_PROPERTY);
+      String orientation = extractString(laneSymbolJson, ModelerConstants.ORIENTATION_PROPERTY);
+      String participantFullID = extractString(laneSymbolJson, ModelerConstants.PARTICIPANT_FULL_ID);
 
       synchronized (model)
       {
          editSession.beginEdit();
-
-         LaneSymbol laneSymbol = AbstractElementBuilder.F_CWM.createLaneSymbol();
-
-         processDefinition.getDiagram().get(0).getPoolSymbols().get(0).getChildLanes()
-               .add(laneSymbol);
-
-         laneSymbol.setElementOid(++maxOid);
-
+         LaneSymbol laneSymbol = MBFacade.createLane(modelId, model, processDefinition, laneId, laneName, xPos, yPos, width, height, orientation, participantFullID);
          laneSymbolJson.addProperty(OID_PROPERTY, laneSymbol.getElementOid());
-
-         laneSymbol.setId(extractString(laneSymbolJson, ModelerConstants.ID_PROPERTY));
-         laneSymbol.setName(extractString(laneSymbolJson, ModelerConstants.NAME_PROPERTY));
-         laneSymbol.setXPos(extractInt(laneSymbolJson, X_PROPERTY));
-         laneSymbol.setYPos(extractInt(laneSymbolJson, Y_PROPERTY));
-         laneSymbol.setWidth(extractInt(laneSymbolJson, WIDTH_PROPERTY));
-         laneSymbol.setHeight(extractInt(laneSymbolJson, HEIGHT_PROPERTY));
-
-         if (extractString(laneSymbolJson, ORIENTATION_PROPERTY) == DIAGRAM_FLOW_ORIENTATION_HORIZONTAL)
-         {
-            laneSymbol.setOrientation(OrientationType.HORIZONTAL_LITERAL);
-         }
-         else
-         {
-            laneSymbol.setOrientation(OrientationType.VERTICAL_LITERAL);
-         }
-
-         // TODO Deal with full Ids
-
-         if (extractString(laneSymbolJson, ModelerConstants.PARTICIPANT_FULL_ID) != null)
-         {
-
-            String participantModelID = MBFacade.getModelId(extractString(laneSymbolJson,
-                  ModelerConstants.PARTICIPANT_FULL_ID));
-            if (StringUtils.isEmpty(participantModelID))
-            {
-               participantModelID = modelId;
-            }
-            ModelType participantModel = model;
-            if(!participantModelID.equals(modelId))
-            {
-               participantModel = getModelManagementStrategy().getModels().get(participantModelID);
-            }
-            
-            IModelParticipant modelParticipant = MBFacade.findParticipant(
-                  getModelManagementStrategy().getModels().get(participantModelID),
-                  MBFacade.stripFullId(extractString(laneSymbolJson, ModelerConstants.PARTICIPANT_FULL_ID)));
-            
-            
-            if(!participantModelID.equals(modelId))
-            {
-               String fileConnectionId = JcrConnectionManager.createFileConnection(model, participantModel);                        
-               
-               String bundleId = CarnotConstants.DIAGRAM_PLUGIN_ID;         
-               URI uri = URI.createURI("cnx://" + fileConnectionId + "/");
-               
-               ReplaceModelElementDescriptor descriptor = new ReplaceModelElementDescriptor(uri, 
-                     modelParticipant, bundleId, null, true);
-               
-               PepperIconFactory iconFactory = new PepperIconFactory();
-               
-               descriptor.importElements(iconFactory, model, true);
-            }
-
-            laneSymbol.setParticipant(modelParticipant);
-         }
-
          editSession.endEdit();
-
          return commandJson.toString();
       }
    }
@@ -2810,11 +2707,11 @@ public class ModelService {
 
 			if (poolSymbol.getOrientation().equals(
 					OrientationType.HORIZONTAL_LITERAL)) {
-				poolSymbolJson.addProperty(ORIENTATION_PROPERTY,
-						DIAGRAM_FLOW_ORIENTATION_HORIZONTAL);
+				poolSymbolJson.addProperty(ModelerConstants.ORIENTATION_PROPERTY,
+						ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL);
 			} else {
-				poolSymbolJson.addProperty(ORIENTATION_PROPERTY,
-						DIAGRAM_FLOW_ORIENTATION_VERTICAL);
+				poolSymbolJson.addProperty(ModelerConstants.ORIENTATION_PROPERTY,
+						ModelerConstants.DIAGRAM_FLOW_ORIENTATION_VERTICAL);
 			}
 
 			JsonArray laneSymbols = new JsonArray();
@@ -3993,7 +3890,7 @@ public class ModelService {
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
 				extractString(json, NEW_OBJECT_PROPERTY, ModelerConstants.ID_PROPERTY));
 		LaneSymbol parentLaneSymbol = MBFacade.findLaneInProcess(processDefinition,
-				DEF_LANE_ID);
+				ModelerConstants.DEF_LANE_ID);
 
 		// Create Start Event
 
