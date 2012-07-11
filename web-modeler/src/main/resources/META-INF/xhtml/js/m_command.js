@@ -50,6 +50,9 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 		createNodeSymbolCommand : function(commandType, baseUri, targetElement, newObject, context) {
 			return new ChangeDescriptor(commandType, [{oid: targetElement.oid, changes: newObject}], context);
 		},
+		createUpdateModelElementCommand : function(baseUri, modelElement, changes, context) {
+			return new ChangeDescriptor(modelElement.type + ".update", [{oid: modelElement.oid, changes: changes}], context);
+		},
 		createRemoveNodeSymbolCommand : function(commandType, baseUri, targetElement, newObject, context) {
 			return new ChangeDescriptor(commandType, [{oid: targetElement.oid, changes: newObject}], context);
 		},
