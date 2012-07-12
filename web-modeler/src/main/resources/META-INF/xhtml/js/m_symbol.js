@@ -1181,11 +1181,17 @@ define(
 							this.parentSymbol.containedSymbols, this);
 					m_utils.removeItemFromArray(this.diagram.symbols, this);
 					
+					this.createAndSubmitDeleteCommand();
+				};
+
+				/**
+				 *
+				 */
+				Symbol.prototype.createAndSubmitDeleteCommand = function() {
 					var command = m_command.createRemoveNodeSymbolCommand(this.getCommandIdForNode("delete"), this.getPath(true),
 							{oid : this.parentSymbol.oid}, this.createTransferObject(), this);
 					m_commandsController.submitCommand(command);
-				};
-				
+				}
 
 				/**
 				 *

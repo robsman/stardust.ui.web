@@ -57,7 +57,7 @@ public class CommandHandlingMediator
       {
          handler = new GatewayCommandHandler();
       }
-      else if ("swimlaneSymbol.create".equals(commandId) || "swimlane.delete".equals(commandId))
+      else if ("swimlaneSymbol.create".equals(commandId) || "swimlaneSymbol.delete".equals(commandId))
       {
          handler = new SwimlaneCommandHandler();
       }

@@ -649,6 +649,8 @@ define(
 					this.removePrimitives();
 					this.removeFlyOutMenu();
 					this.removeProximitySensor();
+					
+					this.createAndSubmitDeleteCommand();
 				}
 
 				/**

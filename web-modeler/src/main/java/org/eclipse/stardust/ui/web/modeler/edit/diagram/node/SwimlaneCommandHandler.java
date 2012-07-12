@@ -20,6 +20,8 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERT
 
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
@@ -45,25 +47,25 @@ public class SwimlaneCommandHandler implements ICommandHandler {
 	@Override
 	public void handleCommand(String commandId, IModelElement targetElement,
 			JsonObject request) {
-		PoolSymbol parentLaneSymbol = (PoolSymbol) targetElement;
-		ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
+		PoolSymbol parentSymbol = (PoolSymbol) targetElement;
+		ModelType model = ModelUtils.findContainingModel(parentSymbol);
 		ProcessDefinitionType processDefinition = ModelUtils
-				.findContainingProcess(parentLaneSymbol);
+				.findContainingProcess(parentSymbol);
 		if ("swimlaneSymbol.create".equals(commandId)) {
-			createSwimlane(parentLaneSymbol, model, processDefinition, request);
+			createSwimlane(parentSymbol, model, processDefinition, request);
 		} else if ("swimlaneSymbol.delete".equals(commandId)) {
-			deleteSwimlane(parentLaneSymbol, model, processDefinition, request);
+			deleteSwimlane(parentSymbol, model, processDefinition, request);
 		}
 	}
 
 	/**
 	 * 
-	 * @param parentLaneSymbol
+	 * @param parentSymbol
 	 * @param model
 	 * @param processDefinition
 	 * @param request
 	 */
-	private void createSwimlane(PoolSymbol parentLaneSymbol, ModelType model,
+	private void createSwimlane(PoolSymbol parentSymbol, ModelType model,
 			ProcessDefinitionType processDefinition, JsonObject request) {
 		String laneId = extractString(request, ModelerConstants.ID_PROPERTY);
 		String laneName = extractString(request, ModelerConstants.NAME_PROPERTY);
@@ -80,39 +82,26 @@ public class SwimlaneCommandHandler implements ICommandHandler {
 			LaneSymbol laneSymbol = MBFacade.createLane(model.getId(), model,
 					processDefinition, laneId, laneName, xPos, yPos, width,
 					height, orientation, participantFullID);
-			parentLaneSymbol.getLanes().add(laneSymbol);
+			parentSymbol.getLanes().add(laneSymbol);
 
 		}
 	}
 
 	/**
 	 * 
-	 * @param parentLaneSymbol
+	 * @param parentSymbol
 	 * @param model
 	 * @param processDefinition
 	 * @param request
 	 */
-	private void deleteSwimlane(PoolSymbol parentLaneSymbol, ModelType model,
+	private void deleteSwimlane(PoolSymbol parentSymbol, ModelType model,
 			ProcessDefinitionType processDefinition, JsonObject request) {
-		// TODO - to implement
-		// String laneId = extractString(request,
-		// ModelerConstants.MODEL_ELEMENT_PROPERTY,
-		// ModelerConstants.ID_PROPERTY);
-		// ActivityType activity = MBFacade.findActivity(processDefinition,
-		// laneId);
-		// ActivitySymbolType activitySymbol =
-		// activity.getActivitySymbols().get(0);
-		//
-		// synchronized (model)
-		// {
-		//
-		// processDefinition.getActivity().remove(activity);
-		// processDefinition.getDiagram().get(0).getActivitySymbol().remove(activitySymbol);
-		//
-		// parentLaneSymbol.getActivitySymbol().remove(activitySymbol);
-		//
-		// }
+		String laneId = extractString(request, ModelerConstants.ID_PROPERTY);
+		LaneSymbol lane = MBFacade.findLaneInProcess(processDefinition, laneId);
 
+		synchronized (model) {
+			parentSymbol.getLanes().remove(lane);
+		}
 	}
 
 }
