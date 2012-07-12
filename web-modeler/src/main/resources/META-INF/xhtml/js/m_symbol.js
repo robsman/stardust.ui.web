@@ -223,7 +223,7 @@ define(
 				Symbol.prototype.complete = function() {
 					this.completeNoTransfer(this);
 					var command = m_command.createNodeSymbolCommand(
-							this.commandType("create"), this.getPath(true), {
+							this.getCommandIdForNode("create"), this.getPath(true), {
 								oid : this.parentSymbol.oid
 							}, this.createTransferObject(), this);
 					m_commandsController.submitCommand(command);
@@ -238,7 +238,7 @@ define(
 				/**
 				 * generate command type based on i/p . i.e create,remove
 				 */
-				Symbol.prototype.commandType = function(str) {
+				Symbol.prototype.getCommandIdForNode = function(str) {
 					var commandType = null;
 					if (this.type == m_constants.ACTIVITY_SYMBOL) {
 						commandType = "activitySymbol." + str;
@@ -1179,7 +1179,7 @@ define(
 							this.parentSymbol.containedSymbols, this);
 					m_utils.removeItemFromArray(this.diagram.symbols, this);
 					
-					var command = m_command.createRemoveNodeSymbolCommand(this.commandType("delete"), this.getPath(true),
+					var command = m_command.createRemoveNodeSymbolCommand(this.getCommandIdForNode("delete"), this.getPath(true),
 							{oid : this.parentSymbol.oid}, this.createTransferObject(), this);
 					m_commandsController.submitCommand(command);
 				};
