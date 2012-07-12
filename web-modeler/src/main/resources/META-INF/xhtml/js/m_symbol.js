@@ -248,6 +248,8 @@ define(
 						commandType = "eventSymbol." + str;
 					} else if (this.type == m_constants.DATA_SYMBOL) {
 						commandType = "dataSymbol." + str;
+					} else if (this.type == m_constants.SWIMLANE_SYMBOL) {
+						commandType = "swimlaneSymbol." + str;
 					}
 					return commandType;
 				}

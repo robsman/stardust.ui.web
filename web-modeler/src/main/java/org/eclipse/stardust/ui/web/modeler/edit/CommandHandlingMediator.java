@@ -19,8 +19,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.ActivityCommandHand
 import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.EventCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.GatewayCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.MoveNodeSymbolHandler;
-import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.UpdateActivityCommandHandler;
-import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.UpdateProcessCommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.SwimlaneCommandHandler;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -57,6 +56,10 @@ public class CommandHandlingMediator
       else if ("gateSymbol.create".equals(commandId) || "gateSymbol.delete".equals(commandId))
       {
          handler = new GatewayCommandHandler();
+      }
+      else if ("swimlaneSymbol.create".equals(commandId) || "swimlane.delete".equals(commandId))
+      {
+         handler = new SwimlaneCommandHandler();
       }
       
       Modification change = null;
