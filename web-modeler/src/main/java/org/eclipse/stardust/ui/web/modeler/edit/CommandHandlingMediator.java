@@ -41,7 +41,11 @@ public class CommandHandlingMediator
       // TODO proper handler attribute matching
       ICommandHandler handler = null;
       
-      if ("nodeSymbol.move".equals(commandId))
+      if ("modelElement.update".equals(commandId))
+      {
+         handler = new UpdateModelElementCommandHandler();
+      }
+      else if ("nodeSymbol.move".equals(commandId))
       {
          handler = new MoveNodeSymbolHandler();
       }
