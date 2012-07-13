@@ -149,6 +149,19 @@ define(
 								this, this.dataSymbols[n]);
 					}
 				};
+				/**
+				 * Overridden as we do now want the create REST call to be made at this point but
+				 * after the swimlane is repositioned.
+				 */
+				SwimlaneSymbol.prototype.complete = function() {
+					this.completeNoTransfer(this);					
+
+					if (this.requiresParentSymbol())
+					{
+						// TODO Needs to be called on create, otherwise it may be aparllel calls
+						//this.diagram.submitUpdate();
+					}
+				};
 
 				/**
 				 * 

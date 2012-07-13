@@ -222,11 +222,7 @@ define(
 				 */
 				Symbol.prototype.complete = function() {
 					this.completeNoTransfer(this);
-					var command = m_command.createNodeSymbolCommand(
-							this.getCommandIdForNode("create"), this.getPath(true), {
-								oid : this.parentSymbol.oid
-							}, this.createTransferObject(), this);
-					m_commandsController.submitCommand(command);
+					this.createAndSubmitCreateCommand();
 
 					if (this.requiresParentSymbol())
 					{
@@ -1193,6 +1189,13 @@ define(
 					m_commandsController.submitCommand(command);
 				}
 
+				Symbol.prototype.createAndSubmitCreateCommand = function () {
+					var command = m_command.createNodeSymbolCommand(
+							this.getCommandIdForNode("create"), this.getPath(true), {
+								oid : this.parentSymbol.oid
+							}, this.createTransferObject(), this);
+					m_commandsController.submitCommand(command);
+				}
 				/**
 				 *
 				 */

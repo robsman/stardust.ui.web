@@ -284,6 +284,9 @@ define(
 
 					this.recalculateBoundingBox();
 					this.adjustGeometry();
+
+					//The create REST call for swimlanes is made after the swimlabe is created and re-positioned.
+					swimlaneSymbol.createAndSubmitCreateCommand();
 				};
 
 				/**
