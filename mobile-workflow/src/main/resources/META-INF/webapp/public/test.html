@@ -1,0 +1,102 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<title>handheld media type test</title>
+	<style type="text/css">
+		body {
+			font: 80% arial, helvetica, sans-serif;
+		}
+		
+		span {
+			font-weight: bold;
+			color: red;
+		}
+		
+		h1 {
+			font-size: 1.5em;
+		}
+		
+		h2 {
+			font-size: 1.25em;
+		}
+		
+		div {
+			margin-bottom: 2em;
+			border: 1px solid #999;
+		}
+
+		@media screen {
+			#screen .atmedia {
+				color: #00ff00;
+				background: #00ff00;
+			}
+		}
+		@media handheld {
+			#handheld .atmedia {
+				color: #00ff00;
+				background: #00ff00;
+			}
+		}
+	</style>
+	<style type="text/css" media="screen">
+		#screen .style {
+				color: #00ff00;
+				background: #00ff00;
+		}
+	</style>
+	<style type="text/css" media="handheld">
+		#handheld .style {
+				color: #00ff00;
+				background: #00ff00;
+		}
+	</style>
+	<style type="text/css">@import url("importscreen.css") screen;</style>
+
+	<style type="text/css">@import url("importhandheld.css") handheld;</style>
+	<link rel="stylesheet" type="text/css" media="screen" href="linkscreen.css" />
+	<link rel="stylesheet" type="text/css" media="handheld" href="linkhandheld.css" />
+</head>
+
+<body>
+
+<h1>handheld media type test</h1>
+
+<div id="screen">
+<h2>screen</h2>
+
+<p>&lt;link media="screen"... <span class="link">not</span> applied.</p>
+<p>&lt;style media="screen"... <span class="style">not</span> applied.</p>
+<p>@import url("whatever.css") screen; <span class="atimport">not</span> applied.</p>
+<p>@media screen {... <span class="atmedia">not</span> applied.</p>
+
+</div>
+
+<div id="handheld">
+<h2>handheld</h2>
+<p>&lt;link media="handheld"... <span class="link">not</span> applied.</p>
+<p>&lt;style media="handheld"... <span class="style">not</span> applied.</p>
+<p>@import url("whatever.css") handheld; <span class="atimport">not</span> applied.</p>
+
+<p>@media handheld {... <span class="atmedia">not</span> applied.</p>
+</div>
+
+
+<div id="example"></div>
+
+<script type="text/javascript">
+
+txt = "<p>Browser CodeName: " + navigator.appCodeName + "</p>";
+txt+= "<p>Browser Name: " + navigator.appName + "</p>";
+txt+= "<p>Browser Version: " + navigator.appVersion + "</p>";
+txt+= "<p>Cookies Enabled: " + navigator.cookieEnabled + "</p>";
+txt+= "<p>Platform: " + navigator.platform + "</p>";
+txt+= "<p>User-agent header: " + navigator.userAgent + "</p>";
+
+document.getElementById("example").innerHTML=txt;
+
+</script>
+
+
+
+</body>
+</html>
+

@@ -1,0 +1,22 @@
+Must Have
+
+o user work statistics
+o process attachments in process overview
+o process activity history
+ 
+Nice To ave
+
+o descriptors
+o document viewer (TIFF, PNG, GIF, HTML, TXT)
+o document viewport size
+o icon improvements
+o Error handling, e.g. access right on activities
+o Focus handling for Pharmacy
+o Encapsulate all calls to IPP Services by calls to MobileSession as these might be remote calls from devices
+o Process attachments
+o sketch collaboration panel
+o 1:N table functionality
+
+
+
+http://localhost:8080/demo/run?__report=http://localhost:8080/demo/jackrabbit/repository/default/ipp-repository/partitions/default/realms/carnot/users/cc/documents/reports/designs/Dummy
