@@ -14,7 +14,9 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
@@ -84,6 +86,7 @@ public class ModelerSessionRestController
 
    @GET
    @Path("/changes/mostCurrent")
+   @Produces(MediaType.APPLICATION_JSON)
    public String showCurrentChange()
    {
       JsonObject result = new JsonObject();
@@ -93,21 +96,21 @@ public class ModelerSessionRestController
          Modification pendingUndo = editingSession.getPendingUndo();
          result = toJson(pendingUndo);
 
+         result.addProperty("pendingUndo", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingUndo.getId());
          if (editingSession.canRedo())
          {
             Modification pendingRedo = editingSession.getPendingRedo();
-            result.addProperty("nextChange", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingRedo.getId());
+            result.addProperty("pendingRedo", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingRedo.getId());
          }
       }
 
       return jsonIo().writeJsonObject(result);
    }
 
-   @GET
+   @POST
    @Path("/changes/mostCurrent/navigation")
-   public Response adjustMostCurrentChange() // TODO String action)
+   public Response adjustMostCurrentChange(String action)
    {
-      String action = "undoMostCurrent";
       if ("undoMostCurrent".equals(action))
       {
          JsonObject result = new JsonObject();
@@ -118,20 +121,55 @@ public class ModelerSessionRestController
 
             result = toJson(undoneChange);
 
+            if (editingSession.canUndo())
+            {
+               Modification pendingUndo = editingSession.getPendingUndo();
+               result.addProperty("pendingUndo", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingUndo.getId());
+            }
             if (editingSession.canRedo())
             {
                Modification pendingRedo = editingSession.getPendingRedo();
-               result.addProperty("nextChange", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingRedo.getId());
+               result.addProperty("pendingRedo", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingRedo.getId());
             }
-         }
 
-         return Response.ok(jsonIo().writeJsonObject(result)).build();
+            return Response.ok(jsonIo().writeJsonObject(result), MediaType.APPLICATION_JSON_TYPE).build();
+         }
+         else
+         {
+            return Response.status(Status.CONFLICT) //
+                  .entity("Nothing to be undone")
+                  .build();
+         }
       }
       else if ("redoLastUndo".equals(action))
       {
-         return Response.status(Status.BAD_REQUEST) //
-               .entity("Not yet implemented")
-               .build();
+         JsonObject result = new JsonObject();
+         EditingSession editingSession = editingSessionManager().getSession();
+         if (editingSession.canRedo())
+         {
+            Modification redoneChange = editingSession.redoNext();
+
+            result = toJson(redoneChange);
+
+            if (editingSession.canUndo())
+            {
+               Modification pendingUndo = editingSession.getPendingUndo();
+               result.addProperty("pendingUndo", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingUndo.getId());
+            }
+            if (editingSession.canRedo())
+            {
+               Modification pendingRedo = editingSession.getPendingRedo();
+               result.addProperty("pendingRedo", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingRedo.getId());
+            }
+
+            return Response.ok(jsonIo().writeJsonObject(result), MediaType.APPLICATION_JSON_TYPE).build();
+         }
+         else
+         {
+            return Response.status(Status.CONFLICT) //
+                  .entity("Nothing to be redone")
+                  .build();
+         }
       }
       else
       {
@@ -249,6 +287,7 @@ public class ModelerSessionRestController
          UnsavedModelsTracker.getInstance().notifyModelModfied(model.getId());
          return Response.created(toChangeUri(change)) //
                .entity(jsonIo().writeJsonObject(toJson(change)))
+               .type(MediaType.APPLICATION_JSON_TYPE)
                .build();
       }
       else

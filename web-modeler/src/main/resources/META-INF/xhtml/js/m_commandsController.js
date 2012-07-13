@@ -52,7 +52,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function CommandsController(newCommunicationController) {
 				// Initialize members
@@ -62,7 +62,7 @@ define(
 				this.commandHandlers = [];
 
 				/**
-				 * 
+				 *
 				 */
 				CommandsController.prototype.toString = function() {
 					return "Lightdust.CommandController";
@@ -149,7 +149,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommandsController.prototype.submitCommand = function(command) {
 					var url = m_communicationController.getEndpointUrl()
@@ -215,7 +215,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommandsController.prototype.registerCommandHandler = function(
 						commandHandler) {
@@ -223,7 +223,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommandsController.prototype.broadcastCommand = function(
 						command) {
@@ -244,7 +244,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommandsController.prototype.broadcastCommandUndo = function(
 						command) {
@@ -259,7 +259,11 @@ define(
 					m_utils.debug(command);
 
 					for ( var n = 0; n < this.commandHandlers.length; ++n) {
-						this.commandHandlers[n].undoCommand(command);
+						try {
+							this.commandHandlers[n].undoCommand(command);
+						} catch (e) {
+							m_utils.debug("Failed broadcasting undo: " + e);
+						}
 					}
 				};
 			}

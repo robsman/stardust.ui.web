@@ -312,45 +312,40 @@ define(
 				},
 
 				undoToolAction : function(event, data) {
-					m_communicationController.getData(getEndpointUrl()
-							+ "/models/" + modelId + "/processes/" + processId
-							+ "/undo", function(data) {
+					m_communicationController.postData({url: getEndpointUrl() + "/sessions/changes/mostCurrent/navigation"},
+							"undoMostCurrent",
+							{success: function(data) {
 						m_utils.debug("Undo");
 						m_utils.debug(data);
 
-						if (data.command != null) {
-							m_commandsController
-									.broadcastCommandUndo(data.command);
-						}
+						m_commandsController
+								.broadcastCommandUndo(data);
 
-						if (data.hasMoreToUndo) {
+						if (null != data.pendingUndo) {
 							jQuery("#undo").removeAttr("disabled", "disabled");
 						} else {
 							jQuery("#undo").attr("disabled", "disabled");
 						}
 
-						if (data.hasMoreToRedo) {
+						if (null != data.pendingRedo) {
 							jQuery("#redo").removeAttr("disabled", "disabled");
 						} else {
 							jQuery("#redo").attr("disabled", "disabled");
 						}
-					});
+					}});
 				},
 
 				redoToolAction : function(event, data) {
-					m_communicationController.getData(getEndpointUrl()
-							+ "/models/" + modelId + "/processes/" + processId
-							+ "/redo",
-							function(data) {
+					m_communicationController.postData({url: getEndpointUrl() + "/sessions/changes/mostCurrent/navigation"},
+							"redoLastUndo",
+							{success: function(data) {
 								m_utils.debug("Redo");
 								m_utils.debug(data);
 
-								if (data.command != null) {
-									m_commandsController
-											.broadcastCommand(data.command);
-								}
+								m_commandsController
+										.broadcastCommand(data);
 
-								if (data.hasMoreToUndo) {
+								if (null != data.pendingUndo) {
 									jQuery("#undo").removeAttr("disabled",
 											"disabled");
 								} else {
@@ -358,14 +353,14 @@ define(
 											.attr("disabled", "disabled");
 								}
 
-								if (data.hasMoreToRedo) {
+								if (null != data.pendingRedo) {
 									jQuery("#redo").removeAttr("disabled",
 											"disabled");
 								} else {
 									jQuery("#redo")
 											.attr("disabled", "disabled");
 								}
-							});
+							}});
 				}
 			};
 
@@ -2100,7 +2095,7 @@ define(
 			 * as 100% zoom. This enables us to lay the annotations at correct
 			 * location whenever it's accessed again or in the event of image at
 			 * zoom etc.
-			 * 
+			 *
 			 * Calculation:: Subtract the current image coordinates from those
 			 * of the annotation to get dx, dy. Divide dx, dy by current zoom to
 			 * get the actual dx, dy at 100% zoom.
