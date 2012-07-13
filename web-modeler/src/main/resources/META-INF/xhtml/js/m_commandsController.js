@@ -233,7 +233,13 @@ define(
 					for ( var n = 0; n < this.commandHandlers.length; ++n) {
 						m_utils.debug("Process command on "
 								+ this.commandHandlers[n]);
-						this.commandHandlers[n].processCommand(command);
+						try {
+							if (this.commandHandlers[n]) {
+								this.commandHandlers[n].processCommand(command);
+							}
+						} catch (e) {
+							m_utils.debug("Exception while invoking command handler " +  e);
+						}
 					}
 				};
 
