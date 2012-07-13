@@ -29,32 +29,46 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 		createRetrieveCommand : function(url, data) {
 			return new Command(url, data, RETRIEVE);
 		},
+		// @deprecated
 		createCreateCommand : function(path, object) {
 			return new ChangeEvent(m_constants.CREATE_COMMAND, path, null, null, object);
 		},
+		// @deprecated
 		createDeleteCommand : function(path, object) {
 			return new ChangeEvent(m_constants.DELETE_COMMAND, path, null, object, null);
 		},
+		// @deprecated
 		createUpdateCommand : function(path, oldObject, newObject) {
 			return new ChangeEvent(m_constants.UPDATE_COMMAND, path, null, oldObject, newObject);
 		},
+		// @deprecated
 		createRenameCommand : function(path, oldObject, newObject) {
 			return new ChangeEvent(m_constants.RENAME_COMMAND, path, "rename", oldObject, newObject);
 		},
+		// @deprecated
 		createChangeGeometryCommand : function(path, oldObject, newObject, modelElement) {
 			return new ChangeEvent(m_constants.UPDATE_GEOMETRY_COMMAND, path, null, oldObject, newObject, modelElement);
 		},
 		createMoveNodeSymbolCommand : function(baseUri, targetElement, newObject, context) {
-			return new ChangeDescriptor("nodeSymbol.move", [{oid: targetElement.oid, changes: newObject}], context);
+			// TODO This code needs be removed as soon modelId passed instead of context (see createUpdateModelElementCommand) 
+			var modelId = context.diagram.model.id;
+
+			return new ChangeDescriptor("nodeSymbol.move", modelId, [{oid: targetElement.oid, changes: newObject}]);
 		},
 		createCreateNodeCommand : function(commandType, baseUri, targetElement, newObject, context) {
-			return new ChangeDescriptor(commandType, [{oid: targetElement.oid, changes: newObject}], context);
+			// TODO This code needs be removed as soon modelId passed instead of context (see createUpdateModelElementCommand) 
+			var modelId = context.diagram.model.id;
+
+			return new ChangeDescriptor(commandType, modelId, [{oid: targetElement.oid, changes: newObject}]);
 		},
-		createUpdateModelElementCommand : function(oid, changes, context) {
-			return new ChangeDescriptor("modelElement.update", [{oid: oid, changes: changes}], context);
+		createUpdateModelElementCommand : function(modelId, oid, changes) {
+			return new ChangeDescriptor("modelElement.update", modelId, [{oid: oid, changes: changes}]);
 		},
 		createRemoveNodeCommand : function(commandType, baseUri, targetElement, newObject, context) {
-			return new ChangeDescriptor(commandType, [{oid: targetElement.oid, changes: newObject}], context);
+			// TODO This code needs be removed as soon modelId passed instead of context (see createUpdateModelElementCommand) 
+			var modelId = context.diagram.model.id;
+
+			return new ChangeDescriptor(commandType, modelId, [{oid: targetElement.oid, changes: newObject}]);
 		},
 		// TODO Might be simple Request causing command to be broadcasted
 		createRequestJoinCommand : function(prospect) {
@@ -131,20 +145,11 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 		};
 	}
 
-	function ChangeDescriptor(commandId, changeDescriptions, changeContext) {
+	function ChangeDescriptor(commandId, modelId, changeDescriptions) {
 		this.account = m_user.getCurrentUser().account;
 		this.timestamp = new Date();
 		this.commandId = commandId;
-		this.context = {};
-		if (changeContext.diagram)
-		{
-			if (changeContext.diagram.model) {
-				this.context.modelId = changeContext.diagram.model.id;
-			}
-			if (changeContext.diagram.process) {
-				this.context.processId = changeContext.diagram.process.id;
-			}
-		}
+		this.modelId = modelId;
 		this.changeDescriptions = changeDescriptions;
 
 		this.path = "/sessions/changes";

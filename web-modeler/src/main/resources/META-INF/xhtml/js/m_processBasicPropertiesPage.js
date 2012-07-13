@@ -125,10 +125,9 @@ define(
 					m_utils.debug("Process: ");
 					m_utils.debug(this.propertiesPanel.element);
 					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(
+							.createUpdateModelElementCommand(this.propertiesPanel.element.model.id,
 									this.propertiesPanel.element.oid,
-									changes,
-									this.propertiesPanel.element));
+									changes));
 				};
 
 			}

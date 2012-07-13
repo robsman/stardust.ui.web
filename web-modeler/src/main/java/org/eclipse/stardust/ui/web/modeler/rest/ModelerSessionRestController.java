@@ -200,7 +200,7 @@ public class ModelerSessionRestController
    {
 	   System.out.println("applyChange: " + commandJson);
       String commandId = extractString(commandJson, "commandId");
-      String modelId = extractString(commandJson, "context", "modelId");
+      String modelId = extractString(commandJson, "modelId");
 
       if (isEmpty(modelId))
       {

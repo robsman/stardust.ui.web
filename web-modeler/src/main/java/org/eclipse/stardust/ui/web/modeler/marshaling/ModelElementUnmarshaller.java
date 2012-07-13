@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.activity.BpmApplicationActivityBuilder;
@@ -31,10 +32,12 @@ import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 
 /**
@@ -129,6 +132,12 @@ public class ModelElementUnmarshaller
       }
    }
 
+   private void updateProcessDefinition(ProcessDefinitionType processDefinition,
+         JsonObject processDefinitionJson)
+   {
+      
+   }
+
    /**
     * 
     * @param activitySymbol
@@ -144,6 +153,7 @@ public class ModelElementUnmarshaller
             modelElementPropertiesMap.get(ActivitySymbolType.class));
       mapDeclaredSymbolProperties(activitySymbol, activitySymbolJson,
             symbolPropertiesMap.get(ActivitySymbolType.class));
+      storeAttributes(activity, activityJson);
 
       if (ModelerConstants.MANUAL_ACTIVITY.equals(extractString(activityJson,
             ModelerConstants.ACTIVITY_TYPE)))
@@ -204,7 +214,7 @@ public class ModelElementUnmarshaller
             modelElementPropertiesMap.get(ActivitySymbolType.class));
       mapDeclaredSymbolProperties(activitySymbol, gatewaySymbolJson,
             symbolPropertiesMap.get(ActivitySymbolType.class));
-
+      storeAttributes(activity, activityJson);
    }
 
    /**
@@ -220,7 +230,7 @@ public class ModelElementUnmarshaller
             modelElementPropertiesMap.get(StartEventSymbol.class));
       mapDeclaredSymbolProperties(startEventSymbol, startEventSymbolJson,
             symbolPropertiesMap.get(StartEventSymbol.class));
-   }
+  }
 
    /**
     * 
@@ -343,4 +353,33 @@ public class ModelElementUnmarshaller
          System.out.println("No value for property " + property);
       }
    }
+   
+   /**
+   *
+   * @param json
+   * @param element
+   * @throws JSONException
+   */
+  private void storeAttributes(IIdentifiableModelElement element, JsonObject json) {
+     if (!json.has(ModelerConstants.ATTRIBUTES_PROPERTY)) {
+        return;
+     }
+
+     JsonObject attributes = json.getAsJsonObject(ModelerConstants.ATTRIBUTES_PROPERTY);
+
+     if (attributes != null) {
+        for (Map.Entry<String, ?> entry : attributes.entrySet()) {
+           String key = entry.getKey();
+           JsonElement value = attributes.get(key);
+
+           System.out.println("Storing attribute " + key + " " + value);
+
+           if (value instanceof JsonObject) {
+           } else {
+              AttributeUtil.setAttribute(element, key, value.toString());
+           }
+        }
+     }
+  }
+
 }

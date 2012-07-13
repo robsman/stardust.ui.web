@@ -305,10 +305,9 @@ define(
 				 */
 				ActivityBasicPropertiesPage.prototype.submitChanges = function(changes) {
 					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(
+							.createUpdateModelElementCommand(this.propertiesPanel.element.diagram.modelId,
 									this.propertiesPanel.element.oid,
-									changes,
-									this.propertiesPanel.element));
+									changes));
 				};
 			}
 		});
