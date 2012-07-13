@@ -242,8 +242,8 @@ define(
 						commandType = "gateSymbol." + str;
 					} else if (this.type == m_constants.EVENT_SYMBOL) {
 						commandType = "eventSymbol." + str;
-					} else if (this.type == m_constants.DATA_SYMBOL) {
-						commandType = "dataSymbol." + str;
+					/*} else if (this.type == m_constants.DATA_SYMBOL) {
+						commandType = "dataSymbol." + str;*/
 					} else if (this.type == m_constants.SWIMLANE_SYMBOL) {
 						commandType = "swimlaneSymbol." + str;
 					}
@@ -1190,14 +1190,20 @@ define(
 				}
 
 				Symbol.prototype.createAndSubmitCreateCommand = function () {
-					var command = m_command.createCreateNodeCommand(
-							this.getCommandIdForNode("create"), this.getPath(true), {
-								oid : this.parentSymbol.oid
-							}, this.createTransferObject(), this);
-					m_commandsController.submitCommand(command);
+					var commandType = this.getCommandIdForNode("create");
+					if (commandType) {
+						var command = m_command.createCreateNodeCommand(this
+								.getCommandIdForNode("create"), this
+								.getPath(true), {
+							oid : this.parentSymbol.oid
+						}, this.createTransferObject(), this);
+						m_commandsController.submitCommand(command);
+					} else {
+						this.submitCreation();
+					}
 				}
 				/**
-				 *
+				 * 
 				 */
 				Symbol.prototype.removePrimitives = function() {
 					var n = 0;
