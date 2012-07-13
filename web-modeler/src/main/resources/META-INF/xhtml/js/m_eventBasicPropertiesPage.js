@@ -3,9 +3,9 @@
  */
 
 define(
-		[ "m_utils", "m_constants", "m_dialog", "m_propertiesPage",
+		[ "m_utils", "m_constants", "m_commandsController", "m_command", "m_dialog", "m_propertiesPage",
 				"m_dataTraversal" ],
-		function(m_utils, m_constants, m_dialog, m_propertiesPage,
+		function(m_utils, m_constants, m_commandsController, m_command, m_dialog, m_propertiesPage,
 				m_dataTraversal) {
 			return {
 				createPropertiesPage : function(propertiesPanel) {
@@ -62,6 +62,54 @@ define(
 
 				// Initialize callbacks
 
+				this.nameInput
+						.change(
+								{
+									"page" : this
+								},
+								function(event) {
+									var page = event.data.page;
+
+									if (!page.validate()) {
+										return;
+									}
+
+									if (page.propertiesPanel.element.modelElement.name != page.nameInput
+											.val()) {
+										page.propertiesPanel.element.modelElement.name = page.nameInput
+												.val();
+										page.submitChanges({
+											modelElement : {
+												name : page.nameInput.val()
+											}
+										});
+									}
+								});
+				this.descriptionInput
+						.change(
+								{
+									"page" : this
+								},
+								function(event) {
+									var page = event.data.page;
+
+									if (!page.validate()) {
+										return;
+									}
+
+									if (page.propertiesPanel.element.modelElement.description != page.descriptionInput
+											.val()) {
+										page.propertiesPanel.element.modelElement.description = page.descriptionInput
+												.val();
+										page
+												.submitChanges({
+													modelElement : {
+														description : page.descriptionInput
+																.val()
+													}
+												});
+									}
+								});
 				this.eventTypeSelectInput
 						.change(
 								{
@@ -246,7 +294,7 @@ define(
 										event.data.callbackScope.endpointAccessPointsSelectInput
 												.append("<optgroup label=\"Input Data\">");
 										event.data.callbackScope.endpointAccessPointsSelectInput
-											.append("<option value=\"Message\">(Map)</option>");
+												.append("<option value=\"Message\">(Map)</option>");
 										event.data.callbackScope.endpointAccessPointsSelectInput
 												.append("<option value=\"EventCategory\">EventCategory (Enumeration)</option>");
 										event.data.callbackScope.endpointAccessPointsSelectInput
@@ -328,7 +376,6 @@ define(
 												.append("<option value=\"message\">message (Structure)</option>");
 									}
 								});
-
 				this.dataPathTextInput./*
 										 * bind( "keydown", function( event ) {
 										 * if ( event.keyCode ===
@@ -394,9 +441,9 @@ define(
 
 						for ( var m in model.dataItems) {
 							var content = "<option value='"
-									+ model.dataItems[m].getFullId() + "'>" + model.name
-									+ "/" + model.dataItems[m].name
-									+ "</option>";
+									+ model.dataItems[m].getFullId() + "'>"
+									+ model.name + "/"
+									+ model.dataItems[m].name + "</option>";
 
 							this.documentDataList.append(content);
 							this.camelEndpointDataMappingDataSelectInput
@@ -449,13 +496,31 @@ define(
 				/**
 				 * 
 				 */
-				EventBasicPropertiesPage.prototype.apply = function() {
-					this.propertiesPanel.element.modelElement.name = this.nameInput
-							.val();
-					this.propertiesPanel.element.modelElement.description = this.descriptionInput
-							.val();
-					this.propertiesPanel.element.modelElement.documentDataId = this.documentDataList
-							.val();
+				EventBasicPropertiesPage.prototype.validate = function() {
+					this.nameInput.removeClass("error");
+
+					if (this.nameInput.val() == null
+							|| this.nameInput.val() == "") {
+						this.propertiesPanel.errorMessages
+								.push("Event name must not be empty.");
+						this.nameInput.addClass("error");
+
+						return false;
+					}
+
+					return true;
 				};
+
+				/**
+				 * 
+				 */
+				EventBasicPropertiesPage.prototype.submitChanges = function(
+						changes) {
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementCommand(
+									this.propertiesPanel.element.oid, changes,
+									this.propertiesPanel.element));
+				};
+
 			}
 		});

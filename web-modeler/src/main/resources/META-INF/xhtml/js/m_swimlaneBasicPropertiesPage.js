@@ -13,6 +13,9 @@ define(
 				}
 			};
 
+			/**
+			 * 
+			 */
 			function SwimlaneBasicPropertiesPage(newPropertiesPanel, newId,
 					newTitle) {
 
@@ -37,6 +40,54 @@ define(
 
 				// Initialize callbacks
 
+				this.nameInput
+						.change(
+								{
+									"page" : this
+								},
+								function(event) {
+									var page = event.data.page;
+
+									if (!page.validate()) {
+										return;
+									}
+
+									if (page.propertiesPanel.element.modelElement.name != page.nameInput
+											.val()) {
+										page.propertiesPanel.element.modelElement.name = page.nameInput
+												.val();
+										page.submitChanges({
+											modelElement : {
+												name : page.nameInput.val()
+											}
+										});
+									}
+								});
+				this.descriptionInput
+						.change(
+								{
+									"page" : this
+								},
+								function(event) {
+									var page = event.data.page;
+
+									if (!page.validate()) {
+										return;
+									}
+
+									if (page.propertiesPanel.element.modelElement.description != page.descriptionInput
+											.val()) {
+										page.propertiesPanel.element.modelElement.description = page.descriptionInput
+												.val();
+										page
+												.submitChanges({
+													modelElement : {
+														description : page.descriptionInput
+																.val()
+													}
+												});
+									}
+								});
 				this.createNewParticipantLink
 						.click(
 								{
@@ -74,7 +125,8 @@ define(
 						for ( var m in this.propertiesPanel.models[n].participants) {
 							this.participantList
 									.append("<option value='"
-											+ this.propertiesPanel.models[n].participants[m].getFullId()
+											+ this.propertiesPanel.models[n].participants[m]
+													.getFullId()
 											+ "'>"
 											+ this.propertiesPanel.models[n].name
 											+ "/"
@@ -89,13 +141,13 @@ define(
 				 */
 				SwimlaneBasicPropertiesPage.prototype.setElement = function() {
 					this.refreshParticipantList();
-					
+
 					this.nameInput.removeClass("error");
 
 					this.nameInput.val(this.propertiesPanel.element.name);
 					this.descriptionInput
 							.val(this.propertiesPanel.element.description);
-					
+
 					this.title
 							.html(this.propertiesPanel.element.participantName);
 
@@ -124,23 +176,6 @@ define(
 				/**
 				 * 
 				 */
-				SwimlaneBasicPropertiesPage.prototype.apply = function() {
-					this.propertiesPanel.element.name = this.nameInput.val();
-					this.propertiesPanel.element.description = this.descriptionInput
-							.val();
-
-					if (this.participantList.val() != "NONE") {
-						this.propertiesPanel.element.participantFullId = this.participantList
-								.val();
-					}
-
-					this.propertiesPanel.element
-							.notifySymbolsOnParticipantChange();
-				};
-
-				/**
-				 * 
-				 */
 				SwimlaneBasicPropertiesPage.prototype.setParticipantId = function(
 						json) {
 					var participant = m_participant.createParticipantFromJson(
@@ -150,8 +185,19 @@ define(
 					m_utils.debug(participant);
 
 					this.refreshParticipantList();
-					this.participantList
-					.val(participant.getFullId());
+					this.participantList.val(participant.getFullId());
 				};
+
+				/**
+				 * 
+				 */
+				SwimlaneBasicPropertiesPage.prototype.submitChanges = function(
+						changes) {
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementCommand(
+									this.propertiesPanel.element.oid, changes,
+									this.propertiesPanel.element));
+				};
+
 			}
 		});

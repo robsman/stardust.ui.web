@@ -949,6 +949,8 @@ public class ModelService {
 	 * @param activityId
 	 * @param postedData
 	 * @return
+	 * 
+	 * @deprecated
 	 */
 	public String updateActivity(String modelId, String processId,
 			String activityId, JsonObject commandJson) {
@@ -1002,6 +1004,8 @@ public class ModelService {
 	 * @param activitySymbolJson
 	 * @return
 	 * @throws JSONException
+	 * 
+	 * @deprecated
 	 */
 	private JsonObject updateActivity(ActivitySymbolType activitySymbol,
 			LaneSymbol laneSymbol, JsonObject activitySymbolJson) {
@@ -1178,6 +1182,8 @@ public class ModelService {
 	 * @param gatewayId
 	 * @param postedData
 	 * @return
+	 * 
+	 * @deprecated
 	 */
 	public String updateGateway(String modelId, String processId,
 			String gatewayId, JsonObject commandJson) {

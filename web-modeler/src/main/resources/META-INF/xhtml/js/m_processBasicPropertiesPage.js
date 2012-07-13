@@ -123,5 +123,17 @@ define(
 							.val();
 					this.saveDocumentUrl();
 				};
+				
+				/**
+				 * 
+				 */
+				ProcessBasicPropertiesPage.prototype.submitChanges = function(changes) {
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementCommand(
+									this.propertiesPanel.element.oid,
+									changes,
+									this.propertiesPanel.element));
+				};
+
 			}
 		});

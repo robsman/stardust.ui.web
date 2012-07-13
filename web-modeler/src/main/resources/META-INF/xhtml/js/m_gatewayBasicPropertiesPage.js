@@ -3,8 +3,10 @@
  */
 
 define(
-		[ "m_utils", "m_constants", "m_propertiesPage" ],
-		function(m_utils, m_constants, m_propertiesPage) {
+		[ "m_utils", "m_constants", "m_command", "m_commandsController",
+				"m_propertiesPage" ],
+		function(m_utils, m_constants, m_command, m_commandsController,
+				m_propertiesPage) {
 			return {
 				createPropertiesPage : function(propertiesPanel) {
 					return new GatewayBasicPropertiesPage(propertiesPanel);
@@ -24,15 +26,42 @@ define(
 						propertiesPage);
 
 				// Field initialization
-				
+
 				this.descriptionInput = this.mapInputId("descriptionInput");
 				this.gatewayTypeInput = this.mapInputId("gatewayTypeInput");
+
+				this.descriptionInput
+						.change(
+								{
+									"page" : this
+								},
+								function(event) {
+									var page = event.data.page;
+
+									if (!page.validate()) {
+										return;
+									}
+
+									if (page.propertiesPanel.element.modelElement.description != page.descriptionInput
+											.val()) {
+										page.propertiesPanel.element.modelElement.description = page.descriptionInput
+												.val();
+										page
+												.submitChanges({
+													modelElement : {
+														description : page.descriptionInput
+																.val()
+													}
+												});
+									}
+								});
 
 				/**
 				 * 
 				 */
 				GatewayBasicPropertiesPage.prototype.setElement = function() {
-					this.descriptionInput.val(this.propertiesPanel.element.modelElement.description);
+					this.descriptionInput
+							.val(this.propertiesPanel.element.modelElement.description);
 					this.gatewayTypeInput
 							.val(this.propertiesPanel.element.modelElement.gatewayType);
 				};
@@ -42,9 +71,27 @@ define(
 				 */
 				GatewayBasicPropertiesPage.prototype.apply = function() {
 					this.propertiesPanel.element.modelElement.description = this.descriptionInput
-							.val();					
+							.val();
 					this.propertiesPanel.element.modelElement.gatewayType = this.gatewayTypeInput
 							.val();
+				};
+
+				/**
+				 * 
+				 */
+				GatewayBasicPropertiesPage.prototype.validate = function() {
+					return true;
+				};
+
+				/**
+				 * 
+				 */
+				GatewayBasicPropertiesPage.prototype.submitChanges = function(
+						changes) {
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementCommand(
+									this.propertiesPanel.element.oid, changes,
+									this.propertiesPanel.element));
 				};
 			}
 		});
