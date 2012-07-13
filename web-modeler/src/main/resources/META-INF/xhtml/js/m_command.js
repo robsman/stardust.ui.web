@@ -47,13 +47,13 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 		createMoveNodeSymbolCommand : function(baseUri, targetElement, newObject, context) {
 			return new ChangeDescriptor("nodeSymbol.move", [{oid: targetElement.oid, changes: newObject}], context);
 		},
-		createNodeSymbolCommand : function(commandType, baseUri, targetElement, newObject, context) {
+		createCreateNodeCommand : function(commandType, baseUri, targetElement, newObject, context) {
 			return new ChangeDescriptor(commandType, [{oid: targetElement.oid, changes: newObject}], context);
 		},
 		createUpdateModelElementCommand : function(oid, changes, context) {
 			return new ChangeDescriptor("modelElement.update", [{oid: oid, changes: changes}], context);
 		},
-		createRemoveNodeSymbolCommand : function(commandType, baseUri, targetElement, newObject, context) {
+		createRemoveNodeCommand : function(commandType, baseUri, targetElement, newObject, context) {
 			return new ChangeDescriptor(commandType, [{oid: targetElement.oid, changes: newObject}], context);
 		},
 		// TODO Might be simple Request causing command to be broadcasted
