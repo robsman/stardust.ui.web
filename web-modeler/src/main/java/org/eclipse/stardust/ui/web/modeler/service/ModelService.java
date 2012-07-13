@@ -3226,6 +3226,7 @@ public class ModelService {
 			JsonObject processJson = new JsonObject();
 			processesJson.add(processDefinition.getId(), processJson);
 
+         processJson.addProperty(ModelerConstants.OID_PROPERTY, processDefinition.getElementOid());
 			processJson.addProperty(ModelerConstants.ID_PROPERTY, processDefinition.getId());
 			processJson.addProperty(ModelerConstants.NAME_PROPERTY, processDefinition.getName());
 			loadDescription(processJson, processDefinition);

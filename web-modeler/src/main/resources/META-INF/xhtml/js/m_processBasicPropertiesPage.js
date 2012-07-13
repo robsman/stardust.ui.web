@@ -39,25 +39,25 @@ define(
 				this.initializeDocumentationHandling();
 
 				this.nameInput
-						.change(
-								{
-									"page" : this
-								},
-								function(event) {
-									m_commandsController
-											.submitCommand(m_command
-													.createRenameCommand(
-															event.data.page.propertiesPanel.element
-																	.getPath(true),
-															{
-																"id" : event.data.page.propertiesPanel.element.id,
-																"name" : event.data.page.propertiesPanel.element.name
-															},
-															{
-																"name" : event.data.page.nameInput
-																		.val()
-															}));
-								});
+				.change(
+						{
+							"page" : this
+						},
+						function(event) {
+							var page = event.data.page;
+
+							if (!page.validate()) {
+								return;
+							}
+
+							if (page.propertiesPanel.element.name != page.nameInput
+									.val()) {
+								page.propertiesPanel.element.name = page.nameInput
+										.val();
+								page.submitChanges({name: page.nameInput
+									.val()});
+							}
+						});
 
 				/**
 				 * 
@@ -111,23 +111,19 @@ define(
 						this.propertiesPanel.errorMessages
 								.push("Process name must not be empty.");
 						this.nameInput.addClass("error");
+						
+						return false;
 					}
+					
+					return true;
 				};
 
 				/**
 				 * 
 				 */
-				ProcessBasicPropertiesPage.prototype.apply = function() {
-					this.propertiesPanel.element.name = this.nameInput.val();
-					this.propertiesPanel.element.description = this.descriptionInput
-							.val();
-					this.saveDocumentUrl();
-				};
-				
-				/**
-				 * 
-				 */
 				ProcessBasicPropertiesPage.prototype.submitChanges = function(changes) {
+					m_utils.debug("Process: ");
+					m_utils.debug(this.propertiesPanel.element);
 					m_commandsController.submitCommand(m_command
 							.createUpdateModelElementCommand(
 									this.propertiesPanel.element.oid,

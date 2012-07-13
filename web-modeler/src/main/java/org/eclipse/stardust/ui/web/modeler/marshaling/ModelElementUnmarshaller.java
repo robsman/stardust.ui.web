@@ -95,6 +95,8 @@ public class ModelElementUnmarshaller {
 	 * @param json
 	 */
 	public void populateFromJson(IModelElement element, JsonObject json) {
+	   System.out.println("Unmarshalling: " + element + " " + json);
+	   
 		if (element instanceof ProcessDefinitionType) {
 			mapDeclaredModelElementProperties(element, json,
 					modelElementPropertiesMap.get(ProcessDefinitionType.class));
@@ -139,18 +141,17 @@ public class ModelElementUnmarshaller {
 			String subprocessFullId = extractString(activityJson,
 					ModelerConstants.SUBPROCESS_ID);
 
-			// ProcessDefinitionType subProcessDefinition =
-			// MBFacade.findProcessDefinition(
-			// getModel(MBFacade.getModelId(subprocessFullId)),
-			// MBFacade.stripFullId(subprocessFullId));
-			// ModelType subProcessModel =
-			// ModelUtils.findContainingModel(subProcessDefinition);
-			// BpmSubProcessActivityBuilder subProcessActivity =
-			// newSubProcessActivity(ModelUtils.findContainingProcess(activity));
-			//
-			// subProcessActivity.setActivity(activity);
-			// subProcessActivity.setSubProcessModel(subProcessModel);
-			// subProcessActivity.invokingProcess(subProcessDefinition);
+			 ProcessDefinitionType subProcessDefinition =
+			 MBFacade.getProcessDefinition(MBFacade.getModelId(subprocessFullId),
+			 MBFacade.stripFullId(subprocessFullId));
+			 ModelType subProcessModel =
+			 ModelUtils.findContainingModel(subProcessDefinition);
+			 BpmSubProcessActivityBuilder subProcessActivity =
+			 newSubProcessActivity(ModelUtils.findContainingProcess(activity));
+			
+			 subProcessActivity.setActivity(activity);
+			 subProcessActivity.setSubProcessModel(subProcessModel);
+			 subProcessActivity.invokingProcess(subProcessDefinition);
 		} else if (ModelerConstants.APPLICATION_ACTIVITY.equals(extractString(
 				activityJson, ModelerConstants.ACTIVITY_TYPE))) {
 			activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
