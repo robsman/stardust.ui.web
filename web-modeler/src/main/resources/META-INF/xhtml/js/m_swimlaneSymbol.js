@@ -949,6 +949,12 @@ define(
 					}
 					this.parentSymbol.recalculateBoundingBox();
 					this.parentSymbol.adjustGeometry();
+					if ((parseInt(preAdjustmentPos.width) != parseInt(this.width))
+							|| (parseInt(preAdjustmentPos.heigth) != parseInt(this.heigth))) {
+						var newGeometry = {"x": this.x, "y" : this.y, "oid" : this.oid, "width" : this.width , "height" :this.height};
+						var command = m_command.createMoveNodeSymbolCommand(this.getPath(true), {oid : this.oid}, newGeometry, this);
+						m_commandsController.submitCommand(command);
+					}
 				};
 
 				/**
