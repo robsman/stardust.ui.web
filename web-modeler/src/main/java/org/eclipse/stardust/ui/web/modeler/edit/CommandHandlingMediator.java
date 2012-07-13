@@ -1,7 +1,6 @@
 package org.eclipse.stardust.ui.web.modeler.edit;
 
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
-import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingModel;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,14 +11,13 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.stardust.common.Pair;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
-import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.ActivityCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.EventCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.GatewayCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.MoveNodeSymbolHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.SwimlaneCommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.model.element.CreateProcessCommandHandler;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -34,8 +32,8 @@ public class CommandHandlingMediator
    @Resource
    private EditingSessionManager editingSessionManager;
 
-   public Modification handleCommand(ProcessDefinitionType containingProcess,
-         String commandId, List<Pair<IModelElement, JsonObject>> changes)
+   public Modification handleCommand(ModelType containingModel, String commandId,
+         List<Pair<EObject, JsonObject>> changes)
    {
       // TODO register handlers externally
       // TODO proper handler attribute matching
@@ -65,6 +63,10 @@ public class CommandHandlingMediator
       {
          handler = new SwimlaneCommandHandler();
       }
+      else if ("process.create".equals(commandId))
+      {
+         handler = new CreateProcessCommandHandler();
+      }
       
       Modification change = null;
       EObject changeRoot;
@@ -72,12 +74,7 @@ public class CommandHandlingMediator
       {
          // TODO wrap in undo/redo command generator
 
-         EditingSession editingSession = null;
-         if (null != containingProcess)
-         {
-            editingSession = editingSessionManager.getSession(containingProcess);
-         }
-
+         EditingSession editingSession = editingSessionManager.getSession(containingModel);
          List<EObject> modifications = newArrayList();
          try
          {
@@ -86,8 +83,10 @@ public class CommandHandlingMediator
                editingSession.beginEdit();
             }
 
-            for (Pair<IModelElement, JsonObject> modification : changes)
+            for (Pair<EObject, JsonObject> modification : changes)
             {
+               // TODO verify type of target element against expected target (probably
+               // requires some kind of annotation on handler)
                handler.handleCommand(commandId, modification.getFirst(), modification.getSecond());
             }
          }
@@ -105,7 +104,7 @@ public class CommandHandlingMediator
             else
             {
                // wild guess assuming only the elements itself were changed
-               for (Pair<IModelElement, JsonObject> modification : changes)
+               for (Pair<EObject, JsonObject> modification : changes)
                {
                   modifications.add(modification.getFirst());
                }
@@ -123,7 +122,7 @@ public class CommandHandlingMediator
          else
          {
             // find most specific common root of all modified elements
-            changeRoot = findCommonRoot(findContainingModel(containingProcess), modifications);
+            changeRoot = findCommonRoot(containingModel, modifications);
          }
       }
       else

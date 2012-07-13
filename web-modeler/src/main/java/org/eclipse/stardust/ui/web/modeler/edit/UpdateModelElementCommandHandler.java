@@ -4,7 +4,7 @@
  */
 package org.eclipse.stardust.ui.web.modeler.edit;
 
-import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
 
@@ -15,12 +15,12 @@ public class UpdateModelElementCommandHandler implements ICommandHandler
    @Override
    public boolean isValidTarget(Class< ? > type)
    {
-      return IIdentifiableElement.class.isAssignableFrom(type);
+      return IModelElement.class.isAssignableFrom(type);
    }
 
    @Override
-   public void handleCommand(String commandId, IModelElement targetElement, JsonObject request)
+   public void handleCommand(String commandId, EObject targetElement, JsonObject request)
    {
-	   ModelElementUnmarshaller.getInstance().populateFromJson(targetElement, request);
+	   ModelElementUnmarshaller.getInstance().populateFromJson((IModelElement) targetElement, request);
    }
 }

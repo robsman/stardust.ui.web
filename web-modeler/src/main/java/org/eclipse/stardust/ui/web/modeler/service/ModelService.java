@@ -128,20 +128,20 @@ public class ModelService {
 	private static final String DIRECTORY_MODE = "DIRECTORY_MODE";
 	private static final String SINGLE_FILE_MODE = "SINGLE_FILE_MODE";
 	public static final String TYPE_PROPERTY = "type";
-	private static final String ATTRIBUTES_PROPERTY = "attributes";
+	public static final String ATTRIBUTES_PROPERTY = "attributes";
 	public static final String OID_PROPERTY = "oid";
-	private static final String NEW_OBJECT_PROPERTY = "newObject";
+	public static final String NEW_OBJECT_PROPERTY = "newObject";
 	private static final String OLD_OBJECT_PROPERTY = "oldObject";
 	public static final String X_PROPERTY = "x";
 	public static final String Y_PROPERTY = "y";
 	public static final String WIDTH_PROPERTY = "width";
 	public static final String HEIGHT_PROPERTY = "height";
 	private static final String DESCRIPTION_PROPERTY = "description";
-	private static final String MODEL_ID_PROPERTY = "modelId";
+	public static final String MODEL_ID_PROPERTY = "modelId";
 	private static final String PARENT_SYMBOL_ID_PROPERTY = "parentSymbolId";
-	private static final String ACTIVITIES_PROPERTY = "activities";
-	private static final String GATEWAYS_PROPERTY = "gateways";
-	private static final String EVENTS_PROPERTY = "events";
+	public static final String ACTIVITIES_PROPERTY = "activities";
+	public static final String GATEWAYS_PROPERTY = "gateways";
+	public static final String EVENTS_PROPERTY = "events";
 	private static final String ACTIVITY_KEY = "activity";
 	private static final String ACTIVITY_SYMBOLS = "activitySymbols";
 	private static final String GATEWAY_SYMBOLS = "gatewaySymbols";
@@ -182,8 +182,8 @@ public class ModelService {
 	private static final String STRUCTURED_DATA_TYPE_FULL_ID = "structuredDataTypeFullId";
 	private static final String TYPE_DECLARATION_PROPERTY = "typeDeclaration";
 	private static final String CONNECTIONS_PROPERTY = "connections";
-	private static final String CONTROL_FLOWS_PROPERTY = "controlFlows";
-	private static final String DATA_FLOWS_PROPERTY = "dataFlows";
+	public static final String CONTROL_FLOWS_PROPERTY = "controlFlows";
+	public static final String DATA_FLOWS_PROPERTY = "dataFlows";
 	private static final String CONDITION_EXPRESSION_PROPERTY = "conditionExpression";
 	private static final String IN_DATA_MAPPING_PROPERTY = "inDataMapping";
 	private static final String OUT_DATA_MAPPING_PROPERTY = "outDataMapping";
@@ -215,7 +215,7 @@ public class ModelService {
 	private static final String MODEL_DOCUMENTATION_TEMPLATES_FOLDER = "/documents/templates/modeling/";
 
 	private ServiceFactory serviceFactory;
-	private DocumentManagementService documentManagementService;	
+	private DocumentManagementService documentManagementService;
 	private UserService userService;
 	private QueryService queryService;
 	private ModelManagementStrategy modelManagementStrategy;
@@ -284,11 +284,11 @@ public class ModelService {
 	// TODO For testing only <<<
 
 	// Modeling Session Management
-	
+
 	private Map<String, User> prospectUsers = new HashMap<String, User>();
 	private Map<String, User> participantUsers = new HashMap<String, User>();
 	private Map<String, String> imageUris = new HashMap<String, String>();
-	
+
 	/**
 	 * Contains all loaded and newly created
 	 * getModelManagementStrategy().getModels().
@@ -315,7 +315,7 @@ public class ModelService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param modelManagementStrategy
 	 */
 	public void setModelManagementStrategy(
@@ -397,13 +397,12 @@ public class ModelService {
 	 * @param processDefinition
 	 * @return
 	 */
-	private EditingSession getEditingSession(ModelType model,
-			ProcessDefinitionType processDefinition) {
-	   return editingSessionManager.getSession(processDefinition);
+	private EditingSession getEditingSession(ModelType model) {
+	   return editingSessionManager.getSession(model);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param postedData
 	 * @return
 	 */
@@ -411,24 +410,24 @@ public class ModelService {
 		System.out.println("Account: " + postedData.getAsJsonObject(NEW_OBJECT_PROPERTY).get("account").getAsString());
 
 		requestJoin(postedData.getAsJsonObject(NEW_OBJECT_PROPERTY).get("account").getAsString());
-		
+
 		return postedData.toString();
 	}
 
 	/**
-	 * 
+	 *
 	 * @param postedData
 	 * @return
 	 */
 	public void requestJoin(String account) {
 		User prospect = getUserService().getUser(account);
-		
+
 		prospectUsers.put(prospect.getAccount(), prospect);
 		//imageUris.put("prospect.getAccount()", );
 	}
 
 	/**
-	 * 
+	 *
 	 * @param postedData
 	 * @return
 	 */
@@ -446,18 +445,18 @@ public class ModelService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public List<User> getNotInvitedUsers()
 	{
 		UserQuery userQuery = UserQuery.findActive();
-		
+
 		return getQueryService().getAllUsers(userQuery);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param userAccountList
 	 */
 	public void inviteUsers(List<String> userAccountList)
@@ -465,9 +464,9 @@ public class ModelService {
 		// TODO @Francesca
 		// Push REQUEST_JOIN_COMMAND to originating browser session for testing
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param id
 	 * @param postedData
 	 * @return
@@ -499,7 +498,7 @@ public class ModelService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param modelId
 	 * @param commandJson
 	 * @return
@@ -513,7 +512,7 @@ public class ModelService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param modelId
 	 * @param commandJson
      * @return
@@ -534,7 +533,7 @@ public class ModelService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param modelId
 	 * @param processId
 	 * @param postedData
@@ -553,7 +552,7 @@ public class ModelService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param modelId
 	 * @param processId
 	 * @param postedData
@@ -571,7 +570,7 @@ public class ModelService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param modelId
 	 * @param processId
 	 * @param newProcessName
@@ -592,14 +591,14 @@ public class ModelService {
 	/**
 	 * Retrieves all the stored models and returns a json array of references of
 	 * these getModelManagementStrategy().getModels().
-	 * 
+	 *
 	 * @return
 	 */
 	public String getAllModels() {
 		try {
 			// Reload only if model map was empty
 			// TODO Review
-			getModelManagementStrategy().getModels(getModelManagementStrategy().getModels().isEmpty()); 
+			getModelManagementStrategy().getModels(getModelManagementStrategy().getModels().isEmpty());
 
 			// Refresh JSON
 			// TODO Smarter caching
@@ -755,9 +754,9 @@ public class ModelService {
 
 		getModelManagementStrategy().saveModel(model);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void saveAllModels() {
 	   //TODO
@@ -770,10 +769,10 @@ public class ModelService {
 	            getModelManagementStrategy().saveModel(model);
 	        }
 	   }
-	   
+
 	   //Clear the unsaved models' list.
 	   UnsavedModelsTracker.getInstance().notifyAllModelsSaved();*/
-	   
+
 	 //TODO
 	   //Temporarily saving all models as not all changes have moved to change protocol yet.
 	   //After that happens this code can be deleted.
@@ -804,7 +803,7 @@ public class ModelService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param modelId
 	 * @param id
 	 * @param postedData
@@ -816,8 +815,6 @@ public class ModelService {
 				ModelerConstants.NAME_PROPERTY);
 		String id = MBFacade.createIdFromName(name);
 		ProcessDefinitionType processDefinition = MBFacade.createProcess(model, name, id);
-
-		editingSessionManager.createEditingSession(processDefinition);
 
 		JsonObject processDefinitionJson = new JsonObject();
 
@@ -852,8 +849,8 @@ public class ModelService {
 		ModelType model = getModelManagementStrategy().getModels().get(modelId);
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
 				processId);
-		EditingSession editSession = getEditingSession(model, processDefinition);
-		
+		EditingSession editSession = getEditingSession(model);
+
 		String activityType = extractString(activitySymbolJson,
               ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ACTIVITY_TYPE);
 		String participantFullID = extractString(activitySymbolJson, ModelerConstants.MODEL_ELEMENT_PROPERTY,
@@ -870,7 +867,7 @@ public class ModelService {
 		String subProcessID = extractString(
               activitySymbolJson,
               ModelerConstants.MODEL_ELEMENT_PROPERTY,
-              ModelerConstants.SUBPROCESS_ID);		
+              ModelerConstants.SUBPROCESS_ID);
 		String parentSymbolID = extractString(activitySymbolJson, PARENT_SYMBOL_ID_PROPERTY);
 		int xProperty = extractInt(activitySymbolJson, X_PROPERTY);
 		int yProperty = extractInt(activitySymbolJson, Y_PROPERTY);
@@ -880,7 +877,7 @@ public class ModelService {
 	          HEIGHT_PROPERTY);
 
 
-		synchronized (model) 
+		synchronized (model)
 		{
 			long maxOid = XpdlModelUtils.getMaxUsedOid(model);
 
@@ -888,7 +885,7 @@ public class ModelService {
 
 			ActivityType activity = MBFacade.createActivity(modelId, processDefinition, activityType,
                participantFullID, modelID, modelName, applicationFullID, subProcessID, maxOid);
-			
+
 			setDescription(activity,
 					activitySymbolJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
 
@@ -918,8 +915,7 @@ public class ModelService {
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
 				processId);
 		ActivityType activity = MBFacade.findActivity(processDefinition, activityId);
-		EditingSession editingSession = getEditingSession(model,
-				processDefinition);
+		EditingSession editingSession = getEditingSession(model);
 
 		synchronized (model) {
 			editingSession.beginEdit();
@@ -962,8 +958,7 @@ public class ModelService {
 		LaneSymbol laneSymbol = MBFacade.findLaneContainingActivitySymbol(
 				processDefinition.getDiagram().get(0),
 				activitySymbol.getElementOid());
-		EditingSession editingSession = getEditingSession(model,
-				processDefinition);
+		EditingSession editingSession = getEditingSession(model);
 
 		synchronized (model) {
 			editingSession.beginEdit();
@@ -1027,17 +1022,17 @@ public class ModelService {
 
 			String subprocessFullId = extractString(activityJson, ModelerConstants.SUBPROCESS_ID);
 
-			
+
 			ProcessDefinitionType subProcessDefinition = MBFacade.findProcessDefinition(
                getModel(MBFacade.getModelId(subprocessFullId)),
                MBFacade.stripFullId(subprocessFullId));
          ModelType subProcessModel = ModelUtils.findContainingModel(subProcessDefinition);
-         BpmSubProcessActivityBuilder subProcessActivity = newSubProcessActivity(ModelUtils.findContainingProcess(activity));           
-         subProcessActivity.setActivity(activity);         
+         BpmSubProcessActivityBuilder subProcessActivity = newSubProcessActivity(ModelUtils.findContainingProcess(activity));
+         subProcessActivity.setActivity(activity);
          subProcessActivity.setSubProcessModel(subProcessModel);
          subProcessActivity.invokingProcess(subProcessDefinition);
-			
-			
+
+
 		} else if (ModelerConstants.APPLICATION_ACTIVITY.equals(extractString(activityJson,
 				ModelerConstants.ACTIVITY_TYPE))) {
 			activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
@@ -1051,12 +1046,12 @@ public class ModelService {
 
 			ApplicationType application = MBFacade.getApplication(
                MBFacade.getModelId(applicationFullId),
-               MBFacade.stripFullId(applicationFullId));			
-			
+               MBFacade.stripFullId(applicationFullId));
+
          BpmApplicationActivityBuilder applicationActivity = newApplicationActivity(ModelUtils.findContainingProcess(activity));
          applicationActivity.setActivity(activity);
          ModelType applicationModel = ModelUtils.findContainingModel(application);
-         applicationActivity.setApplicationModel(applicationModel);         
+         applicationActivity.setApplicationModel(applicationModel);
          applicationActivity.invokingApplication(application);
 		}
 
@@ -1085,8 +1080,7 @@ public class ModelService {
 		ModelType model = getModelManagementStrategy().getModels().get(modelId);
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
 				processId);
-		EditingSession editingSession = getEditingSession(model,
-				processDefinition);
+		EditingSession editingSession = getEditingSession(model);
 		ActivityType activity = MBFacade.findActivity(processDefinition, activityId);
 		ActivitySymbolType activitySymbol = activity.getActivitySymbols()
 				.get(0);
@@ -1127,8 +1121,7 @@ public class ModelService {
 		ModelType model = getModelManagementStrategy().getModels().get(modelId);
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
 				processId);
-		EditingSession editingSession = getEditingSession(model,
-				processDefinition);
+		EditingSession editingSession = getEditingSession(model);
 
 		synchronized (model) {
 			long maxOid = XpdlModelUtils.getMaxUsedOid(model);
@@ -1197,8 +1190,7 @@ public class ModelService {
 		LaneSymbol laneSymbol = MBFacade.findLaneContainingActivitySymbol(
 				processDefinition.getDiagram().get(0),
 				gatewaySymbol.getElementOid());
-		EditingSession editingSession = getEditingSession(model,
-				processDefinition);
+		EditingSession editingSession = getEditingSession(model);
 
 		synchronized (model) {
 			editingSession.beginEdit();
@@ -1259,8 +1251,7 @@ public class ModelService {
 		ModelType model = getModelManagementStrategy().getModels().get(modelId);
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
 				processId);
-		EditingSession editingSession = getEditingSession(model,
-				processDefinition);
+		EditingSession editingSession = getEditingSession(model);
 		ActivityType gateway = MBFacade.findActivity(processDefinition, gatewayId);
 		ActivitySymbolType gatewaySymbol = gateway.getActivitySymbols().get(0);
 
@@ -1346,7 +1337,7 @@ public class ModelService {
 		ModelType model = getModelManagementStrategy().getModels().get(modelId);
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
 				processId);
-		EditingSession editSession = getEditingSession(model, processDefinition);
+		EditingSession editSession = getEditingSession(model);
 		long maxOid = XpdlModelUtils.getMaxUsedOid(model);
 
 		synchronized (model) {
@@ -1745,7 +1736,7 @@ public class ModelService {
 		ModelType model = getModelManagementStrategy().getModels().get(modelId);
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
 				processId);
-		EditingSession editSession = getEditingSession(model, processDefinition);
+		EditingSession editSession = getEditingSession(model);
 
 		synchronized (model) {
 			editSession.beginEdit();
@@ -1824,7 +1815,7 @@ public class ModelService {
 		ModelType model = getModelManagementStrategy().getModels().get(modelId);
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
 				processId);
-		EditingSession editSession = getEditingSession(model, processDefinition);
+		EditingSession editSession = getEditingSession(model);
 
 		synchronized (model) {
 			editSession.beginEdit();
@@ -1902,13 +1893,13 @@ public class ModelService {
       JsonObject laneSymbolJson = commandJson.getAsJsonObject(NEW_OBJECT_PROPERTY);
       ModelType model = getModelManagementStrategy().getModels().get(modelId);
       ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model, processId);
-      EditingSession editSession = getEditingSession(model, processDefinition);
+      EditingSession editSession = getEditingSession(model);
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-      
+
       String laneId = extractString(laneSymbolJson, ModelerConstants.ID_PROPERTY);
       String laneName = extractString(laneSymbolJson, ModelerConstants.NAME_PROPERTY);
       int xPos = extractInt(laneSymbolJson, X_PROPERTY);
-      int yPos = extractInt(laneSymbolJson, Y_PROPERTY); 
+      int yPos = extractInt(laneSymbolJson, Y_PROPERTY);
       int width = extractInt(laneSymbolJson, WIDTH_PROPERTY);
       int height = extractInt(laneSymbolJson, HEIGHT_PROPERTY);
       String orientation = extractString(laneSymbolJson, ModelerConstants.ORIENTATION_PROPERTY);
@@ -1938,8 +1929,7 @@ public class ModelService {
 				processId);
 		LaneSymbol laneSymbol = MBFacade.findLaneSymbolById(processDefinition, laneId);
 
-		EditingSession editingSession = getEditingSession(model,
-				processDefinition);
+		EditingSession editingSession = getEditingSession(model);
 
 		synchronized (model) {
 			editingSession.beginEdit();
@@ -1977,39 +1967,39 @@ public class ModelService {
 							model,
 							MBFacade.stripFullId(extractString(laneSymbolJson,
 									ModelerConstants.PARTICIPANT_FULL_ID))));
-			
+
          String participantModelID = MBFacade.getModelId(extractString(laneSymbolJson,
                ModelerConstants.PARTICIPANT_FULL_ID));
          if (StringUtils.isEmpty(participantModelID))
          {
             participantModelID = model.getId();
          }
-         
+
          ModelType participantModel = model;
          if(!participantModelID.equals(model.getId()))
          {
             participantModel = getModelManagementStrategy().getModels().get(participantModelID);
          }
-         
+
          IModelParticipant modelParticipant = MBFacade.findParticipant(
                getModelManagementStrategy().getModels().get(participantModelID),
                MBFacade.stripFullId(extractString(laneSymbolJson, ModelerConstants.PARTICIPANT_FULL_ID)));
-                  
+
          if(!participantModelID.equals(model.getId()))
          {
-            String fileConnectionId = JcrConnectionManager.createFileConnection(model, participantModel);                        
-            
-            String bundleId = CarnotConstants.DIAGRAM_PLUGIN_ID;         
+            String fileConnectionId = JcrConnectionManager.createFileConnection(model, participantModel);
+
+            String bundleId = CarnotConstants.DIAGRAM_PLUGIN_ID;
             URI uri = URI.createURI("cnx://" + fileConnectionId + "/");
-            
-            ReplaceModelElementDescriptor descriptor = new ReplaceModelElementDescriptor(uri, 
+
+            ReplaceModelElementDescriptor descriptor = new ReplaceModelElementDescriptor(uri,
                   modelParticipant, bundleId, null, true);
-            
+
             PepperIconFactory iconFactory = new PepperIconFactory();
-            
+
             descriptor.importElements(iconFactory, model, true);
-         }			
-			
+         }
+
 			laneSymbol.setParticipant(modelParticipant);
 		}
 
@@ -2464,7 +2454,7 @@ public class ModelService {
 		ModelType model = getModelManagementStrategy().getModels().get(modelId);
 		JsonObject structuredDataTypeJson = commandJson
 				.getAsJsonObject(NEW_OBJECT_PROPERTY);
-		
+
 		String typeId = extractString(structuredDataTypeJson,
               ModelerConstants.ID_PROPERTY);
 		String typeName = extractString(structuredDataTypeJson,
@@ -2510,7 +2500,7 @@ public class ModelService {
 		ModelType model = getModelManagementStrategy().getModels().get(modelId);
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
 				processId);
-		EditingSession editSession = getEditingSession(model, processDefinition);
+		EditingSession editSession = getEditingSession(model);
 
 		synchronized (model) {
 			editSession.beginEdit();
@@ -2591,7 +2581,7 @@ public class ModelService {
 		ModelType model = getModelManagementStrategy().getModels().get(modelId);
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
 				processId);
-		EditingSession editSession = getEditingSession(model, processDefinition);
+		EditingSession editSession = getEditingSession(model);
 
 		synchronized (model) {
 			editSession.beginEdit();
@@ -3142,7 +3132,7 @@ public class ModelService {
 					connectionsJson.add(
 							extractString(modelElementJson, ModelerConstants.ID_PROPERTY),
 							connectionJson);
-					
+
 					//For end event symbol the anchorpoint orientation is set to "bottom", in the eclipse modeler.
 					//This causes wrong routing of the the connector.
 					//Hence overriding the property with "center" / or "undefined"
@@ -3187,7 +3177,7 @@ public class ModelService {
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
 				processId);
 		DiagramType diagram = processDefinition.getDiagram().get(0);
-		EditingSession editSession = getEditingSession(model, processDefinition);
+		EditingSession editSession = getEditingSession(model);
 
 		editSession.beginEdit();
 
@@ -3209,7 +3199,7 @@ public class ModelService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param httpRequest
 	 * @param modelId
 	 * @return
@@ -3232,8 +3222,6 @@ public class ModelService {
 
 		for (ProcessDefinitionType processDefinition : model
 				.getProcessDefinition()) {
-
-		   editingSessionManager.createEditingSession(processDefinition);
 
 			JsonObject processJson = new JsonObject();
 			processesJson.add(processDefinition.getId(), processJson);
@@ -3384,7 +3372,7 @@ public class ModelService {
 							.getSchema();
 
 					// Determine prefix
-					
+
 					String prefix = null;
 
 					for (Iterator iterator = xsdSchema
@@ -3486,7 +3474,7 @@ public class ModelService {
 		{
 		   dataJson.addProperty(TYPE_PROPERTY, data.getType().getId());
 		}
-		
+
 		return dataJson;
 	}
 
@@ -3702,7 +3690,7 @@ public class ModelService {
 	    JsonObject dataJson = commandJson.getAsJsonObject(NEW_OBJECT_PROPERTY);
         String stripFullId_ = MBFacade.getModelId(extractString(
               dataJson,
-              STRUCTURED_DATA_TYPE_FULL_ID));           
+              STRUCTURED_DATA_TYPE_FULL_ID));
         if(StringUtils.isEmpty(stripFullId_))
         {
            stripFullId_ = modelId;
@@ -3724,7 +3712,7 @@ public class ModelService {
 			   MBFacade.createPrimitiveData(model, id, name, primitiveType);
 			} else if (typeKey.equals(
 			      ModelerConstants.STRUCTURED_DATA_TYPE_KEY)) {
-  
+
             id = extractString(dataJson, ModelerConstants.ID_PROPERTY);
             name = extractString(dataJson, ModelerConstants.NAME_PROPERTY);
             MBFacade.createStructuredData(model, stripFullId_, id, name, structuredDataFullId);
@@ -3749,7 +3737,7 @@ public class ModelService {
 		ModelType model = getModelManagementStrategy().getModels().get(modelId);
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
 				processId);
-		EditingSession editSession = getEditingSession(model, processDefinition);
+		EditingSession editSession = getEditingSession(model);
 		String dataFullID = extractString(dataSymbolJson,
               ModelerConstants.DATA_FULL_ID_PROPERTY);
 		String dataID = extractString(dataSymbolJson, ModelerConstants.DATA_ID_PROPERTY);
@@ -3785,7 +3773,7 @@ public class ModelService {
                yProperty, widthProperty, heightProperty, parentSymbolID, maxOid, data);
 
             dataSymbolJson
-            .addProperty(OID_PROPERTY, dataSymbol.getElementOid());			
+            .addProperty(OID_PROPERTY, dataSymbol.getElementOid());
 			editSession.endEdit();
 		}
 
@@ -3808,16 +3796,16 @@ public class ModelService {
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
 				processId);
 		DataType data = MBFacade.findData(model, dataId);
-		
+
 		/*
-      ModelType typeDeclarationModel = getModelManagementStrategy().getModels().get(typeDeclarationModelId);      
+      ModelType typeDeclarationModel = getModelManagementStrategy().getModels().get(typeDeclarationModelId);
       BpmStructVariableBuilder structVariable = newStructVariable(model);
       structVariable.setData(data);
       structVariable.setTypeDeclarationModel(typeDeclarationModel);
       */
-		
+
 		DataSymbolType dataSymbol = (DataSymbolType) data.getSymbols().get(0);
-		EditingSession editSession = getEditingSession(model, processDefinition);
+		EditingSession editSession = getEditingSession(model);
 
 		synchronized (model) {
 			editSession.beginEdit();
@@ -3863,7 +3851,7 @@ public class ModelService {
 		ModelType model = getModelManagementStrategy().getModels().get(modelId);
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
 				processId);
-		EditingSession editSession = getEditingSession(model, processDefinition);
+		EditingSession editSession = getEditingSession(model);
 
 		synchronized (model) {
 			editSession.beginEdit();
@@ -4128,7 +4116,7 @@ public class ModelService {
 				.add(endEventSymbol);
 
 		parentLaneSymbol.getEndEventSymbols().add(endEventSymbol);
-		
+
 		processDefinitionJson.addProperty("scope", "all");
 
 		return processDefinitionJson.toString();
@@ -4212,7 +4200,7 @@ public class ModelService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	private DocumentManagementService getDocumentManagementService() {
@@ -4225,7 +4213,7 @@ public class ModelService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	private UserService getUserService() {
@@ -4238,7 +4226,7 @@ public class ModelService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	private QueryService getQueryService() {
@@ -4275,11 +4263,11 @@ public class ModelService {
 
 		return content;
 	}
-	
+
 	public ProcessDefinitionType findProcessDefinition(ModelType model, String id) {
 	   return MBFacade.findProcessDefinition(model, id);
 	}
-	
+
 	public ModelType findModel(String modelId)
 	{
 	    return MBFacade.findModel(modelId);

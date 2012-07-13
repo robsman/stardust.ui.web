@@ -1,13 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.edit;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -15,20 +9,32 @@ import org.springframework.stereotype.Component;
 @Scope("session")
 public class EditingSessionManager
 {
-   private final ConcurrentMap<EObject, EditingSession> editingSessions = new ConcurrentHashMap<EObject, EditingSession>();
+   private EditingSession editingSession;
 
-   public EditingSession getSession(ProcessDefinitionType processDefinition)
+   public EditingSession getSession(ModelType... models)
    {
-      return editingSessions.get(processDefinition);
+      if (null == editingSession)
+      {
+         createEditingSession();
+      }
+
+      for (ModelType model : models)
+      {
+         if ( !editingSession.isTrackingModel(model))
+         {
+            editingSession.trackModel(model);
+         }
+      }
+
+      return editingSession;
    }
 
-   public EditingSession createEditingSession(ProcessDefinitionType processDefinition)
+   public EditingSession createEditingSession()
    {
-      if ( !editingSessions.containsKey(processDefinition))
+      if (null == editingSession)
       {
-         ModelType model = ModelUtils.findContainingModel(processDefinition);
-         editingSessions.putIfAbsent(processDefinition, new EditingSession(model));
+         editingSession = new EditingSession();
       }
-      return editingSessions.get(processDefinition);
+      return editingSession;
    }
 }

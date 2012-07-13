@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -43,7 +43,7 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 		},
 		createChangeGeometryCommand : function(path, oldObject, newObject, modelElement) {
 			return new ChangeEvent(m_constants.UPDATE_GEOMETRY_COMMAND, path, null, oldObject, newObject, modelElement);
-		},				
+		},
 		createMoveNodeSymbolCommand : function(baseUri, targetElement, newObject, context) {
 			return new ChangeDescriptor("nodeSymbol.move", [{oid: targetElement.oid, changes: newObject}], context);
 		},
@@ -59,34 +59,34 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 		// TODO Might be simple Request causing command to be broadcasted
 		createRequestJoinCommand : function(prospect) {
 			return new ChangeEvent(m_constants.REQUEST_JOIN_COMMAND, "/users", "requestJoin", null, prospect);
-		},				
+		},
 		createConfirmJoinCommand : function(participant) {
 			return new ChangeEvent(m_constants.CONFIRM_JOIN_COMMAND, "/users", "confirmJoin", participant, null);
-		},				
+		},
 		createSubmitChatMessageCommand : function(message) {
 			return new ChangeEvent(m_constants.SUBMIT_CHAT_MESSAGE_COMMAND, "/users", "submitChatMessage", null, message);
-		},				
+		},
 		patchRenamePath: function(renameCommand)
 		{
 			var path = renameCommand.path;
 			var steps = path.split("/");
 			var newPath = "";
-			
+
 			for (var n = 0; n < steps.length - 1; ++n)
 				{
 				newPath += "/";
 				newPath += steps[n];
 				}
-			
+
 			newPath += "/";
 			newPath += renameCommand.newObject.id;
-			
+
 			renameCommand.path = newPath;
 		}
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	function Command(url, data, type) {
 		m_utils.debug("===> Url: " + url);
@@ -99,16 +99,16 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 		this.type = type;
 
 		/**
-		 * 
+		 *
 		 */
 		Command.prototype.toString = function() {
 			return "Lightdust.Command";
 		};
 	}
-	
+
 	// TODO Merge
 	/**
-	 * 
+	 *
 	 */
 	function ChangeEvent(type, path, operation, oldObject, newObject, modelElement) {
 		this.account = m_user.getCurrentUser().account;
@@ -118,26 +118,36 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 		this.operation = operation;
 		this.oldObject = oldObject;
 		this.newObject = newObject;
-		
+
 		if (modelElement) {
 			this.modelElement = modelElement;
 		}
 
 		/**
-		 * 
+		 *
 		 */
 		ChangeEvent.prototype.toString = function() {
 			return "Lightdust.ChangeEvent";
 		};
 	}
 
-	function ChangeDescriptor(commandId, changeDescriptions, context) {
+	function ChangeDescriptor(commandId, changeDescriptions, changeContext) {
 		this.account = m_user.getCurrentUser().account;
 		this.timestamp = new Date();
 		this.commandId = commandId;
+		this.context = {};
+		if (changeContext.diagram)
+		{
+			if (changeContext.diagram.model) {
+				this.context.modelId = changeContext.diagram.model.id;
+			}
+			if (changeContext.diagram.process) {
+				this.context.processId = changeContext.diagram.process.id;
+			}
+		}
 		this.changeDescriptions = changeDescriptions;
 
-		this.path = "/sessions/" + context.diagram.model.id + "/" + context.diagram.process.id + "/changes";
+		this.path = "/sessions/changes";
 
 		/**
 		 *

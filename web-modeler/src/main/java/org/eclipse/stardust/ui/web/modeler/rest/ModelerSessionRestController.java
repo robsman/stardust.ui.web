@@ -1,6 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.rest;
 
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLong;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 import static org.eclipse.stardust.ui.web.modeler.rest.RestControllerUtils.resolveSpringBean;
@@ -13,7 +14,6 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -25,7 +25,6 @@ import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
 import org.eclipse.stardust.ui.web.modeler.edit.CommandHandlingMediator;
 import org.eclipse.stardust.ui.web.modeler.edit.EditingSessionManager;
@@ -37,7 +36,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-@Path("/modeler/{randomPostFix}/sessions/{modelId}/{processId}")
+@Path("/modeler/{randomPostFix}/sessions")
 public class ModelerSessionRestController
 {
    @Context
@@ -45,12 +44,6 @@ public class ModelerSessionRestController
 
    @Context
    private UriInfo uriInfo;
-
-   @PathParam("modelId")
-   private String modelId;
-
-   @PathParam("processId")
-   private String processId;
 
    public URI toChangeUri(Modification change)
    {
@@ -93,11 +86,8 @@ public class ModelerSessionRestController
    @Path("/changes/mostCurrent")
    public String showCurrentChange()
    {
-      ModelType model = modelService().findModel(modelId);
-      ProcessDefinitionType processDefinition = modelService().findProcessDefinition(model, processId);
-
       JsonObject result = new JsonObject();
-      EditingSession editingSession = editingSessionManager().getSession(processDefinition);
+      EditingSession editingSession = editingSessionManager().getSession();
       if (editingSession.canUndo())
       {
          Modification pendingUndo = editingSession.getPendingUndo();
@@ -113,6 +103,44 @@ public class ModelerSessionRestController
       return jsonIo().writeJsonObject(result);
    }
 
+   @GET
+   @Path("/changes/mostCurrent/navigation")
+   public Response adjustMostCurrentChange() // TODO String action)
+   {
+      String action = "undoMostCurrent";
+      if ("undoMostCurrent".equals(action))
+      {
+         JsonObject result = new JsonObject();
+         EditingSession editingSession = editingSessionManager().getSession();
+         if (editingSession.canUndo())
+         {
+            Modification undoneChange = editingSession.undoLast();
+
+            result = toJson(undoneChange);
+
+            if (editingSession.canRedo())
+            {
+               Modification pendingRedo = editingSession.getPendingRedo();
+               result.addProperty("nextChange", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingRedo.getId());
+            }
+         }
+
+         return Response.ok(jsonIo().writeJsonObject(result)).build();
+      }
+      else if ("redoLastUndo".equals(action))
+      {
+         return Response.status(Status.BAD_REQUEST) //
+               .entity("Not yet implemented")
+               .build();
+      }
+      else
+      {
+         return Response.status(Status.BAD_REQUEST) //
+               .entity("Invalid navigation action: " + action)
+               .build();
+      }
+   }
+
    @POST
    @Path("/changes")
    public Response applyChange(String postedData)
@@ -120,7 +148,7 @@ public class ModelerSessionRestController
       try
       {
          JsonObject json = jsonIo().readJsonObject(postedData);
-         Response outcome = applyChange(modelId, processId, json);
+         Response outcome = applyChange(json);
 
          return outcome;
       }
@@ -130,26 +158,55 @@ public class ModelerSessionRestController
       }
    }
 
-   private Response applyChange(String modelId, String processId, JsonObject commandJson)
+   private Response applyChange(JsonObject commandJson)
    {
 	   System.out.println("applyChange: " + commandJson);
       String commandId = extractString(commandJson, "commandId");
+      String modelId = extractString(commandJson, "context", "modelId");
 
-      ModelType model = modelService().findModel(modelId);
-      ProcessDefinitionType processDefinition = modelService().findProcessDefinition(model, processId);
+      if (isEmpty(modelId))
+      {
+         return applyGlobalChange(commandId, commandJson);
+      }
+      else
+      {
+         // change to be interpreted in context of a model
+         ModelType model = modelService().findModel(modelId);
+         if (null == model)
+         {
+            return Response.status(Status.BAD_REQUEST) //
+                  .entity("Unknown model: " + modelId)
+                  .build();
+         }
 
-      List<Pair<IModelElement, JsonObject>> changeDescriptors = newArrayList();
+         return applyModelElementChange(commandId, model, commandJson);
+      }
+   }
+
+   private Response applyGlobalChange(String commandId, JsonObject commandJson)
+   {
+      // TODO global command (e.g. "model.create")
+
+      return null;
+   }
+
+
+   private Response applyModelElementChange(String commandId, ModelType model, JsonObject commandJson)
+   {
+      List<Pair<EObject, JsonObject>> changeDescriptors = newArrayList();
       JsonArray targetElementsJson = commandJson.getAsJsonArray("changeDescriptions");
       for (JsonElement targetElementJson : targetElementsJson)
       {
-         IModelElement targetElement = null;
+         EObject targetElement = null;
 
          if (targetElementJson.isJsonObject() && targetElementJson.getAsJsonObject().has("oid"))
          {
+            // existing target, identified by oid
             long oid = extractLong(targetElementJson.getAsJsonObject(), "oid");
 
             // deep search for model element by OID
-            for (Iterator<? > i = processDefinition.eAllContents(); i.hasNext();)
+            // TODO can lookup faster as oid is declared the XML index field?
+            for (Iterator<? > i = model.eAllContents(); i.hasNext();)
             {
                Object element = i.next();
                if ((element instanceof IModelElement)
@@ -164,13 +221,15 @@ public class ModelerSessionRestController
             {
                JsonElement jsTargetElementChanges = targetElementJson.getAsJsonObject().get("changes");
 
-               changeDescriptors.add(new Pair<IModelElement, JsonObject>(targetElement,
+               changeDescriptors.add(new Pair<EObject, JsonObject>(targetElement,
                      jsTargetElementChanges.getAsJsonObject()));
             }
             else
             {
                return Response.status(Status.BAD_REQUEST) //
-                     .entity("Unknown target element for element OID " + oid)
+                     .entity(
+                           "Unknown target element for element OID " + oid
+                                 + " within model " + model.getId())
                      .build();
             }
          }
@@ -183,11 +242,11 @@ public class ModelerSessionRestController
       }
 
       // dispatch to actual command handler
-      Modification change = commandHandlerRegistry().handleCommand(processDefinition, commandId, changeDescriptors);
+      Modification change = commandHandlerRegistry().handleCommand(model, commandId, changeDescriptors);
       if (null != change)
       {
-         //Notify unsaved models tracker of the change to the model. 
-         UnsavedModelsTracker.getInstance().notifyModelModfied(modelId);
+         //Notify unsaved models tracker of the change to the model.
+         UnsavedModelsTracker.getInstance().notifyModelModfied(model.getId());
          return Response.created(toChangeUri(change)) //
                .entity(jsonIo().writeJsonObject(toJson(change)))
                .build();

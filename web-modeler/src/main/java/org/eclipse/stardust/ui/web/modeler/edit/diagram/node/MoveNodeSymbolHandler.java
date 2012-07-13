@@ -6,7 +6,7 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PRO
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
-import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
 import org.eclipse.stardust.ui.web.modeler.edit.ICommandHandler;
@@ -22,7 +22,7 @@ public class MoveNodeSymbolHandler implements ICommandHandler
    }
 
    @Override
-   public void handleCommand(String commandId, IModelElement targetElement,
+   public void handleCommand(String commandId, EObject targetElement,
          JsonObject request)
    {
       INodeSymbol nodeSymbol = (INodeSymbol) targetElement;

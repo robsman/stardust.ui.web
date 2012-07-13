@@ -18,12 +18,10 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PRO
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
-import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
@@ -35,7 +33,7 @@ import com.google.gson.JsonObject;
 
 /**
  * @author Shrikant.Gangal
- * 
+ *
  */
 public class SwimlaneCommandHandler implements ICommandHandler {
 
@@ -45,8 +43,8 @@ public class SwimlaneCommandHandler implements ICommandHandler {
 	}
 
 	@Override
-	public void handleCommand(String commandId, IModelElement targetElement,
-			JsonObject request) {
+   public void handleCommand(String commandId, EObject targetElement, JsonObject request)
+   {
 		PoolSymbol parentSymbol = (PoolSymbol) targetElement;
 		ModelType model = ModelUtils.findContainingModel(parentSymbol);
 		ProcessDefinitionType processDefinition = ModelUtils
@@ -59,7 +57,7 @@ public class SwimlaneCommandHandler implements ICommandHandler {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param parentSymbol
 	 * @param model
 	 * @param processDefinition
@@ -88,7 +86,7 @@ public class SwimlaneCommandHandler implements ICommandHandler {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param parentSymbol
 	 * @param model
 	 * @param processDefinition

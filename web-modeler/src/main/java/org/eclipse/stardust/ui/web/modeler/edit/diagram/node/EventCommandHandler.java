@@ -13,11 +13,11 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PRO
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
@@ -37,7 +37,7 @@ public class EventCommandHandler implements ICommandHandler
    }
 
    @Override
-   public void handleCommand(String commandId, IModelElement targetElement, JsonObject request)
+   public void handleCommand(String commandId, EObject targetElement, JsonObject request)
    {
       if ("eventSymbol.create".equals(commandId))
       {
@@ -49,7 +49,7 @@ public class EventCommandHandler implements ICommandHandler
       }
    }
 
-   private void createEvent(IModelElement targetElement, JsonObject request)
+   private void createEvent(EObject targetElement, JsonObject request)
    {
       LaneSymbol parentLaneSymbol = (LaneSymbol) targetElement;
       ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
