@@ -47,7 +47,8 @@ define(
 				var rest = array.slice((to || from) + 1 || array.length);
 				array.length = from < 0 ? array.length + from : from;
 				return array.push.apply(array, rest);
-			};
+			}
+			;
 
 			/**
 			 * 
@@ -56,7 +57,7 @@ define(
 			function removeItemFromArray(array, item) {
 				debug("===> Before removal:");
 				debug(array);
-				var n=0;
+				var n = 0;
 				while (n < array.length) {
 					if (array[n] == item) {
 						removeFromArray(array, n, n);
@@ -69,7 +70,8 @@ define(
 
 				debug("===> After removal:");
 				debug(array);
-			};
+			}
+			;
 
 			function debug(obj) {
 				if (console) {
@@ -78,7 +80,13 @@ define(
 			}
 
 			/**
-			 * Copies all data members of and object into another object.
+			 * Copies all data members of and object into another object
+			 * recursively. Members existing in the childObject and not existing
+			 * in the parentObject will not be overwritten.
+			 * 
+			 * The function will not check for cyclic dependencies.
+			 * 
+			 * Functions in parentObject will not be copied.
 			 */
 			function inheritFields(childObject, parentObject) {
 				for ( var member in parentObject) {
@@ -86,7 +94,14 @@ define(
 						continue;
 					}
 
-					childObject[member] = parentObject[member];
+					if (typeof parentObject[member] == "object"  
+							&& childObject[member] != null) {
+						// Copy recursively
+
+						inheritFields(childObject[member], parentObject[member]);
+					} else {
+						childObject[member] = parentObject[member];
+					}
 				}
 			}
 
@@ -107,7 +122,7 @@ define(
 			function typeObject(object, prototype) {
 				inheritMethods(object, prototype);
 			}
-			
+
 			function viewObject(obj) {
 				var outStr = "";
 

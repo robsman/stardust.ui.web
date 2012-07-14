@@ -42,13 +42,20 @@ define(
 				/**
 				 * 
 				 */
+				Drawable.prototype.applyChanges = function(changedObject) {
+					m_utils.inheritFields(this, changedObject);
+				};
+
+				/**
+				 * @deprecated
+				 */
 				Drawable.prototype.submitCreation = function() {
 					m_commandsController.submitCommand(m_command.
 							createCreateCommand(this.getPath(), this.createTransferObject()));
 				};
 
 				/**
-				 * 
+				 * @deprecated
 				 */
 				Drawable.prototype.submitDeletion = function() {
 					m_commandsController.submitCommand(m_command.createDeleteCommand(this.getPath(true),

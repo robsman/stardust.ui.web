@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -45,9 +45,8 @@ define(
 			var currentPanningSensor = null;
 			var symbolEditMode = false;
 
-
 			/**
-			 *
+			 * 
 			 */
 			function panCurrentDiagramNorth() {
 				if (currentDiagram != null) {
@@ -56,7 +55,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function panCurrentDiagramEast() {
 				if (currentDiagram != null) {
@@ -65,7 +64,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function panCurrentDiagramSouth() {
 				if (currentDiagram != null) {
@@ -74,7 +73,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function panCurrentDiagramWest() {
 				if (currentDiagram != null) {
@@ -83,7 +82,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function Diagram(newDivId) {
 				currentDiagram = this;
@@ -298,22 +297,32 @@ define(
 				this.rubberBandWidth = 0;
 				this.rubberBandHeight = 0;
 
-				 this.editableText = jQuery("#editable").editable(
-				 function(value, settings) {
-				 return value;
-				 },
-				 {
-				 type : "text",
-				 event : "dblclick",
-				 onblur : "submit",
-				 onreset : function(settings, value) {  //On Reset hide the text box and reset the value
-					 jQuery.data(document, "diagram").cancelEditable();
-					},
-				 onsubmit : function(settings,value) {
-					jQuery.data(document, "diagram").submitEditable($('input', this).val());
-			     }
-				 }).css("font-family", m_constants.DEFAULT_FONT_FAMILY)
-				 .css("font-size", m_constants.DEFAULT_FONT_SIZE);
+				this.editableText = jQuery("#editable")
+						.editable(
+								function(value, settings) {
+									return value;
+								},
+								{
+									type : "text",
+									event : "dblclick",
+									onblur : "submit",
+									onreset : function(settings, value) { // On
+										// Reset
+										// hide
+										// the
+										// text box and reset
+										// the value
+										jQuery.data(document, "diagram")
+												.cancelEditable();
+									},
+									onsubmit : function(settings, value) {
+										jQuery.data(document, "diagram")
+												.submitEditable(
+														$('input', this).val());
+									}
+								}).css("font-family",
+								m_constants.DEFAULT_FONT_FAMILY).css(
+								"font-size", m_constants.DEFAULT_FONT_SIZE);
 
 				jQuery.data(document, "diagram", this);
 
@@ -321,14 +330,14 @@ define(
 				this.poolSymbol = null;
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.toString = function() {
 					return "Lightdust.Diagram";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.initialize = function() {
 					// Load all models to populate Properties Panels
@@ -362,7 +371,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.getEndpointUrl = function() {
 					return m_urlUtils.getContextName()
@@ -370,7 +379,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.createTransferObject = function() {
 					var transferObject = {};
@@ -386,136 +395,59 @@ define(
 				};
 
 				/**
+				 * 
+				 */
+				Diagram.prototype.findSymbolByGuid = function(guid) {
+
+					for ( var i = 0; i < this.symbols.length; i++) {
+						if (this.symbols[i].oid == guid) {
+							return this.symbols[i];
+						}
+					}
+
+					return null;
+				};
+
+				/**
 				 * The diagram serves as a dispatcher for all changes on model
-				 * elements.
+				 * elements underneath the diagram process.
 				 */
 				Diagram.prototype.processCommand = function(command) {
 					m_utils.debug("===> Diagram Process Command");
 					m_utils.debug(command.type);
+
 					// parse the response JSON from command pattern
-					var obj = ("string" == typeof(command)) ? jQuery.parseJSON(command) : command;
+					var obj = ("string" == typeof (command)) ? jQuery
+							.parseJSON(command) : command;
 
 					if (null != obj && null != obj.changes) {
 
 						for ( var i = 0; i < obj.changes.added.length; i++) {
 							this.lastSymbol.oid = obj.changes.added[i].oid;
 						}
+
 						this.lastSymbol = null;
-					} else if (command.type == m_constants.CREATE_COMMAND) {
-						// The following is for the case that the symbol has been created directly from the toolbar and already exists
-						// although not registered with the diagram and the process
 
-						if (command.newObject.modelElement == null) {
-							// Swimlanes
+						// Apply changes
 
-							m_utils.debug("Last symbol "
-									+ this.lastSymbol);
-							this.lastSymbol.oid = command.newObject.oid;
+						for ( var i = 0; i < obj.changes.modified.length; i++) {
+							var symbol = this
+									.findSymbolByGuid(obj.changes.modified[i].oid);
 
-							this.lastSymbol = null;
-						}
-						else if (this.lastSymbol.modelElement.id == command.newObject.modelElement.id) {
-							m_utils.debug("Setting element OID to "
-									+ command.newObject.oid);
-							this.lastSymbol.oid = command.newObject.oid;
-
-							this.lastSymbol.register();
-
-							this.lastSymbol = null;
-						} else {
-							m_utils.debug("Wrong ID for last symbol.");
-							// TODO Here we need to react to symbol creation pushed from other sources
-							// Create object from json and register with diagram
-						}
-					} else {
-						var element = this.findElementByPath(command.path);
-
-						if (element != null) {
-							if (command.type == m_constants.CREATE_COMMAND) {
-							} else if (command.type == m_constants.RENAME_COMMAND) {
-								element.modelElement.id = command.newObject.modelElement.id;
-								element.modelElement.name = command.newObject.modelElement.name;
-
-								element.refreshFromModelElement();
-							} else if (command.type == m_constants.UPDATE_GEOMETRY_COMMAND) {
-								element.move(command.newObject.x,
-										command.newObject.y);
-								// TODO Stretch
-							} else if (command.type == m_constants.DELETE_COMMAND) {
-								element.remove();
+							if (symbol != null) {
+								m_utils.debug("Up to changed symbol:");
+								m_utils.debug(symbol);
+								symbol.applyChanges(obj.changes.modified[i]);
+								m_utils.debug("Changed symbol to:");
+								m_utils.debug(symbol);
+								symbol.refresh();
 							}
-						} else {
-							m_utils.debug("Element " + command.path
-									+ " not found.");
 						}
-					}
+					} 
 				};
 
 				/**
-				 *
-				 */
-				Diagram.prototype.undoCommand = function(command) {
-					if (command.type == m_constants.DELETE_COMMAND) {
-						if (command.oldObject.modelElement != null) {
-							if (command.oldObject.modelElement.type == m_constants.ACTIVITY) {
-								var lane = this
-										.findLane(command.oldObject.parentSymbolId);
-
-								m_utils.debug("Lane: ");
-								m_utils.debug(lane);
-
-								m_activitySymbol.createActivitySymbolFromJson(
-										this, lane, command.oldObject);
-							}
-						}
-					} else {
-						var element = this.findElementByPath(command.path);
-
-						if (element != null) {
-							if (command.type == m_constants.CREATE_COMMAND) {
-								element.remove();
-							} else if (command.type == m_constants.RENAME_COMMAND) {
-								element.modelElement.id = command.oldObject.id;
-								element.modelElement.name = command.oldObject.name;
-
-								element.refreshFromModelElement();
-							} else if (command.type == m_constants.UPDATE_GEOMETRY_COMMAND) {
-								element.move(command.oldObject.x,
-										command.oldObject.y);
-								// TODO Stretch
-							}
-						}
-					}
-				};
-
-				/**
-				 *
-				 */
-				Diagram.prototype.findElementByPath = function(path) {
-					var steps = path.split("/");
-					var type = steps[steps.length - 2];
-					var id = steps[steps.length - 1];
-
-					m_utils.debug("step-1: " + steps[steps.length - 2]);
-					m_utils.debug("step-0: " + steps[steps.length - 1]);
-
-					var symbol = null;
-
-					if (type == "activities") {
-						return this.findActivitySymbolById(id);
-					} else if (type == "events") {
-						return this.findEventSymbolById(id)
-					} else if (type == "gateways") {
-						return this.findGatewaySymbolById(id);
-					} else if (type == "data") {
-						return this.findDataSymbolById(id);
-					}
-
-					// TODO Connector
-				};
-
-				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.findActivitySymbolById = function(id) {
 					for ( var n in this.activitySymbols) {
@@ -530,7 +462,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.findGatewaySymbolById = function(id) {
 					for ( var n in this.gatewaySymbols) {
@@ -545,7 +477,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.findEventSymbolById = function(id) {
 					for ( var n in this.eventSymbols) {
@@ -560,7 +492,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.findDataSymbolById = function(id) {
 					for ( var n in this.dataSymbols) {
@@ -575,24 +507,25 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.submitUpdate = function() {
 					// TODO Incomplete
-					m_commandsController.submitCommand(m_command.
-							createUpdateCommand("/models/"
-									+ this.model.id + "/processes/" + this.process.id
-									+ "/diagrams/4711", null, this.createTransferObject()));
+					m_commandsController.submitCommand(m_command
+							.createUpdateCommand("/models/" + this.model.id
+									+ "/processes/" + this.process.id
+									+ "/diagrams/4711", null, this
+									.createTransferObject()));
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.onUpdate = function() {
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.addActivitySymbol = function() {
 					this.newSymbol = m_activitySymbol.createActivitySymbol(
@@ -600,14 +533,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.isInConnectionMode = function() {
 					return this.mode == this.CONNECTION_MODE;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.setSelectMode = function() {
 					this.clearCurrentSelection();
@@ -622,7 +555,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.isInNormalMode = function() {
 					return this.mode == this.NORMAL_MODE;
@@ -649,7 +582,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.onGlobalMouseMove = function(x, y) {
 					if (this.newSymbol != null) {
@@ -695,7 +628,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.onGlobalMouseUp = function(x, y) {
 					if (this.mode == this.RUBBERBAND_MODE) {
@@ -721,7 +654,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.getSymbolContainingCoordinates = function(x,
 						y) {
@@ -735,7 +668,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.getSymbolContainingCoordinatesExcludeContainerSymbols = function(
 						x, y) {
@@ -750,7 +683,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.checkSnapLines = function(symbol) {
 					this.verticalSnapLine.hide();
@@ -799,7 +732,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.hideSnapLines = function(symbol) {
 					this.verticalSnapLine.hide();
@@ -810,7 +743,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.adjustVerticalSnapLine = function(newPosition) {
 					this.verticalSnapLinePosition = newPosition;
@@ -821,7 +754,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.adjustHorizontalSnapLine = function(
 						newPosition) {
@@ -833,7 +766,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.snapSymbol = function(symbol) {
 					if (this.isVerticalSnap) {
@@ -855,7 +788,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.onClick = function(x, y) {
 					if (this.newSymbol != null) {
@@ -877,7 +810,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.placeNewSymbol = function(x, y) {
 					this.newSymbol.complete();
@@ -895,7 +828,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.flipFlowOrientation = function(anchorPoint) {
 					if (this.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
@@ -917,14 +850,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.print = function(anchorPoint) {
 					jQuery("#scrollpane").print();
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.connectSymbol = function(symbol) {
 					this.mode = this.CONNECTION_MODE;
@@ -946,7 +879,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.connectToActivity = function(symbol) {
 					this.addAndConnectSymbol(symbol, m_activitySymbol
@@ -954,7 +887,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.connectToGateway = function(symbol) {
 					this.addAndConnectSymbol(symbol, m_gatewaySymbol
@@ -962,7 +895,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.connectToStopEvent = function(symbol) {
 					this.addAndConnectSymbol(symbol, m_eventSymbol
@@ -970,7 +903,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.addAndConnectSymbol = function(startSymbol,
 						targetSymbol) {
@@ -999,7 +932,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.setAnchorPoint = function(anchorPoint) {
 					if (this.currentConnection == null) {
@@ -1026,14 +959,14 @@ define(
 					return m_connection.createConnection(this, anchorPoint);
 				};
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.addToCurrentSelection = function(drawable) {
 					this.currentSelection.push(drawable);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.clearCurrentSelection = function() {
 					for ( var item in this.currentSelection) {
@@ -1051,7 +984,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.moveSelectedSymbolsBy = function(dX, dY) {
 					for ( var n in this.currentSelection) {
@@ -1060,11 +993,12 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.showEditable = function(textPrimitive) {
 					this.currentTextPrimitive = textPrimitive;
-					//Use the Symbol's x co-ordinate to decide the width  of textbox
+					// Use the Symbol's x co-ordinate to decide the width of
+					// textbox
 					var textboxWidth = textPrimitive.auxiliaryProperties.callbackScope.width
 							- WIDTH_ADJUSTMENT;
 					m_utils.debug("text primitive set");
@@ -1078,14 +1012,14 @@ define(
 										"x" : textPrimitive.auxiliaryProperties.callbackScope.x
 												+ X_OFFSET + 27,
 										"y" : textPrimitive.auxiliaryProperties.callbackScope.y
-												+ Y_OFFSET -5
+												+ Y_OFFSET - 5
 									}).show().trigger("dblclick");
 					this.symbolEditMode = true;
 					m_utils.debug("editable activated");
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.submitEditable = function(content) {
 					if (content == '') {
@@ -1102,7 +1036,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.cancelEditable = function() {
 					this.editableText.css("visibility", "hidden").hide()
@@ -1113,7 +1047,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.zoomIn = function() {
 					this.zoomFactor = Math.max(this.zoomFactor
@@ -1129,7 +1063,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.zoomOut = function() {
 					this.zoomFactor = this.zoomFactor
@@ -1145,7 +1079,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.loadProcess = function() {
 					m_communicationController.syncGetData({
@@ -1167,7 +1101,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.loadFromJson = function(json) {
 					m_utils.debug("===> Process/Diagram JSON");
@@ -1205,7 +1139,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.setSize = function(width, height) {
 					this.width = width;
@@ -1218,7 +1152,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.checkPan = function(x, y) {
 					if (this.panningSensorNorth.x <= x
@@ -1299,7 +1233,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.panNorth = function() {
 					if (this.scrollPane.scrollTop() > 0) {
@@ -1311,7 +1245,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.panEast = function() {
 					if (this.scrollPane.scrollLeft() < this.width) {
@@ -1323,7 +1257,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.panSouth = function() {
 					if (this.scrollPane.scrollTop() < this.height) {
@@ -1335,7 +1269,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.panWest = function() {
 					if (this.scrollPane.scrollLeft() > 0) {
@@ -1392,7 +1326,7 @@ define(
 				// === End move to m_toolbar.js ===
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.applyDecoration = function(decoration) {
 					for ( var decorationElement in decoration.elements) {
@@ -1442,7 +1376,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.findLane = function(id) {
 					return this.poolSymbol.findLane(id);

@@ -79,23 +79,6 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 		},
 		createSubmitChatMessageCommand : function(message) {
 			return new ChangeEvent(m_constants.SUBMIT_CHAT_MESSAGE_COMMAND, "/users", "submitChatMessage", null, message);
-		},
-		patchRenamePath: function(renameCommand)
-		{
-			var path = renameCommand.path;
-			var steps = path.split("/");
-			var newPath = "";
-
-			for (var n = 0; n < steps.length - 1; ++n)
-				{
-				newPath += "/";
-				newPath += steps[n];
-				}
-
-			newPath += "/";
-			newPath += renameCommand.newObject.id;
-
-			renameCommand.path = newPath;
 		}
 	};
 

@@ -76,7 +76,7 @@ define(
 					} else if (command.type == m_constants.CONFIRM_JOIN_COMMAND) {
 						imageUrl = "../images/" + command.oldObject.account + "-photo.gif"; //command.oldObject.imageUrl;
 					} else {
-						imageUrl = "../images/" + command.account + "-photo.gif"; //m_session.current().participants[command.account].imageUrl;
+						imageUrl = "../images/" + "sheldor-photo.gif"; //m_session.current().participants[command.account].imageUrl;
 					}
 
 					row += "<img src=\"" + imageUrl + "\"/>";
@@ -101,18 +101,9 @@ define(
 								+ command.oldObject.lastName + " joining was confirmed.");
 					} else if (command.type == m_constants.SUBMIT_CHAT_MESSAGE_COMMAND) {
 						row += command.newObject;
-					} else if (command.type == m_constants.CREATE_COMMAND) {
-						row += "Model Element created.";
-					} else if (command.type == m_constants.DELETE_COMMAND) {
-						row += "Model Element deleted.";
-					} else if (command.type == m_constants.UPDATE_COMMAND) {
-						row += "Model Element changed.";
-					} else if (command.type == m_constants.RENAME_COMMAND) {
-						row += "Model Element renamed.";
-					} else if (command.type == m_constants.UPDATE_GEOMETRY_COMMAND) {
-						row += "Geometry of Model Element changed.";
 					} else {
-						row += "Unkown change performed.";
+						// TODO Can be more specific
+						row += "Model element(s) added, changed or deleted.";
 					}
 
 					row += "</span></td>";

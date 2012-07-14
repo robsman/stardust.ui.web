@@ -250,17 +250,12 @@ define(
 						command) {
 					m_utils.debug("===> Broadcast Command Undo:");
 
-					// TODO Review
-
-					if (command.type == m_constants.RENAME_COMMAND) {
-						m_command.patchRenamePath(command);
-					}
-
 					m_utils.debug(command);
 
 					for ( var n = 0; n < this.commandHandlers.length; ++n) {
 						try {
-							this.commandHandlers[n].undoCommand(command);
+							this.commandHandlers[n].processCommand(command);
+							//this.commandHandlers[n].undoCommand(command); TODO do we still need a specific undo?
 						} catch (e) {
 							m_utils.debug("Failed broadcasting undo: " + e);
 						}
