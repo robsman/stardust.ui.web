@@ -146,6 +146,15 @@ define(
 				// Register with Command Controller
 
 				m_commandsController.registerCommandHandler(this);
+				
+				// Unregister handler on window unload.
+				if (window.callbackScope) {
+					window.callbackScope = {};
+				}
+				window.callbackScope.diagram = this;
+				$(window).unload(function() {
+					m_commandsController.unregisterCommandHandler(this.callbackScope.diagram);
+				});
 
 				// Bind DOM elements
 

@@ -32,6 +32,9 @@ define(
 				registerCommandHandler : function(commandHandler) {
 					getInstance().registerCommandHandler(commandHandler);
 				},
+				unregisterCommandHandler : function(commandHandler) {
+					getInstance().unregisterCommandHandler(commandHandler);
+				},
 				broadcastCommand : function(command) {
 					getInstance().broadcastCommand(command);
 				},
@@ -220,6 +223,14 @@ define(
 				CommandsController.prototype.registerCommandHandler = function(
 						commandHandler) {
 					this.commandHandlers.push(commandHandler);
+				};
+
+				/**
+				 *
+				 */
+				CommandsController.prototype.unregisterCommandHandler = function(
+						commandHandler) {
+					m_utils.removeItemFromArray(this.commandHandlers, commandHandler);
 				};
 
 				/**
