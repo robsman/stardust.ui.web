@@ -49,7 +49,6 @@ define(
 				findProcess : function(fullId) {
 					return getModels()[stripModelId(fullId)].processes[stripElementId(fullId)];
 				},
-
 				createModel : function(id, name) {
 					var model = new Model();
 
@@ -60,7 +59,6 @@ define(
 
 					return model;
 				},
-
 				renameModel : function(id, newId, newName) {
 					var model = getModels()[id];
 
@@ -69,6 +67,24 @@ define(
 					getModels()[newId] = model;
 
 					delete getModels()[id];
+				},
+				/**
+				 * TODO May not be safe as element OIDs are not unique. 
+				 * @param guid
+				 * @returns
+				 */
+				findModelElementByGuid : function(guid) {
+					var model = null;
+					var element = null;
+
+					for ( var model in getModels()) {
+						if ((element = getModels()[model]
+								.findModelElementByGuid(guid)) != null) {
+							return element;
+						}
+					}
+
+					return null;
 				},
 				findElementTypeByPath : function(path) {
 					var steps = path.split("/");
@@ -236,7 +252,7 @@ define(
 				Model.prototype.getApplicationIndex = function() {
 					var index = 0;
 
-					for ( var n in this.application) {
+					for ( var n in this.applications) {
 						++index;
 					}
 
@@ -258,6 +274,45 @@ define(
 					++index;
 
 					return index;
+				};
+
+				/**
+				 * TODO Make more efficient?
+				 */
+				Model.prototype.findModelElementByGuid = function(guid) {
+					var n;
+
+					for (n in this.processes) {
+						if (this.processes[n].oid == guid) {
+							return this.processes[n];
+						}
+					}
+
+					for (n in this.applications) {
+						if (this.applications[n].oid == guid) {
+							return this.applications[n];
+						}
+					}
+
+					for (n in this.dataItems) {
+						if (this.dataItems[n].oid == guid) {
+							return this.dataItems[n];
+						}
+					}
+
+					for (n in this.participants) {
+						if (this.participants[n].oid == guid) {
+							return this.participants[n];
+						}
+					}
+
+					for (n in this.structuredDataTypes) {
+						if (this.structuredDataTypes[n].oid == guid) {
+							return this.structuredDataTypes[n];
+						}
+					}
+
+					return null;
 				};
 			}
 

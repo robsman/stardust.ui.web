@@ -130,6 +130,9 @@ public class CommandHandlingMediator
          // did not handle command, so nothing has changed
          changeRoot = null;
       }
+      
+      System.out.println("Change Root: " + changeRoot);
+      System.out.println("Change: " + change);
 
       return change;
    }

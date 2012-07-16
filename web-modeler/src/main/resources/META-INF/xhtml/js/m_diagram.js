@@ -409,6 +409,21 @@ define(
 				};
 
 				/**
+				 * 
+				 */
+				Diagram.prototype.findSymbolByModelElementGuid = function(guid) {
+
+					for ( var i = 0; i < this.symbols.length; i++) {
+						if (this.symbols[i].modelElement != null
+								&& this.symbols[i].modelElement.oid == guid) {
+							return this.symbols[i];
+						}
+					}
+
+					return null;
+				};
+
+				/**
 				 * The diagram serves as a dispatcher for all changes on model
 				 * elements underneath the diagram process.
 				 */
@@ -416,12 +431,15 @@ define(
 					m_utils.debug("===> Diagram Process Command");
 					m_utils.debug(command.type);
 
-					// parse the response JSON from command pattern
+					// Parse the response JSON from command pattern
+					
 					var obj = ("string" == typeof (command)) ? jQuery
 							.parseJSON(command) : command;
 
 					if (null != obj && null != obj.changes) {
 
+						// TODO is lastSymbol still needed
+						
 						for ( var i = 0; i < obj.changes.added.length; i++) {
 							this.lastSymbol.oid = obj.changes.added[i].oid;
 						}
@@ -442,8 +460,20 @@ define(
 								m_utils.debug(symbol);
 								symbol.refresh();
 							}
+							
+							symbol = this
+									.findSymbolByModelElementGuid(obj.changes.modified[i].oid);
+
+							if (symbol != null) {
+								m_utils.debug("Up to changed symbol:");
+								m_utils.debug(symbol);
+								symbol.applyChanges(obj.changes.modified[i]);
+								m_utils.debug("Changed symbol to:");
+								m_utils.debug(symbol);
+								symbol.refresh();
+							}
 						}
-					} 
+					}
 				};
 
 				/**

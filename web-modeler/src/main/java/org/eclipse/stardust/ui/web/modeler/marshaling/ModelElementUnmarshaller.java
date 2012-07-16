@@ -80,17 +80,19 @@ public class ModelElementUnmarshaller
       modelElementPropertiesMap = new HashMap<Class, String[]>();
       modelElementReferencePropertiesMap = new HashMap<Class, String[]>();
 
+      modelElementPropertiesMap.put(ProcessDefinitionType.class, new String[] {
+         "name"});
       symbolPropertiesMap.put(ActivitySymbolType.class, new String[] {"x", "y"});
       modelElementPropertiesMap.put(ActivitySymbolType.class, new String[] {
-            "name", "description"});
+            "name"});
 
       symbolPropertiesMap.put(StartEventSymbol.class, new String[] {"x", "y"});
       modelElementPropertiesMap.put(StartEventSymbol.class, new String[] {
-            "name", "description"});
+            "name"});
 
       symbolPropertiesMap.put(EndEventSymbol.class, new String[] {"x", "y"});
       modelElementPropertiesMap.put(EndEventSymbol.class, new String[] {
-            "name", "description"});
+            "name"});
    }
 
    /**
@@ -104,8 +106,7 @@ public class ModelElementUnmarshaller
 
       if (element instanceof ProcessDefinitionType)
       {
-         mapDeclaredModelElementProperties(element, json,
-               modelElementPropertiesMap.get(ProcessDefinitionType.class));
+         updateProcessDefinition((ProcessDefinitionType) element, json);
       }
       else if (element instanceof ActivitySymbolType)
       {
@@ -132,10 +133,17 @@ public class ModelElementUnmarshaller
       }
    }
 
+   /**
+    * 
+    * @param processDefinition
+    * @param processDefinitionJson
+    */
    private void updateProcessDefinition(ProcessDefinitionType processDefinition,
          JsonObject processDefinitionJson)
    {
-      
+      mapDeclaredModelElementProperties(processDefinition, processDefinitionJson,
+            modelElementPropertiesMap.get(ProcessDefinitionType.class));
+      storeAttributes(processDefinition, processDefinitionJson);
    }
 
    /**

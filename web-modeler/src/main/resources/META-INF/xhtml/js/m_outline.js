@@ -10,9 +10,9 @@
 
 define(
 		[ "m_utils", "m_urlUtils", "m_constants", "m_communicationController",
-				"m_commandsController", "m_command", "m_session", "m_model", "m_process",
-				"m_application", "m_dataStructure", "m_participant",
-				"m_outlineToolbarController" ],
+				"m_commandsController", "m_command", "m_session", "m_model",
+				"m_process", "m_application", "m_dataStructure",
+				"m_participant", "m_outlineToolbarController" ],
 		function(m_utils, m_urlUtils, m_constants, m_communicationController,
 				m_commandsController, m_command, m_session, m_model, m_process,
 				m_application, m_dataStructure, m_participant,
@@ -427,9 +427,10 @@ define(
 
 			var setupEventHandling = function() {
 				/* Listen to toolbar events */
-				jQuery(document).bind('TOOL_CLICKED_EVENT', function(event, data) {
-					handleToolbarEvents(event, data);
-				});
+				jQuery(document).bind('TOOL_CLICKED_EVENT',
+						function(event, data) {
+							handleToolbarEvents(event, data);
+						});
 
 				var IE = document.all ? true : false;
 				if (!IE) {
@@ -826,11 +827,14 @@ define(
 													"createWrapperProcess" : {
 														"label" : "Create Wrapper Process",
 														"action" : function(obj) {
-															var application = m_model.findApplication(obj
-																	.attr("fullId"));
-															m_utils.debug("Application");
-															m_utils.debug(application);
-															
+															var application = m_model
+																	.findApplication(obj
+																			.attr("fullId"));
+															m_utils
+																	.debug("Application");
+															m_utils
+																	.debug(application);
+
 															createWrapperProcess(application);
 														}
 													},
@@ -1177,7 +1181,7 @@ define(
 				// "url" : "/xhtml/css/jstree"}}).jstree("set_theme",
 				// "default");
 
-				var handleToolbarEvents = function (event, data) {
+				var handleToolbarEvents = function(event, data) {
 					if ("createModel" == data.id) {
 						createModel();
 					} else if ("importModel" == data.id) {
@@ -1193,7 +1197,9 @@ define(
 					m_communicationController
 							.syncGetData(
 									{
-										url : require("m_urlUtils").getModelerEndpointUrl() + "/models/save"
+										url : require("m_urlUtils")
+												.getModelerEndpointUrl()
+												+ "/models/save"
 									},
 									new function() {
 										return {
@@ -1466,7 +1472,7 @@ define(
 					outline = new Outline();
 
 					outline.initialize();
-					
+
 					m_outlineToolbarController.init("outlineToolbar");
 				},
 				"refresh" : function() {
@@ -1499,11 +1505,45 @@ define(
 				 */
 				Outline.prototype.processCommand = function(command) {
 					m_utils.debug("===> Outline Process Event");
-					m_utils.debug(command.type);
-					m_utils.debug(command.path);
-					m_utils.debug(command.newObject);
 
-					if (command.scope == "all") {
+					var obj = ("string" == typeof (command)) ? jQuery
+							.parseJSON(command) : command;
+
+					if (null != obj && null != obj.changes) {
+						for ( var i = 0; i < obj.changes.modified.length; i++) {
+							var modelElement = m_model.findModelElementByGuid(obj.changes.modified[i].oid);
+
+							m_utils.debug("Models:");
+							m_utils.debug(m_model.getModels());
+							m_utils.debug("Model Element:");
+							m_utils.debug(modelElement);
+
+							var oldId = modelElement.id;
+							
+							if (modelElement != null) {
+								modelElement.rename(obj.changes.modified[i].id,
+										obj.changes.modified[i].name);
+
+								m_utils.debug("Resulting model structure:");
+								m_utils.debug(m_model.getModels());
+
+								// TODO Improve! This must find nodes uniquely and
+								// by
+								// type! May be nodes should save the REST URI as
+								// id?
+								var link = jQuery("li#" + oldId + " a")[0];
+								var node = jQuery("li#" + oldId);
+
+								node.attr("id", modelElement.id);
+								node.attr("fullId", modelElement.getFullId());
+								node.attr("name", modelElement.name);
+
+								var textElem = jQuery(link.childNodes[1])[0];
+
+								textElem.nodeValue = modelElement.name;
+							}
+						}
+					} else if (command.scope == "all") {
 						refresh();
 					} else if (command.type == m_constants.CREATE_COMMAND) {
 						var type = m_model.findElementTypeByPath(command.path);
@@ -1524,39 +1564,6 @@ define(
 							this.createData(command.newObject);
 						} else if (type == m_constants.PARTICIPANT) {
 							this.createParticipant(command.newObject);
-						}
-					} else if (command.type == m_constants.RENAME_COMMAND) {
-						var modelElement = m_model
-								.findElementByPath(command.path);
-
-						m_utils.debug("Models:");
-						m_utils.debug(m_model.getModels());
-						m_utils.debug("Model Element:");
-						m_utils.debug(modelElement);
-
-						if (modelElement != null) {
-							modelElement.rename(command.newObject.id,
-									command.newObject.name);
-
-							m_utils.debug("Resulting model structure:");
-							m_utils.debug(m_model.getModels());
-
-							// TODO Improve! This must find nodes uniquely and
-							// by
-							// type! May be nodes should save the REST URI as
-							// id?
-							var id = command.oldObject.id;
-							
-							var link = jQuery("li#" + id + " a")[0];
-							var node = jQuery("li#" + id);
-
-							node.attr("id", modelElement.id);
-							node.attr("fullId", modelElement.getFullId());
-							node.attr("name", modelElement.name);
-
-							var textElem = jQuery(link.childNodes[1])[0];
-
-							textElem.nodeValue = modelElement.name;
 						}
 					} else if (command.type == m_constants.DELETE_COMMAND) {
 						var type = m_model.findElementTypeByPath(command.path);
@@ -1597,31 +1604,6 @@ define(
 									.findModel(command.oldObject.modelId);
 							m_participant.deleteParticipantRole(
 									command.oldObject.participantId, model);
-						}
-					}
-				};
-
-				/**
-				 * 
-				 */
-				Outline.prototype.undoCommand = function(command) {
-					// TODO Do we really want undo for model operations
-
-					if (command.type == m_constants.RENAME_COMMAND) {
-						var modelElement = m_model
-								.findElementByPath(command.path);
-
-						m_utils.debug("Model Element:");
-						m_utils.debug(modelElement);
-
-						if (modelElement != null) {
-							modelElement.rename(command.oldObject.id,
-									command.oldObject.name);
-
-							m_utils.debug(jQuery("li#" + id + " a")[0]);
-							var link = jQuery("li#" + id + " a")[0];
-							var textElem = jQuery(link.childNodes[1])[0];
-							textElem.nodeValue = command.oldObject.name;
 						}
 					}
 				};

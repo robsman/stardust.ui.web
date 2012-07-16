@@ -57,6 +57,8 @@ public class ModelerSessionRestController
       JsonObject result = new JsonObject();
 
       result.addProperty("id", change.getId());
+      result.addProperty("account", "sheldor"); // TODO Robert add!
+      result.addProperty("timestamp", System.currentTimeMillis());
 
       JsonObject jsChanges = new JsonObject();
       result.add("changes", jsChanges);
@@ -283,7 +285,7 @@ public class ModelerSessionRestController
       Modification change = commandHandlerRegistry().handleCommand(model, commandId, changeDescriptors);
       if (null != change)
       {
-         //Notify unsaved models tracker of the change to the model.
+         // Notify unsaved models tracker of the change to the model.
          UnsavedModelsTracker.getInstance().notifyModelModfied(model.getId());
          return Response.created(toChangeUri(change)) //
                .entity(jsonIo().writeJsonObject(toJson(change)))

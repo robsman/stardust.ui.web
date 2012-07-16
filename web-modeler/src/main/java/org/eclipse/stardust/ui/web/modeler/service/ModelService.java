@@ -123,89 +123,89 @@ import com.google.gson.JsonObject;
  *
  */
 public class ModelService {
-	private static final String MODELING_DOCUMENTS_DIR = "/process-modeling-documents/";
-	private static final String NULL_VALUE = "null";
-	private static final String DIRECTORY_MODE = "DIRECTORY_MODE";
-	private static final String SINGLE_FILE_MODE = "SINGLE_FILE_MODE";
+	public static final String MODELING_DOCUMENTS_DIR = "/process-modeling-documents/";
+	public static final String NULL_VALUE = "null";
+	public static final String DIRECTORY_MODE = "DIRECTORY_MODE";
+	public static final String SINGLE_FILE_MODE = "SINGLE_FILE_MODE";
 	public static final String TYPE_PROPERTY = "type";
 	public static final String ATTRIBUTES_PROPERTY = "attributes";
 	public static final String OID_PROPERTY = "oid";
 	public static final String NEW_OBJECT_PROPERTY = "newObject";
-	private static final String OLD_OBJECT_PROPERTY = "oldObject";
+	public static final String OLD_OBJECT_PROPERTY = "oldObject";
 	public static final String X_PROPERTY = "x";
 	public static final String Y_PROPERTY = "y";
 	public static final String WIDTH_PROPERTY = "width";
 	public static final String HEIGHT_PROPERTY = "height";
-	private static final String DESCRIPTION_PROPERTY = "description";
+	public static final String DESCRIPTION_PROPERTY = "description";
 	public static final String MODEL_ID_PROPERTY = "modelId";
-	private static final String PARENT_SYMBOL_ID_PROPERTY = "parentSymbolId";
+	public static final String PARENT_SYMBOL_ID_PROPERTY = "parentSymbolId";
 	public static final String ACTIVITIES_PROPERTY = "activities";
 	public static final String GATEWAYS_PROPERTY = "gateways";
 	public static final String EVENTS_PROPERTY = "events";
-	private static final String ACTIVITY_KEY = "activity";
-	private static final String ACTIVITY_SYMBOLS = "activitySymbols";
-	private static final String GATEWAY_SYMBOLS = "gatewaySymbols";
-	private static final String APPLICATION_TYPE_PROPERTY = "applicationType";
-	private static final String ACCESS_POINTS_PROPERTY = "accessPoints";
-	private static final String IN_ACCESS_POINT_KEY = "IN_ACCESS_POINT";
-	private static final String OUT_ACCESS_POINT_KEY = "OUT_ACCESS_POINT";
-	private static final String INOUT_ACCESS_POINT_KEY = "INOUT_ACCESS_POINT";
-	private static final String ACCESS_POINT_TYPE_PROPERTY = "accessPointType";
-	private static final String PRIMITIVE_ACCESS_POINT_KEY = "PRIMITIVE_ACCESS_POINT";
-	private static final String DATA_STRUCTURE_ACCESS_POINT_KEY = "DATA_STRUCTURE_ACCESS_POINT";
-	private static final String JAVA_CLASS_ACCESS_POINT_KEY = "JAVA_CLASS_ACCESS_POINT";
-	private static final String ANY_ACCESS_POINT_KEY = "ANY_ACCESS_POINT";
-	private static final String CONNECTION = "connection";
-	private static final String DIRECTION_PROPERTY = "direction";
-	private static final String CONTROL_FLOW_LITERAL = "controlFlow";
-	private static final String DATA_FLOW_LITERAL = "dataFlow";
-	private static final String FROM_ANCHOR_POINT_ORIENTATION_PROPERTY = "fromAnchorPointOrientation";
-	private static final String TO_ANCHOR_POINT_ORIENTATION_PROPERTY = "toAnchorPointOrientation";
-	private static final int UNDEFINED_ORIENTATION_KEY = -1;
-	private static final int NORTH_KEY = 0;
-	private static final int EAST_KEY = 1;
-	private static final int SOUTH_KEY = 2;
-	private static final int WEST_KEY = 3;
-	private static final String GATEWAY = "gateway";
-	private static final String GATEWAY_ACTIVITY = "Gateway";
-	private static final String GATEWAY_TYPE_PROPERTY = "gatewayType";
-	private static final String AND_GATEWAY_TYPE = "and";
-	private static final String XOR_GATEWAY_TYPE = "xor";
-	private static final String OR_GATEWAY_TYPE = "or";
+	public static final String ACTIVITY_KEY = "activity";
+	public static final String ACTIVITY_SYMBOLS = "activitySymbols";
+	public static final String GATEWAY_SYMBOLS = "gatewaySymbols";
+	public static final String APPLICATION_TYPE_PROPERTY = "applicationType";
+	public static final String ACCESS_POINTS_PROPERTY = "accessPoints";
+	public static final String IN_ACCESS_POINT_KEY = "IN_ACCESS_POINT";
+	public static final String OUT_ACCESS_POINT_KEY = "OUT_ACCESS_POINT";
+	public static final String INOUT_ACCESS_POINT_KEY = "INOUT_ACCESS_POINT";
+	public static final String ACCESS_POINT_TYPE_PROPERTY = "accessPointType";
+	public static final String PRIMITIVE_ACCESS_POINT_KEY = "PRIMITIVE_ACCESS_POINT";
+	public static final String DATA_STRUCTURE_ACCESS_POINT_KEY = "DATA_STRUCTURE_ACCESS_POINT";
+	public static final String JAVA_CLASS_ACCESS_POINT_KEY = "JAVA_CLASS_ACCESS_POINT";
+	public static final String ANY_ACCESS_POINT_KEY = "ANY_ACCESS_POINT";
+	public static final String CONNECTION = "connection";
+	public static final String DIRECTION_PROPERTY = "direction";
+	public static final String CONTROL_FLOW_LITERAL = "controlFlow";
+	public static final String DATA_FLOW_LITERAL = "dataFlow";
+	public static final String FROM_ANCHOR_POINT_ORIENTATION_PROPERTY = "fromAnchorPointOrientation";
+	public static final String TO_ANCHOR_POINT_ORIENTATION_PROPERTY = "toAnchorPointOrientation";
+	public static final int UNDEFINED_ORIENTATION_KEY = -1;
+	public static final int NORTH_KEY = 0;
+	public static final int EAST_KEY = 1;
+	public static final int SOUTH_KEY = 2;
+	public static final int WEST_KEY = 3;
+	public static final String GATEWAY = "gateway";
+	public static final String GATEWAY_ACTIVITY = "Gateway";
+	public static final String GATEWAY_TYPE_PROPERTY = "gatewayType";
+	public static final String AND_GATEWAY_TYPE = "and";
+	public static final String XOR_GATEWAY_TYPE = "xor";
+	public static final String OR_GATEWAY_TYPE = "or";
 	public static final String EVENT_KEY = "event";
-	private static final String EVENT_SYMBOLS = "eventSymbols";
+	public static final String EVENT_SYMBOLS = "eventSymbols";
 	public static final String EVENT_TYPE_PROPERTY = "eventType";
 	public static final String START_EVENT = "startEvent";
 	public static final String STOP_EVENT = "stopEvent";
-	private static final String DATA = "data";
-	private static final String DATA_SYMBOLS = "dataSymbols";
-	private static final String STRUCTURED_DATA_TYPE_FULL_ID = "structuredDataTypeFullId";
-	private static final String TYPE_DECLARATION_PROPERTY = "typeDeclaration";
-	private static final String CONNECTIONS_PROPERTY = "connections";
+	public static final String DATA = "data";
+	public static final String DATA_SYMBOLS = "dataSymbols";
+	public static final String STRUCTURED_DATA_TYPE_FULL_ID = "structuredDataTypeFullId";
+	public static final String TYPE_DECLARATION_PROPERTY = "typeDeclaration";
+	public static final String CONNECTIONS_PROPERTY = "connections";
 	public static final String CONTROL_FLOWS_PROPERTY = "controlFlows";
 	public static final String DATA_FLOWS_PROPERTY = "dataFlows";
-	private static final String CONDITION_EXPRESSION_PROPERTY = "conditionExpression";
-	private static final String IN_DATA_MAPPING_PROPERTY = "inDataMapping";
-	private static final String OUT_DATA_MAPPING_PROPERTY = "outDataMapping";
-	private static final String DATA_PATH_PROPERTY = "dataPath";
-	private static final String APPLICATION_PATH_PROPERTY = "applicationPath";
-	private static final String OTHERWISE_PROPERTY = "otherwise";
-	private static final String CONDITION_KEY = "CONDITION";
-	private static final String OTHERWISE_KEY = "OTHERWISE";
-	private static final String POOL_SYMBOLS = "poolSymbols";
-	private static final String LANE_SYMBOLS = "laneSymbols";
-	private static final String FROM_MODEL_ELEMENT_OID = "fromModelElementOid";
-	private static final String FROM_MODEL_ELEMENT_TYPE = "fromModelElementType";
-	private static final String TO_MODEL_ELEMENT_OID = "toModelElementOid";
-	private static final String TO_MODEL_ELEMENT_TYPE = "toModelElementType";
-	private static final String WEB_SERVICE_APPLICATION_TYPE_ID = "webservice";
-	private static final String MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID = "messageTransformationBean";
-	private static final String CAMEL_APPLICATION_TYPE_ID = "camelBean";
-	private static final String MAIL_APPLICATION_TYPE_ID = "mailBean";
-	private static final String INTERACTIVE_APPLICATION_TYPE_KEY = "interactive";
-	private static final String CONTEXTS_PROPERTY = "contexts";
-	private static final String JSF_CONTEXT_TYPE_KEY = "jsf";
-	private static final String EXTERNAL_WEB_APP_CONTEXT_TYPE_KEY = "externalWebApp";
+	public static final String CONDITION_EXPRESSION_PROPERTY = "conditionExpression";
+	public static final String IN_DATA_MAPPING_PROPERTY = "inDataMapping";
+	public static final String OUT_DATA_MAPPING_PROPERTY = "outDataMapping";
+	public static final String DATA_PATH_PROPERTY = "dataPath";
+	public static final String APPLICATION_PATH_PROPERTY = "applicationPath";
+	public static final String OTHERWISE_PROPERTY = "otherwise";
+	public static final String CONDITION_KEY = "CONDITION";
+	public static final String OTHERWISE_KEY = "OTHERWISE";
+	public static final String POOL_SYMBOLS = "poolSymbols";
+	public static final String LANE_SYMBOLS = "laneSymbols";
+	public static final String FROM_MODEL_ELEMENT_OID = "fromModelElementOid";
+	public static final String FROM_MODEL_ELEMENT_TYPE = "fromModelElementType";
+	public static final String TO_MODEL_ELEMENT_OID = "toModelElementOid";
+	public static final String TO_MODEL_ELEMENT_TYPE = "toModelElementType";
+	public static final String WEB_SERVICE_APPLICATION_TYPE_ID = "webservice";
+	public static final String MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID = "messageTransformationBean";
+	public static final String CAMEL_APPLICATION_TYPE_ID = "camelBean";
+	public static final String MAIL_APPLICATION_TYPE_ID = "mailBean";
+	public static final String INTERACTIVE_APPLICATION_TYPE_KEY = "interactive";
+	public static final String CONTEXTS_PROPERTY = "contexts";
+	public static final String JSF_CONTEXT_TYPE_KEY = "jsf";
+	public static final String EXTERNAL_WEB_APP_CONTEXT_TYPE_KEY = "externalWebApp";
 	public static final int POOL_LANE_MARGIN = 5;
 	public static final int POOL_SWIMLANE_TOP_BOX_HEIGHT = 20;
 
@@ -367,27 +367,6 @@ public class ModelService {
 					AttributeUtil.setAttribute(element, key, value.toString());
 				}
 			}
-		}
-	}
-
-	/**
-	 *
-	 * @param element
-	 * @param json
-	 * @throws JSONException
-	 */
-	private void loadAttributes(IIdentifiableModelElement element,
-			JsonObject json) {
-		JsonObject attributes;
-
-		if (!json.has(ATTRIBUTES_PROPERTY)) {
-			json.add(ATTRIBUTES_PROPERTY, attributes = new JsonObject());
-		} else {
-			attributes = json.getAsJsonObject(ATTRIBUTES_PROPERTY);
-		}
-
-		for (AttributeType attribute : element.getAttribute()) {
-			attributes.addProperty(attribute.getName(), attribute.getValue());
 		}
 	}
 
@@ -1307,21 +1286,6 @@ public class ModelService {
 		} else {
 			modelElementJson.addProperty(DESCRIPTION_PROPERTY, "");
 		}
-	}
-
-	/**
-	 *
-	 */
-	private RoleType getRoleFromModel(String modelId, String roleId) {
-		ModelType model = getModelManagementStrategy().getModels().get(modelId);
-		List<RoleType> roles = model.getRole();
-		for (RoleType role : roles) {
-			if (roleId.equals(role.getId())) {
-				return role;
-			}
-		}
-
-		return null;
 	}
 
 	/**
@@ -2677,495 +2641,8 @@ public class ModelService {
 
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
 				processId);
-
-		JsonObject diagramJson = new JsonObject();
-
-		// Pools and Lanes
-
-		JsonObject poolSymbolsJson = new JsonObject();
-		diagramJson.add(POOL_SYMBOLS, poolSymbolsJson);
-
-		for (PoolSymbol poolSymbol : processDefinition.getDiagram().get(0)
-				.getPoolSymbols()) {
-			JsonObject poolSymbolJson = new JsonObject();
-			poolSymbolsJson.add(poolSymbol.getId(), poolSymbolJson);
-
-			poolSymbolJson
-					.addProperty(OID_PROPERTY, poolSymbol.getElementOid());
-			poolSymbolJson.addProperty(ModelerConstants.ID_PROPERTY, poolSymbol.getId());
-			poolSymbolJson.addProperty(ModelerConstants.NAME_PROPERTY, poolSymbol.getName());
-			poolSymbolJson.addProperty(X_PROPERTY, poolSymbol.getXPos());
-			poolSymbolJson.addProperty(Y_PROPERTY, poolSymbol.getYPos());
-			poolSymbolJson.addProperty(WIDTH_PROPERTY, poolSymbol.getWidth());
-			poolSymbolJson.addProperty(HEIGHT_PROPERTY, poolSymbol.getHeight());
-
-			if (poolSymbol.getOrientation().equals(
-					OrientationType.HORIZONTAL_LITERAL)) {
-				poolSymbolJson.addProperty(ModelerConstants.ORIENTATION_PROPERTY,
-						ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL);
-			} else {
-				poolSymbolJson.addProperty(ModelerConstants.ORIENTATION_PROPERTY,
-						ModelerConstants.DIAGRAM_FLOW_ORIENTATION_VERTICAL);
-			}
-
-			JsonArray laneSymbols = new JsonArray();
-			poolSymbolJson.add(LANE_SYMBOLS, laneSymbols);
-
-			for (LaneSymbol laneSymbol : poolSymbol.getChildLanes()) {
-				JsonObject laneSymbolJson = new JsonObject();
-				laneSymbols.add(laneSymbolJson);
-
-				laneSymbolJson.addProperty(OID_PROPERTY,
-						laneSymbol.getElementOid());
-				laneSymbolJson.addProperty(ModelerConstants.ID_PROPERTY, laneSymbol.getId());
-				laneSymbolJson.addProperty(ModelerConstants.NAME_PROPERTY, laneSymbol.getName());
-				laneSymbolJson.addProperty(X_PROPERTY, laneSymbol.getXPos());
-				laneSymbolJson.addProperty(Y_PROPERTY, laneSymbol.getYPos());
-				laneSymbolJson.addProperty(WIDTH_PROPERTY,
-						laneSymbol.getWidth());
-				laneSymbolJson.addProperty(HEIGHT_PROPERTY,
-						laneSymbol.getHeight());
-
-				if (laneSymbol.getParticipant() != null) {
-					// TODO Scope handling
-
-					laneSymbolJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID,
-							MBFacade.createFullId(model, laneSymbol.getParticipant()));
-				}
-
-				JsonObject activitySymbolsJson = new JsonObject();
-				JsonObject gatewaySymbolsJson = new JsonObject();
-
-				laneSymbolJson.add(ACTIVITY_SYMBOLS, activitySymbolsJson);
-				laneSymbolJson.add(GATEWAY_SYMBOLS, gatewaySymbolsJson);
-
-				for (ActivitySymbolType activitySymbol : laneSymbol
-						.getActivitySymbol()) {
-					JsonObject activitySymbolJson = new JsonObject();
-
-					activitySymbolJson.addProperty(OID_PROPERTY,
-							activitySymbol.getElementOid());
-					activitySymbolJson.addProperty(X_PROPERTY,
-							activitySymbol.getXPos() + laneSymbol.getXPos()
-									+ POOL_LANE_MARGIN);
-					activitySymbolJson.addProperty(Y_PROPERTY,
-							activitySymbol.getYPos() + laneSymbol.getYPos()
-									+ POOL_LANE_MARGIN
-									+ POOL_SWIMLANE_TOP_BOX_HEIGHT);
-					activitySymbolJson.addProperty(WIDTH_PROPERTY,
-							activitySymbol.getWidth());
-					activitySymbolJson.addProperty(HEIGHT_PROPERTY,
-							activitySymbol.getHeight());
-
-					ActivityType activity = activitySymbol.getActivity();
-					JsonObject activityJson = new JsonObject();
-
-					activitySymbolJson
-							.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, activityJson);
-					activityJson.addProperty(ModelerConstants.ID_PROPERTY, activity.getId());
-					activityJson.addProperty(ModelerConstants.NAME_PROPERTY, activity.getName());
-					loadDescription(activityJson, activity);
-					loadAttributes(activity, activityJson);
-
-					// TODO Hack to identify gateways
-					if (activity.getId().toLowerCase().startsWith("gateway")) {
-						gatewaySymbolsJson.add(activity.getId(),
-								activitySymbolJson);
-
-						activityJson.addProperty(TYPE_PROPERTY, ACTIVITY_KEY);
-						activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
-								GATEWAY_ACTIVITY);
-
-						if (activity.getJoin() == JoinSplitType.XOR_LITERAL) {
-							activityJson.addProperty(GATEWAY_TYPE_PROPERTY,
-									XOR_GATEWAY_TYPE);
-						} else if (activity.getJoin() == JoinSplitType.AND_LITERAL) {
-							activityJson.addProperty(GATEWAY_TYPE_PROPERTY,
-									AND_GATEWAY_TYPE);
-						} else if (activity.getSplit() == JoinSplitType.XOR_LITERAL) {
-							activityJson.addProperty(GATEWAY_TYPE_PROPERTY,
-									XOR_GATEWAY_TYPE);
-						} else if (activity.getSplit() == JoinSplitType.AND_LITERAL) {
-							activityJson.addProperty(GATEWAY_TYPE_PROPERTY,
-									AND_GATEWAY_TYPE);
-						}
-
-						//Identify the gateway symbol for this activity and update the
-						//location and dimension attributes.
-				        GatewaySymbol thisGatewaySymbol = null;
-				        for (GatewaySymbol gs : laneSymbol.getGatewaySymbol()) {
-				           if (gs.getActivitySymbol().getActivity().equals(activity)) {
-				              thisGatewaySymbol = gs;
-				              break;
-				           }
-				        }
-				        if (null != thisGatewaySymbol) {
-	                       activitySymbolJson.remove(X_PROPERTY);
-	                        activitySymbolJson.addProperty(X_PROPERTY,
-	                              thisGatewaySymbol.getXPos() + laneSymbol.getXPos()
-	                                        + POOL_LANE_MARGIN);
-	                        activitySymbolJson.remove(Y_PROPERTY);
-	                        activitySymbolJson.addProperty(Y_PROPERTY,
-	                              thisGatewaySymbol.getYPos() + laneSymbol.getYPos()
-	                                        + POOL_LANE_MARGIN + POOL_SWIMLANE_TOP_BOX_HEIGHT);
-	                        activitySymbolJson.remove(WIDTH_PROPERTY);
-	                        activitySymbolJson.addProperty(WIDTH_PROPERTY,
-	                              thisGatewaySymbol.getWidth());
-	                        activitySymbolJson.remove(HEIGHT_PROPERTY);
-	                        activitySymbolJson.addProperty(HEIGHT_PROPERTY,
-	                              thisGatewaySymbol.getHeight());
-				        }
-					} else {
-						activitySymbolsJson.add(activity.getId(),
-								activitySymbolJson);
-
-						activityJson.addProperty(TYPE_PROPERTY, ACTIVITY_KEY);
-						activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE, activity
-								.getImplementation().getLiteral());
-						if (activity.getImplementationProcess() != null) {
-							activityJson
-									.addProperty(
-											ModelerConstants.SUBPROCESS_ID,
-											MBFacade.createFullId(model, activity
-													.getImplementationProcess()));
-						} else if (activity.getApplication() != null) {
-							activityJson.addProperty(
-									ModelerConstants.APPLICATION_FULL_ID_PROPERTY,
-									MBFacade.createFullId(model,
-											activity.getApplication()));
-						}
-
-						// TODO Obtain access points on client
-
-						JsonObject accessPointsJson = new JsonObject();
-						activityJson.add(ACCESS_POINTS_PROPERTY,
-								accessPointsJson);
-
-						// TODO Access points need to be obtained from all
-						// contexts
-
-						for (AccessPointType accessPoint : ActivityUtil
-								.getAccessPoints(activitySymbol.getActivity(),
-										true,
-										getDefaultDataMappingContext(activity))) {
-							JsonObject accessPointJson = new JsonObject();
-
-							accessPointsJson.add(accessPoint.getId(),
-									accessPointJson);
-							accessPointJson.addProperty(ModelerConstants.ID_PROPERTY,
-									accessPoint.getId());
-							accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
-									accessPoint.getName());
-							accessPointJson.addProperty(DIRECTION_PROPERTY,
-									accessPoint.getDirection().getLiteral());
-
-							loadDescription(accessPointJson, accessPoint);
-						}
-
-						/*
-						 * if (null != activity.getPerformer()) {
-						 * act.getProps().setPerformerid(
-						 * activity.getPerformer().getId()); }
-						 */
-					}
-				}
-
-				JsonObject eventSymbols = new JsonObject();
-				laneSymbolJson.add(EVENT_SYMBOLS, eventSymbols);
-
-				for (StartEventSymbol startEventSymbol : laneSymbol
-						.getStartEventSymbols()) {
-					JsonObject startEventJson = ModelElementMarshaller.toStartEventJson(startEventSymbol);
-					eventSymbols.add(String.valueOf(startEventSymbol.getElementOid()),
-							startEventJson);
-
-				}
-
-				for (EndEventSymbol endEventSymbol : laneSymbol
-						.getEndEventSymbols()) {
-					JsonObject eventSymbolJson = new JsonObject();
-
-					eventSymbolJson.addProperty(OID_PROPERTY,
-							endEventSymbol.getElementOid());
-					eventSymbolJson.addProperty(X_PROPERTY,
-							endEventSymbol.getXPos() + laneSymbol.getXPos()
-									+ POOL_LANE_MARGIN
-									+ START_END_SYMBOL_LEFT_OFFSET);
-					eventSymbolJson.addProperty(Y_PROPERTY,
-							endEventSymbol.getYPos() + laneSymbol.getYPos()
-									+ POOL_LANE_MARGIN
-									+ POOL_SWIMLANE_TOP_BOX_HEIGHT);
-
-					eventSymbols.add(
-							String.valueOf(endEventSymbol.getElementOid()),
-							eventSymbolJson);
-
-					JsonObject eventJson = new JsonObject();
-					eventSymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, eventJson);
-
-					eventJson.addProperty(TYPE_PROPERTY, EVENT_KEY);
-					eventJson.addProperty(EVENT_TYPE_PROPERTY, STOP_EVENT);
-					// eventJson.put(ID_PROPERTY,
-					// String.valueOf(endEventSymbol.getModelElement().getId()));
-					// loadDescription(eventJson,
-					// endEventSymbol.getModelElement());
-					// loadAttributes(endEventSymbol.getModelElement(),
-					// eventJson);
-				}
-
-				// Data
-
-				JsonObject dataSymbolsJson = new JsonObject();
-				laneSymbolJson.add(DATA_SYMBOLS, dataSymbolsJson);
-
-				for (DataSymbolType dataSymbol : laneSymbol.getDataSymbol()) {
-
-					JsonObject dataSymbolJson = new JsonObject();
-
-					dataSymbolJson.addProperty(OID_PROPERTY,
-							dataSymbol.getElementOid());
-					dataSymbolJson
-							.addProperty(X_PROPERTY, dataSymbol.getXPos());
-					dataSymbolJson
-							.addProperty(Y_PROPERTY, dataSymbol.getYPos());
-
-					// TODO Scoping
-					dataSymbolJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
-					      MBFacade.createFullId(model, dataSymbol.getData()));
-					dataSymbolsJson.add(dataSymbol.getData().getId(),
-							dataSymbolJson);
-				}
-			}
-
-			JsonObject connectionsJson = new JsonObject();
-			diagramJson.add(CONNECTIONS_PROPERTY, connectionsJson);
-
-			// Data Mappings
-
-			for (DataMappingConnectionType dataMappingConnection : poolSymbol
-					.getDataMappingConnection()) {
-				JsonObject connectionJson = new JsonObject();
-
-				connectionJson.addProperty(OID_PROPERTY,
-						dataMappingConnection.getElementOid());
-				connectionJson.addProperty(FROM_MODEL_ELEMENT_OID,
-						dataMappingConnection.getDataSymbol().getElementOid());
-				connectionJson.addProperty(FROM_MODEL_ELEMENT_TYPE, DATA);
-				connectionJson.addProperty(TO_MODEL_ELEMENT_OID,
-						dataMappingConnection.getActivitySymbol()
-								.getElementOid());
-				connectionJson.addProperty(TO_MODEL_ELEMENT_TYPE, ACTIVITY_KEY);
-				connectionJson.addProperty(
-						FROM_ANCHOR_POINT_ORIENTATION_PROPERTY,
-						mapAnchorOrientation(dataMappingConnection
-								.getSourceAnchor()));
-				connectionJson.addProperty(
-						TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
-						mapAnchorOrientation(dataMappingConnection
-								.getTargetAnchor()));
-
-				JsonObject dataFlowJson = new JsonObject();
-				connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, dataFlowJson);
-
-				dataFlowJson.addProperty(TYPE_PROPERTY, DATA_FLOW_LITERAL);
-				dataFlowJson.addProperty(ModelerConstants.ID_PROPERTY, ""
-						+ dataMappingConnection.getElementOid());
-
-				// if (dataMappingC.getDirection() ==
-				// DirectionType.IN_LITERAL)
-				// {
-				// dataFlow.put(IN_DATA_MAPPING_PROPERTY, true);
-				// dataFlow.put(OUT_DATA_MAPPING_PROPERTY, false);
-				// } else if (dataMapping.getDirection() ==
-				// DirectionType.OUT_LITERAL) {
-				// dataFlow.put(IN_DATA_MAPPING_PROPERTY, false);
-				// dataFlow.put(OUT_DATA_MAPPING_PROPERTY, true);
-				// } else {
-				// dataFlow.put(IN_DATA_MAPPING_PROPERTY, true);
-				// dataFlow.put(OUT_DATA_MAPPING_PROPERTY, true);
-				// }
-
-				// dataFlow.put(DATA_PATH_PROPERTY,
-				// dataMapping.getApplicationPath());
-				// dataFlow.put(APPLICATION_PATH_PROPERTY,
-				// dataMapping.getApplicationPath());
-				connectionsJson.add(extractString(dataFlowJson, ModelerConstants.ID_PROPERTY),
-						connectionJson);
-			}
-
-			// Transitions
-
-			for (TransitionConnectionType transitionConnection : poolSymbol
-					.getTransitionConnection()) {
-				JsonObject connectionJson = new JsonObject();
-				JsonObject modelElementJson = new JsonObject();
-
-				// Common settings
-
-				connectionJson.addProperty(
-						FROM_ANCHOR_POINT_ORIENTATION_PROPERTY,
-						mapAnchorOrientation(transitionConnection
-								.getSourceAnchor()));
-				connectionJson.addProperty(
-						TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
-						mapAnchorOrientation(transitionConnection
-								.getTargetAnchor()));
-
-				if (transitionConnection.getTransition() != null) {
-					TransitionType transition = transitionConnection
-							.getTransition();
-
-					connectionJson.addProperty(OID_PROPERTY,
-							transitionConnection.getElementOid());
-					connectionJson
-							.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, modelElementJson);
-
-					modelElementJson.addProperty(TYPE_PROPERTY,
-							CONTROL_FLOW_LITERAL);
-					modelElementJson.addProperty(ModelerConstants.ID_PROPERTY,
-							transition.getId());
-
-					if (transition.getCondition().equals("CONDITION")) {
-						modelElementJson.addProperty(
-								CONDITION_EXPRESSION_PROPERTY,
-								(String) transition.getExpression().getMixed()
-										.getValue(0));
-						modelElementJson.addProperty(OTHERWISE_PROPERTY, false);
-					} else {
-						modelElementJson.addProperty(OTHERWISE_PROPERTY, true);
-					}
-
-					loadDescription(modelElementJson, transition);
-					loadAttributes(transition, modelElementJson);
-
-					connectionJson.addProperty(FROM_MODEL_ELEMENT_OID,
-							transition.getFrom().getActivitySymbols().get(0)
-									.getElementOid());
-
-					// TODO Hack to identify gateways
-
-					if (transition.getFrom().getId().toLowerCase()
-							.startsWith("gateway")) {
-						connectionJson.addProperty(FROM_MODEL_ELEMENT_TYPE,
-								GATEWAY);
-					} else {
-						connectionJson.addProperty(FROM_MODEL_ELEMENT_TYPE,
-								ACTIVITY_KEY);
-					}
-
-					connectionJson.addProperty(TO_MODEL_ELEMENT_OID, transition
-							.getTo().getActivitySymbols().get(0)
-							.getElementOid());
-
-					if (transition.getTo().getId().toLowerCase()
-							.startsWith("gateway")) {
-						connectionJson.addProperty(TO_MODEL_ELEMENT_TYPE,
-								GATEWAY);
-                        connectionJson.remove(TO_ANCHOR_POINT_ORIENTATION_PROPERTY);
-                        connectionJson.addProperty(
-                                TO_ANCHOR_POINT_ORIENTATION_PROPERTY, NORTH_KEY);
-					} else {
-						connectionJson.addProperty(TO_MODEL_ELEMENT_TYPE,
-								ACTIVITY_KEY);
-					}
-
-					connectionsJson.add(
-							extractString(modelElementJson, ModelerConstants.ID_PROPERTY),
-							connectionJson);
-				} else if (transitionConnection.getSourceNode() instanceof StartEventSymbol) {
-
-					connectionJson.addProperty(OID_PROPERTY,
-							transitionConnection.getElementOid());
-					connectionJson
-							.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, modelElementJson);
-
-					modelElementJson.addProperty(TYPE_PROPERTY,
-							CONTROL_FLOW_LITERAL);
-					modelElementJson
-							.addProperty(
-									ModelerConstants.ID_PROPERTY,
-									transitionConnection.getSourceNode()
-											.getElementOid()
-											+ "-"
-											+ ((ActivitySymbolType) transitionConnection
-													.getTargetActivitySymbol())
-													.getActivity().getId());
-
-					connectionJson.addProperty(FROM_MODEL_ELEMENT_OID,
-							transitionConnection.getSourceNode()
-									.getElementOid());
-					connectionJson.addProperty(FROM_MODEL_ELEMENT_TYPE,
-							EVENT_KEY);
-					connectionJson.addProperty(TO_MODEL_ELEMENT_OID,
-							transitionConnection.getTargetActivitySymbol()
-									.getElementOid());
-					connectionJson.addProperty(TO_MODEL_ELEMENT_TYPE,
-							ACTIVITY_KEY);
-					connectionsJson.add(
-							extractString(modelElementJson, ModelerConstants.ID_PROPERTY),
-							connectionJson);
-				} else if (transitionConnection.getTargetNode() instanceof EndEventSymbol) {
-					connectionJson.addProperty(OID_PROPERTY,
-							transitionConnection.getElementOid());
-					connectionJson
-							.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, modelElementJson);
-					modelElementJson.addProperty(TYPE_PROPERTY,
-							CONTROL_FLOW_LITERAL);
-					modelElementJson.addProperty(
-							ModelerConstants.ID_PROPERTY,
-							((ActivitySymbolType) transitionConnection
-									.getSourceActivitySymbol()).getActivity()
-									.getId()
-									+ "-"
-									+ String.valueOf(transitionConnection
-											.getTargetNode().getElementOid()));
-					connectionJson.addProperty(FROM_MODEL_ELEMENT_OID,
-							transitionConnection.getSourceActivitySymbol()
-									.getElementOid());
-					connectionJson.addProperty(FROM_MODEL_ELEMENT_TYPE,
-							ACTIVITY_KEY);
-					connectionJson.addProperty(TO_MODEL_ELEMENT_OID, String
-							.valueOf(transitionConnection.getTargetNode()
-									.getElementOid()));
-					connectionJson
-							.addProperty(TO_MODEL_ELEMENT_TYPE, EVENT_KEY);
-					connectionsJson.add(
-							extractString(modelElementJson, ModelerConstants.ID_PROPERTY),
-							connectionJson);
-
-					//For end event symbol the anchorpoint orientation is set to "bottom", in the eclipse modeler.
-					//This causes wrong routing of the the connector.
-					//Hence overriding the property with "center" / or "undefined"
-					connectionJson.remove(TO_ANCHOR_POINT_ORIENTATION_PROPERTY);
-		            connectionJson.addProperty(
-		                        TO_ANCHOR_POINT_ORIENTATION_PROPERTY, UNDEFINED_ORIENTATION_KEY);
-				}
-			}
-		}
-
-		return diagramJson.toString();
-	}
-
-	/**
-	 *
-	 * @param orientation
-	 * @return
-	 */
-	private int mapAnchorOrientation(String orientation) {
-		if (orientation.equals("top")) {
-			return NORTH_KEY;
-		} else if (orientation.equals("right")) {
-			return EAST_KEY;
-		} else if (orientation.equals("bottom")) {
-			return SOUTH_KEY;
-		} else if (orientation.equals("left")) {
-			return WEST_KEY;
-		} else if (orientation.equals("center") || orientation == null) {
-			return UNDEFINED_ORIENTATION_KEY;
-		}
-
-		throw new IllegalArgumentException("Illegal orientation key "
-				+ orientation + ".");
+		
+		return ModelElementMarshaller.toProcessDefinitionDiagram(processDefinition).toString();
 	}
 
 	/**
@@ -3218,45 +2695,12 @@ public class ModelService {
 		}
 
 		JsonObject processesJson = new JsonObject();
+
 		modelJson.add("processes", processesJson);
 
 		for (ProcessDefinitionType processDefinition : model
 				.getProcessDefinition()) {
-
-			JsonObject processJson = new JsonObject();
-			processesJson.add(processDefinition.getId(), processJson);
-
-         processJson.addProperty(ModelerConstants.OID_PROPERTY, processDefinition.getElementOid());
-			processJson.addProperty(ModelerConstants.ID_PROPERTY, processDefinition.getId());
-			processJson.addProperty(ModelerConstants.NAME_PROPERTY, processDefinition.getName());
-			loadDescription(processJson, processDefinition);
-
-			JsonObject attributesJson = new JsonObject();
-			processJson.add(ATTRIBUTES_PROPERTY, attributesJson);
-
-			JsonObject activitiesJson = new JsonObject();
-			processJson.add(ACTIVITIES_PROPERTY, activitiesJson);
-
-			for (ActivityType activity : processDefinition.getActivity()) {
-				JsonObject activityJson = new JsonObject();
-				activitiesJson.add(activity.getId(), activityJson);
-
-				activityJson.addProperty(ModelerConstants.ID_PROPERTY, activity.getId());
-				activityJson.addProperty(ModelerConstants.NAME_PROPERTY, activity.getName());
-				loadDescription(activityJson, activity);
-			}
-
-			JsonObject gatewaysJson = new JsonObject();
-			processJson.add(GATEWAYS_PROPERTY, gatewaysJson);
-
-			JsonObject eventsJson = new JsonObject();
-			processJson.add(EVENTS_PROPERTY, eventsJson);
-
-			JsonObject controlFlowsJson = new JsonObject();
-			processJson.add(CONTROL_FLOWS_PROPERTY, controlFlowsJson);
-
-			JsonObject dataFlowsJson = new JsonObject();
-			processJson.add(DATA_FLOWS_PROPERTY, dataFlowsJson);
+			processesJson.add(processDefinition.getId(), ModelElementMarshaller.toProcessDefinition(processDefinition));
 		}
 
 		JsonObject participantsJson = new JsonObject();
