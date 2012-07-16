@@ -22,6 +22,11 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.emf.ecore.EObject;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import org.eclipse.stardust.common.Pair;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
@@ -33,10 +38,6 @@ import org.eclipse.stardust.ui.web.modeler.edit.EditingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 @Path("/modeler/{randomPostFix}/sessions")
 public class ModelerSessionRestController
@@ -59,6 +60,19 @@ public class ModelerSessionRestController
       result.addProperty("id", change.getId());
       result.addProperty("account", "sheldor"); // TODO Robert add!
       result.addProperty("timestamp", System.currentTimeMillis());
+
+      if (change.getMetadata().containsKey("commandId"))
+      {
+          result.addProperty("commandId", change.getMetadata().get("commandId"));
+      }
+      if (change.getMetadata().containsKey("modelId"))
+      {
+          result.addProperty("modelId", change.getMetadata().get("modelId"));
+      }
+      if (change.getMetadata().containsKey("account"))
+      {
+          result.addProperty("account", change.getMetadata().get("account"));
+      }
 
       JsonObject jsChanges = new JsonObject();
       result.add("changes", jsChanges);
@@ -134,6 +148,8 @@ public class ModelerSessionRestController
                result.addProperty("pendingRedo", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingRedo.getId());
             }
 
+            commandHandlerRegistry().broadcastChange(result);
+
             return Response.ok(jsonIo().writeJsonObject(result), MediaType.APPLICATION_JSON_TYPE).build();
          }
          else
@@ -163,6 +179,8 @@ public class ModelerSessionRestController
                Modification pendingRedo = editingSession.getPendingRedo();
                result.addProperty("pendingRedo", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingRedo.getId());
             }
+
+            commandHandlerRegistry().broadcastChange(result);
 
             return Response.ok(jsonIo().writeJsonObject(result), MediaType.APPLICATION_JSON_TYPE).build();
          }
@@ -285,10 +303,22 @@ public class ModelerSessionRestController
       Modification change = commandHandlerRegistry().handleCommand(model, commandId, changeDescriptors);
       if (null != change)
       {
+         change.getMetadata().put("commandId", commandId);
+         change.getMetadata().put("modelId", model.getId());
+         if (commandJson.has("account"))
+         {
+            change.getMetadata().put("account", extractString(commandJson, "account"));
+         }
+
          // Notify unsaved models tracker of the change to the model.
          UnsavedModelsTracker.getInstance().notifyModelModfied(model.getId());
+
+         JsonObject changeJto = toJson(change);
+
+         commandHandlerRegistry().broadcastChange(changeJto);
+
          return Response.created(toChangeUri(change)) //
-               .entity(jsonIo().writeJsonObject(toJson(change)))
+               .entity(jsonIo().writeJsonObject(changeJto))
                .type(MediaType.APPLICATION_JSON_TYPE)
                .build();
       }
