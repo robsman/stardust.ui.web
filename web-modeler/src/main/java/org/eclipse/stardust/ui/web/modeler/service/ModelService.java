@@ -2616,16 +2616,12 @@ public class ModelService {
 	 * @return
 	 */
 	public String createRole(String modelId, JsonObject roleJson) {
-		ModelType model = getModelManagementStrategy().getModels().get(modelId);
-
+		
+	    ModelType model = getModelManagementStrategy().getModels().get(modelId);
+	    String roleID = extractString(roleJson, ModelerConstants.ID_PROPERTY);
+	    String roleName = extractString(roleJson, ModelerConstants.NAME_PROPERTY);
 		synchronized (model) {
-			// EditingSession editSession = model.getEditSession();
-			//
-			// editSession.beginEdit();
-
-			RoleType role = newRole(model).withIdAndName(
-					extractString(roleJson, ModelerConstants.ID_PROPERTY),
-					extractString(roleJson, ModelerConstants.NAME_PROPERTY)).build();
+			MBFacade.createRole(model, roleID, roleName);
 		}
 
 		return roleJson.toString();
