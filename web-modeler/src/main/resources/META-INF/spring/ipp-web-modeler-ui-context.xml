@@ -14,15 +14,6 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		</ippui:preferences>
 		<ippui:launchPanel name="ippAdmAdministrativeActions"
 			include="/plugins/bpm-modeler/launchpad/modelerLauncher.xhtml" />
-		<ippui:toolbarSection name="messageTransfomationApplicationViewToolbar"
-			include="/plugins/bpm-modeler/toolbars/messageTransformationApplicationViewToolbar.xhtml"
-			requiredView="messageTransformationApplicationView" />
-		<ippui:toolbarSection name="camelApplicationViewToolbar"
-			include="/plugins/bpm-modeler/toolbars/camelApplicationViewToolbar.xhtml"
-			requiredView="camelApplicationView" />
-		<ippui:toolbarSection name="xsdStructuredDataTypeViewToolbar"
-			include="/plugins/bpm-modeler/toolbars/xsdStructuredDataTypeViewToolbar.xhtml"
-			requiredView="xsdStructuredDataTypeView" />
 		<ippui:view name="modelView"
 			include="/plugins/bpm-modeler/views/modeler/modelView.xhtml"
 			controller="modelView" />
