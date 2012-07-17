@@ -1097,6 +1097,7 @@ public class ModelService {
 			JsonObject commandJson) {
 		JsonObject gatewaySymbolJson = commandJson
 				.getAsJsonObject(NEW_OBJECT_PROPERTY);
+		JsonObject gatewayJson = gatewaySymbolJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
 		ModelType model = getModelManagementStrategy().getModels().get(modelId);
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
 				processId);
@@ -1107,17 +1108,13 @@ public class ModelService {
 
 			editingSession.beginEdit();
 
-			ActivityType gateway = null;
-
-			// TODO Should be Route
-			gateway = newManualActivity(processDefinition)
-					.withIdAndName(
-							extractString(gatewaySymbolJson,
-									ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY),
-							extractString(gatewaySymbolJson,
-									ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.NAME_PROPERTY))
-					.havingDefaultPerformer(ADMINISTRATOR_ROLE).build();
-
+			// TODO Ugly!
+         ActivityType gateway = MBFacade.createActivity(modelId, processDefinition, null,
+               null, null, null, null, null, maxOid);
+         
+         gateway.setImplementation(ActivityImplementationType.ROUTE_LITERAL);
+         gatewayJson.addProperty(ModelerConstants.OID_PROPERTY, gateway.getElementOid());
+         
 			processDefinition.getActivity().add(gateway);
 
 			ActivitySymbolType gatewaySymbol = AbstractElementBuilder.F_CWM
@@ -1129,7 +1126,7 @@ public class ModelService {
 
 			gatewaySymbolJson.addProperty(OID_PROPERTY,
 					gatewaySymbol.getElementOid());
-
+			
 			gatewaySymbol.setXPos(extractInt(gatewaySymbolJson, X_PROPERTY)
 					- parentLaneSymbol.getXPos());
 			gatewaySymbol.setYPos(extractInt(gatewaySymbolJson, Y_PROPERTY)
@@ -2089,6 +2086,8 @@ public class ModelService {
 
 			model.getApplication().add(messageTransformationApplication);
 
+         messageTransformationApplication.setElementOid(XpdlModelUtils.getMaxUsedOid(model));
+         messageTransformationApplicationJson.addProperty(OID_PROPERTY, messageTransformationApplication.getElementOid());
 			messageTransformationApplication.setId(extractString(
 					messageTransformationApplicationJson, ModelerConstants.ID_PROPERTY));
 			messageTransformationApplication.setName(extractString(
@@ -2243,6 +2242,8 @@ public class ModelService {
 
 			model.getApplication().add(camelApplication);
 
+         camelApplication.setElementOid(XpdlModelUtils.getMaxUsedOid(model));
+         camelApplicationJson.addProperty(OID_PROPERTY, camelApplication.getElementOid());
 			camelApplication.setId(extractString(camelApplicationJson,
 					ModelerConstants.ID_PROPERTY));
 			camelApplication.setName(extractString(camelApplicationJson,
@@ -2430,6 +2431,10 @@ public class ModelService {
 			// editSession.beginEdit();
 
 			MBFacade.createTypeDeclaration(model, typeId, typeName);
+
+			// TODO 
+         //structuredDataType.setElementOid(XpdlModelUtils.getMaxUsedOid(model));
+         //structuredDataTypeJson.addProperty(OID_PROPERTY, camelApplication.getElementOid());
 
 			structuredDataTypeJson
 					.addProperty(MODEL_ID_PROPERTY, model.getId());
@@ -2737,42 +2742,11 @@ public class ModelService {
 		}
 
 		JsonObject applicationsJson = new JsonObject();
+
 		modelJson.add("applications", applicationsJson);
 
 		for (ApplicationType application : model.getApplication()) {
-
-			JsonObject applicationJson = new JsonObject();
-			applicationsJson.add(application.getId(), applicationJson);
-
-			applicationJson.addProperty(ModelerConstants.ID_PROPERTY, application.getId());
-			applicationJson.addProperty(ModelerConstants.NAME_PROPERTY, application.getName());
-			loadDescription(applicationJson, application);
-
-			if (application.getType() != null) {
-				applicationJson.addProperty(APPLICATION_TYPE_PROPERTY,
-						application.getType().getId());
-			} else {
-				applicationJson.addProperty(APPLICATION_TYPE_PROPERTY,
-						INTERACTIVE_APPLICATION_TYPE_KEY);
-
-				JsonObject contextsJson = new JsonObject();
-				applicationJson.add(CONTEXTS_PROPERTY, contextsJson);
-
-				for (ContextType context : application.getContext()) {
-					JsonObject contextJson = new JsonObject();
-					applicationJson.add(context.getType().getId(), contextJson);
-				}
-			}
-
-			// TODO Review
-
-			for (AttributeType attribute : application.getAttribute()) {
-				if ("carnot:engine:methodName".equals(attribute.getName())) {
-					applicationJson.addProperty("accessPoint",
-							attribute.getValue());
-					break;
-				}
-			}
+			applicationsJson.add(application.getId(), ModelElementMarshaller.toApplication(application));
 		}
 
 		JsonObject dataItemsJson = new JsonObject();
