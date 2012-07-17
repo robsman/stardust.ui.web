@@ -49,6 +49,12 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 		createChangeGeometryCommand : function(path, oldObject, newObject, modelElement) {
 			return new ChangeEvent(m_constants.UPDATE_GEOMETRY_COMMAND, path, null, oldObject, newObject, modelElement);
 		},
+		createCreateProcessCommand : function(modelId, oid, changes) {
+			return new ChangeDescriptor("process.create", modelId, [ {
+				oid : oid,
+				changes : changes
+			} ]);
+		},
 		createMoveNodeSymbolCommand : function(baseUri, targetElement, newObject, context) {
 			// TODO This code needs be removed as soon modelId passed instead of context (see createUpdateModelElementCommand) 
 			var modelId = context.diagram.model.id;

@@ -92,6 +92,10 @@ public class ModelElementMarshaller
             processDefinition.getElementOid());
       processJson.addProperty(ModelerConstants.ID_PROPERTY, processDefinition.getId());
       processJson.addProperty(ModelerConstants.NAME_PROPERTY, processDefinition.getName());
+      processJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+              ModelerConstants.PROCESS_KEY);
+      processJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY,
+    		  ModelUtils.findContainingModel(processDefinition).getId());
       loadDescription(processJson, processDefinition);
 
       JsonObject attributesJson = new JsonObject();

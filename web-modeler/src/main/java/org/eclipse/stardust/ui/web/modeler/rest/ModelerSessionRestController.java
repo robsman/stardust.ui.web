@@ -2,8 +2,8 @@ package org.eclipse.stardust.ui.web.modeler.rest;
 
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
-import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLong;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
 import static org.eclipse.stardust.ui.web.modeler.rest.RestControllerUtils.resolveSpringBean;
 
 import java.net.URI;
@@ -79,21 +79,33 @@ public class ModelerSessionRestController
       JsonArray jsModified = new JsonArray();
       for (EObject changedObject : change.changedObjects())
       {
-         jsModified.add(ModelElementMarshaller.toJson((IModelElement) changedObject));
+         //TODO change ModelElementMarshaller.toJson to accept EObject instead
+    	  if (changedObject instanceof IModelElement)
+    	  {
+    		  jsModified.add(ModelElementMarshaller.toJson((IModelElement) changedObject));    		  
+    	  }         
       }
       jsChanges.add("modified", jsModified);
 
       JsonArray jsAdded = new JsonArray();
       for (EObject addedObject : change.addedObjects())
       {
-         jsAdded.add(ModelElementMarshaller.toJson((IModelElement) addedObject));
+       //TODO change ModelElementMarshaller.toJson to accept EObject instead
+         if (addedObject instanceof IModelElement)
+         {
+            jsAdded.add(ModelElementMarshaller.toJson((IModelElement) addedObject));
+         }
       }
       jsChanges.add("added", jsAdded);
 
       JsonArray jsRemoved = new JsonArray();
       for (EObject removedObject : change.removedObjects())
       {
-         jsRemoved.add(ModelElementMarshaller.toJson((IModelElement) removedObject));
+       //TODO change ModelElementMarshaller.toJson to accept EObject instead
+         if (removedObject instanceof IModelElement)
+         {
+            jsRemoved.add(ModelElementMarshaller.toJson((IModelElement) removedObject));
+         }
       }
       jsChanges.add("removed", jsRemoved);
 
@@ -218,7 +230,6 @@ public class ModelerSessionRestController
 
    private Response applyChange(JsonObject commandJson)
    {
-	   System.out.println("applyChange: " + commandJson);
       String commandId = extractString(commandJson, "commandId");
       String modelId = extractString(commandJson, "modelId");
 
@@ -259,21 +270,24 @@ public class ModelerSessionRestController
 
          if (targetElementJson.isJsonObject() && targetElementJson.getAsJsonObject().has("oid"))
          {
-            // existing target, identified by oid
-            long oid = extractLong(targetElementJson.getAsJsonObject(), "oid");
-
-            // deep search for model element by OID
-            // TODO can lookup faster as oid is declared the XML index field?
-            for (Iterator<? > i = model.eAllContents(); i.hasNext();)
-            {
-               Object element = i.next();
-               if ((element instanceof IModelElement)
-                     && ((((IModelElement) element).getElementOid() == oid)))
-               {
-                  targetElement = (IModelElement) element;
-                  break;
-               }
-            }
+				// existing target, identified by oid
+				String oid = extractAsString(targetElementJson.getAsJsonObject(),
+						"oid");
+				if (model.getId().equals(oid)) {
+					targetElement = model;
+				} else {					
+					// deep search for model element by OID
+					// TODO can lookup faster as oid is declared the XML index
+					// field?
+					for (Iterator<?> i = model.eAllContents(); i.hasNext();) {
+						Object element = i.next();
+						if ((element instanceof IModelElement)
+								&& ((((IModelElement) element).getElementOid() == Long.parseLong(oid)))) {
+							targetElement = (IModelElement) element;
+							break;
+						}
+					}
+				}
 
             if (null != targetElement)
             {

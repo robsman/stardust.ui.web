@@ -1204,7 +1204,7 @@ define(
 									new function() {
 										return {
 											success : function(data) {
-												alert("All models saved successfully to /process-models/");
+												alert("All models have been saved successfully.");
 											},
 											failure : function(data) {
 											}
@@ -1256,13 +1256,12 @@ define(
 					var number = (++modelCounter);
 					var name = "Process " + number;
 					var id = "Process" + number;
-
+					
 					m_commandsController.submitCommand(m_command
-							.createCreateCommand("/models/" + modelId
-									+ "/processes", {
+							.createCreateProcessCommand(modelId, modelId, {
 								"name" : name,
 								"id" : id
-							}));
+							}, modelId));
 				}
 
 				function deleteProcess(processId, modelId) {
@@ -1510,6 +1509,12 @@ define(
 							.parseJSON(command) : command;
 
 					if (null != obj && null != obj.changes) {
+						for (var i = 0; i < obj.changes.added.length; i++) {
+							//Create Process
+							if ("process" == command.changes.added[i].type) {
+								this.createProcess(command.changes.added[i]);
+							}							
+						}
 						for ( var i = 0; i < obj.changes.modified.length; i++) {
 							var modelElement = m_model.findModelElementByGuid(obj.changes.modified[i].oid);
 

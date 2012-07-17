@@ -76,4 +76,12 @@ public class GsonUtils
          throw new NullPointerException("Missing JSON sub-object " + objectName);
       }
    }
+
+   public static String extractAsString(JsonObject json, String memberName)
+   {
+      JsonElement member = json.get(memberName);
+      return (null != member) && member.isJsonPrimitive()
+            ? member.getAsString()
+            : (String) null;
+   }
 }
