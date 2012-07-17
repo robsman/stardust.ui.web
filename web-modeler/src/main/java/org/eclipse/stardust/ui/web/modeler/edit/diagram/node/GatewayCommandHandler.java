@@ -23,6 +23,7 @@ import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
@@ -78,6 +79,9 @@ public class GatewayCommandHandler implements ICommandHandler
                      extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.NAME_PROPERTY))
                .havingDefaultPerformer(ADMINISTRATOR_ROLE).build();
 
+         gateway.setElementOid(maxOid);
+         gateway.setImplementation(ActivityImplementationType.ROUTE_LITERAL);
+         
          processDefinition.getActivity().add(gateway);
 
          ActivitySymbolType gatewaySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
