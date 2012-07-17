@@ -1524,9 +1524,6 @@ define(
 								modelElement.rename(obj.changes.modified[i].id,
 										obj.changes.modified[i].name);
 
-								m_utils.debug("Resulting model structure:");
-								m_utils.debug(m_model.getModels());
-
 								// TODO Improve! This must find nodes uniquely and
 								// by
 								// type! May be nodes should save the REST URI as
@@ -1544,6 +1541,7 @@ define(
 							}
 						}
 					} else if (command.scope == "all") {
+						// @deprecated
 						refresh();
 					} else if (command.type == m_constants.CREATE_COMMAND) {
 						var type = m_model.findElementTypeByPath(command.path);

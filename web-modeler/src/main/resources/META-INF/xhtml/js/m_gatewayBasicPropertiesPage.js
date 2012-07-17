@@ -44,12 +44,33 @@ define(
 
 									if (page.propertiesPanel.element.modelElement.description != page.descriptionInput
 											.val()) {
-										page.propertiesPanel.element.modelElement.description = page.descriptionInput
-												.val();
 										page
 												.submitChanges({
 													modelElement : {
 														description : page.descriptionInput
+																.val()
+													}
+												});
+									}
+								});
+				this.gatewayTypeInput
+						.change(
+								{
+									"page" : this
+								},
+								function(event) {
+									var page = event.data.page;
+
+									if (!page.validate()) {
+										return;
+									}
+
+									if (page.propertiesPanel.element.modelElement.gatewayType != page.gatewayTypeInput
+											.val()) {
+										page
+												.submitChanges({
+													modelElement : {
+														gatewayType : page.gatewayTypeInput
 																.val()
 													}
 												});
@@ -63,17 +84,7 @@ define(
 					this.descriptionInput
 							.val(this.propertiesPanel.element.modelElement.description);
 					this.gatewayTypeInput
-							.val(this.propertiesPanel.element.modelElement.gatewayType);
-				};
-
-				/**
-				 * 
-				 */
-				GatewayBasicPropertiesPage.prototype.apply = function() {
-					this.propertiesPanel.element.modelElement.description = this.descriptionInput
-							.val();
-					this.propertiesPanel.element.modelElement.gatewayType = this.gatewayTypeInput
-							.val();
+							.val(this.propertiesPanel.element.modelElement.attributes.gatewayType);
 				};
 
 				/**
@@ -88,10 +99,12 @@ define(
 				 */
 				GatewayBasicPropertiesPage.prototype.submitChanges = function(
 						changes) {
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(
-									this.propertiesPanel.element.oid, changes,
-									this.propertiesPanel.element));
+					m_commandsController
+							.submitCommand(m_command
+									.createUpdateModelElementCommand(
+											this.propertiesPanel.element.diagram.modelId,
+											this.propertiesPanel.element.oid,
+											changes));
 				};
 			}
 		});

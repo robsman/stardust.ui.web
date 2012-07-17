@@ -13,7 +13,8 @@ define(
 				"m_model", "m_typeDeclaration", "m_accessPoint",
 				"m_dataTraversal", "m_dialog" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_model, m_typeDeclaration, m_accessPoint, m_dataTraversal, m_dialog) {
+				m_model, m_typeDeclaration, m_accessPoint, m_dataTraversal,
+				m_dialog) {
 			var view;
 			var typeDeclarations = m_typeDeclaration.getTestTypeDeclarations();
 
@@ -26,7 +27,14 @@ define(
 					var model = m_model.findModel(modelId);
 					var application = model.applications[applicationId];
 
-					view = new MessageTransformationApplicationView(application);
+					view = new MessageTransformationApplicationView();
+
+					// TODO Unregister!
+					// In Initializer?
+
+					m_commandsController.registerCommandHandler(view);
+
+					view.initialize(application);
 				}
 			};
 
@@ -51,7 +59,7 @@ define(
 				this.filterHighlightedTargetFieldsInput = jQuery("#filterHighlightedTargetFieldsInput");
 				this.showAllSourceFieldsInput = jQuery("#showAllSourceFieldsInput");
 				this.showAllTargetFieldsInput = jQuery("#showAllTargetFieldsInput");
-				
+
 				this.selectedOutputTableRow = null;
 
 				this.inputTableBody.empty();
@@ -60,12 +68,16 @@ define(
 				this.inputTableRows = [];
 				this.outputTableRows = [];
 
-				this.nameInput.keypress({
+				this.nameInput.change({
 					"view" : this
 				}, function(event) {
-					// m_commandsController.submitRenameEvent("",
-					// event.data.view.application,
-					// event.data.view.application);
+					var view = event.data.view;
+
+					if (view.application.name != view.nameInput.val()) {
+						view.submitChanges({
+							name : view.nameInput.val()
+						});
+					}
 				});
 
 				this.sourceFilterInput.keypress({
@@ -161,7 +173,15 @@ define(
 									mappingCell
 											.append(outputTableRow.mappingExpression);
 
-									view.submitUpdate();
+									view
+											.submitChanges({
+												attributes : {
+													fieldMappings : [ {
+														"fieldPath" : outputTableRow.path,
+														"mappingExpression" : outputTableRow.mappingExpression
+													} ]
+												}
+											});
 								}
 
 								view.expressionTextArea.css({
@@ -319,8 +339,14 @@ define(
 				/**
 				 * 
 				 */
-				MessageTransformationApplicationView.prototype.toString = function() {
-					return "Lightdust.MessageTransformationApplicationView";
+				MessageTransformationApplicationView.prototype.initialize = function(
+						application) {
+					this.application = application;
+
+					m_utils.debug("Initializing MTA");
+					m_utils.debug(this.application);
+					
+					this.nameInput.val(application.name);
 				};
 
 				/**
@@ -578,7 +604,16 @@ define(
 														.val(outputTableRow.mappingExpression);
 											}
 
-											view.submitUpdate();
+											view
+													.submitChanges({
+														attributes : {
+															fieldMappings : [ {
+																"fieldPath" : outputTableRow.path,
+																"mappingExpression" : outputTableRow.mappingExpression
+															} ]
+														}
+													});
+
 										},
 										hoverClass : "accept",
 										over : function(e, ui) {
@@ -601,17 +636,20 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.highlightSource = function(
 						tableRow) {
-					jQuery("#sourceTable .data-element")
-					.removeClass("highlighted");
-					jQuery("#targetTable .data-element")
-					.removeClass("highlighted");
+					jQuery("#sourceTable .data-element").removeClass(
+							"highlighted");
+					jQuery("#targetTable .data-element").removeClass(
+							"highlighted");
 
 					for ( var n = 0; n < this.outputTableRows.length; ++n) {
 						if (this.outputTableRows[n].mappingExpression
 								.indexOf(this.inputTableRows[tableRow].path) != -1) {
-							jQuery("#targetTable #" + this.outputTableRows[n].path
-									.replace(/\./g, "-") + " .data-element")
-									.addClass("highlighted");
+							jQuery(
+									"#targetTable #"
+											+ this.outputTableRows[n].path
+													.replace(/\./g, "-")
+											+ " .data-element").addClass(
+									"highlighted");
 						}
 					}
 				};
@@ -621,17 +659,20 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.highlightTarget = function(
 						tableRow) {
-					jQuery("#sourceTable .data-element")
-					.removeClass("highlighted");
-					jQuery("#targetTable .data-element")
-					.removeClass("highlighted");
+					jQuery("#sourceTable .data-element").removeClass(
+							"highlighted");
+					jQuery("#targetTable .data-element").removeClass(
+							"highlighted");
 
 					for ( var n = 0; n < this.inputTableRows.length; ++n) {
 						if (this.outputTableRows[tableRow].mappingExpression
 								.indexOf(this.inputTableRows[n].path) != -1) {
-							jQuery("#sourceTable #" + this.inputTableRows[n].path
-									.replace(/\./g, "-") + " .data-element")
-									.addClass("highlighted");
+							jQuery(
+									"#sourceTable #"
+											+ this.inputTableRows[n].path
+													.replace(/\./g, "-")
+											+ " .data-element").addClass(
+									"highlighted");
 						}
 					}
 				};
@@ -712,85 +753,80 @@ define(
 				 * 
 				 */
 				MessageTransformationApplicationView.prototype.filterHighlightedSourceFields = function() {
-					m_dialog.makeInvisible(this.filterHighlightedSourceFieldsInput);
+					m_dialog
+							.makeInvisible(this.filterHighlightedSourceFieldsInput);
 					m_dialog.makeVisible(this.showAllSourceFieldsInput);
 
 					jQuery("table#sourceTable tbody tr").addClass("invisible");
-					jQuery("table#sourceTable tbody tr .highlighted")
-							.parent().parent().removeClass("invisible");
+					jQuery("table#sourceTable tbody tr .highlighted").parent()
+							.parent().removeClass("invisible");
 				};
 
 				/**
 				 * 
 				 */
 				MessageTransformationApplicationView.prototype.filterHighlightedTargetFields = function() {
-					m_dialog.makeInvisible(this.filterHighlightedTargetFieldsInput);
+					m_dialog
+							.makeInvisible(this.filterHighlightedTargetFieldsInput);
 					m_dialog.makeVisible(this.showAllTargetFieldsInput);
 
 					jQuery("table#targetTable tbody tr").addClass("invisible");
-					jQuery("table#targetTable tbody tr .highlighted")
-							.parent().parent().removeClass("invisible");
+					jQuery("table#targetTable tbody tr .highlighted").parent()
+							.parent().removeClass("invisible");
 				};
 
 				/**
 				 * 
 				 */
 				MessageTransformationApplicationView.prototype.showAllSourceFields = function() {
-					m_dialog.makeVisible(this.filterHighlightedSourceFieldsInput);
+					m_dialog
+							.makeVisible(this.filterHighlightedSourceFieldsInput);
 					m_dialog.makeInvisible(this.showAllSourceFieldsInput);
-					jQuery("table#sourceTable tbody tr").removeClass("invisible");
+					jQuery("table#sourceTable tbody tr").removeClass(
+							"invisible");
 				};
 
 				/**
 				 * 
 				 */
 				MessageTransformationApplicationView.prototype.showAllTargetFields = function() {
-					m_dialog.makeVisible(this.filterHighlightedTargetFieldsInput);
+					m_dialog
+							.makeVisible(this.filterHighlightedTargetFieldsInput);
 					m_dialog.makeInvisible(this.showAllTargetFieldsInput);
-					jQuery("table#targetTable tbody tr").removeClass("invisible");
+					jQuery("table#targetTable tbody tr").removeClass(
+							"invisible");
 				};
-				
+
 				/**
 				 * 
 				 */
-				MessageTransformationApplicationView.prototype.submitUpdate = function() {
-					this.application.fieldMappings = [];
+				MessageTransformationApplicationView.prototype.submitChanges = function(
+						changes) {
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementCommand(this.application.model.id,
+									this.application.oid, changes));
+				};
 
-					for ( var tableRow in this.outputTableRows) {
-						this.application.fieldMappings
-								.push({
-									"fieldPath" : this.outputTableRows[tableRow].path,
-									"mappingExpression" : this.outputTableRows[tableRow].mappingExpression
-								});
+				/**
+				 * Only react to name changes and validation exceptions.
+				 */
+				MessageTransformationApplicationView.prototype.processCommand = function(
+						command) {
+					m_utils.debug("===> MTA Process Command");
+					m_utils.debug(command);
+
+					// Parse the response JSON from command pattern
+
+					var obj = ("string" == typeof (command)) ? jQuery
+							.parseJSON(command) : command;
+
+					if (null != obj && null != obj.changes
+							&& object.changes[this.application.oid] != null) {
+						this.nameInput
+								.val(object.changes[this.application.oid].name);
+
+						// Validation Exceptions!
 					}
-
-					var transferObject = {};
-
-					transferObject = m_utils.inheritFields(transferObject,
-							this.application);
-
-					m_utils.debug("transfer object");
-					m_utils.debug(transferObject);
-
-					m_commandsController
-							.submitImmediately(
-									m_command
-											.createCommand(
-													"/models/"
-															+ "bla"
-															+ "/applications/messageTransformationApplications/"
-															+ "blub",
-													transferObject), {
-										method : "onUpdate",
-										callbackScope : this
-									});
 				};
-
-				MessageTransformationApplicationView.prototype.onUpdate = function(
-						data) {
-					m_utils.debug("MTA Update");
-					m_utils.debug(data);
-				};
-			}
-			;
+			};
 		});

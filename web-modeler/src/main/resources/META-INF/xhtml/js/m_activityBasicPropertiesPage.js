@@ -59,8 +59,11 @@ define(
 											.val()) {
 										page.propertiesPanel.element.modelElement.name = page.nameInput
 												.val();
-										page.submitChanges({modelElement: {name: page.nameInput
-											.val()}});
+										page.submitChanges({
+											modelElement : {
+												name : page.nameInput.val()
+											}
+										});
 									}
 								});
 				this.descriptionInput
@@ -77,10 +80,13 @@ define(
 
 									if (page.propertiesPanel.element.modelElement.description != page.descriptionInput
 											.val()) {
-										page.propertiesPanel.element.modelElement.description = page.descriptionInput
-												.val();
-										page.submitChanges({modelElement: {description: page.descriptionInput
-											.val()}});
+										page
+												.submitChanges({
+													modelElement : {
+														description : page.descriptionInput
+																.val()
+													}
+												});
 									}
 								});
 				this.applicationList
@@ -95,14 +101,16 @@ define(
 										return;
 									}
 
-									var changes = {modelElement: {}};
+									var changes = {
+										modelElement : {}
+									};
 
 									if (page.applicationList.val() == m_constants.AUTO_GENERATED_UI) {
 										changes.modelElement.activityType = m_constants.MANUAL_ACTIVITY_TYPE;
 										changes.modelElement.applicationFullId = null;
 										changes.modelElement.subprocessFullId = null;
 									} else {
-										page.propertiesPanel.element.modelElement.activityType = m_constants.APPLICATION_ACTIVITY_TYPE;
+										changes.modelElement.activityType = m_constants.APPLICATION_ACTIVITY_TYPE;
 
 										if (page.applicationList.val() == m_constants.TO_BE_DEFINED) {
 											changes.modelElement.applicationFullId = null;
@@ -131,7 +139,9 @@ define(
 										return;
 									}
 
-									var changes = {modelElement: {}};
+									var changes = {
+										modelElement : {}
+									};
 
 									changes.modelElement.activityType = m_constants.SUBPROCESS_ACTIVITY_TYPE;
 
@@ -140,7 +150,7 @@ define(
 
 										page.propertiesPanel.showHelpPanel();
 									} else {
-										changes.modelElement.subprocessFullId = this.subprocessList
+										changes.modelElement.subprocessFullId = page.subprocessList
 												.val();
 									}
 
@@ -219,11 +229,14 @@ define(
 					this.subprocessList.val(m_constants.TO_BE_DEFINED);
 					this.applicationInput.attr("checked", true);
 					this.applicationList.removeAttr("disabled");
-
-					this.propertiesPanel.element.modelElement.activityType = m_constants.APPLICATION_ACTIVITY_TYPE;
-					this.propertiesPanel.element.modelElement.applicationFullId = null;
 					this.propertiesPanel.showHelpPanel();
-					this.submitChanges();
+					this
+							.submitChanges({
+								modelElement : {
+									activityType : m_constants.APPLICATION_ACTIVITY_TYPE,
+									applicationFullId : null
+								}
+							});
 				};
 
 				/**
@@ -235,11 +248,14 @@ define(
 					this.applicationInput.attr("checked", false);
 					this.applicationList.attr("disabled", true);
 					this.applicationList.val(m_constants.TO_BE_DEFINED);
-
-					this.propertiesPanel.element.modelElement.activityType = m_constants.SUBPROCESS_ACTIVITY_TYPE;
-					this.propertiesPanel.element.modelElement.subprocessFullId = null;
 					this.propertiesPanel.showHelpPanel();
-					this.submitChanges();
+					this
+							.submitChanges({
+								modelElement : {
+									activityType : m_constants.SUBPROCESS_ACTIVITY_TYPE,
+									subprocessFullId : null
+								}
+							});
 				};
 
 				/**
@@ -303,11 +319,16 @@ define(
 				/**
 				 * 
 				 */
-				ActivityBasicPropertiesPage.prototype.submitChanges = function(changes) {
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(this.propertiesPanel.element.diagram.modelId,
-									this.propertiesPanel.element.oid,
-									changes));
+				ActivityBasicPropertiesPage.prototype.submitChanges = function(
+						changes) {
+					m_utils.debug("Changes to be subnmitted: ");
+					m_utils.debug(changes);
+					m_commandsController
+							.submitCommand(m_command
+									.createUpdateModelElementCommand(
+											this.propertiesPanel.element.diagram.modelId,
+											this.propertiesPanel.element.oid,
+											changes));
 				};
 			}
 		});

@@ -24,9 +24,14 @@ define(
 					var model = m_model.findModel(modelId);
 					var structuredDataType = model.structuredDataTypes[structuredDataTypeId];
 
-					view = new XsdStructuredDataTypeView(model,
-							structuredDataType);
+					view = new XsdStructuredDataTypeView();
 
+					// TODO Unregister!
+					// In Initializer?
+
+					m_commandsController.registerCommandHandler(view);
+
+					view.initialize(structuredDataType);
 					view.initializeForManualDefinition();
 				}
 			};
@@ -34,11 +39,10 @@ define(
 			/**
 			 * 
 			 */
-			function XsdStructuredDataTypeView(model, structuredDataType) {
-				this.model = model;
-				this.structuredDataType = structuredDataType;
+			function XsdStructuredDataTypeView() {
 				this.tree = jQuery("#typeDeclarationsTable");
 				this.tableBody = jQuery("table#typeDeclarationsTable tbody");
+				this.nameInput = jQuery("#nameInput");
 				this.urlTextInput = jQuery("#urlTextInput");
 				this.loadFromUrlButton = jQuery("#loadFromUrlButton");
 				this.importFromUrlRadioButton = jQuery("#importFromUrlRadioButton");
@@ -50,6 +54,18 @@ define(
 				this.structureRadioButton = jQuery("#structureRadioButton");
 				this.enumerationRadioButton = jQuery("#enumerationRadioButton");
 				this.propertiesTree = m_propertiesTree.create("fieldPropertiesTable");
+
+				this.nameInput.change({
+					"view" : this
+				}, function(event) {
+					var view = event.data.view;
+
+					if (view.structuredDataType.name != view.nameInput.val()) {
+						view.submitChanges({
+							name : view.nameInput.val()
+						});
+					}
+				});
 
 				this.loadFromUrlButton.click({
 					"callbackScope" : this
@@ -106,6 +122,16 @@ define(
 									event.data.view
 											.resumeTableFoManualDefinition();
 								});
+
+				/**
+				 * 
+				 */
+				XsdStructuredDataTypeView.prototype.initialize = function(
+						structuredDataType) {
+					this.structuredDataType = structuredDataType;
+					
+					this.nameInput.val(structuredDataType.name);
+				};
 
 				/**
 				 * 
@@ -442,6 +468,38 @@ define(
 
 					return select;
 				};
+				
+
+				/**
+				 * 
+				 */
+				XsdStructuredDataTypeView.prototype.submitChanges = function(
+						changes) {
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementCommand(this.structuredDataType.model.id,
+									this.structuredDataType.oid, changes));
+				};
+
+				/**
+				 * Only react to name changes and validation exceptions.
+				 */
+				XsdStructuredDataTypeView.prototype.processCommand = function(
+						command) {
+					m_utils.debug("===> Structured Data Process Command");
+					m_utils.debug(command);
+
+					// Parse the response JSON from command pattern
+
+					var obj = ("string" == typeof (command)) ? jQuery
+							.parseJSON(command) : command;
+
+					if (null != obj && null != obj.changes
+							&& object.changes[this.structuredDataType.oid] != null) {
+						this.nameInput
+								.val(object.changes[this.structuredDataType.oid].name);
+
+						// Other attributes
+					}
+				};
 			}
-			;
 		});
