@@ -34,6 +34,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
+import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
@@ -93,6 +94,9 @@ public class ModelElementUnmarshaller
       symbolPropertiesMap.put(EndEventSymbol.class, new String[] {"x", "y"});
       modelElementPropertiesMap.put(EndEventSymbol.class, new String[] {
             "name"});
+
+      modelElementPropertiesMap.put(ApplicationType.class, new String[] {
+      "name"});
    }
 
    /**
@@ -130,6 +134,10 @@ public class ModelElementUnmarshaller
       else if (element instanceof EndEventSymbol)
       {
          updateEndEventSymbol((EndEventSymbol) element, json);
+      }
+      else if (element instanceof ApplicationType)
+      {
+         updateApplication((ApplicationType) element, json);
       }
    }
 
@@ -223,6 +231,24 @@ public class ModelElementUnmarshaller
       mapDeclaredSymbolProperties(activitySymbol, gatewaySymbolJson,
             symbolPropertiesMap.get(ActivitySymbolType.class));
       storeAttributes(activity, activityJson);
+
+      if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY).getAsString().equals(ModelerConstants.XOR_GATEWAY_TYPE))
+      {
+         activity.setJoin(JoinSplitType.XOR_LITERAL);
+         activity.setSplit(JoinSplitType.XOR_LITERAL);
+      }
+      else if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY).getAsString().equals(ModelerConstants.AND_GATEWAY_TYPE))
+      {
+         activity.setJoin(JoinSplitType.AND_LITERAL);
+         activity.setSplit(JoinSplitType.AND_LITERAL);
+      }
+      else if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY).getAsString().equals(ModelerConstants.OR_GATEWAY_TYPE))
+      {
+         // TODO OR Support
+         
+         activity.setJoin(JoinSplitType.XOR_LITERAL);
+         activity.setSplit(JoinSplitType.XOR_LITERAL);
+      }
    }
 
    /**
@@ -253,6 +279,19 @@ public class ModelElementUnmarshaller
             modelElementPropertiesMap.get(EndEventSymbol.class));
       mapDeclaredSymbolProperties(endEventSymbol, endEventSymbolJson,
             symbolPropertiesMap.get(EndEventSymbol.class));
+   }
+
+   /**
+    * 
+    * @param processDefinition
+    * @param processDefinitionJson
+    */
+   private void updateApplication(ApplicationType application,
+         JsonObject applicationJson)
+   {
+      mapDeclaredModelElementProperties(application, applicationJson,
+            modelElementPropertiesMap.get(ApplicationType.class));
+      storeAttributes(application, applicationJson);
    }
 
    /**

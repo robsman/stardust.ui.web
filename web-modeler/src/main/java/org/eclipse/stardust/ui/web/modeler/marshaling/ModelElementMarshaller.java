@@ -63,6 +63,10 @@ public class ModelElementMarshaller
       {
          jsResult = toStartEventJson((StartEventSymbol) modelElement);
       }
+      else if (modelElement instanceof ApplicationType)
+      {
+         jsResult = toApplication((ApplicationType) modelElement);
+      }
       else
       {
          jsResult = new JsonObject();
@@ -524,6 +528,8 @@ public class ModelElementMarshaller
          activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
                ModelerConstants.GATEWAY_ACTIVITY);
 
+         // TODO Throw error for inconsistent Split/Join settings
+         
          if (activity.getJoin() == JoinSplitType.XOR_LITERAL)
          {
             activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
@@ -749,6 +755,47 @@ public class ModelElementMarshaller
       // MBFacade.createFullId(model, dataSymbol.getData()));
 
       return dataSymbolJson;
+   }
+
+   /**
+    * @return
+    */
+   public static JsonObject toApplication(ApplicationType application)
+   {
+      JsonObject applicationJson = new JsonObject();
+
+      applicationJson.addProperty(ModelerConstants.OID_PROPERTY, application.getElementOid());
+      applicationJson.addProperty(ModelerConstants.ID_PROPERTY, application.getId());
+      applicationJson.addProperty(ModelerConstants.NAME_PROPERTY, application.getName());
+      loadDescription(applicationJson, application);
+
+      if (application.getType() != null) {
+         applicationJson.addProperty(ModelerConstants.APPLICATION_TYPE_PROPERTY,
+               application.getType().getId());
+      } else {
+         applicationJson.addProperty(ModelerConstants.APPLICATION_TYPE_PROPERTY,
+               ModelerConstants.INTERACTIVE_APPLICATION_TYPE_KEY);
+
+         JsonObject contextsJson = new JsonObject();
+         applicationJson.add(ModelerConstants.CONTEXTS_PROPERTY, contextsJson);
+
+         for (ContextType context : application.getContext()) {
+            JsonObject contextJson = new JsonObject();
+            applicationJson.add(context.getType().getId(), contextJson);
+         }
+      }
+
+      // TODO Review
+
+      for (AttributeType attribute : application.getAttribute()) {
+         if ("carnot:engine:methodName".equals(attribute.getName())) {
+            applicationJson.addProperty("accessPoint",
+                  attribute.getValue());
+            break;
+         }
+      }
+
+      return applicationJson;
    }
 
    /**
