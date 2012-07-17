@@ -72,18 +72,23 @@ define(
 					var imageUrl = null;
 
 					if (command.type == m_constants.REQUEST_JOIN_COMMAND) {
-						imageUrl = "../images/" + command.newObject.account + "-photo.gif"; //command.newObject.imageUrl;
+						imageUrl = "../images/" + command.newObject.account
+								+ "-photo.gif"; // command.newObject.imageUrl;
 					} else if (command.type == m_constants.CONFIRM_JOIN_COMMAND) {
-						imageUrl = "../images/" + command.oldObject.account + "-photo.gif"; //command.oldObject.imageUrl;
+						imageUrl = "../images/" + command.oldObject.account
+								+ "-photo.gif"; // command.oldObject.imageUrl;
 					} else {
-						imageUrl = "../images/" + "sheldor-photo.gif"; //m_session.current().participants[command.account].imageUrl;
+						imageUrl = "../images/" + "sheldor-photo.gif"; // m_session.current().participants[command.account].imageUrl;
 					}
 
 					row += "<img src=\"" + imageUrl + "\"/>";
 					row += "</td><td valign=\"top\"><span id=\"userTag\">";
 					row += command.account;
 					row += "</span><br><span id=\"dateTag\">";
-					row += command.timestamp;
+
+					var date = new Date(command.timestamp);
+
+					row += date;
 					row += "</span></td></tr></table></td></tr>";
 					row += "<tr>";
 					row += "<td valign=\"top\" align=\"left\"><span id=\"messageTag\">";
@@ -102,8 +107,31 @@ define(
 					} else if (command.type == m_constants.SUBMIT_CHAT_MESSAGE_COMMAND) {
 						row += command.newObject;
 					} else {
-						// TODO Can be more specific
-						row += "Model element(s) added, changed or deleted.";
+						if (command.commandId == "modelElement.update") {
+							row += "Model element updated.";
+						} else if (command.commandId == "activitySymbol.create") {
+							row += "Activity created.";
+						} else if (command.commandId == "eventSymbol.create") {
+							row += "Event created.";
+						} else if (command.commandId == "gatewaySymbol.create") {
+							row += "Gateway created.";
+						} else if (command.commandId == "swimlaneSymbol.create") {
+							row += "Swimlane created.";
+						} else if (command.commandId == "process.create") {
+							row += "Process Definition created.";
+						} else if (command.commandId == "activitySymbol.delete") {
+							row += "Activity deleted.";
+						} else if (command.commandId == "eventSymbol.delete") {
+							row += "Event deleted.";
+						} else if (command.commandId == "gatewaySymbol.delete") {
+							row += "Gateway deleted.";
+						} else if (command.commandId == "swimlaneSymbol.delete") {
+							row += "Swimlane deleted.";
+						} else if (command.commandId == "process.delete") {
+							row += "Process Definition deleted.";
+						} else {
+							row += "Other modification performed.";
+						}
 					}
 
 					row += "</span></td>";
