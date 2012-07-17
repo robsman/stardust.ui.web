@@ -148,7 +148,7 @@ define(
 				m_commandsController.registerCommandHandler(this);
 				
 				// Unregister handler on window unload.
-				if (window.callbackScope) {
+				if (!window.callbackScope) {
 					window.callbackScope = {};
 				}
 				window.callbackScope.diagram = this;
