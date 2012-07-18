@@ -67,13 +67,13 @@ public class CreateProcessCommandHandler implements ICommandHandler
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
       String id = MBFacade.createIdFromName(name);
       processDefinition = newProcessDefinition(model).withIdAndName(id, name).build();
-
+      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
+      processDefinition.setElementOid(++maxOid);
       // Create diagram bits too
 
       DiagramType diagram = AbstractElementBuilder.F_CWM.createDiagramType();
       diagram.setMode(DiagramModeType.MODE_400_LITERAL);
       diagram.setOrientation(OrientationType.VERTICAL_LITERAL);
-      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       diagram.setElementOid(++maxOid);
       diagram.setName("Diagram 1");
 
