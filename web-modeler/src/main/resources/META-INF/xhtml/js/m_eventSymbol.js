@@ -23,7 +23,9 @@ define(
 					eventSymbol.bind(diagram);
 					eventSymbol.modelElement = m_event
 							.createStartEvent(diagram.process);
-
+					
+					eventSymbol.diagram.process.events[eventSymbol.modelElement.id] = eventSymbol.modelElement;
+					
 					return eventSymbol;
 				},
 				createStopEventSymbol : function(diagram) {

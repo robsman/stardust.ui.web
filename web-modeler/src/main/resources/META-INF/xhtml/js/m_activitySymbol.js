@@ -24,6 +24,8 @@ define(
 
 					activitySymbol.modelElement = m_activity.createActivity(
 							diagram.process, type);
+					
+					activitySymbol.diagram.process.activities[activitySymbol.modelElement.id] = activitySymbol.modelElement;
 
 					return activitySymbol;
 				},
