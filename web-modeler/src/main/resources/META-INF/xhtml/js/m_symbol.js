@@ -913,8 +913,8 @@ define(
 							//this.diagram.submitUpdate();
 							var oldGeometry = {"x": this.dragStartX, "y" : this.dragStartY, "oid" : this.oid};
 							var newGeometry = {"x": this.x, "y" : this.y, "oid" : this.oid};
-
-							var command = m_command.createMoveNodeSymbolCommand(this.getPath(true), {oid: this.oid}, newGeometry, this);
+							
+							var command = m_command.createMoveNodeSymbolCommand(this.diagram.model.id, this.oid, newGeometry);
 							m_commandsController.submitCommand(command);
 						} else {
 							this.diagram.snapSymbol(this);
@@ -927,7 +927,7 @@ define(
 								var oldGeometry = {"x": this.dragStartX, "y" : this.dragStartY, "oid" : this.oid};
 								var newGeometry = {"x": this.x, "y" : this.y, "oid" : this.oid};
 
-								var command = m_command.createMoveNodeSymbolCommand(this.getPath(true), {oid: this.oid}, newGeometry, this);
+								var command = m_command.createMoveNodeSymbolCommand(this.diagram.model.id, this.oid, newGeometry);
 								m_commandsController.submitCommand(command);
 							}
 						}
@@ -1184,8 +1184,8 @@ define(
 				 *
 				 */
 				Symbol.prototype.createAndSubmitDeleteCommand = function() {
-					var command = m_command.createRemoveNodeCommand(this.getCommandIdForNode("delete"), this.getPath(true),
-							{oid : this.parentSymbol.oid}, this.createTransferObject(), this);
+					var command = m_command.createRemoveNodeCommand(this.getCommandIdForNode("delete"), this.diagram.model.id,
+							this.parentSymbol.oid, this.createTransferObject());
 					m_commandsController.submitCommand(command);
 				}
 
@@ -1193,10 +1193,9 @@ define(
 					var commandType = this.getCommandIdForNode("create");
 					if (commandType) {
 						var command = m_command.createCreateNodeCommand(this
-								.getCommandIdForNode("create"), this
-								.getPath(true), {
-							oid : this.parentSymbol.oid
-						}, this.createTransferObject(), this);
+								.getCommandIdForNode("create"),
+								this.diagram.model.id, this.parentSymbol.oid,
+								this.createTransferObject());
 						m_commandsController.submitCommand(command);
 					} else {
 						this.submitCreation();
@@ -1239,8 +1238,8 @@ define(
 				 */
 				Symbol.prototype.stretchStop = function() {
 					var newGeometry = {"x": this.x, "y" : this.y, "oid" : this.oid, "width" : this.width , "height" :this.height};
-
-					var command = m_command.createMoveNodeSymbolCommand(this.getPath(true), {oid: this.oid}, newGeometry, this);
+					
+					var command = m_command.createMoveNodeSymbolCommand(this.diagram.model.id, this.oid, newGeometry);
 					m_commandsController.submitCommand(command);
 				};
 

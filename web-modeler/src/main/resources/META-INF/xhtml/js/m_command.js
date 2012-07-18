@@ -55,26 +55,17 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 				changes : changes
 			} ]);
 		},
-		createMoveNodeSymbolCommand : function(baseUri, targetElement, newObject, context) {
-			// TODO This code needs be removed as soon modelId passed instead of context (see createUpdateModelElementCommand) 
-			var modelId = context.diagram.model.id;
-
-			return new ChangeDescriptor("nodeSymbol.move", modelId, [{oid: targetElement.oid, changes: newObject}]);
+		createMoveNodeSymbolCommand : function(modelId, oid, changes) {
+			return new ChangeDescriptor("nodeSymbol.move", modelId, [{oid: oid, changes: changes}]);
 		},
-		createCreateNodeCommand : function(commandType, baseUri, targetElement, newObject, context) {
-			// TODO This code needs be removed as soon modelId passed instead of context (see createUpdateModelElementCommand) 
-			var modelId = context.diagram.model.id;
-
-			return new ChangeDescriptor(commandType, modelId, [{oid: targetElement.oid, changes: newObject}]);
+		createCreateNodeCommand : function(commandType, modelId, oid, changes) {
+			return new ChangeDescriptor(commandType, modelId, [{oid: oid, changes: changes}]);
 		},
 		createUpdateModelElementCommand : function(modelId, oid, changes) {
 			return new ChangeDescriptor("modelElement.update", modelId, [{oid: oid, changes: changes}]);
 		},
-		createRemoveNodeCommand : function(commandType, baseUri, targetElement, newObject, context) {
-			// TODO This code needs be removed as soon modelId passed instead of context (see createUpdateModelElementCommand) 
-			var modelId = context.diagram.model.id;
-
-			return new ChangeDescriptor(commandType, modelId, [{oid: targetElement.oid, changes: newObject}]);
+		createRemoveNodeCommand : function(commandType, modelId, oid, changes) {
+			return new ChangeDescriptor(commandType, modelId, [{oid: oid, changes: changes}]);
 		},
 		// TODO Might be simple Request causing command to be broadcasted
 		createRequestJoinCommand : function(prospect) {

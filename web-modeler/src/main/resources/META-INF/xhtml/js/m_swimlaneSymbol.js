@@ -823,7 +823,7 @@ define(
 
 						var newGeometry = {"x": this.x, "y" : this.y, "oid" : this.oid, "width" : this.width , "height" :this.height};
 
-						var command = m_command.createMoveNodeSymbolCommand(this.getPath(true), {oid: this.oid}, newGeometry, this);
+						var command = m_command.createMoveNodeSymbolCommand(this.diagram.model.id, this.oid, newGeometry);
 						m_commandsController.submitCommand(command);
 					}
 				};
