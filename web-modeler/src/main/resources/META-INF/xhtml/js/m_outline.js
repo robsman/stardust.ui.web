@@ -1221,7 +1221,7 @@ define(
 					var id = 'Model' + number;
 
 					m_commandsController.submitCommand(m_command
-							.createCreateCommand("/models/", {
+							.createCreateModelCommand({
 								"name" : name,
 								"id" : id
 							}));
@@ -1513,7 +1513,9 @@ define(
 							//Create Process
 							if ("process" == command.changes.added[i].type) {
 								this.createProcess(command.changes.added[i]);
-							}							
+							} else if ("model" == command.changes.added[i].type) {
+								this.createModel(command.changes.added[i]);
+							}
 						}
 						for ( var i = 0; i < obj.changes.modified.length; i++) {
 							var modelElement = m_model.findModelElementByGuid(obj.changes.modified[i].oid);

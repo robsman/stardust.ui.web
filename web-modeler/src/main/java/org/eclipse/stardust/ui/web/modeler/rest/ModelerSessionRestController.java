@@ -1,5 +1,6 @@
 package org.eclipse.stardust.ui.web.modeler.rest;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
@@ -35,6 +36,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
 import org.eclipse.stardust.ui.web.modeler.edit.CommandHandlingMediator;
 import org.eclipse.stardust.ui.web.modeler.edit.EditingSessionManager;
+import org.eclipse.stardust.ui.web.modeler.edit.model.element.ModelChangeCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
@@ -252,9 +254,30 @@ public class ModelerSessionRestController
       }
    }
 
+   /**
+    * @param commandId
+    * @param commandJson
+    * @return
+    */
    private Response applyGlobalChange(String commandId, JsonObject commandJson)
    {
       // TODO global command (e.g. "model.create")
+      if ("model.create".equalsIgnoreCase(commandId)
+            || "model.delete".equalsIgnoreCase(commandId))
+      {
+         JsonArray changesJson = commandJson.getAsJsonArray("changeDescriptions");         
+         for (JsonElement cJson : changesJson) {
+            if (null != cJson) {
+               JsonElement changeJson = cJson.getAsJsonObject().get("changes");
+               ModelChangeCommandHandler handler = new ModelChangeCommandHandler();
+               handler.handleCommand(commandId, null, changeJson.getAsJsonObject());
+               JsonObject response = handler.getResponse();
+               if (null != response) {
+                  return Response.ok(response.toString(), APPLICATION_JSON_TYPE).build();
+               }         
+            }
+         }
+      }
 
       return null;
    }

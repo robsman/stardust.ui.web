@@ -24,6 +24,7 @@ import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.OrientationType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
@@ -800,6 +801,22 @@ public class ModelElementMarshaller
       }
 
       return applicationJson;
+   }
+
+   
+   /**
+    * @param model
+    * @return
+    */
+   public static JsonObject toModel(ModelType model)
+   {
+      JsonObject modelJson = new JsonObject();
+      modelJson.addProperty(ModelerConstants.ID_PROPERTY, model.getId());
+      modelJson.addProperty(ModelerConstants.NAME_PROPERTY, model.getName());
+      modelJson.addProperty(ModelerConstants.OID_PROPERTY, model.getOid());
+      modelJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.MODEL_KEY);
+      
+      return modelJson;
    }
 
    /**
