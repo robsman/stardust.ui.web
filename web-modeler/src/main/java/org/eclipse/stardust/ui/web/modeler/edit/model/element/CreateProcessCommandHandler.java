@@ -17,8 +17,6 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.EVENTS_PR
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.GATEWAYS_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.MODEL_ID_PROPERTY;
 
-import javax.annotation.Resource;
-
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
@@ -31,15 +29,16 @@ import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.OrientationType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
-import org.eclipse.stardust.ui.web.modeler.edit.EditingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.edit.ICommandHandler;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+/**
+ * @author Shrikant.Gangal
+ *
+ */
 @Component
 @Scope("prototype")
 public class CreateProcessCommandHandler implements ICommandHandler
@@ -47,12 +46,6 @@ public class CreateProcessCommandHandler implements ICommandHandler
    private static final String DEF_LANE_ID = "DefaultLane";
    private static final String DEF_LANE_NAME = "Default Lane";
    public static final String TYPE_PROPERTY = "type";
-
-   // TODO BAD - These fields makes the handler stateful and needs to be changed
-   private ProcessDefinitionType processDefinition;
-
-   @Resource
-   private EditingSessionManager editingSessionManager;
 
    @Override
    public boolean isValidTarget(Class< ? > type)
@@ -66,7 +59,7 @@ public class CreateProcessCommandHandler implements ICommandHandler
       ModelType model = (ModelType) targetElement;
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
       String id = MBFacade.createIdFromName(name);
-      processDefinition = newProcessDefinition(model).withIdAndName(id, name).build();
+      ProcessDefinitionType processDefinition = newProcessDefinition(model).withIdAndName(id, name).build();
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       processDefinition.setElementOid(++maxOid);
       // Create diagram bits too
@@ -108,7 +101,6 @@ public class CreateProcessCommandHandler implements ICommandHandler
 
       newManualTrigger(processDefinition).accessibleTo(ADMINISTRATOR_ROLE).build();
 
-      // editingSessionManager.createEditingSession(processDefinition);
       JsonObject processDefinitionJson = new JsonObject();
 
       processDefinitionJson.addProperty(TYPE_PROPERTY, "process");
@@ -122,41 +114,5 @@ public class CreateProcessCommandHandler implements ICommandHandler
       processDefinitionJson.add(EVENTS_PROPERTY, new JsonObject());
       processDefinitionJson.add(DATA_FLOWS_PROPERTY, new JsonObject());
       processDefinitionJson.add(CONTROL_FLOWS_PROPERTY, new JsonObject());
-
-      // postedData.add(NEW_OBJECT_PROPERTY, processDefinitionJson);
-   }
-
-   /**
-    *
-    */
-   public ProcessDefinitionType getProcessDefinition()
-   {
-      return processDefinition;
-   }
-
-   /**
-    * @return
-    */
-   public JsonObject getModifications()
-   {
-      JsonObject changes = new JsonObject();
-      changes.add("modified", new JsonArray());
-
-      JsonObject addedObjs = new JsonObject();
-      addedObjs.addProperty("id", processDefinition.getId());
-      addedObjs.addProperty("modelId", ModelUtils.findContainingModel(processDefinition).getId());
-      addedObjs.addProperty("type", "org.eclipse.stardust.model.xpdl.carnot.impl.ProcessDefinitionTypeImpl");
-      addedObjs.addProperty("name", processDefinition.getName());
-      JsonArray addedArray = new JsonArray();
-      addedArray.add(addedObjs);
-      changes.add("added", addedArray);
-
-      changes.add("removed", new JsonArray());
-
-      JsonObject response = new JsonObject();
-      response.addProperty("id", System.currentTimeMillis());
-      response.add("changes", changes);
-
-      return response;
    }
 }
