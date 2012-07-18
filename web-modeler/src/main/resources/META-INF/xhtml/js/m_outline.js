@@ -1417,11 +1417,10 @@ define(
 					var id = "XSDDataStructure" + number;
 
 					m_commandsController.submitCommand(m_command
-							.createCreateCommand("/models/" + modelId
-									+ "/structuredDataTypes", {
+							.createCreateStructuredDataTypeCommand(modelId, modelId, {
 								"name" : name,
 								"id" : id
-							}));
+							}, modelId));
 				}
 
 				/**
@@ -1515,6 +1514,8 @@ define(
 								this.createProcess(command.changes.added[i]);
 							} else if ("model" == command.changes.added[i].type) {
 								this.createModel(command.changes.added[i]);
+							} else if ("struct" == command.changes.added[i].type) {
+								this.createStructuredDataType(command.changes.added[i]);
 							}
 						}
 						for ( var i = 0; i < obj.changes.modified.length; i++) {

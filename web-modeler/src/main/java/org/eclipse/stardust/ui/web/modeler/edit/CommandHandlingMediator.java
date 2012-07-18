@@ -25,6 +25,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.GatewayCommandHandl
 import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.MoveNodeSymbolHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.SwimlaneCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.model.element.CreateProcessCommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.model.element.StructuredTypeChangeCommandHandler;
 
 @Component
 // TODO registry should be singleton scope, but somehow needs to have access to
@@ -102,6 +103,10 @@ public class CommandHandlingMediator
       else if ("process.create".equals(commandId))
       {
          handler = new CreateProcessCommandHandler();
+      }
+      else if ("structuredDataType.create".equals(commandId))
+      {
+         handler = new StructuredTypeChangeCommandHandler();
       }
 
       Modification change = null;

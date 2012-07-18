@@ -60,6 +60,12 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 				changes : changes
 			} ]);
 		},
+		createCreateStructuredDataTypeCommand : function(modelId, oid, changes) {
+			return new ChangeDescriptor("structuredDataType.create", modelId, [ {
+				oid : oid,
+				changes : changes
+			} ]);
+		},
 		createMoveNodeSymbolCommand : function(modelId, oid, changes) {
 			return new ChangeDescriptor("nodeSymbol.move", modelId, [{oid: oid, changes: changes}]);
 		},

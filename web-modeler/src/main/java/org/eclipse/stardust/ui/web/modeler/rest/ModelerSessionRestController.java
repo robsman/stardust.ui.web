@@ -81,33 +81,21 @@ public class ModelerSessionRestController
       JsonArray jsModified = new JsonArray();
       for (EObject changedObject : change.changedObjects())
       {
-         //TODO change ModelElementMarshaller.toJson to accept EObject instead
-    	  if (changedObject instanceof IModelElement)
-    	  {
-    		  jsModified.add(ModelElementMarshaller.toJson((IModelElement) changedObject));    		  
-    	  }         
+         jsModified.add(ModelElementMarshaller.toJson(changedObject));    		  
       }
       jsChanges.add("modified", jsModified);
 
       JsonArray jsAdded = new JsonArray();
       for (EObject addedObject : change.addedObjects())
       {
-       //TODO change ModelElementMarshaller.toJson to accept EObject instead
-         if (addedObject instanceof IModelElement)
-         {
-            jsAdded.add(ModelElementMarshaller.toJson((IModelElement) addedObject));
-         }
+         jsAdded.add(ModelElementMarshaller.toJson(addedObject));
       }
       jsChanges.add("added", jsAdded);
 
       JsonArray jsRemoved = new JsonArray();
       for (EObject removedObject : change.removedObjects())
       {
-       //TODO change ModelElementMarshaller.toJson to accept EObject instead
-         if (removedObject instanceof IModelElement)
-         {
-            jsRemoved.add(ModelElementMarshaller.toJson((IModelElement) removedObject));
-         }
+         jsRemoved.add(ModelElementMarshaller.toJson(removedObject));
       }
       jsChanges.add("removed", jsRemoved);
 
@@ -226,6 +214,7 @@ public class ModelerSessionRestController
       }
       catch (Exception e)
       {
+         e.printStackTrace();
          return Response.serverError().entity(e).build();
       }
    }

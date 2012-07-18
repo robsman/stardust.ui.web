@@ -2,6 +2,8 @@ package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import org.eclipse.emf.ecore.EObject;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -35,6 +37,7 @@ import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 import org.eclipse.stardust.model.xpdl.carnot.impl.ProcessDefinitionTypeImpl;
 import org.eclipse.stardust.model.xpdl.carnot.util.ActivityUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 
 public class ModelElementMarshaller
 {
@@ -43,7 +46,7 @@ public class ModelElementMarshaller
     * @param modelElement
     * @return
     */
-   public static JsonObject toJson(IModelElement modelElement)
+   public static JsonObject toJson(EObject modelElement)
    {
       JsonObject jsResult;
       String objectUri = null;
@@ -52,7 +55,15 @@ public class ModelElementMarshaller
 
       // TODO generically dispatch REST generation from IModelElement
 
-      if (modelElement instanceof ProcessDefinitionTypeImpl)
+      if (modelElement instanceof ModelType)
+      {
+         jsResult = toModel((ModelType) modelElement);
+      }
+      else if (modelElement instanceof TypeDeclarationType)
+      {
+         jsResult = toTypeDeclarationType((TypeDeclarationType) modelElement);
+      }
+      else if (modelElement instanceof ProcessDefinitionTypeImpl)
       {
          jsResult = toProcessDefinition((ProcessDefinitionType) modelElement);
       }
@@ -71,7 +82,10 @@ public class ModelElementMarshaller
       else
       {
          jsResult = new JsonObject();
-         jsResult.addProperty(ModelerConstants.OID_PROPERTY, modelElement.getElementOid());
+         if (modelElement instanceof IModelElement)
+         {
+            jsResult.addProperty(ModelerConstants.OID_PROPERTY, ((IModelElement) modelElement).getElementOid());
+         }
          jsResult.addProperty(ModelerConstants.TYPE_PROPERTY, modelElement.getClass()
                .getName());
          jsResult.addProperty("moreContent", "TODO");
@@ -802,7 +816,6 @@ public class ModelElementMarshaller
 
       return applicationJson;
    }
-
    
    /**
     * @param model
@@ -817,6 +830,27 @@ public class ModelElementMarshaller
       modelJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.MODEL_KEY);
       
       return modelJson;
+   }
+
+   /**
+    * @param structType
+    * @return
+    */
+   public static JsonObject toTypeDeclarationType(TypeDeclarationType structType)
+   {
+      JsonObject structJson = new JsonObject();
+      structJson.addProperty(ModelerConstants.ID_PROPERTY, structType.getId());
+      structJson.addProperty(ModelerConstants.NAME_PROPERTY, structType.getName());
+      structJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY,
+            ModelUtils.findContainingModel(structType).getId());
+      JsonObject typeDeclarationJson = new JsonObject();
+      structJson.add(ModelerConstants.TYPE_DECLARATION_PROPERTY, typeDeclarationJson);
+      JsonObject childrenJson = new JsonObject();
+      typeDeclarationJson.add("children", childrenJson);
+      structJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+            ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
+
+      return structJson;
    }
 
    /**
