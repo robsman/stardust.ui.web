@@ -522,5 +522,34 @@ define(
 									this.propertiesPanel.element));
 				};
 
+//                 <carnot:Trigger Oid="10049" Id="FileTrigger" Name="File Trigger " Type="camel">
+//                    <carnot:AccessPoints>
+//                       <carnot:AccessPoint Oid="10063" Id="message" Name="message" Direction="OUT" Type="primitive">
+//                          <carnot:Attributes>
+//                             <carnot:Attribute Name="carnot:engine:browsable" Value="false" Type="boolean"/>
+//                             <carnot:Attribute Name="carnot:engine:visibility" Value="Public"/>
+//                             <carnot:Attribute Name="authorization:data.readDataValues" Value="__carnot_internal_all_permissions__"/>
+//                             <carnot:Attribute Name="carnot:engine:type" Value="String" Type="org.eclipse.stardust.engine.core.pojo.data.Type"/>
+//                          </carnot:Attributes>
+//                       </carnot:AccessPoint>
+//                       <carnot:AccessPoint Oid="10213" Id="headers" Name="headers" Direction="OUT" Type="serializable">
+//                          <carnot:Attributes>
+//                             <carnot:Attribute Name="carnot:engine:className" Value="org.eclipse.stardust.engine.extensions.camel.runtime.GenericMessage"/>
+//                             <carnot:Attribute Name="carnot:engine:browsable" Value="true" Type="boolean"/>
+//                          </carnot:Attributes>
+//                       </carnot:AccessPoint>
+//                    </carnot:AccessPoints>
+//                    <carnot:DataFlows>
+//                       <carnot:DataFlow Oid="10061">
+//                          <carnot:DataRef Id="BodyContent"/>
+//                          <carnot:AccessPointRef Id="message"/>
+//                       </carnot:DataFlow>
+//                    </carnot:DataFlows>
+//                    <carnot:Attributes>
+//                       <carnot:Attribute Name="carnot:engine:camel::camelContextId" Value="camelContext"/>
+//                       <carnot:Attribute Name="carnot:engine:camel::endpointURI" Value="file://C:/tmp/camel/sdt?delay=5000"/>
+//                       <carnot:Attribute Name="carnot:engine:camel::camelRouteExt" Value="&lt;from uri=&quot;file://C:/tmp/camel/sdt?delay=5000&quot; /&gt;&#13;&#10;&lt;convertBodyTo type=&quot;java.lang.String&quot;/&gt;&#13;&#10;&lt;to uri=&quot;ipp:direct&quot; /&gt;"/>
+//                       <carnot:Attribute Name="carnot:engine:camel::endpointTypeClass" Value="org.eclipse.stardust.engine.extensions.camel.runtime.GenericEndpoint"/>
+//                    </carnot:Attributes>
 			}
 		});

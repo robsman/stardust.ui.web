@@ -23,8 +23,9 @@ define(
 				},
 
 				// TODO Homogenize calls
-				
-				initializeProcessPropertiesPanel : function(processPropertiesPanel) {
+
+				initializeProcessPropertiesPanel : function(
+						processPropertiesPanel) {
 					if (currentPropertiesPanel != null) {
 						currentPropertiesPanel.hide();
 					}
@@ -36,7 +37,7 @@ define(
 
 				createPropertiesPanel : function(id) {
 					var propertiesPanel = new PropertiesPanel(id);
-					
+
 					return propertiesPanel;
 				}
 			};
@@ -47,10 +48,9 @@ define(
 			function PropertiesPanel(newId) {
 				this.id = newId;
 				this.panel = jQuery("#" + this.id);
-				this.propertiesPageList = jQuery("#" + this.id
-						+ " #propertiesPageList");
+				this.propertiesPageList = jQuery("#propertiesPageList");
 				this.applyButton = jQuery("#" + this.id + " #applyButton");
-				this.resetButton = jQuery("#" + this.id + " #resetButton");
+				this.resetButton = jQuery("#" + this.id + " #resetButton");	
 				this.errorMessagesList = jQuery("#" + this.id
 						+ " #errorMessagesList");
 				this.propertiesPages = [];
@@ -61,18 +61,6 @@ define(
 				 * 
 				 */
 				PropertiesPanel.prototype.initialize = function(element) {
-					this.applyButton.click({
-						"callbackScope" : this
-					}, function(event) {
-						event.data.callbackScope.apply();
-					});
-					this.resetButton.click({
-						"callbackScope" : this
-					}, function(event) {
-						event.data.callbackScope.reset();
-					});
-
-					this.createPropertiesPageList();
 					this.hide();
 				};
 
@@ -86,38 +74,42 @@ define(
 				/**
 				 * 
 				 */
-				PropertiesPanel.prototype.createPropertiesPageList = function() {
+				PropertiesPanel.prototype.showPropertiesPageList = function() {
 					if (this.propertiesPages.length == 1) {
 						m_dialog.makeInvisible(this.propertiesPageList);
 
 						return;
 					}
 
-					this.propertiesPageList.empty();
+					m_dialog.makeVisible(this.propertiesPageList);
 
-					// var list = this.propertiesPageList.append("<ul/>");
+					this.propertiesPageList.empty();
 
 					for ( var n in this.propertiesPages) {
 						this.propertiesPageList
-								.append("<div id=\""
+								.append("<tr>"
+										+ "<td>"
+										+ "<input id=\""
 										+ this.propertiesPages[n].id
-										+ "ListItem\" class=\"propertiesPageListItem\">"
+										+ "ListItem\" type=\"image\" src=\""
+										+ "../../images/icons/generic-property-page.png"
+										+ "\" title=\""
 										+ this.propertiesPages[n].title
-										+ "</div");
+										+ "\" alt=\""
+										+ this.propertiesPages[n].title
+										+ "\" class=\"toolbarButton\" />"
+										+ "</td>" + "</tr>");
 
 						jQuery(
-								"#" + this.id + " #"
+								"#propertiesPageList #"
 										+ this.propertiesPages[n].id
-										+ "ListItem").click(
-								{
-									"callbackScope" : this,
-									"propertiesPage" : this.propertiesPages[n]
-								},
-								function(event) {
-									 event.data.callbackScope
-									 .hidePropertiesPages();
-									event.data.propertiesPage.show();
-								});
+										+ "ListItem").click({
+							"callbackScope" : this,
+							"propertiesPage" : this.propertiesPages[n]
+						}, function(event) {
+							event.data.callbackScope.hidePropertiesPages();
+							event.data.propertiesPage.show();
+						});
 					}
 				};
 
@@ -131,6 +123,7 @@ define(
 				};
 
 				PropertiesPanel.prototype.clearErrorMessages = function() {
+					m_dialog.makeInvisible(this.errorMessagesList);
 					this.errorMessages = [];
 					this.errorMessagesList.empty();
 				};
@@ -150,6 +143,7 @@ define(
 							this.propertiesPages[n].apply();
 						}
 					} else {
+						m_dialog.makeVisible(this.errorMessagePanel);
 						this.errorMessagesList.empty();
 
 						for ( var n in this.errorMessages) {
@@ -173,11 +167,15 @@ define(
 				 */
 				PropertiesPanel.prototype.show = function() {
 					m_dialog.makeVisible(this.panel);
+					this.showPropertiesPageList();
 					this.hidePropertiesPages();
 
 					if (this.propertiesPages.length >= 1) {
 						this.propertiesPages[0].show();
 					}
+					
+					this.clearErrorMessages();
+					
 					require("m_modelerViewLayoutManager").adjustPanels();
 				};
 
