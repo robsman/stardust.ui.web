@@ -27,6 +27,13 @@
 			style="width: 800px;">
 			<tr>
 				<td>
+					<div class="errorMessagesPanel">
+						<ul id="errorMessagesList">
+						</ul>
+					</div></td>
+			</tr>
+			<tr>
+				<td>
 					<table>
 						<tr>
 							<td>
@@ -38,12 +45,12 @@
 										<td><input id="nameInput" type="text"></input>
 										</td>
 									</tr>
-								</table>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<table>
+									<tr>
+										<td><label for="camelContextInput">Camel Context</label>
+										</td>
+										<td><input id="camelContextInput" type="text"></input>
+										</td>
+									</tr>
 									<tr>
 										<td><label for="endpointTypeSelectInput">Endpoint
 												Type</label>
@@ -71,7 +78,8 @@
 								</table></td>
 						</tr>
 						<tr>
-							<td><div id="endpointUriPrefix" class="code">&lt;route&gt;</div></td>
+							<td><div id="endpointUriPrefix" class="code">&lt;route&gt;</div>
+							</td>
 						</tr>
 						<tr>
 							<td><textarea id="routeTextarea" cols="50" rows="5"
@@ -79,14 +87,16 @@
 																</textarea></td>
 						</tr>
 						<tr>
-							<td><div class="code" style="margin-bottom: 10px;">&lt;/route&gt;</div></td>
+							<td><div class="code" style="margin-bottom: 10px;">&lt;/route&gt;</div>
+							</td>
 						</tr>
 						<tr>
-							<td><label for="additionalBeanSpecificationTextarea">Additional Bean Specification</label></td>
+							<td><label for="additionalBeanSpecificationTextarea">Additional
+									Bean Specification</label></td>
 						</tr>
 						<tr>
-							<td><textarea id="additionalBeanSpecificationTextarea" cols="50" rows="5"
-									class="code">
+							<td><textarea id="additionalBeanSpecificationTextarea"
+									cols="50" rows="5" class="code">
 								</textarea></td>
 						</tr>
 						<tr>
