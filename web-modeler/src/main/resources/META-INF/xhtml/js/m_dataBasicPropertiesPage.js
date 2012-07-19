@@ -1,17 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2011 SunGard CSA LLC and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *    SunGard CSA LLC - initial API and implementation and/or initial documentation
- *******************************************************************************/
+ * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
+ * documentation
+ ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_propertiesPage" ],
-		function(m_utils, m_constants, m_propertiesPage) {
+		[ "m_utils", "m_constants", "m_command", "m_commandsController", "m_propertiesPage" ],
+		function(m_utils, m_constants, m_command, m_commandsController, m_propertiesPage) {
 			return {
 				createPropertiesPage : function(propertiesPanel) {
 					return new DataBasicPropertiesPage(propertiesPanel);
@@ -43,6 +42,54 @@ define(
 
 				// Initialize callbacks
 
+				this.nameInput
+						.change(
+								{
+									"page" : this
+								},
+								function(event) {
+									var page = event.data.page;
+
+									if (!page.validate()) {
+										return;
+									}
+
+									if (page.propertiesPanel.element.modelElement.name != page.nameInput
+											.val()) {
+										page.propertiesPanel.element.modelElement.name = page.nameInput
+												.val();
+										page.submitChanges({
+											modelElement : {
+												name : page.nameInput.val()
+											}
+										});
+									}
+								});
+				this.descriptionInput
+						.change(
+								{
+									"page" : this
+								},
+								function(event) {
+									var page = event.data.page;
+
+									if (!page.validate()) {
+										return;
+									}
+
+									if (page.propertiesPanel.element.modelElement.description != page.descriptionInput
+											.val()) {
+										page.propertiesPanel.element.modelElement.description = page.descriptionInput
+												.val();
+										page
+												.submitChanges({
+													modelElement : {
+														description : page.descriptionInput
+																.val()
+													}
+												});
+									}
+								});
 				this.primitiveInput
 						.click(
 								{
@@ -95,7 +142,8 @@ define(
 						for ( var m in this.propertiesPanel.models[n].structuredDataTypes) {
 							this.dataStructureList
 									.append("<option value='"
-											+ this.propertiesPanel.models[n].structuredDataTypes[m].getFullId()
+											+ this.propertiesPanel.models[n].structuredDataTypes[m]
+													.getFullId()
 											+ "'>"
 											+ this.propertiesPanel.models[n].name
 											+ "/"
@@ -120,7 +168,8 @@ define(
 						for ( var m in this.propertiesPanel.models[n].structuredDataTypes) {
 							this.documentTypeList
 									.append("<option value='"
-											+ this.propertiesPanel.models[n].structuredDataTypes[m].getFullId()
+											+ this.propertiesPanel.models[n].structuredDataTypes[m]
+													.getFullId()
 											+ "'>"
 											+ this.propertiesPanel.models[n].name
 											+ "/"
@@ -199,6 +248,7 @@ define(
 				 * 
 				 */
 				DataBasicPropertiesPage.prototype.validate = function() {
+					this.propertiesPanel.clearErrorMessages();
 					this.nameInput.removeClass("error");
 
 					if (this.nameInput.val() == null
@@ -206,17 +256,19 @@ define(
 						this.propertiesPanel.errorMessages
 								.push("Data name must not be empty.");
 						this.nameInput.addClass("error");
+
+						this.propertiesPanel.showErrorMessages();
+
+						return false;
 					}
+
+					return true;
 				};
 
 				/**
 				 * 
 				 */
 				DataBasicPropertiesPage.prototype.apply = function() {
-					this.propertiesPanel.data.description = this.descriptionInput
-							.val();
-					this.propertiesPanel.data.name = this.nameInput.val();
-
 					if (this.primitiveInput.is(":checked")) {
 						this.propertiesPanel.data.type = m_constants.PRIMITIVE_DATA_TYPE;
 						if (this.primitiveList.val() == m_constants.TO_BE_DEFINED) {
@@ -243,5 +295,17 @@ define(
 						}
 					}
 				};
+
+				/**
+				 * 
+				 */
+				DataBasicPropertiesPage.prototype.submitChanges = function(
+						changes) {
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementCommand(
+									this.propertiesPanel.element.oid, changes,
+									this.propertiesPanel.element));
+				};
+
 			}
 		});

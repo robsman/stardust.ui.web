@@ -24,7 +24,7 @@ define(
 					var model = m_model.findModel(modelId);
 					var application = model.applications[applicationId];
 
-					view = new CamelApplicationView();
+					view = new RoleView();
 					// TODO Unregister!
 					// In Initializer?
 
@@ -37,13 +37,13 @@ define(
 			/**
 			 * 
 			 */
-			function CamelApplicationView() {
+			function RoleView() {
 				// Inheritance
 
 				var view = m_view.create();
 
 				m_utils.inheritFields(this, view);
-				m_utils.inheritMethods(CamelApplicationView.prototype, view);
+				m_utils.inheritMethods(RoleView.prototype, view);
 
 				this.nameInput = jQuery("#nameInput");
 				this.camelContextInput = jQuery("#camelContextInput");
@@ -140,7 +140,7 @@ define(
 				/**
 				 * 
 				 */
-				CamelApplicationView.prototype.initialize = function(
+				RoleView.prototype.initialize = function(
 						application) {
 					this.application = application;
 
@@ -165,14 +165,14 @@ define(
 				/**
 				 * 
 				 */
-				CamelApplicationView.prototype.toString = function() {
-					return "Lightdust.CamelApplicationView";
+				RoleView.prototype.toString = function() {
+					return "Lightdust.RoleView";
 				};
 
 				/**
 				 * 
 				 */
-				CamelApplicationView.prototype.validate = function() {
+				RoleView.prototype.validate = function() {
 					this.clearErrorMessages();
 
 					this.nameInput.removeClass("error");
@@ -204,7 +204,7 @@ define(
 				/**
 				 * 
 				 */
-				CamelApplicationView.prototype.submitChanges = function(changes) {
+				RoleView.prototype.submitChanges = function(changes) {
 					// Generic attributes
 
 					if (changes.attributes == null) {
@@ -222,7 +222,7 @@ define(
 				/**
 				 * 
 				 */
-				CamelApplicationView.prototype.processCommand = function(
+				RoleView.prototype.processCommand = function(
 						command) {
 					m_utils.debug("===> Camel Process Command");
 					m_utils.debug(command);

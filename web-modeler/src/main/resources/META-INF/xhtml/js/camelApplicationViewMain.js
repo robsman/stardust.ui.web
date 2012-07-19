@@ -11,5 +11,6 @@ require(["m_jqueryConflictResolver",
 		 "m_constants",
 		 "m_command",
 		 "m_commandsController",
+		 "m_view",
 		 "m_camelApplicationView"], pageInitializer);
 

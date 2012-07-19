@@ -131,34 +131,14 @@ define(
 				/**
 				 * 
 				 */
-				PropertiesPanel.prototype.applyPropertiesPages = function() {
-					this.clearErrorMessages();
-
-					for ( var n in this.propertiesPages) {
-						this.propertiesPages[n].validate();
-					}
-
-					if (this.errorMessages.length == 0) {
-						for ( var n in this.propertiesPages) {
-							this.propertiesPages[n].apply();
-						}
-					} else {
-						m_dialog.makeVisible(this.errorMessagePanel);
-						this.errorMessagesList.empty();
+				PropertiesPanel.prototype.showErrorMessages = function() {
+					if (this.errorMessages.length != 0) {
+						m_dialog.makeVisible(this.errorMessagesList);
 
 						for ( var n in this.errorMessages) {
 							this.errorMessagesList.append("<li>"
 									+ this.errorMessages[n] + "</li>");
 						}
-					}
-				};
-
-				/**
-				 * 
-				 */
-				PropertiesPanel.prototype.resetPropertiesPages = function() {
-					for ( var n in this.propertiesPages) {
-						this.propertiesPages[n].reset();
 					}
 				};
 

@@ -302,6 +302,7 @@ define(
 				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.validate = function() {
+					this.propertiesPanel.clearErrorMessages();
 					this.nameInput.removeClass("error");
 
 					if (this.nameInput.val() == null
@@ -309,6 +310,7 @@ define(
 						this.propertiesPanel.errorMessages
 								.push("Activity name must not be empty.");
 						this.nameInput.addClass("error");
+						this.propertiesPanel.showErrorMessages();
 
 						return false;
 					}

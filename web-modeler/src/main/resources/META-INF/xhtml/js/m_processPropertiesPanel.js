@@ -3,9 +3,9 @@
  */
 define(
 		[ "m_utils", "m_constants", "m_model", "m_propertiesPanel", "m_propertiesPage",
-				"m_processBasicPropertiesPage", "m_processProcessInterfacePropertiesPage" ],
+				"m_processBasicPropertiesPage", "m_processDisplayPropertiesPage", "m_processProcessInterfacePropertiesPage" ],
 		function(m_utils, m_constants, m_model, m_propertiesPanel, m_propertiesPage,
-				m_processBasicPropertiesPage, m_processProcessInterfacePropertiesPage) {
+				m_processBasicPropertiesPage, m_processDisplayPropertiesPage, m_processProcessInterfacePropertiesPage) {
 
 			var processPropertiesPanel = null;
 
@@ -43,6 +43,8 @@ define(
 				this.propertiesPages = [
 						m_processBasicPropertiesPage
 								.createPropertiesPage(this),
+								m_processDisplayPropertiesPage
+								.createPropertiesPage(this),
 								m_processProcessInterfacePropertiesPage
 								.createPropertiesPage(this)];
 
@@ -65,15 +67,6 @@ define(
 					for ( var n in this.propertiesPages) {
 						this.propertiesPages[n].setElement();
 					}
-				};
-
-				/**
-				 * 
-				 */
-				ProcessPropertiesPanel.prototype.apply = function() {
-					this.applyPropertiesPages();
-//					this.element.refresh();
-//					this.element.submitUpdate();					
 				};
 			}
 		});

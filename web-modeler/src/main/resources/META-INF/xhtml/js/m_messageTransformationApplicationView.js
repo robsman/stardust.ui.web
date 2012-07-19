@@ -16,7 +16,6 @@ define(
 				m_model, m_typeDeclaration, m_accessPoint, m_dataTraversal,
 				m_dialog) {
 			var view;
-			var typeDeclarations = m_typeDeclaration.getTestTypeDeclarations();
 
 			return {
 				initialize : function() {
@@ -41,8 +40,14 @@ define(
 			/**
 			 * 
 			 */
-			function MessageTransformationApplicationView(application) {
-				this.application = application;
+			function MessageTransformationApplicationView() {
+				// Inheritance
+
+				var view = m_view.create();
+
+				m_utils.inheritFields(this, view);
+				m_utils.inheritMethods(CamelApplicationView.prototype, view);
+
 				this.inputData = {};
 				this.outputData = {};
 				this.nameInput = jQuery("#nameInput");
@@ -173,15 +178,8 @@ define(
 									mappingCell
 											.append(outputTableRow.mappingExpression);
 
-									view
-											.submitChanges({
-												attributes : {
-													fieldMappings : [ {
-														"fieldPath" : outputTableRow.path,
-														"mappingExpression" : outputTableRow.mappingExpression
-													} ]
-												}
-											});
+									view.submitChanges(this
+											.determineTransformationChanges());
 								}
 
 								view.expressionTextArea.css({
@@ -345,7 +343,7 @@ define(
 
 					m_utils.debug("Initializing MTA");
 					m_utils.debug(this.application);
-					
+
 					this.nameInput.val(application.name);
 				};
 
@@ -605,14 +603,8 @@ define(
 											}
 
 											view
-													.submitChanges({
-														attributes : {
-															fieldMappings : [ {
-																"fieldPath" : outputTableRow.path,
-																"mappingExpression" : outputTableRow.mappingExpression
-															} ]
-														}
-													});
+													.submitChanges(this
+															.determineTransformationChanges());
 
 										},
 										hoverClass : "accept",
@@ -800,10 +792,67 @@ define(
 				/**
 				 * 
 				 */
+				MessageTransformationApplicationView.prototype.validate = function() {
+					this.clearErrorMessages();
+
+					this.nameInput.removeClass("error");
+
+					if (this.nameInput.val() == null
+							|| this.nameInput.val() == "") {
+						this.errorMessages
+								.push("Application name must not be empty.");
+						this.nameInput.addClass("error");
+					}
+
+					if (this.errorMessages.length > 0) {
+						this.showErrorMessages();
+
+						return false;
+					}
+
+					return true;
+				};
+
+				/**
+				 * 
+				 */
+				MessageTransformationApplicationView.prototype.determineTransformationChanges = function() {
+					var transformationProperty = "&lt;?xml version=&quot;1.0&quot; encoding=&quot;ASCII&quot;?&gt;&#13;&#10;&lt;mapping:TransformationProperty xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:mapping=&quot;java://com.infinity.bpm.messaging.model&quot; xsi:schemaLocation=&quot;java://com.infinity.bpm.messaging.model java://com.infinity.bpm.messaging.model.mapping.MappingPackage&quot;&gt;&#13;&#10;";
+
+					for ( var n = 0; n < this.outputTableRows.length; ++n) {
+						var outputTableRow = this.outputTableRows[n];
+
+						transformationProperty += "&lt;fieldMappings";
+						transformationProperty += " fieldPath=&quot;";
+						transformationProperty += outputTableRow.path;
+						transformationProperty += "&quot; mappingExpression=&quot;";
+						transformationProperty += outputTableRow.mappingExpression;
+						transformationProperty += "&quot;/&gt;&#13;&#10;";
+					}
+
+					transformationProperty += ";&lt;/mapping:TransformationProperty&gt;&#13;&#10;";
+
+					return {
+						attributes : {
+							"messageTransformation:TransformationProperty" : transformationProperty
+						}
+					};
+				};
+
+				/**
+				 * 
+				 */
 				MessageTransformationApplicationView.prototype.submitChanges = function(
 						changes) {
+					// Generic attributes
+
+					if (changes.attributes == null) {
+						changes.attributes = {};
+					}
+
 					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(this.application.model.id,
+							.createUpdateModelElementCommand(
+									this.application.model.id,
 									this.application.oid, changes));
 				};
 
@@ -817,16 +866,76 @@ define(
 
 					// Parse the response JSON from command pattern
 
-					var obj = ("string" == typeof (command)) ? jQuery
+					var object = ("string" == typeof (command)) ? jQuery
 							.parseJSON(command) : command;
 
-					if (null != obj && null != obj.changes
-							&& object.changes[this.application.oid] != null) {
-						this.nameInput
-								.val(object.changes[this.application.oid].name);
+					if (null != object
+							&& null != object.changes
+							&& null != object.changes.modified
+							&& 0 != object.changes.modified.length
+							&& object.changes.modified[0].oid == this.application.oid) {
 
-						// Validation Exceptions!
+						// TODO May be too expensive, ignore returned mapping changes - only evaluate errors/warnings
+						
+//						m_utils.inheritFields(this.application,
+//								object.changes.modified[0]);
+//						this.initialize(this.application);
+						
+						this.application.name = object.changes.modified[0].name;
+						
+						this.nameInput.val(this.application.name);
+						
+						// Access Points
+						
+//						for (Map.Entry<String, JsonElement> entry : accessPointsJson.entrySet()) {
+//							JsonObject accessPointJson = entry.getValue().getAsJsonObject();
+//
+//							System.out.println("JSON: " + accessPointJson.toString());
+//
+//							 AccessPointType accessPoint = null;
+//							
+//							 accessPoint.setId(accessPointJson.getString(ID_PROPERTY));
+//							 accessPoint.setName(accessPointJson.getString(NAME_PROPERTY));
+//							
+//							 if (accessPointJson.get(DIRECTION_PROPERTY).equals("IN")) {
+//							 accessPoint.setDirection(DirectionType.IN_LITERAL);
+//							 } else if (accessPointJson.get(DIRECTION_PROPERTY)
+//							 .equals("OUT")) {
+//							 accessPoint.setDirection(DirectionType.IN_LITERAL);
+//							 } else {
+//							 accessPoint.setDirection(DirectionType.INOUT_LITERAL);
+//							 }
+//							
+//							 accessPoint.setType(arg0);
+//							
+//							 storeAttributes(accessPointJson, accessPoint);
+//						}
+//						 <carnot:AccessPoints>
+//						 <carnot:AccessPoint Oid="10062" Id="Person1"
+//						 Name="Person1 (Person)" Direction="IN" Type="struct">
+//						 <carnot:Attributes>
+//						 <carnot:Attribute Name="carnot:engine:dataType" Value="Person"/>
+//						 <carnot:Attribute Name="carnot:engine:path:separator" Value="/"/>
+//						 <carnot:Attribute Name="carnot:engine:data:bidirectional"
+//						 Value="true" Type="boolean"/>
+//						 <carnot:Attribute Name="RootElement" Value="Person1"/>
+//						 <carnot:Attribute Name="FullXPath" Value="Person1/"/>
+//						 </carnot:Attributes>
+//						 </carnot:AccessPoint>
+//						 <carnot:AccessPoint Oid="10063" Id="Order1" Name="Order1 (Order)"
+//						 Direction="OUT" Type="struct">
+//						 <carnot:Attributes>
+//						 <carnot:Attribute Name="carnot:engine:dataType" Value="Order"/>
+//						 <carnot:Attribute Name="carnot:engine:path:separator" Value="/"/>
+//						 <carnot:Attribute Name="carnot:engine:data:bidirectional"
+//						 Value="true" Type="boolean"/>
+//						 <carnot:Attribute Name="RootElement" Value="Order1"/>
+//						 <carnot:Attribute Name="FullXPath" Value="Order1/"/>
+//						 </carnot:Attributes>
+//						 </carnot:AccessPoint>
+//						 </carnot:AccessPoints>
 					}
 				};
-			};
+			}
+			;
 		});
