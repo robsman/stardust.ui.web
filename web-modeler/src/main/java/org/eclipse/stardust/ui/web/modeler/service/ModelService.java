@@ -2130,53 +2130,53 @@ public class ModelService {
 		JsonObject accessPointsJson = messageTransformationApplicationJson
 				.getAsJsonObject(ACCESS_POINTS_PROPERTY);
 
-		for (Map.Entry<String, JsonElement> entry : accessPointsJson.entrySet()) {
-			JsonObject accessPointJson = entry.getValue().getAsJsonObject();
-
-			System.out.println("JSON: " + accessPointJson.toString());
-
-			// AccessPointType accessPoint = null;
-			//
-			// accessPoint.setId(accessPointJson.getString(ID_PROPERTY));
-			// accessPoint.setName(accessPointJson.getString(NAME_PROPERTY));
-			//
-			// if (accessPointJson.get(DIRECTION_PROPERTY).equals("IN")) {
-			// accessPoint.setDirection(DirectionType.IN_LITERAL);
-			// } else if (accessPointJson.get(DIRECTION_PROPERTY)
-			// .equals("OUT")) {
-			// accessPoint.setDirection(DirectionType.IN_LITERAL);
-			// } else {
-			// accessPoint.setDirection(DirectionType.INOUT_LITERAL);
-			// }
-			//
-			// accessPoint.setType(arg0);
-			//
-			// storeAttributes(accessPointJson, accessPoint);
-		}
-		// <carnot:AccessPoints>
-		// <carnot:AccessPoint Oid="10062" Id="Person1"
-		// Name="Person1 (Person)" Direction="IN" Type="struct">
-		// <carnot:Attributes>
-		// <carnot:Attribute Name="carnot:engine:dataType" Value="Person"/>
-		// <carnot:Attribute Name="carnot:engine:path:separator" Value="/"/>
-		// <carnot:Attribute Name="carnot:engine:data:bidirectional"
-		// Value="true" Type="boolean"/>
-		// <carnot:Attribute Name="RootElement" Value="Person1"/>
-		// <carnot:Attribute Name="FullXPath" Value="Person1/"/>
-		// </carnot:Attributes>
-		// </carnot:AccessPoint>
-		// <carnot:AccessPoint Oid="10063" Id="Order1" Name="Order1 (Order)"
-		// Direction="OUT" Type="struct">
-		// <carnot:Attributes>
-		// <carnot:Attribute Name="carnot:engine:dataType" Value="Order"/>
-		// <carnot:Attribute Name="carnot:engine:path:separator" Value="/"/>
-		// <carnot:Attribute Name="carnot:engine:data:bidirectional"
-		// Value="true" Type="boolean"/>
-		// <carnot:Attribute Name="RootElement" Value="Order1"/>
-		// <carnot:Attribute Name="FullXPath" Value="Order1/"/>
-		// </carnot:Attributes>
-		// </carnot:AccessPoint>
-		// </carnot:AccessPoints>
+//		for (Map.Entry<String, JsonElement> entry : accessPointsJson.entrySet()) {
+//			JsonObject accessPointJson = entry.getValue().getAsJsonObject();
+//
+//			System.out.println("JSON: " + accessPointJson.toString());
+//
+//			 AccessPointType accessPoint = null;
+//			
+//			 accessPoint.setId(accessPointJson.getString(ID_PROPERTY));
+//			 accessPoint.setName(accessPointJson.getString(NAME_PROPERTY));
+//			
+//			 if (accessPointJson.get(DIRECTION_PROPERTY).equals("IN")) {
+//			 accessPoint.setDirection(DirectionType.IN_LITERAL);
+//			 } else if (accessPointJson.get(DIRECTION_PROPERTY)
+//			 .equals("OUT")) {
+//			 accessPoint.setDirection(DirectionType.IN_LITERAL);
+//			 } else {
+//			 accessPoint.setDirection(DirectionType.INOUT_LITERAL);
+//			 }
+//			
+//			 accessPoint.setType(arg0);
+//			
+//			 storeAttributes(accessPointJson, accessPoint);
+//		}
+//		 <carnot:AccessPoints>
+//		 <carnot:AccessPoint Oid="10062" Id="Person1"
+//		 Name="Person1 (Person)" Direction="IN" Type="struct">
+//		 <carnot:Attributes>
+//		 <carnot:Attribute Name="carnot:engine:dataType" Value="Person"/>
+//		 <carnot:Attribute Name="carnot:engine:path:separator" Value="/"/>
+//		 <carnot:Attribute Name="carnot:engine:data:bidirectional"
+//		 Value="true" Type="boolean"/>
+//		 <carnot:Attribute Name="RootElement" Value="Person1"/>
+//		 <carnot:Attribute Name="FullXPath" Value="Person1/"/>
+//		 </carnot:Attributes>
+//		 </carnot:AccessPoint>
+//		 <carnot:AccessPoint Oid="10063" Id="Order1" Name="Order1 (Order)"
+//		 Direction="OUT" Type="struct">
+//		 <carnot:Attributes>
+//		 <carnot:Attribute Name="carnot:engine:dataType" Value="Order"/>
+//		 <carnot:Attribute Name="carnot:engine:path:separator" Value="/"/>
+//		 <carnot:Attribute Name="carnot:engine:data:bidirectional"
+//		 Value="true" Type="boolean"/>
+//		 <carnot:Attribute Name="RootElement" Value="Order1"/>
+//		 <carnot:Attribute Name="FullXPath" Value="Order1/"/>
+//		 </carnot:Attributes>
+//		 </carnot:AccessPoint>
+//		 </carnot:AccessPoints>
 
 		// TODO Dummy
 
