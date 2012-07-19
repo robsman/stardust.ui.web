@@ -20,7 +20,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.activity.BpmApplicationActivityBuilder;
@@ -152,6 +151,7 @@ public class ModelElementUnmarshaller
       mapDeclaredModelElementProperties(processDefinition, processDefinitionJson,
             modelElementPropertiesMap.get(ProcessDefinitionType.class));
       storeAttributes(processDefinition, processDefinitionJson);
+      storeDescription(processDefinition, processDefinitionJson);
    }
 
    /**
@@ -170,6 +170,7 @@ public class ModelElementUnmarshaller
       mapDeclaredSymbolProperties(activitySymbol, activitySymbolJson,
             symbolPropertiesMap.get(ActivitySymbolType.class));
       storeAttributes(activity, activityJson);
+      storeDescription(activity, activityJson);
 
       if (ModelerConstants.MANUAL_ACTIVITY.equals(extractString(activityJson,
             ModelerConstants.ACTIVITY_TYPE)))
@@ -231,6 +232,7 @@ public class ModelElementUnmarshaller
       mapDeclaredSymbolProperties(activitySymbol, gatewaySymbolJson,
             symbolPropertiesMap.get(ActivitySymbolType.class));
       storeAttributes(activity, activityJson);
+      storeDescription(activity, activityJson);
 
       if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY).getAsString().equals(ModelerConstants.XOR_GATEWAY_TYPE))
       {
@@ -292,6 +294,7 @@ public class ModelElementUnmarshaller
       mapDeclaredModelElementProperties(application, applicationJson,
             modelElementPropertiesMap.get(ApplicationType.class));
       storeAttributes(application, applicationJson);
+      storeDescription(application, applicationJson);
    }
 
    /**
@@ -417,16 +420,26 @@ public class ModelElementUnmarshaller
      if (attributes != null) {
         for (Map.Entry<String, ?> entry : attributes.entrySet()) {
            String key = entry.getKey();
-           JsonElement value = attributes.get(key);
+           String value = attributes.get(key).getAsString();
 
            System.out.println("Storing attribute " + key + " " + value);
 
-           if (value instanceof JsonObject) {
-           } else {
-              AttributeUtil.setAttribute(element, key, value.toString());
-           }
+           AttributeUtil.setAttribute(element, key, value);
         }
      }
   }
 
+  /**
+  *
+  * @param modelElementJson
+  * @param element
+  */
+ private void storeDescription(IIdentifiableModelElement element, JsonObject modelElementJson) {
+    if (null != element.getDescription()) {
+       modelElementJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, (String) element
+             .getDescription().getMixed().get(0).getValue());
+    } else {
+       modelElementJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, "");
+    }
+ }
 }
