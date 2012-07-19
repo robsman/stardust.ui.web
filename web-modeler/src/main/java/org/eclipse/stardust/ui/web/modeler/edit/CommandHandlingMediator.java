@@ -26,6 +26,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.MoveNodeSymbolHandl
 import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.SwimlaneCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.model.element.CreateProcessCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.model.element.StructuredTypeChangeCommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.model.element.ApplicationTypeChangeCommandHandler;
 
 @Component
 // TODO registry should be singleton scope, but somehow needs to have access to
@@ -107,6 +108,13 @@ public class CommandHandlingMediator
       else if ("structuredDataType.create".equals(commandId))
       {
          handler = new StructuredTypeChangeCommandHandler();
+      }
+      else if ("webServiceApplication.create".equals(commandId)
+            || "messageTransformationApplication.create".equals(commandId)
+            || "camelApplication.create".equals(commandId)
+            || "uiMashupApplication.create".equals(commandId))
+      {
+         handler = new ApplicationTypeChangeCommandHandler();
       }
 
       Modification change = null;

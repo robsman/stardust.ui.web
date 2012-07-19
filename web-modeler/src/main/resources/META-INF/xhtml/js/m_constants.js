@@ -172,7 +172,8 @@ define(function() {
 		// Process Definition
 
 		PROCESS_DEFINITION : "processDefinition",
-		
+		PROCESS : "process",
+
 		// Application
 		
 		APPLICATION : "application",

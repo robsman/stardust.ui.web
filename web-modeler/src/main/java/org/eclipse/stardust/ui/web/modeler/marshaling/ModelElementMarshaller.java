@@ -7,6 +7,7 @@ import org.eclipse.emf.ecore.EObject;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
@@ -36,6 +37,7 @@ import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 //import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.model.xpdl.carnot.impl.ProcessDefinitionTypeImpl;
 import org.eclipse.stardust.model.xpdl.carnot.util.ActivityUtil;
+import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 
@@ -786,14 +788,32 @@ public class ModelElementMarshaller
       applicationJson.addProperty(ModelerConstants.OID_PROPERTY, application.getElementOid());
       applicationJson.addProperty(ModelerConstants.ID_PROPERTY, application.getId());
       applicationJson.addProperty(ModelerConstants.NAME_PROPERTY, application.getName());
+      applicationJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY,
+            ModelUtils.findContainingModel(application).getId());
+      applicationJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.APPLICATION_KEY);
       loadDescription(applicationJson, application);
 
       if (application.getType() != null) {
          applicationJson.addProperty(ModelerConstants.APPLICATION_TYPE_PROPERTY,
                application.getType().getId());
       } else {
-         applicationJson.addProperty(ModelerConstants.APPLICATION_TYPE_PROPERTY,
-               ModelerConstants.INTERACTIVE_APPLICATION_TYPE_KEY);
+         // TODO - Check if needed
+         // A temporary work around to identify application type, till
+         // MBFacade#findApplicationTypeType is extended to
+         // return application type for MessageTransformation, ExternalWebApp etc type of
+         // applications.
+         String applicationType = AttributeUtil.getAttributeValue(application,
+               ModelerConstants.APPLICATION_TYPE_PROPERTY);
+         if (StringUtils.isNotEmpty(applicationType))
+         {
+            applicationJson.addProperty(ModelerConstants.APPLICATION_TYPE_PROPERTY,
+                  applicationType);
+         }
+         else
+         {
+            applicationJson.addProperty(ModelerConstants.APPLICATION_TYPE_PROPERTY,
+                  ModelerConstants.INTERACTIVE_APPLICATION_TYPE_KEY);
+         }
 
          JsonObject contextsJson = new JsonObject();
          applicationJson.add(ModelerConstants.CONTEXTS_PROPERTY, contextsJson);
@@ -804,8 +824,47 @@ public class ModelElementMarshaller
          }
       }
 
-      // TODO Review
+      // TODO - check if this is the appropriate place to add additional properties to
+      // response JSON.
+      //
+      // Adding additional properties to the response JSON.
+      String applicationType = applicationJson.get(
+            ModelerConstants.APPLICATION_TYPE_PROPERTY).getAsString();
+      if (ModelerConstants.MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID.equals(applicationType))
+      {
+         JsonArray fieldMappings = new JsonArray();
+         applicationJson.add("fieldMappings", fieldMappings);
+      }
+      else if (ModelerConstants.CAMEL_APPLICATION_TYPE_ID.equalsIgnoreCase(applicationType))
+      {
+         JsonObject accessPoints = new JsonObject();
+         applicationJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPoints);
 
+         JsonObject accessPoint = new JsonObject();
+         accessPoints.add("InputMessage", accessPoint);
+
+         accessPoint.addProperty(ModelerConstants.ID_PROPERTY, "RequestMessage");
+         accessPoint.addProperty(ModelerConstants.NAME_PROPERTY, "Request Message");
+         accessPoint.addProperty(ModelerConstants.ACCESS_POINT_TYPE_PROPERTY,
+               ModelerConstants.JAVA_CLASS_ACCESS_POINT_KEY);
+         accessPoint.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+               ModelerConstants.IN_ACCESS_POINT_KEY);
+
+         accessPoint = new JsonObject();
+         accessPoints.add("OutputMessage", accessPoint);
+
+         accessPoint.addProperty(ModelerConstants.ID_PROPERTY, "ResponseMessage");
+         accessPoint.addProperty(ModelerConstants.NAME_PROPERTY, "Response Message");
+         accessPoint.addProperty(ModelerConstants.ACCESS_POINT_TYPE_PROPERTY,
+               ModelerConstants.JAVA_CLASS_ACCESS_POINT_KEY);
+         accessPoint.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+               ModelerConstants.OUT_ACCESS_POINT_KEY);
+
+         JsonObject fieldMappings = new JsonObject();
+         applicationJson.add("fieldMappings", fieldMappings);
+      }
+      
+      // TODO Review
       for (AttributeType attribute : application.getAttribute()) {
          if ("carnot:engine:methodName".equals(attribute.getName())) {
             applicationJson.addProperty("accessPoint",

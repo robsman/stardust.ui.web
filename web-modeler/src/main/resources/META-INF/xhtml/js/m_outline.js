@@ -1345,11 +1345,10 @@ define(
 					var id = "WebService" + number;
 
 					m_commandsController.submitCommand(m_command
-							.createCreateCommand("/models/" + modelId
-									+ "/applications/webServiceApplications", {
+							.createCreateWebServiceAppCommand(modelId, modelId, {
 								"name" : name,
 								"id" : id
-							}));
+							}, modelId));
 				}
 
 				/**
@@ -1360,16 +1359,11 @@ define(
 					var name = "Message Transformation " + number;
 					var id = "MessageTransformation" + number;
 
-					m_commandsController
-							.submitCommand(m_command
-									.createCreateCommand(
-											"/models/"
-													+ modelId
-													+ "/applications/messageTransformationApplications",
-											{
-												"name" : name,
-												"id" : id
-											}));
+					m_commandsController.submitCommand(m_command
+							.createCreateMessageTransfromationAppCommand(modelId, modelId, {
+								"name" : name,
+								"id" : id
+							}, modelId));
 				}
 
 				/**
@@ -1381,11 +1375,10 @@ define(
 					var id = "CamelRoute" + number;
 
 					m_commandsController.submitCommand(m_command
-							.createCreateCommand("/models/" + modelId
-									+ "/applications/camelApplications", {
+							.createCreateCamelAppCommand(modelId, modelId, {
 								"name" : name,
 								"id" : id
-							}));
+							}, modelId));
 				}
 
 				/**
@@ -1397,12 +1390,10 @@ define(
 					var id = "UIMashup" + number;
 
 					m_commandsController.submitCommand(m_command
-							.createCreateCommand("/models/" + modelId
-									+ "/applications/externalWebApplications",
-									{
-										"name" : name,
-										"id" : id
-									}));
+							.createCreateUiMashupAppCommand(modelId, modelId, {
+								"name" : name,
+								"id" : id
+							}, modelId));
 				}
 
 				/**
@@ -1510,12 +1501,14 @@ define(
 					if (null != obj && null != obj.changes) {
 						for (var i = 0; i < obj.changes.added.length; i++) {
 							//Create Process
-							if ("process" == command.changes.added[i].type) {
+							if (m_constants.PROCESS == command.changes.added[i].type) {
 								this.createProcess(command.changes.added[i]);
-							} else if ("model" == command.changes.added[i].type) {
+							} else if (m_constants.MODEL == command.changes.added[i].type) {
 								this.createModel(command.changes.added[i]);
-							} else if ("struct" == command.changes.added[i].type) {
+							} else if (m_constants.STRUCTURED_DATA_TYPE == command.changes.added[i].type) {
 								this.createStructuredDataType(command.changes.added[i]);
+							} else if (m_constants.APPLICATION == command.changes.added[i].type) {
+								this.createApplication(command.changes.added[i]);
 							}
 						}
 						for ( var i = 0; i < obj.changes.modified.length; i++) {

@@ -55,6 +55,30 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 				changes : changes
 			} ]);
 		},
+		createCreateWebServiceAppCommand : function(modelId, oid, changes) {
+			return new ChangeDescriptor("webServiceApplication.create", modelId, [ {
+				oid : oid,
+				changes : changes
+			} ]);
+		},
+		createCreateMessageTransfromationAppCommand : function(modelId, oid, changes) {
+			return new ChangeDescriptor("messageTransformationApplication.create", modelId, [ {
+				oid : oid,
+				changes : changes
+			} ]);
+		},
+		createCreateCamelAppCommand : function(modelId, oid, changes) {
+			return new ChangeDescriptor("camelApplication.create", modelId, [ {
+				oid : oid,
+				changes : changes
+			} ]);
+		},
+		createCreateUiMashupAppCommand : function(modelId, oid, changes) {
+			return new ChangeDescriptor("uiMashupApplication.create", modelId, [ {
+				oid : oid,
+				changes : changes
+			} ]);
+		},
 		createCreateModelCommand : function(changes) {
 			return new ChangeDescriptor("model.create", undefined, [ {
 				changes : changes
