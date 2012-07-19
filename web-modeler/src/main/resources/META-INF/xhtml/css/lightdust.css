@@ -52,7 +52,7 @@ input {
 }
 
 input[type="text"] {
-	height: 21px;
+	height: 18px;
 	padding-left: 5px;
 	min-width: 100px;
 }
