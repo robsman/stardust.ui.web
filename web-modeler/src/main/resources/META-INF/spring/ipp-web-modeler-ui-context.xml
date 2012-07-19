@@ -42,6 +42,9 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<ippui:view name="modelingWorkAssignmentView"
 			include="/plugins/bpm-modeler/views/modeler/modelingWorkAssignmentView.xhtml"
 			controller="modelingWorkAssignmentView" />
+		<ippui:view name="roleView"
+			include="/plugins/bpm-modeler/views/modeler/roleView.xhtml"
+			controller="roleView" />
 	</ippui:perspective>
 	<ippui:perspective id="test" messageBundles="bpm-modeler-messages">
 		<ippui:launchPanel name="testLaunchPanel"
