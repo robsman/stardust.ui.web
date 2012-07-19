@@ -188,6 +188,8 @@ define(
 									// Create Data nodes
 									jQuery.each(model.dataItems, function(
 											index, data) {
+										m_utils.debug("Data: ");
+										m_utils.debug(data.type);
 										jQuery("#outline").jstree(
 												"create",
 												"#data_" + model.id,
@@ -476,6 +478,82 @@ define(
 														+ modelId
 														+ "&modelName="
 														+ modelName, modelId);
+									} else if (data.rslt.obj.attr('rel') == 'participant_role') {
+										var roleId = data.rslt.obj.attr('id');
+										var roleName = data.inst.get_text();
+
+										// data.inst gives you the actual tree
+										// instance
+
+										var modelId = data.inst._get_parent(
+												data.rslt.obj).attr('id');
+										var link = jQuery(
+												"a[id $= 'role_view_link']",
+												window.parent.frames['ippPortalMain'].document);
+										var linkId = link.attr('id');
+										var form = link.parents('form:first');
+										var formId = form.attr('id');
+
+										window.parent.EventHub.events.publish(
+												"OPEN_VIEW", linkId, formId,
+												"roleView", "roleId=" + roleId
+														+ "&modelId=" + modelId
+														+ "&roleName="
+														+ roleName, roleId);
+									} else if (data.rslt.obj.attr('rel') == 'participant_organization') {
+										var organizationId = data.rslt.obj
+												.attr('id');
+										var organizationName = data.inst
+												.get_text();
+
+										// data.inst gives you the actual tree
+										// instance
+
+										var modelId = data.inst._get_parent(
+												data.rslt.obj).attr('id');
+										var link = jQuery(
+												"a[id $= 'organization_view_link']",
+												window.parent.frames['ippPortalMain'].document);
+										var linkId = link.attr('id');
+										var form = link.parents('form:first');
+										var formId = form.attr('id');
+
+										window.parent.EventHub.events.publish(
+												"OPEN_VIEW", linkId, formId,
+												"organizationView",
+												"organizationId="
+														+ organizationId
+														+ "&modelId=" + modelId
+														+ "&organizationName="
+														+ organizationName,
+												organizationId);										
+									} else if (data.rslt.obj.attr('rel') == 'primitive' ||
+											data.rslt.obj.attr('rel') == 'serializable' ||
+											data.rslt.obj.attr('rel') == 'entity' ||
+											data.rslt.obj.attr('rel') == 'struct' ||
+											data.rslt.obj.attr('rel') == 'dmsDocumentList') {
+										// TODO Above is very ugly!
+										var dataId = data.rslt.obj.attr('id');
+										var dataName = data.inst.get_text();
+
+										// data.inst gives you the actual tree
+										// instance
+
+										var modelId = data.inst._get_parent(
+												data.rslt.obj).attr('id');
+										var link = jQuery(
+												"a[id $= 'data_view_link']",
+												window.parent.frames['ippPortalMain'].document);
+										var linkId = link.attr('id');
+										var form = link.parents('form:first');
+										var formId = form.attr('id');
+
+										window.parent.EventHub.events.publish(
+												"OPEN_VIEW", linkId, formId,
+												"dataView", "dataId=" + dataId
+														+ "&modelId=" + modelId
+														+ "&dataName="
+														+ dataName, dataId);
 									} else if (data.rslt.obj.attr('rel') == 'process') {
 										var processId = data.rslt.obj
 												.attr('id');
@@ -1256,7 +1334,7 @@ define(
 					var number = (++modelCounter);
 					var name = "Process " + number;
 					var id = "Process" + number;
-					
+
 					m_commandsController.submitCommand(m_command
 							.createCreateProcessCommand(modelId, modelId, {
 								"name" : name,
@@ -1345,10 +1423,11 @@ define(
 					var id = "WebService" + number;
 
 					m_commandsController.submitCommand(m_command
-							.createCreateWebServiceAppCommand(modelId, modelId, {
-								"name" : name,
-								"id" : id
-							}, modelId));
+							.createCreateWebServiceAppCommand(modelId, modelId,
+									{
+										"name" : name,
+										"id" : id
+									}, modelId));
 				}
 
 				/**
@@ -1360,10 +1439,11 @@ define(
 					var id = "MessageTransformation" + number;
 
 					m_commandsController.submitCommand(m_command
-							.createCreateMessageTransfromationAppCommand(modelId, modelId, {
-								"name" : name,
-								"id" : id
-							}, modelId));
+							.createCreateMessageTransfromationAppCommand(
+									modelId, modelId, {
+										"name" : name,
+										"id" : id
+									}, modelId));
 				}
 
 				/**
@@ -1408,10 +1488,11 @@ define(
 					var id = "XSDDataStructure" + number;
 
 					m_commandsController.submitCommand(m_command
-							.createCreateStructuredDataTypeCommand(modelId, modelId, {
-								"name" : name,
-								"id" : id
-							}, modelId));
+							.createCreateStructuredDataTypeCommand(modelId,
+									modelId, {
+										"name" : name,
+										"id" : id
+									}, modelId));
 				}
 
 				/**
@@ -1499,20 +1580,23 @@ define(
 							.parseJSON(command) : command;
 
 					if (null != obj && null != obj.changes) {
-						for (var i = 0; i < obj.changes.added.length; i++) {
-							//Create Process
+						for ( var i = 0; i < obj.changes.added.length; i++) {
+							// Create Process
 							if (m_constants.PROCESS == command.changes.added[i].type) {
 								this.createProcess(command.changes.added[i]);
 							} else if (m_constants.MODEL == command.changes.added[i].type) {
 								this.createModel(command.changes.added[i]);
 							} else if (m_constants.STRUCTURED_DATA_TYPE == command.changes.added[i].type) {
-								this.createStructuredDataType(command.changes.added[i]);
+								this
+										.createStructuredDataType(command.changes.added[i]);
 							} else if (m_constants.APPLICATION == command.changes.added[i].type) {
-								this.createApplication(command.changes.added[i]);
+								this
+										.createApplication(command.changes.added[i]);
 							}
 						}
 						for ( var i = 0; i < obj.changes.modified.length; i++) {
-							var modelElement = m_model.findModelElementByGuid(obj.changes.modified[i].oid);
+							var modelElement = m_model
+									.findModelElementByGuid(obj.changes.modified[i].oid);
 
 							m_utils.debug("Models:");
 							m_utils.debug(m_model.getModels());
@@ -1520,14 +1604,16 @@ define(
 							m_utils.debug(modelElement);
 
 							var oldId = modelElement.id;
-							
+
 							if (modelElement != null) {
 								modelElement.rename(obj.changes.modified[i].id,
 										obj.changes.modified[i].name);
 
-								// TODO Improve! This must find nodes uniquely and
+								// TODO Improve! This must find nodes uniquely
+								// and
 								// by
-								// type! May be nodes should save the REST URI as
+								// type! May be nodes should save the REST URI
+								// as
 								// id?
 								var link = jQuery("li#" + oldId + " a")[0];
 								var node = jQuery("li#" + oldId);

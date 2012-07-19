@@ -41,18 +41,30 @@ public class AbstractAdapterView implements ViewEventHandler {
 	public AbstractAdapterView(String viewPath, String anchorId)
    {
       super();
+      
       this.viewPath = viewPath;
       this.anchorId = anchorId;
    }
 
+	/**
+	 * 
+	 * @return
+	 */
    public ModelService getModelService() {
 		return modelService;
 	}
 
+   /**
+    * 
+    * @param modelService
+    */
 	public void setModelService(ModelService modelService) {
 		this.modelService = modelService;
 	}
 
+	/**
+	 * 
+	 */
 	public void handleEvent(ViewEvent event) {
 		String pagePath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
 		pagePath += viewPath;

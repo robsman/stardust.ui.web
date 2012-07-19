@@ -83,4 +83,14 @@
 		<property name="modelService" ref="modelService" />
 	</bean>
 
+	<bean id="organizationView"
+		class="org.eclipse.stardust.ui.web.modeler.portal.OrganizationView">
+		<property name="modelService" ref="modelService" />
+	</bean>
+
+	<bean id="dataView"
+		class="org.eclipse.stardust.ui.web.modeler.portal.DataView">
+		<property name="modelService" ref="modelService" />
+	</bean>
+
 </beans>

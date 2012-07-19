@@ -105,6 +105,30 @@
 				<ice:outputText value="Open Model &amp;raquo;"
 					styleClass="action-link" escape="false" />
 			</ice:commandLink>
+			<ice:commandLink id="role_view_link"
+				action="#{ippPortalApp.openView}" visible="false">
+				<f:param name="viewId" value="roleView" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText value="Open Role View &amp;raquo;"
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>
+			<ice:commandLink id="organization_view_link"
+				action="#{ippPortalApp.openView}" visible="false">
+				<f:param name="viewId" value="organizationView" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText value="Open Organization View &amp;raquo;"
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>
+			<ice:commandLink id="data_view_link"
+				action="#{ippPortalApp.openView}" visible="false">
+				<f:param name="viewId" value="dataView" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText value="Open Data View &amp;raquo;"
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>			
 			<ice:commandLink id="modeler_view_link"
 				action="#{ippPortalApp.openView}" visible="false">
 				<f:param name="viewId" value="modelerView" />

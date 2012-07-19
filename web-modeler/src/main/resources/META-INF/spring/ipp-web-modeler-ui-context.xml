@@ -45,6 +45,12 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<ippui:view name="roleView"
 			include="/plugins/bpm-modeler/views/modeler/roleView.xhtml"
 			controller="roleView" />
+		<ippui:view name="organizationView"
+			include="/plugins/bpm-modeler/views/modeler/organizationView.xhtml"
+			controller="organizationView" />
+		<ippui:view name="dataView"
+			include="/plugins/bpm-modeler/views/modeler/dataView.xhtml"
+			controller="dataView" />
 	</ippui:perspective>
 	<ippui:perspective id="test" messageBundles="bpm-modeler-messages">
 		<ippui:launchPanel name="testLaunchPanel"
