@@ -800,7 +800,7 @@ define(
 							this.separatorX = x * this.zoomFactor;
 							this.separatorY = y * this.zoomFactor;
 
-							this.checkPan(x, y);
+							this.checkPan(x, y);							
 						} else {
 							this.verticalSeparatorLine.attr({
 								"path" : "M" + x + " 0L" + x + " "
@@ -815,6 +815,11 @@ define(
 								"height" : this.height
 							});
 						}
+						
+						// TODO Workaround
+						
+						this.verticalSnapLine.hide();
+						this.horizontalSnapLine.hide();
 					} else if (this.isInConnectionMode()) {
 						if (this.currentConnection != null) {
 
