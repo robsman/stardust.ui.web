@@ -61,7 +61,7 @@ public class CreateProcessCommandHandler implements ICommandHandler
       // Create diagram bits too
 
       DiagramType diagram = AbstractElementBuilder.F_CWM.createDiagramType();
-      diagram.setMode(DiagramModeType.MODE_400_LITERAL);
+      diagram.setMode(DiagramModeType.MODE_450_LITERAL);
       diagram.setOrientation(OrientationType.VERTICAL_LITERAL);
       diagram.setElementOid(++maxOid);
       diagram.setName("Diagram 1");
