@@ -85,8 +85,12 @@ public class SwimlaneCommandHandler implements ICommandHandler
          LaneSymbol laneSymbol = MBFacade.createLane(model.getId(), model,
                processDefinition, laneId, laneName, xPos, yPos, width, height,
                orientation, participantFullID);
+         
          parentSymbol.getLanes().add(laneSymbol);
 
+         PoolSymbol containingPool = parentSymbol;
+         int poolWidth = containingPool.getWidth();
+         containingPool.setWidth(poolWidth + width);         
       }
    }
 
