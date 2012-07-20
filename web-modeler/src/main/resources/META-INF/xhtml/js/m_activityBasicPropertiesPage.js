@@ -23,7 +23,7 @@ define(
 				// Inheritance
 
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						propertiesPanel, "basicPropertiesPage", "Basic");
+						propertiesPanel, "basicPropertiesPage", "Basic", "../../images/icons/basic-properties-page.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(ActivityBasicPropertiesPage.prototype,

@@ -92,7 +92,7 @@ define(
 										+ "<input id=\""
 										+ this.propertiesPages[n].id
 										+ "ListItem\" type=\"image\" src=\""
-										+ "../../images/icons/generic-property-page.png"
+										+ this.propertiesPages[n].imageUrl
 										+ "\" title=\""
 										+ this.propertiesPages[n].title
 										+ "\" alt=\""

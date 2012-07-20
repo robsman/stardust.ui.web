@@ -6,20 +6,28 @@ define(
 		function(m_utils, m_constants, m_command, m_commandsController, m_dialog) {
 
 			return {
-				createPropertiesPage : function(newPropertiesPanel, newId,
-						newTitel) {
-					return new PropertiesPage(newPropertiesPanel, newId,
-							newTitel);
+				createPropertiesPage : function(propertiesPanel, id,
+						titel, imageUrl) {
+					return new PropertiesPage(propertiesPanel, id,
+							titel, imageUrl);
 				}
 			};
 
-			function PropertiesPage(newPropertiesPanel, newId, newTitle) {
+			function PropertiesPage(newPropertiesPanel, id, title, imageUrl) {
 				this.propertiesPanel = newPropertiesPanel;
-				this.id = newId;
-				this.title = newTitle;
+				this.id = id;
+				this.title = title;
 				this.page = jQuery("#" + this.propertiesPanel.id + " #"
 						+ this.id);
 
+				if (imageUrl == null)
+					{
+					this.imageUrl = "../../images/icons/generic-properties-page.png";
+					}
+				else
+				{
+					this.imageUrl = imageUrl;
+				}
 				/**
 				 * 
 				 */
