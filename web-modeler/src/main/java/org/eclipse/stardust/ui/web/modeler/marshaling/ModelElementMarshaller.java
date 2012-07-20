@@ -35,6 +35,7 @@ import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 //import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.eclipse.stardust.model.xpdl.carnot.impl.LaneSymbolImpl;
 import org.eclipse.stardust.model.xpdl.carnot.impl.ProcessDefinitionTypeImpl;
 import org.eclipse.stardust.model.xpdl.carnot.util.ActivityUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
@@ -69,6 +70,10 @@ public class ModelElementMarshaller
       {
          jsResult = toProcessDefinition((ProcessDefinitionType) modelElement);
       }
+      else if (modelElement instanceof LaneSymbolImpl)
+      {
+         jsResult = toLaneSymbol((LaneSymbolImpl) modelElement);
+      }
       else if (modelElement instanceof ActivitySymbolType)
       {
          jsResult = toActivitySymbolJson((ActivitySymbolType) modelElement);
@@ -80,6 +85,10 @@ public class ModelElementMarshaller
       else if (modelElement instanceof ApplicationType)
       {
          jsResult = toApplication((ApplicationType) modelElement);
+      }
+      else if (modelElement instanceof TransitionConnectionType)
+      {
+         jsResult = toTransitionType((TransitionConnectionType) modelElement);
       }
       else
       {
@@ -145,6 +154,42 @@ public class ModelElementMarshaller
 
       return processJson;
    }
+   
+   /**
+    * 
+    * @param laneSymbol
+    * @return
+    */
+   public static JsonObject toLaneSymbol(LaneSymbol laneSymbol)
+   {
+      int poolOffsetX = 0;
+      int poolOffsetY = 0;
+      
+      PoolSymbol container = (laneSymbol.eContainer() instanceof PoolSymbol)
+            ? (PoolSymbol) laneSymbol.eContainer()
+            : null;
+      
+      while (null != container)
+      {
+         poolOffsetX += container.getXPos();
+         poolOffsetX += container.getYPos();
+
+         // recurse
+         container = (container.eContainer() instanceof PoolSymbol)
+               ? (PoolSymbol) container.eContainer()
+               : null;
+      }
+      
+      JsonObject laneSymbolJson = new JsonObject();
+      laneSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
+            laneSymbol.getElementOid());
+      laneSymbolJson.addProperty(ModelerConstants.ID_PROPERTY, laneSymbol.getId());
+      laneSymbolJson.addProperty(ModelerConstants.NAME_PROPERTY, laneSymbol.getName());
+      
+      //TODO - Analyse and set other properties
+      return laneSymbolJson;
+
+   }
 
    /**
     * @return
@@ -194,7 +239,7 @@ public class ModelElementMarshaller
             JsonObject laneSymbolJson = new JsonObject();
             laneSymbols.add(laneSymbolJson);
 
-            laneSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
+           laneSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
                   laneSymbol.getElementOid());
             laneSymbolJson.addProperty(ModelerConstants.ID_PROPERTY, laneSymbol.getId());
             laneSymbolJson.addProperty(ModelerConstants.NAME_PROPERTY,
@@ -876,6 +921,144 @@ public class ModelElementMarshaller
       return applicationJson;
    }
    
+   /**
+    * 
+    * @param transitionConnection
+    * @return
+    */
+   public static JsonObject toTransitionType(TransitionConnectionType transitionConnection)
+   {
+      JsonObject connectionJson = new JsonObject();
+      JsonObject modelElementJson = new JsonObject();
+
+      // Common settings
+
+      connectionJson.addProperty(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY,
+            mapAnchorOrientation(transitionConnection.getSourceAnchor()));
+      connectionJson.addProperty(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
+            mapAnchorOrientation(transitionConnection.getTargetAnchor()));
+
+      if (transitionConnection.getTransition() != null)
+      {
+         TransitionType transition = transitionConnection.getTransition();
+
+         connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
+               transitionConnection.getElementOid());
+         connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, modelElementJson);
+
+         modelElementJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+               ModelerConstants.CONTROL_FLOW_LITERAL);
+         modelElementJson.addProperty(ModelerConstants.ID_PROPERTY, transition.getId());
+
+         if (transition.getCondition().equals("CONDITION"))
+         {
+            modelElementJson.addProperty(ModelerConstants.CONDITION_EXPRESSION_PROPERTY,
+                  (String) transition.getExpression().getMixed().getValue(0));
+            modelElementJson.addProperty(ModelerConstants.OTHERWISE_PROPERTY, false);
+         }
+         else
+         {
+            modelElementJson.addProperty(ModelerConstants.OTHERWISE_PROPERTY, true);
+         }
+
+         loadDescription(modelElementJson, transition);
+         loadAttributes(transition, modelElementJson);
+
+         connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
+               transition.getFrom().getActivitySymbols().get(0).getElementOid());
+
+         // TODO Hack to identify gateways
+
+         if (transition.getFrom().getId().toLowerCase().startsWith("gateway"))
+         {
+            connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
+                  ModelerConstants.GATEWAY);
+         }
+         else
+         {
+            connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
+                  ModelerConstants.ACTIVITY_KEY);
+         }
+
+         connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
+               transition.getTo().getActivitySymbols().get(0).getElementOid());
+
+         if (transition.getTo().getId().toLowerCase().startsWith("gateway"))
+         {
+            connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
+                  ModelerConstants.GATEWAY);
+            connectionJson.remove(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY);
+            connectionJson.addProperty(
+                  ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
+                  ModelerConstants.NORTH_KEY);
+         }
+         else
+         {
+            connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
+                  ModelerConstants.ACTIVITY_KEY);
+         }
+
+      }
+      else if (transitionConnection.getSourceNode() instanceof StartEventSymbol)
+      {
+
+         connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
+               transitionConnection.getElementOid());
+         connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, modelElementJson);
+
+         modelElementJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+               ModelerConstants.CONTROL_FLOW_LITERAL);
+         modelElementJson.addProperty(
+               ModelerConstants.ID_PROPERTY,
+               transitionConnection.getSourceNode().getElementOid()
+                     + "-"
+                     + ((ActivitySymbolType) transitionConnection.getTargetActivitySymbol()).getActivity()
+                           .getId());
+
+         connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
+               transitionConnection.getSourceNode().getElementOid());
+         connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
+               ModelerConstants.EVENT_KEY);
+         connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
+               transitionConnection.getTargetActivitySymbol().getElementOid());
+         connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
+               ModelerConstants.ACTIVITY_KEY);
+      }
+      else if (transitionConnection.getTargetNode() instanceof EndEventSymbol)
+      {
+         connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
+               transitionConnection.getElementOid());
+         connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, modelElementJson);
+         modelElementJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+               ModelerConstants.CONTROL_FLOW_LITERAL);
+         modelElementJson.addProperty(
+               ModelerConstants.ID_PROPERTY,
+               ((ActivitySymbolType) transitionConnection.getSourceActivitySymbol()).getActivity()
+                     .getId()
+                     + "-"
+                     + String.valueOf(transitionConnection.getTargetNode()
+                           .getElementOid()));
+         connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
+               transitionConnection.getSourceActivitySymbol().getElementOid());
+         connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
+               ModelerConstants.ACTIVITY_KEY);
+         connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
+               String.valueOf(transitionConnection.getTargetNode().getElementOid()));
+         connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
+               ModelerConstants.EVENT_KEY);
+
+         // For end event symbol the anchorpoint orientation is set to "bottom", in
+         // the eclipse modeler.
+         // This causes wrong routing of the the connector.
+         // Hence overriding the property with "center" / or "undefined"
+         connectionJson.remove(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY);
+         connectionJson.addProperty(
+               ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
+               ModelerConstants.UNDEFINED_ORIENTATION_KEY);
+      }
+      return connectionJson;
+   }
+
    /**
     * @param model
     * @return

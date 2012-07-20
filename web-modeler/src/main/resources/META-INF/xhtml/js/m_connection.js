@@ -475,7 +475,11 @@ define(
 				 */
 				Connection.prototype.complete = function() {
 					this.completeNoTransfer();
-					this.submitCreation();
+					/*this.submitCreation();*/
+					var command = m_command.createCreateNodeCommand("connection.create",
+							this.diagram.model.id, this.diagram.process.oid,
+							this.createTransferObject());
+					m_commandsController.submitCommand(command);
 				};
 
 				// TODO Move to drawable
@@ -1185,6 +1189,10 @@ define(
 							this.toAnchorPoint.symbol.connections, this);
 					m_utils.removeItemFromArray(
 							this.fromAnchorPoint.symbol.connections, this);
+					
+					var command = m_command.createRemoveNodeCommand("connection.delete", this.diagram.model.id,
+							this.oid, this.createTransferObject());
+					m_commandsController.submitCommand(command);
 				};
 				
 				/**

@@ -461,6 +461,21 @@ define(
 
 					return null;
 				};
+				
+				/**
+				 * 
+				 */
+				Diagram.prototype.findConnectionByModelId = function(id) {
+
+					for ( var i = 0; i < this.connections.length; i++) {
+						if (this.connections[i].modelElement != null
+								&& this.connections[i].modelElement.id == id) {
+							return this.connections[i];
+						}
+					}
+
+					return null;
+				};
 
 				/**
 				 * The diagram serves as a dispatcher for all changes on model
@@ -480,7 +495,18 @@ define(
 						// TODO is lastSymbol still needed
 
 						for ( var i = 0; i < obj.changes.added.length; i++) {
-							this.lastSymbol.oid = obj.changes.added[i].oid;
+							if (null != this.lastSymbol) {
+								this.lastSymbol.oid = obj.changes.added[i].oid;
+							} else if (null != obj.changes.added[i].modelElement) {
+								// for connections , search by connectionId to
+								// set OID
+								var conn = this
+										.findConnectionByModelId(obj.changes.added[i].modelElement.id);
+								if (null != symbol) {
+									conn.oid = obj.changes.added[i].oid;
+									conn.refresh();
+								}
+							}
 						}
 
 						this.lastSymbol = null;

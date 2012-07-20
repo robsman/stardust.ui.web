@@ -20,6 +20,7 @@ import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.ActivityCommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.ConnectionCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.EventCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.GatewayCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.MoveNodeSymbolHandler;
@@ -115,6 +116,10 @@ public class CommandHandlingMediator
             || "uiMashupApplication.create".equals(commandId))
       {
          handler = new ApplicationTypeChangeCommandHandler();
+      }
+      else if ("connection.create".equals(commandId) || "connection.delete".equals(commandId))
+      {
+         handler = new ConnectionCommandHandler();
       }
 
       Modification change = null;
