@@ -39,7 +39,7 @@ define([ "m_utils", "m_constants", "m_modelElement" ], function(m_utils, m_const
 		 * 
 		 */
 		Participant.prototype.toString = function() {
-			return "[object Lightdust.Participant()]";
+			return "Lightdust.Participant";
 		};
 
 		/**
