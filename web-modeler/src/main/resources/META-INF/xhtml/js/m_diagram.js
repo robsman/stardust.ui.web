@@ -148,18 +148,6 @@ define(
 
 				m_commandsController.registerCommandHandler(this);
 
-				// Unregister diagram commandHandler on window(process diagram
-				// IFRAME) unload event.
-				attachToWindowCallbackScope({
-					diagram : this
-				});
-				setOnWindowUnloadFunction(function() {
-					// "this", in the scope of this function, represents the
-					// window object of the process diagram IFRAME.
-					m_commandsController
-							.unregisterCommandHandler(this.callbackScope.diagram);
-				});
-
 				// Bind DOM elements
 
 				// === Start Toolbar ===
@@ -1732,18 +1720,5 @@ define(
 						- Y_OFFSET
 						+ this.auxiliaryProperties.diagram.scrollPane
 								.scrollTop());
-			}
-
-			function attachToWindowCallbackScope(obj) {
-				if (!window.callbackScope) {
-					window.callbackScope = {};
-				}
-				$.each(obj, function(index, value) {
-					window.callbackScope[index] = value;
-				});
-			}
-
-			function setOnWindowUnloadFunction(fn) {
-				$(window).unload(fn);
 			}
 		});

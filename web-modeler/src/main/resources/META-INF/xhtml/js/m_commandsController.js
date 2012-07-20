@@ -31,6 +31,7 @@ define(
 				},
 				registerCommandHandler : function(commandHandler) {
 					getInstance().registerCommandHandler(commandHandler);
+					unregisterCommandhandlerOnWindowUnload(commandHandler);
 				},
 				unregisterCommandHandler : function(commandHandler) {
 					getInstance().unregisterCommandHandler(commandHandler);
@@ -52,6 +53,24 @@ define(
 				}
 
 				return window.top.commandsController;
+			}
+
+			function unregisterCommandhandlerOnWindowUnload(commandHandler) {
+				if (!window.callbackScope) {
+					window.callbackScope = {};
+				}
+				if (!window.callbackScope.objectsToUnregister) {
+					window.callbackScope.objectsToUnregister = new Array();
+					window.onunload = function() {
+							if (this.callbackScope && this.callbackScope.objectsToUnregister) {
+								for (var i = 0; i < this.callbackScope.objectsToUnregister.length; i++) {
+									m_utils.debug("Unregistering command handler: " + this.callbackScope.objectsToUnregister[i]);
+									getInstance().unregisterCommandHandler(this.callbackScope.objectsToUnregister[i]);
+								}							
+							}
+						};
+				}
+				window.callbackScope.objectsToUnregister.push(commandHandler);	
 			}
 
 			/**
