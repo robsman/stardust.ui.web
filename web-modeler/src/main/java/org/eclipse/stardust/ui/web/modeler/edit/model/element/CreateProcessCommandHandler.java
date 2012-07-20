@@ -43,10 +43,6 @@ import com.google.gson.JsonObject;
 @Scope("prototype")
 public class CreateProcessCommandHandler implements ICommandHandler
 {
-   private static final String DEF_LANE_ID = "DefaultLane";
-   private static final String DEF_LANE_NAME = "Default Lane";
-   public static final String TYPE_PROPERTY = "type";
-
    @Override
    public boolean isValidTarget(Class< ? > type)
    {
@@ -89,8 +85,8 @@ public class CreateProcessCommandHandler implements ICommandHandler
       laneSymbol.setParentPool(poolSymbol);
 
       laneSymbol.setElementOid(++maxOid);
-      laneSymbol.setId(DEF_LANE_ID);
-      laneSymbol.setName(DEF_LANE_NAME);
+      laneSymbol.setId(ModelerConstants.DEF_LANE_ID);
+      laneSymbol.setName(ModelerConstants.DEF_LANE_NAME);
       laneSymbol.setXPos(10);
       laneSymbol.setYPos(10);
       laneSymbol.setWidth(480);
@@ -103,11 +99,11 @@ public class CreateProcessCommandHandler implements ICommandHandler
 
       JsonObject processDefinitionJson = new JsonObject();
 
-      processDefinitionJson.addProperty(TYPE_PROPERTY, "process");
+      processDefinitionJson.addProperty(ModelerConstants.TYPE_PROPERTY, "process");
       processDefinitionJson.addProperty(ID_PROPERTY, id);
       processDefinitionJson.addProperty(ModelerConstants.NAME_PROPERTY, name);
       processDefinitionJson.addProperty(MODEL_ID_PROPERTY, model.getId());
-      processDefinitionJson.addProperty(TYPE_PROPERTY, "process");
+      processDefinitionJson.addProperty(ModelerConstants.TYPE_PROPERTY, "process");
       processDefinitionJson.add(ATTRIBUTES_PROPERTY, new JsonObject());
       processDefinitionJson.add(ACTIVITIES_PROPERTY, new JsonObject());
       processDefinitionJson.add(GATEWAYS_PROPERTY, new JsonObject());
