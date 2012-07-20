@@ -188,8 +188,6 @@ define(
 									// Create Data nodes
 									jQuery.each(model.dataItems, function(
 											index, data) {
-										m_utils.debug("Data: ");
-										m_utils.debug(data.type);
 										jQuery("#outline").jstree(
 												"create",
 												"#data_" + model.id,

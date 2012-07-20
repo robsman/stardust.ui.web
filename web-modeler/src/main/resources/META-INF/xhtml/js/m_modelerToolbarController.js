@@ -5,11 +5,17 @@ define([ "m_toolbarManager", "m_constants" ], function(m_toolbarManager,
 		m_constants) {
 	var currentSelection;
 	var toolSelectActions = {
-			selectModeSelected : function(data) {
-				jQuery(document).trigger("TOOL_CLICKED_EVENT", {
-					"id" : data.toolId
-				});
-			},
+		selectModeSelected : function(data) {
+			jQuery(document).trigger("TOOL_CLICKED_EVENT", {
+				"id" : data.toolId
+			});
+		},
+
+		separatorModeSelected : function(data) {
+			jQuery(document).trigger("TOOL_CLICKED_EVENT", {
+				"id" : data.toolId
+			});
+		},
 
 		activityToolSelected : function(data) {
 			jQuery(document).trigger("TOOL_CLICKED_EVENT", {

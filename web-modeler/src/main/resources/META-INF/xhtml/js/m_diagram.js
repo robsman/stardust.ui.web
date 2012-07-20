@@ -95,6 +95,7 @@ define(
 				this.NORMAL_MODE = "NORMAL_MODE";
 				this.RUBBERBAND_MODE = "RUBBERBAND_MODE";
 				this.CONNECTION_MODE = "CONNECTION_MODE";
+				this.SEPARATOR_MODE = "SEPARATOR_MODE";
 				this.X_OFFSET = X_OFFSET;
 				this.Y_OFFSET = Y_OFFSET;
 				this.width = m_canvasManager.getCanvasWidth();
@@ -146,12 +147,17 @@ define(
 				// Register with Command Controller
 
 				m_commandsController.registerCommandHandler(this);
-				
-				// Unregister diagram commandHandler on window(process diagram IFRAME) unload event.
-				attachToWindowCallbackScope({diagram : this});
+
+				// Unregister diagram commandHandler on window(process diagram
+				// IFRAME) unload event.
+				attachToWindowCallbackScope({
+					diagram : this
+				});
 				setOnWindowUnloadFunction(function() {
-					//"this", in the scope of this function, represents the window object of the process diagram IFRAME.
-					m_commandsController.unregisterCommandHandler(this.callbackScope.diagram);
+					// "this", in the scope of this function, represents the
+					// window object of the process diagram IFRAME.
+					m_commandsController
+							.unregisterCommandHandler(this.callbackScope.diagram);
 				});
 
 				// Bind DOM elements
@@ -164,6 +170,14 @@ define(
 					"diagram" : this
 				}, function(event) {
 					event.data.diagram.setSelectMode();
+				});
+
+				var separatorModeButton = jQuery("#separatorModeButton");
+
+				separatorModeButton.click({
+					"diagram" : this
+				}, function(event) {
+					event.data.diagram.setSeparatorMode();
 				});
 
 				// === End Toolbar
@@ -287,6 +301,24 @@ define(
 					"stroke" : m_constants.SNAP_LINE_COLOR,
 					"stroke-width" : m_constants.SNAP_LINE_STROKE_WIDTH,
 					'stroke-dasharray' : m_constants.SNAP_LINE_DASHARRAY
+				});
+
+				this.separationActive = false;
+				this.separationStarted = false;
+				this.separatorX = 0;
+				this.separatorY = 0;
+				this.separatorDX = 0;
+				this.separatorDY = 0;
+				this.separatorList = [];
+				this.horizontalSeparatorLine = m_canvasManager.drawPath("", {
+					"stroke" : m_constants.SEPARATOR_LINE_COLOR,
+					"stroke-width" : m_constants.SEPARATOR_LINE_STROKE_WIDTH,
+					'stroke-dasharray' : m_constants.SEPARATOR_LINE_DASHARRAY
+				});
+				this.verticalSeparatorLine = m_canvasManager.drawPath("", {
+					"stroke" : m_constants.SEPARATOR_LINE_COLOR,
+					"stroke-width" : m_constants.SEPARATOR_LINE_STROKE_WIDTH,
+					'stroke-dasharray' : m_constants.SEPARATOR_LINE_DASHARRAY
 				});
 
 				this.rubberBand = m_canvasManager.drawRectangle(0, 0, 0, 0, {
@@ -439,14 +471,14 @@ define(
 					m_utils.debug(command.type);
 
 					// Parse the response JSON from command pattern
-					
+
 					var obj = ("string" == typeof (command)) ? jQuery
 							.parseJSON(command) : command;
 
 					if (null != obj && null != obj.changes) {
 
 						// TODO is lastSymbol still needed
-						
+
 						for ( var i = 0; i < obj.changes.added.length; i++) {
 							this.lastSymbol.oid = obj.changes.added[i].oid;
 						}
@@ -467,7 +499,7 @@ define(
 								m_utils.debug(symbol);
 								symbol.refresh();
 							}
-							
+
 							symbol = this
 									.findSymbolByModelElementGuid(obj.changes.modified[i].oid);
 
@@ -589,6 +621,27 @@ define(
 
 						this.currentConnection = null;
 					}
+
+					this.verticalSeparatorLine.hide();
+					this.horizontalSeparatorLine.hide();
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.setSeparatorMode = function() {
+					this.clearCurrentSelection();
+					this.mode = this.SEPARATOR_MODE;
+					this.newSymbol = null;
+
+					if (this.currentConnection != null) {
+						this.currentConnection.remove();
+
+						this.currentConnection = null;
+					}
+
+					this.verticalSeparatorLine.show();
+					this.horizontalSeparatorLine.show();
 				};
 
 				/**
@@ -615,6 +668,11 @@ define(
 						});
 						this.rubberBand.show();
 						this.rubberBand.toFront();
+					} else if (this.mode == this.SEPARATOR_MODE) {
+						this.separationStarted = true;
+						this.separationActive = true;
+						this.separatorX = x * this.zoomFactor;
+						this.separatorY = y * this.zoomFactor;
 					}
 				};
 
@@ -632,7 +690,6 @@ define(
 						}
 
 						this.checkPan(x, y);
-
 					} else if (this.mode == this.RUBBERBAND_MODE) {
 						this.rubberBandWidth = x * this.zoomFactor
 								- this.rubberBandX;
@@ -645,6 +702,105 @@ define(
 						});
 
 						this.checkPan(x, y);
+					} else if (this.mode == this.SEPARATOR_MODE) {
+						if (this.separationActive) {
+							var dX = x * this.zoomFactor - this.separatorX;
+							var dY = y * this.zoomFactor - this.separatorY;
+
+							if (this.separationStarted) {
+								this.separationStarted = false;
+								this.separatorList = [];
+
+								if (Math.abs(dX) > Math.abs(dY)) {
+									if (dX > 0) {
+										this.separatorDX = 1;
+										this.separatorDY = 0;
+
+										for ( var n in this.symbols) {
+											if (this.symbols[n].x > this.separatorX) {
+												this.separatorList
+														.push(this.symbols[n]);
+											}
+										}
+
+									} else {
+										this.separatorDX = -1;
+										this.separatorDY = 0;
+
+										for ( var n in this.symbols) {
+											if (this.symbols[n].x < this.separatorX) {
+												this.separatorList
+														.push(this.symbols[n]);
+											}
+										}
+									}
+								} else {
+									if (dY < 0) {
+										this.separatorDX = 0;
+										this.separatorDY = -1;
+
+										for ( var n in this.symbols) {
+											if (this.symbols[n].y > this.separatorY) {
+												this.separatorList
+														.push(this.symbols[n]);
+											}
+										}
+									} else {
+										this.separatorDX = 0;
+										this.separatorDY = 1;
+
+										for ( var n in this.symbols) {
+											if (this.symbols[n].y > this.separatorY) {
+												this.separatorList
+														.push(this.symbols[n]);
+											}
+										}
+									}
+								}
+							} else {
+								for ( var n in this.separatorList) {
+									this.separatorList[n].moveBy(dX
+											* Math.abs(this.separatorDX), dY
+											* Math.abs(this.separatorDY));
+								}
+							}
+
+							if (Math.abs(this.separatorDX) > 0) {
+								this.verticalSeparatorLine.attr({
+									"path" : "M" + x + " 0L" + x + " "
+											+ this.height,
+									"width" : this.width,
+									"height" : this.height
+								});
+							} else {
+								this.horizontalSeparatorLine.attr({
+									"path" : "M0" + " " + y + "L" + this.width
+											+ " " + y,
+									"width" : this.width,
+									"height" : this.height
+								});
+							}
+
+							// Remember position
+
+							this.separatorX = x * this.zoomFactor;
+							this.separatorY = y * this.zoomFactor;
+
+							this.checkPan(x, y);
+						} else {
+							this.verticalSeparatorLine.attr({
+								"path" : "M" + x + " 0L" + x + " "
+										+ this.height,
+								"width" : this.width,
+								"height" : this.height
+							});
+							this.horizontalSeparatorLine.attr({
+								"path" : "M0" + " " + y + "L" + this.width
+										+ " " + y,
+								"width" : this.width,
+								"height" : this.height
+							});
+						}
 					} else if (this.isInConnectionMode()) {
 						if (this.currentConnection != null) {
 
@@ -687,6 +843,8 @@ define(
 						this.mode = this.NORMAL_MODE;
 
 						this.rubberBand.hide();
+					} else if (this.mode == this.SEPARATOR_MODE) {
+						this.separationActive = false;
 					}
 				};
 
@@ -702,6 +860,50 @@ define(
 					}
 
 					return null;
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.moveLeftOfBy = function(x, dX) {
+					for ( var n in this.symbols) {
+						if (this.symbols[n].x < x) {
+							this.symbols[n].moveBy(dX, 0);
+						}
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.moveRightOfBy = function(x, dX) {
+					for ( var n in this.symbols) {
+						if (this.symbols[n].x > x) {
+							this.symbols[n].moveBy(dX, 0);
+						}
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.moveAboveBy = function(y, dY) {
+					for ( var n in this.symbols) {
+						if (this.symbols[n].y < y) {
+							this.symbols[n].moveBy(0, dY);
+						}
+					}
+				};
+
+				/**
+				 * 
+				 */
+				Diagram.prototype.moveBelowBy = function(y, dY) {
+					for ( var n in this.symbols) {
+						if (this.symbols[n].y > y) {
+							this.symbols[n].moveBy(0, dY);
+						}
+					}
 				};
 
 				/**
@@ -1505,7 +1707,7 @@ define(
 						+ this.auxiliaryProperties.diagram.scrollPane
 								.scrollTop());
 			}
-			
+
 			function attachToWindowCallbackScope(obj) {
 				if (!window.callbackScope) {
 					window.callbackScope = {};
@@ -1514,7 +1716,7 @@ define(
 					window.callbackScope[index] = value;
 				});
 			}
-			
+
 			function setOnWindowUnloadFunction(fn) {
 				$(window).unload(fn);
 			}

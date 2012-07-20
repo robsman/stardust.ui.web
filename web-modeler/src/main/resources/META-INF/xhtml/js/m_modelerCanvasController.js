@@ -77,6 +77,12 @@ define(
 					m_modelerToolbarController.resetCurrentSelection();
 				},
 
+				separatorModeToolAction : function(event, data) {
+					diagram.setSeparatorMode();
+
+					m_modelerToolbarController.resetCurrentSelection();
+				},
+
 				activityToolAction : function(event, data) {
 					diagram.newSymbol = m_activitySymbol.createActivitySymbol(
 							diagram, m_constants.MANUAL_ACTIVITY_TYPE);
