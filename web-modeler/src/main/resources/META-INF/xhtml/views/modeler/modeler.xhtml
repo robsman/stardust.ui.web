@@ -107,7 +107,6 @@ div#modificationStatusDisplay {
 	font-style: italic;
 }
 
-/* input.text { margin-bottom:12px; width:80%; padding: .4em; }*/
 fieldset {
 	padding: 0;
 	border: 0;
@@ -189,6 +188,21 @@ div#propertiesPageList {
 div.panelWrapperBorder {
 	border: 1px solid #e8e8e8;
 }
+
+#data-path-list {
+	list-style: none;
+	list-style-position: outside;
+	padding-left: 2px;
+	margin: 0px;
+}
+
+.in-data-path-list-item {
+	background: url("../../images/icons/generic-properties-page.png")
+		no-repeat;
+	padding-left: 20px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
 </style>
 <script type="text/javascript" src="../../js/json2.js"></script>
 <script type="text/javascript" src="../../js/raphael.js"></script>
@@ -219,9 +233,9 @@ div.panelWrapperBorder {
 																	height="16" width="16" alt="Select Mode"
 																	class="toolbarButton" /></td>
 																<td><input id="separatorModeButton" type="image"
-																	src="../../images/icons/select.png" title="Separation Mode"
-																	height="16" width="16" alt="Separation Mode"
-																	class="toolbarButton" /></td>
+																	src="../../images/icons/select.png"
+																	title="Separation Mode" height="16" width="16"
+																	alt="Separation Mode" class="toolbarButton" /></td>
 																<td><input id="zoomIn"
 																	src="../../images/icons/zoom-in.gif" type="image"
 																	height="16" width="16" title="Zoom In" alt="Zoom In"
@@ -479,9 +493,115 @@ div.panelWrapperBorder {
 																</table>
 															</div>
 															<div id="dataPathPropertiesPage" class="propertiesPage">
-																<div class="heading">Data Path</div>
+																<div class="heading">Data Paths</div>
 																<table>
 																	<tr>
+																		<td><table>
+																				<tr>
+																					<td><input id="addDataPathButton" type="image"
+																						src="../../images/icons/add.png" title="Add"
+																						alt="Add" class="toolbarButton" />
+																					</td>
+																					<td><img
+																						src="../../images/icons/toolbar-separator.png"></img>
+																					</td>
+																					<td><input id="deleteDataPathButton" type="image"
+																						src="../../images/icons/delete.png" title="Delete"
+																						alt="Delete" class="toolbarButton" />
+																					</td>
+																					<td><img
+																						src="../../images/icons/toolbar-separator.png"></img>
+																					</td>
+																					<td><input id="moveDataPathUpButton" type="image"
+																						src="../../images/icons/add.png" title="Move Up"
+																						alt="Move Up" class="toolbarButton" />
+																					</td>
+																					<td><img
+																						src="../../images/icons/toolbar-separator.png"></img>
+																					</td>
+																					<td><input id="moveDataPathDownButton" type="image"
+																						src="../../images/icons/add.png" title="Move Down"
+																						alt="Move Down" class="toolbarButton" />
+																					</td>
+																				</tr>
+																			</table></td>
+																	</tr>
+																	<tr>
+																		<td align="left">
+																			<div
+																				style="height: 100px; overflow: auto; border: grey 1px solid; margin-bottom: 10px;">
+																				<ul id="data-path-list">
+																					<li class="in-data-path-list-item">First Name</li>
+																					<li class="in-data-path-list-item">Last Name</li>
+																					<li class="in-data-path-list-item">Last Name</li>
+																					<li class="in-data-path-list-item">Last Name</li>
+																					<li class="in-data-path-list-item">Last Name</li>
+																					<li class="in-data-path-list-item">Last Name</li>
+																					<li class="in-data-path-list-item">Last Name</li>
+																					<li class="in-data-path-list-item">Last Name</li>
+																					<li class="in-data-path-list-item">Last Name</li>
+																					<li class="in-data-path-list-item">Last Name</li>
+																				</ul>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<table id="dataPathTable">
+																				<tr>
+																					<td><label for="dataPathNameInput">Name</label>
+																					</td>
+																					<td><input id="dataPathNameInput" type="text" />
+																					</td>
+																				</tr>
+																				<tr>
+																					<td><label>Direction</label></td>
+																					<td><table>
+																							<tr>
+																								<td><input id="inDataPathInput"
+																									type="checkbox" />
+																								</td>
+																								<td><label for="inDataPathInput">In</label>
+																								</td>
+																								<td><input id="outDataPathInput"
+																									type="checkbox" />
+																								</td>
+																								<td><label for="outDataPathInput">Out</label>
+																								</td>
+																							</tr>
+																						</table>
+																					</td>
+																				</tr>
+																				<tr>
+																					<td><input id="descriptorInput"
+																						type="checkbox" />
+																					</td>
+																					<td><label for="descriptorInput">Descriptor</label>
+																					</td>
+																				</tr>
+																				<tr>
+																					<td><input id="keyDescriptorInput"
+																						type="checkbox" />
+																					</td>
+																					<td><label for="keyDescriptorInput">Key
+																							Descriptor</label></td>
+																				</tr>
+																				<tr>
+																					<td><label for="dataPathDataSelect">Data</label>
+																					</td>
+																					<td><select id="dataPathDataSelect">
+																					</select>
+																					</td>
+																				</tr>
+																				<tr>
+																					<td><label for="dataPathPathInput">Path</label>
+																					</td>
+																					<td><input id="dataPathPathInput" type="text" />
+																					</td>
+																				</tr>
+
+																			</table>
+																		</td>
 																	</tr>
 																</table>
 															</div>
@@ -489,9 +609,11 @@ div.panelWrapperBorder {
 																<div class="heading">Display</div>
 																<table>
 																	<tr>
-																		<td><input id="auxiliaryProcessInput" type="checkbox" />
+																		<td><input id="auxiliaryProcessInput"
+																			type="checkbox" />
 																		</td>
-																		<td><label for="auxiliaryProcessInput">Is Auxiliary Process</label></td>
+																		<td><label for="auxiliaryProcessInput">Is
+																				Auxiliary Process</label></td>
 																	</tr>
 																</table>
 															</div>
@@ -1267,7 +1389,7 @@ div.panelWrapperBorder {
 								</table>
 							</td>
 							<td width="16px" valign="top">
-								<table id="propertiesPageList" width="16px" >
+								<table id="propertiesPageList" width="16px">
 									<tr>
 										<td><input id="startevent" type="image"
 											src="../../images/icons/generic-property-page.png"
