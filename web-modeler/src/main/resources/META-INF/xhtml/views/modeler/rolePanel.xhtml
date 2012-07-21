@@ -16,8 +16,7 @@
 <link href="../../css/jquery.tablescroll.css" rel="stylesheet"
 	type="text/css" />
 <link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript"
-	src="../../js/roleViewPageInitializer.js"></script>
+<script type="text/javascript" src="../../js/roleViewPageInitializer.js"></script>
 <script type="text/javascript" data-main="roleViewMain"
 	src="../../js/requireplugins-jquery-1.4.3.js"></script>
 </head>
@@ -30,24 +29,72 @@
 					<div class="errorMessagesPanel">
 						<ul id="errorMessagesList">
 						</ul>
-					</div></td>
+					</div>
+				</td>
 			</tr>
 			<tr>
 				<td>
-					<table>
+					<div class="heading">General Properties</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="layoutTable"
+						style="margin-bottom: 10px;">
 						<tr>
-							<td>
-								<table cellpadding="0" cellspacing="0" class="layoutTable"
-									style="margin-bottom: 10px;">
-									<tr>
-										<td><label for="nameInput">Role Name</label>
-										</td>
-										<td><input id="nameInput" type="text"></input>
-										</td>
-									</tr>
-								</table></td>
+							<td><label for="guidOutput">GUID</label></td>
+							<td><div id="guidOutput" class="output">168999</div></td>
 						</tr>
-					</table></td>
+						<tr>
+							<td><label for="idOutput">ID</label></td>
+							<td><div id="idOutput" class="output"></div></td>
+						</tr>
+						<tr>
+							<td><label for="nameInput">Role Name</label></td>
+							<td><input id="nameInput" type="text"></input></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="descriptionTextarea">Description</label>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tr>
+							<td><input id="publicVisibilityCheckbox" type="checkbox"></input></td>
+							<td><label for="publicVisibilityCheckbox">Public Visibility</label></td>
+						</tr>
+					</table>
+				</td>
+			</tr>			
+			<tr>
+				<td>
+					<div class="heading">Activity Assignment</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="layoutTable"
+						style="margin-bottom: 10px;">
+						<tr>
+							<td><input id="chooseAssignmentRadio" type="radio"/></td>
+							<td><label for="chooseAssignmentRadio">Choose Assignment</label></td>
+						</tr>
+						<tr>
+							<td><input id="assignAutomatically" type="radio"/></td>
+							<td><label for="assignAutomatically">Assign Automatically</label></td>
+						</tr>
+					</table>
+				</td>
 			</tr>
 		</table>
 	</div>

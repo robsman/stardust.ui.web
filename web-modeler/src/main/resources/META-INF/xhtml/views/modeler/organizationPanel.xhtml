@@ -30,24 +30,114 @@
 					<div class="errorMessagesPanel">
 						<ul id="errorMessagesList">
 						</ul>
-					</div></td>
+					</div>
+				</td>
 			</tr>
 			<tr>
 				<td>
-					<table>
+					<div class="heading">General Properties</div></td>
+			</tr>
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="layoutTable"
+						style="margin-bottom: 10px;">
 						<tr>
-							<td>
-								<table cellpadding="0" cellspacing="0" class="layoutTable"
-									style="margin-bottom: 10px;">
-									<tr>
-										<td><label for="nameInput">Organization Name</label>
-										</td>
-										<td><input id="nameInput" type="text"></input>
-										</td>
-									</tr>
-								</table></td>
+							<td><label for="guidOutput">GUID</label></td>
+							<td><div id="guidOutput" class="output">168999</div></td>
 						</tr>
-					</table></td>
+						<tr>
+							<td><label for="idOutput">ID</label></td>
+							<td><div id="idOutput" class="output"></div></td>
+						</tr>
+						<tr>
+							<td><label for="nameInput">Organization Name</label></td>
+							<td><input id="nameInput" type="text"></input></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="descriptionTextarea">Description</label>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tr>
+							<td><input id="publicVisibilityCheckbox" type="checkbox"></input></td>
+							<td><label for="publicVisibilityCheckbox">Public Visibility</label></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div class="heading">Activity Assignment</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tr>
+							<td><input id="chooseAssignmentRadio" type="radio"/></td>
+							<td><label for="chooseAssignmentRadio">Choose Assignment</label></td>
+						</tr>
+						<tr>
+							<td><input id="assignAutomatically" type="radio"/></td>
+							<td><label for="assignAutomatically">Assign Automatically</label></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div class="heading">Department</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tr>
+							<td><input id="supportsDepartmentsCheckbox" type="checkbox"></input></td>
+							<td><label for="supportsDepartmentsCheckbox">Supports Departments</label></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tr>
+							<td><label for="departmentDataSelect">Data</label></td>
+							<td><select id="departmentDataSelect"></select></td>
+						</tr>
+						<tr>
+							<td><label for="departmentDataPathInput">Data Path</label></td>
+							<td><input id="departmentDataPathInput" type="text"></input></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div class="heading">Team Leader</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tr>
+							<td><label for="leaderSelect">Leader</label></td>
+							<td><select id="leaderSelect"></select></td>
+						</tr>
+					</table>
+				</td>
 			</tr>
 		</table>
 	</div>
