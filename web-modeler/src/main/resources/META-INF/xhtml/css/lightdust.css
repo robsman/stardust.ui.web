@@ -149,7 +149,12 @@ a:hover {
 	font-size: 11px;
 	font-color: #4D4D4D;
 	border-bottom: 1px solid #E7E7E7;
+	margin-top: 10px;
 	margin-bottom: 10px;
+}
+
+.output {
+	font-style: italic;
 }
 
 /* Layout Table */
