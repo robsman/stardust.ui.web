@@ -12,7 +12,7 @@ define(
 		[ "m_utils", "m_constants", "m_command", "m_commandsController", "m_propertiesPage" ],
 		function(m_utils, m_constants, m_command, m_commandsController, m_propertiesPage) {
 			return {
-				createPropertiesPage : function(propertiesPanel) {
+				create : function(propertiesPanel) {
 					return new DataBasicPropertiesPage(propertiesPanel);
 				}
 			};

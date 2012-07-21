@@ -6,7 +6,7 @@ define(
 		[ "m_utils", "m_constants", "m_propertiesPage" ],
 		function(m_utils, m_constants, m_propertiesPage) {
 			return {
-				createPropertiesPage : function(propertiesPanel) {
+				create: function(propertiesPanel) {
 					return new ActivityCostPropertiesPage(propertiesPanel);
 				}
 			};

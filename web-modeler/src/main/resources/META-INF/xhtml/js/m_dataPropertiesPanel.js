@@ -10,10 +10,8 @@
  *******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_model", "m_propertiesPanel", "m_propertiesPage",
-				"m_dataBasicPropertiesPage" ],
-		function(m_utils, m_constants, m_model, m_propertiesPanel, m_propertiesPage,
-				m_dataBasicPropertiesPage) {
+		[ "m_utils", "m_constants", "m_model", "m_propertiesPanel", "m_propertiesPage"],
+		function(m_utils, m_constants, m_model, m_propertiesPanel, m_propertiesPage) {
 
 			var dataPropertiesPanel = null;
 
@@ -44,15 +42,12 @@ define(
 
 				this.models = models;
 				this.data = null;
-				this.propertiesPages = [
-						m_dataBasicPropertiesPage
-								.createPropertiesPage(this)];
 
 				/**
 				 * 
 				 */
 				DataPropertiesPanel.prototype.toString = function() {
-					return "Lightdust.DataPropertiesPanel()";
+					return "Lightdust.DataPropertiesPanel";
 				};
 
 				/**
@@ -72,15 +67,6 @@ define(
 					for ( var n in this.propertiesPages) {
 						this.propertiesPages[n].setElement();
 					}
-				};
-
-				/**
-				 * 
-				 */
-				DataPropertiesPanel.prototype.apply = function() {
-					this.applyPropertiesPages();
-					this.element.refresh();
-					this.element.submitUpdate();					
 				};
 			}
 		});

@@ -9,16 +9,23 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_urlUtils", "m_constants", "m_communicationController",
-				"m_commandsController", "m_command", "m_session", "m_model",
-				"m_process", "m_application", "m_dataStructure",
-				"m_participant", "m_outlineToolbarController" ],
-		function(m_utils, m_urlUtils, m_constants, m_communicationController,
-				m_commandsController, m_command, m_session, m_model, m_process,
-				m_application, m_dataStructure, m_participant,
-				m_outlineToolbarController) {
+		[ "m_utils", "m_urlUtils", "m_constants", "m_extensionManager",
+				"m_communicationController", "m_commandsController",
+				"m_command", "m_session", "m_model", "m_process",
+				"m_application", "m_dataStructure", "m_participant",
+				"m_outlineToolbarController" ],
+		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
+				m_communicationController, m_commandsController, m_command,
+				m_session, m_model, m_process, m_application, m_dataStructure,
+				m_participant, m_outlineToolbarController) {
 			var modelCounter = 0;
 			var processCounter = 0;
+
+			// TODO Find better location
+
+			var viewManagerExtension = m_extensionManager
+					.findExtension("viewManager");
+			var viewManager = require(viewManagerExtension.moduleUrl).create();
 
 			function getURL() {
 				return require('m_urlUtils').getContextName()
@@ -106,7 +113,7 @@ define(
 																				"id" : participant.id,
 																				"fullId" : participant
 																						.getFullId(),
-																				"rel" : "participant_role",
+																				"rel" : participant.participantType,
 																				"modelId" : model.id,
 																				"draggable" : true
 																			},
@@ -399,7 +406,9 @@ define(
 											"name" : data.rslt.name
 										}));
 					}
-				} else if (data.rslt.obj.attr("rel") == "participant_role") {
+				} else if (data.rslt.obj.attr("rel") == "roleParticipant"
+						|| data.rslt.obj.attr("rel") == "organizationParticipant"
+						|| data.rslt.obj.attr("rel") == "conditionalPerformerParticipant") {
 					var modelId = data.rslt.obj.attr("modelId");
 					var participantId = data.rslt.obj.attr('id');
 					var model = m_model.findModel(modelId);
@@ -441,15 +450,23 @@ define(
 					};
 				}
 				document.onmousemove = function(e) {
-					if (e) {
-						parent.iDnD.setIframeXY(e, window.name);
-					} else {
-						parent.iDnD.setIframeXY(window.event, window.name);
+					// TODO Make portable/modularize
+
+					if (parent != null && parent.iDnD != null) {
+						if (e) {
+							parent.iDnD.setIframeXY(e, window.name);
+						} else {
+							parent.iDnD.setIframeXY(window.event, window.name);
+						}
 					}
 				};
 
 				document.onmouseup = function() {
-					parent.iDnD.hideIframe();
+					// TODO Make portable/modularize
+
+					if (parent != null && parent.iDnD != null) {
+						parent.iDnD.hideIframe();
+					}
 				};
 
 				// Tree Node Selection
@@ -461,94 +478,55 @@ define(
 									if (data.rslt.obj.attr('rel') == 'model') {
 										var modelId = data.rslt.obj.attr('id');
 										var modelName = data.inst.get_text();
-										// data.inst gives you the actual tree
-										// instance
-										var link = jQuery(
-												"a[id $= 'model_view_link']",
-												window.parent.frames['ippPortalMain'].document);
-										var linkId = link.attr('id');
-										var form = link.parents('form:first');
-										var formId = form.attr('id');
 
-										window.parent.EventHub.events.publish(
-												"OPEN_VIEW", linkId, formId,
-												"modelView", "modelId="
-														+ modelId
+										viewManager.openView("modelView",
+												"modelId=" + modelId
 														+ "&modelName="
 														+ modelName, modelId);
-									} else if (data.rslt.obj.attr('rel') == 'participant_role') {
-										var roleId = data.rslt.obj.attr('id');
+									} else if (data.rslt.obj.attr('rel') == "roleParticipant") {
+										var roleId = data.rslt.obj.attr("id");
 										var roleName = data.inst.get_text();
+										var modelId = data.rslt.obj
+												.attr("modelId");
+										var fullId = data.rslt.obj
+										.attr("fullId");
 
-										// data.inst gives you the actual tree
-										// instance
-
-										var modelId = data.inst._get_parent(
-												data.rslt.obj).attr('id');
-										var link = jQuery(
-												"a[id $= 'role_view_link']",
-												window.parent.frames['ippPortalMain'].document);
-										var linkId = link.attr('id');
-										var form = link.parents('form:first');
-										var formId = form.attr('id');
-
-										window.parent.EventHub.events.publish(
-												"OPEN_VIEW", linkId, formId,
-												"roleView", "roleId=" + roleId
+										viewManager.openView("roleView",
+												"roleId=" + roleId
 														+ "&modelId=" + modelId
 														+ "&roleName="
-														+ roleName, roleId);
-									} else if (data.rslt.obj.attr('rel') == 'participant_organization') {
+														+ roleName + "&fullId="
+															+ fullId, fullId);
+									} else if (data.rslt.obj.attr('rel') == 'organizationParticipant') {
 										var organizationId = data.rslt.obj
 												.attr('id');
 										var organizationName = data.inst
 												.get_text();
+										var modelId = data.rslt.obj
+												.attr("modelId");
 
-										// data.inst gives you the actual tree
-										// instance
-
-										var modelId = data.inst._get_parent(
-												data.rslt.obj).attr('id');
-										var link = jQuery(
-												"a[id $= 'organization_view_link']",
-												window.parent.frames['ippPortalMain'].document);
-										var linkId = link.attr('id');
-										var form = link.parents('form:first');
-										var formId = form.attr('id');
-
-										window.parent.EventHub.events.publish(
-												"OPEN_VIEW", linkId, formId,
+										viewManager.openView(
 												"organizationView",
 												"organizationId="
 														+ organizationId
 														+ "&modelId=" + modelId
 														+ "&organizationName="
 														+ organizationName,
-												organizationId);										
-									} else if (data.rslt.obj.attr('rel') == 'primitive' ||
-											data.rslt.obj.attr('rel') == 'serializable' ||
-											data.rslt.obj.attr('rel') == 'entity' ||
-											data.rslt.obj.attr('rel') == 'struct' ||
-											data.rslt.obj.attr('rel') == 'dmsDocumentList') {
+												organizationId);
+									} else if (data.rslt.obj.attr('rel') == 'primitive'
+											|| data.rslt.obj.attr('rel') == 'serializable'
+											|| data.rslt.obj.attr('rel') == 'entity'
+											|| data.rslt.obj.attr('rel') == 'struct'
+											|| data.rslt.obj.attr('rel') == 'dmsDocumentList') {
+
 										// TODO Above is very ugly!
 										var dataId = data.rslt.obj.attr('id');
 										var dataName = data.inst.get_text();
+										var modelId = data.rslt.obj
+												.attr("modelId");
 
-										// data.inst gives you the actual tree
-										// instance
-
-										var modelId = data.inst._get_parent(
-												data.rslt.obj).attr('id');
-										var link = jQuery(
-												"a[id $= 'data_view_link']",
-												window.parent.frames['ippPortalMain'].document);
-										var linkId = link.attr('id');
-										var form = link.parents('form:first');
-										var formId = form.attr('id');
-
-										window.parent.EventHub.events.publish(
-												"OPEN_VIEW", linkId, formId,
-												"dataView", "dataId=" + dataId
+										viewManager.openView("dataView",
+												"dataId=" + dataId
 														+ "&modelId=" + modelId
 														+ "&dataName="
 														+ dataName, dataId);
@@ -556,112 +534,73 @@ define(
 										var processId = data.rslt.obj
 												.attr('id');
 										var processName = data.inst.get_text();
-										// data.inst gives you the actual tree
-										// instance
 										var modelId = data.inst._get_parent(
 												data.rslt.obj).attr('id');
-										var link = jQuery(
-												"a[id $= 'modeler_view_link']",
-												window.parent.frames['ippPortalMain'].document);
-										var linkId = link.attr('id');
-										var form = link.parents('form:first');
-										var formId = form.attr('id');
 
-										window.parent.EventHub.events.publish(
-												"OPEN_VIEW", linkId, formId,
-												"modelerView", "processId="
-														+ processId
+										viewManager.openView("modelerView",
+												"processId=" + processId
 														+ "&modelId=" + modelId
 														+ "&processName="
 														+ processName,
 												processId);
 									} else if (data.rslt.obj.attr('rel') == "webservice") {
-										var link = jQuery(
-												"a[id $= 'webservice_application_view_link']",
-												window.parent.frames['ippPortalMain'].document);
-										var linkId = link.attr('id');
-										var form = link.parents('form:first');
-										var formId = form.attr('id');
+										var applicationId = data.rslt.obj
+												.attr('id');
+										var modelId = data.rslt.obj
+												.attr("modelId");
 
-										window.parent.EventHub.events.publish(
-												"OPEN_VIEW", linkId, formId,
-												"webServiceApplicationView");
+										viewManager.openView(
+												"webServiceApplicationView",
+												"modelId=" + modelId
+														+ "&applicationId="
+														+ applicationId,
+												applicationId);
 									} else if (data.rslt.obj.attr('rel') == "messageTransformationBean") {
 										var applicationId = data.rslt.obj
 												.attr('id');
-										var modelId = data.inst._get_parent(
-												data.rslt.obj).attr('modelId');
-										var link = jQuery(
-												"a[id $= 'message_transformation_application_view_link']",
-												window.parent.frames['ippPortalMain'].document);
-										var linkId = link.attr('id');
-										var form = link.parents('form:first');
-										var formId = form.attr('id');
+										var modelId = data.rslt.obj
+												.attr("modelId");
 
-										window.parent.EventHub.events
-												.publish(
-														"OPEN_VIEW",
-														linkId,
-														formId,
+										viewManager
+												.openView(
 														"messageTransformationApplicationView",
 														"modelId="
 																+ modelId
 																+ "&applicationId="
 																+ applicationId,
-														applicationId); // TODO
-										// Review
-										// View
-										// ID
+														applicationId);
 									} else if (data.rslt.obj.attr('rel') == "camelBean") {
 										var applicationId = data.rslt.obj
 												.attr('id');
-										var modelId = data.inst._get_parent(
-												data.rslt.obj).attr('modelId');
-										var link = jQuery(
-												"a[id $= 'camel_application_view_link']",
-												window.parent.frames['ippPortalMain'].document);
-										var linkId = link.attr('id');
-										var form = link.parents('form:first');
-										var formId = form.attr('id');
+										var modelId = data.rslt.obj
+												.attr("modelId");
 
-										window.parent.EventHub.events.publish(
-												"OPEN_VIEW", linkId, formId,
+										viewManager.openView(
 												"camelApplicationView",
 												"modelId=" + modelId
 														+ "&applicationId="
 														+ applicationId,
-												applicationId); // TODO
-										// Review
-										// View
-										// ID
+												applicationId);
 									} else if (data.rslt.obj.attr('rel') == "interactive") {
-										var link = jQuery(
-												"a[id $= 'ui_mashup_application_view_link']",
-												window.parent.frames['ippPortalMain'].document);
-										var linkId = link.attr('id');
-										var form = link.parents('form:first');
-										var formId = form.attr('id');
+										var applicationId = data.rslt.obj
+												.attr('id');
+										var modelId = data.rslt.obj
+												.attr("modelId");
 
-										window.parent.EventHub.events.publish(
-												"OPEN_VIEW", linkId, formId,
-												"uiMashupApplicationView");
+										viewManager.openView(
+												"uiMashupApplicationView",
+												"modelId=" + modelId
+														+ "&applicationId="
+														+ applicationId,
+												applicationId);
 									} else if (data.rslt.obj.attr('rel') == "structuredDataType") {
 										var structuredDataTypeId = data.rslt.obj
 												.attr('id');
-										var modelId = data.inst._get_parent(
-												data.rslt.obj).attr('modelId');
-										var link = jQuery(
-												"a[id $= 'xsd_structured_data_type_view_link']",
-												window.parent.frames['ippPortalMain'].document);
-										var linkId = link.attr('id');
-										var form = link.parents('form:first');
-										var formId = form.attr('id');
+										var modelId = data.rslt.obj
+												.attr("modelId");
 
-										window.parent.EventHub.events
-												.publish(
-														"OPEN_VIEW",
-														linkId,
-														formId,
+										viewManager
+												.openView(
 														"xsdStructuredDataTypeView",
 														"modelId="
 																+ modelId
@@ -974,7 +913,7 @@ define(
 														}
 													}
 												};
-											} else if ('participant_role' == node
+											} else if ('roleParticipant' == node
 													.attr('rel')) {
 												return {
 													"ccp" : false,
@@ -1034,21 +973,21 @@ define(
 													"image" : "../images/icons/world.png"
 												},
 												"valid_children" : [
-														"participant_role",
-														"participant_org",
-														"participant_cp" ]
+														"roleParticipant",
+														"organizationParticipant",
+														"conditionalPerformerParticipant" ]
 											},
-											"participant_role" : {
+											"roleParticipant" : {
 												"icon" : {
 													"image" : "../images/icons/role.png"
 												}
 											},
-											"participant_org" : {
+											"organizationParticipant" : {
 												"icon" : {
 													"image" : "../images/icons/organization.png"
 												}
 											},
-											"participant_cp" : {
+											"conditionalPerformerParticipant" : {
 												"icon" : {
 													"image" : "../images/icons/role.png"
 												}
@@ -1523,10 +1462,14 @@ define(
 					parent.iPopupDialog.openPopup(popupData);
 				}
 
-				window.parent.EventHub.events.subscribe("ELEMENT_CREATED",
-						elementCreationHandler);
-				window.parent.EventHub.events.subscribe("ELEMENT_RENAMED",
-						elementRenamingHandler);
+				// TODO Should be encapsulated in module
+
+				if (window.parent.EventHub != null) {
+					window.parent.EventHub.events.subscribe("ELEMENT_CREATED",
+							elementCreationHandler);
+					window.parent.EventHub.events.subscribe("ELEMENT_RENAMED",
+							elementRenamingHandler);
+				}
 
 				readAllModels();
 			};
@@ -1534,16 +1477,15 @@ define(
 			var outline;
 
 			return {
-				"init" : function() {
+				init : function() {
 					setupEventHandling();
 
 					outline = new Outline();
 
 					outline.initialize();
-
 					m_outlineToolbarController.init("outlineToolbar");
 				},
-				"refresh" : function() {
+				refresh : function() {
 					refresh();
 				}
 			};

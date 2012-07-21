@@ -8,11 +8,12 @@
  * documentation
  ******************************************************************************/
 
+/**
+ * 
+ */
 define(
-		[ "m_utils", "m_constants", "m_propertiesPanel", "m_propertiesPage",
-				"m_gatewayBasicPropertiesPage" ],
-		function(m_utils, m_constants, m_propertiesPanel, m_propertiesPage,
-				m_gatewayBasicPropertiesPage) {
+		[ "m_utils", "m_constants", "m_propertiesPanel", "m_propertiesPage"],
+		function(m_utils, m_constants, m_propertiesPanel, m_propertiesPage) {
 
 			var gatewayPropertiesPanel = null;
 
@@ -41,14 +42,9 @@ define(
 				m_utils.inheritMethods(GatewayPropertiesPanel.prototype,
 						propertiesPanel);
 
-				// Constants
-
 				// Member initialization
 
 				this.models = models;
-				this.propertiesPages = [
-						m_gatewayBasicPropertiesPage
-								.createPropertiesPage(this)];
 
 				/**
 				 * 
@@ -73,15 +69,6 @@ define(
 					for ( var n in this.propertiesPages) {
 						this.propertiesPages[n].setElement();
 					}
-				};
-
-				/**
-				 * 
-				 */
-				GatewayPropertiesPanel.prototype.apply = function() {
-					this.applyPropertiesPages();
-					this.element.refresh();
-					this.element.submitUpdate();
 				};
 			}
 		});

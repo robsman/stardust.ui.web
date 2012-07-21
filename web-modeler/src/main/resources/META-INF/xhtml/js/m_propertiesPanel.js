@@ -2,8 +2,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_dialog", "m_modelerViewLayoutManager" ],
-		function(m_utils, m_constants, m_dialog, m_modelerViewLayoutManager) {
+		[ "m_utils", "m_constants", "m_extensionManager", "m_dialog", "m_modelerViewLayoutManager" ],
+		function(m_utils, m_constants, m_extensionManager, m_dialog, m_modelerViewLayoutManager) {
 
 			var currentPropertiesPanel = null;
 
@@ -45,8 +45,8 @@ define(
 			/**
 			 * 
 			 */
-			function PropertiesPanel(newId) {
-				this.id = newId;
+			function PropertiesPanel(id) {
+				this.id = id;
 				this.panel = jQuery("#" + this.id);
 				this.propertiesPageList = jQuery("#propertiesPageList");
 				this.applyButton = jQuery("#" + this.id + " #applyButton");
@@ -61,6 +61,7 @@ define(
 				 * 
 				 */
 				PropertiesPanel.prototype.initialize = function(element) {
+					this.initializePropertiesPages();
 					this.hide();
 				};
 
@@ -69,6 +70,19 @@ define(
 				 */
 				PropertiesPanel.prototype.mapInputId = function(inputId) {
 					return jQuery("#" + this.id + " #" + inputId);
+				};
+
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.initializePropertiesPages = function() {
+					var propertiesPages = m_extensionManager.findExtensions(
+							"propertiesPage", "panelId", id);
+
+					for ( var n = 0; n < propertiesPages.length; n++) {
+						this.propertiesPages.push(require(
+								propertiesPages[n].pageJavaScriptUrl).create(this));
+					}
 				};
 
 				/**

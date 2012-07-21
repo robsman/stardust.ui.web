@@ -6,7 +6,7 @@ define(
 		[ "m_utils", "m_constants", "m_user", "m_dialog", "m_propertiesPage" ],
 		function(m_utils, m_constants, m_user, m_dialog, m_propertiesPage) {
 			return {
-				createPropertiesPage : function(propertiesPanel) {
+				create : function(propertiesPanel) {
 					return new DataFlowBasicPropertiesPage(propertiesPanel);
 				}
 			};
@@ -81,7 +81,7 @@ define(
 								|| accessPoint.direction == m_constants.INOUT_ACCESS_POINT) {
 							m_utils.debug("Acess Point");
 							m_utils.debug(accessPoint);
-							
+
 							var option = "<option value\"";
 
 							option += accessPoint.id;
@@ -103,12 +103,12 @@ define(
 
 					for ( var n in dataFlow.activity.getAccessPoints()) {
 						var accessPoint = dataFlow.activity.getAccessPoints()[n];
-						
+
 						if (accessPoint.direction == m_constants.OUT_ACCESS_POINT
 								|| accessPoint.direction == m_constants.INOUT_ACCESS_POINT) {
 							m_utils.debug("Acess Point");
 							m_utils.debug(accessPoint);
-							
+
 							var option = "<option value\"";
 
 							option += accessPoint.id;
@@ -145,13 +145,14 @@ define(
 					// this.applicationPathInput
 					// .val(this.propertiesPanel.element.modelElement.applicationPath);
 
-//					if (m_user.currentUserHasProfileRole(m_user.INTEGRATOR)) {
-//						m_dialog.makeVisible(this.inputAccessPointPanel);
-//						m_dialog.makeVisible(this.outputAccessPointPanel);
-//					} else {
-//						m_dialog.makeInvisible(this.inputAccessPointPanel);
-//						m_dialog.makeInvisible(this.outputAccessPointPanel);
-//					}
+					// if (m_user.currentUserHasProfileRole(m_user.INTEGRATOR))
+					// {
+					// m_dialog.makeVisible(this.inputAccessPointPanel);
+					// m_dialog.makeVisible(this.outputAccessPointPanel);
+					// } else {
+					// m_dialog.makeInvisible(this.inputAccessPointPanel);
+					// m_dialog.makeInvisible(this.outputAccessPointPanel);
+					// }
 				};
 
 				/**

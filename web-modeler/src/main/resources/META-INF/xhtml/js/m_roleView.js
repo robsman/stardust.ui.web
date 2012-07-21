@@ -13,24 +13,21 @@ define(
 				"m_model", "m_typeDeclaration" ],
 		function(m_utils, m_command, m_commandsController, m_dialog, m_view, m_model,
 				m_typeDeclaration) {
-			var view;
-
 			return {
-				initialize : function() {
-					var modelId = jQuery.url.setUrl(window.location.search)
-							.param("modelId");
-					var applicationId = jQuery.url.setUrl(
-							window.location.search).param("applicationId");
-					var model = m_model.findModel(modelId);
-					var application = model.applications[applicationId];
+				initialize : function(fullId) {
+					m_utils.debug("fullId = " + fullId);
+					
+					var role = m_model.findParticipant(fullId);
 
-					view = new RoleView();
+					m_utils.debug(role);
+
+					var view = new RoleView();
 					// TODO Unregister!
 					// In Initializer?
 
 					m_commandsController.registerCommandHandler(view);
 
-					view.initialize(application);
+					view.initialize(role);
 				}
 			};
 

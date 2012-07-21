@@ -13,9 +13,11 @@ require(["m_jqueryConflictResolver",
 		 "jquery.jstree",
 		 "m_utils",
 		 "m_communicationController",
-		 "extensions",
+		 "testExtensions",
 		 
-		 "m_jsfViewManager",
+		 // TODO Remove dependency
+		 "m_testViewManager",
+		 "m_roleView",
 		 
 		 "m_urlUtils",
 		 "m_constants",

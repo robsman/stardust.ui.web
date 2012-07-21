@@ -14,7 +14,7 @@ define(
 		function(m_utils, m_constants,
 				m_commandsController, m_command, m_propertiesPage) {
 			return {
-				createPropertiesPage : function(propertiesPanel) {
+				create: function(propertiesPanel) {
 					return new ProcessBasicPropertiesPage(propertiesPanel);
 				}
 			};

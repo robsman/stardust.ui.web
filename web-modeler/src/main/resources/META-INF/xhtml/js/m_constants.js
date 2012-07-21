@@ -185,6 +185,9 @@ define(function() {
 		// Participant				
 		
 		PARTICIPANT : "participant",
+		ROLE_PARTICIPANT_TYPE : "roleParticipant",
+		ORGANIZATION_PARTICIPANT_TYPE : "organizationParticipant",
+		CONDITIONAL_PERFORMER_PARTICIPANT_TYPE : "conditionalPerformerParticipant",
 
 		// Activity
 

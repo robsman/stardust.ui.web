@@ -14,7 +14,7 @@ define(
 		function(m_utils, m_constants, m_command, m_commandsController,
 				m_propertiesPage, m_activity) {
 			return {
-				createPropertiesPage : function(propertiesPanel) {
+				create: function(propertiesPanel) {
 					return new ActivityBasicPropertiesPage(propertiesPanel);
 				}
 			};

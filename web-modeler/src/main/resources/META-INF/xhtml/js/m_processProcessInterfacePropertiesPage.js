@@ -8,7 +8,7 @@ define(
 		function(m_utils, m_constants, m_dialog, m_propertiesPage,
 				m_typeDeclaration) {
 			return {
-				createPropertiesPage : function(propertiesPanel) {
+				create: function(propertiesPanel) {
 					return new ProcessProcessInterfacePropertiesPage(
 							propertiesPanel);
 				}

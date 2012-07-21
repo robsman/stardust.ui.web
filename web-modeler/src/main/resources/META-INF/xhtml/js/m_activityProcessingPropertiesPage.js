@@ -15,7 +15,7 @@ define(
 		function(m_utils, m_constants, m_command, m_commandsController,
 				m_propertiesPage, m_activity) {
 			return {
-				createPropertiesPage : function(propertiesPanel) {
+				create: function(propertiesPanel) {
 					return new ActivityProcessingPropertiesPage(propertiesPanel);
 				}
 			};
@@ -25,7 +25,7 @@ define(
 
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "processingPropertiesPage",
-						"Processing");
+						"Processing",  "../../images/icons/activity-processing-properties-page.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
