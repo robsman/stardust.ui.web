@@ -2713,6 +2713,7 @@ public class ModelService {
 
 			participantJson.addProperty(ModelerConstants.ID_PROPERTY, role.getId());
 			participantJson.addProperty(ModelerConstants.NAME_PROPERTY, role.getName());
+         participantJson.addProperty(ModelerConstants.PARTICIPANT_TYPE_PROPERTY, ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
 			loadDescription(participantJson, role);
 		}
 
@@ -2722,6 +2723,7 @@ public class ModelService {
 
 			participantJson.addProperty(ModelerConstants.ID_PROPERTY, organization.getId());
 			participantJson.addProperty(ModelerConstants.NAME_PROPERTY, organization.getName());
+         participantJson.addProperty(ModelerConstants.PARTICIPANT_TYPE_PROPERTY, ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
 			loadDescription(participantJson, organization);
 		}
 
@@ -2734,6 +2736,7 @@ public class ModelService {
 					conditionalPerformer.getId());
 			participantJson.addProperty(ModelerConstants.NAME_PROPERTY,
 					conditionalPerformer.getName());
+         participantJson.addProperty(ModelerConstants.PARTICIPANT_TYPE_PROPERTY, ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY);
 			loadDescription(participantJson, conditionalPerformer);
 		}
 
