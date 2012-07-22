@@ -17,13 +17,12 @@ package org.eclipse.stardust.ui.web.modeler.portal;
  *
  * TODO Use AbstractAdapterView with Spring Bean Properties?
  */
-public class OrganizationView extends AbstractAdapterView {
-   
+public class OrganizationView extends AbstractAdapterView {  
    /**
     * 
     */
 	public OrganizationView()
    {
-      super("/plugins/bpm-modeler/views/modeler/organizationPanel.xhtml", "organizationPanelAnchor");
+      super("/plugins/bpm-modeler/views/modeler/organizationView.html", "organizationFrameAnchor");
    }
 }

@@ -14,16 +14,16 @@ package org.eclipse.stardust.ui.web.modeler.portal;
 /**
  * 
  * @author Marc.Gille
- *
- * TODO Use AbstractAdapterView with Spring Bean Properties?
+ * 
+ *         TODO Use AbstractAdapterView with Spring Bean Properties?
  */
-public class RoleView extends AbstractAdapterView {
-   
+public class RoleView extends AbstractAdapterView
+{
    /**
     * 
     */
-	public RoleView()
+   public RoleView()
    {
-      super("/plugins/bpm-modeler/views/modeler/rolePanel.xhtml", "rolePanelAnchor");
+      super("/plugins/bpm-modeler/views/modeler/roleView.html", "roleFrameAnchor");
    }
 }

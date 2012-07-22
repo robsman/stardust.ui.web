@@ -14,16 +14,16 @@ package org.eclipse.stardust.ui.web.modeler.portal;
 /**
  * 
  * @author Marc.Gille
- *
+ * 
  * TODO Use AbstractAdapterView with Spring Bean Properties?
  */
-public class DataView extends AbstractAdapterView {
-   
+public class DataView extends AbstractAdapterView
+{
    /**
     * 
     */
-	public DataView()
+   public DataView()
    {
-      super("/plugins/bpm-modeler/views/modeler/dataPanel.xhtml", "dataPanelAnchor");
+      super("/plugins/bpm-modeler/views/modeler/dataView.html", "dataFrameAnchor");
    }
 }
