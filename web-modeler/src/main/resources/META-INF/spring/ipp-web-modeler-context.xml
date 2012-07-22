@@ -35,12 +35,21 @@
 		<property name="modelService" ref="modelService" />
 	</bean>
 
-	<bean id="uiMashupApplicationView" class="org.eclipse.stardust.ui.web.modeler.portal.UIMashupApplicationView">
+	<bean id="genericApplicationView" class="org.eclipse.stardust.ui.web.modeler.portal.GenericApplicationView">
+		<property name="modelService" ref="modelService" />
+	</bean>
+
+	<bean id="uiMashupApplicationView" class="org.eclipse.stardust.ui.web.modeler.portal.UiMashupApplicationView">
 		<property name="modelService" ref="modelService" />
 	</bean>
 
 	<bean id="modelView"
 		class="org.eclipse.stardust.ui.web.modeler.portal.ModelView">
+		<property name="modelService" ref="modelService" />
+	</bean>
+
+	<bean id="processDefinitionView"
+		class="org.eclipse.stardust.ui.web.modeler.portal.ProcessDefinitionView">
 		<property name="modelService" ref="modelService" />
 	</bean>
 
