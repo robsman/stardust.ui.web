@@ -25,12 +25,12 @@
 					<table cellpadding="0" cellspacing="0" class="layoutTable"
 						style="margin-bottom: 10px;">
 						<tr>
-							<td><label for="nameInput">Application Name</label></td>
+							<td><label for="nameInput">Application Name</label>
+							</td>
 							<td><input id="nameInput" type="text" style="width: 200px;"></input>
 							</td>
 						</tr>
-					</table>
-				</td>
+					</table></td>
 			</tr>
 			<tr>
 				<td>
@@ -38,9 +38,11 @@
 						<tr valign="top">
 							<td>
 								<div class="heading" style="margin-bottom: 5px;">Source
-									Message</div></td>
+									Message</div>
+							</td>
 							<td><div class="heading" style="margin-bottom: 5px;">Target
-									Message</div></td>
+									Message</div>
+							</td>
 						</tr>
 						<tr valign="top">
 							<td>
@@ -52,17 +54,24 @@
 													<table cellpadding="0" cellspacing="5" class="layoutTable">
 														<tr>
 															<td><input id="addInputDataButton" type="button"
-																value="Add Input ..." /></td>
-															<td><input id="filterHighlightedSourceFieldsInput" type="image" height="16" width="16"
-																src="../../images/bulb-on.gif" title="Display only highlighted fields"/>
+																value="Add Input ..." />
 															</td>
-															<td><input id="showAllSourceFieldsInput" type="image" height="16" width="16"
-																src="../../images/bulb-off.gif" title="Display highlighted and non-highlighted fields"/>
+															<td><input id="filterHighlightedSourceFieldsInput"
+																type="image" height="16" width="16"
+																src="../../images/bulb-on.gif"
+																title="Display only highlighted fields" /></td>
+															<td><input id="showAllSourceFieldsInput"
+																type="image" height="16" width="16"
+																src="../../images/bulb-off.gif"
+																title="Display highlighted and non-highlighted fields" />
 															</td>
-															<td><input id="sourceFilterInput" type="text" style="width: 100%;" /></td>
+															<td><input id="sourceFilterInput" type="text"
+																style="width: 100%;" />
+															</td>
 														</tr>
 													</table>
-												</div></td>
+												</div>
+											</td>
 										</tr>
 										<tr>
 											<td>
@@ -77,11 +86,11 @@
 														</thead>
 														<tbody />
 													</table>
-												</div></td>
+												</div>
+											</td>
 										</tr>
 									</table>
-								</div>
-							</td>
+								</div></td>
 							<td>
 								<div style="margin-left: 10px;">
 									<div class="panelBorder">
@@ -92,25 +101,37 @@
 														<table cellpadding="0" cellspacing="5" class="layoutTable">
 															<tr>
 																<td><input id="addOutputDataButton" type="button"
-																	value="Add Output ..." />
+																	value="Add Output ..." /></td>
+																<td><input id="filterFieldsWithMappingInput"
+																	type="image" height="16" width="16"
+																	src="../../images/mapping.gif"
+																	title="Display only fields with mapping expressions" />
 																</td>
-																<td><input id="filterFieldsWithMappingInput" type="image" height="16" width="16"
-																	src="../../images/mapping.gif" title="Display only fields with mapping expressions"/>
+																<td><input id="filterFieldsWithNoMappingInput"
+																	type="image" height="16" width="16"
+																	src="../../images/no-mapping.gif"
+																	title="Display only fields with no mapping expression" />
 																</td>
-																<td><input id="filterFieldsWithNoMappingInput" type="image" height="16" width="16"
-																	src="../../images/no-mapping.gif" title="Display only fields with no mapping expression"/></td>
-																<td><input id="filterHighlightedTargetFieldsInput" type="image" height="16" width="16"
-																	src="../../images/bulb-on.gif" title="Display only highlighted fields"/>
-																</td>
-																<td><input id="showAllTargetFieldsInput" type="image" height="16" width="16"
-																	src="../../images/bulb-off.gif" title="Display highlighted and non-highlighted fields"/>
+																<td><input id="filterHighlightedTargetFieldsInput"
+																	type="image" height="16" width="16"
+																	src="../../images/bulb-on.gif"
+																	title="Display only highlighted fields" /></td>
+																<td><input id="showAllTargetFieldsInput"
+																	type="image" height="16" width="16"
+																	src="../../images/bulb-off.gif"
+																	title="Display highlighted and non-highlighted fields" />
 																</td>
 																<td><input type="image" height="16" width="16"
-																	src="../../images/error.gif" title="Display only fields whose mapping expression is invalid"/></td>
-																<td><input id="targetFilterInput" type="text" style="width: 100%;" title="Filter fields"/></td>
+																	src="../../images/error.gif"
+																	title="Display only fields whose mapping expression is invalid" />
+																</td>
+																<td><input id="targetFilterInput" type="text"
+																	style="width: 100%;" title="Filter fields" />
+																</td>
 															</tr>
 														</table>
-													</div></td>
+													</div>
+												</td>
 											</tr>
 											<tr>
 												<td>
@@ -127,15 +148,18 @@
 															</thead>
 															<tbody />
 														</table>
-													</div></td>
+													</div>
+												</td>
 											</tr>
 										</table>
 									</div>
-								</div></td>
+								</div>
+							</td>
 						</tr>
 						<tr>
 							<td colspan="2"><div class="heading"
-									style="margin-top: 10px;">Advanced Mapping</div></td>
+									style="margin-top: 10px;">Advanced Mapping</div>
+							</td>
 						</tr>
 						<tr>
 							<td colspan="2"><div id="elementIndicatorText">&nbsp;</div>
@@ -143,10 +167,10 @@
 						</tr>
 						<tr>
 							<td colspan="2"><textarea id="expressionTextArea" cols="80"
-									rows="10"></textarea>
-							</td>
+									rows="10"></textarea></td>
 						</tr>
-					</table></td>
+					</table>
+				</td>
 			</tr>
 		</table>
 	</div>
@@ -154,17 +178,13 @@
 		style="min-width: 300px; min-height: 200px;">
 		<table>
 			<tr>
-				<td><label for="typeSelectInput">Type:</label>
-				</td>
+				<td><label for="typeSelectInput">Type:</label></td>
 				<td><select id="typeSelectInput">
-				</select>
-				</td>
+				</select></td>
 			</tr>
 			<tr>
-				<td><label for="nameTextInput">Name:</label>
-				</td>
-				<td><input id="nameTextInput" type="text" />
-				</td>
+				<td><label for="nameTextInput">Name:</label></td>
+				<td><input id="nameTextInput" type="text" /></td>
 			</tr>
 			<tr>
 				<td colspan="2">
@@ -175,7 +195,8 @@
 							<td><input id="closeButton" type="button" value="Close" />
 							</td>
 						</tr>
-					</table></td>
+					</table>
+				</td>
 			</tr>
 		</table>
 	</div>
@@ -183,17 +204,13 @@
 		style="min-width: 300px; min-height: 200px;">
 		<table>
 			<tr>
-				<td><label for="typeSelectInput">Type:</label>
-				</td>
+				<td><label for="typeSelectInput">Type:</label></td>
 				<td><select id="typeSelectInput">
-				</select>
-				</td>
+				</select></td>
 			</tr>
 			<tr>
-				<td><label for="nameTextInput">Name:</label>
-				</td>
-				<td><input id="nameTextInput" type="text" />
-				</td>
+				<td><label for="nameTextInput">Name:</label></td>
+				<td><input id="nameTextInput" type="text" /></td>
 			</tr>
 			<tr>
 				<td colspan="2">
@@ -204,7 +221,8 @@
 							<td><input id="closeButton" type="button" value="Close" />
 							</td>
 						</tr>
-					</table></td>
+					</table>
+				</td>
 			</tr>
 		</table>
 	</div>
