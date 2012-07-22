@@ -40,6 +40,8 @@ define(
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(DataView.prototype, view);
 
+				this.guidOutput = jQuery("#guidOutput");
+				this.idOutput = jQuery("#idOutput");
 				this.nameInput = jQuery("#nameInput");
 
 				this.nameInput.change({
@@ -65,6 +67,10 @@ define(
 						data) {
 					this.data = data;
 
+					this.guidOutput.empty();
+					this.guidOutput.append(this.data.oid);
+					this.idOutput.empty();
+					this.idOutput.append(this.data.id);
 					this.nameInput.val(this.data.name);
 
 					if (this.data.attributes == null) {

@@ -39,6 +39,7 @@ define(
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(ModelView.prototype, view);
 
+				this.idOutput = jQuery("#idOutput");
 				this.nameInput = jQuery("#nameInput");
 
 				this.nameInput.change({
@@ -64,6 +65,8 @@ define(
 						model) {
 					this.model = model;
 
+					this.idOutput.empty();
+					this.idOutput.append(this.model.id);
 					this.nameInput.val(this.model.name);
 
 					if (this.model.attributes == null) {
@@ -85,12 +88,11 @@ define(
 					this.clearErrorMessages();
 
 					this.nameInput.removeClass("error");
-					this.camelContextInput.removeClass("error");
 
 					if (this.nameInput.val() == null
 							|| this.nameInput.val() == "") {
 						this.errorMessages
-								.push("Application name must not be empty.");
+								.push("Model name must not be empty.");
 						this.nameInput.addClass("error");
 					}
 
@@ -107,12 +109,6 @@ define(
 				 * 
 				 */
 				ModelView.prototype.submitChanges = function(changes) {
-					// Generic attributes
-
-					if (changes.attributes == null) {
-						changes.attributes = {};
-					}
-
 					m_commandsController.submitCommand(m_command
 							.createUpdateModelElementCommand(
 									this.model.model.id,

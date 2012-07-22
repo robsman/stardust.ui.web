@@ -16,7 +16,8 @@
 <link href="../../css/jquery.tablescroll.css" rel="stylesheet"
 	type="text/css" />
 <link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="../../js/webServiceApplicationViewPageInitializer.js"></script>
+<script type="text/javascript"
+	src="../../js/webServiceApplicationViewPageInitializer.js"></script>
 <script type="text/javascript" data-main="webServiceApplicationViewMain"
 	src="../../js/requireplugins-jquery-1.4.3.js"></script>
 </head>
@@ -42,6 +43,73 @@
 									<tr>
 										<td><label for="nameInput">Application Name</label></td>
 										<td><input id="nameInput" type="text"></input></td>
+									</tr>
+									<tr>
+										<td><label for="wsdlUrlInput">WSDL URL</label></td>
+										<td><input id="wsdlUrlInput" type="text"></input></td>
+									</tr>
+									<tr>
+										<td><label for="serviceSelect">Service</label></td>
+										<td><select id="serviceSelect"></select></td>
+									</tr>
+								</table>
+								<table cellpadding="0" cellspacing="0" class="layoutTable"
+									style="margin-bottom: 10px;">
+									<tr>
+										<td>
+											<table cellpadding="0" cellspacing="0" class="layoutTable"
+												style="margin-bottom: 10px;">
+												<tr>
+													<td><label for="portSelect">Port</label></td>
+													<td><select id="portSelect"></select></td>
+												</tr>
+												<tr>
+													<td><label for="styleOutput">Style</label></td>
+													<td><div id="styleOutput" class="output"></div></td>
+												</tr>
+												<tr>
+													<td><label for="protocolOutput">Proctocol</label></td>
+													<td><div id="protocolOutput" class="output"></div></td>
+												</tr>
+												<tr>
+													<td><input id="addressingCheckbox" type="checkbox"></input>
+													</td>
+													<td><label for="addressingCheckbox">Include
+															WS-Addressing EPR</label></td>
+												</tr>
+												<tr>
+													<td><input id="authenticationCheckbox" type="checkbox"></input>
+													</td>
+													<td><label for="authenticationCheckbox">Authentication
+															Required</label></td>
+												</tr>
+											</table></td>
+										<td>
+											<table cellpadding="0" cellspacing="0" class="layoutTable"
+												style="margin-bottom: 10px;">
+												<tr>
+													<td><label for="operationSelect">Operation</label></td>
+													<td><select id="operationSelect"></select></td>
+												</tr>
+												<tr>
+													<td><label for="useOutput">Use</label></td>
+													<td><div id="useOutput" class="output"></div></td>
+												</tr>
+												<tr>
+													<td><label for="implementationSelect">Implementation</label>
+													</td>
+													<td><select id="implementationSelect"></select></td>
+												</tr>
+												<tr>
+													<td><label for="mechanismSelect">Mechanism</label></td>
+													<td><select id="mechanismSelect"></select></td>
+												</tr>
+												<tr>
+													<td><label for="variantSelect">Variant</label></td>
+													<td><select id="variantSelect"></select></td>
+												</tr>
+											</table>
+										</td>
 									</tr>
 								</table>
 							</td>

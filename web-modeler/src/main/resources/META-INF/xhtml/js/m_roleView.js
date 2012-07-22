@@ -10,9 +10,8 @@
 
 define(
 		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_view",
-				"m_model", "m_typeDeclaration" ],
-		function(m_utils, m_command, m_commandsController, m_dialog, m_view, m_model,
-				m_typeDeclaration) {
+				"m_model"],
+		function(m_utils, m_command, m_commandsController, m_dialog, m_view, m_model) {
 			return {
 				initialize : function(fullId) {
 					var role = m_model.findParticipant(fullId);
@@ -38,12 +37,9 @@ define(
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(RoleView.prototype, view);
 
+				this.guidOutput = jQuery("#guidOutput");
+				this.idOutput = jQuery("#idOutput");
 				this.nameInput = jQuery("#nameInput");
-				this.camelContextInput = jQuery("#camelContextInput");
-				this.routeTextarea = jQuery("#routeTextarea");
-				this.additionalBeanSpecificationTextarea = jQuery("#additionalBeanSpecificationTextarea");
-				this.requestDataInput = jQuery("#requestDataInput");
-				this.responseDataInput = jQuery("#responseDataInput");
 
 				this.nameInput.change({
 					"view" : this
@@ -54,110 +50,25 @@ define(
 						return;
 					}
 
-					if (view.application.name != view.nameInput.val()) {
+					if (view.role.name != view.nameInput.val()) {
 						view.submitChanges({
 							name : view.nameInput.val()
 						});
 					}
 				});
-				this.camelContextInput
-						.change(
-								{
-									"view" : this
-								},
-								function(event) {
-									var view = event.data.view;
-
-									if (!view.validate()) {
-										return;
-									}
-
-									if (view.application.attributes["carnot:engine:camel::camelContextId"] !=
-											 view.nameInput.val()) {
-										view
-												.submitChanges({
-													attributes : {
-														"carnot:engine:camel::camelContextId" : view.camelContextInput
-																.val()
-													}
-												});
-									}
-								});
-				this.routeTextarea
-						.change(
-								{
-									"view" : this
-								},
-								function(event) {
-									var view = event.data.view;
-
-									if (!view.validate()) {
-										return;
-									}
-
-									if (view.application.attributes["carnot:engine:camel::routeEntries"] !=
-											 view.routeTextarea.val()) {
-										view
-												.submitChanges({
-													attributes : {
-														"carnot:engine:camel::routeEntries" : view.routeTextarea
-																.val()
-													}
-												});
-									}
-								});
-				this.additionalBeanSpecificationTextarea
-						.change(
-								{
-									"view" : this
-								},
-								function(event) {
-									var view = event.data.view;
-
-									if (!view.validate()) {
-										return;
-									}
-
-									if (view.application.attributes["carnot:engine:camel::additionalSpringBeanDefinitions"] != view.additionalBeanSpecificationTextarea
-											.val()) {
-										view
-												.submitChanges({
-													attributes : {
-														"carnot:engine:camel::additionalSpringBeanDefinitions" : view.additionalBeanSpecificationTextarea
-																.val()
-													}
-												});
-									}
-								});
 
 				/**
 				 * 
 				 */
 				RoleView.prototype.initialize = function(
-						application) {
-					this.application = application;
+						role) {
+					this.role= role;
 
-					m_utils.debug("Name Input");
-					m_utils.debug(this.nameInput);
-					m_utils.debug(jQuery("#nameInput"));
-
-					
-					this.nameInput.val(this.application.name);
-
-					if (this.application.attributes == null) {
-						this.application.attributes = {};
-					}
-
-					if (this.application.attributes["carnot:engine:camel::camelContextId"] == null) {
-						this.application.attributes["carnot:engine:camel::camelContextId"] = "Default";
-					}
-
-					this.camelContextInput
-							.val(this.application.attributes["carnot:engine:camel::camelContextId"]);
-					this.routeTextarea
-							.val(this.application.attributes["carnot:engine:camel::routeEntries"]);
-					this.additionalBeanSpecificationTextarea
-							.val(this.application.attributes["carnot:engine:camel::additionalSpringBeanDefinitions"]);
+					this.guidOutput.empty();
+					this.guidOutput.append(this.role.oid);
+					this.idOutput.empty();
+					this.idOutput.append(this.role.id);
+					this.nameInput.val(this.role.name);
 				};
 
 				/**

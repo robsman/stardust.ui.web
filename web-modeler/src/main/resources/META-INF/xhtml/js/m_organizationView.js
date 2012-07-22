@@ -40,6 +40,8 @@ define(
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(OrganizationView.prototype, view);
 
+				this.guidOutput = jQuery("#guidOutput");
+				this.idOutput = jQuery("#idOutput");
 				this.nameInput = jQuery("#nameInput");
 
 				this.nameInput.change({
@@ -65,6 +67,10 @@ define(
 						organization) {
 					this.organization = organization;
 
+					this.guidOutput.empty();
+					this.guidOutput.append(this.organization.oid);
+					this.idOutput.empty();
+					this.idOutput.append(this.organization.id);
 					this.nameInput.val(this.organization.name);
 
 					if (this.organization.attributes == null) {

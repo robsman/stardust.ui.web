@@ -2,8 +2,10 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_extensionManager", "m_dialog", "m_modelerViewLayoutManager" ],
-		function(m_utils, m_constants, m_extensionManager, m_dialog, m_modelerViewLayoutManager) {
+		[ "m_utils", "m_constants", "m_extensionManager", "m_dialog",
+				"m_modelerViewLayoutManager" ],
+		function(m_utils, m_constants, m_extensionManager, m_dialog,
+				m_modelerViewLayoutManager) {
 
 			var currentPropertiesPanel = null;
 
@@ -50,7 +52,7 @@ define(
 				this.panel = jQuery("#" + this.id);
 				this.propertiesPageList = jQuery("#propertiesPageList");
 				this.applyButton = jQuery("#" + this.id + " #applyButton");
-				this.resetButton = jQuery("#" + this.id + " #resetButton");	
+				this.resetButton = jQuery("#" + this.id + " #resetButton");
 				this.errorMessagesList = jQuery("#" + this.id
 						+ " #errorMessagesList");
 				this.propertiesPages = [];
@@ -80,8 +82,39 @@ define(
 							"propertiesPage", "panelId", id);
 
 					for ( var n = 0; n < propertiesPages.length; n++) {
-						this.propertiesPages.push(require(
-								propertiesPages[n].pageJavaScriptUrl).create(this));
+						if (propertiesPages[n].pageHtmlUrl != null) {
+							jQuery("#" + this.id + "Table").append(
+									"<tr><td><div id=\""
+											+ propertiesPages[n].pageId + "\" class=\"propertiesPage\">"
+											+ "Test</div></td></tr>");
+
+							jQuery("#" + propertiesPages[n].pageId)
+									.load(
+											propertiesPages[n].pageHtmlUrl,
+											function(response, status, xhr) {
+												if (status == "error") {
+													var msg = "Sorry but there was an error: ";
+													jQuery(
+															"#"
+																	+ propertiesPages[n].pageId)
+															.html(
+																	msg
+																			+ xhr.status
+																			+ " "
+																			+ xhr.statusText);
+												} else {
+													this.propertiesPages.push(require(
+															propertiesPages[n].pageJavaScriptUrl)
+															.create(this));
+												}
+											});
+						} else {
+							// Embedded Markup
+
+							this.propertiesPages.push(require(
+									propertiesPages[n].pageJavaScriptUrl)
+									.create(this));
+						}
 					}
 				};
 
@@ -100,19 +133,14 @@ define(
 					this.propertiesPageList.empty();
 
 					for ( var n in this.propertiesPages) {
-						this.propertiesPageList
-								.append("<tr>"
-										+ "<td>"
-										+ "<input id=\""
-										+ this.propertiesPages[n].id
-										+ "ListItem\" type=\"image\" src=\""
-										+ this.propertiesPages[n].imageUrl
-										+ "\" title=\""
-										+ this.propertiesPages[n].title
-										+ "\" alt=\""
-										+ this.propertiesPages[n].title
-										+ "\" class=\"toolbarButton\" />"
-										+ "</td>" + "</tr>");
+						this.propertiesPageList.append("<tr>" + "<td>"
+								+ "<input id=\"" + this.propertiesPages[n].id
+								+ "ListItem\" type=\"image\" src=\""
+								+ this.propertiesPages[n].imageUrl
+								+ "\" title=\"" + this.propertiesPages[n].title
+								+ "\" alt=\"" + this.propertiesPages[n].title
+								+ "\" class=\"toolbarButton\" />" + "</td>"
+								+ "</tr>");
 
 						jQuery(
 								"#propertiesPageList #"
@@ -167,9 +195,9 @@ define(
 					if (this.propertiesPages.length >= 1) {
 						this.propertiesPages[0].show();
 					}
-					
+
 					this.clearErrorMessages();
-					
+
 					require("m_modelerViewLayoutManager").adjustPanels();
 				};
 
