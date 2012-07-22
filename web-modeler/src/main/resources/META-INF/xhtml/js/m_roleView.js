@@ -15,11 +15,7 @@ define(
 				m_typeDeclaration) {
 			return {
 				initialize : function(fullId) {
-					m_utils.debug("fullId = " + fullId);
-					
 					var role = m_model.findParticipant(fullId);
-
-					m_utils.debug(role);
 
 					var view = new RoleView();
 					// TODO Unregister!
@@ -141,6 +137,11 @@ define(
 						application) {
 					this.application = application;
 
+					m_utils.debug("Name Input");
+					m_utils.debug(this.nameInput);
+					m_utils.debug(jQuery("#nameInput"));
+
+					
 					this.nameInput.val(this.application.name);
 
 					if (this.application.attributes == null) {

@@ -14,7 +14,8 @@
  * 
  * @author Marc.Gille
  */
-define([ "m_utils", "m_extensionManager" ], function(m_utils, m_extensionManager) {
+define([ "m_utils", "m_extensionManager" ], function(m_utils,
+		m_extensionManager) {
 	return {
 		create : function() {
 			return new TestViewManager();
@@ -37,24 +38,25 @@ define([ "m_utils", "m_extensionManager" ], function(m_utils, m_extensionManager
 		 */
 		TestViewManager.prototype.openView = function(viewId, queryString,
 				objectId) {
-			var extension = m_extensionManager.findExtensions("view", "viewId", viewId)[0];
-			
-			m_utils.debug("Extension: " + extension.viewHtmlUrl + " " + extension.viewJavaScriptUrl);
-						
-			jQuery("#viewAnchor")
-					.load(
-							extension.viewHtmlUrl,
-							function(response, status, xhr) {
-								if (status == "error") {
-									var msg = "Error loading ";
-									$("#viewAnchor").append(
-											msg + xhr.status + " "
-													+ xhr.statusText);
-								}
-							});
+			var extension = m_extensionManager.findExtensions("view", "viewId",
+					viewId)[0];
 
-			
-			require(extension.viewJavaScriptUrl).initialize(objectId);
+			m_utils.debug("Extension: " + extension.viewHtmlUrl + " "
+					+ extension.viewJavaScriptUrl);
+
+			jQuery("#viewAnchor").attr("src", extension.viewHtmlUrl + "?" + queryString);
+
+			//			jQuery("#viewAnchor").load(
+//					extension.viewHtmlUrl,
+//					function(response, status, xhr) {
+//						if (status == "error") {
+//							var msg = "Error loading ";
+//							$("#viewAnchor").append(
+//									msg + xhr.status + " " + xhr.statusText);
+//						} else {
+//							require(extension.viewJavaScriptUrl).initialize(objectId);
+//						}
+//					});
 		};
 	}
 });

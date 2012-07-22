@@ -70,29 +70,43 @@ var extensions = {
 	} ],
 	view : [ {
 		viewId : "modelView",
-		viewHtmlUrl : "../views/modeler/modelView.xhtml",
-		viewJavaScriptUrl : "m_modelerViewLayoutManager"
+		viewHtmlUrl : "../views/modeler/modelView.html",
 	}, {
-		viewId : "modelerView",
-		viewHtmlUrl : "../views/modeler/modeler.xhtml",
-		viewJavaScriptUrl : "m_modelerViewLayoutManager"
+		viewId : "processDefinitionView",
+		viewHtmlUrl : "../views/modeler/processDefinitionView.html",
 	}, {
 		viewId : "roleView",
-		viewHtmlUrl : "../views/modeler/rolePanel.xhtml",
-		viewJavaScriptUrl : "m_roleView"
+		viewHtmlUrl : "../views/modeler/roleView.html",
 	}, {
 		viewId : "organizationView",
-		viewHtmlUrl : "../views/modeler/organizationPanel.xhtml",
-		viewJavaScriptUrl : "m_organizationView"
+		viewHtmlUrl : "../views/modeler/organizationView.html",
 	},
 	{
 		viewId : "dataView",
-		viewHtmlUrl : "../views/modeler/dataPanel.xhtml",
-		viewJavaScriptUrl : "m_dataView"
+		viewHtmlUrl : "../views/modeler/dataView.html",
+	},
+	{
+		viewId : "genericApplicationView",
+		viewHtmlUrl : "../views/modeler/genericApplicationView.html",
+	},
+	{
+		viewId : "webServiceApplicationView",
+		viewHtmlUrl : "../views/modeler/webServiceApplicationView.html",
+	},
+	{
+		viewId : "uiMashupApplicationView",
+		viewHtmlUrl : "../views/modeler/uiMashupApplicationView.html",
+	},
+	{
+		viewId : "camelApplicationView",
+		viewHtmlUrl : "../views/modeler/camelApplicationView.html",
+	},
+	{
+		viewId : "messageTransformationApplicationView",
+		viewHtmlUrl : "../views/modeler/messageTransformationApplicationView.html",
 	},
 	{
 		viewId : "xsdStructuredDataTypeView",
-		viewHtmlUrl : "../views/modeler/xsdStructuredDataTypePanel.xhtml",
-		viewJavaScriptUrl : "m_xsdStructuredDataTypeView"
+		viewHtmlUrl : "../views/modeler/xsdStructuredDataTypeView.html",
 	}  ]
 };

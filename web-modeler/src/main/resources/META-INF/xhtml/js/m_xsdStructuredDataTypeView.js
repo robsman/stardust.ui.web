@@ -6,32 +6,16 @@ define(
 				"m_model", "m_typeDeclaration" , "m_propertiesTree"],
 		function(m_utils, m_command, m_commandsController, m_dialog, m_model,
 				m_typeDeclaration, m_propertiesTree) {
-			var view;
-			var typeDeclarations = m_typeDeclaration.getTestTypeDeclarations();
-
 			return {
-				initialize : function() {
-					var modelId = jQuery.url.setUrl(window.location.search)
-							.param("modelId");
-					var structuredDataTypeId = jQuery.url.setUrl(
-							window.location.search).param(
-							"structuredDataTypeId");
-
-					m_utils.debug("modelId = " + modelId);
-					m_utils.debug("structuredDataTypeId = "
-							+ structuredDataTypeId);
-
-					var model = m_model.findModel(modelId);
-					var structuredDataType = model.structuredDataTypes[structuredDataTypeId];
-
-					view = new XsdStructuredDataTypeView();
+				initialize : function(fullId) {
+					var view = new XsdStructuredDataTypeView();
 
 					// TODO Unregister!
 					// In Initializer?
 
 					m_commandsController.registerCommandHandler(view);
 
-					view.initialize(structuredDataType);
+					view.initialize(m_model.findDataStructure(fullId));
 					view.initializeForManualDefinition();
 				}
 			};

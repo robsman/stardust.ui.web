@@ -504,6 +504,8 @@ define(
 												.get_text();
 										var modelId = data.rslt.obj
 												.attr("modelId");
+										var fullId = data.rslt.obj
+										.attr("fullId");
 
 										viewManager.openView(
 												"organizationView",
@@ -511,8 +513,9 @@ define(
 														+ organizationId
 														+ "&modelId=" + modelId
 														+ "&organizationName="
-														+ organizationName,
-												organizationId);
+														+ organizationName + "&fullId="
+														+ fullId,
+												fullId);
 									} else if (data.rslt.obj.attr('rel') == 'primitive'
 											|| data.rslt.obj.attr('rel') == 'serializable'
 											|| data.rslt.obj.attr('rel') == 'entity'
@@ -524,42 +527,53 @@ define(
 										var dataName = data.inst.get_text();
 										var modelId = data.rslt.obj
 												.attr("modelId");
+										var fullId = data.rslt.obj
+										.attr("fullId");
 
 										viewManager.openView("dataView",
 												"dataId=" + dataId
 														+ "&modelId=" + modelId
 														+ "&dataName="
-														+ dataName, dataId);
+														+ dataName + "&fullId="
+														+ fullId, fullId);
 									} else if (data.rslt.obj.attr('rel') == 'process') {
 										var processId = data.rslt.obj
 												.attr('id');
 										var processName = data.inst.get_text();
 										var modelId = data.inst._get_parent(
 												data.rslt.obj).attr('id');
+										var fullId = data.rslt.obj
+										.attr("fullId");
 
-										viewManager.openView("modelerView",
+										viewManager.openView("processDefinitionView",
 												"processId=" + processId
 														+ "&modelId=" + modelId
 														+ "&processName="
-														+ processName,
-												processId);
+														+ processName + "&fullId="
+														+ fullId,
+												fullId);
 									} else if (data.rslt.obj.attr('rel') == "webservice") {
 										var applicationId = data.rslt.obj
 												.attr('id');
 										var modelId = data.rslt.obj
 												.attr("modelId");
+										var fullId = data.rslt.obj
+										.attr("fullId");
 
 										viewManager.openView(
 												"webServiceApplicationView",
 												"modelId=" + modelId
 														+ "&applicationId="
-														+ applicationId,
-												applicationId);
+														+ applicationId + "&fullId="
+														+ fullId,
+												fullId);
 									} else if (data.rslt.obj.attr('rel') == "messageTransformationBean") {
 										var applicationId = data.rslt.obj
 												.attr('id');
 										var modelId = data.rslt.obj
 												.attr("modelId");
+										var fullId = data.rslt.obj
+										.attr("fullId");
 
 										viewManager
 												.openView(
@@ -567,37 +581,46 @@ define(
 														"modelId="
 																+ modelId
 																+ "&applicationId="
-																+ applicationId,
-														applicationId);
+																+ applicationId + "&fullId="
+																+ fullId,
+														fullId);
 									} else if (data.rslt.obj.attr('rel') == "camelBean") {
 										var applicationId = data.rslt.obj
 												.attr('id');
 										var modelId = data.rslt.obj
 												.attr("modelId");
+										var fullId = data.rslt.obj
+										.attr("fullId");
 
 										viewManager.openView(
 												"camelApplicationView",
 												"modelId=" + modelId
 														+ "&applicationId="
-														+ applicationId,
-												applicationId);
+														+ applicationId + "&fullId="
+														+ fullId,
+												fullId);
 									} else if (data.rslt.obj.attr('rel') == "interactive") {
 										var applicationId = data.rslt.obj
 												.attr('id');
 										var modelId = data.rslt.obj
 												.attr("modelId");
+										var fullId = data.rslt.obj
+										.attr("fullId");
 
 										viewManager.openView(
 												"uiMashupApplicationView",
 												"modelId=" + modelId
 														+ "&applicationId="
-														+ applicationId,
-												applicationId);
+														+ applicationId + "&fullId="
+														+ fullId,
+												fullId);
 									} else if (data.rslt.obj.attr('rel') == "structuredDataType") {
 										var structuredDataTypeId = data.rslt.obj
 												.attr('id');
 										var modelId = data.rslt.obj
 												.attr("modelId");
+										var fullId = data.rslt.obj
+										.attr("fullId");
 
 										viewManager
 												.openView(
@@ -605,8 +628,9 @@ define(
 														"modelId="
 																+ modelId
 																+ "&structuredDataTypeId="
-																+ structuredDataTypeId,
-														structuredDataTypeId);
+																+ structuredDataTypeId + "&fullId="
+																+ fullId,
+														fullId);
 									}
 
 									jQuery("a")

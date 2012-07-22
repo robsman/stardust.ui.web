@@ -13,24 +13,15 @@ define(
 				"m_model", "m_typeDeclaration" ],
 		function(m_utils, m_command, m_commandsController, m_dialog, m_view, m_model,
 				m_typeDeclaration) {
-			var view;
-
 			return {
-				initialize : function() {
-					var modelId = jQuery.url.setUrl(window.location.search)
-							.param("modelId");
-					var applicationId = jQuery.url.setUrl(
-							window.location.search).param("applicationId");
-					var model = m_model.findModel(modelId);
-					var application = model.applications[applicationId];
-
-					view = new CamelApplicationView();
+				initialize : function(fullId) {
+					var view = new CamelApplicationView();
 					// TODO Unregister!
 					// In Initializer?
 
 					m_commandsController.registerCommandHandler(view);
 
-					view.initialize(application);
+					view.initialize(m_model.findApplication(fullId));
 				}
 			};
 

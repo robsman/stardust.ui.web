@@ -6,7 +6,12 @@ require([ "m_jqueryConflictResolver", "m_logger", "extensions_raphael",
 		"jquery-impromptu.3.1.min", "download.jQuery", "jquery.form",
 		"jquery.simplemodal.1.4.1.min", "jquery.url", "jquery.print",
 		"jquery.treeTable", "jquery.tablescroll", "jquery.jeditable",
-		"extensions_jquery", "m_utils", "extensions", "m_extensionManager",
+		"extensions_jquery", 
+		
+		 "json2",
+		 "raphael",
+
+		"m_utils", "extensions", "m_extensionManager",
 		"m_communicationController", "m_canvasManager", "m_toolbarManager",
 		"m_modelerViewLayoutManager", "m_urlUtils", "m_constants", "m_user",
 		"m_command", "m_commandsController", "m_accessPoint",

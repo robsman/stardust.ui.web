@@ -6,14 +6,14 @@
 
 define(["m_utils"], function(m_utils){
 	return {
-		init: function(frame, divId, cWidth, cHeight, bImage){
-			//Raphael.setWindow(frame);
+		initialize: function(divId, cWidth, cHeight, bImage){
 			canvas = Raphael(divId, cWidth, cHeight);
 			canvasWidth = cWidth;
 			canvasHeight = cHeight;
 			bgImage = bImage;
 		},
 		
+		// TODO Stille needed?
 		setWindow : function (frame) {
 			Raphael.setWindow(frame);
 		},

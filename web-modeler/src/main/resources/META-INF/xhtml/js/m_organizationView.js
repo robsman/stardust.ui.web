@@ -16,13 +16,8 @@ define(
 			var view;
 
 			return {
-				initialize : function() {
-					var modelId = jQuery.url.setUrl(window.location.search)
-							.param("modelId");
-					var applicationId = jQuery.url.setUrl(
-							window.location.search).param("applicationId");
-					var model = m_model.findModel(modelId);
-					var application = model.applications[applicationId];
+				initialize : function(fullId) {
+					var organization = m_model.findParticipant(fullId);
 
 					view = new OrganizationView();
 					// TODO Unregister!
@@ -30,7 +25,7 @@ define(
 
 					m_commandsController.registerCommandHandler(view);
 
-					view.initialize(application);
+					view.initialize(organization);
 				}
 			};
 
@@ -46,11 +41,6 @@ define(
 				m_utils.inheritMethods(OrganizationView.prototype, view);
 
 				this.nameInput = jQuery("#nameInput");
-				this.camelContextInput = jQuery("#camelContextInput");
-				this.routeTextarea = jQuery("#routeTextarea");
-				this.additionalBeanSpecificationTextarea = jQuery("#additionalBeanSpecificationTextarea");
-				this.requestDataInput = jQuery("#requestDataInput");
-				this.responseDataInput = jQuery("#responseDataInput");
 
 				this.nameInput.change({
 					"view" : this
@@ -67,99 +57,30 @@ define(
 						});
 					}
 				});
-				this.camelContextInput
-						.change(
-								{
-									"view" : this
-								},
-								function(event) {
-									var view = event.data.view;
-
-									if (!view.validate()) {
-										return;
-									}
-
-									if (view.application.attributes["carnot:engine:camel::camelContextId"] !=
-											 view.nameInput.val()) {
-										view
-												.submitChanges({
-													attributes : {
-														"carnot:engine:camel::camelContextId" : view.camelContextInput
-																.val()
-													}
-												});
-									}
-								});
-				this.routeTextarea
-						.change(
-								{
-									"view" : this
-								},
-								function(event) {
-									var view = event.data.view;
-
-									if (!view.validate()) {
-										return;
-									}
-
-									if (view.application.attributes["carnot:engine:camel::routeEntries"] !=
-											 view.routeTextarea.val()) {
-										view
-												.submitChanges({
-													attributes : {
-														"carnot:engine:camel::routeEntries" : view.routeTextarea
-																.val()
-													}
-												});
-									}
-								});
-				this.additionalBeanSpecificationTextarea
-						.change(
-								{
-									"view" : this
-								},
-								function(event) {
-									var view = event.data.view;
-
-									if (!view.validate()) {
-										return;
-									}
-
-									if (view.application.attributes["carnot:engine:camel::additionalSpringBeanDefinitions"] != view.additionalBeanSpecificationTextarea
-											.val()) {
-										view
-												.submitChanges({
-													attributes : {
-														"carnot:engine:camel::additionalSpringBeanDefinitions" : view.additionalBeanSpecificationTextarea
-																.val()
-													}
-												});
-									}
-								});
 
 				/**
 				 * 
 				 */
 				OrganizationView.prototype.initialize = function(
-						application) {
-					this.application = application;
+						organization) {
+					this.organization = organization;
 
-					this.nameInput.val(this.application.name);
+					this.nameInput.val(this.organization.name);
 
-					if (this.application.attributes == null) {
-						this.application.attributes = {};
+					if (this.organization.attributes == null) {
+						this.organization.attributes = {};
 					}
 
-					if (this.application.attributes["carnot:engine:camel::camelContextId"] == null) {
-						this.application.attributes["carnot:engine:camel::camelContextId"] = "Default";
+					if (this.organization.attributes["carnot:engine:camel::camelContextId"] == null) {
+						this.organization.attributes["carnot:engine:camel::camelContextId"] = "Default";
 					}
 
 					this.camelContextInput
-							.val(this.application.attributes["carnot:engine:camel::camelContextId"]);
+							.val(this.organization.attributes["carnot:engine:camel::camelContextId"]);
 					this.routeTextarea
-							.val(this.application.attributes["carnot:engine:camel::routeEntries"]);
+							.val(this.organization.attributes["carnot:engine:camel::routeEntries"]);
 					this.additionalBeanSpecificationTextarea
-							.val(this.application.attributes["carnot:engine:camel::additionalSpringBeanDefinitions"]);
+							.val(this.organization.attributes["carnot:engine:camel::additionalSpringBeanDefinitions"]);
 				};
 
 				/**
@@ -185,13 +106,6 @@ define(
 						this.nameInput.addClass("error");
 					}
 
-					if (this.camelContextInput.val() == null
-							|| this.camelContextInput.val() == "") {
-						this.errorMessages
-								.push("Camel Context must not be empty.");
-						this.nameInput.addClass("error");
-					}
-
 					if (this.errorMessages.length > 0) {
 						this.showErrorMessages();
 
@@ -211,12 +125,10 @@ define(
 						changes.attributes = {};
 					}
 
-					changes.attributes["carnot:engine:camel::producerMethodName"] = "executeMessage(java.lang.Object)";
-
 					m_commandsController.submitCommand(m_command
 							.createUpdateModelElementCommand(
-									this.application.model.id,
-									this.application.oid, changes));
+									this.organization.model.id,
+									this.organization.oid, changes));
 				};
 
 				/**
@@ -224,9 +136,6 @@ define(
 				 */
 				OrganizationView.prototype.processCommand = function(
 						command) {
-					m_utils.debug("===> Camel Process Command");
-					m_utils.debug(command);
-
 					// Parse the response JSON from command pattern
 
 					var object = ("string" == typeof (command)) ? jQuery
@@ -235,11 +144,11 @@ define(
 					if (null != object && null != object.changes
 							&& null != object.changes.modified
 							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].oid == this.application.oid) {
+							&& object.changes.modified[0].oid == this.organization.oid) {
 
-						m_utils.inheritFields(this.application, object.changes.modified[0]);
+						m_utils.inheritFields(this.organization, object.changes.modified[0]);
 						
-						this.initialize(this.application);
+						this.initialize(this.organization);
 					}
 				};
 			}

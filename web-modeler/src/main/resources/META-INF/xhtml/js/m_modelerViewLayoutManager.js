@@ -108,9 +108,9 @@ define(
 			}
 
 			return {
-				init : function(modeler_frame) {
+				initialize : function(fullId) {
 					initialize();
-					m_modelerCanvasController.init(modeler_frame, 'canvas',
+					m_modelerCanvasController.initialize(fullId, "canvas",
 							5000, 1000, 'toolbar');
 					m_propertiesPanel
 					.initializeProcessPropertiesPanel(m_processPropertiesPanel

@@ -11,29 +11,20 @@
 define(
 		[ "m_utils", "m_constants", "m_command", "m_commandsController",
 				"m_model", "m_typeDeclaration", "m_accessPoint",
-				"m_dataTraversal", "m_dialog" ],
+				"m_dataTraversal", "m_dialog", "m_view" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
 				m_model, m_typeDeclaration, m_accessPoint, m_dataTraversal,
-				m_dialog) {
-			var view;
-
+				m_dialog, m_view) {
 			return {
-				initialize : function() {
-					var modelId = jQuery.url.setUrl(window.location.search)
-							.param("modelId");
-					var applicationId = jQuery.url.setUrl(
-							window.location.search).param("applicationId");
-					var model = m_model.findModel(modelId);
-					var application = model.applications[applicationId];
-
-					view = new MessageTransformationApplicationView();
+				initialize : function(fullId) {
+					var view = new MessageTransformationApplicationView();
 
 					// TODO Unregister!
 					// In Initializer?
 
 					m_commandsController.registerCommandHandler(view);
 
-					view.initialize(application);
+					view.initialize(m_model.findApplication(fullId));
 				}
 			};
 
@@ -46,7 +37,7 @@ define(
 				var view = m_view.create();
 
 				m_utils.inheritFields(this, view);
-				m_utils.inheritMethods(CamelApplicationView.prototype, view);
+				m_utils.inheritMethods(MessageTransformationApplicationView.prototype, view);
 
 				this.inputData = {};
 				this.outputData = {};

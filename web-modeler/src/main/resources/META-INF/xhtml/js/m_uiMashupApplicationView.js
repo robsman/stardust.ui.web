@@ -17,41 +17,39 @@ define(
 
 			return {
 				initialize : function(fullId) {
-					var data = m_model.findData(fullId);
-
-					view = new DataView();
+					view = new UiMashupApplicationView();
 					// TODO Unregister!
 					// In Initializer?
 
 					m_commandsController.registerCommandHandler(view);
 
-					view.initialize(data);
+					view.initialize(m_model.findApplication(fullId));
 				}
 			};
 
 			/**
 			 * 
 			 */
-			function DataView() {
+			function UiMashupApplicationView() {
 				// Inheritance
 
 				var view = m_view.create();
 
 				m_utils.inheritFields(this, view);
-				m_utils.inheritMethods(DataView.prototype, view);
+				m_utils.inheritMethods(UiMashupApplicationView.prototype, view);
 
 				this.nameInput = jQuery("#nameInput");
 
 				this.nameInput.change({
 					"view" : this
 				}, function(event) {
-					var view = event.data.view;
+					var view = event.application.view;
 
 					if (!view.validate()) {
 						return;
 					}
 
-					if (view.data.name != view.nameInput.val()) {
+					if (view.application.name != view.nameInput.val()) {
 						view.submitChanges({
 							name : view.nameInput.val()
 						});
@@ -61,28 +59,28 @@ define(
 				/**
 				 * 
 				 */
-				DataView.prototype.initialize = function(
-						data) {
-					this.data = data;
+				UiMashupApplicationView.prototype.initialize = function(
+						application) {
+					this.application = application;
 
-					this.nameInput.val(this.data.name);
+					this.nameInput.val(this.application.name);
 
-					if (this.data.attributes == null) {
-						this.data.attributes = {};
+					if (this.application.attributes == null) {
+						this.application.attributes = {};
 					}
 				};
 
 				/**
 				 * 
 				 */
-				DataView.prototype.toString = function() {
-					return "Lightdust.DataView";
+				UiMashupApplicationView.prototype.toString = function() {
+					return "Lightdust.UiMashupApplicationView";
 				};
 
 				/**
 				 * 
 				 */
-				DataView.prototype.validate = function() {
+				UiMashupApplicationView.prototype.validate = function() {
 					this.clearErrorMessages();
 
 					this.nameInput.removeClass("error");
@@ -107,7 +105,7 @@ define(
 				/**
 				 * 
 				 */
-				DataView.prototype.submitChanges = function(changes) {
+				UiMashupApplicationView.prototype.submitChanges = function(changes) {
 					// Generic attributes
 
 					if (changes.attributes == null) {
@@ -116,14 +114,14 @@ define(
 
 					m_commandsController.submitCommand(m_command
 							.createUpdateModelElementCommand(
-									this.data.model.id,
-									this.data.oid, changes));
+									this.application.model.id,
+									this.application.oid, changes));
 				};
 
 				/**
 				 * 
 				 */
-				DataView.prototype.processCommand = function(
+				UiMashupApplicationView.prototype.processCommand = function(
 						command) {
 					// Parse the response JSON from command pattern
 
@@ -133,11 +131,11 @@ define(
 					if (null != object && null != object.changes
 							&& null != object.changes.modified
 							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].oid == this.data.oid) {
+							&& object.changes.modified[0].oid == this.application.oid) {
 
-						m_utils.inheritFields(this.data, object.changes.modified[0]);
+						m_utils.inheritFields(this.application, object.changes.modified[0]);
 						
-						this.initialize(this.data);
+						this.initialize(this.application);
 					}
 				};
 			}

@@ -10,35 +10,34 @@
 
 define(
 		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_view",
-				"m_model", "m_typeDeclaration" ],
-		function(m_utils, m_command, m_commandsController, m_dialog, m_view, m_model,
-				m_typeDeclaration) {
+				"m_model"],
+		function(m_utils, m_command, m_commandsController, m_dialog, m_view, m_model) {
 			var view;
 
 			return {
-				initialize : function(fullId) {
-					var data = m_model.findData(fullId);
+				initialize : function(modelId) {
+					var model = m_model.findModel(modelId);
 
-					view = new DataView();
+					view = new ModelView();
 					// TODO Unregister!
 					// In Initializer?
 
 					m_commandsController.registerCommandHandler(view);
 
-					view.initialize(data);
+					view.initialize(model);
 				}
 			};
 
 			/**
 			 * 
 			 */
-			function DataView() {
+			function ModelView() {
 				// Inheritance
 
 				var view = m_view.create();
 
 				m_utils.inheritFields(this, view);
-				m_utils.inheritMethods(DataView.prototype, view);
+				m_utils.inheritMethods(ModelView.prototype, view);
 
 				this.nameInput = jQuery("#nameInput");
 
@@ -51,7 +50,7 @@ define(
 						return;
 					}
 
-					if (view.data.name != view.nameInput.val()) {
+					if (view.model.name != view.nameInput.val()) {
 						view.submitChanges({
 							name : view.nameInput.val()
 						});
@@ -61,28 +60,28 @@ define(
 				/**
 				 * 
 				 */
-				DataView.prototype.initialize = function(
-						data) {
-					this.data = data;
+				ModelView.prototype.initialize = function(
+						model) {
+					this.model = model;
 
-					this.nameInput.val(this.data.name);
+					this.nameInput.val(this.model.name);
 
-					if (this.data.attributes == null) {
-						this.data.attributes = {};
+					if (this.model.attributes == null) {
+						this.model.attributes = {};
 					}
 				};
 
 				/**
 				 * 
 				 */
-				DataView.prototype.toString = function() {
-					return "Lightdust.DataView";
+				ModelView.prototype.toString = function() {
+					return "Lightdust.ModelView";
 				};
 
 				/**
 				 * 
 				 */
-				DataView.prototype.validate = function() {
+				ModelView.prototype.validate = function() {
 					this.clearErrorMessages();
 
 					this.nameInput.removeClass("error");
@@ -91,7 +90,7 @@ define(
 					if (this.nameInput.val() == null
 							|| this.nameInput.val() == "") {
 						this.errorMessages
-								.push("Data name must not be empty.");
+								.push("Application name must not be empty.");
 						this.nameInput.addClass("error");
 					}
 
@@ -107,7 +106,7 @@ define(
 				/**
 				 * 
 				 */
-				DataView.prototype.submitChanges = function(changes) {
+				ModelView.prototype.submitChanges = function(changes) {
 					// Generic attributes
 
 					if (changes.attributes == null) {
@@ -116,14 +115,14 @@ define(
 
 					m_commandsController.submitCommand(m_command
 							.createUpdateModelElementCommand(
-									this.data.model.id,
-									this.data.oid, changes));
+									this.model.model.id,
+									this.model.oid, changes));
 				};
 
 				/**
 				 * 
 				 */
-				DataView.prototype.processCommand = function(
+				ModelView.prototype.processCommand = function(
 						command) {
 					// Parse the response JSON from command pattern
 
@@ -133,11 +132,11 @@ define(
 					if (null != object && null != object.changes
 							&& null != object.changes.modified
 							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].oid == this.data.oid) {
+							&& object.changes.modified[0].oid == this.model.oid) {
 
-						m_utils.inheritFields(this.data, object.changes.modified[0]);
+						m_utils.inheritFields(this.model, object.changes.modified[0]);
 						
-						this.initialize(this.data);
+						this.initialize(this.model);
 					}
 				};
 			}

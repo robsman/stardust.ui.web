@@ -371,7 +371,7 @@ define(
 			};
 
 			return {
-				init : function(frame, divId, width, height, toolbarDiv) {
+				initialize : function(fullId, divId, width, height, toolbarDiv) {
 
 					var IE = document.all ? true : false;
 					if (!IE)
@@ -507,7 +507,7 @@ define(
 
 					canvasWidth = width;
 					canvasHeight = height;
-					m_canvasManager.init(frame, divId, width, height);
+					m_canvasManager.initialize(divId, width, height);
 
 					currentImage = m_canvasManager.addImage(
 							"../../images/white_bg.png", width, height);
@@ -519,12 +519,11 @@ define(
 					m_modelerToolbarController.init(toolbarDiv);
 					m_commandsController.init(true, false);
 					setupEventHandling(this);
-					// console.log("window.location.search = ",
-					// window.location.search);
-					modelId = jQuery.url.setUrl(window.location.search).param(
-							"modelId");
-					processId = jQuery.url.setUrl(window.location.search)
-							.param("processId");
+
+					var process = m_model.findProcess(fullId);
+					
+					modelId = process.model.id;
+					processId = process.id;
 					jQuery("#saveModelForm").attr('action',
 							getEndpointUrl() + "/models/" + modelId);
 					// toolActions.loadToolAction();
