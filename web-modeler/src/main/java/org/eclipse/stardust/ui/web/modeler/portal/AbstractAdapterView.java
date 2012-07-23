@@ -81,7 +81,7 @@ public class AbstractAdapterView implements ViewEventHandler {
 						facesContext);
 			}
 
-			PortalApplication.getInstance().addEventScript("InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + iframeId + "', '" + pagePath + event.getView().getParams() + "', {anchorId:'" + anchorId + "', width:1000, height:800, maxWidth:1000, maxHeight:1000, anchorYAdjustment:10, zIndex:200});");
+			PortalApplication.getInstance().addEventScript("InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + iframeId + "', '" + pagePath + event.getView().getParams() + "', {anchorId:'" + anchorId + "', anchorYAdjustment:10, zIndex:200});");
 
 			break;
 
