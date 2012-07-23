@@ -11,10 +11,10 @@
 define(
 		[ "m_utils", "m_constants", "m_messageDisplay", "m_canvasManager",
 				"m_diagram", "m_drawable", "m_commandsController", "m_command",
-				"m_propertiesPanel" ],
+				"m_propertiesPanel", "m_modelerUtils" ],
 		function(m_utils, m_constants, m_messageDisplay, m_canvasManager,
 				m_diagram, m_drawable, m_commandsController, m_command,
-				m_propertiesPanel) {
+				m_propertiesPanel, m_modelerUtils) {
 
 			return {
 				createSymbol : function() {
@@ -303,6 +303,10 @@ define(
 				 *
 				 */
 				Symbol.prototype.getClosestAnchorPoint = function(x, y) {
+					var scrollPos = m_modelerUtils.getModelerScrollPosition();
+					x += scrollPos.left;
+					y += scrollPos.top;
+
 					var distance = this.width + this.height;
 					var resultAnchorPoint = null;
 
