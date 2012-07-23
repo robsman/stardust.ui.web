@@ -18,14 +18,12 @@ var extensions = {
 		panelId : "processPropertiesPanel",
 		pageId : "displayPropertiesPage",
 		pageJavaScriptUrl : "m_processDisplayPropertiesPage"
-	}, 
-	{
+	}, {
 		panelId : "processPropertiesPanel",
 		pageId : "testPropertiesPage",
 		pageHtmlUrl : "../../public/processTestPropertiesPage.html",
 		pageJavaScriptUrl : "m_processTestPropertiesPage"
-	},
-	{
+	}, {
 		panelId : "activityPropertiesPanel",
 		pageId : "basicPropertiesPage",
 		pageJavaScriptUrl : "m_activityBasicPropertiesPage"
@@ -35,8 +33,13 @@ var extensions = {
 		pageJavaScriptUrl : "m_activityProcessingPropertiesPage"
 	}, {
 		panelId : "activityPropertiesPanel",
-		pageId : "costPropertiesPage",
-		pageJavaScriptUrl : "m_activityCostPropertiesPage"
+		pageId : "controllingPropertiesPage",
+		pageHtmlUrl : "activityControllingPropertiesPage.html",
+		pageJavaScriptUrl : "m_activityControllingPropertiesPage"
+	}, {
+		panelId : "activityPropertiesPanel",
+		pageId : "qualityControlPropertiesPage",
+		pageJavaScriptUrl : "m_activityQualityControlPropertiesPage"
 	}, {
 		panelId : "eventPropertiesPanel",
 		pageId : "basicPropertiesPage",

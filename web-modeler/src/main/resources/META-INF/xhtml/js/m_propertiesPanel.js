@@ -85,8 +85,7 @@ define(
 						if (propertiesPages[n].pageHtmlUrl != null) {
 							jQuery("#" + this.id + "Table").append(
 									"<tr><td><div id=\""
-											+ propertiesPages[n].pageId + "\" class=\"propertiesPage\">"
-											+ "Test</div></td></tr>");
+											+ propertiesPages[n].pageId + "\" class=\"propertiesPage\"></div></td></tr>");
 
 							var panel = this;
 							var extension = propertiesPages[n];
@@ -96,14 +95,15 @@ define(
 											extension.pageHtmlUrl,
 											function(response, status, xhr) {
 												if (status == "error") {
-													var msg = "Error: ";
+													var msg = "Error: "
+													+ xhr.status
+													+ " "
+													+ xhr.statusText;
+													
 													jQuery("#" + panel.id + " #"
 																	+ extension.pageId)
-															.append(
-																	msg
-																			+ xhr.status
-																			+ " "
-																			+ xhr.statusText);
+															.append(msg);
+													m_utils.debug(msg);
 												} else {
 													panel.propertiesPages.push(require(
 															extension.pageJavaScriptUrl)

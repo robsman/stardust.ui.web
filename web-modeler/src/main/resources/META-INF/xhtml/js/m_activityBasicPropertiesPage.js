@@ -14,7 +14,7 @@ define(
 		function(m_utils, m_constants, m_command, m_commandsController,
 				m_propertiesPage, m_activity) {
 			return {
-				create: function(propertiesPanel) {
+				create : function(propertiesPanel) {
 					return new ActivityBasicPropertiesPage(propertiesPanel);
 				}
 			};
@@ -23,7 +23,8 @@ define(
 				// Inheritance
 
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						propertiesPanel, "basicPropertiesPage", "Basic", "../../images/icons/basic-properties-page.png");
+						propertiesPanel, "basicPropertiesPage", "Basic",
+						"../../images/icons/basic-properties-page.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(ActivityBasicPropertiesPage.prototype,
@@ -223,39 +224,60 @@ define(
 				/**
 				 * 
 				 */
-				ActivityBasicPropertiesPage.prototype.setApplicationType = function() {
+				ActivityBasicPropertiesPage.prototype.setApplicationType = function(
+						applicationFullId) {
+					this.propertiesPanel.showHelpPanel();
 					this.subprocessInput.attr("checked", false);
 					this.subprocessList.attr("disabled", true);
 					this.subprocessList.val(m_constants.TO_BE_DEFINED);
 					this.applicationInput.attr("checked", true);
 					this.applicationList.removeAttr("disabled");
-					this.propertiesPanel.showHelpPanel();
-					this
-							.submitChanges({
-								modelElement : {
-									activityType : m_constants.APPLICATION_ACTIVITY_TYPE,
-									applicationFullId : null
-								}
-							});
+
+					if (applicationFullId != null) {
+						this.applicationList.val(applicationFullId);
+					}
+
+					if (this.propertiesPanel.element.modelElement.applicationFullId != this.applicationList.val())
+					{
+						this
+								.submitChanges({
+									modelElement : {
+										activityType : this.applicationList.val() == m_constants.AUTO_GENERATED_UI ? m_constants.MANUAL_ACTIVITY_TYPE : m_constants.APPLICATION_ACTIVITY_TYPE,
+										applicationFullId : this.applicationList.val() == m_constants.AUTO_GENERATED_UI ? null: this.applicationList
+												.val()
+									}
+								});
+					}
 				};
 
 				/**
 				 * 
 				 */
-				ActivityBasicPropertiesPage.prototype.setSubprocessType = function() {
+				ActivityBasicPropertiesPage.prototype.setSubprocessType = function(
+						subprocessFullId) {
+					this.propertiesPanel.showHelpPanel();
 					this.subprocessInput.attr("checked", true);
 					this.subprocessList.removeAttr("disabled");
+
+					if (subprocessFullId != null) {
+						this.subprocessList.val(subprocessFullId);
+					}
+
 					this.applicationInput.attr("checked", false);
 					this.applicationList.attr("disabled", true);
 					this.applicationList.val(m_constants.TO_BE_DEFINED);
-					this.propertiesPanel.showHelpPanel();
-					this
-							.submitChanges({
-								modelElement : {
-									activityType : m_constants.SUBPROCESS_ACTIVITY_TYPE,
-									subprocessFullId : null
-								}
-							});
+
+					if (this.propertiesPanel.element.modelElement.subprocessFullId != this.subprocessList
+							.val()) {
+						this
+								.submitChanges({
+									modelElement : {
+										activityType : m_constants.SUBPROCESS_ACTIVITY_TYPE,
+										subprocessFullId : this.subprocessList
+												.val()
+									}
+								});
+					}
 				};
 
 				/**
@@ -272,8 +294,8 @@ define(
 					this.loadDocumentUrl();
 
 					if (this.propertiesPanel.element.modelElement.activityType == m_constants.MANUAL_ACTIVITY_TYPE) {
-						this.setApplicationType();
-						this.applicationList.val(m_constants.AUTO_GENERATED_UI);
+						this.setApplicationType(m_constants.AUTO_GENERATED_UI);
+
 						if (this.propertiesPanel.participant != null) {
 							this.participantOutput.append("executed by <b>"
 									+ this.propertiesPanel.participant.name
@@ -283,13 +305,10 @@ define(
 									.append("executed by a participant to be defined.</b>");
 						}
 					} else if (this.propertiesPanel.element.modelElement.activityType == m_constants.SUBPROCESS_ACTIVITY_TYPE) {
-						this.setSubprocessType();
-						this.subprocessList
-								.val(this.propertiesPanel.element.modelElement.subprocessFullId);
+						this.setSubprocessType(this.propertiesPanel.element.modelElement.subprocessFullId);
 					} else if (this.propertiesPanel.element.modelElement.activityType == m_constants.APPLICATION_ACTIVITY_TYPE) {
-						this.setApplicationType();
-						this.applicationList
-								.val(this.propertiesPanel.element.modelElement.applicationFullId);
+						this.setApplicationType(this.propertiesPanel.element.modelElement.applicationFullId);
+
 						if (this.propertiesPanel.participant != null) {
 							this.participantOutput.append("executed by <b>"
 									+ this.propertiesPanel.participant.name

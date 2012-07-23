@@ -7,20 +7,22 @@ define(
 		function(m_utils, m_constants, m_propertiesPage) {
 			return {
 				create: function(propertiesPanel) {
-					return new ActivityCostPropertiesPage(propertiesPanel);
+					return new ActivityControllingPropertiesPage(propertiesPanel);
 				}
 			};
 
-			function ActivityCostPropertiesPage(newPropertiesPanel, newId,
-					newTitle) {
+			/**
+			 * 
+			 */
+			function ActivityControllingPropertiesPage(propertiesPanel) {
 
 				// Inheritance
 
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						newPropertiesPanel, "costPropertiesPage", "Cost");
+						propertiesPanel, "controllingPropertiesPage", "Controlling",  "../../images/icons/controlling-properties-page.png");
 
 				m_utils.inheritFields(this, propertiesPage);
-				m_utils.inheritMethods(ActivityCostPropertiesPage.prototype,
+				m_utils.inheritMethods(ActivityControllingPropertiesPage.prototype,
 						propertiesPage);
 
 				// Field initialization
@@ -32,7 +34,7 @@ define(
 				/**
 				 * 
 				 */
-				ActivityCostPropertiesPage.prototype.setElement = function() {
+				ActivityControllingPropertiesPage.prototype.setElement = function() {
 					if (this.propertiesPanel.element.properties.cost == null)
 					{
 					this.propertiesPanel.element.properties.cost = {};
@@ -40,14 +42,6 @@ define(
 
 					this.targetCostPerExecutionInput
 							.val(this.propertiesPanel.element.properties.cost.targetCostPerExecution);
-				};
-
-				/**
-				 * 
-				 */
-				ActivityCostPropertiesPage.prototype.apply = function() {
-					this.propertiesPanel.element.properties.cost.targetCostPerExecution = this.targetCostPerExecutionInput
-							.val();
 				};
 			}
 		});
