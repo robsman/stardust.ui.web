@@ -72,44 +72,51 @@ public class EventCommandHandler implements ICommandHandler
          ProcessDefinitionType processDefinition, JsonObject request)
    {
 
-      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-
-      if (START_EVENT.equals(extractString(request,
-            ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY)))
+      synchronized (model)
       {
-         StartEventSymbol startEventSymbol = AbstractElementBuilder.F_CWM.createStartEventSymbol();
-         startEventSymbol.setElementOid(++maxOid);
+         long maxOid = XpdlModelUtils.getMaxUsedOid(model);
 
-         startEventSymbol.setXPos(extractInt(request, X_PROPERTY)
-               - parentLaneSymbol.getXPos());
-         startEventSymbol.setYPos(extractInt(request, Y_PROPERTY)
-               - parentLaneSymbol.getYPos());
-         startEventSymbol.setWidth(extractInt(request, WIDTH_PROPERTY));
-         startEventSymbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
+         if (START_EVENT.equals(extractString(request,
+               ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY)))
+         {
+            StartEventSymbol startEventSymbol = AbstractElementBuilder.F_CWM.createStartEventSymbol();
+            startEventSymbol.setElementOid(++maxOid);
+            // TODO - Pass correct x,y co-ordinates rather than adjustment at server
+            startEventSymbol.setXPos(extractInt(request, X_PROPERTY)
+                  - parentLaneSymbol.getXPos() - ModelerConstants.POOL_LANE_MARGIN);
+            startEventSymbol.setYPos(extractInt(request, Y_PROPERTY)
+                  - parentLaneSymbol.getYPos() - ModelerConstants.POOL_LANE_MARGIN
+                  - ModelerConstants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
+            startEventSymbol.setWidth(extractInt(request, WIDTH_PROPERTY));
+            startEventSymbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
 
-         // TODO evaluate other properties
+            // TODO evaluate other properties
 
-         processDefinition.getDiagram()
-               .get(0)
-               .getStartEventSymbols()
-               .add(startEventSymbol);
-         parentLaneSymbol.getStartEventSymbols().add(startEventSymbol);
-      }
-      else
-      {
-         EndEventSymbol endEventSymbol = AbstractElementBuilder.F_CWM.createEndEventSymbol();
-         endEventSymbol.setElementOid(++maxOid);
+            processDefinition.getDiagram()
+                  .get(0)
+                  .getStartEventSymbols()
+                  .add(startEventSymbol);
+            parentLaneSymbol.getStartEventSymbols().add(startEventSymbol);
+         }
+         else
+         {
+            EndEventSymbol endEventSymbol = AbstractElementBuilder.F_CWM.createEndEventSymbol();
+            endEventSymbol.setElementOid(++maxOid);
 
-         endEventSymbol.setXPos(extractInt(request, X_PROPERTY)
-               - parentLaneSymbol.getXPos());
-         endEventSymbol.setYPos(extractInt(request, Y_PROPERTY)
-               - parentLaneSymbol.getYPos());
-         endEventSymbol.setWidth(extractInt(request, WIDTH_PROPERTY));
-         endEventSymbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
+            endEventSymbol.setXPos(extractInt(request, X_PROPERTY)
+                  - parentLaneSymbol.getXPos());
+            endEventSymbol.setYPos(extractInt(request, Y_PROPERTY)
+                  - parentLaneSymbol.getYPos());
+            endEventSymbol.setWidth(extractInt(request, WIDTH_PROPERTY));
+            endEventSymbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
 
-         processDefinition.getDiagram().get(0).getEndEventSymbols().add(endEventSymbol);
+            processDefinition.getDiagram()
+                  .get(0)
+                  .getEndEventSymbols()
+                  .add(endEventSymbol);
 
-         parentLaneSymbol.getEndEventSymbols().add(endEventSymbol);
+            parentLaneSymbol.getEndEventSymbols().add(endEventSymbol);
+         }
       }
    }
 
@@ -117,26 +124,29 @@ public class EventCommandHandler implements ICommandHandler
          ProcessDefinitionType processDefinition, JsonObject request)
    {
       Long eventOId = extractLong(request, ModelerConstants.OID_PROPERTY);
-      if (START_EVENT.equals(extractString(request,
-            ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY)))
+      synchronized (model)
       {
-         StartEventSymbol startEventSymbol = MBFacade.findStartEventSymbol(
-               parentLaneSymbol, eventOId);
-         processDefinition.getDiagram()
-               .get(0)
-               .getStartEventSymbols()
-               .remove(startEventSymbol);
-         parentLaneSymbol.getStartEventSymbols().remove(startEventSymbol);
-      }
-      else
-      {
-         EndEventSymbol endEventSymbol = MBFacade.findEndEventSymbol(parentLaneSymbol,
-               eventOId);
-         processDefinition.getDiagram()
-               .get(0)
-               .getEndEventSymbols()
-               .remove(endEventSymbol);
-         parentLaneSymbol.getEndEventSymbols().remove(endEventSymbol);
+         if (START_EVENT.equals(extractString(request,
+               ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY)))
+         {
+            StartEventSymbol startEventSymbol = MBFacade.findStartEventSymbol(
+                  parentLaneSymbol, eventOId);
+            processDefinition.getDiagram()
+                  .get(0)
+                  .getStartEventSymbols()
+                  .remove(startEventSymbol);
+            parentLaneSymbol.getStartEventSymbols().remove(startEventSymbol);
+         }
+         else
+         {
+            EndEventSymbol endEventSymbol = MBFacade.findEndEventSymbol(parentLaneSymbol,
+                  eventOId);
+            processDefinition.getDiagram()
+                  .get(0)
+                  .getEndEventSymbols()
+                  .remove(endEventSymbol);
+            parentLaneSymbol.getEndEventSymbols().remove(endEventSymbol);
+         }
       }
    }
 

@@ -87,9 +87,12 @@ public class GatewayCommandHandler implements ICommandHandler
          ActivitySymbolType gatewaySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
 
          gatewaySymbol.setElementOid(++maxOid);
-
-         gatewaySymbol.setXPos(extractInt(request, X_PROPERTY) - parentLaneSymbol.getXPos());
-         gatewaySymbol.setYPos(extractInt(request, Y_PROPERTY) - parentLaneSymbol.getYPos());
+         // TODO - Pass correct x,y co-ordinates rather than adjustment at server
+         gatewaySymbol.setXPos(extractInt(request, X_PROPERTY)
+               - parentLaneSymbol.getXPos() - ModelerConstants.POOL_LANE_MARGIN);
+         gatewaySymbol.setYPos(extractInt(request, Y_PROPERTY)
+               - parentLaneSymbol.getYPos() - ModelerConstants.POOL_LANE_MARGIN
+               - ModelerConstants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
          gatewaySymbol.setActivity(gateway);
 
          gateway.getActivitySymbols().add(gatewaySymbol);
