@@ -7,7 +7,7 @@
 	xmlns:ice="http://www.icesoft.com/icefaces/component"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <head>
-<title>Modeler Canvas</title>
+<title>Web Service Application</title>
 <link rel="stylesheet" type="text/css"
 	href="../../../graphics-common/css/smoothness/jquery-ui-1.8.12.custom.css">
 </link>
@@ -30,92 +30,144 @@
 					<div class="errorMessagesPanel">
 						<ul id="errorMessagesList">
 						</ul>
-					</div>
+					</div></td>
+			</tr>
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+						style="margin-bottom: 10px;">
+						<tr>
+							<td><label for="guidOutput">GUID</label>
+							</td>
+							<td><div id="guidOutput" class="output">168999</div>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="idOutput">ID</label>
+							</td>
+							<td><div id="idOutput" class="output"></div>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="nameInput">Application Name</label>
+							</td>
+							<td><input id="nameInput" type="text"></input>
+							</td>
+						</tr>
+					</table></td>
+			</tr>
+			<tr>
+				<td><label for="descriptionTextarea">Description</label>
+				</td>
+			</tr>
+			<tr>
+				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<table>
+					<div class="heading">Web Service Configuration</div></td>
+			</tr>
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+						style="margin-bottom: 10px;">
 						<tr>
-							<td>
-								<table cellpadding="0" cellspacing="0" class="layoutTable"
-									style="margin-bottom: 10px;">
+							<td><label for="wsdlUrlInput">WSDL URL</label>
+							</td>
+							<td><table>
 									<tr>
-										<td><label for="nameInput">Application Name</label></td>
-										<td><input id="nameInput" type="text"></input></td>
-									</tr>
-									<tr>
-										<td><label for="wsdlUrlInput">WSDL URL</label></td>
-										<td><input id="wsdlUrlInput" type="text"></input></td>
-									</tr>
-									<tr>
-										<td><label for="serviceSelect">Service</label></td>
-										<td><select id="serviceSelect"></select></td>
-									</tr>
-								</table>
-								<table cellpadding="0" cellspacing="0" class="layoutTable"
-									style="margin-bottom: 10px;">
-									<tr>
-										<td>
-											<table cellpadding="0" cellspacing="0" class="layoutTable"
-												style="margin-bottom: 10px;">
-												<tr>
-													<td><label for="portSelect">Port</label></td>
-													<td><select id="portSelect"></select></td>
-												</tr>
-												<tr>
-													<td><label for="styleOutput">Style</label></td>
-													<td><div id="styleOutput" class="output"></div></td>
-												</tr>
-												<tr>
-													<td><label for="protocolOutput">Proctocol</label></td>
-													<td><div id="protocolOutput" class="output"></div></td>
-												</tr>
-												<tr>
-													<td><input id="addressingCheckbox" type="checkbox"></input>
-													</td>
-													<td><label for="addressingCheckbox">Include
-															WS-Addressing EPR</label></td>
-												</tr>
-												<tr>
-													<td><input id="authenticationCheckbox" type="checkbox"></input>
-													</td>
-													<td><label for="authenticationCheckbox">Authentication
-															Required</label></td>
-												</tr>
-											</table></td>
-										<td>
-											<table cellpadding="0" cellspacing="0" class="layoutTable"
-												style="margin-bottom: 10px;">
-												<tr>
-													<td><label for="operationSelect">Operation</label></td>
-													<td><select id="operationSelect"></select></td>
-												</tr>
-												<tr>
-													<td><label for="useOutput">Use</label></td>
-													<td><div id="useOutput" class="output"></div></td>
-												</tr>
-												<tr>
-													<td><label for="implementationSelect">Implementation</label>
-													</td>
-													<td><select id="implementationSelect"></select></td>
-												</tr>
-												<tr>
-													<td><label for="mechanismSelect">Mechanism</label></td>
-													<td><select id="mechanismSelect"></select></td>
-												</tr>
-												<tr>
-													<td><label for="variantSelect">Variant</label></td>
-													<td><select id="variantSelect"></select></td>
-												</tr>
-											</table>
+										<td><input id="wsdlUrlInput" type="text" style="width: 300px;"></input>
+										</td>
+										<td><input id="browseButton" type="button" value="Browse ..."/>
 										</td>
 									</tr>
 								</table>
 							</td>
 						</tr>
+						<tr>
+							<td><label for="serviceSelect">Service</label>
+							</td>
+							<td><select id="serviceSelect"></select>
+							</td>
+						</tr>
 					</table>
-				</td>
+					<table cellpadding="0" cellspacing="0" class="layoutTable"
+						style="margin-bottom: 10px;">
+						<tr>
+							<td>
+								<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+									style="margin-bottom: 10px;">
+									<tr>
+										<td><label for="portSelect">Port</label>
+										</td>
+										<td><select id="portSelect"></select>
+										</td>
+									</tr>
+									<tr>
+										<td><label for="styleOutput">Style</label>
+										</td>
+										<td><div id="styleOutput" class="output"></div>
+										</td>
+									</tr>
+									<tr>
+										<td><label for="protocolOutput">Protocol</label>
+										</td>
+										<td><div id="protocolOutput" class="output"></div>
+										</td>
+									</tr>
+									<tr>
+										<td><input id="addressingCheckbox" type="checkbox"></input>
+										</td>
+										<td><label for="addressingCheckbox">Include
+												WS-Addressing EPR</label>
+										</td>
+									</tr>
+									<tr>
+										<td><input id="authenticationCheckbox" type="checkbox"></input>
+										</td>
+										<td><label for="authenticationCheckbox">Authentication
+												Required</label>
+										</td>
+									</tr>
+								</table>
+							</td>
+							<td>
+								<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+									style="margin-bottom: 10px;">
+									<tr>
+										<td><label for="operationSelect">Operation</label>
+										</td>
+										<td><select id="operationSelect"></select>
+										</td>
+									</tr>
+									<tr>
+										<td><label for="useOutput">Use</label>
+										</td>
+										<td><div id="useOutput" class="output"></div>
+										</td>
+									</tr>
+									<tr>
+										<td><label for="implementationSelect">Implementation</label>
+										</td>
+										<td><select id="implementationSelect"></select>
+										</td>
+									</tr>
+									<tr>
+										<td><label for="mechanismSelect">Mechanism</label>
+										</td>
+										<td><select id="mechanismSelect"></select>
+										</td>
+									</tr>
+									<tr>
+										<td><label for="variantSelect">Variant</label>
+										</td>
+										<td><select id="variantSelect"></select>
+										</td>
+									</tr>
+								</table></td>
+						</tr>
+					</table></td>
 			</tr>
 		</table>
 	</div>

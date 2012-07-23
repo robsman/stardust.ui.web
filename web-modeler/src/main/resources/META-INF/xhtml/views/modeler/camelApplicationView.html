@@ -35,26 +35,50 @@
 			</tr>
 			<tr>
 				<td>
-					<table>
+					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+						style="margin-bottom: 10px;">
 						<tr>
-							<td>
-								<table cellpadding="0" cellspacing="0" class="layoutTable"
-									style="margin-bottom: 10px;">
-									<tr>
-										<td><label for="nameInput">Application Name</label></td>
-										<td><input id="nameInput" type="text"></input></td>
-									</tr>
-									<tr>
-										<td><label for="camelContextInput">Camel Context</label>
-										</td>
-										<td><input id="camelContextInput" type="text"></input></td>
-									</tr>
-									<tr>
-										<td><label for="endpointTypeSelectInput">Endpoint
-												Type</label></td>
-										<td><select id="endpointTypeSelectInput">
-												<option value="genericEndpoint">Generic</option>
-												<!-->option value="fileEndpoint">File Endpoint</option>
+							<td><label for="guidOutput">GUID</label></td>
+							<td><div id="guidOutput" class="output">168999</div></td>
+						</tr>
+						<tr>
+							<td><label for="idOutput">ID</label></td>
+							<td><div id="idOutput" class="output"></div></td>
+						</tr>
+						<tr>
+							<td><label for="nameInput">Application Name</label></td>
+							<td><input id="nameInput" type="text"></input></td>
+						</tr>
+					</table></td>
+			</tr>
+			<tr>
+				<td><label for="descriptionTextarea">Description</label>
+				</td>
+			</tr>
+			<tr>
+				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<div class="heading">Camel Configuration</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+						style="margin-bottom: 10px;">
+						<tr>
+							<td><label for="camelContextInput">Camel Context</label></td>
+							<td><input id="camelContextInput" type="text"></input></td>
+						</tr>
+						<tr>
+							<td><label for="endpointTypeSelectInput">Endpoint
+									Type</label></td>
+							<td><select id="endpointTypeSelectInput">
+									<option value="genericEndpoint">Generic</option>
+									<!-->option value="fileEndpoint">File Endpoint</option>
 												<option value="ftpEndpoint">FTP Endpoint</option>
 												<option value="pop3Endpoint">Mail Endpoint (POP3)</option>
 												<option value="smtpEndpoint">Mail Endpoint (SMTP)</option>
@@ -69,48 +93,45 @@
 													(Hazelcast)</option>
 												<option value="quartzEndpoint">Timer Endpoint
 													(quartz)</option-->
-										</select></td>
-									</tr>
-								</table>
-							</td>
+							</select></td>
 						</tr>
-						<tr>
-							<td><div id="endpointUriPrefix" class="code">&lt;route&gt;</div>
-							</td>
-						</tr>
-						<tr>
-							<td><textarea id="routeTextarea" cols="50" rows="5"
-									class="code">
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td><div id="endpointUriPrefix" class="code">&lt;route&gt;</div>
+				</td>
+			</tr>
+			<tr>
+				<td><textarea id="routeTextarea" cols="50" rows="5"
+						class="code">
 																</textarea>
-							</td>
-						</tr>
-						<tr>
-							<td><div class="code" style="margin-bottom: 10px;">&lt;/route&gt;</div>
-							</td>
-						</tr>
-						<tr>
-							<td><label for="additionalBeanSpecificationTextarea">Additional
-									Bean Specification</label>
-							</td>
-						</tr>
-						<tr>
-							<td><textarea id="additionalBeanSpecificationTextarea"
-									cols="50" rows="5" class="code">
+				</td>
+			</tr>
+			<tr>
+				<td><div class="code" style="margin-bottom: 10px;">&lt;/route&gt;</div>
+				</td>
+			</tr>
+			<tr>
+				<td><label for="additionalBeanSpecificationTextarea">Additional
+						Bean Specification</label>
+				</td>
+			</tr>
+			<tr>
+				<td><textarea id="additionalBeanSpecificationTextarea"
+						cols="50" rows="5" class="code">
 								</textarea>
-							</td>
-						</tr>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table>
 						<tr>
-							<td>
-								<table>
-									<tr>
-										<td><label for="directionInput">Direction</label></td>
-										<td><select id="directionInput">
-												<option value="requestOnly">Request Only</option>
-												<option value="requestResponse">Request/Response</option>
-										</select></td>
-									</tr>
-								</table>
-							</td>
+							<td><label for="directionInput">Direction</label></td>
+							<td><select id="directionInput">
+									<option value="requestOnly">Request Only</option>
+									<option value="requestResponse">Request/Response</option>
+							</select></td>
 						</tr>
 					</table>
 				</td>
