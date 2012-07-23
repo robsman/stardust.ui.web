@@ -22,7 +22,7 @@ var extensions = {
 	{
 		panelId : "processPropertiesPanel",
 		pageId : "testPropertiesPage",
-		pageHtmlUrl : "../../public/processTestPropertiesPage",
+		pageHtmlUrl : "../../public/processTestPropertiesPage.html",
 		pageJavaScriptUrl : "m_processTestPropertiesPage"
 	},
 	{

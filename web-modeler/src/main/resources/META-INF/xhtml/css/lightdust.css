@@ -159,6 +159,7 @@ a:hover {
 }
 
 /* Layout Table */
+
 table.layoutTable {
 	margin: 0px;
 	padding: 0px;
@@ -173,6 +174,25 @@ table.layoutTable tr {
 table.layoutTable td {
 	padding: 0px;
 	margin: 0px;
+	vertical-align: top;
+}
+
+/* Field Set Table */
+
+table.fieldSetTable {
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
+}
+
+table.fieldSetTable tr {
+	padding: 0px;
+	margin: 0px;
+}
+
+table.fieldSetTable td {
+	padding-top: 3px;
+	padding-bottom: 3px;
 	vertical-align: top;
 }
 

@@ -88,24 +88,26 @@ define(
 											+ propertiesPages[n].pageId + "\" class=\"propertiesPage\">"
 											+ "Test</div></td></tr>");
 
-							jQuery("#" + propertiesPages[n].pageId)
+							var panel = this;
+
+							jQuery("#" + this.id + " #" + propertiesPages[n].pageId)
 									.load(
 											propertiesPages[n].pageHtmlUrl,
 											function(response, status, xhr) {
 												if (status == "error") {
-													var msg = "Sorry but there was an error: ";
-													jQuery(
-															"#"
+													var msg = "Error: ";
+													jQuery("#" + panel.id + " #"
 																	+ propertiesPages[n].pageId)
-															.html(
+															.append(
 																	msg
 																			+ xhr.status
 																			+ " "
 																			+ xhr.statusText);
 												} else {
-													this.propertiesPages.push(require(
+													panel.propertiesPages.push(require(
 															propertiesPages[n].pageJavaScriptUrl)
-															.create(this));
+															.create(panel));
+													m_utils.debug("Page loaded");
 												}
 											});
 						} else {

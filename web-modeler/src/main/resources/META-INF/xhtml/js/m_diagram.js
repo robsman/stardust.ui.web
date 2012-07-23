@@ -1639,52 +1639,6 @@ define(
 				Diagram.prototype.findLane = function(id) {
 					return this.poolSymbol.findLane(id);
 				};
-
-				Diagram.prototype.findSymbolByPath = function(path) {
-					// TODO is not implemented!
-					// var steps = path.split("/");
-					//
-					// if (steps[0] != "models") {
-					// m_utils.debug("Path must contain /models element ("
-					// + path + ").");
-					// }
-					//
-					// var model = getModels()[step[1]];
-					//
-					// if (steps.length == 2) {
-					// return model;
-					// }
-					//
-					// if (steps[2] == "processes") {
-					// if (steps.length == 4) {
-					// return model.processes[steps[3]];
-					// }
-					//
-					// if (steps[4] == "activities") {
-					// return model.processes[steps[3]].activities[steps[5]];
-					// }
-					// } else if (steps[2] == "applications") {
-					// if (steps.length < 5) {
-					// m_utils
-					// .debug("Path to application must contain 6 steps ("
-					// + path + ").");
-					// return null;
-					// }
-					//
-					// return model.applications[steps[4]];
-					// } else if (steps[2] == "structuredDataTypes") {
-					// return model.structuredDataTypes[steps[3]];
-					// } else if (steps[2] == "data") {
-					// return model.dataItems[steps[3]];
-					// } else if (steps[2] == "participants") {
-					// return model.participants[steps[3]];
-					// } else {
-					// m_utils.debug("Unsupported model element " + steps[2]
-					// + " in path " + path)
-					// + ".";
-					// }
-				}
-
 			}
 
 			function Diagram_clickClosure(event) {
