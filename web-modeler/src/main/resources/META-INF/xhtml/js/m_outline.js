@@ -1661,10 +1661,11 @@ define(
 				 * 
 				 */
 				Outline.prototype.createModel = function(data) {
-					m_model.createModel(data.id, data.name);
+					var model = m_model.createModel(data.id, data.name);
 					jQuery("#outline").jstree("create", "#Models", "last", {
 						"attr" : {
 							"id" : data.id,
+							"fullId" : model.getFullId(),
 							"rel" : "model"
 						},
 						"data" : data.name
@@ -1730,6 +1731,7 @@ define(
 									"id" : process.id,
 									"modelId" : model.id,
 									"rel" : "process",
+									"fullId" : process.getFullId(),
 									"draggable" : true
 								},
 								"state" : "open",
