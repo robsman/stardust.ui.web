@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<head>
+<title>Controlling</title>
+</head>
+<body>
+	<div class="heading">Controlling</div>
+	<table>
+		<tr>
+			<td><label for="targetProcessingTimeInput">Target
+					Processing Time</label></td>
+			<td><input id="targetProcessingTimeInput" type="text"
+				style="width: 50px;" />
+			</td>
+			<td>h</td>
+		</tr>
+		<tr>
+			<td><label for="targetExecutionTimeInput">Target
+					Execution Time</label></td>
+			<td><input id="targetExecutionTimeInput" type="text"
+				style="width: 50px;" />
+			</td>
+			<td>h</td>
+		</tr>
+		<tr>
+			<td><label for="targetIdleTimeInput">Target Idle Time</label></td>
+			<td><input id="targetIdleTimeInput" type="text"
+				style="width: 50px;" />
+			</td>
+			<td>h</td>
+		</tr>
+		<tr>
+			<td><label for="targetWaitingTimeInput">Target Waiting
+					Time</label></td>
+			<td><input id="targetWaitingTimeInput" type="text"
+				style="width: 50px;" />
+			</td>
+			<td>h</td>
+		</tr>
+		<tr>
+			<td><label for="targetQueueDepthInput">Target Queue
+					Depth</label></td>
+			<td><input id="targetQueueDepthInput" type="text"
+				style="width: 50px;" />
+			</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><label for="targetCostPerExecutionInput">Target Cost
+					per Execution</label></td>
+			<td><input id="targetCostPerExecutionInput" type="text" />
+			</td>
+			<td>$</td>
+		</tr>
+		<tr>
+			<td><label for="resourcePerformanceCalculationSelect">Resource
+					Performance Calculation</label></td>
+			<td><select id="resourcePerformanceCalculationSelect"><option
+						value="included">Included</option>
+					<option value="notIncluded">Not Included</option>
+			</select>
+			</td>
+			<td></td>
+		</tr>
+	</table>
+</body>
+</html>
