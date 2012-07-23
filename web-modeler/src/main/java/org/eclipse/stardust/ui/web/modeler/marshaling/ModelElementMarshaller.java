@@ -70,10 +70,6 @@ public class ModelElementMarshaller
       {
          jsResult = toProcessDefinition((ProcessDefinitionType) modelElement);
       }
-      else if (modelElement instanceof LaneSymbolImpl)
-      {
-         jsResult = toLaneSymbol((LaneSymbolImpl) modelElement);
-      }
       else if (modelElement instanceof ActivitySymbolType)
       {
          jsResult = toActivitySymbolJson((ActivitySymbolType) modelElement);
@@ -155,42 +151,6 @@ public class ModelElementMarshaller
       return processJson;
    }
    
-   /**
-    * 
-    * @param laneSymbol
-    * @return
-    */
-   public static JsonObject toLaneSymbol(LaneSymbol laneSymbol)
-   {
-      int poolOffsetX = 0;
-      int poolOffsetY = 0;
-      
-      PoolSymbol container = (laneSymbol.eContainer() instanceof PoolSymbol)
-            ? (PoolSymbol) laneSymbol.eContainer()
-            : null;
-      
-      while (null != container)
-      {
-         poolOffsetX += container.getXPos();
-         poolOffsetX += container.getYPos();
-
-         // recurse
-         container = (container.eContainer() instanceof PoolSymbol)
-               ? (PoolSymbol) container.eContainer()
-               : null;
-      }
-      
-      JsonObject laneSymbolJson = new JsonObject();
-      laneSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
-            laneSymbol.getElementOid());
-      laneSymbolJson.addProperty(ModelerConstants.ID_PROPERTY, laneSymbol.getId());
-      laneSymbolJson.addProperty(ModelerConstants.NAME_PROPERTY, laneSymbol.getName());
-      
-      //TODO - Analyse and set other properties
-      return laneSymbolJson;
-
-   }
-
    /**
     * @return
     */
