@@ -89,15 +89,16 @@ define(
 											+ "Test</div></td></tr>");
 
 							var panel = this;
+							var extension = propertiesPages[n];
 
 							jQuery("#" + this.id + " #" + propertiesPages[n].pageId)
 									.load(
-											propertiesPages[n].pageHtmlUrl,
+											extension.pageHtmlUrl,
 											function(response, status, xhr) {
 												if (status == "error") {
 													var msg = "Error: ";
 													jQuery("#" + panel.id + " #"
-																	+ propertiesPages[n].pageId)
+																	+ extension.pageId)
 															.append(
 																	msg
 																			+ xhr.status
@@ -105,9 +106,8 @@ define(
 																			+ xhr.statusText);
 												} else {
 													panel.propertiesPages.push(require(
-															propertiesPages[n].pageJavaScriptUrl)
+															extension.pageJavaScriptUrl)
 															.create(panel));
-													m_utils.debug("Page loaded");
 												}
 											});
 						} else {

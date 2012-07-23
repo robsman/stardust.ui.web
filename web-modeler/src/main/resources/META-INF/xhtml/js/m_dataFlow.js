@@ -16,7 +16,7 @@ define([ "m_utils", "m_constants", "m_model" ],
 				initializeFromJson : function(process, json) {
 					// TODO Ugly, use prototype
 					m_utils.typeObject(json, new DataFlow());
-
+					
 					json.initializeFromJson(process);
 
 					return json;

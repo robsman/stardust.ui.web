@@ -31,6 +31,7 @@ define(
 					m_utils.inheritMethods(json, new Connection());
 
 					json.bind(diagram);
+					
 					json.initializeFromJson();
 					
 					return json;
@@ -151,7 +152,7 @@ define(
 					this.toAnchorPoint.symbol.connections.push(this);
 
 					if (this.isDataFlow()) {
-						m_dataFlow.initializeFromJson(this.diagram.process);
+						m_dataFlow.initializeFromJson(this.diagram.process, this.modelElement);
 						this.propertiesPanel = m_dataFlowPropertiesPanel
 								.getInstance();
 					} else {
