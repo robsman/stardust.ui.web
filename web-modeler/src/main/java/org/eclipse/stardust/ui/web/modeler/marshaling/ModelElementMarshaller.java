@@ -278,9 +278,7 @@ public class ModelElementMarshaller
 
             for (DataSymbolType dataSymbol : laneSymbol.getDataSymbol())
             {
-               JsonObject dataSymbolJson = new JsonObject();
-
-               dataSymbolsJson.add(dataSymbol.getData().getId(), dataSymbolJson);
+               dataSymbolsJson.add(dataSymbol.getData().getId(), toDataJson(dataSymbol));
 
             }
          }
@@ -319,6 +317,7 @@ public class ModelElementMarshaller
             dataFlowJson.addProperty(ModelerConstants.ID_PROPERTY, ""
                   + dataMappingConnection.getElementOid());
 
+            // TODO Needed!
 //            if (dataMappingC.getDirection() == DirectionType.IN_LITERAL)
 //            {
 //               dataFlow.put(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
@@ -334,9 +333,11 @@ public class ModelElementMarshaller
 //               dataFlow.put(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
 //               dataFlow.put(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
 //            }
-//
-//            dataFlow.put(ModelerConstants.DATA_PATH_PROPERTY, dataMapping.getApplicationPath());
-//            dataFlow.put(ModelerConstants.APPLICATION_PATH_PROPERTY, dataMapping.getApplicationPath());
+
+            dataFlowJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, MBFacade.createFullId(ModelUtils.findContainingModel(dataMappingConnection.getDataSymbol().getData()),
+                  dataMappingConnection.getDataSymbol().getData()));
+            dataFlowJson.addProperty(ModelerConstants.ACTIVITY_ID_PROPERTY, 
+                  dataMappingConnection.getActivitySymbol().getActivity().getId());
 
             connectionsJson.add(
                   extractString(dataFlowJson, ModelerConstants.ID_PROPERTY),
@@ -776,9 +777,8 @@ public class ModelElementMarshaller
       dataSymbolJson.addProperty(ModelerConstants.X_PROPERTY, dataSymbol.getXPos());
       dataSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, dataSymbol.getYPos());
 
-      // TODO Scoping
-      // dataSymbolJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
-      // MBFacade.createFullId(model, dataSymbol.getData()));
+       dataSymbolJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
+       MBFacade.createFullId(ModelUtils.findContainingModel(dataSymbol.getData()), dataSymbol.getData()));
 
       return dataSymbolJson;
    }
