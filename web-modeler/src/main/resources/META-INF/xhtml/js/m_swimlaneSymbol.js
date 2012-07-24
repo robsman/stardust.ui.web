@@ -59,7 +59,6 @@ define(
 				m_utils.inheritFields(this, symbol);
 				m_utils.inheritMethods(SwimlaneSymbol.prototype, symbol);
 
-				this.type = m_constants.SWIMLANE_SYMBOL;
 				this.width = 0;
 				this.height = 0;
 				this.id = "DefaultLane";
@@ -77,6 +76,8 @@ define(
 				 * objects, diagram, base classes).
 				 */
 				SwimlaneSymbol.prototype.bind = function(diagram, parentSymbol) {
+					this.type = m_constants.SWIMLANE_SYMBOL;
+					
 					this.diagram = diagram;
 					this.orientation = diagram.flowOrientation;
 					this.parentSymbol = parentSymbol;

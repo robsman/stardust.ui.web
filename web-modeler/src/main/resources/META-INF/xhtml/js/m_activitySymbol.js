@@ -75,7 +75,6 @@ define(
 				m_utils.inheritFields(this, symbol);
 				m_utils.inheritMethods(ActivitySymbol.prototype, symbol);
 
-				this.type = m_constants.ACTIVITY_SYMBOL;
 				this.x = 0;
 				this.y = 0;
 				this.width = m_constants.ACTIVITY_SYMBOL_DEFAULT_WIDTH;
@@ -87,12 +86,15 @@ define(
 				 * objects, diagram, base classes).
 				 */
 				ActivitySymbol.prototype.bind = function(diagram) {
+					this.type = m_constants.ACTIVITY_SYMBOL;
+					
 					this.diagram = diagram;
 					
 					this.diagram.lastSymbol = this;
 					
 					this.propertiesPanel = m_activityPropertiesPanel
 							.getInstance();
+					
 					this.rectangle = null;
 					this.text = null;
 					this.icon = null;

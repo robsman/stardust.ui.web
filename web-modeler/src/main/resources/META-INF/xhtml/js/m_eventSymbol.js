@@ -58,7 +58,6 @@ define(
 				m_utils.inheritFields(this, symbol);
 				m_utils.inheritMethods(EventSymbol.prototype, symbol);
 
-				this.type = m_constants.EVENT_SYMBOL;
 				this.width = 2 * m_constants.EVENT_DEFAULT_RADIUS;
 				this.height = 2 * m_constants.EVENT_DEFAULT_RADIUS;
 
@@ -66,6 +65,8 @@ define(
 				 * Binds all client-side aspects to the object (graphics objects, diagram, base classes).
 				 */
 				EventSymbol.prototype.bind = function(diagram) {
+					this.type = m_constants.EVENT_SYMBOL;
+					
 					this.diagram = diagram;
 					
 					this.diagram.lastSymbol = this;

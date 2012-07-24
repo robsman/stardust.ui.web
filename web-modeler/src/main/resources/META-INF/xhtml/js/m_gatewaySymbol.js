@@ -47,7 +47,6 @@ define(
 				m_utils.inheritFields(this, symbol);
 				m_utils.inheritMethods(GatewaySymbol.prototype, symbol);
 
-				this.type = m_constants.GATEWAY_SYMBOL;
 				this.width = m_constants.GATEWAY_SYMBOL_DEFAULT_WIDTH;
 				this.height = m_constants.GATEWAY_SYMBOL_DEFAULT_HEIGHT;
 
@@ -56,6 +55,8 @@ define(
 				 * objects, diagram, base classes).
 				 */
 				GatewaySymbol.prototype.bind = function(diagram) {
+					this.type = m_constants.GATEWAY_SYMBOL;
+					
 					this.diagram = diagram;
 										
 					this.diagram.lastSymbol = this;
