@@ -8,12 +8,7 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <head>
 <title>Role View</title>
-<link rel="stylesheet" type="text/css"
-	href="../../../graphics-common/css/smoothness/jquery-ui-1.8.12.custom.css">
-</link>
-<link href="../../css/jquery.treeTable.css" rel="stylesheet"
-	type="text/css" />
-<link href="../../css/jquery.tablescroll.css" rel="stylesheet"
+<link href="../../css/jquery-ui-1.8.20.custom.css" rel="stylesheet"
 	type="text/css" />
 <link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../js/roleViewPageInitializer.js"></script>
@@ -52,43 +47,88 @@
 				</td>
 			</tr>
 			<tr>
-				<td>
-					<label for="descriptionTextarea">Description</label>
+				<td><label for="descriptionTextarea">Description</label>
+				</td>
+			</tr>
+			<tr>
+				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+					<table cellpadding="0" cellspacing="0" class="fieldSetTable" style="margin-bottom: 10px;">
 						<tr>
-							<td><input id="publicVisibilityCheckbox" type="checkbox"></input></td>
-							<td><label for="publicVisibilityCheckbox">Public Visibility</label></td>
+							<td><input id="publicVisibilityCheckbox" type="checkbox"></input>
+							</td>
+							<td><label for="publicVisibilityCheckbox">Public
+									Visibility</label></td>
 						</tr>
 					</table>
 				</td>
-			</tr>			
-			<tr>
-				<td>
-					<div class="heading">Activity Assignment</div>
-				</td>
 			</tr>
 			<tr>
 				<td>
-					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
-						style="margin-bottom: 10px;">
-						<tr>
-							<td><input id="chooseAssignmentRadio" type="radio"/></td>
-							<td><label for="chooseAssignmentRadio">Choose Assignment</label></td>
-						</tr>
-						<tr>
-							<td><input id="assignAutomatically" type="radio"/></td>
-							<td><label for="assignAutomatically">Assign Automatically</label></td>
-						</tr>
-					</table>
+					<div id="roleTabs">
+						<ul>
+							<li><a href="#assignmentTab">Activity Assignment</a></li>
+							<li><a href="#controllingTab"><img src="../../images/icons/controlling-properties-page.png"></img>Controlling</a></li>
+						</ul>
+						<div id="assignmentTab">
+							<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+								style="margin-bottom: 10px;">
+								<tr>
+									<td><input id="chooseAssignmentRadio" type="radio" /></td>
+									<td><label for="chooseAssignmentRadio">Choose
+											Assignment</label></td>
+								</tr>
+								<tr>
+									<td><input id="assignAutomatically" type="radio" /></td>
+									<td><label for="assignAutomatically">Assign
+											Automatically</label></td>
+								</tr>
+							</table>
+						</div>
+						<div id="controllingTab">
+							<table>
+								<tr>
+									<td><label for="workingWeeksPerYearInput">Working Weeks per Year</label></td>
+									<td><input id="workingWeeksPerYearInput" type="text"
+										style="width: 50px;" />
+									</td>
+									<td>h</td>
+								</tr>
+								<tr>
+									<td><label for="targetWorktimePerDayInput">Target
+											Worktime per Day</label></td>
+									<td><input id="targetWorktimePerDayInput" type="text"
+										style="width: 50px;" />
+									</td>
+									<td>h</td>
+								</tr>
+								<tr>
+									<td><label for="targetWorktimePerWeekInput">Target Worktime per Week</label></td>
+									<td><input id="targetWorktimePerWeekInput" type="text"
+										style="width: 50px;" />
+									</td>
+									<td>h</td>
+								</tr>
+								<tr>
+									<td><label for="targetQueueDepthInput">Target
+											Queue Depth</label></td>
+									<td><input id="targetQueueDepthInput" type="text"
+										style="width: 50px;" />
+									</td>
+									<td></td>
+								</tr>
+								<tr>
+									<td><label for="actualCostPerMinuteInput">Actual Cost per Minute</label></td>
+									<td><input id="actualCostPerMinuteInput" type="text" style="width: 50px;"/>
+									</td>
+									<td>$</td>
+								</tr>
+							</table>
+						</div>
+					</div>
 				</td>
 			</tr>
 		</table>

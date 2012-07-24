@@ -44,6 +44,8 @@ define(
 				this.idOutput = jQuery("#idOutput");
 				this.nameInput = jQuery("#nameInput");
 
+				jQuery("#organizationTabs").tabs();
+
 				this.nameInput.change({
 					"view" : this
 				}, function(event) {
@@ -77,16 +79,6 @@ define(
 						this.organization.attributes = {};
 					}
 
-					if (this.organization.attributes["carnot:engine:camel::camelContextId"] == null) {
-						this.organization.attributes["carnot:engine:camel::camelContextId"] = "Default";
-					}
-
-					this.camelContextInput
-							.val(this.organization.attributes["carnot:engine:camel::camelContextId"]);
-					this.routeTextarea
-							.val(this.organization.attributes["carnot:engine:camel::routeEntries"]);
-					this.additionalBeanSpecificationTextarea
-							.val(this.organization.attributes["carnot:engine:camel::additionalSpringBeanDefinitions"]);
 				};
 
 				/**

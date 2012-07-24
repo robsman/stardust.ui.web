@@ -1,7 +1,7 @@
 /**
  * @author Omkar.Patil
  */
-require([ "m_jqueryConflictResolver", "m_logger", "extensions_raphael",
+require([ "m_jqueryConflictResolver", "extensions_raphael",
 		"jquery-1.7.2.min", "jquery-ui-1.8.19.custom.min",
 		"jquery-impromptu.3.1.min", "download.jQuery", "jquery.form",
 		"jquery.simplemodal.1.4.1.min", "jquery.url", "jquery.print",

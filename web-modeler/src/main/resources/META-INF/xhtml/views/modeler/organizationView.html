@@ -7,13 +7,8 @@
 	xmlns:ice="http://www.icesoft.com/icefaces/component"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <head>
-<title>Modeler Canvas</title>
-<link rel="stylesheet" type="text/css"
-	href="../../../graphics-common/css/smoothness/jquery-ui-1.8.12.custom.css">
-</link>
-<link href="../../css/jquery.treeTable.css" rel="stylesheet"
-	type="text/css" />
-<link href="../../css/jquery.tablescroll.css" rel="stylesheet"
+<title>Organization View</title>
+<link href="../../css/jquery-ui-1.8.20.custom.css" rel="stylesheet"
 	type="text/css" />
 <link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript"
@@ -65,7 +60,8 @@
 			</tr>
 			<tr>
 				<td>
-					<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+						style="margin-bottom: 10px;">
 						<tr>
 							<td><input id="publicVisibilityCheckbox" type="checkbox"></input>
 							</td>
@@ -77,74 +73,80 @@
 			</tr>
 			<tr>
 				<td>
-					<div class="heading">Activity Assignment</div></td>
-			</tr>
-			<tr>
-				<td>
-					<table cellpadding="0" cellspacing="0" class="fieldSetTable">
-						<tr>
-							<td><input id="chooseAssignmentRadio" type="radio" />
-							</td>
-							<td><label for="chooseAssignmentRadio">Choose
-									Assignment</label>
-							</td>
-						</tr>
-						<tr>
-							<td><input id="assignAutomatically" type="radio" />
-							</td>
-							<td><label for="assignAutomatically">Assign
-									Automatically</label>
-							</td>
-						</tr>
-					</table></td>
-			</tr>
-			<tr>
-				<td>
-					<div class="heading">Department</div></td>
-			</tr>
-			<tr>
-				<td>
-					<table cellpadding="0" cellspacing="0" class="fieldSetTable">
-						<tr>
-							<td><input id="supportsDepartmentsCheckbox" type="checkbox"></input>
-							</td>
-							<td><label for="supportsDepartmentsCheckbox">Supports
-									Departments</label>
-							</td>
-						</tr>
-					</table></td>
-			</tr>
-			<tr>
-				<td>
-					<table cellpadding="0" cellspacing="0" class="fieldSetTable">
-						<tr>
-							<td><label for="departmentDataSelect">Data</label>
-							</td>
-							<td><select id="departmentDataSelect"></select>
-							</td>
-						</tr>
-						<tr>
-							<td><label for="departmentDataPathInput">Data Path</label>
-							</td>
-							<td><input id="departmentDataPathInput" type="text"></input>
-							</td>
-						</tr>
-					</table></td>
-			</tr>
-			<tr>
-				<td>
-					<div class="heading">Team Leader</div></td>
-			</tr>
-			<tr>
-				<td>
-					<table cellpadding="0" cellspacing="0" class="fieldSetTable">
-						<tr>
-							<td><label for="leaderSelect">Leader</label>
-							</td>
-							<td><select id="leaderSelect"></select>
-							</td>
-						</tr>
-					</table></td>
+
+					<div id="organizationTabs">
+						<ul>
+							<li><a href="#departmentTab">Department</a></li>
+							<li><a href="#teamLeadTab">Team Lead</a></li>
+							<li><a href="#assignmentTab">Activity Assignment</a></li>
+							<li><a href="#controllingTab">Controlling</a></li>
+						</ul>
+						<div id="departmentTab">
+							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+								<tr>
+									<td><input id="supportsDepartmentsCheckbox"
+										type="checkbox"></input></td>
+									<td><label for="supportsDepartmentsCheckbox">Supports
+											Departments</label>
+									</td>
+								</tr>
+							</table>
+							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+								<tr>
+									<td><label for="departmentDataSelect">Data</label>
+									</td>
+									<td><select id="departmentDataSelect"></select>
+									</td>
+								</tr>
+								<tr>
+									<td><label for="departmentDataPathInput">Data Path</label>
+									</td>
+									<td><input id="departmentDataPathInput" type="text"></input>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div id="teamLeadTab">
+							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+								<tr>
+									<td><label for="leaderSelect">Leader</label>
+									</td>
+									<td><select id="leaderSelect"></select>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div id="assignmentTab">
+							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+								<tr>
+									<td><input id="chooseAssignmentRadio" type="radio" />
+									</td>
+									<td><label for="chooseAssignmentRadio">Choose
+											Assignment</label>
+									</td>
+								</tr>
+								<tr>
+									<td><input id="assignAutomatically" type="radio" />
+									</td>
+									<td><label for="assignAutomatically">Assign
+											Automatically</label>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div id="controllingTab">
+							<table>
+								<tr>
+									<td><label for="costCenterInput">Cost Center</label></td>
+									<td><input id="costCenterInput" type="text"
+										style="width: 50px;" />
+									</td>
+									<td></td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</td>
 			</tr>
 		</table>
 	</div>

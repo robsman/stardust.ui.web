@@ -41,6 +41,8 @@ define(
 				this.idOutput = jQuery("#idOutput");
 				this.nameInput = jQuery("#nameInput");
 
+				jQuery("#roleTabs").tabs();
+				
 				this.nameInput.change({
 					"view" : this
 				}, function(event) {
