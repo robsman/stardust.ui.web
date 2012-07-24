@@ -195,20 +195,20 @@ define(
 					this.addToEditableTextPrimitives(this.text);
 
 					this.manualActivityIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/activity_manual.png",
-							this.x + 5, this.y + 5, 20, 16).hide();
+							"../../images/icons/activity-manual.png",
+							this.x + 5, this.y + 5, 16, 16).hide();
 
 					this.addToPrimitives(this.manualActivityIcon);
 
 					this.subprocessIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/activity_subprocess.gif",
-							this.x + 5, this.y + 5, 20, 16).hide();
+							"../../images/icons/activity-subprocess.png",
+							this.x + 5, this.y + 5, 16, 16).hide();
 
 					this.addToPrimitives(this.subprocessIcon);
 
 					this.applicationIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/activity_application.gif",
-							this.x + 5, this.y + 5, 20, 16).hide();
+							"../../images/icons/activity-application.png",
+							this.x + 5, this.y + 5, 16, 16).hide();
 
 					this.addToPrimitives(this.applicationIcon);
 

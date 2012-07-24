@@ -45,18 +45,6 @@ define([ "m_utils", "m_extensionManager" ], function(m_utils,
 					+ extension.viewJavaScriptUrl);
 
 			jQuery("#viewAnchor").attr("src", extension.viewHtmlUrl + "?" + queryString);
-
-			//			jQuery("#viewAnchor").load(
-//					extension.viewHtmlUrl,
-//					function(response, status, xhr) {
-//						if (status == "error") {
-//							var msg = "Error loading ";
-//							$("#viewAnchor").append(
-//									msg + xhr.status + " " + xhr.statusText);
-//						} else {
-//							require(extension.viewJavaScriptUrl).initialize(objectId);
-//						}
-//					});
 		};
 	}
 });
