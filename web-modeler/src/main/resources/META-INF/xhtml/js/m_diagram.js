@@ -9,21 +9,21 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_urlUtils", "m_communicationController",
-				"m_commandsController", "m_command", "m_canvasManager",
-				"m_messageDisplay", "m_symbol", "m_poolSymbol",
-				"m_activitySymbol", "m_dataSymbol", "m_eventSymbol",
-				"m_gatewaySymbol", "m_connection", "m_propertiesPanel",
-				"m_processPropertiesPanel", "m_activityPropertiesPanel",
-				"m_dataPropertiesPanel", "m_eventPropertiesPanel",
-				"m_gatewayPropertiesPanel", "m_swimlanePropertiesPanel",
-				"m_controlFlowPropertiesPanel", "m_dataFlowPropertiesPanel",
-				"m_model", "m_process", "m_data" ],
-		function(m_utils, m_constants, m_urlUtils, m_communicationController,
-				m_commandsController, m_command, m_canvasManager,
-				m_messageDisplay, m_symbol, m_poolSymbol, m_activitySymbol,
-				m_dataSymbol, m_eventSymbol, m_gatewaySymbol, m_connection,
-				m_propertiesPanel, m_processPropertiesPanel,
+		[ "m_utils", "m_constants", "m_extensionManager", "m_urlUtils",
+				"m_communicationController", "m_commandsController",
+				"m_command", "m_canvasManager", "m_messageDisplay", "m_symbol",
+				"m_poolSymbol", "m_activitySymbol", "m_dataSymbol",
+				"m_eventSymbol", "m_gatewaySymbol", "m_connection",
+				"m_propertiesPanel", "m_processPropertiesPanel",
+				"m_activityPropertiesPanel", "m_dataPropertiesPanel",
+				"m_eventPropertiesPanel", "m_gatewayPropertiesPanel",
+				"m_swimlanePropertiesPanel", "m_controlFlowPropertiesPanel",
+				"m_dataFlowPropertiesPanel", "m_model", "m_process", "m_data" ],
+		function(m_utils, m_constants, m_extensionManager, m_urlUtils,
+				m_communicationController, m_commandsController, m_command,
+				m_canvasManager, m_messageDisplay, m_symbol, m_poolSymbol,
+				m_activitySymbol, m_dataSymbol, m_eventSymbol, m_gatewaySymbol,
+				m_connection, m_propertiesPanel, m_processPropertiesPanel,
 				m_activityPropertiesPanel, m_dataPropertiesPanel,
 				m_eventPropertiesPanel, m_gatewayPropertiesPanel,
 				m_swimlanePropertiesPanel, m_controlFlowPropertiesPanel,
@@ -151,6 +151,61 @@ define(
 				// Bind DOM elements
 
 				// === Start Toolbar ===
+
+				var toolbarPalettes = m_extensionManager
+						.findExtensions("diagramToolbarPalette");
+
+				var paletteTableRow = jQuery("#diagramToolbarTable #paletteRow");
+
+				m_utils.debug(paletteTableRow);
+
+				for ( var n = 0; n < toolbarPalettes.length; ++n) {
+					m_utils.debug("Adding " + toolbarPalettes[n].id);
+
+					paletteTableRow
+							.append("<td><div class=\"toolbar-section\"><div class=\"toolbar-section-content\"><table><tr id=\""
+									+ toolbarPalettes[n].id
+									+ "EntryRow\"></tr></table></div><div class=\"toolbar-section-footer\">"
+									+ toolbarPalettes[n].title
+									+ "</div></div></td>");
+
+					var entryRow = jQuery("#diagramToolbarTable #paletteRow #"
+							+ toolbarPalettes[n].id + "EntryRow");
+
+					var paletteEntries = m_extensionManager.findExtensions(
+							"diagramToolbarPaletteEntry", "paletteId",
+							toolbarPalettes[n].id);
+
+					for ( var m = 0; m < paletteEntries.length; ++m) {
+						entryRow.append("<td><input id=\""
+								+ paletteEntries[m].id
+								+ "\" type=\"image\" src=\""
+								+ paletteEntries[m].iconUrl + "\" "
+								+ "title=\"" + paletteEntries[m].title
+								+ "\" height=\"16\" width=\"16\" alt=\""
+								+ paletteEntries[m].title
+								+ "\" class=\"toolbarButton\" /></td>");
+
+						jQuery(
+								"#diagramToolbarTable #paletteRow #"
+										+ toolbarPalettes[n].id + "EntryRow #"
+										+ paletteEntries[m].id)
+								.click(
+										{
+											diagram : this,
+											handler : paletteEntries[m].handler,
+											handlerMethod : paletteEntries[m].handlerMethod
+										},
+										function(event) {
+											m_utils.debug("Clicked "
+													+ event.data.handler + " "
+													+ event.data.handlerMethod);
+											require(event.data.handler)[event.data.handlerMethod]
+													(event.data.diagram);
+										});
+					}
+
+				}
 
 				var selectModeButton = jQuery("#selectModeButton");
 
@@ -449,7 +504,7 @@ define(
 
 					return null;
 				};
-				
+
 				/**
 				 * 
 				 */
@@ -800,7 +855,7 @@ define(
 							this.separatorX = x * this.zoomFactor;
 							this.separatorY = y * this.zoomFactor;
 
-							this.checkPan(x, y);							
+							this.checkPan(x, y);
 						} else {
 							this.verticalSeparatorLine.attr({
 								"path" : "M" + x + " 0L" + x + " "
@@ -815,9 +870,9 @@ define(
 								"height" : this.height
 							});
 						}
-						
+
 						// TODO Workaround
-						
+
 						this.verticalSnapLine.hide();
 						this.horizontalSnapLine.hide();
 					} else if (this.isInConnectionMode()) {

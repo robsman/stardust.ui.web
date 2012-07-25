@@ -1,72 +1,95 @@
 /*******************************************************************************
- * Copyright (c) 2011 SunGard CSA LLC and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *    SunGard CSA LLC - initial API and implementation and/or initial documentation
- *******************************************************************************/
+ * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
+ * documentation
+ ******************************************************************************/
 
-define(
-		[ "m_utils", "m_constants", "m_model", "m_propertiesPanel", "m_propertiesPage"],
-		function(m_utils, m_constants, m_model, m_propertiesPanel, m_propertiesPage) {
+define([ "m_utils", "m_constants", "m_extensionManager", "m_model",
+		"m_propertiesPanel", "m_propertiesPage" ], function(m_utils,
+		m_constants, m_extensionManager, m_model, m_propertiesPanel,
+		m_propertiesPage) {
 
-			var dataPropertiesPanel = null;
+	var dataPropertiesPanel = null;
 
-			return {
-				initialize : function(models) {
-					dataPropertiesPanel = new DataPropertiesPanel(
-							models);
-					
-					dataPropertiesPanel.initialize();
-				},
-				getInstance : function(element) {
-					return dataPropertiesPanel;
-				}
-			};
+	return {
+		initialize : function(models) {
+			dataPropertiesPanel = new DataPropertiesPanel(models);
 
-			/**
-			 * 
-			 */
-			function DataPropertiesPanel(models) {
-				// Inheritance
+			dataPropertiesPanel.initialize();
+		},
+		getInstance : function(element) {
+			return dataPropertiesPanel;
+		}
+	};
 
-				var propertiesPanel = m_propertiesPanel
-						.createPropertiesPanel("dataPropertiesPanel");
+	/**
+	 * 
+	 */
+	function DataPropertiesPanel(models) {
+		// Inheritance
 
-				m_utils.inheritFields(this, propertiesPanel);
-				m_utils.inheritMethods(DataPropertiesPanel.prototype,
-						propertiesPanel);
+		var propertiesPanel = m_propertiesPanel
+				.createPropertiesPanel("dataPropertiesPanel");
 
-				this.models = models;
-				this.data = null;
+		m_utils.inheritFields(this, propertiesPanel);
+		m_utils.inheritMethods(DataPropertiesPanel.prototype, propertiesPanel);
 
-				/**
-				 * 
-				 */
-				DataPropertiesPanel.prototype.toString = function() {
-					return "Lightdust.DataPropertiesPanel";
-				};
+		this.viewLink = jQuery("#dataPropertiesPanel #viewLink");
 
-				/**
-				 * 
-				 */
-				DataPropertiesPanel.prototype.setElement = function(
-						element) {
-					this.clearErrorMessages();
+		this.models = models;
+		this.data = null;
 
-					this.element = element;					
-					this.data = m_model.findData(this.element.dataFullId);
+		var viewManagerExtension = m_extensionManager
+				.findExtension("viewManager");
 
-					if (this.element.properties == null) {
-						this.element.properties = {};
-					}
+		this.viewManager = require(viewManagerExtension.moduleUrl).create();
 
-					for ( var n in this.propertiesPages) {
-						this.propertiesPages[n].setElement();
-					}
-				};
-			}
+		this.viewLink.click({
+			panel : this
+		}, function(event) {
+			m_utils.debug("Click");
+			event.data.panel.openView();
 		});
+
+		/**
+		 * 
+		 */
+		DataPropertiesPanel.prototype.toString = function() {
+			return "Lightdust.DataPropertiesPanel";
+		};
+
+		/**
+		 * 
+		 */
+		DataPropertiesPanel.prototype.openView = function() {
+			m_utils.debug("Open View");
+			this.viewManager
+					.openView("dataView", "dataId=" + this.data.id
+							+ "&modelId=" + "notsetyet" + "&dataName="
+							+ this.data.name + "&fullId="
+							+ this.data.getFullId(), this.data.getFullId());
+		};
+
+		/**
+		 * 
+		 */
+		DataPropertiesPanel.prototype.setElement = function(element) {
+			this.clearErrorMessages();
+
+			this.element = element;
+			this.data = m_model.findData(this.element.dataFullId);
+
+			if (this.element.properties == null) {
+				this.element.properties = {};
+			}
+
+			for ( var n in this.propertiesPages) {
+				this.propertiesPages[n].setElement();
+			}
+		};
+	}
+});

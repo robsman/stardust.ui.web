@@ -392,13 +392,13 @@ define(
 												clickHandler : ActivitySymbol_removeClosure
 											},
 											{
-												imageUrl : "../../images/icons/activity_subprocess.gif",
+												imageUrl : "../../images/icons/activity-subprocess.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_switchToSubprocessActivityClosure
 											},
 											{
-												imageUrl : "../../images/icons/activity_application.gif",
+												imageUrl : "../../images/icons/activity-application.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_switchToApplicationActivityClosure

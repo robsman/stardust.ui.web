@@ -41,6 +41,14 @@ define(
 
 				this.idOutput = jQuery("#idOutput");
 				this.nameInput = jQuery("#nameInput");
+				this.versionTable = jQuery("#versionTable");
+				this.versionTableBody = jQuery("table#versionTable tbody");
+
+				jQuery("#modelTabs").tabs();
+
+				this.versionTable.tableScroll({
+					height : 200
+				});
 
 				this.nameInput.change({
 					"view" : this

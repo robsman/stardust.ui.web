@@ -1,9 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<head>
+<link href="../../css/jquery-ui-1.8.20.custom.css" rel="stylesheet"
+	type="text/css" />
 <link href="../../css/jquery.treeTable.css" rel="stylesheet"
 	type="text/css" />
 <link href="../../css/jquery.tablescroll.css" rel="stylesheet"
 	type="text/css" />
 <link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="../../js/modelViewPageInitializer.js"></script>
+<script type="text/javascript"
+	src="../../js/modelViewPageInitializer.js"></script>
 <script type="text/javascript" data-main="modelViewMain"
 	src="../../js/requireplugins-jquery-1.4.3.js"></script>
 </head>
@@ -16,8 +28,7 @@
 					<div class="errorMessagesPanel">
 						<ul id="errorMessagesList">
 						</ul>
-					</div>
-				</td>
+					</div></td>
 			</tr>
 			<tr>
 				<td>
@@ -27,34 +38,44 @@
 								<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 									style="margin-bottom: 10px; margin-right: 10px;">
 									<tr>
-										<td><label for="idOutput">Model ID</label></td>
-										<td><div id="idOutput" class="output"></div></td>
+										<td><label for="idOutput">Model ID</label>
+										</td>
+										<td><div id="idOutput" class="output"></div>
+										</td>
 									</tr>
 									<tr>
-										<td><label for="nameInput">Model Name</label></td>
-										<td><input id="nameInput" type="text" style="width: 200px;"></input></td>
+										<td><label for="nameInput">Model Name</label>
+										</td>
+										<td><input id="nameInput" type="text"
+											style="width: 200px;"></input>
+										</td>
 									</tr>
-								</table>
-							</td>
+								</table></td>
 							<td>
 								<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 									style="margin-bottom: 10px;">
 									<tr>
-										<td><label for="creationDateOutput">Creation Date</label></td>
-										<td><div id="creationDateOutput" class="output">12.12.2012 12:70</div></td>
+										<td><label for="creationDateOutput">Creation Date</label>
+										</td>
+										<td><div id="creationDateOutput" class="output">12.12.2012
+												12:70</div>
+										</td>
 									</tr>
 									<tr>
-										<td><label for="lastModificationDateOutput">Last Modification Date</label></td>
-										<td><div id="lastModificationDateOutput" class="output">23.10.2013 10:00</div></td>
+										<td><label for="lastModificationDateOutput">Last
+												Modification Date</label>
+										</td>
+										<td><div id="lastModificationDateOutput" class="output">23.10.2013
+												10:00</div>
+										</td>
 									</tr>
-								</table>
-							</td>
+								</table></td>
 						</tr>
-					</table>
-				</td>
+					</table></td>
 			</tr>
 			<tr>
-				<td><label for="descriptionTextarea">Description</label></td>
+				<td><label for="descriptionTextarea">Description</label>
+				</td>
 			</tr>
 			<tr>
 				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
@@ -62,19 +83,68 @@
 			</tr>
 			<tr>
 				<td>
-					<div class="heading">Versions</div>
-				</td>
-			</tr>			
-			<tr>
-				<td>
-					<div class="heading">Access Control</div>
-				</td>
-			</tr>			
-			<tr>
-				<td>
-					<div class="heading">Problems</div>
-				</td>
-			</tr>						
+					<div id="modelTabs" style="margin-top: 10px;">
+						<ul>
+							<li><a href="#versioningTab"><img
+									src="../../images/icons/basic-properties-page.png"></img><span
+									class="tabLabel">Versioning</span> </a>
+							</li>
+							<li><a href="#accessControlTab"><img
+									src="../../images/icons/basic-properties-page.png"></img><span
+									class="tabLabel">Access Control</span> </a>
+							</li>
+							<li><a href="#problemsTab"><img
+									src="../../images/icons/basic-properties-page.png"></img><span
+									class="tabLabel">Problems</span> </a>
+							</li>
+						</ul>
+						<div id="versioningTab">
+							<div class="panelBorder">
+								<table cellpadding="0" cellspacing="0" class="layoutTable">
+									<tr>
+										<td>
+											<div class="dataTable">
+												<table id="versionTable" class="treeTable"
+													style="width: 300px;">
+													<thead>
+														<tr>
+															<th style="width: 200px;">Date</th>
+															<th style="width: 100px;">Tag</th>
+															<th style="width: 100px;">Comments</th>
+														</tr>
+													</thead>
+													<tbody />
+												</table>
+											</div></td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<div id="accessControlTab"></div>
+						<div id="problemsTab">
+							<div class="panelBorder">
+								<table cellpadding="0" cellspacing="0" class="layoutTable">
+									<tr>
+										<td>
+											<div class="dataTable">
+												<table id="versionTable" class="treeTable"
+													style="width: 300px;">
+													<thead>
+														<tr>
+															<th style="width: 100px;">Severity</th>
+															<th style="width: 100px;">Element</th>
+															<th style="width: 400px;">Description</th>
+														</tr>
+													</thead>
+													<tbody />
+												</table>
+											</div></td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div></td>
+			</tr>
 		</table>
 	</div>
 </body>

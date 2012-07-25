@@ -20,6 +20,8 @@ require([ "m_jqueryConflictResolver", "extensions_raphael",
 
 		// TODO Do we need these
 		
+		"m_jsfViewManager",		
+		"m_defaultPaletteHandler",
 		"m_processBasicPropertiesPage", "m_processDataPathPropertiesPage",
 		"m_processDisplayPropertiesPage",
 		"m_processProcessInterfacePropertiesPage",

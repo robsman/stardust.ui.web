@@ -429,7 +429,15 @@ fieldset {
 	margin-top: 15px;
 }
 
-/* Externalize in other file */
+/* Tabs */
+
+.tabLabel {
+	padding-left: 4px;
+	vertical-align: center;
+}
+
+/* Properties Pages */
+
 div.propertiesPanel {
 	border: 4px solid #e8e8e8;
 	vertical-align: top;
@@ -540,3 +548,4 @@ div.panelWrapperBorder {
 {
 	background: url("../images/icons/select.png") center center;
 }
+

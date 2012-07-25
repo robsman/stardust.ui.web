@@ -17,48 +17,6 @@ define([ "m_toolbarManager", "m_constants" ], function(m_toolbarManager,
 			});
 		},
 
-		activityToolSelected : function(data) {
-			jQuery(document).trigger("TOOL_CLICKED_EVENT", {
-				"id" : data.toolId
-			});
-		},
-
-		createswimlaneToolSelected : function(data) {
-			jQuery(document).trigger("TOOL_CLICKED_EVENT", {
-				"id" : data.toolId
-			});
-		},
-
-		starteventToolSelected : function(data) {
-			jQuery(document).trigger("TOOL_CLICKED_EVENT", {
-				"id" : data.toolId
-			});
-		},
-
-		endeventToolSelected : function(data) {
-			jQuery(document).trigger("TOOL_CLICKED_EVENT", {
-				"id" : data.toolId
-			});
-		},
-
-		newConnectorToolSelected : function(data) {
-			jQuery(document).trigger("TOOL_CLICKED_EVENT", {
-				"id" : data.toolId
-			});
-		},
-
-		dataToolSelected : function(data) {
-			jQuery(document).trigger("TOOL_CLICKED_EVENT", {
-				"id" : data.toolId
-			});
-		},
-
-		gatewayToolSelected : function(data) {
-			jQuery(document).trigger("TOOL_CLICKED_EVENT", {
-				"id" : data.toolId
-			});
-		},
-
 		zoomInToolSelected : function(data) {
 			jQuery(document).trigger("TOOL_CLICKED_EVENT", {
 				"id" : data.toolId
@@ -66,18 +24,6 @@ define([ "m_toolbarManager", "m_constants" ], function(m_toolbarManager,
 		},
 
 		zoomOutToolSelected : function(data) {
-			jQuery(document).trigger("TOOL_CLICKED_EVENT", {
-				"id" : data.toolId
-			});
-		},
-
-		saveToolSelected : function(data) {
-			jQuery(document).trigger("TOOL_CLICKED_EVENT", {
-				"id" : data.toolId
-			});
-		},
-
-		loadToolSelected : function(data) {
 			jQuery(document).trigger("TOOL_CLICKED_EVENT", {
 				"id" : data.toolId
 			});
