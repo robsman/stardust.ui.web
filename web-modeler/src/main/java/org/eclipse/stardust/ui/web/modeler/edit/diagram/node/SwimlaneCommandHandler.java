@@ -110,6 +110,7 @@ public class SwimlaneCommandHandler implements ICommandHandler
       synchronized (model)
       {
          parentSymbol.getLanes().remove(lane);
+         parentSymbol.getChildLanes().remove(lane);
       }
    }
 
