@@ -582,32 +582,6 @@ public class ModelService {
 	 * @param postedData
 	 * @return
 	 */
-	public String renameProcess(String modelId, String processId,
-			JsonObject commandJson) {
-		ModelType model = getModelManagementStrategy().getModels().get(modelId);
-		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
-				processId);
-
-		// TODO Use corresponding modeler function for auto ID generation
-		processDefinition.setId(MBFacade.createIdFromName(extractString(commandJson,
-				NEW_OBJECT_PROPERTY, ModelerConstants.NAME_PROPERTY)));
-		processDefinition.setName(extractString(commandJson,
-				NEW_OBJECT_PROPERTY, ModelerConstants.NAME_PROPERTY));
-
-		commandJson.getAsJsonObject(NEW_OBJECT_PROPERTY).addProperty(
-				ModelerConstants.ID_PROPERTY, processDefinition.getId());
-
-		return commandJson.toString();
-	}
-
-	/**
-	 *
-	 * @param modelId
-	 * @param processId
-	 * @param newProcessName
-	 * @param postedData
-	 * @return
-	 */
 	public String renameApplication(String modelId, String applicationId,
 			JsonObject commandJson) {
 		JsonObject newObject = commandJson.getAsJsonObject(NEW_OBJECT_PROPERTY);

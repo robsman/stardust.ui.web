@@ -295,26 +295,6 @@ public class ModelerResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("models/{modelId}/processes/{processId}/rename")
-	public Response renameProcess(@PathParam("modelId") String modelId,
-			@PathParam("processId") String processId, String command) {
-		try {
-			JsonObject json = jsonIo.readJsonObject(command);
-
-			String result = getModelService().renameProcess(modelId, processId,
-					json);
-			return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-
-			throw new RuntimeException(e);
-		}
-	}
-
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
 	@Path("models/{modelId}/applications/{applicationId}/rename")
 	public Response renameApplication(@PathParam("modelId") String modelId,
 			@PathParam("applicationId") String applicationId, String command) {
