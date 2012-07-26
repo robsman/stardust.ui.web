@@ -1030,21 +1030,6 @@ define(
 														"manual_activity",
 														"sub_process_activity" ]
 											},
-											"manual_activity" : {
-												"icon" : {
-													"image" : "../images/icons/activity_manual.png"
-												}
-											},
-											"sub_process_activity" : {
-												"icon" : {
-													"image" : "../images/icons/activity_subprocess.gif"
-												}
-											},
-											"application_activity" : {
-												"icon" : {
-													"image" : "../images/icons/activity_application.gif"
-												}
-											},
 											"structuredTypes" : {
 												"icon" : {
 													"image" : "../images/icons/struct_types.gif"
