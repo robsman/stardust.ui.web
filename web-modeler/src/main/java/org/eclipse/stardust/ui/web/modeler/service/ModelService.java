@@ -1979,7 +1979,7 @@ public class ModelService {
 	}
 	
 	
-	public JsonObject ValidateModel(String modelId)
+	public JsonObject validateModel(String modelId)
 	{
       ModelType model = getModelManagementStrategy().getModels().get(modelId);
 
