@@ -11,15 +11,7 @@
 
 package org.eclipse.stardust.ui.web.modeler.service;
 
-import static org.eclipse.stardust.engine.api.model.PredefinedConstants.ADMINISTRATOR_ROLE;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newApplicationActivity;
-import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newBpmModel;
-import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newManualActivity;
-import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newManualTrigger;
-import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newPrimitiveVariable;
-import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newProcessDefinition;
-import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newRole;
-import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newRouteActivity;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newStructVariable;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newSubProcessActivity;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBoolean;
@@ -32,13 +24,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 
 import javax.annotation.Resource;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
+import org.w3c.dom.Node;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
@@ -52,7 +49,6 @@ import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
-import org.eclipse.stardust.engine.core.pojo.data.Type;
 import org.eclipse.stardust.model.xpdl.builder.activity.BpmApplicationActivityBuilder;
 import org.eclipse.stardust.model.xpdl.builder.activity.BpmSubProcessActivityBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
@@ -66,7 +62,6 @@ import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.PepperIconFactory;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
@@ -80,42 +75,29 @@ import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
-import org.eclipse.stardust.model.xpdl.carnot.DiagramModeType;
 import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.GatewaySymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
-import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
-import org.eclipse.stardust.model.xpdl.carnot.OrientationType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
-import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
-import org.eclipse.stardust.model.xpdl.carnot.util.ActivityUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
-import org.eclipse.stardust.model.xpdl.xpdl2.XpdlFactory;
 import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
-import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
 import org.eclipse.stardust.ui.web.modeler.edit.EditingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
-import org.w3c.dom.Node;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  *
@@ -446,38 +428,6 @@ public class ModelService {
 
 	/**
 	 *
-	 * @param id
-	 * @param postedData
-	 * @return
-	 */
-	public String createModel(String id, JsonObject postedData) {
-		JsonObject newObjectJson = postedData
-				.getAsJsonObject(NEW_OBJECT_PROPERTY);
-
-		ModelType model = newBpmModel().withIdAndName(
-				newObjectJson.get(ModelerConstants.ID_PROPERTY).getAsString(),
-				newObjectJson.get(ModelerConstants.NAME_PROPERTY).getAsString()).build();
-		long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-		AttributeUtil.setAttribute(model, PredefinedConstants.VERSION_ATT, "1");
-
-		RoleType admin = AbstractElementBuilder.F_CWM.createRoleType();
-		admin.setName(ADMINISTRATOR_ROLE);
-		admin.setId(ADMINISTRATOR_ROLE);
-		long adminOid = ++maxOid;
-		admin.setElementOid(adminOid);
-
-		model.getRole().add(admin);
-
-		getModelManagementStrategy().getModels().put(model.getId(), model);
-
-		newObjectJson.addProperty(ModelerConstants.ID_PROPERTY, model.getId());
-		newObjectJson.addProperty(ModelerConstants.NAME_PROPERTY, model.getName());
-
-		return postedData.toString();
-	}
-
-	/**
-	 *
 	 * @param modelId
 	 * @param commandJson
 	 * @return
@@ -777,17 +727,6 @@ public class ModelService {
 	 * @param postedData
 	 * @return
 	 */
-	public String createProcess(String modelId, JsonObject postedData) {
-		return createProcessJson(modelId, postedData).toString();
-	}
-
-	/**
-	 *
-	 * @param modelId
-	 * @param id
-	 * @param postedData
-	 * @return
-	 */
 	public JsonObject createProcessJson(String modelId, JsonObject postedData) {
 		ModelType model = getModelManagementStrategy().getModels().get(modelId);
 		String name = extractString(postedData, NEW_OBJECT_PROPERTY,
@@ -812,72 +751,6 @@ public class ModelService {
 		postedData.add(NEW_OBJECT_PROPERTY, processDefinitionJson);
 
 		return postedData;
-	}
-
-	/**
-	 *
-	 * @param modelId
-	 * @param processId
-	 * @param postedData
-	 * @return
-	 */
-	public String createActivity(String modelId, String processId,
-			JsonObject commandJson) {
-		JsonObject activitySymbolJson = commandJson
-				.getAsJsonObject(NEW_OBJECT_PROPERTY);
-		ModelType model = getModelManagementStrategy().getModels().get(modelId);
-		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
-				processId);
-		EditingSession editSession = getEditingSession(model);
-
-		String activityType = extractString(activitySymbolJson,
-              ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ACTIVITY_TYPE);
-		String participantFullID = extractString(activitySymbolJson, ModelerConstants.MODEL_ELEMENT_PROPERTY,
-              ModelerConstants.PARTICIPANT_FULL_ID);
-		String modelID = extractString(activitySymbolJson,
-              ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
-		String modelName = extractString(activitySymbolJson,
-              ModelerConstants.MODEL_ELEMENT_PROPERTY,
-              ModelerConstants.NAME_PROPERTY);
-		String applicationFullID = extractString(
-              activitySymbolJson,
-              ModelerConstants.MODEL_ELEMENT_PROPERTY,
-              ModelerConstants.APPLICATION_FULL_ID_PROPERTY);
-		String subProcessID = extractString(
-              activitySymbolJson,
-              ModelerConstants.MODEL_ELEMENT_PROPERTY,
-              ModelerConstants.SUBPROCESS_ID);
-		String parentSymbolID = extractString(activitySymbolJson, PARENT_SYMBOL_ID_PROPERTY);
-		int xProperty = extractInt(activitySymbolJson, X_PROPERTY);
-		int yProperty = extractInt(activitySymbolJson, Y_PROPERTY);
-		int widthProperty = extractInt(activitySymbolJson,
-              WIDTH_PROPERTY);
-	    int heightProperty = extractInt(activitySymbolJson,
-	          HEIGHT_PROPERTY);
-
-
-		synchronized (model)
-		{
-			long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-
-			editSession.beginEdit();
-
-			ActivityType activity = MBFacade.createActivity(modelId, processDefinition, activityType,
-               participantFullID, modelID, modelName, applicationFullID, subProcessID, maxOid);
-
-			setDescription(activity,
-					activitySymbolJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
-
-			ActivitySymbolType activitySymbol = MBFacade.createActivitySymbol(processDefinition,
-               parentSymbolID, xProperty, yProperty, widthProperty, heightProperty,
-               maxOid, activity);
-
-	        activitySymbolJson.addProperty(OID_PROPERTY,
-                   activitySymbol.getElementOid());
-			editSession.endEdit();
-		}
-
-		return commandJson.toString();
 	}
 
 	/**
@@ -1051,103 +924,6 @@ public class ModelService {
 	 *
 	 * @param modelId
 	 * @param processId
-	 * @param activityId
-	 * @return
-	 */
-	public String deleteActivity(String modelId, String processId,
-			String activityId, JsonObject commandJson) {
-		ModelType model = getModelManagementStrategy().getModels().get(modelId);
-		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
-				processId);
-		EditingSession editingSession = getEditingSession(model);
-		ActivityType activity = MBFacade.findActivity(processDefinition, activityId);
-		ActivitySymbolType activitySymbol = activity.getActivitySymbols()
-				.get(0);
-
-		synchronized (model) {
-			editingSession.beginEdit();
-
-			processDefinition.getActivity().remove(activity);
-			processDefinition.getDiagram().get(0).getActivitySymbol()
-					.remove(activitySymbol);
-
-			LaneSymbol parentLaneSymbol = MBFacade.findLaneContainingActivitySymbol(
-					processDefinition, activitySymbol);
-
-			parentLaneSymbol.getActivitySymbol().remove(activitySymbol);
-
-			// TODO For testing
-
-			pushCommand(commandJson);
-
-			editingSession.endEdit();
-		}
-
-		return commandJson.toString();
-	}
-
-	/**
-	 *
-	 * @param modelId
-	 * @param processId
-	 * @param postedData
-	 * @return
-	 */
-	public String createGateway(String modelId, String processId,
-			JsonObject commandJson) {
-		JsonObject gatewaySymbolJson = commandJson
-				.getAsJsonObject(NEW_OBJECT_PROPERTY);
-		JsonObject gatewayJson = gatewaySymbolJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-		ModelType model = getModelManagementStrategy().getModels().get(modelId);
-		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
-				processId);
-		EditingSession editingSession = getEditingSession(model);
-
-		synchronized (model) {
-			long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-
-			editingSession.beginEdit();
-
-			// TODO Ugly!
-         ActivityType gateway = MBFacade.createActivity(modelId, processDefinition, null,
-               null, null, null, null, null, maxOid);
-         
-         gateway.setImplementation(ActivityImplementationType.ROUTE_LITERAL);
-         gatewayJson.addProperty(ModelerConstants.OID_PROPERTY, gateway.getElementOid());
-         
-			processDefinition.getActivity().add(gateway);
-
-			ActivitySymbolType gatewaySymbol = AbstractElementBuilder.F_CWM
-					.createActivitySymbolType();
-			LaneSymbol parentLaneSymbol = MBFacade.findLaneInProcess(processDefinition,
-					extractString(gatewaySymbolJson, PARENT_SYMBOL_ID_PROPERTY));
-
-			gatewaySymbol.setElementOid(++maxOid);
-
-			gatewaySymbolJson.addProperty(OID_PROPERTY,
-					gatewaySymbol.getElementOid());
-			
-			gatewaySymbol.setXPos(extractInt(gatewaySymbolJson, X_PROPERTY)
-					- parentLaneSymbol.getXPos());
-			gatewaySymbol.setYPos(extractInt(gatewaySymbolJson, Y_PROPERTY)
-					- parentLaneSymbol.getYPos());
-			gatewaySymbol.setActivity(gateway);
-
-			gateway.getActivitySymbols().add(gatewaySymbol);
-			processDefinition.getDiagram().get(0).getActivitySymbol()
-					.add(gatewaySymbol);
-			parentLaneSymbol.getActivitySymbol().add(gatewaySymbol);
-
-			editingSession.endEdit();
-		}
-
-		return commandJson.toString();
-	}
-
-	/**
-	 *
-	 * @param modelId
-	 * @param processId
 	 * @param gatewayId
 	 * @param postedData
 	 * @return
@@ -1216,40 +992,6 @@ public class ModelService {
 	}
 
 	/**
-	 *
-	 * @param modelId
-	 * @param processId
-	 * @param gatewayId
-	 * @return
-	 */
-	public String deleteGateway(String modelId, String processId,
-			String gatewayId) {
-		ModelType model = getModelManagementStrategy().getModels().get(modelId);
-		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
-				processId);
-		EditingSession editingSession = getEditingSession(model);
-		ActivityType gateway = MBFacade.findActivity(processDefinition, gatewayId);
-		ActivitySymbolType gatewaySymbol = gateway.getActivitySymbols().get(0);
-
-		synchronized (model) {
-			editingSession.beginEdit();
-
-			processDefinition.getActivity().remove(gateway);
-			processDefinition.getDiagram().get(0).getActivitySymbol()
-					.remove(gatewaySymbol);
-
-			LaneSymbol parentLaneSymbol = MBFacade.findLaneContainingActivitySymbol(
-					processDefinition, gatewaySymbol);
-
-			parentLaneSymbol.getActivitySymbol().remove(gatewaySymbol);
-
-			editingSession.endEdit();
-		}
-
-		return new JsonObject().toString();
-	}
-
-	/**
 	 * @param element
 	 * @param description
 	 * @throws JSONException
@@ -1285,226 +1027,7 @@ public class ModelService {
 		}
 	}
 
-	/**
-	 * @param modelId
-	 * @param processId
-	 * @param postedData
-	 * @return
-	 */
-	public String createConnection(String modelId, String processId,
-			JsonObject commandJson) {
-		JsonObject connectionJson = commandJson
-				.getAsJsonObject(NEW_OBJECT_PROPERTY);
-		ModelType model = getModelManagementStrategy().getModels().get(modelId);
-		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
-				processId);
-		EditingSession editSession = getEditingSession(model);
-		long maxOid = XpdlModelUtils.getMaxUsedOid(model);
 
-		synchronized (model) {
-			editSession.beginEdit();
-
-			if (ACTIVITY_KEY.equals(extractString(connectionJson,
-					FROM_MODEL_ELEMENT_TYPE))
-					|| GATEWAY.equals(extractString(connectionJson,
-							FROM_MODEL_ELEMENT_TYPE))) {
-				if (ACTIVITY_KEY.equals(extractString(connectionJson,
-						TO_MODEL_ELEMENT_TYPE))
-						|| GATEWAY.equals(extractString(connectionJson,
-								TO_MODEL_ELEMENT_TYPE))) {
-					createControlFlowConnection(
-							connectionJson,
-							processDefinition,
-							MBFacade.findActivitySymbol(
-									processDefinition.getDiagram().get(0),
-									extractLong(connectionJson,
-											FROM_MODEL_ELEMENT_OID)),
-							MBFacade.findActivitySymbol(
-									processDefinition.getDiagram().get(0),
-									extractLong(connectionJson,
-											TO_MODEL_ELEMENT_OID)), maxOid);
-				} else if (EVENT_KEY.equals(extractString(connectionJson,
-						TO_MODEL_ELEMENT_TYPE))) {
-					try {
-						StartEventSymbol startEventSymbol = MBFacade.findStartEventSymbol(
-								processDefinition.getDiagram().get(0),
-								extractLong(connectionJson,
-										TO_MODEL_ELEMENT_OID));
-
-						createControlFlowConnection(
-								connectionJson,
-								processDefinition,
-								startEventSymbol,
-								MBFacade.findActivitySymbol(
-										processDefinition.getDiagram().get(0),
-										extractLong(connectionJson,
-												FROM_MODEL_ELEMENT_OID)),
-								maxOid);
-					} catch (ObjectNotFoundException x) {
-						EndEventSymbol endEventSymbol = MBFacade.findEndEventSymbol(
-								processDefinition.getDiagram().get(0),
-								extractLong(connectionJson,
-										TO_MODEL_ELEMENT_OID));
-						createControlFlowConnection(
-								connectionJson,
-								processDefinition,
-								MBFacade.findActivitySymbol(
-										processDefinition.getDiagram().get(0),
-										extractLong(connectionJson,
-												FROM_MODEL_ELEMENT_OID)),
-								endEventSymbol, maxOid);
-					}
-				} else if (DATA.equals(extractString(connectionJson,
-						TO_MODEL_ELEMENT_TYPE))) {
-					createDataFlowConnection(
-							connectionJson,
-							processDefinition,
-							MBFacade.findActivitySymbol(
-									processDefinition.getDiagram().get(0),
-									extractLong(connectionJson,
-											FROM_MODEL_ELEMENT_OID)),
-							MBFacade.findDataSymbol(
-									processDefinition.getDiagram().get(0),
-									extractLong(connectionJson,
-											TO_MODEL_ELEMENT_OID)), maxOid);
-				} else {
-					throw new IllegalArgumentException(
-							"Unknown target symbol type "
-									+ extractString(connectionJson,
-											TO_MODEL_ELEMENT_TYPE)
-									+ " for connection.");
-				}
-			} else if (EVENT_KEY.equals(extractString(connectionJson,
-					FROM_MODEL_ELEMENT_TYPE))) {
-				if (ACTIVITY_KEY.equals(extractString(connectionJson,
-						TO_MODEL_ELEMENT_TYPE))) {
-					try {
-						StartEventSymbol startEventSymbol = MBFacade.findStartEventSymbol(
-								processDefinition.getDiagram().get(0),
-								extractLong(connectionJson,
-										FROM_MODEL_ELEMENT_OID));
-
-						createControlFlowConnection(
-								connectionJson,
-								processDefinition,
-								startEventSymbol,
-								MBFacade.findActivitySymbol(
-										processDefinition.getDiagram().get(0),
-										extractLong(connectionJson,
-												TO_MODEL_ELEMENT_OID)), maxOid);
-					} catch (ObjectNotFoundException x) {
-						EndEventSymbol endEventSymbol = MBFacade.findEndEventSymbol(
-								processDefinition.getDiagram().get(0),
-								extractLong(connectionJson,
-										FROM_MODEL_ELEMENT_OID));
-						createControlFlowConnection(
-								connectionJson,
-								processDefinition,
-								MBFacade.findActivitySymbol(
-										processDefinition.getDiagram().get(0),
-										extractLong(connectionJson,
-												TO_MODEL_ELEMENT_OID)),
-								endEventSymbol, maxOid);
-					}
-				} else {
-					throw new IllegalArgumentException(
-							"Unknown target symbol type "
-									+ extractString(connectionJson,
-											TO_MODEL_ELEMENT_TYPE)
-									+ " for connection.");
-				}
-			} else if (DATA.equals(extractString(connectionJson,
-					FROM_MODEL_ELEMENT_TYPE))) {
-				if (ACTIVITY_KEY.equals(extractString(connectionJson,
-						TO_MODEL_ELEMENT_TYPE))) {
-					createDataFlowConnection(
-							connectionJson,
-							processDefinition,
-							MBFacade.findActivitySymbol(
-									processDefinition.getDiagram().get(0),
-									extractLong(connectionJson,
-											TO_MODEL_ELEMENT_OID)),
-							MBFacade.findDataSymbol(
-									processDefinition.getDiagram().get(0),
-									extractLong(connectionJson,
-											FROM_MODEL_ELEMENT_OID)), maxOid);
-				} else {
-					throw new IllegalArgumentException(
-							"Unknown target symbol type "
-									+ extractString(connectionJson,
-											TO_MODEL_ELEMENT_TYPE)
-									+ " for connection.");
-				}
-			} else {
-				throw new IllegalArgumentException(
-						"Unsupported source symbol type "
-								+ extractString(connectionJson,
-										FROM_MODEL_ELEMENT_TYPE)
-								+ " for connection.");
-			}
-
-			editSession.endEdit();
-		}
-
-		return connectionJson.toString();
-	}
-
-	/**
-	 *
-	 * @param sourceActivitySymbol
-	 * @param targetActivitySymbol
-	 * @throws JSONException
-	 */
-	private void createControlFlowConnection(JsonObject connectionJson,
-			ProcessDefinitionType processDefinition,
-			ActivitySymbolType sourceActivitySymbol,
-			ActivitySymbolType targetActivitySymbol, long maxOid) {
-		JsonObject controlFlowJson = connectionJson
-				.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-		TransitionType transition = AbstractElementBuilder.F_CWM
-				.createTransitionType();
-
-		processDefinition.getTransition().add(transition);
-
-		transition.setElementOid(++maxOid);
-		transition.setFrom(sourceActivitySymbol.getActivity());
-		transition.setTo(targetActivitySymbol.getActivity());
-		transition.setId(extractString(controlFlowJson, ModelerConstants.ID_PROPERTY));
-
-		if (extractBoolean(controlFlowJson, OTHERWISE_PROPERTY)) {
-			transition.setCondition(OTHERWISE_KEY);
-		} else {
-			transition.setCondition(CONDITION_KEY);
-
-			XmlTextNode expression = CarnotWorkflowModelFactory.eINSTANCE
-					.createXmlTextNode();
-
-			ModelUtils.setCDataString(expression.getMixed(), "true", true);
-			transition.setExpression(expression);
-		}
-
-		// setDescription(transition,
-		// controlFlowJson.getString(DESCRIPTION_PROPERTY));
-
-		TransitionConnectionType transitionConnection = AbstractElementBuilder.F_CWM
-				.createTransitionConnectionType();
-
-		transition.getTransitionConnections().add(transitionConnection);
-		transitionConnection.setTransition(transition);
-
-		transitionConnection.setElementOid(++maxOid);
-		transitionConnection.setSourceActivitySymbol(sourceActivitySymbol);
-		transitionConnection.setTargetActivitySymbol(targetActivitySymbol);
-		transitionConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
-				connectionJson, FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-		transitionConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
-				connectionJson, TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-
-		// TODO Obtain pool from call
-
-		processDefinition.getDiagram().get(0).getPoolSymbols().get(0)
-				.getTransitionConnection().add(transitionConnection);
-	}
 
 	/**
 	 *
@@ -1527,160 +1050,107 @@ public class ModelService {
 	}
 
 	/**
-	 *
-	 * @param connectionJson
-	 * @param processDefinition
-	 * @param sourceActivitySymbol
-	 * @param targetActivitySymbol
-	 * @param maxOid
-	 */
-	private void createControlFlowConnection(JsonObject connectionJson,
-			ProcessDefinitionType processDefinition,
-			StartEventSymbol startEventSymbol,
-			ActivitySymbolType targetActivitySymbol, long maxOid) {
-		TransitionConnectionType transitionConnection = AbstractElementBuilder.F_CWM
-				.createTransitionConnectionType();
+   *
+   * @param connectionJson
+   * @param processDefinition
+   * @param sourceActivitySymbol
+   * @param dataSymbol
+   * @param maxOid
+   */
+  private void createDataFlowConnection(JsonObject connectionJson,
+        ProcessDefinitionType processDefinition,
+        ActivitySymbolType activitySymbol, DataSymbolType dataSymbol,
+        long maxOid) {
 
-		transitionConnection.setElementOid(++maxOid);
-		transitionConnection.setSourceNode(startEventSymbol);
-		transitionConnection.setTargetNode(targetActivitySymbol);
-		transitionConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
-				connectionJson, FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-		transitionConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
-				connectionJson, TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-		processDefinition.getDiagram().get(0).getPoolSymbols().get(0)
-				.getTransitionConnection().add(transitionConnection);
-	}
+     System.out.println("Create data flow connection");
 
-	/**
-	 *
-	 * @param connectionJson
-	 * @param processDefinition
-	 * @param sourceActivitySymbol
-	 * @param targetActivitySymbol
-	 * @param maxOid
-	 */
-	private void createControlFlowConnection(JsonObject connectionJson,
-			ProcessDefinitionType processDefinition,
-			ActivitySymbolType sourceActivitySymbol,
-			EndEventSymbol endEventSymbol, long maxOid) {
-		TransitionConnectionType transitionConnection = AbstractElementBuilder.F_CWM
-				.createTransitionConnectionType();
-		transitionConnection.setElementOid(++maxOid);
-		transitionConnection.setSourceNode(sourceActivitySymbol);
-		transitionConnection.setTargetNode(endEventSymbol);
-		transitionConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
-				connectionJson, FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-		transitionConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
-				connectionJson, TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-		// TODO Obtain pool from call
+     DataType data = dataSymbol.getData();
+     ActivityType activity = activitySymbol.getActivity();
 
-		processDefinition.getDiagram().get(0).getPoolSymbols().get(0)
-				.getTransitionConnection().add(transitionConnection);
-	}
+     DataMappingType dataMapping = AbstractElementBuilder.F_CWM
+           .createDataMappingType();
+     DataMappingConnectionType dataMappingConnection = AbstractElementBuilder.F_CWM
+           .createDataMappingConnectionType();
 
-	/**
-	 *
-	 * @param connectionJson
-	 * @param processDefinition
-	 * @param sourceActivitySymbol
-	 * @param dataSymbol
-	 * @param maxOid
-	 */
-	private void createDataFlowConnection(JsonObject connectionJson,
-			ProcessDefinitionType processDefinition,
-			ActivitySymbolType activitySymbol, DataSymbolType dataSymbol,
-			long maxOid) {
+     // TODO Add index
 
-		System.out.println("Create data flow connection");
+     dataMapping.setId(data.getId());
+     dataMapping.setName(data.getName());
 
-		DataType data = dataSymbol.getData();
-		ActivityType activity = activitySymbol.getActivity();
+     dataMapping.setDirection(DirectionType.get(DirectionType.OUT));
+     dataMapping.setData(data);
 
-		DataMappingType dataMapping = AbstractElementBuilder.F_CWM
-				.createDataMappingType();
-		DataMappingConnectionType dataMappingConnection = AbstractElementBuilder.F_CWM
-				.createDataMappingConnectionType();
+     // TODO Incomplete
 
-		// TODO Add index
+     // if (activity.getImplementation().getLiteral().equals("Application"))
+     // {
+     // dataMapping.setContext(PredefinedConstants.APPLICATION_CONTEXT);
+     // dataMapping.setApplicationAccessPoint(element.getProps().getEnds()
+     // .getAccesspoint());
+     // }
+     // else
+     // {
+     dataMapping.setContext(PredefinedConstants.DEFAULT_CONTEXT);
+     // }
 
-		dataMapping.setId(data.getId());
-		dataMapping.setName(data.getName());
+     activity.getDataMapping().add(dataMapping);
 
-		dataMapping.setDirection(DirectionType.get(DirectionType.OUT));
-		dataMapping.setData(data);
+     // TODO Obtain pool from call
 
-		// TODO Incomplete
+     processDefinition.getDiagram().get(0).getPoolSymbols().get(0)
+           .getDataMappingConnection().add(dataMappingConnection);
 
-		// if (activity.getImplementation().getLiteral().equals("Application"))
-		// {
-		// dataMapping.setContext(PredefinedConstants.APPLICATION_CONTEXT);
-		// dataMapping.setApplicationAccessPoint(element.getProps().getEnds()
-		// .getAccesspoint());
-		// }
-		// else
-		// {
-		dataMapping.setContext(PredefinedConstants.DEFAULT_CONTEXT);
-		// }
+     dataMappingConnection.setElementOid(++maxOid);
+     dataMappingConnection.setActivitySymbol(activitySymbol);
+     dataMappingConnection.setDataSymbol(dataSymbol);
+     activitySymbol.getDataMappings().add(dataMappingConnection);
+     dataSymbol.getDataMappings().add(dataMappingConnection);
+     dataMappingConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
+           connectionJson, FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+     dataMappingConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
+           connectionJson, TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
 
-		activity.getDataMapping().add(dataMapping);
-
-		// TODO Obtain pool from call
-
-		processDefinition.getDiagram().get(0).getPoolSymbols().get(0)
-				.getDataMappingConnection().add(dataMappingConnection);
-
-		dataMappingConnection.setElementOid(++maxOid);
-		dataMappingConnection.setActivitySymbol(activitySymbol);
-		dataMappingConnection.setDataSymbol(dataSymbol);
-		activitySymbol.getDataMappings().add(dataMappingConnection);
-		dataSymbol.getDataMappings().add(dataMappingConnection);
-		dataMappingConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
-				connectionJson, FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-		dataMappingConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
-				connectionJson, TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-
-	}
-
-	/**
-	 *
-	 * TODO From DynamicConnectionCommand. Refactor?
-	 *
-	 * @param activity
-	 * @return
-	 */
-	private String getDefaultDataMappingContext(ActivityType activity) {
-		if (ActivityImplementationType.ROUTE_LITERAL == activity
-				.getImplementation()) {
-			return PredefinedConstants.DEFAULT_CONTEXT;
-		}
-		if (ActivityImplementationType.MANUAL_LITERAL == activity
-				.getImplementation()) {
-			return PredefinedConstants.DEFAULT_CONTEXT;
-		}
-		if (ActivityImplementationType.APPLICATION_LITERAL == activity
-				.getImplementation() && activity.getApplication() != null) {
-			ApplicationType application = activity.getApplication();
-			if (application.isInteractive()) {
-				if (application.getContext().size() > 0) {
-					ContextType context = (ContextType) application
-							.getContext().get(0);
-					return context.getType().getId();
-				}
-				return PredefinedConstants.DEFAULT_CONTEXT;
-			}
-			return PredefinedConstants.APPLICATION_CONTEXT;
-		}
-		if (ActivityImplementationType.SUBPROCESS_LITERAL == activity
-				.getImplementation()
-				&& activity.getImplementationProcess() != null) {
-			ProcessDefinitionType process = activity.getImplementationProcess();
-			if (process.getFormalParameters() != null) {
-				return PredefinedConstants.PROCESSINTERFACE_CONTEXT;
-			}
-		}
-		return PredefinedConstants.ENGINE_CONTEXT;
-	}
+  }
+  
+  /**
+  *
+  * TODO From DynamicConnectionCommand. Refactor?
+  *
+  * @param activity
+  * @return
+  */
+ private String getDefaultDataMappingContext(ActivityType activity) {
+    if (ActivityImplementationType.ROUTE_LITERAL == activity
+          .getImplementation()) {
+       return PredefinedConstants.DEFAULT_CONTEXT;
+    }
+    if (ActivityImplementationType.MANUAL_LITERAL == activity
+          .getImplementation()) {
+       return PredefinedConstants.DEFAULT_CONTEXT;
+    }
+    if (ActivityImplementationType.APPLICATION_LITERAL == activity
+          .getImplementation() && activity.getApplication() != null) {
+       ApplicationType application = activity.getApplication();
+       if (application.isInteractive()) {
+          if (application.getContext().size() > 0) {
+             ContextType context = (ContextType) application
+                   .getContext().get(0);
+             return context.getType().getId();
+          }
+          return PredefinedConstants.DEFAULT_CONTEXT;
+       }
+       return PredefinedConstants.APPLICATION_CONTEXT;
+    }
+    if (ActivityImplementationType.SUBPROCESS_LITERAL == activity
+          .getImplementation()
+          && activity.getImplementationProcess() != null) {
+       ProcessDefinitionType process = activity.getImplementationProcess();
+       if (process.getFormalParameters() != null) {
+          return PredefinedConstants.PROCESSINTERFACE_CONTEXT;
+       }
+    }
+    return PredefinedConstants.ENGINE_CONTEXT;
+ }
 
 	/**
 	 *
@@ -1766,49 +1236,6 @@ public class ModelService {
 
 	/**
 	 *
-	 * @param modelId
-	 * @param processId
-	 * @param connectionId
-	 * @return
-	 */
-	public String deleteConnection(String modelId, String processId,
-			long connectionOid) {
-		ModelType model = getModelManagementStrategy().getModels().get(modelId);
-		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
-				processId);
-		EditingSession editSession = getEditingSession(model);
-
-		synchronized (model) {
-			editSession.beginEdit();
-
-			try {
-				TransitionConnectionType transitionConnection = MBFacade.findTransitionConnectionByModelOid(
-						processDefinition, connectionOid);
-
-				processDefinition.getDiagram().get(0).getTransitionConnection()
-						.remove(transitionConnection);
-
-				if (transitionConnection.getTransition() != null) {
-					processDefinition.getTransition().remove(
-							transitionConnection.getTransition());
-				}
-			} catch (ObjectNotFoundException x) {
-				DataMappingConnectionType dataMappingConnection = MBFacade.findDataMappingConnectionByModelOid(
-						processDefinition, connectionOid);
-
-				processDefinition.getDiagram().get(0)
-						.getDataMappingConnection()
-						.remove(dataMappingConnection);
-			}
-
-			editSession.endEdit();
-		}
-
-		return new JsonObject().toString();
-	}
-
-	/**
-	 *
 	 * @param poolSymbol
 	 * @param poolSymbolJson
 	 * @return
@@ -1841,40 +1268,6 @@ public class ModelService {
 
 		return poolSymbolJson;
 	}
-
-	/**
-	 *
-	 * @param modelId
-	 * @param processId
-	 * @param postedData
-	 * @return
-	 */
-   public String createLane(String modelId, String processId, JsonObject commandJson)
-   {
-      JsonObject laneSymbolJson = commandJson.getAsJsonObject(NEW_OBJECT_PROPERTY);
-      ModelType model = getModelManagementStrategy().getModels().get(modelId);
-      ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model, processId);
-      EditingSession editSession = getEditingSession(model);
-      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-
-      String laneId = extractString(laneSymbolJson, ModelerConstants.ID_PROPERTY);
-      String laneName = extractString(laneSymbolJson, ModelerConstants.NAME_PROPERTY);
-      int xPos = extractInt(laneSymbolJson, X_PROPERTY);
-      int yPos = extractInt(laneSymbolJson, Y_PROPERTY);
-      int width = extractInt(laneSymbolJson, WIDTH_PROPERTY);
-      int height = extractInt(laneSymbolJson, HEIGHT_PROPERTY);
-      String orientation = extractString(laneSymbolJson, ModelerConstants.ORIENTATION_PROPERTY);
-      String participantFullID = extractString(laneSymbolJson, ModelerConstants.PARTICIPANT_FULL_ID);
-
-      synchronized (model)
-      {
-         editSession.beginEdit();
-         LaneSymbol laneSymbol = MBFacade.createLane(modelId, model, processDefinition, laneId, laneName, xPos, yPos, width, height, orientation, participantFullID);
-         laneSymbolJson.addProperty(OID_PROPERTY, laneSymbol.getElementOid());
-         editSession.endEdit();
-         return commandJson.toString();
-      }
-   }
 
 	/**
 	 *
@@ -2019,102 +1412,6 @@ public class ModelService {
 		return laneSymbolJson;
 	}
 
-	/**
-	 *
-	 * @param modelId
-	 * @param processId
-	 * @param postedData
-	 * @return
-	 */
-	public JsonObject createWebServiceApplication(String modelId,
-			JsonObject commandJson) {
-		ModelType model = getModelManagementStrategy().getModels().get(modelId);
-		JsonObject webServiceApplicationJson = commandJson
-				.getAsJsonObject(NEW_OBJECT_PROPERTY);
-
-		synchronized (model) {
-			// EditingSession editSession = model.getEditSession();
-			//
-			// editSession.beginEdit();
-
-			ApplicationType webServiceApplication = AbstractElementBuilder.F_CWM
-					.createApplicationType();
-
-			model.getApplication().add(webServiceApplication);
-
-			webServiceApplication.setId(extractString(
-					webServiceApplicationJson, ModelerConstants.ID_PROPERTY));
-			webServiceApplication.setName(extractString(
-					webServiceApplicationJson, ModelerConstants.NAME_PROPERTY));
-			webServiceApplication.setType(MBFacade.findApplicationTypeType(model,
-					WEB_SERVICE_APPLICATION_TYPE_ID));
-
-			webServiceApplicationJson.addProperty(APPLICATION_TYPE_PROPERTY,
-					WEB_SERVICE_APPLICATION_TYPE_ID);
-			webServiceApplicationJson.addProperty(MODEL_ID_PROPERTY,
-					model.getId());
-
-			// AttributeUtil.setAttribute(application, PredefinedConstants.,
-			// "");
-
-			// editSession.endEdit();
-
-			return commandJson;
-		}
-	}
-
-	/**
-	 *
-	 * @param modelId
-	 * @param processId
-	 * @param postedData
-	 * @return
-	 */
-	public JsonObject createMessageTransformationApplication(String modelId,
-			JsonObject commandJson) {
-		ModelType model = getModelManagementStrategy().getModels().get(modelId);
-		JsonObject messageTransformationApplicationJson = commandJson
-				.getAsJsonObject(NEW_OBJECT_PROPERTY);
-
-		synchronized (model) {
-			// EditingSession editSession = model.getEditSession();
-			//
-			// editSession.beginEdit();
-
-			ApplicationType messageTransformationApplication = AbstractElementBuilder.F_CWM
-					.createApplicationType();
-
-			model.getApplication().add(messageTransformationApplication);
-
-         messageTransformationApplication.setElementOid(XpdlModelUtils.getMaxUsedOid(model));
-         messageTransformationApplicationJson.addProperty(OID_PROPERTY, messageTransformationApplication.getElementOid());
-			messageTransformationApplication.setId(extractString(
-					messageTransformationApplicationJson, ModelerConstants.ID_PROPERTY));
-			messageTransformationApplication.setName(extractString(
-					messageTransformationApplicationJson, ModelerConstants.NAME_PROPERTY));
-			// messageTransformationApplication.setType(ModelBuilderFascade.findApplicationTypeType(model,
-			// MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID));
-
-			messageTransformationApplicationJson.addProperty(
-					APPLICATION_TYPE_PROPERTY,
-					MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID);
-			messageTransformationApplicationJson.addProperty(MODEL_ID_PROPERTY,
-					model.getId());
-
-			JsonObject accessPoints = new JsonObject();
-			messageTransformationApplicationJson.add(ACCESS_POINTS_PROPERTY,
-					accessPoints);
-
-			JsonArray fieldMappings = new JsonArray();
-			messageTransformationApplicationJson.add("fieldMappings",
-					fieldMappings);
-
-			// editSession.endEdit();
-
-			return commandJson;
-		}
-	}
-
 	public JsonObject updateMessageTransformationApplication(String modelId,
 			String applicationId,
 			JsonObject messageTransformationApplicationJson) {
@@ -2219,72 +1516,6 @@ public class ModelService {
 		// }
 	}
 
-	/**
-	 *
-	 * @param modelId
-	 * @param processId
-	 * @param postedData
-	 * @return
-	 */
-	public JsonObject createCamelApplication(String modelId,
-			JsonObject commandJson) {
-		ModelType model = getModelManagementStrategy().getModels().get(modelId);
-		JsonObject camelApplicationJson = commandJson
-				.getAsJsonObject(NEW_OBJECT_PROPERTY);
-
-		synchronized (model) {
-			// EditingSession editSession = model.getEditSession();
-			//
-			// editSession.beginEdit();
-
-			ApplicationType camelApplication = AbstractElementBuilder.F_CWM
-					.createApplicationType();
-
-			model.getApplication().add(camelApplication);
-
-         camelApplication.setElementOid(XpdlModelUtils.getMaxUsedOid(model));
-         camelApplicationJson.addProperty(OID_PROPERTY, camelApplication.getElementOid());
-			camelApplication.setId(extractString(camelApplicationJson,
-					ModelerConstants.ID_PROPERTY));
-			camelApplication.setName(extractString(camelApplicationJson,
-					ModelerConstants.NAME_PROPERTY));
-			// messageTransformationApplication.setType(ModelBuilderFascade.findApplicationTypeType(model,
-			// CAMEL_APPLICATION_TYPE_ID));
-
-			camelApplicationJson.addProperty(APPLICATION_TYPE_PROPERTY,
-					CAMEL_APPLICATION_TYPE_ID);
-			camelApplicationJson.addProperty(MODEL_ID_PROPERTY, model.getId());
-
-			JsonObject accessPoints = new JsonObject();
-			camelApplicationJson.add(ACCESS_POINTS_PROPERTY, accessPoints);
-
-			JsonObject accessPoint = new JsonObject();
-			accessPoints.add("InputMessage", accessPoint);
-
-			accessPoint.addProperty(ModelerConstants.ID_PROPERTY, "RequestMessage");
-			accessPoint.addProperty(ModelerConstants.NAME_PROPERTY, "Request Message");
-			accessPoint.addProperty(ACCESS_POINT_TYPE_PROPERTY,
-					JAVA_CLASS_ACCESS_POINT_KEY);
-			accessPoint.addProperty(DIRECTION_PROPERTY, IN_ACCESS_POINT_KEY);
-
-			accessPoint = new JsonObject();
-			accessPoints.add("OutputMessage", accessPoint);
-
-			accessPoint.addProperty(ModelerConstants.ID_PROPERTY, "ResponseMessage");
-			accessPoint.addProperty(ModelerConstants.NAME_PROPERTY, "Response Message");
-			accessPoint.addProperty(ACCESS_POINT_TYPE_PROPERTY,
-					JAVA_CLASS_ACCESS_POINT_KEY);
-			accessPoint.addProperty(DIRECTION_PROPERTY, OUT_ACCESS_POINT_KEY);
-
-			JsonObject fieldMappings = new JsonObject();
-			camelApplicationJson.add("fieldMappings", fieldMappings);
-
-			// editSession.endEdit();
-
-			return commandJson;
-		}
-	}
-
 	public JsonObject updateCamelApplication(String modelId,
 			String applicationId, JsonObject camelApplicationJson) {
 		// ModelType model =
@@ -2328,58 +1559,6 @@ public class ModelService {
 	/**
 	 *
 	 * @param modelId
-	 * @param processId
-	 * @param postedData
-	 * @return
-	 */
-	public JsonObject createExternalWebApplication(String modelId,
-			JsonObject commandJson) {
-		ModelType model = getModelManagementStrategy().getModels().get(modelId);
-		JsonObject externalWebApplicationJson = commandJson
-				.getAsJsonObject(NEW_OBJECT_PROPERTY);
-
-		synchronized (model) {
-			// EditingSession editSession = model.getEditSession();
-			//
-			// editSession.beginEdit();
-
-			ApplicationType externalWebApplication = AbstractElementBuilder.F_CWM
-					.createApplicationType();
-
-			model.getApplication().add(externalWebApplication);
-
-			externalWebApplication.setId(extractString(
-					externalWebApplicationJson, ModelerConstants.ID_PROPERTY));
-			externalWebApplication.setName(extractString(
-					externalWebApplicationJson, ModelerConstants.NAME_PROPERTY));
-			// TODO
-			// externalWebApplication.setType(ModelBuilderFascade.findApplicationContextTypeType(model,
-			// EXTERNAL_WEB_APPLICATION_TYPE_ID));
-
-			// AttributeUtil.setAttribute(application, PredefinedConstants.,
-			// "");
-
-			externalWebApplicationJson.addProperty(APPLICATION_TYPE_PROPERTY,
-					INTERACTIVE_APPLICATION_TYPE_KEY);
-
-			JsonObject contextsJson = new JsonObject();
-
-			JsonObject contextJson = new JsonObject();
-			contextsJson.add(EXTERNAL_WEB_APP_CONTEXT_TYPE_KEY, contextJson);
-
-			externalWebApplicationJson.add(CONTEXTS_PROPERTY, contextsJson);
-			externalWebApplicationJson.addProperty(MODEL_ID_PROPERTY,
-					model.getId());
-
-			// editSession.endEdit();
-
-			return commandJson;
-		}
-	}
-
-	/**
-	 *
-	 * @param modelId
 	 * @param postedData
 	 * @return
 	 */
@@ -2405,132 +1584,6 @@ public class ModelService {
 
 			return webServiceApplicationJson.toString();
 		}
-	}
-
-	/**
-	 *
-	 * @param modelId
-	 * @param processId
-	 * @param postedData
-	 * @return
-	 */
-	public JsonObject createStructuredDataType(String modelId,
-			JsonObject commandJson) {
-		ModelType model = getModelManagementStrategy().getModels().get(modelId);
-		JsonObject structuredDataTypeJson = commandJson
-				.getAsJsonObject(NEW_OBJECT_PROPERTY);
-
-		String typeId = extractString(structuredDataTypeJson,
-              ModelerConstants.ID_PROPERTY);
-		String typeName = extractString(structuredDataTypeJson,
-              ModelerConstants.NAME_PROPERTY);
-
-		synchronized (model) {
-			// EditingSession editSession = model.getEditSession();
-			//
-			// editSession.beginEdit();
-
-			MBFacade.createTypeDeclaration(model, typeId, typeName);
-
-			// TODO 
-         //structuredDataType.setElementOid(XpdlModelUtils.getMaxUsedOid(model));
-         //structuredDataTypeJson.addProperty(OID_PROPERTY, camelApplication.getElementOid());
-
-			structuredDataTypeJson
-					.addProperty(MODEL_ID_PROPERTY, model.getId());
-
-			JsonObject typeDeclarationJson = new JsonObject();
-			structuredDataTypeJson.add(TYPE_DECLARATION_PROPERTY,
-					typeDeclarationJson);
-
-			JsonObject childrenJson = new JsonObject();
-			typeDeclarationJson.add("children", childrenJson);
-
-			// editSession.endEdit();
-
-			return commandJson;
-		}
-	}
-
-
-
-	/**
-	 *
-	 * @param modelId
-	 * @param processId
-	 * @param eventType
-	 * @param postedData
-	 * @return
-	 */
-	public String createEvent(String modelId, String processId,
-			JsonObject commandJson) {
-		JsonObject eventSymbolJson = commandJson
-				.getAsJsonObject(NEW_OBJECT_PROPERTY);
-		ModelType model = getModelManagementStrategy().getModels().get(modelId);
-		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
-				processId);
-		EditingSession editSession = getEditingSession(model);
-
-		synchronized (model) {
-			editSession.beginEdit();
-
-			long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-
-			LaneSymbol parentLaneSymbol = MBFacade.findLaneInProcess(processDefinition,
-					extractString(eventSymbolJson, PARENT_SYMBOL_ID_PROPERTY));
-
-			if (START_EVENT.equals(extractString(eventSymbolJson,
-					ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY))) {
-				StartEventSymbol startEventSymbol = AbstractElementBuilder.F_CWM
-						.createStartEventSymbol();
-				startEventSymbol.setElementOid(++maxOid);
-
-				eventSymbolJson.addProperty(OID_PROPERTY,
-						startEventSymbol.getElementOid());
-
-				startEventSymbol
-						.setXPos(extractInt(eventSymbolJson, X_PROPERTY)
-								- parentLaneSymbol.getXPos());
-				startEventSymbol
-						.setYPos(extractInt(eventSymbolJson, Y_PROPERTY)
-								- parentLaneSymbol.getYPos());
-				startEventSymbol.setWidth(extractInt(eventSymbolJson,
-						WIDTH_PROPERTY));
-				startEventSymbol.setHeight(extractInt(eventSymbolJson,
-						HEIGHT_PROPERTY));
-
-				// TODO evaluate other properties
-
-				processDefinition.getDiagram().get(0).getStartEventSymbols()
-						.add(startEventSymbol);
-				parentLaneSymbol.getStartEventSymbols().add(startEventSymbol);
-			} else {
-				EndEventSymbol endEventSymbol = AbstractElementBuilder.F_CWM
-						.createEndEventSymbol();
-				endEventSymbol.setElementOid(++maxOid);
-
-				eventSymbolJson.addProperty(OID_PROPERTY,
-						endEventSymbol.getElementOid());
-
-				endEventSymbol.setXPos(extractInt(eventSymbolJson, X_PROPERTY)
-						- parentLaneSymbol.getXPos());
-				endEventSymbol.setYPos(extractInt(eventSymbolJson, Y_PROPERTY)
-						- parentLaneSymbol.getYPos());
-				endEventSymbol.setWidth(extractInt(eventSymbolJson,
-						WIDTH_PROPERTY));
-				endEventSymbol.setHeight(extractInt(eventSymbolJson,
-						HEIGHT_PROPERTY));
-
-				processDefinition.getDiagram().get(0).getEndEventSymbols()
-						.add(endEventSymbol);
-
-				parentLaneSymbol.getEndEventSymbols().add(endEventSymbol);
-			}
-
-			editSession.endEdit();
-		}
-
-		return commandJson.toString();
 	}
 
 	/**

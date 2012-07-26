@@ -153,41 +153,6 @@ public class ModelerResource {
 		}
 	}
 
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("models")
-	public Response createModel(String postedData) {
-		try {
-			JsonObject json = jsonIo.readJsonObject(postedData);
-
-			String result = getModelService().createModel(getNextId(), json);
-			return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-	}
-
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("models/createWithId/{modelId}")
-	public Response createModel(@PathParam("modelId") String modelId,
-			String postedData) {
-		try {
-			JsonObject json = jsonIo.readJsonObject(postedData);
-
-			String result = getModelService().createModel(modelId, json);
-			return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-	}
-
 	@DELETE
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -411,23 +376,6 @@ public class ModelerResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("models/{id}/processes")
-	public Response createProcess(@PathParam("id") String modelId,
-			String postedData) {
-		try {
-			String result = getModelService().createProcess(modelId,
-					jsonIo.readJsonObject(postedData));
-			return Response.ok(result, APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-	}
-
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
 	@Path("models/{modelId}/processes/{processId}/diagrams/{diagramId}")
 	public Response updateDiagram(@PathParam("modelId") String modelId,
 			@PathParam("processId") String processId,
@@ -437,23 +385,6 @@ public class ModelerResource {
 
 			String result = getModelService().updateProcessDiagram(modelId,
 					processId, diagramId, json);
-			return Response.ok(result, APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-	}
-
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("models/{modelId}/processes/{processId}/activities")
-	public Response createActivity(@PathParam("modelId") String modelId,
-			@PathParam("processId") String processId, String postedData) {
-		try {
-			String result = getModelService().createActivity(modelId,
-					processId, jsonIo.readJsonObject(postedData));
 			return Response.ok(result, APPLICATION_JSON_TYPE).build();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -504,47 +435,6 @@ public class ModelerResource {
 		}
 	}
 
-	@DELETE
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("models/{modelId}/processes/{processId}/activities/{activityId}")
-	public Response deleteActivity(@PathParam("modelId") String modelId,
-			@PathParam("processId") String processId,
-			@PathParam("activityId") String activityId, String postedData) {
-		try {
-			JsonObject json = jsonIo.readJsonObject(postedData);
-
-			String result = getModelService().deleteActivity(modelId,
-					processId, activityId, json);
-
-			return Response.ok(result, APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			throw new RuntimeException(e);
-		}
-	}
-
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("models/{modelId}/processes/{processId}/gateways")
-	public Response createGateway(@PathParam("modelId") String modelId,
-			@PathParam("processId") String processId, String postedData) {
-		try {
-			JsonObject json = jsonIo.readJsonObject(postedData);
-
-			String result = getModelService().createGateway(modelId, processId,
-					json);
-
-			return Response.ok(result, APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			throw new RuntimeException(e);
-		}
-	}
-
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -562,25 +452,6 @@ public class ModelerResource {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-	}
-
-	@DELETE
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("models/{modelId}/processes/{processId}/gateways/{gatewayId}")
-	public Response updateGateway(@PathParam("modelId") String modelId,
-			@PathParam("processId") String processId,
-			@PathParam("gatewayId") String gatewayId) {
-		try {
-			String result = getModelService().deleteGateway(modelId, processId,
-					gatewayId);
-
-			return Response.ok(result, APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			e.printStackTrace();
-
 			throw new RuntimeException(e);
 		}
 	}
@@ -610,25 +481,6 @@ public class ModelerResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("models/{modelId}/processes/{processId}/connections")
-	public Response createConnection(@PathParam("modelId") String modelId,
-			@PathParam("processId") String processId, String postedData) {
-		try {
-			JsonObject json = jsonIo.readJsonObject(postedData);
-
-			String result = getModelService().createConnection(modelId,
-					processId, json);
-			return Response.ok(result, APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			throw new RuntimeException(e);
-		}
-	}
-
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
 	@Path("models/{modelId}/processes/{processId}/connections/{connectionOid}")
 	public Response updateConnection(@PathParam("modelId") String modelId,
 			@PathParam("processId") String processId,
@@ -638,43 +490,6 @@ public class ModelerResource {
 
 			String result = getModelService().updateConnection(modelId,
 					processId, connectionOid, json);
-			return Response.ok(result, APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			throw new RuntimeException(e);
-		}
-	}
-
-	@DELETE
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("models/{modelId}/processes/{processId}/connections/{connectionOid}")
-	public Response deleteConnection(@PathParam("modelId") String modelId,
-			@PathParam("processId") String processId,
-			@PathParam("connectionOid") long connectionOid) {
-		try {
-			String result = getModelService().deleteConnection(modelId,
-					processId, connectionOid);
-			return Response.ok(result, APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			throw new RuntimeException(e);
-		}
-	}
-
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("models/{modelId}/processes/{processId}/events")
-	public Response createEvent(@PathParam("modelId") String modelId,
-			@PathParam("processId") String processId, String postedData) {
-		try {
-			JsonObject json = jsonIo.readJsonObject(postedData);
-
-			String result = getModelService().createEvent(modelId, processId,
-					json);
 			return Response.ok(result, APPLICATION_JSON_TYPE).build();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -697,27 +512,6 @@ public class ModelerResource {
 					eventId, json);
 			return Response.ok(result, APPLICATION_JSON_TYPE).build();
 		} catch (Exception e) {
-			e.printStackTrace();
-
-			throw new RuntimeException(e);
-		}
-	}
-
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("models/{modelId}/processes/{processId}/lanes")
-	public Response createLane(@PathParam("modelId") String modelId,
-			@PathParam("processId") String processId, String postedData) {
-		try {
-			JsonObject json = jsonIo.readJsonObject(postedData);
-
-			String result = getModelService().createLane(modelId, processId,
-					json);
-
-			return Response.ok(result, APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 
 			throw new RuntimeException(e);
@@ -978,49 +772,6 @@ public class ModelerResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("models/{modelId}/applications/webServiceApplications")
-	public Response createWebServiceApplication(
-			@PathParam("modelId") String modelId, String postedData) {
-
-		try {
-			JsonObject json = jsonIo.readJsonObject(postedData);
-
-			json = getModelService().createWebServiceApplication(modelId, json);
-
-			return Response.ok(jsonIo.writeJsonObject(json),
-					APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			return Response.serverError().build();
-		}
-	}
-
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("models/{modelId}/applications/messageTransformationApplications")
-	public Response createMessageTransformationApplication(
-			@PathParam("modelId") String modelId, String postedData) {
-
-		try {
-			JsonObject json = jsonIo.readJsonObject(postedData);
-
-			json = getModelService().createMessageTransformationApplication(
-					modelId, json);
-
-			return Response.ok(jsonIo.writeJsonObject(json),
-					APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			return Response.serverError().build();
-		}
-	}
-
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
 	@Path("models/{modelId}/applications/messageTransformationApplications/{applicationId}")
 	public Response updateMessageTransformationApplication(
 			@PathParam("modelId") String modelId,
@@ -1044,27 +795,6 @@ public class ModelerResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("models/{modelId}/applications/camelApplications")
-	public Response createCamelApplication(
-			@PathParam("modelId") String modelId, String postedData) {
-
-		try {
-			JsonObject json = jsonIo.readJsonObject(postedData);
-
-			json = getModelService().createCamelApplication(modelId, json);
-
-			return Response.ok(jsonIo.writeJsonObject(json),
-					APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			return Response.serverError().build();
-		}
-	}
-
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
 	@Path("models/{modelId}/applications/camelApplications/{applicationId}")
 	public Response updateCamelApplication(
 			@PathParam("modelId") String modelId,
@@ -1075,49 +805,6 @@ public class ModelerResource {
 
 			json = getModelService().updateCamelApplication(modelId,
 					applicationId, json);
-
-			return Response.ok(jsonIo.writeJsonObject(json),
-					APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			return Response.serverError().build();
-		}
-	}
-
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("models/{modelId}/applications/externalWebApplications")
-	public Response createExternalWebApplication(
-			@PathParam("modelId") String modelId, String postedData) {
-
-		try {
-			JsonObject json = jsonIo.readJsonObject(postedData);
-
-			json = getModelService()
-					.createExternalWebApplication(modelId, json);
-
-			return Response.ok(jsonIo.writeJsonObject(json),
-					APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			return Response.serverError().build();
-		}
-	}
-
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("models/{modelId}/structuredDataTypes")
-	public Response createStructuredDataType(
-			@PathParam("modelId") String modelId, String postedData) {
-
-		try {
-			JsonObject json = jsonIo.readJsonObject(postedData);
-
-			json = getModelService().createStructuredDataType(modelId, json);
 
 			return Response.ok(jsonIo.writeJsonObject(json),
 					APPLICATION_JSON_TYPE).build();
