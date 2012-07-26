@@ -539,7 +539,12 @@ define(
 
 						for ( var i = 0; i < obj.changes.added.length; i++) {
 							if (null != this.lastSymbol) {
-								this.lastSymbol.oid = obj.changes.added[i].oid;
+								if (null != this.lastSymbol.modelElement
+										&& null == this.lastSymbol.modelElement.oid) {
+									this.lastSymbol.modelElement.oid = obj.changes.added[i].oid;
+								} else {
+									this.lastSymbol.oid = obj.changes.added[i].oid;
+								}
 							} else if (null != obj.changes.added[i].modelElement) {
 								// for connections , search by connectionId to
 								// set OID
@@ -551,11 +556,10 @@ define(
 								}
 							}
 						}
-
 						this.lastSymbol = null;
-
+						
 						// Apply changes
-
+						
 						for ( var i = 0; i < obj.changes.modified.length; i++) {
 							var symbol = this
 									.findSymbolByGuid(obj.changes.modified[i].oid);
@@ -575,7 +579,10 @@ define(
 							if (symbol != null) {
 								m_utils.debug("Up to changed symbol:");
 								m_utils.debug(symbol);
-								symbol.applyChanges(obj.changes.modified[i]);
+								// Modifies only modelElement,rather than whole
+								// symbol
+								m_utils.inheritFields(symbol.modelElement, obj.changes.modified[i]);
+								/*symbol.applyChanges(obj.changes.modified[i]);*/
 								m_utils.debug("Changed symbol to:");
 								m_utils.debug(symbol);
 								symbol.refresh();

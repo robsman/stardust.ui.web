@@ -70,6 +70,10 @@ public class ModelElementMarshaller
       {
          jsResult = toProcessDefinition((ProcessDefinitionType) modelElement);
       }
+      else if (modelElement instanceof ActivityType)
+      {
+         jsResult = toActivityType((ActivityType) modelElement);
+      }
       else if (modelElement instanceof ActivitySymbolType)
       {
          jsResult = toActivitySymbolJson((ActivitySymbolType) modelElement);
@@ -500,6 +504,75 @@ public class ModelElementMarshaller
 
    /**
     * 
+    * @param activity
+    * @return
+    */
+   public static JsonObject toActivityType(ActivityType activity)
+   {
+      JsonObject activityJson = new JsonObject();
+
+      activityJson.addProperty(ModelerConstants.OID_PROPERTY, activity.getElementOid());
+      activityJson.addProperty(ModelerConstants.ID_PROPERTY, activity.getId());
+      activityJson.addProperty(ModelerConstants.NAME_PROPERTY, activity.getName());
+
+      loadDescription(activityJson, activity);
+      loadAttributes(activity, activityJson);
+
+      // TODO Hack to identify gateways
+
+      if (activity.getId().toLowerCase().startsWith("gateway"))
+      {
+         activityJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+               ModelerConstants.ACTIVITY_KEY);
+         activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
+               ModelerConstants.GATEWAY_ACTIVITY);
+
+         // TODO Throw error for inconsistent Split/Join settings
+
+         if (activity.getJoin() == JoinSplitType.XOR_LITERAL)
+         {
+            activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
+                  ModelerConstants.XOR_GATEWAY_TYPE);
+         }
+         else if (activity.getJoin() == JoinSplitType.AND_LITERAL)
+         {
+            activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
+                  ModelerConstants.AND_GATEWAY_TYPE);
+         }
+         else if (activity.getSplit() == JoinSplitType.XOR_LITERAL)
+         {
+            activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
+                  ModelerConstants.XOR_GATEWAY_TYPE);
+         }
+         else if (activity.getSplit() == JoinSplitType.AND_LITERAL)
+         {
+            activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
+                  ModelerConstants.AND_GATEWAY_TYPE);
+         }
+      }
+      else
+      {
+         activityJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+               ModelerConstants.ACTIVITY_KEY);
+         activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
+               activity.getImplementation().getLiteral());
+         if (activity.getImplementationProcess() != null)
+         {
+            activityJson.addProperty(ModelerConstants.SUBPROCESS_ID,
+                  MBFacade.createFullId(ModelUtils.findContainingModel(activity),
+                        activity.getImplementationProcess()));
+         }
+         else if (activity.getApplication() != null)
+         {
+            activityJson.addProperty(ModelerConstants.APPLICATION_FULL_ID_PROPERTY,
+                  MBFacade.createFullId(ModelUtils.findContainingModel(activity),
+                        activity.getApplication()));
+         }
+      }
+      return activityJson;
+   }
+   /**
+    * 
     * @param activitySymbol
     * @return
     */
@@ -536,48 +609,14 @@ public class ModelElementMarshaller
             activitySymbol.getHeight());
 
       ActivityType activity = activitySymbol.getActivity();
-      JsonObject activityJson = new JsonObject();
+      JsonObject activityJson = toActivityType(activity);
 
       activitySymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, activityJson);
-      activityJson.addProperty(ModelerConstants.OID_PROPERTY, activity.getElementOid());
-      activityJson.addProperty(ModelerConstants.ID_PROPERTY, activity.getId());
-      activityJson.addProperty(ModelerConstants.NAME_PROPERTY, activity.getName());
-
-      loadDescription(activityJson, activity);
-      loadAttributes(activity, activityJson);
 
       // TODO Hack to identify gateways
 
       if (activity.getId().toLowerCase().startsWith("gateway"))
       {
-         activityJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-               ModelerConstants.ACTIVITY_KEY);
-         activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
-               ModelerConstants.GATEWAY_ACTIVITY);
-
-         // TODO Throw error for inconsistent Split/Join settings
-         
-         if (activity.getJoin() == JoinSplitType.XOR_LITERAL)
-         {
-            activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
-                  ModelerConstants.XOR_GATEWAY_TYPE);
-         }
-         else if (activity.getJoin() == JoinSplitType.AND_LITERAL)
-         {
-            activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
-                  ModelerConstants.AND_GATEWAY_TYPE);
-         }
-         else if (activity.getSplit() == JoinSplitType.XOR_LITERAL)
-         {
-            activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
-                  ModelerConstants.XOR_GATEWAY_TYPE);
-         }
-         else if (activity.getSplit() == JoinSplitType.AND_LITERAL)
-         {
-            activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
-                  ModelerConstants.AND_GATEWAY_TYPE);
-         }
-
          // TODO Refactor
          // Identify the gateway symbol for this activity and update the
          // location and dimension attributes.
@@ -606,25 +645,6 @@ public class ModelElementMarshaller
             activitySymbolJson.remove(ModelerConstants.HEIGHT_PROPERTY);
             activitySymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
                   thisGatewaySymbol.getHeight());
-         }
-      }
-      else
-      {
-         activityJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-               ModelerConstants.ACTIVITY_KEY);
-         activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
-               activity.getImplementation().getLiteral());
-         if (activity.getImplementationProcess() != null)
-         {
-            activityJson.addProperty(ModelerConstants.SUBPROCESS_ID,
-                  MBFacade.createFullId(ModelUtils.findContainingModel(activity),
-                        activity.getImplementationProcess()));
-         }
-         else if (activity.getApplication() != null)
-         {
-            activityJson.addProperty(ModelerConstants.APPLICATION_FULL_ID_PROPERTY,
-                  MBFacade.createFullId(ModelUtils.findContainingModel(activity),
-                        activity.getApplication()));
          }
       }
 
