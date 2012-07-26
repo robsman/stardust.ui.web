@@ -116,14 +116,14 @@ var extensions = {
 		id : "undoButton",
 		paletteId : "drawingPalette",
 		title : "Undo",
-		iconUrl : "../../images/icons/undo.gif",
+		iconUrl : "../../images/icons/undo.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "undo"
 	}, {
 		id : "redoButton",
 		paletteId : "drawingPalette",
 		title : "Redo",
-		iconUrl : "../../images/icons/redo.gif",
+		iconUrl : "../../images/icons/redo.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "redo"
 	}, {
