@@ -4,13 +4,13 @@
 
 define(
 		[ "m_utils", "m_constants", "m_messageDisplay",
-				"m_modelerToolbarController", "m_canvasManager",
+				"m_canvasManager",
 				"m_communicationController", "m_constants", "m_logger",
 				"m_commandsController", "m_diagram", "m_activitySymbol",
 				"m_eventSymbol", "m_gatewaySymbol", "m_dataSymbol", "m_model",
 				"m_process", "m_activity", "m_data" ],
 		function(m_utils, m_constants, m_messageDisplay,
-				m_modelerToolbarController, m_canvasManager,
+				m_canvasManager,
 				m_communicationController, m_constants, m_logger,
 				m_commandsController, m_diagram, m_activitySymbol,
 				m_eventSymbol, m_gatewaySymbol, m_dataSymbol, m_model,
@@ -68,306 +68,6 @@ define(
 				"dataassoc" : "/dataassociations",
 				"dataSymbol" : "/dataSymbols",
 				"roleSymbol" : "/roleSymbols"
-			};
-
-			var toolActions = {
-				selectModeToolAction : function(event, data) {
-					diagram.setSelectMode();
-
-					m_modelerToolbarController.resetCurrentSelection();
-				},
-
-				separatorModeToolAction : function(event, data) {
-					diagram.setSeparatorMode();
-
-					m_modelerToolbarController.resetCurrentSelection();
-				},
-
-				activityToolAction : function(event, data) {
-					diagram.newSymbol = m_activitySymbol.createActivitySymbol(
-							diagram, m_constants.MANUAL_ACTIVITY_TYPE);
-
-					m_modelerToolbarController.resetCurrentSelection();
-				},
-
-				createswimlaneToolAction : function(event, data) {
-					diagram.poolSymbol.createSwimlaneSymbol();
-
-					m_modelerToolbarController.resetCurrentSelection();
-				},
-
-				starteventToolAction : function(event, data) {
-					diagram.newSymbol = m_eventSymbol
-							.createStartEventSymbol(diagram);
-
-					m_modelerToolbarController.resetCurrentSelection();
-				},
-
-				endeventToolAction : function(event, data) {
-					diagram.newSymbol = m_eventSymbol
-							.createStopEventSymbol(diagram);
-
-					m_modelerToolbarController.resetCurrentSelection();
-				},
-
-				dataToolAction : function(event, data) {
-					diagram.newSymbol = m_dataSymbol.createDataSymbol(diagram);
-
-					m_modelerToolbarController.resetCurrentSelection();
-				},
-
-				gatewayToolAction : function(event, data) {
-					diagram.newSymbol = m_gatewaySymbol
-							.createGatewaySymbol(diagram);
-
-					m_modelerToolbarController.resetCurrentSelection();
-				},
-
-				newConnectorToolAction : function(event, data) {
-					diagram.mode = diagram.CONNECTION_MODE;
-					m_messageDisplay
-							.showMessage("Select first anchor point for connection.");
-				},
-
-				zoomInToolAction : function(event, data) {
-					diagram.zoomIn();
-				},
-
-				zoomOutToolAction : function(event, data) {
-					diagram.zoomOut();
-				},
-
-				printToolAction : function(event, data) {
-					diagram.print();
-				},
-
-				flipOrientationToolAction : function(event, data) {
-					diagram.flipFlowOrientation();
-				},
-
-				saveToolAction : function(event, data) {
-					// jQuery("#saveModelForm").submit();
-					m_communicationController
-							.syncGetData(
-									{
-										url : getEndpointUrl() + "/models/"
-												+ modelId
-									},
-									new function() {
-										return {
-											success : function(data) {
-												m_messageDisplay.markSaved();
-												m_messageDisplay
-														.showMessage("Model saved successfully to /process-models/"
-																+ modelId
-																+ ".xpdl");
-											},
-
-											failure : function(data) {
-											}
-										}
-									});
-				},
-
-				loadToolAction : function(event, data) {
-					m_communicationController
-							.syncGetData(
-									{
-										url : getEndpointUrl() + "/models/"
-												+ modelId + "/process/"
-												+ processId + "/loadModel"
-									},
-									new function() {
-										return {
-											success : function(json) {
-												resetState();
-												// console.log("Model loaded
-												// successfully", json);
-												// separate out activities and
-												// connectors
-												var acts = jQuery
-														.map(
-																json,
-																function(val, i) {
-																	if (val.type == "activity") {
-																		return val;
-																	}
-																});
-
-												jQuery
-														.each(
-																acts,
-																function(index,
-																		val) {
-																	drawActivity(
-																			val.props.dimensions.x,
-																			val.props.dimensions.y,
-																			activityDefaultWidth,
-																			activityDefaultHeight,
-																			val.props.text,
-																			val.props.text,
-																			'Recreate',
-																			{
-																				"id" : val.id,
-																				"description" : val.description
-																			});
-																});
-
-												var events = jQuery
-														.map(
-																json,
-																function(val, i) {
-																	if (val.type == "start"
-																			|| val.type == "end") {
-																		return val;
-																	}
-																});
-
-												jQuery
-														.each(
-																events,
-																function(index,
-																		val) {
-																	drawEvent(
-																			val.props.dimensions.x,
-																			val.props.dimensions.y,
-																			val.type,
-																			'Recreate',
-																			val.id);
-																});
-
-												var cons = jQuery
-														.map(
-																json,
-																function(val, i) {
-																	if (val.type == "connector") {
-																		return val;
-																	}
-																});
-
-												jQuery
-														.each(
-																cons,
-																function(index,
-																		val) {
-																	// console.log("Iterating
-																	// on
-																	// connections");
-																	var sourceId = val.props.ends.source;
-																	// console.log("Source
-																	// activity
-																	// id = ",
-																	// sourceId);
-																	var targetId = val.props.ends.target;
-																	// console.log("Target
-																	// activity
-																	// id = ",
-																	// targetId);
-
-																	var sourceAct = jQuery
-																			.grep(
-																					allAnnotationsList,
-																					function(
-																							val,
-																							i) {
-																						// console.log("val.id
-																						// =",
-																						// val.customProps.id);
-																						var result = val.customProps.id == sourceId;
-																						// console.log("Result
-																						// = ",
-																						// result);
-																						return result;
-																					});
-																	// console.log("sourceAct
-																	// = ",
-																	// sourceAct.id);
-
-																	var targetAct = jQuery
-																			.grep(
-																					allAnnotationsList,
-																					function(
-																							val,
-																							i) {
-																						// console.log("val.id
-																						// = ",
-																						// val.customProps.id);
-																						var result = val.customProps.id == targetId;
-																						// console.log("Result
-																						// = ",
-																						// result);
-																						return result;
-																					});
-																	// console.log("targetAct
-																	// = ",
-																	// targetAct.id);
-
-																	addConnectionEnd(
-																			sourceAct[0],
-																			true);
-																	addConnectionEnd(
-																			targetAct[0],
-																			true);
-																});
-											},
-											failure : function() {
-												alert('Error occured');
-											}
-										}
-									});
-				},
-
-				undoToolAction : function(event, data) {
-					m_communicationController.postData({url: getEndpointUrl() + "/sessions/changes/mostCurrent/navigation"},
-							"undoMostCurrent",
-							{success: function(data) {
-						m_utils.debug("Undo");
-						m_utils.debug(data);
-
-						m_commandsController
-								.broadcastCommandUndo(data);
-
-						if (null != data.pendingUndo) {
-							jQuery("#undo").removeAttr("disabled", "disabled");
-						} else {
-							jQuery("#undo").attr("disabled", "disabled");
-						}
-
-						if (null != data.pendingRedo) {
-							jQuery("#redo").removeAttr("disabled", "disabled");
-						} else {
-							jQuery("#redo").attr("disabled", "disabled");
-						}
-					}});
-				},
-
-				redoToolAction : function(event, data) {
-					m_communicationController.postData({url: getEndpointUrl() + "/sessions/changes/mostCurrent/navigation"},
-							"redoLastUndo",
-							{success: function(data) {
-								m_utils.debug("Redo");
-								m_utils.debug(data);
-
-								m_commandsController
-										.broadcastCommand(data);
-
-								if (null != data.pendingUndo) {
-									jQuery("#undo").removeAttr("disabled",
-											"disabled");
-								} else {
-									jQuery("#undo")
-											.attr("disabled", "disabled");
-								}
-
-								if (null != data.pendingRedo) {
-									jQuery("#redo").removeAttr("disabled",
-											"disabled");
-								} else {
-									jQuery("#redo")
-											.attr("disabled", "disabled");
-								}
-							}});
-				}
 			};
 
 			return {
@@ -516,7 +216,6 @@ define(
 
 					diagram.initialize();
 
-					m_modelerToolbarController.init(toolbarDiv);
 					m_commandsController.init(true, false);
 					setupEventHandling(this);
 
@@ -578,32 +277,6 @@ define(
 			;
 
 			function setupEventHandling(self) {
-				jQuery(document).bind(
-						m_constants.CANVAS_CLICKED_EVENT,
-						function(event, data) {
-							deHighlightAnnotation();
-
-							currentlySelectedAnnotation = null; // Reset any
-							// previous
-							// selection of
-							// annotation.
-							var handler = m_modelerToolbarController
-									.getCurrentSelection()
-									+ "ToolAction";
-
-							if (typeof toolActions[handler] == 'function') {
-								toolActions[handler](event, data);
-							}
-						});
-
-				// This event is only fired for Zoom, Save etc.
-
-				jQuery(document).bind("TOOL_CLICKED_EVENT",
-						function(event, data) {
-							var handler = data.id + "ToolAction";
-							toolActions[handler](event, data);
-						});
-
 				jQuery("#dialog-form").dialog({
 					autoOpen : false,
 					height : 70,
@@ -651,8 +324,6 @@ define(
 										}
 									}
 								});
-								m_modelerToolbarController
-										.resetCurrentSelection();
 							}
 						});
 
@@ -964,7 +635,7 @@ define(
 				};
 
 				var icon = m_canvasManager.drawImageAt(
-						"../../images/icons/activity_subprocess.gif",
+						"../../images/icons/activity-subprocess.png",
 						parseInt(x) + 5, parseInt(y) + 5, 20, 16);
 
 				setId(txt, rect.customProps.id);
@@ -2028,27 +1699,6 @@ define(
 
 				allAnnotationsList.push(eventSymbol);
 				return eventSymbol;
-			}
-
-			function setOnclickSelectHandling(element) {
-				jQuery(element.node).click(
-						function(event) {
-							deHighlightAnnotation();
-							currentlySelectedAnnotation = element;
-							highlightAnnotation(element);
-							if ('connector' == m_modelerToolbarController
-									.getCurrentSelection()) {
-								addConnectionEnd(element, false);
-							}
-							event.stopPropagation();
-						});
-			}
-
-			function setOnclickHandlingForText(textElement, rectElement) {
-				jQuery(textElement.node).click(function(event) {
-					event.stopPropagation();
-					jQuery(rectElement.node).trigger('click');
-				});
 			}
 
 			function setUniqueId(object) {

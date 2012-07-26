@@ -12,12 +12,12 @@
  * 
  */
 define([ "m_utils", "m_constants", "m_messageDisplay",
-		"m_modelerToolbarController", "m_canvasManager",
+		"m_canvasManager",
 		"m_communicationController", "m_constants", "m_logger",
 		"m_commandsController", "m_diagram", "m_activitySymbol",
 		"m_eventSymbol", "m_gatewaySymbol", "m_dataSymbol", "m_model",
 		"m_process", "m_activity", "m_data" ], function(m_utils, m_constants,
-		m_messageDisplay, m_modelerToolbarController, m_canvasManager,
+		m_messageDisplay, m_canvasManager,
 		m_communicationController, m_constants, m_logger, m_commandsController,
 		m_diagram, m_activitySymbol, m_eventSymbol, m_gatewaySymbol,
 		m_dataSymbol, m_model, m_process, m_activity, m_data) {
@@ -25,51 +25,35 @@ define([ "m_utils", "m_constants", "m_messageDisplay",
 	return {
 		setSelectMode : function(diagram) {
 			diagram.setSelectMode();
-
-			m_modelerToolbarController.resetCurrentSelection();
 		},
 
 		setSeparatorMode : function(diagram) {
 			diagram.setSeparatorMode();
-
-			m_modelerToolbarController.resetCurrentSelection();
 		},
 
 		createActivity : function(diagram) {
 			diagram.newSymbol = m_activitySymbol.createActivitySymbol(diagram,
 					m_constants.MANUAL_ACTIVITY_TYPE);
-
-			m_modelerToolbarController.resetCurrentSelection();
 		},
 
 		createSwimlane : function(diagram) {
 			diagram.poolSymbol.createSwimlaneSymbol();
-
-			m_modelerToolbarController.resetCurrentSelection();
 		},
 
 		createStartEvent : function(diagram) {
 			diagram.newSymbol = m_eventSymbol.createStartEventSymbol(diagram);
-
-			m_modelerToolbarController.resetCurrentSelection();
 		},
 
 		createEndEvent : function(diagram) {
 			diagram.newSymbol = m_eventSymbol.createStopEventSymbol(diagram);
-
-			m_modelerToolbarController.resetCurrentSelection();
-		},
+	},
 
 		createData : function(diagram) {
 			diagram.newSymbol = m_dataSymbol.createDataSymbol(diagram);
-
-			m_modelerToolbarController.resetCurrentSelection();
 		},
 
 		createGateway : function(diagram) {
 			diagram.newSymbol = m_gatewaySymbol.createGatewaySymbol(diagram);
-
-			m_modelerToolbarController.resetCurrentSelection();
 		},
 
 		createConnector : function(diagram) {

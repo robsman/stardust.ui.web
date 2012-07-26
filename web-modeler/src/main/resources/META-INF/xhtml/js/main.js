@@ -15,7 +15,7 @@ require([ "m_jqueryConflictResolver", "extensions_raphael",
 		"m_communicationController", "m_canvasManager", "m_toolbarManager",
 		"m_modelerViewLayoutManager", "m_urlUtils", "m_constants", "m_user",
 		"m_command", "m_commandsController", "m_accessPoint",
-		"m_modelerToolbarController", "m_diagram", "m_modelerCanvasController",
+		"m_diagram", "m_modelerCanvasController",
 		"m_propertiesPanel", 
 
 		// TODO Do we need these
