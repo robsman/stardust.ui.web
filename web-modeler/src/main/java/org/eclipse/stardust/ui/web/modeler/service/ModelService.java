@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.w3c.dom.Node;
 
@@ -90,6 +91,9 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
+//import org.eclipse.stardust.modeling.validation.Issue;
+//import org.eclipse.stardust.modeling.validation.ValidationService;
+//import org.eclipse.stardust.modeling.validation.ValidatorRegistry;
 import org.eclipse.stardust.ui.web.modeler.edit.EditingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
@@ -1972,5 +1976,60 @@ public class ModelService {
 	public ModelType findModel(String modelId)
 	{
 	    return MBFacade.findModel(modelId);
+	}
+	
+	
+	public JsonObject ValidateModel(String modelId)
+	{
+      ModelType model = getModelManagementStrategy().getModels().get(modelId);
+
+      if(model == null)
+      {
+         return null;
+      }
+      
+      //ValidatorRegistry.setValidationExtensionRegistry(ValidationExtensionRegistry.getInstance());
+      //ValidationService validationService = ValidationService.getInstance();
+      
+      JsonObject response = new JsonObject();
+	   
+      JsonArray jsIssues = new JsonArray();
+      response.add("issues", jsIssues);
+	   
+/*      
+	   Issue[] issues = validationService.validateModel(model);
+      for (int i = 0; i < issues.length; i++)
+      {
+         Issue issue = issues[i];
+         
+         JsonObject jsIssue = new JsonObject();
+         jsIssue.addProperty("message", issue.getMessage());
+         jsIssue.addProperty("severity", issue.getSeverity());         
+         EObject modelElement = issue.getModelElement();         
+         jsIssue.addProperty("modelElement", modelElement != null ? modelElement.toString() : null);
+         
+         jsIssues.add(jsIssue);         
+      }	   
+*/
+
+      JsonObject jsIssue = new JsonObject();
+      jsIssue.addProperty("message", "invalid id");
+      jsIssue.addProperty("severity", 2);         
+      jsIssue.addProperty("modelElement", model.getId() + "/Role1/00177" );      
+      jsIssues.add(jsIssue);         
+      
+      jsIssue = new JsonObject();
+      jsIssue.addProperty("message", "duplicate id");
+      jsIssue.addProperty("severity", 2);         
+      jsIssue.addProperty("modelElement", model.getId() + "/Activity2/00277" );      
+      jsIssues.add(jsIssue);         
+
+      jsIssue = new JsonObject();
+      jsIssue.addProperty("message", "invalid id");
+      jsIssue.addProperty("severity", 2);         
+      jsIssue.addProperty("modelElement", model.getId() + "/PrimitiveData2/00199" );      
+      jsIssues.add(jsIssue);               
+      
+      return response;
 	}
 }
