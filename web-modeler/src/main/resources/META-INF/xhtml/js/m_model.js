@@ -86,6 +86,26 @@ define(
 
 					return null;
 				},
+				/**
+				 * Fetches the element with given OID within the given modelId.
+				 * 
+				 * @param guid
+				 * @returns
+				 */
+				findModelElementInModelByGuid : function(modelId, guid) {
+					var model = null;
+					var element = null;
+
+					for ( var index in getModels()) {
+						model = getModels()[index];
+						if (model.id == modelId
+								&& (element = model.findModelElementByGuid(guid)) != null) {
+							return element;
+						}
+					}
+
+					return null;
+				},
 				findElementTypeByPath : function(path) {
 					var steps = path.split("/");
 

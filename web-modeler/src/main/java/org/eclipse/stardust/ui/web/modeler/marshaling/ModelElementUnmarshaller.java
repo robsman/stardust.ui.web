@@ -81,7 +81,7 @@ public class ModelElementUnmarshaller
       modelElementReferencePropertiesMap = new HashMap<Class, String[]>();
 
       modelElementPropertiesMap.put(ProcessDefinitionType.class, new String[] {
-         "name"});
+         "name", "id"});
       symbolPropertiesMap.put(ActivitySymbolType.class, new String[] {"x", "y"});
       modelElementPropertiesMap.put(ActivitySymbolType.class, new String[] {
             "name"});

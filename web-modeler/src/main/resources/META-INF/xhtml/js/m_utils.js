@@ -34,9 +34,29 @@ define(
 
 				debug : function(obj) {
 					debug(obj);
+				},
+				
+				getLastIndexOf : function(str, searchStr) {
+					return getLastIndexOf(str, searchStr);
+				},
+				
+				generateIDFromName : function(name) {
+					return name.replace(" ", "_");
 				}
 			};
 
+			function getLastIndexOf(str, searchStr) {
+				var index = -1;
+				if (undefined != str && undefined != searchStr) {
+					var subStr = str;
+					var ind = 0;
+					while (-1 != (ind = subStr.indexOf(searchStr, ind))) {
+						index = ind += searchStr.length;
+					}					
+				}
+				
+				return index;
+			}
 			/**
 			 * 
 			 * @param from

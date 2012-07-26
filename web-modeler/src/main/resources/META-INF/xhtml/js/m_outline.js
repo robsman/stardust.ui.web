@@ -72,7 +72,8 @@ define(
 												"last",
 												{
 													"attr" : {
-														"id" : process.id,
+														"id" : getTreeNodeId(model.id, m_constants.PROCESS, process.id),
+														"oid" : process.oid,
 														"fullId" : process
 																.getFullId(),
 														"modelId" : model.id,
@@ -355,18 +356,15 @@ define(
 				} else if (data.rslt.obj.attr("rel") == "process") {
 					var modelId = data.inst._get_parent(data.rslt.obj).attr(
 							"id");
-					var processId = data.rslt.obj.attr('id');
+					var processId = extractElementIdFromTreeNodeId(data.rslt.obj.attr('id'));
+					var processFullid = data.rslt.obj.attr('fullid');
 					var model = m_model.findModel(modelId);
-					var process = m_model.findProcess(processId);
-
+					var process = m_model.findProcess(processFullid);
 					if (process.name != data.rslt.name) {
 						m_commandsController.submitCommand(m_command
-								.createRenameCommand("/models/" + modelId
-										+ "/processes/" + processId, {
-									"id" : process.id,
-									"name" : process.name
-								}, {
-									"name" : data.rslt.name
+								.createUpdateModelElementCommand(modelId, process.oid, {
+									"name" : data.rslt.name,
+									"id" : m_utils.generateIDFromName(data.rslt.name)
 								}));
 					}
 				} else if (data.rslt.obj.attr("rel") == "webservice"
@@ -434,6 +432,15 @@ define(
 				readAllModels();
 			};
 
+			var getTreeNodeId = function (modelId, nodeType, nodeId) {				
+				return modelId + "__" + nodeType + "__" + nodeId;
+			};
+			
+			var extractElementIdFromTreeNodeId = function (nodeId) {
+				var index = m_utils.getLastIndexOf(nodeId, "__");
+				return nodeId.substring(index);
+			};			
+			
 			var setupEventHandling = function() {
 				/* Listen to toolbar events */
 				jQuery(document).bind('TOOL_CLICKED_EVENT',
@@ -537,8 +544,7 @@ define(
 														+ dataName + "&fullId="
 														+ fullId, fullId);
 									} else if (data.rslt.obj.attr('rel') == 'process') {
-										var processId = data.rslt.obj
-												.attr('id');
+										var processId = extractElementIdFromTreeNodeId(data.rslt.obj.attr('id'));
 										var processName = data.inst.get_text();
 										var modelId = data.inst._get_parent(
 												data.rslt.obj).attr('id');
@@ -1560,29 +1566,23 @@ define(
 						}
 						for ( var i = 0; i < obj.changes.modified.length; i++) {
 							var modelElement = m_model
-									.findModelElementByGuid(obj.changes.modified[i].oid);
+									.findModelElementInModelByGuid(obj.changes.modified[i].modelId, obj.changes.modified[i].oid);
 
 							m_utils.debug("Models:");
 							m_utils.debug(m_model.getModels());
 							m_utils.debug("Model Element:");
 							m_utils.debug(modelElement);
 
-							var oldId = modelElement.id;
-
 							if (modelElement != null) {
 								modelElement.rename(obj.changes.modified[i].id,
 										obj.changes.modified[i].name);
 
-								// TODO Improve! This must find nodes uniquely
-								// and
-								// by
-								// type! May be nodes should save the REST URI
-								// as
-								// id?
-								var link = jQuery("li#" + oldId + " a")[0];
-								var node = jQuery("li#" + oldId);
+								var oid = modelElement.oid;
+								var modelid = modelElement.model.id;
+								var link = jQuery("li[oid=" + oid + "][modelid=" + modelid + "] a")[0];
+								var node = jQuery("li[oid=" + oid + "][modelid=" + modelid + "]");
 
-								node.attr("id", modelElement.id);
+								node.attr("id", getTreeNodeId(modelid, modelElement.type, modelElement.id));
 								node.attr("fullId", modelElement.getFullId());
 								node.attr("name", modelElement.name);
 
@@ -1728,7 +1728,8 @@ define(
 					jQuery("#outline").jstree("create", parentSelector, "last",
 							{
 								"attr" : {
-									"id" : process.id,
+									"oid" : process.oid,
+									"id" : getTreeNodeId(model.id, m_constants.PROCESS, process.id),
 									"modelId" : model.id,
 									"rel" : "process",
 									"fullId" : process.getFullId(),
