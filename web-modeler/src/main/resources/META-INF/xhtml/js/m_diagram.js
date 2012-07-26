@@ -540,12 +540,22 @@ define(
 						for ( var i = 0; i < obj.changes.added.length; i++) {
 							if (null != this.lastSymbol) {
 								if (null != this.lastSymbol.modelElement
-										&& null == this.lastSymbol.modelElement.oid) {
-									this.lastSymbol.modelElement.oid = obj.changes.added[i].oid;
-								} else {
+										&& null != obj.changes.added[i].modelElement) {
+									this.lastSymbol.modelElement.oid = obj.changes.added[i].modelElement.oid;
 									this.lastSymbol.oid = obj.changes.added[i].oid;
+								} else {
+									// If current symbol is modelElement of an
+									// Symbol and already set, no need to set
+									// anything
+									if (null != this.lastSymbol.modelElement
+											&& this.lastSymbol.modelElement.oid == obj.changes.added[i].oid) {
+										continue;
+									} else {
+										this.lastSymbol.oid = obj.changes.added[i].oid;
+									}
 								}
-							} else if (null != obj.changes.added[i].modelElement) {
+							}// For connections lastSymbol will be empty
+							else if (null != obj.changes.added[i].modelElement) {
 								// for connections , search by connectionId to
 								// set OID
 								var conn = this
