@@ -5,22 +5,8 @@
 	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="src" path="src/test/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javax/servlet/2.4/servlet-2.4.jar" sourcepath="/Q-ARCHIVE/thirdparty/javax/servlet/2.4/servlet-2.4-sources.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-comps-ee-EE-1.8.2.GA_P04.jar" sourcepath="/Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-comps-src.zip"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-facelets-ee-EE-1.8.2.GA_P04.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-ee-EE-1.8.2.GA_P04.jar" sourcepath="/Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/just-ice-src.zip"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/log4j/1.2.15/log4j-1.2.15.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/junit/4.10/junit-4.10.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javax/jsf/1.1_02/jsf-api.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/jsp/2.0/jsp-2.0.jar" sourcepath="/Q-ARCHIVE/thirdparty/javax/jsp/2.0/jsp-2.0-sources.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javax/el/facelets-1.1.14/el-api.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/org.apache/slf4j/1.5.11/slf4j-api-1.5.11.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/org.apache/slf4j/1.5.11/slf4j-log4j12-1.5.11.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-beans-3.0.5.RELEASE.jar" sourcepath="/Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-beans-3.0.5.RELEASE-sources.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-core-3.0.5.RELEASE.jar" sourcepath="/Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-core-3.0.5.RELEASE-sources.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-context-3.0.5.RELEASE.jar" sourcepath="/Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-context-3.0.5.RELEASE-sources.jar" />
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-test-3.0.5.RELEASE.jar"  />
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/sun/jersey/1.1.5.1/jsr311-api-1.1.1.jar"/>
+	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=Portal-Common&amp;ivyXmlPath=etc%2Ficefaces-ivy-conf.xml&amp;confs=*"/>
+	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=Portal-Common&amp;ivyXmlPath=ivy.xml&amp;confs=compile%2Ctest"/>
 	<classpathentry kind="output" path=".eclipse/classes"/>
 </classpath>

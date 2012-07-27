@@ -24,7 +24,7 @@
       
       <conf name="ipp-views-common-sources" description="Views Common - Sources" />
    
-      <conf name="compile" extends="ipp-views-common-compile" visibility="private" description="Views Common" />
+      <conf name="compile" extends="ipp-views-common-compile,ipp-views-common-provided" visibility="private" description="Views Common" />
       
       <conf name="test" visibility="private" description="Test dependencies" />
       
@@ -67,12 +67,15 @@
  
       <!-- ipp-views-common-provided -->
       <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-views-common-provided->jsf-api-module-compile" />
-      <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="ipp-views-common-provided, compile->default" />
-      <dependency org="javax.el" name="el-api" rev="1.0" conf="ipp-views-common-provided, compile->default" />
-     <dependency org="javax.servlet" name="jsp-api" rev="2.0" conf="ipp-views-common-provided, compile->default" />
-
+      <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="ipp-views-common-provided->default" />
+      <dependency org="javax.el" name="el-api" rev="1.0" conf="ipp-views-common-provided->default" />
+      <dependency org="javax.servlet" name="jsp-api" rev="2.0" conf="ipp-views-common-provided->default" />
+      
       <!-- compile -->
       <dependency org="javax.faces" name="jsf-api" rev="1.1_02" conf="compile->default" />
+      <dependency org="org.eclipse.xsd" name="xsd-runtime" rev="2.6.1" transitive="false" conf="compile->default">
+         <artifact name="org.eclipse.xsd" type="jar"/>
+      </dependency>
 
       <!-- test -->
       <dependency org="junit" name="junit" rev="4.10" conf="test->default" />     

@@ -81,12 +81,14 @@
 
 	<target name="prepareSources" depends="initBuild">
 		<echo message="Preparing sources for a safe but slow build." />
-		<copy todir="${build.src}">
+		<copy todir="${build.src}" overwrite="true">
 			<fileset dir="${project.src}">
 				<include name="**/*.java" />
 				<exclude name="org/eclipse/stardust/ui/web/viewscommon/common/spi/env/impl/CurrentVersion.java"/>
 			</fileset>
 		</copy>
+	   <replace dir="${build.src}" token="import org.eclipse.xsd" 
+	      value="import com.infinity.bpm.thirdparty.xsd" summary="true"/>
 		
         <antcall target="copyVersionSourceFile">
            <param name="source" value="${project.src}"/>
@@ -95,7 +97,7 @@
 	</target>
 	
 	   <target name="copyVersionSourceFile">
-	      <copy todir="${destination}">
+	      <copy todir="${destination}" overwrite="true">
 	         <fileset dir="${source}">
 	            <include name="org/eclipse/stardust/ui/web/viewscommon/common/spi/env/impl/CurrentVersion.java"/>
 	         </fileset>

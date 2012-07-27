@@ -147,6 +147,7 @@
       
       <!-- test -->
       <dependency org="junit" name="junit" rev="4.10" conf="test->default" />
+      <dependency org="org.springframework" name="spring-test" transitive="false" rev="3.0.5.RELEASE" conf="test->default" />
 
       <exclude org="commons-fileupload" module="commons-fileupload" conf="ipp-portal-base-lib-module-runtime"/>
       <exclude org="commons-httpclient" module="commons-httpclient" conf="ipp-portal-base-lib-module-runtime"/>

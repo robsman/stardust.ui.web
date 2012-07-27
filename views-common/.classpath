@@ -3,39 +3,7 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-core-3.0.5.RELEASE.jar" sourcepath="/Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-core-3.0.5.RELEASE-sources.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-beans-3.0.5.RELEASE.jar" sourcepath="/Q-ARCHIVE/thirdparty/spring/framework/3.0.5.RELEASE/spring-beans-3.0.5.RELEASE-sources.jar"/>
-	<classpathentry kind="var" path="CARNOT_HOME/lib/carnot-base.jar"/>
-	<classpathentry kind="var" path="CARNOT_HOME/lib/carnot-engine.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-comps-ee-EE-1.8.2.GA_P04.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-facelets-ee-EE-1.8.2.GA_P04.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icefaces.org/1.8.2/icefaces-ee-EE-1.8.2.GA_P04.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/log4j/1.2.15/log4j-1.2.15.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/junit/4.10/junit-4.10.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javax/jsf/1.1_02/jsf-api.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javax/servlet/2.4/servlet-2.4.jar" sourcepath="/Q-ARCHIVE/thirdparty/javax/servlet/2.4/servlet-2.4-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="http://java.sun.com/javaee/5/docs/api/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javax/jcr/2.0/jcr-2.0.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Portal-Common"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/portal-api"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/jakarta-commons/lang/2.1/commons-lang-2.1.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/htmlcleaner/2.1/htmlcleaner2_1.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/icepdf/4.3.2/icepdf-core-4.3.2.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/jaf/1.1/activation.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javamail/1.4/mail.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/jai-imageio/1.1/jai_imageio-1.1.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/sun/jersey/1.1.5.1/jsr311-api-1.1.1.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/stardust-ui-form-jsf"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/stardust-common-introspection"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/stardust-common-introspection-xsd"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/stardust-ui-form"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/carnot/jcr-vfs/2.4.0/jcr-vfs-2.4.0.jar" sourcepath="/Q-ARCHIVE/carnot/jcr-vfs/2.4.0/jcr-vfs-2.4.0-sources.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javax/el/facelets-1.1.14/el-api.jar"/>
-	<classpathentry kind="var" path="CARNOT_HOME/lib/carnot-spring.jar"/>
-	<classpathentry kind="var" path="Q-ARCHIVE/thirdparty/javax/jsp/2.0/jsp-2.0.jar"/>
+	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=views-common&amp;ivyXmlPath=ivy.xml&amp;confs=compile%2Ctest"/>
 	<classpathentry kind="output" path=".eclipse/classes"/>
 </classpath>
