@@ -29,11 +29,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.Pair;
+import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.ui.web.modeler.common.EObjectUUIDMapper;
 import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
 import org.eclipse.stardust.ui.web.modeler.edit.CommandHandlingMediator;
 import org.eclipse.stardust.ui.web.modeler.edit.EditingSessionManager;
@@ -259,7 +259,7 @@ public class ModelerSessionRestController
          for (JsonElement cJson : changesJson) {
             if (null != cJson) {
                JsonElement changeJson = cJson.getAsJsonObject().get("changes");
-               ModelChangeCommandHandler handler = new ModelChangeCommandHandler();
+               ModelChangeCommandHandler handler = resolveSpringBean(ModelChangeCommandHandler.class, servletContext);
                handler.handleCommand(commandId, null, changeJson.getAsJsonObject());
                JsonObject response = handler.getResponse();
                if (null != response) {

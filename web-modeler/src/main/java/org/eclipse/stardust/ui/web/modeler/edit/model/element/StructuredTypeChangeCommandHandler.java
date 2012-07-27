@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.ui.web.modeler.common.EObjectUUIDMapper;
 import org.eclipse.stardust.ui.web.modeler.edit.ICommandHandler;
 
 /**

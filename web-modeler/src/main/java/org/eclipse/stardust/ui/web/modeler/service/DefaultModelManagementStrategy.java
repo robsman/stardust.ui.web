@@ -1,7 +1,12 @@
 package org.eclipse.stardust.ui.web.modeler.service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.eclipse.emf.ecore.EObject;
 
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
@@ -10,6 +15,7 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
+import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.AbstractModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelIoUtils;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
@@ -28,6 +34,9 @@ public class DefaultModelManagementStrategy extends
 	private ServiceFactory serviceFactory;
 	private DocumentManagementService documentManagementService;
 
+	@Resource
+   private EObjectUUIDMapper eObjectUUIDMapper;
+
 	/**
 	 * 
 	 */
@@ -44,6 +53,8 @@ public class DefaultModelManagementStrategy extends
 
 				ModelType model = XpdlModelIoUtils
 						.loadModel(readModelContext(modelDocument));
+				//TODO - This method needs to move to some place where it will be called only once for
+				loadEObjectUUIDMap(model);
 
 				getModels().put(model.getId(), model);
 			}
@@ -172,4 +183,17 @@ public class DefaultModelManagementStrategy extends
 		return getDocumentManagementService().retrieveDocumentContent(
 				modelDocument.getId());
 	}
+	
+   /**
+    * TODO - This method needs to move to some place where it will be called only once for
+    * a session.
+    */
+   private void loadEObjectUUIDMap(ModelType model)
+   {
+      eObjectUUIDMapper.map(model);
+      for (Iterator<EObject> i = model.eAllContents(); i.hasNext();)
+      {
+         eObjectUUIDMapper.map(i.next());
+      }
+   }
 }

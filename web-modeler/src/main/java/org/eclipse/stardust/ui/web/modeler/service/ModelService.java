@@ -27,7 +27,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.w3c.dom.Node;
 
@@ -49,6 +48,7 @@ import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
+import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementHelper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
@@ -216,7 +216,13 @@ public class ModelService {
 	@Resource
 	private EditingSessionManager editingSessionManager;
 
-	public ServiceFactory getServiceFactory() {
+	@Resource
+	private ModelElementMarshaller modelElementMarshaller;
+
+   @Resource
+   private EObjectUUIDMapper eObjectUUIDMapper;
+   
+   public ServiceFactory getServiceFactory() {
 		if (serviceFactory == null) {
 			serviceFactory = ServiceFactoryLocator.get("motu", "motu");
 		}
@@ -1186,7 +1192,7 @@ public class ModelService {
 		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
 				processId);
 		
-		return ModelElementMarshaller.toProcessDefinitionDiagram(processDefinition).toString();
+		return modelElementMarshaller.toProcessDefinitionDiagram(processDefinition).toString();
 	}
 
 	/**
@@ -1230,6 +1236,7 @@ public class ModelService {
 
 		modelJson.addProperty(ModelerConstants.ID_PROPERTY, model.getId());
 		modelJson.addProperty(ModelerConstants.NAME_PROPERTY, model.getName());
+		modelJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper.getUUID(model));
 
 		if (model.getDescription() != null) {
 			modelJson.addProperty(DESCRIPTION_PROPERTY, (String) model
@@ -1244,7 +1251,7 @@ public class ModelService {
 
 		for (ProcessDefinitionType processDefinition : model
 				.getProcessDefinition()) {
-			processesJson.add(processDefinition.getId(), ModelElementMarshaller.toProcessDefinition(processDefinition));
+			processesJson.add(processDefinition.getId(), modelElementMarshaller.toProcessDefinition(processDefinition));
 		}
 
 		JsonObject participantsJson = new JsonObject();
@@ -1257,6 +1264,7 @@ public class ModelService {
 			participantJson.addProperty(ModelerConstants.ID_PROPERTY, role.getId());
 			participantJson.addProperty(ModelerConstants.NAME_PROPERTY, role.getName());
          participantJson.addProperty(ModelerConstants.PARTICIPANT_TYPE_PROPERTY, ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
+         participantJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper.getUUID(role));
 			loadDescription(participantJson, role);
 		}
 
@@ -1267,6 +1275,7 @@ public class ModelService {
 			participantJson.addProperty(ModelerConstants.ID_PROPERTY, organization.getId());
 			participantJson.addProperty(ModelerConstants.NAME_PROPERTY, organization.getName());
          participantJson.addProperty(ModelerConstants.PARTICIPANT_TYPE_PROPERTY, ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
+         participantJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper.getUUID(organization));
 			loadDescription(participantJson, organization);
 		}
 
@@ -1280,6 +1289,7 @@ public class ModelService {
 			participantJson.addProperty(ModelerConstants.NAME_PROPERTY,
 					conditionalPerformer.getName());
          participantJson.addProperty(ModelerConstants.PARTICIPANT_TYPE_PROPERTY, ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY);
+         participantJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper.getUUID(conditionalPerformer));
 			loadDescription(participantJson, conditionalPerformer);
 		}
 
@@ -1288,7 +1298,7 @@ public class ModelService {
 		modelJson.add("applications", applicationsJson);
 
 		for (ApplicationType application : model.getApplication()) {
-			applicationsJson.add(application.getId(), ModelElementMarshaller.toApplication(application));
+			applicationsJson.add(application.getId(), modelElementMarshaller.toApplication(application));
 		}
 
 		JsonObject dataItemsJson = new JsonObject();
@@ -1314,6 +1324,7 @@ public class ModelService {
 						typeDeclaration.getId());
 				structuredDataTypeJson.addProperty(ModelerConstants.NAME_PROPERTY,
 						typeDeclaration.getName());
+				structuredDataTypeJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper.getUUID(typeDeclaration));
 				// TODO Review why different from other descriptions
 				structuredDataTypeJson.addProperty(DESCRIPTION_PROPERTY,
 						typeDeclaration.getDescription());
@@ -1430,6 +1441,7 @@ public class ModelService {
 
 		dataJson.addProperty(ModelerConstants.ID_PROPERTY, data.getId());
 		dataJson.addProperty(ModelerConstants.NAME_PROPERTY, data.getName());
+		dataJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper.getUUID(data));
 		loadDescription(dataJson, data);
 		if(data.getType() != null)
 		{

@@ -55,7 +55,8 @@ define(
 											"#Models", "last", {
 												"attr" : {
 													"id" : model.id,
-													"rel" : "model"
+													"rel" : "model",
+													"uuid" : model.uuid
 												},
 												"data" : model.name
 											}, null, true);
@@ -78,7 +79,8 @@ define(
 																.getFullId(),
 														"modelId" : model.id,
 														"rel" : "process",
-														"draggable" : true
+														"draggable" : true,
+														"uuid" : process.uuid
 													},
 													"data" : process.name
 												}, null, true);
@@ -116,7 +118,8 @@ define(
 																						.getFullId(),
 																				"rel" : participant.participantType,
 																				"modelId" : model.id,
-																				"draggable" : true
+																				"draggable" : true,
+																				"uuid" : participant.uuid
 																			},
 																			"data" : participant.name
 																		},
@@ -164,6 +167,7 @@ define(
 																						.getFullId(),
 																				"rel" : application.applicationType,
 																				"draggable" : true,
+																				"uuid" : application.uuid,
 																				// TODO
 																				// Likely
 																				// a
@@ -206,6 +210,7 @@ define(
 														"fullId" : data
 																.getFullId(),
 														"rel" : data.type,
+														"uuid" : data.uuid,
 														"draggable" : true
 													},
 													"data" : data.name
@@ -249,6 +254,7 @@ define(
 																				"uuid" : structuredDataType.uuid,
 																				"fullId" : structuredDataType
 																						.getFullId(),
+																				"uuid" : structuredDataType.uuid,
 																				"rel" : "structuredDataType",
 																				"modelId" : model.id,
 																				"draggable" : true

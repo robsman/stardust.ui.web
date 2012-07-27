@@ -14,6 +14,7 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
@@ -46,7 +47,6 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ActivityUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
-import org.eclipse.stardust.ui.web.modeler.common.EObjectUUIDMapper;
 
 @Component
 @Scope("prototype")
@@ -121,7 +121,7 @@ public class ModelElementMarshaller
    /**
     * @return
     */
-   public static JsonObject toProcessDefinition(ProcessDefinitionType processDefinition)
+   public JsonObject toProcessDefinition(ProcessDefinitionType processDefinition)
    {
       JsonObject processJson = new JsonObject();
 
@@ -129,6 +129,7 @@ public class ModelElementMarshaller
             processDefinition.getElementOid());
       processJson.addProperty(ModelerConstants.ID_PROPERTY, processDefinition.getId());
       processJson.addProperty(ModelerConstants.NAME_PROPERTY, processDefinition.getName());
+      processJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(processDefinition));
       processJson.addProperty(ModelerConstants.TYPE_PROPERTY,
               ModelerConstants.PROCESS_KEY);
       processJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY,
@@ -169,7 +170,7 @@ public class ModelElementMarshaller
    /**
     * @return
     */
-   public static JsonObject toProcessDefinitionDiagram(
+   public JsonObject toProcessDefinitionDiagram(
          ProcessDefinitionType processDefinition)
    {
       JsonObject diagramJson = new JsonObject();
@@ -518,7 +519,7 @@ public class ModelElementMarshaller
     * @param activity
     * @return
     */
-   public static JsonObject toActivityType(ActivityType activity)
+   public JsonObject toActivityType(ActivityType activity)
    {
       JsonObject activityJson = new JsonObject();
 
@@ -587,7 +588,7 @@ public class ModelElementMarshaller
     * @param activitySymbol
     * @return
     */
-   public static JsonObject toActivitySymbolJson(ActivitySymbolType activitySymbol)
+   public JsonObject toActivitySymbolJson(ActivitySymbolType activitySymbol)
    {
       int laneOffsetX = 0;
       int laneOffsetY = 0;
@@ -695,7 +696,7 @@ public class ModelElementMarshaller
     * @param startEventSymbol
     * @return
     */
-   public static JsonObject toStartEventJson(StartEventSymbol startEventSymbol)
+   public JsonObject toStartEventJson(StartEventSymbol startEventSymbol)
    {
       JsonObject eventSymbolJson = new JsonObject();
 
@@ -748,7 +749,7 @@ public class ModelElementMarshaller
     * @param startEventSymbol
     * @return
     */
-   public static JsonObject toEndEventJson(EndEventSymbol endEventSymbol)
+   public JsonObject toEndEventJson(EndEventSymbol endEventSymbol)
    {
       JsonObject eventSymbolJson = new JsonObject();
 
@@ -799,7 +800,7 @@ public class ModelElementMarshaller
     * @param startEventSymbol
     * @return
     */
-   public static JsonObject toDataJson(DataSymbolType dataSymbol)
+   public JsonObject toDataJson(DataSymbolType dataSymbol)
    {
       JsonObject dataSymbolJson = new JsonObject();
 
@@ -817,7 +818,7 @@ public class ModelElementMarshaller
    /**
     * @return
     */
-   public static JsonObject toApplication(ApplicationType application)
+   public JsonObject toApplication(ApplicationType application)
    {
       JsonObject applicationJson = new JsonObject();
 
@@ -826,6 +827,7 @@ public class ModelElementMarshaller
       applicationJson.addProperty(ModelerConstants.NAME_PROPERTY, application.getName());
       applicationJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY,
             ModelUtils.findContainingModel(application).getId());
+      applicationJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(application));
       applicationJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.APPLICATION_KEY);
       loadDescription(applicationJson, application);
 
@@ -917,7 +919,7 @@ public class ModelElementMarshaller
     * @param transitionConnection
     * @return
     */
-   public static JsonObject toTransitionType(TransitionConnectionType transitionConnection)
+   public JsonObject toTransitionType(TransitionConnectionType transitionConnection)
    {
       JsonObject connectionJson = new JsonObject();
       JsonObject modelElementJson = new JsonObject();
@@ -1054,7 +1056,7 @@ public class ModelElementMarshaller
     * @param model
     * @return
     */
-   public static JsonObject toModel(ModelType model)
+   public JsonObject toModel(ModelType model)
    {
       JsonObject modelJson = new JsonObject();
       modelJson.addProperty(ModelerConstants.ID_PROPERTY, model.getId());
@@ -1074,7 +1076,7 @@ public class ModelElementMarshaller
       JsonObject structJson = new JsonObject();
       structJson.addProperty(ModelerConstants.ID_PROPERTY, structType.getId());
       structJson.addProperty(ModelerConstants.NAME_PROPERTY, structType.getName());
-      structJson.addProperty(ModelerConstants.UUID_PROPERTY, springContext.getBean(EObjectUUIDMapper.class).getUUID(structType).toString());
+      structJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(structType));
       structJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY,
             ModelUtils.findContainingModel(structType).getId());
       JsonObject typeDeclarationJson = new JsonObject();
@@ -1208,5 +1210,13 @@ public class ModelElementMarshaller
       }
 
       return PredefinedConstants.ENGINE_CONTEXT;
+   }
+   
+   /**
+    * @return
+    */
+   private EObjectUUIDMapper eObjectUUIDMapper()
+   {
+      return springContext.getBean(EObjectUUIDMapper.class);
    }
 }

@@ -14,7 +14,12 @@ package org.eclipse.stardust.ui.web.modeler.edit.model.element;
 import static org.eclipse.stardust.engine.api.model.PredefinedConstants.ADMINISTRATOR_ROLE;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newBpmModel;
 
+import javax.annotation.Resource;
+
 import org.eclipse.emf.ecore.EObject;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -35,11 +40,16 @@ import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
  * @author Shrikant.Gangal
  * 
  */
+@Component
+@Scope("prototype")
 public class ModelChangeCommandHandler implements ICommandHandler
 {
    private ModelType model;
 
    private JsonObject response;
+
+   @Resource
+   private ApplicationContext springContext;
 
    @Override
    public boolean isValidTarget(Class<? > type)
@@ -97,7 +107,7 @@ public class ModelChangeCommandHandler implements ICommandHandler
             .put(model.getId(), model);
 
       JsonArray added = new JsonArray();
-      JsonObject addedModel = ModelElementMarshaller.toModel(model);
+      JsonObject addedModel = springContext.getBean(ModelElementMarshaller.class).toModel(model);
       added.add(addedModel);
       generateResponse(commandId, null, added, null);
    }
