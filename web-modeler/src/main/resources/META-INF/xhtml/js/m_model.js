@@ -86,6 +86,7 @@ define(
 
 					return null;
 				},
+
 				/**
 				 * Fetches the element with given OID within the given modelId.
 				 * 
@@ -106,6 +107,28 @@ define(
 
 					return null;
 				},
+
+				/**
+				 * Fetches the element with given UUID within the given modelId.
+				 * 
+				 * @param guid
+				 * @returns
+				 */
+				findModelElementInModelByUuid : function(modelId, uuid) {
+					var model = null;
+					var element = null;
+
+					for ( var index in getModels()) {
+						model = getModels()[index];
+						if (model.id == modelId
+								&& (element = model.findModelElementByUuid(uuid)) != null) {
+							return element;
+						}
+					}
+
+					return null;
+				},
+				
 				findElementTypeByPath : function(path) {
 					var steps = path.split("/");
 
@@ -328,6 +351,42 @@ define(
 
 					for (n in this.structuredDataTypes) {
 						if (this.structuredDataTypes[n].oid == guid) {
+							return this.structuredDataTypes[n];
+						}
+					}
+
+					return null;
+				};
+				
+				Model.prototype.findModelElementByUuid = function(uuid) {
+					var n;
+
+					for (n in this.processes) {
+						if (this.processes[n].uuid == uuid) {
+							return this.processes[n];
+						}
+					}
+
+					for (n in this.applications) {
+						if (this.applications[n].uuid == uuid) {
+							return this.applications[n];
+						}
+					}
+
+					for (n in this.dataItems) {
+						if (this.dataItems[n].uuid == uuid) {
+							return this.dataItems[n];
+						}
+					}
+
+					for (n in this.participants) {
+						if (this.participants[n].uuid == uuid) {
+							return this.participants[n];
+						}
+					}
+
+					for (n in this.structuredDataTypes) {
+						if (this.structuredDataTypes[n].uuid == uuid) {
 							return this.structuredDataTypes[n];
 						}
 					}

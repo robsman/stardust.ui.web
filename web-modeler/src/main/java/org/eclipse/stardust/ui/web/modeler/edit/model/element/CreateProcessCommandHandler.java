@@ -17,6 +17,8 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.EVENTS_PR
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.GATEWAYS_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.MODEL_ID_PROPERTY;
 
+import javax.annotation.Resource;
+
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
@@ -30,6 +32,8 @@ import org.eclipse.stardust.model.xpdl.carnot.OrientationType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.ui.web.modeler.edit.ICommandHandler;
+
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -43,6 +47,9 @@ import com.google.gson.JsonObject;
 @Scope("prototype")
 public class CreateProcessCommandHandler implements ICommandHandler
 {
+   @Resource
+   private ApplicationContext springContext;
+
    @Override
    public boolean isValidTarget(Class< ? > type)
    {

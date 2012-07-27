@@ -99,6 +99,10 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 		createUpdateModelElementCommand : function(modelId, oid, changes) {
 			return new ChangeDescriptor("modelElement.update", modelId, [{oid: oid, changes: changes}]);
 		},
+		//TODO: temporary - later all commands will accept OID and/or UUID.
+		createUpdateStructDataTypeCommand : function(modelId, uuid, changes) {
+			return new ChangeDescriptor("modelElement.update", modelId, [{uuid: uuid, changes: changes}]);
+		},
 		createRemoveNodeCommand : function(commandType, modelId, oid, changes) {
 			return new ChangeDescriptor(commandType, modelId, [{oid: oid, changes: changes}]);
 		},

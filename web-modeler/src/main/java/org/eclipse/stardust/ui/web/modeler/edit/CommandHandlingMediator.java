@@ -104,11 +104,25 @@ public class CommandHandlingMediator
       }
       else if ("process.create".equals(commandId))
       {
-         handler = new CreateProcessCommandHandler();
+         if (null != springContext)
+         {
+            handler = springContext.getBean(CreateProcessCommandHandler.class);
+         }
+         else
+         {
+            handler = new CreateProcessCommandHandler();
+         }
       }
       else if ("structuredDataType.create".equals(commandId))
       {
-         handler = new StructuredTypeChangeCommandHandler();
+         if (null != springContext)
+         {
+            handler = springContext.getBean(StructuredTypeChangeCommandHandler.class);
+         }
+         else
+         {
+            handler = new StructuredTypeChangeCommandHandler();
+         }
       }
       else if ("webServiceApplication.create".equals(commandId)
             || "messageTransformationApplication.create".equals(commandId)

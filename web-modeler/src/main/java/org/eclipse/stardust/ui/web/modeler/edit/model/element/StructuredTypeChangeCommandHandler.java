@@ -6,7 +6,10 @@ package org.eclipse.stardust.ui.web.modeler.edit.model.element;
 
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import javax.annotation.Resource;
+
 import org.eclipse.emf.ecore.EObject;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +18,7 @@ import com.google.gson.JsonObject;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.ui.web.modeler.common.EObjectUUIDMapper;
 import org.eclipse.stardust.ui.web.modeler.edit.ICommandHandler;
 
 /**
@@ -25,9 +29,8 @@ import org.eclipse.stardust.ui.web.modeler.edit.ICommandHandler;
 @Scope("prototype")
 public class StructuredTypeChangeCommandHandler implements ICommandHandler
 {
-   private static final String DEF_LANE_ID = "DefaultLane";
-
-   private static final String DEF_LANE_NAME = "Default Lane";
+   @Resource
+   private ApplicationContext springContext;
 
    public static final String TYPE_PROPERTY = "type";
 
@@ -46,7 +49,8 @@ public class StructuredTypeChangeCommandHandler implements ICommandHandler
 
       synchronized (model)
       {
-         MBFacade.createTypeDeclaration(model, typeId, typeName);
+         EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+         mapper.map(MBFacade.createTypeDeclaration(model, typeId, typeName));
       }
    }
 }

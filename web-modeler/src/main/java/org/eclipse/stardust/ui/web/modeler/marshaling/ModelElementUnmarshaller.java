@@ -20,6 +20,8 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.emf.ecore.EObject;
+
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.activity.BpmApplicationActivityBuilder;
@@ -39,6 +41,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 
 /**
  * 
@@ -96,6 +99,9 @@ public class ModelElementUnmarshaller
 
       modelElementPropertiesMap.put(ApplicationType.class, new String[] {
       "name"});
+      
+      modelElementPropertiesMap.put(TypeDeclarationType.class, new String[] {
+      "name", "id"});
    }
 
    /**
@@ -103,7 +109,7 @@ public class ModelElementUnmarshaller
     * @param element
     * @param json
     */
-   public void populateFromJson(IModelElement element, JsonObject json)
+   public void populateFromJson(EObject element, JsonObject json)
    {
       System.out.println("Unmarshalling: " + element + " " + json);
 
@@ -137,6 +143,10 @@ public class ModelElementUnmarshaller
       else if (element instanceof ApplicationType)
       {
          updateApplication((ApplicationType) element, json);
+      }
+      else if (element instanceof TypeDeclarationType)
+      {
+         updateTypeDeclaration((TypeDeclarationType) element, json);
       }
    }
 
@@ -299,11 +309,23 @@ public class ModelElementUnmarshaller
 
    /**
     * 
+    * @param processDefinition
+    * @param processDefinitionJson
+    */
+   private void updateTypeDeclaration(TypeDeclarationType typeDeclaration,
+         JsonObject applicationJson)
+   {
+      mapDeclaredModelElementProperties(typeDeclaration, applicationJson,
+            modelElementPropertiesMap.get(TypeDeclarationType.class));
+   }
+   
+   /**
+    * 
     * @param modelElement
     * @param modelElementJson
     * @param modelElementProperties
     */
-   private void mapDeclaredModelElementProperties(IModelElement modelElement,
+   private void mapDeclaredModelElementProperties(EObject modelElement,
          JsonObject modelElementJson, String[] modelElementProperties)
    {
       if (modelElement != null)
@@ -339,7 +361,7 @@ public class ModelElementUnmarshaller
     * @param request
     * @param property
     */
-   private void mapProperty(IModelElement targetElement, JsonObject request,
+   private void mapProperty(EObject targetElement, JsonObject request,
          String property)
    {
       if (request.has(property))

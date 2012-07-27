@@ -245,7 +245,8 @@ define(
 																		"last",
 																		{
 																			"attr" : {
-																				"id" : structuredDataType.id,
+																				"id" : getTreeNodeId(model.id, m_constants.STRUCTURED_DATA_TYPE, structuredDataType.id),
+																				"uuid" : structuredDataType.uuid,
 																				"fullId" : structuredDataType
 																						.getFullId(),
 																				"rel" : "structuredDataType",
@@ -389,20 +390,16 @@ define(
 				} else if (data.rslt.obj.attr("rel") == "structuredDataType") {
 					var modelId = data.rslt.obj.attr("modelId");
 					var dataTypeId = data.rslt.obj.attr('id');
+					var dataTypeFullid = data.rslt.obj.attr('fullid');
 					var model = m_model.findModel(modelId);
-					var dataType = model.structuredDataTypes[dataTypeId];
+					var dataType = m_model.findModelElementInModelByUuid(modelId, data.rslt.obj.attr('uuid'));
 
 					if (dataType.name != data.rslt.name) {
 						m_commandsController.submitCommand(m_command
-								.createRenameCommand(
-										"/models/" + model.id
-												+ "/structuredDataTypes/"
-												+ dataType.id, {
-											"id" : dataType.id,
-											"name" : dataType.name
-										}, {
-											"name" : data.rslt.name
-										}));
+								.createUpdateStructDataTypeCommand(modelId, dataType.uuid, {
+									"name" : data.rslt.name,
+									"id" : m_utils.generateIDFromName(data.rslt.name)
+								}));
 					}
 				} else if (data.rslt.obj.attr("rel") == "roleParticipant"
 						|| data.rslt.obj.attr("rel") == "organizationParticipant"
@@ -621,8 +618,7 @@ define(
 														+ fullId,
 												fullId);
 									} else if (data.rslt.obj.attr('rel') == "structuredDataType") {
-										var structuredDataTypeId = data.rslt.obj
-												.attr('id');
+										var structuredDataTypeId = extractElementIdFromTreeNodeId(data.rslt.obj.attr('id'));
 										var modelId = data.rslt.obj
 												.attr("modelId");
 										var fullId = data.rslt.obj
@@ -1772,7 +1768,8 @@ define(
 								"attr" : {
 									"rel" : "structuredDataType",
 									"modelId" : model.id,
-									"id" : dataStructure.id,
+									"id" : getTreeNodeId(model.id, m_constants.STRUCTURED_DATA_TYPE, dataStructure.id),
+									"uuid" : dataStructure.uuid,
 									"fullId" : dataStructure.getFullId(),
 									"draggable" : true
 								},

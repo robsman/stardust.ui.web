@@ -33,6 +33,7 @@ import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.ui.web.modeler.common.EObjectUUIDMapper;
 import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
 import org.eclipse.stardust.ui.web.modeler.edit.CommandHandlingMediator;
 import org.eclipse.stardust.ui.web.modeler.edit.EditingSessionManager;
@@ -81,21 +82,21 @@ public class ModelerSessionRestController
       JsonArray jsModified = new JsonArray();
       for (EObject changedObject : change.changedObjects())
       {
-         jsModified.add(ModelElementMarshaller.toJson(changedObject));    		  
+         jsModified.add(modelElementMarshaller().toJson(changedObject));    		  
       }
       jsChanges.add("modified", jsModified);
 
       JsonArray jsAdded = new JsonArray();
       for (EObject addedObject : change.addedObjects())
       {
-         jsAdded.add(ModelElementMarshaller.toJson(addedObject));
+         jsAdded.add(modelElementMarshaller().toJson(addedObject));
       }
       jsChanges.add("added", jsAdded);
 
       JsonArray jsRemoved = new JsonArray();
       for (EObject removedObject : change.removedObjects())
       {
-         jsRemoved.add(ModelElementMarshaller.toJson(removedObject));
+         jsRemoved.add(modelElementMarshaller().toJson(removedObject));
       }
       jsChanges.add("removed", jsRemoved);
 
@@ -280,42 +281,63 @@ public class ModelerSessionRestController
       {
          EObject targetElement = null;
 
-         if (targetElementJson.isJsonObject() && targetElementJson.getAsJsonObject().has("oid"))
+         if (targetElementJson.isJsonObject()
+               && (targetElementJson.getAsJsonObject().has("oid") || targetElementJson.getAsJsonObject()
+                     .has("uuid")))
          {
-				// existing target, identified by oid
-				String oid = extractAsString(targetElementJson.getAsJsonObject(),
-						"oid");
-				if (model.getId().equals(oid)) {
-					targetElement = model;
-				} else {					
-					// deep search for model element by OID
-					// TODO can lookup faster as oid is declared the XML index
-					// field?
-					for (Iterator<?> i = model.eAllContents(); i.hasNext();) {
-						Object element = i.next();
-						if ((element instanceof IModelElement)
-								&& ((((IModelElement) element).getElementOid() == Long.parseLong(oid)))) {
-							targetElement = (IModelElement) element;
-							break;
-						}
-					}
-				}
-
-            if (null != targetElement)
+            // existing target, identified by uuid
+            if (targetElementJson.getAsJsonObject().has("uuid"))
             {
-               JsonElement jsTargetElementChanges = targetElementJson.getAsJsonObject().get("changes");
+               String uuid = extractAsString(targetElementJson.getAsJsonObject(), "uuid");
+               targetElement = eObjectUUIDMapper().getEObject(uuid);
 
-               changeDescriptors.add(new Pair<EObject, JsonObject>(targetElement,
-                     jsTargetElementChanges.getAsJsonObject()));
+               if (null == targetElement)
+               {
+                  return Response.status(Status.BAD_REQUEST) //
+                        .entity("Unknown target element for element UUID " + uuid)
+                        .build();
+               }
             }
-            else
+            // existing target, identified by oid
+            else if (targetElementJson.getAsJsonObject().has("oid"))
             {
-               return Response.status(Status.BAD_REQUEST) //
-                     .entity(
-                           "Unknown target element for element OID " + oid
-                                 + " within model " + model.getId())
-                     .build();
+               String oid = extractAsString(targetElementJson.getAsJsonObject(), "oid");
+               if (model.getId().equals(oid))
+               {
+                  targetElement = model;
+               }
+               else
+               {
+                  // deep search for model element by OID
+                  // TODO can lookup faster as oid is declared the XML index
+                  // field?
+                  for (Iterator<? > i = model.eAllContents(); i.hasNext();)
+                  {
+                     Object element = i.next();
+                     if ((element instanceof IModelElement)
+                           && ((((IModelElement) element).getElementOid() == Long.parseLong(oid))))
+                     {
+                        targetElement = (IModelElement) element;
+                        break;
+                     }
+                  }
+               }
+
+               if (null == targetElement)
+               {
+                  return Response.status(Status.BAD_REQUEST) //
+                        .entity(
+                              "Unknown target element for element OID " + oid
+                                    + " within model " + model.getId())
+                        .build();
+               }
             }
+
+            JsonElement jsTargetElementChanges = targetElementJson.getAsJsonObject().get(
+                  "changes");
+
+            changeDescriptors.add(new Pair<EObject, JsonObject>(targetElement,
+                  jsTargetElementChanges.getAsJsonObject()));
          }
          else
          {
@@ -326,7 +348,8 @@ public class ModelerSessionRestController
       }
 
       // dispatch to actual command handler
-      Modification change = commandHandlerRegistry().handleCommand(model, commandId, changeDescriptors);
+      Modification change = commandHandlerRegistry().handleCommand(model, commandId,
+            changeDescriptors);
       if (null != change)
       {
          change.getMetadata().put("commandId", commandId);
@@ -375,5 +398,15 @@ public class ModelerSessionRestController
    private CommandHandlingMediator commandHandlerRegistry()
    {
       return resolveSpringBean(CommandHandlingMediator.class, servletContext);
+   }
+
+   private EObjectUUIDMapper eObjectUUIDMapper()
+   {
+      return resolveSpringBean(EObjectUUIDMapper.class, servletContext);
+   }
+   
+   private ModelElementMarshaller modelElementMarshaller()
+   {
+      return resolveSpringBean(ModelElementMarshaller.class, servletContext);
    }
 }

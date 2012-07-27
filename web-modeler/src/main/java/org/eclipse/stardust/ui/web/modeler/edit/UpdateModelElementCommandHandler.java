@@ -21,6 +21,6 @@ public class UpdateModelElementCommandHandler implements ICommandHandler
    @Override
    public void handleCommand(String commandId, EObject targetElement, JsonObject request)
    {
-	   ModelElementUnmarshaller.getInstance().populateFromJson((IModelElement) targetElement, request);
+	   ModelElementUnmarshaller.getInstance().populateFromJson(targetElement, request);
    }
 }

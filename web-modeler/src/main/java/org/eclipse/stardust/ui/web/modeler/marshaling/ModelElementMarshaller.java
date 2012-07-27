@@ -2,7 +2,12 @@ package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import javax.annotation.Resource;
+
 import org.eclipse.emf.ecore.EObject;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -41,15 +46,21 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ActivityUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
+import org.eclipse.stardust.ui.web.modeler.common.EObjectUUIDMapper;
 
+@Component
+@Scope("prototype")
 public class ModelElementMarshaller
 {
+   @Resource
+   private ApplicationContext springContext;
+
    /**
     * 
     * @param modelElement
     * @return
     */
-   public static JsonObject toJson(EObject modelElement)
+   public JsonObject toJson(EObject modelElement)
    {
       JsonObject jsResult;
       String objectUri = null;
@@ -1058,11 +1069,12 @@ public class ModelElementMarshaller
     * @param structType
     * @return
     */
-   public static JsonObject toTypeDeclarationType(TypeDeclarationType structType)
+   public JsonObject toTypeDeclarationType(TypeDeclarationType structType)
    {
       JsonObject structJson = new JsonObject();
       structJson.addProperty(ModelerConstants.ID_PROPERTY, structType.getId());
       structJson.addProperty(ModelerConstants.NAME_PROPERTY, structType.getName());
+      structJson.addProperty(ModelerConstants.UUID_PROPERTY, springContext.getBean(EObjectUUIDMapper.class).getUUID(structType).toString());
       structJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY,
             ModelUtils.findContainingModel(structType).getId());
       JsonObject typeDeclarationJson = new JsonObject();
