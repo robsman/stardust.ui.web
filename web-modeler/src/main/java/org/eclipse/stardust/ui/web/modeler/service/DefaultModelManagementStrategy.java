@@ -75,8 +75,10 @@ public class DefaultModelManagementStrategy extends
           {
              if(modelDocument.getName().equals(id))
              {
-                return XpdlModelIoUtils
+                ModelType model = XpdlModelIoUtils
                    .loadModel(readModelContext(modelDocument));
+                loadEObjectUUIDMap(model);
+                return model;
              }
           }
        }      
@@ -190,10 +192,14 @@ public class DefaultModelManagementStrategy extends
     */
    private void loadEObjectUUIDMap(ModelType model)
    {
-      eObjectUUIDMapper.map(model);
-      for (Iterator<EObject> i = model.eAllContents(); i.hasNext();)
+      // Load if not already loaded.
+      if (null == eObjectUUIDMapper.getUUID(model))
       {
-         eObjectUUIDMapper.map(i.next());
+         eObjectUUIDMapper.map(model);
+         for (Iterator<EObject> i = model.eAllContents(); i.hasNext();)
+         {
+            eObjectUUIDMapper.map(i.next());
+         }
       }
    }
 }

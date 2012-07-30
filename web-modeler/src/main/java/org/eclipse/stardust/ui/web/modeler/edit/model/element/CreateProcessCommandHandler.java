@@ -21,6 +21,7 @@ import javax.annotation.Resource;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
+import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
@@ -63,6 +64,10 @@ public class CreateProcessCommandHandler implements ICommandHandler
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
       String id = MBFacade.createIdFromName(name);
       ProcessDefinitionType processDefinition = newProcessDefinition(model).withIdAndName(id, name).build();
+      //Added process definition to UUID map.
+      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      mapper.map(processDefinition);
+
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       processDefinition.setElementOid(++maxOid);
       // Create diagram bits too

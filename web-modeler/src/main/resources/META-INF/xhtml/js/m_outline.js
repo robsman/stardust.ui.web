@@ -54,33 +54,33 @@ define(
 									jQuery("#outline").jstree("create",
 											"#Models", "last", {
 												"attr" : {
-													"id" : model.id,
+													"id" : model.uuid,
 													"rel" : "model",
-													"uuid" : model.uuid
+													"elementId" : model.id
 												},
 												"data" : model.name
 											}, null, true);
 
 									jQuery("#outline").jstree("set_type",
-											"model", "#" + model.id);
+											"model", "#" + model.uuid);
 
 									jQuery.each(model.processes, function(
 											index, process) {
 										processCounter++;
 										jQuery("#outline").jstree(
 												"create",
-												"#" + model.id,
+												"#" + model.uuid,
 												"last",
 												{
 													"attr" : {
-														"id" : getTreeNodeId(model.id, m_constants.PROCESS, process.id),
+														"id" : process.uuid,
 														"oid" : process.oid,
 														"fullId" : process
 																.getFullId(),
 														"modelId" : model.id,
 														"rel" : "process",
 														"draggable" : true,
-														"uuid" : process.uuid
+														"elementId" : process.id
 													},
 													"data" : process.name
 												}, null, true);
@@ -90,7 +90,7 @@ define(
 
 									jQuery("#outline").jstree(
 											"create",
-											"#" + model.id,
+											"#" + model.uuid,
 											"first",
 											{
 												"attr" : {
@@ -113,13 +113,13 @@ define(
 																		"last",
 																		{
 																			"attr" : {
-																				"id" : participant.id,
+																				"id" : participant.uuid,
 																				"fullId" : participant
 																						.getFullId(),
 																				"rel" : participant.participantType,
 																				"modelId" : model.id,
 																				"draggable" : true,
-																				"uuid" : participant.uuid
+																				"elementId" : participant.id
 																			},
 																			"data" : participant.name
 																		},
@@ -136,7 +136,7 @@ define(
 
 									jQuery("#outline").jstree(
 											"create",
-											"#" + model.id,
+											"#" + model.uuid,
 											"first",
 											{
 												"attr" : {
@@ -162,12 +162,12 @@ define(
 																		"last",
 																		{
 																			"attr" : {
-																				"id" : application.id,
+																				"id" : application.uuid,
 																				"fullId" : application
 																						.getFullId(),
 																				"rel" : application.applicationType,
 																				"draggable" : true,
-																				"uuid" : application.uuid,
+																				"elementId" : application.id,
 																				// TODO
 																				// Likely
 																				// a
@@ -189,7 +189,7 @@ define(
 									// data and add nodes of specific data types
 
 									jQuery("#outline").jstree("create",
-											"#" + model.id, "first", {
+											"#" + model.uuid, "first", {
 												"attr" : {
 													"id" : "data_" + model.id,
 													"rel" : "data"
@@ -206,11 +206,11 @@ define(
 												"last",
 												{
 													"attr" : {
-														"id" : data.id,
+														"id" : data.uuid,
 														"fullId" : data
 																.getFullId(),
 														"rel" : data.type,
-														"uuid" : data.uuid,
+														"elementId" : data.id,
 														"draggable" : true
 													},
 													"data" : data.name
@@ -223,7 +223,7 @@ define(
 
 									jQuery("#outline").jstree(
 											"create",
-											"#" + model.id,
+											"#" + model.uuid,
 											"first",
 											{
 												"attr" : {
@@ -250,11 +250,10 @@ define(
 																		"last",
 																		{
 																			"attr" : {
-																				"id" : getTreeNodeId(model.id, m_constants.STRUCTURED_DATA_TYPE, structuredDataType.id),
-																				"uuid" : structuredDataType.uuid,
+																				"id" : structuredDataType.uuid,
 																				"fullId" : structuredDataType
 																						.getFullId(),
-																				"uuid" : structuredDataType.uuid,
+																				"elementId" : structuredDataType.id,
 																				"rel" : "structuredDataType",
 																				"modelId" : model.id,
 																				"draggable" : true
@@ -271,7 +270,7 @@ define(
 													});
 
 									jQuery("#outline").jstree("close_node",
-											"#" + model.id);
+											"#" + model.uuid);
 								});
 			};
 
@@ -290,7 +289,7 @@ define(
 
 			};
 
-			// TODO Is this still needed?
+			// TODO Is this still needed? Delete after verifying
 			var elementCreationHandler = function(id, name, type, parent) {
 				if (type == 'activity') {
 					var parentSelector = '#' + parent;
@@ -348,7 +347,7 @@ define(
 
 			var renameNodeHandler = function(event, data) {
 				if (data.rslt.obj.attr('rel') == 'model') {
-					var modelId = data.rslt.obj.attr('id');
+					var modelId = data.rslt.obj.attr('elementId');
 					var model = m_model.findModel(modelId);
 
 					if (model.name != data.rslt.name) {
@@ -362,8 +361,8 @@ define(
 					}
 				} else if (data.rslt.obj.attr("rel") == "process") {
 					var modelId = data.inst._get_parent(data.rslt.obj).attr(
-							"id");
-					var processId = extractElementIdFromTreeNodeId(data.rslt.obj.attr('id'));
+							"elementId");
+					var processId = data.rslt.obj.attr('elementId');
 					var processFullid = data.rslt.obj.attr('fullid');
 					var model = m_model.findModel(modelId);
 					var process = m_model.findProcess(processFullid);
@@ -379,7 +378,7 @@ define(
 						|| data.rslt.obj.attr("rel") == "camelBean"
 						|| data.rslt.obj.attr("rel") == "interactive") {
 					var modelId = data.rslt.obj.attr("modelId");
-					var applicationId = data.rslt.obj.attr('id');
+					var applicationId = data.rslt.obj.attr('elementId');
 					var model = m_model.findModel(modelId);
 					var application = model.applications[applicationId];
 
@@ -395,10 +394,10 @@ define(
 					}
 				} else if (data.rslt.obj.attr("rel") == "structuredDataType") {
 					var modelId = data.rslt.obj.attr("modelId");
-					var dataTypeId = data.rslt.obj.attr('id');
+					var dataTypeId = data.rslt.obj.attr('elementId');
 					var dataTypeFullid = data.rslt.obj.attr('fullid');
 					var model = m_model.findModel(modelId);
-					var dataType = m_model.findModelElementInModelByUuid(modelId, data.rslt.obj.attr('uuid'));
+					var dataType = m_model.findModelElementInModelByUuid(modelId, data.rslt.obj.attr('id'));
 
 					if (dataType.name != data.rslt.name) {
 						m_commandsController.submitCommand(m_command
@@ -411,7 +410,7 @@ define(
 						|| data.rslt.obj.attr("rel") == "organizationParticipant"
 						|| data.rslt.obj.attr("rel") == "conditionalPerformerParticipant") {
 					var modelId = data.rslt.obj.attr("modelId");
-					var participantId = data.rslt.obj.attr('id');
+					var participantId = data.rslt.obj.attr('elementId');
 					var model = m_model.findModel(modelId);
 					var participant = model.participants[participantId];
 
@@ -435,14 +434,15 @@ define(
 				readAllModels();
 			};
 
-			var getTreeNodeId = function (modelId, nodeType, nodeId) {				
-				return modelId + "__" + nodeType + "__" + nodeId;
-			};
+			//TODO - delete
+//			var getTreeNodeId = function (modelId, nodeType, nodeId) {				
+//				return modelId + "__" + nodeType + "__" + nodeId;
+//			};
 			
-			var extractElementIdFromTreeNodeId = function (nodeId) {
-				var index = m_utils.getLastIndexOf(nodeId, "__");
-				return nodeId.substring(index);
-			};			
+//			var extractElementIdFromTreeNodeId = function (nodeId) {
+//				var index = m_utils.getLastIndexOf(nodeId, "__");
+//				return nodeId.substring(index);
+//			};			
 			
 			var setupEventHandling = function() {
 				/* Listen to toolbar events */
@@ -486,7 +486,7 @@ define(
 								"select_node.jstree",
 								function(event, data) {
 									if (data.rslt.obj.attr('rel') == 'model') {
-										var modelId = data.rslt.obj.attr('id');
+										var modelId = data.rslt.obj.attr("elementId");
 										var modelName = data.inst.get_text();
 
 										viewManager.openView("modelView",
@@ -509,7 +509,7 @@ define(
 															+ fullId, fullId);
 									} else if (data.rslt.obj.attr('rel') == 'organizationParticipant') {
 										var organizationId = data.rslt.obj
-												.attr('id');
+												.attr("elementId");
 										var organizationName = data.inst
 												.get_text();
 										var modelId = data.rslt.obj
@@ -533,7 +533,7 @@ define(
 											|| data.rslt.obj.attr('rel') == 'dmsDocumentList') {
 
 										// TODO Above is very ugly!
-										var dataId = data.rslt.obj.attr('id');
+										var dataId = data.rslt.obj.attr("elementId");
 										var dataName = data.inst.get_text();
 										var modelId = data.rslt.obj
 												.attr("modelId");
@@ -547,10 +547,10 @@ define(
 														+ dataName + "&fullId="
 														+ fullId, fullId);
 									} else if (data.rslt.obj.attr('rel') == 'process') {
-										var processId = extractElementIdFromTreeNodeId(data.rslt.obj.attr('id'));
+										var processId = data.rslt.obj.attr('elementId');
 										var processName = data.inst.get_text();
 										var modelId = data.inst._get_parent(
-												data.rslt.obj).attr('id');
+												data.rslt.obj).attr('elementId');
 										var fullId = data.rslt.obj
 										.attr("fullId");
 
@@ -563,7 +563,7 @@ define(
 												fullId);
 									} else if (data.rslt.obj.attr('rel') == "webservice") {
 										var applicationId = data.rslt.obj
-												.attr('id');
+												.attr("elementId");
 										var modelId = data.rslt.obj
 												.attr("modelId");
 										var fullId = data.rslt.obj
@@ -578,7 +578,7 @@ define(
 												fullId);
 									} else if (data.rslt.obj.attr('rel') == "messageTransformationBean") {
 										var applicationId = data.rslt.obj
-												.attr('id');
+												.attr("elementId");
 										var modelId = data.rslt.obj
 												.attr("modelId");
 										var fullId = data.rslt.obj
@@ -595,7 +595,7 @@ define(
 														fullId);
 									} else if (data.rslt.obj.attr('rel') == "camelBean") {
 										var applicationId = data.rslt.obj
-												.attr('id');
+												.attr("elementId");
 										var modelId = data.rslt.obj
 												.attr("modelId");
 										var fullId = data.rslt.obj
@@ -610,7 +610,7 @@ define(
 												fullId);
 									} else if (data.rslt.obj.attr('rel') == "interactive") {
 										var applicationId = data.rslt.obj
-												.attr('id');
+												.attr("elementId");
 										var modelId = data.rslt.obj
 												.attr("modelId");
 										var fullId = data.rslt.obj
@@ -624,7 +624,7 @@ define(
 														+ fullId,
 												fullId);
 									} else if (data.rslt.obj.attr('rel') == "structuredDataType") {
-										var structuredDataTypeId = extractElementIdFromTreeNodeId(data.rslt.obj.attr('id'));
+										var structuredDataTypeId = data.rslt.obj.attr('elementId');
 										var modelId = data.rslt.obj
 												.attr("modelId");
 										var fullId = data.rslt.obj
@@ -688,7 +688,7 @@ define(
 																		.parent()
 																		.parent()
 																		.attr(
-																				'id'),
+																				"elementId"),
 																'attr' : {}
 															};
 
@@ -752,7 +752,7 @@ define(
 																	obj.context.lastChild.data,
 																	function() {
 																		deleteModel(obj
-																				.attr('id'));
+																				.attr("elementId"));
 																	});
 														}
 													},
@@ -760,14 +760,14 @@ define(
 														"label" : "Deploy",
 														"action" : function(obj) {
 															deployModel(obj
-																	.attr('id'));
+																	.attr("elementId"));
 														}
 													},
 													"createProcess" : {
 														"label" : "Create Process",
 														"action" : function(obj) {
 															createProcess(obj
-																	.attr('id'));
+																	.attr("elementId"));
 														}
 													}
 												};
@@ -940,7 +940,7 @@ define(
 																				obj
 																						.attr("modelId"),
 																				obj
-																						.attr('id'));
+																						.attr("elementId"));
 																	});
 														}
 													}
@@ -971,7 +971,7 @@ define(
 																				obj
 																						.attr("modelId"),
 																				obj
-																						.attr('id'));
+																						.attr("elementId"));
 																	});
 														}
 													}
@@ -1260,7 +1260,7 @@ define(
 				}
 
 				/**
-				 * 
+				 * TODO - WRONG
 				 */
 				function renameModel() {
 					var number = (++modelCounter);
@@ -1480,7 +1480,7 @@ define(
 				}
 
 				// TODO Should be encapsulated in module
-
+				//TODO - check and delete
 				if (window.parent.EventHub != null) {
 					window.parent.EventHub.events.subscribe("ELEMENT_CREATED",
 							elementCreationHandler);
@@ -1564,12 +1564,14 @@ define(
 								modelElement.rename(obj.changes.modified[i].id,
 										obj.changes.modified[i].name);
 
-								var oid = modelElement.oid;
+								var uuid = modelElement.uuid;
 								var modelid = modelElement.model.id;
-								var link = jQuery("li[oid=" + oid + "][modelid=" + modelid + "] a")[0];
-								var node = jQuery("li[oid=" + oid + "][modelid=" + modelid + "]");
+//								var link = jQuery("li[oid=" + oid + "][modelid=" + modelid + "] a")[0];
+//								var node = jQuery("li[oid=" + oid + "][modelid=" + modelid + "]");
+								var link = jQuery("li#" + uuid + " a")[0];
+								var node = jQuery("li#" + uuid);
 
-								node.attr("id", getTreeNodeId(modelid, modelElement.type, modelElement.id));
+								node.attr("elementId", modelElement.id);
 								node.attr("fullId", modelElement.getFullId());
 								node.attr("name", modelElement.name);
 
@@ -1651,14 +1653,15 @@ define(
 					var model = m_model.createModel(data.id, data.name);
 					jQuery("#outline").jstree("create", "#Models", "last", {
 						"attr" : {
-							"id" : data.id,
+							"elementId" : data.id,
+							"id" : data.uuid,
 							"fullId" : model.getFullId(),
 							"rel" : "model"
 						},
 						"data" : data.name
 					}, null, false);
 					jQuery("#outline").jstree("set_type", "model",
-							"#" + data.id);
+							"#" + data.uuid);
 					jQuery("#outline").jstree("create", "#" + data.id, "first",
 							{
 								"attr" : {
@@ -1710,13 +1713,14 @@ define(
 					var model = m_model.findModel(transferObject.modelId);
 					var process = m_process.createProcessFromJson(model,
 							transferObject);
-					var parentSelector = '#' + model.id;
+					var parentSelector = '#' + model.uuid;
 
 					jQuery("#outline").jstree("create", parentSelector, "last",
 							{
 								"attr" : {
+									"id" : process.uuid,
 									"oid" : process.oid,
-									"id" : getTreeNodeId(model.id, m_constants.PROCESS, process.id),
+									"elementId" : process.id,
 									"modelId" : model.id,
 									"rel" : "process",
 									"fullId" : process.getFullId(),
@@ -1741,7 +1745,8 @@ define(
 							{
 								"attr" : {
 									"rel" : application.applicationType,
-									"id" : application.id,
+									"id" : application.uuid,
+									"elementId" : application.id,
 									"fullId" : application.getFullId(),
 									"modelId" : application.modelId,
 									"draggable" : true
@@ -1774,7 +1779,8 @@ define(
 								"attr" : {
 									"rel" : "structuredDataType",
 									"modelId" : model.id,
-									"id" : getTreeNodeId(model.id, m_constants.STRUCTURED_DATA_TYPE, dataStructure.id),
+									"id" : dataStructure.uuid,
+									"elementId" : dataStructure.id,
 									"uuid" : dataStructure.uuid,
 									"fullId" : dataStructure.getFullId(),
 									"draggable" : true
