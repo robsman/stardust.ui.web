@@ -9,9 +9,9 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_view",
+		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_modelElementView",
 				"m_model", "m_typeDeclaration" ],
-		function(m_utils, m_command, m_commandsController, m_dialog, m_view, m_model,
+		function(m_utils, m_command, m_commandsController, m_dialog, m_modelElementView, m_model,
 				m_typeDeclaration) {
 			var view;
 
@@ -33,41 +33,19 @@ define(
 			function UiMashupApplicationView() {
 				// Inheritance
 
-				var view = m_view.create();
+				var view = m_modelElementView.create();
 
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(UiMashupApplicationView.prototype, view);
-
-				this.nameInput = jQuery("#nameInput");
-
-				this.nameInput.change({
-					"view" : this
-				}, function(event) {
-					var view = event.application.view;
-
-					if (!view.validate()) {
-						return;
-					}
-
-					if (view.application.name != view.nameInput.val()) {
-						view.submitChanges({
-							name : view.nameInput.val()
-						});
-					}
-				});
 
 				/**
 				 * 
 				 */
 				UiMashupApplicationView.prototype.initialize = function(
 						application) {
+					this.initializeModelElement(application);
+					
 					this.application = application;
-
-					this.nameInput.val(this.application.name);
-
-					if (this.application.attributes == null) {
-						this.application.attributes = {};
-					}
 				};
 
 				/**

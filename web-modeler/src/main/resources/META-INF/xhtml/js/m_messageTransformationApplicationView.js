@@ -11,10 +11,10 @@
 define(
 		[ "m_utils", "m_constants", "m_command", "m_commandsController",
 				"m_model", "m_typeDeclaration", "m_accessPoint",
-				"m_dataTraversal", "m_dialog", "m_view" ],
+				"m_dataTraversal", "m_dialog", "m_modelElementView" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
 				m_model, m_typeDeclaration, m_accessPoint, m_dataTraversal,
-				m_dialog, m_view) {
+				m_dialog, m_modelElementView) {
 			return {
 				initialize : function(fullId) {
 					var view = new MessageTransformationApplicationView();
@@ -34,14 +34,13 @@ define(
 			function MessageTransformationApplicationView() {
 				// Inheritance
 
-				var view = m_view.create();
+				var view = m_modelElementView.create();
 
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(MessageTransformationApplicationView.prototype, view);
 
 				this.inputData = {};
 				this.outputData = {};
-				this.nameInput = jQuery("#nameInput");
 				this.inputTable = jQuery("#sourceTable");
 				this.inputTableBody = jQuery("table#sourceTable tbody");
 				this.sourceFilterInput = jQuery("#sourceFilterInput");
@@ -63,18 +62,6 @@ define(
 
 				this.inputTableRows = [];
 				this.outputTableRows = [];
-
-				this.nameInput.change({
-					"view" : this
-				}, function(event) {
-					var view = event.data.view;
-
-					if (view.application.name != view.nameInput.val()) {
-						view.submitChanges({
-							name : view.nameInput.val()
-						});
-					}
-				});
 
 				this.sourceFilterInput.keypress({
 					"view" : this
@@ -330,12 +317,9 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.initialize = function(
 						application) {
+					this.initializeModelElement(application);
+					
 					this.application = application;
-
-					m_utils.debug("Initializing MTA");
-					m_utils.debug(this.application);
-
-					this.nameInput.val(application.name);
 				};
 
 				/**
@@ -828,23 +812,6 @@ define(
 							"messageTransformation:TransformationProperty" : transformationProperty
 						}
 					};
-				};
-
-				/**
-				 * 
-				 */
-				MessageTransformationApplicationView.prototype.submitChanges = function(
-						changes) {
-					// Generic attributes
-
-					if (changes.attributes == null) {
-						changes.attributes = {};
-					}
-
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(
-									this.application.model.id,
-									this.application.oid, changes));
 				};
 
 				/**

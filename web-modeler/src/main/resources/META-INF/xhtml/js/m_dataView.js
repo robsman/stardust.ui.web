@@ -9,9 +9,9 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_view",
+		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_modelElementView",
 				"m_model", "m_typeDeclaration" ],
-		function(m_utils, m_command, m_commandsController, m_dialog, m_view, m_model,
+		function(m_utils, m_command, m_commandsController, m_dialog, m_modelElementView, m_model,
 				m_typeDeclaration) {
 			var view;
 
@@ -35,47 +35,19 @@ define(
 			function DataView() {
 				// Inheritance
 
-				var view = m_view.create();
+				var view = m_modelElementView.create();
 
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(DataView.prototype, view);
-
-				this.guidOutput = jQuery("#guidOutput");
-				this.idOutput = jQuery("#idOutput");
-				this.nameInput = jQuery("#nameInput");
-
-				this.nameInput.change({
-					"view" : this
-				}, function(event) {
-					var view = event.data.view;
-
-					if (!view.validate()) {
-						return;
-					}
-
-					if (view.data.name != view.nameInput.val()) {
-						view.submitChanges({
-							name : view.nameInput.val()
-						});
-					}
-				});
 
 				/**
 				 * 
 				 */
 				DataView.prototype.initialize = function(
 						data) {
+					this.initializeModelElement(data);
+					
 					this.data = data;
-
-					this.guidOutput.empty();
-					this.guidOutput.append(this.data.oid);
-					this.idOutput.empty();
-					this.idOutput.append(this.data.id);
-					this.nameInput.val(this.data.name);
-
-					if (this.data.attributes == null) {
-						this.data.attributes = {};
-					}
 				};
 
 				/**
@@ -108,22 +80,6 @@ define(
 					}
 
 					return true;
-				};
-
-				/**
-				 * 
-				 */
-				DataView.prototype.submitChanges = function(changes) {
-					// Generic attributes
-
-					if (changes.attributes == null) {
-						changes.attributes = {};
-					}
-
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(
-									this.data.model.id,
-									this.data.oid, changes));
 				};
 
 				/**

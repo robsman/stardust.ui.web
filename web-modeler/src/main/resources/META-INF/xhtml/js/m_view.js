@@ -2,8 +2,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_dialog" ],
-		function(m_utils, m_constants, m_dialog) {
+		[ "m_utils", "m_constants", "m_command", "m_commandsController", "m_dialog" ],
+		function(m_utils, m_constants, m_command, m_commandsController, m_dialog) {
 			return {
 				create : function(id) {
 					var view = new View();

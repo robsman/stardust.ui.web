@@ -9,9 +9,9 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_view",
+		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_modelElementView",
 				"m_model", "m_typeDeclaration" ],
-		function(m_utils, m_command, m_commandsController, m_dialog, m_view, m_model,
+		function(m_utils, m_command, m_commandsController, m_dialog, m_modelElementView, m_model,
 				m_typeDeclaration) {
 			var view;
 
@@ -35,50 +35,21 @@ define(
 			function OrganizationView() {
 				// Inheritance
 
-				var view = m_view.create();
+				var view = m_modelElementView.create();
 
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(OrganizationView.prototype, view);
 
-				this.guidOutput = jQuery("#guidOutput");
-				this.idOutput = jQuery("#idOutput");
-				this.nameInput = jQuery("#nameInput");
-
 				jQuery("#organizationTabs").tabs();
-
-				this.nameInput.change({
-					"view" : this
-				}, function(event) {
-					var view = event.data.view;
-
-					if (!view.validate()) {
-						return;
-					}
-
-					if (view.application.name != view.nameInput.val()) {
-						view.submitChanges({
-							name : view.nameInput.val()
-						});
-					}
-				});
 
 				/**
 				 * 
 				 */
 				OrganizationView.prototype.initialize = function(
 						organization) {
+					this.initializeModelElement(organization);
+					
 					this.organization = organization;
-
-					this.guidOutput.empty();
-					this.guidOutput.append(this.organization.oid);
-					this.idOutput.empty();
-					this.idOutput.append(this.organization.id);
-					this.nameInput.val(this.organization.name);
-
-					if (this.organization.attributes == null) {
-						this.organization.attributes = {};
-					}
-
 				};
 
 				/**
@@ -111,22 +82,6 @@ define(
 					}
 
 					return true;
-				};
-
-				/**
-				 * 
-				 */
-				OrganizationView.prototype.submitChanges = function(changes) {
-					// Generic attributes
-
-					if (changes.attributes == null) {
-						changes.attributes = {};
-					}
-
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(
-									this.organization.model.id,
-									this.organization.oid, changes));
 				};
 
 				/**

@@ -9,16 +9,16 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_view",
+		[ "m_utils", "m_commandsController", "m_dialog", "m_modelElementView",
 				"m_model", "m_typeDeclaration" ],
-		function(m_utils, m_command, m_commandsController, m_dialog, m_view, m_model,
+		function(m_utils, m_commandsController, m_dialog, m_modelElementView, m_model,
 				m_typeDeclaration) {
 			return {
 				initialize : function(fullId) {
 					var view = new CamelApplicationView();
+					
 					// TODO Unregister!
 					// In Initializer?
-
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(m_model.findApplication(fullId));
@@ -31,33 +31,17 @@ define(
 			function CamelApplicationView() {
 				// Inheritance
 
-				var view = m_view.create();
+				var view = m_modelElementView.create();
 
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(CamelApplicationView.prototype, view);
 
-				this.nameInput = jQuery("#nameInput");
 				this.camelContextInput = jQuery("#camelContextInput");
 				this.routeTextarea = jQuery("#routeTextarea");
 				this.additionalBeanSpecificationTextarea = jQuery("#additionalBeanSpecificationTextarea");
 				this.requestDataInput = jQuery("#requestDataInput");
 				this.responseDataInput = jQuery("#responseDataInput");
 
-				this.nameInput.change({
-					"view" : this
-				}, function(event) {
-					var view = event.data.view;
-
-					if (!view.validate()) {
-						return;
-					}
-
-					if (view.application.name != view.nameInput.val()) {
-						view.submitChanges({
-							name : view.nameInput.val()
-						});
-					}
-				});
 				this.camelContextInput
 						.change(
 								{
@@ -71,7 +55,7 @@ define(
 									}
 
 									if (view.application.attributes["carnot:engine:camel::camelContextId"] !=
-											 view.nameInput.val()) {
+											 view.camelContextInput.val()) {
 										view
 												.submitChanges({
 													attributes : {
@@ -135,12 +119,8 @@ define(
 						application) {
 					this.application = application;
 
-					this.nameInput.val(this.application.name);
-
-					if (this.application.attributes == null) {
-						this.application.attributes = {};
-					}
-
+					this.initializeModelElement(application);
+					
 					if (this.application.attributes["carnot:engine:camel::camelContextId"] == null) {
 						this.application.attributes["carnot:engine:camel::camelContextId"] = "Default";
 					}
@@ -190,24 +170,6 @@ define(
 					}
 
 					return true;
-				};
-
-				/**
-				 * 
-				 */
-				CamelApplicationView.prototype.submitChanges = function(changes) {
-					// Generic attributes
-
-					if (changes.attributes == null) {
-						changes.attributes = {};
-					}
-
-					changes.attributes["carnot:engine:camel::producerMethodName"] = "executeMessage(java.lang.Object)";
-
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(
-									this.application.model.id,
-									this.application.oid, changes));
 				};
 
 				/**

@@ -9,9 +9,9 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_view",
+		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_modelElementView",
 				"m_model"],
-		function(m_utils, m_command, m_commandsController, m_dialog, m_view, m_model) {
+		function(m_utils, m_command, m_commandsController, m_dialog, m_modelElementView, m_model) {
 			return {
 				initialize : function(fullId) {
 					var role = m_model.findParticipant(fullId);
@@ -32,45 +32,21 @@ define(
 			function RoleView() {
 				// Inheritance
 
-				var view = m_view.create();
+				var view = m_modelElementView.create();
 
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(RoleView.prototype, view);
 
-				this.guidOutput = jQuery("#guidOutput");
-				this.idOutput = jQuery("#idOutput");
-				this.nameInput = jQuery("#nameInput");
-
 				jQuery("#roleTabs").tabs();
 				
-				this.nameInput.change({
-					"view" : this
-				}, function(event) {
-					var view = event.data.view;
-
-					if (!view.validate()) {
-						return;
-					}
-
-					if (view.role.name != view.nameInput.val()) {
-						view.submitChanges({
-							name : view.nameInput.val()
-						});
-					}
-				});
-
 				/**
 				 * 
 				 */
 				RoleView.prototype.initialize = function(
 						role) {
+					this.initializeModelElement(role);
+					
 					this.role= role;
-
-					this.guidOutput.empty();
-					this.guidOutput.append(this.role.oid);
-					this.idOutput.empty();
-					this.idOutput.append(this.role.id);
-					this.nameInput.val(this.role.name);
 				};
 
 				/**
@@ -110,24 +86,6 @@ define(
 					}
 
 					return true;
-				};
-
-				/**
-				 * 
-				 */
-				RoleView.prototype.submitChanges = function(changes) {
-					// Generic attributes
-
-					if (changes.attributes == null) {
-						changes.attributes = {};
-					}
-
-					changes.attributes["carnot:engine:camel::producerMethodName"] = "executeMessage(java.lang.Object)";
-
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(
-									this.application.model.id,
-									this.application.oid, changes));
 				};
 
 				/**

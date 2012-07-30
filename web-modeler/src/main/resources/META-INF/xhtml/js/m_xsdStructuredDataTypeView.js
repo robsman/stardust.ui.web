@@ -2,9 +2,9 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_command", "m_commandsController", "m_dialog",
+		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_modelView",
 				"m_model", "m_typeDeclaration" , "m_propertiesTree"],
-		function(m_utils, m_command, m_commandsController, m_dialog, m_model,
+		function(m_utils, m_command, m_commandsController, m_dialog, m_modelView, m_model,
 				m_typeDeclaration, m_propertiesTree) {
 			return {
 				initialize : function(fullId) {
@@ -24,9 +24,15 @@ define(
 			 * 
 			 */
 			function XsdStructuredDataTypeView() {
+				// Inheritance
+
+				var view = m_modelElementView.create();
+
+				m_utils.inheritFields(this, view);
+				m_utils.inheritMethods(XsdStructuredDataTypeView.prototype, view);
+
 				this.tree = jQuery("#typeDeclarationsTable");
 				this.tableBody = jQuery("table#typeDeclarationsTable tbody");
-				this.nameInput = jQuery("#nameInput");
 				this.urlTextInput = jQuery("#urlTextInput");
 				this.loadFromUrlButton = jQuery("#loadFromUrlButton");
 				this.importFromUrlRadioButton = jQuery("#importFromUrlRadioButton");
@@ -38,18 +44,6 @@ define(
 				this.structureRadioButton = jQuery("#structureRadioButton");
 				this.enumerationRadioButton = jQuery("#enumerationRadioButton");
 				this.propertiesTree = m_propertiesTree.create("fieldPropertiesTable");
-
-				this.nameInput.change({
-					"view" : this
-				}, function(event) {
-					var view = event.data.view;
-
-					if (view.structuredDataType.name != view.nameInput.val()) {
-						view.submitChanges({
-							name : view.nameInput.val()
-						});
-					}
-				});
 
 				this.loadFromUrlButton.click({
 					"callbackScope" : this
@@ -112,9 +106,9 @@ define(
 				 */
 				XsdStructuredDataTypeView.prototype.initialize = function(
 						structuredDataType) {
-					this.structuredDataType = structuredDataType;
+					this.initializeModelElement(structuredDataType);
 					
-					this.nameInput.val(structuredDataType.name);
+					this.structuredDataType = structuredDataType;
 				};
 
 				/**
@@ -453,16 +447,6 @@ define(
 					return select;
 				};
 				
-
-				/**
-				 * 
-				 */
-				XsdStructuredDataTypeView.prototype.submitChanges = function(
-						changes) {
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(this.structuredDataType.model.id,
-									this.structuredDataType.oid, changes));
-				};
 
 				/**
 				 * Only react to name changes and validation exceptions.
