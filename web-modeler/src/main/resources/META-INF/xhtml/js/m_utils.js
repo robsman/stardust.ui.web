@@ -41,7 +41,7 @@ define(
 				},
 				
 				generateIDFromName : function(name) {
-					return name.replace(" ", "_");
+					return name.replace(/ /g, '_');
 				}
 			};
 
