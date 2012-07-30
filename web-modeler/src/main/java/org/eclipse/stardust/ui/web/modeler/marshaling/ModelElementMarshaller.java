@@ -829,7 +829,9 @@ public class ModelElementMarshaller
             ModelUtils.findContainingModel(application).getId());
       applicationJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(application));
       applicationJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.APPLICATION_KEY);
+    
       loadDescription(applicationJson, application);
+      loadAttributes(application, applicationJson);
 
       if (application.getType() != null) {
          applicationJson.addProperty(ModelerConstants.APPLICATION_TYPE_PROPERTY,
