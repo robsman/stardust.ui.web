@@ -43,13 +43,13 @@ public class CommandHandlingMediator
 
    private List<IChangeListener> changeListeners = newArrayList();
 
-   public void broadcastChange(JsonObject commndJson)
+   public void broadcastChange(EditingSession session, JsonObject commndJson)
    {
       for (IChangeListener listener : changeListeners)
       {
          try
          {
-            listener.onCommand(commndJson);
+            listener.onCommand(session, commndJson);
          }
          catch (Exception e)
          {

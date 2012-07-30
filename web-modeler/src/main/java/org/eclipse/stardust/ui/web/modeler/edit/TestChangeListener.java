@@ -5,16 +5,17 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
+
 @Component
 @Scope("singleton")
 public class TestChangeListener implements IChangeListener
 {
 
    @Override
-   public void onCommand(JsonObject commandJson)
+   public void onCommand(EditingSession session, JsonObject commandJson)
    {
-      // TODO Auto-generated method stub
-      System.out.println("Received command: " + commandJson);
+      System.out.println("[session: " + session.getId() + "] - command: " + commandJson);
    }
 
 }

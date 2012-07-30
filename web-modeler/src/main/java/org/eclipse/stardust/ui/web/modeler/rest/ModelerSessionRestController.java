@@ -82,7 +82,7 @@ public class ModelerSessionRestController
       JsonArray jsModified = new JsonArray();
       for (EObject changedObject : change.changedObjects())
       {
-         jsModified.add(modelElementMarshaller().toJson(changedObject));    		  
+         jsModified.add(modelElementMarshaller().toJson(changedObject));
       }
       jsChanges.add("modified", jsModified);
 
@@ -151,7 +151,7 @@ public class ModelerSessionRestController
                result.addProperty("pendingRedo", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingRedo.getId());
             }
 
-            commandHandlerRegistry().broadcastChange(result);
+            commandHandlerRegistry().broadcastChange(undoneChange.getSession(), result);
 
             return Response.ok(jsonIo().writeJsonObject(result), MediaType.APPLICATION_JSON_TYPE).build();
          }
@@ -183,7 +183,7 @@ public class ModelerSessionRestController
                result.addProperty("pendingRedo", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingRedo.getId());
             }
 
-            commandHandlerRegistry().broadcastChange(result);
+            commandHandlerRegistry().broadcastChange(redoneChange.getSession(), result);
 
             return Response.ok(jsonIo().writeJsonObject(result), MediaType.APPLICATION_JSON_TYPE).build();
          }
@@ -255,7 +255,7 @@ public class ModelerSessionRestController
       if ("model.create".equalsIgnoreCase(commandId)
             || "model.delete".equalsIgnoreCase(commandId))
       {
-         JsonArray changesJson = commandJson.getAsJsonArray("changeDescriptions");         
+         JsonArray changesJson = commandJson.getAsJsonArray("changeDescriptions");
          for (JsonElement cJson : changesJson) {
             if (null != cJson) {
                JsonElement changeJson = cJson.getAsJsonObject().get("changes");
@@ -264,7 +264,7 @@ public class ModelerSessionRestController
                JsonObject response = handler.getResponse();
                if (null != response) {
                   return Response.ok(response.toString(), APPLICATION_JSON_TYPE).build();
-               }         
+               }
             }
          }
       }
@@ -364,7 +364,7 @@ public class ModelerSessionRestController
 
          JsonObject changeJto = toJson(change);
 
-         commandHandlerRegistry().broadcastChange(changeJto);
+         commandHandlerRegistry().broadcastChange(change.getSession(), changeJto);
 
          return Response.created(toChangeUri(change)) //
                .entity(jsonIo().writeJsonObject(changeJto))
@@ -404,7 +404,7 @@ public class ModelerSessionRestController
    {
       return resolveSpringBean(EObjectUUIDMapper.class, servletContext);
    }
-   
+
    private ModelElementMarshaller modelElementMarshaller()
    {
       return resolveSpringBean(ModelElementMarshaller.class, servletContext);
