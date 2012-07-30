@@ -49,11 +49,12 @@ define(
 				findProcess : function(fullId) {
 					return getModels()[stripModelId(fullId)].processes[stripElementId(fullId)];
 				},
-				createModel : function(id, name) {
+				createModel : function(id, name, uuid) {
 					var model = new Model();
 
 					model.id = id;
 					model.name = name;
+					model.uuid = uuid;
 
 					getModels()[id] = model;
 

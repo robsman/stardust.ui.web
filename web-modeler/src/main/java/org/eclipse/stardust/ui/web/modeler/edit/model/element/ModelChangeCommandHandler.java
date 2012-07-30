@@ -26,6 +26,7 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
+import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementHelper;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
@@ -90,6 +91,8 @@ public class ModelChangeCommandHandler implements ICommandHandler
       model = newBpmModel().withIdAndName(
             request.get(ModelerConstants.ID_PROPERTY).getAsString(),
             request.get(ModelerConstants.NAME_PROPERTY).getAsString()).build();
+      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      mapper.map(model);
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       AttributeUtil.setAttribute(model, PredefinedConstants.VERSION_ATT, "1");
 

@@ -1650,7 +1650,7 @@ define(
 				 * 
 				 */
 				Outline.prototype.createModel = function(data) {
-					var model = m_model.createModel(data.id, data.name);
+					var model = m_model.createModel(data.id, data.name, data.uuid);
 					jQuery("#outline").jstree("create", "#Models", "last", {
 						"attr" : {
 							"elementId" : data.id,
@@ -1662,7 +1662,7 @@ define(
 					}, null, false);
 					jQuery("#outline").jstree("set_type", "model",
 							"#" + data.uuid);
-					jQuery("#outline").jstree("create", "#" + data.id, "first",
+					jQuery("#outline").jstree("create", "#" + data.uuid, "first",
 							{
 								"attr" : {
 									"id" : "structuredTypes_" + data.id,
@@ -1671,7 +1671,7 @@ define(
 								},
 								"data" : "Structured Types"
 							}, null, true);
-					jQuery("#outline").jstree("create", "#" + data.id, "first",
+					jQuery("#outline").jstree("create", "#" + data.uuid, "first",
 							{
 								"attr" : {
 									"id" : "data_" + data.id,
@@ -1679,7 +1679,7 @@ define(
 								},
 								"data" : "Data"
 							}, null, true);
-					jQuery("#outline").jstree("create", "#" + data.id, "first",
+					jQuery("#outline").jstree("create", "#" + data.uuid, "first",
 							{
 								"attr" : {
 									"modelId" : data.id,
@@ -1688,7 +1688,7 @@ define(
 								},
 								"data" : "Applications"
 							}, null, true);
-					jQuery("#outline").jstree("create", "#" + data.id, "first",
+					jQuery("#outline").jstree("create", "#" + data.uuid, "first",
 							{
 								"attr" : {
 									"id" : "participants_" + data.id,

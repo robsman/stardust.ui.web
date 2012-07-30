@@ -1064,6 +1064,7 @@ public class ModelElementMarshaller
       modelJson.addProperty(ModelerConstants.ID_PROPERTY, model.getId());
       modelJson.addProperty(ModelerConstants.NAME_PROPERTY, model.getName());
       modelJson.addProperty(ModelerConstants.OID_PROPERTY, model.getOid());
+      modelJson.addProperty(ModelerConstants.UUID_PROPERTY,  eObjectUUIDMapper().getUUID(model));
       modelJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.MODEL_KEY);
       
       return modelJson;
