@@ -12,6 +12,14 @@
 	<context:annotation-config />
 	<context:component-scan base-package="org.eclipse.stardust.ui.web.modeler" />
 
+	<bean name="bpmModelerCmdHandlerRegistry" class="org.eclipse.stardust.ui.web.modeler.edit.CommandHandlerRegistry"
+		scope="singleton" />
+
+	<!-- this is a bean factory post processor, must use XML to wire dependencies (see SPR-4935) -->
+	<bean class="org.eclipse.stardust.ui.web.modeler.edit.discovery.CommandHandlerScanner">
+		<constructor-arg index="0" ref="bpmModelerCmdHandlerRegistry" />
+	</bean>
+
 	<bean name="bpmModelerMessages" class="org.eclipse.stardust.ui.web.modeler.portal.messages.Messages"
 		scope="session">
 	</bean>
@@ -85,7 +93,7 @@
 		class="org.eclipse.stardust.ui.web.modeler.portal.ModelingWorkAssignmentView">
 		<property name="modelService" ref="modelService" />
 	</bean>
-	
+
 	<bean id="inviteParticipantsDialog"
 		class="org.eclipse.stardust.ui.web.modeler.portal.InviteParticipantsDialog">
 		<property name="modelService" ref="modelService" />

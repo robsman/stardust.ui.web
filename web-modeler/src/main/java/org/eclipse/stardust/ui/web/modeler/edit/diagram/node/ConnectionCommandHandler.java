@@ -16,8 +16,6 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractIn
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLong;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
-import org.eclipse.emf.ecore.EObject;
-
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
@@ -43,41 +41,20 @@ import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
-import org.eclipse.stardust.ui.web.modeler.edit.ICommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 
 /**
- * 
  * @author Sidharth.Singh
- * 
  */
-public class ConnectionCommandHandler implements ICommandHandler
+@CommandHandler
+public class ConnectionCommandHandler
 {
-
-   @Override
-   public boolean isValidTarget(Class<? > type)
-   {
-      return IIdentifiableElement.class.isAssignableFrom(type);
-   }
-
-   @Override
-   public void handleCommand(String commandId, EObject targetElement, JsonObject request)
+   @OnCommand(commandId = "connection.create")
+   public void createConnection(IIdentifiableElement targetElement, JsonObject request)
    {
       ModelType model = ModelUtils.findContainingModel(targetElement);
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(targetElement);
-      if ("connection.create".equals(commandId))
-      {
-         createConnection(model, processDefinition, request);
-      }
-      else if ("connection.delete".equals(commandId))
-      {
-         deleteConnection(model, processDefinition, request);
-      }
-
-   }
-
-   private void createConnection(ModelType model,
-         ProcessDefinitionType processDefinition, JsonObject request)
-   {
 
       synchronized (model)
       {
@@ -221,9 +198,12 @@ public class ConnectionCommandHandler implements ICommandHandler
       }
    }
 
-   private void deleteConnection(ModelType model,
-         ProcessDefinitionType processDefinition, JsonObject request)
+   @OnCommand(commandId = "connection.delete")
+   public void deleteConnection(IIdentifiableElement targetElement, JsonObject request)
    {
+      ModelType model = ModelUtils.findContainingModel(targetElement);
+      ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(targetElement);
+
       Long connectionOid = extractLong(request, ModelerConstants.OID_PROPERTY);
       synchronized (model)
       {
@@ -259,7 +239,7 @@ public class ConnectionCommandHandler implements ICommandHandler
    }
 
    /**
-    * 
+    *
     * @param sourceActivitySymbol
     * @param targetActivitySymbol
     * @throws JSONException
@@ -320,7 +300,7 @@ public class ConnectionCommandHandler implements ICommandHandler
    }
 
    /**
-    * 
+    *
     * @param connectionJson
     * @param processDefinition
     * @param sourceActivitySymbol
@@ -349,7 +329,7 @@ public class ConnectionCommandHandler implements ICommandHandler
    }
 
    /**
-    * 
+    *
     * @param connectionJson
     * @param processDefinition
     * @param sourceActivitySymbol
@@ -380,7 +360,7 @@ public class ConnectionCommandHandler implements ICommandHandler
    }
 
    /**
-    * 
+    *
     * @param connectionJson
     * @param processDefinition
     * @param sourceActivitySymbol
@@ -445,7 +425,7 @@ public class ConnectionCommandHandler implements ICommandHandler
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */

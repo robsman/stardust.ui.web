@@ -19,7 +19,10 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.MODEL_ID_
 
 import javax.annotation.Resource;
 
-import org.eclipse.emf.ecore.EObject;
+import org.springframework.context.ApplicationContext;
+
+import com.google.gson.JsonObject;
+
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
@@ -32,35 +35,22 @@ import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.OrientationType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.ui.web.modeler.edit.ICommandHandler;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-import com.google.gson.JsonObject;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 
 /**
  * @author Shrikant.Gangal
  *
  */
-@Component
-@Scope("prototype")
-public class CreateProcessCommandHandler implements ICommandHandler
+@CommandHandler
+public class CreateProcessCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
 
-   @Override
-   public boolean isValidTarget(Class< ? > type)
+   @OnCommand(commandId = "process.create")
+   public void handleCommand(ModelType model, JsonObject request)
    {
-      return ModelType.class.isAssignableFrom(type);
-   }
-
-   @Override
-   public void handleCommand(String commandId, EObject targetElement, JsonObject request)
-   {
-      ModelType model = (ModelType) targetElement;
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
       String id = MBFacade.createIdFromName(name);
       ProcessDefinitionType processDefinition = newProcessDefinition(model).withIdAndName(id, name).build();

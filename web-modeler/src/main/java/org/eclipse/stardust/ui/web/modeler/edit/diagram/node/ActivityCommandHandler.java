@@ -18,62 +18,38 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PRO
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
-import org.eclipse.emf.ecore.EObject;
+import com.google.gson.JsonObject;
+
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
-import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
-import org.eclipse.stardust.ui.web.modeler.edit.ICommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
-import com.google.gson.JsonObject;
-
 /**
- * 
+ *
  * @author Sidharth.Singh
- * 
+ *
  */
-public class ActivityCommandHandler implements ICommandHandler
+@CommandHandler
+public class ActivityCommandHandler
 {
-
-   @Override
-   public boolean isValidTarget(Class< ? > type)
-   {
-      return IIdentifiableElement.class.isAssignableFrom(type);
-   }
-
-   @Override
-   public void handleCommand(String commandId, EObject targetElement, JsonObject request)
-   {
-      LaneSymbol parentLaneSymbol = (LaneSymbol) targetElement;
-      ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
-      ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
-      if ("activitySymbol.create".equals(commandId))
-      {
-         createActivity(parentLaneSymbol, model, processDefinition, request);
-      }
-      else if ("activitySymbol.delete".equals(commandId))
-      {
-         deleteActivity(parentLaneSymbol, model, processDefinition, request);
-      }
-   }
-
    /**
-    *
     * @param parentLaneSymbol
-    * @param model
-    * @param processDefinition
     * @param request
     */
-   private void createActivity(LaneSymbol parentLaneSymbol, ModelType model, ProcessDefinitionType processDefinition,
-         JsonObject request)
+   @OnCommand(commandId = "activitySymbol.create")
+   public void createActivity(LaneSymbol parentLaneSymbol, JsonObject request)
    {
+      ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
+      ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
 
       String activityType = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
             ModelerConstants.ACTIVITY_TYPE);
@@ -111,13 +87,14 @@ public class ActivityCommandHandler implements ICommandHandler
    /**
     *
     * @param parentLaneSymbol
-    * @param model
-    * @param processDefinition
     * @param request
     */
-   private void deleteActivity(LaneSymbol parentLaneSymbol, ModelType model, ProcessDefinitionType processDefinition,
-         JsonObject request)
+   @OnCommand(commandId = "activitySymbol.delete")
+   public void deleteActivity(LaneSymbol parentLaneSymbol, JsonObject request)
    {
+      ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
+      ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
+
       String activityId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
       ActivityType activity = MBFacade.findActivity(processDefinition, activityId);
       ActivitySymbolType activitySymbol = activity.getActivitySymbols().get(0);

@@ -5,22 +5,19 @@
 package org.eclipse.stardust.ui.web.modeler.edit;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
-import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
 
 import com.google.gson.JsonObject;
 
-public class UpdateModelElementCommandHandler implements ICommandHandler
-{
-   @Override
-   public boolean isValidTarget(Class< ? > type)
-   {
-      return IModelElement.class.isAssignableFrom(type);
-   }
+import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
+import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
 
-   @Override
-   public void handleCommand(String commandId, EObject targetElement, JsonObject request)
+@CommandHandler
+public class UpdateModelElementCommandHandler
+{
+   @OnCommand(commandId = "modelElement.update")
+   public void updateElement(EObject targetElement, JsonObject request)
    {
-	   ModelElementUnmarshaller.getInstance().populateFromJson(targetElement, request);
+      ModelElementUnmarshaller.getInstance().populateFromJson(targetElement, request);
    }
 }

@@ -16,27 +16,24 @@ import org.springframework.stereotype.Component;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.Pair;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.ActivityCommandHandler;
-import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.ConnectionCommandHandler;
-import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.EventCommandHandler;
-import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.GatewayCommandHandler;
-import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.MoveNodeSymbolHandler;
-import org.eclipse.stardust.ui.web.modeler.edit.diagram.node.SwimlaneCommandHandler;
-import org.eclipse.stardust.ui.web.modeler.edit.model.element.CreateProcessCommandHandler;
-import org.eclipse.stardust.ui.web.modeler.edit.model.element.StructuredTypeChangeCommandHandler;
-import org.eclipse.stardust.ui.web.modeler.edit.model.element.ApplicationTypeChangeCommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.CommandHandlerRegistry.ICommandHandlerInvoker;
 
 @Component
-// TODO registry should be singleton scope, but somehow needs to have access to
-// session-scoped EditingSession management
 @Scope("session")
 public class CommandHandlingMediator
 {
+   private static final Logger trace = LogManager.getLogger(CommandHandlingMediator.class);
+
    @Resource
    private EditingSessionManager editingSessionManager;
+
+   @Resource
+   private CommandHandlerRegistry commandHandlerRegistry;
 
    @Resource
    private ApplicationContext springContext;
@@ -74,105 +71,50 @@ public class CommandHandlingMediator
    public Modification handleCommand(ModelType containingModel, String commandId,
          List<Pair<EObject, JsonObject>> changes)
    {
-      // TODO register handlers externally
-      // TODO proper handler attribute matching
-      ICommandHandler handler = null;
-
-      if ("modelElement.update".equals(commandId))
-      {
-         handler = new UpdateModelElementCommandHandler();
-      }
-      else if ("nodeSymbol.move".equals(commandId))
-      {
-         handler = new MoveNodeSymbolHandler();
-      }
-      else if ("activitySymbol.create".equals(commandId) || "activitySymbol.delete".equals(commandId))
-      {
-         handler = new ActivityCommandHandler();
-      }
-      else if ("eventSymbol.create".equals(commandId) || "eventSymbol.delete".equals(commandId))
-      {
-         handler = new EventCommandHandler();
-      }
-      else if ("gateSymbol.create".equals(commandId) || "gateSymbol.delete".equals(commandId))
-      {
-         handler = new GatewayCommandHandler();
-      }
-      else if ("swimlaneSymbol.create".equals(commandId) || "swimlaneSymbol.delete".equals(commandId))
-      {
-         handler = new SwimlaneCommandHandler();
-      }
-      else if ("process.create".equals(commandId))
-      {
-         if (null != springContext)
-         {
-            handler = springContext.getBean(CreateProcessCommandHandler.class);
-         }
-         else
-         {
-            handler = new CreateProcessCommandHandler();
-         }
-      }
-      else if ("structuredDataType.create".equals(commandId))
-      {
-         if (null != springContext)
-         {
-            handler = springContext.getBean(StructuredTypeChangeCommandHandler.class);
-         }
-         else
-         {
-            handler = new StructuredTypeChangeCommandHandler();
-         }
-      }
-      else if ("webServiceApplication.create".equals(commandId)
-            || "messageTransformationApplication.create".equals(commandId)
-            || "camelApplication.create".equals(commandId)
-            || "uiMashupApplication.create".equals(commandId))
-      {
-         if (null != springContext)
-         {
-            handler = springContext.getBean(ApplicationTypeChangeCommandHandler.class);
-         }
-         else
-         {
-            handler = new ApplicationTypeChangeCommandHandler();
-         }
-      }
-      else if ("connection.create".equals(commandId) || "connection.delete".equals(commandId))
-      {
-         handler = new ConnectionCommandHandler();
-      }
-
+      EditingSession editingSession = editingSessionManager.getSession(containingModel);
       Modification change = null;
-      if (null != handler)
+      try
       {
-         // TODO wrap in undo/redo command generator
-
-         EditingSession editingSession = editingSessionManager.getSession(containingModel);
-         try
+         if (null != editingSession)
          {
-            if (null != editingSession)
-            {
-               editingSession.beginEdit();
-            }
-
-            for (Pair<EObject, JsonObject> modification : changes)
-            {
-               // TODO verify type of target element against expected target (probably
-               // requires some kind of annotation on handler)
-               handler.handleCommand(commandId, modification.getFirst(), modification.getSecond());
-            }
+            // starting to record changes in order to automatically be able to perform
+            // undo/redo
+            editingSession.beginEdit();
          }
-         finally
+
+         for (Pair<EObject, JsonObject> modification : changes)
          {
-            if ((null != editingSession) && editingSession.endEdit())
+            ICommandHandlerInvoker invoker = null;
+            if (null != commandHandlerRegistry)
             {
-               change = editingSession.getPendingUndo();
+               invoker = commandHandlerRegistry.findCommandHandler(commandId,
+                     modification.getFirst());
+            }
+
+            if (null != invoker)
+            {
+               invoker.handleCommand(commandId, modification.getFirst(),
+                     modification.getSecond());
+            }
+            else
+            {
+               trace.error("Failed handling command: no suitable handler for command '"
+                     + commandId + "'.");
             }
          }
       }
+      finally
+      {
+         if ((null != editingSession) && editingSession.endEdit())
+         {
+            change = editingSession.getPendingUndo();
+         }
+      }
 
-      System.out.println("Change: " + change);
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("Change: " + change);
+      }
 
       return change;
    }

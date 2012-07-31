@@ -18,58 +18,34 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PRO
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
-import org.eclipse.emf.ecore.EObject;
+import com.google.gson.JsonObject;
+
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
-import org.eclipse.stardust.ui.web.modeler.edit.ICommandHandler;
-
-import com.google.gson.JsonObject;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 
 /**
  * @author Shrikant.Gangal
- * 
  */
-public class SwimlaneCommandHandler implements ICommandHandler
+@CommandHandler
+public class SwimlaneCommandHandler
 {
-
-   @Override
-   public boolean isValidTarget(Class<? > type)
-   {
-      return IIdentifiableElement.class.isAssignableFrom(type);
-   }
-
-   @Override
-   public void handleCommand(String commandId, EObject targetElement, JsonObject request)
-   {
-      PoolSymbol parentSymbol = (PoolSymbol) targetElement;
-      ModelType model = ModelUtils.findContainingModel(parentSymbol);
-      ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentSymbol);
-      if ("swimlaneSymbol.create".equals(commandId))
-      {
-         createSwimlane(parentSymbol, model, processDefinition, request);
-      }
-      else if ("swimlaneSymbol.delete".equals(commandId))
-      {
-         deleteSwimlane(parentSymbol, model, processDefinition, request);
-      }
-   }
-
    /**
-    * 
     * @param parentSymbol
-    * @param model
-    * @param processDefinition
     * @param request
     */
-   private void createSwimlane(PoolSymbol parentSymbol, ModelType model,
-         ProcessDefinitionType processDefinition, JsonObject request)
+   @OnCommand(commandId = "swimlaneSymbol.create")
+   public void createSwimlane(PoolSymbol parentSymbol, JsonObject request)
    {
+      ModelType model = ModelUtils.findContainingModel(parentSymbol);
+      ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentSymbol);
+
       String laneId = extractString(request, ModelerConstants.ID_PROPERTY);
       String laneName = extractString(request, ModelerConstants.NAME_PROPERTY);
       int xPos = extractInt(request, X_PROPERTY);
@@ -85,25 +61,25 @@ public class SwimlaneCommandHandler implements ICommandHandler
          LaneSymbol laneSymbol = MBFacade.createLane(model.getId(), model,
                processDefinition, laneId, laneName, xPos, yPos, width, height,
                orientation, participantFullID);
-         
+
          parentSymbol.getLanes().add(laneSymbol);
 
          PoolSymbol containingPool = parentSymbol;
          int poolWidth = containingPool.getWidth();
-         containingPool.setWidth(poolWidth + width);         
+         containingPool.setWidth(poolWidth + width);
       }
    }
 
    /**
-    * 
     * @param parentSymbol
-    * @param model
-    * @param processDefinition
     * @param request
     */
-   private void deleteSwimlane(PoolSymbol parentSymbol, ModelType model,
-         ProcessDefinitionType processDefinition, JsonObject request)
+   @OnCommand(commandId = "swimlaneSymbol.delete")
+   public void deleteSwimlane(PoolSymbol parentSymbol, JsonObject request)
    {
+      ModelType model = ModelUtils.findContainingModel(parentSymbol);
+      ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentSymbol);
+
       String laneId = extractString(request, ModelerConstants.ID_PROPERTY);
       LaneSymbol lane = MBFacade.findLaneInProcess(processDefinition, laneId);
 

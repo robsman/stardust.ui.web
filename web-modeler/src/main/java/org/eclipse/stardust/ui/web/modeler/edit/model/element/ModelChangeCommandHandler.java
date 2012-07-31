@@ -39,7 +39,7 @@ import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 
 /**
  * @author Shrikant.Gangal
- * 
+ *
  */
 @Component
 @Scope("prototype")
@@ -80,7 +80,7 @@ public class ModelChangeCommandHandler implements ICommandHandler
    }
 
    /**
-    * 
+    *
     * @param parentSymbol
     * @param model
     * @param processDefinition
@@ -116,7 +116,7 @@ public class ModelChangeCommandHandler implements ICommandHandler
    }
 
    /**
-    * 
+    *
     * @param parentSymbol
     * @param model
     * @param processDefinition

@@ -21,8 +21,6 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PRO
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
-import org.eclipse.emf.ecore.EObject;
-
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
@@ -35,42 +33,20 @@ import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
-import org.eclipse.stardust.ui.web.modeler.edit.ICommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 
 /**
- * 
  * @author Sidharth.Singh
- * 
  */
-public class EventCommandHandler implements ICommandHandler
+@CommandHandler
+public class EventCommandHandler
 {
-
-   @Override
-   public boolean isValidTarget(Class<? > type)
+   @OnCommand(commandId = "eventSymbol.create")
+   public void createEvent(LaneSymbol parentLaneSymbol, JsonObject request)
    {
-      return LaneSymbol.class.isAssignableFrom(type);
-   }
-
-   @Override
-   public void handleCommand(String commandId, EObject targetElement, JsonObject request)
-   {
-      LaneSymbol parentLaneSymbol = (LaneSymbol) targetElement;
       ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
-
-      if ("eventSymbol.create".equals(commandId))
-      {
-         createEvent(parentLaneSymbol, model, processDefinition, request);
-      }
-      else if ("eventSymbol.delete".equals(commandId))
-      {
-         deleteEvent(parentLaneSymbol, model, processDefinition, request);
-      }
-   }
-
-   private void createEvent(LaneSymbol parentLaneSymbol, ModelType model,
-         ProcessDefinitionType processDefinition, JsonObject request)
-   {
 
       synchronized (model)
       {
@@ -120,9 +96,12 @@ public class EventCommandHandler implements ICommandHandler
       }
    }
 
-   private void deleteEvent(LaneSymbol parentLaneSymbol, ModelType model,
-         ProcessDefinitionType processDefinition, JsonObject request)
+   @OnCommand(commandId = "eventSymbol.delete")
+   public void deleteEvent(LaneSymbol parentLaneSymbol, JsonObject request)
    {
+      ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
+      ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
+
       Long eventOId = extractLong(request, ModelerConstants.OID_PROPERTY);
       synchronized (model)
       {

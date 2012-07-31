@@ -6,26 +6,19 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PRO
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
-import org.eclipse.stardust.ui.web.modeler.edit.ICommandHandler;
-
 import com.google.gson.JsonObject;
 
-public class MoveNodeSymbolHandler implements ICommandHandler
-{
-   @Override
-   public boolean isValidTarget(Class<? > type)
-   {
-      return INodeSymbol.class.isAssignableFrom(type);
-   }
+import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 
-   @Override
-   public void handleCommand(String commandId, EObject targetElement,
-         JsonObject request)
+@CommandHandler
+public class MoveNodeSymbolHandler
+{
+   @OnCommand(commandId = "nodeSymbol.move")
+   public void handleMoveNode(INodeSymbol nodeSymbol, JsonObject request)
    {
-      INodeSymbol nodeSymbol = (INodeSymbol) targetElement;
       int laneOffsetX = 0;
       int laneOffsetY = 0;
       ISwimlaneSymbol container = (nodeSymbol.eContainer() instanceof ISwimlaneSymbol)

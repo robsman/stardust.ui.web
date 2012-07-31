@@ -18,7 +18,8 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractSt
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
-import org.eclipse.emf.ecore.EObject;
+import com.google.gson.JsonObject;
+
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
@@ -30,43 +31,21 @@ import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
-import org.eclipse.stardust.ui.web.modeler.edit.ICommandHandler;
-
-import com.google.gson.JsonObject;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 
 /**
- * 
  * @author Sidharth.Singh
- * 
  */
-public class GatewayCommandHandler implements ICommandHandler
+@CommandHandler
+public class GatewayCommandHandler
 {
-
-   @Override
-   public boolean isValidTarget(Class< ? > type)
+   @OnCommand(commandId = "gateSymbol.create")
+   public void createGateway(LaneSymbol parentLaneSymbol, JsonObject request)
    {
-      return LaneSymbol.class.isAssignableFrom(type);
-   }
-
-   @Override
-   public void handleCommand(String commandId, EObject targetElement, JsonObject request)
-   {
-      LaneSymbol parentLaneSymbol = (LaneSymbol) targetElement;
       ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
-      if ("gateSymbol.create".equals(commandId))
-      {
-         createGateway(parentLaneSymbol, model, processDefinition, request);
-      }
-      if ("gateSymbol.delete".equals(commandId))
-      {
-         deleteGateway(parentLaneSymbol, model, processDefinition, request);
-      }
-   }
 
-   private void createGateway(LaneSymbol parentLaneSymbol, ModelType model, ProcessDefinitionType processDefinition,
-         JsonObject request)
-   {
       synchronized (model)
       {
          long maxOid = XpdlModelUtils.getMaxUsedOid(model);
@@ -81,7 +60,7 @@ public class GatewayCommandHandler implements ICommandHandler
 
          gateway.setElementOid(maxOid);
          gateway.setImplementation(ActivityImplementationType.ROUTE_LITERAL);
-         
+
          processDefinition.getActivity().add(gateway);
 
          ActivitySymbolType gatewaySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
@@ -100,17 +79,17 @@ public class GatewayCommandHandler implements ICommandHandler
          parentLaneSymbol.getActivitySymbol().add(gatewaySymbol);
       }
    }
-   
+
    /**
-    * 
     * @param parentLaneSymbol
-    * @param model
-    * @param processDefinition
     * @param request
     */
-   private void deleteGateway(LaneSymbol parentLaneSymbol, ModelType model, ProcessDefinitionType processDefinition,
-         JsonObject request)
+   @OnCommand(commandId = "gateSymbol.delete")
+   public void deleteGateway(LaneSymbol parentLaneSymbol, JsonObject request)
    {
+      ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
+      ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
+
       String gatewayId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
       ActivityType gateway = MBFacade.findActivity(processDefinition, gatewayId);
       ActivitySymbolType gatewaySymbol = gateway.getActivitySymbols().get(0);
