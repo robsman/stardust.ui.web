@@ -568,6 +568,8 @@ public class ModelElementMarshaller
                ModelerConstants.ACTIVITY_KEY);
          activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
                activity.getImplementation().getLiteral());
+         activityJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, new JsonArray());
+         
          if (activity.getImplementationProcess() != null)
          {
             activityJson.addProperty(ModelerConstants.SUBPROCESS_ID,
@@ -581,6 +583,7 @@ public class ModelElementMarshaller
                         activity.getApplication()));
          }
       }
+      
       return activityJson;
    }
    /**
