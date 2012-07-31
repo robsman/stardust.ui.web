@@ -84,6 +84,18 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 				changes : changes
 			} ]);
 		},
+		createUpdateModelCommand : function(uuid, changes) {
+			return new ChangeDescriptor("model.update", undefined, [ {
+				uuid : uuid,
+				changes : changes
+			} ]);
+		},
+		createDeleteModelCommand : function(uuid, changes) {
+			return new ChangeDescriptor("model.delete", undefined, [ {
+				uuid : uuid,
+				changes : changes
+			} ]);
+		},
 		createCreateStructuredDataTypeCommand : function(modelId, oid, changes) {
 			return new ChangeDescriptor("structuredDataType.create", modelId, [ {
 				oid : oid,

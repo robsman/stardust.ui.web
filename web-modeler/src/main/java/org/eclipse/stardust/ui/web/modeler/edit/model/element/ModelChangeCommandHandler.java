@@ -28,6 +28,7 @@ import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementHelper;
+import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
@@ -36,59 +37,50 @@ import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.ui.web.modeler.edit.ICommandHandler;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
+import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
  * @author Shrikant.Gangal
- *
+ * 
  */
 @Component
-@Scope("prototype")
-public class ModelChangeCommandHandler implements ICommandHandler
+@Scope("singleton")
+public class ModelChangeCommandHandler
 {
-   private ModelType model;
-
-   private JsonObject response;
-
    @Resource
    private ApplicationContext springContext;
 
-   @Override
    public boolean isValidTarget(Class<? > type)
    {
       return IIdentifiableElement.class.isAssignableFrom(type);
    }
 
-   @Override
-   public void handleCommand(String commandId, EObject targetElement, JsonObject request)
+   public JsonObject handleCommand(String commandId, EObject targetElement, JsonObject request)
    {
       if ("model.create".equals(commandId))
       {
-         createModel(commandId, request);
+         return createModel(commandId, request);
+      }
+      else if ("model.update".equals(commandId))
+      {
+         return updateModel(commandId, targetElement, request);
       }
       else if ("model.delete".equals(commandId))
       {
-         deleteModel(commandId, request);
+         return deleteModel(commandId, targetElement, request);
       }
+      
+      return null;
    }
 
    /**
-    * @return
-    */
-   public JsonObject getResponseJSON()
-   {
-      return response;
-   }
-
-   /**
-    *
-    * @param parentSymbol
-    * @param model
-    * @param processDefinition
+    * @param commandId
     * @param request
     */
-   private void createModel(String commandId, JsonObject request)
+   private JsonObject createModel(String commandId, JsonObject request)
    {
-      model = newBpmModel().withIdAndName(
+      ModelType model = newBpmModel().withIdAndName(
             request.get(ModelerConstants.ID_PROPERTY).getAsString(),
             request.get(ModelerConstants.NAME_PROPERTY).getAsString()).build();
       EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
@@ -112,19 +104,58 @@ public class ModelChangeCommandHandler implements ICommandHandler
       JsonArray added = new JsonArray();
       JsonObject addedModel = springContext.getBean(ModelElementMarshaller.class).toModel(model);
       added.add(addedModel);
-      generateResponse(commandId, null, added, null);
+      return generateResponse(commandId, null, added, null);
    }
 
    /**
-    *
-    * @param parentSymbol
-    * @param model
-    * @param processDefinition
+    * @param commandId
+    * @param obj
     * @param request
+    * @return
     */
-   private void deleteModel(String commandId, JsonObject request)
+   private JsonObject deleteModel(String commandId, EObject obj, JsonObject request)
    {
-      // TODO
+      if (null != obj && obj instanceof ModelType) {
+         ModelType model = (ModelType) obj;
+
+         ModelManagementStrategy modelMgtStrategy = springContext.getBean(ModelService.class).getModelManagementStrategy();
+         modelMgtStrategy.deleteModel(model);
+         JsonArray deleted = new JsonArray();
+         JsonObject deletedModel = springContext.getBean(ModelElementMarshaller.class).toModel(model);
+         deleted.add(deletedModel);
+         
+         return generateResponse(commandId, null, null, deleted);
+      }
+      
+      return generateResponse(commandId, null, null, null);
+   }
+
+   /**
+    * @param commandId
+    * @param obj
+    * @param request
+    * @return
+    */
+   private JsonObject updateModel(String commandId, EObject obj, JsonObject request)
+   {
+      if (null != obj && obj instanceof ModelType) {
+         ModelType model = (ModelType) obj;
+         //Delete old model xpdl
+         ModelManagementStrategy modelMgtStrategy = springContext.getBean(ModelService.class).getModelManagementStrategy();
+         modelMgtStrategy.deleteModel(model);
+         
+         ModelElementUnmarshaller.getInstance().populateFromJson(model, request);
+         
+         modelMgtStrategy.getModels().put(model.getId(), model);
+         modelMgtStrategy.saveModel(model);
+
+         JsonArray modified = new JsonArray();
+         JsonObject modifiedModel = springContext.getBean(ModelElementMarshaller.class).toModel(model);
+         modified.add(modifiedModel);
+         return generateResponse(commandId, modified, null, null);
+      }
+      
+      return generateResponse(commandId, null, null, null);
    }
 
    /**
@@ -133,10 +164,10 @@ public class ModelChangeCommandHandler implements ICommandHandler
     * @param added
     * @param removed
     */
-   private void generateResponse(String commandId, JsonArray modified, JsonArray added,
+   private JsonObject generateResponse(String commandId, JsonArray modified, JsonArray added,
          JsonArray removed)
    {
-      response = new JsonObject();
+      JsonObject response = new JsonObject();
 
       response.addProperty("id", System.currentTimeMillis());
       response.addProperty("account", "sheldor"); // TODO Robert add!
@@ -167,13 +198,7 @@ public class ModelChangeCommandHandler implements ICommandHandler
          jsRemoved = new JsonArray();
       }
       jsChanges.add("removed", jsRemoved);
-   }
-
-   /**
-    * @return
-    */
-   public JsonObject getResponse()
-   {
+      
       return response;
    }
 }

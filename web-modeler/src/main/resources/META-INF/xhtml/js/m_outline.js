@@ -353,11 +353,9 @@ define(
 
 					if (model.name != data.rslt.name) {
 						m_commandsController.submitCommand(m_command
-								.createRenameCommand("/models/" + model.id, {
-									"id" : model.id,
-									"name" : model.name
-								}, {
-									"name" : data.rslt.name
+								.createUpdateModelCommand(model.uuid, {
+									"name" : data.rslt.name,
+									"id" : m_utils.generateIDFromName(data.rslt.name)
 								}));
 					}
 				} else if (data.rslt.obj.attr("rel") == "process") {
@@ -1270,11 +1268,13 @@ define(
 							}));
 				}
 
+				/**
+				 * 
+				 */
 				function deleteModel(modelId) {
+					var model = m_model.findModel(modelId);
 					m_commandsController.submitCommand(m_command
-							.createDeleteCommand("/models/" + modelId, {
-								"id" : modelId
-							}));
+							.createDeleteModelCommand(model.uuid, {}));
 				}
 
 				/**
@@ -1588,6 +1588,11 @@ define(
 								textElem.nodeValue = modelElement.name;
 							}
 						}
+						for ( var i = 0; i < obj.changes.removed.length; i++) {
+							if (m_constants.MODEL == command.changes.removed[i].type) {
+								this.deleteModel(command.changes.removed[i]);
+							}
+						}
 					} else if (command.scope == "all") {
 						// @deprecated
 						refresh();
@@ -1714,6 +1719,13 @@ define(
 								"data" : "Administrator"
 							}, null, true);
 				}
+
+				Outline.prototype.deleteModel = function(transferObject) {
+					m_model.deleteModel(transferObject.id);
+					jQuery("#outline").jstree("remove",
+							"#" + transferObject.uuid)
+				}
+
 				/**
 				 * 
 				 */

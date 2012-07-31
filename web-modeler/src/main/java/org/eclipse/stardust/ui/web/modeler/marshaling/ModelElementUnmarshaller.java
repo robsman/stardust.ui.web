@@ -102,6 +102,9 @@ public class ModelElementUnmarshaller
       
       modelElementPropertiesMap.put(TypeDeclarationType.class, new String[] {
       "name", "id"});
+      
+      modelElementPropertiesMap.put(ModelType.class, new String[] {
+         "name", "id"});
    }
 
    /**
@@ -147,6 +150,10 @@ public class ModelElementUnmarshaller
       else if (element instanceof TypeDeclarationType)
       {
          updateTypeDeclaration((TypeDeclarationType) element, json);
+      }
+      else if (element instanceof ModelType)
+      {
+         updateModelType((ModelType) element, json);
       }
    }
 
@@ -294,9 +301,8 @@ public class ModelElementUnmarshaller
    }
 
    /**
-    * 
-    * @param processDefinition
-    * @param processDefinitionJson
+    * @param application
+    * @param applicationJson
     */
    private void updateApplication(ApplicationType application,
          JsonObject applicationJson)
@@ -308,9 +314,8 @@ public class ModelElementUnmarshaller
    }
 
    /**
-    * 
-    * @param processDefinition
-    * @param processDefinitionJson
+    * @param typeDeclaration
+    * @param applicationJson
     */
    private void updateTypeDeclaration(TypeDeclarationType typeDeclaration,
          JsonObject applicationJson)
@@ -318,7 +323,19 @@ public class ModelElementUnmarshaller
       mapDeclaredModelElementProperties(typeDeclaration, applicationJson,
             modelElementPropertiesMap.get(TypeDeclarationType.class));
    }
-   
+
+
+   /**
+    * @param model
+    * @param modelJson
+    */
+   private void updateModelType(ModelType model,
+         JsonObject modelJson)
+   {
+      mapDeclaredModelElementProperties(model, modelJson,
+            modelElementPropertiesMap.get(ModelType.class));
+   }
+
    /**
     * 
     * @param modelElement

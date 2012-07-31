@@ -32,6 +32,7 @@ import org.eclipse.stardust.common.Pair;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
@@ -253,15 +254,21 @@ public class ModelerSessionRestController
    {
       // TODO global command (e.g. "model.create")
       if ("model.create".equalsIgnoreCase(commandId)
-            || "model.delete".equalsIgnoreCase(commandId))
+            || "model.delete".equalsIgnoreCase(commandId)
+            || "model.update".equalsIgnoreCase(commandId))
       {
          JsonArray changesJson = commandJson.getAsJsonArray("changeDescriptions");
          for (JsonElement cJson : changesJson) {
             if (null != cJson) {
-               JsonElement changeJson = cJson.getAsJsonObject().get("changes");
+               EObject targetElement = null;
+               if (null != cJson.getAsJsonObject().get(ModelerConstants.UUID_PROPERTY)) {
+                  String uuid = cJson.getAsJsonObject().get(ModelerConstants.UUID_PROPERTY).getAsString();
+                  targetElement = eObjectUUIDMapper().getEObject(uuid);
+               }         
+               
+               JsonElement changeJson = cJson.getAsJsonObject().get("changes");               
                ModelChangeCommandHandler handler = resolveSpringBean(ModelChangeCommandHandler.class, servletContext);
-               handler.handleCommand(commandId, null, changeJson.getAsJsonObject());
-               JsonObject response = handler.getResponse();
+               JsonObject response = handler.handleCommand(commandId, targetElement, changeJson.getAsJsonObject());
                if (null != response) {
                   return Response.ok(response.toString(), APPLICATION_JSON_TYPE).build();
                }
