@@ -1542,6 +1542,9 @@ define(
 							} else if (m_constants.STRUCTURED_DATA_TYPE == command.changes.added[i].type) {
 								this
 										.createStructuredDataType(command.changes.added[i]);
+							} else if (m_constants.DATA == command.changes.added[i].type) {
+								this
+										.createData(command.changes.added[i].data);
 							} else if (m_constants.APPLICATION == command.changes.added[i].type) {
 								this
 										.createApplication(command.changes.added[i]);
@@ -1765,8 +1768,24 @@ define(
 				 * 
 				 */
 				Outline.prototype.createData = function(transferObject) {
-					var model = m_model.findModel(transferObject.modelId);
-					// TODO Add
+					var model = m_model.findModelByUuid(transferObject.modelUUID);
+					var data = m_data.initializeFromJson(
+							model, transferObject);
+					var parentSelector = '#data_' + model.id;
+
+					jQuery("#outline").jstree("create", parentSelector, "last",
+							{
+								"attr" : {
+									"rel" : data.type,
+									"modelId" : model.id,
+									"id" : data.uuid,
+									"elementId" : data.id,
+									"fullId" : data.getFullId(),
+									"draggable" : true
+								},
+								"state" : "open",
+								"data" : data.name
+							}, null, false);
 				};
 
 				/**
@@ -1786,7 +1805,6 @@ define(
 									"modelId" : model.id,
 									"id" : dataStructure.uuid,
 									"elementId" : dataStructure.id,
-									"uuid" : dataStructure.uuid,
 									"fullId" : dataStructure.getFullId(),
 									"draggable" : true
 								},

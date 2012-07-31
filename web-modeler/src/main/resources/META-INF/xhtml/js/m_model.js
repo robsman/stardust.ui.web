@@ -17,6 +17,8 @@ define(
 				loadModels : loadModels,
 
 				getModels : getModels,
+				
+				findModelByUuid : findModelByUuid,
 
 				createModel : function() {
 					return new Model();
@@ -82,6 +84,23 @@ define(
 						if ((element = getModels()[model]
 								.findModelElementByGuid(guid)) != null) {
 							return element;
+						}
+					}
+
+					return null;
+				},
+
+				/**
+				 * TODO May not be safe as element OIDs are not unique. 
+				 * @param guid
+				 * @returns
+				 */
+				findModelByUuid : function(uuid) {
+					var model = null;
+
+					for ( var model in getModels()) {
+						if (guid == getModels()[model].uuid) {
+							return getModels()[model];
 						}
 					}
 
