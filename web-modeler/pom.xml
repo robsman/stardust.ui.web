@@ -126,6 +126,11 @@
          <scope>test</scope>
       </dependency>
 
+      <dependency>
+         <groupId>com.infinity.bpm</groupId>
+         <artifactId>ipp-bpm-model-validation</artifactId>
+         <version>${ipp.version}</version>
+      </dependency>
    </dependencies>
 
    <build>

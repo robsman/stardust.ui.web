@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.w3c.dom.Node;
 
@@ -57,43 +58,16 @@ import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.PepperIconFactory;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
-import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
-import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
-import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
-import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
-import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
-import org.eclipse.stardust.model.xpdl.carnot.ContextType;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
-import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.DataType;
-import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
-import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
-import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
-import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
-import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
-import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
-import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.RoleType;
-import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
-import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
-//import org.eclipse.stardust.modeling.validation.Issue;
-//import org.eclipse.stardust.modeling.validation.ValidationService;
-//import org.eclipse.stardust.modeling.validation.ValidatorRegistry;
+import org.eclipse.stardust.modeling.validation.Issue;
+import org.eclipse.stardust.modeling.validation.ValidationService;
+import org.eclipse.stardust.modeling.validation.ValidatorRegistry;
 import org.eclipse.stardust.ui.web.modeler.edit.EditingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
@@ -617,7 +591,8 @@ public class ModelService {
 
 	   //Clear the unsaved models' list.
 	   UnsavedModelsTracker.getInstance().notifyAllModelsSaved();*/
-
+	   
+	   
 	 //TODO
 	   //Temporarily saving all models as not all changes have moved to change protocol yet.
 	   //After that happens this code can be deleted.
@@ -1988,8 +1963,7 @@ public class ModelService {
 	public ModelType findModel(String modelId)
 	{
 	    return MBFacade.findModel(modelId);
-	}
-	
+	}	
 	
 	public JsonObject validateModel(String modelId)
 	{
@@ -2000,16 +1974,14 @@ public class ModelService {
          return null;
       }
       
-      //ValidatorRegistry.setValidationExtensionRegistry(ValidationExtensionRegistry.getInstance());
-      //ValidationService validationService = ValidationService.getInstance();
+      ValidatorRegistry.setFilters(new HashMap<String, String>());
+      ValidatorRegistry.setValidationExtensionRegistry(ValidationExtensionRegistry.getInstance());
+      ValidationService validationService = ValidationService.getInstance();
       
-      JsonObject response = new JsonObject();
-	   
+      JsonObject response = new JsonObject();	   
       JsonArray jsIssues = new JsonArray();
-      response.add("issues", jsIssues);
-	   
-/*      
-	   Issue[] issues = validationService.validateModel(model);
+	         
+	   Issue[] issues = validationService.validateModel(model);	   
       for (int i = 0; i < issues.length; i++)
       {
          Issue issue = issues[i];
@@ -2017,30 +1989,17 @@ public class ModelService {
          JsonObject jsIssue = new JsonObject();
          jsIssue.addProperty("message", issue.getMessage());
          jsIssue.addProperty("severity", issue.getSeverity());         
-         EObject modelElement = issue.getModelElement();         
-         jsIssue.addProperty("modelElement", modelElement != null ? modelElement.toString() : null);
+         EObject modelElement = issue.getModelElement();       
+         
+         String modelElemendId = null;         
+         if(modelElement != null && modelElement instanceof IIdentifiableModelElement)
+         {
+            modelElemendId = modelId  + "/" + ((IIdentifiableModelElement) modelElement).getId() + "/" + ((IIdentifiableModelElement) modelElement).getElementOid();         
+         }         
+         jsIssue.addProperty("modelElement", modelElemendId);
          
          jsIssues.add(jsIssue);         
       }	   
-*/
-
-      JsonObject jsIssue = new JsonObject();
-      jsIssue.addProperty("message", "invalid id");
-      jsIssue.addProperty("severity", 2);         
-      jsIssue.addProperty("modelElement", model.getId() + "/Role1/00177" );      
-      jsIssues.add(jsIssue);         
-      
-      jsIssue = new JsonObject();
-      jsIssue.addProperty("message", "duplicate id");
-      jsIssue.addProperty("severity", 2);         
-      jsIssue.addProperty("modelElement", model.getId() + "/Activity2/00277" );      
-      jsIssues.add(jsIssue);         
-
-      jsIssue = new JsonObject();
-      jsIssue.addProperty("message", "invalid id");
-      jsIssue.addProperty("severity", 2);         
-      jsIssue.addProperty("modelElement", model.getId() + "/PrimitiveData2/00199" );      
-      jsIssues.add(jsIssue);               
       
       return response;
 	}
