@@ -78,6 +78,7 @@ define(
 														"fullId" : process
 																.getFullId(),
 														"modelId" : model.id,
+														"modelUUId" : model.uuid,
 														"rel" : "process",
 														"draggable" : true,
 														"elementId" : process.id
@@ -118,6 +119,7 @@ define(
 																						.getFullId(),
 																				"rel" : participant.participantType,
 																				"modelId" : model.id,
+																				"modelUUId" : model.uuid,
 																				"draggable" : true,
 																				"elementId" : participant.id
 																			},
@@ -141,8 +143,9 @@ define(
 											{
 												"attr" : {
 													"modelId" : model.id,
+													"modelUUId" : model.uuid,
 													"id" : "applications_"
-															+ model.id,
+															+ model.uuid,
 													"rel" : "applications"
 												},
 												"data" : "Applications"
@@ -158,12 +161,13 @@ define(
 																.jstree(
 																		"create",
 																		"#applications_"
-																				+ model.id,
+																				+ model.uuid,
 																		"last",
 																		{
 																			"attr" : {
 																				"id" : application.uuid,
 																				"modelId" : model.id,
+																				"modelUUId" : model.uuid,
 																				"fullId" : application
 																						.getFullId(),
 																				"rel" : application.applicationType,
@@ -183,7 +187,7 @@ define(
 																.jstree(
 																		"close_node",
 																		"#applications_"
-																				+ model.id);
+																				+ model.uuid);
 													});
 
 									// TODO - remove hard-coding for primitive
@@ -229,9 +233,10 @@ define(
 											{
 												"attr" : {
 													"id" : "structuredTypes_"
-															+ model.id,
+															+ model.uuid,
 													"rel" : "structuredTypes",
-													"modelId" : model.id
+													"modelId" : model.id,
+													"modelUUId" : model.uuid
 												},
 												"data" : "Structured Types"
 											}, null, true);
@@ -247,7 +252,7 @@ define(
 																.jstree(
 																		"create",
 																		"#structuredTypes_"
-																				+ model.id,
+																				+ model.uuid,
 																		"last",
 																		{
 																			"attr" : {
@@ -257,6 +262,7 @@ define(
 																				"elementId" : structuredDataType.id,
 																				"rel" : "structuredDataType",
 																				"modelId" : model.id,
+																				"modelUUId" : model.uuid,
 																				"draggable" : true
 																			},
 																			"data" : structuredDataType.name
@@ -267,7 +273,7 @@ define(
 																.jstree(
 																		"close_node",
 																		"#structuredTypes_"
-																				+ model.id);
+																				+ model.uuid);
 													});
 
 									jQuery("#outline").jstree("close_node",
@@ -818,28 +824,28 @@ define(
 														"label" : "Create Web Service",
 														"action" : function(obj) {
 															createWebServiceApplication(obj
-																	.attr("modelId"));
+																	.attr("modelUUId"));
 														}
 													},
 													"createMessageTransformationApplication" : {
 														"label" : "Create Transformation",
 														"action" : function(obj) {
 															createMessageTransformationApplication(obj
-																	.attr("modelId"));
+																	.attr("modelUUId"));
 														}
 													},
 													"createCamelApplication" : {
 														"label" : "Create Camel Route",
 														"action" : function(obj) {
 															createCamelApplication(obj
-																	.attr("modelId"));
+																	.attr("modelUUId"));
 														}
 													},
 													"createUiMashupApplication" : {
 														"label" : "Create UI Mashup",
 														"action" : function(obj) {
 															createUiMashupApplication(obj
-																	.attr("modelId"));
+																	.attr("modelUUId"));
 														}
 													}
 												};
@@ -903,8 +909,10 @@ define(
 													"createXSDStructuredDataType" : {
 														"label" : "Create Data Type",
 														"action" : function(obj) {
+//															createXsdStructuredDataType(obj
+//																	.attr("modelId"));
 															createXsdStructuredDataType(obj
-																	.attr("modelId"));
+																	.attr("modelUUId"));
 														}
 													}
 												};
@@ -1367,10 +1375,12 @@ define(
 				/**
 				 * 
 				 */
-				function createWebServiceApplication(modelId) {
+				function createWebServiceApplication(modelUUId) {
 					var number = (++processCounter);
 					var name = "Web Service " + number;
 					var id = "WebService" + number;
+					var model = m_model.findModelByUuid(modelUUId);
+					var modelId = model.id;
 
 					m_commandsController.submitCommand(m_command
 							.createCreateWebServiceAppCommand(modelId, modelId,
@@ -1383,10 +1393,12 @@ define(
 				/**
 				 * 
 				 */
-				function createMessageTransformationApplication(modelId) {
+				function createMessageTransformationApplication(modelUUId) {
 					var number = (++processCounter);
 					var name = "Message Transformation " + number;
 					var id = "MessageTransformation" + number;
+					var model = m_model.findModelByUuid(modelUUId);
+					var modelId = model.id;
 
 					m_commandsController.submitCommand(m_command
 							.createCreateMessageTransfromationAppCommand(
@@ -1399,10 +1411,12 @@ define(
 				/**
 				 * 
 				 */
-				function createCamelApplication(modelId) {
+				function createCamelApplication(modelUUId) {
 					var number = (++processCounter);
 					var name = "Camel Route " + number;
 					var id = "CamelRoute" + number;
+					var model = m_model.findModelByUuid(modelUUId);
+					var modelId = model.id;
 
 					m_commandsController.submitCommand(m_command
 							.createCreateCamelAppCommand(modelId, modelId, {
@@ -1414,10 +1428,12 @@ define(
 				/**
 				 * 
 				 */
-				function createUiMashupApplication(modelId) {
+				function createUiMashupApplication(modelUUId) {
 					var number = (++processCounter);
 					var name = "UI Mashup " + number;
 					var id = "UIMashup" + number;
+					var model = m_model.findModelByUuid(modelUUId);
+					var modelId = model.id;
 
 					m_commandsController.submitCommand(m_command
 							.createCreateUiMashupAppCommand(modelId, modelId, {
@@ -1431,12 +1447,13 @@ define(
 				 * @param modelId
 				 * @returns
 				 */
-				function createXsdStructuredDataType(modelId) {
+				function createXsdStructuredDataType(modelUUId) {
 					var number = (++processCounter);
 					// TODO obtain number from model
 					var name = "XSD Data Structure " + number;
 					var id = "XSDDataStructure" + number;
-
+					var model = m_model.findModelByUuid(modelUUId);
+					var modelId = model.id;
 					m_commandsController.submitCommand(m_command
 							.createCreateStructuredDataTypeCommand(modelId,
 									modelId, {
@@ -1551,17 +1568,21 @@ define(
 							}
 						}
 						for ( var i = 0; i < obj.changes.modified.length; i++) {
-							if (undefined == obj.changes.modified[i].oid
-									|| 0 == obj.changes.modified[i].oid) {
-								var modelElement = m_model
-										.findModelElementInModelByUuid(
-												obj.changes.modified[i].modelId,
-												obj.changes.modified[i].uuid);
+							if (m_constants.MODEL == obj.changes.modified[i].type) {
+								var modelElement = m_model.findModelByUuid(obj.changes.modified[i].uuid);
 							} else {
-								var modelElement = m_model
-										.findModelElementInModelByGuid(
-												obj.changes.modified[i].modelId,
-												obj.changes.modified[i].oid);
+								if (undefined == obj.changes.modified[i].oid
+										|| 0 == obj.changes.modified[i].oid) {
+									var modelElement = m_model
+											.findModelElementInModelByUuid(
+													obj.changes.modified[i].modelId,
+													obj.changes.modified[i].uuid);
+								} else {
+									var modelElement = m_model
+											.findModelElementInModelByGuid(
+													obj.changes.modified[i].modelId,
+													obj.changes.modified[i].oid);
+								}
 							}
 							m_utils.debug("Models:");
 							m_utils.debug(m_model.getModels());
@@ -1573,9 +1594,6 @@ define(
 										obj.changes.modified[i].name);
 
 								var uuid = modelElement.uuid;
-								var modelid = modelElement.model.id;
-//								var link = jQuery("li[oid=" + oid + "][modelid=" + modelid + "] a")[0];
-//								var node = jQuery("li[oid=" + oid + "][modelid=" + modelid + "]");
 								var link = jQuery("li#" + uuid + " a")[0];
 								var node = jQuery("li#" + uuid);
 
@@ -1678,9 +1696,10 @@ define(
 					jQuery("#outline").jstree("create", "#" + data.uuid, "first",
 							{
 								"attr" : {
-									"id" : "structuredTypes_" + data.id,
+									"id" : "structuredTypes_" + data.uuid,
 									"rel" : "structuredTypes",
-									"modelId" : data.id
+									"modelId" : data.id,
+									"modelUUId" : data.uuid
 								},
 								"data" : "Structured Types"
 							}, null, true);
@@ -1688,7 +1707,8 @@ define(
 							{
 								"attr" : {
 									"id" : "data_" + data.id,
-									"rel" : "data"
+									"rel" : "data",
+									"modelUUId" : data.uuid
 								},
 								"data" : "Data"
 							}, null, true);
@@ -1696,8 +1716,9 @@ define(
 							{
 								"attr" : {
 									"modelId" : data.id,
-									"id" : "applications_" + data.id,
-									"rel" : "applications"
+									"id" : "applications_" + data.uuid,
+									"rel" : "applications",
+									"modelUUId" : data.uuid
 								},
 								"data" : "Applications"
 							}, null, true);
@@ -1705,7 +1726,8 @@ define(
 							{
 								"attr" : {
 									"id" : "participants_" + data.id,
-									"rel" : "participants"
+									"rel" : "participants",
+									"modelUUId" : data.uuid
 								},
 								"data" : "Participants"
 							}, null, true);
@@ -1759,7 +1781,7 @@ define(
 					var application = m_application.initializeFromJson(model,
 							transferObject);
 					var parentSelector = '#applications_'
-							+ transferObject.modelId;
+							+ model.uuid;
 
 					jQuery("#outline").jstree("create", parentSelector, "last",
 							{
@@ -1814,7 +1836,7 @@ define(
 					var model = m_model.findModel(transferObject.modelId);
 					var dataStructure = m_dataStructure.initializeFromJson(
 							model, transferObject);
-					var parentSelector = '#structuredTypes_' + model.id;
+					var parentSelector = '#structuredTypes_' + model.uuid;
 
 					jQuery("#outline").jstree("create", parentSelector, "last",
 							{
