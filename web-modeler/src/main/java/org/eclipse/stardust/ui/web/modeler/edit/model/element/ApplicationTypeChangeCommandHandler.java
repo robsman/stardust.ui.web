@@ -6,13 +6,17 @@ package org.eclipse.stardust.ui.web.modeler.edit.model.element;
 
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import javax.annotation.Resource;
+
 import org.eclipse.emf.ecore.EObject;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
+import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
@@ -28,6 +32,9 @@ import org.eclipse.stardust.ui.web.modeler.edit.ICommandHandler;
 @Scope("prototype")
 public class ApplicationTypeChangeCommandHandler implements ICommandHandler
 {
+   @Resource
+   private ApplicationContext springContext;
+
    @Override
    public boolean isValidTarget(Class<? > type)
    {
@@ -39,6 +46,10 @@ public class ApplicationTypeChangeCommandHandler implements ICommandHandler
    {
       ModelType model = (ModelType) targetElement;
       ApplicationType applicationType = AbstractElementBuilder.F_CWM.createApplicationType();
+
+      //Map newly created application to a UUID 
+      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      mapper.map(applicationType);
 
       model.getApplication().add(applicationType);
 

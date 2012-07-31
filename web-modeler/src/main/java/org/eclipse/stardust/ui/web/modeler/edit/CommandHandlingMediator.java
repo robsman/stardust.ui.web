@@ -129,7 +129,14 @@ public class CommandHandlingMediator
             || "camelApplication.create".equals(commandId)
             || "uiMashupApplication.create".equals(commandId))
       {
-         handler = new ApplicationTypeChangeCommandHandler();
+         if (null != springContext)
+         {
+            handler = springContext.getBean(ApplicationTypeChangeCommandHandler.class);
+         }
+         else
+         {
+            handler = new ApplicationTypeChangeCommandHandler();
+         }
       }
       else if ("connection.create".equals(commandId) || "connection.delete".equals(commandId))
       {

@@ -163,6 +163,7 @@ define(
 																		{
 																			"attr" : {
 																				"id" : application.uuid,
+																				"modelId" : model.id,
 																				"fullId" : application
 																						.getFullId(),
 																				"rel" : application.applicationType,
@@ -382,16 +383,11 @@ define(
 					var model = m_model.findModel(modelId);
 					var application = model.applications[applicationId];
 
-					if (application.name != data.rslt.name) {
-						m_commandsController.submitCommand(m_command
-								.createRenameCommand("/models/" + model.id
-										+ "/applications/" + application.id, {
-									"id" : application.id,
-									"name" : application.name
-								}, {
-									"name" : data.rslt.name
-								}));
-					}
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementWithUUIDCommand(modelId, application.uuid, {
+								"name" : data.rslt.name,
+								"id" : m_utils.generateIDFromName(data.rslt.name)
+							}));
 				} else if (data.rslt.obj.attr("rel") == "structuredDataType") {
 					var modelId = data.rslt.obj.attr("modelId");
 					var dataTypeId = data.rslt.obj.attr('elementId');
@@ -401,7 +397,7 @@ define(
 
 					if (dataType.name != data.rslt.name) {
 						m_commandsController.submitCommand(m_command
-								.createUpdateStructDataTypeCommand(modelId, dataType.uuid, {
+								.createUpdateModelElementWithUUIDCommand(modelId, dataType.uuid, {
 									"name" : data.rslt.name,
 									"id" : m_utils.generateIDFromName(data.rslt.name)
 								}));
@@ -1552,9 +1548,18 @@ define(
 							}
 						}
 						for ( var i = 0; i < obj.changes.modified.length; i++) {
-							var modelElement = m_model
-									.findModelElementInModelByGuid(obj.changes.modified[i].modelId, obj.changes.modified[i].oid);
-
+							if (undefined == obj.changes.modified[i].oid
+									|| 0 == obj.changes.modified[i].oid) {
+								var modelElement = m_model
+										.findModelElementInModelByUuid(
+												obj.changes.modified[i].modelId,
+												obj.changes.modified[i].uuid);
+							} else {
+								var modelElement = m_model
+										.findModelElementInModelByGuid(
+												obj.changes.modified[i].modelId,
+												obj.changes.modified[i].oid);
+							}
 							m_utils.debug("Models:");
 							m_utils.debug(m_model.getModels());
 							m_utils.debug("Model Element:");

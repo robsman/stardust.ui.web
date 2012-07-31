@@ -98,7 +98,7 @@ public class ModelElementUnmarshaller
             "name"});
 
       modelElementPropertiesMap.put(ApplicationType.class, new String[] {
-      "name"});
+      "name", "id"});
       
       modelElementPropertiesMap.put(TypeDeclarationType.class, new String[] {
       "name", "id"});
