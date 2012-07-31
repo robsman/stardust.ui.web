@@ -18,8 +18,6 @@ define(
 
 				getModels : getModels,
 				
-				findModelByUuid : findModelByUuid,
-
 				createModel : function() {
 					return new Model();
 				},
