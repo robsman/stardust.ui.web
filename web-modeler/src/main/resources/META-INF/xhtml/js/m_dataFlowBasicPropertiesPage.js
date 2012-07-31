@@ -74,12 +74,15 @@ define(
 						dataFlow) {
 					this.inAccessPointSelectInput.empty();
 
+					m_utils.debug("===> Activity");
+					m_utils.debug(dataFlow.activity);
+					
 					for ( var n in dataFlow.activity.getAccessPoints()) {
 						var accessPoint = dataFlow.activity.getAccessPoints()[n];
 
 						if (accessPoint.direction == m_constants.IN_ACCESS_POINT
 								|| accessPoint.direction == m_constants.INOUT_ACCESS_POINT) {
-							m_utils.debug("Acess Point");
+							m_utils.debug("Access Point");
 							m_utils.debug(accessPoint);
 
 							var option = "<option value\"";
