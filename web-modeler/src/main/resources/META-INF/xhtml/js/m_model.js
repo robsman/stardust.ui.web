@@ -88,16 +88,11 @@ define(
 					return null;
 				},
 
-				/**
-				 * TODO May not be safe as element OIDs are not unique. 
-				 * @param guid
-				 * @returns
-				 */
 				findModelByUuid : function(uuid) {
 					var model = null;
 
 					for ( var model in getModels()) {
-						if (guid == getModels()[model].uuid) {
+						if (uuid == getModels()[model].uuid) {
 							return getModels()[model];
 						}
 					}
