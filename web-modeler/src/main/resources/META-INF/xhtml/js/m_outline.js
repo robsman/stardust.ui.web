@@ -13,11 +13,11 @@ define(
 				"m_communicationController", "m_commandsController",
 				"m_command", "m_session", "m_model", "m_process",
 				"m_application", "m_dataStructure", "m_participant",
-				"m_outlineToolbarController" ],
+				"m_outlineToolbarController", "m_data" ],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_communicationController, m_commandsController, m_command,
 				m_session, m_model, m_process, m_application, m_dataStructure,
-				m_participant, m_outlineToolbarController) {
+				m_participant, m_outlineToolbarController, m_data) {
 			var modelCounter = 0;
 			var processCounter = 0;
 
@@ -1542,7 +1542,7 @@ define(
 							} else if (m_constants.STRUCTURED_DATA_TYPE == command.changes.added[i].type) {
 								this
 										.createStructuredDataType(command.changes.added[i]);
-							} else if (m_constants.DATA == command.changes.added[i].type) {
+							} else if (m_constants.DATA_SYMBOL == command.changes.added[i].type) {
 								this
 										.createData(command.changes.added[i].data);
 							} else if (m_constants.APPLICATION == command.changes.added[i].type) {
@@ -1768,8 +1768,14 @@ define(
 				 * 
 				 */
 				Outline.prototype.createData = function(transferObject) {
-					var model = m_model.findModelByUuid(transferObject.modelUUID);
-					var data = m_data.initializeFromJson(
+					try{
+						var model = m_model.findModelByUuid(transferObject.modelUUID);
+	
+					}
+					catch (e) {
+						alert("error"+e);
+					}
+										var data = m_data.initializeFromJson(
 							model, transferObject);
 					var parentSelector = '#data_' + model.id;
 

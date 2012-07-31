@@ -26,6 +26,7 @@ import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.ContextType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
+import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.GatewaySymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
@@ -41,6 +42,7 @@ import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 //import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.eclipse.stardust.model.xpdl.carnot.impl.DataTypeImpl;
 import org.eclipse.stardust.model.xpdl.carnot.impl.LaneSymbolImpl;
 import org.eclipse.stardust.model.xpdl.carnot.impl.ProcessDefinitionTypeImpl;
 import org.eclipse.stardust.model.xpdl.carnot.util.ActivityUtil;
@@ -100,6 +102,10 @@ public class ModelElementMarshaller
       else if (modelElement instanceof TransitionConnectionType)
       {
          jsResult = toTransitionType((TransitionConnectionType) modelElement);
+      }
+      else if (modelElement instanceof DataSymbolType)
+      {
+         jsResult = toDataJson((DataSymbolType) modelElement);
       }
       else
       {
@@ -800,6 +806,36 @@ public class ModelElementMarshaller
 
    /**
     * 
+    * @param data
+    * @return
+    */
+   public JsonObject toDataTypeJson(DataType data)
+   {
+      JsonObject dataJson = new JsonObject();
+
+      dataJson.addProperty(ModelerConstants.ID_PROPERTY, data.getId());
+      dataJson.addProperty(ModelerConstants.NAME_PROPERTY, data.getName());
+      dataJson.addProperty(ModelerConstants.UUID_PROPERTY,  eObjectUUIDMapper().getUUID(data));
+      ModelType model = ModelUtils.findContainingModel(data);
+      dataJson.addProperty("modelUUID", eObjectUUIDMapper().getUUID(model));
+      if (null != data.getDescription())
+      {
+         dataJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
+               (String) data.getDescription().getMixed().get(0).getValue());
+      }
+      else
+      {
+         dataJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, "");
+      }
+      if (data.getType() != null)
+      {
+         dataJson.addProperty(ModelerConstants.TYPE_PROPERTY, data.getType().getId());
+      }
+      return dataJson;
+   }
+
+   /**
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -811,9 +847,11 @@ public class ModelElementMarshaller
             dataSymbol.getElementOid());
       dataSymbolJson.addProperty(ModelerConstants.X_PROPERTY, dataSymbol.getXPos());
       dataSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, dataSymbol.getYPos());
-
-       dataSymbolJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
-       MBFacade.createFullId(ModelUtils.findContainingModel(dataSymbol.getData()), dataSymbol.getData()));
+      dataSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.DATA_SYMBOL);
+      dataSymbolJson.add("data", toDataTypeJson(dataSymbol.getData()));
+      
+      dataSymbolJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
+            MBFacade.createFullId(ModelUtils.findContainingModel(dataSymbol.getData()), dataSymbol.getData()));
 
       return dataSymbolJson;
    }

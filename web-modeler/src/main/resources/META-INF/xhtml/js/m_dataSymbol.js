@@ -26,8 +26,8 @@ define(
 					
 					dataSymbol.dataId = "Data" + index;
 					dataSymbol.dataName = "Data " + index;
-//					dataSymbol.dataFullId = m_model.getFullId(diagram.model,
-//							"Data" + index);
+					dataSymbol.dataFullId = m_model.getFullId(diagram.model,
+							"Data" + index);
 					return dataSymbol;
 				},
 

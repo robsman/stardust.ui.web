@@ -242,8 +242,11 @@ define(
 						commandType = "gateSymbol." + str;
 					} else if (this.type == m_constants.EVENT_SYMBOL) {
 						commandType = "eventSymbol." + str;
-					/*} else if (this.type == m_constants.DATA_SYMBOL) {
-						commandType = "dataSymbol." + str;*/
+					} // For data symbol only Create is implemented with
+						// change protocol
+					else if (this.type == m_constants.DATA_SYMBOL
+							&& str.match("create")) {
+						commandType = "dataSymbol." + str;
 					} else if (m_constants.SWIMLANE_SYMBOL.match(this.type)) {
 						commandType = "swimlaneSymbol." + str;
 					}

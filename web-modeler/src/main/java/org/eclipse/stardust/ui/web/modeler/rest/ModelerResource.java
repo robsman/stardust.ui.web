@@ -487,26 +487,6 @@ public class ModelerResource {
 		}
 	}
 
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("models/{modelId}/processes/{processId}/dataSymbols")
-	public Response createDataSymbol(@PathParam("modelId") String modelId,
-			@PathParam("processId") String processId, String postedData) {
-		try {
-			JsonObject json = jsonIo.readJsonObject(postedData);
-
-			String result = getModelService().createDataSymbol(modelId,
-					processId, json);
-
-			return Response.ok(result, APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-	}
-
 	@DELETE
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)

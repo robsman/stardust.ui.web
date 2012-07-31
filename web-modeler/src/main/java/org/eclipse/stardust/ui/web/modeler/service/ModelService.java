@@ -36,7 +36,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
@@ -1471,65 +1470,6 @@ public class ModelService {
 
 		return commandJson.toString();
 	}
-
-	/**
-	 *
-	 * @param modelId
-	 * @param processId
-	 * @param postedData
-	 * @return
-	 */
-	public String createDataSymbol(String modelId, String processId,
-			JsonObject commandJson) {
-		JsonObject dataSymbolJson = commandJson
-				.getAsJsonObject(NEW_OBJECT_PROPERTY);
-		ModelType model = getModelManagementStrategy().getModels().get(modelId);
-		ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
-				processId);
-		EditingSession editSession = getEditingSession(model);
-		String dataFullID = extractString(dataSymbolJson,
-              ModelerConstants.DATA_FULL_ID_PROPERTY);
-		String dataID = extractString(dataSymbolJson, ModelerConstants.DATA_ID_PROPERTY);
-		String dataName = extractString(dataSymbolJson, ModelerConstants.DATA_NAME_PROPERTY);
-		int xProperty = extractInt(dataSymbolJson, X_PROPERTY);
-		int yProperty = extractInt(dataSymbolJson, Y_PROPERTY);
-		int widthProperty = extractInt(dataSymbolJson, WIDTH_PROPERTY);
-		int heightProperty = extractInt(dataSymbolJson, HEIGHT_PROPERTY);
-		String parentSymbolID = extractString(dataSymbolJson, PARENT_SYMBOL_ID_PROPERTY);
-
-		synchronized (model) {
-			editSession.beginEdit();
-
-			long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-
-			DataType data;
-
-			try {
-				data = MBFacade.getDataFromExistingModel(modelId, model, dataFullID);
-			} catch (ObjectNotFoundException x) {
-				if (true) {
-					data = MBFacade.createNewPrimitive(model, dataID, dataName);
-
-					JsonObject dataJson = loadData(model, data);
-
-					dataSymbolJson.add("data", dataJson);
-					dataSymbolJson.addProperty("dataFullId",
-					      MBFacade.createFullId(model, data));
-				}
-			}
-
-			DataSymbolType dataSymbol = MBFacade.createDataSymbol(processDefinition, xProperty,
-               yProperty, widthProperty, heightProperty, parentSymbolID, maxOid, data);
-
-            dataSymbolJson
-            .addProperty(OID_PROPERTY, dataSymbol.getElementOid());
-			editSession.endEdit();
-		}
-
-		return commandJson.toString();
-	}
-
-
 
 	/**
 	 *

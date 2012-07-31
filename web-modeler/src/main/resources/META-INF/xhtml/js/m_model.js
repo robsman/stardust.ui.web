@@ -216,6 +216,13 @@ define(
 								+ " in path " + path)
 								+ ".";
 					}
+				},
+				
+				/**
+				 * 
+				 */
+				getFullId : function(model, symbolId) {
+					return model.id + ":" +symbolId;
 				}
 			};
 
