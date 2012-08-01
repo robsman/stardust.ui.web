@@ -474,13 +474,12 @@ define(
 								"select_node.jstree",
 								function(event, data) {
 									if (data.rslt.obj.attr('rel') == 'model') {
-										var modelId = data.rslt.obj.attr("elementId");
-										var modelName = data.inst.get_text();
+										var model = m_model.findModelByUuid(data.rslt.obj.attr("id"));
 
 										viewManager.openView("modelView",
-												"modelId=" + modelId
+												"modelId=" + model.id
 														+ "&modelName="
-														+ modelName, modelId);
+														+ model.name, model.id);
 									} else if (data.rslt.obj.attr('rel') == "roleParticipant") {
 										var roleId = data.rslt.obj.attr("id");
 										var roleName = data.inst.get_text();
@@ -535,98 +534,75 @@ define(
 														+ dataName + "&fullId="
 														+ fullId, fullId);
 									} else if (data.rslt.obj.attr('rel') == 'process') {
-										var processId = data.rslt.obj.attr('elementId');
-										var processName = data.inst.get_text();
-										var modelId = data.inst._get_parent(
-												data.rslt.obj).attr('elementId');
-										var fullId = data.rslt.obj
-										.attr("fullId");
+										var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
+										var process = model.findModelElementByUuid(data.rslt.obj.attr("id"));
 
 										viewManager.openView("processDefinitionView",
-												"processId=" + processId
-														+ "&modelId=" + modelId
+												"processId=" + process.id
+														+ "&modelId=" + model.id
 														+ "&processName="
-														+ processName + "&fullId="
-														+ fullId,
-												fullId);
+														+ process.name + "&fullId="
+														+ process.getFullId(),
+														process.getFullId());
 									} else if (data.rslt.obj.attr('rel') == "webservice") {
-										var applicationId = data.rslt.obj
-												.attr("elementId");
-										var modelId = data.rslt.obj
-												.attr("modelId");
-										var fullId = data.rslt.obj
-										.attr("fullId");
+										var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
+										var application = model.findModelElementByUuid(data.rslt.obj.attr("id"));
 
 										viewManager.openView(
 												"webServiceApplicationView",
-												"modelId=" + modelId
+												"modelId=" + model.id
 														+ "&applicationId="
-														+ applicationId + "&fullId="
-														+ fullId,
-												fullId);
+														+ application.id + "&fullId="
+														+ application.getFullId(),
+														application.getFullId());
 									} else if (data.rslt.obj.attr('rel') == "messageTransformationBean") {
-										var applicationId = data.rslt.obj
-												.attr("elementId");
-										var modelId = data.rslt.obj
-												.attr("modelId");
-										var fullId = data.rslt.obj
-										.attr("fullId");
+										var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
+										var application = model.findModelElementByUuid(data.rslt.obj.attr("id"));
 
 										viewManager
 												.openView(
 														"messageTransformationApplicationView",
 														"modelId="
-																+ modelId
+																+ model.id
 																+ "&applicationId="
-																+ applicationId + "&fullId="
-																+ fullId,
-														fullId);
+																+ application.id + "&fullId="
+																+ application.getFullId(),
+																application.getFullId());
 									} else if (data.rslt.obj.attr('rel') == "camelBean") {
-										var applicationId = data.rslt.obj
-												.attr("elementId");
-										var modelId = data.rslt.obj
-												.attr("modelId");
-										var fullId = data.rslt.obj
-										.attr("fullId");
+										var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
+										var application = model.findModelElementByUuid(data.rslt.obj.attr("id"));
 
 										viewManager.openView(
 												"camelApplicationView",
-												"modelId=" + modelId
+												"modelId=" + model.id
 														+ "&applicationId="
-														+ applicationId + "&fullId="
-														+ fullId,
-												fullId);
+														+ application.id + "&fullId="
+														+ application.getFullId(),
+														application.getFullId());
 									} else if (data.rslt.obj.attr('rel') == "interactive") {
-										var applicationId = data.rslt.obj
-												.attr("elementId");
-										var modelId = data.rslt.obj
-												.attr("modelId");
-										var fullId = data.rslt.obj
-										.attr("fullId");
+										var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
+										var application = model.findModelElementByUuid(data.rslt.obj.attr("id"));
 
 										viewManager.openView(
 												"uiMashupApplicationView",
-												"modelId=" + modelId
+												"modelId=" + model.id
 														+ "&applicationId="
-														+ applicationId + "&fullId="
-														+ fullId,
-												fullId);
+														+ application.id + "&fullId="
+														+ application.getFullId(),
+														application.getFullId());
 									} else if (data.rslt.obj.attr('rel') == "structuredDataType") {
-										var structuredDataTypeId = data.rslt.obj.attr('elementId');
-										var modelId = data.rslt.obj
-												.attr("modelId");
-										var fullId = data.rslt.obj
-										.attr("fullId");
+										var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
+										var structuredDataType = model.findModelElementByUuid(data.rslt.obj.attr("id"));
 
 										viewManager
 												.openView(
 														"xsdStructuredDataTypeView",
 														"modelId="
-																+ modelId
+																+ model.id
 																+ "&structuredDataTypeId="
-																+ structuredDataTypeId + "&fullId="
-																+ fullId,
-														fullId);
+																+ structuredDataType.id + "&fullId="
+																+ structuredDataType.getFullId(),
+																structuredDataType.getFullId());
 									}
 
 									jQuery("a")
