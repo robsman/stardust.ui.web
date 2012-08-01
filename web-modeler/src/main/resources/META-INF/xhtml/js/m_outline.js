@@ -354,8 +354,7 @@ define(
 
 			var renameNodeHandler = function(event, data) {
 				if (data.rslt.obj.attr('rel') == 'model') {
-					var modelId = data.rslt.obj.attr('elementId');
-					var model = m_model.findModel(modelId);
+					var model = m_model.findModelByUuid(data.rslt.obj.attr("id"));
 
 					if (model.name != data.rslt.name) {
 						m_commandsController.submitCommand(m_command
@@ -365,15 +364,11 @@ define(
 								}));
 					}
 				} else if (data.rslt.obj.attr("rel") == "process") {
-					var modelId = data.inst._get_parent(data.rslt.obj).attr(
-							"elementId");
-					var processId = data.rslt.obj.attr('elementId');
-					var processFullid = data.rslt.obj.attr('fullid');
-					var model = m_model.findModel(modelId);
-					var process = m_model.findProcess(processFullid);
+					var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
+					var process = model.findModelElementByUuid(data.rslt.obj.attr("id"));
 					if (process.name != data.rslt.name) {
 						m_commandsController.submitCommand(m_command
-								.createUpdateModelElementCommand(modelId, process.oid, {
+								.createUpdateModelElementCommand(model.id, process.oid, {
 									"name" : data.rslt.name,
 									"id" : m_utils.generateIDFromName(data.rslt.name)
 								}));
@@ -382,26 +377,21 @@ define(
 						|| data.rslt.obj.attr("rel") == "messageTransformationBean"
 						|| data.rslt.obj.attr("rel") == "camelBean"
 						|| data.rslt.obj.attr("rel") == "interactive") {
-					var modelId = data.rslt.obj.attr("modelId");
-					var applicationId = data.rslt.obj.attr('elementId');
-					var model = m_model.findModel(modelId);
-					var application = model.applications[applicationId];
+					var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
+					var application = model.findModelElementByUuid(data.rslt.obj.attr("id"));
 
 					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementWithUUIDCommand(modelId, application.uuid, {
+							.createUpdateModelElementWithUUIDCommand(model.id, application.uuid, {
 								"name" : data.rslt.name,
 								"id" : m_utils.generateIDFromName(data.rslt.name)
 							}));
 				} else if (data.rslt.obj.attr("rel") == "structuredDataType") {
-					var modelId = data.rslt.obj.attr("modelId");
-					var dataTypeId = data.rslt.obj.attr('elementId');
-					var dataTypeFullid = data.rslt.obj.attr('fullid');
-					var model = m_model.findModel(modelId);
-					var dataType = m_model.findModelElementInModelByUuid(modelId, data.rslt.obj.attr('id'));
+					var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
+					var dataType = model.findModelElementByUuid(data.rslt.obj.attr("id"));
 
 					if (dataType.name != data.rslt.name) {
 						m_commandsController.submitCommand(m_command
-								.createUpdateModelElementWithUUIDCommand(modelId, dataType.uuid, {
+								.createUpdateModelElementWithUUIDCommand(model.id, dataType.uuid, {
 									"name" : data.rslt.name,
 									"id" : m_utils.generateIDFromName(data.rslt.name)
 								}));
@@ -409,10 +399,8 @@ define(
 				} else if (data.rslt.obj.attr("rel") == "roleParticipant"
 						|| data.rslt.obj.attr("rel") == "organizationParticipant"
 						|| data.rslt.obj.attr("rel") == "conditionalPerformerParticipant") {
-					var modelId = data.rslt.obj.attr("modelId");
-					var participantId = data.rslt.obj.attr('elementId');
-					var model = m_model.findModel(modelId);
-					var participant = model.participants[participantId];
+					var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
+					var participant = model.findModelElementByUuid(data.rslt.obj.attr("id"));
 
 					if (participant.name != data.rslt.name) {
 						m_commandsController.submitCommand(m_command
@@ -1289,7 +1277,7 @@ define(
 				 * 
 				 */
 				function createProcess(modelId) {
-					var number = (++modelCounter);
+					var number = (++processCounter);
 					var name = "Process " + number;
 					var id = "Process" + number;
 
