@@ -1607,9 +1607,9 @@ define(
 							}
 						}
 						for ( var i = 0; i < obj.changes.removed.length; i++) {
-							if (m_constants.MODEL == command.changes.removed[i].type) {
-								this.deleteModel(command.changes.removed[i]);
-							}
+//							if (m_constants.MODEL == command.changes.removed[i].type) {
+//								this.deleteModel(command.changes.removed[i]);
+//							}
 						}
 					} else if (command.scope == "all") {
 						// @deprecated
