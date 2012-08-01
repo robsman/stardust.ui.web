@@ -481,38 +481,28 @@ define(
 														+ "&modelName="
 														+ model.name, model.id);
 									} else if (data.rslt.obj.attr('rel') == "roleParticipant") {
-										var roleId = data.rslt.obj.attr("id");
-										var roleName = data.inst.get_text();
-										var modelId = data.rslt.obj
-												.attr("modelId");
-										var fullId = data.rslt.obj
-										.attr("fullId");
+										var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
+										var role = model.findModelElementByUuid(data.rslt.obj.attr("id"));
 
 										viewManager.openView("roleView",
-												"roleId=" + roleId
-														+ "&modelId=" + modelId
+												"roleId=" + role.id
+														+ "&modelId=" + model.id
 														+ "&roleName="
-														+ roleName + "&fullId="
-															+ fullId, fullId);
+														+ role.name + "&fullId="
+															+ role.getFullId(), role.getFullId());
 									} else if (data.rslt.obj.attr('rel') == 'organizationParticipant') {
-										var organizationId = data.rslt.obj
-												.attr("elementId");
-										var organizationName = data.inst
-												.get_text();
-										var modelId = data.rslt.obj
-												.attr("modelId");
-										var fullId = data.rslt.obj
-										.attr("fullId");
+										var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
+										var organization = model.findModelElementByUuid(data.rslt.obj.attr("id"));
 
 										viewManager.openView(
 												"organizationView",
 												"organizationId="
-														+ organizationId
-														+ "&modelId=" + modelId
+														+ organization.id
+														+ "&modelId=" + model.id
 														+ "&organizationName="
-														+ organizationName + "&fullId="
-														+ fullId,
-												fullId);
+														+ organization.name + "&fullId="
+														+ organization.getFullId(),
+														organization.getFullId());
 									} else if (data.rslt.obj.attr('rel') == 'primitive'
 											|| data.rslt.obj.attr('rel') == 'serializable'
 											|| data.rslt.obj.attr('rel') == 'entity'
@@ -520,19 +510,15 @@ define(
 											|| data.rslt.obj.attr('rel') == 'dmsDocumentList') {
 
 										// TODO Above is very ugly!
-										var dataId = data.rslt.obj.attr("elementId");
-										var dataName = data.inst.get_text();
-										var modelId = data.rslt.obj
-												.attr("modelId");
-										var fullId = data.rslt.obj
-										.attr("fullId");
+										var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
+										var data = model.findModelElementByUuid(data.rslt.obj.attr("id"));
 
 										viewManager.openView("dataView",
-												"dataId=" + dataId
-														+ "&modelId=" + modelId
+												"dataId=" + data.id
+														+ "&modelId=" + model.id
 														+ "&dataName="
-														+ dataName + "&fullId="
-														+ fullId, fullId);
+														+ data.name + "&fullId="
+														+ data.getFullId(), data.getFullId());
 									} else if (data.rslt.obj.attr('rel') == 'process') {
 										var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
 										var process = model.findModelElementByUuid(data.rslt.obj.attr("id"));
