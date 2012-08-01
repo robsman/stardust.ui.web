@@ -756,9 +756,9 @@ define(
 																	function() {
 																		deleteProcess(
 																				obj
-																						.attr("id"),
+																						.attr("elementId"),
 																				obj
-																						.attr("modelId"));
+																						.attr("modelUUID"));
 																	});
 														}
 													}
@@ -1250,12 +1250,11 @@ define(
 							}, modelId));
 				}
 
-				function deleteProcess(processId, modelId) {
+				function deleteProcess(processId, modelUuid) {
+					var model = m_model.findModelByUuid(modelUuid);
 					m_commandsController.submitCommand(m_command
-							.createDeleteCommand("/models/" + modelId
-									+ "/processes/" + processId, {
-								"processId" : processId,
-								"modelId" : modelId
+							.createDeleteProcessCommand(model.id, model.id, {
+								"id" : processId
 							}));
 				}
 
@@ -1559,7 +1558,11 @@ define(
 						for ( var i = 0; i < obj.changes.removed.length; i++) {
 //							if (m_constants.MODEL == command.changes.removed[i].type) {
 //								this.deleteModel(command.changes.removed[i]);
-//							}
+//							} else
+							if (m_constants.PROCESS == command.changes.removed[i].type) {
+								this.deleteProcess(command.changes.removed[i]);
+							}
+							
 						}
 					} else if (command.scope == "all") {
 						// @deprecated
@@ -1692,10 +1695,23 @@ define(
 							}, null, true);
 				}
 
+				/**
+				 * 
+				 */
 				Outline.prototype.deleteModel = function(transferObject) {
 					m_model.deleteModel(transferObject.id);
 					jQuery("#outline").jstree("remove",
 							"#" + transferObject.uuid)
+				}
+				
+				/**
+				 * 
+				 */
+				Outline.prototype.deleteProcess = function(transferObject) {
+					jQuery("#outline").jstree("remove",
+							"#" + transferObject.uuid)
+					var model = m_model.findModelForElement(transferObject.uuid);
+					m_process.deleteProcess(transferObject.id, model);
 				}
 
 				/**
@@ -1714,6 +1730,7 @@ define(
 									"oid" : process.oid,
 									"elementId" : process.id,
 									"modelId" : model.id,
+									"modelUUID" : model.uuid,
 									"rel" : "process",
 									"fullId" : process.getFullId(),
 									"draggable" : true
@@ -1741,6 +1758,7 @@ define(
 									"elementId" : application.id,
 									"fullId" : application.getFullId(),
 									"modelId" : application.modelId,
+									"modelUUID" : model.uuid,
 									"draggable" : true
 								},
 								"state" : "open",
@@ -1768,6 +1786,7 @@ define(
 								"attr" : {
 									"rel" : data.type,
 									"modelId" : model.id,
+									"modelUUID" : model.uuid,
 									"id" : data.uuid,
 									"elementId" : data.id,
 									"fullId" : data.getFullId(),
@@ -1793,6 +1812,7 @@ define(
 								"attr" : {
 									"rel" : "structuredDataType",
 									"modelId" : model.id,
+									"modelUUID" : model.uuid,
 									"id" : dataStructure.uuid,
 									"elementId" : dataStructure.id,
 									"fullId" : dataStructure.getFullId(),

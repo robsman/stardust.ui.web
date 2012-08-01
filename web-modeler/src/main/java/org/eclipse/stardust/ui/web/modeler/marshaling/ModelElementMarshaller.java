@@ -138,8 +138,20 @@ public class ModelElementMarshaller
       processJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(processDefinition));
       processJson.addProperty(ModelerConstants.TYPE_PROPERTY,
               ModelerConstants.PROCESS_KEY);
-      processJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY,
-    		  ModelUtils.findContainingModel(processDefinition).getId());
+      try
+      {
+         processJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY,
+         	  ModelUtils.findContainingModel(processDefinition).getId());
+      }
+      catch (Exception e)
+      {
+         //A null pointer exception will be thrown in case of element removal
+         //Do no send model ID in such a case as it's difficult to discover it
+         //Instead find the model on client side using element uuid and delete
+         //element from it.
+
+         //TODO - Ugly - Find an elegant alternative.
+      }
       loadDescription(processJson, processDefinition);
 
       JsonObject attributesJson = new JsonObject();

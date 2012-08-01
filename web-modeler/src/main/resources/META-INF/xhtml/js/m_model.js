@@ -101,6 +101,25 @@ define(
 				},
 
 				/**
+				 * Fetches the model for given element UUID.
+				 * 
+				 * @param elementUUID
+				 * @returns model
+				 */
+				findModelForElement : function(elementUuid) {
+					var model = null;
+
+					for ( var index in getModels()) {
+						model = getModels()[index];
+						if (model.findModelElementByUuid(guid) != null) {
+							return model;
+						}
+					}
+
+					return null;
+				},
+
+				/**
 				 * Fetches the element with given OID within the given modelId.
 				 * 
 				 * @param guid

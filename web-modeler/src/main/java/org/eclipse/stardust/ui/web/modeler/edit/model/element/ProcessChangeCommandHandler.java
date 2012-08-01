@@ -43,13 +43,13 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
  *
  */
 @CommandHandler
-public class CreateProcessCommandHandler
+public class ProcessChangeCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
 
    @OnCommand(commandId = "process.create")
-   public void handleCommand(ModelType model, JsonObject request)
+   public void createProcess(ModelType model, JsonObject request)
    {
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
       String id = MBFacade.createIdFromName(name);
@@ -112,5 +112,17 @@ public class CreateProcessCommandHandler
       processDefinitionJson.add(EVENTS_PROPERTY, new JsonObject());
       processDefinitionJson.add(DATA_FLOWS_PROPERTY, new JsonObject());
       processDefinitionJson.add(CONTROL_FLOWS_PROPERTY, new JsonObject());
+   }
+
+   /**
+    * @param model
+    * @param request
+    */
+   @OnCommand(commandId = "process.delete")
+   public void deleteProcess(ModelType model, JsonObject request)
+   {
+      String id = extractString(request, ModelerConstants.ID_PROPERTY);
+      ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model, id);
+      model.getProcessDefinition().remove(processDefinition);
    }
 }
