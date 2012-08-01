@@ -89,7 +89,7 @@ public class DataCommandHandler
          }
 
          DataSymbolType dataSymbol = MBFacade.createDataSymbol(processDefinition,
-               xProperty, yProperty, widthProperty, heightProperty, parentLaneSymbol,
+               xProperty, yProperty, widthProperty, heightProperty, parentLaneSymbol.getId(),
                maxOid, data);
          mapper.map(dataSymbol);
       }
