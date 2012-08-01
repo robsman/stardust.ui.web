@@ -9,9 +9,9 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_view",
+		[ "m_utils", "m_communicationController", "m_command", "m_commandsController", "m_dialog", "m_view",
 				"m_model"],
-		function(m_utils, m_command, m_commandsController, m_dialog, m_view, m_model) {
+		function(m_utils, m_communicationController, m_command, m_commandsController, m_dialog, m_view, m_model) {
 			var view;
 
 			return {
@@ -25,6 +25,7 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(model);
+					view.refreshValidation();
 				}
 			};
 
@@ -43,6 +44,8 @@ define(
 				this.nameInput = jQuery("#nameInput");
 				this.versionTable = jQuery("#versionTable");
 				this.versionTableBody = jQuery("table#versionTable tbody");
+				this.problemsTable = jQuery("#problemsTable");
+				this.problemsTableBody = jQuery("table#problemsTable tbody");
 
 				jQuery("#modelTabs").tabs();
 
@@ -142,6 +145,45 @@ define(
 						
 						this.initialize(this.model);
 					}
+				};
+				
+				/**
+				 * 
+				 */
+				ModelView.prototype.refreshValidation = function() {
+					this.problemsTableBody.empty();
+					
+					m_communicationController.syncGetData({
+						url : m_communicationController.getEndpointUrl()
+								+ "/models/" + this.model.id + "/problems",
+						view: this
+					}, {
+						"success" : function(json) {
+							m_utils.debug("Problems:");
+							m_utils.debug(json);
+
+							for (var n = 0; n < json.length; ++n)
+							{
+								var content = "<tr>";
+
+								content += "<td>";
+								content += json[n].severity;
+								content += "</td>";
+								content += "<td>";
+								content += json[n].modelElement;
+								content += "</td>";
+								content += "<td>";
+								content += json[n].message;
+								content += "</td>";
+								content += "</tr>";
+								
+								view.problemsTableBody.append(content);								
+							}
+						},
+						"error" : function() {
+							m_utils.debug("Error");
+						}
+					});
 				};
 			}
 		});
