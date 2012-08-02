@@ -196,8 +196,9 @@ define(
 									jQuery("#outline").jstree("create",
 											"#" + model.uuid, "first", {
 												"attr" : {
-													"id" : "data_" + model.id,
-													"rel" : "data"
+													"id" : "data_" + model.uuid,
+													"rel" : "data",
+													"modelUUId" : model.uuid
 												},
 												"data" : "Data"
 											}, null, true);
@@ -207,7 +208,7 @@ define(
 											index, data) {
 										jQuery("#outline").jstree(
 												"create",
-												"#data_" + model.id,
+												"#data_" + model.uuid,
 												"last",
 												{
 													"attr" : {
@@ -799,6 +800,34 @@ define(
 														}
 													}
 												};
+											} else if ('data' == node
+													.attr('rel')) {
+												return {
+													"ccp" : false,
+													"create" : false,
+													"rename" : false,
+													"createPrimitiveData" : {
+														"label" : "Create Primitive Data",
+														"action" : function(obj) {
+															createPrimitiveData(obj
+																	.attr("modelUUId"));
+														}
+													},
+													"createDocumentData" : {
+														"label" : "Create Document",
+														"action" : function(obj) {
+															createDocumentData(obj
+																	.attr("modelUUId"));
+														}
+													},
+													"createStructuredData" : {
+														"label" : "Create Structured Data",
+														"action" : function(obj) {
+															createStructuredData(obj
+																	.attr("modelUUId"));
+														}
+													}
+												};
 											} else if ("webservice" == node
 													.attr("rel")
 													|| "messageTransformationBean" == node
@@ -1324,6 +1353,61 @@ define(
 				/**
 				 * 
 				 */
+				function createPrimitiveData(modelUUId) {
+					var number = (++processCounter);
+					var name = "Primitive Data " + number;
+					var id = m_utils.generateIDFromName(name);
+					var model = m_model.findModelByUuid(modelUUId);
+					var modelId = model.id;
+
+					m_commandsController.submitCommand(m_command
+							.createCreatePrimitiveDataCommand(modelId, modelId,
+									{
+										"name" : name,
+										"id" : id,
+										"primitiveType" : m_constants.STRING_PRIMITIVE_DATA_TYPE
+									}));
+				}
+
+				/**
+				 * 
+				 */
+				function createDocumentData(modelUUId) {
+					var number = (++processCounter);
+					var name = "Web Service " + number;
+					var id = "WebService" + number;
+					var model = m_model.findModelByUuid(modelUUId);
+					var modelId = model.id;
+
+//					m_commandsController.submitCommand(m_command
+//							.createCreateWebServiceAppCommand(modelId, modelId,
+//									{
+//										"name" : name,
+//										"id" : id
+//									}, modelId));
+				}
+
+				/**
+				 * 
+				 */
+				function createStructuredData(modelUUId) {
+					var number = (++processCounter);
+					var name = "Web Service " + number;
+					var id = "WebService" + number;
+					var model = m_model.findModelByUuid(modelUUId);
+					var modelId = model.id;
+
+//					m_commandsController.submitCommand(m_command
+//							.createCreateWebServiceAppCommand(modelId, modelId,
+//									{
+//										"name" : name,
+//										"id" : id
+//									}, modelId));
+				}
+
+				/**
+				 * 
+				 */
 				function createWebServiceApplication(modelUUId) {
 					var number = (++processCounter);
 					var name = "Web Service " + number;
@@ -1511,6 +1595,10 @@ define(
 							} else if (m_constants.DATA_SYMBOL == command.changes.added[i].type) {
 								this
 										.createData(command.changes.added[i].data);
+							} else if (m_constants.PRIMITIVE_DATA_TYPE == command.changes.added[i].type
+											|| m_constants.STRUCTURED_DATA_TYPE == command.changes.added[i].type
+											|| m_constants.DOCUMENT_DATA_TYPE == command.changes.added[i].type) {
+								this.createData(command.changes.added[i]);
 							} else if (m_constants.APPLICATION == command.changes.added[i].type) {
 								this
 										.createApplication(command.changes.added[i]);
@@ -1659,7 +1747,7 @@ define(
 					jQuery("#outline").jstree("create", "#" + data.uuid, "first",
 							{
 								"attr" : {
-									"id" : "data_" + data.id,
+									"id" : "data_" + data.uuid,
 									"rel" : "data",
 									"modelUUId" : data.uuid
 								},
@@ -1770,16 +1858,9 @@ define(
 				 * 
 				 */
 				Outline.prototype.createData = function(transferObject) {
-					try{
-						var model = m_model.findModelByUuid(transferObject.modelUUID);
-	
-					}
-					catch (e) {
-						alert("error"+e);
-					}
-										var data = m_data.initializeFromJson(
-							model, transferObject);
-					var parentSelector = '#data_' + model.id;
+					var model = m_model.findModelByUuid(transferObject.modelUUID);
+					var data = m_data.initializeFromJson(model, transferObject);
+					var parentSelector = '#data_' + model.uuid;
 
 					jQuery("#outline").jstree("create", parentSelector, "last",
 							{

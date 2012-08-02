@@ -103,6 +103,10 @@ public class ModelElementMarshaller
       {
          jsResult = toTransitionType((TransitionConnectionType) modelElement);
       }
+      else if (modelElement instanceof DataType)
+      {
+         jsResult = toDataTypeJson((DataType) modelElement);
+      }
       else if (modelElement instanceof DataSymbolType)
       {
          jsResult = toDataJson((DataSymbolType) modelElement);
@@ -829,7 +833,7 @@ public class ModelElementMarshaller
       dataJson.addProperty(ModelerConstants.NAME_PROPERTY, data.getName());
       dataJson.addProperty(ModelerConstants.UUID_PROPERTY,  eObjectUUIDMapper().getUUID(data));
       ModelType model = ModelUtils.findContainingModel(data);
-      dataJson.addProperty("modelUUID", eObjectUUIDMapper().getUUID(model));
+      dataJson.addProperty("modelUUID", eObjectUUIDMapper().getUUID(model));      
       if (null != data.getDescription())
       {
          dataJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,

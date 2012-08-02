@@ -61,6 +61,12 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 				changes : changes
 			} ]);
 		},
+		createCreatePrimitiveDataCommand : function(modelId, oid, changes) {
+			return new ChangeDescriptor("primitiveData.create", modelId, [ {
+				oid : oid,
+				changes : changes
+			} ]);
+		},
 		createCreateWebServiceAppCommand : function(modelId, oid, changes) {
 			return new ChangeDescriptor("webServiceApplication.create", modelId, [ {
 				oid : oid,
