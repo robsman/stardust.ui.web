@@ -1144,7 +1144,7 @@ public class ModelElementMarshaller
       JsonObject childrenJson = new JsonObject();
       typeDeclarationJson.add("children", childrenJson);
       structJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-            ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
+            ModelerConstants.TYPE_DECLARATION_PROPERTY);
 
       return structJson;
    }

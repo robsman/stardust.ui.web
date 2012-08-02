@@ -19,6 +19,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
@@ -43,7 +44,7 @@ public class DataChangeCommandHandler
     * @param request
     */
    @OnCommand(commandId = "primitiveData.create")
-   public void createData(ModelType model, JsonObject request)
+   public void createPrimitiveData(ModelType model, JsonObject request)
    {
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
@@ -54,6 +55,34 @@ public class DataChangeCommandHandler
       data.setElementOid(++maxOid);
 
       //Map newly created data element to a UUID
+      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      mapper.map(data);
+   }
+
+   /**
+    * @param model
+    * @param request
+    */
+   @OnCommand(commandId = "structuredData.create")
+   public void createStructuredData(ModelType model, JsonObject request)
+   {
+      String id = extractString(request, ModelerConstants.ID_PROPERTY);
+      String name = extractString(request, ModelerConstants.NAME_PROPERTY);
+      String stripFullId_ = MBFacade.getModelId(extractString(request,
+            ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID));
+      if (StringUtils.isEmpty(stripFullId_))
+      {
+         stripFullId_ = model.getId();
+      }
+      String structuredDataFullId = MBFacade.stripFullId(extractString(request,
+            ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID));
+      DataType data = MBFacade.createStructuredData(model, stripFullId_, id, name,
+            structuredDataFullId);
+
+      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
+      data.setElementOid(++maxOid);
+
+      // Map newly created data element to a UUID
       EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
       mapper.map(data);
    }

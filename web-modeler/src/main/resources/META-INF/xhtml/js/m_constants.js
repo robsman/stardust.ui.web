@@ -210,6 +210,7 @@ define(function() {
 		DOUBLE_PRIMITIVE_DATA_TYPE : "double",
 		DECIMAL_PRIMITIVE_DATA_TYPE : "decimal",
 		STRUCTURED_DATA_TYPE : "struct",
+		TYPE_DECLARATION_PROPERTY : "typeDeclaration",
 		DOCUMENT_DATA_TYPE : "document",
 
 		// Gateway

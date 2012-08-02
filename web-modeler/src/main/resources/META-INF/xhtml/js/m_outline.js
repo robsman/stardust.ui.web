@@ -96,7 +96,7 @@ define(
 											{
 												"attr" : {
 													"id" : "participants_"
-															+ model.id,
+															+ model.uuid,
 													"rel" : "participants"
 												},
 												"data" : "Participants"
@@ -110,7 +110,7 @@ define(
 																.jstree(
 																		"create",
 																		"#participants_"
-																				+ model.id,
+																				+ model.uuid,
 																		"last",
 																		{
 																			"attr" : {
@@ -131,7 +131,7 @@ define(
 																.jstree(
 																		"close_node",
 																		"#participants_"
-																				+ model.id);
+																				+ model.uuid);
 													});
 
 									// Applications
@@ -1392,17 +1392,19 @@ define(
 				 */
 				function createStructuredData(modelUUId) {
 					var number = (++processCounter);
-					var name = "Web Service " + number;
-					var id = "WebService" + number;
+					var name = "Structured Data " + number;
+					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
 					var modelId = model.id;
+					var fullId = model.id + ":" + id;
 
-//					m_commandsController.submitCommand(m_command
-//							.createCreateWebServiceAppCommand(modelId, modelId,
-//									{
-//										"name" : name,
-//										"id" : id
-//									}, modelId));
+					m_commandsController.submitCommand(m_command
+							.createCreateStructuredDataCommand(model.id, model.id,
+									{
+										"name" : name,
+										"id" : id,
+										"structuredDataTypeFullId" : fullId
+									}));
 				}
 
 				/**
@@ -1589,19 +1591,16 @@ define(
 								this.createProcess(command.changes.added[i]);
 							} else if (m_constants.MODEL == command.changes.added[i].type) {
 								this.createModel(command.changes.added[i]);
-							} else if (m_constants.STRUCTURED_DATA_TYPE == command.changes.added[i].type) {
-								this
-										.createStructuredDataType(command.changes.added[i]);
+							} else if (m_constants.TYPE_DECLARATION_PROPERTY == command.changes.added[i].type) {
+								this.createStructuredDataType(command.changes.added[i]);
 							} else if (m_constants.DATA_SYMBOL == command.changes.added[i].type) {
-								this
-										.createData(command.changes.added[i].data);
+								this.createData(command.changes.added[i].data);
 							} else if (m_constants.PRIMITIVE_DATA_TYPE == command.changes.added[i].type
 											|| m_constants.STRUCTURED_DATA_TYPE == command.changes.added[i].type
 											|| m_constants.DOCUMENT_DATA_TYPE == command.changes.added[i].type) {
 								this.createData(command.changes.added[i]);
 							} else if (m_constants.APPLICATION == command.changes.added[i].type) {
-								this
-										.createApplication(command.changes.added[i]);
+								this.createApplication(command.changes.added[i]);
 							}
 						}
 						for ( var i = 0; i < obj.changes.modified.length; i++) {
@@ -1766,14 +1765,14 @@ define(
 					jQuery("#outline").jstree("create", "#" + data.uuid, "first",
 							{
 								"attr" : {
-									"id" : "participants_" + data.id,
+									"id" : "participants_" + data.uuid,
 									"rel" : "participants",
 									"modelUUId" : data.uuid
 								},
 								"data" : "Participants"
 							}, null, true);
 					jQuery("#outline").jstree("create",
-							"#" + "participants_" + data.id, "first", {
+							"#" + "participants_" + data.uuid, "first", {
 								"attr" : {
 									"id" : data.adminId,
 									"rel" : "participant_role",
