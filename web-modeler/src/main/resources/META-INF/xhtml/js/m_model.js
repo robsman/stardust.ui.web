@@ -111,7 +111,7 @@ define(
 
 					for ( var index in getModels()) {
 						model = getModels()[index];
-						if (model.findModelElementByUuid(guid) != null) {
+						if (model.findModelElementByUuid(elementUuid) != null) {
 							return model;
 						}
 					}
