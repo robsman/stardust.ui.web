@@ -75,8 +75,6 @@ define(
 			 * @param item
 			 */
 			function removeItemFromArray(array, item) {
-				debug("===> Before removal:");
-				debug(array);
 				var n = 0;
 				while (n < array.length) {
 					if (array[n] == item) {
@@ -87,15 +85,12 @@ define(
 					}
 					++n;
 				}
-
-				debug("===> After removal:");
-				debug(array);
 			}
 			;
 
 			function debug(obj) {
-				if (console) {
-					console.debug(obj);
+				if (typeof console == "object"){
+					console.log(obj);
 				}
 			}
 

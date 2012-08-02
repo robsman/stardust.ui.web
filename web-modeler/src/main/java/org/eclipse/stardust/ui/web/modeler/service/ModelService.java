@@ -2089,31 +2089,30 @@ public class ModelService
     * @param modelId
     * @return
     */
-   public JsonObject validateModel(String modelId)
+   public JsonArray validateModel(String modelId)
    {
+      System.out.println("Validating model " + modelId);
+      
       ModelType model = getModelManagementStrategy().getModels().get(modelId);
-
-      if (model == null)
-      {
-         return null;
-      }
 
       ValidatorRegistry.setFilters(new HashMap<String, String>());
       ValidatorRegistry.setValidationExtensionRegistry(ValidationExtensionRegistry.getInstance());
       ValidationService validationService = ValidationService.getInstance();
 
-      JsonObject response = new JsonObject();
-      JsonArray jsIssues = new JsonArray();
+      JsonArray issuesJson = new JsonArray();
 
       Issue[] issues = validationService.validateModel(model);
 
       for (int i = 0; i < issues.length; i++ )
       {
          Issue issue = issues[i];
+         JsonObject issueJson = new JsonObject();
+         
+         System.out.println("Found issue " + issue);
 
-         JsonObject jsIssue = new JsonObject();
-         jsIssue.addProperty("message", issue.getMessage());
-         jsIssue.addProperty("severity", issue.getSeverity());
+         issueJson.addProperty("message", issue.getMessage());
+         issueJson.addProperty("severity", issue.getSeverity());
+         
          EObject modelElement = issue.getModelElement();
 
          String modelElemendId = null;
@@ -2125,11 +2124,10 @@ public class ModelService
                   + ((IIdentifiableModelElement) modelElement).getElementOid();
          }
 
-         jsIssue.addProperty("modelElement", modelElemendId);
-
-         jsIssues.add(jsIssue);
+         issueJson.addProperty("modelElement", modelElemendId);
+         issuesJson.add(issueJson);
       }
 
-      return response;
+      return issuesJson;
    }
 }

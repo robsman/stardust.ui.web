@@ -177,13 +177,18 @@ define(
 								content += "</td>";
 								content += "</tr>";
 								
-								view.problemsTableBody.append(content);								
+								jQuery("table#problemsTable tbody").append(content);								
 							}
 						},
 						"error" : function() {
 							m_utils.debug("Error");
 						}
 					});
+
+					this.problemsTable.tableScroll({
+						height : 300
+					});
+	
 				};
 			}
 		});
