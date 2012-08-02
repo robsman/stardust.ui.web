@@ -1594,7 +1594,12 @@ define(
 							} else if (m_constants.TYPE_DECLARATION_PROPERTY == command.changes.added[i].type) {
 								this.createStructuredDataType(command.changes.added[i]);
 							} else if (m_constants.DATA_SYMBOL == command.changes.added[i].type) {
-								this.createData(command.changes.added[i].data);
+								//Create data element in outline only in the case where the symbol was drawn from
+								//modeler toolbar and not when it's dragged and dropped from outline
+								if (null == m_model.findModelForElement(command.changes.added[i].uuid)
+										&& null == m_model.findModelForElement(command.changes.added[i].data.uuid)) {
+									this.createData(command.changes.added[i].data);
+								}
 							} else if (m_constants.PRIMITIVE_DATA_TYPE == command.changes.added[i].type
 											|| m_constants.STRUCTURED_DATA_TYPE == command.changes.added[i].type
 											|| m_constants.DOCUMENT_DATA_TYPE == command.changes.added[i].type) {
