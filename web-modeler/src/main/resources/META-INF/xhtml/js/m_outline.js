@@ -1474,8 +1474,8 @@ define(
 				 */
 				function createDocumentData(modelUUId) {
 					var number = (++processCounter);
-					var name = "Web Service " + number;
-					var id = "WebService" + number;
+					var name = "Document data " + number;
+					var id = "DocumentData" + number;
 					var model = m_model.findModelByUuid(modelUUId);
 					var modelId = model.id;
 
@@ -1730,7 +1730,7 @@ define(
 								this.createStructuredDataType(command.changes.added[i]);
 							} else if (m_constants.PRIMITIVE_DATA_TYPE == command.changes.added[i].type
 											|| m_constants.STRUCTURED_DATA_TYPE == command.changes.added[i].type
-											|| m_constants.DOCUMENT_DATA_TYPE == command.changes.added[i].type) {
+											|| m_constants.DMS_DOCUMENT_DATA_TYPE == command.changes.added[i].type) {
 								this.createData(command.changes.added[i]);
 							} else if (m_constants.APPLICATION == command.changes.added[i].type) {
 								this.createApplication(command.changes.added[i]);

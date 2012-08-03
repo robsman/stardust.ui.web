@@ -212,6 +212,7 @@ define(function() {
 		STRUCTURED_DATA_TYPE : "struct",
 		TYPE_DECLARATION_PROPERTY : "typeDeclaration",
 		DOCUMENT_DATA_TYPE : "document",
+		DMS_DOCUMENT_DATA_TYPE : "dmsDocument",
 
 		// Gateway
 

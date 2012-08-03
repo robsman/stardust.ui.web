@@ -94,6 +94,16 @@ public class DataChangeCommandHandler
    @OnCommand(commandId = "documentData.create")
    public void createDocumentData(ModelType model, JsonObject request)
    {
-      //TODO
+      String id = extractString(request, ModelerConstants.ID_PROPERTY);
+      String name = extractString(request, ModelerConstants.NAME_PROPERTY);
+
+      DataType data = MBFacade.createDocumentData(model, id, name, null);
+
+      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
+      data.setElementOid(++maxOid);
+
+      // Map newly created data element to a UUID
+      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      mapper.map(data);
    }
 }
