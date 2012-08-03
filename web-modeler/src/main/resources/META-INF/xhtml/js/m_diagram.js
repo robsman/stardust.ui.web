@@ -480,13 +480,15 @@ define(
 				 * 
 				 */
 				Diagram.prototype.findSymbolByGuid = function(guid) {
-
-					for ( var i = 0; i < this.symbols.length; i++) {
-						if (this.symbols[i].oid == guid) {
-							return this.symbols[i];
+					
+					if (null != guid) {
+						for ( var i = 0; i < this.symbols.length; i++) {
+							if (this.symbols[i].oid == guid) {
+								return this.symbols[i];
+							}
 						}
 					}
-
+					
 					return null;
 				};
 
@@ -495,10 +497,12 @@ define(
 				 */
 				Diagram.prototype.findSymbolByModelElementGuid = function(guid) {
 
-					for ( var i = 0; i < this.symbols.length; i++) {
-						if (this.symbols[i].modelElement != null
-								&& this.symbols[i].modelElement.oid == guid) {
-							return this.symbols[i];
+					if (null != guid) {
+						for ( var i = 0; i < this.symbols.length; i++) {
+							if (this.symbols[i].modelElement != null
+									&& this.symbols[i].modelElement.oid == guid) {
+								return this.symbols[i];
+							}
 						}
 					}
 
@@ -508,11 +512,11 @@ define(
 				/**
 				 * 
 				 */
-				Diagram.prototype.findConnectionByModelId = function(id) {
+				Diagram.prototype.findConnection = function(conn) {
 
 					for ( var i = 0; i < this.connections.length; i++) {
-						if (this.connections[i].modelElement != null
-								&& this.connections[i].modelElement.id == id) {
+						if (this.connections[i].fromModelElementOid == conn.fromModelElementOid
+								&& this.connections[i].toModelElementOid == conn.toModelElementOid) {
 							return this.connections[i];
 						}
 					}
@@ -549,9 +553,9 @@ define(
 								// for connections , search by connectionId to
 								// set OID
 								var conn = this
-										.findConnectionByModelId(obj.changes.added[i].modelElement.id);
-								if (null != symbol) {
-									conn.oid = obj.changes.added[i].oid;
+										.findConnection(obj.changes.added[i]);
+								if (null != conn) {
+									conn.applyChanges(obj.changes.added[i]);
 									conn.refresh();
 								}
 							}
