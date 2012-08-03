@@ -19,22 +19,22 @@ import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
 
-import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
-import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
+import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 
 /**
  * @author Shrikant.Gangal
- *
+ * 
  */
 @CommandHandler
-public class DataChangeCommandHandler
+public class ParticipantChangeCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
@@ -43,57 +43,63 @@ public class DataChangeCommandHandler
     * @param model
     * @param request
     */
-   @OnCommand(commandId = "primitiveData.create")
-   public void createPrimitiveData(ModelType model, JsonObject request)
+   @OnCommand(commandId = "role.create")
+   public void createRole(ModelType model, JsonObject request)
    {
-      String id = extractString(request, ModelerConstants.ID_PROPERTY);
-      String name = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String primitiveType = extractString(request, ModelerConstants.PRIMITIVE_TYPE);
-      DataType data = MBFacade.createPrimitiveData(model, id, name, primitiveType);
-      
-      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-      data.setElementOid(++maxOid);
-
-      //Map newly created data element to a UUID
-      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
-      mapper.map(data);
-   }
-
-   /**
-    * @param model
-    * @param request
-    */
-   @OnCommand(commandId = "structuredData.create")
-   public void createStructuredData(ModelType model, JsonObject request)
-   {
-      String id = extractString(request, ModelerConstants.ID_PROPERTY);
-      String name = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String stripFullId_ = MBFacade.getModelId(extractString(request,
-            ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID));
-      if (StringUtils.isEmpty(stripFullId_))
+      String roleID = extractString(request, ModelerConstants.ID_PROPERTY);
+      String roleName = extractString(request, ModelerConstants.NAME_PROPERTY);
+      RoleType role = null;
+      synchronized (model)
       {
-         stripFullId_ = model.getId();
+         role = MBFacade.createRole(model, roleID, roleName);
       }
-      String structuredDataFullId = MBFacade.stripFullId(extractString(request,
-            ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID));
-      DataType data = MBFacade.createStructuredData(model, stripFullId_, id, name,
-            structuredDataFullId);
-
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-      data.setElementOid(++maxOid);
+      role.setElementOid(++maxOid);
 
       // Map newly created data element to a UUID
       EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
-      mapper.map(data);
+      mapper.map(role);
    }
 
    /**
     * @param model
     * @param request
     */
-   @OnCommand(commandId = "documentData.create")
-   public void createDocumentData(ModelType model, JsonObject request)
+   @OnCommand(commandId = "organization.create")
+   public void createOrganization(ModelType model, JsonObject request)
    {
-      //TODO
+      String orgID = extractString(request, ModelerConstants.ID_PROPERTY);
+      String orgName = extractString(request, ModelerConstants.NAME_PROPERTY);
+      OrganizationType org = null;
+      synchronized (model)
+      {
+         org = MBFacade.createOrganization(model, orgID, orgName);
+      }
+      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
+      org.setElementOid(++maxOid);
+
+      // Map newly created data element to a UUID
+      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      mapper.map(org);
+   }
+
+   /**
+    * @param org
+    * @param request
+    */
+   @OnCommand(commandId = "role.create")
+   public void createRole(OrganizationType org, JsonObject request)
+   {
+      // TODO
+   }
+
+   /**
+    * @param model
+    * @param request
+    */
+   @OnCommand(commandId = "organization.create")
+   public void createOrganization(OrganizationType model, JsonObject request)
+   {
+      // TODO
    }
 }

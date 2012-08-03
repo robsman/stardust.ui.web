@@ -67,8 +67,26 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 				changes : changes
 			} ]);
 		},
+		createCreateDocumentDataCommand : function(modelId, oid, changes) {
+			return new ChangeDescriptor("documentData.create", modelId, [ {
+				oid : oid,
+				changes : changes
+			} ]);
+		},
 		createCreateStructuredDataCommand : function(modelId, oid, changes) {
 			return new ChangeDescriptor("structuredData.create", modelId, [ {
+				oid : oid,
+				changes : changes
+			} ]);
+		},
+		createCreateRoleCommand : function(modelId, oid, changes) {
+			return new ChangeDescriptor("role.create", modelId, [ {
+				oid : oid,
+				changes : changes
+			} ]);
+		},
+		createCreateOrganizationCommand : function(modelId, oid, changes) {
+			return new ChangeDescriptor("organization.create", modelId, [ {
 				oid : oid,
 				changes : changes
 			} ]);

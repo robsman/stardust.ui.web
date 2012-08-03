@@ -78,7 +78,7 @@ define(
 														"fullId" : process
 																.getFullId(),
 														"modelId" : model.id,
-														"modelUUId" : model.uuid,
+														"modelUUID" : model.uuid,
 														"rel" : "process",
 														"draggable" : true,
 														"elementId" : process.id
@@ -97,7 +97,8 @@ define(
 												"attr" : {
 													"id" : "participants_"
 															+ model.uuid,
-													"rel" : "participants"
+													"rel" : "participants",
+													"modelUUID" : model.uuid
 												},
 												"data" : "Participants"
 											}, null, true);
@@ -119,7 +120,7 @@ define(
 																						.getFullId(),
 																				"rel" : participant.participantType,
 																				"modelId" : model.id,
-																				"modelUUId" : model.uuid,
+																				"modelUUID" : model.uuid,
 																				"draggable" : true,
 																				"elementId" : participant.id
 																			},
@@ -143,7 +144,7 @@ define(
 											{
 												"attr" : {
 													"modelId" : model.id,
-													"modelUUId" : model.uuid,
+													"modelUUID" : model.uuid,
 													"id" : "applications_"
 															+ model.uuid,
 													"rel" : "applications"
@@ -167,7 +168,7 @@ define(
 																			"attr" : {
 																				"id" : application.uuid,
 																				"modelId" : model.id,
-																				"modelUUId" : model.uuid,
+																				"modelUUID" : model.uuid,
 																				"fullId" : application
 																						.getFullId(),
 																				"rel" : application.applicationType,
@@ -198,7 +199,7 @@ define(
 												"attr" : {
 													"id" : "data_" + model.uuid,
 													"rel" : "data",
-													"modelUUId" : model.uuid
+													"modelUUID" : model.uuid
 												},
 												"data" : "Data"
 											}, null, true);
@@ -222,7 +223,7 @@ define(
 													"data" : data.name
 												}, null, true);
 										jQuery("#outline").jstree("close_node",
-												"#data_" + model.id);
+												"#data_" + model.uuid);
 									});
 
 									// Structured Data Types
@@ -237,7 +238,7 @@ define(
 															+ model.uuid,
 													"rel" : "structuredTypes",
 													"modelId" : model.id,
-													"modelUUId" : model.uuid
+													"modelUUID" : model.uuid
 												},
 												"data" : "Structured Types"
 											}, null, true);
@@ -263,7 +264,7 @@ define(
 																				"elementId" : structuredDataType.id,
 																				"rel" : "structuredDataType",
 																				"modelId" : model.id,
-																				"modelUUId" : model.uuid,
+																				"modelUUID" : model.uuid,
 																				"draggable" : true
 																			},
 																			"data" : structuredDataType.name
@@ -775,28 +776,28 @@ define(
 														"label" : "Create Web Service",
 														"action" : function(obj) {
 															createWebServiceApplication(obj
-																	.attr("modelUUId"));
+																	.attr("modelUUID"));
 														}
 													},
 													"createMessageTransformationApplication" : {
 														"label" : "Create Transformation",
 														"action" : function(obj) {
 															createMessageTransformationApplication(obj
-																	.attr("modelUUId"));
+																	.attr("modelUUID"));
 														}
 													},
 													"createCamelApplication" : {
 														"label" : "Create Camel Route",
 														"action" : function(obj) {
 															createCamelApplication(obj
-																	.attr("modelUUId"));
+																	.attr("modelUUID"));
 														}
 													},
 													"createUiMashupApplication" : {
 														"label" : "Create UI Mashup",
 														"action" : function(obj) {
 															createUiMashupApplication(obj
-																	.attr("modelUUId"));
+																	.attr("modelUUID"));
 														}
 													}
 												};
@@ -810,21 +811,42 @@ define(
 														"label" : "Create Primitive Data",
 														"action" : function(obj) {
 															createPrimitiveData(obj
-																	.attr("modelUUId"));
+																	.attr("modelUUID"));
 														}
 													},
 													"createDocumentData" : {
 														"label" : "Create Document",
 														"action" : function(obj) {
 															createDocumentData(obj
-																	.attr("modelUUId"));
+																	.attr("modelUUID"));
 														}
 													},
 													"createStructuredData" : {
 														"label" : "Create Structured Data",
 														"action" : function(obj) {
 															createStructuredData(obj
-																	.attr("modelUUId"));
+																	.attr("modelUUID"));
+														}
+													}
+												};
+											} else if ("participants" == node
+													.attr('rel')) {
+												return {
+													"ccp" : false,
+													"create" : false,
+													"rename" : false,
+													"createRole" : {
+														"label" : "Create Role",
+														"action" : function(obj) {
+															createRole(obj
+																	.attr("modelUUID"));
+														}
+													},
+													"createOrganization" : {
+														"label" : "Create Organization",
+														"action" : function(obj) {
+															createOrganization(obj
+																	.attr("modelUUID"));
 														}
 													}
 												};
@@ -891,7 +913,7 @@ define(
 //															createXsdStructuredDataType(obj
 //																	.attr("modelId"));
 															createXsdStructuredDataType(obj
-																	.attr("modelUUId"));
+																	.attr("modelUUID"));
 														}
 													}
 												};
@@ -957,6 +979,49 @@ define(
 														}
 													}
 												};
+											} else if ('organizationParticipant' == node
+													.attr('rel')) {
+												return {
+													"ccp" : false,
+													"create" : false,
+													"rename" : {
+														"label" : "Rename",
+														"action" : function(obj) {
+															jQuery("#outline")
+																	.jstree(
+																			"rename",
+																			"#"
+																					+ obj
+																							.attr("id"));
+														}
+													},
+													"deleteParticipantRole" : {
+														"label" : "Delete",
+														"action" : function(obj) {
+															deleteElementAction(
+																	obj.context.lastChild.data,
+																	function() {
+																		deleteParticipantRole(
+																				obj
+																						.attr("modelId"),
+																				obj
+																						.attr("elementId"));
+																	});
+														}
+													},
+													"createRole" : {
+														"label" : "Create Role",
+														"action" : function(obj) {
+															createRole(obj.attr("modelUUID"), obj.attr("id"));
+														}
+													},
+													"createOrganization" : {
+														"label" : "Create Organization",
+														"action" : function(obj) {
+															createOrganization(obj.attr("modelUUID"), obj.attr("id"));
+														}
+													}
+												};
 											}
 
 											return {};
@@ -998,7 +1063,11 @@ define(
 											"organizationParticipant" : {
 												"icon" : {
 													"image" : "../images/icons/organization.png"
-												}
+												},
+												"valid_children" : [
+														"roleParticipant",
+														"organizationParticipant",
+														"conditionalPerformerParticipant" ]
 											},
 											"conditionalPerformerParticipant" : {
 												"icon" : {
@@ -1379,12 +1448,12 @@ define(
 					var model = m_model.findModelByUuid(modelUUId);
 					var modelId = model.id;
 
-//					m_commandsController.submitCommand(m_command
-//							.createCreateWebServiceAppCommand(modelId, modelId,
-//									{
-//										"name" : name,
-//										"id" : id
-//									}, modelId));
+					m_commandsController.submitCommand(m_command
+							.createCreateDocumentDataCommand(modelId, modelId,
+									{
+										"name" : name,
+										"id" : id
+									}));
 				}
 
 				/**
@@ -1404,6 +1473,41 @@ define(
 										"name" : name,
 										"id" : id,
 										"structuredDataTypeFullId" : fullId
+									}));
+				}
+
+				/**
+				 * 
+				 */
+				function createRole(modelUUId, targetUUID) {
+					var number = (++processCounter);
+					var name = "Role " + number;
+					var id = m_utils.generateIDFromName(name);
+					var model = m_model.findModelByUuid(modelUUId);
+					var targetOid = (targetUUID ? m_model.findElementInModelByUuid(model.id, targetUUID).oid : model.id);
+
+					m_commandsController.submitCommand(m_command
+							.createCreateRoleCommand(model.id, targetOid,
+									{
+										"name" : name,
+										"id" : id
+									}));
+				}
+				/**
+				 * 
+				 */
+				function createOrganization(modelUUId, targetUUID) {
+					var number = (++processCounter);
+					var name = "Organization " + number;
+					var id = m_utils.generateIDFromName(name);
+					var model = m_model.findModelByUuid(modelUUId);
+					var targetOid = (targetUUID ? m_model.findElementInModelByUuid(model.id, targetUUID).oid : model.id);
+
+					m_commandsController.submitCommand(m_command
+							.createCreateOrganizationCommand(model.id, targetOid,
+									{
+										"name" : name,
+										"id" : id
 									}));
 				}
 
@@ -1599,6 +1703,9 @@ define(
 								this.createData(command.changes.added[i]);
 							} else if (m_constants.APPLICATION == command.changes.added[i].type) {
 								this.createApplication(command.changes.added[i]);
+							} else if (m_constants.ROLE_PARTICIPANT_TYPE == command.changes.added[i].type
+										|| m_constants.ORGANIZATION_PARTICIPANT_TYPE == command.changes.added[i].type) {
+								this.createParticipant(command.changes.added[i]);
 							}
 						}
 						for ( var i = 0; i < obj.changes.modified.length; i++) {
@@ -1608,12 +1715,12 @@ define(
 								if (undefined == obj.changes.modified[i].oid
 										|| 0 == obj.changes.modified[i].oid) {
 									var modelElement = m_model
-											.findModelElementInModelByUuid(
+											.findElementInModelByUuid(
 													obj.changes.modified[i].modelId,
 													obj.changes.modified[i].uuid);
 								} else {
 									var modelElement = m_model
-											.findModelElementInModelByGuid(
+											.findElementInModelByOid(
 													obj.changes.modified[i].modelId,
 													obj.changes.modified[i].oid);
 								}
@@ -1738,7 +1845,7 @@ define(
 									"id" : "structuredTypes_" + data.uuid,
 									"rel" : "structuredTypes",
 									"modelId" : data.id,
-									"modelUUId" : data.uuid
+									"modelUUID" : data.uuid
 								},
 								"data" : "Structured Types"
 							}, null, true);
@@ -1747,7 +1854,7 @@ define(
 								"attr" : {
 									"id" : "data_" + data.uuid,
 									"rel" : "data",
-									"modelUUId" : data.uuid
+									"modelUUID" : data.uuid
 								},
 								"data" : "Data"
 							}, null, true);
@@ -1757,7 +1864,7 @@ define(
 									"modelId" : data.id,
 									"id" : "applications_" + data.uuid,
 									"rel" : "applications",
-									"modelUUId" : data.uuid
+									"modelUUID" : data.uuid
 								},
 								"data" : "Applications"
 							}, null, true);
@@ -1766,7 +1873,7 @@ define(
 								"attr" : {
 									"id" : "participants_" + data.uuid,
 									"rel" : "participants",
-									"modelUUId" : data.uuid
+									"modelUUID" : data.uuid
 								},
 								"data" : "Participants"
 							}, null, true);
@@ -1905,9 +2012,24 @@ define(
 				/**
 				 * 
 				 */
-				Outline.prototype.createParticipant = function(transfermObject) {
-					var model = m_model.findModel(transferObject.modelId);
-					// TODO Add
-				};
+				Outline.prototype.createParticipant = function(transferObject) {
+					var model = m_model.findModelByUuid(transferObject.modelUUID);
+					var participant = m_participant.initializeFromJson(model, transferObject);
+					var parentSelector = '#participants_' + model.uuid;
+					jQuery("#outline").jstree("create", parentSelector, "last",
+							{
+								"attr" : {
+									"id" : participant.uuid,
+									"fullId" : participant
+											.getFullId(),
+									"rel" : participant.participantType,
+									"modelId" : model.id,
+									"modelUUID" : model.uuid,
+									"draggable" : true,
+									"elementId" : participant.id
+								},
+								"data" : participant.name
+							}, null, false);
+				}
 			}
 		});

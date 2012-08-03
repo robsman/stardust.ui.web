@@ -125,14 +125,14 @@ define(
 				 * @param guid
 				 * @returns
 				 */
-				findModelElementInModelByGuid : function(modelId, guid) {
+				findElementInModelByOid : function(modelId, oid) {
 					var model = null;
 					var element = null;
 
 					for ( var index in getModels()) {
 						model = getModels()[index];
 						if (model.id == modelId
-								&& (element = model.findModelElementByGuid(guid)) != null) {
+								&& (element = model.findModelElementByGuid(oid)) != null) {
 							return element;
 						}
 					}
@@ -146,7 +146,7 @@ define(
 				 * @param guid
 				 * @returns
 				 */
-				findModelElementInModelByUuid : function(modelId, uuid) {
+				findElementInModelByUuid : function(modelId, uuid) {
 					var model = null;
 					var element = null;
 

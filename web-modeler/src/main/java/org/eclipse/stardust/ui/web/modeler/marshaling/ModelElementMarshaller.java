@@ -35,9 +35,11 @@ import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
 import org.eclipse.stardust.model.xpdl.carnot.OrientationType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
@@ -121,6 +123,14 @@ public class ModelElementMarshaller
       else if (modelElement instanceof DataSymbolType)
       {
          jsResult = toDataJson((DataSymbolType) modelElement);
+      }
+      else if (modelElement instanceof RoleType)
+      {
+         jsResult = toRoleJson((RoleType) modelElement);
+      }
+      else if (modelElement instanceof OrganizationType)
+      {
+         jsResult = toOrganizationJson((OrganizationType) modelElement);
       }
       else
       {
@@ -874,7 +884,7 @@ public class ModelElementMarshaller
       dataJson.addProperty(ModelerConstants.NAME_PROPERTY, data.getName());
       dataJson.addProperty(ModelerConstants.UUID_PROPERTY,  eObjectUUIDMapper().getUUID(data));
       ModelType model = ModelUtils.findContainingModel(data);
-      dataJson.addProperty("modelUUID", eObjectUUIDMapper().getUUID(model));      
+      dataJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY, eObjectUUIDMapper().getUUID(model));
       if (null != data.getDescription())
       {
          dataJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
@@ -904,6 +914,7 @@ public class ModelElementMarshaller
             dataSymbol.getElementOid());
       dataSymbolJson.addProperty(ModelerConstants.X_PROPERTY, dataSymbol.getXPos());
       dataSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, dataSymbol.getYPos());
+      dataSymbolJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(dataSymbol));
       dataSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.DATA_SYMBOL);
       dataSymbolJson.add(ModelerConstants.DATA, toDataTypeJson(dataSymbol.getData()));
       
@@ -911,6 +922,42 @@ public class ModelElementMarshaller
             MBFacade.createFullId(ModelUtils.findContainingModel(dataSymbol.getData()), dataSymbol.getData()));
 
       return dataSymbolJson;
+   }
+
+   /**
+    * @param role
+    * @return
+    */
+   public JsonObject toRoleJson(RoleType role)
+   {
+      JsonObject roleJson = new JsonObject();
+      roleJson.addProperty(ModelerConstants.ID_PROPERTY, role.getId());
+      roleJson.addProperty(ModelerConstants.NAME_PROPERTY, role.getName());
+      roleJson.addProperty(ModelerConstants.OID_PROPERTY, role.getElementOid());
+      roleJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
+      ModelType model = ModelUtils.findContainingModel(role);
+      roleJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY, eObjectUUIDMapper().getUUID(model));
+      roleJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(role));
+
+      return roleJson;
+   }
+
+   /**
+    * @param org
+    * @return
+    */
+   public JsonObject toOrganizationJson(OrganizationType org)
+   {
+      JsonObject orgJson = new JsonObject();
+      orgJson.addProperty(ModelerConstants.ID_PROPERTY, org.getId());
+      orgJson.addProperty(ModelerConstants.NAME_PROPERTY, org.getName());
+      orgJson.addProperty(ModelerConstants.OID_PROPERTY, org.getElementOid());
+      orgJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
+      ModelType model = ModelUtils.findContainingModel(org);
+      orgJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY, eObjectUUIDMapper().getUUID(model));
+      orgJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(org));
+
+      return orgJson;
    }
 
    /**

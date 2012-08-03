@@ -1407,6 +1407,7 @@ public class ModelService
 
          participantJson.addProperty(ModelerConstants.ID_PROPERTY, role.getId());
          participantJson.addProperty(ModelerConstants.NAME_PROPERTY, role.getName());
+         participantJson.addProperty(ModelerConstants.OID_PROPERTY, role.getElementOid());
          participantJson.addProperty(ModelerConstants.PARTICIPANT_TYPE_PROPERTY,
                ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
          participantJson.addProperty(ModelerConstants.UUID_PROPERTY,
@@ -1422,6 +1423,7 @@ public class ModelService
          participantJson.addProperty(ModelerConstants.ID_PROPERTY, organization.getId());
          participantJson.addProperty(ModelerConstants.NAME_PROPERTY,
                organization.getName());
+         participantJson.addProperty(ModelerConstants.OID_PROPERTY, organization.getElementOid());
          participantJson.addProperty(ModelerConstants.PARTICIPANT_TYPE_PROPERTY,
                ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
          participantJson.addProperty(ModelerConstants.UUID_PROPERTY,
