@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -20,16 +21,21 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
-import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.query.DeployedModelQuery;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
+import org.eclipse.stardust.engine.api.runtime.DeployedModelDescription;
+import org.eclipse.stardust.engine.api.runtime.Models;
+import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 
 
 
@@ -335,5 +341,48 @@ public class ModelUtils
          }
       }
       return null;
+   }
+   
+   /**
+    * returns Models referring to the provided model
+    * 
+    * @param modelId
+    * @return
+    */
+   public static List<DeployedModel> findReferringModels(String modelId)
+   {
+      List<DeployedModel> usingModels = new ArrayList<DeployedModel>();
+
+      if (StringUtils.isEmpty(modelId))
+      {
+         return usingModels;
+      }
+
+      DeployedModel model = getModel(modelId);
+
+      if (null == model)
+      {
+         return usingModels;
+      }
+
+      SessionContext sessionContext = SessionContext.findSessionContext();
+      ServiceFactory serviceFactory = sessionContext.getServiceFactory();
+      if (serviceFactory != null)
+      {
+         try
+         {
+            Models models = serviceFactory.getQueryService().getModels(
+                  DeployedModelQuery.findUsing(model.getModelOID()));
+            for (DeployedModelDescription deployedModelDescription : models)
+            {
+               usingModels.add(getModel(deployedModelDescription.getModelOID()));
+            }
+         }
+         catch (Exception e)
+         {
+            ExceptionHandler.handleException(e);
+         }
+      }
+      return usingModels;
    }
 }

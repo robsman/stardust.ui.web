@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -55,12 +56,9 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserGroup;
 import org.eclipse.stardust.engine.api.runtime.UserService;
-import org.eclipse.stardust.ui.web.common.UIComponentBean;
-import org.eclipse.stardust.ui.web.common.table.PaginatorDataTable;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataFilterOnOff;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
-import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.CallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.PanelConfirmation;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -126,6 +124,8 @@ public class ParticipantTree
 
    private boolean filterPredefniedModelNodes = true;
 
+   private Map<String, List<String>> referringModels = new HashMap<String, List<String>>();
+   
    public ParticipantTree()
    {
       //super(view);
@@ -1395,11 +1395,36 @@ public class ParticipantTree
       String participantId = grant.getQualifiedId();
       Department department = grant.getDepartment();
       String modelId = ModelUtils.extractModelId(grant.getQualifiedId());
-      
+
       List<ParticipantItem> participantItemPath = UserUtils.getParticipantPath(participantId, department);
-      highlightNode(user, participantItemPath, modelId, highlightStyleIndex);
+      highlightNode(user, participantItemPath, modelId, highlightStyleIndex, false);
+
+      // find referring models
+      if (!referringModels.containsKey(modelId))
+      {
+         putReferringModels(modelId, ModelUtils.findReferringModels(modelId));
+      }
+      List<String> modelIds = referringModels.get(modelId);
+
+      for (String referringModelId : modelIds)
+      {
+         highlightNode(user, participantItemPath, referringModelId, highlightStyleIndex, true);
+      }
    }
    
+   /**
+    * @param modelId
+    * @param models
+    */
+   private void putReferringModels(String modelId, List<DeployedModel> models)
+   {
+      List<String> modelIds = new ArrayList<String>();
+      for (DeployedModel deployedModel : models)
+      {
+         modelIds.add(deployedModel.getId());
+      }
+      referringModels.put(modelId, modelIds);
+   }
    
    /**
     * Highlights the user under the particular user group.
@@ -1412,7 +1437,7 @@ public class ParticipantTree
    {
       List<ParticipantItem> participantItemPath = CollectionUtils.newList();
       participantItemPath.add(new ParticipantItem(userGroup));
-      highlightNode(user, participantItemPath, null, highlightStyleIndex);
+      highlightNode(user, participantItemPath, null, highlightStyleIndex, false);
    }
    
    /**
@@ -1422,12 +1447,14 @@ public class ParticipantTree
     * @param user
     * @param participantItemPath
     * @param modelId
-    * @param highlightColor
+    * @param highlightStyleIndex
+    * @param allowMultiple
     */
-   private void highlightNode(User user, List<ParticipantItem> participantItemPath, String modelId, int highlightStyleIndex)
+   private void highlightNode(User user, List<ParticipantItem> participantItemPath, String modelId,
+         int highlightStyleIndex, boolean allowMultiple)
    {
       DefaultMutableTreeNode searchRoot = null;
-      
+
       // Use the tree root to start the search if:
       // 1. Model nodes are being displayed OR
       // 2. modelId is null (e.g. Usergroups or Administrator Role)
@@ -1439,46 +1466,65 @@ public class ParticipantTree
       {
          searchRoot = modelNodesMap.get(modelId);
       }
-      // expand model node
-      ParticipantUserObject userObject = (ParticipantUserObject) searchRoot.getUserObject();
-      userObject.setExpanded(true);
-      
-      for (ParticipantItem participantItem : participantItemPath)
+
+      if (null != searchRoot)
       {
-         DefaultMutableTreeNode searchNode = searchNodeChildren(searchRoot, participantItem);
-         if (null != searchNode)
+         // expand model node
+         ParticipantUserObject modelNodeUserObject = (ParticipantUserObject) searchRoot.getUserObject();
+         modelNodeUserObject.setExpanded(true);
+
+         for (ParticipantItem participantItem : participantItemPath)
          {
-            searchRoot = searchNode;
-            loadChildNodes(searchNode);
-            
-            ParticipantUserObject participantUserObject = (ParticipantUserObject) searchNode.getUserObject();
-            participantUserObject.setExpanded(true);
+            Set<DefaultMutableTreeNode> searchNodes = searchNodeChildren(searchRoot, participantItem, allowMultiple);
+            for (DefaultMutableTreeNode searchNode : searchNodes)
+            {
+               searchRoot = searchNode;
+               loadChildNodes(searchNode);
+
+               ParticipantUserObject participantUserObject = (ParticipantUserObject) searchNode.getUserObject();
+               participantUserObject.setExpanded(true);
+               // Locate and highlight the user
+               DefaultMutableTreeNode searchNodeUser = searchNodeChildren(searchRoot, new ParticipantItem(user));
+
+               if (null != searchNodeUser)
+               {
+                  ParticipantUserObject userObject = (ParticipantUserObject) searchNodeUser.getUserObject();
+                  userObject.setHighlightStyleClass(highlightStyleIndex);
+                  highlightedParticipantUserObjects.add(userObject);
+                  highlightedUsers.add(userObject.getUser().getAccount());
+               }
+            }
          }
-      }
-      
-      // Locate and highlight the user
-      DefaultMutableTreeNode searchNode = searchNodeChildren(searchRoot, new ParticipantItem(user));
-      if (null != searchNode)
-      {
-         ParticipantUserObject participantUserObject = (ParticipantUserObject) searchNode.getUserObject();
-         participantUserObject.setHighlightStyleClass(highlightStyleIndex);
-         highlightedParticipantUserObjects.add(participantUserObject);
-         highlightedUsers.add(participantUserObject.getUser().getAccount());
       }
    }
    
    /**
-    * Returns the matching child node under the parent for the provided
-    * {@link ParticipantItem}.
-    * 
     * @param parent
     * @param participantItem
     * @return
     */
-
    private DefaultMutableTreeNode searchNodeChildren(DefaultMutableTreeNode parent, ParticipantItem participantItem)
    {
-      DefaultMutableTreeNode node = null, resultNode = null;
+      Set<DefaultMutableTreeNode> searchNodes = searchNodeChildren(parent, participantItem, false);
+      if (CollectionUtils.isNotEmpty(searchNodes))
+      {
+         return searchNodes.iterator().next();
+      }
+      return null;
+   }   
+   
+   /**
+    *  Returns the matching child node under the parent for the provided, in case of referred roles nodes can be more than one
+    * {@link ParticipantItem}.
+    * @param parent
+    * @param participantItem
+    * @param allowMultiple
+    * @return
+    */
+   private Set<DefaultMutableTreeNode> searchNodeChildren(DefaultMutableTreeNode parent, ParticipantItem participantItem, boolean allowMultiple)
+   {
+      Set<DefaultMutableTreeNode> resultNode = new HashSet<DefaultMutableTreeNode>();
+      DefaultMutableTreeNode node = null;
       ParticipantItem other = null;
 
       if (null != parent && null != participantItem)
@@ -1509,8 +1555,11 @@ public class ParticipantTree
                // Compare the two objects
                if (participantItem.equals(other))
                {
-                  resultNode = node;
-                  break;
+                  resultNode.add(node);
+                  if (!allowMultiple)
+                  {
+                     break;
+                  }
                }
             }
          }
