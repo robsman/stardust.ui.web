@@ -32,6 +32,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
+import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
@@ -105,6 +106,9 @@ public class ModelElementUnmarshaller
       
       modelElementPropertiesMap.put(ModelType.class, new String[] {
          "name", "id"});
+
+      modelElementPropertiesMap.put(DataType.class, new String[] {
+         "name", "id"});
    }
 
    /**
@@ -154,6 +158,10 @@ public class ModelElementUnmarshaller
       else if (element instanceof ModelType)
       {
          updateModelType((ModelType) element, json);
+      }
+      else if (element instanceof DataType)
+      {
+         updateDataType((DataType) element, json);
       }
    }
 
@@ -324,6 +332,16 @@ public class ModelElementUnmarshaller
             modelElementPropertiesMap.get(TypeDeclarationType.class));
    }
 
+   /**
+    * @param typeDeclaration
+    * @param applicationJson
+    */
+   private void updateDataType(DataType dataType,
+         JsonObject applicationJson)
+   {
+      mapDeclaredModelElementProperties(dataType, applicationJson,
+            modelElementPropertiesMap.get(TypeDeclarationType.class));
+   }
 
    /**
     * @param model

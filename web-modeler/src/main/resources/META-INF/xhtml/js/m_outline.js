@@ -214,6 +214,7 @@ define(
 												{
 													"attr" : {
 														"id" : data.uuid,
+														"modelUUID" : model.uuid,
 														"fullId" : data
 																.getFullId(),
 														"rel" : data.type,
@@ -375,6 +376,17 @@ define(
 									"id" : m_utils.generateIDFromName(data.rslt.name)
 								}));
 					}
+				} else if (data.rslt.obj.attr("rel") == "primitive"
+						|| data.rslt.obj.attr("rel") == "struct"
+						|| data.rslt.obj.attr("rel") == "Document") {
+					var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
+					var application = model.findModelElementByUuid(data.rslt.obj.attr("id"));
+
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementWithUUIDCommand(model.id, application.uuid, {
+								"name" : data.rslt.name,
+								"id" : m_utils.generateIDFromName(data.rslt.name)
+							}));
 				} else if (data.rslt.obj.attr("rel") == "webservice"
 						|| data.rslt.obj.attr("rel") == "messageTransformationBean"
 						|| data.rslt.obj.attr("rel") == "camelBean"
@@ -826,6 +838,30 @@ define(
 														"action" : function(obj) {
 															createStructuredData(obj
 																	.attr("modelUUID"));
+														}
+													}
+												};
+											} else if ("primitive" == node.attr("rel")
+													|| "struct" == node.attr("rel")
+													|| "Document" == node.attr("rel")) {
+												return {
+													"ccp" : false,
+													"create" : false,
+													"rename" : {
+														"label" : "Rename",
+														"action" : function(obj) {
+															jQuery("#outline")
+																	.jstree(
+																			"rename",
+																			"#"
+																					+ obj
+																							.attr("id"));
+														}
+													},
+													"deleteData" : {
+														"label" : "Delete",
+														"action" : function(obj) {
+															
 														}
 													}
 												};
