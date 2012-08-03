@@ -416,16 +416,11 @@ define(
 					var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
 					var participant = model.findModelElementByUuid(data.rslt.obj.attr("id"));
 
-					if (participant.name != data.rslt.name) {
-						m_commandsController.submitCommand(m_command
-								.createRenameCommand("/models/" + model.id
-										+ "/participants/" + participant.id, {
-									"id" : participant.id,
-									"name" : participant.name
-								}, {
-									"name" : data.rslt.name
-								}));
-					}
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementWithUUIDCommand(model.id, participant.uuid, {
+								"name" : data.rslt.name,
+								"id" : m_utils.generateIDFromName(data.rslt.name)
+							}));
 				}
 			};
 

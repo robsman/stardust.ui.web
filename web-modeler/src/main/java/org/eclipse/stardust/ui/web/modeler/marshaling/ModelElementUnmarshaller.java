@@ -38,7 +38,9 @@ import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
@@ -109,6 +111,12 @@ public class ModelElementUnmarshaller
 
       modelElementPropertiesMap.put(DataType.class, new String[] {
          "name", "id"});
+
+      modelElementPropertiesMap.put(RoleType.class, new String[] {
+         "name", "id"});
+      
+      modelElementPropertiesMap.put(OrganizationType.class, new String[] {
+         "name", "id"});
    }
 
    /**
@@ -162,6 +170,14 @@ public class ModelElementUnmarshaller
       else if (element instanceof DataType)
       {
          updateDataType((DataType) element, json);
+      }
+      else if (element instanceof RoleType)
+      {
+         updateRole((RoleType) element, json);
+      }
+      else if (element instanceof OrganizationType)
+      {
+         updateOrganization((OrganizationType) element, json);
       }
    }
 
@@ -331,16 +347,38 @@ public class ModelElementUnmarshaller
       mapDeclaredModelElementProperties(typeDeclaration, applicationJson,
             modelElementPropertiesMap.get(TypeDeclarationType.class));
    }
+   
+   /**
+    * @param roleType
+    * @param roleJson
+    */
+   private void updateRole(RoleType roleType,
+         JsonObject roleJson)
+   {
+      mapDeclaredModelElementProperties(roleType, roleJson,
+            modelElementPropertiesMap.get(RoleType.class));
+   }
 
    /**
-    * @param typeDeclaration
-    * @param applicationJson
+    * @param orgType
+    * @param orgJson
+    */
+   private void updateOrganization(OrganizationType orgType,
+         JsonObject orgJson)
+   {
+      mapDeclaredModelElementProperties(orgType, orgJson,
+            modelElementPropertiesMap.get(OrganizationType.class));
+   }
+
+   /**
+    * @param dataType
+    * @param dataJson
     */
    private void updateDataType(DataType dataType,
-         JsonObject applicationJson)
+         JsonObject dataJson)
    {
-      mapDeclaredModelElementProperties(dataType, applicationJson,
-            modelElementPropertiesMap.get(TypeDeclarationType.class));
+      mapDeclaredModelElementProperties(dataType, dataJson,
+            modelElementPropertiesMap.get(DataType.class));
    }
 
    /**
