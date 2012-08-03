@@ -659,7 +659,7 @@ define(
 					} else if (this.isDataFlow()) {
 						this.path.attr({
 							"stroke" : m_constants.DATA_FLOW_COLOR,
-							"stroke-dasharray" : ""
+							"stroke-dasharray" : "-"
 						});
 
 						if (this.modelElement.inDataMapping) {

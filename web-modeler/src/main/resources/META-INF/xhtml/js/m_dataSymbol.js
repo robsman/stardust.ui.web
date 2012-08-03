@@ -288,9 +288,9 @@ define(
 				 */
 				DataSymbol.prototype.refreshFromModelElement = function() {
 					var data = m_model.findData(this.dataFullId);
-
+					this.modelElement = data;
+						
 					// Data mayno have been created yet
-
 					if (data != null) {
 						this.text.attr("text", data.name);
 					}

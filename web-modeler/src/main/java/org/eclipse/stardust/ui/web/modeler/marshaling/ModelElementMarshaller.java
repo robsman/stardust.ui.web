@@ -42,7 +42,6 @@ import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 //import org.eclipse.stardust.ui.web.modeler.service.ModelService;
-import org.eclipse.stardust.model.xpdl.carnot.impl.DataTypeImpl;
 import org.eclipse.stardust.model.xpdl.carnot.impl.LaneSymbolImpl;
 import org.eclipse.stardust.model.xpdl.carnot.impl.ProcessDefinitionTypeImpl;
 import org.eclipse.stardust.model.xpdl.carnot.util.ActivityUtil;
@@ -83,6 +82,10 @@ public class ModelElementMarshaller
       {
          jsResult = toProcessDefinition((ProcessDefinitionType) modelElement);
       }
+      else if (modelElement instanceof LaneSymbolImpl)
+      {
+         jsResult = toLaneType((LaneSymbolImpl) modelElement);
+      }
       else if (modelElement instanceof ActivityType)
       {
          jsResult = toActivityType((ActivityType) modelElement);
@@ -95,6 +98,10 @@ public class ModelElementMarshaller
       {
          jsResult = toStartEventJson((StartEventSymbol) modelElement);
       }
+      else if (modelElement instanceof EndEventSymbol)
+      {
+         jsResult = toEndEventJson((EndEventSymbol) modelElement);
+      }
       else if (modelElement instanceof ApplicationType)
       {
          jsResult = toApplication((ApplicationType) modelElement);
@@ -102,6 +109,10 @@ public class ModelElementMarshaller
       else if (modelElement instanceof TransitionConnectionType)
       {
          jsResult = toTransitionType((TransitionConnectionType) modelElement);
+      }
+      else if (modelElement instanceof DataMappingConnectionType)
+      {
+         jsResult = toDataMappingConnectionType((DataMappingConnectionType) modelElement);
       }
       else if (modelElement instanceof DataType)
       {
@@ -187,6 +198,26 @@ public class ModelElementMarshaller
       processJson.add(ModelerConstants.DATA_FLOWS_PROPERTY, dataFlowsJson);
 
       return processJson;
+   }
+   
+   /**
+    * 
+    * @param laneSymbol
+    * @return
+    */
+   public JsonObject toLaneType(LaneSymbolImpl laneSymbol)
+   {
+      JsonObject laneSymbolJson = new JsonObject();
+
+      laneSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
+            laneSymbol.getElementOid());
+      laneSymbolJson.addProperty(ModelerConstants.ID_PROPERTY, laneSymbol.getId());
+      laneSymbolJson.addProperty(ModelerConstants.NAME_PROPERTY, laneSymbol.getName());
+      laneSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY, laneSymbol.getWidth());
+      laneSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY, laneSymbol.getHeight());
+      laneSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.SWIMLANE_SYMBOL);
+      
+      return laneSymbolJson;
    }
    
    /**
@@ -644,7 +675,7 @@ public class ModelElementMarshaller
             activitySymbol.getWidth());
       activitySymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
             activitySymbol.getHeight());
-
+      
       ActivityType activity = activitySymbol.getActivity();
       JsonObject activityJson = toActivityType(activity);
 
@@ -654,6 +685,8 @@ public class ModelElementMarshaller
 
       if (activity.getId().toLowerCase().startsWith("gateway"))
       {
+         activitySymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+               ModelerConstants.GATEWAY_SYMBOL);
          // TODO Refactor
          // Identify the gateway symbol for this activity and update the
          // location and dimension attributes.
@@ -683,6 +716,11 @@ public class ModelElementMarshaller
             activitySymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
                   thisGatewaySymbol.getHeight());
          }
+      }
+      else
+      {
+         activitySymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+               ModelerConstants.ACTIVITY_SYMBOL);
       }
 
       // TODO Obtain access points on client
@@ -759,6 +797,7 @@ public class ModelElementMarshaller
       eventJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.EVENT_KEY);
       eventJson.addProperty(ModelerConstants.EVENT_TYPE_PROPERTY,
             ModelerConstants.START_EVENT);
+      eventSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,ModelerConstants.EVENT_SYMBOL);
       // eventJson.put(ID_PROPERTY,
       // String.valueOf(startEventSymbol.getModelElement().getId()));
       // loadDescription(eventJson,
@@ -805,7 +844,9 @@ public class ModelElementMarshaller
 
       JsonObject eventJson = new JsonObject();
       eventSymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, eventJson);
-
+      
+      eventSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,ModelerConstants.EVENT_SYMBOL);
+      
       eventJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.EVENT_KEY);
       eventJson.addProperty(ModelerConstants.EVENT_TYPE_PROPERTY,
             ModelerConstants.STOP_EVENT);
@@ -815,7 +856,7 @@ public class ModelElementMarshaller
       // endEventSymbol.getModelElement());
       // loadAttributes(endEventSymbol.getModelElement(),
       // eventJson);
-
+      
       return eventSymbolJson;
 
    }
@@ -864,7 +905,7 @@ public class ModelElementMarshaller
       dataSymbolJson.addProperty(ModelerConstants.X_PROPERTY, dataSymbol.getXPos());
       dataSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, dataSymbol.getYPos());
       dataSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.DATA_SYMBOL);
-      dataSymbolJson.add("data", toDataTypeJson(dataSymbol.getData()));
+      dataSymbolJson.add(ModelerConstants.DATA, toDataTypeJson(dataSymbol.getData()));
       
       dataSymbolJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
             MBFacade.createFullId(ModelUtils.findContainingModel(dataSymbol.getData()), dataSymbol.getData()));
@@ -971,6 +1012,64 @@ public class ModelElementMarshaller
       }
 
       return applicationJson;
+   }
+   
+   /**
+    * 
+    * @param dataMappingConnection
+    * @return
+    */
+   public JsonObject toDataMappingConnectionType(DataMappingConnectionType dataMappingConnection)
+   {
+         JsonObject connectionJson = new JsonObject();
+
+         connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
+               dataMappingConnection.getElementOid());
+         connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
+               dataMappingConnection.getDataSymbol().getElementOid());
+         connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
+               ModelerConstants.DATA);
+         connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
+               dataMappingConnection.getActivitySymbol().getElementOid());
+         connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
+               ModelerConstants.ACTIVITY_KEY);
+         connectionJson.addProperty(
+               ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY,
+               mapAnchorOrientation(dataMappingConnection.getSourceAnchor()));
+         connectionJson.addProperty(
+               ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
+               mapAnchorOrientation(dataMappingConnection.getTargetAnchor()));
+
+         JsonObject dataFlowJson = new JsonObject();
+         connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, dataFlowJson);
+
+         dataFlowJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+               ModelerConstants.DATA_FLOW_LITERAL);
+         dataFlowJson.addProperty(ModelerConstants.ID_PROPERTY, ""
+               + dataMappingConnection.getElementOid());
+
+         // TODO Needed!
+//         if (dataMappingC.getDirection() == DirectionType.IN_LITERAL)
+//         {
+//            dataFlow.put(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
+//            dataFlow.put(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, false);
+//         }
+//         else if (dataMapping.getDirection() == DirectionType.OUT_LITERAL)
+//         {
+//            dataFlow.put(ModelerConstants.IN_DATA_MAPPING_PROPERTY, false);
+//            dataFlow.put(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
+//         }
+//         else
+//         {
+//            dataFlow.put(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
+//            dataFlow.put(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
+//         }
+
+         dataFlowJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, MBFacade.createFullId(ModelUtils.findContainingModel(dataMappingConnection.getDataSymbol().getData()),
+               dataMappingConnection.getDataSymbol().getData()));
+         dataFlowJson.addProperty(ModelerConstants.ACTIVITY_ID_PROPERTY, 
+               dataMappingConnection.getActivitySymbol().getActivity().getId());
+         return connectionJson;
    }
    
    /**
