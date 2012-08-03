@@ -83,34 +83,25 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
    {
       InputFile inputFile = (InputFile) event.getSource();
       FileInfo fileInfo = inputFile.getFileInfo();
-      try
-      {
-         if (fileInfo.isSaved())
-         {
-            fireCallback(FileUploadEvent.FILE_UPLOADED, fileInfo);
-         }
-         else
-         {
-            switch (fileInfo.getStatus())
-            {
-            case FileInfo.UNSPECIFIED_NAME:
-               ExceptionHandler.handleException("commonFile" + getBeanId(), MessagesViewsCommonBean.getInstance()
-                     .getString("views.genericRepositoryView.UNSPECIFIED_NAME"));
-               break;
-            default:
-               ExceptionHandler.handleException("commonFile" + getBeanId(), MessagesViewsCommonBean.getInstance()
-                     .getString("views.genericRepositoryView.fileUploadError"));
-               break;
-            }
-            fireCallback(FileUploadEvent.UPLOAD_FAILED, null);
-         }
-      }
-      catch (Exception exception)
-      {
-         ExceptionHandler.handleException(exception);
-         fireCallback(FileUploadEvent.UPLOAD_FAILED, null);
-      }
 
+      if (fileInfo.isSaved())
+      {
+         fireCallback(FileUploadEvent.FILE_UPLOADED, fileInfo);
+      }
+      else
+      {
+         switch (fileInfo.getStatus())
+         {
+         case FileInfo.UNSPECIFIED_NAME:
+            ExceptionHandler.handleException("commonFile" + getBeanId(), MessagesViewsCommonBean.getInstance()
+                  .getString("views.genericRepositoryView.UNSPECIFIED_NAME"));
+            break;
+         default:
+            ExceptionHandler.handleException("commonFile" + getBeanId(), MessagesViewsCommonBean.getInstance()
+                  .getString("views.genericRepositoryView.fileUploadError"));
+            break;
+         }
+      }
    }
 
    public void continueAction()
@@ -149,11 +140,7 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
     */
    private void fireCallback(FileUploadEvent eventType, FileInfo fileInfo)
    {
-      // if exception occurs on dialog, don't close the popup
-      if (!(FileUploadEvent.UPLOAD_FAILED == eventType))
-      {
-         closePopup();
-      }
+      closePopup();
       
       if (callbackHandler != null)
       {
