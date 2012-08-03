@@ -44,7 +44,12 @@ public class ValidationExtensionRegistry implements IValidationExtensionRegistry
    private static final IConfigurationElement[] EMPTY_VALIDATORS = new IConfigurationElement[0];
    private static final String[] EXCLUDE_VALIDATION_IDS = 
    {
-      "org.eclipse.stardust.modeling.validation.serializableData"
+      "org.eclipse.stardust.modeling.validation.serializableData",
+      "org.eclipse.stardust.modeling.validation.transition",
+      "org.eclipse.stardust.modeling.transformation.modelElementValidator",
+      "MessageSerializationApplicationValidator",
+      "org.eclipse.stardust.modeling.transformation.application.validation.MessageTransformationApplicationValidator",
+      "externalWebAppValidator"      
    };
       
    ValidationExtensionRegistry()
