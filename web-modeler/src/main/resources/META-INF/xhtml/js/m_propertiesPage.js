@@ -190,5 +190,18 @@ define(
 					m_dialog.makeInvisible(this.documentationCreationLinkPanel);
 					m_dialog.makeVisible(this.openDocumentViewLinkPanel);
 				};
+				
+				/**
+				 * 
+				 */
+				PropertiesPage.prototype.submitChanges = function(
+						changes) {
+					m_utils.debug("Changes to be submitted: ");
+					m_utils.debug(changes);
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementCommand(this.propertiesPanel.element.diagram.modelId, 
+									this.propertiesPanel.element.oid, changes));
+				};
+
 			}
 		});

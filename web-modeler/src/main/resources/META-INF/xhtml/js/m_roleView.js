@@ -32,10 +32,10 @@ define(
 			function RoleView() {
 				// Inheritance
 
-				var view = m_modelElementView.create();
+				var modelElementView = m_modelElementView.create();
 
-				m_utils.inheritFields(this, view);
-				m_utils.inheritMethods(RoleView.prototype, view);
+				m_utils.inheritFields(this, modelElementView);
+				m_utils.inheritMethods(RoleView.prototype, modelElementView);
 
 				jQuery("#roleTabs").tabs();
 				
@@ -44,9 +44,10 @@ define(
 				 */
 				RoleView.prototype.initialize = function(
 						role) {
+					this.initializeModelElementView();
 					this.initializeModelElement(role);
 					
-					this.role= role;
+					this.role = role;
 				};
 
 				/**
@@ -63,19 +64,11 @@ define(
 					this.clearErrorMessages();
 
 					this.nameInput.removeClass("error");
-					this.camelContextInput.removeClass("error");
 
 					if (this.nameInput.val() == null
 							|| this.nameInput.val() == "") {
 						this.errorMessages
 								.push("Application name must not be empty.");
-						this.nameInput.addClass("error");
-					}
-
-					if (this.camelContextInput.val() == null
-							|| this.camelContextInput.val() == "") {
-						this.errorMessages
-								.push("Camel Context must not be empty.");
 						this.nameInput.addClass("error");
 					}
 
@@ -93,7 +86,7 @@ define(
 				 */
 				RoleView.prototype.processCommand = function(
 						command) {
-					m_utils.debug("===> Camel Process Command");
+					m_utils.debug("===> Role View Process Command");
 					m_utils.debug(command);
 
 					// Parse the response JSON from command pattern
@@ -104,11 +97,11 @@ define(
 					if (null != object && null != object.changes
 							&& null != object.changes.modified
 							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].oid == this.application.oid) {
+							&& object.changes.modified[0].oid == this.role.oid) {
 
-						m_utils.inheritFields(this.application, object.changes.modified[0]);
+						m_utils.inheritFields(this.role, object.changes.modified[0]);
 						
-						this.initialize(this.application);
+						this.initialize(this.role);
 					}
 				};
 			}

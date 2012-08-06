@@ -117,6 +117,8 @@ define(
 				 */
 				CamelApplicationView.prototype.initialize = function(
 						application) {
+					this.initializeModelElementView();
+					
 					this.application = application;
 
 					this.initializeModelElement(application);

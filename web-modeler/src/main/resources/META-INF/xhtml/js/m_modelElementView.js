@@ -23,43 +23,49 @@ define(
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(ModelElementView.prototype, view);
 
-				this.modelElement = null;
-				this.guidOutput = jQuery("#guidOutput");
-				this.idOutput = jQuery("#idOutput");
-				this.nameInput = jQuery("#nameInput");
-				this.descriptionTextarea = jQuery("#descriptionTextarea");
+				/**
+				 * 
+				 */
+				ModelElementView.prototype.initializeModelElementView = function() {
+					this.modelElement = null;
+					this.guidOutput = jQuery("#guidOutput");
+					this.idOutput = jQuery("#idOutput");
+					this.nameInput = jQuery("#nameInput");
+					this.descriptionTextarea = jQuery("#descriptionTextarea");
 
-				this.nameInput.change({
-					"view" : this
-				}, function(event) {
-					var view = event.data.view;
+					this.nameInput.change({
+						"view" : this
+					}, function(event) {
+						var view = event.data.view;
 
-					if (!view.validate()) {
-						return;
-					}
+						if (!view.validate()) {
+							return;
+						}
 
-					if (view.application.name != view.nameInput.val()) {
-						view.submitChanges({
-							name : view.nameInput.val()
-						});
-					}
-				});
-				this.descriptionTextarea.change({
-					"view" : this
-				}, function(event) {
-					var view = event.data.view;
+						if (view.modelElement.name != view.nameInput.val()) {
+							view.submitChanges({
+								name : view.nameInput.val(),
+								id : m_utils.generateIDFromName(view.nameInput.val())
+							});
+						}
+					});
+					this.descriptionTextarea.change({
+						"view" : this
+					}, function(event) {
+						var view = event.data.view;
 
-					if (!view.validate()) {
-						return;
-					}
+						if (!view.validate()) {
+							return;
+						}
 
-					if (view.application.description != view.descriptionTextarea.val()) {
-						view.submitChanges({
-							description : view.descriptionTextarea.val()
-						});
-					}
-				});
-
+						if (view.modelElement.description != view.descriptionTextarea.val()) {
+							view.submitChanges({
+								description : view.descriptionTextarea.val()
+							});
+						}
+					});					
+				};
+				
 				/**
 				 * 
 				 */
@@ -67,7 +73,7 @@ define(
 						modelElement) {
 					this.modelElement = modelElement;
 					this.guidOutput.empty();
-					this.guidOutput.append(this.modelElement.oid);
+					this.guidOutput.append(this.modelElement.uuid);
 					this.idOutput.empty();
 					this.idOutput.append(this.modelElement.id);
 					this.nameInput.val(this.modelElement.name);
@@ -89,9 +95,7 @@ define(
 					}
 
 					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(
-									this.modelElement.model.id,
-									this.modelElement.oid, changes));
+							.createUpdateModelElementWithUUIDCommand(this.modelElement.model.id, this.modelElement.uuid, changes));
 				};
 			}
 		});

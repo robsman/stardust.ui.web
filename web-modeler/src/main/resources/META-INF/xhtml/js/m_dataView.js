@@ -45,6 +45,7 @@ define(
 				 */
 				DataView.prototype.initialize = function(
 						data) {
+					this.initializeModelElementView();
 					this.initializeModelElement(data);
 					
 					this.data = data;
@@ -64,7 +65,6 @@ define(
 					this.clearErrorMessages();
 
 					this.nameInput.removeClass("error");
-					this.camelContextInput.removeClass("error");
 
 					if (this.nameInput.val() == null
 							|| this.nameInput.val() == "") {

@@ -10,217 +10,175 @@
 
 define(
 		[ "m_utils", "m_constants", "m_command", "m_commandsController",
-				"m_propertiesPage", "m_activity" ],
+				"m_basicPropertiesPage", "m_activity" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_propertiesPage, m_activity) {
+				m_basicPropertiesPage, m_activity) {
 			return {
 				create : function(propertiesPanel) {
-					return new ActivityBasicPropertiesPage(propertiesPanel);
+					var page = new ActivityBasicPropertiesPage(propertiesPanel);
+					
+					page.initialize();
+					
+					return page;
 				}
 			};
 
 			function ActivityBasicPropertiesPage(propertiesPanel) {
 				// Inheritance
 
-				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						propertiesPanel, "basicPropertiesPage", "Basic",
-						"../../images/icons/basic-properties-page.png");
+				var basicPropertiesPage = m_basicPropertiesPage
+						.create(propertiesPanel);
 
-				m_utils.inheritFields(this, propertiesPage);
+				m_utils.inheritFields(this, basicPropertiesPage);
 				m_utils.inheritMethods(ActivityBasicPropertiesPage.prototype,
-						propertiesPage);
+						basicPropertiesPage);
 
-				// Field initialization
+				/**
+				 * 
+				 */
+				ActivityBasicPropertiesPage.prototype.initialize = function() {
+					this.initializeBasicPropertiesPage();
+					
+					this.applicationInput = this.mapInputId("applicationInput");
+					this.applicationList = this.mapInputId("applicationList");
+					this.subprocessInput = this.mapInputId("subprocessInput");
+					this.subprocessList = this.mapInputId("subprocessList");
+					this.participantOutput = this.mapInputId("participantOutput");
 
-				this.nameInput = this.mapInputId("nameInput");
-				this.descriptionInput = this.mapInputId("descriptionInput");
-				this.applicationInput = this.mapInputId("applicationInput");
-				this.applicationList = this.mapInputId("applicationList");
-				this.subprocessInput = this.mapInputId("subprocessInput");
-				this.subprocessList = this.mapInputId("subprocessList");
-				this.participantOutput = this.mapInputId("participantOutput");
+					// Initialize callbacks
 
-				this.initializeDocumentationHandling();
+					this.applicationList
+							.change(
+									{
+										"page" : this
+									},
+									function(event) {
+										var page = event.data.page;
 
-				// Initialize callbacks
+										if (!page.validate()) {
+											return;
+										}
 
-				this.nameInput
-						.change(
-								{
-									"page" : this
-								},
-								function(event) {
-									var page = event.data.page;
+										var changes = {
+											modelElement : {}
+										};
 
-									if (!page.validate()) {
-										return;
-									}
-
-									if (page.propertiesPanel.element.modelElement.name != page.nameInput
-											.val()) {
-										page.propertiesPanel.element.modelElement.name = page.nameInput
-												.val();
-										page.submitChanges({
-											modelElement : {
-												name : page.nameInput.val()
-											}
-										});
-									}
-								});
-				this.descriptionInput
-						.change(
-								{
-									"page" : this
-								},
-								function(event) {
-									var page = event.data.page;
-
-									if (!page.validate()) {
-										return;
-									}
-
-									if (page.propertiesPanel.element.modelElement.description != page.descriptionInput
-											.val()) {
-										page
-												.submitChanges({
-													modelElement : {
-														description : page.descriptionInput
-																.val()
-													}
-												});
-									}
-								});
-				this.applicationList
-						.change(
-								{
-									"page" : this
-								},
-								function(event) {
-									var page = event.data.page;
-
-									if (!page.validate()) {
-										return;
-									}
-
-									var changes = {
-										modelElement : {}
-									};
-
-									if (page.applicationList.val() == m_constants.AUTO_GENERATED_UI) {
-										changes.modelElement.activityType = m_constants.MANUAL_ACTIVITY_TYPE;
-										changes.modelElement.applicationFullId = null;
-										changes.modelElement.subprocessFullId = null;
-									} else {
-										changes.modelElement.activityType = m_constants.APPLICATION_ACTIVITY_TYPE;
-
-										if (page.applicationList.val() == m_constants.TO_BE_DEFINED) {
+										if (page.applicationList.val() == m_constants.AUTO_GENERATED_UI) {
+											changes.modelElement.activityType = m_constants.MANUAL_ACTIVITY_TYPE;
 											changes.modelElement.applicationFullId = null;
-
-											page.propertiesPanel
-													.showHelpPanel();
+											changes.modelElement.subprocessFullId = null;
 										} else {
-											changes.modelElement.applicationFullId = page.applicationList
+											changes.modelElement.activityType = m_constants.APPLICATION_ACTIVITY_TYPE;
+
+											if (page.applicationList.val() == m_constants.TO_BE_DEFINED) {
+												changes.modelElement.applicationFullId = null;
+
+												page.propertiesPanel
+														.showHelpPanel();
+											} else {
+												changes.modelElement.applicationFullId = page.applicationList
+														.val();
+											}
+
+											changes.modelElement.subprocessFullId = null;
+										}
+
+										page.submitChanges(changes);
+									});
+					this.subprocessList
+							.change(
+									{
+										"page" : this
+									},
+									function(event) {
+										var page = event.data.page;
+
+										if (!page.validate()) {
+											return;
+										}
+
+										var changes = {
+											modelElement : {}
+										};
+
+										changes.modelElement.activityType = m_constants.SUBPROCESS_ACTIVITY_TYPE;
+
+										if (page.subprocessList.val() == m_constants.TO_BE_DEFINED) {
+											changes.modelElement.subprocessFullId = null;
+
+											page.propertiesPanel.showHelpPanel();
+										} else {
+											changes.modelElement.subprocessFullId = page.subprocessList
 													.val();
 										}
 
-										changes.modelElement.subprocessFullId = null;
-									}
+										changes.modelElement.applicationFullId = null;
 
-									page.submitChanges(changes);
-								});
-				this.subprocessList
-						.change(
-								{
-									"page" : this
-								},
-								function(event) {
-									var page = event.data.page;
+										page.submitChanges(changes);
+									});
+					this.applicationInput.click({
+						"page" : this
+					}, function(event) {
+						if (event.data.page.applicationInput.is(":checked")) {
+							event.data.page.setApplicationType();
+						}
+					});
+					this.subprocessInput.click({
+						"callbackScope" : this
+					},
+							function(event) {
+								if (event.data.callbackScope.subprocessInput
+										.is(":checked")) {
+									event.data.callbackScope.setSubprocessType();
+								}
+							});
 
-									if (!page.validate()) {
-										return;
-									}
+					// Populate application from model
 
-									var changes = {
-										modelElement : {}
-									};
+					this.applicationList.empty();
+					this.applicationList.append("<option value='"
+							+ m_constants.TO_BE_DEFINED
+							+ "'>(To be defined)</option>");
+					this.applicationList.append("<option value='"
+							+ m_constants.AUTO_GENERATED_UI
+							+ "'>(Auto-generated Screen)</option>");
 
-									changes.modelElement.activityType = m_constants.SUBPROCESS_ACTIVITY_TYPE;
-
-									if (page.subprocessList.val() == m_constants.TO_BE_DEFINED) {
-										changes.modelElement.subprocessFullId = null;
-
-										page.propertiesPanel.showHelpPanel();
-									} else {
-										changes.modelElement.subprocessFullId = page.subprocessList
-												.val();
-									}
-
-									changes.modelElement.applicationFullId = null;
-
-									page.submitChanges(changes);
-								});
-				this.applicationInput.click({
-					"page" : this
-				}, function(event) {
-					if (event.data.page.applicationInput.is(":checked")) {
-						event.data.page.setApplicationType();
+					for ( var n in this.propertiesPanel.models) {
+						for ( var m in this.propertiesPanel.models[n].applications) {
+							this.applicationList
+									.append("<option value='"
+											+ this.propertiesPanel.models[n].applications[m]
+													.getFullId()
+											+ "'>"
+											+ this.propertiesPanel.models[n].name
+											+ "/"
+											+ this.propertiesPanel.models[n].applications[m].name
+											+ "</option>");
+						}
 					}
-				});
-				this.subprocessInput.click({
-					"callbackScope" : this
-				},
-						function(event) {
-							if (event.data.callbackScope.subprocessInput
-									.is(":checked")) {
-								event.data.callbackScope.setSubprocessType();
-							}
-						});
 
-				// Populate application from model
+					// Populate subprocesses from model
 
-				this.applicationList.empty();
-				this.applicationList.append("<option value='"
-						+ m_constants.TO_BE_DEFINED
-						+ "'>(To be defined)</option>");
-				this.applicationList.append("<option value='"
-						+ m_constants.AUTO_GENERATED_UI
-						+ "'>(Auto-generated Screen)</option>");
+					this.subprocessList.empty();
+					this.subprocessList.append("<option value='"
+							+ m_constants.TO_BE_DEFINED
+							+ "'>(To be defined)</option>");
 
-				for ( var n in this.propertiesPanel.models) {
-					for ( var m in this.propertiesPanel.models[n].applications) {
-						this.applicationList
-								.append("<option value='"
-										+ this.propertiesPanel.models[n].applications[m]
-												.getFullId()
-										+ "'>"
-										+ this.propertiesPanel.models[n].name
-										+ "/"
-										+ this.propertiesPanel.models[n].applications[m].name
-										+ "</option>");
-					}
-				}
-
-				// Populate subprocesses from model
-
-				this.subprocessList.empty();
-				this.subprocessList.append("<option value='"
-						+ m_constants.TO_BE_DEFINED
-						+ "'>(To be defined)</option>");
-
-				for ( var n in this.propertiesPanel.models) {
-					for ( var m in this.propertiesPanel.models[n].processes) {
-						this.subprocessList
-								.append("<option value='"
-										+ this.propertiesPanel.models[n].processes[m]
-												.getFullId()
-										+ "'>"
-										+ this.propertiesPanel.models[n].name
-										+ "/"
-										+ this.propertiesPanel.models[n].processes[m].name
-										+ "</option>");
-					}
-				}
-
+					for ( var n in this.propertiesPanel.models) {
+						for ( var m in this.propertiesPanel.models[n].processes) {
+							this.subprocessList
+									.append("<option value='"
+											+ this.propertiesPanel.models[n].processes[m]
+													.getFullId()
+											+ "'>"
+											+ this.propertiesPanel.models[n].name
+											+ "/"
+											+ this.propertiesPanel.models[n].processes[m].name
+											+ "</option>");
+						}
+					}					
+				};
+				
 				/**
 				 * 
 				 */
@@ -237,14 +195,17 @@ define(
 						this.applicationList.val(applicationFullId);
 					}
 
-					if (this.propertiesPanel.element.modelElement.applicationFullId != this.applicationList.val())
-					{
+					if (this.propertiesPanel.element.modelElement.applicationFullId != this.applicationList
+							.val()) {
 						this
 								.submitChanges({
 									modelElement : {
-										activityType : this.applicationList.val() == m_constants.AUTO_GENERATED_UI ? m_constants.MANUAL_ACTIVITY_TYPE : m_constants.APPLICATION_ACTIVITY_TYPE,
-										applicationFullId : this.applicationList.val() == m_constants.AUTO_GENERATED_UI ? null: this.applicationList
-												.val()
+										activityType : this.applicationList
+												.val() == m_constants.AUTO_GENERATED_UI ? m_constants.MANUAL_ACTIVITY_TYPE
+												: m_constants.APPLICATION_ACTIVITY_TYPE,
+										applicationFullId : this.applicationList
+												.val() == m_constants.AUTO_GENERATED_UI ? null
+												: this.applicationList.val()
 									}
 								});
 					}
@@ -284,14 +245,7 @@ define(
 				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.setElement = function() {
-					this.nameInput.removeClass("error");
-
-					this.nameInput
-							.val(this.propertiesPanel.element.modelElement.name);
-					this.descriptionInput
-							.val(this.propertiesPanel.element.modelElement.description);
-					this.participantOutput.empty();
-					this.loadDocumentUrl();
+					this.setModelElement();
 
 					if (this.propertiesPanel.element.modelElement.activityType == m_constants.MANUAL_ACTIVITY_TYPE) {
 						this.setApplicationType(m_constants.AUTO_GENERATED_UI);
@@ -305,9 +259,11 @@ define(
 									.append("executed by a participant to be defined.</b>");
 						}
 					} else if (this.propertiesPanel.element.modelElement.activityType == m_constants.SUBPROCESS_ACTIVITY_TYPE) {
-						this.setSubprocessType(this.propertiesPanel.element.modelElement.subprocessFullId);
+						this
+								.setSubprocessType(this.propertiesPanel.element.modelElement.subprocessFullId);
 					} else if (this.propertiesPanel.element.modelElement.activityType == m_constants.APPLICATION_ACTIVITY_TYPE) {
-						this.setApplicationType(this.propertiesPanel.element.modelElement.applicationFullId);
+						this
+								.setApplicationType(this.propertiesPanel.element.modelElement.applicationFullId);
 
 						if (this.propertiesPanel.participant != null) {
 							this.participantOutput.append("executed by <b>"
@@ -321,35 +277,11 @@ define(
 				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.validate = function() {
-					this.propertiesPanel.clearErrorMessages();
-					this.nameInput.removeClass("error");
-
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
-						this.propertiesPanel.errorMessages
-								.push("Activity name must not be empty.");
-						this.nameInput.addClass("error");
-						this.propertiesPanel.showErrorMessages();
-
-						return false;
+					if (this.validateModelElement()) {
+						return true;
 					}
 
-					return true;
-				};
-
-				/**
-				 * 
-				 */
-				ActivityBasicPropertiesPage.prototype.submitChanges = function(
-						changes) {
-					m_utils.debug("Changes to be subnmitted: ");
-					m_utils.debug(changes);
-					m_commandsController
-							.submitCommand(m_command
-									.createUpdateModelElementCommand(
-											this.propertiesPanel.element.diagram.modelId,
-											this.propertiesPanel.element.oid,
-											changes));
+					return false;
 				};
 			}
 		});

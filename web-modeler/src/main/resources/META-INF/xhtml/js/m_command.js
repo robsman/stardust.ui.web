@@ -21,34 +21,6 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 		UPDATE : UPDATE,
 		DELETE : DELETE,
 
-		// @deprecated
-		createCommand : function(url, data) {
-			return new Command(url, data, CREATE);
-		},
-		// @deprecated
-		createRetrieveCommand : function(url, data) {
-			return new Command(url, data, RETRIEVE);
-		},
-		// @deprecated
-		createCreateCommand : function(path, object) {
-			return new ChangeEvent(m_constants.CREATE_COMMAND, path, null, null, object);
-		},
-		// @deprecated
-		createDeleteCommand : function(path, object) {
-			return new ChangeEvent(m_constants.DELETE_COMMAND, path, null, object, null);
-		},
-		// @deprecated
-		createUpdateCommand : function(path, oldObject, newObject) {
-			return new ChangeEvent(m_constants.UPDATE_COMMAND, path, null, oldObject, newObject);
-		},
-		// @deprecated
-		createRenameCommand : function(path, oldObject, newObject) {
-			return new ChangeEvent(m_constants.RENAME_COMMAND, path, "rename", oldObject, newObject);
-		},
-		// @deprecated
-		createChangeGeometryCommand : function(path, oldObject, newObject, modelElement) {
-			return new ChangeEvent(m_constants.UPDATE_GEOMETRY_COMMAND, path, null, oldObject, newObject, modelElement);
-		},
 		createCreateProcessCommand : function(modelId, oid, changes) {
 			return new ChangeDescriptor("process.create", modelId, [ {
 				oid : oid,

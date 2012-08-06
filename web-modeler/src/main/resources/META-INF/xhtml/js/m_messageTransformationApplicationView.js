@@ -317,6 +317,7 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.initialize = function(
 						application) {
+					this.initializeModelElementView();
 					this.initializeModelElement(application);
 					
 					this.application = application;

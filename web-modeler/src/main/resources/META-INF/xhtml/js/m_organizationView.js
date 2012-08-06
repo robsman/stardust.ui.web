@@ -47,6 +47,7 @@ define(
 				 */
 				OrganizationView.prototype.initialize = function(
 						organization) {
+					this.initializeModelElementView();
 					this.initializeModelElement(organization);
 					
 					this.organization = organization;
@@ -66,7 +67,6 @@ define(
 					this.clearErrorMessages();
 
 					this.nameInput.removeClass("error");
-					this.camelContextInput.removeClass("error");
 
 					if (this.nameInput.val() == null
 							|| this.nameInput.val() == "") {

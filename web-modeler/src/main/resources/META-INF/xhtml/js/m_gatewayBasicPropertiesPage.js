@@ -13,9 +13,9 @@
  */
 define(
 		[ "m_utils", "m_constants", "m_command", "m_commandsController",
-				"m_propertiesPage" ],
+				"m_basicPropertiesPage" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_propertiesPage) {
+				m_basicPropertiesPage) {
 			return {
 				create : function(propertiesPanel) {
 					return new GatewayBasicPropertiesPage(propertiesPanel);
@@ -27,8 +27,8 @@ define(
 
 				// Inheritance
 
-				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						newPropertiesPanel, "basicPropertiesPage", "Basic");
+				var propertiesPage = m_basicPropertiesPage.create(
+						newPropertiesPanel);
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(GatewayBasicPropertiesPage.prototype,

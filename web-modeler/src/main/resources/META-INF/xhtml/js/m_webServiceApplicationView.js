@@ -43,6 +43,7 @@ define(
 				 */
 				WebServiceApplicationView.prototype.initialize = function(
 						application) {
+					this.initializeModelElementView();
 					this.initializeFromModelElement(application);
 					
 					this.application = application;

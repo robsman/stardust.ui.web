@@ -106,6 +106,7 @@ define(
 				 */
 				XsdStructuredDataTypeView.prototype.initialize = function(
 						structuredDataType) {
+					this.initializeModelElementView();
 					this.initializeModelElement(structuredDataType);
 					
 					this.structuredDataType = structuredDataType;
