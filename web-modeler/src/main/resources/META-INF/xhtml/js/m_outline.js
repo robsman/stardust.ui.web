@@ -20,6 +20,10 @@ define(
 				m_participant, m_outlineToolbarController, m_data) {
 			var modelCounter = 0;
 			var processCounter = 0;
+			var structTypeCounter = 0;
+			var dataCounter = 0;
+			var participantCounter = 0;
+			var applicationCounter = 0;
 
 			// TODO Find better location
 
@@ -107,6 +111,7 @@ define(
 											.each(
 													model.participants,
 													function(index, participant) {
+														participantCounter++;
 														jQuery("#outline")
 																.jstree(
 																		"create",
@@ -158,6 +163,7 @@ define(
 											.each(
 													model.applications,
 													function(index, application) {
+														applicationCounter++;
 														jQuery("#outline")
 																.jstree(
 																		"create",
@@ -207,6 +213,7 @@ define(
 									// Create Data nodes
 									jQuery.each(model.dataItems, function(
 											index, data) {
+										dataCounter++;
 										jQuery("#outline").jstree(
 												"create",
 												"#data_" + model.uuid,
@@ -251,6 +258,7 @@ define(
 													model.structuredDataTypes,
 													function(index,
 															structuredDataType) {
+														structTypeCounter++;
 														jQuery("#outline")
 																.jstree(
 																		"create",
@@ -427,6 +435,10 @@ define(
 			var refresh = function() {
 				modelCounter = 0;
 				processCounter = 0;
+				structTypeCounter = 0;
+				dataCounter = 0;
+				participantCounter = 0;
+				applicationCounter = 0;
 				jQuery("#outline").jstree("remove", "#Models");
 				readAllModels();
 			};
@@ -1343,17 +1355,17 @@ define(
 				/**
 				 * TODO - WRONG
 				 */
-				function renameModel() {
-					var number = (++modelCounter);
-					var name = 'Model ' + number;
-					var id = 'Model' + number;
-
-					m_commandsController.submitCommand(m_command
-							.createCreateCommand("/models/", {
-								"name" : name,
-								"id" : id
-							}));
-				}
+//				function renameModel() {
+//					var number = (++modelCounter);
+//					var name = 'Model ' + number;
+//					var id = 'Model' + number;
+//
+//					m_commandsController.submitCommand(m_command
+//							.createCreateCommand("/models/", {
+//								"name" : name,
+//								"id" : id
+//							}));
+//				}
 
 				/**
 				 * 
@@ -1454,7 +1466,7 @@ define(
 				 * 
 				 */
 				function createPrimitiveData(modelUUId) {
-					var number = (++processCounter);
+					var number = (++dataCounter);
 					var name = "Primitive Data " + number;
 					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1473,7 +1485,7 @@ define(
 				 * 
 				 */
 				function createDocumentData(modelUUId) {
-					var number = (++processCounter);
+					var number = (++dataCounter);
 					var name = "Document data " + number;
 					var id = "DocumentData" + number;
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1491,7 +1503,7 @@ define(
 				 * 
 				 */
 				function createStructuredData(modelUUId) {
-					var number = (++processCounter);
+					var number = (++dataCounter);
 					var name = "Structured Data " + number;
 					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1511,7 +1523,7 @@ define(
 				 * 
 				 */
 				function createRole(modelUUId, targetUUID) {
-					var number = (++processCounter);
+					var number = (++participantCounter);
 					var name = "Role " + number;
 					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1528,7 +1540,7 @@ define(
 				 * 
 				 */
 				function createOrganization(modelUUId, targetUUID) {
-					var number = (++processCounter);
+					var number = (++participantCounter);
 					var name = "Organization " + number;
 					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1546,7 +1558,7 @@ define(
 				 * 
 				 */
 				function createWebServiceApplication(modelUUId) {
-					var number = (++processCounter);
+					var number = (++applicationCounter);
 					var name = "Web Service " + number;
 					var id = "WebService" + number;
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1564,7 +1576,7 @@ define(
 				 * 
 				 */
 				function createMessageTransformationApplication(modelUUId) {
-					var number = (++processCounter);
+					var number = (++applicationCounter);
 					var name = "Message Transformation " + number;
 					var id = "MessageTransformation" + number;
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1582,7 +1594,7 @@ define(
 				 * 
 				 */
 				function createCamelApplication(modelUUId) {
-					var number = (++processCounter);
+					var number = (++applicationCounter);
 					var name = "Camel Route " + number;
 					var id = "CamelRoute" + number;
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1599,7 +1611,7 @@ define(
 				 * 
 				 */
 				function createUiMashupApplication(modelUUId) {
-					var number = (++processCounter);
+					var number = (++applicationCounter);
 					var name = "UI Mashup " + number;
 					var id = "UIMashup" + number;
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1618,7 +1630,7 @@ define(
 				 * @returns
 				 */
 				function createXsdStructuredDataType(modelUUId) {
-					var number = (++processCounter);
+					var number = (++structTypeCounter);
 					// TODO obtain number from model
 					var name = "XSD Data Structure " + number;
 					var id = "XSDDataStructure" + number;
