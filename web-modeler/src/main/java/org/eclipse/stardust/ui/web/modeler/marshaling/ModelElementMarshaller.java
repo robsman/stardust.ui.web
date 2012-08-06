@@ -702,6 +702,7 @@ public class ModelElementMarshaller
       dataJson.addProperty(ModelerConstants.UUID_PROPERTY,  eObjectUUIDMapper().getUUID(data));
       ModelType model = ModelUtils.findContainingModel(data);
       dataJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY, eObjectUUIDMapper().getUUID(model));
+      dataJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
       if (null != data.getDescription())
       {
          dataJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
@@ -754,6 +755,7 @@ public class ModelElementMarshaller
       roleJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
       ModelType model = ModelUtils.findContainingModel(role);
       roleJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY, eObjectUUIDMapper().getUUID(model));
+      roleJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
       roleJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(role));
 
       return roleJson;
@@ -772,6 +774,7 @@ public class ModelElementMarshaller
       orgJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
       ModelType model = ModelUtils.findContainingModel(org);
       orgJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY, eObjectUUIDMapper().getUUID(model));
+      orgJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
       orgJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(org));
 
       return orgJson;

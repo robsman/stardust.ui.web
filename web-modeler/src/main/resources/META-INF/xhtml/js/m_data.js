@@ -148,6 +148,19 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 		/**
 		 * 
 		 */
+		Data.prototype.rename = function(id, name)
+		{
+			delete this.model.dataItems[this.id];
+
+			this.id = id;
+			this.name = name;
+
+			this.model.dataItems[this.id] = this;
+		};
+
+		/**
+		 * 
+		 */
 		Data.prototype.onCreate = function() {
 		};
 	}

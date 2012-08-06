@@ -386,7 +386,7 @@ define(
 					}
 				} else if (data.rslt.obj.attr("rel") == "primitive"
 						|| data.rslt.obj.attr("rel") == "struct"
-						|| data.rslt.obj.attr("rel") == "Document") {
+						|| data.rslt.obj.attr("rel") == "dmsDocument") {
 					var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
 					var application = model.findModelElementByUuid(data.rslt.obj.attr("id"));
 
@@ -528,7 +528,8 @@ define(
 											|| data.rslt.obj.attr('rel') == 'serializable'
 											|| data.rslt.obj.attr('rel') == 'entity'
 											|| data.rslt.obj.attr('rel') == 'struct'
-											|| data.rslt.obj.attr('rel') == 'dmsDocumentList') {
+											|| data.rslt.obj.attr('rel') == 'dmsDocumentList'
+											|| data.rslt.obj.attr('rel') == 'dmsDocument') {
 
 										// TODO Above is very ugly!
 										var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
@@ -850,7 +851,7 @@ define(
 												};
 											} else if ("primitive" == node.attr("rel")
 													|| "struct" == node.attr("rel")
-													|| "Document" == node.attr("rel")) {
+													|| "dmsDocument" == node.attr("rel")) {
 												return {
 													"ccp" : false,
 													"create" : false,
