@@ -34,9 +34,6 @@ public class DefaultModelManagementStrategy extends
 	private ServiceFactory serviceFactory;
 	private DocumentManagementService documentManagementService;
 
-	@Resource
-   private EObjectUUIDMapper eObjectUUIDMapper;
-
 	/**
 	 * 
 	 */
@@ -94,7 +91,8 @@ public class DefaultModelManagementStrategy extends
 		ModelType model = XpdlModelIoUtils
 		.loadModel(readModelContext(getDocumentManagementService()
 				.getDocument(MODELS_DIR + id + ".xpdl")));
-		
+		loadEObjectUUIDMap(model);
+
 		getModels().put(id, model);
 		
 		return model;
@@ -185,21 +183,4 @@ public class DefaultModelManagementStrategy extends
 		return getDocumentManagementService().retrieveDocumentContent(
 				modelDocument.getId());
 	}
-	
-   /**
-    * TODO - This method needs to move to some place where it will be called only once for
-    * a session.
-    */
-   private void loadEObjectUUIDMap(ModelType model)
-   {
-      // Load if not already loaded.
-      if (null == eObjectUUIDMapper.getUUID(model))
-      {
-         eObjectUUIDMapper.map(model);
-         for (Iterator<EObject> i = model.eAllContents(); i.hasNext();)
-         {
-            eObjectUUIDMapper.map(i.next());
-         }
-      }
-   }
 }
