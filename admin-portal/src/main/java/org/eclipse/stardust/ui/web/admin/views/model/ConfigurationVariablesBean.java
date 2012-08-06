@@ -10,16 +10,11 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.admin.views.model;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,7 +30,6 @@ import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.ModelReconfigurationInfo;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
-import org.eclipse.stardust.engine.core.preferences.PreferenceStoreUtils;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
 import org.eclipse.stardust.engine.core.preferences.configurationvariables.ConfigurationVariable;
 import org.eclipse.stardust.engine.core.preferences.configurationvariables.ConfigurationVariableUtils;
@@ -65,13 +59,11 @@ import org.eclipse.stardust.ui.web.common.treetable.TreeTable;
 import org.eclipse.stardust.ui.web.common.treetable.TreeTableBean;
 import org.eclipse.stardust.ui.web.common.treetable.TreeTableNode;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
-import org.eclipse.stardust.ui.web.common.util.FileUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ConfigurationImportDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.PreferencesResource;
-import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
@@ -540,8 +532,6 @@ public class ConfigurationVariablesBean extends UIComponentBean
                dialog.setDeploymentInfoList(allInfoList);
                dialog.setICallbackHandler(this);
                dialog.openPopup();
-               
-               FacesUtils.refreshPage();
                
                infoList= allInfoList;
                valueChanged = false;      

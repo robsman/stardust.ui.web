@@ -27,7 +27,7 @@
 							<!-- ************* OVERFLOW TAB MANAGEMENT ************* -->
 							<ice:panelGroup rendered="#{overflowTab}" >
 									<ice:commandLink
-										action="#{ippPortalApp.toggleOverflowTabIframePopup}"
+										action="#{ippPortalApp.toggleOverflowTabIframePopup}" 
 										displayOnClick="true"
 										value="#{common_msgPropsBean['portalFramework.overflowViewTabs.label']} #{ippPortalApp.overflowedViewsSize}"
 										title="#{common_msgPropsBean['portalFramework.overflowViewTabs.tooltip']}">
@@ -49,7 +49,7 @@
 								<ice:panelGroup>
 									<pc:automationTag value="auto-FW-TabFullScreen" />
 									<ice:commandLink rendered="#{ippPortalApp.focusView.identityUrl eq tab.identityUrl}" immediate="false"
-										action="#{ippPortalApp.activateFullScreenMode}" 
+										action="#{ippPortalApp.activateFullScreenMode}" onclick="Event.stop(event);"
 										styleClass="toolbar-button">
 										<f:param name="identityUrl" value="#{tab.identityUrl}" />
 										<ice:graphicImage value="/plugins/common/images/icons/tab-bttn-maximize.png"
@@ -59,7 +59,7 @@
 								</ice:panelGroup>
 								<ice:panelGroup>
 									<pc:automationTag value="#{ippPortalApp.focusView.identityUrl eq tab.identityUrl ? 'auto-FW-TabActiveClose' : 'auto-FW-TabInActiveClose'}" />
-									<ice:commandLink action="#{ippPortalApp.closeView}" immediate="false"
+									<ice:commandLink action="#{ippPortalApp.closeView}" immediate="false" onclick="Event.stop(event);"
 										styleClass="toolbar-button viewCloseLink">
 										<f:param name="identityUrl" value="#{tab.identityUrl}" />
 										<ice:graphicImage value="/plugins/common/images/icons/dialog-windowbttn-close.png"

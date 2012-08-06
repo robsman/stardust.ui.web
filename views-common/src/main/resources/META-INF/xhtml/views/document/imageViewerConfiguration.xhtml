@@ -234,7 +234,8 @@
 		</ice:panelGroup>
 		<ice:panelGroup style="clearing" />
 		<ice:panelGrid columns="2" rendered="#{imageViewerConfigurationBean.allowDeleteFromOriginal}">
-			<ice:outputLabel value="#{views_common_msgPropsBean['views.imageViewerConfig.extractPages.DocPriorVersionAction.Label']}" styleClass="label-form"/>
+			<ice:outputText value="#{views_common_msgPropsBean['views.imageViewerConfig.extractPages.DocPriorVersionAction.Label']}" 
+				escape="false" styleClass="label-form"/>
 			<ice:selectOneMenu partialSubmit="true"
 				value="#{imageViewerConfigurationBean.docPriorVersionAction}"
 				disabled="#{!ippPortalApp.loggedInUser.administrator or !imageViewerConfigurationBean.enableExtractPage}">

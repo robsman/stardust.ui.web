@@ -165,7 +165,6 @@ public class WorkflowExecutionConfigurationBean extends UIComponentBean implemen
 
       initialize();
       MessageDialog.addInfoMessage(messageBean.getString("views.workflowExecution.config.resetSuccessful"));
-      FacesUtils.refreshPage();
    }
    
    /**

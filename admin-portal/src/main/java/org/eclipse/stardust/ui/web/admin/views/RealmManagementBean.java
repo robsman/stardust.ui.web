@@ -42,7 +42,6 @@ import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.table.DataTableRowSelector;
 import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
@@ -254,7 +253,6 @@ public class RealmManagementBean extends PopupUIComponentBean implements ViewEve
       this.name = "";
       this.description = "";
       fireCloseEvent = true;
-      FacesUtils.refreshPage();
       super.closePopup();
    }
 

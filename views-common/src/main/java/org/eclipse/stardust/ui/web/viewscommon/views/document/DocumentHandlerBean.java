@@ -457,18 +457,9 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
     */
    public void save()
    {
-      save(null);
-   }
-
-
-   /**
-    * @param callback
-    */
-   public void save(final ICallbackHandler callback)
-   {
       if (isModified() || getDocumentContentInfo() instanceof FileSystemJCRDocument)
       {
-         saveDocument(callback);
+         saveDocument(null);
       }
       else
       {
@@ -477,10 +468,6 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
                {
                   public boolean cancel()
                   {
-                     if (null != callback)
-                     {
-                        callback.handleEvent(EventType.CANCEL);
-                     }
                      return true;
                   }
 
@@ -496,17 +483,28 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
                         fireDocumentDeletedEvent();
                         loadSuccessful = false;
                      }
-                     if (null != callback)
-                     {
-                        callback.handleEvent(EventType.APPLY);
-                     }
-
                      return true;
                   }
                });
          confirmationDialog.setTitle(propsBean.getString("common.confirm"));
          confirmationDialog.setMessage(propsBean.getString("views.documentView.saveDocumentDialog.noChangesWarning"));
          confirmationDialog.openPopup();
+      }
+   }
+
+   /**
+    * @param callback
+    */
+   public void save(final ICallbackHandler callback)
+   {
+      if (isModified() || getDocumentContentInfo() instanceof FileSystemJCRDocument)
+      {
+         saveDocument(callback);
+      }
+      else
+      {
+         //no change in document
+         callback.handleEvent(EventType.APPLY);
       }
    }
    
@@ -539,7 +537,10 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       catch (Exception e)
       {
          ExceptionHandler.handleException(e);
-         callback.handleEvent(EventType.CANCEL);
+         if (null != callback)
+         {
+            callback.handleEvent(EventType.CANCEL);
+         }
       }
    }
    

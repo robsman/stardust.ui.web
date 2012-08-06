@@ -24,9 +24,15 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.View;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.services.ContextPortalServices;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
@@ -40,7 +46,7 @@ import com.icesoft.faces.component.dragdrop.DropEvent;
  * @author Yogesh.Manware
  * @version $Revision: $
  */
-public class ChatViewBean extends UIComponentBean implements ViewEventHandler
+public class ChatViewBean extends UIComponentBean implements ViewEventHandler, ConfirmationDialogHandler
 {
    private static final long serialVersionUID = 1L;
    private ProcessInstance processInstance;
@@ -54,6 +60,7 @@ public class ChatViewBean extends UIComponentBean implements ViewEventHandler
    // Spring configuration injected bean
    private IMessenger messenger;
    private ChatCloseConfirmationPopup confirmationPopup;
+   private ConfirmationDialog confirmationDialog;
 
    /**
     * default constructor
@@ -175,9 +182,44 @@ public class ChatViewBean extends UIComponentBean implements ViewEventHandler
     */
    public void handleLeaveChatRoomToolbarEvent(ActionEvent event)
    {
-      chatRoom.handleLeaveChatRoomToolbarEvent();
+      // Confirmation Dialog on close action
+      confirmationDialog = new ConfirmationDialog(DialogContentType.NONE, DialogActionType.YES_NO, null,
+            DialogStyle.COMPACT, this);
+      if (this.chatRoom.isCurrentUserChatOwner())
+      {
+         confirmationDialog.setTitle(MessagesViewsCommonBean.getInstance().getString(
+               "views.chatView.toolbar.close.confirmTitle"));
+         confirmationDialog.setMessage(MessagesViewsCommonBean.getInstance().getString(
+               "views.chatView.toolbar.close.confirmMsg"));
+      }
+      else
+      {
+         confirmationDialog.setTitle(MessagesViewsCommonBean.getInstance().getString(
+               "views.chatView.toolbar.leave.confirmTitle"));
+         confirmationDialog.setMessage(MessagesViewsCommonBean.getInstance().getString(
+               "views.chatView.toolbar.leave.confirmMsg"));
+      }
+      confirmationDialog.openPopup();
    }
 
+   /**
+    * 
+    */
+   public boolean accept()
+   {
+      confirmationDialog = null;
+      chatRoom.handleLeaveChatRoomToolbarEvent();
+      return true;
+   }
+
+   /**
+    * 
+    */
+   public boolean cancel()
+   {
+      confirmationDialog = null;
+      return true;
+   }
    /**
     * @param dropEvent
     */
@@ -340,5 +382,16 @@ public class ChatViewBean extends UIComponentBean implements ViewEventHandler
    {
       this.confirmationPopup = confirmationPopup;
    }
+
+   /**
+    * 
+    * @return
+    */
+   public ConfirmationDialog getConfirmationDialog()
+   {
+      return confirmationDialog;
+   }
+   
+   
 
 }

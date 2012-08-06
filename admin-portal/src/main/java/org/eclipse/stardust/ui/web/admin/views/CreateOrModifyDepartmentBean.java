@@ -30,7 +30,6 @@ import org.eclipse.stardust.ui.web.admin.AdminportalConstants;
 import org.eclipse.stardust.ui.web.admin.ResourcePaths;
 import org.eclipse.stardust.ui.web.admin.WorkflowFacade;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ContextMenuItem;
@@ -222,7 +221,6 @@ public class CreateOrModifyDepartmentBean extends PopupUIComponentBean
       {
          super.openPopup();
       }
-      FacesUtils.refreshPage();
    }
 
    // ********************* Default Getter and Setter Methods *******************

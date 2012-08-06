@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.processportal.view.manual;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -72,7 +73,6 @@ public class ManualActivityForm extends Form
    private ActivityInstance activityInstance;
    
    private DocumentInputEventHandler documentInputEventHandler;
-
    /**
     * @param generationPreferences
     * @param formBinding
@@ -147,20 +147,21 @@ public class ManualActivityForm extends Form
     */
    public void setData()
    {
+      Map<String, Serializable> inDataValues = getWorkflowService().getInDataValues(activityInstance.getOID(),
+            getApplicationContext().getId(), null);
+
       for (Object object : getApplicationContext().getAllDataMappings())
       {
          DataMapping dataMapping = (DataMapping) object;
 
          if (dataMapping.getDirection().equals(Direction.IN) || dataMapping.getDirection().equals(Direction.IN_OUT))
          {
-            Object value = getWorkflowService().getInDataValue(activityInstance.getOID(),
-                  getApplicationContext().getId(), dataMapping.getId());
-
+            Object value = inDataValues.get(dataMapping.getId());
             setValue(dataMapping.getId(), value);
          }
       }
    }
-
+   
    /**
     * @return
     */

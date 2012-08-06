@@ -10,13 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
-import java.util.Set;
-
-
-import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
-import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
-import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.PermissionState;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.runtime.utils.ExecutionPermission;
@@ -86,7 +80,7 @@ public class AuthorizationUtils
     */
    public static boolean canForceSuspend()
    {
-      return hasPermission(ExecutionPermission.Id.forceSuspend);
+      return getIppUser().hasPermission(ExecutionPermission.Id.forceSuspend);
    }
 
    /**
@@ -94,7 +88,7 @@ public class AuthorizationUtils
     */
    public static boolean canManageAuthorization()
    {
-      return hasPermission(ExecutionPermission.Id.manageAuthorization);
+      return getIppUser().hasPermission(ExecutionPermission.Id.manageAuthorization);
    }
 
    /**
@@ -102,7 +96,7 @@ public class AuthorizationUtils
     */
    public static boolean canManageDaemons()
    {
-      return hasPermission(ExecutionPermission.Id.manageDaemons);
+      return getIppUser().hasPermission(ExecutionPermission.Id.manageDaemons);
    }
    
    /**
@@ -110,14 +104,7 @@ public class AuthorizationUtils
     */
    public static boolean canCreateCase()
    {
-      try
-      {
-         return hasPermission(ExecutionPermission.Id.createCase);
-      }
-      catch (Exception e)
-      {
-         return false;
-      }
+      return getIppUser().hasPermission(ExecutionPermission.Id.createCase);
    }
    
    /**
@@ -125,14 +112,7 @@ public class AuthorizationUtils
     */
    public static boolean hasSpawnProcessPermission()
    {
-      try
-      {
-         return hasPermission(ExecutionPermission.Id.spawnSubProcessInstance);
-      }
-      catch (Exception e)
-      {
-         return false;
-      }
+      return getIppUser().hasPermission(ExecutionPermission.Id.spawnSubProcessInstance);
    }
    
    /**
@@ -140,14 +120,7 @@ public class AuthorizationUtils
     */
    public static boolean hasAbortAndJoinProcessInstancePermission()
    {
-      try
-      {
-         return hasPermission(ExecutionPermission.Id.joinProcessInstance);
-      }
-      catch (Exception e)
-      {
-         return false;
-      }
+      return getIppUser().hasPermission(ExecutionPermission.Id.joinProcessInstance);
    }
    
    /**
@@ -155,51 +128,11 @@ public class AuthorizationUtils
     */
    public static boolean hasAbortAndStartProcessInstancePermission()
    {
-      try
-      {
-         return hasPermission(ExecutionPermission.Id.spawnPeerProcessInstance);
-      }
-      catch (Exception e)
-      {
-         return false;
-      }
+       return getIppUser().hasPermission(ExecutionPermission.Id.spawnPeerProcessInstance);
    }
 
-   /**
-    * @param permissionId
-    * @return
-    */
-   private static boolean hasPermission(ExecutionPermission.Id permissionId)
+   public static IppUser getIppUser()
    {
-      AdministrationService adminService = ServiceFactoryUtils.getAdministrationService();
-     
-      boolean hasAllGrants = adminService.getGlobalPermissions().hasAllGrant(permissionId.toString());     
-      if (hasAllGrants)
-      {
-         return true;
-      }
-      
-      boolean hasPermission = false;
-      IppUser currentUser = (IppUser) IppUserProvider.getInstance().getUser();
-      Set<ModelParticipantInfo> grants = adminService.getGlobalPermissions().getGrants(permissionId.toString());
-      for (ModelParticipantInfo grant : grants)
-      {
-         if (grant instanceof QualifiedModelParticipantInfo)
-         {
-            QualifiedModelParticipantInfo qualifiedParticipantInfo = (QualifiedModelParticipantInfo) grant;
-            if (currentUser.isInRole(qualifiedParticipantInfo.getQualifiedId()))
-            {
-               hasPermission = true;
-               break;
-            }
-         }
-         // For Admin Role
-         else if (currentUser.isInRole(grant.getId()))
-         {
-            hasPermission = true;
-            break;
-         }
-      }
-      return hasPermission;
+      return (IppUser) IppUserProvider.getInstance().getUser();
    }
 }

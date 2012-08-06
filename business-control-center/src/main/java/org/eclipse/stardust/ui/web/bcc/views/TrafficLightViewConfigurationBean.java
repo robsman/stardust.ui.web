@@ -743,9 +743,7 @@ public class TrafficLightViewConfigurationBean extends UIComponentBean implement
                processingThreshold.setValue(EMPTY);
             }
          }
-         
-         
-         FacesUtils.refreshPage();//remove that line if possible,added this statement because FacesUtils.clearFacesTree() is not working here        
+                 
          MessageDialog.addInfoMessage(MessagesViewsCommonBean.getInstance().getString("views.common.config.reset"));
 
       }

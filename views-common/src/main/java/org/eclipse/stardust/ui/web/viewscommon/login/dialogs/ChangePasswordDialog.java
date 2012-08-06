@@ -150,10 +150,13 @@ public class ChangePasswordDialog extends PopupDialog
 		return account;
 	}
 
-	public void setAccount(String account)
-	{
-		this.account = account;
-	}
+	public void initAccount(String account)
+    {
+        this.account = account;
+    }
+	
+    public void setAccount(String account)
+    {}
 
 	public String getOldPassword()
 	{

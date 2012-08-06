@@ -20,11 +20,10 @@
 				<ice:panelGrid columns="1">
 					<ice:commandLink disabled="#{!row.activatable}"
 						value="#{row.processName}" style="white-space: nowrap;"
-						actionListener="#{worklistTableBean.openActivity}"
+						actionListener="#{worklistTableBean.openActivity}" onclick="Event.stop(event);"
 						title="#{worklistTableBean.messages['tooltip.openActivity']}">
 						<pc:automationTag value="auto-PP-WorkList-DataTable-Overview" standAlone="false"/>
 						<f:param name="oid" value="#{row.oid}" />
-						<f:param name="processName" value="#{row.processName}" />
 						<ice:graphicImage rendered="#{row.renderIcon}" style="margin-left:5px; vertical-align:middle"
 							value="#{row.iconPath}"
 							title="" />

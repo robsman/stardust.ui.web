@@ -24,9 +24,6 @@ public interface CorrespondenceAttachmentsHandler
       AT_BOTTOM
    }
 
-   void popupOpened();
-   void popupClosed();
-   
    boolean addAttachment(Document document);
    boolean addTemplate(Document document, AddPolicy addPolicy);
    boolean isDocumentTemplate(Document document);

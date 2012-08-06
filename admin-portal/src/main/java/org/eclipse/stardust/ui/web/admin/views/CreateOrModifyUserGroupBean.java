@@ -26,7 +26,6 @@ import org.eclipse.stardust.ui.web.admin.WorkflowFacade;
 import org.eclipse.stardust.ui.web.admin.messages.AdminMessagesPropertiesBean;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.GlobalPageMessage;
 import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
@@ -238,12 +237,4 @@ public class CreateOrModifyUserGroupBean extends PopupUIComponentBean
    {
       return validationMessage;
    }
-
-   @Override
-	public void closePopup() {
-		FacesUtils.refreshPage();
-		super.closePopup();
-	}
-   
-
 }

@@ -43,7 +43,6 @@ import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.EMailAddressValidator;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
@@ -145,37 +144,17 @@ public class CorrespondenceViewBean extends UIComponentBean
       pdfConverterHelper = new PDFConverterHelper(); 
       printAvailable = pdfConverterHelper.isPDFConverterAvailable();
       
-      correspondenceAttachments = new CorrespondenceAttachments(new CorrespondenceAttachmentsHandler(){
-         boolean templatesAdded = false;
-
-         public void popupOpened()
-         {
-            templatesAdded = false;
-         }
-
-         public void popupClosed()
-         {
-            // Need this as content is somehow not getting refreshed with Added Templates
-            if (templatesAdded)
-            {
-               FacesUtils.refreshPage();
-            }
-         }
-
+      correspondenceAttachments = new CorrespondenceAttachments(new CorrespondenceAttachmentsHandler()
+      {
          public boolean addAttachment(Document document)
          {
-            return CorrespondenceViewBean.this.addAttachments(new Attachment(document, DocumentMgmtUtility.getDocumentManagementService()));
+            return CorrespondenceViewBean.this.addAttachments(new Attachment(document, DocumentMgmtUtility
+                  .getDocumentManagementService()));
          }
 
          public boolean addTemplate(Document document, AddPolicy addPolicy)
          {
-            boolean ret = CorrespondenceViewBean.this.addTemplate(document, AddPolicy.AT_TOP == addPolicy);
-            if (ret)
-            {
-               templatesAdded = true;
-            }
-
-            return ret;
+            return CorrespondenceViewBean.this.addTemplate(document, AddPolicy.AT_TOP == addPolicy);
          }
 
          public boolean isDocumentTemplate(Document document)

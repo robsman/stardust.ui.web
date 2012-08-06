@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.admin.views;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.common.config.Parameters;
@@ -21,13 +22,20 @@ import org.eclipse.stardust.engine.api.runtime.PasswordRules;
 import org.eclipse.stardust.ui.web.admin.AdminportalConstants;
 import org.eclipse.stardust.ui.web.admin.ResourcePaths;
 import org.eclipse.stardust.ui.web.admin.WorkflowFacade;
+import org.eclipse.stardust.ui.web.admin.messages.AdminMessagesPropertiesBean;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.GenericPopup;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 
 
@@ -35,7 +43,7 @@ import org.eclipse.stardust.ui.web.viewscommon.dialogs.GenericPopup;
  * @author Ankita.Patel
  * @version $Revision: $
  */
-public class PasswordManagementBean extends UIComponentBean implements  ViewEventHandler
+public class PasswordManagementBean extends UIComponentBean implements  ViewEventHandler, ConfirmationDialogHandler
 {
    private static final long serialVersionUID = 1L;
    public static int EXPIRATION_TIME_MIN = 1;
@@ -61,6 +69,7 @@ public class PasswordManagementBean extends UIComponentBean implements  ViewEven
    private List<SelectItem> minCharDifferences = new ArrayList<SelectItem>();
 
    private PasswordRules passwordRules;
+   private ConfirmationDialog confirmationDialog;
 
    /**
     * 
@@ -113,7 +122,7 @@ public class PasswordManagementBean extends UIComponentBean implements  ViewEven
    {
       WorkflowFacade workflowFacade = (WorkflowFacade) SessionContext
             .findSessionContext().lookup(AdminportalConstants.WORKFLOW_FACADE);
-      if (isPasswordEncrypted())
+      if (getPasswordEncrypted())
       {
          GenericPopup genericPopup = GenericPopup.getCurrent();
          genericPopup.setIncludePath(ResourcePaths.V_ConfirmEncyprtPwd);
@@ -193,8 +202,45 @@ public class PasswordManagementBean extends UIComponentBean implements  ViewEven
       }
    }
 
+   /**
+    * 
+    * @param event
+    */
+   public void openConfirmDialog(ActionEvent event)
+   {
+      AdminMessagesPropertiesBean propsBean = AdminMessagesPropertiesBean.getInstance();
+      if (null == confirmationDialog)
+      {
+         confirmationDialog = new ConfirmationDialog(DialogContentType.NONE, DialogActionType.YES_NO, null,
+               DialogStyle.COMPACT, this);
+         /* confirmationDialog.setClearFacesTree(false); */
+         confirmationDialog.setTitle(MessagesViewsCommonBean.getInstance().getString("common.confirm"));
+         confirmationDialog.setMessage(propsBean.getString("views.passwordMgmt.saveConfirmation"));
+      }
+      confirmationDialog.openPopup();
+
+   }
+
+   /**
+    * 
+    */
+   public boolean accept()
+   {
+      save();
+      return true;
+   }
+
+   /**
+    * 
+    */
+   public boolean cancel()
+   {
+      return true;
+   }
    // **************** Getter & Setter Methods********************
-   public boolean isPasswordEncrypted()
+  
+   // Icefaces does not recognize isGetterName() method while loading xhtml
+   public Boolean getPasswordEncrypted()
    {
       // Uncomment the line,Once the Security.Password.Encryption property will be added
       // in carnot.properties.
@@ -205,35 +251,44 @@ public class PasswordManagementBean extends UIComponentBean implements  ViewEven
       return Parameters.instance().getBoolean("Security.Password.Encryption", false);
    }
 
-   public boolean isStrongPassword()
+   public void setPasswordEncrypted(Boolean passwordEncrypted)
+   {}
+
+   public Boolean getStrongPassword()
    {
-      return passwordRules.isStrongPassword();
+      return Boolean.valueOf(passwordRules.isStrongPassword());
    }
 
-   public void setStrongPassword(boolean strongPassword)
+   public void setStrongPassword(Boolean strongPassword)
    {
       passwordRules.setStrongPassword(strongPassword);
    }
 
-   public int getMinimalPasswordLength()
+   public Integer getMinimalPasswordLength()
    {
       return passwordRules.getMinimalPasswordLength();
    }
 
-   public void setMinimalPasswordLength(int minimalPasswordLength)
+   public void setMinimalPasswordLength(Integer minimalPasswordLength)
    {
-      passwordRules.setMinimalPasswordLength(minimalPasswordLength);
-      calculateMinCharDiff();
+      if (getStrongPassword())
+      {
+         passwordRules.setMinimalPasswordLength(minimalPasswordLength);
+         calculateMinCharDiff();
+      }
    }
 
-   public int getLetters()
+   public Integer getLetters()
    {
       return passwordRules.getLetters();
    }
 
-   public void setLetters(int letters)
+   public void setLetters(Integer letters)
    {
-      passwordRules.setLetters(letters);
+      if (getStrongPassword())
+      {
+         passwordRules.setLetters(letters);
+      }
    }
 
    public List<SelectItem> getMinPwdLengths()
@@ -243,7 +298,10 @@ public class PasswordManagementBean extends UIComponentBean implements  ViewEven
 
    public void setMinPwdLengths(List<SelectItem> minPwdLengths)
    {
-      this.minPwdLengths = minPwdLengths;
+      if (getStrongPassword())
+      {
+         this.minPwdLengths = minPwdLengths;
+      }
    }
 
    public List<SelectItem> getAllLetters()
@@ -253,10 +311,13 @@ public class PasswordManagementBean extends UIComponentBean implements  ViewEven
 
    public void setAllLetters(List<SelectItem> allLetters)
    {
-      this.allLetters = allLetters;
+      if (getStrongPassword())
+      {
+         this.allLetters = allLetters;
+      }
    }
 
-   public int getLowerCaseLetters()
+   public Integer getLowerCaseLetters()
    {
       return lowerCaseLetters;
    }
@@ -271,87 +332,101 @@ public class PasswordManagementBean extends UIComponentBean implements  ViewEven
       this.mixedCaseLetters = mixedCaseLetters;
    }
 
-   public void setLowerCaseLetters(int lowerCaseLetters)
+   public void setLowerCaseLetters(Integer lowerCaseLetters)
    {
-      this.lowerCaseLetters = lowerCaseLetters;
+         this.lowerCaseLetters = lowerCaseLetters;
    }
 
-   public int getUpperCaseLetters()
+   public Integer getUpperCaseLetters()
    {
       return upperCaseLetters;
    }
 
-   public void setUpperCaseLetters(int upperCaseLetters)
+   public void setUpperCaseLetters(Integer upperCaseLetters)
    {
-      this.upperCaseLetters = upperCaseLetters;
+         this.upperCaseLetters = upperCaseLetters;
    }
 
-   public void setMixedCase(int length)
+   public void setMixedCase(Integer length)
    {
-      passwordRules.setMixedCase(length);
+      if (getStrongPassword())
+      {
+         passwordRules.setMixedCase(length);
+      }
    }
 
-   public int getMixedCase()
+   public Integer getMixedCase()
    {
       return passwordRules.getMixedCase();
    }
 
-   public int getDigits()
+   public Integer getDigits()
    {
       return passwordRules.getDigits();
    }
 
-   public void setDigits(int digits)
+   public void setDigits(Integer digits)
    {
-      passwordRules.setDigits(digits);
+      if (getStrongPassword())
+      {
+         passwordRules.setDigits(digits);
+      }
    }
 
-   public int getPunctuations()
+   public Integer getPunctuations()
    {
       return passwordRules.getPunctuation();
    }
 
-   public void setPunctuations(int punctuations)
+   public void setPunctuations(Integer punctuations)
    {
-      passwordRules.setPunctuation(punctuations);
+      if (getStrongPassword())
+      {
+         passwordRules.setPunctuation(punctuations);
+      }
    }
 
-   public boolean isUniquePassword()
+   public Boolean getUniquePassword()
    {
-      return passwordRules.isUniquePassword();
+      return Boolean.valueOf(passwordRules.isUniquePassword());
    }
 
-   public void setUniquePassword(boolean uniquePassword)
+   public void setUniquePassword(Boolean uniquePassword)
    {
       passwordRules.setUniquePassword(uniquePassword);
    }
 
-   public int getDifferentCharacters()
+   public Integer getDifferentCharacters()
    {
       return passwordRules.getDifferentCharacters();
    }
 
-   public void setDifferentCharacters(int differentCharacters)
+   public void setDifferentCharacters(Integer differentCharacters)
    {
-      passwordRules.setDifferentCharacters(differentCharacters);
+      if (getUniquePassword())
+      {
+         passwordRules.setDifferentCharacters(differentCharacters);
+      }
    }
 
-   public int getPasswordTracking()
+   public Integer getPasswordTracking()
    {
       return passwordRules.getPasswordTracking();
    }
 
-   public void setPasswordTracking(int passwordTracking)
+   public void setPasswordTracking(Integer passwordTracking)
    {
+      if(getUniquePassword()){
       passwordRules.setPasswordTracking(passwordTracking);
+      }
    }
 
-   public boolean isPeriodicPwdChange()
+   public Boolean getPeriodicPwdChange()
    {
-      return passwordRules.isForcePasswordChange();
+      return Boolean.valueOf(passwordRules.isForcePasswordChange());
    }
-
-   public void setPeriodicPwdChange(boolean periodicPwdChange)
+   
+   public void setPeriodicPwdChange(Boolean periodicPwdChange)
    {
       passwordRules.setForcePasswordChange(periodicPwdChange);
    }
@@ -458,6 +533,10 @@ public class PasswordManagementBean extends UIComponentBean implements  ViewEven
    {
       this.minCharDifferences = minCharDifferences;
    }
-   
+
+   public ConfirmationDialog getConfirmationDialog()
+   {
+      return confirmationDialog;
+   }
 
 }

@@ -6,80 +6,82 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 	
-	<ice:panelGroup>
-		<ui:include src="securityAddParticipantDialog.xhtml" />
-	</ice:panelGroup>
-	
-	<ice:panelPopup id="#{securityDialog.beanId}" modal="true" rendered="#{securityDialog.visible}"
-		draggable="true"
-		styleClass="popupDialog" autoPosition="manual" clientOnly="true">
-		<f:facet name="header">
-			<ice:panelGroup>
-				<pc:automationTag value="auto-COM-SecurityDlg-Header"/>
-				<ice:outputText
-					value="#{securityDialog.messages['securityDialog.title']}"
-					escape="false" styleClass="headerText" />
-				<ice:commandButton
-					title="#{common_msgPropsBean['common.close']}"
-					styleClass="windowClose" action="#{securityDialog.closePopup}" />
-			</ice:panelGroup>
-		</f:facet>
-		<f:facet name="body">
-			<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
-				cellspacing="0" renderNorth="false" renderEast="false"
-				renderSouth="true" renderWest="false" renderCenter="true">
-				<f:facet name="center">
-					<ice:panelGroup>
-						<ice:panelGroup styleClass="panelHeader">
-							<ice:commandLink
-								action="#{securityDialog.toggleExpandCollpase}">
-								<ice:panelGrid columns="2">
-									<ice:graphicImage rendered="#{!securityDialog.expanded}"
-										value="/plugins/views-common/images/icons/thumbnailsPanel-triggerExpand.png"
-										style="border: none" />
-									<ice:graphicImage rendered="#{securityDialog.expanded}"
-										value="/plugins/views-common/images/icons/panelHeader-triggerCollapse.png"
-										style="border: none" />
-									<ice:outputText styleClass="panelHeaderTitle"
-										value="#{securityDialog.messages['securityDialog.inheritedTable.title']}  #{securityDialog.resourceName}" />
-								</ice:panelGrid>
-							</ice:commandLink>
-						</ice:panelGroup>
-						<ice:panelGroup rendered="#{securityDialog.expanded}">
-							<pc:automationTag value="auto-COM-SecurityDlg-InheritedTbl" />
-							<pc:genericDataTable
-								exportExcel="false" exportCsv="false" 
-								bean="#{securityDialog}" id="ctxSecurityDialogInherited"
-								table="#{securityDialog.securityDialogInheritedTable}"
-								sortSupported="true" />
-						</ice:panelGroup>
+	<c:if test="#{securityDialog.visible}">
+		<ice:panelGroup>
+			<ui:include src="securityAddParticipantDialog.xhtml" />
+		</ice:panelGroup>
+		
+		<ice:panelPopup id="#{securityDialog.beanId}" modal="true" rendered="#{securityDialog.visible}"
+			draggable="true"
+			styleClass="popupDialog" autoPosition="manual" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-COM-SecurityDlg-Header"/>
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.title']}"
+						escape="false" styleClass="headerText" />
+					<ice:commandButton
+						title="#{common_msgPropsBean['common.close']}"
+						styleClass="windowClose" action="#{securityDialog.closePopup}" />
+				</ice:panelGroup>
+			</f:facet>
+			<f:facet name="body">
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+					cellspacing="0" renderNorth="false" renderEast="false"
+					renderSouth="true" renderWest="false" renderCenter="true">
+					<f:facet name="center">
 						<ice:panelGroup>
-							<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl" />
-							<pc:genericDataTable
-								title="#{securityDialog.messages['securityDialog.table.title']} #{securityDialog.resourceName}"
-								exportExcel="false" exportCsv="false"
-								bean="#{securityDialog}" id="ctxSecurityDialog"
-								table="#{securityDialog.securityDialogTable}"
-								toolbarUrl="/plugins/views-common/extension/toolbar/securityDialogToolbar.xhtml"
-								sortSupported="true" />
+							<ice:panelGroup styleClass="panelHeader">
+								<ice:commandLink
+									action="#{securityDialog.toggleExpandCollpase}">
+									<ice:panelGrid columns="2">
+										<ice:graphicImage rendered="#{!securityDialog.expanded}"
+											value="/plugins/views-common/images/icons/thumbnailsPanel-triggerExpand.png"
+											style="border: none" />
+										<ice:graphicImage rendered="#{securityDialog.expanded}"
+											value="/plugins/views-common/images/icons/panelHeader-triggerCollapse.png"
+											style="border: none" />
+										<ice:outputText styleClass="panelHeaderTitle"
+											value="#{securityDialog.messages['securityDialog.inheritedTable.title']}  #{securityDialog.resourceName}" />
+									</ice:panelGrid>
+								</ice:commandLink>
+							</ice:panelGroup>
+							<ice:panelGroup rendered="#{securityDialog.expanded}">
+								<pc:automationTag value="auto-COM-SecurityDlg-InheritedTbl" />
+								<pc:genericDataTable
+									exportExcel="false" exportCsv="false" 
+									bean="#{securityDialog}" id="ctxSecurityDialogInherited"
+									table="#{securityDialog.securityDialogInheritedTable}"
+									sortSupported="true" />
+							</ice:panelGroup>
+							<ice:panelGroup>
+								<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl" />
+								<pc:genericDataTable
+									title="#{securityDialog.messages['securityDialog.table.title']} #{securityDialog.resourceName}"
+									exportExcel="false" exportCsv="false"
+									bean="#{securityDialog}" id="ctxSecurityDialog"
+									table="#{securityDialog.securityDialogTable}"
+									toolbarUrl="/plugins/views-common/extension/toolbar/securityDialogToolbar.xhtml"
+									sortSupported="true" />
+							</ice:panelGroup>
 						</ice:panelGroup>
-					</ice:panelGroup>
-				</f:facet>
-				<f:facet name="south">
-					<ice:panelGroup>
-						<ice:panelGrid columns="3" style="float:right;">
-							<pc:automationTag value="auto-COM-SecurityDlg-BtnsBar" standAlone="false"/>
-							<ice:commandButton rendered="#{securityDialog.editMode}" 
-								value="#{securityDialog.messages['securityDialog.button.apply']}"
-								styleClass="button" action="#{securityDialog.apply}" />
-							<ice:commandButton
-								value="#{views_common_msgPropsBean['common.close']}"
-								styleClass="button" action="#{securityDialog.closePopup}" />
-						</ice:panelGrid>
-						
-					</ice:panelGroup>
-				</f:facet>
-			</ice:panelBorder>
-		</f:facet>
-	</ice:panelPopup>
+					</f:facet>
+					<f:facet name="south">
+						<ice:panelGroup>
+							<ice:panelGrid columns="3" style="float:right;">
+								<pc:automationTag value="auto-COM-SecurityDlg-BtnsBar" standAlone="false"/>
+								<ice:commandButton rendered="#{securityDialog.editMode}" 
+									value="#{securityDialog.messages['securityDialog.button.apply']}"
+									styleClass="button" action="#{securityDialog.apply}" />
+								<ice:commandButton
+									value="#{views_common_msgPropsBean['common.close']}"
+									styleClass="button" action="#{securityDialog.closePopup}" />
+							</ice:panelGrid>
+							
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</c:if>
 </f:view>

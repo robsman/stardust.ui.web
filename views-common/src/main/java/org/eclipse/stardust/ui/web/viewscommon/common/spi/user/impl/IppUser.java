@@ -10,19 +10,28 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
 import org.eclipse.stardust.common.CompareHelper;
+import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
+import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.Grant;
+import org.eclipse.stardust.engine.core.runtime.utils.ExecutionPermission;
 import org.eclipse.stardust.engine.core.runtime.utils.PermissionHelper;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
-
 
 
 /**
@@ -32,6 +41,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 public class IppUser implements User
 {
    private static final long serialVersionUID = 1L;
+   private static final Logger trace = LogManager.getLogger(IppUser.class);
 
    private org.eclipse.stardust.engine.api.runtime.User ippUser;
    
@@ -40,6 +50,8 @@ public class IppUser implements User
    private String uniqueUserId;
    
    private String displayName = null;
+   
+   private Map<String, Boolean> permissionsCache;
 
    /**
     * Gets the logged in user
@@ -140,5 +152,75 @@ public class IppUser implements User
          displayName = UserUtils.getUserDisplayLabel(ippUser);
       }
       return displayName;
+   }
+   
+   /**
+    * @param permissionId
+    * @return
+    * @author Yogesh.Manware
+    */
+   public boolean hasPermission(ExecutionPermission.Id exePermissionId)
+   {
+      String permissionId = exePermissionId.toString();
+
+      if (null == permissionsCache)
+      {
+         permissionsCache = new HashMap<String, Boolean>();
+      }
+
+      if (!permissionsCache.containsKey(permissionId))
+      {
+         permissionsCache.put(permissionId, _hasPermission(permissionId));
+      }
+
+      return permissionsCache.get(permissionId);
+   }
+   
+   /**
+    * @param permissionId
+    * @return
+    */
+   private boolean _hasPermission(String permissionId)
+   {
+      boolean hasPermission = false;
+
+      try
+      {
+         AdministrationService adminService = ServiceFactoryUtils.getAdministrationService();
+         boolean hasAllGrants = adminService.getGlobalPermissions().hasAllGrant(permissionId);
+         if (hasAllGrants)
+         {
+            hasPermission = true;
+         }
+         
+         if (!hasPermission)
+         {
+            Set<ModelParticipantInfo> grants = adminService.getGlobalPermissions().getGrants(permissionId);
+            for (ModelParticipantInfo grant : grants)
+            {
+               if (grant instanceof QualifiedModelParticipantInfo)
+               {
+                  QualifiedModelParticipantInfo qualifiedParticipantInfo = (QualifiedModelParticipantInfo) grant;
+                  if (this.isInRole(qualifiedParticipantInfo.getQualifiedId()))
+                  {
+                     hasPermission = true;
+                     break;
+                  }
+               }
+               // For Admin Role
+               else if (this.isInRole(grant.getId()))
+               {
+                  hasPermission = true;
+                  break;
+               }
+            }
+         }
+      }
+      catch (Exception e)
+      {
+         trace.warn("Unable to determine permission for " + permissionId, e);
+      }
+
+      return hasPermission;
    }
 }

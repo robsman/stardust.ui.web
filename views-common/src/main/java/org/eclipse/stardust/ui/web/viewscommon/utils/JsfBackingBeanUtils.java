@@ -13,6 +13,8 @@ package org.eclipse.stardust.ui.web.viewscommon.utils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -30,7 +32,6 @@ import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.pojo.data.JavaDataTypeUtils;
-import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.PortalBackingBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalErrorClass;
@@ -212,6 +213,19 @@ public class JsfBackingBeanUtils
                      trace.debug("Value " + outValue + " retrieved for mapping "
                            + mappingID);
                   }
+
+                  // Handle Calendar differently, because UI (<selectInoutDate>) supports only Date
+                  // Convert Date to Calendar automatically as Calendar is required by the Engine
+                  if (Calendar.class == mapping.getMappedType() && !(outValue instanceof Calendar))
+                  {
+                     if (outValue instanceof Date) // Safety Check
+                     {
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTime((Date)outValue);
+                        outValue = cal;
+                     }
+                  }
+
                   outData.put(mappingID, outValue);
                }
                catch (InvocationTargetException e)

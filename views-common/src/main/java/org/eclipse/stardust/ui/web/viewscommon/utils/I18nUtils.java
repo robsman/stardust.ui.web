@@ -45,9 +45,12 @@ import org.eclipse.stardust.ui.web.viewscommon.common.LocalizerKey;
  */
 public class I18nUtils
 {
-   public static final String USER_NAME_DISPLAY_FORMAT_PREF_ID = "ipp-admin-portal.userNameDisplayFormat.prefs.displayFormat";  
-   
+   public static final String USER_NAME_DISPLAY_FORMAT_PREF_ID = "ipp-admin-portal.userNameDisplayFormat.prefs.displayFormat";
    protected final static Logger trace = LogManager.getLogger(I18nUtils.class);   
+   private static final String QUALITY_ASSURANCE_CODE = "QualityAssuranceCode.";
+   private static final String QUALITY_ASSURANCE_CODE_DESC = ".Description";
+   private static final String QUALITY_ASSURANCE_CODE_NAME = ".Name";
+   private static final int QUALITY_ASSURANCE_CODE_LENGTH = 89;
    
    public static String getModelName(DeployedModelDescription model)
    {
@@ -148,8 +151,8 @@ public class I18nUtils
    public static String getQualityAssuranceDesc(QualityAssuranceCode qaCode, long modelOID)
    {
       String label = null;
-      LocalizerKey key = new LocalizerKey(ModelElementUtils.getBundleName(modelOID), "QualityAssuranceCode."
-            + qaCode.getCode() + ".Description");
+      LocalizerKey key = new LocalizerKey(ModelElementUtils.getBundleName(modelOID), QUALITY_ASSURANCE_CODE
+            + qaCode.getCode() + QUALITY_ASSURANCE_CODE_DESC);
       if (trace.isDebugEnabled())
       {
          trace.debug("use '" + key.getBundleName() + "' for label receivement");
@@ -162,6 +165,7 @@ public class I18nUtils
       {
          ExceptionHandler.handleException(e);
       }
+
       if (StringUtils.isEmpty(label))
       {
          label = qaCode.getDescription();
@@ -178,8 +182,8 @@ public class I18nUtils
    public static String getQualityAssuranceCode(QualityAssuranceCode qaCode, long modelOID)
    {
       String label = null;
-      LocalizerKey key = new LocalizerKey(ModelElementUtils.getBundleName(modelOID), "QualityAssuranceCode."
-            + qaCode.getCode() + ".Name");
+      LocalizerKey key = new LocalizerKey(ModelElementUtils.getBundleName(modelOID), QUALITY_ASSURANCE_CODE
+            + qaCode.getCode() + QUALITY_ASSURANCE_CODE_NAME);
       if (trace.isDebugEnabled())
       {
          trace.debug("use '" + key.getBundleName() + "' for label receivement");

@@ -200,6 +200,10 @@ public class ActivityPanelController extends UIComponentBean
          {
             activityDetailsBean.abortCurrentActivity();
          }
+         else
+         {
+            trace.warn("Externally triggered command NOT handled: " + commandId);
+         }
       }
    }
 

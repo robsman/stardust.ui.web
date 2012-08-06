@@ -253,7 +253,8 @@ public class JCRDocument extends AbstractDocumentContentInfo
       {
          this.document = DocumentMgmtUtility.getDocumentManagementService().versionDocument(this.document.getId(), "", null);
       }
-      
+
+      this.document.setProperties(getProperties());
       this.document.setDescription(description);
       this.document.setDocumentType(documentType);
       

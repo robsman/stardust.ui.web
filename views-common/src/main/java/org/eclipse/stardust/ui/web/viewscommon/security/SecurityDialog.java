@@ -43,7 +43,6 @@ import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.table.DataTableRowSelector;
 import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
@@ -572,8 +571,6 @@ public class SecurityDialog extends PopupUIComponentBean
             new SortableTableComparator<AccessControlBean>("participant", false));
       //securityDialogInheritedTable.setRowSelector(new DataTableRowSelector("selectedRow",true));
       securityDialogInheritedTable.initialize();
-
-      FacesUtils.refreshPage();
    }
    
    /**

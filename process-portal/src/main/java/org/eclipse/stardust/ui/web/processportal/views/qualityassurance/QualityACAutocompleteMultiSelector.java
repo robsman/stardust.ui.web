@@ -140,7 +140,7 @@ public class QualityACAutocompleteMultiSelector extends AutocompleteMultiSelecto
       List<QualityAssuranceCodeEntry> list = getSelectedValues();
       for (QualityAssuranceCodeEntry codeEntry : list)
       {
-         stringList.add(codeEntry.getDescription());
+         stringList.add(codeEntry.getCode());
       }
       return stringList;
    }
@@ -228,13 +228,12 @@ public class QualityACAutocompleteMultiSelector extends AutocompleteMultiSelecto
                QualityAssuranceCodeEntry qualityACodeEntry = new QualityAssuranceCodeEntry(qualityAssuranceCode,
                      modelOID);
 
-               if (qualityACodeEntry.getCode().toLowerCase().contains(searchValue.toLowerCase())
-                     || qualityACodeEntry.getDescription().toLowerCase().contains(searchValue.toLowerCase()))
+               if (qualityACodeEntry.getCode().toLowerCase().contains(searchValue.toLowerCase()))
                {
                   if (!searchResult.contains(qualityACodeEntry))
                   {
                      searchResult.add(qualityACodeEntry);
-                     qaItems.add(new SelectItem(qualityACodeEntry, qualityACodeEntry.getDescription()));
+                     qaItems.add(new SelectItem(qualityACodeEntry, qualityACodeEntry.getCode()));
                   }
                }
             }

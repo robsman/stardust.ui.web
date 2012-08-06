@@ -15,7 +15,6 @@ import java.util.StringTokenizer;
 import javax.faces.event.ActionEvent;
 
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil.ICON_COLOR;
 
@@ -175,21 +174,12 @@ public class CriticalityConfigurationTableEntry extends DefaultRowModel
       String selectedColor = (String) event.getComponent().getAttributes().get("selectedColor");
       setIconColor(ICON_COLOR.valueOf(selectedColor));
       criticalityIconsSelectorPopup.setVisible(false);
-
-      //FacesUtils.refreshPage() is needed as after pop-up is closed non of the command buttons / links (without immediate='true')
-      //work on first click. Adding immediate (as a workaround) poses other problems.
-      //As this is an administrative activity and would be carried out once in a while a refresh should not do much harm.
-      FacesUtils.refreshPage();
    }
    
    
    public void closeIconSelectionPopup(ActionEvent event)
    {
       criticalityIconsSelectorPopup.setVisible(false);
-      //FacesUtils.refreshPage() is needed as after pop-up is closed non of the command buttons / links (without immediate='true')
-      //work on first click. Adding immediate (as a workaround) poses other problems.
-      //As this is an administrative activity and would be carried out once in a while a refresh should not do much harm.
-      FacesUtils.refreshPage();
    }
    
    /* (non-Javadoc)

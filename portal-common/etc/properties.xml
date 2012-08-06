@@ -15,7 +15,7 @@
 
    <module name="ippBasePortal-ejb" target="carnot.ear">
       <server-archive name="ippBasePortal-ejb"
-         type="war" sourceFile="../deploy/ipp-portal.war" />
+         type="war" sourceFile="../deploy/ipp-portal.war" />      <server-archive name="activation" type="jar"         sourceFile="../../../lib/ext/activation.jar"/>      <server-archive name="mail" type="jar"         sourceFile="../../../lib/ext/mail.jar"/>
       <server-archive name="jsp-api" type="jar" appservers="was5, wls8"
          sourceFile="../../../lib/jsp-api.jar" />
       <server-archive name="servlet-api" type="jar"
@@ -87,7 +87,7 @@
       <server-archive name="ippBasePortal-pojo"
          type="war" sourceFile="../deploy/ipp-portal.war" />         
       <server-archive name="engine-pojo" type="jar"
-         sourceFile="../../../lib/carnot-engine.jar" destDir="WEB-INF/lib/" />      <server-archive name="carnot-base" type="jar"         sourceFile="../../../lib/carnot-base.jar" destDir="WEB-INF/lib/" />             
+         sourceFile="../../../lib/carnot-engine.jar" destDir="WEB-INF/lib/" />      <server-archive name="carnot-base" type="jar"         sourceFile="../../../lib/carnot-base.jar" destDir="WEB-INF/lib/" />                   <server-archive name="activation" type="jar"         sourceFile="../../../lib/ext/activation.jar" destDir="WEB-INF/lib/" />      <server-archive name="mail" type="jar"         sourceFile="../../../lib/ext/mail.jar" destDir="WEB-INF/lib/" />
       <server-archive name="ipp-engine-core" type="jar"
          sourceFile="../../../lib/ipp-engine-core.jar" destDir="WEB-INF/lib/" />
       <server-archive name="ipp-product-nls" type="jar"
@@ -1874,9 +1874,9 @@
                 webservices-extra-api.jar webservices-tools.jar jaxws-spring.jar cglib-nodep.jar
                 jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar">
             <appserver-value appserver="jboss5" 
-               value="ipp-engine-core.jar ipp-product-nls.jar mail.jar commons-jxpath.jar
+               value="ipp-engine-core.jar ipp-product-nls.jar mail.jar activation.jar commons-jxpath.jar
                 jcr-vfs.jar asm.jar gson.jar jersey-core.jar jersey-server.jar aopalliance.jar                spring-beans.jar spring-core.jar spring-tx.jar spring-jms.jar spring-jdbc.jar spring-expression.jar spring-context-support.jar spring-context.jar spring-asm.jar spring-aop.jar spring-orm.jar 
-                jsr250-api.jar jsr311-api.jar jaxws-spring.jar cglib-nodep.jar
+                jsr250-api.jar jsr311-api.jar ipp-engine-ws-metro.jar xom.jar webservices-rt.jar webservices-api.jar webservices-extra.jar                webservices-extra-api.jar webservices-tools.jar jaxws-spring.jar cglib-nodep.jar
                 jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar"/>
             <appserver-value appserver="wls"               value="ipp-engine-core.jar ipp-product-nls.jar mail.jar commons-jxpath.jar
                 jcr-vfs.jar asm.jar gson.jar jersey-core.jar jersey-server.jar aopalliance.jar                spring-beans.jar spring-core.jar spring-tx.jar spring-jms.jar spring-jdbc.jar spring-expression.jar spring-context-support.jar spring-context.jar spring-asm.jar spring-aop.jar spring-orm.jar 

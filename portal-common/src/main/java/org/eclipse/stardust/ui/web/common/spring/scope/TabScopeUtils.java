@@ -103,8 +103,11 @@ public class TabScopeUtils
          }
          else
          {
-            trace.warn("Invalid tab scope manager: " + currentlyBoundManager,
-                  new Throwable());
+            trace.warn("Invalid tab scope manager: " + currentlyBoundManager);
+            if (trace.isDebugEnabled())
+            {
+               trace.debug(new Throwable());
+            }
          }
       }
       else if (facesContext.getExternalContext() instanceof PortletExternalContext)

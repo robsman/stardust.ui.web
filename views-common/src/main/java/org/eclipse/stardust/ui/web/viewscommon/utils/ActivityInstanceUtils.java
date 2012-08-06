@@ -140,7 +140,8 @@ public class ActivityInstanceUtils
             params.put("processInstanceOID", String.valueOf(ai.getProcessInstanceOID()));
             
             PortalApplication.getInstance().openViewById("caseDetailsView",
-                  "oid=" + String.valueOf(ai.getProcessInstanceOID()), params, null, false);
+                  "processInstanceOID=" + String.valueOf(ai.getProcessInstanceOID()), params, null, false);
+            
             return;
          }
 

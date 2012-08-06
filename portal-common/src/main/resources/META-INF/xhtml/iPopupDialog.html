@@ -9,7 +9,7 @@ function init()
 	var popupAttrs = parent.iPopupDialog.getPopupData().attributes;
 	var popupContent = document.getElementById("iframePopupDialog");
 	popupContent.style.width = popupAttrs.width;
-	popupContent.style.height = popupAttrs.height	
+	popupContent.style.height = popupAttrs.height
 	popupContent.innerHTML = "<iframe id='contentIframe' src='" + popupAttrs.src + "' width='100%' height='100%' frameborder='0'></iframe>";
 	var iElem = document.getElementById("contentIframe");
 	iElem.contentWindow.payloadObj = parent.iPopupDialog.getPopupData().payload;
@@ -21,7 +21,7 @@ function init()
 <body onload="init();" style="height: 100%; width: 100%; overflow: hidden; margin: 0px;">
 	<div class="iPopupDialogBackgroundScreen">
 	</div>
-	<div id="iframePopupDialog" class="iPopupDialog">		
+	<div id="iframePopupDialog" class="iPopupDialog">
 	</div>
 </body>
 </html>

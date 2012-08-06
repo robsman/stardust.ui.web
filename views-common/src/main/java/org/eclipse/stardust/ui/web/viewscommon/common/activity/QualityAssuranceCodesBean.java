@@ -96,7 +96,7 @@ public class QualityAssuranceCodesBean
                         qualityAssuranceCodes = new ArrayList<String>();
                         for (QualityAssuranceCode qualityAssuranceCode : qualityACodes)
                         {
-                           qualityAssuranceCodes.add(I18nUtils.getQualityAssuranceDesc(qualityAssuranceCode,
+                           qualityAssuranceCodes.add(I18nUtils.getQualityAssuranceCode(qualityAssuranceCode,
                                  activityInstance.getModelOID()));
                         }
                      }
@@ -157,7 +157,7 @@ public class QualityAssuranceCodesBean
                   {
                      MenuItem codeItem = new MenuItem();
                      codeItem.setIcon("/plugins/views-common/images/icons/wrench--exclamation.png");
-                     codeItem.setValue(I18nUtils.getQualityAssuranceDesc(assuranceCode, modelOID));
+                     codeItem.setValue(I18nUtils.getQualityAssuranceCode(assuranceCode, modelOID));
                      qualityACMenuItems.add(codeItem);
                   }
                }

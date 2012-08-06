@@ -33,11 +33,13 @@
 								<ice:panelGrid columns="1">
 									<ice:outputText
 										value="#{printerDialogPopup.messages['printerDialog.orientation']}"
-										style="font-weight: bold;" />
+										style="font-weight: bold; padding-left: 10px" />
+									
 									<!-- spacer -->
 									<ice:graphicImage
 										value="/plugins/views-common/images/spacer.png"
-										width="5" height="15" />
+										width="5" height="2" />
+									
 									<ice:selectOneRadio id="pageOrientation" layout="pageDirection"
 										value="#{printerDialogPopup.printingPreferences.orientation}"
 										valueChangeListener="#{printerDialogPopup.orientationChanged}"
@@ -51,21 +53,15 @@
 											itemLabel="#{printerDialogPopup.messages['printerDialog.landscape']}"
 											styleClass="label-form" />
 									</ice:selectOneRadio>
-									<!-- spacer -->
-									<ice:graphicImage
-										value="/plugins/views-common/images/spacer.png"
-										width="5" height="15" />
 								</ice:panelGrid>
 							</ice:panelGroup>
 
 							<ice:panelGroup style="vertical-align: top;">
 								<ice:panelGrid columns="1">
-									<ice:outputText
+									<ice:outputText 
 										value="#{printerDialogPopup.messages['printerDialog.margin']}"
-										style="font-weight: bold;" />
-									<ice:graphicImage
-										value="/plugins/views-common/images/spacer.png"
-										width="2" height="10" />
+										style="font-weight: bold; padding-left: 2px" />
+										
 									<ice:panelGrid columns="5">
 										<ice:outputLabel
 											value="#{printerDialogPopup.messages['printerDialog.left']}"
@@ -79,9 +75,6 @@
 										<ice:outputLabel
 											value="#{printerDialogPopup.messages['printerDialog.right']}"
 											styleClass="label-form" />
-										<ice:graphicImage
-											value="/plugins/views-common/images/spacer.png"
-											width="6px" height="6px" />
 										<ice:selectOneMenu partialSubmit="true" size="1"
 											valueChangeListener="#{printerDialogPopup.rightMarginChanged}">
 											<pc:automationTag value="auto-COM-PrintDlg-RightMar"
@@ -114,7 +107,7 @@
 						</ice:panelGrid>
 						<ice:outputLabel
 							value="#{printerDialogPopup.messages['printerDialog.paperSize']}:"
-							styleClass="label-form" />
+							styleClass="label-form" style="padding-left: 15px;"  />
 						<ice:selectOneMenu id="pageSize"
 							value="#{printerDialogPopup.printingPreferences.pageSize}"
 							valueChangeListener="#{printerDialogPopup.pageSizeChanged}"

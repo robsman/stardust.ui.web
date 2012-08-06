@@ -233,8 +233,6 @@ public class WorklistsBean extends AbstractLaunchPanel implements InitializingBe
                {
                   MessageDialog
                         .addErrorMessage("Assembly Line Provider is not an instance of org.eclipse.stardust.ui.web.processportal.spi.IAssemblyLineActivityProvider");
-                  FacesUtils.refreshPage(); // Sometimes this is required otherwise dialog
-                                            // appears as blank
                }
             }
             else
@@ -247,8 +245,6 @@ public class WorklistsBean extends AbstractLaunchPanel implements InitializingBe
          {
             // This may not be internationalized. Since this is 'dev only' scenario
             MessageDialog.addErrorMessage("Cannot instantiate Assembly Line Provider", e);
-            FacesUtils.refreshPage(); // Sometimes this is required otherwise dialog
-                                      // appears as blank
          }
       }
    }

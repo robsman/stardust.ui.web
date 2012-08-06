@@ -268,7 +268,7 @@
 																			<c:otherwise>
 													                    		<c:choose>
 													                    			<c:when test="#{sortColumn eq colPref.columnProperty}">
-													                    				<ice:outputText value="#{colPref.columnTitle}" />
+													                    				<ice:outputText escape="false" value="#{colPref.columnTitle}" />
 													                    			</c:when>
 													                    			<c:otherwise>
 													                    				<table>
@@ -290,7 +290,7 @@
 																		<c:when test="#{(selectColumn eq colPref.columnName) and (colPref.columnRenderType eq 'READ_WRITE')}">
 																			<ui:include src="includes/genericDataTableSelectAllNone.xhtml" />																	</c:when>
 																		<c:otherwise>
-													                    	<ice:outputText value="#{colPref.columnTitle}" />
+													                    	<ice:outputText escape="false" value="#{colPref.columnTitle}" />
 																		</c:otherwise>
 																	</c:choose>
 																</c:otherwise>
@@ -355,13 +355,13 @@
 																<c:otherwise>
 										                    		<c:choose>
 										                    			<c:when test="#{sortColumn eq item.columnProperty}">
-										                    				<ice:outputText value="#{item.columnTitle}" />
+										                    				<ice:outputText escape="false" value="#{item.columnTitle}" />
 										                    			</c:when>
 										                    			<c:otherwise>
 										                    				<table>
 										                    					<tbody>
 											                    					<tr>
-											                    						<td><ice:outputText value="#{item.columnTitle}" /></td>
+											                    						<td><ice:outputText escape="false" value="#{item.columnTitle}" /></td>
 											                    						<td><div class="#{styleClass}SortColHdr"></div></td>
 											                    					</tr>
 											                    				</tbody>
@@ -378,7 +378,7 @@
 																<ui:include src="includes/genericDataTableSelectAllNone.xhtml" />
 															</c:when>
 															<c:otherwise>
-										                    	<ice:outputText value="#{item.columnTitle}" />
+										                    	<ice:outputText escape="false" value="#{item.columnTitle}" />
 															</c:otherwise>
 														</c:choose>
 													</c:otherwise>

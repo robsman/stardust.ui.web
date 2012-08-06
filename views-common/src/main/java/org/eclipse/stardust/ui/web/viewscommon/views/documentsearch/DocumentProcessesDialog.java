@@ -14,7 +14,6 @@ import javax.faces.event.ActionEvent;
 
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 
 
@@ -42,7 +41,6 @@ public class DocumentProcessesDialog extends PopupUIComponentBean
    public void closePopup()
    {
       super.closePopup();
-      FacesUtils.refreshPage();
    }
    
    public void openProcess(ActionEvent event)

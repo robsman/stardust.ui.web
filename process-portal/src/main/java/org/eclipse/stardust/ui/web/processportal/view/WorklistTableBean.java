@@ -1201,7 +1201,7 @@ public class WorklistTableBean extends UIComponentBean
                      ? WorklistQuery.START_TIME
                      : ActivityInstanceQuery.START_TIME, sortCriterion.isAscending());
             }
-            else if ("processName".equals(sortCriterion.getProperty()))
+            else if ("activityName".equals(sortCriterion.getProperty()))
             {
                CustomOrderCriterion o = ActivityInstanceQuery.ACTIVITY_NAME
                      .ascendig(sortCriterion.isAscending());

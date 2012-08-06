@@ -89,14 +89,12 @@ public class CorrespondenceAttachments extends PopupUIComponentBean implements I
    {
       initialize();
       super.openPopup();
-      correspondenceAttachmentsHandler.popupOpened();
    }
 
    @Override
    public void closePopup()
    {
       super.closePopup();
-      correspondenceAttachmentsHandler.popupClosed();      
    }
 
    /* (non-Javadoc)

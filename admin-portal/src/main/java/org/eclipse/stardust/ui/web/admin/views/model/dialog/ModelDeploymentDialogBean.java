@@ -68,7 +68,6 @@ public class ModelDeploymentDialogBean extends Wizard implements ViewEventHandle
    public void closePopup()
    {
       super.closePopup();
-      FacesUtils.refreshPage();// TODO remove this call
    }
 
    public ModelDeploymentConfigurationPage getConfigurationPage()
@@ -269,7 +268,6 @@ public class ModelDeploymentDialogBean extends Wizard implements ViewEventHandle
       modelTableEntry.setDeploymentAction(overwrite ? 2 : 1);
       deploymentPage.addModelToModelList(modelTableEntry);
       deploymentPage.initialize();
-      FacesUtils.refreshPage(); // remove
    }
 
    public void setAllowBrowse(boolean allowBrowse)

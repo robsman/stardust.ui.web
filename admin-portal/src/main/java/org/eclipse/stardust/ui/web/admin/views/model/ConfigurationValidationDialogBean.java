@@ -375,7 +375,6 @@ public class ConfigurationValidationDialogBean extends PopupUIComponentBean
    public void continueSave()
    {
       super.closePopup();
-      FacesUtils.refreshPage();
       getICallbackHandler().handleEvent(EventType.APPLY);
    }
    
@@ -383,8 +382,6 @@ public class ConfigurationValidationDialogBean extends PopupUIComponentBean
    public void closePopup()
    {      
       super.closePopup();
-      FacesUtils.refreshPage();
       getICallbackHandler().handleEvent(EventType.CANCEL);
    }
-
 }

@@ -63,7 +63,6 @@ import org.eclipse.stardust.ui.web.common.treetable.TreeTable;
 import org.eclipse.stardust.ui.web.common.treetable.TreeTableBean;
 import org.eclipse.stardust.ui.web.common.treetable.TreeTableNode;
 import org.eclipse.stardust.ui.web.common.treetable.TreeTableUserObject;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
@@ -270,7 +269,6 @@ public class ModelManagementBean extends UIComponentBean implements ViewEventHan
       deployBean.setOverwrite(false);
       deployBean.setAllowBrowse(true);
       deployBean.openPopup();
-      FacesUtils.refreshPage(); // remove
    }
 
    /**
@@ -314,7 +312,6 @@ public class ModelManagementBean extends UIComponentBean implements ViewEventHan
          deployBean.setOverwriteModel(row.getOid(), row.getParent().getLabel(), row.getVersion());
          deployBean.setAllowBrowse(true);
          deployBean.openPopup();
-         FacesUtils.refreshPage();// TODO remove this call
       }
       else if ((row != null) && type.equals(PopUpActionType.RUN_REPORT.name()))
       {

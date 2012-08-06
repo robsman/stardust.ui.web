@@ -175,8 +175,7 @@ public class AbortActivityBean extends PopupUIComponentBean
             if (null != activityInstance)
             {
                activityInstance = ActivityInstanceUtils.getActivityInstance(activityInstance.getOID());
-               if (ActivityInstanceUtils.isAbortable(activityInstance)
-                     && !ActivityInstanceUtils.isDefaultCaseActivity(activityInstance))
+               if (!ActivityInstanceUtils.isDefaultCaseActivity(activityInstance))
                {
                   try
                   {

@@ -227,7 +227,10 @@ public class ActivityDetailsBean extends UIComponentBean
    List<ToolbarSection> documentViewToolbars;
    
    private WorkflowAction selectedAction = WorkflowAction.SUSPEND;
-   
+
+   private boolean qualityAssuranceActionInProgress;
+   private QAAction qualityAssuranceAction;   
+
    public static IActivityInteractionController getInteractionController(Activity activity)
    {
       IActivityInteractionController interactionController = ActivityInstanceUtils
@@ -456,8 +459,6 @@ public class ActivityDetailsBean extends UIComponentBean
             {
                fireEventForViewEventAwareInteractionController(activityInstance, event);
             }
-
-            FacesUtils.refreshPage();
          }
       }
       else if (ViewEventType.POST_OPEN_LIFECYCLE == event.getType())
@@ -1110,7 +1111,6 @@ public class ActivityDetailsBean extends UIComponentBean
                {
                   setActivityInstance(ActivityInstanceUtils.activate(ai));
                   update(false);
-                  FacesUtils.refreshPage();
                }
             }
          }
@@ -1361,16 +1361,26 @@ public class ActivityDetailsBean extends UIComponentBean
       IActivityInteractionController interactionController = getInteractionController(ai
             .getActivity());
 
-      retrieveOutDataMapping(interactionController, false, new ParametricCallbackHandler()
+      if (null != interactionController)
       {
-         public void handleEvent(EventType eventType)
+         qualityAssuranceActionInProgress = true;
+         qualityAssuranceAction = action;
+         if (interactionController.closePanel(ai, ClosePanelScenario.COMPLETE))
          {
-            if (EventType.APPLY == eventType)
+            qualityAssuranceActionInProgress = false;
+            qualityAssuranceAction = null;
+            retrieveOutDataMapping(interactionController, false, new ParametricCallbackHandler()
             {
-               QualityAssuranceActivityBean.openDialog(action, getActivityInstance(), thisView, getParameters());
-            }
+               public void handleEvent(EventType eventType)
+               {
+                  if (EventType.APPLY == eventType)
+                  {
+                     QualityAssuranceActivityBean.openDialog(action, getActivityInstance(), thisView, getParameters());
+                  }
+               }
+            });
          }
-      });
+      }
    }
    
    /**
@@ -1436,7 +1446,16 @@ public class ActivityDetailsBean extends UIComponentBean
                   {
                      if (EventType.APPLY == eventType)
                      {
-                        completeCurrentActivityContinue((Map)getParameters());
+                        if (qualityAssuranceActionInProgress)
+                        {
+                           qualityAssuranceActionInProgress = false;
+                           QualityAssuranceActivityBean.openDialog(qualityAssuranceAction, getActivityInstance(), thisView, getParameters());
+                           qualityAssuranceAction = null;
+                        }
+                        else
+                        {
+                           completeCurrentActivityContinue((Map)getParameters());
+                        }
                      }
                   }
                });
@@ -1472,7 +1491,8 @@ public class ActivityDetailsBean extends UIComponentBean
             nextActivityObject = completionLog.getNextActivity();
             if (null == nextActivityObject
                   && !QualityAssuranceState.QUALITY_ASSURANCE_TRIGGERED.equals(activityInstance
-                        .getQualityAssuranceState()))
+                        .getQualityAssuranceState())
+                  && !QualityAssuranceState.IS_REVISED.equals(activityInstance.getQualityAssuranceState()))
             {
                nextActivityObject = PollingProperties.getInstance().poll(this);
             }
@@ -1503,12 +1523,13 @@ public class ActivityDetailsBean extends UIComponentBean
                   params.put("pushService", assemblyLinePushService);
                   params.put("worklistsBean", worklistsBean);
                }
-   
                ActivityInstanceUtils.openActivity(nextActivityObject, params);
+               FacesUtils.refreshPage(true);
             }
             else if(assemblyLineActivity && assemblyLinePushService)
             {
                worklistsBean.openNextAssemblyLineActivity(params);
+               FacesUtils.refreshPage(true);
             }
          }
          skipViewEvents = false;

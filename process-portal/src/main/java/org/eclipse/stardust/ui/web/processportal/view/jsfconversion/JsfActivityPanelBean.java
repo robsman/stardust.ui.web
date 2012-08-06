@@ -10,13 +10,18 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.processportal.view.jsfconversion;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstancePriority;
 import org.eclipse.stardust.ui.common.form.InputController;
+import org.eclipse.stardust.ui.common.form.jsf.DocumentInputController;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
@@ -97,7 +102,14 @@ public class JsfActivityPanelBean implements IJsfActivityPanelBean, ViewEventHan
     */
    public String getFormId()
    {
-      return activityForm.getFormId();
+      if (null != activityForm)
+      {
+         return activityForm.getFormId();
+      }
+      else
+      {
+         return "";
+      }
    }
 
    /**
@@ -105,7 +117,14 @@ public class JsfActivityPanelBean implements IJsfActivityPanelBean, ViewEventHan
     */
    public boolean isFormValidationsPresent()
    {
-      return activityForm.isFormValidationsPresent();
+      if (null != activityForm)
+      {
+         return activityForm.isFormValidationsPresent();
+      }
+      else
+      {
+         return false;
+      }
    }
 
    /**
@@ -113,7 +132,14 @@ public class JsfActivityPanelBean implements IJsfActivityPanelBean, ViewEventHan
     */
    public Map<String, InputController> getFullPathInputControllerMap()
    {
-      return activityForm.getFullPathInputControllerMap();
+      if (null != activityForm)
+      {
+         return activityForm.getFullPathInputControllerMap();
+      }
+      else
+      {
+         return null;
+      }
    }
 
    /**
@@ -144,12 +170,112 @@ public class JsfActivityPanelBean implements IJsfActivityPanelBean, ViewEventHan
    }
 
    /**
+    * This methods saves document if it's not already saved (i.e. if it's freshly uploaded document) 
+    * Calling this method in complete() is responsibility of Backing Bean.
+    * @param id Data Mapping id
+    */
+   protected boolean saveDocumentIfRequired(String id)
+   {
+      Document doc = (Document)getData(id);
+      if (null != doc)
+      {
+         DocumentInputController docInputCtrl = (DocumentInputController)activityForm.getTopLevelInputController(id);
+         return docInputCtrl.saveDocument();
+      }
+
+      return false;
+   }
+
+   /**
+    * Converts java.util.Calendar to java.util.Date
+    * Calling this method from JSF getter method is responsibility of Backing Bean.
+    * @param id Data Mapping id
+    * @return
+    */
+   protected Date getDataAsDate(String id)
+   {
+      Object data = getData(id);
+      if (null != data)
+      {
+         if (data instanceof Date)
+         {
+            return (Date)data;
+         }
+         else if (data instanceof Calendar)
+         {
+            return ((Calendar)data).getTime();
+         }
+      }
+      return null;
+   }
+
+   /**
+    * Converts java.util.Date to java.util.Calendar
+    * Calling this method from JSF getter method is responsibility of Backing Bean.
+    * @param id
+    * @return
+    */
+   protected Calendar getDataAsCalendar(String id)
+   {
+      Object data = getData(id);
+      if (null != data)
+      {
+         if (data instanceof Date)
+         {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime((Date)data);
+            return calendar;
+         }
+         else if (data instanceof Calendar)
+         {
+            return (Calendar)data;
+         }
+      }
+      return null;
+   }
+
+   /**
+    * Converts Priority String to Integer
+    * Calling this method from JSF getter method is responsibility of Backing Bean.
+    * @param id Data Mapping id
+    * @return
+    */
+   protected int getDataAsPriorityIndex(String id)
+   {
+      try
+      {
+         Object priorityObj = getData(id);
+         if (priorityObj instanceof Integer)
+         {
+            return (Integer)priorityObj;
+         }
+         else if (priorityObj instanceof String)
+         {
+            Integer priority = Integer.parseInt((String)priorityObj);
+            return priority;
+         }
+      }
+      catch (Exception e)
+      {
+      }
+      
+      return ProcessInstancePriority.NORMAL;
+   }
+
+   /**
     * @param id
     * @return
     */
    protected Object getData(String id)
    {
-      return activityForm.getValue(id);
+      if (null != activityForm)
+      {
+         return activityForm.getValue(id);
+      }
+      else
+      {
+         return null;
+      }
    }
 
    /**
@@ -158,7 +284,10 @@ public class JsfActivityPanelBean implements IJsfActivityPanelBean, ViewEventHan
     */
    protected void setData(String id, Object value)
    {
-      activityForm.setValue(id, value);
+      if (null != activityForm)
+      {
+         activityForm.setValue(id, value);
+      }
    }
 
    public ManualActivityForm getActivityForm()

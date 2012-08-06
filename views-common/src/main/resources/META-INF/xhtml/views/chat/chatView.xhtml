@@ -14,6 +14,11 @@
 	<body>
 	<ice:panelGroup>
 		<ui:include src="/plugins/views-common/views/chat/chatCloseConfirmationPopup.xhtml" />
+		<ui:include
+			src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+			<ui:param name="dialogBean"
+				value="#{chatViewBean.confirmationDialog}" />
+		</ui:include>
 	</ice:panelGroup>
 	<ice:panelGroup styleClass="pnlBrdrDemo">
 		<ice:panelBorder renderNorth="false" renderSouth="false"

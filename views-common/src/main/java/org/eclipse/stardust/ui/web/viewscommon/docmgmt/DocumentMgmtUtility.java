@@ -219,11 +219,11 @@ public class DocumentMgmtUtility
       Document doc = null;
       
       existingDocument.setDescription(description);
-      
       existingDocument.setOwner(getUser().getAccount());
+
       if (!isDocumentVersioned(existingDocument))
       {
-         existingDocument = getDocumentManagementService().versionDocument(existingDocument.getId(), "", null);
+         getDocumentManagementService().versionDocument(existingDocument.getId(), "", null);
       }
       
       if (null != fileData)
@@ -749,9 +749,13 @@ public class DocumentMgmtUtility
                   // (carnot.properties "Carnot.Configuration.ContentStreamingThreshold")
                   // since the base url of the dms-content servlet is unknown
                   byte[] documentContent = readEntryData(stream);
+                  
+                  //set contentType
+                  DocumentInfo docInfo = DmsUtils.createDocumentInfo(documentName);
+                  docInfo.setContentType(MimeTypesHelper.detectMimeType(documentName, null).getType());
+                  
                   // use default encoding, should not be a problem
-                  Document document = getDocumentManagementService().createDocument(folder.getId(), DmsUtils.createDocumentInfo(documentName),
-                        documentContent, null);
+                  getDocumentManagementService().createDocument(folder.getId(), docInfo, documentContent, null);
                }
             }
          }

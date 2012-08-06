@@ -242,7 +242,7 @@ public class LoginDialogBean implements Serializable
             // Change Pwd Dialog
             if(sessionCtx.getUser().isPasswordExpired()) 
             {
-            	changePwdDialog.setAccount(getAccount());
+            	changePwdDialog.initAccount(getAccount());
             	changePwdDialog.openPopup();
             	return null;
             }

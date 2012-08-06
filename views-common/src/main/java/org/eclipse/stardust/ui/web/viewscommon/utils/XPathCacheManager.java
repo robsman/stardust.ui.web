@@ -20,6 +20,7 @@ import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.engine.api.model.Reference;
 import org.eclipse.stardust.engine.api.model.TypeDeclaration;
 import org.eclipse.stardust.engine.core.struct.ClientXPathMap;
 import org.eclipse.stardust.engine.core.struct.IXPathMap;
@@ -96,7 +97,9 @@ public class XPathCacheManager
     */
    public IXPathMap getXpathMap(Model model, DataPath dataPath)
    {
-      Data data = model.getData(dataPath.getData());
+      Model refModel = getReferenceModel(model, dataPath);
+
+      Data data = refModel.getData(dataPath.getData());
 
       if (!cacheEnabled)
       {
@@ -104,19 +107,19 @@ public class XPathCacheManager
          {
             trace.debug("ClientXPathMap Caching is not enabled. Creating New and returning the same");
          }
-         return ClientXPathMap.getXpathMap(model, data);
+         return ClientXPathMap.getXpathMap(refModel, data);
       }
 
       // Caching Mechanism
-      Long dataCachKey = getDataCacheKey(model, data);
+      Long dataCachKey = getDataCacheKey(refModel, data);
       IXPathMap xPathMap = dataXPathMapCache.get(dataCachKey);
       if (null == xPathMap)
       {
-         TypeDeclarationCacheKey typeCachKey = getTypeCacheKey(model, data);
+         TypeDeclarationCacheKey typeCachKey = getTypeCacheKey(refModel, data);
          xPathMap = typeXPathMapCache.get(typeCachKey);
          if (null == xPathMap)
          {
-            xPathMap = createIXPathMap(model, data, typeCachKey);
+            xPathMap = createIXPathMap(refModel, data, typeCachKey);
             typeXPathMapCache.put(typeCachKey, xPathMap);
             if (trace.isDebugEnabled())
             {
@@ -244,6 +247,25 @@ public class XPathCacheManager
       }
    }
 
+   /**
+    * @param model
+    * @param dp
+    * @return
+    */
+   private Model getReferenceModel(Model model, DataPath dp)
+   {
+      Data data = model.getData(dp.getData());
+      Reference ref = data.getReference();
+      Model refModel = model;
+
+      if (ref != null)
+      {
+         refModel = ModelCache.findModelCache().getModel(ref.getModelOid());
+      }
+
+      return refModel;
+   }
+   
    /**
     * @author florin.herinean
     *
