@@ -64,6 +64,8 @@ public class Constants
 
    public static final Boolean searchCaseSensitive;
    
+   public static final String ROOT_GRID = "rootGrid";
+   
    public ActivityInstanceStates getActivityInstanceState()
    {
       return activityInstanceStates;

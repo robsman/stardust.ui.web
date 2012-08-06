@@ -13,17 +13,24 @@ package org.eclipse.stardust.ui.web.viewscommon.utils;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.servlet.http.HttpSession;
 
+import org.eclipse.stardust.ui.common.form.FormContainer;
 import org.eclipse.stardust.ui.common.form.Indent;
 import org.eclipse.stardust.ui.common.form.jsf.ILabelProvider;
 import org.eclipse.stardust.ui.common.form.jsf.JsfFormGenerator;
+import org.eclipse.stardust.ui.common.form.jsf.JsfStructureContainer;
+import org.eclipse.stardust.ui.common.form.jsf.utils.IceFacesComponentUtils;
 import org.eclipse.stardust.ui.common.form.preferences.FormGenerationPreferences;
 import org.eclipse.stardust.ui.common.introspection.Path;
 import org.eclipse.stardust.ui.web.common.util.CustomBooleanConverter;
 import org.eclipse.stardust.ui.web.common.util.CustomDateConverter;
 import org.eclipse.stardust.ui.web.common.util.CustomDateTimeConverter;
 import org.eclipse.stardust.ui.web.common.util.CustomTimeConverter;
+import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter;
 
 import com.icesoft.faces.component.ext.HtmlPanelGrid;
@@ -52,6 +59,24 @@ public class IppJsfFormGenerator extends JsfFormGenerator
          ILabelProvider labelProvider)
    {
       super(generationPreferences, formBinding, labelProvider);
+   }
+
+   @Override
+   protected JsfStructureContainer createRootContainer()
+   {
+      // reuse previous Root Container if available
+      HttpSession s = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+      if (null == s.getAttribute(Constants.ROOT_GRID))
+      {
+         return super.createRootContainer();
+      }
+      else
+      {
+         JsfStructureContainer rootContainer = new JsfStructureContainer(
+               (HtmlPanelGrid) (s.getAttribute(Constants.ROOT_GRID)));
+         s.setAttribute(Constants.ROOT_GRID, null);
+         return rootContainer;
+      }
    }
 
    @Override

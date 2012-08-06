@@ -116,6 +116,16 @@ public class ActivityInstanceUtils
     */
    public static void openActivity(ActivityInstance ai, Map<String, Object> viewParams)
    {
+      openActivity(ai, viewParams, -1);
+   }
+   
+   /**
+    * @param ai
+    * @param viewParams
+    * @param viewIndex
+    */
+   public static void openActivity(ActivityInstance ai, Map<String, Object> viewParams, int viewIndex)
+   {
       if (null != ai)
       {
          if (!isSupportsWeb(ai.getActivity()))
@@ -156,7 +166,7 @@ public class ActivityInstanceUtils
             params.put("activityName", I18nUtils.getActivityName(activatedAi.getActivity()));
 
             PortalApplication.getInstance().openViewById("activityPanel", "oid=" + activatedAi.getOID(), params, null,
-                  false);
+                  false, viewIndex);
 
          }
       }

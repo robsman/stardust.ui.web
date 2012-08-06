@@ -515,6 +515,22 @@ public class PortalApplication
     * @param nestedView
     * @return
     */
+   public View openViewById(String viewId, String viewKey, Map<String, Object> params, AbstractMessageBean msgBean,
+         boolean nestedView, int viewIndex)
+   {
+      View view = getPortalUiController().openViewById(viewId, viewKey, params, msgBean, nestedView);
+      addToDisplayedViews(view, true, viewIndex);
+      return view;
+   }
+   
+   /**
+    * @param viewId
+    * @param viewKey
+    * @param params
+    * @param msgBean
+    * @param nestedView
+    * @return
+    */
    public View openViewById(String viewId, String viewKey, Map<String, Object> params,
          AbstractMessageBean msgBean, boolean nestedView)
    {
@@ -1058,6 +1074,11 @@ public class PortalApplication
       }
    }
 
+   public int getViewIndex(View view)
+   {
+      return displayedViews.indexOf(view);
+   }   
+   
    /**
     * @param view
     * @param justOpened

@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.servlet.http.HttpSession;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
@@ -87,6 +88,7 @@ import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityForm;
 import org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityAssuranceActivityBean;
 import org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityAssuranceActivityBean.QAAction;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
+import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.NoteTip;
 import org.eclipse.stardust.ui.web.viewscommon.common.activity.QualityAssuranceCodesBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
@@ -1486,10 +1488,12 @@ public class ActivityDetailsBean extends UIComponentBean
          Map<String, Object> params = getPinViewStatusParam();
          
          skipViewEvents = true;
+         int viewIndex = PortalApplication.getInstance().getViewIndex(getThisView());
          PortalApplication.getInstance().closeView(thisView, true, false);
 
          if (completionLog.isSuccess())
          {
+            
             if (null != nextActivityObject)
             {
                if (null != worklistsBean) // Means Assembly Line Mode is OFF  

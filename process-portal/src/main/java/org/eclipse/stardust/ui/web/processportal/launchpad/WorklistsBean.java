@@ -146,6 +146,16 @@ public class WorklistsBean extends AbstractLaunchPanel implements InitializingBe
     */
    public ActivityInstance openNextAssemblyLineActivity(Map<String, Object> params)
    {
+      return openNextAssemblyLineActivity(params, -1);
+   }
+  
+   /**
+    * @param params
+    * @param viewIndex
+    * @return
+    */
+   public ActivityInstance openNextAssemblyLineActivity(Map<String, Object> params, int viewIndex)
+   {
       if (null != getAssemblyLineActivityProvider())
       {
          try
@@ -161,7 +171,7 @@ public class WorklistsBean extends AbstractLaunchPanel implements InitializingBe
             params.put("assemblyLineActivity", true);
             params.put("worklistsBean", this);
 
-            ActivityInstanceUtils.openActivity(ai, params);
+            ActivityInstanceUtils.openActivity(ai, params, viewIndex);
 
             return ai;
          }
