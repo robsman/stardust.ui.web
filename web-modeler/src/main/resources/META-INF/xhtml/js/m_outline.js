@@ -1306,7 +1306,7 @@ define(
 											}
 										}
 									}
-								}).jstree("set_theme", "default");
+								}).jstree("set_theme", "classic", "../css/jstree/classic/style.css");
 				// "themes" : {
 				// "theme" : "default",
 				// "url" : "/xhtml/css/jstree"}}).jstree("set_theme",
@@ -1977,7 +1977,6 @@ define(
 									"fullId" : process.getFullId(),
 									"draggable" : true
 								},
-								"state" : "open",
 								"data" : process.name
 							}, null, false);
 				};
@@ -2003,7 +2002,6 @@ define(
 									"modelUUID" : model.uuid,
 									"draggable" : true
 								},
-								"state" : "open",
 								"data" : application.name
 							}, null, false);
 				};
@@ -2027,7 +2025,6 @@ define(
 									"fullId" : data.getFullId(),
 									"draggable" : true
 								},
-								"state" : "open",
 								"data" : data.name
 							}, null, false);
 				};
@@ -2053,7 +2050,6 @@ define(
 									"fullId" : dataStructure.getFullId(),
 									"draggable" : true
 								},
-								"state" : "open",
 								"data" : dataStructure.name
 							}, null, false);
 				};
