@@ -911,30 +911,32 @@ public class ModelElementMarshaller
       dataFlowJson.addProperty(ModelerConstants.ID_PROPERTY,
             "" + dataMappingConnection.getElementOid());
       ActivityType activity = dataMappingConnection.getActivitySymbol().getActivity();
+      DataType data = dataMappingConnection.getDataSymbol().getData();
       for (DataMappingType dataMapping : activity.getDataMapping())
       {
-         if (dataMapping.getDirection() == DirectionType.IN_LITERAL)
+         // Update the dataFlowJson for currentData symbol
+         if (dataMapping.getData().getId() == data.getId())
          {
-            dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
-            dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, false);
+            if (dataMapping.getDirection() == DirectionType.IN_LITERAL)
+            {
+               dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
+               dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, false);
+            }
+            else if (dataMapping.getDirection() == DirectionType.OUT_LITERAL)
+            {
+               dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, false);
+               dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
+            }
+            else
+            {
+               dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
+               dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
+            }
          }
-         else if (dataMapping.getDirection() == DirectionType.OUT_LITERAL)
-         {
-            dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, false);
-            dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
-         }
-         else
-         {
-            dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
-            dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
-         }
-
       }
 
       dataFlowJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
-            MBFacade.createFullId(
-                  ModelUtils.findContainingModel(dataMappingConnection.getDataSymbol()
-                        .getData()), dataMappingConnection.getDataSymbol().getData()));
+            MBFacade.createFullId(ModelUtils.findContainingModel(data), data));
       dataFlowJson.addProperty(ModelerConstants.ACTIVITY_ID_PROPERTY, activity.getId());
       return connectionJson;
    }
