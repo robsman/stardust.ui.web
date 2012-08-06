@@ -592,110 +592,6 @@ public class ModelService
 
    /**
     * 
-    * @param modelId
-    * @param commandJson
-    * @return
-    */
-   public String renameModel(String modelId, JsonObject commandJson)
-   {
-      JsonObject newObjectJson = commandJson.getAsJsonObject(NEW_OBJECT_PROPERTY);
-      String newName = newObjectJson.get(ModelerConstants.NAME_PROPERTY).getAsString();
-      newObjectJson.addProperty(ModelerConstants.ID_PROPERTY,
-            MBFacade.createIdFromName(newName));
-
-      ModelType model = getModelManagementStrategy().getModels().get(modelId);
-
-      getModelManagementStrategy().deleteModel(model);
-
-      String oldName = model.getName();
-      model.setName(newName);
-      model.setId(newObjectJson.get(ModelerConstants.ID_PROPERTY).getAsString());
-      // TODO Use corresponding modeler function for auto ID generation
-
-      getModelManagementStrategy().getModels().put(model.getId(), model);
-      getModelManagementStrategy().saveModel(model);
-
-      return commandJson.toString();
-   }
-
-   /**
-    * 
-    * @param modelId
-    * @param processId
-    * @param newProcessName
-    * @param postedData
-    * @return
-    */
-   public String renameApplication(String modelId, String applicationId,
-         JsonObject commandJson)
-   {
-      JsonObject newObject = commandJson.getAsJsonObject(NEW_OBJECT_PROPERTY);
-      ModelType model = getModelManagementStrategy().getModels().get(modelId);
-      ApplicationType application = MBFacade.findApplication(model, applicationId);
-
-      // TODO Use corresponding modeler function for auto ID generation
-      application.setId(MBFacade.createIdFromName(newObject.get(
-            ModelerConstants.NAME_PROPERTY).getAsString()));
-      application.setName(newObject.get(ModelerConstants.NAME_PROPERTY).getAsString());
-
-      newObject.addProperty(ModelerConstants.ID_PROPERTY, application.getId());
-
-      return commandJson.toString();
-   }
-
-   /**
-    * @param modelId
-    * @param participantId
-    * @param newName
-    * @param commandJson
-    * @return
-    */
-   public String renameParticipant(String modelId, String participantId,
-         JsonObject commandJson)
-   {
-      JsonObject newObject = commandJson.getAsJsonObject(NEW_OBJECT_PROPERTY);
-      ModelType model = getModelManagementStrategy().getModels().get(modelId);
-      IModelParticipant participant = MBFacade.findParticipant(model, participantId);
-
-      // TODO Use corresponding modeler function for auto ID generation
-      participant.setId(MBFacade.createIdFromName(newObject.get(
-            ModelerConstants.NAME_PROPERTY).getAsString()));
-      participant.setName(newObject.get(ModelerConstants.NAME_PROPERTY).getAsString());
-
-      newObject.addProperty(ModelerConstants.ID_PROPERTY, participant.getId());
-
-      return commandJson.toString();
-   }
-
-   /**
-    * 
-    * @param modelId
-    * @param processId
-    * @param newProcessName
-    * @param postedData
-    * @return
-    */
-   public String renameStructuredDataType(String modelId, String structuredDataTypeId,
-         JsonObject commandJson)
-   {
-      JsonObject newObject = commandJson.getAsJsonObject(NEW_OBJECT_PROPERTY);
-      ModelType model = getModelManagementStrategy().getModels().get(modelId);
-      TypeDeclarationType structuredDataType = MBFacade.findStructuredDataType(model,
-            structuredDataTypeId);
-
-      // TODO Use corresponding modeler function for auto ID generation
-      structuredDataType.setId(MBFacade.createIdFromName(newObject.get(
-            ModelerConstants.NAME_PROPERTY).getAsString()));
-      structuredDataType.setName(newObject.get(ModelerConstants.NAME_PROPERTY)
-            .getAsString());
-
-      newObject.addProperty(ModelerConstants.ID_PROPERTY, structuredDataType.getId());
-
-      return commandJson.toString();
-   }
-
-   /**
-    * 
     * @param httpRequest
     * @param modelId
     * @return
@@ -1288,26 +1184,6 @@ public class ModelService
    }
 
    /**
-    * 
-    * @param modelId
-    * @param transferObject
-    * @return
-    */
-   public String createRole(String modelId, JsonObject roleJson)
-   {
-
-      ModelType model = getModelManagementStrategy().getModels().get(modelId);
-      String roleID = extractString(roleJson, ModelerConstants.ID_PROPERTY);
-      String roleName = extractString(roleJson, ModelerConstants.NAME_PROPERTY);
-      synchronized (model)
-      {
-         MBFacade.createRole(model, roleID, roleName);
-      }
-
-      return roleJson.toString();
-   }
-
-   /**
     * @return
     */
    public String loadProcessDiagram(String modelId, String processId)
@@ -1609,57 +1485,6 @@ public class ModelService
       }
 
       return dataJson;
-   }
-
-   /**
-    * 
-    * @param modelId
-    * @param processId
-    * @param postedData
-    * @return
-    */
-   public String createData(String modelId, JsonObject commandJson)
-   {
-      ModelType model = getModelManagementStrategy().getModels().get(modelId);
-      JsonObject dataJson = commandJson.getAsJsonObject(NEW_OBJECT_PROPERTY);
-      String stripFullId_ = MBFacade.getModelId(extractString(dataJson,
-            STRUCTURED_DATA_TYPE_FULL_ID));
-      if (StringUtils.isEmpty(stripFullId_))
-      {
-         stripFullId_ = modelId;
-      }
-      synchronized (model)
-      {
-
-         long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-
-         DataType data;
-         String id = MBFacade.stripFullId(extractString(dataJson,
-               ModelerConstants.ID_PROPERTY));
-         String name = MBFacade.stripFullId(extractString(dataJson,
-               ModelerConstants.NAME_PROPERTY));
-         String typeKey = extractString(dataJson, TYPE_PROPERTY);
-         String primitiveType = extractString(dataJson, ModelerConstants.PRIMITIVE_TYPE);
-         String structuredDataFullId = MBFacade.stripFullId(extractString(dataJson,
-               STRUCTURED_DATA_TYPE_FULL_ID));
-
-         if (primitiveType != null
-               && primitiveType.equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
-         {
-            MBFacade.createPrimitiveData(model, id, name, primitiveType);
-         }
-         else if (typeKey.equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
-         {
-
-            id = extractString(dataJson, ModelerConstants.ID_PROPERTY);
-            name = extractString(dataJson, ModelerConstants.NAME_PROPERTY);
-            MBFacade.createStructuredData(model, stripFullId_, id, name,
-                  structuredDataFullId);
-         }
-
-      }
-
-      return commandJson.toString();
    }
 
    /**

@@ -319,96 +319,6 @@ public class ModelerResource
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/rename")
-   public Response renameModel(@PathParam("modelId") String modelId, String postedData)
-   {
-      try
-      {
-         String result = getModelService().renameModel(modelId,
-               jsonIo.readJsonObject(postedData));
-         return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-
-         throw new RuntimeException(e);
-      }
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/applications/{applicationId}/rename")
-   public Response renameApplication(@PathParam("modelId") String modelId,
-         @PathParam("applicationId") String applicationId, String command)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(command);
-         String result = getModelService().renameApplication(modelId, applicationId, json);
-
-         return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-
-         throw new RuntimeException(e);
-      }
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/participants/{participantId}/rename")
-   public Response renameParticipant(@PathParam("modelId") String modelId,
-         @PathParam("participantId") String participantId, String command)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(command);
-         String result = getModelService().renameParticipant(modelId, participantId, json);
-
-         return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-
-         throw new RuntimeException(e);
-      }
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/structuredDataTypes/{structuredDataTypeId}/rename")
-   public Response renameStructuredDataType(@PathParam("modelId") String modelId,
-         @PathParam("structuredDataTypeId") String structuredDataTypeId, String command)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(command);
-         String result = getModelService().renameStructuredDataType(modelId,
-               structuredDataTypeId, json);
-         return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-
-         throw new RuntimeException(e);
-      }
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
    @Path("models/{modelId}/processes/{processId}/diagrams/{diagramId}")
    public Response updateDiagram(@PathParam("modelId") String modelId,
          @PathParam("processId") String processId,
@@ -543,28 +453,6 @@ public class ModelerResource
       }
    }
 
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/data")
-   public Response createData(@PathParam("modelId") String modelId, String postedData)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(postedData);
-
-         String result = getModelService().createData(modelId, json);
-
-         return Response.ok(result, APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-         throw new RuntimeException(e);
-      }
-   }
-
    @DELETE
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
@@ -577,28 +465,6 @@ public class ModelerResource
          JsonObject json = jsonIo.readJsonObject(postedData);
 
          String result = getModelService().dropDataSymbol(modelId, processId, json);
-         return Response.ok(result, APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-         throw new RuntimeException(e);
-      }
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/roles")
-   public Response createRole(@PathParam("modelId") String modelId, String postedData)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(postedData);
-
-         String result = getModelService().createRole(modelId, json);
-
          return Response.ok(result, APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
