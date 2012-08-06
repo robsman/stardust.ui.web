@@ -15,6 +15,8 @@ import static org.eclipse.stardust.engine.api.model.PredefinedConstants.ADMINIST
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newManualActivity;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
+import static org.eclipse.stardust.ui.web.modeler.service.ModelService.HEIGHT_PROPERTY;
+import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
@@ -73,6 +75,8 @@ public class GatewayCommandHandler
                - parentLaneSymbol.getYPos() - ModelerConstants.POOL_LANE_MARGIN
                - ModelerConstants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
          gatewaySymbol.setActivity(gateway);
+         gatewaySymbol.setWidth(extractInt(request, WIDTH_PROPERTY));
+         gatewaySymbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
 
          gateway.getActivitySymbols().add(gatewaySymbol);
          processDefinition.getDiagram().get(0).getActivitySymbol().add(gatewaySymbol);

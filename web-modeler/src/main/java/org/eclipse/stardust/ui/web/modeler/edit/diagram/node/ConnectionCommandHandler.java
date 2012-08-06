@@ -117,7 +117,7 @@ public class ConnectionCommandHandler
                            extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID)),
                      MBFacade.findDataSymbol(processDefinition.getDiagram().get(0),
                            extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
-                     maxOid);
+                     maxOid, true);
             }
             else
             {
@@ -181,7 +181,7 @@ public class ConnectionCommandHandler
                            extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
                      MBFacade.findDataSymbol(processDefinition.getDiagram().get(0),
                            extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID)),
-                     maxOid);
+                     maxOid, false);
             }
             else
             {
@@ -370,7 +370,7 @@ public class ConnectionCommandHandler
     */
    private void createDataFlowConnection(JsonObject connectionJson,
          ProcessDefinitionType processDefinition, ActivitySymbolType activitySymbol,
-         DataSymbolType dataSymbol, long maxOid)
+         DataSymbolType dataSymbol, long maxOid, boolean inDataMapping)
    {
 
       System.out.println("Create data flow connection");
@@ -386,9 +386,16 @@ public class ConnectionCommandHandler
       dataMapping.setId(data.getId());
       dataMapping.setName(data.getName());
 
-      dataMapping.setDirection(DirectionType.get(DirectionType.OUT));
-      dataMapping.setData(data);
+      if (inDataMapping)
+      {
+         dataMapping.setDirection(DirectionType.get(DirectionType.IN));
+      }
+      else
+      {
+         dataMapping.setDirection(DirectionType.get(DirectionType.OUT));
+      }
 
+      dataMapping.setData(data);
       // TODO Incomplete
 
       // if (activity.getImplementation().getLiteral().equals("Application"))

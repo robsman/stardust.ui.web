@@ -25,8 +25,10 @@ import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.ContextType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
+import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.GatewaySymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
@@ -369,208 +371,23 @@ public class ModelElementMarshaller
 
          for (DataMappingConnectionType dataMappingConnection : poolSymbol.getDataMappingConnection())
          {
-            JsonObject connectionJson = new JsonObject();
-
-            connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
-                  dataMappingConnection.getElementOid());
-            connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
-                  dataMappingConnection.getDataSymbol().getElementOid());
-            connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
-                  ModelerConstants.DATA);
-            connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
-                  dataMappingConnection.getActivitySymbol().getElementOid());
-            connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
-                  ModelerConstants.ACTIVITY_KEY);
-            connectionJson.addProperty(
-                  ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY,
-                  mapAnchorOrientation(dataMappingConnection.getSourceAnchor()));
-            connectionJson.addProperty(
-                  ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
-                  mapAnchorOrientation(dataMappingConnection.getTargetAnchor()));
-
-            JsonObject dataFlowJson = new JsonObject();
-            connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, dataFlowJson);
-
-            dataFlowJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                  ModelerConstants.DATA_FLOW_LITERAL);
-            dataFlowJson.addProperty(ModelerConstants.ID_PROPERTY, ""
-                  + dataMappingConnection.getElementOid());
-
-            // TODO Needed!
-//            if (dataMappingC.getDirection() == DirectionType.IN_LITERAL)
-//            {
-//               dataFlow.put(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
-//               dataFlow.put(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, false);
-//            }
-//            else if (dataMapping.getDirection() == DirectionType.OUT_LITERAL)
-//            {
-//               dataFlow.put(ModelerConstants.IN_DATA_MAPPING_PROPERTY, false);
-//               dataFlow.put(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
-//            }
-//            else
-//            {
-//               dataFlow.put(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
-//               dataFlow.put(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
-//            }
-
-            dataFlowJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, MBFacade.createFullId(ModelUtils.findContainingModel(dataMappingConnection.getDataSymbol().getData()),
-                  dataMappingConnection.getDataSymbol().getData()));
-            dataFlowJson.addProperty(ModelerConstants.ACTIVITY_ID_PROPERTY, 
-                  dataMappingConnection.getActivitySymbol().getActivity().getId());
+            JsonObject connectionJson = toDataMappingConnectionType(dataMappingConnection);
 
             connectionsJson.add(
-                  extractString(dataFlowJson, ModelerConstants.ID_PROPERTY),
-                  connectionJson);
+                  extractString(
+                        connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
+                        ModelerConstants.ID_PROPERTY), connectionJson);
          }
 
          // Transitions
 
          for (TransitionConnectionType transitionConnection : poolSymbol.getTransitionConnection())
          {
-            JsonObject connectionJson = new JsonObject();
-            JsonObject modelElementJson = new JsonObject();
-
-            // Common settings
-
-            connectionJson.addProperty(
-                  ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY,
-                  mapAnchorOrientation(transitionConnection.getSourceAnchor()));
-            connectionJson.addProperty(
-                  ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
-                  mapAnchorOrientation(transitionConnection.getTargetAnchor()));
-
-            if (transitionConnection.getTransition() != null)
-            {
-               TransitionType transition = transitionConnection.getTransition();
-
-               connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
-                     transitionConnection.getElementOid());
-               connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY,
-                     modelElementJson);
-
-               modelElementJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                     ModelerConstants.CONTROL_FLOW_LITERAL);
-               modelElementJson.addProperty(ModelerConstants.ID_PROPERTY,
-                     transition.getId());
-
-               if (transition.getCondition().equals("CONDITION"))
-               {
-                  modelElementJson.addProperty(
-                        ModelerConstants.CONDITION_EXPRESSION_PROPERTY,
-                        (String) transition.getExpression().getMixed().getValue(0));
-                  modelElementJson.addProperty(ModelerConstants.OTHERWISE_PROPERTY, false);
-               }
-               else
-               {
-                  modelElementJson.addProperty(ModelerConstants.OTHERWISE_PROPERTY, true);
-               }
-
-               loadDescription(modelElementJson, transition);
-               loadAttributes(transition, modelElementJson);
-
-               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
-                     transition.getFrom().getActivitySymbols().get(0).getElementOid());
-
-               // TODO Hack to identify gateways
-
-               if (transition.getFrom().getId().toLowerCase().startsWith("gateway"))
-               {
-                  connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
-                        ModelerConstants.GATEWAY);
-               }
-               else
-               {
-                  connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
-                        ModelerConstants.ACTIVITY_KEY);
-               }
-
-               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
-                     transition.getTo().getActivitySymbols().get(0).getElementOid());
-
-               if (transition.getTo().getId().toLowerCase().startsWith("gateway"))
-               {
-                  connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
-                        ModelerConstants.GATEWAY);
-                  connectionJson.remove(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY);
-                  connectionJson.addProperty(
-                        ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
-                        ModelerConstants.NORTH_KEY);
-               }
-               else
-               {
-                  connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
-                        ModelerConstants.ACTIVITY_KEY);
-               }
-
-               connectionsJson.add(
-                     extractString(modelElementJson, ModelerConstants.ID_PROPERTY),
-                     connectionJson);
-            }
-            else if (transitionConnection.getSourceNode() instanceof StartEventSymbol)
-            {
-
-               connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
-                     transitionConnection.getElementOid());
-               connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY,
-                     modelElementJson);
-
-               modelElementJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                     ModelerConstants.CONTROL_FLOW_LITERAL);
-               modelElementJson.addProperty(
-                     ModelerConstants.ID_PROPERTY,
-                     transitionConnection.getSourceNode().getElementOid()
-                           + "-"
-                           + ((ActivitySymbolType) transitionConnection.getTargetActivitySymbol()).getActivity()
-                                 .getId());
-
-               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
-                     transitionConnection.getSourceNode().getElementOid());
-               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
-                     ModelerConstants.EVENT_KEY);
-               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
-                     transitionConnection.getTargetActivitySymbol().getElementOid());
-               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
-                     ModelerConstants.ACTIVITY_KEY);
-               connectionsJson.add(
-                     extractString(modelElementJson, ModelerConstants.ID_PROPERTY),
-                     connectionJson);
-            }
-            else if (transitionConnection.getTargetNode() instanceof EndEventSymbol)
-            {
-               connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
-                     transitionConnection.getElementOid());
-               connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY,
-                     modelElementJson);
-               modelElementJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                     ModelerConstants.CONTROL_FLOW_LITERAL);
-               modelElementJson.addProperty(
-                     ModelerConstants.ID_PROPERTY,
-                     ((ActivitySymbolType) transitionConnection.getSourceActivitySymbol()).getActivity()
-                           .getId()
-                           + "-"
-                           + String.valueOf(transitionConnection.getTargetNode()
-                                 .getElementOid()));
-               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
-                     transitionConnection.getSourceActivitySymbol().getElementOid());
-               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
-                     ModelerConstants.ACTIVITY_KEY);
-               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
-                     String.valueOf(transitionConnection.getTargetNode().getElementOid()));
-               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
-                     ModelerConstants.EVENT_KEY);
-               connectionsJson.add(
-                     extractString(modelElementJson, ModelerConstants.ID_PROPERTY),
-                     connectionJson);
-
-               // For end event symbol the anchorpoint orientation is set to "bottom", in
-               // the eclipse modeler.
-               // This causes wrong routing of the the connector.
-               // Hence overriding the property with "center" / or "undefined"
-               connectionJson.remove(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY);
-               connectionJson.addProperty(
-                     ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
-                     ModelerConstants.UNDEFINED_ORIENTATION_KEY);
-            }
+            JsonObject connectionJson = toTransitionType(transitionConnection);
+            connectionsJson.add(
+                  extractString(
+                        connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
+                        ModelerConstants.ID_PROPERTY), connectionJson);
          }
       }
 
@@ -1066,57 +883,60 @@ public class ModelElementMarshaller
     * @param dataMappingConnection
     * @return
     */
-   public JsonObject toDataMappingConnectionType(DataMappingConnectionType dataMappingConnection)
+   public JsonObject toDataMappingConnectionType(
+         DataMappingConnectionType dataMappingConnection)
    {
-         JsonObject connectionJson = new JsonObject();
+      JsonObject connectionJson = new JsonObject();
 
-         connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
-               dataMappingConnection.getElementOid());
-         connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
-               dataMappingConnection.getDataSymbol().getElementOid());
-         connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
-               ModelerConstants.DATA);
-         connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
-               dataMappingConnection.getActivitySymbol().getElementOid());
-         connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
-               ModelerConstants.ACTIVITY_KEY);
-         connectionJson.addProperty(
-               ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY,
-               mapAnchorOrientation(dataMappingConnection.getSourceAnchor()));
-         connectionJson.addProperty(
-               ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
-               mapAnchorOrientation(dataMappingConnection.getTargetAnchor()));
+      connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
+            dataMappingConnection.getElementOid());
+      connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
+            dataMappingConnection.getDataSymbol().getElementOid());
+      connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
+            ModelerConstants.DATA);
+      connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
+            dataMappingConnection.getActivitySymbol().getElementOid());
+      connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
+            ModelerConstants.ACTIVITY_KEY);
+      connectionJson.addProperty(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY,
+            mapAnchorOrientation(dataMappingConnection.getSourceAnchor()));
+      connectionJson.addProperty(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
+            mapAnchorOrientation(dataMappingConnection.getTargetAnchor()));
 
-         JsonObject dataFlowJson = new JsonObject();
-         connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, dataFlowJson);
+      JsonObject dataFlowJson = new JsonObject();
+      connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, dataFlowJson);
 
-         dataFlowJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-               ModelerConstants.DATA_FLOW_LITERAL);
-         dataFlowJson.addProperty(ModelerConstants.ID_PROPERTY, ""
-               + dataMappingConnection.getElementOid());
+      dataFlowJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+            ModelerConstants.DATA_FLOW_LITERAL);
+      dataFlowJson.addProperty(ModelerConstants.ID_PROPERTY,
+            "" + dataMappingConnection.getElementOid());
+      ActivityType activity = dataMappingConnection.getActivitySymbol().getActivity();
+      for (DataMappingType dataMapping : activity.getDataMapping())
+      {
+         if (dataMapping.getDirection() == DirectionType.IN_LITERAL)
+         {
+            dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
+            dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, false);
+         }
+         else if (dataMapping.getDirection() == DirectionType.OUT_LITERAL)
+         {
+            dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, false);
+            dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
+         }
+         else
+         {
+            dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
+            dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
+         }
 
-         // TODO Needed!
-//         if (dataMappingC.getDirection() == DirectionType.IN_LITERAL)
-//         {
-//            dataFlow.put(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
-//            dataFlow.put(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, false);
-//         }
-//         else if (dataMapping.getDirection() == DirectionType.OUT_LITERAL)
-//         {
-//            dataFlow.put(ModelerConstants.IN_DATA_MAPPING_PROPERTY, false);
-//            dataFlow.put(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
-//         }
-//         else
-//         {
-//            dataFlow.put(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
-//            dataFlow.put(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
-//         }
+      }
 
-         dataFlowJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, MBFacade.createFullId(ModelUtils.findContainingModel(dataMappingConnection.getDataSymbol().getData()),
-               dataMappingConnection.getDataSymbol().getData()));
-         dataFlowJson.addProperty(ModelerConstants.ACTIVITY_ID_PROPERTY, 
-               dataMappingConnection.getActivitySymbol().getActivity().getId());
-         return connectionJson;
+      dataFlowJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
+            MBFacade.createFullId(
+                  ModelUtils.findContainingModel(dataMappingConnection.getDataSymbol()
+                        .getData()), dataMappingConnection.getDataSymbol().getData()));
+      dataFlowJson.addProperty(ModelerConstants.ACTIVITY_ID_PROPERTY, activity.getId());
+      return connectionJson;
    }
    
    /**

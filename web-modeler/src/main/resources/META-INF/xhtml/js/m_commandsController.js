@@ -176,6 +176,7 @@ define(
 				CommandsController.prototype.submitCommand = function(command) {
 					var url = m_communicationController.getEndpointUrl()
 							+ command.path;
+					var obj = [];
 
 					if (command.operation != null) {
 						url += "/" + command.operation;
@@ -217,7 +218,15 @@ define(
 										{
 											"url" : url
 										},
-										JSON.stringify(command),
+										// Added to remove any cyclic reference
+										JSON.stringify(command, function(key, val) {
+											   if (typeof val == "object") {
+												if (obj.indexOf(val) >= 0)
+													return undefined;
+												obj.push(val);
+											}
+											return val;
+											}),
 										new function() {
 											return {
 												"success" : function(command) {

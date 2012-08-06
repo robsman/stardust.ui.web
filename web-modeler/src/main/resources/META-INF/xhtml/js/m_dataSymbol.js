@@ -24,7 +24,7 @@ define(
 
 					// TODO Need to create data before!
 					
-					dataSymbol.dataId = "Data" + index;
+					dataSymbol.dataId = "Data_" + index;
 					dataSymbol.dataName = "Data " + index;
 					dataSymbol.dataFullId = m_model.getFullId(diagram.model,
 							"Data" + index);
