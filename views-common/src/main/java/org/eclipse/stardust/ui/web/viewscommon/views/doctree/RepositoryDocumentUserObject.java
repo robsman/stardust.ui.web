@@ -233,7 +233,7 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
       try
       {
          document.setName(this.getName());
-         document = getDMS().updateDocument(document, false, "", false);
+         document = getDMS().updateDocument(document, true, "", null, false);
          updateprocessInstance(document);
          this.setText(this.getName());
       }
