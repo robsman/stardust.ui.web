@@ -1240,6 +1240,7 @@ define(
 												"valid_children" : [
 														"Entity_Bean",
 														"primitive",
+														"dmsDocument",
 														"Serializable_Data",
 														"struct", "Document",
 														"Document_List",
@@ -1266,6 +1267,11 @@ define(
 											"Entity_Bean" : {
 												"icon" : {
 													"image" : "../images/icons/entity_data.gif"
+												}
+											},
+											"dmsDocument" : {
+												"icon" : {
+													"image" : "../images/icons/blue-document.png"
 												}
 											},
 											"Document" : {
