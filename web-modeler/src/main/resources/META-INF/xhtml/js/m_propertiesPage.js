@@ -2,14 +2,16 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_command", "m_commandsController", "m_dialog" ],
-		function(m_utils, m_constants, m_command, m_commandsController, m_dialog) {
+		[ "m_utils", "m_constants", "m_command", "m_commandsController",
+				"m_dialog" ],
+		function(m_utils, m_constants, m_command, m_commandsController,
+				m_dialog) {
 
 			return {
-				createPropertiesPage : function(propertiesPanel, id,
-						titel, imageUrl) {
-					return new PropertiesPage(propertiesPanel, id,
-							titel, imageUrl);
+				createPropertiesPage : function(propertiesPanel, id, titel,
+						imageUrl) {
+					return new PropertiesPage(propertiesPanel, id, titel,
+							imageUrl);
 				}
 			};
 
@@ -20,12 +22,9 @@ define(
 				this.page = jQuery("#" + this.propertiesPanel.id + " #"
 						+ this.id);
 
-				if (imageUrl == null)
-					{
+				if (imageUrl == null) {
 					this.imageUrl = "../../images/icons/generic-properties-page.png";
-					}
-				else
-				{
+				} else {
 					this.imageUrl = imageUrl;
 				}
 				/**
@@ -52,6 +51,7 @@ define(
 				 * 
 				 */
 				PropertiesPage.prototype.validate = function() {
+					return true;
 				};
 
 				/**
@@ -79,34 +79,30 @@ define(
 				 */
 				PropertiesPage.prototype.initializeDocumentationHandling = function() {
 					this.documentationCreationLink = this
-					.mapInputId("documentationCreationLink");
+							.mapInputId("documentationCreationLink");
 					this.documentationCreationLinkPanel = this
-					.mapInputId("documentationCreationLinkPanel");
+							.mapInputId("documentationCreationLinkPanel");
 					this.openDocumentViewLink = this
-					.mapInputId("openDocumentViewLink");
+							.mapInputId("openDocumentViewLink");
 					this.openDocumentViewLinkPanel = this
-					.mapInputId("openDocumentViewLinkPanel");
+							.mapInputId("openDocumentViewLinkPanel");
 					this.documentUrl = null;
-					
-					if (this.documentationCreationLink != null) {
-						this.documentationCreationLink
-								.click(
-										{
-											"callbackScope" : this
-										},
-										function(event) {
-											var url = event.data.callbackScope.getDocumentationCreationUrl();
 
-											m_commandsController
-													.submitImmediately(
-															m_command
-																	.createCommand(url,
-																			event.data.callbackScope.getModelElement()),
-															{
-																"callbackScope" : event.data.callbackScope,
-																"method" : "setDocumentUrl"
-															});
-										});
+					if (this.documentationCreationLink != null) {
+						this.documentationCreationLink.click({
+							"callbackScope" : this
+						}, function(event) {
+							var url = event.data.callbackScope
+									.getDocumentationCreationUrl();
+
+							m_commandsController.submitImmediately(m_command
+									.createCommand(url,
+											event.data.callbackScope
+													.getModelElement()), {
+								"callbackScope" : event.data.callbackScope,
+								"method" : "setDocumentUrl"
+							});
+						});
 					}
 
 					if (this.openDocumentViewLink != null) {
@@ -142,16 +138,15 @@ define(
 				 * 
 				 */
 				PropertiesPage.prototype.getDocumentationCreationUrl = function() {
-					var url =
-					"/models/"
-					+ this.propertiesPanel.element.diagram.modelId
-					+ "/processes/"
-					+ this.propertiesPanel.element.diagram.processId
-					+ "/createDocumentation";
-					
+					var url = "/models/"
+							+ this.propertiesPanel.element.diagram.modelId
+							+ "/processes/"
+							+ this.propertiesPanel.element.diagram.processId
+							+ "/createDocumentation";
+
 					return url;
 				};
-				
+
 				/**
 				 * 
 				 */
@@ -166,19 +161,21 @@ define(
 					this.documentUrl = this.getModelElement().attributes["carnot:engine:documentUrl"];
 
 					if (this.documentUrl == null) {
-						m_dialog.makeVisible(this.documentationCreationLinkPanel);
+						m_dialog
+								.makeVisible(this.documentationCreationLinkPanel);
 						m_dialog.makeInvisible(this.openDocumentViewLinkPanel);
 					} else {
-						m_dialog.makeInvisible(this.documentationCreationLinkPanel);
+						m_dialog
+								.makeInvisible(this.documentationCreationLinkPanel);
 						m_dialog.makeVisible(this.openDocumentViewLinkPanel);
 					}
 				};
-				
+
 				/**
 				 * 
 				 */
 				PropertiesPage.prototype.saveDocumentUrl = function() {
-					this.getModelElement().attributes["carnot:engine:documentUrl"] = this.documentUrl; 					
+					this.getModelElement().attributes["carnot:engine:documentUrl"] = this.documentUrl;
 				};
 
 				/**
@@ -190,17 +187,121 @@ define(
 					m_dialog.makeInvisible(this.documentationCreationLinkPanel);
 					m_dialog.makeVisible(this.openDocumentViewLinkPanel);
 				};
-				
+
 				/**
 				 * 
 				 */
-				PropertiesPage.prototype.submitChanges = function(
-						changes) {
+				PropertiesPage.prototype.registerTextInputForModelElementChangeSubmission = function(
+						input, property) {
+					input
+							.change(
+									{
+										"page" : this,
+										"input" : input
+									},
+									function(event) {
+										var page = event.data.page;
+										var input = event.data.input;
+
+										if (!page.validate()) {
+											return;
+										}
+
+										if (page.propertiesPanel.element.modelElement[property] != input
+												.val()) {
+											modelElement = {};
+											modelElement[property] = input
+													.val();
+
+											page.submitChanges({
+												modelElement : modelElement
+											});
+										}
+									});
+				};
+
+				/**
+				 * 
+				 */
+				PropertiesPage.prototype.registerTextInputForModelElementAttributeChangeSubmission = function(
+						input, attribute) {
+					input
+							.change(
+									{
+										"page" : this,
+										"input" : input
+									},
+									function(event) {
+										var page = event.data.page;
+										var input = event.data.input;
+
+										if (!page.validate()) {
+											return;
+										}
+
+										m_utils.debug(page.propertiesPanel.element.modelElement.attributes[attribute] + " ?= " + input
+												.val());
+										if (page.propertiesPanel.element.modelElement.attributes[attribute] != input
+												.val()) {
+											modelElement = {
+												attributes : {}
+											};
+											modelElement.attributes[attribute] = input
+													.val();
+
+											page.submitChanges({
+												modelElement : modelElement
+											});
+										}
+									});
+				};
+
+				/**
+				 * 
+				 */
+				PropertiesPage.prototype.registerCheckboxInputForModelElementAttributeChangeSubmission = function(
+						input, attribute) {
+					input
+							.click(
+									{
+										"page" : this,
+										"input" : input
+									},
+									function(event) {
+										var page = event.data.page;
+										var input = event.data.input;
+
+										if (!page.validate()) {
+											return;
+										}
+
+										if (page.propertiesPanel.element.modelElement.attributes[attribute] != input
+												.val()) {
+											modelElement = {
+												attributes : {}
+											};
+											modelElement.attributes[attribute] = input
+													.is(":checked");
+
+											page.submitChanges({
+												modelElement : modelElement
+											});
+										}
+									});
+				};
+
+				/**
+				 * 
+				 */
+				PropertiesPage.prototype.submitChanges = function(changes) {
 					m_utils.debug("Changes to be submitted: ");
 					m_utils.debug(changes);
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(this.propertiesPanel.element.diagram.modelId, 
-									this.propertiesPanel.element.oid, changes));
+					m_commandsController
+							.submitCommand(m_command
+									.createUpdateModelElementCommand(
+											this.propertiesPanel.element.diagram.modelId,
+											this.propertiesPanel.element.oid,
+											changes));
 				};
 
 			}

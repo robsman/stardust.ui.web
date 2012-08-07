@@ -11,13 +11,13 @@
 /**
  * @author Marc.Gille
  */
-
 define(
 		[ "m_utils", "m_constants", "m_propertiesPage" ],
 		function(m_utils, m_constants, m_propertiesPage) {
 			return {
-				create: function(propertiesPanel) {
-					return new ActivityControllingPropertiesPage(propertiesPanel);
+				create : function(propertiesPanel) {
+					return new ActivityControllingPropertiesPage(
+							propertiesPanel);
 				}
 			};
 
@@ -29,29 +29,89 @@ define(
 				// Inheritance
 
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						propertiesPanel, "controllingPropertiesPage", "Controlling",  "../../images/icons/controlling-properties-page.png");
+						propertiesPanel, "controllingPropertiesPage",
+						"Controlling",
+						"../../images/icons/controlling-properties-page.png");
 
 				m_utils.inheritFields(this, propertiesPage);
-				m_utils.inheritMethods(ActivityControllingPropertiesPage.prototype,
+				m_utils.inheritMethods(
+						ActivityControllingPropertiesPage.prototype,
 						propertiesPage);
 
 				// Field initialization
-				
+
+				m_utils.debug("Activity Controlling Property Page: "
+						+ this.propertiesPanel.id + " " + this.id);
+				m_utils.debug(jQuery("#" + this.propertiesPanel.id));
+				m_utils.debug(jQuery("#" + this.propertiesPanel.id + " #" + this.id));
+				m_utils.debug(jQuery("#" + this.propertiesPanel.id + " #" + this.id
+						+ " #targetCostPerExecutionInput"));
+
 				this.targetCostPerExecutionInput = jQuery("#"
 						+ this.propertiesPanel.id + " #" + this.id
 						+ " #targetCostPerExecutionInput");
+				this.targetProcessingTimeInput = jQuery("#"
+						+ this.propertiesPanel.id + " #" + this.id
+						+ " #targetProcessingTimeInput");
+				this.targetExecutionTimeInput = jQuery("#"
+						+ this.propertiesPanel.id + " #" + this.id
+						+ " #targetExecutionTimeInput");
+				this.targetIdleTimeInput = jQuery("#" + this.propertiesPanel.id
+						+ " #" + this.id + " #targetIdleTimeInput");
+				this.targetWaitingTimeInput = jQuery("#"
+						+ this.propertiesPanel.id + " #" + this.id
+						+ " #targetWaitingTimeInput");
+				this.targetQueueDepthInput = jQuery("#"
+						+ this.propertiesPanel.id + " #" + this.id
+						+ " #targetQueueDepthInput");
+				this.targetCostPerExecutionInput = jQuery("#"
+						+ this.propertiesPanel.id + " #" + this.id
+						+ " #targetCostPerExecutionInput");
+				this.resourcePerformanceCalculationSelect = jQuery("#"
+						+ this.propertiesPanel.id + " #" + this.id
+						+ " #resourcePerformanceCalculationSelect");
+
+				// Change handling
+
+				this.registerTextInputForModelElementAttributeChangeSubmission(
+						this.targetProcessingTimeInput,
+						"carnot:pwh:targetProcessingTime");
+				this.registerTextInputForModelElementAttributeChangeSubmission(
+						this.targetExecutionTimeInput,
+						"carnot:pwh:targetExecutionTime");
+				this.registerTextInputForModelElementAttributeChangeSubmission(
+						this.targetIdleTimeInput, "carnot:pwh:targetIdleTime");
+				this.registerTextInputForModelElementAttributeChangeSubmission(
+						this.targetWaitingTimeInput,
+						"carnot:pwh:targetWaitingTime");
+				this.registerTextInputForModelElementAttributeChangeSubmission(
+						this.targetQueueDepthInput,
+						"carnot:pwh:targetQueueDepth");
+				this.registerTextInputForModelElementAttributeChangeSubmission(
+						this.targetCostPerExecutionInput,
+						"carnot:pwh:targetCostPerExecution");
 
 				/**
 				 * 
 				 */
 				ActivityControllingPropertiesPage.prototype.setElement = function() {
-					if (this.propertiesPanel.element.properties.cost == null)
-					{
-					this.propertiesPanel.element.properties.cost = {};
-					}
+					m_utils.debug("activity ===>");
+					m_utils.debug(this.propertiesPanel.element.modelElement);
 
+					this.targetProcessingTimeInput
+							.val(this.propertiesPanel.element.modelElement.attributes["carnot:pwh:targetProcessingTime"]);
+					this.targetExecutionTimeInput
+							.val(this.propertiesPanel.element.modelElement.attributes["carnot:pwh:targetExecutionTime"]);
+					this.targetIdleTimeInput
+							.val(this.propertiesPanel.element.modelElement.attributes["carnot:pwh:targetIdleTime"]);
+					this.targetWaitingTimeInput
+							.val(this.propertiesPanel.element.modelElement.attributes["carnot:pwh:targetWaitingTime"]);
+					this.targetQueueDepthInput
+							.val(this.propertiesPanel.element.modelElement.attributes["carnot:pwh:targetQueueDepth"]);
 					this.targetCostPerExecutionInput
-							.val(this.propertiesPanel.element.properties.cost.targetCostPerExecution);
+							.val(this.propertiesPanel.element.modelElement.attributes["carnot:pwh:targetCostPerExecution"]);
+					// this.resourcePerformanceCalculationSelect
+					// .val(this.propertiesPanel.element.modelElement.attributes["carnot:pwh:targetCostPerSecond"]);
 				};
 			}
 		});

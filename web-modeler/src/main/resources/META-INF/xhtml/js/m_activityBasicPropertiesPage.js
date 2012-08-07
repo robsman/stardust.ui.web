@@ -44,9 +44,19 @@ define(
 					this.subprocessInput = this.mapInputId("subprocessInput");
 					this.subprocessList = this.mapInputId("subprocessList");
 					this.participantOutput = this.mapInputId("participantOutput");
+					this.hibernateInitiallyInput = this.mapInputId("hibernateInitiallyInput");
+					this.supportsRelocationInput = this.mapInputId("supportsRelocationInput");
+					this.isRelocationTargetInput = this.mapInputId("isRelocationTargetInput");
 
 					// Initialize callbacks
 
+					this.registerCheckboxInputForModelElementAttributeChangeSubmission(
+							this.hibernateInitiallyInput, "@TOADD@");
+					this.registerCheckboxInputForModelElementAttributeChangeSubmission(
+							this.supportsRelocationInput, "carnot:engine:relocate:source");
+					this.registerCheckboxInputForModelElementAttributeChangeSubmission(
+							this.isRelocationTargetInput, "carnot:engine:relocate:target");
+					
 					this.applicationList
 							.change(
 									{
@@ -247,8 +257,14 @@ define(
 				ActivityBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();
 
+					this.hibernateInitiallyInput.attr("checked", this.propertiesPanel.element.modelElement.attributes["@TOADD@"]);
+					this.supportsRelocationInput.attr("checked", this.propertiesPanel.element.modelElement.attributes["carnot:engine:relocate:source"]);
+					this.isRelocationTargetInput.attr("checked", this.propertiesPanel.element.modelElement.attributes["carnot:engine:relocate:target"]);
+
 					if (this.propertiesPanel.element.modelElement.activityType == m_constants.MANUAL_ACTIVITY_TYPE) {
 						this.setApplicationType(m_constants.AUTO_GENERATED_UI);
+
+						this.participantOutput.empty();
 
 						if (this.propertiesPanel.participant != null) {
 							this.participantOutput.append("executed by <b>"
