@@ -9,10 +9,10 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_modelElementView",
-				"m_model", "m_typeDeclaration" ],
-		function(m_utils, m_command, m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_typeDeclaration) {
+		[ "m_utils", "m_command", "m_commandsController", "m_dialog",
+				"m_modelElementView", "m_model", "m_typeDeclaration" ],
+		function(m_utils, m_command, m_commandsController, m_dialog,
+				m_modelElementView, m_model, m_typeDeclaration) {
 			var view;
 
 			return {
@@ -45,12 +45,134 @@ define(
 				/**
 				 * 
 				 */
-				OrganizationView.prototype.initialize = function(
-						organization) {
+				OrganizationView.prototype.initialize = function(organization) {
 					this.initializeModelElementView();
 					this.initializeModelElement(organization);
-					
+
 					this.organization = organization;
+
+					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
+					this.chooseAssignmentRadio = jQuery("#chooseAssignmentRadio");
+					this.assignAutomaticallyRadio = jQuery("#assignAutomaticallyRadio");
+					this.costCenterInput = jQuery("#costCenterInput");
+
+					this.publicVisibilityCheckbox
+							.change(
+									{
+										"view" : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.modelElement.attributes["carnot:engine:visibility"] != "Public") {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:engine:visibility" : "Public"
+														}
+													});
+										}
+									});
+					this.chooseAssignmentRadio
+							.click(
+									{
+										"view" : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.chooseAssignmentRadio
+												.is(":checked")) {
+											view.assignAutomaticallyRadio.attr(
+													"checked", false);
+
+											if (view.modelElement.attributes["carnot:engine:tasks:assignment:mode"] != "assemblyLine") {
+												view
+														.submitChanges({
+															attributes : {
+																"carnot:engine:tasks:assignment:mode" : "assemblyLine"
+															}
+														});
+											}
+										}
+									});
+					this.assignAutomaticallyRadio
+							.click(
+									{
+										"view" : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.assignAutomaticallyRadio
+												.is(":checked")) {
+											view.chooseAssignmentRadio.attr(
+													"checked", false);
+
+											if (view.modelElement.attributes["carnot:engine:tasks:assignment:mode"] != "assemblyLine") {
+												view
+														.submitChanges({
+															attributes : {
+																"carnot:engine:tasks:assignment:mode" : "assemblyLine"
+															}
+														});
+											}
+										}
+									});
+					this.publicVisibilityCheckbox
+							.change(
+									{
+										"view" : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.modelElement.attributes["carnot:pwh:costCenter"] != view.publicVisibilityCheckbox
+												.val()) {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:pwh:costCenter" : view.publicVisibilityCheckbox
+																	.val()
+														}
+													});
+										}
+									});
+
+					if (organization.attributes["carnot:engine:visibility"]
+							.equals("Public")) {
+						this.publicVisibilityCheckbox.attr("checked", true);
+					} else {
+						this.publicVisibilityCheckbox.attr("checked", false);
+					}
+
+					if (organization.attributes["carnot:engine:tasks:assignment:mode"]
+							.equals("assemblyLine")) {
+						this.assignAutomaticallyRadio.attr("checked", true);
+						this.chooseAssignmentRadio.attr("checked", false);
+					} else {
+						this.assignAutomaticallyRadio.attr("checked", false);
+						this.chooseAssignmentRadio.attr("checked", true);
+					}
+
+					this.costCenterInput
+							.val(this.organization.attributes["carnot:pwh:costCenter"]);
 				};
 
 				/**
@@ -87,20 +209,21 @@ define(
 				/**
 				 * 
 				 */
-				OrganizationView.prototype.processCommand = function(
-						command) {
+				OrganizationView.prototype.processCommand = function(command) {
 					// Parse the response JSON from command pattern
 
 					var object = ("string" == typeof (command)) ? jQuery
 							.parseJSON(command) : command;
 
-					if (null != object && null != object.changes
+					if (null != object
+							&& null != object.changes
 							&& null != object.changes.modified
 							&& 0 != object.changes.modified.length
 							&& object.changes.modified[0].oid == this.organization.oid) {
 
-						m_utils.inheritFields(this.organization, object.changes.modified[0]);
-						
+						m_utils.inheritFields(this.organization,
+								object.changes.modified[0]);
+
 						this.initialize(this.organization);
 					}
 				};

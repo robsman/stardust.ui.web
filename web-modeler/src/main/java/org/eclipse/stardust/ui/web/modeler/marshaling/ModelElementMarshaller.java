@@ -758,6 +758,9 @@ public class ModelElementMarshaller
       roleJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
       roleJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(role));
 
+      loadDescription(roleJson, role);
+      loadAttributes(role, roleJson);
+
       return roleJson;
    }
 
@@ -776,6 +779,9 @@ public class ModelElementMarshaller
       orgJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY, eObjectUUIDMapper().getUUID(model));
       orgJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
       orgJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(org));
+
+      loadDescription(orgJson, org);
+      loadAttributes(org, orgJson);
 
       return orgJson;
    }

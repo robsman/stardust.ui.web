@@ -349,25 +349,29 @@ public class ModelElementUnmarshaller
    }
    
    /**
-    * @param roleType
+    * @param role
     * @param roleJson
     */
-   private void updateRole(RoleType roleType,
+   private void updateRole(RoleType role,
          JsonObject roleJson)
    {
-      mapDeclaredModelElementProperties(roleType, roleJson,
+      mapDeclaredModelElementProperties(role, roleJson,
             modelElementPropertiesMap.get(RoleType.class));
+      storeAttributes(role, roleJson);
+      storeDescription(role, roleJson);
    }
 
    /**
-    * @param orgType
-    * @param orgJson
+    * @param organization
+    * @param organizationJson
     */
-   private void updateOrganization(OrganizationType orgType,
-         JsonObject orgJson)
+   private void updateOrganization(OrganizationType organization,
+         JsonObject organizationJson)
    {
-      mapDeclaredModelElementProperties(orgType, orgJson,
+      mapDeclaredModelElementProperties(organization, organizationJson,
             modelElementPropertiesMap.get(OrganizationType.class));
+      storeAttributes(organization, organizationJson);
+      storeDescription(organization, organizationJson);
    }
 
    /**

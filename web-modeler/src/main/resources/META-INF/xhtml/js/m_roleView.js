@@ -9,9 +9,10 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_modelElementView",
-				"m_model"],
-		function(m_utils, m_command, m_commandsController, m_dialog, m_modelElementView, m_model) {
+		[ "m_utils", "m_command", "m_commandsController", "m_dialog",
+				"m_modelElementView", "m_model" ],
+		function(m_utils, m_command, m_commandsController, m_dialog,
+				m_modelElementView, m_model) {
 			return {
 				initialize : function(fullId) {
 					var role = m_model.findParticipant(fullId);
@@ -38,16 +39,248 @@ define(
 				m_utils.inheritMethods(RoleView.prototype, modelElementView);
 
 				jQuery("#roleTabs").tabs();
-				
+
 				/**
 				 * 
 				 */
-				RoleView.prototype.initialize = function(
-						role) {
+				RoleView.prototype.initialize = function(role) {
 					this.initializeModelElementView();
 					this.initializeModelElement(role);
-					
+
 					this.role = role;
+
+					m_utils.debug("===> role");
+					m_utils.debug(role);
+
+					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
+					this.chooseAssignmentRadio = jQuery("#chooseAssignmentRadio");
+					this.assignAutomaticallyRadio = jQuery("#assignAutomaticallyRadio");
+
+					this.workingWeeksPerYearInput = jQuery("workingWeeksPerYearInput");
+					this.targetWorktimePerDayInput = jQuery("targetWorktimePerDayInput");
+					this.targetWorktimePerWeekInput = jQuery("targetWorktimePerWeekInput");
+					this.targetQueueDepthInput = jQuery("targetQueueDepthInput");
+					this.actualCostPerMinuteInput = jQuery("actualCostPerMinuteInput");
+
+					this.publicVisibilityCheckbox
+							.change(
+									{
+										"view" : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.modelElement.attributes["carnot:engine:visibility"] != "Public") {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:engine:visibility" : "Public"
+														}
+													});
+										}
+									});
+					this.chooseAssignmentRadio
+							.click(
+									{
+										"view" : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.chooseAssignmentRadio
+												.is(":checked")) {
+											view.assignAutomaticallyRadio.attr(
+													"checked", false);
+
+											if (view.modelElement.attributes["carnot:engine:tasks:assignment:mode"] != "assemblyLine") {
+												view
+														.submitChanges({
+															attributes : {
+																"carnot:engine:tasks:assignment:mode" : "assemblyLine"
+															}
+														});
+											}
+										}
+									});
+					this.assignAutomaticallyRadio
+							.click(
+									{
+										"view" : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.assignAutomaticallyRadio
+												.is(":checked")) {
+											view.chooseAssignmentRadio.attr(
+													"checked", false);
+
+											if (view.modelElement.attributes["carnot:engine:tasks:assignment:mode"] != "assemblyLine") {
+												view
+														.submitChanges({
+															attributes : {
+																"carnot:engine:tasks:assignment:mode" : "assemblyLine"
+															}
+														});
+											}
+										}
+									});
+
+					this.workingWeeksPerYearInput
+							.change(
+									{
+										"view" : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.modelElement.attributes["carnot:pwh:workingWeeksPerYear"] != view.workingWeeksPerYearInput
+												.val()) {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:pwh:workingWeeksPerYear" : view.workingWeeksPerYearInput
+																	.val()
+														}
+													});
+										}
+									});
+					this.targetWorktimePerDayInput
+							.change(
+									{
+										"view" : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.modelElement.attributes["carnot:pwh:targetWorkTimePerDay"] != view.targetWorktimePerDayInput
+												.val()) {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:pwh:targetWorkTimePerDay" : view.targetWorktimePerDayInput
+																	.val()
+														}
+													});
+										}
+									});
+					this.targetWorktimePerWeekInput
+							.change(
+									{
+										"view" : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.modelElement.attributes["carnot:pwh:targetWorkTimePerWeek"] != view.targetWorktimePerWeekInput
+												.val()) {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:pwh:targetWorkTimePerWeek" : view.targetWorktimePerWeekInput
+																	.val()
+														}
+													});
+										}
+									});
+					this.targetQueueDepthInput
+							.change(
+									{
+										"view" : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.modelElement.attributes["carnot:pwh:targetQueueDepth"] != view.targetQueueDepthInput
+												.val()) {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:engine:visibility" : "Public"
+														}
+													});
+										}
+									});
+					this.actualCostPerMinuteInput
+							.change(
+									{
+										"view" : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.modelElement.attributes["carnot:pwh:actualCostPerMinute"] != this.actualCostPerMinuteInput
+												.val()) {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:pwh:actualCostPerMinute" : this.actualCostPerMinuteInput
+																	.val()
+														}
+													});
+										}
+									});
+
+					// Set values
+
+					if (this.role.attributes["carnot:engine:visibility"]
+							.equals("Public")) {
+						this.publicVisibilityCheckbox.attr("checked", true);
+					} else {
+						this.publicVisibilityCheckbox.attr("checked", false);
+					}
+
+					if (this.role.attributes["carnot:engine:tasks:assignment:mode"]
+							.equals("assemblyLine")) {
+						this.assignAutomaticallyRadio.attr("checked", true);
+						this.chooseAssignmentRadio.attr("checked", false);
+					} else {
+						this.assignAutomaticallyRadio.attr("checked", false);
+						this.chooseAssignmentRadio.attr("checked", true);
+					}
+
+					this.workingWeeksPerYearInput
+							.val(this.role.attributes["carnot:pwh:workingWeeksPerYear"]);
+					this.targetWorktimePerDayInput
+							.val(this.role.attributes["carnot:pwh:targetWorkTimePerDay"]);
+					this.targetWorktimePerWeekInput
+							.val(this.role.attributes["carnot:pwh:targetWorkTimePerWeek"]);
+					this.targetQueueDepthInput
+							.val(this.role.attributes["carnot:pwh:targetQueueDepth"]);
+					this.actualCostPerMinuteInput
+							.val(this.role.attributes["carnot:pwh:actualCostPerMinute"]);
 				};
 
 				/**
@@ -84,8 +317,7 @@ define(
 				/**
 				 * 
 				 */
-				RoleView.prototype.processCommand = function(
-						command) {
+				RoleView.prototype.processCommand = function(command) {
 					m_utils.debug("===> Role View Process Command");
 					m_utils.debug(command);
 
@@ -99,8 +331,9 @@ define(
 							&& 0 != object.changes.modified.length
 							&& object.changes.modified[0].oid == this.role.oid) {
 
-						m_utils.inheritFields(this.role, object.changes.modified[0]);
-						
+						m_utils.inheritFields(this.role,
+								object.changes.modified[0]);
+
 						this.initialize(this.role);
 					}
 				};
