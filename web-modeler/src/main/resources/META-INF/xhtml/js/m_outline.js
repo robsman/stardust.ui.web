@@ -111,34 +111,39 @@ define(
 											.each(
 													model.participants,
 													function(index, participant) {
-														participantCounter++;
-														jQuery("#outline")
-																.jstree(
-																		"create",
-																		"#participants_"
-																				+ model.uuid,
-																		"last",
-																		{
-																			"attr" : {
-																				"id" : participant.uuid,
-																				"fullId" : participant
-																						.getFullId(),
-																				"rel" : participant.participantType,
-																				"modelId" : model.id,
-																				"modelUUID" : model.uuid,
-																				"draggable" : true,
-																				"elementId" : participant.id
+														if (!participant.parentUUID) {
+															participantCounter++;
+															jQuery("#outline")
+																	.jstree(
+																			"create",
+																			"#participants_"
+																					+ model.uuid,
+																			"last",
+																			{
+																				"attr" : {
+																					"id" : participant.uuid,
+																					"fullId" : participant
+																							.getFullId(),
+																					"rel" : participant.type,
+																					"modelId" : model.id,
+																					"modelUUID" : model.uuid,
+																					"draggable" : true,
+																					"elementId" : participant.id
+																				},
+																				"data" : participant.name
 																			},
-																			"data" : participant.name
-																		},
-																		null,
-																		true);
-														jQuery("#outline")
-																.jstree(
-																		"close_node",
-																		"#participants_"
-																				+ model.uuid);
+																			null,
+																			true);
+															//Load child participants
+															loadChildParticipants(model, participant);
+
+															jQuery("#outline")
+																	.jstree(
+																			"close_node",
+																			"#" + participant.uuid);
+														}
 													});
+									jQuery("#outline").jstree("close_node", "#participants_" + model.uuid);
 
 									// Applications
 
@@ -291,6 +296,43 @@ define(
 											"#" + model.uuid);
 								});
 			};
+
+			var loadChildParticipants = function (model, parentParticipant) {
+				if (parentParticipant.childParticipants) {
+					jQuery
+					.each(
+							parentParticipant.childParticipants,
+							function(index, participant) {
+								participantCounter++;
+								jQuery("#outline")
+										.jstree(
+												"create",
+												"#" + parentParticipant.uuid,
+												"last",
+												{
+													"attr" : {
+														"id" : participant.uuid,
+														"rel" : participant.type,
+														"fullId" : participant
+														.getFullId(),
+														"modelId" : model.id,
+														"modelUUID" : model.uuid,
+														"parentUUID" : parentParticipant.uuid,
+														"draggable" : true,
+														"elementId" : participant.id
+													},
+													"data" : participant.name
+												},
+												null,
+												true);
+								loadChildParticipants(model, participant);
+								jQuery("#outline")
+										.jstree(
+												"close_node",
+												"#" + participant.uuid);
+							});
+				}
+			}
 
 			var deployModel = function(modelId) {
 				var modeleDeployerLink = jQuery(
@@ -2061,16 +2103,17 @@ define(
 				Outline.prototype.createParticipant = function(transferObject) {
 					var model = m_model.findModelByUuid(transferObject.modelUUID);
 					var participant = m_participant.initializeFromJson(model, transferObject);
-					var parentSelector = '#participants_' + model.uuid;
+					var parentSelector = (transferObject.parentUUID ? ("#" + transferObject.parentUUID) : ("#participants_" + model.uuid));
 					jQuery("#outline").jstree("create", parentSelector, "last",
 							{
 								"attr" : {
 									"id" : participant.uuid,
 									"fullId" : participant
 											.getFullId(),
-									"rel" : participant.participantType,
+									"rel" : participant.type,
 									"modelId" : model.id,
 									"modelUUID" : model.uuid,
+									"parentUUID" : transferObject.parentUUID,
 									"draggable" : true,
 									"elementId" : participant.id
 								},

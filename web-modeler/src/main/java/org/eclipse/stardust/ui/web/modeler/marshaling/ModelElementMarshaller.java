@@ -2,8 +2,12 @@ package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -33,12 +37,14 @@ import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.GatewaySymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
+import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
 import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
 import org.eclipse.stardust.model.xpdl.carnot.OrientationType;
+import org.eclipse.stardust.model.xpdl.carnot.ParticipantType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
@@ -754,6 +760,13 @@ public class ModelElementMarshaller
       roleJson.addProperty(ModelerConstants.OID_PROPERTY, role.getElementOid());
       roleJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
       ModelType model = ModelUtils.findContainingModel(role);
+      List<OrganizationType> parentOrgs = MBFacade.getParentOrganizations(model, role);
+      if (parentOrgs.size() > 0)
+      {
+         //TODO - add array of orgs
+         roleJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
+               eObjectUUIDMapper().getUUID(parentOrgs.get(0)));
+      }
       roleJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY, eObjectUUIDMapper().getUUID(model));
       roleJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
       roleJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(role));
@@ -776,6 +789,12 @@ public class ModelElementMarshaller
       orgJson.addProperty(ModelerConstants.OID_PROPERTY, org.getElementOid());
       orgJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
       ModelType model = ModelUtils.findContainingModel(org);
+      List<OrganizationType> parentOrgs = MBFacade.getParentOrganizations(model, org);
+      if (parentOrgs.size() > 0)
+      {
+         orgJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
+               eObjectUUIDMapper().getUUID(parentOrgs.get(0)));
+      }
       orgJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY, eObjectUUIDMapper().getUUID(model));
       orgJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
       orgJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(org));

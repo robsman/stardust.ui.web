@@ -13,18 +13,21 @@ define([ "m_utils", "m_constants", "m_modelElement" ], function(m_utils, m_const
 
 	return {
 		initializeFromJson : function(model, json) {
-			// TODO Ugly, use prototype					
-			m_utils.typeObject(json, new Participant());
-
-			json.initializeFromJson(model);
-
-			return json;
+			return initializeFromJson(model, json);
 		},
 		deleteParticipantRole : function(id,model) {
 			delete model.participants[id];
 		}
 	};
 
+	function initializeFromJson(model, json) {
+		// TODO Ugly, use prototype					
+		m_utils.typeObject(json, new Participant());
+
+		json.initializeFromJson(model);
+
+		return json;		
+	}
 	/**
 	 * 
 	 */
@@ -48,6 +51,9 @@ define([ "m_utils", "m_constants", "m_modelElement" ], function(m_utils, m_const
 		Participant.prototype.initializeFromJson = function(model) {
 			this.model = model;
 			this.model.participants[this.id] = this;
+			for ( var cParticipant in this.childParticipants) {
+				initializeFromJson(model, this.childParticipants[cParticipant]);
+			}
 		};
 
 		/**

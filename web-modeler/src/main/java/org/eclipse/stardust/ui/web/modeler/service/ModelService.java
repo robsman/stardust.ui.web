@@ -26,6 +26,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
@@ -1278,33 +1279,42 @@ public class ModelService
 
       for (RoleType role : model.getRole())
       {
-         JsonObject participantJson = new JsonObject();
-         participantsJson.add(role.getId(), participantJson);
+         if (!hasParentParticipant(model, role))
+         {
+            JsonObject participantJson = new JsonObject();
+            participantsJson.add(role.getId(), participantJson);
 
-         participantJson.addProperty(ModelerConstants.ID_PROPERTY, role.getId());
-         participantJson.addProperty(ModelerConstants.NAME_PROPERTY, role.getName());
-         participantJson.addProperty(ModelerConstants.OID_PROPERTY, role.getElementOid());
-         participantJson.addProperty(ModelerConstants.PARTICIPANT_TYPE_PROPERTY,
-               ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
-         participantJson.addProperty(ModelerConstants.UUID_PROPERTY,
-               eObjectUUIDMapper.getUUID(role));
-         loadDescription(participantJson, role);
+            participantJson.addProperty(ModelerConstants.ID_PROPERTY, role.getId());
+            participantJson.addProperty(ModelerConstants.NAME_PROPERTY, role.getName());
+            participantJson.addProperty(ModelerConstants.OID_PROPERTY, role.getElementOid());
+            participantJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                  ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
+            participantJson.addProperty(ModelerConstants.UUID_PROPERTY,
+                  eObjectUUIDMapper.getUUID(role));
+            loadDescription(participantJson, role);
+         }
       }
 
       for (OrganizationType organization : model.getOrganization())
       {
-         JsonObject participantJson = new JsonObject();
-         participantsJson.add(organization.getId(), participantJson);
+         if (!hasParentParticipant(model, organization))
+         {
+            JsonObject participantJson = new JsonObject();
+            participantsJson.add(organization.getId(), participantJson);
 
-         participantJson.addProperty(ModelerConstants.ID_PROPERTY, organization.getId());
-         participantJson.addProperty(ModelerConstants.NAME_PROPERTY,
-               organization.getName());
-         participantJson.addProperty(ModelerConstants.OID_PROPERTY, organization.getElementOid());
-         participantJson.addProperty(ModelerConstants.PARTICIPANT_TYPE_PROPERTY,
-               ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
-         participantJson.addProperty(ModelerConstants.UUID_PROPERTY,
-               eObjectUUIDMapper.getUUID(organization));
-         loadDescription(participantJson, organization);
+            participantJson.addProperty(ModelerConstants.ID_PROPERTY, organization.getId());
+            participantJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                  organization.getName());
+            participantJson.addProperty(ModelerConstants.OID_PROPERTY, organization.getElementOid());
+            participantJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                  ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
+            participantJson.addProperty(ModelerConstants.UUID_PROPERTY,
+                  eObjectUUIDMapper.getUUID(organization));
+            loadDescription(participantJson, organization);
+            
+            //Adds children if any
+            addChildParticipantsJson(participantJson, organization);
+         }
       }
 
       for (ConditionalPerformerType conditionalPerformer : model.getConditionalPerformer())
@@ -1316,7 +1326,7 @@ public class ModelService
                conditionalPerformer.getId());
          participantJson.addProperty(ModelerConstants.NAME_PROPERTY,
                conditionalPerformer.getName());
-         participantJson.addProperty(ModelerConstants.PARTICIPANT_TYPE_PROPERTY,
+         participantJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY);
          participantJson.addProperty(ModelerConstants.UUID_PROPERTY,
                eObjectUUIDMapper.getUUID(conditionalPerformer));
@@ -1462,6 +1472,71 @@ public class ModelService
       }
 
       return modelJson;
+   }
+
+   /**
+    * @param model
+    * @param participant
+    * @return
+    */
+   private boolean hasParentParticipant(ModelType model, IModelParticipant participant)
+   {
+      List<OrganizationType> parentOrgs = MBFacade.getParentOrganizations(model,
+            participant);
+      if (parentOrgs.size() > 0)
+      {
+         return true;
+      }
+
+      return false;
+   }
+
+   /**
+    * @param parentJson
+    * @param parent
+    */
+   private void addChildParticipantsJson(JsonObject parentJson, OrganizationType parent)
+   {
+      EList<ParticipantType> children = parent.getParticipant();
+      if (children.size() > 0)
+      {
+         JsonArray childrenArray = new JsonArray();
+         parentJson.add(ModelerConstants.CHILD_PARTICIPANTS_KEY, childrenArray);
+         for (ParticipantType child : children)
+         {
+            IModelParticipant childParticipant = child.getParticipant();
+            JsonObject childJson = new JsonObject();
+            childrenArray.add(childJson);
+
+            childJson.addProperty(ModelerConstants.ID_PROPERTY, childParticipant.getId());
+            childJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                  childParticipant.getName());
+            childJson.addProperty(ModelerConstants.OID_PROPERTY,
+                  childParticipant.getElementOid());
+            childJson.addProperty(ModelerConstants.UUID_PROPERTY,
+                  eObjectUUIDMapper.getUUID(childParticipant));
+            childJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
+                  eObjectUUIDMapper.getUUID(parent));
+            loadDescription(childJson, childParticipant);
+
+            if (childParticipant instanceof OrganizationType)
+            {
+               childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                     ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
+               addChildParticipantsJson(childJson, (OrganizationType) childParticipant);
+            }
+            else if (childParticipant instanceof RoleType)
+            {
+               childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                     ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
+            }
+            else if (childParticipant instanceof ConditionalPerformerType)
+            {
+               childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                     ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY);
+            }
+         }
+      }
    }
 
    /**
