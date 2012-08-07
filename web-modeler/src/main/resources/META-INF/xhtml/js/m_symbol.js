@@ -1030,15 +1030,17 @@ define(
 								* this.diagram.zoomFactor
 								- this.diagram.X_OFFSET, y
 								* this.diagram.zoomFactor
-								- this.diagram.Y_OFFSET);
+								- this.diagram.Y_OFFSET + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
 
 						anchorPoint.select();
-
-						if (this.diagram.currentConnection.toAnchorPoint == anchorPoint) {
-							return;
-						} else if (this.diagram.currentConnection.isPrepared()) {
-							this.diagram.currentConnection
-									.setSecondAnchorPointNoComplete(anchorPoint);
+						
+						if(null != this.diagram.currentConnection){
+							if (this.diagram.currentConnection.toAnchorPoint == anchorPoint) {
+								return;
+							} else if (this.diagram.currentConnection.isPrepared()) {
+								this.diagram.currentConnection
+										.setSecondAnchorPointNoComplete(anchorPoint);
+							}
 						}
 					}
 				};
@@ -1054,11 +1056,12 @@ define(
 								* this.diagram.zoomFactor
 								- this.diagram.X_OFFSET, y
 								* this.diagram.zoomFactor
-								- this.diagram.Y_OFFSET);
+								- this.diagram.Y_OFFSET + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
 
 						anchorPoint.select();
 
-						if (this.diagram.currentConnection.isPrepared()) {
+						if (null != this.diagram.currentConnection
+								&& this.diagram.currentConnection.isPrepared()) {
 							this.diagram.currentConnection
 									.setSecondAnchorPointNoComplete(anchorPoint);
 						}
@@ -1073,7 +1076,8 @@ define(
 				 */
 				Symbol.prototype.hoverOut = function() {
 					if (this.diagram.isInConnectionMode()) {
-						if (this.diagram.currentConnection.isPrepared()) {
+						if (null != this.diagram.currentConnection
+								&& this.diagram.currentConnection.isPrepared()) {
 							this.diagram.currentConnection
 									.setDummySecondAnchorPoint();
 						}
@@ -1108,7 +1112,7 @@ define(
 											* this.diagram.zoomFactor
 											- this.diagram.X_OFFSET, y
 											* this.diagram.zoomFactor
-											- this.diagram.Y_OFFSET));
+											- this.diagram.Y_OFFSET + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT));
 							this.hideAnchorPoints();
 						} else {
 							this.select();
