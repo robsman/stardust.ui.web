@@ -9,126 +9,82 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_command", "m_commandsController", "m_propertiesPage" ],
-		function(m_utils, m_constants, m_command, m_commandsController, m_propertiesPage) {
+		[ "m_utils", "m_constants", "m_command", "m_commandsController", "m_basicPropertiesPage" ],
+		function(m_utils, m_constants, m_command, m_commandsController, m_basicPropertiesPage) {
 			return {
 				create : function(propertiesPanel) {
-					return new DataBasicPropertiesPage(propertiesPanel);
+					var page = new DataBasicPropertiesPage(propertiesPanel);
+					
+					page.initialize();
+					
+					return page;
 				}
 			};
 
-			function DataBasicPropertiesPage(newPropertiesPanel, newId,
-					newTitle) {
-
+			function DataBasicPropertiesPage(propertiesPanel) {
 				// Inheritance
 
-				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						newPropertiesPanel, "basicPropertiesPage", "Basic");
+				var propertiesPage = m_basicPropertiesPage.create(propertiesPanel);
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(DataBasicPropertiesPage.prototype,
 						propertiesPage);
 
-				// Field initialization
+				/**
+				 * 
+				 */
+				DataBasicPropertiesPage.prototype.initialize = function() {	
+					this.initializeBasicPropertiesPage();
 
-				this.nameInput = this.mapInputId("nameInput");
-				this.descriptionInput = this.mapInputId("descriptionInput");
-				this.primitiveInput = this.mapInputId("primitiveInput");
-				this.primitiveList = this.mapInputId("primitiveList");
-				this.dataStructureInput = this.mapInputId("dataStructureInput");
-				this.dataStructureList = this.mapInputId("dataStructureList");
-				this.documentInput = this.mapInputId("documentInput");
-				this.documentTypeList = this.mapInputId("documentTypeList");
+					this.primitiveInput = this.mapInputId("primitiveInput");
+					this.primitiveList = this.mapInputId("primitiveList");
+					this.dataStructureInput = this.mapInputId("dataStructureInput");
+					this.dataStructureList = this.mapInputId("dataStructureList");
+					this.documentInput = this.mapInputId("documentInput");
+					this.documentTypeList = this.mapInputId("documentTypeList");
 
-				// Initialize callbacks
+					// Initialize callbacks
 
-				this.nameInput
-						.change(
-								{
-									"page" : this
-								},
-								function(event) {
-									var page = event.data.page;
+					this.primitiveInput
+							.click(
+									{
+										"callbackScope" : this
+									},
+									function(event) {
+										if (event.data.callbackScope.primitiveInput
+												.is(":checked")) {
+											event.data.callbackScope
+													.setPrimitiveDataType(m_constants.STRING_PRIMITIVE_DATA_TYPE);
+										}
+									});
 
-									if (!page.validate()) {
-										return;
-									}
+					this.dataStructureInput
+							.click(
+									{
+										"callbackScope" : this
+									},
+									function(event) {
+										if (event.data.callbackScope.dataStructureInput
+												.is(":checked")) {
+											event.data.callbackScope
+													.setStructuredDataType(m_constants.TO_BE_DEFINED);
+										}
+									});
 
-									if (page.propertiesPanel.element.modelElement.name != page.nameInput
-											.val()) {
-										page.propertiesPanel.element.modelElement.name = page.nameInput
-												.val();
-										page.submitChanges({
-											modelElement : {
-												name : page.nameInput.val()
-											}
-										});
-									}
-								});
-				this.descriptionInput
-						.change(
-								{
-									"page" : this
-								},
-								function(event) {
-									var page = event.data.page;
-
-									if (!page.validate()) {
-										return;
-									}
-
-									if (page.propertiesPanel.element.modelElement.description != page.descriptionInput
-											.val()) {
-										page.propertiesPanel.element.modelElement.description = page.descriptionInput
-												.val();
-										page
-												.submitChanges({
-													modelElement : {
-														description : page.descriptionInput
-																.val()
-													}
-												});
-									}
-								});
-				this.primitiveInput
-						.click(
-								{
-									"callbackScope" : this
-								},
-								function(event) {
-									if (event.data.callbackScope.primitiveInput
-											.is(":checked")) {
-										event.data.callbackScope
-												.setPrimitiveDataType(m_constants.STRING_PRIMITIVE_DATA_TYPE);
-									}
-								});
-
-				this.dataStructureInput
-						.click(
-								{
-									"callbackScope" : this
-								},
-								function(event) {
-									if (event.data.callbackScope.dataStructureInput
-											.is(":checked")) {
-										event.data.callbackScope
-												.setStructuredDataType(m_constants.TO_BE_DEFINED);
-									}
-								});
-
-				this.documentInput
-						.click(
-								{
-									"callbackScope" : this
-								},
-								function(event) {
-									if (event.data.callbackScope.documentInput
-											.is(":checked")) {
-										event.data.callbackScope
-												.setDocumentDataType(m_constants.TO_BE_DEFINED);
-									}
-								});
-
+					this.documentInput
+							.click(
+									{
+										"callbackScope" : this
+									},
+									function(event) {
+										if (event.data.callbackScope.documentInput
+												.is(":checked")) {
+											event.data.callbackScope
+													.setDocumentDataType(m_constants.TO_BE_DEFINED);
+										}
+									});
+				};
+				
 				/**
 				 * 
 				 */
@@ -225,12 +181,10 @@ define(
 				 * 
 				 */
 				DataBasicPropertiesPage.prototype.setElement = function() {
+					this.setModelElement();
+
 					this.populateDataStructuresSelectInput();
 					this.populateDocumentTypesSelectInput();
-					this.nameInput.removeClass("error");
-					this.nameInput.val(this.propertiesPanel.data.name);
-					this.descriptionInput
-							.val(this.propertiesPanel.data.description);
 
 					if (this.propertiesPanel.data.type == m_constants.PRIMITIVE_DATA_TYPE) {
 						this

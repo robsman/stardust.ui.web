@@ -39,7 +39,7 @@ define(
 					this.nameInput = this.mapInputId("nameInput");
 					this.descriptionInput = this.mapInputId("descriptionInput");
 
-					this.initializeDocumentationHandling();
+					//this.initializeDocumentationHandling();
 
 					// Initialize callbacks
 
@@ -112,7 +112,7 @@ define(
 							.val(this.propertiesPanel.element.modelElement.name);
 					this.descriptionInput
 							.val(this.propertiesPanel.element.modelElement.description);
-					this.loadDocumentUrl();
+					//this.loadDocumentUrl();
 				};
 
 				/**
