@@ -893,14 +893,7 @@ public class ModelElementMarshaller
 
       connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
             dataMappingConnection.getElementOid());
-      connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
-            dataMappingConnection.getDataSymbol().getElementOid());
-      connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
-            ModelerConstants.DATA);
-      connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
-            dataMappingConnection.getActivitySymbol().getElementOid());
-      connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
-            ModelerConstants.ACTIVITY_KEY);
+      
       connectionJson.addProperty(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY,
             mapAnchorOrientation(dataMappingConnection.getSourceAnchor()));
       connectionJson.addProperty(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
@@ -924,11 +917,31 @@ public class ModelElementMarshaller
             {
                dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
                dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, false);
+               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
+                     dataMappingConnection.getDataSymbol().getElementOid());
+               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
+                     ModelerConstants.DATA);
+               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
+                     dataMappingConnection.getActivitySymbol().getElementOid());
+               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
+                     ModelerConstants.ACTIVITY_KEY);
+
             }
             else if (dataMapping.getDirection() == DirectionType.OUT_LITERAL)
             {
                dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, false);
                dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
+               // TODO - Currently API always assumes connectionJson.getSourceNode will be
+               // Data, to set Activity in sourceNode for OUT Mapping for data this code is
+               // placed here
+               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
+                     dataMappingConnection.getActivitySymbol().getElementOid());
+               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
+                     ModelerConstants.ACTIVITY_KEY);
+               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
+                     dataMappingConnection.getDataSymbol().getElementOid());
+               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
+                     ModelerConstants.DATA);
             }
             else
             {

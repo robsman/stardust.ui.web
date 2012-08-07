@@ -662,15 +662,14 @@ define(
 							"stroke-dasharray" : "-"
 						});
 
-						if (this.modelElement.inDataMapping) {
-							this.path.attr("arrow-start", "block-wide-long");
-						} else {
+						//For In-Mapping path will be from Data to Activity
+						//vice-versa for Out mapping
+						if (this.modelElement.inDataMapping
+								|| this.modelElement.outDataMapping) {
 							this.path.attr("arrow-start", "none");
-						}
-
-						if (this.modelElement.outDataMapping) {
 							this.path.attr("arrow-end", "block-wide-long");
 						} else {
+							this.path.attr("arrow-start", "none");
 							this.path.attr("arrow-end", "none");
 						}
 					}

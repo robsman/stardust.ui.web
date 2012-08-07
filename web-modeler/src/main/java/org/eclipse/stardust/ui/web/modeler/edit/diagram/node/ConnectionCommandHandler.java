@@ -117,7 +117,7 @@ public class ConnectionCommandHandler
                            extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID)),
                      MBFacade.findDataSymbol(processDefinition.getDiagram().get(0),
                            extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
-                     maxOid, true);
+                     maxOid, false);
             }
             else
             {
@@ -181,7 +181,7 @@ public class ConnectionCommandHandler
                            extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
                      MBFacade.findDataSymbol(processDefinition.getDiagram().get(0),
                            extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID)),
-                     maxOid, false);
+                     maxOid, true);
             }
             else
             {
