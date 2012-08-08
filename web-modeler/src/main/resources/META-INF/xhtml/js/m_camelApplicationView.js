@@ -42,75 +42,12 @@ define(
 				this.requestDataInput = jQuery("#requestDataInput");
 				this.responseDataInput = jQuery("#responseDataInput");
 
-				this.camelContextInput
-						.change(
-								{
-									"view" : this
-								},
-								function(event) {
-									var view = event.data.view;
-
-									if (!view.validate()) {
-										return;
-									}
-
-									if (view.application.attributes["carnot:engine:camel::camelContextId"] !=
-											 view.camelContextInput.val()) {
-										view
-												.submitChanges({
-													attributes : {
-														"carnot:engine:camel::camelContextId" : view.camelContextInput
-																.val()
-													}
-												});
-									}
-								});
-				this.routeTextarea
-						.change(
-								{
-									"view" : this
-								},
-								function(event) {
-									var view = event.data.view;
-
-									if (!view.validate()) {
-										return;
-									}
-
-									if (view.application.attributes["carnot:engine:camel::routeEntries"] !=
-											 view.routeTextarea.val()) {
-										view
-												.submitChanges({
-													attributes : {
-														"carnot:engine:camel::routeEntries" : view.routeTextarea
-																.val()
-													}
-												});
-									}
-								});
-				this.additionalBeanSpecificationTextarea
-						.change(
-								{
-									"view" : this
-								},
-								function(event) {
-									var view = event.data.view;
-
-									if (!view.validate()) {
-										return;
-									}
-
-									if (view.application.attributes["carnot:engine:camel::additionalSpringBeanDefinitions"] != view.additionalBeanSpecificationTextarea
-											.val()) {
-										view
-												.submitChanges({
-													attributes : {
-														"carnot:engine:camel::additionalSpringBeanDefinitions" : view.additionalBeanSpecificationTextarea
-																.val()
-													}
-												});
-									}
-								});
+				this.registerTextInputForModelElementAttributeChangeSubmission(
+						this.camelContextInput, "carnot:engine:camel::camelContextId");
+				this.registerTextInputForModelElementAttributeChangeSubmission(
+						this.routeTextarea, "carnot:engine:camel::routeEntries");
+				this.registerTextInputForModelElementAttributeChangeSubmission(
+						this.additionalBeanSpecificationTextarea, "carnot:engine:camel::additionalSpringBeanDefinitions");
 
 				/**
 				 * 

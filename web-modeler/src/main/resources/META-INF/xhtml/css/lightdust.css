@@ -104,6 +104,11 @@ input[type=image]:focus {
 	border: 1px solid #6699ff;
 }
 
+input[type=text].rightAligned {
+	text-align: right;
+	padding-right: 3px;
+}
+
 textarea {
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 11px;

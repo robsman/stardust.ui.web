@@ -97,5 +97,99 @@ define(
 					m_commandsController.submitCommand(m_command
 							.createUpdateModelElementWithUUIDCommand(this.modelElement.model.id, this.modelElement.uuid, changes));
 				};
+				
+				/**
+				 * 
+				 */
+				ModelElementView.prototype.registerTextInputForModelElementChangeSubmission = function(
+						input, property) {
+					input
+							.change(
+									{
+										"view" : this,
+										"input" : input
+									},
+									function(event) {
+										var view = event.data.view;
+										var input = event.data.input;
+
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.modelElement[property] != input
+												.val()) {
+											var modelElement = {};
+											modelElement[property] = input
+													.val();
+
+											view.submitChanges(modelElement);
+										}
+									});
+				};
+
+				/**
+				 * 
+				 */
+				ModelElementView.prototype.registerTextInputForModelElementAttributeChangeSubmission = function(
+						input, attribute) {
+					input
+							.change(
+									{
+										"view" : this,
+										"input" : input
+									},
+									function(event) {
+										var view = event.data.view;
+										var input = event.data.input;
+
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.modelElement.attributes[attribute] != input
+												.val()) {
+											var modelElement = {
+												attributes : {}
+											};
+											modelElement.attributes[attribute] = input
+													.val();
+
+											view.submitChanges(modelElement);
+										}
+									});
+				};
+
+				/**
+				 * 
+				 */
+				ModelElementView.prototype.registerCheckboxInputForModelElementAttributeChangeSubmission = function(
+						input, attribute) {
+					input
+							.click(
+									{
+										"page" : this,
+										"input" : input
+									},
+									function(event) {
+										var view = event.data.view;
+										var input = event.data.input;
+
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.modelElement.attributes[attribute] != input
+												.val()) {
+											var modelElement = {
+												attributes : {}
+											};
+											modelElement.attributes[attribute] = input
+													.is(":checked");
+
+											view.submitChanges(modelElement);
+										}
+									});
+				};
 			}
 		});

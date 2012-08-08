@@ -40,13 +40,6 @@ define(
 
 				// Field initialization
 
-				m_utils.debug("Activity Controlling Property Page: "
-						+ this.propertiesPanel.id + " " + this.id);
-				m_utils.debug(jQuery("#" + this.propertiesPanel.id));
-				m_utils.debug(jQuery("#" + this.propertiesPanel.id + " #" + this.id));
-				m_utils.debug(jQuery("#" + this.propertiesPanel.id + " #" + this.id
-						+ " #targetCostPerExecutionInput"));
-
 				this.targetCostPerExecutionInput = jQuery("#"
 						+ this.propertiesPanel.id + " #" + this.id
 						+ " #targetCostPerExecutionInput");

@@ -39,61 +39,14 @@ define(
 					this.nameInput = this.mapInputId("nameInput");
 					this.descriptionInput = this.mapInputId("descriptionInput");
 
-					//this.initializeDocumentationHandling();
+					// this.initializeDocumentationHandling();
 
 					// Initialize callbacks
 
-					this.nameInput
-							.change(
-									{
-										"page" : this
-									},
-									function(event) {
-										var page = event.data.page;
-
-										if (!page.validate()) {
-											return;
-										}
-
-										if (page.propertiesPanel.element.modelElement.name != page.nameInput
-												.val()) {
-											page.propertiesPanel.element.modelElement.name = page.nameInput
-													.val();
-											page
-													.submitChanges({
-														modelElement : {
-															name : page.nameInput
-																	.val(),
-															id : m_utils
-																	.generateIDFromName(page.nameInput
-																			.val())
-														}
-													});
-										}
-									});
-					this.descriptionInput
-							.change(
-									{
-										"page" : this
-									},
-									function(event) {
-										var page = event.data.page;
-
-										if (!page.validate()) {
-											return;
-										}
-
-										if (page.propertiesPanel.element.modelElement.description != page.descriptionInput
-												.val()) {
-											page
-													.submitChanges({
-														modelElement : {
-															description : page.descriptionInput
-																	.val()
-														}
-													});
-										}
-									});
+					this.registerTextInputForModelElementChangeSubmission(
+							this.nameInput, "name");
+					this.registerTextInputForModelElementChangeSubmission(
+							this.descriptionInput, "description");
 				};
 
 				/**
@@ -112,7 +65,7 @@ define(
 							.val(this.propertiesPanel.element.modelElement.name);
 					this.descriptionInput
 							.val(this.propertiesPanel.element.modelElement.description);
-					//this.loadDocumentUrl();
+					// this.loadDocumentUrl();
 				};
 
 				/**

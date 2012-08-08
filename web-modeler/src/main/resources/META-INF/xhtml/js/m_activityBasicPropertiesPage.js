@@ -263,7 +263,6 @@ define(
 
 					if (this.propertiesPanel.element.modelElement.activityType == m_constants.MANUAL_ACTIVITY_TYPE) {
 						this.setApplicationType(m_constants.AUTO_GENERATED_UI);
-
 						this.participantOutput.empty();
 
 						if (this.propertiesPanel.participant != null) {
@@ -280,6 +279,7 @@ define(
 					} else if (this.propertiesPanel.element.modelElement.activityType == m_constants.APPLICATION_ACTIVITY_TYPE) {
 						this
 								.setApplicationType(this.propertiesPanel.element.modelElement.applicationFullId);
+						this.participantOutput.empty();
 
 						if (this.propertiesPanel.participant != null) {
 							this.participantOutput.append("executed by <b>"
