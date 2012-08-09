@@ -19,6 +19,7 @@
 
    <properties>
       <ipp.version>7.1.0-NIGHTLY-SNAPSHOT</ipp.version>
+      <atmosphere.version>0.9.7</atmosphere.version>
    </properties>
 
    <dependencyManagement>
@@ -37,6 +38,22 @@
             <version>${ipp.version}</version>
             <type>pom</type>
             <scope>import</scope>
+         </dependency>
+
+         <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
+            <version>1.10</version>
+         </dependency>
+         <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>1.10</version>
+         </dependency>
+         <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-servlet</artifactId>
+            <version>1.10</version>
          </dependency>
  -->
       </dependencies>
@@ -130,6 +147,12 @@
          <groupId>com.infinity.bpm</groupId>
          <artifactId>ipp-bpm-model-validation</artifactId>
          <version>${ipp.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.atmosphere</groupId>
+         <artifactId>atmosphere-runtime</artifactId>
+         <version>${atmosphere.version}</version>
       </dependency>
    </dependencies>
 
