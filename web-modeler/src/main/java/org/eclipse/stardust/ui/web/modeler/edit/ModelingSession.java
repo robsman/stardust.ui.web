@@ -30,10 +30,7 @@ public class ModelingSession
 
    private Map<String, User> collaborators = newHashMap();
 
-   /**
-    * see {@link #createEditingSession()}
-    */
-   private EditingSession editingSession;
+   private final EditingSession editingSession = new EditingSession();
 
    @Resource
    @Qualifier("default")
@@ -123,11 +120,6 @@ public class ModelingSession
 
    public synchronized EditingSession getSession(ModelType... models)
    {
-      if (null == editingSession)
-      {
-         createEditingSession();
-      }
-
       for (ModelType model : models)
       {
          if ( !editingSession.isTrackingModel(model))
@@ -136,15 +128,6 @@ public class ModelingSession
          }
       }
 
-      return editingSession;
-   }
-
-   private EditingSession createEditingSession()
-   {
-      if (null == editingSession)
-      {
-         editingSession = new EditingSession();
-      }
       return editingSession;
    }
 }

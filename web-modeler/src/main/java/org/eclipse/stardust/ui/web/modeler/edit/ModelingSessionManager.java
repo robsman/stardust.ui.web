@@ -10,9 +10,6 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-
 @Component
 @Scope("singleton")
 public class ModelingSessionManager
@@ -20,9 +17,19 @@ public class ModelingSessionManager
    @Resource
    private ConfigurableListableBeanFactory context;
 
+   // session by ID
    private ConcurrentMap<String, ModelingSession> sessions = newConcurrentHashMap();
 
+   // session by owner
+   private ConcurrentMap<String, ModelingSession> userSessions = newConcurrentHashMap();
+
+   // collaboration session per user (at most one per user)
    private ConcurrentMap<String, ModelingSession> collaborations = newConcurrentHashMap();
+
+   public ModelingSession findById(String sessionId)
+   {
+      return sessions.get(sessionId);
+   }
 
    public ModelingSession currentSession(String userId)
    {
@@ -31,12 +38,15 @@ public class ModelingSessionManager
       if (null == session)
       {
          // if not collaborating, use the user's original session
-         session = sessions.get(userId);
+         session = userSessions.get(userId);
          if (null == session)
          {
             // no original session yet, start a new one
-            sessions.putIfAbsent(userId, createSession(userId));
-            session = sessions.get(userId);
+            userSessions.putIfAbsent(userId, createSession(userId));
+            session = userSessions.get(userId);
+
+            // the real user session should be tracked by ID as well
+            sessions.putIfAbsent(session.getId(), session);
          }
       }
 
