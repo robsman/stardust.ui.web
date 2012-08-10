@@ -108,6 +108,10 @@ public class ParticipantChangeCommandHandler
       mapper.map(role);
    }
 
+   /**
+    * @param org
+    * @param request
+    */
    @OnCommand(commandId = "organization.create")
    public void addOrganization(OrganizationType org, JsonObject request)
    {
@@ -126,5 +130,22 @@ public class ParticipantChangeCommandHandler
       // Map newly created data element to a UUID
       EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
       mapper.map(newOrg);
+   }
+
+   /**
+    * @param org
+    * @param request
+    */
+   @OnCommand(commandId = "organization.updateTeamLeader")
+   public void updateTeamLeader(OrganizationType org, JsonObject request)
+   {
+      String teamLeaderUUID = extractString(request, ModelerConstants.UUID_PROPERTY);
+      RoleType tealLeader = (RoleType) springContext.getBean(EObjectUUIDMapper.class)
+            .getEObject(teamLeaderUUID);
+      ModelType model = ModelUtils.findContainingModel(org);
+      synchronized (model)
+      {
+         MBFacade.setTeamLeader(org, tealLeader);
+      }
    }
 }

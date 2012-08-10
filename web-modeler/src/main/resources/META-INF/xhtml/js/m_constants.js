@@ -188,6 +188,7 @@ define(function() {
 		ROLE_PARTICIPANT_TYPE : "roleParticipant",
 		ORGANIZATION_PARTICIPANT_TYPE : "organizationParticipant",
 		CONDITIONAL_PERFORMER_PARTICIPANT_TYPE : "conditionalPerformerParticipant",
+		TEAM_LEADER_KEY : "isTeamLeader",
 
 		// Activity
 

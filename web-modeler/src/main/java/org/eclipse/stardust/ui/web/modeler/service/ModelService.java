@@ -1292,6 +1292,8 @@ public class ModelService
             participantJson.addProperty(ModelerConstants.UUID_PROPERTY,
                   eObjectUUIDMapper.getUUID(role));
             loadDescription(participantJson, role);
+
+            participantJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "false");
          }
       }
 
@@ -1529,6 +1531,10 @@ public class ModelService
             {
                childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                      ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
+               if (null != parent.getTeamLead() && parent.getTeamLead().equals(childParticipant))
+               {
+                  childJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "true");
+               }
             }
             else if (childParticipant instanceof ConditionalPerformerType)
             {

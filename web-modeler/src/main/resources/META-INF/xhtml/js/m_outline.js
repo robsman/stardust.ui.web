@@ -128,7 +128,8 @@ define(
 																					"modelId" : model.id,
 																					"modelUUID" : model.uuid,
 																					"draggable" : true,
-																					"elementId" : participant.id
+																					"elementId" : participant.id,
+																					"isTeamLeader" : participant.isTeamLeader
 																				},
 																				"data" : participant.name
 																			},
@@ -319,7 +320,8 @@ define(
 														"modelUUID" : model.uuid,
 														"parentUUID" : parentParticipant.uuid,
 														"draggable" : true,
-														"elementId" : participant.id
+														"elementId" : participant.id,
+														"isTeamLeader" : participant.isTeamLeader
 													},
 													"data" : participant.name
 												},
@@ -1063,6 +1065,16 @@ define(
 																						.attr("elementId"));
 																	});
 														}
+													},
+													"setAsManager" : {
+														"label" : "Set As Manager",
+														"_disabled" : ((undefined == node.attr("parentUUID"))
+																|| ("true" == node.attr("isTeamLeader"))),
+														"action" : function(obj) {
+															setAsManager(node.attr("modelUUID"),
+																	node.attr("parentUUID"),
+																	node.attr("id"));
+														}
 													}
 												};
 											} else if ('organizationParticipant' == node
@@ -1585,6 +1597,22 @@ define(
 										"id" : id
 									}));
 				}
+
+				/**
+				 * 
+				 */
+				function setAsManager(modelUUId, orgUUID, roleUUID) {
+					var model = m_model.findModelByUuid(modelUUId);
+					var orgOid = m_model.findElementInModelByUuid(model.id, orgUUID).oid;
+					var roleUUID = m_model.findElementInModelByUuid(model.id, roleUUID).uuid;
+					
+					m_commandsController.submitCommand(m_command
+							.createUpdateTeamLeaderCommand(model.id, orgOid,
+									{
+										"uuid" : roleUUID
+									}));					
+				}
+				
 				/**
 				 * 
 				 */
@@ -1837,6 +1865,9 @@ define(
 								var textElem = jQuery(link.childNodes[1])[0];
 
 								textElem.nodeValue = modelElement.name;
+								if (m_constants.ROLE_PARTICIPANT_TYPE == modelElement.type) {
+									node.attr(m_constants.TEAM_LEADER_KEY, obj.changes.modified[i].isTeamLeader);
+								}
 							}
 						}
 						for ( var i = 0; i < obj.changes.removed.length; i++) {
@@ -2115,7 +2146,8 @@ define(
 									"modelUUID" : model.uuid,
 									"parentUUID" : transferObject.parentUUID,
 									"draggable" : true,
-									"elementId" : participant.id
+									"elementId" : participant.id,
+									"isTeamLeader" : participant.isTeamLeader
 								},
 								"data" : participant.name
 							}, null, false);

@@ -63,6 +63,12 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 				changes : changes
 			} ]);
 		},
+		createUpdateTeamLeaderCommand : function(modelId, oid, changes) {
+			return new ChangeDescriptor("organization.updateTeamLeader", modelId, [ {
+				oid : oid,
+				changes : changes
+			} ]);
+		},
 		createCreateWebServiceAppCommand : function(modelId, oid, changes) {
 			return new ChangeDescriptor("webServiceApplication.create", modelId, [ {
 				oid : oid,
