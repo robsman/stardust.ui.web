@@ -140,11 +140,7 @@ define(
 					row += "</td>";
 					row += "</tr>";
 
-					if (jQuery("tr.sessionLogTableRow")[0] == null) {
-						this.sessionLogTable.append(row);
-					} else {
-						jQuery("tr.sessionLogTableRow{0}").before(row);
-					}
+					this.sessionLogTable.prepend(row); 
 
 					if (prospect != null) {
 						jQuery("#joinSessionConfirmLink")
