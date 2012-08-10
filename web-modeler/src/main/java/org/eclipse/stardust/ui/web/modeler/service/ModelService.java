@@ -51,14 +51,41 @@ import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
-import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementHelper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.JcrConnectionManager;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.PepperIconFactory;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
-import org.eclipse.stardust.model.xpdl.carnot.*;
+import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
+import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
+import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
+import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
+import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
+import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
+import org.eclipse.stardust.model.xpdl.carnot.ContextType;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
+import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
+import org.eclipse.stardust.model.xpdl.carnot.DataType;
+import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
+import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
+import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
+import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
+import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
+import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
+import org.eclipse.stardust.model.xpdl.carnot.ParticipantType;
+import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.model.xpdl.carnot.RoleType;
+import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
@@ -68,14 +95,16 @@ import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelE
 import org.eclipse.stardust.modeling.validation.Issue;
 import org.eclipse.stardust.modeling.validation.ValidationService;
 import org.eclipse.stardust.modeling.validation.ValidatorRegistry;
-import org.eclipse.stardust.ui.web.modeler.edit.EditingSessionManager;
+import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
+import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
+import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
 /**
- * 
+ *
  * @author Shrikant.Gangal, Marc.Gille
- * 
+ *
  */
 public class ModelService
 {
@@ -257,6 +286,9 @@ public class ModelService
 
    private static final String MODEL_DOCUMENTATION_TEMPLATES_FOLDER = "/documents/templates/modeling/";
 
+   @Resource
+   private UserIdProvider me;
+
    private ServiceFactory serviceFactory;
 
    private DocumentManagementService documentManagementService;
@@ -265,15 +297,7 @@ public class ModelService
 
    private QueryService queryService;
 
-   private ModelManagementStrategy modelManagementStrategy;
-
    // Modeling Session Management
-
-   private Map<String, User> prospectUsers = new HashMap<String, User>();
-
-   private Map<String, User> participantUsers = new HashMap<String, User>();
-
-   private Map<String, String> imageUris = new HashMap<String, String>();
 
    /**
     * Contains all loaded and newly created getModelManagementStrategy().getModels().
@@ -281,13 +305,7 @@ public class ModelService
    private JsonObject modelsJson = new JsonObject();
 
    @Resource
-   private EditingSessionManager editingSessionManager;
-
-   @Resource
-   private ModelElementMarshaller modelElementMarshaller;
-
-   @Resource
-   private EObjectUUIDMapper eObjectUUIDMapper;
+   private ModelingSessionManager sessionManager;
 
    public ServiceFactory getServiceFactory()
    {
@@ -299,28 +317,43 @@ public class ModelService
       return serviceFactory;
    }
 
+   public ModelingSession currentSession()
+   {
+      return sessionManager.currentSession(me.getCurrentUserId());
+   }
+
    /**
-    * 
+    *
     * @return
     */
    public ModelManagementStrategy getModelManagementStrategy()
    {
-      return modelManagementStrategy;
+      return currentSession().modelManagementStrategy();
+   }
+
+   public ModelElementMarshaller modelElementMarshaller()
+   {
+      return currentSession().modelElementMarshaller();
    }
 
    /**
-    * 
+    *
     * @param modelManagementStrategy
     */
+   @Deprecated
    public void setModelManagementStrategy(ModelManagementStrategy modelManagementStrategy)
    {
-      this.modelManagementStrategy = modelManagementStrategy;
-      ModelManagementHelper.getInstance().setModelManagementStrategy(
-            modelManagementStrategy);
+      // TODO review if really needed
+      currentSession().setModelManagementStrategy(modelManagementStrategy);
+   }
+
+   public EObjectUUIDMapper uuidMapper()
+   {
+      return currentSession().uuidMapper();
    }
 
    /**
-    * 
+    *
     * @param attrs
     * @param attrType
     */
@@ -337,7 +370,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param json
     * @param element
     * @throws JSONException
@@ -372,18 +405,18 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param model
     * @param processDefinition
     * @return
     */
    private EditingSession getEditingSession(ModelType model)
    {
-      return editingSessionManager.getSession(model);
+      return currentSession().getSession(model);
    }
 
    /**
-    * 
+    *
     * @param postedData
     * @return
     */
@@ -402,7 +435,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param postedData
     * @return
     */
@@ -410,12 +443,11 @@ public class ModelService
    {
       User prospect = getUserService().getUser(account);
 
-      prospectUsers.put(prospect.getAccount(), prospect);
-      // imageUris.put("prospect.getAccount()", );
+      currentSession().requestJoin(prospect);
    }
 
    /**
-    * 
+    *
     * @param postedData
     * @return
     */
@@ -424,10 +456,9 @@ public class ModelService
       String account = postedData.getAsJsonObject(OLD_OBJECT_PROPERTY)
             .get("account")
             .getAsString();
-      User participant = prospectUsers.get(account);
+      User participant = getUserService().getUser(account);
 
-      participantUsers.put(account, participant);
-      prospectUsers.remove(participant);
+      currentSession().confirmJoin(participant);
 
       // TODO @Francesca
       // Push CONFIRM_JOIN_COMMAND to all browser sessions
@@ -436,7 +467,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @return
     */
    public List<User> getNotInvitedUsers()
@@ -447,7 +478,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param userAccountList
     */
    public void inviteUsers(List<String> userAccountList)
@@ -457,7 +488,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param commandJson
     * @return
@@ -472,7 +503,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param commandJson
     * @return
@@ -496,7 +527,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param processId
     * @param postedData
@@ -516,7 +547,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param processId
     * @param postedData
@@ -536,7 +567,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param processId
     * @param newProcessName
@@ -559,7 +590,7 @@ public class ModelService
    /**
     * Retrieves all the stored models and returns a json array of references of these
     * getModelManagementStrategy().getModels().
-    * 
+    *
     * @return
     */
    public String getAllModels()
@@ -592,7 +623,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param httpRequest
     * @param modelId
     * @return
@@ -619,7 +650,7 @@ public class ModelService
        * changedModels) { ModelType model =
        * getModelManagementStrategy().getModels().get(modelId); if (null != model) {
        * getModelManagementStrategy().saveModel(model); } }
-       * 
+       *
        * //Clear the unsaved models' list.
        * UnsavedModelsTracker.getInstance().notifyAllModelsSaved();
        */
@@ -636,7 +667,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param id
     * @return
     */
@@ -646,7 +677,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param id
     * @param postedData
@@ -680,7 +711,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param processId
     * @param activityId
@@ -714,7 +745,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param gatewaySymbol
     * @param gatewaySymbolJson
     * @return
@@ -773,7 +804,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -792,7 +823,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -819,7 +850,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param connectionJson
     * @param processDefinition
     * @param sourceActivitySymbol
@@ -884,9 +915,9 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * TODO From DynamicConnectionCommand. Refactor?
-    * 
+    *
     * @param activity
     * @return
     */
@@ -928,7 +959,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param processId
     * @param connectionId
@@ -1002,7 +1033,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param poolSymbol
     * @param poolSymbolJson
     * @return
@@ -1038,7 +1069,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param processId
     * @param postedData
@@ -1067,7 +1098,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param laneSymbol
     * @param laneSymbolJson
     * @return
@@ -1202,7 +1233,7 @@ public class ModelService
       ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model,
             processId);
 
-      return modelElementMarshaller.toProcessDefinitionDiagram(processDefinition)
+      return modelElementMarshaller().toProcessDefinitionDiagram(processDefinition)
             .toString();
    }
 
@@ -1238,7 +1269,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param httpRequest
     * @param modelId
     * @return
@@ -1250,7 +1281,7 @@ public class ModelService
       modelJson.addProperty(ModelerConstants.ID_PROPERTY, model.getId());
       modelJson.addProperty(ModelerConstants.NAME_PROPERTY, model.getName());
       modelJson.addProperty(ModelerConstants.UUID_PROPERTY,
-            eObjectUUIDMapper.getUUID(model));
+            currentSession().uuidMapper().getUUID(model));
 
       if (model.getDescription() != null)
       {
@@ -1271,7 +1302,7 @@ public class ModelService
       for (ProcessDefinitionType processDefinition : model.getProcessDefinition())
       {
          processesJson.add(processDefinition.getId(),
-               modelElementMarshaller.toProcessDefinition(processDefinition));
+               modelElementMarshaller().toProcessDefinition(processDefinition));
       }
 
       JsonObject participantsJson = new JsonObject();
@@ -1290,7 +1321,7 @@ public class ModelService
             participantJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                   ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
             participantJson.addProperty(ModelerConstants.UUID_PROPERTY,
-                  eObjectUUIDMapper.getUUID(role));
+                  currentSession().uuidMapper().getUUID(role));
             loadDescription(participantJson, role);
 
             participantJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "false");
@@ -1311,9 +1342,9 @@ public class ModelService
             participantJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                   ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
             participantJson.addProperty(ModelerConstants.UUID_PROPERTY,
-                  eObjectUUIDMapper.getUUID(organization));
+                  currentSession().uuidMapper().getUUID(organization));
             loadDescription(participantJson, organization);
-            
+
             //Adds children if any
             addChildParticipantsJson(participantJson, organization);
          }
@@ -1331,7 +1362,7 @@ public class ModelService
          participantJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY);
          participantJson.addProperty(ModelerConstants.UUID_PROPERTY,
-               eObjectUUIDMapper.getUUID(conditionalPerformer));
+               currentSession().uuidMapper().getUUID(conditionalPerformer));
          loadDescription(participantJson, conditionalPerformer);
       }
 
@@ -1342,7 +1373,7 @@ public class ModelService
       for (ApplicationType application : model.getApplication())
       {
          applicationsJson.add(application.getId(),
-               modelElementMarshaller.toApplication(application));
+               modelElementMarshaller().toApplication(application));
       }
 
       JsonObject dataItemsJson = new JsonObject();
@@ -1371,7 +1402,7 @@ public class ModelService
             structuredDataTypeJson.addProperty(ModelerConstants.NAME_PROPERTY,
                   typeDeclaration.getName());
             structuredDataTypeJson.addProperty(ModelerConstants.UUID_PROPERTY,
-                  eObjectUUIDMapper.getUUID(typeDeclaration));
+                  currentSession().uuidMapper().getUUID(typeDeclaration));
             // TODO Review why different from other descriptions
             structuredDataTypeJson.addProperty(DESCRIPTION_PROPERTY,
                   typeDeclaration.getDescription());
@@ -1516,9 +1547,9 @@ public class ModelService
             childJson.addProperty(ModelerConstants.OID_PROPERTY,
                   childParticipant.getElementOid());
             childJson.addProperty(ModelerConstants.UUID_PROPERTY,
-                  eObjectUUIDMapper.getUUID(childParticipant));
+                  currentSession().uuidMapper().getUUID(childParticipant));
             childJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
-                  eObjectUUIDMapper.getUUID(parent));
+                  currentSession().uuidMapper().getUUID(parent));
             loadDescription(childJson, childParticipant);
 
             if (childParticipant instanceof OrganizationType)
@@ -1546,7 +1577,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param data
     * @return
     * @throws JSONException
@@ -1558,7 +1589,7 @@ public class ModelService
       dataJson.addProperty(ModelerConstants.ID_PROPERTY, data.getId());
       dataJson.addProperty(ModelerConstants.NAME_PROPERTY, data.getName());
       dataJson.addProperty(ModelerConstants.UUID_PROPERTY,
-            eObjectUUIDMapper.getUUID(data));
+            currentSession().uuidMapper().getUUID(data));
       loadDescription(dataJson, data);
       if (data.getType() != null)
       {
@@ -1569,7 +1600,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param processId
     * @param postedData
@@ -1664,7 +1695,7 @@ public class ModelService
                   "requestTransformationActivityName")),
             extractString(wizardParameterJson, "requestTransformationActivityName"))
             .invokingApplication(
-                  MBFacade.getApplication(modelId,
+                  new MBFacade(getModelManagementStrategy()).getApplication(modelId,
                         extractString(wizardParameterJson, "applicationId")))
             .build();
 
@@ -1714,7 +1745,7 @@ public class ModelService
                   "serviceInvocationActivityName")),
             extractString(wizardParameterJson, "serviceInvocationActivityName"))
             .invokingApplication(
-                  MBFacade.getApplication(modelId,
+                  new MBFacade(getModelManagementStrategy()).getApplication(modelId,
                         extractString(wizardParameterJson, "applicationId")))
             .build();
 
@@ -1764,7 +1795,7 @@ public class ModelService
                   "responseTransformationActivityName")),
             extractString(wizardParameterJson, "responseTransformationActivityName"))
             .invokingApplication(
-                  MBFacade.getApplication(modelId,
+                  new MBFacade(getModelManagementStrategy()).getApplication(modelId,
                         extractString(wizardParameterJson, "applicationId")))
             .build();
 
@@ -1884,7 +1915,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param elementType
     * @return
     */
@@ -1911,7 +1942,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @return
     */
    private DocumentManagementService getDocumentManagementService()
@@ -1925,7 +1956,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @return
     */
    private UserService getUserService()
@@ -1939,7 +1970,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @return
     */
    private QueryService getQueryService()
@@ -1989,18 +2020,18 @@ public class ModelService
 
    public ModelType findModel(String modelId)
    {
-      return MBFacade.findModel(modelId);
+      return getModelManagementStrategy().getModels().get(modelId);
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @return
     */
    public JsonArray validateModel(String modelId)
    {
       System.out.println("Validating model " + modelId);
-      
+
       ModelType model = getModelManagementStrategy().getModels().get(modelId);
 
       ValidatorRegistry.setFilters(new HashMap<String, String>());
@@ -2015,12 +2046,12 @@ public class ModelService
       {
          Issue issue = issues[i];
          JsonObject issueJson = new JsonObject();
-         
+
          System.out.println("Found issue " + issue);
 
          issueJson.addProperty("message", issue.getMessage());
          issueJson.addProperty("severity", issue.getSeverity());
-         
+
          EObject modelElement = issue.getModelElement();
 
          String modelElemendId = null;

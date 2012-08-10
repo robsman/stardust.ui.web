@@ -22,6 +22,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
  * @author Shrikant.Gangal
@@ -38,7 +39,7 @@ public class ApplicationTypeChangeCommandHandler
       ApplicationType applicationType = AbstractElementBuilder.F_CWM.createApplicationType();
 
       //Map newly created application to a UUID
-      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(applicationType);
 
       model.getApplication().add(applicationType);
@@ -57,7 +58,7 @@ public class ApplicationTypeChangeCommandHandler
       ApplicationType applicationType = AbstractElementBuilder.F_CWM.createApplicationType();
 
       //Map newly created application to a UUID
-      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(applicationType);
 
       model.getApplication().add(applicationType);
@@ -82,7 +83,7 @@ public class ApplicationTypeChangeCommandHandler
       ApplicationType applicationType = AbstractElementBuilder.F_CWM.createApplicationType();
 
       //Map newly created application to a UUID
-      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(applicationType);
 
       model.getApplication().add(applicationType);
@@ -107,7 +108,7 @@ public class ApplicationTypeChangeCommandHandler
       ApplicationType applicationType = AbstractElementBuilder.F_CWM.createApplicationType();
 
       //Map newly created application to a UUID
-      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(applicationType);
 
       model.getApplication().add(applicationType);
@@ -123,5 +124,10 @@ public class ApplicationTypeChangeCommandHandler
       // TODO
       // applicationType.setType(MBFacade.findApplicationTypeType(model,
       // ModelerConstants.MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID));
+   }
+
+   private ModelService modelService()
+   {
+      return springContext.getBean(ModelService.class);
    }
 }

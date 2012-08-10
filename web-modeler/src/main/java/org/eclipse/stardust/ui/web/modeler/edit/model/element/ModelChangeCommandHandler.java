@@ -27,7 +27,6 @@ import com.google.gson.JsonObject;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
-import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementHelper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
@@ -35,14 +34,11 @@ import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
-import org.eclipse.stardust.ui.web.modeler.edit.ICommandHandler;
-import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
-import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
  * @author Shrikant.Gangal
- * 
+ *
  */
 @Component
 @Scope("singleton")
@@ -70,7 +66,7 @@ public class ModelChangeCommandHandler
       {
          return deleteModel(commandId, targetElement, request);
       }
-      
+
       return null;
    }
 
@@ -83,7 +79,7 @@ public class ModelChangeCommandHandler
       ModelType model = newBpmModel().withIdAndName(
             request.get(ModelerConstants.ID_PROPERTY).getAsString(),
             request.get(ModelerConstants.NAME_PROPERTY).getAsString()).build();
-      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(model);
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       AttributeUtil.setAttribute(model, PredefinedConstants.VERSION_ATT, "1");
@@ -96,13 +92,13 @@ public class ModelChangeCommandHandler
 
       model.getRole().add(admin);
 
-      ModelManagementHelper.getInstance()
-            .getModelManagementStrategy()
+      modelService().currentSession()
+            .modelManagementStrategy()
             .getModels()
             .put(model.getId(), model);
 
       JsonArray added = new JsonArray();
-      JsonObject addedModel = springContext.getBean(ModelElementMarshaller.class).toModel(model);
+      JsonObject addedModel = modelService().modelElementMarshaller().toModel(model);
       added.add(addedModel);
       return generateResponse(commandId, null, added, null);
    }
@@ -121,12 +117,12 @@ public class ModelChangeCommandHandler
          ModelManagementStrategy modelMgtStrategy = springContext.getBean(ModelService.class).getModelManagementStrategy();
          modelMgtStrategy.deleteModel(model);
          JsonArray deleted = new JsonArray();
-         JsonObject deletedModel = springContext.getBean(ModelElementMarshaller.class).toModel(model);
+         JsonObject deletedModel = modelService().modelElementMarshaller().toModel(model);
          deleted.add(deletedModel);
-         
+
          return generateResponse(commandId, null, null, deleted);
       }
-      
+
       return generateResponse(commandId, null, null, null);
    }
 
@@ -143,18 +139,18 @@ public class ModelChangeCommandHandler
          //Delete old model xpdl
          ModelManagementStrategy modelMgtStrategy = springContext.getBean(ModelService.class).getModelManagementStrategy();
          modelMgtStrategy.deleteModel(model);
-         
-         ModelElementUnmarshaller.getInstance().populateFromJson(model, request);
-         
+
+         modelService().currentSession().modelElementUnmarshaller().populateFromJson(model, request);
+
          modelMgtStrategy.getModels().put(model.getId(), model);
          modelMgtStrategy.saveModel(model);
 
          JsonArray modified = new JsonArray();
-         JsonObject modifiedModel = springContext.getBean(ModelElementMarshaller.class).toModel(model);
+         JsonObject modifiedModel = modelService().modelElementMarshaller().toModel(model);
          modified.add(modifiedModel);
          return generateResponse(commandId, modified, null, null);
       }
-      
+
       return generateResponse(commandId, null, null, null);
    }
 
@@ -198,7 +194,13 @@ public class ModelChangeCommandHandler
          jsRemoved = new JsonArray();
       }
       jsChanges.add("removed", jsRemoved);
-      
+
       return response;
    }
+
+   private ModelService modelService()
+   {
+      return springContext.getBean(ModelService.class);
+   }
 }
+

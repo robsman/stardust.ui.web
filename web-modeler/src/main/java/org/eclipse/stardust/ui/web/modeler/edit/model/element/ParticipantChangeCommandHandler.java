@@ -29,10 +29,11 @@ import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
  * @author Shrikant.Gangal
- * 
+ *
  */
 @CommandHandler
 public class ParticipantChangeCommandHandler
@@ -58,7 +59,7 @@ public class ParticipantChangeCommandHandler
       role.setElementOid(++maxOid);
 
       // Map newly created data element to a UUID
-      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(role);
    }
 
@@ -80,7 +81,7 @@ public class ParticipantChangeCommandHandler
       org.setElementOid(++maxOid);
 
       // Map newly created data element to a UUID
-      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(org);
    }
 
@@ -104,7 +105,7 @@ public class ParticipantChangeCommandHandler
       role.setElementOid(++maxOid);
 
       // Map newly created data element to a UUID
-      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(role);
    }
 
@@ -128,7 +129,7 @@ public class ParticipantChangeCommandHandler
       newOrg.setElementOid(++maxOid);
 
       // Map newly created data element to a UUID
-      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(newOrg);
    }
 
@@ -147,5 +148,10 @@ public class ParticipantChangeCommandHandler
       {
          MBFacade.setTeamLeader(org, tealLeader);
       }
+   }
+
+   private ModelService modelService()
+   {
+      return springContext.getBean(ModelService.class);
    }
 }

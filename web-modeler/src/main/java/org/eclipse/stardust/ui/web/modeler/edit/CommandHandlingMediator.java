@@ -20,7 +20,6 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.edit.CommandHandlerRegistry.ICommandHandlerInvoker;
 
 @Component
@@ -28,9 +27,6 @@ import org.eclipse.stardust.ui.web.modeler.edit.CommandHandlerRegistry.ICommandH
 public class CommandHandlingMediator
 {
    private static final Logger trace = LogManager.getLogger(CommandHandlingMediator.class);
-
-   @Resource
-   private EditingSessionManager editingSessionManager;
 
    @Resource
    private CommandHandlerRegistry commandHandlerRegistry;
@@ -68,10 +64,9 @@ public class CommandHandlingMediator
       }
    }
 
-   public Modification handleCommand(ModelType containingModel, String commandId,
+   public Modification handleCommand(EditingSession editingSession, String commandId,
          List<Pair<EObject, JsonObject>> changes)
    {
-      EditingSession editingSession = editingSessionManager.getSession(containingModel);
       Modification change = null;
       try
       {

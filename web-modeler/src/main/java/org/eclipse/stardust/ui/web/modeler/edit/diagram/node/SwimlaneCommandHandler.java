@@ -18,6 +18,8 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PRO
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
+import javax.annotation.Resource;
+
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
@@ -29,6 +31,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
  * @author Shrikant.Gangal
@@ -36,6 +39,9 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 @CommandHandler
 public class SwimlaneCommandHandler
 {
+   @Resource
+   private ModelService modelService;
+
    /**
     * @param parentSymbol
     * @param request
@@ -58,7 +64,7 @@ public class SwimlaneCommandHandler
 
       synchronized (model)
       {
-         LaneSymbol laneSymbol = MBFacade.createLane(model.getId(), model,
+         LaneSymbol laneSymbol = new MBFacade(modelService.getModelManagementStrategy()).createLane(model.getId(), model,
                processDefinition, laneId, laneName, xPos, yPos, width, height,
                orientation, participantFullID);
 
@@ -89,5 +95,4 @@ public class SwimlaneCommandHandler
          parentSymbol.getChildLanes().remove(lane);
       }
    }
-
 }

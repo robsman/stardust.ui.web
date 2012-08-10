@@ -3,8 +3,8 @@ package org.eclipse.stardust.ui.web.modeler.rest;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
-import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 import static org.eclipse.stardust.ui.web.modeler.rest.RestControllerUtils.resolveSpringBean;
 
 import java.net.URI;
@@ -29,7 +29,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.Pair;
-import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
@@ -37,10 +36,9 @@ import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
 import org.eclipse.stardust.ui.web.modeler.edit.CommandHandlingMediator;
-import org.eclipse.stardust.ui.web.modeler.edit.EditingSessionManager;
+import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.edit.model.element.ModelChangeCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
-import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 @Path("/modeler/{randomPostFix}/sessions")
@@ -83,21 +81,21 @@ public class ModelerSessionRestController
       JsonArray jsModified = new JsonArray();
       for (EObject changedObject : change.changedObjects())
       {
-         jsModified.add(modelElementMarshaller().toJson(changedObject));
+         jsModified.add(modelService().modelElementMarshaller().toJson(changedObject));
       }
       jsChanges.add("modified", jsModified);
 
       JsonArray jsAdded = new JsonArray();
       for (EObject addedObject : change.addedObjects())
       {
-         jsAdded.add(modelElementMarshaller().toJson(addedObject));
+         jsAdded.add(modelService().modelElementMarshaller().toJson(addedObject));
       }
       jsChanges.add("added", jsAdded);
 
       JsonArray jsRemoved = new JsonArray();
       for (EObject removedObject : change.removedObjects())
       {
-         jsRemoved.add(modelElementMarshaller().toJson(removedObject));
+         jsRemoved.add(modelService().modelElementMarshaller().toJson(removedObject));
       }
       jsChanges.add("removed", jsRemoved);
 
@@ -110,7 +108,7 @@ public class ModelerSessionRestController
    public String showCurrentChange()
    {
       JsonObject result = new JsonObject();
-      EditingSession editingSession = editingSessionManager().getSession();
+      EditingSession editingSession = modelService().currentSession().getSession();
       if (editingSession.canUndo())
       {
          Modification pendingUndo = editingSession.getPendingUndo();
@@ -134,7 +132,7 @@ public class ModelerSessionRestController
       if ("undoMostCurrent".equals(action))
       {
          JsonObject result = new JsonObject();
-         EditingSession editingSession = editingSessionManager().getSession();
+         EditingSession editingSession = modelService().currentSession().getSession();
          if (editingSession.canUndo())
          {
             Modification undoneChange = editingSession.undoLast();
@@ -166,7 +164,7 @@ public class ModelerSessionRestController
       else if ("redoLastUndo".equals(action))
       {
          JsonObject result = new JsonObject();
-         EditingSession editingSession = editingSessionManager().getSession();
+         EditingSession editingSession = modelService().currentSession().getSession();
          if (editingSession.canRedo())
          {
             Modification redoneChange = editingSession.redoNext();
@@ -263,10 +261,10 @@ public class ModelerSessionRestController
                EObject targetElement = null;
                if (null != cJson.getAsJsonObject().get(ModelerConstants.UUID_PROPERTY)) {
                   String uuid = cJson.getAsJsonObject().get(ModelerConstants.UUID_PROPERTY).getAsString();
-                  targetElement = eObjectUUIDMapper().getEObject(uuid);
-               }         
-               
-               JsonElement changeJson = cJson.getAsJsonObject().get("changes");               
+                  targetElement = modelService().uuidMapper().getEObject(uuid);
+               }
+
+               JsonElement changeJson = cJson.getAsJsonObject().get("changes");
                ModelChangeCommandHandler handler = resolveSpringBean(ModelChangeCommandHandler.class, servletContext);
                JsonObject response = handler.handleCommand(commandId, targetElement, changeJson.getAsJsonObject());
                if (null != response) {
@@ -296,7 +294,7 @@ public class ModelerSessionRestController
             if (targetElementJson.getAsJsonObject().has("uuid"))
             {
                String uuid = extractAsString(targetElementJson.getAsJsonObject(), "uuid");
-               targetElement = eObjectUUIDMapper().getEObject(uuid);
+               targetElement = modelService().uuidMapper().getEObject(uuid);
 
                if (null == targetElement)
                {
@@ -355,8 +353,8 @@ public class ModelerSessionRestController
       }
 
       // dispatch to actual command handler
-      Modification change = commandHandlerRegistry().handleCommand(model, commandId,
-            changeDescriptors);
+      Modification change = commandHandlerRegistry().handleCommand(
+            modelService().currentSession().getSession(model), commandId, changeDescriptors);
       if (null != change)
       {
          change.getMetadata().put("commandId", commandId);
@@ -387,9 +385,9 @@ public class ModelerSessionRestController
       }
    }
 
-   private EditingSessionManager editingSessionManager()
+   private ModelingSessionManager editingSessionManager()
    {
-      return resolveSpringBean(EditingSessionManager.class, servletContext);
+      return resolveSpringBean(ModelingSessionManager.class, servletContext);
    }
 
    private ModelService modelService()
@@ -405,15 +403,5 @@ public class ModelerSessionRestController
    private CommandHandlingMediator commandHandlerRegistry()
    {
       return resolveSpringBean(CommandHandlingMediator.class, servletContext);
-   }
-
-   private EObjectUUIDMapper eObjectUUIDMapper()
-   {
-      return resolveSpringBean(EObjectUUIDMapper.class, servletContext);
-   }
-
-   private ModelElementMarshaller modelElementMarshaller()
-   {
-      return resolveSpringBean(ModelElementMarshaller.class, servletContext);
    }
 }

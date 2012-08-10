@@ -1,12 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.eclipse.emf.ecore.EObject;
 
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
@@ -15,14 +10,13 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
-import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.AbstractModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelIoUtils;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
 /**
- * 
+ *
  * @author Marc.Gille
  *
  */
@@ -35,14 +29,14 @@ public class DefaultModelManagementStrategy extends
 	private DocumentManagementService documentManagementService;
 
 	/**
-	 * 
+	 *
 	 */
 	public List<ModelType> loadModels() {
 
 		List<ModelType> models = new ArrayList<ModelType>();
 		List<Document> candidateModelDocuments = getDocumentManagementService()
 				.getFolder(MODELS_DIR).getDocuments();
-		
+
 		XpdlModelIoUtils.clearModelsMap();
 
 		for (Document modelDocument : candidateModelDocuments) {
@@ -59,16 +53,16 @@ public class DefaultModelManagementStrategy extends
 
 		return models;
 	}
-	
+
     /**
-     * 
+     *
      */
     public ModelType loadModel(String id) {
 
-       Folder folder = documentManagementService.getFolder(MODELS_DIR);      
+       Folder folder = documentManagementService.getFolder(MODELS_DIR);
        List<Document> candidateModelDocuments = folder.getDocuments();
        for (Document modelDocument : candidateModelDocuments) {
-          if (modelDocument.getName().endsWith(".xpdl")) 
+          if (modelDocument.getName().endsWith(".xpdl"))
           {
              if(modelDocument.getName().equals(id))
              {
@@ -78,14 +72,14 @@ public class DefaultModelManagementStrategy extends
                 return model;
              }
           }
-       }      
+       }
        return null;
-    }	
-	
-	
+    }
+
+
 
 	/**
-	 * 
+	 *
 	 */
 	public ModelType attachModel(String id) {
 		ModelType model = XpdlModelIoUtils
@@ -94,12 +88,12 @@ public class DefaultModelManagementStrategy extends
 		loadEObjectUUIDMap(model);
 
 		getModels().put(id, model);
-		
+
 		return model;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void saveModel(ModelType model) {
 			String modelContent = new String(XpdlModelIoUtils.saveModel(model));
@@ -130,7 +124,7 @@ public class DefaultModelManagementStrategy extends
 	}
 
 	/**
-	 * 
+	 *
 	 * @param model
 	 */
 	public void deleteModel(ModelType model) {
@@ -146,13 +140,13 @@ public class DefaultModelManagementStrategy extends
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void versionizeModel(ModelType model) {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	private DocumentManagementService getDocumentManagementService() {
@@ -175,7 +169,7 @@ public class DefaultModelManagementStrategy extends
 	}
 
 	/**
-	 * 
+	 *
 	 * @param modelDocument
 	 * @return
 	 */

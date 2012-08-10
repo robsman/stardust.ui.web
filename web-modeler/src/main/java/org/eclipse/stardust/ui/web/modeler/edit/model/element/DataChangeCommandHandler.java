@@ -28,6 +28,7 @@ import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
  * @author Shrikant.Gangal
@@ -50,12 +51,12 @@ public class DataChangeCommandHandler
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
       String primitiveType = extractString(request, ModelerConstants.PRIMITIVE_TYPE);
       DataType data = MBFacade.createPrimitiveData(model, id, name, primitiveType);
-      
+
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       data.setElementOid(++maxOid);
 
       //Map newly created data element to a UUID
-      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(data);
    }
 
@@ -76,14 +77,14 @@ public class DataChangeCommandHandler
       }
       String structuredDataFullId = MBFacade.stripFullId(extractString(request,
             ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID));
-      DataType data = MBFacade.createStructuredData(model, stripFullId_, id, name,
+      DataType data = new MBFacade(modelService().getModelManagementStrategy()).createStructuredData(model, stripFullId_, id, name,
             structuredDataFullId);
 
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       data.setElementOid(++maxOid);
 
       // Map newly created data element to a UUID
-      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(data);
    }
 
@@ -103,7 +104,12 @@ public class DataChangeCommandHandler
       data.setElementOid(++maxOid);
 
       // Map newly created data element to a UUID
-      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(data);
+   }
+
+   private ModelService modelService()
+   {
+      return springContext.getBean(ModelService.class);
    }
 }

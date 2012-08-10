@@ -11,13 +11,13 @@
 
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
+import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newApplicationActivity;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newSubProcessActivity;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
@@ -26,6 +26,7 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.activity.BpmApplicationActivityBuilder;
 import org.eclipse.stardust.model.xpdl.builder.activity.BpmSubProcessActivityBuilder;
+import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
@@ -47,44 +48,28 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 
 /**
- * 
+ *
  * @author Marc.Gille
- * 
+ *
  */
-public class ModelElementUnmarshaller
+public abstract class ModelElementUnmarshaller
 {
-   private static ModelElementUnmarshaller instance;
+   private Map<Class<?>, String[]> symbolPropertiesMap;
 
-   private Map<Class, String[]> symbolPropertiesMap;
+   private Map<Class<?>, String[]> modelElementPropertiesMap;
 
-   private Map<Class, String[]> modelElementPropertiesMap;
+   private Map<Class<?>, String[]> modelElementReferencePropertiesMap;
 
-   private Map<Class, String[]> modelElementReferencePropertiesMap;
-
-   /**
-    * 
-    * @return
-    */
-   public static synchronized ModelElementUnmarshaller getInstance()
-   {
-      if (instance == null)
-      {
-         instance = new ModelElementUnmarshaller();
-      }
-
-      return instance;
-   }
+   protected abstract ModelManagementStrategy modelManagementStrategy();
 
    /**
-	 * 
+	 *
 	 */
    public ModelElementUnmarshaller()
    {
-      super();
-
-      symbolPropertiesMap = new HashMap<Class, String[]>();
-      modelElementPropertiesMap = new HashMap<Class, String[]>();
-      modelElementReferencePropertiesMap = new HashMap<Class, String[]>();
+      symbolPropertiesMap = newHashMap();
+      modelElementPropertiesMap = newHashMap();
+      modelElementReferencePropertiesMap = newHashMap();
 
       modelElementPropertiesMap.put(ProcessDefinitionType.class, new String[] {
          "name", "id"});
@@ -102,10 +87,10 @@ public class ModelElementUnmarshaller
 
       modelElementPropertiesMap.put(ApplicationType.class, new String[] {
       "name", "id"});
-      
+
       modelElementPropertiesMap.put(TypeDeclarationType.class, new String[] {
       "name", "id"});
-      
+
       modelElementPropertiesMap.put(ModelType.class, new String[] {
          "name", "id"});
 
@@ -114,13 +99,13 @@ public class ModelElementUnmarshaller
 
       modelElementPropertiesMap.put(RoleType.class, new String[] {
          "name", "id"});
-      
+
       modelElementPropertiesMap.put(OrganizationType.class, new String[] {
          "name", "id"});
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     */
@@ -182,7 +167,7 @@ public class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param processDefinition
     * @param processDefinitionJson
     */
@@ -196,7 +181,7 @@ public class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @param activitySymbolJson
     */
@@ -226,7 +211,7 @@ public class ModelElementUnmarshaller
          String subprocessFullId = extractString(activityJson,
                ModelerConstants.SUBPROCESS_ID);
 
-         ProcessDefinitionType subProcessDefinition = MBFacade.getProcessDefinition(
+         ProcessDefinitionType subProcessDefinition = new MBFacade(modelManagementStrategy()).getProcessDefinition(
                MBFacade.getModelId(subprocessFullId),
                MBFacade.stripFullId(subprocessFullId));
          ModelType subProcessModel = ModelUtils.findContainingModel(subProcessDefinition);
@@ -244,7 +229,7 @@ public class ModelElementUnmarshaller
          String applicationFullId = extractString(activityJson,
                ModelerConstants.APPLICATION_FULL_ID_PROPERTY);
 
-         ApplicationType application = MBFacade.getApplication(
+         ApplicationType application = new MBFacade(modelManagementStrategy()).getApplication(
                MBFacade.getModelId(applicationFullId),
                MBFacade.stripFullId(applicationFullId));
 
@@ -258,7 +243,7 @@ public class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @param gatewaySymbolJson
     */
@@ -288,14 +273,14 @@ public class ModelElementUnmarshaller
       else if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY).getAsString().equals(ModelerConstants.OR_GATEWAY_TYPE))
       {
          // TODO OR Support
-         
+
          activity.setJoin(JoinSplitType.XOR_LITERAL);
          activity.setSplit(JoinSplitType.XOR_LITERAL);
       }
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @param startEventSymbolJson
     */
@@ -310,7 +295,7 @@ public class ModelElementUnmarshaller
   }
 
    /**
-    * 
+    *
     * @param endEventSymbol
     * @param endEventSymbolJson
     */
@@ -347,7 +332,7 @@ public class ModelElementUnmarshaller
       mapDeclaredModelElementProperties(typeDeclaration, applicationJson,
             modelElementPropertiesMap.get(TypeDeclarationType.class));
    }
-   
+
    /**
     * @param role
     * @param roleJson
@@ -397,7 +382,7 @@ public class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElement
     * @param modelElementJson
     * @param modelElementProperties
@@ -415,7 +400,7 @@ public class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param symbol
     * @param symbolJson
     * @param symbolProperties
@@ -433,7 +418,7 @@ public class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param targetElement
     * @param request
     * @param property
@@ -502,7 +487,7 @@ public class ModelElementUnmarshaller
          System.out.println("No value for property " + property);
       }
    }
-   
+
    /**
    *
    * @param json

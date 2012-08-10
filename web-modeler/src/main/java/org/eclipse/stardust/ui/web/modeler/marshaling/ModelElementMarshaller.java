@@ -2,16 +2,9 @@ package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
-
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -37,21 +30,18 @@ import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.GatewaySymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
-import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
 import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
 import org.eclipse.stardust.model.xpdl.carnot.OrientationType;
-import org.eclipse.stardust.model.xpdl.carnot.ParticipantType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
-//import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.model.xpdl.carnot.impl.LaneSymbolImpl;
 import org.eclipse.stardust.model.xpdl.carnot.impl.ProcessDefinitionTypeImpl;
 import org.eclipse.stardust.model.xpdl.carnot.util.ActivityUtil;
@@ -59,15 +49,12 @@ import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 
-@Component
-@Scope("prototype")
-public class ModelElementMarshaller
+public abstract class ModelElementMarshaller
 {
-   @Resource
-   private ApplicationContext springContext;
+   protected abstract EObjectUUIDMapper eObjectUUIDMapper();
 
    /**
-    * 
+    *
     * @param modelElement
     * @return
     */
@@ -217,9 +204,9 @@ public class ModelElementMarshaller
 
       return processJson;
    }
-   
+
    /**
-    * 
+    *
     * @param laneSymbol
     * @return
     */
@@ -234,10 +221,10 @@ public class ModelElementMarshaller
       laneSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY, laneSymbol.getWidth());
       laneSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY, laneSymbol.getHeight());
       laneSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.SWIMLANE_SYMBOL);
-      
+
       return laneSymbolJson;
    }
-   
+
    /**
     * @return
     */
@@ -401,7 +388,7 @@ public class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @return
     */
@@ -455,7 +442,7 @@ public class ModelElementMarshaller
          activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
                activity.getImplementation().getLiteral());
          activityJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, new JsonArray());
-         
+
          if (activity.getImplementationProcess() != null)
          {
             activityJson.addProperty(ModelerConstants.SUBPROCESS_ID,
@@ -469,11 +456,11 @@ public class ModelElementMarshaller
                         activity.getApplication()));
          }
       }
-      
+
       return activityJson;
    }
    /**
-    * 
+    *
     * @param activitySymbol
     * @return
     */
@@ -508,7 +495,7 @@ public class ModelElementMarshaller
             activitySymbol.getWidth());
       activitySymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
             activitySymbol.getHeight());
-      
+
       ActivityType activity = activitySymbol.getActivity();
       JsonObject activityJson = toActivityType(activity);
 
@@ -588,7 +575,7 @@ public class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -642,7 +629,7 @@ public class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -677,9 +664,9 @@ public class ModelElementMarshaller
 
       JsonObject eventJson = new JsonObject();
       eventSymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, eventJson);
-      
+
       eventSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,ModelerConstants.EVENT_SYMBOL);
-      
+
       eventJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.EVENT_KEY);
       eventJson.addProperty(ModelerConstants.EVENT_TYPE_PROPERTY,
             ModelerConstants.STOP_EVENT);
@@ -689,13 +676,13 @@ public class ModelElementMarshaller
       // endEventSymbol.getModelElement());
       // loadAttributes(endEventSymbol.getModelElement(),
       // eventJson);
-      
+
       return eventSymbolJson;
 
    }
 
    /**
-    * 
+    *
     * @param data
     * @return
     */
@@ -726,7 +713,7 @@ public class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -741,7 +728,7 @@ public class ModelElementMarshaller
       dataSymbolJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(dataSymbol));
       dataSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.DATA_SYMBOL);
       dataSymbolJson.add(ModelerConstants.DATA, toDataTypeJson(dataSymbol.getData()));
-      
+
       dataSymbolJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
             MBFacade.createFullId(ModelUtils.findContainingModel(dataSymbol.getData()), dataSymbol.getData()));
 
@@ -825,7 +812,7 @@ public class ModelElementMarshaller
             ModelUtils.findContainingModel(application).getId());
       applicationJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(application));
       applicationJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.APPLICATION_KEY);
-    
+
       loadDescription(applicationJson, application);
       loadAttributes(application, applicationJson);
 
@@ -899,7 +886,7 @@ public class ModelElementMarshaller
          JsonObject fieldMappings = new JsonObject();
          applicationJson.add("fieldMappings", fieldMappings);
       }
-      
+
       // TODO Review
       for (AttributeType attribute : application.getAttribute()) {
          if ("carnot:engine:methodName".equals(attribute.getName())) {
@@ -911,9 +898,9 @@ public class ModelElementMarshaller
 
       return applicationJson;
    }
-   
+
    /**
-    * 
+    *
     * @param dataMappingConnection
     * @return
     */
@@ -924,7 +911,7 @@ public class ModelElementMarshaller
 
       connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
             dataMappingConnection.getElementOid());
-      
+
       connectionJson.addProperty(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY,
             mapAnchorOrientation(dataMappingConnection.getSourceAnchor()));
       connectionJson.addProperty(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
@@ -987,9 +974,9 @@ public class ModelElementMarshaller
       dataFlowJson.addProperty(ModelerConstants.ACTIVITY_ID_PROPERTY, activity.getId());
       return connectionJson;
    }
-   
+
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -1138,7 +1125,7 @@ public class ModelElementMarshaller
       modelJson.addProperty(ModelerConstants.OID_PROPERTY, model.getOid());
       modelJson.addProperty(ModelerConstants.UUID_PROPERTY,  eObjectUUIDMapper().getUUID(model));
       modelJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.MODEL_KEY);
-      
+
       return modelJson;
    }
 
@@ -1165,7 +1152,7 @@ public class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -1196,7 +1183,7 @@ public class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -1215,7 +1202,7 @@ public class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     * @throws JSONException
@@ -1240,9 +1227,9 @@ public class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * TODO From DynamicConnectionCommand. Refactor?
-    * 
+    *
     * @param activity
     * @return
     */
@@ -1285,13 +1272,5 @@ public class ModelElementMarshaller
       }
 
       return PredefinedConstants.ENGINE_CONTEXT;
-   }
-   
-   /**
-    * @return
-    */
-   private EObjectUUIDMapper eObjectUUIDMapper()
-   {
-      return springContext.getBean(EObjectUUIDMapper.class);
    }
 }

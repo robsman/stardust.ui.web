@@ -24,22 +24,18 @@
 		scope="session">
 	</bean>
 
-	<bean id="eObjectUUIDMapper" class="org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper"
-		scope="session">
-	</bean>
-
-	<bean id="defaultModelManagementStrategy" class="org.eclipse.stardust.ui.web.modeler.service.DefaultModelManagementStrategy"
-		scope="session">
+	<bean class="org.eclipse.stardust.ui.web.modeler.service.DefaultModelManagementStrategy" scope="prototype">
+		<qualifier value="default" />
 	</bean>
 
 	<bean id="modelService" class="org.eclipse.stardust.ui.web.modeler.service.ModelService"
 		scope="session">
-		<aop:scoped-proxy />
-		<property name="modelManagementStrategy" ref="defaultModelManagementStrategy" />
+		<aop:scoped-proxy/>
 	</bean>
 
 	<bean id="testModelManagementStrategy" class="org.eclipse.stardust.ui.web.modeler.service.TestModelManagementStrategy"
 		scope="session">
+		<qualifier value="test" />
 		<property name="modelService" ref="modelService" />
 	</bean>
 

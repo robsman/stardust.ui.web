@@ -34,11 +34,12 @@ import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
- * 
+ *
  * @author Sidharth.Singh
- * 
+ *
  */
 @CommandHandler
 public class DataCommandHandler
@@ -48,7 +49,7 @@ public class DataCommandHandler
    private ApplicationContext springContext;
 
    /**
-    * 
+    *
     * @param parentLaneSymbol
     * @param model
     * @param processDefinition
@@ -69,14 +70,14 @@ public class DataCommandHandler
 
       synchronized (model)
       {
-         EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+         EObjectUUIDMapper mapper = modelService().uuidMapper();
          long maxOid = XpdlModelUtils.getMaxUsedOid(model);
 
          DataType data;
 
          try
          {
-            data = MBFacade.getDataFromExistingModel(model.getId(), model, dataFullID);
+            data = new MBFacade(modelService().getModelManagementStrategy()).getDataFromExistingModel(model.getId(), model, dataFullID);
          }
          catch (ObjectNotFoundException x)
          {
@@ -96,7 +97,7 @@ public class DataCommandHandler
    }
 
    /**
-    * 
+    *
     * @param parentLaneSymbol
     * @param request
     */
@@ -107,7 +108,7 @@ public class DataCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
       Long dataOID = extractLong(request, ModelerConstants.OID_PROPERTY);
       String dataFullID = extractString(request, ModelerConstants.DATA_FULL_ID_PROPERTY);
-      DataType data = MBFacade.getDataFromExistingModel(model.getId(), model, dataFullID);
+      DataType data = new MBFacade(modelService().getModelManagementStrategy()).getDataFromExistingModel(model.getId(), model, dataFullID);
       DataSymbolType dataSymbol = MBFacade.findDataSymbolRecursively(parentLaneSymbol,
             dataOID);
       synchronized (model)
@@ -119,4 +120,8 @@ public class DataCommandHandler
 
    }
 
+   private ModelService modelService()
+   {
+      return springContext.getBean(ModelService.class);
+   }
 }

@@ -18,6 +18,7 @@ import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
  * @author Shrikant.Gangal
@@ -39,8 +40,13 @@ public class StructuredTypeChangeCommandHandler
 
       synchronized (model)
       {
-         EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+         EObjectUUIDMapper mapper = modelService().uuidMapper();
          mapper.map(MBFacade.createTypeDeclaration(model, typeId, typeName));
       }
+   }
+
+   private ModelService modelService()
+   {
+      return springContext.getBean(ModelService.class);
    }
 }

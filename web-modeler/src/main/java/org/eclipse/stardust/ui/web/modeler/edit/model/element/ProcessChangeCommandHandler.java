@@ -37,6 +37,7 @@ import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
  * @author Shrikant.Gangal
@@ -55,7 +56,7 @@ public class ProcessChangeCommandHandler
       String id = MBFacade.createIdFromName(name);
       ProcessDefinitionType processDefinition = newProcessDefinition(model).withIdAndName(id, name).build();
       //Added process definition to UUID map.
-      EObjectUUIDMapper mapper = springContext.getBean(EObjectUUIDMapper.class);
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(processDefinition);
 
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
@@ -124,5 +125,10 @@ public class ProcessChangeCommandHandler
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
       ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model, id);
       model.getProcessDefinition().remove(processDefinition);
+   }
+
+   private ModelService modelService()
+   {
+      return springContext.getBean(ModelService.class);
    }
 }

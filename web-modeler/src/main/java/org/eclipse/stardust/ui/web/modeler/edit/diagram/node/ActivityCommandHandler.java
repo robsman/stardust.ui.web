@@ -18,6 +18,8 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PRO
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
+import javax.annotation.Resource;
+
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
@@ -41,6 +43,9 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 @CommandHandler
 public class ActivityCommandHandler
 {
+   @Resource
+   private ModelService modelService;
+
    /**
     * @param parentLaneSymbol
     * @param request
@@ -74,7 +79,7 @@ public class ActivityCommandHandler
          long maxOid = XpdlModelUtils.getMaxUsedOid(model);
          String modelId = model.getId();
 
-         ActivityType activity = MBFacade.createActivity(modelId, processDefinition, activityType, participantFullID,
+         ActivityType activity = new MBFacade(modelService.getModelManagementStrategy()).createActivity(modelId, processDefinition, activityType, participantFullID,
                activityId, activityName, applicationFullID, subProcessID, maxOid++);
 
          ModelService.setDescription(activity, request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
@@ -110,5 +115,4 @@ public class ActivityCommandHandler
       }
 
    }
-
 }
