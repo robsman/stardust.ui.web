@@ -10,6 +10,9 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl.IppUserProvider;
+
 @Component
 @Scope("singleton")
 public class ModelingSessionManager
@@ -25,6 +28,11 @@ public class ModelingSessionManager
 
    // collaboration session per user (at most one per user)
    private ConcurrentMap<String, ModelingSession> collaborations = newConcurrentHashMap();
+
+   public static String getUniqueId(User user)
+   {
+      return IppUserProvider.wrapUser(user).getUID();
+   }
 
    public ModelingSession findById(String sessionId)
    {

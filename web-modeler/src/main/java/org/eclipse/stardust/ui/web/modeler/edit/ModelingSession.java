@@ -2,9 +2,9 @@ package org.eclipse.stardust.ui.web.modeler.edit;
 
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 import static org.eclipse.stardust.common.CompareHelper.areEqual;
+import static org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager.getUniqueId;
 
 import java.util.Map;
-import java.util.UUID;
 
 import javax.annotation.Resource;
 
@@ -102,19 +102,19 @@ public class ModelingSession
 
    public void requestJoin(User user)
    {
-      if ( !isOwner(user.getAccount()))
+      if ( !isOwner(getUniqueId(user)))
       {
-         prospectUsers.put(user.getAccount(), user);
+         prospectUsers.put(getUniqueId(user), user);
          // imageUris.put("prospect.getAccount()", );
       }
    }
 
    public void confirmJoin(User user)
    {
-      if (prospectUsers.containsKey(user.getAccount()))
+      if (prospectUsers.containsKey(getUniqueId(user)))
       {
-         collaborators.put(user.getAccount(), user);
-         prospectUsers.remove(user.getAccount());
+         collaborators.put(getUniqueId(user), user);
+         prospectUsers.remove(getUniqueId(user));
       }
    }
 
