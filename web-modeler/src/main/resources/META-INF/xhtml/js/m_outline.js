@@ -1871,14 +1871,12 @@ define(
 							}
 						}
 						for ( var i = 0; i < obj.changes.removed.length; i++) {
-//							TODO - temporarily disabled to avoid unintentional model node deletion in some scenarios
-//							if (m_constants.MODEL == command.changes.removed[i].type) {
-//								this.deleteModel(command.changes.removed[i]);
-//							} else
+							if (m_constants.MODEL == command.changes.removed[i].type) {
+								this.deleteModel(command.changes.removed[i]);
+							} else
 							if (m_constants.PROCESS == command.changes.removed[i].type) {
 								this.deleteProcess(command.changes.removed[i]);
 							}
-							
 						}
 					} else if (command.scope == "all") {
 						// @deprecated
