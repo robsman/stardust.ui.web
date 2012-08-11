@@ -178,6 +178,14 @@
 				<ice:outputText value="Open Camel Application &amp;raquo;"
 					styleClass="action-link" escape="false" />
 			</ice:commandLink>
+			<ice:commandLink id="generic_application_view_link"
+				action="#{ippPortalApp.openView}" visible="false">
+				<f:param name="viewId" value="genericApplicationView" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText value="Open Generic Application &amp;raquo;"
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>
 			<ice:commandLink id="modeling_work_assignment_view_link"
 				action="#{ippPortalApp.openView}" visible="false">
 				<f:param name="viewId" value="modelingWorkAssignmentView" />
