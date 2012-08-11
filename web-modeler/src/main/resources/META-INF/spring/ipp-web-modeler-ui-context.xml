@@ -22,7 +22,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			controller="processDefinitionView" />
 		<ippui:view name="genericApplicationView"
 			include="/plugins/bpm-modeler/views/modeler/genericApplicationFrameAdapter.xhtml"
-			controller="uiMashupApplicationView" />
+			controller="genericApplicationView" />
 		<ippui:view name="uiMashupApplicationView"
 			include="/plugins/bpm-modeler/views/modeler/uiMashupApplicationFrameAdapter.xhtml"
 			controller="uiMashupApplicationView" />
