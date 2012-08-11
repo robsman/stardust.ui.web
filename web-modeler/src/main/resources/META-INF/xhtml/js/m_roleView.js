@@ -255,15 +255,13 @@ define(
 
 					// Set values
 
-					if (this.role.attributes["carnot:engine:visibility"]
-							.equals("Public")) {
+					if ("Public".equals(this.role.attributes["carnot:engine:visibility"])) {
 						this.publicVisibilityCheckbox.attr("checked", true);
 					} else {
 						this.publicVisibilityCheckbox.attr("checked", false);
 					}
 
-					if (this.role.attributes["carnot:engine:tasks:assignment:mode"]
-							.equals("assemblyLine")) {
+					if ("assemblyLine".equals(this.role.attributes["carnot:engine:tasks:assignment:mode"])) {
 						this.assignAutomaticallyRadio.attr("checked", true);
 						this.chooseAssignmentRadio.attr("checked", false);
 					} else {

@@ -12,11 +12,12 @@ define(
 		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_modelElementView",
 				"m_model"],
 		function(m_utils, m_command, m_commandsController, m_dialog, m_modelElementView, m_model) {
-			var view;
-
 			return {
 				initialize : function(fullId) {
-					view = new GenericApplicationView();
+					m_utils.debug("Full Id");
+					m_utils.debug(fullId);
+
+					var view = new GenericApplicationView();
 					// TODO Unregister!
 					// In Initializer?
 
@@ -37,6 +38,8 @@ define(
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(GenericApplicationView.prototype, view);
 
+				this.unsupportedMessagePanel = jQuery("#unsupportedMessagePanel");
+
 				/**
 				 * 
 				 */
@@ -45,6 +48,12 @@ define(
 					this.initializeModelElementView();
 					this.initializeModelElement(application);
 					this.application = application;
+					
+					m_utils.debug("Application");
+					m_utils.debug(this.application);
+					
+					this.unsupportedMessagePanel.empty();
+					this.unsupportedMessagePanel.append("The Application Type <b>" + this.application.applicationType + "</b> is not yet supported for the Browser Modeler. No further details provided.");
 				};
 
 				/**

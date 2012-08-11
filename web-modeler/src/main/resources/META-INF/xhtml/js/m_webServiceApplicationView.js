@@ -13,11 +13,9 @@ define(
 				"m_model", "m_typeDeclaration" ],
 		function(m_utils, m_command, m_commandsController, m_dialog, m_modelElementView, m_model,
 				m_typeDeclaration) {
-			var view;
-
 			return {
 				initialize : function(fullId) {
-					view = new WebServiceApplicationView();
+					var view = new WebServiceApplicationView();
 					// TODO Unregister!
 					// In Initializer?
 
@@ -44,9 +42,10 @@ define(
 				WebServiceApplicationView.prototype.initialize = function(
 						application) {
 					this.initializeModelElementView();
-					this.initializeFromModelElement(application);
 					
 					this.application = application;
+
+					this.initializeModelElement(application);
 				};
 
 				/**

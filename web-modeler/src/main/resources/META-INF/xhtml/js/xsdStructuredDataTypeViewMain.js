@@ -11,5 +11,6 @@ require(["m_jqueryConflictResolver",
 		 "m_constants",
 		 "m_command",
 		 "m_commandsController",
+		 "m_modelElementView",
 		 "m_xsdStructuredDataTypeView"], pageInitializer);
 

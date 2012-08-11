@@ -19,5 +19,6 @@ require(["m_jqueryConflictResolver",
 		 "m_command",
 		 "m_commandsController",
 		 "m_view",
+		 "m_modelElementView",
 		 "m_messageTransformationApplicationView"], pageInitializer);
 

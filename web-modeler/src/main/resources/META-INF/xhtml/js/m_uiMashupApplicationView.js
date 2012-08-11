@@ -13,11 +13,9 @@ define(
 				"m_model", "m_typeDeclaration" ],
 		function(m_utils, m_command, m_commandsController, m_dialog, m_modelElementView, m_model,
 				m_typeDeclaration) {
-			var view;
-
 			return {
 				initialize : function(fullId) {
-					view = new UiMashupApplicationView();
+					var view = new UiMashupApplicationView();
 					// TODO Unregister!
 					// In Initializer?
 
@@ -43,9 +41,11 @@ define(
 				 */
 				UiMashupApplicationView.prototype.initialize = function(
 						application) {
-					this.initializeModelElement(application);
+					this.initializeModelElementView();
 					
 					this.application = application;
+
+					this.initializeModelElement(application);
 				};
 
 				/**

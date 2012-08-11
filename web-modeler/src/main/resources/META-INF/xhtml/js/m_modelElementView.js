@@ -49,21 +49,7 @@ define(
 							});
 						}
 					});
-					this.descriptionTextarea.change({
-						"view" : this
-					}, function(event) {
-						var view = event.data.view;
-
-						if (!view.validate()) {
-							return;
-						}
-
-						if (view.modelElement.description != view.descriptionTextarea.val()) {
-							view.submitChanges({
-								description : view.descriptionTextarea.val()
-							});
-						}
-					});					
+					this.registerTextInputForModelElementChangeSubmission(this.descriptionTextarea, "description");
 				};
 				
 				/**

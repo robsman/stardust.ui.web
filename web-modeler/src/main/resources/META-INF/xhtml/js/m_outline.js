@@ -642,6 +642,17 @@ define(
 														+ application.id + "&fullId="
 														+ application.getFullId(),
 														application.getFullId());
+									} else if (data.rslt.obj.attr('rel') == "plainJava") {
+										var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
+										var application = model.findModelElementByUuid(data.rslt.obj.attr("id"));
+
+										viewManager.openView(
+												"genericApplicationView",
+												"modelId=" + model.id
+														+ "&applicationId="
+														+ application.id + "&fullId="
+														+ application.getFullId(),
+														application.getFullId());
 									} else if (data.rslt.obj.attr('rel') == "structuredDataType") {
 										var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
 										var structuredDataType = model.findModelElementByUuid(data.rslt.obj.attr("id"));

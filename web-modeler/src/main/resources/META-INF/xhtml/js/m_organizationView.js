@@ -54,8 +54,18 @@ define(
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.chooseAssignmentRadio = jQuery("#chooseAssignmentRadio");
 					this.assignAutomaticallyRadio = jQuery("#assignAutomaticallyRadio");
-					this.costCenterInput = jQuery("#costCenterInput");
+					this.supportsDepartmentsCheckbox = jQuery("#supportsDepartmentsCheckbox");
+					this.departmentDataSelect = jQuery("#departmentDataSelect");
+					this.departmentDataPathInput = jQuery("#departmentDataPathInput");
+					this.costCenterInput = jQuery("#costCenterInput");					
 
+                    this.registerTextInputForModelElementAttributeChangeSubmission(
+                    		this.departmentDataSelect, "carnot:engine:dataId");
+                    this.registerTextInputForModelElementAttributeChangeSubmission(
+                    		this.departmentDataPathInput, "carnot:engine:dataPath");
+                    this.registerCheckboxInputForModelElementAttributeChangeSubmission(
+                    		this.supportsDepartmentsCheckbox, "carnot:engine:bound");
+                    
 					this.publicVisibilityCheckbox
 							.change(
 									{
@@ -170,6 +180,10 @@ define(
 						this.assignAutomaticallyRadio.attr("checked", false);
 						this.chooseAssignmentRadio.attr("checked", true);
 					}
+
+                    this.departmentDataSelect.val(organization.attributes["carnot:engine:dataId"]);
+                    this.departmentDataPathInput.val(organization.attributes["carnot:engine:dataPath"]);
+                    this.supportsDepartmentsCheckbox.attr("checked", organization.attributes["carnot:engine:bound"]);
 
 					this.costCenterInput
 							.val(this.organization.attributes["carnot:pwh:costCenter"]);
