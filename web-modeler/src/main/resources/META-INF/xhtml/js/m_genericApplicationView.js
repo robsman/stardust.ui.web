@@ -14,9 +14,6 @@ define(
 		function(m_utils, m_command, m_commandsController, m_dialog, m_modelElementView, m_model) {
 			return {
 				initialize : function(fullId) {
-					m_utils.debug("Full Id");
-					m_utils.debug(fullId);
-
 					var view = new GenericApplicationView();
 					// TODO Unregister!
 					// In Initializer?
@@ -53,7 +50,7 @@ define(
 					m_utils.debug(this.application);
 					
 					this.unsupportedMessagePanel.empty();
-					this.unsupportedMessagePanel.append("The Application Type <b>" + this.application.applicationType + "</b> is not yet supported for the Browser Modeler. No further details provided.");
+					this.unsupportedMessagePanel.append("Display and editing of the Application Type <b>" + this.application.applicationType + "</b> is not yet supported for the Browser Modeler. However, Applications of this type can be used for modeling.");
 				};
 
 				/**

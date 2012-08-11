@@ -23,6 +23,7 @@ import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.ContextType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
+import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
 import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
@@ -176,6 +177,22 @@ public abstract class ModelElementMarshaller
 
       JsonObject attributesJson = new JsonObject();
       processJson.add(ModelerConstants.ATTRIBUTES_PROPERTY, attributesJson);
+
+      JsonObject dataPathesJson = new JsonObject();
+      processJson.add(ModelerConstants.DATA_PATHES_PROPERTY, dataPathesJson);
+
+      for (DataPathType dataPath : processDefinition.getDataPath())
+      {
+         JsonObject dataPathJson = new JsonObject();
+         dataPathesJson.add(dataPath.getId(), dataPathJson);
+
+         dataPathJson.addProperty(ModelerConstants.ID_PROPERTY, dataPath.getId());
+         dataPathJson.addProperty(ModelerConstants.NAME_PROPERTY, dataPath.getName());
+         dataPathJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, dataPath.getData().getId());
+         dataPathJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY, dataPath.getDataPath());
+         dataPathJson.addProperty(ModelerConstants.DESCRIPTOR_PROPERTY, dataPath.isDescriptor());
+         dataPathJson.addProperty(ModelerConstants.KEY_DESCRIPTOR_PROPERTY, dataPath.isKey());
+      }
 
       JsonObject activitiesJson = new JsonObject();
       processJson.add(ModelerConstants.ACTIVITIES_PROPERTY, activitiesJson);

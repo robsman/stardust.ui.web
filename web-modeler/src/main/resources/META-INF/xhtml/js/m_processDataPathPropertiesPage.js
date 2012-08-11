@@ -21,7 +21,6 @@ define(
 
 			function ProcessDataPathPropertiesPage(newPropertiesPanel, newId,
 					newTitle) {
-
 				// Inheritance
 
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
@@ -70,6 +69,7 @@ define(
 				 * 
 				 */
 				ProcessDataPathPropertiesPage.prototype.setElement = function() {
+					this.populateDataPathTable();
 				};
 
 				/**
@@ -85,40 +85,69 @@ define(
 				 * 
 				 */
 				ProcessDataPathPropertiesPage.prototype.addDataPath = function() {
-					var item = "<tr><td class=\"";
-
-					if (this.descriptorInput.is(":checked")) {
-						if (this.keyDescriptorInput.is(":checked")) {
-							item += "keyDescriptorDataPathListItem";
-						} else {
-							item += "descriptorDataPathListItem";
-						}
-					} else {
-						item += "inDataPathListItem";
-					}
-					
-					item += "\"></td><td class=\"dataPathTableCell\">";
-					item += this.dataPathNameInput.val();
-					item += "</td><td class=\"dataPathTableCell\">";
-					item += this.dataPathDataSelect.val();
-
-					if (this.dataPathPathInput.val() != null
-							&& this.dataPathPathInput.val() != "") {
-						item += ".";
-						item += this.dataPathPathInput.val();
-					}
-
-					item += "</td></tr>";
-
-					this.dataPathTable.append(item);
-					this.dataPaths[this.dataPathNameInput.val()] = {
+					this.propertiesPanel.element.dataPathes[this.dataPathNameInput
+							.val()] = {
 						name : this.dataPathNameInput.val(),
-						type : this.dataPathNameInput.val(),
 						descriptor : this.descriptorInput.is(":checked"),
 						keyDescriptor : this.keyDescriptorInput.is(":checked"),
-						data : this.dataPathDataSelect.val(),
-						expression : this.dataPathPathInput.val()						
+						dataFullId : this.dataPathDataSelect.val(),
+						dataPath : this.dataPathPathInput.val()
 					};
+
+					this.populateDataPathTable();
+				};
+
+				/**
+				 * 
+				 */
+				ProcessDataPathPropertiesPage.prototype.populateDataPathTable = function() {
+					if (this.propertiesPanel.element.dataPathes == null) {
+						return;
+					}
+
+					this.dataPathTable.empty();
+
+					for ( var m in this.propertiesPanel.element.dataPathes) {
+						var dataPath = this.propertiesPanel.element.dataPathes[m];
+
+						m_utils.debug("Data Path");
+						m_utils.debug(dataPath);
+
+						var item = "<tr id=\"";
+						
+						item += dataPath.id;
+						
+						item += "TableRow\"><td class=\"";
+
+						if (dataPath.descriptor) {
+							if (dataPath.keyDescriptor) {
+								item += "keyDescriptorDataPathListItem";
+							} else {
+								item += "descriptorDataPathListItem";
+							}
+						} else {
+							item += "inDataPathListItem";
+						}
+
+						item += "\"></td><td class=\"dataPathTableCell\">";
+						item += dataPath.name;
+						item += "</td><td class=\"dataPathTableCell\">";
+						item += dataPath.dataFullId;
+
+						if (dataPath.dataPath != null
+								&& dataPath.dataPath != "") {
+							item += ".";
+							item += dataPath.dataPath;
+						}
+
+						item += "</td></tr>";
+
+						this.dataPathTable.append(item);
+					}
+
+//					this.dataPathTable.tableScroll({
+//						height : 200
+//					});
 				};
 
 				/**
