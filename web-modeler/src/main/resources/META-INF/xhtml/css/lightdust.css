@@ -518,35 +518,41 @@ div.panelWrapperBorder {
 	border: 1px solid #e8e8e8;
 }
 
-#data-path-list {
-	list-style: none;
-	list-style-position: outside;
-	padding-left: 2px;
-	margin: 0px;
+td.dataPathTableCell
+{
+	padding-right: 5px;
 }
 
-.in-data-path-list-item {
+td.inDataPathListItem {
 	background: url("../images/icons/in-datapath.gif")
 		no-repeat;
 	padding-left: 20px;
-	margin-top: 2px;
-	margin-bottom: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
 }
 
-.out-data-path-list-item {
+td.outDataPathListItem {
 	background: url("../images/icons/out-datapath.gif")
 		no-repeat;
 	padding-left: 20px;
-	margin-top: 2px;
-	margin-bottom: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
 }
 
-.descriptor-data-path-list-item {
+td.descriptorDataPathListItem {
 	background: url("../images/icons/descriptor.gif")
 		no-repeat;
 	padding-left: 20px;
-	margin-top: 2px;
-	margin-bottom: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+td.keyDescriptorDataPathListItem {
+	background: url("../images/icons/descriptor.gif")
+		no-repeat;
+	padding-left: 20px;
+	padding-top: 2px;
+	padding-bottom: 2px;
 }
 
 #selectModeButton
