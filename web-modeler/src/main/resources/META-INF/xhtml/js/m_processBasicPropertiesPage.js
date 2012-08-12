@@ -25,7 +25,7 @@ define(
 				// Inheritance
 
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						newPropertiesPanel, "basicPropertiesPage", "Basic", "../../images/icons/basic-properties-page.png");
+						newPropertiesPanel, "basicPropertiesPage", "General Properties", "../../images/icons/basic-properties-page.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(ProcessBasicPropertiesPage.prototype,

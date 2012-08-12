@@ -9,9 +9,11 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_communicationController", "m_command", "m_commandsController", "m_dialog", "m_view",
-				"m_model"],
-		function(m_utils, m_communicationController, m_command, m_commandsController, m_dialog, m_view, m_model) {
+		[ "m_utils", "m_extensionManager", "m_communicationController",
+				"m_command", "m_commandsController", "m_dialog", "m_view",
+				"m_model" ],
+		function(m_utils, m_extensionManager, m_communicationController,
+				m_command, m_commandsController, m_dialog, m_view, m_model) {
 			var view;
 
 			return {
@@ -39,6 +41,9 @@ define(
 
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(ModelView.prototype, view);
+
+				m_utils.debug("View Manager");
+				m_utils.debug(this.viewManager);
 
 				this.idOutput = jQuery("#idOutput");
 				this.nameInput = jQuery("#nameInput");
@@ -72,8 +77,7 @@ define(
 				/**
 				 * 
 				 */
-				ModelView.prototype.initialize = function(
-						model) {
+				ModelView.prototype.initialize = function(model) {
 					this.model = model;
 
 					this.idOutput.empty();
@@ -122,15 +126,14 @@ define(
 				ModelView.prototype.submitChanges = function(changes) {
 					m_commandsController.submitCommand(m_command
 							.createUpdateModelElementCommand(
-									this.model.model.id,
-									this.model.oid, changes));
+									this.model.model.id, this.model.oid,
+									changes));
 				};
 
 				/**
 				 * 
 				 */
-				ModelView.prototype.processCommand = function(
-						command) {
+				ModelView.prototype.processCommand = function(command) {
 					// Parse the response JSON from command pattern
 
 					var object = ("string" == typeof (command)) ? jQuery
@@ -141,54 +144,172 @@ define(
 							&& 0 != object.changes.modified.length
 							&& object.changes.modified[0].oid == this.model.oid) {
 
-						m_utils.inheritFields(this.model, object.changes.modified[0]);
-						
+						m_utils.inheritFields(this.model,
+								object.changes.modified[0]);
+
 						this.initialize(this.model);
 					}
 				};
-				
+
 				/**
 				 * 
 				 */
 				ModelView.prototype.refreshValidation = function() {
 					this.problemsTableBody.empty();
-					
-					m_communicationController.syncGetData({
-						url : m_communicationController.getEndpointUrl()
-								+ "/models/" + this.model.id + "/problems",
-						view: this
-					}, {
-						"success" : function(json) {
-							m_utils.debug("Problems:");
-							m_utils.debug(json);
 
-							for (var n = 0; n < json.length; ++n)
-							{
-								var content = "<tr>";
+					m_communicationController
+							.syncGetData(
+									{
+										url : m_communicationController
+												.getEndpointUrl()
+												+ "/models/"
+												+ this.model.id
+												+ "/problems",
+										view : this
+									},
+									{
+										"success" : function(json) {
+											for ( var n = 0; n < json.length; ++n) {
+												var content = "<tr>";
 
-								content += "<td>";
-								content += json[n].severity;
-								content += "</td>";
-								content += "<td>";
-								content += json[n].modelElement;
-								content += "</td>";
-								content += "<td>";
-								content += json[n].message;
-								content += "</td>";
-								content += "</tr>";
-								
-								jQuery("table#problemsTable tbody").append(content);								
-							}
-						},
-						"error" : function() {
-							m_utils.debug("Error");
-						}
-					});
+												if (json[n].severity == 0) {
+													content += "<td class=\"infoSeverityIssueItem\">";
+												} else if (json[n].severity == 1) {
+													content += "<td class=\"warningSeverityIssueItem\">";
+												} else if (json[n].severity == 2) {
+													content += "<td class=\"errorSeverityIssueItem\">";
+												}
+
+												content += "</td>";
+												content += "<td><a id=\"issue"
+														+ n + "\">";
+												content += "</a></td>";
+												content += "<td>";
+												content += json[n].message;
+												content += "</td>";
+												content += "</tr>";
+
+												jQuery(
+														"table#problemsTable tbody")
+														.append(content);
+
+												var viewManagerExtension = m_extensionManager
+														.findExtension("viewManager");
+												var viewManager = require(
+														viewManagerExtension.moduleUrl)
+														.create();
+												// TODO This is heuristically
+												// obtained need clear model for
+												// model pathes or switch to
+												// UUIDs
+												var segments = json[n].modelElement
+														.split("/");
+												var model = m_model
+														.findModel(segments[0]);
+
+												if (model.applications[segments[1]] != null) {
+													var application = model.applications[segments[1]];
+													jQuery(
+															"table#problemsTable tbody a#issue"
+																	+ n)
+															.append(
+																	"Application "
+																			+ model.name
+																			+ "/"
+																			+ application.name);
+													jQuery(
+															"table#problemsTable tbody a#issue"
+																	+ n)
+															.click(
+																	{
+																		viewManager : viewManager
+																	},
+																	function(
+																			event) {
+																		event.data.viewManager
+																				.openView(
+																						"genericApplicationView",
+																						"modelId="
+																								+ model.id
+																								+ "&applicationId="
+																								+ application.id
+																								+ "&fullId="
+																								+ application
+																										.getFullId(),
+																						application
+																								.getFullId());
+																	});
+												} else if (model.processes[segments[1]] != null) {
+													var process = model.processes[segments[1]];
+													jQuery(
+															"table#problemsTable tbody a#issue"
+																	+ n)
+															.append(
+																	"Process "
+																			+ model.name
+																			+ "/"
+																			+ process.name);
+													jQuery(
+															"table#problemsTable tbody a#issue"
+																	+ n)
+															.click(
+																	{
+																		viewManager : viewManager
+																	},
+																	function(
+																			event) {
+																		event.data.viewManager
+																				.openView(
+																						"processDefinitionView",
+																						"processId="
+																								+ process.id
+																								+ "&modelId="
+																								+ model.id
+																								+ "&processName="
+																								+ process.name
+																								+ "&fullId="
+																								+ process
+																										.getFullId(),
+																						process
+																								.getFullId());
+																	});
+												} else {
+													jQuery(
+															"table#problemsTable tbody a#issue"
+																	+ n)
+															.append(
+																	"Model "
+																			+ model.name);
+													jQuery(
+															"table#problemsTable tbody a#issue"
+																	+ n)
+															.click(
+																	{
+																		viewManager : viewManager
+																	},
+																	function(
+																			event) {
+																		event.data.viewManager
+																				.openView(
+																						"modelView",
+																						"modelId="
+																								+ model.id
+																								+ "&modelName="
+																								+ model.name,
+																						model.id);
+																	});
+												}
+											}
+										},
+										"error" : function() {
+											m_utils.debug("Error");
+										}
+									});
 
 					this.problemsTable.tableScroll({
-						height : 300
+						height : 200
 					});
-	
-				};								
+
+				};
 			}
 		});

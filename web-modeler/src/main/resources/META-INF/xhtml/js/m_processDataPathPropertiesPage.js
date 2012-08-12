@@ -40,6 +40,10 @@ define(
 						+ " #" + this.id + " #addDataPathButton");
 				this.dataPathNameInput = jQuery("#" + this.propertiesPanel.id
 						+ " #" + this.id + " #dataPathNameInput");
+				this.inDataPathInput = jQuery("#" + this.propertiesPanel.id
+						+ " #" + this.id + " #inDataPathInput");
+				this.outDataPathInput = jQuery("#" + this.propertiesPanel.id
+						+ " #" + this.id + " #outDataPathInput");				
 				this.descriptorInput = jQuery("#" + this.propertiesPanel.id
 						+ " #" + this.id + " #descriptorInput");
 				this.keyDescriptorInput = jQuery("#" + this.propertiesPanel.id
@@ -88,15 +92,29 @@ define(
 					this.propertiesPanel.element.dataPathes[this.dataPathNameInput
 							.val()] = {
 						name : this.dataPathNameInput.val(),
+						direction : this.inDataPathInput.is(":checked") ? "IN" : "OUT",
 						descriptor : this.descriptorInput.is(":checked"),
 						keyDescriptor : this.keyDescriptorInput.is(":checked"),
 						dataFullId : this.dataPathDataSelect.val(),
 						dataPath : this.dataPathPathInput.val()
 					};
 
+					this
+							.submitChanges({
+								modelElement : {
+									dataPathes : this.propertiesPanel.element.dataPathes
+								}
+							});
+
 					this.populateDataPathTable();
 				};
 
+				/**
+				 * 
+				 */
+				ProcessDataPathPropertiesPage.prototype.removeDataPath = function() {
+				};
+				
 				/**
 				 * 
 				 */
@@ -114,16 +132,20 @@ define(
 						m_utils.debug(dataPath);
 
 						var item = "<tr id=\"";
-						
+
 						item += dataPath.id;
-						
+
 						item += "TableRow\"><td class=\"";
 
-						if (dataPath.descriptor) {
-							if (dataPath.keyDescriptor) {
-								item += "keyDescriptorDataPathListItem";
+						if (dataPath.direction == "IN") {
+							if (dataPath.descriptor) {
+								if (dataPath.keyDescriptor) {
+									item += "keyDescriptorDataPathListItem";
+								} else {
+									item += "descriptorDataPathListItem";
+								}
 							} else {
-								item += "descriptorDataPathListItem";
+								item += "outDataPathListItem";
 							}
 						} else {
 							item += "inDataPathListItem";
@@ -145,9 +167,9 @@ define(
 						this.dataPathTable.append(item);
 					}
 
-//					this.dataPathTable.tableScroll({
-//						height : 200
-//					});
+					// this.dataPathTable.tableScroll({
+					// height : 200
+					// });
 				};
 
 				/**

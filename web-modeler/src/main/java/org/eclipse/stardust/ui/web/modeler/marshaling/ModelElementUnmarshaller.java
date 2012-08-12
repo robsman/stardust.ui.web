@@ -19,9 +19,11 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractSt
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.activity.BpmApplicationActivityBuilder;
@@ -33,7 +35,9 @@ import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
+import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
+import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
@@ -48,17 +52,17 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 
 /**
- *
+ * 
  * @author Marc.Gille
- *
+ * 
  */
 public abstract class ModelElementUnmarshaller
 {
-   private Map<Class<?>, String[]> symbolPropertiesMap;
+   private Map<Class<? >, String[]> symbolPropertiesMap;
 
-   private Map<Class<?>, String[]> modelElementPropertiesMap;
+   private Map<Class<? >, String[]> modelElementPropertiesMap;
 
-   private Map<Class<?>, String[]> modelElementReferencePropertiesMap;
+   private Map<Class<? >, String[]> modelElementReferencePropertiesMap;
 
    protected abstract ModelManagementStrategy modelManagementStrategy();
 
@@ -72,40 +76,32 @@ public abstract class ModelElementUnmarshaller
       modelElementReferencePropertiesMap = newHashMap();
 
       modelElementPropertiesMap.put(ProcessDefinitionType.class, new String[] {
-         "name", "id"});
+            "name", "id"});
       symbolPropertiesMap.put(ActivitySymbolType.class, new String[] {"x", "y"});
-      modelElementPropertiesMap.put(ActivitySymbolType.class, new String[] {
-            "name"});
+      modelElementPropertiesMap.put(ActivitySymbolType.class, new String[] {"name"});
 
       symbolPropertiesMap.put(StartEventSymbol.class, new String[] {"x", "y"});
-      modelElementPropertiesMap.put(StartEventSymbol.class, new String[] {
-            "name"});
+      modelElementPropertiesMap.put(StartEventSymbol.class, new String[] {"name"});
 
       symbolPropertiesMap.put(EndEventSymbol.class, new String[] {"x", "y"});
-      modelElementPropertiesMap.put(EndEventSymbol.class, new String[] {
-            "name"});
+      modelElementPropertiesMap.put(EndEventSymbol.class, new String[] {"name"});
 
-      modelElementPropertiesMap.put(ApplicationType.class, new String[] {
-      "name", "id"});
+      modelElementPropertiesMap.put(ApplicationType.class, new String[] {"name", "id"});
 
-      modelElementPropertiesMap.put(TypeDeclarationType.class, new String[] {
-      "name", "id"});
+      modelElementPropertiesMap.put(TypeDeclarationType.class,
+            new String[] {"name", "id"});
 
-      modelElementPropertiesMap.put(ModelType.class, new String[] {
-         "name", "id"});
+      modelElementPropertiesMap.put(ModelType.class, new String[] {"name", "id"});
 
-      modelElementPropertiesMap.put(DataType.class, new String[] {
-         "name", "id"});
+      modelElementPropertiesMap.put(DataType.class, new String[] {"name", "id"});
 
-      modelElementPropertiesMap.put(RoleType.class, new String[] {
-         "name", "id"});
+      modelElementPropertiesMap.put(RoleType.class, new String[] {"name", "id"});
 
-      modelElementPropertiesMap.put(OrganizationType.class, new String[] {
-         "name", "id"});
+      modelElementPropertiesMap.put(OrganizationType.class, new String[] {"name", "id"});
    }
 
    /**
-    *
+    * 
     * @param element
     * @param json
     */
@@ -167,7 +163,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param processDefinition
     * @param processDefinitionJson
     */
@@ -178,10 +174,45 @@ public abstract class ModelElementUnmarshaller
             modelElementPropertiesMap.get(ProcessDefinitionType.class));
       storeAttributes(processDefinition, processDefinitionJson);
       storeDescription(processDefinition, processDefinitionJson);
+
+//      processDefinition.getDataPath().clear();
+//
+//      JsonObject dataPathes = processDefinitionJson.get(
+//            ModelerConstants.DATA_PATHES_PROPERTY).getAsJsonObject();
+//
+//      for (Map.Entry<String, JsonElement> entry : dataPathes.entrySet())
+//      {
+//         String key = entry.getKey();
+//         JsonObject dataPathJson = dataPathes.get(key).getAsJsonObject();
+//
+//         // TODO Kernel How to create?
+//         DataPathType dataPath = null;
+//
+//         // TODO Kernel Make more elegant in Facade
+//         String dataFullId = dataPathJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)
+//               .getAsString();
+//
+//         DataType data = new MBFacade(modelManagementStrategy()).getData(
+//               MBFacade.getModelId(dataFullId), MBFacade.stripFullId(dataFullId));
+//
+//         dataPath.setData(data);
+//         dataPath.setDataPath(dataPathJson.get(ModelerConstants.DATA_PATH_PROPERTY)
+//               .getAsString());
+//         dataPath.setId(dataPathJson.get(ModelerConstants.ID_PROPERTY).getAsString());
+//         dataPath.setName(dataPathJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
+//         dataPath.setDescriptor(dataPathJson.get(ModelerConstants.DESCRIPTOR_PROPERTY)
+//               .getAsBoolean());
+//         dataPath.setKey(dataPathJson.get(ModelerConstants.KEY_DESCRIPTOR_PROPERTY)
+//               .getAsBoolean());
+//
+//         dataPath.setDirection(DirectionType.IN_LITERAL);
+//
+//         processDefinition.getDataPath().add(dataPath);
+//      }
    }
 
    /**
-    *
+    * 
     * @param activitySymbol
     * @param activitySymbolJson
     */
@@ -211,7 +242,8 @@ public abstract class ModelElementUnmarshaller
          String subprocessFullId = extractString(activityJson,
                ModelerConstants.SUBPROCESS_ID);
 
-         ProcessDefinitionType subProcessDefinition = new MBFacade(modelManagementStrategy()).getProcessDefinition(
+         ProcessDefinitionType subProcessDefinition = new MBFacade(
+               modelManagementStrategy()).getProcessDefinition(
                MBFacade.getModelId(subprocessFullId),
                MBFacade.stripFullId(subprocessFullId));
          ModelType subProcessModel = ModelUtils.findContainingModel(subProcessDefinition);
@@ -243,7 +275,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param activitySymbol
     * @param gatewaySymbolJson
     */
@@ -260,17 +292,23 @@ public abstract class ModelElementUnmarshaller
       storeAttributes(activity, activityJson);
       storeDescription(activity, activityJson);
 
-      if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY).getAsString().equals(ModelerConstants.XOR_GATEWAY_TYPE))
+      if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
+            .getAsString()
+            .equals(ModelerConstants.XOR_GATEWAY_TYPE))
       {
          activity.setJoin(JoinSplitType.XOR_LITERAL);
          activity.setSplit(JoinSplitType.XOR_LITERAL);
       }
-      else if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY).getAsString().equals(ModelerConstants.AND_GATEWAY_TYPE))
+      else if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
+            .getAsString()
+            .equals(ModelerConstants.AND_GATEWAY_TYPE))
       {
          activity.setJoin(JoinSplitType.AND_LITERAL);
          activity.setSplit(JoinSplitType.AND_LITERAL);
       }
-      else if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY).getAsString().equals(ModelerConstants.OR_GATEWAY_TYPE))
+      else if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
+            .getAsString()
+            .equals(ModelerConstants.OR_GATEWAY_TYPE))
       {
          // TODO OR Support
 
@@ -280,7 +318,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @param startEventSymbolJson
     */
@@ -292,10 +330,10 @@ public abstract class ModelElementUnmarshaller
             modelElementPropertiesMap.get(StartEventSymbol.class));
       mapDeclaredSymbolProperties(startEventSymbol, startEventSymbolJson,
             symbolPropertiesMap.get(StartEventSymbol.class));
-  }
+   }
 
    /**
-    *
+    * 
     * @param endEventSymbol
     * @param endEventSymbolJson
     */
@@ -313,8 +351,7 @@ public abstract class ModelElementUnmarshaller
     * @param application
     * @param applicationJson
     */
-   private void updateApplication(ApplicationType application,
-         JsonObject applicationJson)
+   private void updateApplication(ApplicationType application, JsonObject applicationJson)
    {
       mapDeclaredModelElementProperties(application, applicationJson,
             modelElementPropertiesMap.get(ApplicationType.class));
@@ -337,8 +374,7 @@ public abstract class ModelElementUnmarshaller
     * @param role
     * @param roleJson
     */
-   private void updateRole(RoleType role,
-         JsonObject roleJson)
+   private void updateRole(RoleType role, JsonObject roleJson)
    {
       mapDeclaredModelElementProperties(role, roleJson,
             modelElementPropertiesMap.get(RoleType.class));
@@ -363,8 +399,7 @@ public abstract class ModelElementUnmarshaller
     * @param dataType
     * @param dataJson
     */
-   private void updateDataType(DataType dataType,
-         JsonObject dataJson)
+   private void updateDataType(DataType dataType, JsonObject dataJson)
    {
       mapDeclaredModelElementProperties(dataType, dataJson,
             modelElementPropertiesMap.get(DataType.class));
@@ -374,15 +409,14 @@ public abstract class ModelElementUnmarshaller
     * @param model
     * @param modelJson
     */
-   private void updateModelType(ModelType model,
-         JsonObject modelJson)
+   private void updateModelType(ModelType model, JsonObject modelJson)
    {
       mapDeclaredModelElementProperties(model, modelJson,
             modelElementPropertiesMap.get(ModelType.class));
    }
 
    /**
-    *
+    * 
     * @param modelElement
     * @param modelElementJson
     * @param modelElementProperties
@@ -400,7 +434,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param symbol
     * @param symbolJson
     * @param symbolProperties
@@ -418,13 +452,12 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param targetElement
     * @param request
     * @param property
     */
-   private void mapProperty(EObject targetElement, JsonObject request,
-         String property)
+   private void mapProperty(EObject targetElement, JsonObject request, String property)
    {
       if (request.has(property))
       {
@@ -489,41 +522,48 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-   *
-   * @param json
-   * @param element
-   * @throws JSONException
-   */
-  private void storeAttributes(IIdentifiableModelElement element, JsonObject json) {
-     if (!json.has(ModelerConstants.ATTRIBUTES_PROPERTY)) {
-        return;
-     }
+    * 
+    * @param json
+    * @param element
+    * @throws JSONException
+    */
+   private void storeAttributes(IIdentifiableModelElement element, JsonObject json)
+   {
+      if ( !json.has(ModelerConstants.ATTRIBUTES_PROPERTY))
+      {
+         return;
+      }
 
-     JsonObject attributes = json.getAsJsonObject(ModelerConstants.ATTRIBUTES_PROPERTY);
+      JsonObject attributes = json.getAsJsonObject(ModelerConstants.ATTRIBUTES_PROPERTY);
 
-     if (attributes != null) {
-        for (Map.Entry<String, ?> entry : attributes.entrySet()) {
-           String key = entry.getKey();
-           String value = attributes.get(key).getAsString();
+      if (attributes != null)
+      {
+         for (Map.Entry<String, ? > entry : attributes.entrySet())
+         {
+            String key = entry.getKey();
+            String value = attributes.get(key).getAsString();
 
-           System.out.println("Storing attribute " + key + " " + value);
+            AttributeUtil.setAttribute(element, key, value);
+         }
+      }
+   }
 
-           AttributeUtil.setAttribute(element, key, value);
-        }
-     }
-  }
-
-  /**
-  *
-  * @param modelElementJson
-  * @param element
-  */
- private void storeDescription(IIdentifiableModelElement element, JsonObject modelElementJson) {
-    if (null != element.getDescription()) {
-       modelElementJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, (String) element
-             .getDescription().getMixed().get(0).getValue());
-    } else {
-       modelElementJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, "");
-    }
- }
+   /**
+    * 
+    * @param modelElementJson
+    * @param element
+    */
+   private void storeDescription(IIdentifiableModelElement element,
+         JsonObject modelElementJson)
+   {
+      if (null != element.getDescription())
+      {
+         modelElementJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
+               (String) element.getDescription().getMixed().get(0).getValue());
+      }
+      else
+      {
+         modelElementJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, "");
+      }
+   }
 }

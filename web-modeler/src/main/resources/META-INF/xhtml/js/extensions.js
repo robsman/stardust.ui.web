@@ -19,11 +19,6 @@ var extensions = {
 		pageId : "displayPropertiesPage",
 		pageJavaScriptUrl : "m_processDisplayPropertiesPage"
 	}, {
-		panelId : "processPropertiesPanel",
-		pageId : "testPropertiesPage",
-		pageHtmlUrl : "../../public/processTestPropertiesPage.html",
-		pageJavaScriptUrl : "m_processTestPropertiesPage"
-	}, {
 		panelId : "activityPropertiesPanel",
 		pageId : "basicPropertiesPage",
 		pageJavaScriptUrl : "m_activityBasicPropertiesPage"

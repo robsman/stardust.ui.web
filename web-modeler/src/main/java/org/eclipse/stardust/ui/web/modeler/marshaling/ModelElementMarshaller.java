@@ -173,6 +173,7 @@ public abstract class ModelElementMarshaller
 
          //TODO - Ugly - Find an elegant alternative.
       }
+      
       loadDescription(processJson, processDefinition);
 
       JsonObject attributesJson = new JsonObject();
@@ -190,6 +191,7 @@ public abstract class ModelElementMarshaller
          dataPathJson.addProperty(ModelerConstants.NAME_PROPERTY, dataPath.getName());
          dataPathJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, dataPath.getData().getId());
          dataPathJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY, dataPath.getDataPath());
+         dataPathJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, dataPath.getDirection().getLiteral());
          dataPathJson.addProperty(ModelerConstants.DESCRIPTOR_PROPERTY, dataPath.isDescriptor());
          dataPathJson.addProperty(ModelerConstants.KEY_DESCRIPTOR_PROPERTY, dataPath.isKey());
       }

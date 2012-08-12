@@ -36,7 +36,8 @@
 																		<option value="default">None</option>
 																		<option value="progress">Progress</option>
 																		<option value="kpi">KPI</option>
-																</select></td>
+																</select>
+																</td>
 																<td><input id="decorationConfigurationButton"
 																	type="image"
 																	src="../../images/icons/decoration-configuration.png"
@@ -46,18 +47,15 @@
 																<td><input id="decorationRefreshButton"
 																	type="image" src="../../images/icons/refresh.png"
 																	height="16" width="16" title="Decoration Refresh"
-																	alt="Decoration Refresh" class="toolbarButton" />
-																</td>
+																	alt="Decoration Refresh" class="toolbarButton" /></td>
 															</tr>
 														</table>
 													</div>
 													<div class="toolbar-section-footer">Decoration</div>
-												</div>
-											</td>
+												</div></td>
 										</tr>
 									</table>
-								</div>
-							</td>
+								</div></td>
 						</tr>
 						<tr>
 							<td>
@@ -65,34 +63,34 @@
 									<table style="width: 100%;" cellpadding="0" cellspacing="0">
 										<tr valign="middle">
 											<td align="left">
-												<div id="messageDisplay"></div>
-											</td>
+												<div id="messageDisplay"></div></td>
 											<td align="right">
 												<table cellpadding="0" cellspacing="0">
 													<tr valign="middle">
 														<td><div id="modificationDisplayLabel">Last
-																Save:</div></td>
+																Save:</div>
+														</td>
 														<td>
-															<div id="lastSaveDateDisplay" /></td>
+															<div id="lastSaveDateDisplay" />
+														</td>
 														<td>
-															<div id="modificationStatusDisplay" /></td>
+															<div id="modificationStatusDisplay" />
+														</td>
 													</tr>
-												</table>
-											</td>
+												</table></td>
 										</tr>
 									</table>
-								</div></td>
+								</div>
+							</td>
 						</tr>
 						<tr>
 							<td>
 								<div id="scrollpane">
 									<div id="canvas" />
-								</div>
-							</td>
+								</div></td>
 						</tr>
 					</table>
-				</div>
-			</td>
+				</div></td>
 			<td>
 				<div id="propertiesPanelDisplayControlDiv" style="height: 100%;">
 					<img id="propertiesPanelShowControl"
@@ -101,8 +99,7 @@
 					<img id="propertiesPanelHideControl"
 						src="../../images/icons/expand.png"
 						class="propertyPageVisibilityControl" title="Hide Property Panel" />
-				</div>
-			</td>
+				</div></td>
 			<td
 				style="height: 100%; vertical-align: top; text-align: left; margin-left: 10px;">
 				<div id="modelerPropertiesPanelWrapper" class="panelWrapperBorder"
@@ -120,22 +117,30 @@
 													<tr>
 														<td>
 															<div class="propertiesPanelTitle">Process
-																Definition</div>
-														</td>
+																Definition</div></td>
 													</tr>
 													<tr>
 														<td>
 															<div class="errorMessagesPanel">
 																<ul id="errorMessagesList">
 																</ul>
-															</div>
-														</td>
+															</div></td>
 													</tr>
 													<tr>
 														<td>
 															<div id="basicPropertiesPage" class="propertiesPage">
 																<div class="heading">Basic</div>
 																<table>
+																	<tr>
+																		<td><label for="guidOutput">GUID</label>
+																		</td>
+																		<td><div id="guidOutput" class="output" /></td>
+																	</tr>
+																	<tr>
+																		<td><label for="idOutput">ID</label>
+																		</td>
+																		<td><div id="idOutput" class="output" /></td>
+																	</tr>
 																	<tr>
 																		<td><label for="nameInput">Name</label>
 																		</td>
@@ -149,7 +154,15 @@
 																	</tr>
 																	<tr>
 																		<td><textarea id="descriptionInput" cols="40"
-																				rows="3"></textarea>
+																				rows="3"></textarea></td>
+																	</tr>
+																</table>
+																<table>
+																	<tr>
+																		<td><label for="defaultPriorityInput">Default
+																				Priority</label>
+																		</td>
+																		<td><input id="defaultPriorityInput" type="text" />
 																		</td>
 																	</tr>
 																</table>
@@ -162,8 +175,7 @@
 																			<div id="openDocumentViewLinkPanel">
 																				<a id="openDocumentViewLink">Open documentation
 																					&raquo;</a>
-																			</div>
-																		</td>
+																			</div></td>
 																	</tr>
 																</table>
 															</div>
@@ -175,7 +187,8 @@
 																				<tr>
 																					<td><input id="addDataPathButton" type="image"
 																						src="../../images/icons/add.png" title="Add"
-																						alt="Add" class="toolbarButton" /></td>
+																						alt="Add" class="toolbarButton" />
+																					</td>
 																					<td><img
 																						src="../../images/icons/toolbar-separator.png"></img>
 																					</td>
@@ -189,7 +202,8 @@
 																					<td><input id="moveDataPathUpButton"
 																						type="image" src="../../images/icons/arrow-up.png"
 																						title="Move Up" alt="Move Up"
-																						class="toolbarButton" /></td>
+																						class="toolbarButton" />
+																					</td>
 																					<td><img
 																						src="../../images/icons/toolbar-separator.png"></img>
 																					</td>
@@ -197,10 +211,10 @@
 																						type="image"
 																						src="../../images/icons/arrow-down.png"
 																						title="Move Down" alt="Move Down"
-																						class="toolbarButton" /></td>
+																						class="toolbarButton" />
+																					</td>
 																				</tr>
-																			</table>
-																		</td>
+																			</table></td>
 																	</tr>
 																	<tr>
 																		<td align="left">
@@ -208,7 +222,8 @@
 																				style="height: 100px; overflow: auto; border: grey 1px solid; margin-bottom: 10px;">
 																				<table id="dataPathTable">
 																				</table>
-																			</div></td>
+																			</div>
+																		</td>
 																	</tr>
 																	<tr>
 																		<td>
@@ -220,39 +235,43 @@
 																					</td>
 																				</tr>
 																				<tr>
-																					<td><label>Direction</label>
-																					</td>
+																					<td><label>Direction</label></td>
 																					<td><table>
 																							<tr>
 																								<td><input id="inDataPathInput"
-																									type="checkbox" /></td>
+																									type="checkbox" />
+																								</td>
 																								<td><label for="inDataPathInput">In</label>
 																								</td>
 																								<td><input id="outDataPathInput"
-																									type="checkbox" /></td>
+																									type="checkbox" />
+																								</td>
 																								<td><label for="outDataPathInput">Out</label>
 																								</td>
 																							</tr>
-																						</table></td>
+																						</table>
+																					</td>
 																				</tr>
 																				<tr>
 																					<td><input id="descriptorInput"
-																						type="checkbox" /></td>
+																						type="checkbox" />
+																					</td>
 																					<td><label for="descriptorInput">Descriptor</label>
 																					</td>
 																				</tr>
 																				<tr>
 																					<td><input id="keyDescriptorInput"
-																						type="checkbox" /></td>
-																					<td><label for="keyDescriptorInput">Key
-																							Descriptor</label>
+																						type="checkbox" />
 																					</td>
+																					<td><label for="keyDescriptorInput">Key
+																							Descriptor</label></td>
 																				</tr>
 																				<tr>
 																					<td><label for="dataPathDataSelect">Data</label>
 																					</td>
 																					<td><select id="dataPathDataSelect">
-																					</select></td>
+																					</select>
+																					</td>
 																				</tr>
 																				<tr>
 																					<td><label for="dataPathPathInput">Path</label>
@@ -261,7 +280,8 @@
 																					</td>
 																				</tr>
 
-																			</table></td>
+																			</table>
+																		</td>
 																	</tr>
 																</table>
 															</div>
@@ -270,10 +290,10 @@
 																<table>
 																	<tr>
 																		<td><input id="auxiliaryProcessInput"
-																			type="checkbox" /></td>
-																		<td><label for="auxiliaryProcessInput">Is
-																				Auxiliary Process</label>
+																			type="checkbox" />
 																		</td>
+																		<td><label for="auxiliaryProcessInput">Is
+																				Auxiliary Process</label></td>
 																	</tr>
 																</table>
 															</div>
@@ -296,9 +316,11 @@
 																								Process Interfaces</option>
 																							<option value="implementsProcessInterface">Implements
 																								Process Interfaces</option>
-																					</select></td>
+																					</select>
+																					</td>
 																				</tr>
-																			</table></td>
+																			</table>
+																		</td>
 																	</tr>
 																	<tr>
 																		<td>
@@ -311,21 +333,22 @@
 																								<tr>
 																									<td><label
 																										for="webServiceInterfaceCheckboxInput">Web
-																											Service</label>
-																									</td>
+																											Service</label></td>
 																									<td><input
 																										id="webServiceInterfaceCheckboxInput"
-																										type="checkbox"></input></td>
+																										type="checkbox"></input>
+																									</td>
 																								</tr>
 																								<tr>
 																									<td><label
 																										for="restInterfaceCheckboxInput">REST
-																											Service</label>
-																									</td>
+																											Service</label></td>
 																									<td><input id="restInterfaceCheckboxInput"
-																										type="checkbox"></input></td>
+																										type="checkbox"></input>
+																									</td>
 																								</tr>
-																							</table></td>
+																							</table>
+																						</td>
 																					</tr>
 																					<tr>
 																						<td>
@@ -342,8 +365,7 @@
 																												<a
 																													id="processInterfaceFromDataCreationWizardLink">Create
 																													from Process Data &raquo;</a>
-																											</div>
-																										</td>
+																											</div></td>
 																									</tr>
 																									<tr>
 																										<td>
@@ -360,24 +382,21 @@
 																													</thead>
 																													<tbody />
 																												</table>
-																											</div>
-																										</td>
+																											</div></td>
 																									</tr>
 																								</table>
-																							</div>
-																						</td>
+																							</div></td>
 																					</tr>
 																				</table>
 																			</div>
-																			<div id="implementsProcessInterface"></div>
-																		</td>
+																			<div id="implementsProcessInterface"></div></td>
 																	</tr>
 																</table>
-															</div>
-														</td>
+															</div></td>
 													</tr>
 												</table>
-											</div></td>
+											</div>
+										</td>
 									</tr>
 									<tr>
 										<td>
@@ -385,16 +404,14 @@
 												<table id="activityPropertiesPanelTable">
 													<tr>
 														<td>
-															<div class="propertiesPanelTitle">Activity</div>
-														</td>
+															<div class="propertiesPanelTitle">Activity</div></td>
 													</tr>
 													<tr>
 														<td>
 															<div class="errorMessagesPanel">
 																<ul id="errorMessagesList">
 																</ul>
-															</div>
-														</td>
+															</div></td>
 													</tr>
 													<tr>
 														<td>
@@ -402,19 +419,19 @@
 																<div class="heading">Basic</div>
 																<table>
 																	<tr>
-																		<td><label for="guidOutput">GUID</label>
+																		<td><label for="guidOutput">GUID</label></td>
+																		<td><div id="guidOutput" class="output" />
 																		</td>
-																		<td><div id="guidOutput" class="output" /></td>
 																	</tr>
 																	<tr>
-																		<td><label for="idOutput">ID</label>
+																		<td><label for="idOutput">ID</label></td>
+																		<td><div id="idOutput" class="output" />
 																		</td>
-																		<td><div id="idOutput" class="output" /></td>
 																	</tr>
 																	<tr>
-																		<td><label for="nameInput">Name</label>
+																		<td><label for="nameInput">Name</label></td>
+																		<td><input id="nameInput" type="text" />
 																		</td>
-																		<td><input id="nameInput" type="text" /></td>
 																	</tr>
 																</table>
 																<table>
@@ -424,8 +441,7 @@
 																	</tr>
 																	<tr>
 																		<td><textarea id="descriptionInput" cols="40"
-																				rows="3"></textarea>
-																		</td>
+																				rows="3"></textarea></td>
 																	</tr>
 																</table>
 																<table style="margin-top: 10px; margin-bottom: 10px;">
@@ -437,37 +453,37 @@
 																			<div id="openDocumentViewLinkPanel">
 																				<a id="openDocumentViewLink">Open documentation
 																					&raquo;</a>
-																			</div>
-																		</td>
+																			</div></td>
 																	</tr>
 																</table>
 																<table style="margin-bottom: 10px;">
 																	<tr>
 																		<td><input id="allowAbortByParticipantInput"
-																			type="checkbox" /></td>
-																		<td><label for="allowAbortByParticipantInput">Allow
-																				Abort by Participant</label>
+																			type="checkbox" />
 																		</td>
+																		<td><label for="allowAbortByParticipantInput">Allow
+																				Abort by Participant</label></td>
 																	</tr>
 																	<tr>
 																		<td><input id="hibernateInitiallyInput"
-																			type="checkbox" /></td>
-																		<td><label for="hibernateInitiallyInput">Hibernate
-																				Initially</label>
+																			type="checkbox" />
 																		</td>
+																		<td><label for="hibernateInitiallyInput">Hibernate
+																				Initially</label></td>
 																	</tr>
 																	<tr>
 																		<td><input id="supportsRelocationInput"
-																			type="checkbox" /></td>
-																		<td><label for="supportsRelocationInput">Supports Relocation</label>
+																			type="checkbox" />
 																		</td>
+																		<td><label for="supportsRelocationInput">Supports
+																				Relocation</label></td>
 																	</tr>
 																	<tr>
 																		<td><input id="isRelocationTargetInput"
-																			type="checkbox" /></td>
-																		<td><label for="isRelocationTargetInput">Is
-																				Relocation Target</label>
+																			type="checkbox" />
 																		</td>
+																		<td><label for="isRelocationTargetInput">Is
+																				Relocation Target</label></td>
 																	</tr>
 																</table>
 																<table>
@@ -477,12 +493,11 @@
 																		<td><label for="applicationInput">Application</label>
 																		</td>
 																		<td><select id="applicationList" size="1">
-																		</select>
-																		</td>
+																		</select></td>
 																	</tr>
 																	<tr>
-																		<td colspan="3"><div id="participantOutput" style="margin-bottom: 10px;"/>
-																		</td>
+																		<td colspan="3"><div id="participantOutput"
+																				style="margin-bottom: 10px;" /></td>
 																	</tr>
 																	<tr>
 																		<td><input id="subprocessInput" type="radio" />
@@ -490,12 +505,10 @@
 																		<td><label for="subprocessInput">Subprocess</label>
 																		</td>
 																		<td><select id="subprocessList" size="1">
-																		</select>
-																		</td>
+																		</select></td>
 																	</tr>
 																</table>
-															</div>
-														</td>
+															</div></td>
 													</tr>
 													<tr>
 														<td>
@@ -505,17 +518,17 @@
 																<table style="margin-bottom: 10px;">
 																	<tr>
 																		<td><input id="singleProcessingTypeInput"
-																			type="radio" />
-																		</td>
+																			type="radio" /></td>
 																		<td><label for="singleProcessingTypeInput">Single
-																				Processing</label></td>
+																				Processing</label>
+																		</td>
 																	</tr>
 																	<tr>
 																		<td><input id="parallelMultiProcessingTypeInput"
-																			type="radio" />
-																		</td>
+																			type="radio" /></td>
 																		<td><label for="parallelMultiProcessingTypeInput">Parallel
-																				Multi-Processing</label></td>
+																				Multi-Processing</label>
+																		</td>
 																	</tr>
 																	<tr>
 																		<td><input
@@ -523,26 +536,26 @@
 																		</td>
 																		<td><label
 																			for="sequentialMultiProcessingTypeInput">Sequential
-																				Multi-Processing</label></td>
+																				Multi-Processing</label>
+																		</td>
 																	</tr>
 																</table>
 																<table>
 																	<tr>
 																		<td><label for="listDataMappingInput">List
-																				Data Mapping</label></td>
-																		<td><input id="listDataMappingInput" type="text">
-																		</input>
+																				Data Mapping</label>
 																		</td>
+																		<td><input id="listDataMappingInput" type="text">
+																		</input></td>
 																	</tr>
 																	<tr>
-																		<td><label for="itemDataList">Item Data</label></td>
-																		<td><select id="itemDataList" size="1">
-																		</select>
+																		<td><label for="itemDataList">Item Data</label>
 																		</td>
+																		<td><select id="itemDataList" size="1">
+																		</select></td>
 																	</tr>
 																</table>
-															</div>
-														</td>
+															</div></td>
 													</tr>
 													<tr>
 														<td>
@@ -553,18 +566,18 @@
 																<table>
 																	<tr>
 																		<td><label for="qualityControlProbabilityInput">Quality
-																				Control Probability</label></td>
-																		<td><input id="qualityControlProbabilityInput"
-																			type="text" />
+																				Control Probability</label>
 																		</td>
+																		<td><input id="qualityControlProbabilityInput"
+																			type="text" /></td>
 																		<td>%</td>
 																	</tr>
 																</table>
-															</div>
-														</td>
+															</div></td>
 													</tr>
 												</table>
-											</div></td>
+											</div>
+										</td>
 									</tr>
 									<tr>
 										<td>
@@ -572,34 +585,34 @@
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
 														<td>
-															<div class="propertiesPanelTitle">Event</div>
-														</td>
+															<div class="propertiesPanelTitle">Event</div></td>
 													</tr>
 													<tr>
 														<td>
 															<div class="errorMessagesPanel">
 																<ul id="errorMessagesList">
 																</ul>
-															</div>
-														</td>
+															</div></td>
 													</tr>
 													<tr>
 														<td>
 															<div id="basicPropertiesPage" class="propertiesPage">
 																<table>
 																	<tr>
-																		<td><label for="guidOutput">GUID</label>
+																		<td><label for="guidOutput">GUID</label></td>
+																		<td><div id="guidOutput" class="output" />
 																		</td>
-																		<td><div id="guidOutput" class="output" /></td>
 																	</tr>
 																	<tr>
-																		<td><label for="idOutput">ID</label>
+																		<td><label for="idOutput">ID</label></td>
+																		<td><div id="idOutput" class="output" />
 																		</td>
-																		<td><div id="idOutput" class="output" /></td>
 																	</tr>
 																	<tr>
-																		<td><label for="nameInput">Name</label></td>
-																		<td><input type="text" id="nameInput" /></td>
+																		<td><label for="nameInput">Name</label>
+																		</td>
+																		<td><input type="text" id="nameInput" />
+																		</td>
 																	</tr>
 																</table>
 																<table>
@@ -609,18 +622,15 @@
 																	</tr>
 																	<tr>
 																		<td><textarea id="descriptionInput" cols="40"
-																				rows="3"></textarea>
-																		</td>
+																				rows="3"></textarea></td>
 																	</tr>
 																</table>
 																<div id="startEventPanel">
 																	<table>
 																		<tr>
 																			<td><label for="eventTypeSelectInput">Event
-																					Type</label>
-																			</td>
-																			<td><select id="eventTypeSelectInput" />
-																			</td>
+																					Type</label></td>
+																			<td><select id="eventTypeSelectInput" /></td>
 																			<td />
 																		</tr>
 																		<tr>
@@ -629,7 +639,8 @@
 																					<table>
 																						<tr>
 																							<td><label for="endpointTypeSelectInput">Endpoint
-																									Type</label></td>
+																									Type</label>
+																							</td>
 																							<td><select id="endpointTypeSelectInput">
 																									<option value="genericEndpoint">Generic</option>
 																									<option value="fileEndpoint">File
@@ -654,37 +665,45 @@
 																										Endpoint (Hazelcast)</option>
 																									<option value="quartzEndpoint">Timer
 																										Endpoint (quartz)</option>
-																							</select></td>
+																							</select>
+																							</td>
 																						</tr>
 																					</table>
 																					<table>
 																						<tr>
 																							<td><div id="endpointUriPrefix" class="code">&lt;from
-																									uri="</div></td>
+																									uri="</div>
+																							</td>
 																						</tr>
 																						<tr>
 																							<td><textarea id="endpointUriTextarea"
 																									cols="40" rows="2" class="code">
-																</textarea></td>
+																</textarea>
+																							</td>
 																						</tr>
 																						<tr>
-																							<td><div class="code">"&gt;</div></td>
+																							<td><div class="code">"&gt;</div>
+																							</td>
 																						</tr>
 																						<tr>
 																							<td><label for="routeTextarea">Additional
-																									Route Specification</label></td>
+																									Route Specification</label>
+																							</td>
 																						</tr>
 																						<tr>
 																							<td><textarea id="routeTextarea" cols="40"
-																									rows="3" class="code"></textarea></td>
+																									rows="3" class="code"></textarea>
+																							</td>
 																						</tr>
 																						<tr>
 																							<td><label for="beanTextarea">Additional
-																									Beans Specification</label></td>
+																									Beans Specification</label>
+																							</td>
 																						</tr>
 																						<tr>
 																							<td><textarea id="beanTextarea" cols="40"
-																									rows="3" class="code"></textarea></td>
+																									rows="3" class="code"></textarea>
+																							</td>
 																						</tr>
 																						<tr>
 																							<td>
@@ -694,38 +713,39 @@
 																											id="endpointAccessPointsSelectInput"
 																											multiple="multiple"
 																											style="min-height: 150px; min-width: 150px;">
-																										</select></td>
+																										</select>
+																										</td>
 																										<td>
 																											<table>
 																												<tr>
 																													<td><label>Parameter Access
-																															Path</label></td>
-																												</tr>
-																												<tr>
-																													<td><input type="text" /></td>
-																												</tr>
-																												<tr>
-																													<td><label>Data</label>
+																															Path</label>
 																													</td>
+																												</tr>
+																												<tr>
+																													<td><input type="text" />
+																													</td>
+																												</tr>
+																												<tr>
+																													<td><label>Data</label></td>
 																												</tr>
 																												<tr>
 																													<td><select
 																														id="camelEndpointDataMappingDataSelectInput">
-																													</select></td>
-																												</tr>
-																												<tr>
-																													<td><label>Data Access Path</label>
+																													</select>
 																													</td>
 																												</tr>
 																												<tr>
-																													<td><input id="dataPathTextInput"
-																														type="text" /></td>
+																													<td><label>Data Access Path</label></td>
 																												</tr>
-																											</table>
-																										</td>
+																												<tr>
+																													<td><input id="dataPathTextInput"
+																														type="text" />
+																													</td>
+																												</tr>
+																											</table></td>
 																									</tr>
-																								</table>
-																							</td>
+																								</table></td>
 																						</tr>
 																					</table>
 																				</div>
@@ -733,25 +753,24 @@
 																					<table>
 																						<tr>
 																							<td><label for="scanInput">Scanned
-																									Document</label>
-																							</td>
+																									Document</label></td>
 																							<td><select id="documentDataList" size="1">
-																							</select></td>
+																							</select>
+																							</td>
 																						</tr>
 																					</table>
 																				</div>
 																				<div id="manualTriggerPanel">
 																					<div id="participantOutput" />
-																				</div>
-																			</td>
+																				</div></td>
 																		</tr>
 																	</table>
 																</div>
-															</div>
-														</td>
+															</div></td>
 													</tr>
 												</table>
-											</div></td>
+											</div>
+										</td>
 									</tr>
 									<tr>
 										<td>
@@ -759,90 +778,25 @@
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
 														<td>
-															<div class="propertiesPanelTitle">Gateway</div>
-														</td>
+															<div class="propertiesPanelTitle">Gateway</div></td>
 													</tr>
 													<tr>
 														<td>
 															<div id="basicPropertiesPage" class="propertiesPage">
 																<table>
 																	<tr>
-																		<td><label for="descriptionInput">Description</label>
+																		<td><label for="guidOutput">GUID</label></td>
+																		<td><div id="guidOutput" class="output" />
 																		</td>
 																	</tr>
 																	<tr>
-																		<td><textarea id="descriptionInput" cols="40"
-																				rows="3"></textarea>
+																		<td><label for="idOutput">ID</label></td>
+																		<td><div id="idOutput" class="output" />
 																		</td>
 																	</tr>
-																</table>
-																<table style="margin-top: 10px; margin-bottom: 10px;">
 																	<tr>
-																		<td><div id="documentationCreationLinkPanel">
-																				<a id="documentationCreationLink">Create
-																					documentation for this Process &raquo;</a>
-																			</div>
-																			<div id="openDocumentViewLinkPanel">
-																				<a id="openDocumentViewLink">Open documentation
-																					&raquo;</a>
-																			</div>
+																		<td><label for="nameInput">Name</label>
 																		</td>
-																	</tr>
-																</table>
-																<table>
-																	<tr>
-																		<td><label for="gatewayTypeInput">Gateway
-																				Type</label>
-																		</td>
-																		<td><select id="gatewayTypeInput" size="1">
-																				<option value="and">AND</option>
-																				<option value="xor">XOR</option>
-																				<option value="or">OR</option>
-																		</select></td>
-																	</tr>
-																</table>
-															</div>
-														</td>
-													</tr>
-												</table>
-											</div></td>
-									</tr>
-									<tr>
-										<td>
-											<div id="dataPropertiesPanel" class="propertiesPanel">
-												<table cellpadding="0" cellspacing="0" class="layoutTable">
-													<tr>
-														<td>
-															<div class="propertiesPanelTitle">Data</div>
-														</td>
-													</tr>
-													<tr>
-														<td>
-															<div class="propertiesPage">
-																<a id="viewLink">Open Data View &raquo;</a>
-															</div>
-														</td>
-													</tr>
-													<tr>
-														<td>
-															<div class="errorMessagesPanel">
-																<ul id="errorMessagesList">
-																</ul>
-															</div>
-															<div id="basicPropertiesPage" class="propertiesPage">
-																<table>
-																	<tr>
-																		<tr>
-																			<td><label for="guidOutput">GUID</label></td>
-																			<td><div id="guidOutput" class="output" />
-																			</td>
-																		</tr>
-																		<tr>
-																			<td><label for="idOutput">ID</label></td>
-																			<td><div id="idOutput" class="output" />
-																			</td>
-																		</tr>
-																		<td><label for="nameInput">Name</label></td>
 																		<td><input type="text" id="nameInput" />
 																		</td>
 																	</tr>
@@ -854,13 +808,91 @@
 																	</tr>
 																	<tr>
 																		<td><textarea id="descriptionInput" cols="40"
-																				rows="3"></textarea>
-																		</td>
+																				rows="3"></textarea></td>
+																	</tr>
+																</table>
+																<table style="margin-top: 10px; margin-bottom: 10px;">
+																	<tr>
+																		<td><div id="documentationCreationLinkPanel">
+																				<a id="documentationCreationLink">Create
+																					documentation for this Process &raquo;</a>
+																			</div>
+																			<div id="openDocumentViewLinkPanel">
+																				<a id="openDocumentViewLink">Open documentation
+																					&raquo;</a>
+																			</div></td>
 																	</tr>
 																</table>
 																<table>
 																	<tr>
-																		<td><input id="primitiveInput" type="radio" /></td>
+																		<td><label for="gatewayTypeInput">Gateway
+																				Type</label></td>
+																		<td><select id="gatewayTypeInput" size="1">
+																				<option value="and">AND</option>
+																				<option value="xor">XOR</option>
+																				<option value="or">OR</option>
+																		</select>
+																		</td>
+																	</tr>
+																</table>
+															</div></td>
+													</tr>
+												</table>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<div id="dataPropertiesPanel" class="propertiesPanel">
+												<table cellpadding="0" cellspacing="0" class="layoutTable">
+													<tr>
+														<td>
+															<div class="propertiesPanelTitle">Data</div></td>
+													</tr>
+													<tr>
+														<td>
+															<div class="propertiesPage">
+																<a id="viewLink">Open Data View &raquo;</a>
+															</div></td>
+													</tr>
+													<tr>
+														<td>
+															<div class="errorMessagesPanel">
+																<ul id="errorMessagesList">
+																</ul>
+															</div>
+															<div id="basicPropertiesPage" class="propertiesPage">
+																<table>
+																	<tr>
+																		<tr>
+																			<td><label for="guidOutput">GUID</label>
+																			</td>
+																			<td><div id="guidOutput" class="output" /></td>
+																		</tr>
+																		<tr>
+																			<td><label for="idOutput">ID</label>
+																			</td>
+																			<td><div id="idOutput" class="output" /></td>
+																		</tr>
+																		<td><label for="nameInput">Name</label>
+																		</td>
+																		<td><input type="text" id="nameInput" /></td>
+																	</tr>
+																</table>
+																<table>
+																	<tr>
+																		<td><label for="descriptionInput">Description</label>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td><textarea id="descriptionInput" cols="40"
+																				rows="3"></textarea></td>
+																	</tr>
+																</table>
+																<table>
+																	<tr>
+																		<td><input id="primitiveInput" type="radio" />
+																		</td>
 																		<td><label for="primitiveInput">Primitive</label>
 																		</td>
 																		<td><select id="primitiveList" size="1">
@@ -871,30 +903,32 @@
 																				<option value="Decimal">Money Amount (e.g.
 																					$4,500,600.42)</option>
 																				<option value="Date">Date (e.g. 14/05/2011)</option>
-																		</select></td>
+																		</select>
+																		</td>
 																	</tr>
 																	<tr>
 																		<td><input id="dataStructureInput" type="radio" />
 																		</td>
 																		<td><label for="dataStructureInput">Data
-																				Structure</label>
-																		</td>
+																				Structure</label></td>
 																		<td><select id="dataStructureList" size="1">
-																		</select></td>
+																		</select>
+																		</td>
 																	</tr>
 																	<tr>
-																		<td><input id="documentInput" type="radio" /></td>
-																		<td><label for="documentInput">Document</label>
+																		<td><input id="documentInput" type="radio" />
 																		</td>
+																		<td><label for="documentInput">Document</label></td>
 																		<td><select id="documentTypeList" size="1">
-																		</select></td>
+																		</select>
+																		</td>
 																	</tr>
 																</table>
-															</div>
-														</td>
+															</div></td>
 													</tr>
 												</table>
-											</div></td>
+											</div>
+										</td>
 									</tr>
 									<tr>
 										<td>
@@ -902,8 +936,7 @@
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
 														<td>
-															<div class="propertiesPanelTitle">Data Flow</div>
-														</td>
+															<div class="propertiesPanelTitle">Data Flow</div></td>
 													</tr>
 													<tr>
 														<td>
@@ -916,29 +949,28 @@
 																	</tr>
 																	<tr>
 																		<td><textarea id="descriptionInput" cols="40"
-																				rows="3"></textarea>
-																		</td>
+																				rows="3"></textarea></td>
 																	</tr>
 																</table>
 																<table>
 																	<tr>
-																		<td><input id="inInput" type="checkbox" /></td>
-																		<td><label for="inInput">Input</label>
+																		<td><input id="inInput" type="checkbox" />
 																		</td>
-																		<td><input id="outInput" type="checkbox" /></td>
-																		<td><label for="outInput">Output</label>
+																		<td><label for="inInput">Input</label></td>
+																		<td><input id="outInput" type="checkbox" />
 																		</td>
+																		<td><label for="outInput">Output</label></td>
 																	</tr>
 																</table>
 																<table>
 																	<tr>
 																		<td><label for="dataPathInput">Input Data
-																				Path</label>
-																		</td>
+																				Path</label></td>
 																	</tr>
 																	<tr>
 																		<td><textarea id="dataPathInput" cols="40"
-																				rows="3"></textarea></td>
+																				rows="3"></textarea>
+																		</td>
 																	</tr>
 																	<tr>
 																		<td>
@@ -946,23 +978,24 @@
 																				<table>
 																					<tr>
 																						<td><label for="inAccessPointSelectInput">Input
-																								Access Point</label>
-																						</td>
+																								Access Point</label></td>
 																						<td><select id="inAccessPointSelectInput"
 																							size="1">
-																						</select></td>
+																						</select>
+																						</td>
 																					</tr>
 																				</table>
-																			</div>
-																		</td>
+																			</div></td>
 																	</tr>
 																	<tr>
 																		<td><label for="dataPathOutput">Output
-																				Data Path</label></td>
+																				Data Path</label>
+																		</td>
 																	</tr>
 																	<tr>
 																		<td><textarea id="dataPathOutput" cols="40"
-																				rows="3"></textarea></td>
+																				rows="3"></textarea>
+																		</td>
 																	</tr>
 																	<tr>
 																		<td>
@@ -970,22 +1003,21 @@
 																				<table>
 																					<tr>
 																						<td><label for="outAccessPointSelectInput">Output
-																								Access Point</label>
-																						</td>
+																								Access Point</label></td>
 																						<td><select id="outAccessPointSelectInput"
 																							size="1">
-																						</select></td>
+																						</select>
+																						</td>
 																					</tr>
 																				</table>
-																			</div>
-																		</td>
+																			</div></td>
 																	</tr>
 																</table>
-															</div>
-														</td>
+															</div></td>
 													</tr>
 												</table>
-											</div></td>
+											</div>
+										</td>
 									</tr>
 									<tr>
 										<td>
@@ -993,8 +1025,7 @@
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
 														<td>
-															<div class="propertiesPanelTitle">Control Flow</div>
-														</td>
+															<div class="propertiesPanelTitle">Control Flow</div></td>
 													</tr>
 													<tr>
 														<td>
@@ -1006,8 +1037,7 @@
 																	</tr>
 																	<tr>
 																		<td><textarea id="descriptionInput" cols="40"
-																				rows="3"></textarea>
-																		</td>
+																				rows="3"></textarea></td>
 																	</tr>
 																</table>
 																<div id="conditionPanel">
@@ -1022,20 +1052,20 @@
 																	<table>
 																		<tr>
 																			<td><label for="conditionExpressionInput">Condition
-																					Expression</label></td>
+																					Expression</label>
+																			</td>
 																		</tr>
 																		<tr>
 																			<td><textarea id="conditionExpressionInput"
-																					cols="40" rows="3"></textarea>
-																			</td>
+																					cols="40" rows="3"></textarea></td>
 																		</tr>
 																	</table>
 																</div>
-															</div>
-														</td>
+															</div></td>
 													</tr>
 												</table>
-											</div></td>
+											</div>
+										</td>
 									</tr>
 									<tr>
 										<td>
@@ -1048,15 +1078,15 @@
 																<center>
 																	<span id="swimlanePropertiesPanelTitle">Swimlane</span>
 																</center>
-															</div></td>
+															</div>
+														</td>
 													</tr>
 													<tr>
 														<td>
 															<div class="errorMessagesPanel">
 																<ul id="errorMessagesList">
 																</ul>
-															</div>
-														</td>
+															</div></td>
 													</tr>
 													<tr>
 														<td>
@@ -1064,7 +1094,18 @@
 																style="min-width: 0px; width: auto;">
 																<table cellspacing="10px;">
 																	<tr>
-																		<td><label for="nameInput">Name</label></td>
+																		<td><label for="guidOutput">GUID</label>
+																		</td>
+																		<td><div id="guidOutput" class="output" /></td>
+																	</tr>
+																	<tr>
+																		<td><label for="idOutput">ID</label>
+																		</td>
+																		<td><div id="idOutput" class="output" /></td>
+																	</tr>
+																	<tr>
+																		<td><label for="nameInput">Name</label>
+																		</td>
 																		<td><input type="text" id="nameInput" size="23" />
 																		</td>
 																	</tr>
@@ -1072,32 +1113,35 @@
 																		<td><label for="descriptionInput">Description:</label>
 																		</td>
 																		<td><textarea id="descriptionInput" cols="20"
-																				rows="5"></textarea>
-																		</td>
+																				rows="5"></textarea></td>
 																	</tr>
 																	<tr>
 																		<td><label for="manualInput">Participant</label>
 																		</td>
 																		<td><select id="participantList" size="1">
-																		</select></td>
+																		</select>
+																		</td>
 																	</tr>
 																</table>
-															</div></td>
+															</div>
+														</td>
 													</tr>
 												</table>
-											</div></td>
+											</div>
+										</td>
 									</tr>
-								</table></td>
+								</table>
+							</td>
 							<td width="16px" valign="top">
 								<table id="propertiesPageList" width="16px">
 									<tr>
 										<td></td>
 									</tr>
-								</table></td>
+								</table>
+							</td>
 						</tr>
 					</table>
-				</div>
-			</td>
+				</div></td>
 		</tr>
 	</table>
 	<form id="saveModelForm" method="get" target="_blank" />
@@ -1106,13 +1150,11 @@
 		<table>
 			<tr>
 				<td>Start Date:</td>
-				<td><input type="text" />
-				</td>
+				<td><input type="text" /></td>
 			</tr>
 			<tr>
 				<td>End Date:</td>
-				<td><input type="text" />
-				</td>
+				<td><input type="text" /></td>
 			</tr>
 			<tr>
 				<td colspan="2">
@@ -1123,7 +1165,8 @@
 							<td><input id="closeButton" type="button" value="Close" />
 							</td>
 						</tr>
-					</table></td>
+					</table>
+				</td>
 			</tr>
 		</table>
 	</div>
@@ -1147,19 +1190,20 @@
 								<tbody />
 							</table>
 						</div>
-					</div></td>
+					</div>
+				</td>
 			</tr>
 			<tr>
 				<td>
 					<table>
 						<tr>
 							<td><input id="generateButton" type="button"
-								value="Generate" /></td>
+								value="Generate" />
+							</td>
 							<td><input id="cancelButton" type="button" value="Cancel" />
 							</td>
 						</tr>
-					</table>
-				</td>
+					</table></td>
 			</tr>
 		</table>
 	</div>
