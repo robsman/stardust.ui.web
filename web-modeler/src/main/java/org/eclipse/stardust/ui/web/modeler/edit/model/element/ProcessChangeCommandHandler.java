@@ -53,7 +53,7 @@ public class ProcessChangeCommandHandler
    public void createProcess(ModelType model, JsonObject request)
    {
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String id = MBFacade.createIdFromName(name);
+      String id = MBFacade.getInstance().createIdFromName(name);
       ProcessDefinitionType processDefinition = newProcessDefinition(model).withIdAndName(id, name).build();
       //Added process definition to UUID map.
       EObjectUUIDMapper mapper = modelService().uuidMapper();
@@ -123,7 +123,7 @@ public class ProcessChangeCommandHandler
    public void deleteProcess(ModelType model, JsonObject request)
    {
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
-      ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model, id);
+      ProcessDefinitionType processDefinition = MBFacade.getInstance().findProcessDefinition(model, id);
       synchronized (model)
       {
     	  model.getProcessDefinition().remove(processDefinition);

@@ -95,7 +95,7 @@ public class GatewayCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
 
       String gatewayId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
-      ActivityType gateway = MBFacade.findActivity(processDefinition, gatewayId);
+      ActivityType gateway = MBFacade.getInstance().findActivity(processDefinition, gatewayId);
       ActivitySymbolType gatewaySymbol = gateway.getActivitySymbols().get(0);
       synchronized (model)
       {

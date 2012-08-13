@@ -244,8 +244,8 @@ public abstract class ModelElementUnmarshaller
 
          ProcessDefinitionType subProcessDefinition = new MBFacade(
                modelManagementStrategy()).getProcessDefinition(
-               MBFacade.getModelId(subprocessFullId),
-               MBFacade.stripFullId(subprocessFullId));
+               MBFacade.getInstance().getModelId(subprocessFullId),
+               MBFacade.getInstance().stripFullId(subprocessFullId));
          ModelType subProcessModel = ModelUtils.findContainingModel(subProcessDefinition);
          BpmSubProcessActivityBuilder subProcessActivity = newSubProcessActivity(ModelUtils.findContainingProcess(activity));
 
@@ -262,8 +262,8 @@ public abstract class ModelElementUnmarshaller
                ModelerConstants.APPLICATION_FULL_ID_PROPERTY);
 
          ApplicationType application = new MBFacade(modelManagementStrategy()).getApplication(
-               MBFacade.getModelId(applicationFullId),
-               MBFacade.stripFullId(applicationFullId));
+               MBFacade.getInstance().getModelId(applicationFullId),
+               MBFacade.getInstance().stripFullId(applicationFullId));
 
          BpmApplicationActivityBuilder applicationActivity = newApplicationActivity(ModelUtils.findContainingProcess(activity));
          applicationActivity.setActivity(activity);

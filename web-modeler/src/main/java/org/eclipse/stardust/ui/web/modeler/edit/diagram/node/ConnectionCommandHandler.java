@@ -72,34 +72,34 @@ public class ConnectionCommandHandler
                createControlFlowConnection(
                      request,
                      processDefinition,
-                     MBFacade.findActivitySymbol(processDefinition.getDiagram().get(0),
+                     MBFacade.getInstance().findActivitySymbol(processDefinition.getDiagram().get(0),
                            extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID)),
-                     MBFacade.findActivitySymbol(processDefinition.getDiagram().get(0),
+                     MBFacade.getInstance().findActivitySymbol(processDefinition.getDiagram().get(0),
                            extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
                      maxOid);
             }
             else if (ModelerConstants.EVENT_KEY.equals(extractString(request,
                   ModelerConstants.TO_MODEL_ELEMENT_TYPE)))
             {
-               StartEventSymbol startEventSymbol = MBFacade.findStartEventSymbol(
+               StartEventSymbol startEventSymbol = MBFacade.getInstance().findStartEventSymbol(
                      processDefinition.getDiagram().get(0),
                      extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID));
 
                if (null != startEventSymbol)
                {
                   createControlFlowConnection(request, processDefinition,
-                        startEventSymbol, MBFacade.findActivitySymbol(
+                        startEventSymbol, MBFacade.getInstance().findActivitySymbol(
                               processDefinition.getDiagram().get(0),
                               extractLong(request,
                                     ModelerConstants.FROM_MODEL_ELEMENT_OID)), maxOid);
                }
                else
                {
-                  EndEventSymbol endEventSymbol = MBFacade.findEndEventSymbol(
+                  EndEventSymbol endEventSymbol = MBFacade.getInstance().findEndEventSymbol(
                         processDefinition.getDiagram().get(0),
                         extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID));
                   createControlFlowConnection(request, processDefinition,
-                        MBFacade.findActivitySymbol(
+                        MBFacade.getInstance().findActivitySymbol(
                               processDefinition.getDiagram().get(0),
                               extractLong(request,
                                     ModelerConstants.FROM_MODEL_ELEMENT_OID)),
@@ -113,9 +113,9 @@ public class ConnectionCommandHandler
                createDataFlowConnection(
                      request,
                      processDefinition,
-                     MBFacade.findActivitySymbol(processDefinition.getDiagram().get(0),
+                     MBFacade.getInstance().findActivitySymbol(processDefinition.getDiagram().get(0),
                            extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID)),
-                     MBFacade.findDataSymbol(processDefinition.getDiagram().get(0),
+                     MBFacade.getInstance().findDataSymbol(processDefinition.getDiagram().get(0),
                            extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
                      maxOid, false);
             }
@@ -134,7 +134,7 @@ public class ConnectionCommandHandler
             {
                try
                {
-                  StartEventSymbol startEventSymbol = MBFacade.findStartEventSymbol(
+                  StartEventSymbol startEventSymbol = MBFacade.getInstance().findStartEventSymbol(
                         processDefinition.getDiagram().get(0),
                         extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID));
 
@@ -142,20 +142,20 @@ public class ConnectionCommandHandler
                         request,
                         processDefinition,
                         startEventSymbol,
-                        MBFacade.findActivitySymbol(
+                        MBFacade.getInstance().findActivitySymbol(
                               processDefinition.getDiagram().get(0),
                               extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
                         maxOid);
                }
                catch (ObjectNotFoundException x)
                {
-                  EndEventSymbol endEventSymbol = MBFacade.findEndEventSymbol(
+                  EndEventSymbol endEventSymbol = MBFacade.getInstance().findEndEventSymbol(
                         processDefinition.getDiagram().get(0),
                         extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID));
                   createControlFlowConnection(
                         request,
                         processDefinition,
-                        MBFacade.findActivitySymbol(
+                        MBFacade.getInstance().findActivitySymbol(
                               processDefinition.getDiagram().get(0),
                               extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
                         endEventSymbol, maxOid);
@@ -177,9 +177,9 @@ public class ConnectionCommandHandler
                createDataFlowConnection(
                      request,
                      processDefinition,
-                     MBFacade.findActivitySymbol(processDefinition.getDiagram().get(0),
+                     MBFacade.getInstance().findActivitySymbol(processDefinition.getDiagram().get(0),
                            extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
-                     MBFacade.findDataSymbol(processDefinition.getDiagram().get(0),
+                     MBFacade.getInstance().findDataSymbol(processDefinition.getDiagram().get(0),
                            extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID)),
                      maxOid, true);
             }
@@ -210,7 +210,7 @@ public class ConnectionCommandHandler
       {
          try
          {
-            TransitionConnectionType transitionConnection = MBFacade.findTransitionConnectionByModelOid(
+            TransitionConnectionType transitionConnection = MBFacade.getInstance().findTransitionConnectionByModelOid(
                   processDefinition, connectionOid);
 
             processDefinition.getDiagram()
@@ -228,7 +228,7 @@ public class ConnectionCommandHandler
          }
          catch (ObjectNotFoundException x)
          {
-            DataMappingConnectionType dataMappingConnection = MBFacade.findDataMappingConnectionByModelOid(
+            DataMappingConnectionType dataMappingConnection = MBFacade.getInstance().findDataMappingConnectionByModelOid(
                   processDefinition, connectionOid);
 
             processDefinition.getDiagram()

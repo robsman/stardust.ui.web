@@ -45,7 +45,7 @@ public class StructuredTypeChangeCommandHandler
       synchronized (model)
       {
          EObjectUUIDMapper mapper = modelService().uuidMapper();
-         mapper.map(MBFacade.createTypeDeclaration(model, typeId, typeName));
+         mapper.map(MBFacade.getInstance().createTypeDeclaration(model, typeId, typeName));
       }
 	}
 
@@ -58,7 +58,7 @@ public class StructuredTypeChangeCommandHandler
 		String structuredDataTypeId = extractString(request,
 				ModelerConstants.ID_PROPERTY);
 
-		TypeDeclarationType structuredDataType = MBFacade
+		TypeDeclarationType structuredDataType = MBFacade.getInstance()
 				.findStructuredDataType(model, structuredDataTypeId);
 		synchronized (model) {
 			model.getTypeDeclarations().getTypeDeclaration()

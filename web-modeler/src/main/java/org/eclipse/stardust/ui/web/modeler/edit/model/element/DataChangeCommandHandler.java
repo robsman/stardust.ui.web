@@ -50,7 +50,7 @@ public class DataChangeCommandHandler
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
       String primitiveType = extractString(request, ModelerConstants.PRIMITIVE_TYPE);
-      DataType data = MBFacade.createPrimitiveData(model, id, name, primitiveType);
+      DataType data = MBFacade.getInstance().createPrimitiveData(model, id, name, primitiveType);
 
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       data.setElementOid(++maxOid);
@@ -69,13 +69,13 @@ public class DataChangeCommandHandler
    {
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String stripFullId_ = MBFacade.getModelId(extractString(request,
+      String stripFullId_ = MBFacade.getInstance().getModelId(extractString(request,
             ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID));
       if (StringUtils.isEmpty(stripFullId_))
       {
          stripFullId_ = model.getId();
       }
-      String structuredDataFullId = MBFacade.stripFullId(extractString(request,
+      String structuredDataFullId = MBFacade.getInstance().stripFullId(extractString(request,
             ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID));
       DataType data = new MBFacade(modelService().getModelManagementStrategy()).createStructuredData(model, stripFullId_, id, name,
             structuredDataFullId);
@@ -98,7 +98,7 @@ public class DataChangeCommandHandler
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
 
-      DataType data = MBFacade.createDocumentData(model, id, name, null);
+      DataType data = MBFacade.getInstance().createDocumentData(model, id, name, null);
 
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       data.setElementOid(++maxOid);
@@ -116,7 +116,7 @@ public class DataChangeCommandHandler
    public void deletetData(ModelType model, JsonObject request)
    {
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
-      DataType data = MBFacade.findData(model, id);
+      DataType data = MBFacade.getInstance().findData(model, id);
       synchronized (model)
       {
          model.getData().remove(data);

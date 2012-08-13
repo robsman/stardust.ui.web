@@ -87,7 +87,7 @@ public class SwimlaneCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentSymbol);
 
       String laneId = extractString(request, ModelerConstants.ID_PROPERTY);
-      LaneSymbol lane = MBFacade.findLaneInProcess(processDefinition, laneId);
+      LaneSymbol lane = MBFacade.getInstance().findLaneInProcess(processDefinition, laneId);
 
       synchronized (model)
       {

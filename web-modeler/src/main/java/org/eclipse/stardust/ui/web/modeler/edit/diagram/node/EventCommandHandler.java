@@ -108,7 +108,7 @@ public class EventCommandHandler
          if (START_EVENT.equals(extractString(request,
                ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY)))
          {
-            StartEventSymbol startEventSymbol = MBFacade.findStartEventSymbol(
+            StartEventSymbol startEventSymbol = MBFacade.getInstance().findStartEventSymbol(
                   parentLaneSymbol, eventOId);
             processDefinition.getDiagram()
                   .get(0)
@@ -118,7 +118,7 @@ public class EventCommandHandler
          }
          else
          {
-            EndEventSymbol endEventSymbol = MBFacade.findEndEventSymbol(parentLaneSymbol,
+            EndEventSymbol endEventSymbol = MBFacade.getInstance().findEndEventSymbol(parentLaneSymbol,
                   eventOId);
             processDefinition.getDiagram()
                   .get(0)

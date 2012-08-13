@@ -16,6 +16,7 @@ import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
+import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
@@ -31,11 +32,13 @@ public class ModelingSession
    private Map<String, User> collaborators = newHashMap();
 
    private final EditingSession editingSession = new EditingSession();
+   
+   private MBFacade mbFacade;
 
    @Resource
    @Qualifier("default")
    private ModelManagementStrategy modelManagementStrategy;
-
+   
    private ModelElementMarshaller modelElementMarshaller = new ModelElementMarshaller()
    {
       @Override
@@ -49,7 +52,7 @@ public class ModelingSession
    {
       @Override
       protected ModelManagementStrategy modelManagementStrategy()
-      {
+      {         
          return ModelingSession.this.modelManagementStrategy();
       }
    };
@@ -76,6 +79,7 @@ public class ModelingSession
 
    public ModelManagementStrategy modelManagementStrategy()
    {
+      MBFacade.getInstance(modelManagementStrategy);
       return modelManagementStrategy;
    }
 

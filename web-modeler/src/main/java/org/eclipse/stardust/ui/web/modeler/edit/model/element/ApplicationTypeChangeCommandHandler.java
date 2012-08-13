@@ -47,7 +47,7 @@ public class ApplicationTypeChangeCommandHandler
       applicationType.setId(extractString(request, ModelerConstants.ID_PROPERTY));
       applicationType.setName(extractString(request, ModelerConstants.NAME_PROPERTY));
 
-      applicationType.setType(MBFacade.findApplicationTypeType(model,
+      applicationType.setType(MBFacade.getInstance().findApplicationTypeType(model,
             ModelerConstants.WEB_SERVICE_APPLICATION_TYPE_ID));
    }
 
@@ -72,7 +72,7 @@ public class ApplicationTypeChangeCommandHandler
             ModelerConstants.MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID);
 
       // TODO
-      // applicationType.setType(MBFacade.findApplicationTypeType(model,
+      // applicationType.setType(MBFacade.getInstance().findApplicationTypeType(model,
       // ModelerConstants.MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID));
    }
 
@@ -97,7 +97,7 @@ public class ApplicationTypeChangeCommandHandler
             ModelerConstants.CAMEL_APPLICATION_TYPE_ID);
 
       // TODO
-      // applicationType.setType(MBFacade.findApplicationTypeType(model,
+      // applicationType.setType(MBFacade.getInstance().findApplicationTypeType(model,
       // ModelerConstants.MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID));
    }
 
@@ -122,7 +122,7 @@ public class ApplicationTypeChangeCommandHandler
             ModelerConstants.INTERACTIVE_APPLICATION_TYPE_KEY);
 
       // TODO
-      // applicationType.setType(MBFacade.findApplicationTypeType(model,
+      // applicationType.setType(MBFacade.getInstance().findApplicationTypeType(model,
       // ModelerConstants.MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID));
    }
 
@@ -135,7 +135,7 @@ public class ApplicationTypeChangeCommandHandler
    {
       ModelType model = (ModelType) targetElement;
       String appId = extractString(request, ModelerConstants.ID_PROPERTY);
-      ApplicationType application = MBFacade.findApplication(model, appId);
+      ApplicationType application = MBFacade.getInstance().findApplication(model, appId);
 
       synchronized (model)
       {

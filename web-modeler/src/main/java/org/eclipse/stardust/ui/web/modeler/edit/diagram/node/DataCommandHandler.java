@@ -83,13 +83,13 @@ public class DataCommandHandler
          {
             if (true)
             {
-               data = MBFacade.createNewPrimitive(model, dataID, dataName);
+               data = MBFacade.getInstance().createNewPrimitive(model, dataID, dataName);
                mapper.map(data);
                data.setElementOid(++maxOid);
             }
          }
 
-         DataSymbolType dataSymbol = MBFacade.createDataSymbol(processDefinition,
+         DataSymbolType dataSymbol = MBFacade.getInstance().createDataSymbol(processDefinition,
                xProperty, yProperty, widthProperty, heightProperty, parentLaneSymbol.getId(),
                maxOid, data);
          mapper.map(dataSymbol);
@@ -109,7 +109,7 @@ public class DataCommandHandler
       Long dataOID = extractLong(request, ModelerConstants.OID_PROPERTY);
       String dataFullID = extractString(request, ModelerConstants.DATA_FULL_ID_PROPERTY);
       DataType data = new MBFacade(modelService().getModelManagementStrategy()).getDataFromExistingModel(model.getId(), model, dataFullID);
-      DataSymbolType dataSymbol = MBFacade.findDataSymbolRecursively(parentLaneSymbol,
+      DataSymbolType dataSymbol = MBFacade.getInstance().findDataSymbolRecursively(parentLaneSymbol,
             dataOID);
       synchronized (model)
       {

@@ -84,7 +84,7 @@ public class ActivityCommandHandler
 
          ModelService.setDescription(activity, request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
 
-         ActivitySymbolType activitySymbol = MBFacade.createActivitySymbol(processDefinition, parentLaneSymbol.getId(),
+         ActivitySymbolType activitySymbol = MBFacade.getInstance().createActivitySymbol(processDefinition, parentLaneSymbol.getId(),
                xProperty, yProperty, widthProperty, heightProperty, maxOid, activity);
       }
    }
@@ -101,7 +101,7 @@ public class ActivityCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
 
       String activityId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
-      ActivityType activity = MBFacade.findActivity(processDefinition, activityId);
+      ActivityType activity = MBFacade.getInstance().findActivity(processDefinition, activityId);
       ActivitySymbolType activitySymbol = activity.getActivitySymbols().get(0);
 
       synchronized (model)
