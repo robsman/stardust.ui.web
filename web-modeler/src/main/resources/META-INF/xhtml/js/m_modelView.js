@@ -42,9 +42,6 @@ define(
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(ModelView.prototype, view);
 
-				m_utils.debug("View Manager");
-				m_utils.debug(this.viewManager);
-
 				this.idOutput = jQuery("#idOutput");
 				this.nameInput = jQuery("#nameInput");
 				this.versionTable = jQuery("#versionTable");

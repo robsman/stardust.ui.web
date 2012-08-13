@@ -37,10 +37,12 @@ define(
 				var view = m_modelElementView.create();
 
 				m_utils.inheritFields(this, view);
-				m_utils.inheritMethods(MessageTransformationApplicationView.prototype, view);
+				m_utils.inheritMethods(
+						MessageTransformationApplicationView.prototype, view);
 
 				this.inputData = {};
 				this.outputData = {};
+				this.mappingExpressions = {};
 				this.inputTable = jQuery("#sourceTable");
 				this.inputTableBody = jQuery("table#sourceTable tbody");
 				this.sourceFilterInput = jQuery("#sourceFilterInput");
@@ -317,10 +319,88 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.initialize = function(
 						application) {
+					this.application = application;
+
+					m_utils.debug("===> Application");
+					m_utils.debug(application);
+
 					this.initializeModelElementView();
 					this.initializeModelElement(application);
+
+					this
+					.convertFromMappingsXml(this.application.attributes["messageTransformation:TransformationProperty"]);
+
+					for ( var m in this.application.accessPoints) {
+						var accessPoint = this.application.accessPoints[m];
+
+						if (accessPoint.direction == "IN") {
+							this.addInputData(accessPoint);
+						} else {
+							this.addOutputData(accessPoint);
+						}
+					}
+
+					this.populateTableRows(this.inputTableBody,
+							this.inputTableRows, true);
+					this.populateTableRows(this.outputTableBody,
+							this.outputTableRows, false);
+					this.resume();
+				};
+
+				/**
+				 * 
+				 */
+				MessageTransformationApplicationView.prototype.convertFromMappingsXml = function(
+						xml) {
+					// TODO Very rudimentary parsing - not robust against any
+					// changes in format
+
+					var fieldMappings = xml
+							.substring(
+									xml
+											.indexOf('<mapping:TransformationProperty') + 31,
+									xml
+											.indexOf('</mapping:TransformationProperty>'))
+							.split("<fieldMappings")
+
+					for ( var n = 1; n < fieldMappings.length; ++n) {
+						var fieldPath = fieldMappings[n]
+								.substr(
+										fieldMappings[n].indexOf('fieldPath="') + 11,
+										fieldMappings[n]
+												.indexOf('mappingExpression="') - 14);
+						var mappingExpression = fieldMappings[n]
+								.substr(fieldMappings[n]
+										.indexOf('mappingExpression="') + 19,
+										fieldMappings[n].indexOf('"/>') - 10);
+						fieldPath = fieldPath.replace(/\//g,
+								".");
+
+						this.mappingExpressions[fieldPath] = mappingExpression;
+					}
 					
-					this.application = application;
+					this.populateTableRows(this.outputTableBody,
+							this.outputTableRows, false);
+				};
+
+				/**
+				 * 
+				 */
+				MessageTransformationApplicationView.prototype.convertToMappingsXml = function() {
+					var xml = "&lt;?xml version=&quot;1.0&quot; encoding=&quot;ASCII&quot;?&gt;&#13;&#10;&lt;mapping:TransformationProperty xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:mapping=&quot;java://com.infinity.bpm.messaging.model&quot; xsi:schemaLocation=&quot;java://com.infinity.bpm.messaging.model java://com.infinity.bpm.messaging.model.mapping.MappingPackage&quot;&gt;&#13;&#10;";
+
+					for ( var n = 0; n < this.outputTableRows.length; ++n) {
+						var outputTableRow = this.outputTableRows[n];
+
+						xml += "&lt;fieldMappings";
+						xml += " fieldPath=&quot;";
+						xml += outputTableRow.path;
+						xml += "&quot; mappingExpression=&quot;";
+						xml += outputTableRow.mappingExpression;
+						xml += "&quot;/&gt;&#13;&#10;";
+					}
+
+					return xml;
 				};
 
 				/**
@@ -381,61 +461,82 @@ define(
 				/**
 				 * 
 				 */
-				MessageTransformationApplicationView.prototype.addInputData = function(
+				MessageTransformationApplicationView.prototype.addInputAccessPoint = function(
 						dataName, dataStructure) {
-					var typeDeclaration = dataStructure.typeDeclaration;
+					
+					this.application.accessPoints[dataName] = m_accessPoint
+					.createFromDataStructure(dataStructure, dataName,
+							dataName, m_constants.IN_ACCESS_POINT);
+					
+					addInputData(this.application.accessPoints[dataName]);
+				};
+				
+				/**
+				 * 
+				 */
+				MessageTransformationApplicationView.prototype.addInputData = function(
+						accessPoint) {
+					// TODO Works only for references in the same model
+					
+					var typeDeclaration = 
+						m_model
+						.findDataStructure(this.application.model.id + ":" + accessPoint.attributes["carnot:engine:dataType"]).typeDeclaration;
 
 					typeDeclaration.resolveTypes(m_typeDeclaration
 							.getTypeDeclarations());
 
-					this.application.accessPoints[dataName] = m_accessPoint
-							.createFromDataStructure(dataStructure, dataName,
-									dataName, m_constants.IN_ACCESS_POINT);
-
-					this.inputData[dataName] = typeDeclaration;
-					this.populateInputTableRowsRecursively(dataName,
+					this.inputData[accessPoint.id] = typeDeclaration;
+					this.initializeInputTableRowsRecursively(accessPoint,
 							typeDeclaration, null, true);
-					this.populateTableRows(this.inputTableBody,
-							this.inputTableRows, true);
 				};
 
+				/**
+				 * 
+				 */
+				MessageTransformationApplicationView.prototype.addOutputAccessPoint = function(
+						dataName, dataStructure) {
+					this.application.accessPoints[dataName] = m_accessPoint
+					.createFromDataStructure(dataStructure, dataName,
+							dataName, m_constants.OUT_ACCESS_POINT);
+					
+					addOutputData(this.application.accessPoints[dataName]);
+				};
+				
 				/**
 				 * 
 				 */
 				MessageTransformationApplicationView.prototype.addOutputData = function(
-						dataName, dataStructure) {
-					var typeDeclaration = dataStructure.typeDeclaration;
+						accessPoint) {
+					// TODO Works only for references in the same model
+					
+					var typeDeclaration = 
+						m_model
+						.findDataStructure(this.application.model.id + ":" + accessPoint.attributes["carnot:engine:dataType"]).typeDeclaration;
 
 					typeDeclaration.resolveTypes(m_typeDeclaration
 							.getTypeDeclarations());
 
-					this.application.accessPoints[dataName] = m_accessPoint
-							.createFromDataStructure(dataStructure, dataName,
-									dataName, m_constants.OUT_ACCESS_POINT);
-
-					this.outputData[dataName] = typeDeclaration;
-					this.populateOutputTableRowsRecursively(dataName,
-							typeDeclaration, null, false);
-					this.populateTableRows(this.outputTableBody,
-							this.outputTableRows, false);
+					this.outputData[accessPoint.id] = typeDeclaration;
+					this.initializeOutputTableRowsRecursively(accessPoint,
+							typeDeclaration, null);
 				};
 
 				/**
 				 * 
 				 */
-				MessageTransformationApplicationView.prototype.populateInputTableRowsRecursively = function(
-						dataName, element, parentPath, source) {
-					var path = parentPath == null ? dataName : (parentPath
+				MessageTransformationApplicationView.prototype.initializeInputTableRowsRecursively = function(
+						accessPoint, element, parentPath) {
+					var path = parentPath == null ? accessPoint.name : (parentPath
 							+ "." + element.name);
 					var tableRow = {};
 
 					this.inputTableRows.push(tableRow);
 
-					tableRow.dataName = dataName;
+					tableRow.accessPoint = accessPoint;
 					tableRow.element = element;
 					tableRow.path = path;
 					tableRow.parentPath = parentPath;
-					tableRow.name = parentPath == null ? dataName
+					tableRow.name = parentPath == null ? accessPoint.name
 							: element.name;
 					tableRow.typeName = parentPath == null ? ""
 							: element.typeName;
@@ -445,31 +546,31 @@ define(
 					}
 
 					for ( var childElement in element.children) {
-						this.populateInputTableRowsRecursively(dataName,
-								element.children[childElement], path, source);
+						this.initializeInputTableRowsRecursively(accessPoint,
+								element.children[childElement], path);
 					}
 				};
 
 				/**
 				 * 
 				 */
-				MessageTransformationApplicationView.prototype.populateOutputTableRowsRecursively = function(
-						dataName, element, parentPath, source) {
-					var path = parentPath == null ? dataName : (parentPath
+				MessageTransformationApplicationView.prototype.initializeOutputTableRowsRecursively = function(
+						accessPoint, element, parentPath) {
+					var path = parentPath == null ? accessPoint.name : (parentPath
 							+ "." + element.name);
 					var tableRow = {};
 
 					this.outputTableRows.push(tableRow);
 
-					tableRow.dataName = dataName;
+					tableRow.accessPoint = accessPoint;
 					tableRow.element = element;
 					tableRow.path = path;
 					tableRow.parentPath = parentPath;
-					tableRow.name = parentPath == null ? dataName
+					tableRow.name = parentPath == null ? accessPoint.name
 							: element.name;
 					tableRow.typeName = parentPath == null ? ""
 							: element.typeName;
-					tableRow.mappingExpression = "";
+					tableRow.mappingExpression = this.mappingExpressions[path] == null ? "" : this.mappingExpressions[path];
 					tableRow.problems = "";
 
 					if (element.children == null) {
@@ -477,8 +578,8 @@ define(
 					}
 
 					for ( var childElement in element.children) {
-						this.populateOutputTableRowsRecursively(dataName,
-								element.children[childElement], path, source);
+						this.initializeOutputTableRowsRecursively(accessPoint,
+								element.children[childElement], path);
 					}
 				};
 
@@ -504,7 +605,7 @@ define(
 								+ tableRows[tableRow].name + "</span>";
 						content += "</td>";
 						content += "<td>" + tableRows[tableRow].typeName;
-						+"</td>";
+						+ "</td>";
 
 						if (source) {
 							content += "</tr>";
@@ -538,8 +639,11 @@ define(
 							});
 
 						} else {
-							content += "<td class=\"mapping\"/>";
+							content += "<td class=\"mapping\">";											
+							content += tableRows[tableRow].mappingExpression;
 							content += "<td/>";
+							content += "<td>";
+							content += "</td>";
 							content += "</tr>";
 
 							tableBody.append(content);
@@ -816,13 +920,10 @@ define(
 				};
 
 				/**
-				 * Only react to name changes and validation exceptions.
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.processCommand = function(
 						command) {
-					m_utils.debug("===> MTA Process Command");
-					m_utils.debug(command);
-
 					// Parse the response JSON from command pattern
 
 					var object = ("string" == typeof (command)) ? jQuery
@@ -833,68 +934,8 @@ define(
 							&& null != object.changes.modified
 							&& 0 != object.changes.modified.length
 							&& object.changes.modified[0].oid == this.application.oid) {
-
-						// TODO May be too expensive, ignore returned mapping changes - only evaluate errors/warnings
-						
-//						m_utils.inheritFields(this.application,
-//								object.changes.modified[0]);
-//						this.initialize(this.application);
-						
-						this.application.name = object.changes.modified[0].name;
-						
-						this.nameInput.val(this.application.name);
-						
-						// Access Points
-						
-//						for (Map.Entry<String, JsonElement> entry : accessPointsJson.entrySet()) {
-//							JsonObject accessPointJson = entry.getValue().getAsJsonObject();
-//
-//							System.out.println("JSON: " + accessPointJson.toString());
-//
-//							 AccessPointType accessPoint = null;
-//							
-//							 accessPoint.setId(accessPointJson.getString(ID_PROPERTY));
-//							 accessPoint.setName(accessPointJson.getString(NAME_PROPERTY));
-//							
-//							 if (accessPointJson.get(DIRECTION_PROPERTY).equals("IN")) {
-//							 accessPoint.setDirection(DirectionType.IN_LITERAL);
-//							 } else if (accessPointJson.get(DIRECTION_PROPERTY)
-//							 .equals("OUT")) {
-//							 accessPoint.setDirection(DirectionType.IN_LITERAL);
-//							 } else {
-//							 accessPoint.setDirection(DirectionType.INOUT_LITERAL);
-//							 }
-//							
-//							 accessPoint.setType(arg0);
-//							
-//							 storeAttributes(accessPointJson, accessPoint);
-//						}
-//						 <carnot:AccessPoints>
-//						 <carnot:AccessPoint Oid="10062" Id="Person1"
-//						 Name="Person1 (Person)" Direction="IN" Type="struct">
-//						 <carnot:Attributes>
-//						 <carnot:Attribute Name="carnot:engine:dataType" Value="Person"/>
-//						 <carnot:Attribute Name="carnot:engine:path:separator" Value="/"/>
-//						 <carnot:Attribute Name="carnot:engine:data:bidirectional"
-//						 Value="true" Type="boolean"/>
-//						 <carnot:Attribute Name="RootElement" Value="Person1"/>
-//						 <carnot:Attribute Name="FullXPath" Value="Person1/"/>
-//						 </carnot:Attributes>
-//						 </carnot:AccessPoint>
-//						 <carnot:AccessPoint Oid="10063" Id="Order1" Name="Order1 (Order)"
-//						 Direction="OUT" Type="struct">
-//						 <carnot:Attributes>
-//						 <carnot:Attribute Name="carnot:engine:dataType" Value="Order"/>
-//						 <carnot:Attribute Name="carnot:engine:path:separator" Value="/"/>
-//						 <carnot:Attribute Name="carnot:engine:data:bidirectional"
-//						 Value="true" Type="boolean"/>
-//						 <carnot:Attribute Name="RootElement" Value="Order1"/>
-//						 <carnot:Attribute Name="FullXPath" Value="Order1/"/>
-//						 </carnot:Attributes>
-//						 </carnot:AccessPoint>
-//						 </carnot:AccessPoints>
+						this.initialize(this.application);
 					}
 				};
 			}
-			;
 		});

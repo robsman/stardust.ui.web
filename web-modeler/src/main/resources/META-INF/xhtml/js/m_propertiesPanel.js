@@ -53,6 +53,8 @@ define(
 				this.propertiesPageList = jQuery("#propertiesPageList");
 				this.applyButton = jQuery("#" + this.id + " #applyButton");
 				this.resetButton = jQuery("#" + this.id + " #resetButton");
+				this.errorMessagesRow = jQuery("#" + this.id
+						+ " #errorMessagesRow");
 				this.errorMessagesList = jQuery("#" + this.id
 						+ " #errorMessagesList");
 				this.propertiesPages = [];
@@ -167,7 +169,7 @@ define(
 				};
 
 				PropertiesPanel.prototype.clearErrorMessages = function() {
-					m_dialog.makeInvisible(this.errorMessagesList);
+					m_dialog.makeInvisible(this.errorMessagesRow);
 					this.errorMessages = [];
 					this.errorMessagesList.empty();
 				};
@@ -177,7 +179,7 @@ define(
 				 */
 				PropertiesPanel.prototype.showErrorMessages = function() {
 					if (this.errorMessages.length != 0) {
-						m_dialog.makeVisible(this.errorMessagesList);
+						m_dialog.makeVisible(this.errorMessagesRow);
 
 						for ( var n in this.errorMessages) {
 							this.errorMessagesList.append("<li>"

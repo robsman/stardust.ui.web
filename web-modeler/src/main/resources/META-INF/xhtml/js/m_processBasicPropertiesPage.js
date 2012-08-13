@@ -10,63 +10,47 @@
 
 define(
 		[ "m_utils", "m_constants", 
-			"m_commandsController", "m_command", "m_propertiesPage" ],
+			"m_commandsController", "m_command", "m_basicPropertiesPage" ],
 		function(m_utils, m_constants,
-				m_commandsController, m_command, m_propertiesPage) {
+				m_commandsController, m_command, m_basicPropertiesPage) {
 			return {
 				create: function(propertiesPanel) {
-					return new ProcessBasicPropertiesPage(propertiesPanel);
+					var page = new ProcessBasicPropertiesPage(propertiesPanel);
+
+					page.initialize();
+
+					return page;
 				}
 			};
 
-			function ProcessBasicPropertiesPage(newPropertiesPanel, newId,
-					newTitle) {
+			function ProcessBasicPropertiesPage(propertiesPanel) {
 
 				// Inheritance
 
-				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						newPropertiesPanel, "basicPropertiesPage", "General Properties", "../../images/icons/basic-properties-page.png");
+				var basicPropertiesPage = m_basicPropertiesPage.create(
+						propertiesPanel);
 
-				m_utils.inheritFields(this, propertiesPage);
+				m_utils.inheritFields(this, basicPropertiesPage);
 				m_utils.inheritMethods(ProcessBasicPropertiesPage.prototype,
-						propertiesPage);
+						basicPropertiesPage);
 
 				// Field initialization
-
-				this.nameInput = this.mapInputId("nameInput");
-				this.descriptionInput = this.mapInputId("descriptionInput");
-
-				this.initializeDocumentationHandling();
-
-				this.nameInput
-				.change(
-						{
-							"page" : this
-						},
-						function(event) {
-							var page = event.data.page;
-
-							if (!page.validate()) {
-								return;
-							}
-
-							if (page.propertiesPanel.element.name != page.nameInput
-									.val()) {
-								page.propertiesPanel.element.name = page.nameInput
-										.val();
-								page.submitChanges({name: page.nameInput
-									.val()});
-							}
-						});
 
 				/**
 				 * 
 				 */
 				ProcessBasicPropertiesPage.prototype.getDocumentationCreationUrl = function() {
-					var url = "/models/" + this.propertiesPanel.element.modelId
+					var url = "/models/" + this.getModelElement().modelId
 							+ "/createDocumentation";
 
 					return url;
+				};
+
+				/**
+				 * 
+				 */
+				ProcessBasicPropertiesPage.prototype.initialize = function() {
+					this.initializeBasicPropertiesPage();
 				};
 
 				/**
@@ -80,58 +64,18 @@ define(
 				 * 
 				 */
 				ProcessBasicPropertiesPage.prototype.setElement = function() {
-					this.nameInput.removeClass("error");
-
-					this.nameInput.val(this.propertiesPanel.element.name);
-					this.descriptionInput
-							.val(this.propertiesPanel.element.description);
-
-					this.loadDocumentUrl();
-
-					if (this.documentUrl == null) {
-						this.documentationCreationLinkPanel.removeAttr("class");
-						this.openDocumentViewLinkPanel.attr("class",
-								"invisible");
-					} else {
-						this.documentationCreationLinkPanel.attr("class",
-								"invisible");
-						this.openDocumentViewLinkPanel.removeAttr("class");
-					}
-
+					this.setModelElement();
 				};
 
 				/**
 				 * 
 				 */
 				ProcessBasicPropertiesPage.prototype.validate = function() {
-					this.propertiesPanel.clearErrorMessages();
-					this.nameInput.removeClass("error");
-
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
-						this.propertiesPanel.errorMessages
-								.push("Process name must not be empty.");
-						this.nameInput.addClass("error");
-
-						this.propertiesPanel.showErrorMessages();
-
-						return false;
+					if (this.validateModelElement()) {
+						return true;
 					}
-					
+
 					return true;
 				};
-
-				/**
-				 * 
-				 */
-				ProcessBasicPropertiesPage.prototype.submitChanges = function(changes) {
-					m_utils.debug("Process: ");
-					m_utils.debug(this.propertiesPanel.element);
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(this.propertiesPanel.element.model.id,
-									this.propertiesPanel.element.oid,
-									changes));
-				};
-
 			}
 		});

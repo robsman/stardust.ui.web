@@ -9,12 +9,7 @@
 <head>
 <title>Modeler Canvas</title>
 <link rel="stylesheet" type="text/css"
-	href="../../css/jquery-ui-1.8.20.custom.css">
-</link>
-<link href="../../css/jquery.treeTable.css" rel="stylesheet"
-	type="text/css" />
-<link href="../../css/jquery.tablescroll.css" rel="stylesheet"
-	type="text/css" />
+	href="../../css/jquery-ui-1.8.20.custom.css"></link>
 <link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../js/dataViewPageInitializer.js"></script>
 <script type="text/javascript" data-main="dataViewMain"
@@ -64,6 +59,39 @@
 			<tr>
 				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
 				</td>
+			</tr>
+			<tr>
+				<td>
+					<table style="margin-top: 10px;">
+						<tr>
+							<td><input id="primitiveInput" type="radio" /></td>
+							<td><label for="primitiveInput">Primitive</label>
+							</td>
+							<td><select id="primitiveList" size="1">
+									<option value="String">Text</option>
+									<option value="Integer">Number (e.g. 18756)</option>
+									<option value="Double">Scientific (e.g. 3.1415)</option>
+									<option value="Decimal">Money Amount (e.g.
+										$4,500,600.42)</option>
+									<option value="Date">Date (e.g. 14/05/2011)</option>
+							</select></td>
+						</tr>
+						<tr>
+							<td><input id="dataStructureInput" type="radio" />
+							</td>
+							<td><label for="dataStructureInput">Data Structure</label>
+							</td>
+							<td><select id="dataStructureList" size="1">
+							</select></td>
+						</tr>
+						<tr>
+							<td><input id="documentInput" type="radio" /></td>
+							<td><label for="documentInput">Document</label>
+							</td>
+							<td><select id="documentTypeList" size="1">
+							</select></td>
+						</tr>
+					</table></td>
 			</tr>
 		</table>
 	</div>

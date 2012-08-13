@@ -13,12 +13,16 @@
  */
 define(
 		[ "m_utils", "m_constants", "m_commandsController", "m_command",
-				"m_propertiesPage", "m_participant" ],
+				"m_basicPropertiesPage", "m_participant" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
-				m_propertiesPage, m_participant) {
+				m_basicPropertiesPage, m_participant) {
 			return {
 				create : function(propertiesPanel) {
-					return new SwimlaneBasicPropertiesPage(propertiesPanel);
+					var page = new SwimlaneBasicPropertiesPage(propertiesPanel);
+
+					page.initialize();
+
+					return page;
 				}
 			};
 
@@ -30,97 +34,53 @@ define(
 
 				// Inheritance
 
-				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						newPropertiesPanel, "basicPropertiesPage", "Basic");
+				var basicPropertiesPage = m_basicPropertiesPage.create(
+						newPropertiesPanel);
 
-				m_utils.inheritFields(this, propertiesPage);
+				m_utils.inheritFields(this, basicPropertiesPage);
 				m_utils.inheritMethods(SwimlaneBasicPropertiesPage.prototype,
-						propertiesPage);
+						basicPropertiesPage);
 
-				// Field initialization
+				/**
+				 * 
+				 */
+				SwimlaneBasicPropertiesPage.prototype.initialize = function() {
+					this.initializeBasicPropertiesPage();
 
-				this.nameInput = this.mapInputId("nameInput");
-				this.title = this.mapInputId("swimlanePropertiesPanelTitle");
-				this.createNewParticipantLink = this
-						.mapInputId("createNewParticipantLink");
-				this.newParticipantName = this.mapInputId("newParticipantName");
-				this.descriptionInput = this.mapInputId("descriptionInput");
-				this.participantList = this.mapInputId("participantList");
+					this.title = this
+							.mapInputId("swimlanePropertiesPanelTitle");
+					this.createNewParticipantLink = this
+							.mapInputId("createNewParticipantLink");
+					this.newParticipantName = this
+							.mapInputId("newParticipantName");
+					this.descriptionInput = this.mapInputId("descriptionInput");
+					this.participantList = this.mapInputId("participantList");
 
-				// Initialize callbacks
-
-				this.nameInput
-						.change(
-								{
-									"page" : this
-								},
-								function(event) {
-									var page = event.data.page;
-
-									if (!page.validate()) {
-										return;
-									}
-
-									if (page.propertiesPanel.element.modelElement.name != page.nameInput
-											.val()) {
-										page.propertiesPanel.element.modelElement.name = page.nameInput
-												.val();
-										page.submitChanges({
-											modelElement : {
-												name : page.nameInput.val()
-											}
-										});
-									}
-								});
-				this.descriptionInput
-						.change(
-								{
-									"page" : this
-								},
-								function(event) {
-									var page = event.data.page;
-
-									if (!page.validate()) {
-										return;
-									}
-
-									if (page.propertiesPanel.element.modelElement.description != page.descriptionInput
-											.val()) {
-										page.propertiesPanel.element.modelElement.description = page.descriptionInput
-												.val();
-										page
-												.submitChanges({
-													modelElement : {
-														description : page.descriptionInput
-																.val()
-													}
-												});
-									}
-								});
-				this.createNewParticipantLink
-						.click(
-								{
-									"callbackScope" : this
-								},
-								function(event) {
-									m_commandsController
-											.submitImmediately(
-													m_command
-															.createCommand(
-																	"/models/"
-																			+ event.data.callbackScope.propertiesPanel.element.diagram.model.id
-																			+ "/roles",
-																	{
-																		"id" : event.data.callbackScope.newParticipantName
-																				.val(),
-																		"name" : event.data.callbackScope.newParticipantName
-																				.val()
-																	}),
-													{
-														"callbackScope" : event.data.callbackScope,
-														"method" : "setParticipantId"
-													}, {});
-								});
+					this.createNewParticipantLink
+							.click(
+									{
+										"callbackScope" : this
+									},
+									function(event) {
+										m_commandsController
+												.submitImmediately(
+														m_command
+																.createCommand(
+																		"/models/"
+																				+ event.data.callbackScope.propertiesPanel.element.diagram.model.id
+																				+ "/roles",
+																		{
+																			"id" : event.data.callbackScope.newParticipantName
+																					.val(),
+																			"name" : event.data.callbackScope.newParticipantName
+																					.val()
+																		}),
+														{
+															"callbackScope" : event.data.callbackScope,
+															"method" : "setParticipantId"
+														}, {});
+									});
+				};
 
 				/**
 				 * 
@@ -149,13 +109,9 @@ define(
 				 * 
 				 */
 				SwimlaneBasicPropertiesPage.prototype.setElement = function() {
+					this.setModelElement();
+
 					this.refreshParticipantList();
-
-					this.nameInput.removeClass("error");
-
-					this.nameInput.val(this.propertiesPanel.element.name);
-					this.descriptionInput
-							.val(this.propertiesPanel.element.description);
 
 					this.title
 							.html(this.propertiesPanel.element.participantName);
@@ -171,21 +127,18 @@ define(
 				/**
 				 * 
 				 */
+				SwimlaneBasicPropertiesPage.prototype.getModelElement = function() {
+					return this.propertiesPanel.element;
+				};
+
+				/**
+				 * 
+				 */
 				SwimlaneBasicPropertiesPage.prototype.validate = function() {
-					this.propertiesPanel.clearErrorMessages();
-					this.nameInput.removeClass("error");
-
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
-						this.propertiesPanel.errorMessages
-								.push("Swimlane name must not be empty.");
-						this.nameInput.addClass("error");
-					
-						this.propertiesPanel.showErrorMessages();
-
-						return false;
+					if (this.validateModelElement()) {
+						return true;
 					}
-					
+
 					return true;
 				};
 

@@ -799,7 +799,8 @@ define(
 										this.separatorDY = 0;
 
 										for ( var n in this.symbols) {
-											if (this.symbols[n].x > this.separatorX) {
+											if (this.symbols[n].x > this.separatorX &&
+													this.symbols[n].type != m_constants.SWIMLANE_SYMBOL) {
 												this.separatorList
 														.push(this.symbols[n]);
 											}
@@ -810,7 +811,8 @@ define(
 										this.separatorDY = 0;
 
 										for ( var n in this.symbols) {
-											if (this.symbols[n].x < this.separatorX) {
+											if (this.symbols[n].x < this.separatorX &&
+													this.symbols[n].type != m_constants.SWIMLANE_SYMBOL) {
 												this.separatorList
 														.push(this.symbols[n]);
 											}
@@ -822,7 +824,8 @@ define(
 										this.separatorDY = -1;
 
 										for ( var n in this.symbols) {
-											if (this.symbols[n].y > this.separatorY) {
+											if (this.symbols[n].y > this.separatorY &&
+													this.symbols[n].type != m_constants.SWIMLANE_SYMBOL) {
 												this.separatorList
 														.push(this.symbols[n]);
 											}
@@ -832,7 +835,8 @@ define(
 										this.separatorDY = 1;
 
 										for ( var n in this.symbols) {
-											if (this.symbols[n].y > this.separatorY) {
+											if (this.symbols[n].y > this.separatorY  &&
+													this.symbols[n].type != m_constants.SWIMLANE_SYMBOL) {
 												this.separatorList
 														.push(this.symbols[n]);
 											}
@@ -844,6 +848,7 @@ define(
 									this.separatorList[n].moveBy(dX
 											* Math.abs(this.separatorDX), dY
 											* Math.abs(this.separatorDY));
+									this.separatorList[n].parentSymbol.adjustToSymbolBoundaries(); 
 								}
 							}
 

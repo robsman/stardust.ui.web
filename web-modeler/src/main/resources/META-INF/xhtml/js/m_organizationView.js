@@ -51,6 +51,9 @@ define(
 
 					this.organization = organization;
 
+					m_utils.debug("===> Organization");
+					m_utils.debug(organization);
+
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.chooseAssignmentRadio = jQuery("#chooseAssignmentRadio");
 					this.assignAutomaticallyRadio = jQuery("#assignAutomaticallyRadio");

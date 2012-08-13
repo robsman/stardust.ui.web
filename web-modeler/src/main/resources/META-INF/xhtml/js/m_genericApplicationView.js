@@ -46,7 +46,7 @@ define(
 					this.initializeModelElement(application);
 					this.application = application;
 					
-					m_utils.debug("Application");
+					m_utils.debug("===> Application");
 					m_utils.debug(this.application);
 					
 					this.unsupportedMessagePanel.empty();

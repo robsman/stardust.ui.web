@@ -1980,4 +1980,33 @@ public class ModelService
 
       return issuesJson;
    }
+
+   /**
+    * 
+    * @param wsdlUrl
+    * @return
+    */
+   public JsonObject getWebServiceStructure(JsonObject postedData)
+   {
+      // TODO Dummy implementation to show JSON structure
+
+      JsonObject webServiceJson = new JsonObject();
+
+      webServiceJson.addProperty("wsdlUrl", postedData.get("wsdlUrl").getAsString());
+      
+      JsonObject servicesJson = new JsonObject();
+
+      webServiceJson.add("services", servicesJson);
+
+      for (int n = 0; n < 3; ++n)
+      {
+         JsonObject serviceJson = new JsonObject();
+
+         servicesJson.add("service" + n, serviceJson);
+         
+         serviceJson.addProperty("name", "service" + n);
+      }
+      
+      return webServiceJson;
+   }
 }

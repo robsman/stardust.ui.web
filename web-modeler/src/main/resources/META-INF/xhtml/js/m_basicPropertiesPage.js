@@ -23,7 +23,8 @@ define(
 				// Inheritance
 
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						propertiesPanel, "basicPropertiesPage", "General Properties",
+						propertiesPanel, "basicPropertiesPage",
+						"General Properties",
 						"../../images/icons/basic-properties-page.png");
 
 				m_utils.inheritFields(this, propertiesPage);
@@ -38,9 +39,11 @@ define(
 					this.idOutput = this.mapInputId("idOutput");
 					this.nameInput = this.mapInputId("nameInput");
 					this.descriptionInput = this.mapInputId("descriptionInput");
-
-					// this.initializeDocumentationHandling();
-
+					this.documentationCreationLinkPanel = this.mapInputId("documentationCreationLinkPanel");
+					this.documentationCreationLink = this.mapInputId("documentationCreationLink");
+					this.openDocumentViewLink = this.mapInputId("openDocumentViewLink");
+					this.openDocumentViewLinkPanel = this.mapInputId("openDocumentViewLinkPanel");
+										
 					// Initialize callbacks
 
 					this.registerTextInputForModelElementChangeSubmission(
@@ -56,16 +59,31 @@ define(
 					this.nameInput.removeClass("error");
 
 					this.guidOutput.empty();
-					this.guidOutput
-							.append(this.propertiesPanel.element.modelElement.oid);
 					this.idOutput.empty();
-					this.idOutput
-							.append(this.propertiesPanel.element.modelElement.id);
-					this.nameInput
-							.val(this.propertiesPanel.element.modelElement.name);
+
+					this.guidOutput.append(this.getModelElement().oid);
+					this.idOutput.append(this.getModelElement().id);
+					this.nameInput.val(this.getModelElement().name);
 					this.descriptionInput
-							.val(this.propertiesPanel.element.modelElement.description);
-					// this.loadDocumentUrl();
+							.val(this.getModelElement().description);
+
+					if (this.documentationCreationLinkPanel != null &&
+							this.openDocumentViewLinkPanel != null && true/*this.documentUrl == null*/) {
+						this.documentationCreationLinkPanel.removeAttr("class");
+						this.openDocumentViewLinkPanel.attr("class",
+								"invisible");
+					} else {
+						this.documentationCreationLinkPanel.attr("class",
+								"invisible");
+						this.openDocumentViewLinkPanel.removeAttr("class");
+					}
+				};
+
+				/**
+				 * 
+				 */
+				BasicPropertiesPage.prototype.getModelElement = function() {
+					return this.propertiesPanel.element.modelElement;
 				};
 
 				/**

@@ -18,7 +18,11 @@ define(
 				m_basicPropertiesPage) {
 			return {
 				create : function(propertiesPanel) {
-					return new GatewayBasicPropertiesPage(propertiesPanel);
+					var page = new GatewayBasicPropertiesPage(propertiesPanel);
+					
+					page.initialize();
+					
+					return page;
 				}
 			};
 
@@ -34,64 +38,44 @@ define(
 				m_utils.inheritMethods(GatewayBasicPropertiesPage.prototype,
 						propertiesPage);
 
-				// Field initialization
+				/**
+				 * 
+				 */
+				GatewayBasicPropertiesPage.prototype.initialize = function() {
+					this.initializeBasicPropertiesPage();										
 
-				this.descriptionInput = this.mapInputId("descriptionInput");
-				this.gatewayTypeInput = this.mapInputId("gatewayTypeInput");
+					this.gatewayTypeInput = this.mapInputId("gatewayTypeInput");
 
-				this.descriptionInput
-						.change(
-								{
-									"page" : this
-								},
-								function(event) {
-									var page = event.data.page;
+					this.gatewayTypeInput
+							.change(
+									{
+										"page" : this
+									},
+									function(event) {
+										var page = event.data.page;
 
-									if (!page.validate()) {
-										return;
-									}
+										if (!page.validate()) {
+											return;
+										}
 
-									if (page.propertiesPanel.element.modelElement.description != page.descriptionInput
-											.val()) {
-										page
-												.submitChanges({
-													modelElement : {
-														description : page.descriptionInput
-																.val()
-													}
-												});
-									}
-								});
-				this.gatewayTypeInput
-						.change(
-								{
-									"page" : this
-								},
-								function(event) {
-									var page = event.data.page;
-
-									if (!page.validate()) {
-										return;
-									}
-
-									if (page.propertiesPanel.element.modelElement.gatewayType != page.gatewayTypeInput
-											.val()) {
-										page
-												.submitChanges({
-													modelElement : {
-														gatewayType : page.gatewayTypeInput
-																.val()
-													}
-												});
-									}
-								});
-
+										if (page.propertiesPanel.element.modelElement.gatewayType != page.gatewayTypeInput
+												.val()) {
+											page
+													.submitChanges({
+														modelElement : {
+															gatewayType : page.gatewayTypeInput
+																	.val()
+														}
+													});
+										}
+									});
+				};
+				
 				/**
 				 * 
 				 */
 				GatewayBasicPropertiesPage.prototype.setElement = function() {
-					this.descriptionInput
-							.val(this.propertiesPanel.element.modelElement.description);
+					this.setModelElement();
 					this.gatewayTypeInput
 							.val(this.propertiesPanel.element.modelElement.attributes.gatewayType);
 				};
