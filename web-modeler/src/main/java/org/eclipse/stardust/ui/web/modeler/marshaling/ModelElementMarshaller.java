@@ -756,6 +756,8 @@ public abstract class ModelElementMarshaller
       roleJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "false");
       roleJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(role));
       ModelType model = ModelUtils.findContainingModel(role);
+      List<OrganizationType> parentOrgs = MBFacade.getInstance().getParentOrganizations(model, role);      
+      
       if (null != model)
       {
          List<OrganizationType> parentOrgs = MBFacade.getInstance().getParentOrganizations(model, role);
@@ -794,6 +796,8 @@ public abstract class ModelElementMarshaller
       orgJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
       orgJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(org));
       ModelType model = ModelUtils.findContainingModel(org);
+      List<OrganizationType> parentOrgs = MBFacade.getInstance().getParentOrganizations(model, org);
+      
       if (null != model)
       {
          List<OrganizationType> parentOrgs = MBFacade.getInstance().getParentOrganizations(model, org);
