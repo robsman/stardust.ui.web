@@ -760,7 +760,6 @@ public abstract class ModelElementMarshaller
       
       if (null != model)
       {
-         List<OrganizationType> parentOrgs = MBFacade.getInstance().getParentOrganizations(model, role);
          if (parentOrgs.size() > 0)
          {
             // TODO - add array of orgs
@@ -800,7 +799,6 @@ public abstract class ModelElementMarshaller
       
       if (null != model)
       {
-         List<OrganizationType> parentOrgs = MBFacade.getInstance().getParentOrganizations(model, org);
          if (parentOrgs.size() > 0)
          {
             orgJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
