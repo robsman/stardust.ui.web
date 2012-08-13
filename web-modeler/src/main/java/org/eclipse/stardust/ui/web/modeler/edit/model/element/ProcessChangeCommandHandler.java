@@ -124,7 +124,10 @@ public class ProcessChangeCommandHandler
    {
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
       ProcessDefinitionType processDefinition = MBFacade.findProcessDefinition(model, id);
-      model.getProcessDefinition().remove(processDefinition);
+      synchronized (model)
+      {
+    	  model.getProcessDefinition().remove(processDefinition);
+      }
    }
 
    private ModelService modelService()

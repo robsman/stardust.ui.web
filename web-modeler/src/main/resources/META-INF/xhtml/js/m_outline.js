@@ -924,7 +924,12 @@ define(
 													"deleteData" : {
 														"label" : "Delete",
 														"action" : function(obj) {
-															
+															deleteElementAction(
+																	obj.context.lastChild.data,
+																	function() {
+																		deleteData(obj .attr("modelUUID"),
+																				obj.attr("elementId"));
+																	});
 														}
 													}
 												};
@@ -993,9 +998,9 @@ define(
 																	function() {
 																		deleteApplication(
 																				obj
-																						.attr("modelId"),
+																						.attr("modelUUID"),
 																				obj
-																						.attr("id"));
+																						.attr("elementId"));
 																	});
 														}
 													}
@@ -1040,7 +1045,7 @@ define(
 																	function() {
 																		deleteStructuredDataType(
 																				obj
-																						.attr("modelId"),
+																						.attr("modelUUID"),
 																				obj
 																						.attr("elementId"));
 																	});
@@ -1063,15 +1068,15 @@ define(
 																							.attr("id"));
 														}
 													},
-													"deleteParticipantRole" : {
+													"deleteParticipant" : {
 														"label" : "Delete",
 														"action" : function(obj) {
 															deleteElementAction(
 																	obj.context.lastChild.data,
 																	function() {
-																		deleteParticipantRole(
+																		deleteParticipant(
 																				obj
-																						.attr("modelId"),
+																						.attr("modelUUID"),
 																				obj
 																						.attr("elementId"));
 																	});
@@ -1104,15 +1109,15 @@ define(
 																							.attr("id"));
 														}
 													},
-													"deleteParticipantRole" : {
+													"deleteParticipant" : {
 														"label" : "Delete",
 														"action" : function(obj) {
 															deleteElementAction(
 																	obj.context.lastChild.data,
 																	function() {
-																		deleteParticipantRole(
+																		deleteParticipant(
 																				obj
-																						.attr("modelId"),
+																						.attr("modelUUID"),
 																				obj
 																						.attr("elementId"));
 																	});
@@ -1463,8 +1468,11 @@ define(
 							}, modelId));
 				}
 
-				function deleteProcess(processId, modelUuid) {
-					var model = m_model.findModelByUuid(modelUuid);
+				/**
+				 * 
+				 */
+				function deleteProcess(processId, modelUUID) {
+					var model = m_model.findModelByUuid(modelUUID);
 					m_commandsController.submitCommand(m_command
 							.createDeleteProcessCommand(model.id, model.id, {
 								"id" : processId
@@ -1473,34 +1481,44 @@ define(
 
 				/**
 				 */
-				function deleteStructuredDataType(modelId, id) {
+				function deleteStructuredDataType(modelUUID, structTypeId) {
+					var model = m_model.findModelByUuid(modelUUID);
 					m_commandsController.submitCommand(m_command
-							.createDeleteCommand("/models/" + modelId
-									+ "/structuredDataTypes/" + id, {
-								"modelId" : modelId,
-								"structuredDataTypeId" : id
+							.createDeleteStructuredDataTypeCommand(model.id, model.id, {
+								"id" : structTypeId
 							}));
 				}
 
 				/**
+				 * 
 				 */
-				function deleteParticipantRole(modelId, id) {
+				function deleteParticipant(modelUUID, id) {
+					var model = m_model.findModelByUuid(modelUUID);
 					m_commandsController.submitCommand(m_command
-							.createDeleteCommand("/models/" + modelId
-									+ "/participants/" + id, {
-								"modelId" : modelId,
-								"participantId" : id
+							.createDeleteParticipantCommand(model.id, model.id, {
+								"id" : id
 							}));
 				}
 
 				/**
+				 * 
 				 */
-				function deleteApplication(modelId, id) {
+				function deleteApplication(modelUUID, appId) {
+					var model = m_model.findModelByUuid(modelUUID);
 					m_commandsController.submitCommand(m_command
-							.createDeleteCommand("/models/" + modelId
-									+ "/applications/" + id, {
-								"modelId" : modelId,
-								"applicationId" : id
+							.createDeleteApplicationCommand(model.id, model.id, {
+								"id" : appId
+							}));
+				}
+
+				/**
+				 * 
+				 */
+				function deleteData(modelUUID, id) {
+					var model = m_model.findModelByUuid(modelUUID);
+					m_commandsController.submitCommand(m_command
+							.createDeleteDataCommand(model.id, model.id, {
+								"id" : id
 							}));
 				}
 
@@ -1884,9 +1902,20 @@ define(
 						for ( var i = 0; i < obj.changes.removed.length; i++) {
 							if (m_constants.MODEL == command.changes.removed[i].type) {
 								this.deleteModel(command.changes.removed[i]);
-							} else
-							if (m_constants.PROCESS == command.changes.removed[i].type) {
+							} else if (m_constants.PROCESS == command.changes.removed[i].type) {
 								this.deleteProcess(command.changes.removed[i]);
+							} else if (m_constants.APPLICATION == command.changes.removed[i].type) {
+								this.deleteApplication(command.changes.removed[i]);
+							} else if (m_constants.PARTICIPANT == command.changes.removed[i].type
+									|| m_constants.ROLE_PARTICIPANT_TYPE == command.changes.removed[i].type
+									|| m_constants.ORGANIZATION_PARTICIPANT_TYPE == command.changes.removed[i].type) {
+								this.deleteParticipant(command.changes.removed[i]);
+							} else if (m_constants.TYPE_DECLARATION_PROPERTY == command.changes.removed[i].type) {
+								this.deleteTypeDeclaration(command.changes.removed[i]);
+							} else if (m_constants.PRIMITIVE_DATA_TYPE == command.changes.removed[i].type
+									|| m_constants.STRUCTURED_DATA_TYPE == command.changes.removed[i].type
+									|| m_constants.DMS_DOCUMENT_DATA_TYPE == command.changes.removed[i].type) {
+								this.deleteData(command.changes.removed[i]);
 							}
 						}
 					} else if (command.scope == "all") {
@@ -2037,6 +2066,47 @@ define(
 							"#" + transferObject.uuid)
 					var model = m_model.findModelForElement(transferObject.uuid);
 					m_process.deleteProcess(transferObject.id, model);
+				}
+				
+				/**
+				 * 
+				 */
+				Outline.prototype.deleteApplication = function(transferObject) {
+					jQuery("#outline").jstree("remove",
+							"#" + transferObject.uuid)
+					var model = m_model.findModelForElement(transferObject.uuid);
+					m_application.deleteApplication(transferObject.id, model);
+				}
+				
+				/**
+				 * 
+				 */
+				Outline.prototype.deleteParticipant = function(transferObject) {
+					jQuery("#outline").jstree("remove",
+							"#" + transferObject.uuid)
+					var model = m_model.findModelForElement(transferObject.uuid);
+					m_participant.deleteParticipantRole(transferObject.id, model);
+				}
+
+				/**
+				 * 
+				 */
+				Outline.prototype.deleteTypeDeclaration = function(transferObject) {
+					jQuery("#outline").jstree("remove",
+							"#" + transferObject.uuid)
+					var model = m_model.findModelForElement(transferObject.uuid);
+					// TODO add delete type declaration code.
+//					m_typeDeclaration.deleteApplication(transferObject.id, model);
+				}
+
+				/**
+				 * 
+				 */
+				Outline.prototype.deleteData = function(transferObject) {
+					jQuery("#outline").jstree("remove",
+							"#" + transferObject.uuid)
+					var model = m_model.findModelForElement(transferObject.uuid);
+					m_data.deleteData(transferObject.id, model);
 				}
 
 				/**

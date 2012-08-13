@@ -49,6 +49,10 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 			json.initializeFromJson(model);
 
 			return json;
+		},
+
+		deleteData : function(id, model) {
+			delete model.dataItems[id];
 		}
 	};
 

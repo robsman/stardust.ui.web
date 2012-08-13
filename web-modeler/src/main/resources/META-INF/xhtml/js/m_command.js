@@ -51,6 +51,12 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 				changes : changes
 			} ]);
 		},
+		createDeleteDataCommand : function(modelId, oid, changes) {
+			return new ChangeDescriptor("data.delete", modelId, [ {
+				oid : oid,
+				changes : changes
+			} ]);
+		},
 		createCreateRoleCommand : function(modelId, oid, changes) {
 			return new ChangeDescriptor("role.create", modelId, [ {
 				oid : oid,
@@ -65,6 +71,12 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 		},
 		createUpdateTeamLeaderCommand : function(modelId, oid, changes) {
 			return new ChangeDescriptor("organization.updateTeamLeader", modelId, [ {
+				oid : oid,
+				changes : changes
+			} ]);
+		},
+		createDeleteParticipantCommand : function(modelId, oid, changes) {
+			return new ChangeDescriptor("participant.delete", modelId, [ {
 				oid : oid,
 				changes : changes
 			} ]);
@@ -93,6 +105,12 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 				changes : changes
 			} ]);
 		},
+		createDeleteApplicationCommand : function(modelId, oid, changes) {
+			return new ChangeDescriptor("application.delete", modelId, [ {
+				oid : oid,
+				changes : changes
+			} ]);
+		},
 		createCreateModelCommand : function(changes) {
 			return new ChangeDescriptor("model.create", undefined, [ {
 				changes : changes
@@ -112,6 +130,12 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 		},
 		createCreateStructuredDataTypeCommand : function(modelId, oid, changes) {
 			return new ChangeDescriptor("structuredDataType.create", modelId, [ {
+				oid : oid,
+				changes : changes
+			} ]);
+		},
+		createDeleteStructuredDataTypeCommand : function(modelId, oid, changes) {
+			return new ChangeDescriptor("structuredDataType.delete", modelId, [ {
 				oid : oid,
 				changes : changes
 			} ]);

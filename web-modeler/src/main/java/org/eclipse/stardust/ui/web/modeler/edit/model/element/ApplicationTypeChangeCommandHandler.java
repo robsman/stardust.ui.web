@@ -126,6 +126,23 @@ public class ApplicationTypeChangeCommandHandler
       // ModelerConstants.MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID));
    }
 
+   /**
+    * @param targetElement
+    * @param request
+    */
+   @OnCommand(commandId = "application.delete")
+   public void deleteApplication(EObject targetElement, JsonObject request)
+   {
+      ModelType model = (ModelType) targetElement;
+      String appId = extractString(request, ModelerConstants.ID_PROPERTY);
+      ApplicationType application = MBFacade.findApplication(model, appId);
+
+      synchronized (model)
+      {
+         model.getApplication().remove(application);
+      }
+   }
+
    private ModelService modelService()
    {
       return springContext.getBean(ModelService.class);

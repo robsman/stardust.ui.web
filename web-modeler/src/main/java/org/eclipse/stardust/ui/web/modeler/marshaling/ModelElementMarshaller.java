@@ -4,6 +4,7 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractSt
 
 import java.util.List;
 
+import org.apache.commons.collections.set.CompositeSet.SetMutator;
 import org.eclipse.emf.ecore.EObject;
 
 import com.google.gson.JsonArray;
@@ -159,20 +160,9 @@ public abstract class ModelElementMarshaller
       processJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(processDefinition));
       processJson.addProperty(ModelerConstants.TYPE_PROPERTY,
               ModelerConstants.PROCESS_KEY);
-      try
-      {
-         processJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY,
-         	  ModelUtils.findContainingModel(processDefinition).getId());
-      }
-      catch (Exception e)
-      {
-         //A null pointer exception will be thrown in case of element removal
-         //Do no send model ID in such a case as it's difficult to discover it
-         //Instead find the model on client side using element uuid and delete
-         //element from it.
+      
+      setContainingModelIdProperty(processJson, processDefinition);
 
-         //TODO - Ugly - Find an elegant alternative.
-      }
       
       loadDescription(processJson, processDefinition);
 
@@ -714,7 +704,7 @@ public abstract class ModelElementMarshaller
       dataJson.addProperty(ModelerConstants.UUID_PROPERTY,  eObjectUUIDMapper().getUUID(data));
       ModelType model = ModelUtils.findContainingModel(data);
       dataJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY, eObjectUUIDMapper().getUUID(model));
-      dataJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
+      setContainingModelIdProperty(dataJson, data);
       if (null != data.getDescription())
       {
          dataJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
@@ -766,22 +756,26 @@ public abstract class ModelElementMarshaller
       roleJson.addProperty(ModelerConstants.OID_PROPERTY, role.getElementOid());
       roleJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
       roleJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "false");
-      ModelType model = ModelUtils.findContainingModel(role);
-      List<OrganizationType> parentOrgs = MBFacade.getParentOrganizations(model, role);      
-      if (parentOrgs.size() > 0)
-      {
-         //TODO - add array of orgs
-         OrganizationType org = parentOrgs.get(0);
-         roleJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
-               eObjectUUIDMapper().getUUID(org));
-         if (null != org.getTeamLead() && org.getTeamLead().equals(role))
-         {
-            roleJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "true");
-         }
-      }
-      roleJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY, eObjectUUIDMapper().getUUID(model));
-      roleJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
       roleJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(role));
+      ModelType model = ModelUtils.findContainingModel(role);
+      if (null != model)
+      {
+         List<OrganizationType> parentOrgs = MBFacade.getParentOrganizations(model, role);
+         if (parentOrgs.size() > 0)
+         {
+            // TODO - add array of orgs
+            OrganizationType org = parentOrgs.get(0);
+            roleJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
+                  eObjectUUIDMapper().getUUID(org));
+            if (null != org.getTeamLead() && org.getTeamLead().equals(role))
+            {
+               roleJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "true");
+            }
+         }
+         roleJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY,
+               eObjectUUIDMapper().getUUID(model));
+         roleJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
+      }
 
       loadDescription(roleJson, role);
       loadAttributes(role, roleJson);
@@ -800,17 +794,20 @@ public abstract class ModelElementMarshaller
       orgJson.addProperty(ModelerConstants.NAME_PROPERTY, org.getName());
       orgJson.addProperty(ModelerConstants.OID_PROPERTY, org.getElementOid());
       orgJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
-      ModelType model = ModelUtils.findContainingModel(org);
-      List<OrganizationType> parentOrgs = MBFacade.getParentOrganizations(model, org);
-      if (parentOrgs.size() > 0)
-      {
-         orgJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
-               eObjectUUIDMapper().getUUID(parentOrgs.get(0)));
-      }
-      orgJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY, eObjectUUIDMapper().getUUID(model));
-      orgJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
       orgJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(org));
-
+      ModelType model = ModelUtils.findContainingModel(org);
+      if (null != model)
+      {
+         List<OrganizationType> parentOrgs = MBFacade.getParentOrganizations(model, org);
+         if (parentOrgs.size() > 0)
+         {
+            orgJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
+                  eObjectUUIDMapper().getUUID(parentOrgs.get(0)));
+         }
+         orgJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY,
+               eObjectUUIDMapper().getUUID(model));
+         orgJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
+      }
       loadDescription(orgJson, org);
       loadAttributes(org, orgJson);
 
@@ -827,8 +824,7 @@ public abstract class ModelElementMarshaller
       applicationJson.addProperty(ModelerConstants.OID_PROPERTY, application.getElementOid());
       applicationJson.addProperty(ModelerConstants.ID_PROPERTY, application.getId());
       applicationJson.addProperty(ModelerConstants.NAME_PROPERTY, application.getName());
-      applicationJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY,
-            ModelUtils.findContainingModel(application).getId());
+      setContainingModelIdProperty(applicationJson, application);
       applicationJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(application));
       applicationJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.APPLICATION_KEY);
 
@@ -1158,8 +1154,7 @@ public abstract class ModelElementMarshaller
       structJson.addProperty(ModelerConstants.ID_PROPERTY, structType.getId());
       structJson.addProperty(ModelerConstants.NAME_PROPERTY, structType.getName());
       structJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(structType));
-      structJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY,
-            ModelUtils.findContainingModel(structType).getId());
+      setContainingModelIdProperty(structJson, structType);
       JsonObject typeDeclarationJson = new JsonObject();
       structJson.add(ModelerConstants.TYPE_DECLARATION_PROPERTY, typeDeclarationJson);
       JsonObject childrenJson = new JsonObject();
@@ -1292,4 +1287,16 @@ public abstract class ModelElementMarshaller
 
       return PredefinedConstants.ENGINE_CONTEXT;
    }
+
+	/**
+	 * @param json
+	 * @param obj
+	 */
+	private void setContainingModelIdProperty(JsonObject json, EObject obj) {
+		ModelType containingModel = ModelUtils.findContainingModel(obj);
+		if (null != containingModel) {
+			json.addProperty(ModelerConstants.MODEL_ID_PROPERTY,
+					containingModel.getId());
+		}
+	}
 }

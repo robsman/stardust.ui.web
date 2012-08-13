@@ -23,6 +23,7 @@ import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
+import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
@@ -147,6 +148,32 @@ public class ParticipantChangeCommandHandler
       synchronized (model)
       {
          MBFacade.setTeamLeader(org, tealLeader);
+      }
+   }
+
+   /**
+    * @param model
+    * @param request
+    */
+   @OnCommand(commandId = "participant.delete")
+   public void deleteParticipant(ModelType model, JsonObject request)
+   {
+      String participantId = extractString(request, ModelerConstants.ID_PROPERTY);
+      IModelParticipant modelParticipantInfo = MBFacade.findParticipant(model,
+            participantId);
+      if (modelParticipantInfo instanceof RoleType)
+      {
+         synchronized (model)
+         {
+            model.getRole().remove(modelParticipantInfo);
+         }
+      }
+      else if (modelParticipantInfo instanceof OrganizationType)
+      {
+         synchronized (model)
+         {
+            model.getOrganization().remove(modelParticipantInfo);
+         }
       }
    }
 

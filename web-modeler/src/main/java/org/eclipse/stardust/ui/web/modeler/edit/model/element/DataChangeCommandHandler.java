@@ -108,6 +108,21 @@ public class DataChangeCommandHandler
       mapper.map(data);
    }
 
+   /**
+    * @param model
+    * @param request
+    */
+   @OnCommand(commandId = "data.delete")
+   public void deletetData(ModelType model, JsonObject request)
+   {
+      String id = extractString(request, ModelerConstants.ID_PROPERTY);
+      DataType data = MBFacade.findData(model, id);
+      synchronized (model)
+      {
+         model.getData().remove(data);
+      }
+   }
+
    private ModelService modelService()
    {
       return springContext.getBean(ModelService.class);
