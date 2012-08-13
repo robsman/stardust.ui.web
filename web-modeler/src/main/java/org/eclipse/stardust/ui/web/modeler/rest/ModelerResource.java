@@ -738,4 +738,23 @@ public class ModelerResource
          throw new RuntimeException(e);
       }
    }
+
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("webServices/structure")
+   public Response getWebServiceOptions(String postedData)
+   {
+      try
+      {
+         return Response.ok(getModelService().getWebServiceStructure(jsonIo.readJsonObject(postedData)).toString(),
+               APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
 }
