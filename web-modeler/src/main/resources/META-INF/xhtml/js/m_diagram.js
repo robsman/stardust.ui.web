@@ -590,6 +590,8 @@ define(
 								m_utils.debug("Changed symbol to:");
 								m_utils.debug(symbol);
 								symbol.refresh();
+								// TODO - update properties panel on
+								// modelElement change
 							}
 						}
 					}
@@ -1353,6 +1355,16 @@ define(
 								.trigger("blur");
 						this.currentTextPrimitive.attr("text", content);
 						m_utils.debug("text set");
+						var changes = {
+								modelElement : {
+									name : this.currentTextPrimitive.attr("text")
+								}
+							};
+						
+						m_commandsController.submitCommand(m_command
+								.createUpdateModelElementCommand(this.currentTextPrimitive.auxiliaryProperties.callbackScope.diagram.modelId,
+										this.currentTextPrimitive.auxiliaryProperties.callbackScope.oid,
+										changes));
 						this.currentTextPrimitive.show();
 						this.symbolEditMode = false;
 						m_utils.debug("text primitive shown");
