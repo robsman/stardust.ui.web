@@ -8,12 +8,12 @@
 	{
 		document.getElementById('titleText').innerHTML = payloadObj.title;
 		document.getElementById('contentText').innerHTML = payloadObj.message;
-		document.getElementById('cancelButton').value = payloadObj.cancelButtonText;
-		document.getElementById('acceptButton').value = payloadObj.acceptButtonText;		
-		document.getElementById('cancelButton').onclick = closePopup;
+		document.getElementById('okButton').value = payloadObj.okButtonText;		
 		document.getElementById('dialogCloseIcon').onclick = closePopup;
-		document.getElementById('acceptButton').onclick = function () {
-			payloadObj.acceptFunction();
+		document.getElementById('okButton').onclick = function () {
+			if (typeof payloadObj.callback == "function") {
+				payloadObj.callback();
+			}
 			closePopup();
 		}
 	}
@@ -28,8 +28,8 @@
 		<div class="iPopupDialogSpacerDiv"></div>
 		<table border="0">
 			<tr>
-				<td class="iPopupDialogContentTabCol1">
-					<img src="../images/icons/dialog-icon-warning.jpg" />
+				<td class="iPopupDialogContentTabCol1" style="padding: 10px">
+					<img src="../images/icons/dialog-icon-info.jpg" />
 				</td>
 				<td class="iPopupDialogContentTabCol2">
 					<span id="contentText" class="iPopupDialogContentText"></span>
@@ -38,8 +38,7 @@
 		</table>
 	</div>
 	<div id="controlsBar" class="iPopupDialogControlsArea">
-		<input id="acceptButton" type="button" value="OK" class="iPopupDialogControlButton" />
-		<input id="cancelButton" type="button" value="Cancel" class="iPopupDialogControlButton" />
+		<input id="okButton" type="button" value="OK" class="iPopupDialogControlButton" />
 	</div>
 </body>
 </html>

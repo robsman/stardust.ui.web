@@ -1406,29 +1406,61 @@ define(
 									new function() {
 										return {
 											success : function(data) {
-												alert("All models have been saved successfully.");
-//												if (parent.iPopupDialog) {
-//													var popupData = {
-//															attributes : {
-//																width : "400px",
-//																height : "200px",
-//																src : "../bpm-modeler/popups/confirmationPopupDialogContent.html"
-//															},
-//															payload : {
-//																title : "Info",
-//																message : "All models have been saved successfully.",
-//																acceptButtonText : "OK"
-//															}
-//													}
-//													parent.iPopupDialog.openPopup(popupData);
-//												} else {
-//													callback();
-//												}
+												if (parent.iPopupDialog) {													
+													parent.iPopupDialog.openPopup(prepareInfoDialogPoupupData(
+															"All models have been saved successfully.",
+															"ok"));
+												} else {
+													alert("All models have been saved successfully.");
+												}
 											},
 											failure : function(data) {
+												if (parent.iPopupDialog) {													
+													parent.iPopupDialog.openPopup(prepareErrorDialogPoupupData(
+															"Error saving models.",
+															"ok"));
+												} else {
+													alert("Error saving models.");
+												}
 											}
 										}
 									});
+				}
+
+				/**
+				 * 
+				 */
+				function prepareInfoDialogPoupupData(msg, okText) {
+					return {
+							attributes : {
+								width : "400px",
+								height : "200px",
+								src : "../bpm-modeler/popups/notificationDialog.html"
+							},
+							payload : {
+								title : "Info",
+								message : msg,
+								okButtonText : okText
+							}
+					}
+				}
+
+				/**
+				 * 
+				 */
+				function prepareErrorDialogPoupupData(msg, okText) {
+					return {
+							attributes : {
+								width : "400px",
+								height : "200px",
+								src : "../bpm-modeler/popups/errorDialog.html"
+							},
+							payload : {
+								title : "Error",
+								message : msg,
+								okButtonText : okText
+							}
+					}
 				}
 
 				/**
