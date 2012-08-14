@@ -127,11 +127,11 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 		 */
 		Data.prototype.submitCreation = function() {
 			return m_commandsController.submitCommand(m_command
-					.createCreateStructuredDataCommand(model.id, model.id,
+					.createCreateStructuredDataCommand(this.model.id, this.model.id,
 							{
-								"name" : name,
-								"id" : id,
-								"structuredDataTypeFullId" : fullId
+								"name" : this.name,
+								"id" : this.id,
+								"structuredDataTypeFullId" : this.structuredDataTypeFullId
 							}));
 		};
 
