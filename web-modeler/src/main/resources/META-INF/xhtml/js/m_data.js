@@ -107,15 +107,6 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 		/**
 		 * 
 		 */
-		Data.prototype.createCreateCommand = function() {
-			return m_command.createCreateCommand("/models/"
-					+ this.model.id + "/data", this
-					.createTransferObject());
-		};
-
-		/**
-		 * 
-		 */
 		Data.prototype.createUpdateCommand = function() {
 			return m_command.createUpdateCommand("/models/"
 					+ this.model.id + "/data/"
@@ -135,18 +126,13 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 		 * 
 		 */
 		Data.prototype.submitCreation = function() {
-			//Temp code to made service work
-			return m_commandsController.submitCommand(this.createCreateCommand());
-
-			// the below call is unable to set url for createCommand, 
-			// so commented for time being
-			/*
-			m_commandsController.submitImmediately(this.createCreateCommand(),
-					{
-						method : "onCreate",
-						callbackScope : this
-					});
-			 */
+			return m_commandsController.submitCommand(m_command
+					.createCreateStructuredDataCommand(model.id, model.id,
+							{
+								"name" : name,
+								"id" : id,
+								"structuredDataTypeFullId" : fullId
+							}));
 		};
 
 		/**

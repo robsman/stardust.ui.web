@@ -147,10 +147,7 @@ define(
 				 * 
 				 */
 				DataSymbol.prototype.createCreateCommand = function() {
-					return m_command.createCreateCommand("/models/"
-							+ this.diagram.model.id + "/processes/"
-							+ this.diagram.process.id + "/dataSymbols", this
-							.createTransferObject());
+					this.createAndSubmitCreateCommand();
 				};
 
 				/**

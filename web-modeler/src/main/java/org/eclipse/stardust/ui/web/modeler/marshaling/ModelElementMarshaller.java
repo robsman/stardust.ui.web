@@ -1018,6 +1018,8 @@ public abstract class ModelElementMarshaller
          modelElementJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                ModelerConstants.CONTROL_FLOW_LITERAL);
          modelElementJson.addProperty(ModelerConstants.ID_PROPERTY, transition.getId());
+         modelElementJson.addProperty(ModelerConstants.OID_PROPERTY,
+               transition.getElementOid());
 
          if (transition.getCondition().equals("CONDITION"))
          {
