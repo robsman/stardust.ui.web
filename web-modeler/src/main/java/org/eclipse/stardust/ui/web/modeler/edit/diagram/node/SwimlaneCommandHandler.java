@@ -20,8 +20,6 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERT
 
 import javax.annotation.Resource;
 
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
@@ -32,6 +30,8 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author Shrikant.Gangal
@@ -64,7 +64,7 @@ public class SwimlaneCommandHandler
 
       synchronized (model)
       {
-         LaneSymbol laneSymbol = new MBFacade(modelService.getModelManagementStrategy()).createLane(model.getId(), model,
+         LaneSymbol laneSymbol = MBFacade.getInstance().createLane(model.getId(), model,
                processDefinition, laneId, laneName, xPos, yPos, width, height,
                orientation, participantFullID);
 

@@ -17,10 +17,6 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractSt
 
 import javax.annotation.Resource;
 
-import org.springframework.context.ApplicationContext;
-
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
@@ -35,6 +31,9 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.springframework.context.ApplicationContext;
+
+import com.google.gson.JsonObject;
 
 /**
  *
@@ -77,7 +76,7 @@ public class DataCommandHandler
 
          try
          {
-            data = new MBFacade(modelService().getModelManagementStrategy()).getDataFromExistingModel(model.getId(), model, dataFullID);
+            data = MBFacade.getInstance().importData(model, dataFullID);
          }
          catch (ObjectNotFoundException x)
          {
@@ -108,7 +107,7 @@ public class DataCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
       Long dataOID = extractLong(request, ModelerConstants.OID_PROPERTY);
       String dataFullID = extractString(request, ModelerConstants.DATA_FULL_ID_PROPERTY);
-      DataType data = new MBFacade(modelService().getModelManagementStrategy()).getDataFromExistingModel(model.getId(), model, dataFullID);
+      DataType data = MBFacade.getInstance().importData(model, dataFullID);
       DataSymbolType dataSymbol = MBFacade.getInstance().findDataSymbolRecursively(parentLaneSymbol,
             dataOID);
       synchronized (model)

@@ -79,7 +79,7 @@ public class ActivityCommandHandler
          long maxOid = XpdlModelUtils.getMaxUsedOid(model);
          String modelId = model.getId();
 
-         ActivityType activity = new MBFacade(modelService.getModelManagementStrategy()).createActivity(modelId, processDefinition, activityType, participantFullID,
+         ActivityType activity = MBFacade.getInstance().createActivity(modelId, processDefinition, activityType, participantFullID,
                activityId, activityName, applicationFullID, subProcessID, maxOid++);
 
          ModelService.setDescription(activity, request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));

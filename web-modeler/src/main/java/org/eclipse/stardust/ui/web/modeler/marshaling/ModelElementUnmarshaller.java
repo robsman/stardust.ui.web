@@ -19,13 +19,8 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractSt
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.model.xpdl.builder.activity.BpmApplicationActivityBuilder;
 import org.eclipse.stardust.model.xpdl.builder.activity.BpmSubProcessActivityBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
@@ -35,9 +30,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
-import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
-import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
@@ -50,6 +43,8 @@ import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
+
+import com.google.gson.JsonObject;
 
 /**
  * 
@@ -242,14 +237,14 @@ public abstract class ModelElementUnmarshaller
          String subprocessFullId = extractString(activityJson,
                ModelerConstants.SUBPROCESS_ID);
 
-         ProcessDefinitionType subProcessDefinition = new MBFacade(
-               modelManagementStrategy()).getProcessDefinition(
-               MBFacade.getInstance().getModelId(subprocessFullId),
-               MBFacade.getInstance().stripFullId(subprocessFullId));
+         ProcessDefinitionType subProcessDefinition = MBFacade.getInstance()
+               .getProcessDefinition(MBFacade.getInstance().getModelId(subprocessFullId),
+                     MBFacade.getInstance().stripFullId(subprocessFullId));
          ModelType subProcessModel = ModelUtils.findContainingModel(subProcessDefinition);
-         BpmSubProcessActivityBuilder subProcessActivity = newSubProcessActivity(ModelUtils.findContainingProcess(activity));
+         BpmSubProcessActivityBuilder subProcessActivity = newSubProcessActivity(ModelUtils
+               .findContainingProcess(activity));
 
-         subProcessActivity.setActivity(activity);
+        subProcessActivity.setActivity(activity);
          subProcessActivity.setSubProcessModel(subProcessModel);
          subProcessActivity.invokingProcess(subProcessDefinition);
       }
@@ -261,7 +256,7 @@ public abstract class ModelElementUnmarshaller
          String applicationFullId = extractString(activityJson,
                ModelerConstants.APPLICATION_FULL_ID_PROPERTY);
 
-         ApplicationType application = new MBFacade(modelManagementStrategy()).getApplication(
+         ApplicationType application = MBFacade.getInstance().getApplication(
                MBFacade.getInstance().getModelId(applicationFullId),
                MBFacade.getInstance().stripFullId(applicationFullId));
 

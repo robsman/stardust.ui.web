@@ -84,7 +84,7 @@ public class DataChangeCommandHandler
       }
       String structuredDataFullId = MBFacade.getInstance().stripFullId(extractString(request,
             ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID));
-      DataType data = new MBFacade(modelService().getModelManagementStrategy()).createStructuredData(model, stripFullId_, id, name,
+      DataType data = MBFacade.getInstance().createStructuredData(model, stripFullId_, id, name,
             structuredDataFullId);
 
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
