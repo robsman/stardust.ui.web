@@ -38,6 +38,7 @@ import org.eclipse.stardust.ui.web.bcc.ProcessSearchProvider;
 import org.eclipse.stardust.ui.web.bcc.ResourcePaths;
 import org.eclipse.stardust.ui.web.bcc.ActivitySearchProvider.ActivityFilterAttributes;
 import org.eclipse.stardust.ui.web.bcc.ProcessSearchProvider.FilterAttributes;
+import org.eclipse.stardust.ui.web.bcc.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.bcc.jsf.BusinessControlCenterLocalizerKey;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
@@ -734,7 +735,8 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
                processTableHelper.getProcessTable().refresh(true);
             }
          });
-         processTableHelper.initializeProcessTable();
+         processTableHelper.initializeProcessTable(UserPreferencesEntries.M_BCC,
+               UserPreferencesEntries.V_PROCESS_SEARCH + "." + UserPreferencesEntries.F_PROCESS_SEARCH_PROCESS_TABLE);
          processTableInitialized = true;
       }
       // Needs to be called again when Reset is called
@@ -831,7 +833,9 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
                activityTableHelper.getActivityTable().refresh(true);
             }
          });
-         activityTableHelper.initActivityTable();
+         activityTableHelper.initActivityTable(UserPreferencesEntries.M_BCC, UserPreferencesEntries.V_PROCESS_SEARCH
+               + "." + UserPreferencesEntries.F_PROCESS_SEARCH_ACTIVITY_TABLE);
+
          activityTableHelper.setStrandedActivityView(false);
          activityTableInitialized = true;
       }

@@ -386,9 +386,17 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
    }
 
    /**
-    * Initializes Activity table
+    * Initialize Activity table
     */
    public void initActivityTable()
+   {
+      initActivityTable(UserPreferencesEntries.M_VIEWS_COMMON, UserPreferencesEntries.V_ACTIVITY_WITH_PRIO);
+   }
+
+   /**
+    * Initializes Activity table
+    */
+   public void initActivityTable(String moduleId, String viewId)
    {
       ColumnPreference activityNameCol = new ColumnPreference(
             COL_ACTIVITY_NAME,
@@ -520,9 +528,8 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
       List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(activityTable, allDescriptors);
       activityCols.addAll(descriptorColumns);
 
-      IColumnModel activityColumnModel = new DefaultColumnModel(activityCols, null, activityFixedCols2,
-            UserPreferencesEntries.M_VIEWS_COMMON, UserPreferencesEntries.V_ACTIVITY_WITH_PRIO,
-            columnModelListener);
+      IColumnModel activityColumnModel = new DefaultColumnModel(activityCols, null, activityFixedCols2, moduleId,
+            viewId, columnModelListener);
       TableColumnSelectorPopup activitySelecpopup = new TableColumnSelectorPopup(
             activityColumnModel);
       
