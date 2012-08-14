@@ -21,6 +21,8 @@ import org.eclipse.stardust.ui.web.common.uielement.AbstractLaunchPanel;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -128,6 +130,9 @@ public class ProcessesView extends AbstractLaunchPanel implements
       {
       case ACTIVATED:
       case LAUNCH_PANELS_ACTIVATED:
+         //Create "process-models" folder if it doesn't exist already.
+         DocumentMgmtUtility.createFolderIfNotExists("/process-models");
+
          if (isExpanded() && PortalApplication.getInstance().isLaunchPanelsActivated())
          {
             activateIframe();
