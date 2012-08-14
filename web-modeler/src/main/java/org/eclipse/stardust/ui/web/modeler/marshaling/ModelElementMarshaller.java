@@ -736,8 +736,13 @@ public abstract class ModelElementMarshaller
       dataSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.DATA_SYMBOL);
       dataSymbolJson.add(ModelerConstants.DATA, toDataTypeJson(dataSymbol.getData()));
 
-      dataSymbolJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
-            MBFacade.getInstance().createFullId(ModelUtils.findContainingModel(dataSymbol.getData()), dataSymbol.getData()));
+      // Model returned will be null in case of data delete operation
+      ModelType containingModel = ModelUtils.findContainingModel(dataSymbol.getData());
+      if (null != containingModel)
+      {
+         dataSymbolJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
+               MBFacade.getInstance().createFullId(containingModel, dataSymbol.getData()));
+      }
 
       return dataSymbolJson;
    }

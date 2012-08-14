@@ -1436,40 +1436,44 @@ public class ModelService
          for (ParticipantType child : children)
          {
             IModelParticipant childParticipant = child.getParticipant();
-            JsonObject childJson = new JsonObject();
-            childrenArray.add(childJson);
-
-            childJson.addProperty(ModelerConstants.ID_PROPERTY, childParticipant.getId());
-            childJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                  childParticipant.getName());
-            childJson.addProperty(ModelerConstants.OID_PROPERTY,
-                  childParticipant.getElementOid());
-            childJson.addProperty(ModelerConstants.UUID_PROPERTY, currentSession()
-                  .uuidMapper().getUUID(childParticipant));
-            childJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY, currentSession()
-                  .uuidMapper().getUUID(parent));
-            loadDescription(childJson, childParticipant);
-
-            if (childParticipant instanceof OrganizationType)
+            if (null != childParticipant)
             {
-               childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                     ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
-               addChildParticipantsJson(childJson, (OrganizationType) childParticipant);
-            }
-            else if (childParticipant instanceof RoleType)
-            {
-               childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                     ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
-               if (null != parent.getTeamLead()
-                     && parent.getTeamLead().equals(childParticipant))
+               JsonObject childJson = new JsonObject();
+               childrenArray.add(childJson);
+
+               childJson.addProperty(ModelerConstants.ID_PROPERTY,
+                     childParticipant.getId());
+               childJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                     childParticipant.getName());
+               childJson.addProperty(ModelerConstants.OID_PROPERTY,
+                     childParticipant.getElementOid());
+               childJson.addProperty(ModelerConstants.UUID_PROPERTY,
+                     currentSession().uuidMapper().getUUID(childParticipant));
+               childJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
+                     currentSession().uuidMapper().getUUID(parent));
+               loadDescription(childJson, childParticipant);
+
+               if (childParticipant instanceof OrganizationType)
                {
-                  childJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "true");
+                  childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                        ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
+                  addChildParticipantsJson(childJson, (OrganizationType) childParticipant);
                }
-            }
-            else if (childParticipant instanceof ConditionalPerformerType)
-            {
-               childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                     ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY);
+               else if (childParticipant instanceof RoleType)
+               {
+                  childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                        ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
+                  if (null != parent.getTeamLead()
+                        && parent.getTeamLead().equals(childParticipant))
+                  {
+                     childJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "true");
+                  }
+               }
+               else if (childParticipant instanceof ConditionalPerformerType)
+               {
+                  childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                        ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY);
+               }
             }
          }
       }

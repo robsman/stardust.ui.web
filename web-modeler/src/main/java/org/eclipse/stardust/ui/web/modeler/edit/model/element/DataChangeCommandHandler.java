@@ -13,6 +13,8 @@ package org.eclipse.stardust.ui.web.modeler.edit.model.element;
 
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import java.util.Iterator;
+
 import javax.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
@@ -24,8 +26,13 @@ import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
+import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
+import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
+import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
@@ -117,8 +124,10 @@ public class DataChangeCommandHandler
    {
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
       DataType data = MBFacade.getInstance().findData(model, id);
+            
       synchronized (model)
       {
+         deleteDataDymbolsForData(model, data.getId());
          model.getData().remove(data);
       }
    }
@@ -126,5 +135,35 @@ public class DataChangeCommandHandler
    private ModelService modelService()
    {
       return springContext.getBean(ModelService.class);
+   }
+
+   /**
+    * @param model
+    * @param dataId
+    */
+   private void deleteDataDymbolsForData(ModelType model, String dataId)
+   {
+      for (ProcessDefinitionType pdt : model.getProcessDefinition())
+      {
+         for (DiagramType diagram : pdt.getDiagram())
+         {
+            for (PoolSymbol poolSymbol : diagram.getPoolSymbols())
+            {
+               for (LaneSymbol childLaneSymbol : poolSymbol.getChildLanes())
+               {
+                  Iterator<DataSymbolType> iter = childLaneSymbol.getDataSymbol()
+                        .iterator();
+                  while (iter.hasNext())
+                  {
+                     DataSymbolType dataSymbol = iter.next();
+                     if (dataId.equals(dataSymbol.getData().getId()))
+                     {
+                        iter.remove();
+                     }
+                  }
+               }
+            }
+         }
+      }
    }
 }
