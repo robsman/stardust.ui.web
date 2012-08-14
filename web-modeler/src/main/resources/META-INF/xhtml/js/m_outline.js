@@ -1407,6 +1407,23 @@ define(
 										return {
 											success : function(data) {
 												alert("All models have been saved successfully.");
+//												if (parent.iPopupDialog) {
+//													var popupData = {
+//															attributes : {
+//																width : "400px",
+//																height : "200px",
+//																src : "../bpm-modeler/popups/confirmationPopupDialogContent.html"
+//															},
+//															payload : {
+//																title : "Info",
+//																message : "All models have been saved successfully.",
+//																acceptButtonText : "OK"
+//															}
+//													}
+//													parent.iPopupDialog.openPopup(popupData);
+//												} else {
+//													callback();
+//												}
 											},
 											failure : function(data) {
 											}
@@ -1527,7 +1544,7 @@ define(
 						attributes : {
 							width : "400px",
 							height : "200px",
-							src : "../bpm-modeler/confirmationPopupDialogContent.html"
+							src : "../bpm-modeler/popups/confirmationPopupDialogContent.html"
 						},
 						payload : {
 							title : "Confirm",

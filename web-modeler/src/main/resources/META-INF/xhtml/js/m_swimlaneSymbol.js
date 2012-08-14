@@ -1013,7 +1013,7 @@ define(
 						attributes : {
 							width : "400px",
 							height : "200px",
-							src : "../bpm-modeler/confirmationPopupDialogContent.html"
+							src : "../bpm-modeler/popups/confirmationPopupDialogContent.html"
 						},
 						payload : {
 							title : "Confirm",
