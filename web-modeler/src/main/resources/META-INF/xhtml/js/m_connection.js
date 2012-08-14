@@ -1189,9 +1189,8 @@ define(
 							this.toAnchorPoint.symbol.connections, this);
 					m_utils.removeItemFromArray(
 							this.fromAnchorPoint.symbol.connections, this);
-					
 					var command = m_command.createRemoveNodeCommand("connection.delete", this.diagram.model.id,
-							this.oid, this.createTransferObject());
+							this.diagram.process.oid, this.createTransferObject());
 					m_commandsController.submitCommand(command);
 				};
 				
