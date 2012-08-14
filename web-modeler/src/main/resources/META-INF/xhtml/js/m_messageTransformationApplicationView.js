@@ -330,6 +330,9 @@ define(
 					this
 					.convertFromMappingsXml(this.application.attributes["messageTransformation:TransformationProperty"]);
 
+					m_utils.debug("===> Mapping Expressions");
+					m_utils.debug(this.mappingExpressions);
+
 					for ( var m in this.application.accessPoints) {
 						var accessPoint = this.application.accessPoints[m];
 
@@ -373,14 +376,15 @@ define(
 								.substr(fieldMappings[n]
 										.indexOf('mappingExpression="') + 19,
 										fieldMappings[n].indexOf('"/>') - 10);
+						mappingExpression = mappingExpression
+						.substr(0,
+								mappingExpression.indexOf('"/>'));
+						
 						fieldPath = fieldPath.replace(/\//g,
 								".");
 
 						this.mappingExpressions[fieldPath] = mappingExpression;
 					}
-					
-					this.populateTableRows(this.outputTableBody,
-							this.outputTableRows, false);
 				};
 
 				/**
@@ -526,7 +530,7 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.initializeInputTableRowsRecursively = function(
 						accessPoint, element, parentPath) {
-					var path = parentPath == null ? accessPoint.name : (parentPath
+					var path = parentPath == null ? accessPoint.id : (parentPath
 							+ "." + element.name);
 					var tableRow = {};
 
@@ -556,7 +560,7 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.initializeOutputTableRowsRecursively = function(
 						accessPoint, element, parentPath) {
-					var path = parentPath == null ? accessPoint.name : (parentPath
+					var path = parentPath == null ? accessPoint.id : (parentPath
 							+ "." + element.name);
 					var tableRow = {};
 
@@ -570,6 +574,8 @@ define(
 							: element.name;
 					tableRow.typeName = parentPath == null ? ""
 							: element.typeName;
+					m_utils.debug("===> Path: " + path);
+					m_utils.debug("===> Expression: " + this.mappingExpressions[path]);
 					tableRow.mappingExpression = this.mappingExpressions[path] == null ? "" : this.mappingExpressions[path];
 					tableRow.problems = "";
 

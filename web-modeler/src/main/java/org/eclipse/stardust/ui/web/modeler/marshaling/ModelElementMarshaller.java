@@ -867,53 +867,20 @@ public abstract class ModelElementMarshaller
          }
       }
 
-      // TODO - check if this is the appropriate place to add additional properties to
-      // response JSON.
-      //
-      // Adding additional properties to the response JSON.
-      String applicationType = applicationJson.get(
-            ModelerConstants.APPLICATION_TYPE_PROPERTY).getAsString();
-      if (ModelerConstants.MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID.equals(applicationType))
-      {
-         JsonArray fieldMappings = new JsonArray();
-         applicationJson.add("fieldMappings", fieldMappings);
-      }
-      else if (ModelerConstants.CAMEL_APPLICATION_TYPE_ID.equalsIgnoreCase(applicationType))
-      {
-         JsonObject accessPoints = new JsonObject();
-         applicationJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPoints);
+      JsonObject accessPointsJson = new JsonObject();
+      
+      applicationJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);
 
-         JsonObject accessPoint = new JsonObject();
-         accessPoints.add("InputMessage", accessPoint);
-
-         accessPoint.addProperty(ModelerConstants.ID_PROPERTY, "RequestMessage");
-         accessPoint.addProperty(ModelerConstants.NAME_PROPERTY, "Request Message");
-         accessPoint.addProperty(ModelerConstants.ACCESS_POINT_TYPE_PROPERTY,
-               ModelerConstants.JAVA_CLASS_ACCESS_POINT_KEY);
-         accessPoint.addProperty(ModelerConstants.DIRECTION_PROPERTY,
-               ModelerConstants.IN_ACCESS_POINT_KEY);
-
-         accessPoint = new JsonObject();
-         accessPoints.add("OutputMessage", accessPoint);
-
-         accessPoint.addProperty(ModelerConstants.ID_PROPERTY, "ResponseMessage");
-         accessPoint.addProperty(ModelerConstants.NAME_PROPERTY, "Response Message");
-         accessPoint.addProperty(ModelerConstants.ACCESS_POINT_TYPE_PROPERTY,
-               ModelerConstants.JAVA_CLASS_ACCESS_POINT_KEY);
-         accessPoint.addProperty(ModelerConstants.DIRECTION_PROPERTY,
-               ModelerConstants.OUT_ACCESS_POINT_KEY);
-
-         JsonObject fieldMappings = new JsonObject();
-         applicationJson.add("fieldMappings", fieldMappings);
-      }
-
-      // TODO Review
-      for (AttributeType attribute : application.getAttribute()) {
-         if ("carnot:engine:methodName".equals(attribute.getName())) {
-            applicationJson.addProperty("accessPoint",
-                  attribute.getValue());
-            break;
-         }
+      for (AccessPointType accessPoint : application.getAccessPoint()) {
+         JsonObject accessPointJson = new JsonObject();
+         
+         accessPointsJson.add(accessPoint.getId(), accessPointJson);         
+         accessPointJson.addProperty(ModelerConstants.ID_PROPERTY, accessPoint.getId());
+         accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY, accessPoint.getName());
+         accessPointJson.addProperty(ModelerConstants.TYPE_PROPERTY, accessPoint.getType().getName());
+         accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, accessPoint.getDirection().getLiteral());
+         
+         loadAttributes(accessPoint, accessPointJson);         
       }
 
       return applicationJson;

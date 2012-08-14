@@ -2013,4 +2013,70 @@ public class ModelService
       
       return webServiceJson;
    }
+
+   /**
+    * 
+    * @param readJsonObject
+    * @return
+    */
+   public JsonObject loadTypeDeclarations(JsonObject postedData)
+   {
+      JsonObject json = new JsonObject();
+
+      System.out.println("URL: " + postedData.get("url").getAsString());
+
+      JsonObject jTdOrder = new JsonObject();
+      json.add("ord:Order", jTdOrder);
+
+      jTdOrder.addProperty("name", "Order");
+
+      JsonObject jTdOrderSub = new JsonObject();
+      jTdOrder.add("children", jTdOrderSub);
+
+      JsonObject jOrderId = new JsonObject();
+      jTdOrderSub.add("OrderId", jOrderId);
+
+      jOrderId.addProperty("type", "xsd:string");
+      jOrderId.addProperty("cardinality", "1");
+
+      JsonObject jOrderDate = new JsonObject();
+      jTdOrderSub.add("OrderDate", jOrderDate);
+
+      jOrderDate.addProperty("type", "xsd:date");
+      jOrderDate.addProperty("cardinality", "1");
+
+      JsonObject jCustomer = new JsonObject();
+      jTdOrderSub.add("Customer", jCustomer);
+
+      jCustomer.addProperty("type", "per:Person");
+      jCustomer.addProperty("cardinality", "1");
+
+      JsonObject jTdPerson = new JsonObject();
+      json.add("per:Person", jTdPerson);
+
+      jTdPerson.addProperty("name", "Person");
+
+      JsonObject jTdPersonSub = new JsonObject();
+      jTdPerson.add("children", jTdPersonSub);
+
+      JsonObject jFirstName = new JsonObject();
+      jTdPersonSub.add("FirstName", jFirstName);
+
+      jFirstName.addProperty("type", "xsd:string");
+      jFirstName.addProperty("cardinality", "1");
+
+      JsonObject jLastName = new JsonObject();
+      jTdPersonSub.add("LastName", jLastName);
+
+      jLastName.addProperty("type", "xsd:string");
+      jLastName.addProperty("cardinality", "1");
+
+      JsonObject jDob = new JsonObject();
+      jTdPersonSub.add("DateOfBirth", jDob);
+
+      jDob.addProperty("type", "xsd:date");
+      jDob.addProperty("cardinality", "1");
+      
+      return json;
+   }
 }

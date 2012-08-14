@@ -14,13 +14,10 @@ define(
 				"m_model" ],
 		function(m_utils, m_extensionManager, m_communicationController,
 				m_command, m_commandsController, m_dialog, m_view, m_model) {
-			var view;
-
 			return {
 				initialize : function(modelId) {
 					var model = m_model.findModel(modelId);
-
-					view = new ModelView();
+					var view = new ModelView();
 					// TODO Unregister!
 					// In Initializer?
 
@@ -161,8 +158,7 @@ define(
 												.getEndpointUrl()
 												+ "/models/"
 												+ this.model.id
-												+ "/problems",
-										view : this
+												+ "/problems"
 									},
 									{
 										"success" : function(json) {
@@ -223,9 +219,20 @@ define(
 																	},
 																	function(
 																			event) {
+																		var applicationTypeExtension = m_extensionManager
+																				.findExtensions(
+																						"applicationType",
+																						"id",
+																						application.applicationType)[0];
+
+																		if (applicationTypeExtension == null) {
+																			throw "No extension for application type "
+																					+ application.applicationType;
+																		}
+
 																		event.data.viewManager
 																				.openView(
-																						"genericApplicationView",
+																						applicationTypeExtension.viewId,
 																						"modelId="
 																								+ model.id
 																								+ "&applicationId="

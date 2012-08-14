@@ -2,10 +2,12 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_modelElementView",
-				"m_model", "m_typeDeclaration" , "m_propertiesTree"],
-		function(m_utils, m_command, m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_typeDeclaration, m_propertiesTree) {
+		[ "m_utils", "m_communicationController", "m_command", "m_commandsController", "m_dialog",
+				"m_modelElementView", "m_model", "m_typeDeclaration",
+				"m_propertiesTree" ],
+		function(m_utils, m_communicationController, m_command, m_commandsController, m_dialog,
+				m_modelElementView, m_model, m_typeDeclaration,
+				m_propertiesTree) {
 			return {
 				initialize : function(fullId) {
 					var view = new XsdStructuredDataTypeView();
@@ -16,7 +18,6 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(m_model.findDataStructure(fullId));
-					view.initializeForManualDefinition();
 				}
 			};
 
@@ -29,77 +30,8 @@ define(
 				var view = m_modelElementView.create();
 
 				m_utils.inheritFields(this, view);
-				m_utils.inheritMethods(XsdStructuredDataTypeView.prototype, view);
-
-				this.tree = jQuery("#typeDeclarationsTable");
-				this.tableBody = jQuery("table#typeDeclarationsTable tbody");
-				this.urlTextInput = jQuery("#urlTextInput");
-				this.loadFromUrlButton = jQuery("#loadFromUrlButton");
-				this.importFromUrlRadioButton = jQuery("#importFromUrlRadioButton");
-				this.defineManuallyRadioButton = jQuery("#defineManuallyRadioButton");
-				this.upButton = jQuery("#upButton");
-				this.downButton = jQuery("#downButton");
-				this.structureDefinitionHintPanel = jQuery("#structureDefinitionHintPanel");
-				this.manualDefinitionRadioButtonPanel = jQuery("#manualDefinitionRadioButtonPanel");
-				this.structureRadioButton = jQuery("#structureRadioButton");
-				this.enumerationRadioButton = jQuery("#enumerationRadioButton");
-				this.propertiesTree = m_propertiesTree.create("fieldPropertiesTable");
-
-				this.loadFromUrlButton.click({
-					"callbackScope" : this
-				}, function(event) {
-					var url = event.data.callbackScope.getLoadFromUrlUrl();
-
-					m_commandsController.submitImmediately(m_command
-							.createCommand(url, {
-								"url" : event.data.callbackScope.urlTextInput
-										.val()
-							}), {
-						"callbackScope" : event.data.callbackScope,
-						"method" : "initializeFromJson"
-					});
-				});
-
-				this.importFromUrlRadioButton.click({
-					"view" : this
-				}, function(event) {
-					event.data.view.initializeForLoadFromUrl();
-				});
-
-				this.defineManuallyRadioButton.click({
-					"view" : this
-				}, function(event) {
-					event.data.view.initializeForManualDefinition();
-				});
-
-				this.structureRadioButton
-						.click(
-								{
-									"view" : this
-								},
-								function(event) {
-									event.data.view.structuredDataType.typeDeclaration.type = m_typeDeclaration.STRUCTURE_TYPE;
-
-									event.data.view.enumerationRadioButton
-											.attr("checked", false);
-
-									event.data.view
-											.resumeTableFoManualDefinition();
-								});
-
-				this.enumerationRadioButton
-						.click(
-								{
-									"view" : this
-								},
-								function(event) {
-									event.data.view.structuredDataType.typeDeclaration.type = m_typeDeclaration.ENUMERATION_TYPE;
-									event.data.view.structureRadioButton.attr(
-											"checked", false);
-
-									event.data.view
-											.resumeTableFoManualDefinition();
-								});
+				m_utils.inheritMethods(XsdStructuredDataTypeView.prototype,
+						view);
 
 				/**
 				 * 
@@ -108,8 +40,72 @@ define(
 						structuredDataType) {
 					this.initializeModelElementView();
 					this.initializeModelElement(structuredDataType);
-					
+
 					this.structuredDataType = structuredDataType;
+
+					this.tree = jQuery("#typeDeclarationsTable");
+					this.tableBody = jQuery("table#typeDeclarationsTable tbody");
+					this.urlTextInput = jQuery("#urlTextInput");
+					this.loadFromUrlButton = jQuery("#loadFromUrlButton");
+					this.importFromUrlRadioButton = jQuery("#importFromUrlRadioButton");
+					this.defineManuallyRadioButton = jQuery("#defineManuallyRadioButton");
+					this.upButton = jQuery("#upButton");
+					this.downButton = jQuery("#downButton");
+					this.structureDefinitionHintPanel = jQuery("#structureDefinitionHintPanel");
+					this.manualDefinitionRadioButtonPanel = jQuery("#manualDefinitionRadioButtonPanel");
+					this.structureRadioButton = jQuery("#structureRadioButton");
+					this.enumerationRadioButton = jQuery("#enumerationRadioButton");
+					this.propertiesTree = m_propertiesTree
+							.create("fieldPropertiesTable");
+
+					this.loadFromUrlButton.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.loadFromUrl();
+					});
+
+					this.importFromUrlRadioButton.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.initializeForLoadFromUrl();
+					});
+
+					this.defineManuallyRadioButton.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.initializeForManualDefinition();
+					});
+
+					this.structureRadioButton
+							.click(
+									{
+										"view" : this
+									},
+									function(event) {
+										event.data.view.structuredDataType.typeDeclaration.type = m_typeDeclaration.STRUCTURE_TYPE;
+
+										event.data.view.enumerationRadioButton
+												.attr("checked", false);
+
+										event.data.view
+												.resumeTableFoManualDefinition();
+									});
+
+					this.enumerationRadioButton
+							.click(
+									{
+										"view" : this
+									},
+									function(event) {
+										event.data.view.structuredDataType.typeDeclaration.type = m_typeDeclaration.ENUMERATION_TYPE;
+										event.data.view.structureRadioButton
+												.attr("checked", false);
+
+										event.data.view
+												.resumeTableFoManualDefinition();
+									});
+
+					this.initializeForManualDefinition();
 				};
 
 				/**
@@ -123,8 +119,7 @@ define(
 				 * 
 				 */
 				XsdStructuredDataTypeView.prototype.getLoadFromUrlUrl = function() {
-					var url = "/models/" + "test"
-							+ "/structuredDataTypes/loadFromUrl";
+					var url = "/typeDeclarations/loadFromUrl";
 
 					return url;
 				};
@@ -214,12 +209,15 @@ define(
 
 						jQuery(
 								"table#typeDeclarationsTable #schemaElementRow-"
-										+ n + " .deleteLink").click({
+										+ n + " .deleteLink")
+								.click(
+										{
 											"view" : this,
 											"schemaElement" : schemaElement
 										},
 										function(event) {
-											event.data.view.removeSchemaElement(event.data.schemaElement);
+											event.data.view
+													.removeSchemaElement(event.data.schemaElement);
 										});
 
 						++n;
@@ -279,11 +277,13 @@ define(
 				/**
 				 * 
 				 */
-				XsdStructuredDataTypeView.prototype.removeSchemaElement = function(schemaElement) {
+				XsdStructuredDataTypeView.prototype.removeSchemaElement = function(
+						schemaElement) {
 					m_utils.debug("Removing " + schemaElement.name);
 					delete this.structuredDataType.typeDeclaration.children[schemaElement.name];
 
-					// TODO For performance improvements we just may delete the table row
+					// TODO For performance improvements we just may delete the
+					// table row
 					this.initializeForManualDefinition();
 				};
 
@@ -300,7 +300,6 @@ define(
 					this.loadFromUrlButton.attr("disabled", false);
 					this.upButton.attr("disabled", true);
 					this.downButton.attr("disabled", true);
-					this.setTypeDeclarations(typeDeclarations);
 				};
 
 				XsdStructuredDataTypeView.prototype.initializeFromJson = function(
@@ -314,6 +313,9 @@ define(
 				 */
 				XsdStructuredDataTypeView.prototype.setTypeDeclarations = function(
 						typeDeclarations) {
+					m_utils.debug("===> Type Declarations");
+					m_utils.debug(typeDeclarations);
+
 					this.tableBody.empty();
 
 					for ( var typeDeclaration in typeDeclarations) {
@@ -447,7 +449,36 @@ define(
 
 					return select;
 				};
-				
+
+				/**
+				 * 
+				 */
+				XsdStructuredDataTypeView.prototype.loadFromUrl = function() {
+					var successCallback = {
+						callbackScope : this,
+						callbackMethod : "setTypeDeclarations"
+					};
+
+					m_communicationController
+							.syncPostData(
+									{
+										url : m_communicationController
+												.getEndpointUrl()
+												+ "/typeDeclarations/loadFromUrl"
+									},
+									JSON.stringify({
+										url : "bla"
+									}),
+									{
+										"success" : function(serverData) {
+											successCallback.callbackScope[successCallback.callbackMethod]
+													(serverData);
+										},
+										"error" : function() {
+											m_utils.debug("Error");
+										}
+									});
+				};
 
 				/**
 				 * Only react to name changes and validation exceptions.
@@ -462,7 +493,8 @@ define(
 					var obj = ("string" == typeof (command)) ? jQuery
 							.parseJSON(command) : command;
 
-					if (null != obj && null != obj.changes
+					if (null != obj
+							&& null != obj.changes
 							&& object.changes[this.structuredDataType.oid] != null) {
 						this.nameInput
 								.val(object.changes[this.structuredDataType.oid].name);

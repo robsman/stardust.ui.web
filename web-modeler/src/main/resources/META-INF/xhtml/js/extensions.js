@@ -184,5 +184,21 @@ var extensions = {
 		iconUrl : "../../images/icons/connector.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "createConnector"
+	} ],
+	applicationType : [ {
+		id : "interactive",
+		viewId : "uiMashupApplicationView"
+	}, {
+		id : "webservice",
+		viewId : "webServiceApplicationView"
+	}, {
+		id : "messageTransformationBean",
+		viewId : "messageTransformationApplicationView"
+	}, {
+		id : "camelBean",
+		viewId : "camelApplicationView"
+	}, {
+		id : "plainJava",
+		viewId : "genericApplicationView"
 	} ]
 };

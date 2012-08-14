@@ -292,6 +292,7 @@ div.toolBar {
 
 .treeTable span.data-element.highlighted {
 	font-weight: bold;
+	color: #24596A;
 }
 
 .treeTable tr.selected,.treeTable tr.accept {

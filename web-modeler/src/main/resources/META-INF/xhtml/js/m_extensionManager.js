@@ -28,7 +28,7 @@ define([ "m_utils" ], function(m_utils) {
 
 			for ( var n = 0; n < extensions[extensionPoint].length; ++n) {
 
-				if (extensions[extensionPoint][n][property] == value) {
+				if (property == null || extensions[extensionPoint][n][property] == value) {
 					result.push(extensions[extensionPoint][n]);
 				}
 			}
@@ -45,7 +45,7 @@ define([ "m_utils" ], function(m_utils) {
 				return extensions[extensionPoint][0];
 			}
 
-			throw "";
+			throw "Cannot find default for Extension Point " + extensionPoint;
 		}
 	};
 });
