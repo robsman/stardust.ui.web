@@ -13,6 +13,9 @@ package org.eclipse.stardust.ui.web.modeler.edit.model.element;
 
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import java.util.Iterator;
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
@@ -26,6 +29,7 @@ import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
+import org.eclipse.stardust.model.xpdl.carnot.ParticipantType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
@@ -142,8 +146,7 @@ public class ParticipantChangeCommandHandler
    public void updateTeamLeader(OrganizationType org, JsonObject request)
    {
       String teamLeaderUUID = extractString(request, ModelerConstants.UUID_PROPERTY);
-      RoleType tealLeader = (RoleType) springContext.getBean(EObjectUUIDMapper.class)
-            .getEObject(teamLeaderUUID);
+      RoleType tealLeader = (RoleType) modelService().uuidMapper().getEObject(teamLeaderUUID);
       ModelType model = ModelUtils.findContainingModel(org);
       synchronized (model)
       {
@@ -159,12 +162,32 @@ public class ParticipantChangeCommandHandler
    public void deleteParticipant(ModelType model, JsonObject request)
    {
       String participantId = extractString(request, ModelerConstants.ID_PROPERTY);
-      IModelParticipant modelParticipantInfo = MBFacade.getInstance().findParticipant(model,
-            participantId);
+      IModelParticipant modelParticipantInfo = MBFacade.getInstance().findParticipant(
+            model, participantId);
       if (modelParticipantInfo instanceof RoleType)
       {
          synchronized (model)
          {
+            List<OrganizationType> parentOrgs = MBFacade.getInstance()
+                  .getParentOrganizations(model, modelParticipantInfo);
+
+            for (OrganizationType org : parentOrgs)
+            {
+               // TODO - check why if a participant is deleted from member list get null pointer at
+               // Modification.determineChangedElement
+//               Iterator<ParticipantType> iter = org.getParticipant().iterator();
+//               while (iter.hasNext())
+//               {
+//                  if (modelParticipantInfo.equals(iter.next().getParticipant()))
+//                  {
+//                     iter.remove();
+//                  }
+//               }
+               if (modelParticipantInfo.equals(org.getTeamLead()))
+               {
+                  org.setTeamLead(null);
+               }
+            }
             model.getRole().remove(modelParticipantInfo);
          }
       }
@@ -172,8 +195,35 @@ public class ParticipantChangeCommandHandler
       {
          synchronized (model)
          {
-            model.getOrganization().remove(modelParticipantInfo);
+            removeOrganization(model, (OrganizationType) modelParticipantInfo);
          }
+      }
+   }
+
+   /**
+    * @param model
+    * @param org
+    */
+   private void removeOrganization(ModelType model, OrganizationType org)
+   {
+      model.getOrganization().remove(org);
+      Iterator<ParticipantType> iter = ((OrganizationType) org).getParticipant()
+            .iterator();
+      while (iter.hasNext())
+      {
+         ParticipantType participant = iter.next();
+         if (participant.getParticipant() instanceof OrganizationType)
+         {
+            removeOrganization(model, (OrganizationType) participant.getParticipant());
+         }
+         else
+         {
+            model.getRole().remove(participant.getParticipant());
+         }
+
+         // TODO - check why if a participant is deleted from member list get null pointer at
+         // Modification.determineChangedElement
+         //iter.remove();
       }
    }
 
