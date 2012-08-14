@@ -57,12 +57,34 @@ define(
 					this.wsdlUrlInput = jQuery("#wsdlUrlInput");
 					this.browseButton = jQuery("#browseButton");
 					this.serviceSelect = jQuery("#serviceSelect");
+					this.authenticationCheckbox = jQuery("#authenticationCheckbox");
+					this.mechanismSelect = jQuery("#mechanismSelect");
+					this.variantSelect = jQuery("#variantSelect");
 
 					this.browseButton.click({
 						view : this
 					}, function(event) {
 						event.data.view.loadWebServiceStructure()
 					});
+
+					this.mechanismSelect
+							.change(
+									{
+										view : this
+									},
+									function(event) {
+										event.data.view.variantSelect.empty();
+
+										if (event.data.view.mechanismSelect
+												.val() == "http") {
+											event.data.view.variantSelect
+													.append("<option value=\"userpassword\">User Name/Password</option>");
+										} else {
+											event.data.view.variantSelect
+													.append("<option value=\"userpassword\">User Name/Password</option><option value=\"userpassworddigest\">User Name/Password Digest</option><option value=\"xwss\">XWSS Configuration</option>");
+										}
+									});
+
 					// carnot:engine:wsPortName: "MortgageIndexHttpGet"
 					// carnot:engine:wsRuntime: "jaxws"
 					// carnot:engine:wsSoapProtocol: "SOAP 1.1 Protocol"

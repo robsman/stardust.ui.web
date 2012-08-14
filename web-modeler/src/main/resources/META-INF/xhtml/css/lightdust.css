@@ -146,8 +146,11 @@ a:hover {
 }
 
 /* General Dialog */
+
 .invisible {
 	display: none;
+	height: 0px;
+	width: 0px;
 }
 
 .heading {

@@ -9,8 +9,7 @@
 <head>
 <title>Web Service Application</title>
 <link rel="stylesheet" type="text/css"
-	href="../../css/jquery-ui-1.8.20.custom.css">
-</link>
+	href="../../css/jquery-ui-1.8.20.custom.css"></link>
 <link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript"
 	src="../../js/webServiceApplicationViewPageInitializer.js"></script>
@@ -73,9 +72,11 @@
 							</td>
 							<td><table>
 									<tr>
-										<td><input id="wsdlUrlInput" type="text" style="width: 300px;"></input>
+										<td><input id="wsdlUrlInput" type="text"
+											style="width: 300px;"></input>
 										</td>
-										<td><input id="browseButton" type="button" value="Browse ..."/>
+										<td><input id="browseButton" type="button"
+											value="Browse ..." />
 										</td>
 									</tr>
 								</table>
@@ -87,19 +88,22 @@
 							<td><select id="serviceSelect"></select>
 							</td>
 						</tr>
-					</table>
-					<table cellpadding="0" cellspacing="0" class="layoutTable"
-						style="margin-bottom: 10px;">
+						<tr>
+							<td><label for="operationSelect">Operation</label>
+							</td>
+							<td><select id="operationSelect"></select>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="portSelect">Port</label>
+							</td>
+							<td><select id="portSelect"></select>
+							</td>
+						</tr>
 						<tr>
 							<td>
 								<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 									style="margin-bottom: 10px;">
-									<tr>
-										<td><label for="portSelect">Port</label>
-										</td>
-										<td><select id="portSelect"></select>
-										</td>
-									</tr>
 									<tr>
 										<td><label for="styleOutput">Style</label>
 										</td>
@@ -112,6 +116,16 @@
 										<td><div id="protocolOutput" class="output"></div>
 										</td>
 									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+					<div class="heading">Implementation</div>
+					<table>
+						<tr>
+							<td>
+								<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+									style="margin-bottom: 10px;">
 									<tr>
 										<td><input id="addressingCheckbox" type="checkbox"></input>
 										</td>
@@ -119,47 +133,45 @@
 												WS-Addressing EPR</label>
 										</td>
 									</tr>
-									<tr>
-										<td><input id="authenticationCheckbox" type="checkbox"></input>
-										</td>
-										<td><label for="authenticationCheckbox">Authentication
-												Required</label>
-										</td>
-									</tr>
 								</table>
 							</td>
+							<td><table class="fieldSetTable">
+									<tr>
+										<td><label for="implementationSelect">Implementation</label>
+										</td>
+										<td><select id="implementationSelect"><option
+													value="generic">Generic Resource</option>
+												<option value="specific">Infinity Specific</option>
+										</select></td>
+									</tr>
+								</table></td>
+						</tr>
+					</table>
+					<div class="heading">Security</div>
+					<table>
+						<tr>
 							<td>
 								<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 									style="margin-bottom: 10px;">
 									<tr>
-										<td><label for="operationSelect">Operation</label>
+										<td><input id="authenticationCheckbox" type="checkbox"></input>
 										</td>
-										<td><select id="operationSelect"></select>
-										</td>
+										<td><label for="authenticationCheckbox">Authentication
+												Required</label></td>
+									</tr>
+								</table>
+							</td>
+							<td><table class="fieldSetTable">
+									<tr>
+										<td><label for="mechanismSelect">Mechanism</label></td>
+										<td><select id="mechanismSelect"><option
+													value="http">HTTP Basic Authorization</option>
+												<option value="wsSecurity">WS-Security</option>
+										</select></td>
 									</tr>
 									<tr>
-										<td><label for="useOutput">Use</label>
-										</td>
-										<td><div id="useOutput" class="output"></div>
-										</td>
-									</tr>
-									<tr>
-										<td><label for="implementationSelect">Implementation</label>
-										</td>
-										<td><select id="implementationSelect"></select>
-										</td>
-									</tr>
-									<tr>
-										<td><label for="mechanismSelect">Mechanism</label>
-										</td>
-										<td><select id="mechanismSelect"></select>
-										</td>
-									</tr>
-									<tr>
-										<td><label for="variantSelect">Variant</label>
-										</td>
-										<td><select id="variantSelect"></select>
-										</td>
+										<td><label for="variantSelect">Variant</label></td>
+										<td><select id="variantSelect"></select></td>
 									</tr>
 								</table></td>
 						</tr>
