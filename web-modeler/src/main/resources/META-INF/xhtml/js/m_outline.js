@@ -1409,7 +1409,7 @@ define(
 												if (parent.iPopupDialog) {													
 													parent.iPopupDialog.openPopup(prepareInfoDialogPoupupData(
 															"All models have been saved successfully.",
-															"ok"));
+															"OK"));
 												} else {
 													alert("All models have been saved successfully.");
 												}
@@ -1418,7 +1418,7 @@ define(
 												if (parent.iPopupDialog) {													
 													parent.iPopupDialog.openPopup(prepareErrorDialogPoupupData(
 															"Error saving models.",
-															"ok"));
+															"OK"));
 												} else {
 													alert("Error saving models.");
 												}
