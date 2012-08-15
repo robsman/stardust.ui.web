@@ -82,7 +82,8 @@ public class DataCommandHandler
          {
             if (true)
             {
-               data = MBFacade.getInstance().createNewPrimitive(model, dataID, dataName);
+               data = MBFacade.getInstance().createPrimitiveData(model, dataID, dataName,
+                     ModelerConstants.STRING_PRIMITIVE_DATA_TYPE);
                mapper.map(data);
                data.setElementOid(++maxOid);
             }
