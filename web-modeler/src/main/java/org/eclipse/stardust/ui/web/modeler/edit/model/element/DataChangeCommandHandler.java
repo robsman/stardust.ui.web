@@ -76,16 +76,16 @@ public class DataChangeCommandHandler
    {
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
+      String dataFullID = extractString(request, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID);
       String stripFullId_ = MBFacade.getInstance().getModelId(extractString(request,
             ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID));
       if (StringUtils.isEmpty(stripFullId_))
       {
          stripFullId_ = model.getId();
       }
-      String structuredDataFullId = MBFacade.getInstance().stripFullId(extractString(request,
-            ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID));
-      DataType data = MBFacade.getInstance().createStructuredData(model, stripFullId_, id, name,
-            structuredDataFullId);
+
+      DataType data = MBFacade.getInstance().createStructuredData(model, id, name,
+            dataFullID);
 
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       data.setElementOid(++maxOid);
