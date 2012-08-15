@@ -39,6 +39,7 @@ import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
+import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
 import org.eclipse.stardust.model.xpdl.carnot.impl.LaneSymbolImpl;
 import org.eclipse.stardust.model.xpdl.carnot.impl.ProcessDefinitionTypeImpl;
 import org.eclipse.stardust.model.xpdl.carnot.util.ActivityUtil;
@@ -86,6 +87,10 @@ public abstract class ModelElementMarshaller
       else if (modelElement instanceof ActivityType)
       {
          jsResult = toActivityType((ActivityType) modelElement);
+      }
+      else if (modelElement instanceof TriggerType)
+      {
+         jsResult = toStartEventJson((StartEventSymbol)((TriggerType) modelElement).getSymbols().get(0));
       }
       else if (modelElement instanceof ActivitySymbolType)
       {

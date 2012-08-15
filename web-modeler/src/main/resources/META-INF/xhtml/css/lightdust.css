@@ -157,7 +157,7 @@ a:hover {
 	font-size: 11px;
 	font-color: #4D4D4D;
 	border-bottom: 1px solid #E7E7E7;
-	margin-top: 10px;
+	margin-top: 5px;
 	margin-bottom: 10px;
 }
 
@@ -461,7 +461,7 @@ div.propertiesPanel {
 	color: #eeeeee;
 	font-family: Arial, sans-serif;
 	margin-top: 0px;
-	margin-bottom: 15px;
+	margin-bottom: 5px;
 	background-color: #807c73;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#9f9c95),
 		to(#807c73) );
@@ -505,7 +505,9 @@ div#propertiesPageList {
 }
 
 .propertiesPage {
-	padding: 10px;
+	padding-left: 10px;
+	padding-bottom: 10px;
+	padding-right: 10px;
 	vertical-align: top;
 	min-width: 400px;
 	width: auto;
