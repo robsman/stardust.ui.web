@@ -1986,6 +1986,7 @@ public class ModelService
    }
 
    /**
+    * Returns a JSON representation of the service structure underneath the <code>wsdlUrl</code> provided with the input JSON.
     * 
     * @param wsdlUrl
     * @return
@@ -2009,13 +2010,39 @@ public class ModelService
          servicesJson.add("service" + n, serviceJson);
          
          serviceJson.addProperty("name", "service" + n);
+
+         JsonObject portsJson = new JsonObject();
+
+         serviceJson.add("ports", portsJson);
+         
+         for (int m = 0; m < 3; ++m)
+         {
+            JsonObject portJson = new JsonObject();
+
+            portsJson.add("port" + m, portJson);
+            
+            portJson.addProperty("name", "port" + m);
+         }
       }
       
+      JsonObject operationsJson = new JsonObject();
+
+      webServiceJson.add("operations", operationsJson);
+
+      for (int n = 0; n < 10; ++n)
+      {
+         JsonObject operationJson = new JsonObject();
+
+         servicesJson.add("operation" + n, operationJson);
+         
+         operationJson.addProperty("name", "operation" + n);
+      }
+
       return webServiceJson;
    }
 
    /**
-    * 
+    * Loads a JSON representation of a type hierarchy loaded from an XSD or WSDL URL. 
     * @param readJsonObject
     * @return
     */
