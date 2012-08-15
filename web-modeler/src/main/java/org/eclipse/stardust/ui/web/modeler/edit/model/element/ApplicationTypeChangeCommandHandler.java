@@ -36,19 +36,15 @@ public class ApplicationTypeChangeCommandHandler
    @OnCommand(commandId = "webServiceApplication.create")
    public void createWebServiceApp(ModelType model, JsonObject request)
    {
-      ApplicationType applicationType = AbstractElementBuilder.F_CWM.createApplicationType();
+      String applicationID = extractString(request, ModelerConstants.ID_PROPERTY);
+      String applicationName = extractString(request, ModelerConstants.NAME_PROPERTY);
+      
+      ApplicationType applicationType = MBFacade.getInstance().createApplication(model, applicationID, applicationName, ModelerConstants.WEB_SERVICE_APPLICATION_TYPE_ID);
 
       //Map newly created application to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(applicationType);
 
-      model.getApplication().add(applicationType);
-
-      applicationType.setId(extractString(request, ModelerConstants.ID_PROPERTY));
-      applicationType.setName(extractString(request, ModelerConstants.NAME_PROPERTY));
-
-      applicationType.setType(MBFacade.getInstance().findApplicationTypeType(model,
-            ModelerConstants.WEB_SERVICE_APPLICATION_TYPE_ID));
    }
 
    @OnCommand(commandId = "messageTransformationApplication.create")

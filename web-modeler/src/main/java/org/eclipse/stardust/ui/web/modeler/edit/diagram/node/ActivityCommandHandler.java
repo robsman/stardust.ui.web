@@ -77,10 +77,9 @@ public class ActivityCommandHandler
       synchronized (model)
       {
          long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-         String modelId = model.getId();
 
-         ActivityType activity = MBFacade.getInstance().createActivity(modelId, processDefinition, activityType, participantFullID,
-               activityId, activityName, applicationFullID, subProcessID, maxOid++);
+         ActivityType activity = MBFacade.getInstance().createActivity(model, processDefinition, activityType, participantFullID,
+               activityId, activityName, applicationFullID, subProcessID);
 
          ModelService.setDescription(activity, request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
 
