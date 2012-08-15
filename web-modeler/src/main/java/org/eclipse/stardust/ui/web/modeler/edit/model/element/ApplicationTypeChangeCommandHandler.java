@@ -38,10 +38,12 @@ public class ApplicationTypeChangeCommandHandler
    {
       String applicationID = extractString(request, ModelerConstants.ID_PROPERTY);
       String applicationName = extractString(request, ModelerConstants.NAME_PROPERTY);
-      
-      ApplicationType applicationType = MBFacade.getInstance().createApplication(model, applicationID, applicationName, ModelerConstants.WEB_SERVICE_APPLICATION_TYPE_ID);
 
-      //Map newly created application to a UUID
+      ApplicationType applicationType = MBFacade.getInstance().createApplication(model,
+            applicationID, applicationName,
+            ModelerConstants.WEB_SERVICE_APPLICATION_TYPE_ID);
+
+      // Map newly created application to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(applicationType);
 
