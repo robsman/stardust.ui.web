@@ -46,9 +46,9 @@ define(
 										
 					// Initialize callbacks
 
-					this.registerTextInputForModelElementChangeSubmission(
+					this.registerInputForModelElementChangeSubmission(
 							this.nameInput, "name");
-					this.registerTextInputForModelElementChangeSubmission(
+					this.registerInputForModelElementChangeSubmission(
 							this.descriptionInput, "description");
 				};
 
@@ -98,6 +98,7 @@ define(
 						this.propertiesPanel.errorMessages
 								.push("Name must not be empty.");
 						this.nameInput.addClass("error");
+						this.nameInput.focus();
 						this.propertiesPanel.showErrorMessages();
 
 						return false;

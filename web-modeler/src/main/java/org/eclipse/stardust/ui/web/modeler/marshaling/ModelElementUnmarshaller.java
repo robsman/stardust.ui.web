@@ -72,27 +72,27 @@ public abstract class ModelElementUnmarshaller
 
       modelElementPropertiesMap.put(ProcessDefinitionType.class, new String[] {
             "name", "id"});
-      symbolPropertiesMap.put(ActivitySymbolType.class, new String[] {"x", "y"});
-      modelElementPropertiesMap.put(ActivitySymbolType.class, new String[] {"name"});
+      symbolPropertiesMap.put(ActivitySymbolType.class, new String[] {ModelerConstants.X_PROPERTY, ModelerConstants.Y_PROPERTY});
+      modelElementPropertiesMap.put(ActivitySymbolType.class, new String[] {ModelerConstants.NAME_PROPERTY});
 
-      symbolPropertiesMap.put(StartEventSymbol.class, new String[] {"x", "y"});
-      modelElementPropertiesMap.put(StartEventSymbol.class, new String[] {"name"});
+      symbolPropertiesMap.put(StartEventSymbol.class, new String[] {ModelerConstants.X_PROPERTY, ModelerConstants.Y_PROPERTY});
+      modelElementPropertiesMap.put(StartEventSymbol.class, new String[] {ModelerConstants.NAME_PROPERTY});
 
-      symbolPropertiesMap.put(EndEventSymbol.class, new String[] {"x", "y"});
-      modelElementPropertiesMap.put(EndEventSymbol.class, new String[] {"name"});
+      symbolPropertiesMap.put(EndEventSymbol.class, new String[] {ModelerConstants.X_PROPERTY, ModelerConstants.Y_PROPERTY});
+      modelElementPropertiesMap.put(EndEventSymbol.class, new String[] {ModelerConstants.NAME_PROPERTY});
 
-      modelElementPropertiesMap.put(ApplicationType.class, new String[] {"name", "id"});
+      modelElementPropertiesMap.put(ApplicationType.class, new String[] {ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY});
 
       modelElementPropertiesMap.put(TypeDeclarationType.class,
             new String[] {"name", "id"});
 
-      modelElementPropertiesMap.put(ModelType.class, new String[] {"name", "id"});
+      modelElementPropertiesMap.put(ModelType.class, new String[] {ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY});
 
-      modelElementPropertiesMap.put(DataType.class, new String[] {"name", "id"});
+      modelElementPropertiesMap.put(DataType.class, new String[] {ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY});
 
-      modelElementPropertiesMap.put(RoleType.class, new String[] {"name", "id"});
+      modelElementPropertiesMap.put(RoleType.class, new String[] {ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY});
 
-      modelElementPropertiesMap.put(OrganizationType.class, new String[] {"name", "id"});
+      modelElementPropertiesMap.put(OrganizationType.class, new String[] {ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY});
    }
 
    /**
@@ -115,7 +115,6 @@ public abstract class ModelElementUnmarshaller
                .toLowerCase()
                .startsWith("gateway"))
          {
-            System.out.println("Handling Gateway");
             updateGatewaySymbol((ActivitySymbolType) element, json);
          }
          else
@@ -154,6 +153,10 @@ public abstract class ModelElementUnmarshaller
       else if (element instanceof OrganizationType)
       {
          updateOrganization((OrganizationType) element, json);
+      }
+      else 
+      {
+         System.out.println("===> Swimlane? " + element);
       }
    }
 
@@ -240,13 +243,8 @@ public abstract class ModelElementUnmarshaller
          ProcessDefinitionType subProcessDefinition = MBFacade.getInstance()
                .getProcessDefinition(MBFacade.getInstance().getModelId(subprocessFullId),
                      MBFacade.getInstance().stripFullId(subprocessFullId));
-         ModelType subProcessModel = ModelUtils.findContainingModel(subProcessDefinition);
-         BpmSubProcessActivityBuilder subProcessActivity = newSubProcessActivity(ModelUtils
-               .findContainingProcess(activity));
-
-        subProcessActivity.setActivity(activity);
-         subProcessActivity.setSubProcessModel(subProcessModel);
-         subProcessActivity.invokingProcess(subProcessDefinition);
+         
+         activity.setImplementationProcess(subProcessDefinition);
       }
       else if (ModelerConstants.APPLICATION_ACTIVITY.equals(extractString(activityJson,
             ModelerConstants.ACTIVITY_TYPE)))
@@ -260,12 +258,7 @@ public abstract class ModelElementUnmarshaller
                MBFacade.getInstance().getModelId(applicationFullId),
                MBFacade.getInstance().stripFullId(applicationFullId));
 
-         BpmApplicationActivityBuilder applicationActivity = newApplicationActivity(ModelUtils.findContainingProcess(activity));
-         applicationActivity.setActivity(activity);
-         ModelType applicationModel = ModelUtils.findContainingModel(application);
-
-         applicationActivity.setApplicationModel(applicationModel);
-         applicationActivity.invokingApplication(application);
+         activity.setApplication(application);
       }
    }
 
@@ -320,11 +313,15 @@ public abstract class ModelElementUnmarshaller
    private void updateStartEventSymbol(StartEventSymbol startEventSymbol,
          JsonObject startEventSymbolJson)
    {
-      mapDeclaredModelElementProperties(startEventSymbol,
-            startEventSymbolJson.getAsJsonObject("modelElement"),
+      JsonObject startEventJson = startEventSymbolJson.getAsJsonObject("modelElement");
+      
+      mapDeclaredModelElementProperties(startEventSymbol.getModelElement(),
+            startEventJson,
             modelElementPropertiesMap.get(StartEventSymbol.class));
       mapDeclaredSymbolProperties(startEventSymbol, startEventSymbolJson,
             symbolPropertiesMap.get(StartEventSymbol.class));
+      storeAttributes(startEventSymbol.getModelElement(), startEventJson);
+      storeDescription(startEventSymbol.getModelElement(), startEventJson);
    }
 
    /**
@@ -335,11 +332,18 @@ public abstract class ModelElementUnmarshaller
    private void updateEndEventSymbol(EndEventSymbol endEventSymbol,
          JsonObject endEventSymbolJson)
    {
-      mapDeclaredModelElementProperties(endEventSymbol,
+      JsonObject endEventJson = endEventSymbolJson.getAsJsonObject("modelElement");
+      
+      mapDeclaredModelElementProperties(endEventSymbol.getModelElement(),
             endEventSymbolJson.getAsJsonObject("modelElement"),
             modelElementPropertiesMap.get(EndEventSymbol.class));
       mapDeclaredSymbolProperties(endEventSymbol, endEventSymbolJson,
             symbolPropertiesMap.get(EndEventSymbol.class));
+
+      // Does not have a model element yet
+      
+//      storeAttributes(endEventSymbol.getModelElement(), endEventJson);
+//      storeDescription(endEventSymbol.getModelElement(), endEventJson);
    }
 
    /**

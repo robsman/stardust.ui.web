@@ -34,24 +34,15 @@ define(
 
 				this.dataPaths = {};
 
-				this.dataPathTable = jQuery("#" + this.propertiesPanel.id
-						+ " #" + this.id + " #dataPathTable");
-				this.addDataPathButton = jQuery("#" + this.propertiesPanel.id
-						+ " #" + this.id + " #addDataPathButton");
-				this.dataPathNameInput = jQuery("#" + this.propertiesPanel.id
-						+ " #" + this.id + " #dataPathNameInput");
-				this.inDataPathInput = jQuery("#" + this.propertiesPanel.id
-						+ " #" + this.id + " #inDataPathInput");
-				this.outDataPathInput = jQuery("#" + this.propertiesPanel.id
-						+ " #" + this.id + " #outDataPathInput");				
-				this.descriptorInput = jQuery("#" + this.propertiesPanel.id
-						+ " #" + this.id + " #descriptorInput");
-				this.keyDescriptorInput = jQuery("#" + this.propertiesPanel.id
-						+ " #" + this.id + " #keyDescriptorInput");
-				this.dataPathDataSelect = jQuery("#" + this.propertiesPanel.id
-						+ " #" + this.id + " #dataPathDataSelect");
-				this.dataPathPathInput = jQuery("#" + this.propertiesPanel.id
-						+ " #" + this.id + " #dataPathPathInput");
+				this.dataPathTable = this.mapInputId("dataPathTable");
+				this.addDataPathButton = this.mapInputId("addDataPathButton");
+				this.dataPathNameInput = this.mapInputId("dataPathNameInput");
+				this.inDataPathInput = this.mapInputId("inDataPathInput");
+				this.outDataPathInput = this.mapInputId("outDataPathInput");				
+				this.descriptorInput = this.mapInputId("descriptorInput");
+				this.keyDescriptorInput = this.mapInputId("keyDescriptorInput");
+				this.dataPathDataSelect = this.mapInputId("dataPathDataSelect");
+				this.dataPathPathInput = this.mapInputId("dataPathPathInput");
 
 				for ( var n in this.propertiesPanel.models) {
 					for ( var m in this.propertiesPanel.models[n].dataItems) {

@@ -28,9 +28,7 @@ define(
 
 				// Field initialization
 
-				this.qualityControlProbabilityInput = jQuery("#"
-						+ this.propertiesPanel.id + " #" + this.id
-						+ " #qualityControlProbabilityInput");
+				this.qualityControlProbabilityInput = this.mapInputId("qualityControlProbabilityInput");
 
 				/**
 				 * 

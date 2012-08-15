@@ -42,11 +42,11 @@ define(
 				this.requestDataInput = jQuery("#requestDataInput");
 				this.responseDataInput = jQuery("#responseDataInput");
 
-				this.registerTextInputForModelElementAttributeChangeSubmission(
+				this.registerInputForModelElementAttributeChangeSubmission(
 						this.camelContextInput, "carnot:engine:camel::camelContextId");
-				this.registerTextInputForModelElementAttributeChangeSubmission(
+				this.registerInputForModelElementAttributeChangeSubmission(
 						this.routeTextarea, "carnot:engine:camel::routeEntries");
-				this.registerTextInputForModelElementAttributeChangeSubmission(
+				this.registerInputForModelElementAttributeChangeSubmission(
 						this.additionalBeanSpecificationTextarea, "carnot:engine:camel::additionalSpringBeanDefinitions");
 
 				/**

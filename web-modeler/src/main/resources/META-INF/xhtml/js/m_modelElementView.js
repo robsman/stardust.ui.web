@@ -49,7 +49,7 @@ define(
 							});
 						}
 					});
-					this.registerTextInputForModelElementChangeSubmission(this.descriptionTextarea, "description");
+					this.registerInputForModelElementChangeSubmission(this.descriptionTextarea, "description");
 				};
 				
 				/**
@@ -87,7 +87,7 @@ define(
 				/**
 				 * 
 				 */
-				ModelElementView.prototype.registerTextInputForModelElementChangeSubmission = function(
+				ModelElementView.prototype.registerInputForModelElementChangeSubmission = function(
 						input, property) {
 					input
 							.change(
@@ -117,7 +117,7 @@ define(
 				/**
 				 * 
 				 */
-				ModelElementView.prototype.registerTextInputForModelElementAttributeChangeSubmission = function(
+				ModelElementView.prototype.registerInputForModelElementAttributeChangeSubmission = function(
 						input, attribute) {
 					input
 							.change(

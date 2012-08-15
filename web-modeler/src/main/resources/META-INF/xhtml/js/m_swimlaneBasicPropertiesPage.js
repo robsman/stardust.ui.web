@@ -53,7 +53,6 @@ define(
 							.mapInputId("createNewParticipantLink");
 					this.newParticipantName = this
 							.mapInputId("newParticipantName");
-					this.descriptionInput = this.mapInputId("descriptionInput");
 					this.participantList = this.mapInputId("participantList");
 
 					this.createNewParticipantLink
@@ -80,6 +79,8 @@ define(
 															"method" : "setParticipantId"
 														}, {});
 									});
+					
+					this.registerInputForChangeSubmission(this.participantList, "participantFullId");
 				};
 
 				/**
@@ -156,17 +157,5 @@ define(
 					this.refreshParticipantList();
 					this.participantList.val(participant.getFullId());
 				};
-
-				/**
-				 * 
-				 */
-				SwimlaneBasicPropertiesPage.prototype.submitChanges = function(
-						changes) {
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(
-									this.propertiesPanel.element.oid, changes,
-									this.propertiesPanel.element));
-				};
-
 			}
 		});

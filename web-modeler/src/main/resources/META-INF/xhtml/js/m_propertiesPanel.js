@@ -84,6 +84,8 @@ define(
 							"propertiesPage", "panelId", id);
 
 					for ( var n = 0; n < propertiesPages.length; n++) {
+						m_utils.debug("Load Properties Page " + propertiesPages[n].pageId);
+						
 						if (propertiesPages[n].pageHtmlUrl != null) {
 							jQuery("#" + this.id + "Table").append(
 									"<tr><td><div id=\""

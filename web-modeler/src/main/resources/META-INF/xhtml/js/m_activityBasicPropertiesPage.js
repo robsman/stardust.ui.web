@@ -296,7 +296,7 @@ define(
 					if (this.validateModelElement()) {
 						return true;
 					}
-
+					
 					return false;
 				};
 			}

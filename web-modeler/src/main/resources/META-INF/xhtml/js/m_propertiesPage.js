@@ -191,7 +191,34 @@ define(
 				/**
 				 * 
 				 */
-				PropertiesPage.prototype.registerTextInputForModelElementChangeSubmission = function(
+				PropertiesPage.prototype.registerInputForChangeSubmission = function(
+						input, property) {
+					input.change({
+						"page" : this,
+						"input" : input
+					}, function(event) {
+						var page = event.data.page;
+						var input = event.data.input;
+
+						if (!page.validate()) {
+							return;
+						}
+
+						if (page.propertiesPanel.element[property] != input
+								.val()) {
+							var element = {};
+							
+							element[property] = input.val();
+							
+							page.submitChanges(element);
+						}
+					});
+				};
+
+				/**
+				 * 
+				 */
+				PropertiesPage.prototype.registerInputForModelElementChangeSubmission = function(
 						input, property) {
 					input
 							.change(
@@ -223,7 +250,7 @@ define(
 				/**
 				 * 
 				 */
-				PropertiesPage.prototype.registerTextInputForModelElementAttributeChangeSubmission = function(
+				PropertiesPage.prototype.registerInputForModelElementAttributeChangeSubmission = function(
 						input, attribute) {
 					input
 							.change(
@@ -239,8 +266,9 @@ define(
 											return;
 										}
 
-										m_utils.debug(page.propertiesPanel.element.modelElement.attributes[attribute] + " ?= " + input
-												.val());
+										m_utils
+												.debug(page.propertiesPanel.element.modelElement.attributes[attribute]
+														+ " ?= " + input.val());
 										if (page.propertiesPanel.element.modelElement.attributes[attribute] != input
 												.val()) {
 											modelElement = {

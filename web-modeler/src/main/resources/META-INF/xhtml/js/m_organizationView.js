@@ -62,9 +62,9 @@ define(
 					this.departmentDataPathInput = jQuery("#departmentDataPathInput");
 					this.costCenterInput = jQuery("#costCenterInput");					
 
-                    this.registerTextInputForModelElementAttributeChangeSubmission(
+                    this.registerInputForModelElementAttributeChangeSubmission(
                     		this.departmentDataSelect, "carnot:engine:dataId");
-                    this.registerTextInputForModelElementAttributeChangeSubmission(
+                    this.registerInputForModelElementAttributeChangeSubmission(
                     		this.departmentDataPathInput, "carnot:engine:dataPath");
                     this.registerCheckboxInputForModelElementAttributeChangeSubmission(
                     		this.supportsDepartmentsCheckbox, "carnot:engine:bound");

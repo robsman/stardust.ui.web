@@ -202,21 +202,11 @@ define(
 				 * 
 				 */
 				DataBasicPropertiesPage.prototype.validate = function() {
-					this.propertiesPanel.clearErrorMessages();
-					this.nameInput.removeClass("error");
-
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
-						this.propertiesPanel.errorMessages
-								.push("Data name must not be empty.");
-						this.nameInput.addClass("error");
-
-						this.propertiesPanel.showErrorMessages();
-
-						return false;
+					if (this.validateModelElement()) {
+						return true;
 					}
-
-					return true;
+					
+					return false;
 				};
 
 				/**

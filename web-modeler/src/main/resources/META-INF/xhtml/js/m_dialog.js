@@ -10,6 +10,19 @@ define([ "m_utils", "m_constants" ], function(m_utils, m_constants) {
 		},
 		makeVisible : function(element) {
 			element.removeClass("invisible");
+		},
+		registerForIntegerFormatValidation: function(input)
+		{
+//			input.keypress({input: input}, function(event){
+//				if(event.data.input.val() != "") {
+//				    var value = event.data.input.val().replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+//				    var intRegex = /^\d+$/;
+//				    
+//				    if (!intRegex.test(value)) {
+//				    	event.preventDefault();
+//				    }
+//				}
+//			});
 		}
 	};
 });

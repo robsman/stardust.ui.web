@@ -12,8 +12,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_propertiesPage" ],
-		function(m_utils, m_constants, m_propertiesPage) {
+		[ "m_utils", "m_constants", "m_dialog", "m_propertiesPage" ],
+		function(m_utils, m_constants, m_dialog, m_propertiesPage) {
 			return {
 				create : function(propertiesPanel) {
 					return new ActivityControllingPropertiesPage(
@@ -40,47 +40,35 @@ define(
 
 				// Field initialization
 
-				this.targetCostPerExecutionInput = jQuery("#"
-						+ this.propertiesPanel.id + " #" + this.id
-						+ " #targetCostPerExecutionInput");
-				this.targetProcessingTimeInput = jQuery("#"
-						+ this.propertiesPanel.id + " #" + this.id
-						+ " #targetProcessingTimeInput");
-				this.targetExecutionTimeInput = jQuery("#"
-						+ this.propertiesPanel.id + " #" + this.id
-						+ " #targetExecutionTimeInput");
-				this.targetIdleTimeInput = jQuery("#" + this.propertiesPanel.id
-						+ " #" + this.id + " #targetIdleTimeInput");
-				this.targetWaitingTimeInput = jQuery("#"
-						+ this.propertiesPanel.id + " #" + this.id
-						+ " #targetWaitingTimeInput");
-				this.targetQueueDepthInput = jQuery("#"
-						+ this.propertiesPanel.id + " #" + this.id
-						+ " #targetQueueDepthInput");
-				this.targetCostPerExecutionInput = jQuery("#"
-						+ this.propertiesPanel.id + " #" + this.id
-						+ " #targetCostPerExecutionInput");
-				this.resourcePerformanceCalculationSelect = jQuery("#"
-						+ this.propertiesPanel.id + " #" + this.id
-						+ " #resourcePerformanceCalculationSelect");
+				this.targetCostPerExecutionInput = this.mapInputId("targetCostPerExecutionInput");
+				this.targetProcessingTimeInput = this.mapInputId("targetProcessingTimeInput");
+				this.targetExecutionTimeInput = this.mapInputId("targetExecutionTimeInput");
+				this.targetIdleTimeInput = this.mapInputId("targetIdleTimeInput");
+				this.targetWaitingTimeInput = this.mapInputId("targetWaitingTimeInput");
+				this.targetQueueDepthInput = this.mapInputId("targetQueueDepthInput");
+				this.targetCostPerExecutionInput = this.mapInputId("targetCostPerExecutionInput");
+				this.resourcePerformanceCalculationSelect = this.mapInputId("resourcePerformanceCalculationSelect");
 
+				m_dialog.registerForIntegerFormatValidation(targetCostPerExecutionInput);
+				m_dialog.registerForIntegerFormatValidation(targetQueueDepthInput);
+				
 				// Change handling
 
-				this.registerTextInputForModelElementAttributeChangeSubmission(
+				this.registerInputForModelElementAttributeChangeSubmission(
 						this.targetProcessingTimeInput,
 						"carnot:pwh:targetProcessingTime");
-				this.registerTextInputForModelElementAttributeChangeSubmission(
+				this.registerInputForModelElementAttributeChangeSubmission(
 						this.targetExecutionTimeInput,
 						"carnot:pwh:targetExecutionTime");
-				this.registerTextInputForModelElementAttributeChangeSubmission(
+				this.registerInputForModelElementAttributeChangeSubmission(
 						this.targetIdleTimeInput, "carnot:pwh:targetIdleTime");
-				this.registerTextInputForModelElementAttributeChangeSubmission(
+				this.registerInputForModelElementAttributeChangeSubmission(
 						this.targetWaitingTimeInput,
 						"carnot:pwh:targetWaitingTime");
-				this.registerTextInputForModelElementAttributeChangeSubmission(
+				this.registerInputForModelElementAttributeChangeSubmission(
 						this.targetQueueDepthInput,
 						"carnot:pwh:targetQueueDepth");
-				this.registerTextInputForModelElementAttributeChangeSubmission(
+				this.registerInputForModelElementAttributeChangeSubmission(
 						this.targetCostPerExecutionInput,
 						"carnot:pwh:targetCostPerExecution");
 
