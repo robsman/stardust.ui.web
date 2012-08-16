@@ -79,6 +79,20 @@ define(
 				/**
 				 * 
 				 */
+				PropertiesPanel.prototype.getDiagram = function() {
+					return this.element.diagram;
+				};
+
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.getElementUuid = function() {
+					return this.element.oid;
+				};
+
+				/**
+				 * 
+				 */
 				PropertiesPanel.prototype.initializePropertiesPages = function() {
 					var propertiesPages = m_extensionManager.findExtensions(
 							"propertiesPage", "panelId", id);

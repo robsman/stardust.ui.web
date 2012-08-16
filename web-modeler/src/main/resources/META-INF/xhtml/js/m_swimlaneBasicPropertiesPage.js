@@ -80,7 +80,36 @@ define(
 														}, {});
 									});
 					
-					this.registerInputForChangeSubmission(this.participantList, "participantFullId");
+					this.registerInputForModelElementChangeSubmission(this.participantList, "participantFullId");
+				};
+
+				/**
+				 * 
+				 */
+				SwimlaneBasicPropertiesPage.prototype.getModelElement = function() {
+					return this.propertiesPanel.element;
+				};
+
+				/**
+				 * 
+				 */
+				SwimlaneBasicPropertiesPage.prototype.assembleChangedObjectFromProperty = function(property, value) {
+					var element = {};
+					
+					element[property] = value;
+					
+					return element;
+				};
+
+				/**
+				 * 
+				 */
+				SwimlaneBasicPropertiesPage.prototype.assembleChangedObjectFromAttribute = function(attribute, value) {
+					var element = { attributes: {}};
+					
+					element.attributes[attribute] = value;
+					
+					return element;
 				};
 
 				/**
@@ -115,21 +144,14 @@ define(
 					this.refreshParticipantList();
 
 					this.title
-							.html(this.propertiesPanel.element.participantName);
+							.html(this.getModelElement().participantName);
 
-					if (this.propertiesPanel.element.participantFullId != null) {
+					if (this.getModelElement().participantFullId != null) {
 						this.participantList
-								.val(this.propertiesPanel.element.participantFullId);
+								.val(this.getModelElement().participantFullId);
 					} else {
 						this.participantList.val("NONE");
 					}
-				};
-
-				/**
-				 * 
-				 */
-				SwimlaneBasicPropertiesPage.prototype.getModelElement = function() {
-					return this.propertiesPanel.element;
 				};
 
 				/**

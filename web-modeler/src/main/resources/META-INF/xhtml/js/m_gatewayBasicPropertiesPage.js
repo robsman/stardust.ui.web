@@ -28,9 +28,6 @@ define(
 
 			function GatewayBasicPropertiesPage(newPropertiesPanel, newId,
 					newTitle) {
-
-				// Inheritance
-
 				var propertiesPage = m_basicPropertiesPage.create(
 						newPropertiesPanel);
 
@@ -46,29 +43,10 @@ define(
 
 					this.gatewayTypeInput = this.mapInputId("gatewayTypeInput");
 
-					this.gatewayTypeInput
-							.change(
-									{
-										"page" : this
-									},
-									function(event) {
-										var page = event.data.page;
+					// Initialize callbacks
 
-										if (!page.validate()) {
-											return;
-										}
-
-										if (page.propertiesPanel.element.modelElement.gatewayType != page.gatewayTypeInput
-												.val()) {
-											page
-													.submitChanges({
-														modelElement : {
-															gatewayType : page.gatewayTypeInput
-																	.val()
-														}
-													});
-										}
-									});
+					this.registerInputForModelElementAttributeChangeSubmission(
+							this.gatewayTypeInput, "gatewayType");
 				};
 				
 				/**
@@ -84,20 +62,11 @@ define(
 				 * 
 				 */
 				GatewayBasicPropertiesPage.prototype.validate = function() {
-					return true;
-				};
-
-				/**
-				 * 
-				 */
-				GatewayBasicPropertiesPage.prototype.submitChanges = function(
-						changes) {
-					m_commandsController
-							.submitCommand(m_command
-									.createUpdateModelElementCommand(
-											this.propertiesPanel.element.diagram.modelId,
-											this.propertiesPanel.element.oid,
-											changes));
+					if (this.validateModelElement()) {
+						return true;
+					}
+					
+					return false;
 				};
 			}
 		});

@@ -63,6 +63,28 @@ define(
 				/**
 				 * 
 				 */
+				ProcessBasicPropertiesPage.prototype.assembleChangedObjectFromProperty = function(property, value) {
+					var element = {};
+					
+					element[property] = value;
+					
+					return element;
+				};
+
+				/**
+				 * 
+				 */
+				ProcessBasicPropertiesPage.prototype.assembleChangedObjectFromAttribute = function(attribute, value) {
+					var element = { attributes: {}};
+					
+					element.attributes[attribute] = value;
+					
+					return element;
+				};
+
+				/**
+				 * 
+				 */
 				ProcessBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();
 				};

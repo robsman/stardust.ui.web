@@ -67,5 +67,20 @@ define(
 						this.propertiesPages[n].setElement();
 					}
 				};
+				
+				/**
+				 * 
+				 */
+				ProcessPropertiesPanel.prototype.getDiagram = function() {
+					return this.diagram;
+				};
+
+				/**
+				 * 
+				 */
+				ProcessPropertiesPanel.prototype.getElementUuid = function() {
+					return this.element.oid;
+				};
+
 			}
 		});

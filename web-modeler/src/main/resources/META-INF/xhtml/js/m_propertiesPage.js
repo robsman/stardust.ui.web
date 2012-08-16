@@ -157,6 +157,36 @@ define(
 				/**
 				 * 
 				 */
+				PropertiesPage.prototype.assembleChangedObjectFromProperty = function(
+						property, value) {
+					var element = {
+						modelElement : {}
+					};
+
+					element.modelElement[property] = value;
+
+					return element;
+				};
+
+				/**
+				 * 
+				 */
+				PropertiesPage.prototype.assembleChangedObjectFromAttribute = function(
+						attribute, value) {
+					var element = {
+						modelElement : {
+							attributes : {}
+						}
+					};
+
+					element.modelElement.attributes[attribute] = value;
+
+					return element;
+				};
+
+				/**
+				 * 
+				 */
 				PropertiesPage.prototype.loadDocumentUrl = function() {
 					this.documentUrl = this.getModelElement().attributes["carnot:engine:documentUrl"];
 
@@ -191,7 +221,7 @@ define(
 				/**
 				 * 
 				 */
-				PropertiesPage.prototype.registerInputForChangeSubmission = function(
+				PropertiesPage.prototype.registerInputForModelElementChangeSubmission = function(
 						input, property) {
 					input.change({
 						"page" : this,
@@ -204,47 +234,15 @@ define(
 							return;
 						}
 
-						if (page.propertiesPanel.element[property] != input
-								.val()) {
-							var element = {};
-							
-							element[property] = input.val();
-							
-							page.submitChanges(element);
+						m_utils.debug("===> Element");
+						m_utils.debug(page.getModelElement());
+						
+						if (page.getModelElement()[property] != input.val()) {
+							page.submitChanges(page
+									.assembleChangedObjectFromProperty(
+											property, input.val()));
 						}
 					});
-				};
-
-				/**
-				 * 
-				 */
-				PropertiesPage.prototype.registerInputForModelElementChangeSubmission = function(
-						input, property) {
-					input
-							.change(
-									{
-										"page" : this,
-										"input" : input
-									},
-									function(event) {
-										var page = event.data.page;
-										var input = event.data.input;
-
-										if (!page.validate()) {
-											return;
-										}
-
-										if (page.propertiesPanel.element.modelElement[property] != input
-												.val()) {
-											modelElement = {};
-											modelElement[property] = input
-													.val();
-
-											page.submitChanges({
-												modelElement : modelElement
-											});
-										}
-									});
 				};
 
 				/**
@@ -266,20 +264,13 @@ define(
 											return;
 										}
 
-										m_utils
-												.debug(page.propertiesPanel.element.modelElement.attributes[attribute]
-														+ " ?= " + input.val());
-										if (page.propertiesPanel.element.modelElement.attributes[attribute] != input
+										if (page.getModelElement().attributes[attribute] != input
 												.val()) {
-											modelElement = {
-												attributes : {}
-											};
-											modelElement.attributes[attribute] = input
-													.val();
-
-											page.submitChanges({
-												modelElement : modelElement
-											});
+											page
+													.submitChanges(page
+															.assembleChangedObjectFromAttribute(
+																	attribute,
+																	input.val()));
 										}
 									});
 				};
@@ -303,17 +294,14 @@ define(
 											return;
 										}
 
-										if (page.propertiesPanel.element.modelElement.attributes[attribute] != input
-												.val()) {
-											modelElement = {
-												attributes : {}
-											};
-											modelElement.attributes[attribute] = input
-													.is(":checked");
-
-											page.submitChanges({
-												modelElement : modelElement
-											});
+										if (page.getModelElement().attributes[attribute] != input
+												.is(":checked")) {
+											page
+													.submitChanges(page
+															.assembleChangedObjectFromAttribute(
+																	attribute,
+																	input
+																			.is(":checked")));
 										}
 									});
 				};
@@ -327,8 +315,8 @@ define(
 					m_commandsController
 							.submitCommand(m_command
 									.createUpdateModelElementCommand(
-											this.propertiesPanel.element.diagram.modelId,
-											this.propertiesPanel.element.oid,
+											this.propertiesPanel.getDiagram().modelId,
+											this.propertiesPanel.getElementUuid(),
 											changes));
 				};
 
