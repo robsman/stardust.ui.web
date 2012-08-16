@@ -14,8 +14,29 @@
  * 
  * @author Marc.Gille
  */
-define([ "m_utils" ], function(m_utils) {
+define(function(require) {
+
+	var mainRequire = require;
+
+	function loadExtension(extensionUri) {
+		var provider = mainRequire(extensionUri);
+
+		return provider;
+	}
+
 	return {
+
+		/**
+		 * Initializes the extension manager, binding the environment used for
+		 * resolving extensions.
+		 *
+		 * @param require
+		 *            the requirejs context to be used to resolve extensions
+		 */
+		initialize: function(require) {
+			mainRequire = require;
+		},
+
 		/**
 		 * 
 		 * @param extensionPoint
@@ -29,7 +50,15 @@ define([ "m_utils" ], function(m_utils) {
 			for ( var n = 0; n < extensions[extensionPoint].length; ++n) {
 
 				if (property == null || extensions[extensionPoint][n][property] == value) {
-					result.push(extensions[extensionPoint][n]);
+					var extension = extensions[extensionPoint][n];
+					if ( !extension.provider) {
+						if (extension.pageJavaScriptUrl) {
+							extension.provider = loadExtension(extension.pageJavaScriptUrl);
+						} else if (extension.handler) {
+							extension.provider = loadExtension(extension.handler);
+						}
+					}
+					result.push(extension);
 				}
 			}
 
@@ -42,7 +71,13 @@ define([ "m_utils" ], function(m_utils) {
 		 */
 		findExtension : function(extensionPoint) {
 			if (extensions[extensionPoint].length == 1) {
-				return extensions[extensionPoint][0];
+				var extension = extensions[extensionPoint][0];
+				if ( !extension.provider) {
+					if (extension.moduleUrl) {
+						extension.provider = loadExtension(extension.moduleUrl);
+					}
+				}
+				return extension;
 			}
 
 			throw "Cannot find default for Extension Point " + extensionPoint;

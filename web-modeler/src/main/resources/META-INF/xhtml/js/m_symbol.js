@@ -10,10 +10,10 @@
 
 define(
 		[ "m_utils", "m_constants", "m_messageDisplay", "m_canvasManager",
-				"m_diagram", "m_drawable", "m_commandsController", "m_command",
+				"m_drawable", "m_commandsController", "m_command",
 				"m_propertiesPanel", "m_modelerUtils" ],
 		function(m_utils, m_constants, m_messageDisplay, m_canvasManager,
-				m_diagram, m_drawable, m_commandsController, m_command,
+				m_drawable, m_commandsController, m_command,
 				m_propertiesPanel, m_modelerUtils) {
 
 			return {

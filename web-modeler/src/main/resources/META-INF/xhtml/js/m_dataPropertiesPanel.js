@@ -46,7 +46,7 @@ define([ "m_utils", "m_constants", "m_extensionManager", "m_model",
 		var viewManagerExtension = m_extensionManager
 				.findExtension("viewManager");
 
-		this.viewManager = require(viewManagerExtension.moduleUrl).create();
+		this.viewManager = viewManagerExtension.provider.create();
 
 		this.viewLink.click({
 			panel : this

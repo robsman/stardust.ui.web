@@ -1,14 +1,36 @@
 /**
  * @author Omkar.Patil
  */
-require(["m_jqueryConflictResolver",
+
+require.config({
+	paths : {
+		'jquery' : 'libs/jquery/jquery-1.7.2',
+
+		'jquery-ui': 'libs/jquery/plugins/jquery-ui-1.8.19.custom.min',
+		'jquery.download': 'libs/jquery/plugins/download.jQuery',
+		'jquery.form': 'libs/jquery/plugins/jquery.form',
+		'jquery.impromptu': 'libs/jquery/plugins/jquery-impromptu.3.1.min',
+		'jquery.simplemodal': 'libs/jquery/plugins/jquery.simplemodal.1.4.1.min',
+		'jquery.url': 'libs/jquery/plugins/jquery.url',
+	},
+	shim: {
+		'jquery-ui': ['jquery'],
+		'jquery.download': ['jquery'],
+		'jquery.form': ['jquery'],
+		'jquery.impromptu': ['jquery'],
+		'jquery.simplemodal': ['jquery'],
+		'jquery.url': ['jquery'],
+	}
+});
+
+require(["require",
+         "jquery",
 		 "extensions_jquery",
-		 "jquery-1.7.2.min",
-		 "jquery-ui-1.8.19.custom.min",
-		 "jquery-impromptu.3.1.min",
-		 "download.jQuery",
+		 "jquery-ui",
+		 "jquery.download",
 		 "jquery.form",
-		 "jquery.simplemodal.1.4.1.min",
+		 "jquery.impromptu",
+		 "jquery.simplemodal",
 		 "jquery.url",
 		 "m_utils",
 		 "m_communicationController",
@@ -16,5 +38,6 @@ require(["m_jqueryConflictResolver",
 		 "m_constants",
 		 "m_user",
 		 "m_sessionLogPanel"
-], pageInitializer);
-
+], function(require) {
+	require('m_sessionLogPanel').initialize();
+});

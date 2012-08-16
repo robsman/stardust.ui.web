@@ -2,10 +2,10 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_extensionManager", "m_dialog",
-				"m_modelerViewLayoutManager" ],
-		function(m_utils, m_constants, m_extensionManager, m_dialog,
-				m_modelerViewLayoutManager) {
+		[ "m_utils", "m_constants", "m_extensionManager", "m_dialog"], //,
+				//"m_modelerViewLayoutManager" ],
+		function(m_utils, m_constants, m_extensionManager, m_dialog) { //,
+				//m_modelerViewLayoutManager) {
 
 			var currentPropertiesPanel = null;
 
@@ -109,17 +109,14 @@ define(
 															.append(msg);
 													m_utils.debug(msg);
 												} else {
-													panel.propertiesPages.push(require(
-															extension.pageJavaScriptUrl)
-															.create(panel));
+													panel.propertiesPages.push(
+															extension.provider.create(panel));
 												}
 											});
 						} else {
 							// Embedded Markup
 
-							this.propertiesPages.push(require(
-									propertiesPages[n].pageJavaScriptUrl)
-									.create(this));
+							this.propertiesPages.push(propertiesPages[n].provider.create(this));
 						}
 					}
 				};

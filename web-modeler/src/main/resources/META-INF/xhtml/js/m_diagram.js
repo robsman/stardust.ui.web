@@ -194,13 +194,14 @@ define(
 										{
 											diagram : this,
 											handler : paletteEntries[m].handler,
+											provider : paletteEntries[m].provider,
 											handlerMethod : paletteEntries[m].handlerMethod
 										},
 										function(event) {
 											m_utils.debug("Clicked "
 													+ event.data.handler + " "
 													+ event.data.handlerMethod);
-											require(event.data.handler)[event.data.handlerMethod]
+											event.data.provider[event.data.handlerMethod]
 													(event.data.diagram);
 										});
 					}

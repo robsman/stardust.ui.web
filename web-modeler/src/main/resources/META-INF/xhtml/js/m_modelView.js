@@ -188,9 +188,7 @@ define(
 
 												var viewManagerExtension = m_extensionManager
 														.findExtension("viewManager");
-												var viewManager = require(
-														viewManagerExtension.moduleUrl)
-														.create();
+												var viewManager = viewManagerExtension.provider.create();
 												// TODO This is heuristically
 												// obtained need clear model for
 												// model pathes or switch to

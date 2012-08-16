@@ -29,7 +29,7 @@ define(
 
 			var viewManagerExtension = m_extensionManager
 					.findExtension("viewManager");
-			var viewManager = require(viewManagerExtension.moduleUrl).create();
+			var viewManager = viewManagerExtension.provider.create();
 
 			function getURL() {
 				return require('m_urlUtils').getContextName()
