@@ -8,10 +8,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
@@ -20,6 +16,9 @@ import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
@@ -45,6 +44,12 @@ public class ModelingSession
       protected EObjectUUIDMapper eObjectUUIDMapper()
       {
          return uuidMapper();
+      }
+      
+      @Override
+      protected ModelManagementStrategy modelManagementStrategy()
+      {         
+         return ModelingSession.this.modelManagementStrategy();
       }
    };
 
@@ -79,7 +84,6 @@ public class ModelingSession
 
    public ModelManagementStrategy modelManagementStrategy()
    {
-      MBFacade.getInstance(modelManagementStrategy);
       return modelManagementStrategy;
    }
 

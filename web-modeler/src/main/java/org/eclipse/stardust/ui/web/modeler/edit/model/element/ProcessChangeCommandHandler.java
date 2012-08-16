@@ -48,12 +48,13 @@ public class ProcessChangeCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
+   private MBFacade facade;
 
    @OnCommand(commandId = "process.create")
    public void createProcess(ModelType model, JsonObject request)
    {
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String id = MBFacade.getInstance().createIdFromName(name);
+      String id = facade().createIdFromName(name);
       ProcessDefinitionType processDefinition = newProcessDefinition(model).withIdAndName(id, name).build();
       //Added process definition to UUID map.
       EObjectUUIDMapper mapper = modelService().uuidMapper();
@@ -123,7 +124,7 @@ public class ProcessChangeCommandHandler
    public void deleteProcess(ModelType model, JsonObject request)
    {
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
-      ProcessDefinitionType processDefinition = MBFacade.getInstance().findProcessDefinition(model, id);
+      ProcessDefinitionType processDefinition = facade().findProcessDefinition(model, id);
       synchronized (model)
       {
     	  model.getProcessDefinition().remove(processDefinition);
@@ -133,5 +134,15 @@ public class ProcessChangeCommandHandler
    private ModelService modelService()
    {
       return springContext.getBean(ModelService.class);
+   }
+   
+   private MBFacade facade()
+   {
+      if (facade == null)
+      {
+         facade = new MBFacade(springContext.getBean(ModelService.class)
+               .getModelManagementStrategy());
+      }
+      return facade;
    }
 }

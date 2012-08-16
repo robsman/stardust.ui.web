@@ -30,6 +30,7 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
 
@@ -40,7 +41,8 @@ import com.google.gson.JsonObject;
 public class SwimlaneCommandHandler
 {
    @Resource
-   private ModelService modelService;
+   private ApplicationContext springContext;
+   private MBFacade facade;
 
    /**
     * @param parentSymbol
@@ -64,7 +66,7 @@ public class SwimlaneCommandHandler
 
       synchronized (model)
       {
-         LaneSymbol laneSymbol = MBFacade.getInstance().createLane(model.getId(), model,
+         LaneSymbol laneSymbol = facade().createLane(model.getId(), model,
                processDefinition, laneId, laneName, xPos, yPos, width, height,
                orientation, participantFullID);
 
@@ -87,12 +89,22 @@ public class SwimlaneCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentSymbol);
 
       String laneId = extractString(request, ModelerConstants.ID_PROPERTY);
-      LaneSymbol lane = MBFacade.getInstance().findLaneInProcess(processDefinition, laneId);
+      LaneSymbol lane = facade().findLaneInProcess(processDefinition, laneId);
 
       synchronized (model)
       {
          parentSymbol.getLanes().remove(lane);
          parentSymbol.getChildLanes().remove(lane);
       }
+   }
+   
+   private MBFacade facade()
+   {
+      if (facade == null)
+      {
+         facade = new MBFacade(springContext.getBean(ModelService.class)
+               .getModelManagementStrategy());
+      }
+      return facade;
    }
 }

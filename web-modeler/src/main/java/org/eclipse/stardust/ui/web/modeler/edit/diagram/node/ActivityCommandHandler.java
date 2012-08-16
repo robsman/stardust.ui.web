@@ -20,8 +20,6 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERT
 
 import javax.annotation.Resource;
 
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
@@ -34,6 +32,9 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.springframework.context.ApplicationContext;
+
+import com.google.gson.JsonObject;
 
 /**
  *
@@ -42,9 +43,10 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
  */
 @CommandHandler
 public class ActivityCommandHandler
-{
+{   
    @Resource
-   private ModelService modelService;
+   private ApplicationContext springContext;
+   private MBFacade facade;
 
    /**
     * @param parentLaneSymbol
@@ -78,12 +80,12 @@ public class ActivityCommandHandler
       {
          long maxOid = XpdlModelUtils.getMaxUsedOid(model);
 
-         ActivityType activity = MBFacade.getInstance().createActivity(model, processDefinition, activityType, participantFullID,
+         ActivityType activity = facade().createActivity(model, processDefinition, activityType, participantFullID,
                activityId, activityName, applicationFullID, subProcessID);
 
          ModelService.setDescription(activity, request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
 
-         ActivitySymbolType activitySymbol = MBFacade.getInstance().createActivitySymbol(processDefinition, parentLaneSymbol.getId(),
+         ActivitySymbolType activitySymbol = facade().createActivitySymbol(processDefinition, parentLaneSymbol.getId(),
                xProperty, yProperty, widthProperty, heightProperty, maxOid, activity);
       }
    }
@@ -100,7 +102,7 @@ public class ActivityCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
 
       String activityId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
-      ActivityType activity = MBFacade.getInstance().findActivity(processDefinition, activityId);
+      ActivityType activity = facade().findActivity(processDefinition, activityId);
       ActivitySymbolType activitySymbol = activity.getActivitySymbols().get(0);
 
       synchronized (model)
@@ -114,4 +116,16 @@ public class ActivityCommandHandler
       }
 
    }
+   
+   private MBFacade facade()
+   {
+      if (facade == null)
+      {
+         facade = new MBFacade(springContext.getBean(ModelService.class)
+               .getModelManagementStrategy());
+      }
+      return facade;
+   }
+         
+   
 }

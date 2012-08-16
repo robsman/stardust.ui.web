@@ -8,6 +8,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
+import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
@@ -53,6 +54,10 @@ import com.google.gson.JsonObject;
 public abstract class ModelElementMarshaller
 {
    protected abstract EObjectUUIDMapper eObjectUUIDMapper();
+   
+   protected abstract ModelManagementStrategy modelManagementStrategy();
+   
+   private MBFacade facade;
 
    /**
     *
@@ -305,7 +310,7 @@ public abstract class ModelElementMarshaller
 
                laneSymbolJson.addProperty(
                      ModelerConstants.PARTICIPANT_FULL_ID,
-                     MBFacade.getInstance().createFullId(
+                     facade().createFullId(
                            ModelUtils.findContainingModel(processDefinition),
                            laneSymbol.getParticipant()));
             }
@@ -460,13 +465,13 @@ public abstract class ModelElementMarshaller
          if (activity.getImplementationProcess() != null)
          {
             activityJson.addProperty(ModelerConstants.SUBPROCESS_ID,
-                  MBFacade.getInstance().createFullId(ModelUtils.findContainingModel(activity),
+                  facade().createFullId(ModelUtils.findContainingModel(activity),
                         activity.getImplementationProcess()));
          }
          else if (activity.getApplication() != null)
          {
             activityJson.addProperty(ModelerConstants.APPLICATION_FULL_ID_PROPERTY,
-                  MBFacade.getInstance().createFullId(ModelUtils.findContainingModel(activity),
+                  facade().createFullId(ModelUtils.findContainingModel(activity),
                         activity.getApplication()));
          }
       }
@@ -752,7 +757,7 @@ public abstract class ModelElementMarshaller
       if (null != containingModel)
       {
          dataSymbolJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
-               MBFacade.getInstance().createFullId(containingModel, dataSymbol.getData()));
+               facade().createFullId(containingModel, dataSymbol.getData()));
       }
 
       return dataSymbolJson;
@@ -775,7 +780,7 @@ public abstract class ModelElementMarshaller
 
       if (null != model)
       {
-         List<OrganizationType> parentOrgs = MBFacade.getInstance().getParentOrganizations(model, role);
+         List<OrganizationType> parentOrgs = facade().getParentOrganizations(model, role);
          if (parentOrgs.size() > 0)
          {
             // TODO - add array of orgs
@@ -814,7 +819,7 @@ public abstract class ModelElementMarshaller
 
       if (null != model)
       {
-         List<OrganizationType> parentOrgs = MBFacade.getInstance().getParentOrganizations(model, org);
+         List<OrganizationType> parentOrgs = facade().getParentOrganizations(model, org);
          if (parentOrgs.size() > 0)
          {
             orgJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
@@ -975,7 +980,7 @@ public abstract class ModelElementMarshaller
             }
          }
          dataFlowJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
-               MBFacade.getInstance().createFullId(ModelUtils.findContainingModel(data), data));
+               facade().createFullId(ModelUtils.findContainingModel(data), data));
          dataFlowJson.addProperty(ModelerConstants.ACTIVITY_ID_PROPERTY, activity.getId());
       }
 
@@ -1293,4 +1298,13 @@ public abstract class ModelElementMarshaller
 					containingModel.getId());
 		}
 	}
+	
+	   private MBFacade facade()
+	   {
+	      if (facade == null)
+	      {
+	         facade = new MBFacade(modelManagementStrategy());
+	      }
+	      return facade;
+	   }
 }

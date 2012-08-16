@@ -584,8 +584,8 @@ public class ModelService
       ModelType model = getModelManagementStrategy().getModels().get(modelId);
       String name = extractString(postedData, NEW_OBJECT_PROPERTY,
             ModelerConstants.NAME_PROPERTY);
-      String id = MBFacade.getInstance().createIdFromName(name);
-      ProcessDefinitionType processDefinition = MBFacade.getInstance().createProcess(
+      String id = facade().createIdFromName(name);
+      ProcessDefinitionType processDefinition = facade().createProcess(
             model, name, id);
 
       JsonObject processDefinitionJson = new JsonObject();
@@ -619,9 +619,9 @@ public class ModelService
          JsonObject commandJson)
    {
       ModelType model = getModelManagementStrategy().getModels().get(modelId);
-      ProcessDefinitionType processDefinition = MBFacade.getInstance()
+      ProcessDefinitionType processDefinition = facade()
             .findProcessDefinition(model, processId);
-      ActivityType activity = MBFacade.getInstance().findActivity(processDefinition,
+      ActivityType activity = facade().findActivity(processDefinition,
             activityId);
       EditingSession editingSession = getEditingSession(model);
 
@@ -867,7 +867,7 @@ public class ModelService
       JsonObject modelElementJson = connectionJson
             .getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
       ModelType model = getModelManagementStrategy().getModels().get(modelId);
-      ProcessDefinitionType processDefinition = MBFacade.getInstance()
+      ProcessDefinitionType processDefinition = facade()
             .findProcessDefinition(model, processId);
       EditingSession editSession = getEditingSession(model);
 
@@ -880,7 +880,7 @@ public class ModelService
 
          if (extractString(modelElementJson, TYPE_PROPERTY).equals(CONTROL_FLOW_LITERAL))
          {
-            TransitionConnectionType transitionConnection = MBFacade.getInstance()
+            TransitionConnectionType transitionConnection = facade()
                   .findTransitionConnectionByModelOid(processDefinition, connectionOid);
             transitionConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
                   connectionJson, FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
@@ -914,7 +914,7 @@ public class ModelService
          }
          else
          {
-            DataMappingConnectionType dataMappingConnection = MBFacade.getInstance()
+            DataMappingConnectionType dataMappingConnection = facade()
                   .findDataMappingConnectionByModelOid(processDefinition, connectionOid);
 
             dataMappingConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
@@ -956,7 +956,7 @@ public class ModelService
          // String key = (String)iterator.next();
          // JSONObject laneSymbolJson = laneSymbolsJson.getJSONObject(key);
          JsonObject laneSymbolJson = laneSymbolsJson.get(n).getAsJsonObject();
-         LaneSymbol laneSymbol = MBFacade.getInstance().findLaneSymbolByElementOid(
+         LaneSymbol laneSymbol = facade().findLaneSymbolByElementOid(
                poolSymbol, extractLong(laneSymbolJson, OID_PROPERTY));
 
          updateLane(model, laneSymbol, laneSymbolJson);
@@ -976,9 +976,9 @@ public class ModelService
          JsonObject laneSymbolJson)
    {
       ModelType model = getModelManagementStrategy().getModels().get(modelId);
-      ProcessDefinitionType processDefinition = MBFacade.getInstance()
+      ProcessDefinitionType processDefinition = facade()
             .findProcessDefinition(model, processId);
-      LaneSymbol laneSymbol = MBFacade.getInstance().findLaneSymbolById(
+      LaneSymbol laneSymbol = facade().findLaneSymbolById(
             processDefinition, laneId);
 
       EditingSession editingSession = getEditingSession(model);
@@ -1018,13 +1018,13 @@ public class ModelService
          System.out.println("Participant Full ID"
                + extractString(laneSymbolJson, ModelerConstants.PARTICIPANT_FULL_ID));
          System.out.println("Participant "
-               + MBFacade.getInstance().findParticipant(
+               + facade().findParticipant(
                      model,
-                     MBFacade.getInstance().stripFullId(
+                     facade().stripFullId(
                            extractString(laneSymbolJson,
                                  ModelerConstants.PARTICIPANT_FULL_ID))));
 
-         String participantModelID = MBFacade.getInstance().getModelId(
+         String participantModelID = facade().getModelId(
                extractString(laneSymbolJson, ModelerConstants.PARTICIPANT_FULL_ID));
          if (StringUtils.isEmpty(participantModelID))
          {
@@ -1038,10 +1038,10 @@ public class ModelService
                   participantModelID);
          }
 
-         IModelParticipant modelParticipant = MBFacade.getInstance()
+         IModelParticipant modelParticipant = facade()
                .findParticipant(
                      getModelManagementStrategy().getModels().get(participantModelID),
-                     MBFacade.getInstance().stripFullId(
+                     facade().stripFullId(
                            extractString(laneSymbolJson,
                                  ModelerConstants.PARTICIPANT_FULL_ID)));
 
@@ -1069,7 +1069,7 @@ public class ModelService
       {
          JsonObject activitySymbolJson = entry.getValue().getAsJsonObject();
 
-         ActivitySymbolType activitySymbol = MBFacade.getInstance().findActivitySymbol(
+         ActivitySymbolType activitySymbol = facade().findActivitySymbol(
                laneSymbol, extractLong(activitySymbolJson, OID_PROPERTY));
 
          // updateActivity(activitySymbol, laneSymbol, activitySymbolJson);
@@ -1081,7 +1081,7 @@ public class ModelService
       {
          JsonObject gatewaySymbolJson = entry.getValue().getAsJsonObject();
 
-         ActivitySymbolType gatewaySymbol = MBFacade.getInstance().findActivitySymbol(
+         ActivitySymbolType gatewaySymbol = facade().findActivitySymbol(
                laneSymbol, extractLong(gatewaySymbolJson, OID_PROPERTY));
 
          updateGateway(gatewaySymbol, laneSymbol, gatewaySymbolJson);
@@ -1092,12 +1092,12 @@ public class ModelService
       {
          JsonObject eventSymbolJson = entry.getValue().getAsJsonObject();
 
-         AbstractEventSymbol eventSymbol = MBFacade.getInstance().findStartEventSymbol(
+         AbstractEventSymbol eventSymbol = facade().findStartEventSymbol(
                laneSymbol, extractLong(eventSymbolJson, OID_PROPERTY));
 
          if (eventSymbol == null)
          {
-            eventSymbol = MBFacade.getInstance().findEndEventSymbol(laneSymbol,
+            eventSymbol = facade().findEndEventSymbol(laneSymbol,
                   extractLong(eventSymbolJson, OID_PROPERTY));
          }
 
@@ -1109,7 +1109,7 @@ public class ModelService
       {
          JsonObject dataSymbolJson = entry.getValue().getAsJsonObject();
 
-         DataSymbolType dataSymbol = MBFacade.getInstance().findDataSymbolRecursively(
+         DataSymbolType dataSymbol = facade().findDataSymbolRecursively(
                laneSymbol, extractLong(dataSymbolJson, OID_PROPERTY));
 
          // updateData(dataSymbol, dataSymbolJson);
@@ -1133,7 +1133,7 @@ public class ModelService
          getModelManagementStrategy().attachModel(modelId);
       }
 
-      ProcessDefinitionType processDefinition = MBFacade.getInstance()
+      ProcessDefinitionType processDefinition = facade()
             .findProcessDefinition(model, processId);
 
       return modelElementMarshaller().toProcessDefinitionDiagram(processDefinition)
@@ -1147,7 +1147,7 @@ public class ModelService
          JsonObject diagramJson)
    {
       ModelType model = getModelManagementStrategy().getModels().get(modelId);
-      ProcessDefinitionType processDefinition = MBFacade.getInstance()
+      ProcessDefinitionType processDefinition = facade()
             .findProcessDefinition(model, processId);
       DiagramType diagram = processDefinition.getDiagram().get(0);
       EditingSession editSession = getEditingSession(model);
@@ -1160,7 +1160,7 @@ public class ModelService
       {
          JsonObject poolSymbolJson = entry.getValue().getAsJsonObject();
 
-         PoolSymbol poolSymbol = MBFacade.getInstance().findPoolSymbolByElementOid(
+         PoolSymbol poolSymbol = facade().findPoolSymbolByElementOid(
                processDefinition, extractLong(poolSymbolJson, OID_PROPERTY));
 
          updatePool(model, poolSymbol, poolSymbolJson);
@@ -1412,7 +1412,7 @@ public class ModelService
     */
    private boolean hasParentParticipant(ModelType model, IModelParticipant participant)
    {
-      List<OrganizationType> parentOrgs = MBFacade.getInstance().getParentOrganizations(
+      List<OrganizationType> parentOrgs = facade().getParentOrganizations(
             model, participant);
       if (parentOrgs.size() > 0)
       {
@@ -1513,7 +1513,7 @@ public class ModelService
          JsonObject dataSymbolJson)
    {
       ModelType model = getModelManagementStrategy().getModels().get(modelId);
-      ProcessDefinitionType processDefinition = MBFacade.getInstance()
+      ProcessDefinitionType processDefinition = facade()
             .findProcessDefinition(model, processId);
       EditingSession editSession = getEditingSession(model);
 
@@ -1543,10 +1543,10 @@ public class ModelService
 
       JsonObject wizardParameterJson = (JsonObject) json.get(NEW_OBJECT_PROPERTY);
       JsonObject processDefinitionJson = (JsonObject) createProcessJson(modelId, json);
-      ProcessDefinitionType processDefinition = MBFacade.getInstance()
+      ProcessDefinitionType processDefinition = facade()
             .findProcessDefinition(model,
                   extractString(json, NEW_OBJECT_PROPERTY, ModelerConstants.ID_PROPERTY));
-      LaneSymbol parentLaneSymbol = MBFacade.getInstance().findLaneInProcess(
+      LaneSymbol parentLaneSymbol = facade().findLaneInProcess(
             processDefinition, ModelerConstants.DEF_LANE_ID);
 
       // Create Start Event
@@ -1573,12 +1573,12 @@ public class ModelService
 
       DataType data = newStructVariable(model)
             .withIdAndName(
-                  MBFacade.getInstance().createIdFromName(
+                  facade().createIdFromName(
                         extractString(wizardParameterJson,
                               "requestParameterDataNameInput")),
                   extractString(wizardParameterJson, "requestParameterDataNameInput"))
             .ofType(
-                  /* Dummy */MBFacade.getInstance().stripFullId(
+                  /* Dummy */facade().stripFullId(
                         extractString(wizardParameterJson,
                               "serviceRequestParameterTypeId"))).build();
 
@@ -1599,12 +1599,12 @@ public class ModelService
 
       ActivityType activity = newApplicationActivity(processDefinition)
             .withIdAndName(
-                  MBFacade.getInstance().createIdFromName(
+                  facade().createIdFromName(
                         extractString(wizardParameterJson,
                               "requestTransformationActivityName")),
                   extractString(wizardParameterJson, "requestTransformationActivityName"))
             .invokingApplication(
-                  MBFacade.getInstance().getApplication(modelId,
+                  facade().getApplication(modelId,
                         extractString(wizardParameterJson, "applicationId"))).build();
 
       // setDescription(activity,
@@ -1628,10 +1628,10 @@ public class ModelService
       // Request data
 
       data = newStructVariable(model)
-            .withIdAndName(MBFacade.getInstance().createIdFromName("Service Request"),
+            .withIdAndName(facade().createIdFromName("Service Request"),
                   "Service Request")
             .ofType(
-                  MBFacade.getInstance().stripFullId(
+                  facade().stripFullId(
                         extractString(wizardParameterJson,
                               "serviceRequestParameterTypeId"))).build();
 
@@ -1652,12 +1652,12 @@ public class ModelService
 
       activity = newApplicationActivity(processDefinition)
             .withIdAndName(
-                  MBFacade.getInstance().createIdFromName(
+                  facade().createIdFromName(
                         extractString(wizardParameterJson,
                               "serviceInvocationActivityName")),
                   extractString(wizardParameterJson, "serviceInvocationActivityName"))
             .invokingApplication(
-                  MBFacade.getInstance().getApplication(modelId,
+                  facade().getApplication(modelId,
                         extractString(wizardParameterJson, "applicationId"))).build();
 
       // setDescription(activity,
@@ -1680,10 +1680,10 @@ public class ModelService
       // Response data
 
       data = newStructVariable(model)
-            .withIdAndName(MBFacade.getInstance().createIdFromName("Service Response"),
+            .withIdAndName(facade().createIdFromName("Service Response"),
                   "Service Response")
             .ofType(
-                  MBFacade.getInstance().stripFullId(
+                  facade().stripFullId(
                         extractString(wizardParameterJson,
                               "serviceResponseParameterTypeId"))).build();
 
@@ -1704,12 +1704,12 @@ public class ModelService
 
       activity = newApplicationActivity(processDefinition)
             .withIdAndName(
-                  MBFacade.getInstance().createIdFromName(
+                  facade().createIdFromName(
                         extractString(wizardParameterJson,
                               "responseTransformationActivityName")),
                   extractString(wizardParameterJson, "responseTransformationActivityName"))
             .invokingApplication(
-                  MBFacade.getInstance().getApplication(modelId,
+                  facade().getApplication(modelId,
                         extractString(wizardParameterJson, "applicationId"))).build();
 
       // setDescription(activity,
@@ -1741,12 +1741,12 @@ public class ModelService
 
       data = newStructVariable(model)
             .withIdAndName(
-                  MBFacade.getInstance().createIdFromName(
+                  facade().createIdFromName(
                         extractString(wizardParameterJson,
                               "responseParameterDataNameInput")),
                   extractString(wizardParameterJson, "responseParameterDataNameInput"))
             .ofType(
-                  /* Dummy */MBFacade.getInstance().stripFullId(
+                  /* Dummy */facade().stripFullId(
                         extractString(wizardParameterJson,
                               "serviceResponseParameterTypeId"))).build();
 
@@ -1929,7 +1929,7 @@ public class ModelService
 
    public ProcessDefinitionType findProcessDefinition(ModelType model, String id)
    {
-      return MBFacade.getInstance().findProcessDefinition(model, id);
+      return facade().findProcessDefinition(model, id);
    }
 
    public ModelType findModel(String modelId)
@@ -2105,5 +2105,10 @@ public class ModelService
       jDob.addProperty("cardinality", "1");
       
       return json;
+   }
+   
+   private MBFacade facade()
+   {
+      return new MBFacade(getModelManagementStrategy());
    }
 }

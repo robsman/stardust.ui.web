@@ -73,7 +73,7 @@ public class TestModelManagementStrategy extends
 			if (modelDocument.getName().endsWith(".xpdl")) {
 
 				ModelType model = XpdlModelIoUtils
-						.loadModel(readModelContext(modelDocument));
+						.loadModel(readModelContext(modelDocument), this);
 
 				getModels().put(model.getId(), model);
 				

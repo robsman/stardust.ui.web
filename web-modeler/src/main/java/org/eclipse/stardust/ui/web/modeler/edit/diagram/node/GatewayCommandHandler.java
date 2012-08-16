@@ -20,6 +20,8 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PRO
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
+import javax.annotation.Resource;
+
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
@@ -35,6 +37,8 @@ import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.springframework.context.ApplicationContext;
 
 /**
  * @author Sidharth.Singh
@@ -42,6 +46,10 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 @CommandHandler
 public class GatewayCommandHandler
 {
+   @Resource
+   private ApplicationContext springContext;
+   private MBFacade facade;
+   
    @OnCommand(commandId = "gateSymbol.create")
    public void createGateway(LaneSymbol parentLaneSymbol, JsonObject request)
    {
@@ -95,7 +103,7 @@ public class GatewayCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
 
       String gatewayId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
-      ActivityType gateway = MBFacade.getInstance().findActivity(processDefinition, gatewayId);
+      ActivityType gateway = facade().findActivity(processDefinition, gatewayId);
       ActivitySymbolType gatewaySymbol = gateway.getActivitySymbols().get(0);
       synchronized (model)
       {
@@ -105,6 +113,16 @@ public class GatewayCommandHandler
          parentLaneSymbol.getActivitySymbol().remove(gatewaySymbol);
 
       }
+   }
+   
+   private MBFacade facade()
+   {
+      if (facade == null)
+      {
+         facade = new MBFacade(springContext.getBean(ModelService.class)
+               .getModelManagementStrategy());
+      }
+      return facade;
    }
 
 }

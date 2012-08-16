@@ -46,6 +46,7 @@ public class DataCommandHandler
 
    @Resource
    private ApplicationContext springContext;
+   private MBFacade facade;
 
    /**
     *
@@ -76,20 +77,20 @@ public class DataCommandHandler
 
          try
          {
-            data = MBFacade.getInstance().importData(model, dataFullID);
+            data = facade().importData(model, dataFullID);
          }
          catch (ObjectNotFoundException x)
          {
             if (true)
             {
-               data = MBFacade.getInstance().createPrimitiveData(model, dataID, dataName,
+               data = facade().createPrimitiveData(model, dataID, dataName,
                      ModelerConstants.STRING_PRIMITIVE_DATA_TYPE);
                mapper.map(data);
                data.setElementOid(++maxOid);
             }
          }
 
-         DataSymbolType dataSymbol = MBFacade.getInstance().createDataSymbol(processDefinition,
+         DataSymbolType dataSymbol = facade().createDataSymbol(processDefinition,
                xProperty, yProperty, widthProperty, heightProperty, parentLaneSymbol.getId(),
                maxOid, data);
          mapper.map(dataSymbol);
@@ -108,8 +109,8 @@ public class DataCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
       Long dataOID = extractLong(request, ModelerConstants.OID_PROPERTY);
       String dataFullID = extractString(request, ModelerConstants.DATA_FULL_ID_PROPERTY);
-      DataType data = MBFacade.getInstance().importData(model, dataFullID);
-      DataSymbolType dataSymbol = MBFacade.getInstance().findDataSymbolRecursively(parentLaneSymbol,
+      DataType data = facade().importData(model, dataFullID);
+      DataSymbolType dataSymbol = facade().findDataSymbolRecursively(parentLaneSymbol,
             dataOID);
       synchronized (model)
       {
@@ -123,5 +124,15 @@ public class DataCommandHandler
    private ModelService modelService()
    {
       return springContext.getBean(ModelService.class);
+   }
+   
+   private MBFacade facade()
+   {
+      if (facade == null)
+      {
+         facade = new MBFacade(springContext.getBean(ModelService.class)
+               .getModelManagementStrategy());
+      }
+      return facade;
    }
 }

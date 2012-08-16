@@ -60,6 +60,8 @@ public abstract class ModelElementUnmarshaller
    private Map<Class<? >, String[]> modelElementReferencePropertiesMap;
 
    protected abstract ModelManagementStrategy modelManagementStrategy();
+   
+   private MBFacade facade;
 
    /**
 	 *
@@ -240,9 +242,9 @@ public abstract class ModelElementUnmarshaller
          String subprocessFullId = extractString(activityJson,
                ModelerConstants.SUBPROCESS_ID);
 
-         ProcessDefinitionType subProcessDefinition = MBFacade.getInstance()
-               .getProcessDefinition(MBFacade.getInstance().getModelId(subprocessFullId),
-                     MBFacade.getInstance().stripFullId(subprocessFullId));
+         ProcessDefinitionType subProcessDefinition = facade()
+               .getProcessDefinition(facade().getModelId(subprocessFullId),
+                     facade().stripFullId(subprocessFullId));
          
          activity.setImplementationProcess(subProcessDefinition);
       }
@@ -254,9 +256,9 @@ public abstract class ModelElementUnmarshaller
          String applicationFullId = extractString(activityJson,
                ModelerConstants.APPLICATION_FULL_ID_PROPERTY);
 
-         ApplicationType application = MBFacade.getInstance().getApplication(
-               MBFacade.getInstance().getModelId(applicationFullId),
-               MBFacade.getInstance().stripFullId(applicationFullId));
+         ApplicationType application = facade().getApplication(
+               facade().getModelId(applicationFullId),
+               facade().stripFullId(applicationFullId));
 
          activity.setApplication(application);
       }
@@ -564,5 +566,14 @@ public abstract class ModelElementUnmarshaller
       {
          modelElementJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, "");
       }
+   }
+   
+   private MBFacade facade()
+   {
+      if (facade == null)
+      {
+         facade = new MBFacade(modelManagementStrategy());
+      }
+      return facade;
    }
 }

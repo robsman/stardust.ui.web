@@ -30,6 +30,7 @@ public class StructuredTypeChangeCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
+   private MBFacade facade;
 
    public static final String TYPE_PROPERTY = "type";
 
@@ -45,7 +46,7 @@ public class StructuredTypeChangeCommandHandler
       synchronized (model)
       {
          EObjectUUIDMapper mapper = modelService().uuidMapper();
-         mapper.map(MBFacade.getInstance().createTypeDeclaration(model, typeId, typeName));
+         mapper.map(facade().createTypeDeclaration(model, typeId, typeName));
       }
 	}
 
@@ -58,7 +59,7 @@ public class StructuredTypeChangeCommandHandler
 		String structuredDataTypeId = extractString(request,
 				ModelerConstants.ID_PROPERTY);
 
-		TypeDeclarationType structuredDataType = MBFacade.getInstance()
+		TypeDeclarationType structuredDataType = facade()
 				.findStructuredDataType(model, structuredDataTypeId);
 		synchronized (model) {
 			model.getTypeDeclarations().getTypeDeclaration()
@@ -69,5 +70,15 @@ public class StructuredTypeChangeCommandHandler
    private ModelService modelService()
    {
       return springContext.getBean(ModelService.class);
+   }
+   
+   private MBFacade facade()
+   {
+      if (facade == null)
+      {
+         facade = new MBFacade(springContext.getBean(ModelService.class)
+               .getModelManagementStrategy());
+      }
+      return facade;
    }
 }

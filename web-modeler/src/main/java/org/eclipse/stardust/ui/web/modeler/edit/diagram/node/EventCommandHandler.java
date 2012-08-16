@@ -21,6 +21,8 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PRO
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
+import javax.annotation.Resource;
+
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
@@ -35,6 +37,8 @@ import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.springframework.context.ApplicationContext;
 
 /**
  * @author Sidharth.Singh
@@ -42,6 +46,10 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 @CommandHandler
 public class EventCommandHandler
 {
+   @Resource
+   private ApplicationContext springContext;
+   private MBFacade facade;
+   
    @OnCommand(commandId = "eventSymbol.create")
    public void createEvent(LaneSymbol parentLaneSymbol, JsonObject request)
    {
@@ -108,7 +116,7 @@ public class EventCommandHandler
          if (START_EVENT.equals(extractString(request,
                ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY)))
          {
-            StartEventSymbol startEventSymbol = MBFacade.getInstance().findStartEventSymbol(
+            StartEventSymbol startEventSymbol = facade().findStartEventSymbol(
                   parentLaneSymbol, eventOId);
             processDefinition.getDiagram()
                   .get(0)
@@ -118,7 +126,7 @@ public class EventCommandHandler
          }
          else
          {
-            EndEventSymbol endEventSymbol = MBFacade.getInstance().findEndEventSymbol(parentLaneSymbol,
+            EndEventSymbol endEventSymbol = facade().findEndEventSymbol(parentLaneSymbol,
                   eventOId);
             processDefinition.getDiagram()
                   .get(0)
@@ -127,6 +135,16 @@ public class EventCommandHandler
             parentLaneSymbol.getEndEventSymbols().remove(endEventSymbol);
          }
       }
+   }
+   
+   private MBFacade facade()
+   {
+      if (facade == null)
+      {
+         facade = new MBFacade(springContext.getBean(ModelService.class)
+               .getModelManagementStrategy());
+      }
+      return facade;
    }
 
 }

@@ -43,7 +43,7 @@ public class DefaultModelManagementStrategy extends
 			if (modelDocument.getName().endsWith(".xpdl")) {
 
 				ModelType model = XpdlModelIoUtils
-						.loadModel(readModelContext(modelDocument));
+						.loadModel(readModelContext(modelDocument), this);
 				//TODO - This method needs to move to some place where it will be called only once for
 				loadEObjectUUIDMap(model);
 
@@ -67,7 +67,7 @@ public class DefaultModelManagementStrategy extends
              if(modelDocument.getName().equals(id))
              {
                 ModelType model = XpdlModelIoUtils
-                   .loadModel(readModelContext(modelDocument));
+                   .loadModel(readModelContext(modelDocument), this);
                 loadEObjectUUIDMap(model);
                 return model;
              }
@@ -84,7 +84,7 @@ public class DefaultModelManagementStrategy extends
 	public ModelType attachModel(String id) {
 		ModelType model = XpdlModelIoUtils
 		.loadModel(readModelContext(getDocumentManagementService()
-				.getDocument(MODELS_DIR + id + ".xpdl")));
+				.getDocument(MODELS_DIR + id + ".xpdl")), this);
 		loadEObjectUUIDMap(model);
 
 		getModels().put(id, model);
