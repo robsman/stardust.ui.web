@@ -16,6 +16,8 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractIn
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLong;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import javax.annotation.Resource;
+
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
@@ -43,6 +45,8 @@ import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.springframework.context.ApplicationContext;
 
 /**
  * @author Sidharth.Singh
@@ -50,6 +54,10 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 @CommandHandler
 public class ConnectionCommandHandler
 {
+   @Resource
+   private ApplicationContext springContext;
+   private MBFacade facade;
+   
    @OnCommand(commandId = "connection.create")
    public void createConnection(IIdentifiableElement targetElement, JsonObject request)
    {
@@ -72,34 +80,34 @@ public class ConnectionCommandHandler
                createControlFlowConnection(
                      request,
                      processDefinition,
-                     MBFacade.getInstance().findActivitySymbol(processDefinition.getDiagram().get(0),
+                     facade().findActivitySymbol(processDefinition.getDiagram().get(0),
                            extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID)),
-                     MBFacade.getInstance().findActivitySymbol(processDefinition.getDiagram().get(0),
+                     facade().findActivitySymbol(processDefinition.getDiagram().get(0),
                            extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
                      maxOid);
             }
             else if (ModelerConstants.EVENT_KEY.equals(extractString(request,
                   ModelerConstants.TO_MODEL_ELEMENT_TYPE)))
             {
-               StartEventSymbol startEventSymbol = MBFacade.getInstance().findStartEventSymbol(
+               StartEventSymbol startEventSymbol = facade().findStartEventSymbol(
                      processDefinition.getDiagram().get(0),
                      extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID));
 
                if (null != startEventSymbol)
                {
                   createControlFlowConnection(request, processDefinition,
-                        startEventSymbol, MBFacade.getInstance().findActivitySymbol(
+                        startEventSymbol, facade().findActivitySymbol(
                               processDefinition.getDiagram().get(0),
                               extractLong(request,
                                     ModelerConstants.FROM_MODEL_ELEMENT_OID)), maxOid);
                }
                else
                {
-                  EndEventSymbol endEventSymbol = MBFacade.getInstance().findEndEventSymbol(
+                  EndEventSymbol endEventSymbol = facade().findEndEventSymbol(
                         processDefinition.getDiagram().get(0),
                         extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID));
                   createControlFlowConnection(request, processDefinition,
-                        MBFacade.getInstance().findActivitySymbol(
+                        facade().findActivitySymbol(
                               processDefinition.getDiagram().get(0),
                               extractLong(request,
                                     ModelerConstants.FROM_MODEL_ELEMENT_OID)),
@@ -113,9 +121,9 @@ public class ConnectionCommandHandler
                createDataFlowConnection(
                      request,
                      processDefinition,
-                     MBFacade.getInstance().findActivitySymbol(processDefinition.getDiagram().get(0),
+                     facade().findActivitySymbol(processDefinition.getDiagram().get(0),
                            extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID)),
-                     MBFacade.getInstance().findDataSymbol(processDefinition.getDiagram().get(0),
+                     facade().findDataSymbol(processDefinition.getDiagram().get(0),
                            extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
                      maxOid, false);
             }
@@ -134,7 +142,7 @@ public class ConnectionCommandHandler
             {
                try
                {
-                  StartEventSymbol startEventSymbol = MBFacade.getInstance().findStartEventSymbol(
+                  StartEventSymbol startEventSymbol = facade().findStartEventSymbol(
                         processDefinition.getDiagram().get(0),
                         extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID));
 
@@ -142,20 +150,20 @@ public class ConnectionCommandHandler
                         request,
                         processDefinition,
                         startEventSymbol,
-                        MBFacade.getInstance().findActivitySymbol(
+                        facade().findActivitySymbol(
                               processDefinition.getDiagram().get(0),
                               extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
                         maxOid);
                }
                catch (ObjectNotFoundException x)
                {
-                  EndEventSymbol endEventSymbol = MBFacade.getInstance().findEndEventSymbol(
+                  EndEventSymbol endEventSymbol = facade().findEndEventSymbol(
                         processDefinition.getDiagram().get(0),
                         extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID));
                   createControlFlowConnection(
                         request,
                         processDefinition,
-                        MBFacade.getInstance().findActivitySymbol(
+                        facade().findActivitySymbol(
                               processDefinition.getDiagram().get(0),
                               extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
                         endEventSymbol, maxOid);
@@ -177,9 +185,9 @@ public class ConnectionCommandHandler
                createDataFlowConnection(
                      request,
                      processDefinition,
-                     MBFacade.getInstance().findActivitySymbol(processDefinition.getDiagram().get(0),
+                     facade().findActivitySymbol(processDefinition.getDiagram().get(0),
                            extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
-                     MBFacade.getInstance().findDataSymbol(processDefinition.getDiagram().get(0),
+                     facade().findDataSymbol(processDefinition.getDiagram().get(0),
                            extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID)),
                      maxOid, true);
             }
@@ -210,7 +218,7 @@ public class ConnectionCommandHandler
       {
          try
          {
-            TransitionConnectionType transitionConnection = MBFacade.getInstance().findTransitionConnectionByModelOid(
+            TransitionConnectionType transitionConnection = facade().findTransitionConnectionByModelOid(
                   processDefinition, connectionOid);
 
             processDefinition.getDiagram()
@@ -228,7 +236,7 @@ public class ConnectionCommandHandler
          }
          catch (ObjectNotFoundException x)
          {
-            DataMappingConnectionType dataMappingConnection = MBFacade.getInstance().findDataMappingConnectionByModelOid(
+            DataMappingConnectionType dataMappingConnection = facade().findDataMappingConnectionByModelOid(
                   processDefinition, connectionOid);
 
             processDefinition.getDiagram()
@@ -459,6 +467,16 @@ public class ConnectionCommandHandler
       }
 
       throw new IllegalArgumentException("Illegal orientation key " + orientation + ".");
+   }
+   
+   private MBFacade facade()
+   {
+      if (facade == null)
+      {
+         facade = new MBFacade(springContext.getBean(ModelService.class)
+               .getModelManagementStrategy());
+      }
+      return facade;
    }
 
 }
