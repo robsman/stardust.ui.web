@@ -664,7 +664,7 @@ define(
 					this.removeFlyOutMenu();
 					this.removeProximitySensor();
 					
-					this.createAndSubmitDeleteCommand();
+					this.parentSymbol.removeLane(this);
 				}
 
 				/**
@@ -1024,7 +1024,7 @@ define(
 							cancelButtonText : "Cancel",
 							acceptFunction : function() {
 								var thisLane = cbObj.auxiliaryProperties.callbackScope;
-								thisLane.parentSymbol.removeLane(thisLane);
+								thisLane.createAndSubmitDeleteCommand();
 							}
 						}
 					});

@@ -518,6 +518,8 @@ define(
 						if (this.connections[i].fromModelElementOid == conn.fromModelElementOid
 								&& this.connections[i].toModelElementOid == conn.toModelElementOid) {
 							return this.connections[i];
+						} else if (this.connections[i].oid == conn.oid) {
+							return this.connections[i];
 						}
 					}
 
@@ -593,6 +595,24 @@ define(
 								// TODO - update properties panel on
 								// modelElement change
 							}
+						}
+						
+						// Delete removed elements
+						for ( var i = 0; i < obj.changes.removed.length; i++) {
+							var symbol = this
+									.findSymbolByGuid(obj.changes.removed[i].oid);
+							if (null == symbol) {
+								symbol = this
+										.findSymbolByModelElementGuid(obj.changes.removed[i].oid);
+							}
+							if (null == symbol) {
+								symbol = this
+										.findConnection(obj.changes.removed[i]);
+							}
+							if (null != symbol) {
+								symbol.remove();
+							}
+
 						}
 					}
 				};

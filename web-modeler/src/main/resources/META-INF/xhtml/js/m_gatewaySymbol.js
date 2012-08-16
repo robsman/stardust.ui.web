@@ -471,7 +471,7 @@ define(
 			 * 
 			 */
 			function GatewaySymbol_removeClosure() {
-				this.auxiliaryProperties.callbackScope.remove();
+				this.auxiliaryProperties.callbackScope.createAndSubmitDeleteCommand();
 			}
 
 			/**

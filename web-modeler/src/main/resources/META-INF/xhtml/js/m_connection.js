@@ -370,7 +370,9 @@ define(
 
 					if (this.isControlFlow()) {
 						// TODO Can we store in graphical element?
+						if(null != this.conditionExpressionTextXOffset)
 						transferObject.modelElement.attributes["carnot:engine:conditionExpressionTextXOffset"] = this.conditionExpressionTextXOffset;
+						if(null !=this.conditionExpressionTextYOffset)
 						transferObject.modelElement.attributes["carnot:engine:conditionExpressionTextYOffset"] = this.conditionExpressionTextYOffset;
 						// TODO Add later
 						transferObject.segments = null;
@@ -476,7 +478,6 @@ define(
 				 */
 				Connection.prototype.complete = function() {
 					this.completeNoTransfer();
-					/*this.submitCreation();*/
 					var command = m_command.createCreateNodeCommand("connection.create",
 							this.diagram.model.id, this.diagram.process.oid,
 							this.createTransferObject());
@@ -1189,8 +1190,17 @@ define(
 							this.toAnchorPoint.symbol.connections, this);
 					m_utils.removeItemFromArray(
 							this.fromAnchorPoint.symbol.connections, this);
-					var command = m_command.createRemoveNodeCommand("connection.delete", this.diagram.model.id,
-							this.diagram.process.oid, this.createTransferObject());
+				};
+				
+				/**
+				 * 
+				 */
+				Connection.prototype.createDeleteCommand = function() {
+					var command = m_command.createRemoveNodeCommand(
+							"connection.delete", this.diagram.model.id,
+							this.diagram.process.oid, {
+								"oid" : this.oid
+							});
 					m_commandsController.submitCommand(command);
 				};
 				
@@ -1294,7 +1304,7 @@ define(
 			}
 
 			function Connection_removeClosure() {
-				this.auxiliaryProperties.callbackScope.remove();
+				this.auxiliaryProperties.callbackScope.createDeleteCommand();
 			}
 
 			function Connection_toggleConnectionType() {

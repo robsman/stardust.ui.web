@@ -601,9 +601,6 @@ define(
 				};
 				
 				PoolSymbol.prototype.removeLane = function(laneSymbol) {
-					/* Remove lane symbol and and its children. */
-					laneSymbol.remove();
-					
 					/* remove lane from lane symbols array. */
 					m_utils.removeItemFromArray(this.laneSymbols, laneSymbol);
 					

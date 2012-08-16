@@ -233,6 +233,8 @@ public class ConnectionCommandHandler
 
             processDefinition.getDiagram()
                   .get(0)
+                  .getPoolSymbols()
+                  .get(0)
                   .getDataMappingConnection()
                   .remove(dataMappingConnection);
          }
@@ -394,7 +396,7 @@ public class ConnectionCommandHandler
       {
          dataMapping.setDirection(DirectionType.get(DirectionType.OUT));
       }
-
+     
       dataMapping.setData(data);
       // TODO Incomplete
 
@@ -419,7 +421,7 @@ public class ConnectionCommandHandler
             .get(0)
             .getDataMappingConnection()
             .add(dataMappingConnection);
-
+      
       dataMappingConnection.setElementOid(++maxOid);
       dataMappingConnection.setActivitySymbol(activitySymbol);
       dataMappingConnection.setDataSymbol(dataSymbol);

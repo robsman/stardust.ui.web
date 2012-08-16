@@ -1185,8 +1185,6 @@ define(
 					m_utils.removeItemFromArray(
 							this.parentSymbol.containedSymbols, this);
 					m_utils.removeItemFromArray(this.diagram.symbols, this);
-					
-					this.createAndSubmitDeleteCommand();
 				};
 
 				/**
@@ -1228,8 +1226,9 @@ define(
 				Symbol.prototype.removeConnections = function() {
 					var n = 0;
 
-					while (this.connections.length > 0) {
-						this.connections[n].remove();
+					while (n < this.connections.length) {
+						this.connections[n].createDeleteCommand();
+						n++;
 					}
 				};
 

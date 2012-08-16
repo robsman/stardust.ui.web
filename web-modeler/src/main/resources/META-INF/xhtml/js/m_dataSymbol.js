@@ -344,6 +344,6 @@ define(
 			 * 
 			 */
 			function DataSymbol_removeClosure() {
-				this.auxiliaryProperties.callbackScope.remove();
+				this.auxiliaryProperties.callbackScope.createAndSubmitDeleteCommand();
 			}
 		});

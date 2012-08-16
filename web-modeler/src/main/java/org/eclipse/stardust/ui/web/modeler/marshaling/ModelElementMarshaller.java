@@ -364,8 +364,8 @@ public abstract class ModelElementMarshaller
 
             for (DataSymbolType dataSymbol : laneSymbol.getDataSymbol())
             {
-               dataSymbolsJson.add(dataSymbol.getData().getId(), toDataJson(dataSymbol));
-
+               //Multiple Data Symbols can have same ID
+               dataSymbolsJson.add(String.valueOf(dataSymbol.getElementOid()), toDataJson(dataSymbol));
             }
          }
 
@@ -701,25 +701,29 @@ public abstract class ModelElementMarshaller
    public JsonObject toDataTypeJson(DataType data)
    {
       JsonObject dataJson = new JsonObject();
-
-      dataJson.addProperty(ModelerConstants.ID_PROPERTY, data.getId());
-      dataJson.addProperty(ModelerConstants.NAME_PROPERTY, data.getName());
-      dataJson.addProperty(ModelerConstants.UUID_PROPERTY,  eObjectUUIDMapper().getUUID(data));
-      ModelType model = ModelUtils.findContainingModel(data);
-      dataJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY, eObjectUUIDMapper().getUUID(model));
-      setContainingModelIdProperty(dataJson, data);
-      if (null != data.getDescription())
+      if (null != data)
       {
-         dataJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
-               (String) data.getDescription().getMixed().get(0).getValue());
-      }
-      else
-      {
-         dataJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, "");
-      }
-      if (data.getType() != null)
-      {
-         dataJson.addProperty(ModelerConstants.TYPE_PROPERTY, data.getType().getId());
+         dataJson.addProperty(ModelerConstants.ID_PROPERTY, data.getId());
+         dataJson.addProperty(ModelerConstants.NAME_PROPERTY, data.getName());
+         dataJson.addProperty(ModelerConstants.UUID_PROPERTY,
+               eObjectUUIDMapper().getUUID(data));
+         ModelType model = ModelUtils.findContainingModel(data);
+         dataJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY,
+               eObjectUUIDMapper().getUUID(model));
+         setContainingModelIdProperty(dataJson, data);
+         if (null != data.getDescription())
+         {
+            dataJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
+                  (String) data.getDescription().getMixed().get(0).getValue());
+         }
+         else
+         {
+            dataJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, "");
+         }
+         if (data.getType() != null)
+         {
+            dataJson.addProperty(ModelerConstants.TYPE_PROPERTY, data.getType().getId());
+         }
       }
       return dataJson;
    }
@@ -739,7 +743,7 @@ public abstract class ModelElementMarshaller
       dataSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, dataSymbol.getYPos());
       dataSymbolJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(dataSymbol));
       dataSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.DATA_SYMBOL);
-      dataSymbolJson.add(ModelerConstants.DATA, toDataTypeJson(dataSymbol.getData()));
+      dataSymbolJson.add(ModelerConstants.DATA, toDataTypeJson(dataSymbol.getData()));   
 
       // Model returned will be null in case of data delete operation
       ModelType containingModel = ModelUtils.findContainingModel(dataSymbol.getData());
@@ -912,58 +916,67 @@ public abstract class ModelElementMarshaller
       JsonObject dataFlowJson = new JsonObject();
       connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, dataFlowJson);
 
-      dataFlowJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-            ModelerConstants.DATA_FLOW_LITERAL);
-      dataFlowJson.addProperty(ModelerConstants.ID_PROPERTY,
-            "" + dataMappingConnection.getElementOid());
-      ActivityType activity = dataMappingConnection.getActivitySymbol().getActivity();
       DataType data = dataMappingConnection.getDataSymbol().getData();
-      for (DataMappingType dataMapping : activity.getDataMapping())
+      if (null != data)
       {
-         // Update the dataFlowJson for currentData symbol
-         if (dataMapping.getData().getId() == data.getId())
+         dataFlowJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+               ModelerConstants.DATA_FLOW_LITERAL);
+         dataFlowJson.addProperty(ModelerConstants.ID_PROPERTY,
+               "" + dataMappingConnection.getElementOid());
+         ActivityType activity = dataMappingConnection.getActivitySymbol().getActivity();
+         for (DataMappingType dataMapping : activity.getDataMapping())
          {
-            if (dataMapping.getDirection() == DirectionType.IN_LITERAL)
+            // Update the dataFlowJson for currentData symbol
+            if (dataMapping.getData().getId() == data.getId())
             {
-               dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
-               dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, false);
-               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
-                     dataMappingConnection.getDataSymbol().getElementOid());
-               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
-                     ModelerConstants.DATA);
-               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
-                     dataMappingConnection.getActivitySymbol().getElementOid());
-               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
-                     ModelerConstants.ACTIVITY_KEY);
+               if (dataMapping.getDirection() == DirectionType.IN_LITERAL)
+               {
+                  dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY,
+                        true);
+                  dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY,
+                        false);
+                  connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
+                        dataMappingConnection.getDataSymbol().getElementOid());
+                  connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
+                        ModelerConstants.DATA);
+                  connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
+                        dataMappingConnection.getActivitySymbol().getElementOid());
+                  connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
+                        ModelerConstants.ACTIVITY_KEY);
 
-            }
-            else if (dataMapping.getDirection() == DirectionType.OUT_LITERAL)
-            {
-               dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, false);
-               dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
-               // TODO - Currently API always assumes connectionJson.getSourceNode will be
-               // Data, to set Activity in sourceNode for OUT Mapping for data this code is
-               // placed here
-               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
-                     dataMappingConnection.getActivitySymbol().getElementOid());
-               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
-                     ModelerConstants.ACTIVITY_KEY);
-               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
-                     dataMappingConnection.getDataSymbol().getElementOid());
-               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
-                     ModelerConstants.DATA);
-            }
-            else
-            {
-               dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
-               dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
+               }
+               else if (dataMapping.getDirection() == DirectionType.OUT_LITERAL)
+               {
+                  dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY,
+                        false);
+                  dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY,
+                        true);
+                  // TODO - Currently API always assumes connectionJson.getSourceNode will
+                  // be data, to set Activity in sourceNode for OUT Mapping for data this
+                  // code is placed here
+                  connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
+                        dataMappingConnection.getActivitySymbol().getElementOid());
+                  connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
+                        ModelerConstants.ACTIVITY_KEY);
+                  connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
+                        dataMappingConnection.getDataSymbol().getElementOid());
+                  connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
+                        ModelerConstants.DATA);
+               }
+               else
+               {
+                  dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY,
+                        true);
+                  dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY,
+                        true);
+               }
             }
          }
+         dataFlowJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
+               MBFacade.getInstance().createFullId(ModelUtils.findContainingModel(data), data));
+         dataFlowJson.addProperty(ModelerConstants.ACTIVITY_ID_PROPERTY, activity.getId());
       }
 
-      dataFlowJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
-            MBFacade.getInstance().createFullId(ModelUtils.findContainingModel(data), data));
-      dataFlowJson.addProperty(ModelerConstants.ACTIVITY_ID_PROPERTY, activity.getId());
       return connectionJson;
    }
 
