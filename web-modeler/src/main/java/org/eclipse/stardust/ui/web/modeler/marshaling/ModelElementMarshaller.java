@@ -61,8 +61,7 @@ public abstract class ModelElementMarshaller
     */
    public JsonObject toJson(EObject modelElement)
    {
-      JsonObject jsResult;
-      String objectUri = null;
+      JsonObject jsResult = null;
 
       System.out.println("ModelElement to marshall: " + modelElement);
 
@@ -90,7 +89,11 @@ public abstract class ModelElementMarshaller
       }
       else if (modelElement instanceof TriggerType)
       {
-         jsResult = toStartEventJson((StartEventSymbol)((TriggerType) modelElement).getSymbols().get(0));
+         if ( !((TriggerType) modelElement).getSymbols().isEmpty()
+               && (((TriggerType) modelElement).getSymbols().get(0) instanceof StartEventSymbol))
+         {
+            jsResult = toStartEventJson((StartEventSymbol)((TriggerType) modelElement).getSymbols().get(0));
+         }
       }
       else if (modelElement instanceof ActivitySymbolType)
       {
@@ -132,7 +135,8 @@ public abstract class ModelElementMarshaller
       {
          jsResult = toOrganizationJson((OrganizationType) modelElement);
       }
-      else
+
+      if (null == jsResult)
       {
          jsResult = new JsonObject();
          if (modelElement instanceof IModelElement)
@@ -142,8 +146,6 @@ public abstract class ModelElementMarshaller
          jsResult.addProperty(ModelerConstants.TYPE_PROPERTY, modelElement.getClass()
                .getName());
          jsResult.addProperty("moreContent", "TODO");
-
-         objectUri = "...";
       }
 
       return jsResult;
@@ -163,10 +165,10 @@ public abstract class ModelElementMarshaller
       processJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(processDefinition));
       processJson.addProperty(ModelerConstants.TYPE_PROPERTY,
               ModelerConstants.PROCESS_KEY);
-      
+
       setContainingModelIdProperty(processJson, processDefinition);
 
-      
+
       loadDescription(processJson, processDefinition);
 
       JsonObject attributesJson = new JsonObject();
@@ -743,7 +745,7 @@ public abstract class ModelElementMarshaller
       dataSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, dataSymbol.getYPos());
       dataSymbolJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(dataSymbol));
       dataSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.DATA_SYMBOL);
-      dataSymbolJson.add(ModelerConstants.DATA, toDataTypeJson(dataSymbol.getData()));   
+      dataSymbolJson.add(ModelerConstants.DATA, toDataTypeJson(dataSymbol.getData()));
 
       // Model returned will be null in case of data delete operation
       ModelType containingModel = ModelUtils.findContainingModel(dataSymbol.getData());
@@ -770,10 +772,10 @@ public abstract class ModelElementMarshaller
       roleJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "false");
       roleJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(role));
       ModelType model = ModelUtils.findContainingModel(role);
-      
+
       if (null != model)
       {
-         List<OrganizationType> parentOrgs = MBFacade.getInstance().getParentOrganizations(model, role);      
+         List<OrganizationType> parentOrgs = MBFacade.getInstance().getParentOrganizations(model, role);
          if (parentOrgs.size() > 0)
          {
             // TODO - add array of orgs
@@ -809,7 +811,7 @@ public abstract class ModelElementMarshaller
       orgJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
       orgJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(org));
       ModelType model = ModelUtils.findContainingModel(org);
-      
+
       if (null != model)
       {
          List<OrganizationType> parentOrgs = MBFacade.getInstance().getParentOrganizations(model, org);
@@ -877,19 +879,19 @@ public abstract class ModelElementMarshaller
       }
 
       JsonObject accessPointsJson = new JsonObject();
-      
+
       applicationJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);
 
       for (AccessPointType accessPoint : application.getAccessPoint()) {
          JsonObject accessPointJson = new JsonObject();
-         
-         accessPointsJson.add(accessPoint.getId(), accessPointJson);         
+
+         accessPointsJson.add(accessPoint.getId(), accessPointJson);
          accessPointJson.addProperty(ModelerConstants.ID_PROPERTY, accessPoint.getId());
          accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY, accessPoint.getName());
          accessPointJson.addProperty(ModelerConstants.TYPE_PROPERTY, accessPoint.getType().getName());
          accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, accessPoint.getDirection().getLiteral());
-         
-         loadAttributes(accessPoint, accessPointJson);         
+
+         loadAttributes(accessPoint, accessPointJson);
       }
 
       return applicationJson;
