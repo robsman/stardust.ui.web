@@ -453,10 +453,6 @@ public class DescriptorFilterUtils
             {
                trace.debug("Performing like filter with filter value " + filterString);
             }
-            if (!filterValueStr.endsWith("%"))
-            {
-               filterValueStr += "%";
-            }
             if (isCaseDescriptor)
             {
                dataFilter=DataFilter.likeCaseDescriptor(dataId, filterValueStr);
