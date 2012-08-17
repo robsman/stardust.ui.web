@@ -21,7 +21,6 @@ import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
@@ -59,7 +58,8 @@ public class DataCommandHandler
    public void createData(LaneSymbol parentLaneSymbol, JsonObject request)
    {
       ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
-      ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
+      ProcessDefinitionType processDefinition = ModelUtils
+            .findContainingProcess(parentLaneSymbol);
       String dataFullID = extractString(request, ModelerConstants.DATA_FULL_ID_PROPERTY);
       String dataID = extractString(request, ModelerConstants.DATA_ID_PROPERTY);
       String dataName = extractString(request, ModelerConstants.DATA_NAME_PROPERTY);
@@ -71,7 +71,6 @@ public class DataCommandHandler
       synchronized (model)
       {
          EObjectUUIDMapper mapper = modelService().uuidMapper();
-         long maxOid = XpdlModelUtils.getMaxUsedOid(model);
 
          DataType data;
 
@@ -86,13 +85,12 @@ public class DataCommandHandler
                data = facade().createPrimitiveData(model, dataID, dataName,
                      ModelerConstants.STRING_PRIMITIVE_DATA_TYPE);
                mapper.map(data);
-               data.setElementOid(++maxOid);
             }
          }
 
-         DataSymbolType dataSymbol = facade().createDataSymbol(processDefinition,
-               xProperty, yProperty, widthProperty, heightProperty, parentLaneSymbol.getId(),
-               maxOid, data);
+         DataSymbolType dataSymbol = facade().createDataSymbol(model, data,
+               processDefinition, parentLaneSymbol.getId(), xProperty, yProperty,
+               widthProperty, heightProperty);
          mapper.map(dataSymbol);
       }
    }

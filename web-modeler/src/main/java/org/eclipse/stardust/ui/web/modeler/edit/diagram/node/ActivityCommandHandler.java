@@ -22,7 +22,6 @@ import javax.annotation.Resource;
 
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
@@ -79,15 +78,15 @@ public class ActivityCommandHandler
       synchronized (model)
       {
          ActivityType activity = facade().createActivity(model, processDefinition,
-               activityType, participantFullID, activityId, activityName,
+               activityType, activityId, activityName, participantFullID,
                applicationFullID, subProcessID);
 
          ModelService.setDescription(activity,
                request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
 
          ActivitySymbolType activitySymbol = facade().createActivitySymbol(model,
-               processDefinition, parentLaneSymbol.getId(), xProperty, yProperty,
-               widthProperty, heightProperty, activity);
+               activity, processDefinition, parentLaneSymbol.getId(), xProperty,
+               yProperty, widthProperty, heightProperty);
       }
    }
 

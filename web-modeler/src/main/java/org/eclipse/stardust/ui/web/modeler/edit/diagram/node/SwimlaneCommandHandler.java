@@ -66,9 +66,9 @@ public class SwimlaneCommandHandler
 
       synchronized (model)
       {
-         LaneSymbol laneSymbol = facade().createLane(model.getId(), model,
-               processDefinition, laneId, laneName, xPos, yPos, width, height,
-               orientation, participantFullID);
+         LaneSymbol laneSymbol = facade().createLane(model,
+               processDefinition, participantFullID, laneId, laneName, orientation, xPos, yPos,
+               width, height);
 
          parentSymbol.getLanes().add(laneSymbol);
 
