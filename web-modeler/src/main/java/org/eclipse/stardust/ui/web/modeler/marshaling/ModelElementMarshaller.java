@@ -126,11 +126,11 @@ public abstract class ModelElementMarshaller
       }
       else if (modelElement instanceof DataType)
       {
-         jsResult = toDataTypeJson((DataType) modelElement);
+         jsResult = toDataJson((DataType) modelElement);
       }
       else if (modelElement instanceof DataSymbolType)
       {
-         jsResult = toDataJson((DataSymbolType) modelElement);
+         jsResult = toDataSymbolJson((DataSymbolType) modelElement);
       }
       else if (modelElement instanceof RoleType)
       {
@@ -371,7 +371,7 @@ public abstract class ModelElementMarshaller
             for (DataSymbolType dataSymbol : laneSymbol.getDataSymbol())
             {
                //Multiple Data Symbols can have same ID
-               dataSymbolsJson.add(String.valueOf(dataSymbol.getElementOid()), toDataJson(dataSymbol));
+               dataSymbolsJson.add(String.valueOf(dataSymbol.getElementOid()), toDataSymbolJson(dataSymbol));
             }
          }
 
@@ -704,11 +704,13 @@ public abstract class ModelElementMarshaller
     * @param data
     * @return
     */
-   public JsonObject toDataTypeJson(DataType data)
+   public JsonObject toDataJson(DataType data)
    {
       JsonObject dataJson = new JsonObject();
+      
       if (null != data)
       {
+         dataJson.addProperty(ModelerConstants.TYPE_PROPERTY, "data");
          dataJson.addProperty(ModelerConstants.ID_PROPERTY, data.getId());
          dataJson.addProperty(ModelerConstants.NAME_PROPERTY, data.getName());
          dataJson.addProperty(ModelerConstants.UUID_PROPERTY,
@@ -717,20 +719,22 @@ public abstract class ModelElementMarshaller
          dataJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY,
                eObjectUUIDMapper().getUUID(model));
          setContainingModelIdProperty(dataJson, data);
-         if (null != data.getDescription())
-         {
-            dataJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
-                  (String) data.getDescription().getMixed().get(0).getValue());
-         }
-         else
-         {
-            dataJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, "");
-         }
-         if (data.getType() != null)
-         {
-            dataJson.addProperty(ModelerConstants.TYPE_PROPERTY, data.getType().getId());
-         }
+         
+         loadDescription(dataJson, data);
+         loadAttributes(data, dataJson);
+
+//         if (data.getType().@@@equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
+//         {
+//            dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY, ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
+//            dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID, @full id@);
+//         }
+//         else (data.getType().@@@equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
+//         {
+//            dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY, ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
+//            dataJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY, @integer etc.@);
+//         }
       }
+      
       return dataJson;
    }
 
@@ -739,7 +743,7 @@ public abstract class ModelElementMarshaller
     * @param startEventSymbol
     * @return
     */
-   public JsonObject toDataJson(DataSymbolType dataSymbol)
+   public JsonObject toDataSymbolJson(DataSymbolType dataSymbol)
    {
       JsonObject dataSymbolJson = new JsonObject();
 
@@ -749,9 +753,12 @@ public abstract class ModelElementMarshaller
       dataSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, dataSymbol.getYPos());
       dataSymbolJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(dataSymbol));
       dataSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.DATA_SYMBOL);
-      dataSymbolJson.add(ModelerConstants.DATA, toDataTypeJson(dataSymbol.getData()));
+      
+      // TODO REVIEW This is not correct, data are loaded separately 
+      //dataSymbolJson.add(ModelerConstants.DATA, toDataTypeJson(dataSymbol.getData()));
 
       // Model returned will be null in case of data delete operation
+      
       ModelType containingModel = ModelUtils.findContainingModel(dataSymbol.getData());
       if (null != containingModel)
       {
@@ -828,6 +835,7 @@ public abstract class ModelElementMarshaller
                eObjectUUIDMapper().getUUID(model));
          orgJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
       }
+      
       loadDescription(orgJson, org);
       loadAttributes(org, orgJson);
 
@@ -978,6 +986,7 @@ public abstract class ModelElementMarshaller
                }
             }
          }
+         
          dataFlowJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
                facade().createFullId(ModelUtils.findContainingModel(data), data));
          dataFlowJson.addProperty(ModelerConstants.ACTIVITY_ID_PROPERTY, activity.getId());
