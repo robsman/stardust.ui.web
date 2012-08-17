@@ -917,7 +917,14 @@ define(
 
 							//this.diagram.submitUpdate();
 							var oldGeometry = {"x": this.dragStartX, "y" : this.dragStartY, "oid" : this.oid};
-							var newGeometry = {"x": this.x, "y" : this.y, "oid" : this.oid};
+							var newGeometry = {
+								"x" : this.x
+										- m_constants.POOL_LANE_MARGIN,
+								"y" : this.y
+										- m_constants.POOL_LANE_MARGIN
+										- m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT,
+								"oid" : this.oid
+							};
 							
 							var command = m_command.createMoveNodeSymbolCommand(this.diagram.model.id, this.oid, newGeometry);
 							m_commandsController.submitCommand(command);
@@ -930,7 +937,14 @@ define(
 								//this.submitUpdate();
 
 								var oldGeometry = {"x": this.dragStartX, "y" : this.dragStartY, "oid" : this.oid};
-								var newGeometry = {"x": this.x, "y" : this.y, "oid" : this.oid};
+								var newGeometry = {
+										"x" : this.x
+												- m_constants.POOL_LANE_MARGIN,
+										"y" : this.y
+												- m_constants.POOL_LANE_MARGIN
+												- m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT,
+										"oid" : this.oid
+									};
 
 								var command = m_command.createMoveNodeSymbolCommand(this.diagram.model.id, this.oid, newGeometry);
 								m_commandsController.submitCommand(command);

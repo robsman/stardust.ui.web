@@ -88,9 +88,10 @@ public class EventCommandHandler
             endEventSymbol.setElementOid(++maxOid);
 
             endEventSymbol.setXPos(extractInt(request, X_PROPERTY)
-                  - parentLaneSymbol.getXPos());
+                  - parentLaneSymbol.getXPos() - ModelerConstants.POOL_LANE_MARGIN);
             endEventSymbol.setYPos(extractInt(request, Y_PROPERTY)
-                  - parentLaneSymbol.getYPos());
+                  - parentLaneSymbol.getYPos() - ModelerConstants.POOL_LANE_MARGIN
+                  - ModelerConstants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
             endEventSymbol.setWidth(extractInt(request, WIDTH_PROPERTY));
             endEventSymbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
 

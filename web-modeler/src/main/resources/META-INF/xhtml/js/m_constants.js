@@ -154,6 +154,8 @@ define(function() {
 		LANE_DEFAULT_WIDTH : 400,
 		LANE_DEFAULT_HEIGHT : 1000,
 		LANE_MIN_WIDTH : 80,
+		// Adjustment required on Symbols
+		POOL_LANE_MARGIN : 5,
 		
 		// Other graphics
 
