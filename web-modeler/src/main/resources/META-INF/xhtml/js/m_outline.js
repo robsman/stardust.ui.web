@@ -1895,7 +1895,8 @@ define(
 								this.createModel(command.changes.added[i]);
 							} else if (m_constants.TYPE_DECLARATION_PROPERTY == command.changes.added[i].type) {
 								this.createStructuredDataType(command.changes.added[i]);
-							} else if (m_constants.PRIMITIVE_DATA_TYPE == command.changes.added[i].type
+							} else if (m_constants.DATA == command.changes.added[i].type
+											|| m_constants.PRIMITIVE_DATA_TYPE == command.changes.added[i].type
 											|| m_constants.STRUCTURED_DATA_TYPE == command.changes.added[i].type
 											|| m_constants.DMS_DOCUMENT_DATA_TYPE == command.changes.added[i].type) {
 								this.createData(command.changes.added[i]);
@@ -1961,7 +1962,8 @@ define(
 								this.deleteParticipant(command.changes.removed[i]);
 							} else if (m_constants.TYPE_DECLARATION_PROPERTY == command.changes.removed[i].type) {
 								this.deleteTypeDeclaration(command.changes.removed[i]);
-							} else if (m_constants.PRIMITIVE_DATA_TYPE == command.changes.removed[i].type
+							} else if (m_constants.DATA == command.changes.removed[i].type
+									|| m_constants.PRIMITIVE_DATA_TYPE == command.changes.removed[i].type
 									|| m_constants.STRUCTURED_DATA_TYPE == command.changes.removed[i].type
 									|| m_constants.DMS_DOCUMENT_DATA_TYPE == command.changes.removed[i].type) {
 								this.deleteData(command.changes.removed[i]);
