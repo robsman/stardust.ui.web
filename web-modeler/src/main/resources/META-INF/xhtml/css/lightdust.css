@@ -245,6 +245,11 @@ div.toolBar {
 	border-bottom: 1px solid #f2f2f;
 }
 
+.dataTable tr.selected,.dataTable tr.accept {
+	border-top: 1px solid #afd7ed;
+	border-bottom: 1px solid #afd7ed;
+	background: #ccedff;
+}
 .dataTable tbody tr td { /*padding-top: 2px;
 	padding-bottom: 2px;*/
 	padding-left: 10px;

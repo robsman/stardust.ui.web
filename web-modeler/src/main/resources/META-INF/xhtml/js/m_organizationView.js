@@ -183,9 +183,9 @@ define(
 											.removeAttr("disabled");
 								} else {
 									view.departmentDataSelect
-											.addAttr("disabled");
+											.attr("disabled", true);
 									view.departmentDataPathInput
-											.addAttr("disabled");
+											.attr("disabled", true);
 								}
 							});
 

@@ -22,7 +22,8 @@
 					<div class="errorMessagesPanel">
 						<ul id="errorMessagesList">
 						</ul>
-					</div></td>
+					</div>
+				</td>
 			</tr>
 			<tr>
 				<td>
@@ -32,19 +33,16 @@
 								<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 									style="margin-bottom: 10px; margin-right: 10px;">
 									<tr>
-										<td><label for="idOutput">Model ID</label>
-										</td>
-										<td><div id="idOutput" class="output"></div>
-										</td>
+										<td><label for="idOutput">Model ID</label></td>
+										<td><div id="idOutput" class="output"></div></td>
 									</tr>
 									<tr>
-										<td><label for="nameInput">Model Name</label>
-										</td>
+										<td><label for="nameInput">Model Name</label></td>
 										<td><input id="nameInput" type="text"
-											style="width: 200px;"></input>
-										</td>
+											style="width: 200px;"></input></td>
 									</tr>
-								</table></td>
+								</table>
+							</td>
 							<td>
 								<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 									style="margin-bottom: 10px;">
@@ -52,24 +50,22 @@
 										<td><label for="creationDateOutput">Creation Date</label>
 										</td>
 										<td><div id="creationDateOutput" class="output">12.12.2012
-												12:70</div>
-										</td>
+												12:70</div></td>
 									</tr>
 									<tr>
 										<td><label for="lastModificationDateOutput">Last
-												Modification Date</label>
-										</td>
+												Modification Date</label></td>
 										<td><div id="lastModificationDateOutput" class="output">23.10.2013
-												10:00</div>
-										</td>
+												10:00</div></td>
 									</tr>
-								</table></td>
+								</table>
+							</td>
 						</tr>
-					</table></td>
+					</table>
+				</td>
 			</tr>
 			<tr>
-				<td><label for="descriptionTextarea">Description</label>
-				</td>
+				<td><label for="descriptionTextarea">Description</label></td>
 			</tr>
 			<tr>
 				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
@@ -81,20 +77,25 @@
 						<ul>
 							<li><a href="#versioningTab"><img
 									src="../../images/icons/basic-properties-page.png"></img><span
-									class="tabLabel">Versioning</span> </a>
-							</li>
+									class="tabLabel">Versioning</span> </a></li>
 							<li><a href="#accessControlTab"><img
 									src="../../images/icons/basic-properties-page.png"></img><span
-									class="tabLabel">Access Control</span> </a>
-							</li>
+									class="tabLabel">Access Control</span> </a></li>
 							<li><a href="#problemsTab"><img
 									src="../../images/icons/basic-properties-page.png"></img><span
-									class="tabLabel">Problems</span> </a>
-							</li>
+									class="tabLabel">Problems</span> </a></li>
 						</ul>
 						<div id="versioningTab">
 							<div class="panelBorder">
 								<table cellpadding="0" cellspacing="0" class="layoutTable">
+									<tr>
+										<td><div class="toolBar">
+												<input id="addVersionButton" type="image"
+													src="../../images/icons/add.png" height="16" width="16"
+													title="Add Version" alt="Add Version"
+													class="toolbarButton" />
+											</div></td>
+									</tr>
 									<tr>
 										<td>
 											<div class="dataTable">
@@ -109,7 +110,8 @@
 													</thead>
 													<tbody />
 												</table>
-											</div></td>
+											</div>
+										</td>
 									</tr>
 								</table>
 							</div>
@@ -125,8 +127,9 @@
 											role.</td>
 									</tr>
 									<tr>
-										<td><a id="markReadonlyLink" style="margin-top: 10px;">Mark
-												readonly &raquo;</a></td>
+										<td style="padding-top: 10px;"><a id="markReadonlyLink">Mark
+												readonly &raquo;</a>
+										</td>
 									</tr>
 								</table>
 							</div>
@@ -139,8 +142,9 @@
 											permissions to all users.</td>
 									</tr>
 									<tr>
-										<td><a id="markWriteableLink"
-											style="margin-top: 10px;">Mark writeable &raquo;</a></td>
+										<td style="padding-top: 10px;"><a id="markWriteableLink" style="margin-top: 10px;">Mark
+												writeable &raquo;</a>
+										</td>
 									</tr>
 								</table>
 							</div>
@@ -149,10 +153,12 @@
 							<div class="panelBorder">
 								<table cellpadding="0" cellspacing="0" class="layoutTable">
 									<tr>
-										<td><a id="refreshValidationLink"><img
-												src="../../images/icons/refresh.png"></img>
-										</a>
-										</td>
+										<td><div class="toolBar">
+												<input id="refreshValidationButton" type="image"
+													src="../../images/icons/refresh.png" height="16" width="16"
+													title="Validation Refresh" alt="Validation Refresh"
+													class="toolbarButton" />
+											</div></td>
 									</tr>
 									<tr>
 										<td>
@@ -168,12 +174,14 @@
 													</thead>
 													<tbody />
 												</table>
-											</div></td>
+											</div>
+										</td>
 									</tr>
 								</table>
 							</div>
 						</div>
-					</div></td>
+					</div>
+				</td>
 			</tr>
 		</table>
 	</div>

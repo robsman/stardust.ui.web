@@ -36,9 +36,15 @@ define(
 
 				this.dataPathTable = this.mapInputId("dataPathTable");
 				this.addDataPathButton = this.mapInputId("addDataPathButton");
+				this.deleteDataPathButton = this
+						.mapInputId("deleteDataPathButton");
+				this.moveDataPathUpButton = this
+						.mapInputId("moveDataPathUpButton");
+				this.moveDataPathDownButton = this
+						.mapInputId("moveDataPathDownButton");
 				this.dataPathNameInput = this.mapInputId("dataPathNameInput");
 				this.inDataPathInput = this.mapInputId("inDataPathInput");
-				this.outDataPathInput = this.mapInputId("outDataPathInput");				
+				this.outDataPathInput = this.mapInputId("outDataPathInput");
 				this.descriptorInput = this.mapInputId("descriptorInput");
 				this.keyDescriptorInput = this.mapInputId("keyDescriptorInput");
 				this.dataPathDataSelect = this.mapInputId("dataPathDataSelect");
@@ -60,11 +66,46 @@ define(
 				}, function(event) {
 					event.data.page.addDataPath();
 				});
+
+				this.deleteDataPathButton.click({
+					"page" : this
+				}, function(event) {
+					var dataPathId = jQuery("table#dataPathTable tr.selected")
+							.attr("id");
+
+					event.data.page.removeDataPath(dataPathId);
+				});
+
+				this.moveDataPathUpButton.click({
+					"page" : this
+				}, function(event) {
+					var dataPathId = jQuery("table#dataPathTable tr.selected")
+							.attr("id");
+
+					m_utils.debug("Moving up" + dataPathId);
+				});
+
+				this.moveDataPathDownButton.click({
+					"page" : this
+				}, function(event) {
+					var dataPathId = jQuery("table#dataPathTable tr.selected")
+							.attr("id");
+
+					m_utils.debug("Moving down" + dataPathId);
+				});
+
 				/**
 				 * 
 				 */
 				ProcessDataPathPropertiesPage.prototype.setElement = function() {
 					this.populateDataPathTable();
+				};
+
+				/**
+				 * 
+				 */
+				ProcessDataPathPropertiesPage.prototype.getModelElement = function() {
+					return this.propertiesPanel.element;
 				};
 
 				/**
@@ -80,10 +121,11 @@ define(
 				 * 
 				 */
 				ProcessDataPathPropertiesPage.prototype.addDataPath = function() {
-					this.propertiesPanel.element.dataPathes[this.dataPathNameInput
+					this.getModelElement().dataPathes[this.dataPathNameInput
 							.val()] = {
 						name : this.dataPathNameInput.val(),
-						direction : this.inDataPathInput.is(":checked") ? "IN" : "OUT",
+						direction : this.inDataPathInput.is(":checked") ? "IN"
+								: "OUT",
 						descriptor : this.descriptorInput.is(":checked"),
 						keyDescriptor : this.keyDescriptorInput.is(":checked"),
 						dataFullId : this.dataPathDataSelect.val(),
@@ -93,7 +135,7 @@ define(
 					this
 							.submitChanges({
 								modelElement : {
-									dataPathes : this.propertiesPanel.element.dataPathes
+									dataPathes : this.getModelElement().dataPathes
 								}
 							});
 
@@ -103,9 +145,20 @@ define(
 				/**
 				 * 
 				 */
-				ProcessDataPathPropertiesPage.prototype.removeDataPath = function() {
+				ProcessDataPathPropertiesPage.prototype.removeDataPath = function(
+						dataPathId) {
+					delete this.getModelElement().dataPathes[dataPathId];
+
+					this
+							.submitChanges({
+								modelElement : {
+									dataPathes : this.getModelElement().dataPathes
+								}
+							});
+
+					this.populateDataPathTable();
 				};
-				
+
 				/**
 				 * 
 				 */
@@ -126,7 +179,7 @@ define(
 
 						item += dataPath.id;
 
-						item += "TableRow\"><td class=\"";
+						item += "\"><td class=\"";
 
 						if (dataPath.direction == "IN") {
 							if (dataPath.descriptor) {
@@ -158,21 +211,14 @@ define(
 						this.dataPathTable.append(item);
 					}
 
+					jQuery("table#dataPathTable tr").mousedown(function() {
+						jQuery("tr.selected").removeClass("selected");
+						jQuery(this).addClass("selected");
+					});
+
 					// this.dataPathTable.tableScroll({
 					// height : 200
 					// });
 				};
-
-				/**
-				 * 
-				 */
-				ProcessDataPathPropertiesPage.prototype.submitChanges = function(
-						changes) {
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(
-									this.propertiesPanel.element.model.id,
-									this.propertiesPanel.element.oid, changes));
-				};
-
 			}
 		});

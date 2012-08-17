@@ -43,12 +43,11 @@ define(
 					this.applicationList = this.mapInputId("applicationList");
 					this.subprocessInput = this.mapInputId("subprocessInput");
 					this.subprocessList = this.mapInputId("subprocessList");
+					this.shareDataInput = this.mapInputId("shareDataInput");
 					this.participantOutput = this.mapInputId("participantOutput");
 					this.hibernateInitiallyInput = this.mapInputId("hibernateInitiallyInput");
 					this.supportsRelocationInput = this.mapInputId("supportsRelocationInput");
 					this.isRelocationTargetInput = this.mapInputId("isRelocationTargetInput");
-
-					// Initialize callbacks
 
 					this.registerCheckboxInputForModelElementAttributeChangeSubmission(
 							this.hibernateInitiallyInput, "@TOADD@");
@@ -56,7 +55,7 @@ define(
 							this.supportsRelocationInput, "carnot:engine:relocate:source");
 					this.registerCheckboxInputForModelElementAttributeChangeSubmission(
 							this.isRelocationTargetInput, "carnot:engine:relocate:target");
-					
+					this.registerCheckboxInputForModelElementAttributeChangeSubmission(this.shareDataInput, "@synchshared");					
 					this.applicationList
 							.change(
 									{
@@ -197,6 +196,7 @@ define(
 					this.propertiesPanel.showHelpPanel();
 					this.subprocessInput.attr("checked", false);
 					this.subprocessList.attr("disabled", true);
+					this.shareDataInput.attr("disabled", true);
 					this.subprocessList.val(m_constants.TO_BE_DEFINED);
 					this.applicationInput.attr("checked", true);
 					this.applicationList.removeAttr("disabled");
@@ -229,7 +229,8 @@ define(
 					this.propertiesPanel.showHelpPanel();
 					this.subprocessInput.attr("checked", true);
 					this.subprocessList.removeAttr("disabled");
-
+					this.shareDataInput.removeAttr("disabled");
+					
 					if (subprocessFullId != null) {
 						this.subprocessList.val(subprocessFullId);
 					}

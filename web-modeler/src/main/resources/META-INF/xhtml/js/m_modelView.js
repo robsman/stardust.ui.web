@@ -45,6 +45,7 @@ define(
 				this.versionTableBody = jQuery("table#versionTable tbody");
 				this.problemsTable = jQuery("#problemsTable");
 				this.problemsTableBody = jQuery("table#problemsTable tbody");
+				this.refreshValidationButton = jQuery("#refreshValidationButton");
 
 				jQuery("#modelTabs").tabs();
 
@@ -66,6 +67,12 @@ define(
 							name : view.nameInput.val()
 						});
 					}
+				});
+
+				this.refreshValidationButton.click({
+					"view" : this
+				}, function(event) {
+					event.data.view.refreshValidation();
 				});
 
 				/**
