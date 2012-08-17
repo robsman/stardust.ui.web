@@ -1972,66 +1972,6 @@ define(
 					} else if (command.scope == "all") {
 						// @deprecated
 						refresh();
-					} else if (command.type == m_constants.CREATE_COMMAND) {
-						var type = m_model.findElementTypeByPath(command.path);
-
-						m_utils.debug("Object Type: " + type);
-
-						if (type == m_constants.MODEL) {
-							this.createModel(command.newObject);
-						} else if (type == m_constants.PROCESS_DEFINITION) {
-							this.createProcess(command.newObject);
-						} else if (type == m_constants.APPLICATION) {
-							this.createApplication(command.newObject);
-							m_utils.debug("Newly created applicaton:");
-							m_utils.debug(m_model.getModels());
-						} else if (type == m_constants.STRUCTURED_DATA_TYPE) {
-							this.createStructuredDataType(command.newObject);
-						} else if (type == m_constants.DATA) {
-							this.createData(command.newObject);
-						} else if (type == m_constants.PARTICIPANT) {
-							this.createParticipant(command.newObject);
-						}
-					} else if (command.type == m_constants.DELETE_COMMAND) {
-						var type = m_model.findElementTypeByPath(command.path);
-
-						if (type == m_constants.MODEL) {
-							m_model.deleteModel(command.oldObject.id);
-							jQuery("#outline").jstree("remove",
-									"#" + command.oldObject.id)
-						} else if (type == m_constants.PROCESS_DEFINITION) {
-							jQuery("#outline").jstree("remove",
-									"#" + command.oldObject.processId)
-							var model = m_model
-									.findModel(command.oldObject.modelId);
-							m_process.deleteProcess(
-									command.oldObject.processId, model);
-						} else if (type == m_constants.APPLICATION) {
-							jQuery("#outline").jstree("remove",
-									"#" + command.oldObject.applicationId)
-							var model = m_model
-									.findModel(command.oldObject.modelId);
-							m_application.deleteApplication(
-									command.oldObject.applicationId, model);
-						} else if (type == m_constants.STRUCTURED_DATA_TYPE) {
-							jQuery("#outline")
-									.jstree(
-											"remove",
-											"#"
-													+ command.oldObject.structuredDataTypeId)
-							var model = m_model
-									.findModel(command.oldObject.modelId);
-							m_dataStructure.deleteStructuredType(
-									command.oldObject.structuredDataTypeId,
-									model);
-						} else if (type == m_constants.PARTICIPANT) {
-							jQuery("#outline").jstree("remove",
-									"#" + command.oldObject.participantId)
-							var model = m_model
-									.findModel(command.oldObject.modelId);
-							m_participant.deleteParticipantRole(
-									command.oldObject.participantId, model);
-						}
 					}
 				};
 
@@ -2221,7 +2161,7 @@ define(
 					jQuery("#outline").jstree("create", parentSelector, "last",
 							{
 								"attr" : {
-									"rel" : data.type,
+									"rel" : data.dataType,
 									"modelId" : model.id,
 									"modelUUID" : model.uuid,
 									"id" : data.uuid,
