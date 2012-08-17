@@ -33,14 +33,20 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
  */
 public class ModelHelper
 {
-   // TODO: This method probably needs to move to the I18Utils class
-   /**
-    * @param participantInfo
-    * @return
-    */
    public static String getParticipantName(ParticipantInfo participantInfo)
    {
-      String participantName = "<Not Found>";
+      return getParticipantLabel(participantInfo).getLabel();
+   }
+   
+   // TODO: This method probably needs to move to the I18Utils class
+   
+   /**
+    * @param participantInfo
+    * @return ParticipantLabel
+    */
+   public static ParticipantLabel getParticipantLabel(ParticipantInfo participantInfo)
+   {
+      ParticipantLabel participantlabel = new ParticipantLabel();
 
       if (participantInfo instanceof ModelParticipantInfo)
       {
@@ -55,10 +61,10 @@ public class ModelHelper
                // Format: OrgName - DeptName
                Organization organization = (Organization) ParticipantUtils.getParticipant(organizationInfo);
                
-               participantName = I18nUtils.getParticipantName(organization); 
+               participantlabel.setParticipantName(I18nUtils.getParticipantName(organization)); 
                if (departmentInfo != null)
                {
-                  participantName += " - " + departmentInfo.getName();
+                  participantlabel.setDepartmentName(departmentInfo.getName());
                }
             }
             else if (modelParticipantInfo instanceof RoleInfo)
@@ -68,26 +74,30 @@ public class ModelHelper
 
                // Format: RoleName (OrgName - DeptName)
 
-               participantName = I18nUtils.getParticipantName(role);
+               participantlabel.setParticipantName(I18nUtils.getParticipantName(role));
                if (departmentInfo != null && !Department.DEFAULT.equals(departmentInfo))
                {
-                  AdministrationService as = SessionContext.findSessionContext().getServiceFactory().getAdministrationService();
+                  AdministrationService as = SessionContext.findSessionContext().getServiceFactory()
+                        .getAdministrationService();
                   Department department = as.getDepartment(departmentInfo.getOID());
-                  String organizationName = I18nUtils.getParticipantName(department.getOrganization()); 
-                  participantName += " (" + organizationName + " - " + department.getName() + ")";
+                  String organizationName = I18nUtils.getParticipantName(department.getOrganization());
+                  participantlabel.setOrganizationName(organizationName);
+                  participantlabel.setDepartmentName(department.getName());
                }
             }
          }
          else
          {
-            participantName = I18nUtils.getParticipantName(ParticipantUtils.getParticipant(participantInfo));
+            participantlabel.setParticipantName(I18nUtils.getParticipantName(ParticipantUtils
+                  .getParticipant(participantInfo)));
          }
       }
       else if (participantInfo instanceof DynamicParticipantInfo)
       {
-         participantName = I18nUtils.getParticipantName(ParticipantUtils.getParticipant(participantInfo));
+         participantlabel.setParticipantName(I18nUtils.getParticipantName(ParticipantUtils
+               .getParticipant(participantInfo)));
       }
 
-      return participantName;
+      return participantlabel;
    }
 }

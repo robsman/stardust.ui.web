@@ -38,7 +38,7 @@
 					</f:facet>
 					<f:facet name="content">
 						<ice:panelGroup style="display: inline;">
-							<ice:outputText value="#{item.userObject.text}" />
+							<ice:outputText value="#{item.userObject.text}" title="#{item.userObject.tooltip}" />
 							<ice:commandLink styleClass="action-link"
 								actionListener="#{item.userObject.select}">
 								<pc:automationTag value="auto-PP-LP-MyAssign-ItemsCnt" standAlone="true"/>

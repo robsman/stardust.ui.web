@@ -58,4 +58,22 @@ public class StringUtils
       }
       return source.substring(0, pos);
    }
+   
+   /**
+    * Wraps the string and appends with ...
+    * 
+    * 
+    * @param inStr
+    * @param length
+    * @return
+    */
+   public static String wrapString(String inStr, int length)
+   {
+      String wrappedStr = inStr;
+      if (inStr.length() > length)
+      {
+         wrappedStr = inStr.substring(0, length) + "...";
+      }
+      return wrappedStr;
+   }
 }

@@ -21,6 +21,7 @@ import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
+import org.eclipse.stardust.ui.web.viewscommon.common.ParticipantLabel;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
 
@@ -64,8 +65,9 @@ public class WorklistsTreeUserObject extends IceUserObject
       params.put(Query.class.getName(), ParticipantWorklistCacheManager.getInstance().getWorklistQuery(participantInfo));
       params.put("participantInfo", participantInfo);
       params.put("id", participant.getQualifiedId());
-      String name = ModelHelper.getParticipantName(participantInfo);
-      params.put("name", name);
+      ParticipantLabel label = ModelHelper.getParticipantLabel(participantInfo);
+      params.put("name", label.getLabel());
+      params.put("wrappedLabel", label.getWrappedLabel());
       params.put("refreshWorklistTable", refreshWorklistTable);
       PPUtils.openWorklistView("id=" + viewKey, params);
       PPUtils.selectWorklist(participantInfo);
@@ -78,7 +80,9 @@ public class WorklistsTreeUserObject extends IceUserObject
    public void setModel(ParticipantInfo participantInfo)
    {
       this.participantInfo = participantInfo;
-      this.setText(ModelHelper.getParticipantName(participantInfo) + ": ");
+      ParticipantLabel label = ModelHelper.getParticipantLabel(participantInfo);
+      this.setText(label.getWrappedLabel() + ": ");
+      this.setTooltip(label.getLabel());
       this.setLeafIcon(PPUtils.getParticipantIcon(participantInfo));
    }
 

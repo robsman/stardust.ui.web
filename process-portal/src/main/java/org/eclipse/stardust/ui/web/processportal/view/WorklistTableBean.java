@@ -25,6 +25,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.Note;
@@ -89,7 +90,6 @@ import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
 import org.eclipse.stardust.ui.web.processportal.common.Resources;
 import org.eclipse.stardust.ui.web.processportal.common.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.ProcessActivityDataFilter;
-import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutoCompleteItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutocompleteTableDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityAutocompleteItem;
@@ -189,8 +189,6 @@ public class WorklistTableBean extends UIComponentBean
 
    private String id;
 
-   private String name;
-   
    private boolean filtersAddedToQuery;
    
    private boolean needUpdateForActvityEvent;
@@ -226,12 +224,21 @@ public class WorklistTableBean extends UIComponentBean
          break;
          
       case ACTIVATED:
+         
          if (!isActivated || needUpdateForActvityEvent)
          {
             update();
             isActivated = true;
             needUpdateForActvityEvent = false;
          }
+         
+         // set wrapped label if provided
+         String wrappedLabel = (String) getParamFromView("wrappedLabel");
+         if (StringUtils.isNotEmpty(wrappedLabel))
+         {
+            this.view.setLabel(getMessages().getString("wrappedLabel", wrappedLabel));
+         }
+         
          break;
          
       case POST_OPEN_LIFECYCLE: // if the view is already open and refresh it with latest
@@ -409,19 +416,6 @@ public class WorklistTableBean extends UIComponentBean
       participantInfo = (ParticipantInfo) getParamFromView("participantInfo");
       
       id = (String) getParamFromView("id");
-
-      if (null != participantInfo)
-      {      
-         name = ModelHelper.getParticipantName(participantInfo);
-      }
-      else // For Duration Related worklists
-      {
-         Object worklistName = getParamFromView("name");
-         if (null != worklistName)
-         {
-            name = worklistName.toString();
-         }
-      }
    }
    
    /**
@@ -626,11 +620,6 @@ public class WorklistTableBean extends UIComponentBean
    public String getBasePath()
    {
       return ".";
-   }
-
-   public String getName()
-   {
-      return name;
    }
 
    public void setEventController(EventController eventController)
