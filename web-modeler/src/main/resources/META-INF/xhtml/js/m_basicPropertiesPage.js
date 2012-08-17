@@ -61,7 +61,7 @@ define(
 					this.guidOutput.empty();
 					this.idOutput.empty();
 
-					this.guidOutput.append(this.getModelElement().oid);
+					this.guidOutput.append(this.getModelElementUuid());
 					this.idOutput.append(this.getModelElement().id);
 					this.nameInput.val(this.getModelElement().name);
 					this.descriptionInput
@@ -84,6 +84,15 @@ define(
 				 */
 				BasicPropertiesPage.prototype.getModelElement = function() {
 					return this.propertiesPanel.element.modelElement;
+				};
+
+				/**
+				 * 
+				 */
+				BasicPropertiesPage.prototype.getModelElementUuid = function() {
+					// TODO Replace with uuid
+					return this.propertiesPanel.element.oid;
+					//return this.getModelElement().uuid;
 				};
 
 				/**

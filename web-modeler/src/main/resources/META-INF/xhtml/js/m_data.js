@@ -23,7 +23,7 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 
 			data.initialize(model, "Data " + index);
 
-			data.type = m_constants.PRIMITIVE_DATA_TYPE;
+			data.dataType = m_constants.PRIMITIVE_DATA_TYPE;
 			data.primitiveDataType = m_constants.STRING_PRIMITIVE_DATA_TYPE;
 
 			return data;
@@ -36,7 +36,7 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 			data.initialize(model, dataStructure.name + index,
 							m_constants.STRUCTURED_DATA_TYPE);
 
-			data.type = m_constants.STRUCTURED_DATA_TYPE;
+			data.dataType = m_constants.STRUCTURED_DATA_TYPE;
 			data.structuredDataTypeFullId = dataStructure.getFullId();
 			
 			return data;
@@ -73,6 +73,7 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 		 * 
 		 */
 		Data.prototype.initialize = function(model, name) {
+			this.type = m_constants.DATA;
 			this.model = model;
 			this.id = m_utils.generateIDFromName(name);
 			this.name = name;

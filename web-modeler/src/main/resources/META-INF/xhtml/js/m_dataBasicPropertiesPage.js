@@ -22,8 +22,6 @@ define(
 			};
 
 			function DataBasicPropertiesPage(propertiesPanel) {
-				// Inheritance
-
 				var propertiesPage = m_basicPropertiesPage.create(propertiesPanel);
 
 				m_utils.inheritFields(this, propertiesPage);
@@ -42,8 +40,6 @@ define(
 					this.dataStructureList = this.mapInputId("dataStructureList");
 					this.documentInput = this.mapInputId("documentInput");
 					this.documentTypeList = this.mapInputId("documentTypeList");
-
-					// Initialize callbacks
 
 					this.primitiveInput
 							.click(
@@ -180,8 +176,19 @@ define(
 				/**
 				 * 
 				 */
+				DataBasicPropertiesPage.prototype.getModelElementUuid = function() {
+					return this.getModelElement().uuid;
+				};
+
+				/**
+				 * 
+				 */
 				DataBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();
+
+					m_utils.debug("===> Data");
+					m_utils.debug(this.propertiesPanel.element);
+					m_utils.debug(this.getModelElement());
 
 					this.populateDataStructuresSelectInput();
 					this.populateDocumentTypesSelectInput();
@@ -208,48 +215,5 @@ define(
 					
 					return false;
 				};
-
-				/**
-				 * 
-				 */
-				DataBasicPropertiesPage.prototype.apply = function() {
-					if (this.primitiveInput.is(":checked")) {
-						this.propertiesPanel.data.type = m_constants.PRIMITIVE_DATA_TYPE;
-						if (this.primitiveList.val() == m_constants.TO_BE_DEFINED) {
-							this.propertiesPanel.data.primitiveDataType = null;
-						} else {
-							this.propertiesPanel.data.primitiveDataType = this.primitiveList
-									.val();
-						}
-					} else if (this.dataStructureInput.is(":checked")) {
-						this.propertiesPanel.data.type = m_constants.STRUCTURED_DATA_TYPE;
-						if (this.dataStructureList.val() == m_constants.TO_BE_DEFINED) {
-							this.propertiesPanel.data.structuredDataFullId = null;
-						} else {
-							this.propertiesPanel.data.structuredDataTypeFullId = this.dataStructureList
-									.val();
-						}
-					} else if (this.documentInput.is(":checked")) {
-						this.propertiesPanel.data.type = m_constants.DOCUMENT_DATA_TYPE;
-						if (this.documentTypeList.val() == m_constants.TO_BE_DEFINED) {
-							this.propertiesPanel.data.structuredDataTypeFullId = null;
-						} else {
-							this.propertiesPanel.data.structuredDataTypeFullId = this.documentTypeList
-									.val();
-						}
-					}
-				};
-
-				/**
-				 * 
-				 */
-				DataBasicPropertiesPage.prototype.submitChanges = function(
-						changes) {
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(
-									this.propertiesPanel.element.oid, changes,
-									this.propertiesPanel.element));
-				};
-
 			}
 		});
