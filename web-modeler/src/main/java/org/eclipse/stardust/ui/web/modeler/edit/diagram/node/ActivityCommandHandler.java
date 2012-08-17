@@ -78,15 +78,16 @@ public class ActivityCommandHandler
       int heightProperty = extractInt(request, HEIGHT_PROPERTY);
       synchronized (model)
       {
-         long maxOid = XpdlModelUtils.getMaxUsedOid(model);
+         ActivityType activity = facade().createActivity(model, processDefinition,
+               activityType, participantFullID, activityId, activityName,
+               applicationFullID, subProcessID);
 
-         ActivityType activity = facade().createActivity(model, processDefinition, activityType, participantFullID,
-               activityId, activityName, applicationFullID, subProcessID);
+         ModelService.setDescription(activity,
+               request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
 
-         ModelService.setDescription(activity, request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
-
-         ActivitySymbolType activitySymbol = facade().createActivitySymbol(processDefinition, parentLaneSymbol.getId(),
-               xProperty, yProperty, widthProperty, heightProperty, maxOid, activity);
+         ActivitySymbolType activitySymbol = facade().createActivitySymbol(model,
+               processDefinition, parentLaneSymbol.getId(), xProperty, yProperty,
+               widthProperty, heightProperty, activity);
       }
    }
 
