@@ -731,7 +731,7 @@ public abstract class ModelElementMarshaller
 //         else (data.getType().@@@equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
 //         {
 //            dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY, ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
-//            dataJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY, @integer etc.@);
+//            dataJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, @integer etc.@);
 //         }
       }
       
