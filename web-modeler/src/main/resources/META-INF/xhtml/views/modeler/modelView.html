@@ -99,12 +99,12 @@
 										<td>
 											<div class="dataTable">
 												<table id="versionTable" class="treeTable"
-													style="width: 300px;">
+													style="width: 800px;">
 													<thead>
 														<tr>
 															<th style="width: 200px;">Date</th>
-															<th style="width: 100px;">Tag</th>
-															<th style="width: 100px;">Comments</th>
+															<th style="width: 200px;">Tag</th>
+															<th style="width: 400px;">Comments</th>
 														</tr>
 													</thead>
 													<tbody />
@@ -114,10 +114,46 @@
 								</table>
 							</div>
 						</div>
-						<div id="accessControlTab"></div>
+						<div id="accessControlTab">
+							<div id="markReadonlyPanel">
+								<table cellpadding="0" cellspacing="0" class="layoutTable">
+									<tr>
+										<td>You can mark a model as readonly to protect it
+											against changes if you have Administrator rights. This
+											operation is a shortcut to revoke all update and delete
+											permissions for users not being assigned to the Administrator
+											role.</td>
+									</tr>
+									<tr>
+										<td><a id="markReadonlyLink" style="margin-top: 10px;">Mark
+												readonly &raquo;</a></td>
+									</tr>
+								</table>
+							</div>
+							<div id="markWritablePanel" class="invisible">
+								<table cellpadding="0" cellspacing="0" class="layoutTable">
+									<tr>
+										<td>This model is marked readonly. You can remove the
+											readonly state if you have Administrator rights. This
+											operation is a shortcut to grant all update and delete
+											permissions to all users.</td>
+									</tr>
+									<tr>
+										<td><a id="markWriteableLink"
+											style="margin-top: 10px;">Mark writeable &raquo;</a></td>
+									</tr>
+								</table>
+							</div>
+						</div>
 						<div id="problemsTab">
 							<div class="panelBorder">
 								<table cellpadding="0" cellspacing="0" class="layoutTable">
+									<tr>
+										<td><a id="refreshValidationLink"><img
+												src="../../images/icons/refresh.png"></img>
+										</a>
+										</td>
+									</tr>
 									<tr>
 										<td>
 											<div class="dataTable">

@@ -25,8 +25,6 @@ define(
 			 * 
 			 */
 			function XsdStructuredDataTypeView() {
-				// Inheritance
-
 				var view = m_modelElementView.create();
 
 				m_utils.inheritFields(this, view);
@@ -173,7 +171,7 @@ define(
 
 						var content = "<tr id=\"schemaElementRow-" + n + "\">";
 
-						content += "<td><input class=\"deleteLink\" type=\"image\" src=\"../../images/icons/cross.png\"/></td>";
+						content += "<td><input class=\"deleteLink\" type=\"image\" src=\"../../images/icons/delete.png\"/></td>";
 						content += "<td>";
 						content += "<input type=\"text\" value=\""
 								+ schemaElement.name

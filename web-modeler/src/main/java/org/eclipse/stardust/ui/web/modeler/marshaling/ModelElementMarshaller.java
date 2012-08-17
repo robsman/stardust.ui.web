@@ -173,7 +173,6 @@ public abstract class ModelElementMarshaller
 
       setContainingModelIdProperty(processJson, processDefinition);
 
-
       loadDescription(processJson, processDefinition);
 
       JsonObject attributesJson = new JsonObject();

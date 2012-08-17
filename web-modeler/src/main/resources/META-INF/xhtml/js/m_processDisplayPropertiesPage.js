@@ -8,55 +8,83 @@
  * documentation
  ******************************************************************************/
 
-define(
-		[ "m_utils", "m_constants", 
-			"m_commandsController", "m_command", "m_propertiesPage" ],
-		function(m_utils, m_constants,
-				m_commandsController, m_command, m_propertiesPage) {
-			return {
-				create: function(propertiesPanel) {
-					return new ProcessDisplayPropertiesPage(propertiesPanel);
-				}
-			};
+define([ "m_utils", "m_constants", "m_commandsController", "m_command",
+		"m_propertiesPage" ], function(m_utils, m_constants,
+		m_commandsController, m_command, m_propertiesPage) {
+	return {
+		create : function(propertiesPanel) {
+			var page = new ProcessDisplayPropertiesPage(propertiesPanel);
 
-			function ProcessDisplayPropertiesPage(newPropertiesPanel, newId,
-					newTitle) {
+			page.initialize();
 
-				// Inheritance
+			return page;
+		}
+	};
 
-				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						newPropertiesPanel, "displayPropertiesPage", "Display", "../../images/icons/display-properties-page.png");
+	function ProcessDisplayPropertiesPage(propertiesPanel) {
+		var propertiesPage = m_propertiesPage.createPropertiesPage(
+				propertiesPanel, "displayPropertiesPage", "Display",
+				"../../images/icons/display-properties-page.png");
 
-				m_utils.inheritFields(this, propertiesPage);
-				m_utils.inheritMethods(ProcessDisplayPropertiesPage.prototype,
-						propertiesPage);
+		m_utils.inheritFields(this, propertiesPage);
+		m_utils.inheritMethods(ProcessDisplayPropertiesPage.prototype,
+				propertiesPage);
 
-				// Field initialization
+		/**
+		 * 
+		 */
+		ProcessDisplayPropertiesPage.prototype.initialize = function() {
+			this.auxiliaryProcessInput = this
+					.mapInputId("auxiliaryProcessInput");
 
-				/**
-				 * 
-				 */
-				ProcessDisplayPropertiesPage.prototype.setElement = function() {
-				};
+			this.registerCheckboxInputForModelElementAttributeChangeSubmission(
+					this.auxiliaryProcessInput, "isAuxiliaryProcess");
+		};
 
-				/**
-				 * 
-				 */
-				ProcessDisplayPropertiesPage.prototype.validate = function() {
-					this.propertiesPanel.clearErrorMessages();
-					
-					return true;
-				};
+		/**
+		 * 
+		 */
+		ProcessDisplayPropertiesPage.prototype.getModelElement = function() {
+			return this.propertiesPanel.element;
+		};
 
-				/**
-				 * 
-				 */
-				ProcessDisplayPropertiesPage.prototype.submitChanges = function(changes) {
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(this.propertiesPanel.element.model.id,
-									this.propertiesPanel.element.oid,
-									changes));
-				};
+		/**
+		 * 
+		 */
+		ProcessDisplayPropertiesPage.prototype.assembleChangedObjectFromProperty = function(property, value) {
+			var element = {};
+			
+			element[property] = value;
+			
+			return element;
+		};
 
-			}
-		});
+		/**
+		 * 
+		 */
+		ProcessDisplayPropertiesPage.prototype.assembleChangedObjectFromAttribute = function(attribute, value) {
+			var element = { attributes: {}};
+			
+			element.attributes[attribute] = value;
+			
+			return element;
+		};
+
+		/**
+		 * 
+		 */
+		ProcessDisplayPropertiesPage.prototype.setElement = function() {
+			this.auxiliaryProcessInput.attr("checked",
+					this.getModelElement().attributes["isAuxiliaryProcess"]);
+		};
+
+		/**
+		 * 
+		 */
+		ProcessDisplayPropertiesPage.prototype.validate = function() {
+			this.propertiesPanel.clearErrorMessages();
+
+			return true;
+		};
+	}
+});

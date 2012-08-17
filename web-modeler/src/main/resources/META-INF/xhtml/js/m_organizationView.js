@@ -9,17 +9,15 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_command", "m_commandsController", "m_dialog",
-				"m_modelElementView", "m_model", "m_typeDeclaration" ],
-		function(m_utils, m_command, m_commandsController, m_dialog,
-				m_modelElementView, m_model, m_typeDeclaration) {
-			var view;
-
+		[ "m_utils", "m_constants", "m_command", "m_commandsController",
+				"m_dialog", "m_modelElementView", "m_model",
+				"m_typeDeclaration" ],
+		function(m_utils, m_constants, m_command, m_commandsController,
+				m_dialog, m_modelElementView, m_model, m_typeDeclaration) {
 			return {
 				initialize : function(fullId) {
 					var organization = m_model.findParticipant(fullId);
-
-					view = new OrganizationView();
+					var view = new OrganizationView();
 					// TODO Unregister!
 					// In Initializer?
 
@@ -33,12 +31,11 @@ define(
 			 * 
 			 */
 			function OrganizationView() {
-				// Inheritance
+				var modelElementView = m_modelElementView.create();
 
-				var view = m_modelElementView.create();
-
-				m_utils.inheritFields(this, view);
-				m_utils.inheritMethods(OrganizationView.prototype, view);
+				m_utils.inheritFields(this, modelElementView);
+				m_utils.inheritMethods(OrganizationView.prototype,
+						modelElementView);
 
 				jQuery("#organizationTabs").tabs();
 
@@ -47,9 +44,10 @@ define(
 				 */
 				OrganizationView.prototype.initialize = function(organization) {
 					this.initializeModelElementView();
-					this.initializeModelElement(organization);
 
 					this.organization = organization;
+
+					this.initializeModelElement(organization);
 
 					m_utils.debug("===> Organization");
 					m_utils.debug(organization);
@@ -60,15 +58,19 @@ define(
 					this.supportsDepartmentsCheckbox = jQuery("#supportsDepartmentsCheckbox");
 					this.departmentDataSelect = jQuery("#departmentDataSelect");
 					this.departmentDataPathInput = jQuery("#departmentDataPathInput");
-					this.costCenterInput = jQuery("#costCenterInput");					
+					this.costCenterInput = jQuery("#costCenterInput");
+					this.leaderSelect = jQuery("#leaderSelect");
 
-                    this.registerInputForModelElementAttributeChangeSubmission(
-                    		this.departmentDataSelect, "carnot:engine:dataId");
-                    this.registerInputForModelElementAttributeChangeSubmission(
-                    		this.departmentDataPathInput, "carnot:engine:dataPath");
-                    this.registerCheckboxInputForModelElementAttributeChangeSubmission(
-                    		this.supportsDepartmentsCheckbox, "carnot:engine:bound");
-                    
+					this.registerInputForModelElementAttributeChangeSubmission(
+							this.departmentDataSelect, "carnot:engine:dataId");
+					this.registerInputForModelElementAttributeChangeSubmission(
+							this.departmentDataPathInput,
+							"carnot:engine:dataPath");
+					this
+							.registerCheckboxInputForModelElementAttributeChangeSubmission(
+									this.supportsDepartmentsCheckbox,
+									"carnot:engine:bound");
+
 					this.publicVisibilityCheckbox
 							.change(
 									{
@@ -167,16 +169,42 @@ define(
 													});
 										}
 									});
+					this.supportsDepartmentsCheckbox.click({
+						view : this
+					},
+							function(event) {
+								var view = event.data.view;
 
-					if (organization.attributes["carnot:engine:visibility"]
-							.equals("Public")) {
+								if (view.supportsDepartmentsCheckbox
+										.is(":checked")) {
+									view.departmentDataSelect
+											.removeAttr("disabled");
+									view.departmentDataPathInput
+											.removeAttr("disabled");
+								} else {
+									view.departmentDataSelect
+											.addAttr("disabled");
+									view.departmentDataPathInput
+											.addAttr("disabled");
+								}
+							});
+
+					this.populateDepartmentDataSelectInput();
+					this.populateLeaderSelectInput();
+
+					// TODO Workaround
+
+					if (this.organization.attributes == null) {
+						this.organization.attributes = {};
+					}
+
+					if ("Public" == this.organization.attributes["carnot:engine:visibility"]) {
 						this.publicVisibilityCheckbox.attr("checked", true);
 					} else {
 						this.publicVisibilityCheckbox.attr("checked", false);
 					}
 
-					if (organization.attributes["carnot:engine:tasks:assignment:mode"]
-							.equals("assemblyLine")) {
+					if ("assemblyLine" == this.organization.attributes["carnot:engine:tasks:assignment:mode"]) {
 						this.assignAutomaticallyRadio.attr("checked", true);
 						this.chooseAssignmentRadio.attr("checked", false);
 					} else {
@@ -184,12 +212,58 @@ define(
 						this.chooseAssignmentRadio.attr("checked", true);
 					}
 
-                    this.departmentDataSelect.val(organization.attributes["carnot:engine:dataId"]);
-                    this.departmentDataPathInput.val(organization.attributes["carnot:engine:dataPath"]);
-                    this.supportsDepartmentsCheckbox.attr("checked", organization.attributes["carnot:engine:bound"]);
+					if (this.organization.attributes["carnot:engine:bound"]) {
+						this.supportsDepartmentsCheckbox.attr("checked", true);
+						this.departmentDataSelect
+								.val(this.organization.attributes["carnot:engine:dataId"]);
+						this.departmentDataPathInput
+								.val(this.organization.attributes["carnot:engine:dataPath"]);
+					} else {
+						this.supportsDepartmentsCheckbox.attr("checked", false);
+						this.departmentDataSelect.addAttr("disabled");
+						this.departmentDataPathInput.addAttr("disabled");
+					}
 
 					this.costCenterInput
 							.val(this.organization.attributes["carnot:pwh:costCenter"]);
+				};
+
+				/**
+				 * 
+				 */
+				OrganizationView.prototype.populateDepartmentDataSelectInput = function() {
+					this.departmentDataSelect.empty();
+
+					for ( var n in m_model.getModels()) {
+						for ( var m in m_model.getModels()[n].dataItems) {
+							var data = m_model.getModels()[n].dataItems[m];
+
+							this.departmentDataSelect.append("<option value='"
+									+ data.getFullId() + "'>"
+									+ m_model.getModels()[n].name + "/"
+									+ data.name + "</option>");
+						}
+					}
+				};
+
+				/**
+				 * 
+				 */
+				OrganizationView.prototype.populateLeaderSelectInput = function() {
+					this.leaderSelect.empty();
+
+					for ( var n in m_model.getModels()) {
+						for ( var m in m_model.getModels()[n].participants) {
+							var participant = m_model.getModels()[n].participants[m];
+
+							if (participant.type == m_constants.ROLE_PARTICIPANT_TYPE) {
+								this.leaderSelect.append("<option value='"
+										+ participant.getFullId() + "'>"
+										+ m_model.getModels()[n].name + "/"
+										+ participant.name + "</option>");
+							}
+						}
+					}
 				};
 
 				/**

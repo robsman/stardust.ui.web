@@ -138,120 +138,16 @@ define(
 										}
 									});
 
-					this.workingWeeksPerYearInput
-							.change(
-									{
-										"view" : this
-									},
-									function(event) {
-										var view = event.data.view;
-
-										if (!view.validate()) {
-											return;
-										}
-
-										if (view.modelElement.attributes["carnot:pwh:workingWeeksPerYear"] != view.workingWeeksPerYearInput
-												.val()) {
-											view
-													.submitChanges({
-														attributes : {
-															"carnot:pwh:workingWeeksPerYear" : view.workingWeeksPerYearInput
-																	.val()
-														}
-													});
-										}
-									});
-					this.targetWorktimePerDayInput
-							.change(
-									{
-										"view" : this
-									},
-									function(event) {
-										var view = event.data.view;
-
-										if (!view.validate()) {
-											return;
-										}
-
-										if (view.modelElement.attributes["carnot:pwh:targetWorkTimePerDay"] != view.targetWorktimePerDayInput
-												.val()) {
-											view
-													.submitChanges({
-														attributes : {
-															"carnot:pwh:targetWorkTimePerDay" : view.targetWorktimePerDayInput
-																	.val()
-														}
-													});
-										}
-									});
-					this.targetWorktimePerWeekInput
-							.change(
-									{
-										"view" : this
-									},
-									function(event) {
-										var view = event.data.view;
-
-										if (!view.validate()) {
-											return;
-										}
-
-										if (view.modelElement.attributes["carnot:pwh:targetWorkTimePerWeek"] != view.targetWorktimePerWeekInput
-												.val()) {
-											view
-													.submitChanges({
-														attributes : {
-															"carnot:pwh:targetWorkTimePerWeek" : view.targetWorktimePerWeekInput
-																	.val()
-														}
-													});
-										}
-									});
-					this.targetQueueDepthInput
-							.change(
-									{
-										"view" : this
-									},
-									function(event) {
-										var view = event.data.view;
-
-										if (!view.validate()) {
-											return;
-										}
-
-										if (view.modelElement.attributes["carnot:pwh:targetQueueDepth"] != view.targetQueueDepthInput
-												.val()) {
-											view
-													.submitChanges({
-														attributes : {
-															"carnot:engine:visibility" : "Public"
-														}
-													});
-										}
-									});
-					this.actualCostPerMinuteInput
-							.change(
-									{
-										"view" : this
-									},
-									function(event) {
-										var view = event.data.view;
-
-										if (!view.validate()) {
-											return;
-										}
-
-										if (view.modelElement.attributes["carnot:pwh:actualCostPerMinute"] != this.actualCostPerMinuteInput
-												.val()) {
-											view
-													.submitChanges({
-														attributes : {
-															"carnot:pwh:actualCostPerMinute" : this.actualCostPerMinuteInput
-																	.val()
-														}
-													});
-										}
-									});
+                    this.registerInputForModelElementAttributeChangeSubmission(
+                    		this.workingWeeksPerYearInput, "carnot:pwh:workingWeeksPerYear");
+                    this.registerInputForModelElementAttributeChangeSubmission(
+                    		this.targetWorktimePerDayInput, "carnot:pwh:targetWorkTimePerDay");
+                    this.registerInputForModelElementAttributeChangeSubmission(
+                    		this.targetWorktimePerWeekInput, "carnot:pwh:targetWorkTimePerWeek");
+                    this.registerInputForModelElementAttributeChangeSubmission(
+                    		this.targetQueueDepthInput, "carnot:pwh:targetQueueDepth");
+                    this.registerInputForModelElementAttributeChangeSubmission(
+                    		this.actualCostPerMinuteInput, "carnot:pwh:actualCostPerMinute");
 
 					// Set values
 
