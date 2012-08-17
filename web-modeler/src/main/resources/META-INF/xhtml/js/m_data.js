@@ -21,7 +21,7 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 			var data = new Data();
 			var index = model.getNewDataIndex();
 
-			data.initialize(model, "Data" + index, "Data " + index);
+			data.initialize(model, "Data " + index);
 
 			data.type = m_constants.PRIMITIVE_DATA_TYPE;
 			data.primitiveDataType = m_constants.STRING_PRIMITIVE_DATA_TYPE;
@@ -33,8 +33,8 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 			var data = new Data();
 			var index = model.getNewDataIndex();
 
-			data.initialize(model, dataStructure.id + index,
-					dataStructure.name + index, m_constants.STRUCTURED_DATA_TYPE);
+			data.initialize(model, dataStructure.name + index,
+							m_constants.STRUCTURED_DATA_TYPE);
 
 			data.type = m_constants.STRUCTURED_DATA_TYPE;
 			data.structuredDataTypeFullId = dataStructure.getFullId();
@@ -72,9 +72,9 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 		/**
 		 * 
 		 */
-		Data.prototype.initialize = function(model, id, name) {
+		Data.prototype.initialize = function(model, name) {
 			this.model = model;
-			this.id = id;
+			this.id = m_utils.generateIDFromName(name);
 			this.name = name;
 
 			// TODO This implies that even data created implicitly from data symbol creation would remain in the model 
@@ -126,7 +126,7 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 		 * 
 		 */
 		Data.prototype.submitCreation = function() {
-			return m_commandsController.submitCommand(m_command
+			 m_commandsController.submitCommand(m_command
 					.createCreateStructuredDataCommand(this.model.id, this.model.id,
 							{
 								"name" : this.name,

@@ -1353,7 +1353,8 @@ public class ModelService
                   if (xsdTypeDefinition.getName().equals(typeDeclaration.getId()))
                   {
 
-                     if (xsdTypeDefinition.getComplexType() != null)
+                     if (xsdTypeDefinition.getComplexType() != null
+                           && xsdTypeDefinition.getComplexType().getElement() != null)
                      {
 
                         typeDeclarationJson.addProperty(TYPE_PROPERTY, "STRUCTURE_TYPE");

@@ -563,7 +563,6 @@ define(
 								}
 							}
 						}
-						this.lastSymbol = null;
 						
 						// Apply changes
 						
