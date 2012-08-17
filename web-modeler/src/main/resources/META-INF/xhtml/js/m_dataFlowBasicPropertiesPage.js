@@ -77,7 +77,7 @@ define(
 					m_utils.debug("===> Activity");
 					m_utils.debug(dataFlow.activity);
 					
-					for ( var n in dataFlow.activity.getAccessPoints()) {
+					for ( var n in dataFlow.activity.accessPoints) {
 						var accessPoint = dataFlow.activity.getAccessPoints()[n];
 
 						if (accessPoint.direction == m_constants.IN_ACCESS_POINT
@@ -104,7 +104,7 @@ define(
 						dataFlow) {
 					this.outAccessPointSelectInput.empty();
 
-					for ( var n in dataFlow.activity.getAccessPoints()) {
+					for ( var n in dataFlow.activity.accessPoints) {
 						var accessPoint = dataFlow.activity.getAccessPoints()[n];
 
 						if (accessPoint.direction == m_constants.OUT_ACCESS_POINT

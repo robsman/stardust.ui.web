@@ -1184,6 +1184,8 @@ define(
 				Connection.prototype.remove = function() {
 					// TODO add symbol/diagram cleanup
 					this.path.remove();
+					this.removeFlyOutMenu();
+					this.removeProximitySensor();
 					// Remove this connection from FROM and TO Symbol's
 					// connection array
 					m_utils.removeItemFromArray(
