@@ -24,6 +24,7 @@ define([ "m_utils", "m_constants", "m_urlUtils" ], function(m_utils, m_constants
 			var result = jQuery.ajax({
 				type: 'POST',
 				url: options.url,
+				async: options.sync ? false : true, //default :true
 				contentType: options.hasOwnProperty('contentType') ? options.contentType : 'application/json',
 				data: dataToBePosted,
 				success: callbacks.hasOwnProperty('success') ? callbacks.success : null,

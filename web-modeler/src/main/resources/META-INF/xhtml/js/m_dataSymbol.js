@@ -142,14 +142,6 @@ define(
 					return path;
 				};
 
-
-				/**
-				 * 
-				 */
-				DataSymbol.prototype.createCreateCommand = function() {
-					this.createAndSubmitCreateCommand();
-				};
-
 				/**
 				 * 
 				 */

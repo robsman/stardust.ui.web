@@ -216,7 +216,9 @@ define(
 						m_communicationController
 								.postData(
 										{
-											"url" : url
+											"url" : url,
+											"sync" : command.sync ? true // Optional param for sync submit
+													: false
 										},
 										// Added to remove any cyclic reference
 										JSON.stringify(command, function(key, val) {
