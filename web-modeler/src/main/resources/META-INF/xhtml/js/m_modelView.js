@@ -18,8 +18,8 @@ define(
 				initialize : function(modelId) {
 					var model = m_model.findModel(modelId);
 					var view = new ModelView();
-					// TODO Unregister!
-					// In Initializer?
+					
+					// TODO Make View singleton
 
 					m_commandsController.registerCommandHandler(view);
 

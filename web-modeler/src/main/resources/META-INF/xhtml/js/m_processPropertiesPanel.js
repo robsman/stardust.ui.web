@@ -12,8 +12,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_model", "m_propertiesPanel", "m_propertiesPage"],
-		function(m_utils, m_constants, m_model, m_propertiesPanel, m_propertiesPage) {
+		[ "m_utils", "m_constants", "m_commandsController", "m_model", "m_propertiesPanel", "m_propertiesPage"],
+		function(m_utils, m_constants, m_commandsController, m_model, m_propertiesPanel, m_propertiesPage) {
 
 			var processPropertiesPanel = null;
 
@@ -22,6 +22,8 @@ define(
 					processPropertiesPanel = new ProcessPropertiesPanel(
 							models, diagram);
 					
+					m_commandsController.registerCommandHandler(processPropertiesPanel);
+
 					processPropertiesPanel.initialize();
 				},
 				getInstance : function(element) {
@@ -81,6 +83,5 @@ define(
 				ProcessPropertiesPanel.prototype.getElementUuid = function() {
 					return this.element.oid;
 				};
-
 			}
 		});

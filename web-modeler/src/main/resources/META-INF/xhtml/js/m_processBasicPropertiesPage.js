@@ -51,6 +51,13 @@ define(
 				 */
 				ProcessBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
+
+					this.defaultPriorityInput = this
+					.mapInputId("defaultPriorityInput");
+
+					this.registerInputForModelElementChangeSubmission(
+							this.defaultPriorityInput, "defaultPriority");
+
 				};
 
 				/**
@@ -87,6 +94,8 @@ define(
 				 */
 				ProcessBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();
+					
+					this.defaultPriorityInput.val(this.getModelElement().defaultPriority);
 				};
 
 				/**

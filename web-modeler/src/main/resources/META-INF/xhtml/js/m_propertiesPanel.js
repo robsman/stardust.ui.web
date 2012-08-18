@@ -2,10 +2,10 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_extensionManager", "m_dialog"], //,
-				//"m_modelerViewLayoutManager" ],
-		function(m_utils, m_constants, m_extensionManager, m_dialog) { //,
-				//m_modelerViewLayoutManager) {
+		[ "m_utils", "m_constants", "m_extensionManager", "m_dialog" ], // ,
+		// "m_modelerViewLayoutManager" ],
+		function(m_utils, m_constants, m_extensionManager, m_dialog) { // ,
+			// m_modelerViewLayoutManager) {
 
 			var currentPropertiesPanel = null;
 
@@ -98,39 +98,45 @@ define(
 							"propertiesPage", "panelId", id);
 
 					for ( var n = 0; n < propertiesPages.length; n++) {
-						m_utils.debug("Load Properties Page " + propertiesPages[n].pageId);
-						
+						m_utils.debug("Load Properties Page "
+								+ propertiesPages[n].pageId);
+
 						if (propertiesPages[n].pageHtmlUrl != null) {
-							jQuery("#" + this.id + "Table").append(
-									"<tr><td><div id=\""
-											+ propertiesPages[n].pageId + "\" class=\"propertiesPage\"></div></td></tr>");
+							jQuery("#" + this.id + "Table")
+									.append(
+											"<tr><td><div id=\""
+													+ propertiesPages[n].pageId
+													+ "\" class=\"propertiesPage\"></div></td></tr>");
 
 							var panel = this;
 							var extension = propertiesPages[n];
 
-							jQuery("#" + this.id + " #" + propertiesPages[n].pageId)
-									.load(
-											extension.pageHtmlUrl,
-											function(response, status, xhr) {
-												if (status == "error") {
-													var msg = "Error: "
-													+ xhr.status
-													+ " "
-													+ xhr.statusText;
-													
-													jQuery("#" + panel.id + " #"
-																	+ extension.pageId)
-															.append(msg);
-													m_utils.debug(msg);
-												} else {
-													panel.propertiesPages.push(
-															extension.provider.create(panel));
-												}
-											});
+							jQuery(
+									"#" + this.id + " #"
+											+ propertiesPages[n].pageId).load(
+									extension.pageHtmlUrl,
+									function(response, status, xhr) {
+										if (status == "error") {
+											var msg = "Error: " + xhr.status
+													+ " " + xhr.statusText;
+
+											jQuery(
+													"#" + panel.id + " #"
+															+ extension.pageId)
+													.append(msg);
+											m_utils.debug(msg);
+										} else {
+											panel.propertiesPages
+													.push(extension.provider
+															.create(panel));
+										}
+									});
 						} else {
 							// Embedded Markup
 
-							this.propertiesPages.push(propertiesPages[n].provider.create(this));
+							this.propertiesPages
+									.push(propertiesPages[n].provider
+											.create(this));
 						}
 					}
 				};
@@ -246,6 +252,33 @@ define(
 				PropertiesPanel.prototype.hideHelpPanel = function() {
 					m_dialog.makeInvisible(this.helpPanel);
 				};
+
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.processCommand = function(command) {
+					var object = ("string" == typeof (command)) ? jQuery
+							.parseJSON(command) : command;
+
+					if (null != object && null != object.changes
+							&& null != object.changes.modified
+							&& 0 != object.changes.modified.length) {
+						if (object.changes.modified[0].oid == this.element.oid) {
+
+							m_utils.inheritFields(this.element,
+									object.changes.modified[0]);
+
+							this.setElement(this.element);
+						}
+						else if (this.element.modelElement != null &&
+								object.changes.modified[0].oid == this.element.modelElement.oid) {
+
+							m_utils.inheritFields(this.element.modelElement,
+									object.changes.modified[0]);
+
+							this.setElement(this.element);
+						}
+					}
+				};
 			}
-			;
 		});

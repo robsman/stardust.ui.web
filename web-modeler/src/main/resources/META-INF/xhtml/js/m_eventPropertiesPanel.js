@@ -12,8 +12,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_model", "m_propertiesPanel", "m_propertiesPage"],
-		function(m_utils, m_constants, m_model, m_propertiesPanel, m_propertiesPage) {
+		[ "m_utils", "m_constants", "m_commandsController", "m_model", "m_propertiesPanel", "m_propertiesPage"],
+		function(m_utils, m_constants, m_commandsController, m_model, m_propertiesPanel, m_propertiesPage) {
 
 			var eventPropertiesPanel = null;
 
@@ -21,6 +21,8 @@ define(
 				initialize : function(models) {
 					eventPropertiesPanel = new EventPropertiesPanel(
 							models);
+				
+					m_commandsController.registerCommandHandler(eventPropertiesPanel);					
 					
 					eventPropertiesPanel.initialize();
 				},

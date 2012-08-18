@@ -13,9 +13,9 @@
  */
 define(
 		[ "m_utils", "m_constants", "m_commandsController", "m_command",
-				"m_basicPropertiesPage", "m_participant" ],
+				"m_model", "m_basicPropertiesPage", "m_participant" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
-				m_basicPropertiesPage, m_participant) {
+				m_model, m_basicPropertiesPage, m_participant) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new SwimlaneBasicPropertiesPage(propertiesPanel);
@@ -34,8 +34,8 @@ define(
 
 				// Inheritance
 
-				var basicPropertiesPage = m_basicPropertiesPage.create(
-						newPropertiesPanel);
+				var basicPropertiesPage = m_basicPropertiesPage
+						.create(newPropertiesPanel);
 
 				m_utils.inheritFields(this, basicPropertiesPage);
 				m_utils.inheritMethods(SwimlaneBasicPropertiesPage.prototype,
@@ -49,38 +49,12 @@ define(
 
 					this.title = this
 							.mapInputId("swimlanePropertiesPanelTitle");
-					this.createNewParticipantLink = this
-							.mapInputId("createNewParticipantLink");
 					this.newParticipantName = this
 							.mapInputId("newParticipantName");
 					this.participantList = this.mapInputId("participantList");
 
-					this.createNewParticipantLink
-							.click(
-									{
-										"callbackScope" : this
-									},
-									function(event) {
-										m_commandsController
-												.submitImmediately(
-														m_command
-																.createCommand(
-																		"/models/"
-																				+ event.data.callbackScope.propertiesPanel.element.diagram.model.id
-																				+ "/roles",
-																		{
-																			"id" : event.data.callbackScope.newParticipantName
-																					.val(),
-																			"name" : event.data.callbackScope.newParticipantName
-																					.val()
-																		}),
-														{
-															"callbackScope" : event.data.callbackScope,
-															"method" : "setParticipantId"
-														}, {});
-									});
-					
-					this.registerInputForModelElementChangeSubmission(this.participantList, "participantFullId");
+					this.registerInputForModelElementChangeSubmission(
+							this.participantList, "participantFullId");
 				};
 
 				/**
@@ -93,22 +67,26 @@ define(
 				/**
 				 * 
 				 */
-				SwimlaneBasicPropertiesPage.prototype.assembleChangedObjectFromProperty = function(property, value) {
+				SwimlaneBasicPropertiesPage.prototype.assembleChangedObjectFromProperty = function(
+						property, value) {
 					var element = {};
-					
+
 					element[property] = value;
-					
+
 					return element;
 				};
 
 				/**
 				 * 
 				 */
-				SwimlaneBasicPropertiesPage.prototype.assembleChangedObjectFromAttribute = function(attribute, value) {
-					var element = { attributes: {}};
-					
+				SwimlaneBasicPropertiesPage.prototype.assembleChangedObjectFromAttribute = function(
+						attribute, value) {
+					var element = {
+						attributes : {}
+					};
+
 					element.attributes[attribute] = value;
-					
+
 					return element;
 				};
 
@@ -143,14 +121,21 @@ define(
 
 					this.refreshParticipantList();
 
-					this.title
-							.html(this.getModelElement().participantName);
+					this.title.empty();
 
 					if (this.getModelElement().participantFullId != null) {
 						this.participantList
 								.val(this.getModelElement().participantFullId);
+						this.title
+								.append(this.getModelElement().name
+										+ "("
+										+ m_model
+												.findParticipant(this
+														.getModelElement().participantFullId).name
+										+ ")");
 					} else {
 						this.participantList.val("NONE");
+						this.title.append(this.getModelElement().name);
 					}
 				};
 
@@ -163,21 +148,6 @@ define(
 					}
 
 					return true;
-				};
-
-				/**
-				 * 
-				 */
-				SwimlaneBasicPropertiesPage.prototype.setParticipantId = function(
-						json) {
-					var participant = m_participant.createParticipantFromJson(
-							this.propertiesPanel.element.diagram.model, json);
-
-					m_utils.debug("===> Set participant:");
-					m_utils.debug(participant);
-
-					this.refreshParticipantList();
-					this.participantList.val(participant.getFullId());
 				};
 			}
 		});

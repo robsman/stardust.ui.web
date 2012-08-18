@@ -236,7 +236,7 @@ define(
 
 						m_utils.debug("===> Element");
 						m_utils.debug(page.getModelElement());
-						
+
 						if (page.getModelElement()[property] != input.val()) {
 							page.submitChanges(page
 									.assembleChangedObjectFromProperty(
@@ -278,6 +278,31 @@ define(
 				/**
 				 * 
 				 */
+				PropertiesPage.prototype.registerCheckboxInputForModelElementChangeSubmission = function(
+						input, property) {
+					input.click({
+						"page" : this,
+						"input" : input
+					}, function(event) {
+						var page = event.data.page;
+						var input = event.data.input;
+
+						if (!page.validate()) {
+							return;
+						}
+
+						if (page.getModelElement()[property] != input
+								.is(":checked")) {
+							page.submitChanges(page
+									.assembleChangedObjectFromProperty(
+											property, input.is(":checked")));
+						}
+					});
+				};
+
+				/**
+				 * 
+				 */
 				PropertiesPage.prototype.registerCheckboxInputForModelElementAttributeChangeSubmission = function(
 						input, attribute) {
 					input
@@ -312,12 +337,11 @@ define(
 				PropertiesPage.prototype.submitChanges = function(changes) {
 					m_utils.debug("Changes to be submitted: ");
 					m_utils.debug(changes);
-					m_commandsController
-							.submitCommand(m_command
-									.createUpdateModelElementCommand(
-											this.propertiesPanel.getDiagram().modelId,
-											this.propertiesPanel.getElementUuid(),
-											changes));
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementCommand(
+									this.propertiesPanel.getDiagram().modelId,
+									this.propertiesPanel.getElementUuid(),
+									changes));
 				};
 
 			}

@@ -12,8 +12,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_propertiesPanel", "m_propertiesPage" ],
-		function(m_utils, m_constants, m_propertiesPanel, m_propertiesPage) {
+		[ "m_utils", "m_constants", "m_commandsController", "m_propertiesPanel", "m_propertiesPage" ],
+		function(m_utils, m_constants, m_commandsController, m_propertiesPanel, m_propertiesPage) {
 
 			var swimlanePropertiesPanel = null;
 
@@ -21,6 +21,8 @@ define(
 				initialize : function(models) {
 					swimlanePropertiesPanel = new SwimlanePropertiesPanel(
 							models);
+				
+					m_commandsController.registerCommandHandler(swimlanePropertiesPanel);					
 					
 					swimlanePropertiesPanel.initialize();
 				},				

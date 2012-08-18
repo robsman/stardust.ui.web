@@ -23,6 +23,8 @@ define(
 					activityPropertiesPanel = new ActivityPropertiesPanel(
 							models);
 
+					m_commandsController.registerCommandHandler(activityPropertiesPanel);
+
 					activityPropertiesPanel.initialize();
 				},
 				getInstance : function() {

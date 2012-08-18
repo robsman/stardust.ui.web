@@ -12,9 +12,9 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_propertiesPanel", "m_propertiesPage"
+		[ "m_utils", "m_constants", "m_commandsController", "m_propertiesPanel", "m_propertiesPage"
 				],
-		function(m_utils, m_constants, m_propertiesPanel, m_propertiesPage) {
+		function(m_utils, m_constants, m_commandsController, m_propertiesPanel, m_propertiesPage) {
 
 			var dataFlowPropertiesPanel = null;
 
@@ -23,6 +23,8 @@ define(
 					dataFlowPropertiesPanel = new DataFlowPropertiesPanel(
 							models);
 
+					m_commandsController.registerCommandHandler(dataFlowPropertiesPanel);					
+					
 					dataFlowPropertiesPanel.initialize();
 				},
 				getInstance : function(element) {

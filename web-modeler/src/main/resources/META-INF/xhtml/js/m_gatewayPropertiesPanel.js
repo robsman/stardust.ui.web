@@ -12,8 +12,8 @@
  * 
  */
 define(
-		[ "m_utils", "m_constants", "m_propertiesPanel", "m_propertiesPage"],
-		function(m_utils, m_constants, m_propertiesPanel, m_propertiesPage) {
+		[ "m_utils", "m_constants", "m_commandsController", "m_propertiesPanel", "m_propertiesPage"],
+		function(m_utils, m_constants, m_commandsController, m_propertiesPanel, m_propertiesPage) {
 
 			var gatewayPropertiesPanel = null;
 
@@ -21,6 +21,8 @@ define(
 				initialize : function(models) {
 					gatewayPropertiesPanel = new GatewayPropertiesPanel(
 							models);
+					
+					m_commandsController.registerCommandHandler(gatewayPropertiesPanel);					
 					
 					gatewayPropertiesPanel.initialize();
 				},				

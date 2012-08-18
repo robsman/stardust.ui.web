@@ -8,9 +8,9 @@
  * documentation
  ******************************************************************************/
 
-define([ "m_utils", "m_constants", "m_extensionManager", "m_model",
+define([ "m_utils", "m_constants", "m_commandsController", "m_extensionManager", "m_model",
 		"m_propertiesPanel", "m_propertiesPage" ], function(m_utils,
-		m_constants, m_extensionManager, m_model, m_propertiesPanel,
+		m_constants, m_commandsController, m_extensionManager, m_model, m_propertiesPanel,
 		m_propertiesPage) {
 
 	var dataPropertiesPanel = null;
@@ -18,6 +18,8 @@ define([ "m_utils", "m_constants", "m_extensionManager", "m_model",
 	return {
 		initialize : function(models) {
 			dataPropertiesPanel = new DataPropertiesPanel(models);
+
+			m_commandsController.registerCommandHandler(dataPropertiesPanel);
 
 			dataPropertiesPanel.initialize();
 		},

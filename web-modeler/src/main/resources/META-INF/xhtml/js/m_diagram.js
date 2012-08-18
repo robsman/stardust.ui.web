@@ -1325,15 +1325,22 @@ define(
 					}
 
 					this.currentSelection = [];
+					
+					this.showProcessPropertiesPanel();
+				};
 
+				/**
+				 * 
+				 */
+				Diagram.prototype.showProcessPropertiesPanel = function() {
 					m_processPropertiesPanel.getInstance().setElement(
 							this.process);
 
 					m_propertiesPanel
 							.initializeProcessPropertiesPanel(m_processPropertiesPanel
-									.getInstance());
-				};
-
+									.getInstance());					
+				}
+				
 				/**
 				 * 
 				 */

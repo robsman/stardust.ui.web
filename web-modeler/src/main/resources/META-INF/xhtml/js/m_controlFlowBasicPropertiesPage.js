@@ -16,75 +16,87 @@ define(
 		function(m_utils, m_constants, m_propertiesPage) {
 			return {
 				create : function(propertiesPanel) {
-					return new ControlFlowBasicPropertiesPage(propertiesPanel);
+					var page = new ControlFlowBasicPropertiesPage(
+							propertiesPanel);
+
+					page.initialize();
+
+					return page;
 				}
 			};
 
 			/**
 			 * 
 			 */
-			function ControlFlowBasicPropertiesPage(newPropertiesPanel, newId,
-					newTitle) {
-
-				// Inheritance
-
+			function ControlFlowBasicPropertiesPage(propertiesPanel) {
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						newPropertiesPanel, "basicPropertiesPage", "Basic");
+						propertiesPanel, "basicPropertiesPage", "Basic");
 
 				m_utils.inheritFields(this, propertiesPage);
-				m_utils.inheritMethods(ControlFlowBasicPropertiesPage.prototype,
+				m_utils.inheritMethods(
+						ControlFlowBasicPropertiesPage.prototype,
 						propertiesPage);
 
-				// Field initialization
-				
-				this.otherwiseInput = this.mapInputId("otherwiseInput");
-				this.conditionExpressionInput = this.mapInputId("conditionExpressionInput");
-				this.descriptionInput = this.mapInputId("descriptionInput");
-				this.conditionPanel = this.mapInputId("conditionPanel");
+				/**
+				 * 
+				 */
+				ControlFlowBasicPropertiesPage.prototype.initialize = function() {
+					this.otherwiseInput = this.mapInputId("otherwiseInput");
+					this.conditionExpressionInput = this
+							.mapInputId("conditionExpressionInput");
+					this.descriptionInput = this.mapInputId("descriptionInput");
+					this.conditionPanel = this.mapInputId("conditionPanel");
 
-				// Initialize callbacks
+					this.otherwiseInput.click({
+						"page" : this
+					}, function(event) {
+						if (event.data.page.otherwiseInput.is(":checked")) {
+							event.data.page.conditionExpressionInput.attr(
+									"disabled", true);
+							event.data.page.conditionExpressionInput.val(null);
+						} else {
+							event.data.page.conditionExpressionInput
+									.removeAttr("disabled");
+							event.data.page.conditionExpressionInput
+									.val("true");
+						}
+					});
 
-				this.otherwiseInput.click({
-					"callbackScope" : this
-				}, function(event) {
-					if (event.data.callbackScope.otherwiseInput.is(":checked")) {
-						event.data.callbackScope.conditionExpressionInput.attr(
-								"disabled", true);
-						event.data.callbackScope.conditionExpressionInput.val(null);
-					} else {
-						event.data.callbackScope.conditionExpressionInput
-						.removeAttr("disabled");
-						event.data.callbackScope.conditionExpressionInput.val("true");
-					}
-				});
+					this.registerInputForModelElementChangeSubmission(
+							this.descriptionInput, "description");
+					this.registerCheckboxInputForModelElementChangeSubmission(
+							this.otherwiseInput, "otherwise");
+					this.registerInputForModelElementChangeSubmission(
+							this.conditionExpressionInput,
+							"conditionExpression");
+				};
 
 				/**
 				 * 
 				 */
 				ControlFlowBasicPropertiesPage.prototype.setElement = function() {
 					this.descriptionInput
-					.val(this.propertiesPanel.element.modelElement.description);
+							.val(this.propertiesPanel.element.modelElement.description);
 
 					if (this.propertiesPanel.element.allowsCondition()) {
-						this.conditionPanel.removeAttr("class");
-						this.conditionExpressionInput
-						.val(this.propertiesPanel.element.modelElement.conditionExpression);						
 						this.otherwiseInput
-						.attr("checked", this.propertiesPanel.element.modelElement.otherwise);
+								.attr(
+										"checked",
+										this.propertiesPanel.element.modelElement.otherwise);
+						this.conditionExpressionInput
+								.val(this.propertiesPanel.element.modelElement.conditionExpression);
+
+						if (this.propertiesPanel.element.modelElement.otherwise) {
+							this.conditionExpressionInput
+									.attr("disabled", true);
+						} else {
+							this.conditionExpressionInput.removeAttr("disabled");
+						}
+
+						this.conditionPanel.removeAttr("class");
 					} else {
 						this.conditionPanel.attr("class", "invisible");
 					}
-				};
-
-				/**
-				 * 
-				 */
-				ControlFlowBasicPropertiesPage.prototype.apply = function() {
-					this.propertiesPanel.element.modelElement.description = this.descriptionInput
-							.val();
-					this.propertiesPanel.element.modelElement.conditionExpression = this.conditionExpressionInput
-					.val();
-					this.propertiesPanel.element.modelElement.otherwise = this.otherwiseInput.is(":checked");
 				};
 			}
 		});

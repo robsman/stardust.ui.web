@@ -43,9 +43,7 @@ define(
 
 					this.gatewayTypeInput = this.mapInputId("gatewayTypeInput");
 
-					// Initialize callbacks
-
-					this.registerInputForModelElementAttributeChangeSubmission(
+					this.registerInputForModelElementChangeSubmission(
 							this.gatewayTypeInput, "gatewayType");
 				};
 				
@@ -55,7 +53,7 @@ define(
 				GatewayBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();
 					this.gatewayTypeInput
-							.val(this.propertiesPanel.element.modelElement.attributes.gatewayType);
+							.val(this.getModelElement().gatewayType);
 				};
 
 				/**

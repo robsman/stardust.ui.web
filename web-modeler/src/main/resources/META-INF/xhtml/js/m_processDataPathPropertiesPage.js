@@ -32,7 +32,7 @@ define(
 				m_utils.inheritMethods(ProcessDataPathPropertiesPage.prototype,
 						propertiesPage);
 
-				this.dataPaths = {};
+				this.dataPaths = [];
 
 				this.dataPathTable = this.mapInputId("dataPathTable");
 				this.addDataPathButton = this.mapInputId("addDataPathButton");
@@ -49,17 +49,6 @@ define(
 				this.keyDescriptorInput = this.mapInputId("keyDescriptorInput");
 				this.dataPathDataSelect = this.mapInputId("dataPathDataSelect");
 				this.dataPathPathInput = this.mapInputId("dataPathPathInput");
-
-				for ( var n in this.propertiesPanel.models) {
-					for ( var m in this.propertiesPanel.models[n].dataItems) {
-						var dataItem = this.propertiesPanel.models[n].dataItems[m];
-
-						this.dataPathDataSelect.append("<option value='"
-								+ dataItem.getFullId() + "'>"
-								+ this.propertiesPanel.models[n].name + "/"
-								+ dataItem.name + "</option>");
-					}
-				}
 
 				this.addDataPathButton.click({
 					"page" : this
@@ -98,7 +87,24 @@ define(
 				 * 
 				 */
 				ProcessDataPathPropertiesPage.prototype.setElement = function() {
+					this.refreshDataItemsList();
 					this.populateDataPathTable();
+				};
+
+				/**
+				 * 
+				 */
+				ProcessDataPathPropertiesPage.prototype.refreshDataItemsList = function() {
+					for ( var n in this.propertiesPanel.models) {
+						for ( var m in this.propertiesPanel.models[n].dataItems) {
+							var dataItem = this.propertiesPanel.models[n].dataItems[m];
+
+							this.dataPathDataSelect.append("<option value='"
+									+ dataItem.getFullId() + "'>"
+									+ this.propertiesPanel.models[n].name + "/"
+									+ dataItem.name + "</option>");
+						}
+					}
 				};
 
 				/**
@@ -121,8 +127,7 @@ define(
 				 * 
 				 */
 				ProcessDataPathPropertiesPage.prototype.addDataPath = function() {
-					this.getModelElement().dataPathes[this.dataPathNameInput
-							.val()] = {
+					this.getModelElement().dataPathes.push({
 						name : this.dataPathNameInput.val(),
 						direction : this.inDataPathInput.is(":checked") ? "IN"
 								: "OUT",
@@ -130,16 +135,11 @@ define(
 						keyDescriptor : this.keyDescriptorInput.is(":checked"),
 						dataFullId : this.dataPathDataSelect.val(),
 						dataPath : this.dataPathPathInput.val()
-					};
+					});
 
-					this
-							.submitChanges({
-								modelElement : {
-									dataPathes : this.getModelElement().dataPathes
-								}
-							});
-
-					this.populateDataPathTable();
+					this.submitChanges({
+						dataPathes : this.getModelElement().dataPathes
+					});
 				};
 
 				/**
@@ -147,16 +147,20 @@ define(
 				 */
 				ProcessDataPathPropertiesPage.prototype.removeDataPath = function(
 						dataPathId) {
-					delete this.getModelElement().dataPathes[dataPathId];
+					var changedPathes = [];
 
-					this
-							.submitChanges({
-								modelElement : {
-									dataPathes : this.getModelElement().dataPathes
-								}
-							});
+					for ( var n = 0; n < this.getModelElement().dataPathes.length; ++n) {
+						if (this.getModelElement().dataPathes[n].id != dataPathId) {
+							changedPathes
+									.push(this.getModelElement().dataPathes[n]);
+						}
+					}
 
-					this.populateDataPathTable();
+					this.getModelElement().dataPathes = changedPathes;
+
+					this.submitChanges({
+							dataPathes : this.getModelElement().dataPathes
+					});
 				};
 
 				/**
