@@ -1203,7 +1203,7 @@ public class ModelService
       for (ProcessDefinitionType processDefinition : model.getProcessDefinition())
       {
          processesJson.add(processDefinition.getId(), modelElementMarshaller()
-               .toProcessDefinition(processDefinition));
+               .toProcessDefinitionJson(processDefinition));
       }
 
       JsonObject participantsJson = new JsonObject();
