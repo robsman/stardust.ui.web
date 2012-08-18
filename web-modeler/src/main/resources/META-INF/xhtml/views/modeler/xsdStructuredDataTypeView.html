@@ -11,7 +11,8 @@
 <link rel="stylesheet" type="text/css"
 	href="../../css/jquery-ui-1.8.20.custom.css"></link>
 <link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" data-main="../../js/xsdStructuredDataTypeViewMain"
+<script type="text/javascript"
+	data-main="../../js/xsdStructuredDataTypeViewMain"
 	src="../../js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
@@ -113,32 +114,46 @@
 						<tr>
 							<td>
 								<div class="panelBorder">
-									<div class="dataTable">
-										<table id="typeDeclarationsTable" cellpadding="0"
-											cellspacing="0" class="treeTable" style="width: 600px;">
-											<thead>
-												<tr>
-													<th style="width: 30px;"></th>
-													<th style="width: 400px;">Element</th>
-													<th style="width: 100px;">Type</th>
-													<th class="last" style="width: 100px;">Cardinality</th>
-												</tr>
-											</thead>
-											<tbody />
-										</table>
-									</div>
-								</div>
-							</td>
-							<td valign="top"><div style="margin-left: 10px;">
 									<table cellpadding="0" cellspacing="0" class="layoutTable">
 										<tr>
-											<td><input id="upButton" type="button" value="Up"
-												style="width: 100px; margin-bottom: 10px;" />
-											</td>
+											<td><div class="toolBar">
+													<table cellpadding="0" cellspacing="0" class="layoutTable">
+														<tr>
+															<td><input id="deleteElementButton" type="image"
+																src="../../images/icons/delete.png" height="16"
+																width="16" title="Delete" alt="Delete"
+																class="toolbarButton" /></td>
+															<td><img
+																src="../../images/icons/toolbar-separator.png"></img></td>
+															<td><input id="moveElementUpButton" type="image"
+																src="../../images/icons/arrow-up.png" title="Move Up"
+																alt="Move Up" class="toolbarButton" /></td>
+															<td><img
+																src="../../images/icons/toolbar-separator.png"></img></td>
+															<td><input id="moveElementDownButton" type="image"
+																src="../../images/icons/arrow-down.png"
+																title="Move Down" alt="Move Down" class="toolbarButton" />
+															</td>
+														</tr>
+													</table>
+												</div>
 										</tr>
 										<tr>
-											<td><input id="downButton" type="button" value="Down"
-												style="width: 100px;" /></td>
+											<td>
+												<div class="dataTable">
+													<table id="typeDeclarationsTable" cellpadding="0"
+														cellspacing="0" class="treeTable" style="width: 600px;">
+														<thead>
+															<tr>
+																<th style="width: 400px;">Element</th>
+																<th style="width: 100px;">Type</th>
+																<th class="last" style="width: 100px;">Cardinality</th>
+															</tr>
+														</thead>
+														<tbody />
+													</table>
+												</div>
+											</td>
 										</tr>
 									</table>
 								</div>

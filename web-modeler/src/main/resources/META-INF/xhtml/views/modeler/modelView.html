@@ -86,16 +86,8 @@
 									class="tabLabel">Problems</span> </a></li>
 						</ul>
 						<div id="versioningTab">
-							<div class="panelBorder">
+							<div class="panelBorder" style="margin-bottom: 10px;">
 								<table cellpadding="0" cellspacing="0" class="layoutTable">
-									<tr>
-										<td><div class="toolBar">
-												<input id="addVersionButton" type="image"
-													src="../../images/icons/add.png" height="16" width="16"
-													title="Add Version" alt="Add Version"
-													class="toolbarButton" />
-											</div></td>
-									</tr>
 									<tr>
 										<td>
 											<div class="dataTable">
@@ -115,6 +107,33 @@
 									</tr>
 								</table>
 							</div>
+							<table cellpadding="0" cellspacing="0" class="layoutTable">
+								<tr>
+									<td><label for="versionTagInput">Version Tag</label>
+									</td>
+									<td><input id="versionTagInput" type="text"
+										style="width: 200px;">
+									</td>
+								</tr>
+							</table>
+							<table>
+								<tr>
+									<td><label for="versionDescriptionTextarea">Description</label>
+									</td>
+								</tr>
+								<tr>
+									<td><textarea id="versionDescriptionTextarea" cols="40"
+											rows="5"></textarea></td>
+								</tr>
+							</table>
+							<table>
+								<tr>
+									<td><input id="addVersionButton" type="image"
+										src="../../images/icons/add.png" height="16" width="16"
+										title="Add Version" alt="Add Version" class="toolbarButton" />
+									</td>
+								</tr>
+							</table>
 						</div>
 						<div id="accessControlTab">
 							<div id="markReadonlyPanel">
@@ -142,8 +161,8 @@
 											permissions to all users.</td>
 									</tr>
 									<tr>
-										<td style="padding-top: 10px;"><a id="markWriteableLink" style="margin-top: 10px;">Mark
-												writeable &raquo;</a>
+										<td style="padding-top: 10px;"><a id="markWriteableLink"
+											style="margin-top: 10px;">Mark writeable &raquo;</a>
 										</td>
 									</tr>
 								</table>
