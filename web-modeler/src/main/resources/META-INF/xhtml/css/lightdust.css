@@ -8,7 +8,6 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-
 body {
 	color: #4d4d4d;
 	font-family: Helvetica, Arial, sans-serif;
@@ -146,7 +145,6 @@ a:hover {
 }
 
 /* General Dialog */
-
 .invisible {
 	display: none;
 	height: 0px;
@@ -167,7 +165,6 @@ a:hover {
 }
 
 /* Layout Table */
-
 table.layoutTable {
 	margin: 0px;
 	padding: 0px;
@@ -186,7 +183,6 @@ table.layoutTable td {
 }
 
 /* Field Set Table */
-
 table.fieldSetTable {
 	margin: 0px;
 	padding: 0px;
@@ -250,8 +246,10 @@ div.toolBar {
 	border-bottom: 1px solid #afd7ed;
 	background: #ccedff;
 }
-.dataTable tbody tr td { /*padding-top: 2px;
-	padding-bottom: 2px;*/
+
+.dataTable tbody tr td {
+	padding-top: 2px;
+	padding-bottom: 2px;
 	padding-left: 10px;
 }
 
@@ -340,7 +338,6 @@ div.toolBar {
 	font-weight: bold;
 	color: #397d9f;
 }
-
 
 .toolSelectedStyle {
 	background-image: url(../../images/toolbarIconSelectHover.png);
@@ -444,14 +441,12 @@ fieldset {
 }
 
 /* Tabs */
-
 .tabLabel {
 	padding-left: 4px;
 	vertical-align: center;
 }
 
 /* Properties Pages */
-
 div.propertiesPanel {
 	border: 4px solid #e8e8e8;
 	vertical-align: top;
@@ -529,22 +524,19 @@ div.panelWrapperBorder {
 	border: 1px solid #e8e8e8;
 }
 
-td.dataPathTableCell
-{
+td.dataPathTableCell {
 	padding-right: 5px;
 }
 
 td.inDataPathListItem {
-	background: url("../images/icons/in-datapath.gif")
-		no-repeat;
+	background: url("../images/icons/in-datapath.gif") no-repeat;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 20px;
 }
 
 td.outDataPathListItem {
-	background: url("../images/icons/out-datapath.gif")
-		no-repeat;
+	background: url("../images/icons/out-datapath.gif") no-repeat;
 	padding-left: 20px;
 	padding-top: 2px;
 	padding-bottom: 2px;
@@ -552,53 +544,45 @@ td.outDataPathListItem {
 }
 
 td.descriptorDataPathListItem {
-	background: url("../images/icons/descriptor.gif")
-		no-repeat;
+	background: url("../images/icons/descriptor.gif") no-repeat;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 20px;
 }
 
 td.keyDescriptorDataPathListItem {
-	background: url("../images/icons/descriptor.gif")
-		no-repeat;
+	background: url("../images/icons/descriptor.gif") no-repeat;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 20px;
 }
 
-#selectModeButton
-{
+#selectModeButton {
 	background: url("../images/icons/select.png") center center;
 }
 
 td.infoSeverityIssueItem {
-	background: url("../images/icons/information.png")
-		no-repeat center;
+	background: url("../images/icons/information.png") no-repeat center;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 20px;
 }
 
 td.warningSeverityIssueItem {
-	background: url("../images/icons/warning.png")
-		no-repeat center;
+	background: url("../images/icons/warning.png") no-repeat center;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 20px;
 }
 
 td.errorSeverityIssueItem {
-	background: url("../images/icons/error.png")
-		no-repeat center;
+	background: url("../images/icons/error.png") no-repeat center;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 20px;
 }
 
 /* Message Transformation Application */
-
-td.mapping
-{
+td.mapping {
 	font-style: italic;
-}	
+}
