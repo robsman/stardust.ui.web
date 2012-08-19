@@ -109,24 +109,5 @@ define(
 					this.applicationFullId = null;
 					this.participantFullId = null;
 				};
-
-				/**
-				 * 
-				 */
-				Activity.prototype.getAccessPoints = function(name,
-						activityType) {
-
-					if (this.activityType == m_constants.APPLICATION_ACTIVITY_TYPE) {
-						var application = m_model
-								.findApplication(this.applicationFullId);
-
-						return application.accessPoints;
-					} else if (this.activityType == m_constants.SUBPROCESS_ACTIVITY_TYPE) {
-						// TODO Add logic, e.g. for Process Interfaces
-						return {};
-					} else {
-						return this.accessPoints;
-					}
-				};
 			}
 		});

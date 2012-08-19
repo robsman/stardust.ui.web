@@ -71,14 +71,5 @@ define(
 						this.propertiesPages[n].setElement();
 					}
 				};
-
-				/**
-				 * 
-				 */
-				ControlFlowPropertiesPanel.prototype.apply = function() {
-					this.applyPropertiesPages();
-					this.element.refresh();
-					this.element.submitUpdate();
-				};
 			}
 		});

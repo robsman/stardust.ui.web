@@ -39,7 +39,7 @@ require.config({
 		'jquery.simplemodal': ['jquery'],
 		'jquery.tablescroll': ['jquery'],
 		'jquery.treeTable': ['jquery'],
-		'jquery.url': ['jquery'],
+		'jquery.url': ['jquery']
 	}
 });
 

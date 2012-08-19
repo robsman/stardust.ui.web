@@ -9,9 +9,9 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_modelElementView",
+		[ "m_utils", "m_extensionManager", "m_command", "m_commandsController", "m_dialog", "m_modelElementView",
 				"m_model"],
-		function(m_utils, m_command, m_commandsController, m_dialog, m_modelElementView, m_model) {
+		function(m_utils, m_extensionManager, m_command, m_commandsController, m_dialog, m_modelElementView, m_model) {
 			return {
 				initialize : function(fullId) {
 					var view = new GenericApplicationView();
@@ -49,8 +49,11 @@ define(
 					m_utils.debug("===> Application");
 					m_utils.debug(this.application);
 					
+					var extension = m_extensionManager.findExtensions(
+							"applicationType", "id", this.application.applicationType)[0];
+					
 					this.unsupportedMessagePanel.empty();
-					this.unsupportedMessagePanel.append("Display and editing of the Application Type <b>" + this.application.applicationType + "</b> is not yet supported for the Browser Modeler. However, Applications of this type can be used for modeling.");
+					this.unsupportedMessagePanel.append("Display and editing of the Application Type <b>" + extension.readableName + "</b> is not yet supported for the Browser Modeler. However, Applications of this type can be used for modeling.");
 				};
 
 				/**

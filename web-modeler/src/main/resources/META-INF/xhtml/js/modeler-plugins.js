@@ -52,6 +52,7 @@ define(["require",
 		 "m_swimlaneBasicPropertiesPage",
 		 "m_dataBasicPropertiesPage",
 		 "m_controlFlowBasicPropertiesPage",
+		 "m_controlFlowTransactionPropertiesPage",
 		 "m_dataFlowBasicPropertiesPage"],
 		function(require, m_extensionManager) {
 			// inject plugins module loader to extensions manager

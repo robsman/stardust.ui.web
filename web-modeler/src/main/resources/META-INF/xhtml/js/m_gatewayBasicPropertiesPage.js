@@ -52,6 +52,10 @@ define(
 				 */
 				GatewayBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();
+					
+					m_utils.debug("===> Gateway");
+					m_utils.debug(this.getModelElement());
+					
 					this.gatewayTypeInput
 							.val(this.getModelElement().gatewayType);
 				};

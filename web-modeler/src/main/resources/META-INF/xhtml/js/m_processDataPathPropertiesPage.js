@@ -83,6 +83,68 @@ define(
 					m_utils.debug("Moving down" + dataPathId);
 				});
 
+				this.outDataPathInput.click({
+					"page" : this
+				}, function(event) {
+					event.data.page.setOutDataPath();
+				});
+
+				this.inDataPathInput.click({
+					"page" : this
+				}, function(event) {
+					event.data.page.setInDataPath();
+				});
+
+				this.descriptorInput.click({
+					"page" : this
+				}, function(event) {
+					event.data.page.setDescriptor();
+				});
+
+				this.keyDescriptorInput.click({
+					"page" : this
+				}, function(event) {
+					event.data.page.setKeyDescriptor();
+				});
+
+				/**
+				 * 
+				 */
+				ProcessDataPathPropertiesPage.prototype.setInDataPath = function() {
+					this.inDataPathInput.attr("checked", true);
+					this.outDataPathInput.attr("checked", false);
+					this.descriptorInput.removeAttr("disabled");
+					this.keyDescriptorInput.removeAttr("disabled");
+				};
+
+				/**
+				 * 
+				 */
+				ProcessDataPathPropertiesPage.prototype.setOutDataPath = function() {
+					this.outDataPathInput.attr("checked", true);
+					this.inDataPathInput.attr("checked", false);
+					this.descriptorInput.attr("disabled", true);
+					this.descriptorInput.attr("checked", false);
+					this.keyDescriptorInput.attr("disabled", true);
+					this.keyDescriptorInput.attr("checked", false);
+				};
+
+				/**
+				 * 
+				 */
+				ProcessDataPathPropertiesPage.prototype.setDescriptor = function() {
+					this.descriptorInput.attr("checked", true);
+					this.keyDescriptorInput.attr("checked", false);
+				};
+
+				/**
+				 * 
+				 */
+				ProcessDataPathPropertiesPage.prototype.setKeyDescriptor = function() {
+					this.descriptorInput.attr("checked", false);
+					this.keyDescriptorInput.attr("checked", true);
+				};
+
 				/**
 				 * 
 				 */
@@ -140,6 +202,8 @@ define(
 					this.submitChanges({
 						dataPathes : this.getModelElement().dataPathes
 					});
+					
+					this.dataPathNameInput.val(null);
 				};
 
 				/**
@@ -159,7 +223,7 @@ define(
 					this.getModelElement().dataPathes = changedPathes;
 
 					this.submitChanges({
-							dataPathes : this.getModelElement().dataPathes
+						dataPathes : this.getModelElement().dataPathes
 					});
 				};
 

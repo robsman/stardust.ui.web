@@ -95,7 +95,7 @@ define(
 				 */
 				PropertiesPanel.prototype.initializePropertiesPages = function() {
 					var propertiesPages = m_extensionManager.findExtensions(
-							"propertiesPage", "panelId", id);
+							"propertiesPage", "panelId", this.id);
 
 					for ( var n = 0; n < propertiesPages.length; n++) {
 						m_utils.debug("Load Properties Page "
@@ -117,7 +117,7 @@ define(
 									extension.pageHtmlUrl,
 									function(response, status, xhr) {
 										if (status == "error") {
-											var msg = "Error: " + xhr.status
+											var msg = "Properties Page Load Error: " + xhr.status
 													+ " " + xhr.statusText;
 
 											jQuery(
@@ -126,6 +126,7 @@ define(
 													.append(msg);
 											m_utils.debug(msg);
 										} else {
+											m_utils.debug("Page loaded: " + extension.pageId);
 											panel.propertiesPages
 													.push(extension.provider
 															.create(panel));

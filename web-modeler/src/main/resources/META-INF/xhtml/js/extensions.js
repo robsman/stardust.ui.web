@@ -60,7 +60,14 @@ var extensions = {
 		panelId : "controlFlowPropertiesPanel",
 		pageId : "basicPropertiesPage",
 		pageJavaScriptUrl : "m_controlFlowBasicPropertiesPage"
-	}, {
+	}, 
+	{
+		panelId : "controlFlowPropertiesPanel",
+		pageId : "transactionPropertiesPage",
+		pageHtmlUrl : "controlFlowTransactionPropertiesPage.html",
+		pageJavaScriptUrl : "m_controlFlowTransactionPropertiesPage"
+	}, 
+	{
 		panelId : "dataFlowPropertiesPanel",
 		pageId : "basicPropertiesPage",
 		pageJavaScriptUrl : "m_dataFlowBasicPropertiesPage"
@@ -192,18 +199,23 @@ var extensions = {
 	} ],
 	applicationType : [ {
 		id : "interactive",
+		readableName : "UI Mashup",
 		viewId : "uiMashupApplicationView"
 	}, {
 		id : "webservice",
+		readableName : "Web Service",
 		viewId : "webServiceApplicationView"
 	}, {
 		id : "messageTransformationBean",
+		readableName : "Message Transformation Application",
 		viewId : "messageTransformationApplicationView"
 	}, {
 		id : "camelBean",
+		readableName : "Camel Application",
 		viewId : "camelApplicationView"
 	}, {
 		id : "plainJava",
+		readableName : "Plain Java Application",
 		viewId : "genericApplicationView"
 	} ]
 };

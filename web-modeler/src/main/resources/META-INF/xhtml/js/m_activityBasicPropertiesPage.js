@@ -258,6 +258,9 @@ define(
 				ActivityBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();
 
+					m_utils.debug("===> Activity");
+					m_utils.debug(this.getModelElement());
+					
 					this.hibernateInitiallyInput.attr("checked", this.propertiesPanel.element.modelElement.attributes["@TOADD@"]);
 					this.supportsRelocationInput.attr("checked", this.propertiesPanel.element.modelElement.attributes["carnot:engine:relocate:source"]);
 					this.isRelocationTargetInput.attr("checked", this.propertiesPanel.element.modelElement.attributes["carnot:engine:relocate:target"]);
