@@ -90,7 +90,7 @@ public abstract class ModelElementMarshaller
       }
       else if (modelElement instanceof ActivityType)
       {
-         jsResult = toActivityType((ActivityType) modelElement);
+         jsResult = toActivityJson((ActivityType) modelElement);
       }
       else if (modelElement instanceof TriggerType)
       {
@@ -197,8 +197,10 @@ public abstract class ModelElementMarshaller
 
          dataPathJson.addProperty(ModelerConstants.ID_PROPERTY, dataPath.getId());
          dataPathJson.addProperty(ModelerConstants.NAME_PROPERTY, dataPath.getName());
-         dataPathJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
-               dataPath.getData().getId());
+         dataPathJson.addProperty(
+               ModelerConstants.DATA_FULL_ID_PROPERTY,
+               facade().createFullId(ModelUtils.findContainingModel(dataPath),
+                     dataPath.getData()));
          dataPathJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY,
                dataPath.getDataPath());
          dataPathJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
@@ -430,7 +432,7 @@ public abstract class ModelElementMarshaller
     * @param activity
     * @return
     */
-   public JsonObject toActivityType(ActivityType activity)
+   public JsonObject toActivityJson(ActivityType activity)
    {
       JsonObject activityJson = new JsonObject();
 
@@ -452,22 +454,22 @@ public abstract class ModelElementMarshaller
 
          // TODO Throw error for inconsistent Split/Join settings
 
-         if (activity.getJoin() == JoinSplitType.XOR_LITERAL)
+         if (activity.getJoin().equals(JoinSplitType.XOR_LITERAL))
          {
             activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
                   ModelerConstants.XOR_GATEWAY_TYPE);
          }
-         else if (activity.getJoin() == JoinSplitType.AND_LITERAL)
+         else if (activity.getJoin().equals(JoinSplitType.AND_LITERAL))
          {
             activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
                   ModelerConstants.AND_GATEWAY_TYPE);
          }
-         else if (activity.getSplit() == JoinSplitType.XOR_LITERAL)
+         else if (activity.getSplit().equals(JoinSplitType.XOR_LITERAL))
          {
             activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
                   ModelerConstants.XOR_GATEWAY_TYPE);
          }
-         else if (activity.getSplit() == JoinSplitType.AND_LITERAL)
+         else if (activity.getSplit().equals(JoinSplitType.AND_LITERAL))
          {
             activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
                   ModelerConstants.AND_GATEWAY_TYPE);
@@ -479,7 +481,6 @@ public abstract class ModelElementMarshaller
                ModelerConstants.ACTIVITY_KEY);
          activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
                activity.getImplementation().getLiteral());
-         activityJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, new JsonArray());
 
          if (activity.getImplementationProcess() != null)
          {
@@ -495,6 +496,34 @@ public abstract class ModelElementMarshaller
                   facade().createFullId(ModelUtils.findContainingModel(activity),
                         activity.getApplication()));
          }
+         
+         // TODO Access points need to be obtained from all
+         // contexts?
+
+         JsonObject accessPointsJson = new JsonObject();
+         
+         activityJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);
+         
+         for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(
+               activity, true, getDefaultDataMappingContext(activity)))
+         {
+            JsonObject accessPointJson = new JsonObject();
+
+            accessPointsJson.add(accessPoint.getId(), accessPointJson);
+            accessPointJson.addProperty(ModelerConstants.ID_PROPERTY, accessPoint.getId());
+            accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                  accessPoint.getName());
+            accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+                  accessPoint.getDirection().getLiteral());
+
+            loadDescription(accessPointJson, accessPoint);
+         }
+
+         /*
+          * if (null != activity.getPerformer()) { act.getProps().setPerformerid(
+          * activity.getPerformer().getId()); }
+          */
+
       }
 
       return activityJson;
@@ -538,9 +567,8 @@ public abstract class ModelElementMarshaller
             activitySymbol.getHeight());
 
       ActivityType activity = activitySymbol.getActivity();
-      JsonObject activityJson = toActivityType(activity);
-
-      activitySymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, activityJson);
+      
+      activitySymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, toActivityJson(activity));
 
       // TODO Hack to identify gateways
 
@@ -548,69 +576,44 @@ public abstract class ModelElementMarshaller
       {
          activitySymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                ModelerConstants.GATEWAY_SYMBOL);
-         // TODO Refactor
-         // Identify the gateway symbol for this activity and update the
-         // location and dimension attributes.
-         GatewaySymbol thisGatewaySymbol = null;
-         // for (GatewaySymbol gs : laneSymbol.getGatewaySymbol()) {
-         // if (gs.getActivitySymbol().getActivity().equals(activity)) {
-         // thisGatewaySymbol = gs;
-         // break;
-         // }
-         // }
 
-         if (null != thisGatewaySymbol)
-         {
-            activitySymbolJson.remove(ModelerConstants.X_PROPERTY);
-            activitySymbolJson.addProperty(ModelerConstants.X_PROPERTY,
-                  thisGatewaySymbol.getXPos() + laneOffsetX
-                        + ModelerConstants.POOL_LANE_MARGIN);
-            activitySymbolJson.remove(ModelerConstants.Y_PROPERTY);
-            activitySymbolJson.addProperty(ModelerConstants.Y_PROPERTY,
-                  thisGatewaySymbol.getYPos() + laneOffsetY
-                        + ModelerConstants.POOL_LANE_MARGIN
-                        + ModelerConstants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
-            activitySymbolJson.remove(ModelerConstants.WIDTH_PROPERTY);
-            activitySymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY,
-                  thisGatewaySymbol.getWidth());
-            activitySymbolJson.remove(ModelerConstants.HEIGHT_PROPERTY);
-            activitySymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
-                  thisGatewaySymbol.getHeight());
-         }
+//         // TODO REVIEW There is no gateway symbol needed!!!
+//
+//         // TODO Refactor
+//         // Identify the gateway symbol for this activity and update the
+//         // location and dimension attributes.
+//         GatewaySymbol thisGatewaySymbol = null;
+//         // for (GatewaySymbol gs : laneSymbol.getGatewaySymbol()) {
+//         // if (gs.getActivitySymbol().getActivity().equals(activity)) {
+//         // thisGatewaySymbol = gs;
+//         // break;
+//         // }
+//         // }
+//
+//         if (null != thisGatewaySymbol)
+//         {
+//            activitySymbolJson.remove(ModelerConstants.X_PROPERTY);
+//            activitySymbolJson.addProperty(ModelerConstants.X_PROPERTY,
+//                  thisGatewaySymbol.getXPos() + laneOffsetX
+//                        + ModelerConstants.POOL_LANE_MARGIN);
+//            activitySymbolJson.remove(ModelerConstants.Y_PROPERTY);
+//            activitySymbolJson.addProperty(ModelerConstants.Y_PROPERTY,
+//                  thisGatewaySymbol.getYPos() + laneOffsetY
+//                        + ModelerConstants.POOL_LANE_MARGIN
+//                        + ModelerConstants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
+//            activitySymbolJson.remove(ModelerConstants.WIDTH_PROPERTY);
+//            activitySymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY,
+//                  thisGatewaySymbol.getWidth());
+//            activitySymbolJson.remove(ModelerConstants.HEIGHT_PROPERTY);
+//            activitySymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
+//                  thisGatewaySymbol.getHeight());
+//         }
       }
       else
       {
          activitySymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                ModelerConstants.ACTIVITY_SYMBOL);
       }
-
-      // TODO Obtain access points on client
-
-      JsonObject accessPointsJson = new JsonObject();
-      activityJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);
-
-      // TODO Access points need to be obtained from all
-      // contexts
-
-      for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(
-            activitySymbol.getActivity(), true, getDefaultDataMappingContext(activity)))
-      {
-         JsonObject accessPointJson = new JsonObject();
-
-         accessPointsJson.add(accessPoint.getId(), accessPointJson);
-         accessPointJson.addProperty(ModelerConstants.ID_PROPERTY, accessPoint.getId());
-         accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
-               accessPoint.getName());
-         accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
-               accessPoint.getDirection().getLiteral());
-
-         loadDescription(accessPointJson, accessPoint);
-      }
-
-      /*
-       * if (null != activity.getPerformer()) { act.getProps().setPerformerid(
-       * activity.getPerformer().getId()); }
-       */
 
       return activitySymbolJson;
    }
@@ -748,20 +751,24 @@ public abstract class ModelElementMarshaller
          loadDescription(dataJson, data);
          loadAttributes(data, dataJson);
 
-         // if (data.getType().@@@equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
-         // {
-         // dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
-         // ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
-         // dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID, @full
-         // id@);
-         // }
-         // else (data.getType().@@@equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
-         // {
-         // dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
-         // ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
-         // dataJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, @integer
-         // etc.@);
-         // }
+         System.out.println("===> Data " + data);
+         System.out.println("===> Data " + data.getType());
+
+         if (data.getType().getId().equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
+         {
+            dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                  ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
+            // dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID, @full
+            // id@);
+         }
+         else if (data.getType().getId().equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
+         {
+            dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                  ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
+            // dataJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY,
+            // @integer
+            // etc.@);
+         }
       }
 
       return dataJson;
@@ -1067,7 +1074,7 @@ public abstract class ModelElementMarshaller
          TransitionType transition = transitionConnection.getTransition();
 
          modelElementJson = toTransitionJson(transition);
-         
+
          connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, modelElementJson);
 
          modelElementJson.addProperty(ModelerConstants.TYPE_PROPERTY,
@@ -1075,6 +1082,8 @@ public abstract class ModelElementMarshaller
          modelElementJson.addProperty(ModelerConstants.ID_PROPERTY, transition.getId());
          modelElementJson.addProperty(ModelerConstants.OID_PROPERTY,
                transition.getElementOid());
+
+         modelElementJson.addProperty(ModelerConstants.FORK_ON_TRAVERSAL_PROPERTY, transition.isForkOnTraversal());
 
          if (transition.getCondition().equals("CONDITION"))
          {
@@ -1357,6 +1366,7 @@ public abstract class ModelElementMarshaller
             && activity.getApplication() != null)
       {
          ApplicationType application = activity.getApplication();
+         
          if (application.isInteractive())
          {
             if (application.getContext().size() > 0)
@@ -1366,6 +1376,7 @@ public abstract class ModelElementMarshaller
             }
             return PredefinedConstants.DEFAULT_CONTEXT;
          }
+         
          return PredefinedConstants.APPLICATION_CONTEXT;
       }
 

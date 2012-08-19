@@ -92,7 +92,7 @@ public abstract class ModelElementUnmarshaller
             ModelerConstants.DEFAULT_PRIORITY_PROPERTY});
       symbolPropertiesMap.put(ActivitySymbolType.class, new String[] {
             ModelerConstants.X_PROPERTY, ModelerConstants.Y_PROPERTY});
-      modelElementPropertiesMap.put(ActivitySymbolType.class,
+      modelElementPropertiesMap.put(ActivityType.class,
             new String[] {ModelerConstants.NAME_PROPERTY});
       symbolPropertiesMap.put(StartEventSymbol.class, new String[] {
             ModelerConstants.X_PROPERTY, ModelerConstants.Y_PROPERTY});
@@ -147,7 +147,7 @@ public abstract class ModelElementUnmarshaller
       }
       else if (element instanceof ActivityType)
       {
-         updateActivity((ActivityType)element, json);
+         updateActivity((ActivityType) element, json);
       }
       else if (element instanceof StartEventSymbol)
       {
@@ -202,6 +202,76 @@ public abstract class ModelElementUnmarshaller
     */
    private void updateActivity(ActivityType activity, JsonObject activityJson)
    {
+      mapDeclaredModelElementProperties(activity, activityJson,
+            modelElementPropertiesMap.get(ActivityType.class));
+      storeAttributes(activity, activityJson);
+      storeDescription(activity, activityJson);
+
+      if (activity.getId().toLowerCase().startsWith("gateway"))
+      {
+         if (activityJson.has(ModelerConstants.GATEWAY_TYPE_PROPERTY))
+         {
+            if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
+                  .getAsString()
+                  .equals(ModelerConstants.XOR_GATEWAY_TYPE))
+            {
+               activity.setJoin(JoinSplitType.XOR_LITERAL);
+               activity.setSplit(JoinSplitType.XOR_LITERAL);
+            }
+            else if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
+                  .getAsString()
+                  .equals(ModelerConstants.AND_GATEWAY_TYPE))
+            {
+               activity.setJoin(JoinSplitType.AND_LITERAL);
+               activity.setSplit(JoinSplitType.AND_LITERAL);
+            }
+            else if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
+                  .getAsString()
+                  .equals(ModelerConstants.OR_GATEWAY_TYPE))
+            {
+               // TODO OR Support
+
+               activity.setJoin(JoinSplitType.XOR_LITERAL);
+               activity.setSplit(JoinSplitType.XOR_LITERAL);
+            }
+         }
+      }
+      else
+      {
+         if (ModelerConstants.MANUAL_ACTIVITY.equals(extractString(activityJson,
+               ModelerConstants.ACTIVITY_TYPE)))
+         {
+            activity.setImplementation(ActivityImplementationType.MANUAL_LITERAL);
+         }
+         else if (ModelerConstants.SUBPROCESS_ACTIVITY.equals(extractString(activityJson,
+               ModelerConstants.ACTIVITY_TYPE)))
+         {
+            activity.setImplementation(ActivityImplementationType.SUBPROCESS_LITERAL);
+
+            String subprocessFullId = extractString(activityJson,
+                  ModelerConstants.SUBPROCESS_ID);
+
+            ProcessDefinitionType subProcessDefinition = facade().getProcessDefinition(
+                  facade().getModelId(subprocessFullId),
+                  facade().stripFullId(subprocessFullId));
+
+            activity.setImplementationProcess(subProcessDefinition);
+         }
+         else if (ModelerConstants.APPLICATION_ACTIVITY.equals(extractString(
+               activityJson, ModelerConstants.ACTIVITY_TYPE)))
+         {
+            activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
+
+            String applicationFullId = extractString(activityJson,
+                  ModelerConstants.APPLICATION_FULL_ID_PROPERTY);
+
+            ApplicationType application = facade().getApplication(
+                  facade().getModelId(applicationFullId),
+                  facade().stripFullId(applicationFullId));
+
+            activity.setApplication(application);
+         }
+      }
    }
 
    /**
@@ -219,6 +289,11 @@ public abstract class ModelElementUnmarshaller
       storeDescription(transition, controlFlowJson);
       storeAttributes(transition, controlFlowJson);
 
+      if (controlFlowJson.has(ModelerConstants.FORK_ON_TRAVERSAL_PROPERTY))
+      {
+         transition.setForkOnTraversal(controlFlowJson.get(ModelerConstants.FORK_ON_TRAVERSAL_PROPERTY).getAsBoolean());
+      }
+      
       if (controlFlowJson.has(ModelerConstants.OTHERWISE_PROPERTY))
       {
          if (controlFlowJson.get(ModelerConstants.OTHERWISE_PROPERTY).getAsBoolean())
@@ -287,34 +362,41 @@ public abstract class ModelElementUnmarshaller
 
          for (int n = 0; n < dataPathes.size(); ++n)
          {
-            // JsonObject dataPathJson = dataPathes.get(n).getAsJsonObject();
-            //
-            // // TODO Kernel How to create?
-            // DataPathType dataPath = null;
-            //
-            // String dataFullId =
-            // dataPathJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)
-            // .getAsString();
-            //
-            // // TODO Very ugly facade syntax
-            //
-            // DataType data = facade().findData(
-            // facade().findModel(facade().getModelId(dataFullId)),
-            // facade().stripFullId(dataFullId));
-            //
-            // dataPath.setData(data);
-            // dataPath.setDataPath(dataPathJson.get(ModelerConstants.DATA_PATH_PROPERTY)
-            // .getAsString());
-            // dataPath.setId(dataPathJson.get(ModelerConstants.ID_PROPERTY).getAsString());
-            // dataPath.setName(dataPathJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
-            // dataPath.setDescriptor(dataPathJson.get(ModelerConstants.DESCRIPTOR_PROPERTY)
-            // .getAsBoolean());
-            // dataPath.setKey(dataPathJson.get(ModelerConstants.KEY_DESCRIPTOR_PROPERTY)
-            // .getAsBoolean());
-            //
-            // dataPath.setDirection(DirectionType.IN_LITERAL);
-            //
-            // processDefinition.getDataPath().add(dataPath);
+            JsonObject dataPathJson = dataPathes.get(n).getAsJsonObject();
+            DataPathType dataPath = facade().createDataPath();
+            String dataFullId = dataPathJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)
+                  .getAsString();
+
+            // TODO Very ugly facade syntax
+
+            DataType data = facade().findData(
+                  facade().findModel(facade().getModelId(dataFullId)),
+                  facade().stripFullId(dataFullId));
+
+            dataPath.setData(data);
+            dataPath.setDataPath(dataPathJson.get(ModelerConstants.DATA_PATH_PROPERTY)
+                  .getAsString());
+            dataPath.setId(facade().createIdFromName(
+                  dataPathJson.get(ModelerConstants.NAME_PROPERTY).getAsString()));
+            dataPath.setName(dataPathJson.get(ModelerConstants.NAME_PROPERTY)
+                  .getAsString());
+            dataPath.setDescriptor(dataPathJson.get(ModelerConstants.DESCRIPTOR_PROPERTY)
+                  .getAsBoolean());
+            dataPath.setKey(dataPathJson.get(ModelerConstants.KEY_DESCRIPTOR_PROPERTY)
+                  .getAsBoolean());
+
+            if (dataPathJson.get(ModelerConstants.DIRECTION_PROPERTY)
+                  .getAsString()
+                  .equals(DirectionType.IN_LITERAL.getLiteral()))
+            {
+               dataPath.setDirection(DirectionType.IN_LITERAL);
+            }
+            else
+            {
+               dataPath.setDirection(DirectionType.OUT_LITERAL);
+            }
+
+            processDefinition.getDataPath().add(dataPath);
          }
       }
    }
@@ -327,49 +409,13 @@ public abstract class ModelElementUnmarshaller
    private void updateActivitySymbol(ActivitySymbolType activitySymbol,
          JsonObject activitySymbolJson)
    {
+      mapDeclaredSymbolProperties(activitySymbol, activitySymbolJson,
+            symbolPropertiesMap.get(ActivitySymbolType.class));
+
       ActivityType activity = activitySymbol.getActivity();
       JsonObject activityJson = activitySymbolJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
 
-      mapDeclaredModelElementProperties(activity, activityJson,
-            modelElementPropertiesMap.get(ActivitySymbolType.class));
-      mapDeclaredSymbolProperties(activitySymbol, activitySymbolJson,
-            symbolPropertiesMap.get(ActivitySymbolType.class));
-      storeAttributes(activity, activityJson);
-      storeDescription(activity, activityJson);
-
-      if (ModelerConstants.MANUAL_ACTIVITY.equals(extractString(activityJson,
-            ModelerConstants.ACTIVITY_TYPE)))
-      {
-         activity.setImplementation(ActivityImplementationType.MANUAL_LITERAL);
-      }
-      else if (ModelerConstants.SUBPROCESS_ACTIVITY.equals(extractString(activityJson,
-            ModelerConstants.ACTIVITY_TYPE)))
-      {
-         activity.setImplementation(ActivityImplementationType.SUBPROCESS_LITERAL);
-
-         String subprocessFullId = extractString(activityJson,
-               ModelerConstants.SUBPROCESS_ID);
-
-         ProcessDefinitionType subProcessDefinition = facade().getProcessDefinition(
-               facade().getModelId(subprocessFullId),
-               facade().stripFullId(subprocessFullId));
-
-         activity.setImplementationProcess(subProcessDefinition);
-      }
-      else if (ModelerConstants.APPLICATION_ACTIVITY.equals(extractString(activityJson,
-            ModelerConstants.ACTIVITY_TYPE)))
-      {
-         activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
-
-         String applicationFullId = extractString(activityJson,
-               ModelerConstants.APPLICATION_FULL_ID_PROPERTY);
-
-         ApplicationType application = facade().getApplication(
-               facade().getModelId(applicationFullId),
-               facade().stripFullId(applicationFullId));
-
-         activity.setApplication(application);
-      }
+      updateActivity(activity, activityJson);
    }
 
    /**
@@ -380,42 +426,13 @@ public abstract class ModelElementUnmarshaller
    private void updateGatewaySymbol(ActivitySymbolType activitySymbol,
          JsonObject gatewaySymbolJson)
    {
+      mapDeclaredSymbolProperties(activitySymbol, gatewaySymbolJson,
+            symbolPropertiesMap.get(ActivitySymbolType.class));
+
       ActivityType gateway = activitySymbol.getActivity();
       JsonObject gatewayJson = gatewaySymbolJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
 
-      mapDeclaredModelElementProperties(gateway, gatewayJson,
-            modelElementPropertiesMap.get(ActivitySymbolType.class));
-      mapDeclaredSymbolProperties(activitySymbol, gatewaySymbolJson,
-            symbolPropertiesMap.get(ActivitySymbolType.class));
-      storeAttributes(gateway, gatewayJson);
-      storeDescription(gateway, gatewayJson);
-
-      if (gatewayJson.has(ModelerConstants.GATEWAY_TYPE_PROPERTY))
-      {
-         if (gatewayJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
-               .getAsString()
-               .equals(ModelerConstants.XOR_GATEWAY_TYPE))
-         {
-            gateway.setJoin(JoinSplitType.XOR_LITERAL);
-            gateway.setSplit(JoinSplitType.XOR_LITERAL);
-         }
-         else if (gatewayJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
-               .getAsString()
-               .equals(ModelerConstants.AND_GATEWAY_TYPE))
-         {
-            gateway.setJoin(JoinSplitType.AND_LITERAL);
-            gateway.setSplit(JoinSplitType.AND_LITERAL);
-         }
-         else if (gatewayJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
-               .getAsString()
-               .equals(ModelerConstants.OR_GATEWAY_TYPE))
-         {
-            // TODO OR Support
-
-            gateway.setJoin(JoinSplitType.XOR_LITERAL);
-            gateway.setSplit(JoinSplitType.XOR_LITERAL);
-         }
-      }
+      updateActivity(gateway, gatewayJson);
    }
 
    /**
