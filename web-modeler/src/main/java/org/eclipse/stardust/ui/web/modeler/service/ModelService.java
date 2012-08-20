@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
 import org.eclipse.emf.common.util.EList;
@@ -296,6 +297,7 @@ public class ModelService
 
    private QueryService queryService;
 
+   private String currentUserId; 
    // Modeling Session Management
 
    /**
@@ -318,7 +320,21 @@ public class ModelService
 
    public ModelingSession currentSession()
    {
-      return sessionManager.currentSession(me.getCurrentUserId());
+      currentUserId = me.getCurrentUserId();
+      return sessionManager.currentSession(me.getCurrentUserId());      
+   }
+
+   /**
+    * Removes the modelling session from cached list when user session ends.
+    * 
+    */
+   @PreDestroy
+   public void destroyModelingSession()
+   {
+      if (null != currentUserId)
+      {
+         sessionManager.destroySession(currentUserId);
+      }
    }
 
    /**
@@ -2048,7 +2064,7 @@ public class ModelService
       
       return json;
    }
-   
+
    private MBFacade getModelBuilderFacade()
    {
       return new MBFacade(getModelManagementStrategy());

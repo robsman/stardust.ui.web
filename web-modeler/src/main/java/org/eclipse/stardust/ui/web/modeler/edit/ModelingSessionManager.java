@@ -61,6 +61,26 @@ public class ModelingSessionManager
       return session;
    }
 
+   /**
+    * @param userId
+    */
+   public void destroySession(String userId)
+   {
+      ModelingSession session = collaborations.get(userId);
+      if (null != session)
+      {
+         collaborations.remove(userId);
+      }
+      else
+      {
+         session = userSessions.get(userId);
+         if (null != session)
+         {
+            userSessions.remove(userId);
+         }
+      }
+   }
+
    private ModelingSession createSession(String userId)
    {
       ModelingSession session = null;
