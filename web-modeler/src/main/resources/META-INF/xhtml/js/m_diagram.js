@@ -550,7 +550,7 @@ define(
 											.match(this.lastSymbol.type)) {
 								this.lastSymbol
 										.applyChanges(obj.changes.added[i]);
-
+								this.lastSymbol = null;
 							}// For connections lastSymbol will be empty
 							else if (null != obj.changes.added[i].modelElement) {
 								// for connections , search by connectionId to
