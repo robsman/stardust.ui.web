@@ -761,34 +761,37 @@ public abstract class ModelElementMarshaller
             dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                   ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
             String uri = AttributeUtil.getAttributeValue(data, IConnectionManager.URI_ATTRIBUTE_NAME);
-            IConnectionManager manager = model.getConnectionManager();
-            if (manager != null & uri != null)
+            if (null != model)
             {
-               EObject eObject = manager.find(uri);
-               if(eObject instanceof EObjectDescriptor)
+               IConnectionManager manager = model.getConnectionManager();
+               if (manager != null & uri != null)
                {
-                  eObject = ((EObjectDescriptor) eObject).getEObject();
-               }
-               ModelType containingModel = ModelUtils.findContainingModel(eObject);
-               if(modelBuilderFacade == null)
-               {
-                  modelBuilderFacade = getModelBuilderFacade();
-               }                  
-               String fullId = modelBuilderFacade.createFullId(containingModel, eObject);  
-               dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID, fullId);               
-            }
-            else 
-            {
-               String typeDeclarationId = AttributeUtil.getAttributeValue(data, StructuredDataConstants.TYPE_DECLARATION_ATT);
-               if(!StringUtils.isEmpty(typeDeclarationId))
-               {
-                  TypeDeclarationType typeDeclaration = model.getTypeDeclarations().getTypeDeclaration(typeDeclarationId);
+                  EObject eObject = manager.find(uri);
+                  if(eObject instanceof EObjectDescriptor)
+                  {
+                     eObject = ((EObjectDescriptor) eObject).getEObject();
+                  }
+                  ModelType containingModel = ModelUtils.findContainingModel(eObject);
                   if(modelBuilderFacade == null)
                   {
                      modelBuilderFacade = getModelBuilderFacade();
                   }                  
-                  String fullId = modelBuilderFacade.createFullId(model, typeDeclaration);               
+                  String fullId = modelBuilderFacade.createFullId(containingModel, eObject);  
                   dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID, fullId);               
+               }
+               else 
+               {
+                  String typeDeclarationId = AttributeUtil.getAttributeValue(data, StructuredDataConstants.TYPE_DECLARATION_ATT);
+                  if(!StringUtils.isEmpty(typeDeclarationId))
+                  {
+                     TypeDeclarationType typeDeclaration = model.getTypeDeclarations().getTypeDeclaration(typeDeclarationId);
+                     if(modelBuilderFacade == null)
+                     {
+                        modelBuilderFacade = getModelBuilderFacade();
+                     }                  
+                     String fullId = modelBuilderFacade.createFullId(model, typeDeclaration);               
+                     dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID, fullId);               
+                  }
                }
             }
          }
