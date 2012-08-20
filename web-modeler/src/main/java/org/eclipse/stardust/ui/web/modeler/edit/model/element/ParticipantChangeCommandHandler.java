@@ -207,7 +207,6 @@ public class ParticipantChangeCommandHandler
     */
    private void removeOrganization(ModelType model, OrganizationType org)
    {
-      model.getOrganization().remove(org);
       Iterator<ParticipantType> iter = ((OrganizationType) org).getParticipant()
             .iterator();
       while (iter.hasNext())
@@ -226,6 +225,7 @@ public class ParticipantChangeCommandHandler
          // Modification.determineChangedElement
          //iter.remove();
       }
+      model.getOrganization().remove(org);
    }
 
    private ModelService modelService()
