@@ -23,7 +23,7 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
-import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
@@ -46,7 +46,7 @@ public class DataChangeCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
-   private MBFacade modelBuilderFacade;
+   private ModelBuilderFacade modelBuilderFacade;
 
    /**
     * @param model
@@ -168,11 +168,11 @@ public class DataChangeCommandHandler
       }
    }
    
-   private MBFacade getModelBuilderFacade()
+   private ModelBuilderFacade getModelBuilderFacade()
    {
       if (modelBuilderFacade == null)
       {
-         modelBuilderFacade = new MBFacade(springContext.getBean(ModelService.class)
+         modelBuilderFacade = new ModelBuilderFacade(springContext.getBean(ModelService.class)
                .getModelManagementStrategy());
       }
       return modelBuilderFacade;

@@ -10,7 +10,7 @@ import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
-import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
@@ -59,7 +59,7 @@ public abstract class ModelElementMarshaller
 
    protected abstract ModelManagementStrategy modelManagementStrategy();
 
-   private MBFacade modelBuilderFacade;
+   private ModelBuilderFacade modelBuilderFacade;
 
    /**
     * 
@@ -1442,11 +1442,11 @@ public abstract class ModelElementMarshaller
       }
    }
 
-   private MBFacade getModelBuilderFacade()
+   private ModelBuilderFacade getModelBuilderFacade()
    {
       if (modelBuilderFacade == null)
       {
-         modelBuilderFacade = new MBFacade(modelManagementStrategy());
+         modelBuilderFacade = new ModelBuilderFacade(modelManagementStrategy());
       }
       return modelBuilderFacade;
    }

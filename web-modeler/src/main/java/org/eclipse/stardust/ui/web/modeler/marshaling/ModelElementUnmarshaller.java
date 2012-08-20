@@ -30,7 +30,7 @@ import org.eclipse.stardust.model.xpdl.builder.activity.BpmApplicationActivityBu
 import org.eclipse.stardust.model.xpdl.builder.activity.BpmSubProcessActivityBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
-import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
@@ -78,7 +78,7 @@ public abstract class ModelElementUnmarshaller
 
    protected abstract ModelManagementStrategy modelManagementStrategy();
 
-   private MBFacade modelBuilderFacade;
+   private ModelBuilderFacade modelBuilderFacade;
 
    /**
 	 *
@@ -755,11 +755,11 @@ public abstract class ModelElementUnmarshaller
     * 
     * @return
     */
-   private MBFacade getModelBuilderFacade()
+   private ModelBuilderFacade getModelBuilderFacade()
    {
       if (modelBuilderFacade == null)
       {
-         modelBuilderFacade = new MBFacade(modelManagementStrategy());
+         modelBuilderFacade = new ModelBuilderFacade(modelManagementStrategy());
       }
       return modelBuilderFacade;
    }

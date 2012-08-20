@@ -48,7 +48,7 @@ import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.JcrConnectionManager;
-import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.PepperIconFactory;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
@@ -2065,8 +2065,8 @@ public class ModelService
       return json;
    }
 
-   private MBFacade getModelBuilderFacade()
+   private ModelBuilderFacade getModelBuilderFacade()
    {
-      return new MBFacade(getModelManagementStrategy());
+      return new ModelBuilderFacade(getModelManagementStrategy());
    }
 }

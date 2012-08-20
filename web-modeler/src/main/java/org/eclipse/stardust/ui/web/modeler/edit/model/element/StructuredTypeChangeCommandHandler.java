@@ -13,7 +13,7 @@ import org.springframework.context.ApplicationContext;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
-import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
@@ -30,7 +30,7 @@ public class StructuredTypeChangeCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
-   private MBFacade modelBuilderFacade;
+   private ModelBuilderFacade modelBuilderFacade;
 
    public static final String TYPE_PROPERTY = "type";
 
@@ -72,11 +72,11 @@ public class StructuredTypeChangeCommandHandler
       return springContext.getBean(ModelService.class);
    }
    
-   private MBFacade getModelBuilderFacade()
+   private ModelBuilderFacade getModelBuilderFacade()
    {
       if (modelBuilderFacade == null)
       {
-         modelBuilderFacade = new MBFacade(springContext.getBean(ModelService.class)
+         modelBuilderFacade = new ModelBuilderFacade(springContext.getBean(ModelService.class)
                .getModelManagementStrategy());
       }
       return modelBuilderFacade;

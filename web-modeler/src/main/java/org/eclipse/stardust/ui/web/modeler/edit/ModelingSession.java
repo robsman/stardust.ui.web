@@ -12,7 +12,7 @@ import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
-import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
@@ -32,7 +32,7 @@ public class ModelingSession
 
    private final EditingSession editingSession = new EditingSession();
    
-   private MBFacade mbFacade;
+   private ModelBuilderFacade mbFacade;
 
    @Resource
    @Qualifier("default")

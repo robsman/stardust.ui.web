@@ -23,7 +23,7 @@ import com.google.gson.JsonObject;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
-import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
@@ -56,7 +56,7 @@ public class ConnectionCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
-   private MBFacade modelBuilderFacade;
+   private ModelBuilderFacade modelBuilderFacade;
    
    @OnCommand(commandId = "connection.create")
    public void createConnection(IIdentifiableElement targetElement, JsonObject request)
@@ -469,11 +469,11 @@ public class ConnectionCommandHandler
       throw new IllegalArgumentException("Illegal orientation key " + orientation + ".");
    }
    
-   private MBFacade getModelBuilderFacade()
+   private ModelBuilderFacade getModelBuilderFacade()
    {
       if (modelBuilderFacade == null)
       {
-         modelBuilderFacade = new MBFacade(springContext.getBean(ModelService.class)
+         modelBuilderFacade = new ModelBuilderFacade(springContext.getBean(ModelService.class)
                .getModelManagementStrategy());
       }
       return modelBuilderFacade;

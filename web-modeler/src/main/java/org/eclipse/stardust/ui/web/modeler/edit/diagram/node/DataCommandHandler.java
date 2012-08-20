@@ -19,7 +19,7 @@ import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
-import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
@@ -45,7 +45,7 @@ public class DataCommandHandler
 
    @Resource
    private ApplicationContext springContext;
-   private MBFacade modelBuilderFacade;
+   private ModelBuilderFacade modelBuilderFacade;
 
    /**
     *
@@ -124,11 +124,11 @@ public class DataCommandHandler
       return springContext.getBean(ModelService.class);
    }
    
-   private MBFacade getModelBuilderFacade()
+   private ModelBuilderFacade getModelBuilderFacade()
    {
       if (modelBuilderFacade == null)
       {
-         modelBuilderFacade = new MBFacade(springContext.getBean(ModelService.class)
+         modelBuilderFacade = new ModelBuilderFacade(springContext.getBean(ModelService.class)
                .getModelManagementStrategy());
       }
       return modelBuilderFacade;

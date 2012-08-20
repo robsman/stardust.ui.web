@@ -20,7 +20,7 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERT
 
 import javax.annotation.Resource;
 
-import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
@@ -42,7 +42,7 @@ public class SwimlaneCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
-   private MBFacade modelBuilderFacade;
+   private ModelBuilderFacade modelBuilderFacade;
 
    /**
     * @param parentSymbol
@@ -98,11 +98,11 @@ public class SwimlaneCommandHandler
       }
    }
    
-   private MBFacade getModelBuilderFacade()
+   private ModelBuilderFacade getModelBuilderFacade()
    {
       if (modelBuilderFacade == null)
       {
-         modelBuilderFacade = new MBFacade(springContext.getBean(ModelService.class)
+         modelBuilderFacade = new ModelBuilderFacade(springContext.getBean(ModelService.class)
                .getModelManagementStrategy());
       }
       return modelBuilderFacade;
