@@ -374,12 +374,8 @@ public abstract class ModelElementUnmarshaller
             DataPathType dataPath = getModelBuilderFacade().createDataPath();
             String dataFullId = dataPathJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)
                   .getAsString();
-
-            // TODO Very ugly facade syntax
-
-            DataType data = getModelBuilderFacade().findData(
-                  getModelBuilderFacade().findModel(getModelBuilderFacade().getModelId(dataFullId)),
-                  getModelBuilderFacade().stripFullId(dataFullId));
+            
+            DataType data = getModelBuilderFacade().findData(dataFullId);
 
             dataPath.setData(data);
             dataPath.setDataPath(dataPathJson.get(ModelerConstants.DATA_PATH_PROPERTY)
