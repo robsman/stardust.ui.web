@@ -419,10 +419,13 @@ public abstract class ModelElementMarshaller
          for (TransitionConnectionType transitionConnection : poolSymbol.getTransitionConnection())
          {
             JsonObject connectionJson = toTransitionConnectionJson(transitionConnection);
-            connectionsJson.add(
-                  extractString(
-                        connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
-                        ModelerConstants.ID_PROPERTY), connectionJson);
+            if (connectionJson.has(ModelerConstants.MODEL_ELEMENT_PROPERTY))
+            {
+               connectionsJson.add(
+                     extractString(
+                           connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
+                           ModelerConstants.ID_PROPERTY), connectionJson);
+            }
          }
       }
 
