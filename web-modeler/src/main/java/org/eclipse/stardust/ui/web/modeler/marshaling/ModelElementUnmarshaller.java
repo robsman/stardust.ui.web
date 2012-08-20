@@ -37,6 +37,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
@@ -190,6 +191,10 @@ public abstract class ModelElementUnmarshaller
       {
          updateControlFlowConnection((TransitionConnectionType) element, json);
       }
+      else if (element instanceof DataMappingConnectionType)
+      {
+         updateDataFlowConnection((DataMappingConnectionType) element, json);
+      }  
       else
       {
          System.out.println("===> Unsupported Symbol " + element);
@@ -327,6 +332,21 @@ public abstract class ModelElementUnmarshaller
             ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
    }
 
+   /**
+    * 
+    * @param dataFlowConnection
+    * @param dataFlowConnectionJson
+    */
+   private void updateDataFlowConnection(DataMappingConnectionType dataFlowConnection,
+         JsonObject dataFlowConnectionJson)
+   {
+      dataFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
+            dataFlowConnectionJson,
+            ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+      dataFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
+            dataFlowConnectionJson, ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+   }
+   
    /**
     * 
     * @param element

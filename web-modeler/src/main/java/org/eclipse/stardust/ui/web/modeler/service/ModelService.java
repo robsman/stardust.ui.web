@@ -749,68 +749,6 @@ public class ModelService
 
    /**
     * 
-    * @param connectionJson
-    * @param processDefinition
-    * @param sourceActivitySymbol
-    * @param dataSymbol
-    * @param maxOid
-    */
-   private void createDataFlowConnection(JsonObject connectionJson,
-         ProcessDefinitionType processDefinition, ActivitySymbolType activitySymbol,
-         DataSymbolType dataSymbol, long maxOid)
-   {
-
-      System.out.println("Create data flow connection");
-
-      DataType data = dataSymbol.getData();
-      ActivityType activity = activitySymbol.getActivity();
-
-      DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
-      DataMappingConnectionType dataMappingConnection = AbstractElementBuilder.F_CWM
-            .createDataMappingConnectionType();
-
-      // TODO Add index
-
-      dataMapping.setId(data.getId());
-      dataMapping.setName(data.getName());
-
-      dataMapping.setDirection(DirectionType.get(DirectionType.OUT));
-      dataMapping.setData(data);
-
-      // TODO Incomplete
-
-      // if (activity.getImplementation().getLiteral().equals("Application"))
-      // {
-      // dataMapping.setContext(PredefinedConstants.APPLICATION_CONTEXT);
-      // dataMapping.setApplicationAccessPoint(element.getProps().getEnds()
-      // .getAccesspoint());
-      // }
-      // else
-      // {
-      dataMapping.setContext(PredefinedConstants.DEFAULT_CONTEXT);
-      // }
-
-      activity.getDataMapping().add(dataMapping);
-
-      // TODO Obtain pool from call
-
-      processDefinition.getDiagram().get(0).getPoolSymbols().get(0)
-            .getDataMappingConnection().add(dataMappingConnection);
-
-      dataMappingConnection.setElementOid(++maxOid);
-      dataMappingConnection.setActivitySymbol(activitySymbol);
-      dataMappingConnection.setDataSymbol(dataSymbol);
-      activitySymbol.getDataMappings().add(dataMappingConnection);
-      dataSymbol.getDataMappings().add(dataMappingConnection);
-      dataMappingConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
-            connectionJson, FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-      dataMappingConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
-            connectionJson, TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-
-   }
-
-   /**
-    * 
     * TODO From DynamicConnectionCommand. Refactor?
     * 
     * @param activity
@@ -864,6 +802,8 @@ public class ModelService
    public String updateConnection(String modelId, String processId, long connectionOid,
          JsonObject connectionJson)
    {
+      // TODO - Not used, ModelElementUnmarshaller contains relevant code to update
+      // connections , can be removed from here
       JsonObject modelElementJson = connectionJson
             .getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
       ModelType model = getModelManagementStrategy().getModels().get(modelId);
