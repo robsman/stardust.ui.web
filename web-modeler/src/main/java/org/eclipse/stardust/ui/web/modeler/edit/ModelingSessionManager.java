@@ -63,6 +63,7 @@ public class ModelingSessionManager
 
    /**
     * @param userId
+    * TODO - pending review
     */
    public void destroySession(String userId)
    {

@@ -326,9 +326,10 @@ public class ModelService
 
    /**
     * Removes the modelling session from cached list when user session ends.
+    * TODO - commented pending review by Robert S
     * 
     */
-   @PreDestroy
+   //@PreDestroy
    public void destroyModelingSession()
    {
       if (null != currentUserId)
