@@ -1086,7 +1086,7 @@ public class ModelService
 
       if (model == null)
       {
-         getModelManagementStrategy().attachModel(modelId);
+         model = getModelManagementStrategy().attachModel(modelId);
       }
 
       ProcessDefinitionType processDefinition = getModelBuilderFacade()
