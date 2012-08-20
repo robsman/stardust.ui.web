@@ -1494,10 +1494,11 @@ public class ModelService
       dataJson.addProperty(ModelerConstants.NAME_PROPERTY, data.getName());
       dataJson.addProperty(ModelerConstants.UUID_PROPERTY, currentSession().uuidMapper()
             .getUUID(data));
+      dataJson.addProperty(TYPE_PROPERTY, ModelerConstants.DATA);
       loadDescription(dataJson, data);
       if (data.getType() != null)
       {
-         dataJson.addProperty(TYPE_PROPERTY, data.getType().getId());
+         dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY, data.getType().getId());
       }
 
       return dataJson;

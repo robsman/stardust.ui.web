@@ -230,7 +230,7 @@ define(
 														"modelUUID" : model.uuid,
 														"fullId" : data
 																.getFullId(),
-														"rel" : data.type,
+														"rel" : data.dataType,
 														"elementId" : data.id,
 														"draggable" : true
 													},
