@@ -100,12 +100,12 @@ define(
 					this.populateDocumentTypesSelectInput();
 					this.initializeModelElement(data);
 
-					if (this.data.type == m_constants.PRIMITIVE_DATA_TYPE) {
+					if (this.data.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
 						this.setPrimitiveDataType(this.data.primitiveDataType);
-					} else if (this.data.type == m_constants.STRUCTURED_DATA_TYPE) {
+					} else if (this.data.dataType == m_constants.STRUCTURED_DATA_TYPE) {
 						this
 								.setStructuredDataType(this.data.structuredDataTypeFullId);
-					} else if (this.data.type == m_constants.DOCUMENT_DATA_TYPE) {
+					} else if (this.data.dataType == m_constants.DOCUMENT_DATA_TYPE) {
 						this
 								.setDocumentDataType(this.data.structuredDataTypeFullId);
 					}

@@ -99,8 +99,8 @@ define(
 							var clickCoordinates = parent.iDnD
 									.getMouseCoordinates(eve);
 							if (m_constants.PRIMITIVE_DATA_TYPE == parent.iDnD.getTransferObject().elementType
-									|| m_constants.STRUCTURED_DATA_TYPE == parent.iDnD
-											.getTransferObject().elementType) {
+									|| m_constants.STRUCTURED_DATA_TYPE == parent.iDnD.getTransferObject().elementType
+									|| m_constants.DOCUMENT_DATA_TYPE == parent.iDnD.getTransferObject().elementType) {
 								// TODO other check required
 								if (!isElementPresent(allAnnotationsList,
 										"customProps.dataId", parent.iDnD

@@ -193,13 +193,13 @@ define(
 					this.populateDataStructuresSelectInput();
 					this.populateDocumentTypesSelectInput();
 
-					if (this.propertiesPanel.data.type == m_constants.PRIMITIVE_DATA_TYPE) {
+					if (this.propertiesPanel.data.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
 						this
 								.setPrimitiveDataType(this.propertiesPanel.data.primitiveDataType);
-					} else if (this.propertiesPanel.data.type == m_constants.STRUCTURED_DATA_TYPE) {
+					} else if (this.propertiesPanel.data.dataType == m_constants.STRUCTURED_DATA_TYPE) {
 						this
 								.setStructuredDataType(this.propertiesPanel.data.structuredDataTypeFullId);
-					} else if (this.propertiesPanel.data.type == m_constants.DOCUMENT_DATA_TYPE) {
+					} else if (this.propertiesPanel.data.dataType == m_constants.DOCUMENT_DATA_TYPE) {
 						this
 								.setDocumentDataType(this.propertiesPanel.data.structuredDataTypeFullId);
 					}
