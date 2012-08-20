@@ -7,6 +7,7 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.MBFacade;
@@ -25,7 +26,6 @@ import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.GatewaySymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
@@ -41,12 +41,14 @@ import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
-import org.eclipse.stardust.model.xpdl.carnot.impl.LaneSymbolImpl;
 import org.eclipse.stardust.model.xpdl.carnot.impl.ProcessDefinitionTypeImpl;
 import org.eclipse.stardust.model.xpdl.carnot.util.ActivityUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
+import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.util.IConnectionManager;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
+import org.eclipse.stardust.modeling.repository.common.descriptors.EObjectDescriptor;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -758,24 +760,50 @@ public abstract class ModelElementMarshaller
          {
             dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                   ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
-            // dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID, @full
-            // id@);
+            String uri = AttributeUtil.getAttributeValue(data, IConnectionManager.URI_ATTRIBUTE_NAME);
+            IConnectionManager manager = model.getConnectionManager();
+            if (manager != null & uri != null)
+            {
+               EObject eObject = manager.find(uri);
+               if(eObject instanceof EObjectDescriptor)
+               {
+                  eObject = ((EObjectDescriptor) eObject).getEObject();
+               }
+               ModelType containingModel = ModelUtils.findContainingModel(eObject);
+               if(modelBuilderFacade == null)
+               {
+                  modelBuilderFacade = getModelBuilderFacade();
+               }                  
+               String fullId = modelBuilderFacade.createFullId(containingModel, eObject);  
+               dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID, fullId);               
+            }
+            else 
+            {
+               String typeDeclarationId = AttributeUtil.getAttributeValue(data, StructuredDataConstants.TYPE_DECLARATION_ATT);
+               if(!StringUtils.isEmpty(typeDeclarationId))
+               {
+                  TypeDeclarationType typeDeclaration = model.getTypeDeclarations().getTypeDeclaration(typeDeclarationId);
+                  if(modelBuilderFacade == null)
+                  {
+                     modelBuilderFacade = getModelBuilderFacade();
+                  }                  
+                  String fullId = modelBuilderFacade.createFullId(model, typeDeclaration);               
+                  dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID, fullId);               
+               }
+            }
          }
          else if (data.getType().getId().equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
          {
             dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                   ModelerConstants.DOCUMENT_DATA_TYPE_KEY);
-            // dataJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY,
-            // @integer
-            // etc.@);
+            // dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID,
          }
          else if (data.getType().getId().equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
          {
             dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                   ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
-            // dataJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY,
-            // @integer
-            // etc.@);
+            String type = AttributeUtil.getAttributeValue(data, CarnotConstants.TYPE_ATT);
+            dataJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
          }
       }
 
