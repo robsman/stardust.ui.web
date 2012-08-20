@@ -32,7 +32,7 @@ public class ApplicationTypeChangeCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
-   private MBFacade facade;
+   private MBFacade modelBuilderFacade;
 
    @OnCommand(commandId = "webServiceApplication.create")
    public void createWebServiceApp(ModelType model, JsonObject request)
@@ -40,7 +40,7 @@ public class ApplicationTypeChangeCommandHandler
       String applicationID = extractString(request, ModelerConstants.ID_PROPERTY);
       String applicationName = extractString(request, ModelerConstants.NAME_PROPERTY);
 
-      ApplicationType applicationType = facade().createApplication(model,
+      ApplicationType applicationType = getModelBuilderFacade().createApplication(model,
             applicationID, applicationName,
             ModelerConstants.WEB_SERVICE_APPLICATION_TYPE_ID);
 
@@ -57,7 +57,7 @@ public class ApplicationTypeChangeCommandHandler
       String applicationID = extractString(request, ModelerConstants.ID_PROPERTY);
       String applicationName = extractString(request, ModelerConstants.NAME_PROPERTY);
 
-      ApplicationType applicationType = facade().createApplication(model,
+      ApplicationType applicationType = getModelBuilderFacade().createApplication(model,
             applicationID, applicationName,
             ModelerConstants.MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID);
 
@@ -88,7 +88,7 @@ public class ApplicationTypeChangeCommandHandler
             ModelerConstants.CAMEL_APPLICATION_TYPE_ID);
 
       // TODO
-      // applicationType.setType(facade().findApplicationTypeType(model,
+      // applicationType.setType(getModelBuilderFacade().findApplicationTypeType(model,
       // ModelerConstants.MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID));
    }
 
@@ -113,7 +113,7 @@ public class ApplicationTypeChangeCommandHandler
             ModelerConstants.INTERACTIVE_APPLICATION_TYPE_KEY);
 
       // TODO
-      // applicationType.setType(facade().findApplicationTypeType(model,
+      // applicationType.setType(getModelBuilderFacade().findApplicationTypeType(model,
       // ModelerConstants.MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID));
    }
 
@@ -126,7 +126,7 @@ public class ApplicationTypeChangeCommandHandler
    {
       ModelType model = (ModelType) targetElement;
       String appId = extractString(request, ModelerConstants.ID_PROPERTY);
-      ApplicationType application = facade().findApplication(model, appId);
+      ApplicationType application = getModelBuilderFacade().findApplication(model, appId);
 
       synchronized (model)
       {
@@ -139,13 +139,13 @@ public class ApplicationTypeChangeCommandHandler
       return springContext.getBean(ModelService.class);
    }
    
-   private MBFacade facade()
+   private MBFacade getModelBuilderFacade()
    {
-      if (facade == null)
+      if (modelBuilderFacade == null)
       {
-         facade = new MBFacade(springContext.getBean(ModelService.class)
+         modelBuilderFacade = new MBFacade(springContext.getBean(ModelService.class)
                .getModelManagementStrategy());
       }
-      return facade;
+      return modelBuilderFacade;
    }
 }

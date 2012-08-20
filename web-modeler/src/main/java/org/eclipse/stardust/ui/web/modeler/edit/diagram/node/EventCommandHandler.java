@@ -48,7 +48,7 @@ public class EventCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
-   private MBFacade facade;
+   private MBFacade modelBuilderFacade;
    
    @OnCommand(commandId = "eventSymbol.create")
    public void createEvent(LaneSymbol parentLaneSymbol, JsonObject request)
@@ -117,7 +117,7 @@ public class EventCommandHandler
          if (START_EVENT.equals(extractString(request,
                ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY)))
          {
-            StartEventSymbol startEventSymbol = facade().findStartEventSymbol(
+            StartEventSymbol startEventSymbol = getModelBuilderFacade().findStartEventSymbol(
                   parentLaneSymbol, eventOId);
             processDefinition.getDiagram()
                   .get(0)
@@ -127,7 +127,7 @@ public class EventCommandHandler
          }
          else
          {
-            EndEventSymbol endEventSymbol = facade().findEndEventSymbol(parentLaneSymbol,
+            EndEventSymbol endEventSymbol = getModelBuilderFacade().findEndEventSymbol(parentLaneSymbol,
                   eventOId);
             processDefinition.getDiagram()
                   .get(0)
@@ -138,14 +138,14 @@ public class EventCommandHandler
       }
    }
    
-   private MBFacade facade()
+   private MBFacade getModelBuilderFacade()
    {
-      if (facade == null)
+      if (modelBuilderFacade == null)
       {
-         facade = new MBFacade(springContext.getBean(ModelService.class)
+         modelBuilderFacade = new MBFacade(springContext.getBean(ModelService.class)
                .getModelManagementStrategy());
       }
-      return facade;
+      return modelBuilderFacade;
    }
 
 }

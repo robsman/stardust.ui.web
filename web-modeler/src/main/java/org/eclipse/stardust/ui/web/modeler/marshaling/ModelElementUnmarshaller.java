@@ -76,7 +76,7 @@ public abstract class ModelElementUnmarshaller
 
    protected abstract ModelManagementStrategy modelManagementStrategy();
 
-   private MBFacade facade;
+   private MBFacade modelBuilderFacade;
 
    /**
 	 *
@@ -251,9 +251,9 @@ public abstract class ModelElementUnmarshaller
             String subprocessFullId = extractString(activityJson,
                   ModelerConstants.SUBPROCESS_ID);
 
-            ProcessDefinitionType subProcessDefinition = facade().getProcessDefinition(
-                  facade().getModelId(subprocessFullId),
-                  facade().stripFullId(subprocessFullId));
+            ProcessDefinitionType subProcessDefinition = getModelBuilderFacade().getProcessDefinition(
+                  getModelBuilderFacade().getModelId(subprocessFullId),
+                  getModelBuilderFacade().stripFullId(subprocessFullId));
 
             activity.setImplementationProcess(subProcessDefinition);
          }
@@ -265,9 +265,9 @@ public abstract class ModelElementUnmarshaller
             String applicationFullId = extractString(activityJson,
                   ModelerConstants.APPLICATION_FULL_ID_PROPERTY);
 
-            ApplicationType application = facade().getApplication(
-                  facade().getModelId(applicationFullId),
-                  facade().stripFullId(applicationFullId));
+            ApplicationType application = getModelBuilderFacade().getApplication(
+                  getModelBuilderFacade().getModelId(applicationFullId),
+                  getModelBuilderFacade().stripFullId(applicationFullId));
 
             activity.setApplication(application);
          }
@@ -334,9 +334,9 @@ public abstract class ModelElementUnmarshaller
          String participantFullId = swimlaneSymbolJson.get(
                ModelerConstants.PARTICIPANT_FULL_ID).getAsString();
 
-         swimlaneSymbol.setParticipant(facade().findParticipant(
-               facade().findModel(facade().getModelId(participantFullId)),
-               facade().stripFullId(participantFullId)));
+         swimlaneSymbol.setParticipant(getModelBuilderFacade().findParticipant(
+               getModelBuilderFacade().findModel(getModelBuilderFacade().getModelId(participantFullId)),
+               getModelBuilderFacade().stripFullId(participantFullId)));
       }
    }
 
@@ -363,20 +363,20 @@ public abstract class ModelElementUnmarshaller
          for (int n = 0; n < dataPathes.size(); ++n)
          {
             JsonObject dataPathJson = dataPathes.get(n).getAsJsonObject();
-            DataPathType dataPath = facade().createDataPath();
+            DataPathType dataPath = getModelBuilderFacade().createDataPath();
             String dataFullId = dataPathJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)
                   .getAsString();
 
             // TODO Very ugly facade syntax
 
-            DataType data = facade().findData(
-                  facade().findModel(facade().getModelId(dataFullId)),
-                  facade().stripFullId(dataFullId));
+            DataType data = getModelBuilderFacade().findData(
+                  getModelBuilderFacade().findModel(getModelBuilderFacade().getModelId(dataFullId)),
+                  getModelBuilderFacade().stripFullId(dataFullId));
 
             dataPath.setData(data);
             dataPath.setDataPath(dataPathJson.get(ModelerConstants.DATA_PATH_PROPERTY)
                   .getAsString());
-            dataPath.setId(facade().createIdFromName(
+            dataPath.setId(getModelBuilderFacade().createIdFromName(
                   dataPathJson.get(ModelerConstants.NAME_PROPERTY).getAsString()));
             dataPath.setName(dataPathJson.get(ModelerConstants.NAME_PROPERTY)
                   .getAsString());
@@ -704,13 +704,13 @@ public abstract class ModelElementUnmarshaller
     * 
     * @return
     */
-   private MBFacade facade()
+   private MBFacade getModelBuilderFacade()
    {
-      if (facade == null)
+      if (modelBuilderFacade == null)
       {
-         facade = new MBFacade(modelManagementStrategy());
+         modelBuilderFacade = new MBFacade(modelManagementStrategy());
       }
-      return facade;
+      return modelBuilderFacade;
    }
 
    /**

@@ -46,7 +46,7 @@ public class DataChangeCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
-   private MBFacade facade;
+   private MBFacade modelBuilderFacade;
 
    /**
     * @param model
@@ -58,7 +58,7 @@ public class DataChangeCommandHandler
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
       String primitiveType = extractString(request, ModelerConstants.PRIMITIVE_TYPE);
-      DataType data = facade().createPrimitiveData(model, id, name, primitiveType);
+      DataType data = getModelBuilderFacade().createPrimitiveData(model, id, name, primitiveType);
 
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       data.setElementOid(++maxOid);
@@ -78,14 +78,14 @@ public class DataChangeCommandHandler
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
       String dataFullID = extractString(request, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID);
-      String stripFullId_ = facade().getModelId(extractString(request,
+      String stripFullId_ = getModelBuilderFacade().getModelId(extractString(request,
             ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID));
       if (StringUtils.isEmpty(stripFullId_))
       {
          stripFullId_ = model.getId();
       }
 
-      DataType data = facade().createStructuredData(model, id, name,
+      DataType data = getModelBuilderFacade().createStructuredData(model, id, name,
             dataFullID);
 
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
@@ -106,7 +106,7 @@ public class DataChangeCommandHandler
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
 
-      DataType data = facade().createDocumentData(model, id, name, null);
+      DataType data = getModelBuilderFacade().createDocumentData(model, id, name, null);
 
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       data.setElementOid(++maxOid);
@@ -124,7 +124,7 @@ public class DataChangeCommandHandler
    public void deletetData(ModelType model, JsonObject request)
    {
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
-      DataType data = facade().findData(model, id);
+      DataType data = getModelBuilderFacade().findData(model, id);
             
       synchronized (model)
       {
@@ -168,13 +168,13 @@ public class DataChangeCommandHandler
       }
    }
    
-   private MBFacade facade()
+   private MBFacade getModelBuilderFacade()
    {
-      if (facade == null)
+      if (modelBuilderFacade == null)
       {
-         facade = new MBFacade(springContext.getBean(ModelService.class)
+         modelBuilderFacade = new MBFacade(springContext.getBean(ModelService.class)
                .getModelManagementStrategy());
       }
-      return facade;
+      return modelBuilderFacade;
    }
 }

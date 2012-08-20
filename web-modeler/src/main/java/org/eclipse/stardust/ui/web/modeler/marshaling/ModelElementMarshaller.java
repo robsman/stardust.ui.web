@@ -57,7 +57,7 @@ public abstract class ModelElementMarshaller
 
    protected abstract ModelManagementStrategy modelManagementStrategy();
 
-   private MBFacade facade;
+   private MBFacade modelBuilderFacade;
 
    /**
     * 
@@ -199,7 +199,7 @@ public abstract class ModelElementMarshaller
          dataPathJson.addProperty(ModelerConstants.NAME_PROPERTY, dataPath.getName());
          dataPathJson.addProperty(
                ModelerConstants.DATA_FULL_ID_PROPERTY,
-               facade().createFullId(ModelUtils.findContainingModel(dataPath),
+               getModelBuilderFacade().createFullId(ModelUtils.findContainingModel(dataPath),
                      dataPath.getData()));
          dataPathJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY,
                dataPath.getDataPath());
@@ -258,7 +258,7 @@ public abstract class ModelElementMarshaller
             ModelerConstants.SWIMLANE_SYMBOL);
       laneSymbolJson.addProperty(
             ModelerConstants.PARTICIPANT_FULL_ID,
-            facade().createFullId(
+            getModelBuilderFacade().createFullId(
                   ModelUtils.findContainingModel(laneSymbol.getParticipant()),
                   laneSymbol.getParticipant()));
 
@@ -330,7 +330,7 @@ public abstract class ModelElementMarshaller
 
                laneSymbolJson.addProperty(
                      ModelerConstants.PARTICIPANT_FULL_ID,
-                     facade().createFullId(
+                     getModelBuilderFacade().createFullId(
                            ModelUtils.findContainingModel(processDefinition),
                            laneSymbol.getParticipant()));
             }
@@ -486,14 +486,14 @@ public abstract class ModelElementMarshaller
          {
             activityJson.addProperty(
                   ModelerConstants.SUBPROCESS_ID,
-                  facade().createFullId(ModelUtils.findContainingModel(activity),
+                  getModelBuilderFacade().createFullId(ModelUtils.findContainingModel(activity),
                         activity.getImplementationProcess()));
          }
          else if (activity.getApplication() != null)
          {
             activityJson.addProperty(
                   ModelerConstants.APPLICATION_FULL_ID_PROPERTY,
-                  facade().createFullId(ModelUtils.findContainingModel(activity),
+                  getModelBuilderFacade().createFullId(ModelUtils.findContainingModel(activity),
                         activity.getApplication()));
          }
          
@@ -809,7 +809,7 @@ public abstract class ModelElementMarshaller
       if (null != containingModel)
       {
          dataSymbolJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
-               facade().createFullId(containingModel, dataSymbol.getData()));
+               getModelBuilderFacade().createFullId(containingModel, dataSymbol.getData()));
       }
 
       return dataSymbolJson;
@@ -834,7 +834,7 @@ public abstract class ModelElementMarshaller
 
       if (null != model)
       {
-         List<OrganizationType> parentOrgs = facade().getParentOrganizations(model, role);
+         List<OrganizationType> parentOrgs = getModelBuilderFacade().getParentOrganizations(model, role);
          if (parentOrgs.size() > 0)
          {
             // TODO - add array of orgs
@@ -875,7 +875,7 @@ public abstract class ModelElementMarshaller
 
       if (null != model)
       {
-         List<OrganizationType> parentOrgs = facade().getParentOrganizations(model, org);
+         List<OrganizationType> parentOrgs = getModelBuilderFacade().getParentOrganizations(model, org);
          if (parentOrgs.size() > 0)
          {
             orgJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
@@ -1049,7 +1049,7 @@ public abstract class ModelElementMarshaller
          }
 
          dataFlowJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
-               facade().createFullId(ModelUtils.findContainingModel(data), data));
+               getModelBuilderFacade().createFullId(ModelUtils.findContainingModel(data), data));
          dataFlowJson.addProperty(ModelerConstants.ACTIVITY_ID_PROPERTY, activity.getId());
       }
 
@@ -1414,12 +1414,12 @@ public abstract class ModelElementMarshaller
       }
    }
 
-   private MBFacade facade()
+   private MBFacade getModelBuilderFacade()
    {
-      if (facade == null)
+      if (modelBuilderFacade == null)
       {
-         facade = new MBFacade(modelManagementStrategy());
+         modelBuilderFacade = new MBFacade(modelManagementStrategy());
       }
-      return facade;
+      return modelBuilderFacade;
    }
 }

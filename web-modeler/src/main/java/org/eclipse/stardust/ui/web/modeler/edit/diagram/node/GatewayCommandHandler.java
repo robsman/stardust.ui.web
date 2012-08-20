@@ -48,7 +48,7 @@ public class GatewayCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
-   private MBFacade facade;
+   private MBFacade modelBuilderFacade;
    
    @OnCommand(commandId = "gateSymbol.create")
    public void createGateway(LaneSymbol parentLaneSymbol, JsonObject request)
@@ -103,7 +103,7 @@ public class GatewayCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
 
       String gatewayId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
-      ActivityType gateway = facade().findActivity(processDefinition, gatewayId);
+      ActivityType gateway = getModelBuilderFacade().findActivity(processDefinition, gatewayId);
       ActivitySymbolType gatewaySymbol = gateway.getActivitySymbols().get(0);
       synchronized (model)
       {
@@ -115,14 +115,14 @@ public class GatewayCommandHandler
       }
    }
    
-   private MBFacade facade()
+   private MBFacade getModelBuilderFacade()
    {
-      if (facade == null)
+      if (modelBuilderFacade == null)
       {
-         facade = new MBFacade(springContext.getBean(ModelService.class)
+         modelBuilderFacade = new MBFacade(springContext.getBean(ModelService.class)
                .getModelManagementStrategy());
       }
-      return facade;
+      return modelBuilderFacade;
    }
 
 }

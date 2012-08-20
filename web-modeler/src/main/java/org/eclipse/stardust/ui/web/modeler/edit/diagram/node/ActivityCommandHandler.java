@@ -45,7 +45,7 @@ public class ActivityCommandHandler
 {   
    @Resource
    private ApplicationContext springContext;
-   private MBFacade facade;
+   private MBFacade modelBuilderFacade;
 
    /**
     * @param parentLaneSymbol
@@ -77,14 +77,14 @@ public class ActivityCommandHandler
       int heightProperty = extractInt(request, HEIGHT_PROPERTY);
       synchronized (model)
       {
-         ActivityType activity = facade().createActivity(model, processDefinition,
+         ActivityType activity = getModelBuilderFacade().createActivity(model, processDefinition,
                activityType, activityId, activityName, participantFullID,
                applicationFullID, subProcessID);
 
          ModelService.setDescription(activity,
                request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
 
-         ActivitySymbolType activitySymbol = facade().createActivitySymbol(model,
+         ActivitySymbolType activitySymbol = getModelBuilderFacade().createActivitySymbol(model,
                activity, processDefinition, parentLaneSymbol.getId(), xProperty,
                yProperty, widthProperty, heightProperty);
       }
@@ -102,7 +102,7 @@ public class ActivityCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
 
       String activityId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
-      ActivityType activity = facade().findActivity(processDefinition, activityId);
+      ActivityType activity = getModelBuilderFacade().findActivity(processDefinition, activityId);
       ActivitySymbolType activitySymbol = activity.getActivitySymbols().get(0);
 
       synchronized (model)
@@ -117,14 +117,14 @@ public class ActivityCommandHandler
 
    }
    
-   private MBFacade facade()
+   private MBFacade getModelBuilderFacade()
    {
-      if (facade == null)
+      if (modelBuilderFacade == null)
       {
-         facade = new MBFacade(springContext.getBean(ModelService.class)
+         modelBuilderFacade = new MBFacade(springContext.getBean(ModelService.class)
                .getModelManagementStrategy());
       }
-      return facade;
+      return modelBuilderFacade;
    }
          
    

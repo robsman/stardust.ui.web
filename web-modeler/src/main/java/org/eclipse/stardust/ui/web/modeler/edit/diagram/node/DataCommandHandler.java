@@ -45,7 +45,7 @@ public class DataCommandHandler
 
    @Resource
    private ApplicationContext springContext;
-   private MBFacade facade;
+   private MBFacade modelBuilderFacade;
 
    /**
     *
@@ -76,19 +76,19 @@ public class DataCommandHandler
 
          try
          {
-            data = facade().importData(model, dataFullID);
+            data = getModelBuilderFacade().importData(model, dataFullID);
          }
          catch (ObjectNotFoundException x)
          {
             if (true)
             {
-               data = facade().createPrimitiveData(model, dataID, dataName,
+               data = getModelBuilderFacade().createPrimitiveData(model, dataID, dataName,
                      ModelerConstants.STRING_PRIMITIVE_DATA_TYPE);
                mapper.map(data);
             }
          }
 
-         DataSymbolType dataSymbol = facade().createDataSymbol(model, data,
+         DataSymbolType dataSymbol = getModelBuilderFacade().createDataSymbol(model, data,
                processDefinition, parentLaneSymbol.getId(), xProperty, yProperty,
                widthProperty, heightProperty);
          mapper.map(dataSymbol);
@@ -107,8 +107,8 @@ public class DataCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
       Long dataOID = extractLong(request, ModelerConstants.OID_PROPERTY);
       String dataFullID = extractString(request, ModelerConstants.DATA_FULL_ID_PROPERTY);
-      DataType data = facade().importData(model, dataFullID);
-      DataSymbolType dataSymbol = facade().findDataSymbolRecursively(parentLaneSymbol,
+      DataType data = getModelBuilderFacade().importData(model, dataFullID);
+      DataSymbolType dataSymbol = getModelBuilderFacade().findDataSymbolRecursively(parentLaneSymbol,
             dataOID);
       synchronized (model)
       {
@@ -124,13 +124,13 @@ public class DataCommandHandler
       return springContext.getBean(ModelService.class);
    }
    
-   private MBFacade facade()
+   private MBFacade getModelBuilderFacade()
    {
-      if (facade == null)
+      if (modelBuilderFacade == null)
       {
-         facade = new MBFacade(springContext.getBean(ModelService.class)
+         modelBuilderFacade = new MBFacade(springContext.getBean(ModelService.class)
                .getModelManagementStrategy());
       }
-      return facade;
+      return modelBuilderFacade;
    }
 }

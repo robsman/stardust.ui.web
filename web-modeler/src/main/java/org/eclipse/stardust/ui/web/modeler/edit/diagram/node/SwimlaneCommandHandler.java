@@ -42,7 +42,7 @@ public class SwimlaneCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
-   private MBFacade facade;
+   private MBFacade modelBuilderFacade;
 
    /**
     * @param parentSymbol
@@ -66,7 +66,7 @@ public class SwimlaneCommandHandler
 
       synchronized (model)
       {
-         LaneSymbol laneSymbol = facade().createLane(model,
+         LaneSymbol laneSymbol = getModelBuilderFacade().createLane(model,
                processDefinition, participantFullID, laneId, laneName, orientation, xPos, yPos,
                width, height);
 
@@ -89,7 +89,7 @@ public class SwimlaneCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentSymbol);
 
       String laneId = extractString(request, ModelerConstants.ID_PROPERTY);
-      LaneSymbol lane = facade().findLaneInProcess(processDefinition, laneId);
+      LaneSymbol lane = getModelBuilderFacade().findLaneInProcess(processDefinition, laneId);
 
       synchronized (model)
       {
@@ -98,13 +98,13 @@ public class SwimlaneCommandHandler
       }
    }
    
-   private MBFacade facade()
+   private MBFacade getModelBuilderFacade()
    {
-      if (facade == null)
+      if (modelBuilderFacade == null)
       {
-         facade = new MBFacade(springContext.getBean(ModelService.class)
+         modelBuilderFacade = new MBFacade(springContext.getBean(ModelService.class)
                .getModelManagementStrategy());
       }
-      return facade;
+      return modelBuilderFacade;
    }
 }

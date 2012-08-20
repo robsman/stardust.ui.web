@@ -45,7 +45,7 @@ public class ParticipantChangeCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
-   private MBFacade facade;
+   private MBFacade modelBuilderFacade;
 
    /**
     * @param model
@@ -59,7 +59,7 @@ public class ParticipantChangeCommandHandler
       RoleType role = null;
       synchronized (model)
       {
-         role = facade().createRole(model, roleID, roleName);
+         role = getModelBuilderFacade().createRole(model, roleID, roleName);
       }
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       role.setElementOid(++maxOid);
@@ -81,7 +81,7 @@ public class ParticipantChangeCommandHandler
       OrganizationType org = null;
       synchronized (model)
       {
-         org = facade().createOrganization(model, orgID, orgName);
+         org = getModelBuilderFacade().createOrganization(model, orgID, orgName);
       }
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       org.setElementOid(++maxOid);
@@ -104,8 +104,8 @@ public class ParticipantChangeCommandHandler
       ModelType model = ModelUtils.findContainingModel(org);
       synchronized (model)
       {
-         role = facade().createRole(model, roleID, roleName);
-         facade().addOrganizationParticipant(org, role);
+         role = getModelBuilderFacade().createRole(model, roleID, roleName);
+         getModelBuilderFacade().addOrganizationParticipant(org, role);
       }
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       role.setElementOid(++maxOid);
@@ -128,8 +128,8 @@ public class ParticipantChangeCommandHandler
       ModelType model = ModelUtils.findContainingModel(org);
       synchronized (model)
       {
-         newOrg = facade().createOrganization(model, orgID, orgName);
-         facade().addOrganizationParticipant(org, newOrg);
+         newOrg = getModelBuilderFacade().createOrganization(model, orgID, orgName);
+         getModelBuilderFacade().addOrganizationParticipant(org, newOrg);
       }
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       newOrg.setElementOid(++maxOid);
@@ -151,7 +151,7 @@ public class ParticipantChangeCommandHandler
       ModelType model = ModelUtils.findContainingModel(org);
       synchronized (model)
       {
-         facade().setTeamLeader(org, tealLeader);
+         getModelBuilderFacade().setTeamLeader(org, tealLeader);
       }
    }
 
@@ -163,13 +163,13 @@ public class ParticipantChangeCommandHandler
    public void deleteParticipant(ModelType model, JsonObject request)
    {
       String participantId = extractString(request, ModelerConstants.ID_PROPERTY);
-      IModelParticipant modelParticipantInfo = facade().findParticipant(
+      IModelParticipant modelParticipantInfo = getModelBuilderFacade().findParticipant(
             model, participantId);
       if (modelParticipantInfo instanceof RoleType)
       {
          synchronized (model)
          {
-            List<OrganizationType> parentOrgs = facade()
+            List<OrganizationType> parentOrgs = getModelBuilderFacade()
                   .getParentOrganizations(model, modelParticipantInfo);
 
             for (OrganizationType org : parentOrgs)
@@ -233,13 +233,13 @@ public class ParticipantChangeCommandHandler
       return springContext.getBean(ModelService.class);
    }
    
-   private MBFacade facade()
+   private MBFacade getModelBuilderFacade()
    {
-      if (facade == null)
+      if (modelBuilderFacade == null)
       {
-         facade = new MBFacade(springContext.getBean(ModelService.class)
+         modelBuilderFacade = new MBFacade(springContext.getBean(ModelService.class)
                .getModelManagementStrategy());
       }
-      return facade;
+      return modelBuilderFacade;
    }
 }
