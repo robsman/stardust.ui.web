@@ -47,7 +47,7 @@ import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
-import org.eclipse.stardust.model.xpdl.builder.utils.JcrConnectionManager;
+import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerConnectionManager;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.PepperIconFactory;
@@ -1003,7 +1003,7 @@ public class ModelService
 
          if (!participantModelID.equals(model.getId()))
          {
-            String fileConnectionId = JcrConnectionManager.createFileConnection(model,
+            String fileConnectionId = WebModelerConnectionManager.createFileConnection(model,
                   participantModel);
 
             String bundleId = CarnotConstants.DIAGRAM_PLUGIN_ID;
