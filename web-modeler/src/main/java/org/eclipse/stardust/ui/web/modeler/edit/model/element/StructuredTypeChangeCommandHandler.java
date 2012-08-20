@@ -60,7 +60,7 @@ public class StructuredTypeChangeCommandHandler
 				ModelerConstants.ID_PROPERTY);
 
 		TypeDeclarationType structuredDataType = getModelBuilderFacade()
-				.findStructuredDataType(model, structuredDataTypeId);
+				.findTypeDeclaration(model, structuredDataTypeId);
 		synchronized (model) {
 			model.getTypeDeclarations().getTypeDeclaration()
 					.remove(structuredDataType);
