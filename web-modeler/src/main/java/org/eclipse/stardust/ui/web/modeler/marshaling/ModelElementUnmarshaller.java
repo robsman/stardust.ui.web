@@ -16,6 +16,7 @@ import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newApplica
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newSubProcessActivity;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBoolean;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -317,6 +318,13 @@ public abstract class ModelElementUnmarshaller
                      .getAsString(), true);
          transition.setExpression(expression);
       }
+      
+      controlFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
+            controlFlowConnectionJson,
+            ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+      controlFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
+            controlFlowConnectionJson,
+            ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
    }
 
    /**
@@ -700,6 +708,33 @@ public abstract class ModelElementUnmarshaller
       }
    }
 
+   /**
+    * 
+    * @param orientation
+    * @return
+    */
+   private String mapAnchorOrientation(int orientation)
+   {
+      if (orientation == ModelerConstants.NORTH_KEY)
+      {
+         return "top";
+      }
+      else if (orientation == ModelerConstants.EAST_KEY)
+      {
+         return "right";
+      }
+      else if (orientation == ModelerConstants.SOUTH_KEY)
+      {
+         return "bottom";
+      }
+      else if (orientation == ModelerConstants.WEST_KEY)
+      {
+         return "left";
+      }
+
+      throw new IllegalArgumentException("Illegal orientation key " + orientation + ".");
+   }
+   
    /**
     * 
     * @return

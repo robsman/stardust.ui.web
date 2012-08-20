@@ -1835,7 +1835,7 @@ define(
 										.setSecondAnchorPoint(this.dragConnection.toAnchorPoint);
 							}
 
-							this.dragConnection.remove();
+							this.dragConnection.createDeleteCommand();
 							this.dragConnection = newConnection;
 						}
 					} else {
@@ -1848,10 +1848,7 @@ define(
 
 					this.dragConnection.reroute();
 
-					// TODO Create update method
-
-					m_commandsController.submitImmediately(this.dragConnection
-							.createUpdateCommand());
+					this.dragConnection.createUpdateCommand();
 
 					this.dragConnection.select();
 					this.dragConnection.toAnchorPoint.deselect();

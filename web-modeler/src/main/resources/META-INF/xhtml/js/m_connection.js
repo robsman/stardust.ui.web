@@ -1209,6 +1209,16 @@ define(
 				/**
 				 * 
 				 */
+				Connection.prototype.createUpdateCommand = function() {
+					var command = m_command.createUpdateModelElementCommand(
+							this.diagram.model.id, this.oid, this
+									.createTransferObject());
+					m_commandsController.submitCommand(command);
+				};
+				
+				/**
+				 * 
+				 */
 				Connection.prototype.hide = function() {
 					this.path.hide();
 					this.visible = false;

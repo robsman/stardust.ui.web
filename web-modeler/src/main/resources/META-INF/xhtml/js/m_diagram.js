@@ -516,10 +516,10 @@ define(
 				Diagram.prototype.findConnection = function(conn) {
 
 					for ( var i = 0; i < this.connections.length; i++) {
-						if (this.connections[i].fromModelElementOid == conn.fromModelElementOid
-								&& this.connections[i].toModelElementOid == conn.toModelElementOid) {
+						if (this.connections[i].oid == conn.oid) {
 							return this.connections[i];
-						} else if (this.connections[i].oid == conn.oid) {
+						} else if (this.connections[i].fromModelElementOid == conn.fromModelElementOid
+								&& this.connections[i].toModelElementOid == conn.toModelElementOid) {
 							return this.connections[i];
 						}
 					}
