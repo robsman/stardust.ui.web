@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -26,7 +26,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function Symbol() {
 				var drawable = m_drawable.createDrawable();
@@ -50,14 +50,14 @@ define(
 				// Method initialization
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.toString = function() {
 					return "Lightdust.Symbol";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.getProperties = function() {
 					this.properties.dimensions = {
@@ -71,7 +71,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.initialize = function(x, y) {
 					this.prepare(x, y);
@@ -100,21 +100,21 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.getXCenter = function() {
 					return this.x + 0.5 * this.width;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.getYCenter = function() {
 					return this.y + 0.5 * this.height;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.prepare = function(x, y) {
 					this.x = x;
@@ -124,7 +124,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.prepareNoPosition = function() {
 					this.createPrimitives();
@@ -145,21 +145,21 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.isContainerSymbol = function() {
 					return false;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.requiresParentSymbol = function() {
 					return true;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.completeNoTransfer = function() {
 					m_messageDisplay.clear();
@@ -218,7 +218,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.complete = function() {
 					this.completeNoTransfer(this);
@@ -250,7 +250,7 @@ define(
 					return commandType;
 				}
 				/**
-				 * 
+				 *
 				 * Registers symbol in specific lists in the diagram.
 				 */
 				Symbol.prototype.register = function() {
@@ -258,21 +258,21 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.createPrimitives = function() {
 					// Nothing to be done
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.createChildSymbols = function() {
 					// Nothing to be done
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.createAnchorPoints = function() {
 					this.anchorPoints[0] = new AnchorPoint(this, 0);
@@ -282,7 +282,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.showAnchorPoints = function() {
 					for ( var n in this.anchorPoints) {
@@ -291,7 +291,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.hideAnchorPoints = function() {
 					for ( var n in this.anchorPoints) {
@@ -300,7 +300,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.getClosestAnchorPoint = function(x, y) {
 					var scrollPos = m_modelerUtils.getModelerScrollPosition();
@@ -324,7 +324,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.showPrimitives = function() {
 					for ( var n in this.primitives) {
@@ -334,7 +334,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.hidePrimitives = function() {
 					for ( var n in this.primitives) {
@@ -343,7 +343,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.hide = function() {
 					this.visible = false;
@@ -356,7 +356,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.show = function() {
 					this.visible = true;
@@ -367,7 +367,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.hideConnections = function() {
 					var n = 0;
@@ -429,7 +429,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.cacheAnchorPointAndAdjust = function(
 						currentAnchorPt, targetAnchorPt) {
@@ -458,7 +458,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.showConnections = function() {
 					var n = 0;
@@ -478,7 +478,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.primitivesToFront = function() {
 					for ( var n in this.primitives) {
@@ -487,7 +487,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.adjustAnchorPoints = function() {
 					this.anchorPoints[0].adjust();
@@ -507,7 +507,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.adjustAuxiliaryElements = function() {
 					if (this.visible) {
@@ -521,13 +521,13 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.adjustChildSymbols = function() {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.adjustSelectFrame = function() {
 					this.leftSelectFrame.attr("path", this
@@ -541,7 +541,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.isInBoundingBox = function(xClick, yClick) {
 					return this.x <= xClick && this.x + this.width >= xClick
@@ -550,7 +550,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.isInRectangle = function(x, y, width, height) {
 					return x <= this.x && x + width >= this.x + this.width
@@ -559,7 +559,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.createProximitySensorPrimitive = function() {
 					return m_canvasManager.drawRectangle(this.x
@@ -577,7 +577,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.createSelectFrame = function() {
 					this.leftSelectFrame = m_canvasManager.drawPath(this
@@ -654,7 +654,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.getLeftSelectFramePath = function() {
 					return "M"
@@ -668,7 +668,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.getTopSelectFramePath = function() {
 					return "M"
@@ -681,7 +681,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.getRightSelectFramePath = function() {
 					return "M"
@@ -695,7 +695,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.getBottomSelectFramePath = function() {
 					return "M"
@@ -709,7 +709,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.createFlyOutMenuBackground = function(x, y,
 						height, width) {
@@ -739,7 +739,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.showSelectFrame = function() {
 					this.leftSelectFrame.show();
@@ -749,7 +749,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.hideSelectFrame = function() {
 					this.leftSelectFrame.hide();
@@ -759,14 +759,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.move = function(x, y) {
 					this.moveBy(x - this.x, y - this.y);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.moveBy = function(dX, dY) {
 					this.x = this.x + dX;
@@ -829,7 +829,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.refresh = function() {
 					this.refreshFromModelElement();
@@ -847,13 +847,13 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.adjustPrimitives = function() {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.dragStart = function() {
 					// TODO hide for all selected
@@ -861,6 +861,9 @@ define(
 					this.hideProximitySensor();
 
 					if (!this.selected) {
+						// deselect other symbols before drag
+						this.diagram.deselectCurrentSelection();
+						this.diagram.currentSelection = [];
 						this.select();
 					}
 
@@ -871,7 +874,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.dragStop = function() {
 					this.showProximitySensor();
@@ -965,7 +968,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.proximityHoverIn = function() {
 					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
@@ -980,7 +983,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.proximityHoverOut = function() {
 					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
@@ -992,7 +995,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.addToPrimitives = function(element) {
 					this.primitives.push(element);
@@ -1018,7 +1021,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.initializeDefaultEventHandling = function(
 						element) {
@@ -1044,7 +1047,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.mouseMove = function(x, y) {
 					if (this.diagram.isInConnectionMode()) {
@@ -1071,7 +1074,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.hoverIn = function(x, y) {
 					if (this.diagram.isInConnectionMode()) {
@@ -1098,7 +1101,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.hoverOut = function() {
 					if (this.diagram.isInConnectionMode()) {
@@ -1116,7 +1119,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.click = function(x, y) {
 					// When symbol is Draged, the edit symbol operation should
@@ -1154,7 +1157,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.select = function() {
 					if (!this.isCompleted()) {
@@ -1171,7 +1174,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.showPropertiesPanel = function() {
 					if (this.propertiesPanel != null) {
@@ -1182,7 +1185,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.deselect = function() {
 					if (!this.isCompleted()) {
@@ -1199,19 +1202,19 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.highlight = function() {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.dehighlight = function() {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.deselectAnchorPoints = function() {
 					for ( var n in this.anchorPoints) {
@@ -1220,7 +1223,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.remove = function() {
 					this.removeConnections();
@@ -1235,7 +1238,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.createAndSubmitDeleteCommand = function() {
 					var command = m_command.createRemoveNodeCommand(this
@@ -1258,7 +1261,7 @@ define(
 					}
 				}
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.removePrimitives = function() {
 					var n = 0;
@@ -1270,7 +1273,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.removeConnections = function() {
 					var n = 0;
@@ -1282,7 +1285,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.removeAnchorPoints = function() {
 					for ( var n in this.anchorPoints) {
@@ -1291,7 +1294,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.stretchStop = function() {
 					var newGeometry = {
@@ -1308,7 +1311,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.stretchLeft = function(dX, dY, x, y) {
 					this.width = x - this.diagram.X_OFFSET - this.x;
@@ -1318,7 +1321,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.stretchTop = function(dX, dY, x, y) {
 					this.height = y - this.diagram.Y_OFFSET - this.y;
@@ -1328,7 +1331,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.stretchRight = function(dX, dY, x, y) {
 					this.width = x - this.diagram.X_OFFSET - this.x;
@@ -1337,7 +1340,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.stretchBottom = function(dX, dY, x, y) {
 					this.height = y - this.diagram.Y_OFFSET - this.y;
@@ -1346,21 +1349,21 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Symbol.prototype.validateCreateConnection = function() {
 					return true;
 				};
 
 				/*
-				 * 
+				 *
 				 */
 				Symbol.prototype.onParentSymbolChange = function() {
 					// Do nothing
 				};
 
 				/*
-				 * 
+				 *
 				 */
 				Symbol.prototype.flipFlowOrientation = function(flowOrientation) {
 					var x = this.x;
@@ -1370,14 +1373,14 @@ define(
 				};
 
 				/*
-				 * 
+				 *
 				 */
 				Symbol.prototype.getDashboardX = function() {
 					return this.x + 30;
 				};
 
 				/*
-				 * 
+				 *
 				 */
 				Symbol.prototype.getDashboardY = function() {
 					return this.y + 30;
@@ -1387,49 +1390,49 @@ define(
 			// Callback methods for closure trick
 
 			/**
-			 * 
+			 *
 			 */
 			function Symbol_hoverInClosure(event, x, y) {
 				this.auxiliaryProperties.callbackScope.hoverIn(x, y);
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Symbol_hoverOutClosure() {
 				this.auxiliaryProperties.callbackScope.hoverOut();
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Symbol_clickClosure(event, x, y) {
 				this.auxiliaryProperties.callbackScope.click(x, y);
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Symbol_hoverInFlyOutMenuClosure() {
 				this.auxiliaryProperties.callbackScope.showFlyOutMenu();
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Symbol_hoverOutFlyOutMenuClosure() {
 				this.auxiliaryProperties.callbackScope.hideFlyOutMenu();
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Symbol_mouseMoveClosure(event, x, y) {
 				this.auxiliaryProperties.callbackScope.mouseMove(x, y);
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Symbol_dragClosure(dX, dY, x, y, event) {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -1451,21 +1454,21 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Symbol_dragStartClosure() {
 				this.auxiliaryProperties.callbackScope.dragStart();
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Symbol_dragStopClosure() {
 				this.auxiliaryProperties.callbackScope.dragStop();
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Symbol_stretchLeftClosure(dX, dY, x, y) {
 				this.auxiliaryProperties.callbackScope
@@ -1481,7 +1484,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Symbol_stretchTopClosure(dX, dY, x, y) {
 				this.auxiliaryProperties.callbackScope
@@ -1497,7 +1500,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Symbol_stretchRightClosure(dX, dY, x, y) {
 				this.auxiliaryProperties.callbackScope
@@ -1513,7 +1516,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Symbol_stretchBottomClosure(dX, dY, x, y) {
 				this.auxiliaryProperties.callbackScope
@@ -1529,7 +1532,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Symbol_stretchStartClosure() {
 				if (this.auxiliaryProperties.callbackScope.stretchStart) {
@@ -1538,7 +1541,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Symbol_stretchStopClosure() {
 				this.auxiliaryProperties.callbackScope.stretchStop();
@@ -1547,7 +1550,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			// TOD= Is this needed
 			function Symbol_createClosure(callbackScope, data) {
@@ -1595,14 +1598,14 @@ define(
 						AnchorPoint_dragStopClosure);
 
 				/**
-				 * 
+				 *
 				 */
 				AnchorPoint.prototype.toString = function() {
 					return "Lightdust.AnchorPoint";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnchorPoint.prototype.moveTo = function(x, y) {
 					this.x = x;
@@ -1615,7 +1618,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				AnchorPoint.prototype.adjust = function() {
 					if (this.orientation == m_constants.NORTH) {
@@ -1634,7 +1637,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnchorPoint.prototype.show = function() {
 					this.graphics.show();
@@ -1642,14 +1645,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnchorPoint.prototype.hide = function() {
 					this.graphics.hide();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnchorPoint.prototype.select = function() {
 					this.graphics
@@ -1669,7 +1672,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnchorPoint.prototype.deselect = function() {
 					this.graphics.animate({
@@ -1685,21 +1688,21 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnchorPoint.prototype.hoverIn = function() {
 					this.select();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnchorPoint.prototype.hoverOut = function() {
 					this.deselect();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnchorPoint.prototype.drag = function(dX, dY, x, y) {
 					if (this.dragConnection == null) {
@@ -1762,7 +1765,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				AnchorPoint.prototype.dragStart = function() {
 					this.dragConnection = this.symbol.connections[0];
@@ -1796,7 +1799,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				AnchorPoint.prototype.dragStop = function() {
 					if (this.dragConnection == null) {
@@ -1856,7 +1859,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				AnchorPoint.prototype.remove = function() {
 					this.graphics.remove();
