@@ -824,11 +824,31 @@ public abstract class ModelElementMarshaller
    public JsonObject toDataSymbolJson(DataSymbolType dataSymbol)
    {
       JsonObject dataSymbolJson = new JsonObject();
+      int laneOffsetX = 0;
+      int laneOffsetY = 0;
+      ISwimlaneSymbol container = (dataSymbol.eContainer() instanceof ISwimlaneSymbol)
+            ? (ISwimlaneSymbol) dataSymbol.eContainer()
+            : null;
+      while (null != container)
+      {
+         laneOffsetX += container.getXPos();
+         laneOffsetY += container.getYPos();
 
+         // recurse
+         container = (container.eContainer() instanceof ISwimlaneSymbol)
+               ? (ISwimlaneSymbol) container.eContainer()
+               : null;
+      }
+      
       dataSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             dataSymbol.getElementOid());
-      dataSymbolJson.addProperty(ModelerConstants.X_PROPERTY, dataSymbol.getXPos());
-      dataSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, dataSymbol.getYPos());
+		dataSymbolJson.addProperty(ModelerConstants.X_PROPERTY,
+				dataSymbol.getXPos() + laneOffsetX
+						+ ModelerConstants.POOL_LANE_MARGIN);
+		dataSymbolJson.addProperty(ModelerConstants.Y_PROPERTY,
+				dataSymbol.getYPos() + laneOffsetY
+						+ ModelerConstants.POOL_LANE_MARGIN
+						+ ModelerConstants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
       dataSymbolJson.addProperty(ModelerConstants.UUID_PROPERTY,
             eObjectUUIDMapper().getUUID(dataSymbol));
       dataSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,

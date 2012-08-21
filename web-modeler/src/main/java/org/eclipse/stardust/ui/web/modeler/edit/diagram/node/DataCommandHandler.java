@@ -63,8 +63,9 @@ public class DataCommandHandler
       String dataFullID = extractString(request, ModelerConstants.DATA_FULL_ID_PROPERTY);
       String dataID = extractString(request, ModelerConstants.DATA_ID_PROPERTY);
       String dataName = extractString(request, ModelerConstants.DATA_NAME_PROPERTY);
-      int xProperty = extractInt(request, ModelerConstants.X_PROPERTY);
-      int yProperty = extractInt(request, ModelerConstants.Y_PROPERTY);
+      int xProperty = extractInt(request, ModelerConstants.X_PROPERTY) - ModelerConstants.POOL_LANE_MARGIN;
+      int yProperty = extractInt(request, ModelerConstants.Y_PROPERTY)- ModelerConstants.POOL_LANE_MARGIN
+				- ModelerConstants.POOL_SWIMLANE_TOP_BOX_HEIGHT;
       int widthProperty = extractInt(request, ModelerConstants.WIDTH_PROPERTY);
       int heightProperty = extractInt(request, ModelerConstants.HEIGHT_PROPERTY);
 
