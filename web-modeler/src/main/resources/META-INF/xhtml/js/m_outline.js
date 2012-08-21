@@ -345,10 +345,13 @@ define(
 				var form = modeleDeployerLink.parents('form:first');
 				var formId = form.attr('id');
 
-				window.parent.EventHub.events.publish(
-						"SELECT_MODEL_FOR_DEPLOYMENT", modeleDeployerLinkId,
-						model.name + ".xpdl", "/process-models/" + model.name
-								+ ".xpdl", formId);
+				if (model.fileName && model.filePath) {
+					window.parent.EventHub.events.publish(
+							"SELECT_MODEL_FOR_DEPLOYMENT", modeleDeployerLinkId,
+							model.fileName, model.filePath, formId);
+				} else {
+					alert("Cannot deploy: Model file name / path not available");
+				}
 
 			};
 
@@ -1908,6 +1911,8 @@ define(
 						for ( var i = 0; i < obj.changes.modified.length; i++) {
 							if (m_constants.MODEL == obj.changes.modified[i].type) {
 								var modelElement = m_model.findModelByUuid(obj.changes.modified[i].uuid);
+								modelElement.fileName = obj.changes.modified[i].fileName;
+								modelElement.filePath = obj.changes.modified[i].filePath;
 							} else {
 								if (undefined == obj.changes.modified[i].oid
 										|| 0 == obj.changes.modified[i].oid) {

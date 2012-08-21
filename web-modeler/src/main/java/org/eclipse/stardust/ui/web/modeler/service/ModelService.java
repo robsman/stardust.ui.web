@@ -108,9 +108,9 @@ import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
 /**
- * 
+ *
  * @author Shrikant.Gangal, Marc.Gille
- * 
+ *
  */
 public class ModelService
 {
@@ -305,7 +305,7 @@ public class ModelService
 
    private QueryService queryService;
 
-   private String currentUserId; 
+   private String currentUserId;
    // Modeling Session Management
 
    /**
@@ -329,15 +329,15 @@ public class ModelService
    public ModelingSession currentSession()
    {
       currentUserId = me.getCurrentUserId();
-      return sessionManager.currentSession(me.getCurrentUserId());      
+      return sessionManager.currentSession(me.getCurrentUserId());
    }
 
    /**
     * Removes the modelling session from cached list when user session ends.
     * TODO - commented pending review by Robert S
-    * 
+    *
     */
-   //@PreDestroy
+   @PreDestroy
    public void destroyModelingSession()
    {
       if (null != currentUserId)
@@ -347,7 +347,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @return
     */
    public ModelManagementStrategy getModelManagementStrategy()
@@ -361,7 +361,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelManagementStrategy
     */
    @Deprecated
@@ -377,7 +377,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param attrs
     * @param attrType
     */
@@ -394,7 +394,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param json
     * @param element
     * @throws JSONException
@@ -429,7 +429,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param model
     * @param processDefinition
     * @return
@@ -654,7 +654,7 @@ public class ModelService
    /**
     * Retrieves all the stored models and returns a json array of references of these
     * getModelManagementStrategy().getModels().
-    * 
+    *
     * @return
     */
    public String getAllModels()
@@ -687,7 +687,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param httpRequest
     * @param modelId
     * @return
@@ -714,7 +714,7 @@ public class ModelService
        * changedModels) { ModelType model =
        * getModelManagementStrategy().getModels().get(modelId); if (null != model) {
        * getModelManagementStrategy().saveModel(model); } }
-       * 
+       *
        * //Clear the unsaved models' list.
        * UnsavedModelsTracker.getInstance().notifyAllModelsSaved();
        */
@@ -731,7 +731,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param id
     * @return
     */
@@ -741,7 +741,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param id
     * @param postedData
@@ -776,7 +776,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param processId
     * @param activityId
@@ -811,7 +811,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param gatewaySymbol
     * @param gatewaySymbolJson
     * @return
@@ -870,7 +870,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -889,7 +889,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -916,9 +916,9 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * TODO From DynamicConnectionCommand. Refactor?
-    * 
+    *
     * @param activity
     * @return
     */
@@ -960,7 +960,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param processId
     * @param connectionId
@@ -1038,7 +1038,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param poolSymbol
     * @param poolSymbolJson
     * @return
@@ -1074,7 +1074,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param processId
     * @param postedData
@@ -1104,7 +1104,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param laneSymbol
     * @param laneSymbolJson
     * @return
@@ -1280,7 +1280,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param httpRequest
     * @param modelId
     * @return
@@ -1293,6 +1293,8 @@ public class ModelService
       modelJson.addProperty(ModelerConstants.NAME_PROPERTY, model.getName());
       modelJson.addProperty(ModelerConstants.UUID_PROPERTY, currentSession().uuidMapper()
             .getUUID(model));
+      modelJson.addProperty(ModelerConstants.FILE_NAME, getModelManagementStrategy().getModelFileName(model));
+      modelJson.addProperty(ModelerConstants.FILE_PATH, getModelManagementStrategy().getModelFilePath(model));
 
       if (model.getDescription() != null)
       {
@@ -1589,7 +1591,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param data
     * @return
     * @throws JSONException
@@ -1613,7 +1615,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param processId
     * @param postedData
@@ -1939,7 +1941,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param elementType
     * @return
     */
@@ -1966,7 +1968,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @return
     */
    private DocumentManagementService getDocumentManagementService()
@@ -1980,7 +1982,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @return
     */
    private UserService getUserService()
@@ -1994,7 +1996,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @return
     */
    private QueryService getQueryService()
@@ -2048,7 +2050,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @return
     */
@@ -2097,7 +2099,7 @@ public class ModelService
 
    /**
     * Returns a JSON representation of the service structure underneath the <code>wsdlUrl</code> provided with the input JSON.
-    * 
+    *
     * @param wsdlUrl
     * @return
     */
@@ -2108,7 +2110,7 @@ public class ModelService
       JsonObject webServiceJson = new JsonObject();
 
       webServiceJson.addProperty("wsdlUrl", postedData.get("wsdlUrl").getAsString());
-      
+
       JsonObject servicesJson = new JsonObject();
 
       webServiceJson.add("services", servicesJson);
@@ -2118,23 +2120,23 @@ public class ModelService
          JsonObject serviceJson = new JsonObject();
 
          servicesJson.add("service" + n, serviceJson);
-         
+
          serviceJson.addProperty("name", "service" + n);
 
          JsonObject portsJson = new JsonObject();
 
          serviceJson.add("ports", portsJson);
-         
+
          for (int m = 0; m < 3; ++m)
          {
             JsonObject portJson = new JsonObject();
 
             portsJson.add("port" + m, portJson);
-            
+
             portJson.addProperty("name", "port" + m);
          }
       }
-      
+
       JsonObject operationsJson = new JsonObject();
 
       webServiceJson.add("operations", operationsJson);
@@ -2144,7 +2146,7 @@ public class ModelService
          JsonObject operationJson = new JsonObject();
 
          servicesJson.add("operation" + n, operationJson);
-         
+
          operationJson.addProperty("name", "operation" + n);
       }
 
@@ -2152,7 +2154,7 @@ public class ModelService
    }
 
    /**
-    * Loads a JSON representation of a type hierarchy loaded from an XSD or WSDL URL. 
+    * Loads a JSON representation of a type hierarchy loaded from an XSD or WSDL URL.
     * @param readJsonObject
     * @return
     */
@@ -2213,7 +2215,7 @@ public class ModelService
 
       jDob.addProperty("type", "xsd:date");
       jDob.addProperty("cardinality", "1");
-      
+
       return json;
    }
 

@@ -13,7 +13,7 @@ import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelIoUtils;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 
 /**
- * 
+ *
  * @author Marc.Gille
  *
  */
@@ -27,7 +27,7 @@ public class TestModelManagementStrategy extends
 	private ServiceFactory serviceFactory;
 	private DocumentManagementService documentManagementService;
 
-	
+
 	public ModelService getModelService() {
 		return modelService;
 	}
@@ -42,7 +42,7 @@ public class TestModelManagementStrategy extends
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public String getFirstModelId()
 	{
@@ -51,9 +51,9 @@ public class TestModelManagementStrategy extends
 
 		return getModels().values().iterator().next().getId();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void deactivate()
 	{
@@ -76,7 +76,7 @@ public class TestModelManagementStrategy extends
 						.loadModel(readModelContext(modelDocument), this);
 
 				getModels().put(model.getId(), model);
-				
+
 				break;
 			}
 		}
@@ -85,33 +85,33 @@ public class TestModelManagementStrategy extends
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public ModelType attachModel(String id) {
 		return null;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void saveModel(ModelType model) {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param model
 	 */
 	public void deleteModel(ModelType model) {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void versionizeModel(ModelType model) {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	private DocumentManagementService getDocumentManagementService() {
@@ -134,7 +134,7 @@ public class TestModelManagementStrategy extends
 	}
 
 	/**
-	 * 
+	 *
 	 * @param modelDocument
 	 * @return
 	 */
@@ -144,10 +144,24 @@ public class TestModelManagementStrategy extends
 	}
 
 	/**
-    * 
+    *
     * @return
     */
     public ModelType loadModel(String id)
+   {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+   @Override
+   public String getModelFileName(ModelType model)
+   {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+   @Override
+   public String getModelFilePath(ModelType model)
    {
       // TODO Auto-generated method stub
       return null;

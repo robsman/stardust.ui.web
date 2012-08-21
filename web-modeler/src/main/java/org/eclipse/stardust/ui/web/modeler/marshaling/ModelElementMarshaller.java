@@ -62,7 +62,7 @@ public abstract class ModelElementMarshaller
    private ModelBuilderFacade modelBuilderFacade;
 
    /**
-    * 
+    *
     * @param modelElement
     * @return
     */
@@ -242,7 +242,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param laneSymbol
     * @return
     */
@@ -433,7 +433,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @return
     */
@@ -501,14 +501,14 @@ public abstract class ModelElementMarshaller
                   getModelBuilderFacade().createFullId(ModelUtils.findContainingModel(activity),
                         activity.getApplication()));
          }
-         
+
          // TODO Access points need to be obtained from all
          // contexts?
 
          JsonObject accessPointsJson = new JsonObject();
-         
+
          activityJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);
-         
+
          for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(
                activity, true, getDefaultDataMappingContext(activity)))
          {
@@ -535,7 +535,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @return
     */
@@ -572,7 +572,7 @@ public abstract class ModelElementMarshaller
             activitySymbol.getHeight());
 
       ActivityType activity = activitySymbol.getActivity();
-      
+
       activitySymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, toActivityJson(activity));
 
       // TODO Hack to identify gateways
@@ -624,7 +624,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -679,7 +679,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -733,7 +733,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param data
     * @return
     */
@@ -778,11 +778,11 @@ public abstract class ModelElementMarshaller
                   if(modelBuilderFacade == null)
                   {
                      modelBuilderFacade = getModelBuilderFacade();
-                  }                  
-                  String fullId = modelBuilderFacade.createFullId(containingModel, eObject);  
-                  dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID, fullId);               
+                  }
+                  String fullId = modelBuilderFacade.createFullId(containingModel, eObject);
+                  dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID, fullId);
                }
-               else 
+               else
                {
                   String typeDeclarationId = AttributeUtil.getAttributeValue(data, StructuredDataConstants.TYPE_DECLARATION_ATT);
                   if(!StringUtils.isEmpty(typeDeclarationId))
@@ -791,9 +791,9 @@ public abstract class ModelElementMarshaller
                      if(modelBuilderFacade == null)
                      {
                         modelBuilderFacade = getModelBuilderFacade();
-                     }                  
-                     String fullId = modelBuilderFacade.createFullId(model, typeDeclaration);               
-                     dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID, fullId);               
+                     }
+                     String fullId = modelBuilderFacade.createFullId(model, typeDeclaration);
+                     dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID, fullId);
                   }
                }
             }
@@ -817,7 +817,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1025,7 +1025,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param dataMappingConnection
     * @return
     */
@@ -1111,7 +1111,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -1260,7 +1260,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -1303,6 +1303,10 @@ public abstract class ModelElementMarshaller
       modelJson.addProperty(ModelerConstants.OID_PROPERTY, model.getOid());
       modelJson.addProperty(ModelerConstants.UUID_PROPERTY,
             eObjectUUIDMapper().getUUID(model));
+      modelJson.addProperty(ModelerConstants.FILE_NAME,
+            modelManagementStrategy().getModelFileName(model));
+      modelJson.addProperty(ModelerConstants.FILE_PATH,
+            modelManagementStrategy().getModelFilePath(model));
       modelJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.MODEL_KEY);
 
       return modelJson;
@@ -1331,7 +1335,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -1362,7 +1366,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -1381,7 +1385,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     * @throws JSONException
@@ -1406,9 +1410,9 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * TODO From DynamicConnectionCommand. Refactor?
-    * 
+    *
     * @param activity
     * @return
     */
@@ -1428,7 +1432,7 @@ public abstract class ModelElementMarshaller
             && activity.getApplication() != null)
       {
          ApplicationType application = activity.getApplication();
-         
+
          if (application.isInteractive())
          {
             if (application.getContext().size() > 0)
@@ -1438,7 +1442,7 @@ public abstract class ModelElementMarshaller
             }
             return PredefinedConstants.DEFAULT_CONTEXT;
          }
-         
+
          return PredefinedConstants.APPLICATION_CONTEXT;
       }
 

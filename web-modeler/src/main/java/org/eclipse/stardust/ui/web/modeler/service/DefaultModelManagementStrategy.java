@@ -1,7 +1,9 @@
 package org.eclipse.stardust.ui.web.modeler.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
@@ -31,6 +33,11 @@ public class DefaultModelManagementStrategy extends
 	/**
 	 *
 	 */
+	private Map<String, String> modelFileNameMap = new HashMap<String, String>();
+
+	/**
+	 *
+	 */
 	public List<ModelType> loadModels() {
 
 		List<ModelType> models = new ArrayList<ModelType>();
@@ -46,6 +53,7 @@ public class DefaultModelManagementStrategy extends
 						.loadModel(readModelContext(modelDocument), this);
 				//TODO - This method needs to move to some place where it will be called only once for
 				loadEObjectUUIDMap(model);
+				mapModelFileName(model, modelDocument.getName());
 
 				getModels().put(model.getId(), model);
 			}
@@ -69,6 +77,8 @@ public class DefaultModelManagementStrategy extends
                 ModelType model = XpdlModelIoUtils
                    .loadModel(readModelContext(modelDocument), this);
                 loadEObjectUUIDMap(model);
+                mapModelFileName(model, modelDocument.getName());
+
                 return model;
              }
           }
@@ -121,6 +131,8 @@ public class DefaultModelManagementStrategy extends
 				getDocumentManagementService().updateDocument(modelDocument,
 						modelContent.getBytes(), null, false, null, false);
 			}
+
+			mapModelFileName(model);
 	}
 
 	/**
@@ -128,15 +140,16 @@ public class DefaultModelManagementStrategy extends
 	 * @param model
 	 */
 	public void deleteModel(ModelType model) {
-		Document modelDocument = getDocumentManagementService().getDocument(
-				MODELS_DIR + model.getName() + ".xpdl");
+      Document modelDocument = getDocumentManagementService().getDocument(
+            getModelFilePath(model));
 
 		if (modelDocument != null)
 		{
 			getDocumentManagementService().removeDocument(modelDocument.getId());
 		}
 
-		getModels().remove(model.getId());
+      removeModelFileNameMapping(model);
+      getModels().remove(model.getId());
 	}
 
 	/**
@@ -144,6 +157,26 @@ public class DefaultModelManagementStrategy extends
 	 */
 	public void versionizeModel(ModelType model) {
 	}
+
+   /**
+    *
+    * @param model
+    */
+   public String getModelFileName(ModelType model)
+   {
+      String modelUUID = uuidMapper().getUUID(model);
+      return modelFileNameMap.get(modelUUID);
+   }
+
+   /**
+    *
+    * @param model
+    */
+   public String getModelFilePath(ModelType model)
+   {
+      String modelUUID = uuidMapper().getUUID(model);
+      return MODELS_DIR + modelFileNameMap.get(modelUUID);
+   }
 
 	/**
 	 *
@@ -177,4 +210,31 @@ public class DefaultModelManagementStrategy extends
 		return getDocumentManagementService().retrieveDocumentContent(
 				modelDocument.getId());
 	}
+
+   /**
+    * @param model
+    */
+   private void mapModelFileName(ModelType model)
+   {
+      mapModelFileName(model, model.getName() + ".xpdl");
+
+   }
+
+   /**
+    * @param model
+    */
+   private void mapModelFileName(ModelType model, String fileName)
+   {
+      String modelUUID = uuidMapper().getUUID(model);
+      modelFileNameMap.put(modelUUID, fileName);
+   }
+
+   /**
+    * @param model
+    */
+   private void removeModelFileNameMapping(ModelType model)
+   {
+      String modelUUID = uuidMapper().getUUID(model);
+      modelFileNameMap.remove(modelUUID);
+   }
 }
