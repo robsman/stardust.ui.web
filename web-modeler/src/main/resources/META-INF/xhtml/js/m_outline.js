@@ -336,7 +336,8 @@ define(
 				}
 			}
 
-			var deployModel = function(modelId) {
+			var deployModel = function(modelUUID) {
+				var model = m_model.findModelByUuid(modelUUID);
 				var modeleDeployerLink = jQuery(
 						"a[id $= 'model_deployer_link']",
 						window.parent.frames['ippPortalMain'].document);
@@ -346,7 +347,7 @@ define(
 
 				window.parent.EventHub.events.publish(
 						"SELECT_MODEL_FOR_DEPLOYMENT", modeleDeployerLinkId,
-						modelId + ".xpdl", "/process-models/" + modelId
+						model.name + ".xpdl", "/process-models/" + model.name
 								+ ".xpdl", formId);
 
 			};
@@ -787,7 +788,7 @@ define(
 														"label" : "Deploy",
 														"action" : function(obj) {
 															deployModel(obj
-																	.attr("elementId"));
+																	.attr("id"));
 														}
 													},
 													"createProcess" : {
