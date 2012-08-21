@@ -337,7 +337,7 @@ public class ModelService
     * TODO - commented pending review by Robert S
     *
     */
-   @PreDestroy
+   //@PreDestroy
    public void destroyModelingSession()
    {
       if (null != currentUserId)
