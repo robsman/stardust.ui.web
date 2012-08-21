@@ -20,6 +20,7 @@
    <properties>
       <ipp.version>7.1.0-NIGHTLY-SNAPSHOT</ipp.version>
       <atmosphere.version>0.9.7</atmosphere.version>
+      <!--atmosphere.version>1.0.0.beta5</atmosphere.version-->
    </properties>
 
    <dependencyManagement>
@@ -153,7 +154,31 @@
          <groupId>org.atmosphere</groupId>
          <artifactId>atmosphere-runtime</artifactId>
          <version>${atmosphere.version}</version>
+<!--
+         <exclusions>
+            <exclusion>
+               <groupId>org.atmosphere</groupId>
+               <artifactId>atmosphere-compat-tomcat7</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.atmosphere</groupId>
+               <artifactId>atmosphere-compat-tomcat</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.atmosphere</groupId>
+               <artifactId>atmosphere-compat-jbossweb</artifactId>
+            </exclusion>
+         </exclusions>
+ -->
       </dependency>
+<!--
+      <dependency>
+         <groupId>com.ning</groupId>
+         <artifactId>async-http-client</artifactId>
+         <version>1.7.4</version>
+      </dependency>
+ -->
+
    </dependencies>
 
    <build>

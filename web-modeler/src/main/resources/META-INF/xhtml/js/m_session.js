@@ -9,27 +9,21 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_commandsController", "m_user" ],
-		function(m_utils, m_constants, m_commandsController, m_user) {
-
+		[ "m_utils", "m_constants", "m_commandsController", "m_command","m_user" ],
+		function(m_utils, m_constants, m_commandsController, m_command, m_user) {
+			this.prospects = new Array();
+			this.participants = new Array();
 			return {
-				current : function() {
+				initialize : function() {
 					if (window.top.modelingSession == null) {
 
-						// TODO Obtain from server
-
-						window.top.modelingSession = new Session(m_user
-								.createUser("sheldor", "Sheldon", "Cooper",
-										"sheldor@particle.edu",
-										"../images/test-image.jpg"));
-
-						m_commandsController
-								.registerCommandHandler(window.top.modelingSession);
+						window.top.modelingSession = new Session(m_user.getCurrentUser);
+						m_commandsController.registerCommandHandler(window.top.modelingSession);
 					}
 
 					m_utils.debug("Session: ");
 					m_utils.debug(window.top.modelingSession);
-					
+
 					return window.top.modelingSession;
 				}
 			};
@@ -38,16 +32,12 @@ define(
 			 * 
 			 */
 			function Session(sessionOwner) {
-				this.owner = sessionOwner;
-				this.participants = {};
-				this.prospects = {};
-				this.startTime = new Date();
+				var owner = sessionOwner;
+				var startTime = new Date();
+				var prospects = [];
+				var collaborators = [];
+				var joined = false;
 
-				this.participants[this.owner.account] = this.owner;
-
-				/**
-				 * 
-				 */
 				Session.prototype.toString = function() {
 					return "Lightdust.Session";
 				};
@@ -56,16 +46,34 @@ define(
 				 * 
 				 */
 				Session.prototype.processCommand = function(command) {
-					if (command.type == m_constants.REQUEST_JOIN_COMMAND) {
-						// TODO For testing, get from server using the account
-						// attribute
-
-						this.prospects[prospect.account] = command.oldObject;
-					} else if (command.type == m_constants.CONFIRM_JOIN_COMMAND) {
-						this.participants[command.newObject.account] = this.prospects[command.newObject.account];
-
-						delete this.prospects[command.newObject.account];
+					
+					if (command.type == m_constants.REQUEST_JOIN_COMMAND && joined) {	
+						m_commandsController.submitCommand(m_command.createFetchProspects(command.account));
+						
+					}else if(command.type == m_constants.CONFIRM_JOIN_COMMAND){
+						joined = true;
+						if(command.account != owner){
+							owner = command.account;							
+						}
+						console.log(owner);
+						var oldObject = {"account" : owner};
+						m_commandsController.submitCommand(m_command.createFetchCollaborators(oldObject));
+						
+					}else if(command.type == m_constants.UPDATE_INVITED_USERS_COMMAND){
+						jQuery.each(command.oldObject.users, function(item, value){
+							if(command.operation == "updateProspects"){
+								console.log("hello!");
+								prospects.push(value.account);
+							}else if(command.operation == "updateCollaborators"){
+								console.log("hello! Collabs");
+								collaborators.push(value.account);
+							}
+						});
+						console.log(collaborators);
+						console.log(prospects);
+						
 					}
 				};
+				
 			}
 		});

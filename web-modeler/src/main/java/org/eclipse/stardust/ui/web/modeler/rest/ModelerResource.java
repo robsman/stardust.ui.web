@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -28,6 +29,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.portal.ViewUtils;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
@@ -91,50 +93,11 @@ public class ModelerResource
       }
    }
 
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("users/requestJoin")
-   public Response requestJoin(String postedData)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(postedData);
-
-         System.out.println("requestJoin: " + postedData);
-
-         return Response.ok(getModelService().requestJoin(json),
-               MediaType.APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-
-         throw new RuntimeException(e);
-      }
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("users/confirmJoin")
-   public Response confirmJoin(String postedData)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(postedData);
-
-         return Response.ok(getModelService().confirmJoin(json),
-               MediaType.APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-
-         throw new RuntimeException(e);
-      }
-   }
-
+   /**
+    * @deprecated
+    * @param postedData
+    * @return
+    */
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
@@ -323,6 +286,82 @@ public class ModelerResource
       catch (Exception e)
       {
          // TODO Auto-generated catch block
+         e.printStackTrace();
+         throw new RuntimeException(e);
+      }
+   }
+
+   @GET
+   @Produces (MediaType.APPLICATION_JSON)
+   @Path("/whoAmI")
+   public Response whoAmI()
+   {
+      try
+      {
+         String result = getModelService().getLoggedInUser(servletContext);
+         return Response.ok(result, APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+         throw new RuntimeException(e);
+      }
+   }
+
+   @HEAD
+   @Path("users/getOfflineInvites")
+   public Response getOfflineInvites()
+   {
+      try
+      {
+         PortalApplication app = WebApplicationContextUtils.getWebApplicationContext(servletContext).getBean(PortalApplication.class);
+         org.eclipse.stardust.ui.web.common.spi.user.User currentUser = app.getLoggedInUser();
+         getModelService().getOfflineInvites(currentUser.getLoginName());
+         return Response.ok().build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+         throw new RuntimeException(e);
+      }
+   }
+
+   @POST
+   @Consumes (MediaType.APPLICATION_JSON)
+   @Produces (MediaType.APPLICATION_JSON)
+   @Path("users/getAllProspects")
+   public Response getAllProspects(String postedData)
+   {
+      try
+      {
+         JsonObject userJson = new JsonMarshaller().readJsonObject(postedData);
+         String result = getModelService().getAllProspects(userJson.getAsJsonObject("oldObject").get("account").getAsString());
+         return Response.ok(result, APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+         throw new RuntimeException(e);
+      }
+   }
+
+   @POST
+   @Consumes (MediaType.APPLICATION_JSON)
+   @Produces (MediaType.APPLICATION_JSON)
+   @Path("users/getAllCollaborators")
+   public Response getAllCollaborators(String postedData)
+   {
+      try
+      {
+         JsonObject userJson = new JsonMarshaller().readJsonObject(postedData);
+         //utlity methode gson utils 
+         String result = getModelService().getAllCollaborators(userJson.getAsJsonObject("oldObject").get("account").getAsString());
+
+         return Response.ok(result, APPLICATION_JSON_TYPE).build();
+
+      }
+      catch (Exception e)
+      {
          e.printStackTrace();
          throw new RuntimeException(e);
       }

@@ -18,7 +18,7 @@ define([ "m_utils", "m_constants", "m_urlUtils", "m_communicationController" ],
 
 			return {
 				initializeCurrentUser : initializeCurrentUser,
-				createUser : function(account, firstName, lastName, email, imageUrl){
+				createUser : function(account, firstName, lastName, email, imageUrl) {
 					var user = new User();
 					
 					user.account = account;
@@ -26,6 +26,7 @@ define([ "m_utils", "m_constants", "m_urlUtils", "m_communicationController" ],
 					user.lastName = lastName;
 					user.imageUrl = imageUrl;
 					user.email = email;
+					user.isInvited = false;
 					
 					return user;
 				},
@@ -78,8 +79,24 @@ define([ "m_utils", "m_constants", "m_urlUtils", "m_communicationController" ],
 			 * 
 			 */
 			function initializeCurrentUser() {
-				// TODO Call ModelerResource
-				// window.top.currentUser =;
+				var user = new User();
+				m_communicationController.syncGetData({
+					url : (m_communicationController.getEndpointUrl()+"/whoAmI") }, new function() {
+					return {
+						success : function(json) {
+							user.firstName = json.firstName;
+							user.lastName = json.lastName;
+							user.account = json.account;
+							user.isInvited = false;
+							window.top.currentUser = user;
+						},
+						failure : function() {
+							alert('Hey');
+						}
+					};
+				});
+				
+				
 			}
 
 			/**
@@ -87,15 +104,7 @@ define([ "m_utils", "m_constants", "m_urlUtils", "m_communicationController" ],
 			 */
 			function getCurrentUser() {
 				if (window.top.currentUser == null) {
-					window.top.currentUser = new User();
-					window.top.currentUser.firstName = "Sheldon";
-					window.top.currentUser.lastName = "Cooper";
-					window.top.currentUser.account = "sheldor";
-					window.top.currentUser.imageUrl = "../images/test-image.jpg";
-					window.top.currentUser.roles[BUSINESS_ANALYST] = {};
-					window.top.currentUser.roles[INTEGRATOR] = {};
-					window.top.currentUser.profileRoles[BUSINESS_ANALYST] = {};
-					window.top.currentRole = "BusinessAnalyst";
+					this.initializeCurrentUser();
 				}
 			
 				m_utils.debug("Current User: ");

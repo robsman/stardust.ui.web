@@ -60,6 +60,17 @@ define([ "m_utils", "m_constants", "m_urlUtils" ], function(m_utils, m_constants
 			jQuery.getJSON(url, callback);
 		},
 		
+		getHead : function(options, callbacks) {
+			jQuery.ajax({
+				type: 'HEAD',
+				url: options.url,
+				callbackScope: options.callbackScope,
+				async: false,
+				success: callbacks.hasOwnProperty('success') ? callbacks.success : null,
+				error: callbacks.hasOwnProperty('error') ? callbacks.error : null
+			});
+		},
+		
 		syncGetData : function(options, callbacks) {
 			jQuery.ajax({
 				type: 'GET',
