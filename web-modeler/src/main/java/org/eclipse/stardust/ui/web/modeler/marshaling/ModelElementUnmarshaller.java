@@ -37,6 +37,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
+import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
@@ -64,9 +65,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * 
+ *
  * @author Marc.Gille
- * 
+ *
  */
 public abstract class ModelElementUnmarshaller
 {
@@ -118,10 +119,12 @@ public abstract class ModelElementUnmarshaller
             ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY});
       modelElementPropertiesMap.put(OrganizationType.class, new String[] {
             ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY});
+      modelElementPropertiesMap.put(ConditionalPerformerType.class, new String[] {
+         ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY});
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     */
@@ -179,6 +182,10 @@ public abstract class ModelElementUnmarshaller
       {
          updateRole((RoleType) element, json);
       }
+      else if (element instanceof ConditionalPerformerType)
+      {
+         updateConditionalPerformer((ConditionalPerformerType) element, json);
+      }
       else if (element instanceof OrganizationType)
       {
          updateOrganization((OrganizationType) element, json);
@@ -194,7 +201,7 @@ public abstract class ModelElementUnmarshaller
       else if (element instanceof DataMappingConnectionType)
       {
          updateDataFlowConnection((DataMappingConnectionType) element, json);
-      }  
+      }
       else
       {
          System.out.println("===> Unsupported Symbol " + element);
@@ -202,7 +209,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     */
@@ -281,7 +288,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param controlFlowJson
     */
@@ -299,7 +306,7 @@ public abstract class ModelElementUnmarshaller
       {
          transition.setForkOnTraversal(controlFlowJson.get(ModelerConstants.FORK_ON_TRAVERSAL_PROPERTY).getAsBoolean());
       }
-      
+
       if (controlFlowJson.has(ModelerConstants.OTHERWISE_PROPERTY))
       {
          if (controlFlowJson.get(ModelerConstants.OTHERWISE_PROPERTY).getAsBoolean())
@@ -323,7 +330,7 @@ public abstract class ModelElementUnmarshaller
                      .getAsString(), true);
          transition.setExpression(expression);
       }
-      
+
       controlFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
             controlFlowConnectionJson,
             ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
@@ -333,7 +340,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param dataFlowConnection
     * @param dataFlowConnectionJson
     */
@@ -346,9 +353,9 @@ public abstract class ModelElementUnmarshaller
       dataFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
             dataFlowConnectionJson, ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
    }
-   
+
    /**
-    * 
+    *
     * @param element
     * @param json
     */
@@ -369,7 +376,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param processDefinition
     * @param processDefinitionJson
     */
@@ -394,7 +401,7 @@ public abstract class ModelElementUnmarshaller
             DataPathType dataPath = getModelBuilderFacade().createDataPath();
             String dataFullId = dataPathJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)
                   .getAsString();
-            
+
             DataType data = getModelBuilderFacade().findData(dataFullId);
 
             dataPath.setData(data);
@@ -426,7 +433,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @param activitySymbolJson
     */
@@ -443,7 +450,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @param gatewaySymbolJson
     */
@@ -460,7 +467,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @param startEventSymbolJson
     */
@@ -478,7 +485,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param endEventSymbol
     * @param endEventSymbolJson
     */
@@ -535,6 +542,18 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
+    * @param cp
+    * @param cpJson
+    */
+   private void updateConditionalPerformer(ConditionalPerformerType cp, JsonObject cpJson)
+   {
+      mapDeclaredModelElementProperties(cp, cpJson,
+            modelElementPropertiesMap.get(ConditionalPerformerType.class));
+      storeAttributes(cp, cpJson);
+      storeDescription(cp, cpJson);
+   }
+
+   /**
     * @param organization
     * @param organizationJson
     */
@@ -568,7 +587,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElement
     * @param modelElementJson
     * @param modelElementProperties
@@ -586,7 +605,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param symbol
     * @param symbolJson
     * @param symbolProperties
@@ -604,7 +623,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param targetElement
     * @param request
     * @param property
@@ -674,7 +693,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param json
     * @param element
     * @throws JSONException
@@ -701,7 +720,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -725,7 +744,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -750,9 +769,9 @@ public abstract class ModelElementUnmarshaller
 
       throw new IllegalArgumentException("Illegal orientation key " + orientation + ".");
    }
-   
+
    /**
-    * 
+    *
     * @return
     */
    private ModelBuilderFacade getModelBuilderFacade()
@@ -765,7 +784,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param json
     * @param memberName
     * @return

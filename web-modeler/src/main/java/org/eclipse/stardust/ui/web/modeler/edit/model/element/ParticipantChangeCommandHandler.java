@@ -26,6 +26,7 @@ import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
+import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
 import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
@@ -192,6 +193,10 @@ public class ParticipantChangeCommandHandler
             model.getRole().remove(modelParticipantInfo);
          }
       }
+      else if (modelParticipantInfo instanceof ConditionalPerformerType)
+      {
+         model.getConditionalPerformer().remove(modelParticipantInfo);
+      }
       else if (modelParticipantInfo instanceof OrganizationType)
       {
          synchronized (model)
@@ -232,7 +237,7 @@ public class ParticipantChangeCommandHandler
    {
       return springContext.getBean(ModelService.class);
    }
-   
+
    private ModelBuilderFacade getModelBuilderFacade()
    {
       if (modelBuilderFacade == null)

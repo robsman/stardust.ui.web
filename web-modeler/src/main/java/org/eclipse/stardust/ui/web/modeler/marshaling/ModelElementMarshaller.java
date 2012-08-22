@@ -18,6 +18,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
+import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
 import org.eclipse.stardust.model.xpdl.carnot.ContextType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
@@ -142,6 +143,10 @@ public abstract class ModelElementMarshaller
       else if (modelElement instanceof RoleType)
       {
          jsResult = toRoleJson((RoleType) modelElement);
+      }
+      else if (modelElement instanceof ConditionalPerformerType)
+      {
+         jsResult = toConditionalPerformer((ConditionalPerformerType) modelElement);
       }
       else if (modelElement instanceof OrganizationType)
       {
@@ -839,7 +844,7 @@ public abstract class ModelElementMarshaller
                ? (ISwimlaneSymbol) container.eContainer()
                : null;
       }
-      
+
       dataSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             dataSymbol.getElementOid());
 		dataSymbolJson.addProperty(ModelerConstants.X_PROPERTY,
@@ -909,6 +914,50 @@ public abstract class ModelElementMarshaller
       loadAttributes(role, roleJson);
 
       return roleJson;
+   }
+
+   /**
+    * @param cPerformer
+    * @return
+    */
+   public JsonObject toConditionalPerformer(ConditionalPerformerType cPerformer)
+   {
+      JsonObject cPerformerJson = new JsonObject();
+      cPerformerJson.addProperty(ModelerConstants.ID_PROPERTY, cPerformer.getId());
+      cPerformerJson.addProperty(ModelerConstants.NAME_PROPERTY, cPerformer.getName());
+      cPerformerJson.addProperty(ModelerConstants.OID_PROPERTY,
+            cPerformer.getElementOid());
+      cPerformerJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+            ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY);
+      cPerformerJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "false");
+      cPerformerJson.addProperty(ModelerConstants.UUID_PROPERTY,
+            eObjectUUIDMapper().getUUID(cPerformer));
+      ModelType model = ModelUtils.findContainingModel(cPerformer);
+
+      if (null != model)
+      {
+         List<OrganizationType> parentOrgs = getModelBuilderFacade().getParentOrganizations(
+               model, cPerformer);
+         if (parentOrgs.size() > 0)
+         {
+            // TODO - add array of orgs
+            OrganizationType org = parentOrgs.get(0);
+            cPerformerJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
+                  eObjectUUIDMapper().getUUID(org));
+            if (null != org.getTeamLead() && org.getTeamLead().equals(cPerformer))
+            {
+               cPerformerJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "true");
+            }
+         }
+         cPerformerJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY,
+               eObjectUUIDMapper().getUUID(model));
+         cPerformerJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
+      }
+
+      loadDescription(cPerformerJson, cPerformer);
+      loadAttributes(cPerformer, cPerformerJson);
+
+      return cPerformerJson;
    }
 
    /**
