@@ -172,7 +172,7 @@ public abstract class ModelElementUnmarshaller
       }
       else if (element instanceof ModelType)
       {
-         updateModelType((ModelType) element, json);
+         updateModel((ModelType) element, json);
       }
       else if (element instanceof DataType)
       {
@@ -567,23 +567,27 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * @param dataType
+    * @param data
     * @param dataJson
     */
-   private void updateDataType(DataType dataType, JsonObject dataJson)
+   private void updateDataType(DataType data, JsonObject dataJson)
    {
-      mapDeclaredModelElementProperties(dataType, dataJson,
+      mapDeclaredModelElementProperties(data, dataJson,
             modelElementPropertiesMap.get(DataType.class));
+      storeAttributes(data, dataJson);
+      storeDescription(data, dataJson);
    }
 
    /**
     * @param model
     * @param modelJson
     */
-   private void updateModelType(ModelType model, JsonObject modelJson)
+   private void updateModel(ModelType model, JsonObject modelJson)
    {
       mapDeclaredModelElementProperties(model, modelJson,
             modelElementPropertiesMap.get(ModelType.class));
+//      storeAttributes(model, modelJson);
+//      storeDescription(model, modelJson);
    }
 
    /**

@@ -30,12 +30,10 @@ import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 
 import org.atmosphere.cpr.Broadcaster;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.w3c.dom.Node;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -71,7 +69,6 @@ import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
-import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
 import org.eclipse.stardust.model.xpdl.carnot.ContextType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
@@ -83,19 +80,14 @@ import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
-import org.eclipse.stardust.model.xpdl.carnot.ParticipantType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
-import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
 import org.eclipse.stardust.modeling.validation.Issue;
 import org.eclipse.stardust.modeling.validation.ValidationService;
@@ -1287,331 +1279,7 @@ public class ModelService
     */
    private JsonObject loadModelOutline(ModelType model)
    {
-      JsonObject modelJson = new JsonObject();
-
-      modelJson.addProperty(ModelerConstants.ID_PROPERTY, model.getId());
-      modelJson.addProperty(ModelerConstants.NAME_PROPERTY, model.getName());
-      modelJson.addProperty(ModelerConstants.UUID_PROPERTY, currentSession().uuidMapper()
-            .getUUID(model));
-      modelJson.addProperty(ModelerConstants.FILE_NAME, getModelManagementStrategy().getModelFileName(model));
-      modelJson.addProperty(ModelerConstants.FILE_PATH, getModelManagementStrategy().getModelFilePath(model));
-
-      if (model.getDescription() != null)
-      {
-         modelJson.addProperty(DESCRIPTION_PROPERTY, (String) model.getDescription()
-               .getMixed().get(0).getValue());
-      }
-      else
-      {
-         modelJson.addProperty(DESCRIPTION_PROPERTY, (String) null);
-      }
-
-      JsonObject processesJson = new JsonObject();
-
-      modelJson.add("processes", processesJson);
-
-      for (ProcessDefinitionType processDefinition : model.getProcessDefinition())
-      {
-         processesJson.add(processDefinition.getId(), modelElementMarshaller()
-               .toProcessDefinitionJson(processDefinition));
-      }
-
-      JsonObject participantsJson = new JsonObject();
-      modelJson.add("participants", participantsJson);
-
-      for (RoleType role : model.getRole())
-      {
-         if (!hasParentParticipant(model, role))
-         {
-            JsonObject participantJson = new JsonObject();
-            participantsJson.add(role.getId(), participantJson);
-
-            participantJson.addProperty(ModelerConstants.ID_PROPERTY, role.getId());
-            participantJson.addProperty(ModelerConstants.NAME_PROPERTY, role.getName());
-            participantJson.addProperty(ModelerConstants.OID_PROPERTY,
-                  role.getElementOid());
-            participantJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                  ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
-            participantJson.addProperty(ModelerConstants.UUID_PROPERTY, currentSession()
-                  .uuidMapper().getUUID(role));
-            loadDescription(participantJson, role);
-
-            participantJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "false");
-         }
-      }
-
-      for (OrganizationType organization : model.getOrganization())
-      {
-         if (!hasParentParticipant(model, organization))
-         {
-            JsonObject participantJson = new JsonObject();
-            participantsJson.add(organization.getId(), participantJson);
-
-            participantJson.addProperty(ModelerConstants.ID_PROPERTY,
-                  organization.getId());
-            participantJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                  organization.getName());
-            participantJson.addProperty(ModelerConstants.OID_PROPERTY,
-                  organization.getElementOid());
-            participantJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                  ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
-            participantJson.addProperty(ModelerConstants.UUID_PROPERTY, currentSession()
-                  .uuidMapper().getUUID(organization));
-            loadDescription(participantJson, organization);
-
-            // Adds children if any
-            addChildParticipantsJson(participantJson, organization);
-         }
-      }
-
-      for (ConditionalPerformerType conditionalPerformer : model
-            .getConditionalPerformer())
-      {
-         JsonObject participantJson = new JsonObject();
-         participantsJson.add(conditionalPerformer.getId(), participantJson);
-
-         participantJson.addProperty(ModelerConstants.ID_PROPERTY,
-               conditionalPerformer.getId());
-         participantJson.addProperty(ModelerConstants.NAME_PROPERTY,
-               conditionalPerformer.getName());
-         participantJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-               ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY);
-         participantJson.addProperty(ModelerConstants.UUID_PROPERTY, currentSession()
-               .uuidMapper().getUUID(conditionalPerformer));
-         loadDescription(participantJson, conditionalPerformer);
-      }
-
-      JsonObject applicationsJson = new JsonObject();
-
-      modelJson.add("applications", applicationsJson);
-
-      for (ApplicationType application : model.getApplication())
-      {
-         applicationsJson.add(application.getId(), modelElementMarshaller()
-               .toApplication(application));
-      }
-
-      JsonObject dataItemsJson = new JsonObject();
-      modelJson.add("dataItems", dataItemsJson);
-
-      for (DataType data : model.getData())
-      {
-         dataItemsJson.add(data.getId(), loadData(model, data));
-      }
-
-      JsonObject structuredDataTypesJson = new JsonObject();
-      modelJson.add("structuredDataTypes", structuredDataTypesJson);
-
-      // TODO Check needed?
-
-      if (null != model.getTypeDeclarations())
-      {
-         for (TypeDeclarationType typeDeclaration : model.getTypeDeclarations()
-               .getTypeDeclaration())
-         {
-            JsonObject structuredDataTypeJson = new JsonObject();
-            structuredDataTypesJson.add(typeDeclaration.getId(), structuredDataTypeJson);
-
-            structuredDataTypeJson.addProperty(ModelerConstants.ID_PROPERTY,
-                  typeDeclaration.getId());
-            structuredDataTypeJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                  typeDeclaration.getName());
-            structuredDataTypeJson.addProperty(ModelerConstants.UUID_PROPERTY,
-                  currentSession().uuidMapper().getUUID(typeDeclaration));
-            // TODO Review why different from other descriptions
-            structuredDataTypeJson.addProperty(DESCRIPTION_PROPERTY,
-                  typeDeclaration.getDescription());
-
-            JsonObject typeDeclarationJson = new JsonObject();
-            structuredDataTypeJson.add(TYPE_DECLARATION_PROPERTY, typeDeclarationJson);
-            JsonObject childrenJson = new JsonObject();
-            typeDeclarationJson.add("children", childrenJson);
-
-            // TODO Review code below, very heuristic ...
-
-            SchemaTypeType schemaType = typeDeclaration.getSchemaType();
-
-            if (schemaType != null)
-            {
-               org.eclipse.xsd.XSDSchema xsdSchema = schemaType.getSchema();
-
-               // Determine prefix
-
-               String prefix = null;
-
-               for (Iterator iterator = xsdSchema.getQNamePrefixToNamespaceMap().keySet()
-                     .iterator(); iterator.hasNext();)
-               {
-                  String key = (String) iterator.next();
-                  String value = xsdSchema.getQNamePrefixToNamespaceMap().get(key);
-
-                  if (value.equals(xsdSchema.getTargetNamespace()))
-                  {
-                     prefix = key;
-
-                     break;
-                  }
-               }
-
-               typeDeclarationJson.addProperty(ModelerConstants.NAME_PROPERTY, prefix
-                     + ":" + typeDeclaration.getId());
-
-               for (org.eclipse.xsd.XSDTypeDefinition xsdTypeDefinition : xsdSchema
-                     .getTypeDefinitions())
-               {
-
-                  if (xsdTypeDefinition.getName().equals(typeDeclaration.getId()))
-                  {
-
-                     if (xsdTypeDefinition.getComplexType() != null
-                           && xsdTypeDefinition.getComplexType().getElement() != null)
-                     {
-
-                        typeDeclarationJson.addProperty(TYPE_PROPERTY, "STRUCTURE_TYPE");
-
-                        for (int n = 0; n < xsdTypeDefinition.getComplexType()
-                              .getElement().getChildNodes().getLength(); ++n)
-                        {
-                           Node node = xsdTypeDefinition.getComplexType().getElement()
-                                 .getChildNodes().item(n);
-                           JsonObject schemaElementJson = new JsonObject();
-
-                           schemaElementJson
-                                 .addProperty(ModelerConstants.NAME_PROPERTY, node
-                                       .getAttributes().getNamedItem("name")
-                                       .getNodeValue());
-                           schemaElementJson.addProperty("typeName", node.getAttributes()
-                                 .getNamedItem("type").getNodeValue());
-                           childrenJson.add(node.getAttributes().getNamedItem("name")
-                                 .getNodeValue(), schemaElementJson);
-                        }
-                     }
-                     else if (xsdTypeDefinition.getSimpleType() != null)
-                     {
-                        Node restriction = xsdTypeDefinition.getSimpleType().getElement()
-                              .getChildNodes().item(0);
-
-                        typeDeclarationJson
-                              .addProperty(TYPE_PROPERTY, "ENUMERATION_TYPE");
-
-                        for (int n = 0; n < restriction.getChildNodes().getLength(); ++n)
-                        {
-                           Node node = restriction.getChildNodes().item(n);
-                           JsonObject schemaElementJson = new JsonObject();
-
-                           schemaElementJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                                 node.getAttributes().getNamedItem("value")
-                                       .getNodeValue());
-                           schemaElementJson.addProperty("typeName", "xsd:string");
-                           childrenJson.add(node.getAttributes().getNamedItem("value")
-                                 .getNodeValue(), schemaElementJson);
-                        }
-                     }
-                  }
-               }
-            }
-         }
-      }
-
-      return modelJson;
-   }
-
-   /**
-    * @param model
-    * @param participant
-    * @return
-    */
-   private boolean hasParentParticipant(ModelType model, IModelParticipant participant)
-   {
-      List<OrganizationType> parentOrgs = getModelBuilderFacade().getParentOrganizations(
-            model, participant);
-      if (parentOrgs.size() > 0)
-      {
-         return true;
-      }
-
-      return false;
-   }
-
-   /**
-    * @param parentJson
-    * @param parent
-    */
-   private void addChildParticipantsJson(JsonObject parentJson, OrganizationType parent)
-   {
-      EList<ParticipantType> children = parent.getParticipant();
-      if (children.size() > 0)
-      {
-         JsonArray childrenArray = new JsonArray();
-         parentJson.add(ModelerConstants.CHILD_PARTICIPANTS_KEY, childrenArray);
-         for (ParticipantType child : children)
-         {
-            IModelParticipant childParticipant = child.getParticipant();
-            if (null != childParticipant)
-            {
-               JsonObject childJson = new JsonObject();
-               childrenArray.add(childJson);
-
-               childJson.addProperty(ModelerConstants.ID_PROPERTY,
-                     childParticipant.getId());
-               childJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                     childParticipant.getName());
-               childJson.addProperty(ModelerConstants.OID_PROPERTY,
-                     childParticipant.getElementOid());
-               childJson.addProperty(ModelerConstants.UUID_PROPERTY,
-                     currentSession().uuidMapper().getUUID(childParticipant));
-               childJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
-                     currentSession().uuidMapper().getUUID(parent));
-               loadDescription(childJson, childParticipant);
-
-               if (childParticipant instanceof OrganizationType)
-               {
-                  childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                        ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
-                  addChildParticipantsJson(childJson, (OrganizationType) childParticipant);
-               }
-               else if (childParticipant instanceof RoleType)
-               {
-                  childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                        ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
-                  if (null != parent.getTeamLead()
-                        && parent.getTeamLead().equals(childParticipant))
-                  {
-                     childJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "true");
-                  }
-               }
-               else if (childParticipant instanceof ConditionalPerformerType)
-               {
-                  childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                        ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY);
-               }
-            }
-         }
-      }
-   }
-
-   /**
-    *
-    * @param data
-    * @return
-    * @throws JSONException
-    */
-   private JsonObject loadData(ModelType model, DataType data)
-   {
-      JsonObject dataJson = new JsonObject();
-
-      dataJson.addProperty(ModelerConstants.ID_PROPERTY, data.getId());
-      dataJson.addProperty(ModelerConstants.NAME_PROPERTY, data.getName());
-      dataJson.addProperty(ModelerConstants.UUID_PROPERTY, currentSession().uuidMapper()
-            .getUUID(data));
-      dataJson.addProperty(TYPE_PROPERTY, ModelerConstants.DATA);
-      loadDescription(dataJson, data);
-      if (data.getType() != null)
-      {
-         dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY, data.getType().getId());
-      }
-
-      return dataJson;
+      return modelElementMarshaller().toModel(model);
    }
 
    /**

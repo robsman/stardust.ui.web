@@ -2,9 +2,16 @@ package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.w3c.dom.Node;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
@@ -29,12 +36,14 @@ import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
+import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
 import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
 import org.eclipse.stardust.model.xpdl.carnot.OrientationType;
+import org.eclipse.stardust.model.xpdl.carnot.ParticipantType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
@@ -48,11 +57,9 @@ import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.util.IConnectionManager;
+import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.modeling.repository.common.descriptors.EObjectDescriptor;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 public abstract class ModelElementMarshaller
 {
@@ -81,7 +88,7 @@ public abstract class ModelElementMarshaller
       }
       else if (modelElement instanceof TypeDeclarationType)
       {
-         jsResult = toTypeDeclarationType((TypeDeclarationType) modelElement);
+         jsResult = toTypeDeclaration((TypeDeclarationType) modelElement);
       }
       else if (modelElement instanceof ProcessDefinitionTypeImpl)
       {
@@ -761,9 +768,6 @@ public abstract class ModelElementMarshaller
          loadDescription(dataJson, data);
          loadAttributes(data, dataJson);
 
-         System.out.println("===> Data " + data);
-         System.out.println("===> Data " + data.getType());
-
          if (data.getType().getId().equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
          {
             dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
@@ -780,24 +784,31 @@ public abstract class ModelElementMarshaller
                      eObject = ((EObjectDescriptor) eObject).getEObject();
                   }
                   ModelType containingModel = ModelUtils.findContainingModel(eObject);
+
                   if(modelBuilderFacade == null)
                   {
                      modelBuilderFacade = getModelBuilderFacade();
                   }
+                  
                   String fullId = modelBuilderFacade.createFullId(containingModel, eObject);
+                  
                   dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID, fullId);
                }
                else
                {
                   String typeDeclarationId = AttributeUtil.getAttributeValue(data, StructuredDataConstants.TYPE_DECLARATION_ATT);
+                  
                   if(!StringUtils.isEmpty(typeDeclarationId))
                   {
                      TypeDeclarationType typeDeclaration = model.getTypeDeclarations().getTypeDeclaration(typeDeclarationId);
+                  
                      if(modelBuilderFacade == null)
                      {
                         modelBuilderFacade = getModelBuilderFacade();
                      }
+                     
                      String fullId = modelBuilderFacade.createFullId(model, typeDeclaration);
+                     
                      dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID, fullId);
                   }
                }
@@ -834,7 +845,8 @@ public abstract class ModelElementMarshaller
       ISwimlaneSymbol container = (dataSymbol.eContainer() instanceof ISwimlaneSymbol)
             ? (ISwimlaneSymbol) dataSymbol.eContainer()
             : null;
-      while (null != container)
+
+            while (null != container)
       {
          laneOffsetX += container.getXPos();
          laneOffsetY += container.getYPos();
@@ -858,9 +870,6 @@ public abstract class ModelElementMarshaller
             eObjectUUIDMapper().getUUID(dataSymbol));
       dataSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
             ModelerConstants.DATA_SYMBOL);
-
-      // TODO REVIEW This is not correct, data are loaded separately
-      // dataSymbolJson.add(ModelerConstants.DATA, toDataTypeJson(dataSymbol.getData()));
 
       // Model returned will be null in case of data delete operation
 
@@ -1347,25 +1356,291 @@ public abstract class ModelElementMarshaller
    public JsonObject toModel(ModelType model)
    {
       JsonObject modelJson = new JsonObject();
+
       modelJson.addProperty(ModelerConstants.ID_PROPERTY, model.getId());
       modelJson.addProperty(ModelerConstants.NAME_PROPERTY, model.getName());
-      modelJson.addProperty(ModelerConstants.OID_PROPERTY, model.getOid());
-      modelJson.addProperty(ModelerConstants.UUID_PROPERTY,
-            eObjectUUIDMapper().getUUID(model));
-      modelJson.addProperty(ModelerConstants.FILE_NAME,
-            modelManagementStrategy().getModelFileName(model));
-      modelJson.addProperty(ModelerConstants.FILE_PATH,
-            modelManagementStrategy().getModelFilePath(model));
-      modelJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.MODEL_KEY);
+      modelJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper()
+            .getUUID(model));
+      modelJson.addProperty(ModelerConstants.FILE_NAME, modelManagementStrategy().getModelFileName(model));
+      modelJson.addProperty(ModelerConstants.FILE_PATH, modelManagementStrategy().getModelFilePath(model));
+
+      if (model.getDescription() != null)
+      {
+         modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, (String) model.getDescription()
+               .getMixed().get(0).getValue());
+      }
+      else
+      {
+         modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, (String) null);
+      }
+
+      JsonObject processesJson = new JsonObject();
+
+      modelJson.add("processes", processesJson);
+
+      for (ProcessDefinitionType processDefinition : model.getProcessDefinition())
+      {
+         processesJson.add(processDefinition.getId(), toProcessDefinitionJson(processDefinition));
+      }
+
+      JsonObject participantsJson = new JsonObject();
+      modelJson.add("participants", participantsJson);
+
+      for (RoleType role : model.getRole())
+      {
+         if (!hasParentParticipant(model, role))
+         {
+            participantsJson.add(role.getId(), toRoleJson(role));
+         }
+      }
+
+      for (OrganizationType organization : model.getOrganization())
+      {
+         if (!hasParentParticipant(model, organization))
+         {
+            JsonObject participantJson = toOrganizationJson(organization);
+
+            participantsJson.add(organization.getId(), participantJson);
+
+            // Adds children if any
+
+            addChildParticipantsJson(participantJson, organization);
+         }
+      }
+
+      for (ConditionalPerformerType conditionalPerformer : model
+            .getConditionalPerformer())
+      {
+         // TODO Separate out in method
+         
+         JsonObject participantJson = new JsonObject();
+         participantsJson.add(conditionalPerformer.getId(), participantJson);
+
+         participantJson.addProperty(ModelerConstants.ID_PROPERTY,
+               conditionalPerformer.getId());
+         participantJson.addProperty(ModelerConstants.NAME_PROPERTY,
+               conditionalPerformer.getName());
+         participantJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+               ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY);
+         participantJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(conditionalPerformer));
+         loadDescription(participantJson, conditionalPerformer);
+      }
+
+      JsonObject applicationsJson = new JsonObject();
+
+      modelJson.add("applications", applicationsJson);
+
+      for (ApplicationType application : model.getApplication())
+      {
+         applicationsJson.add(application.getId(), toApplication(application));
+      }
+
+      JsonObject dataItemsJson = new JsonObject();
+      
+      modelJson.add("dataItems", dataItemsJson);
+
+      for (DataType data : model.getData())
+      {
+         dataItemsJson.add(data.getId(), toDataJson(data));
+      }
+
+      JsonObject structuredDataTypesJson = new JsonObject();
+      
+      modelJson.add("structuredDataTypes", structuredDataTypesJson);
+
+      // TODO Check needed?
+
+      if (null != model.getTypeDeclarations())
+      {
+         for (TypeDeclarationType typeDeclaration : model.getTypeDeclarations()
+               .getTypeDeclaration())
+         {
+            JsonObject structuredDataTypeJson = new JsonObject();
+            structuredDataTypesJson.add(typeDeclaration.getId(), structuredDataTypeJson);
+
+            structuredDataTypeJson.addProperty(ModelerConstants.ID_PROPERTY,
+                  typeDeclaration.getId());
+            structuredDataTypeJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                  typeDeclaration.getName());
+            structuredDataTypeJson.addProperty(ModelerConstants.UUID_PROPERTY,
+                  eObjectUUIDMapper().getUUID(typeDeclaration));
+            // TODO Review why different from other descriptions
+            structuredDataTypeJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
+                  typeDeclaration.getDescription());
+
+            JsonObject typeDeclarationJson = new JsonObject();
+            structuredDataTypeJson.add(ModelerConstants.TYPE_DECLARATION_PROPERTY, typeDeclarationJson);
+            JsonObject childrenJson = new JsonObject();
+            typeDeclarationJson.add("children", childrenJson);
+
+            // TODO Review code below, very heuristic ...
+
+            SchemaTypeType schemaType = typeDeclaration.getSchemaType();
+
+            if (schemaType != null)
+            {
+               org.eclipse.xsd.XSDSchema xsdSchema = schemaType.getSchema();
+
+               // Determine prefix
+
+               String prefix = null;
+
+               for (Iterator iterator = xsdSchema.getQNamePrefixToNamespaceMap().keySet()
+                     .iterator(); iterator.hasNext();)
+               {
+                  String key = (String) iterator.next();
+                  String value = xsdSchema.getQNamePrefixToNamespaceMap().get(key);
+
+                  if (value.equals(xsdSchema.getTargetNamespace()))
+                  {
+                     prefix = key;
+
+                     break;
+                  }
+               }
+
+               typeDeclarationJson.addProperty(ModelerConstants.NAME_PROPERTY, prefix
+                     + ":" + typeDeclaration.getId());
+
+               for (org.eclipse.xsd.XSDTypeDefinition xsdTypeDefinition : xsdSchema
+                     .getTypeDefinitions())
+               {
+
+                  if (xsdTypeDefinition.getName().equals(typeDeclaration.getId()))
+                  {
+
+                     if (xsdTypeDefinition.getComplexType() != null
+                           && xsdTypeDefinition.getComplexType().getElement() != null)
+                     {
+
+                        typeDeclarationJson.addProperty(ModelerConstants.TYPE_PROPERTY, "STRUCTURE_TYPE");
+
+                        for (int n = 0; n < xsdTypeDefinition.getComplexType()
+                              .getElement().getChildNodes().getLength(); ++n)
+                        {
+                           Node node = xsdTypeDefinition.getComplexType().getElement()
+                                 .getChildNodes().item(n);
+                           JsonObject schemaElementJson = new JsonObject();
+
+                           schemaElementJson
+                                 .addProperty(ModelerConstants.NAME_PROPERTY, node
+                                       .getAttributes().getNamedItem("name")
+                                       .getNodeValue());
+                           schemaElementJson.addProperty("typeName", node.getAttributes()
+                                 .getNamedItem("type").getNodeValue());
+                           childrenJson.add(node.getAttributes().getNamedItem("name")
+                                 .getNodeValue(), schemaElementJson);
+                        }
+                     }
+                     else if (xsdTypeDefinition.getSimpleType() != null)
+                     {
+                        Node restriction = xsdTypeDefinition.getSimpleType().getElement()
+                              .getChildNodes().item(0);
+
+                        typeDeclarationJson
+                              .addProperty(ModelerConstants.TYPE_PROPERTY, "ENUMERATION_TYPE");
+
+                        for (int n = 0; n < restriction.getChildNodes().getLength(); ++n)
+                        {
+                           Node node = restriction.getChildNodes().item(n);
+                           JsonObject schemaElementJson = new JsonObject();
+
+                           schemaElementJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                                 node.getAttributes().getNamedItem("value")
+                                       .getNodeValue());
+                           schemaElementJson.addProperty("typeName", "xsd:string");
+                           childrenJson.add(node.getAttributes().getNamedItem("value")
+                                 .getNodeValue(), schemaElementJson);
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
 
       return modelJson;
+   }
+
+   /**
+    * @param model
+    * @param participant
+    * @return
+    */
+   private boolean hasParentParticipant(ModelType model, IModelParticipant participant)
+   {
+      List<OrganizationType> parentOrgs = getModelBuilderFacade().getParentOrganizations(
+            model, participant);
+      if (parentOrgs.size() > 0)
+      {
+         return true;
+      }
+
+      return false;
+   }
+
+   /**
+    * @param parentJson
+    * @param parent
+    */
+   private void addChildParticipantsJson(JsonObject parentJson, OrganizationType parent)
+   {
+      EList<ParticipantType> children = parent.getParticipant();
+      if (children.size() > 0)
+      {
+         JsonArray childrenArray = new JsonArray();
+         parentJson.add(ModelerConstants.CHILD_PARTICIPANTS_KEY, childrenArray);
+         for (ParticipantType child : children)
+         {
+            IModelParticipant childParticipant = child.getParticipant();
+            if (null != childParticipant)
+            {
+               JsonObject childJson = new JsonObject();
+               childrenArray.add(childJson);
+
+               childJson.addProperty(ModelerConstants.ID_PROPERTY,
+                     childParticipant.getId());
+               childJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                     childParticipant.getName());
+               childJson.addProperty(ModelerConstants.OID_PROPERTY,
+                     childParticipant.getElementOid());
+               childJson.addProperty(ModelerConstants.UUID_PROPERTY,
+                     eObjectUUIDMapper().getUUID(childParticipant));
+               childJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
+                     eObjectUUIDMapper().getUUID(parent));
+               loadDescription(childJson, childParticipant);
+
+               if (childParticipant instanceof OrganizationType)
+               {
+                  childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                        ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY);
+                  addChildParticipantsJson(childJson, (OrganizationType) childParticipant);
+               }
+               else if (childParticipant instanceof RoleType)
+               {
+                  childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                        ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
+                  if (null != parent.getTeamLead()
+                        && parent.getTeamLead().equals(childParticipant))
+                  {
+                     childJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "true");
+                  }
+               }
+               else if (childParticipant instanceof ConditionalPerformerType)
+               {
+                  childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                        ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY);
+               }
+            }
+         }
+      }
    }
 
    /**
     * @param structType
     * @return
     */
-   public JsonObject toTypeDeclarationType(TypeDeclarationType structType)
+   public JsonObject toTypeDeclaration(TypeDeclarationType structType)
    {
       JsonObject structJson = new JsonObject();
       structJson.addProperty(ModelerConstants.ID_PROPERTY, structType.getId());
