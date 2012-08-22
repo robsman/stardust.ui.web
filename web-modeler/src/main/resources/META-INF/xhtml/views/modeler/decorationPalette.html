@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<head>
+<title>Controlling</title>
+<link rel="stylesheet" type="text/css"
+	href="../../css/jquery-ui-1.8.20.custom.css"></link>
+<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+	<table>
+		<tr>
+			<td><select id="decorationList" size="1">
+					<option value="default">None</option>
+					<option value="progress">Progress</option>
+					<option value="kpi">KPI</option>
+			</select></td>
+			<td><input id="decorationConfigurationButton" type="image"
+				src="../../images/icons/decoration-configuration.png"
+				title="Decoration Configuration" alt="Decoration Configuration"
+				class="toolbarButton" /></td>
+			<td><input id="decorationRefreshButton" type="image"
+				src="../../images/icons/refresh.png" title="Decoration Refresh"
+				alt="Decoration Refresh" class="toolbarButton" />
+			</td>
+		</tr>
+	</table>
+	<!--div id="dialog" title="Decoration" class="invisible">
+		<table>
+			<tr>
+				<td>Start Date:</td>
+				<td><input type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td>End Date:</td>
+				<td><input type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<table>
+						<tr>
+							<td><input id="applyButton" type="button" value="Apply" />
+							</td>
+							<td><input id="closeButton" type="button" value="Close" />
+							</td>
+						</tr>
+					</table></td>
+			</tr>
+		</table>
+	</div-->
+</body>
+</html>
