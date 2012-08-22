@@ -203,16 +203,6 @@ public abstract class ModelElementUnmarshaller
 
    /**
     * 
-    * @param dataFlow
-    * @param dataFlowJson
-    */
-   private void updateDataFlowConnection(DataMappingConnectionType dataFlow,
-         JsonObject dataFlowJson)
-   {
-   }
-
-   /**
-    * 
     * @param element
     * @param json
     */
