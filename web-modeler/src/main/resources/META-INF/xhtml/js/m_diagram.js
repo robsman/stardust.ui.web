@@ -172,38 +172,72 @@ define(
 					var entryRow = jQuery("#diagramToolbarTable #paletteRow #"
 							+ toolbarPalettes[n].id + "EntryRow");
 
-					var paletteEntries = m_extensionManager.findExtensions(
-							"diagramToolbarPaletteEntry", "paletteId",
-							toolbarPalettes[n].id);
-
-					for ( var m = 0; m < paletteEntries.length; ++m) {
-						entryRow.append("<td><input id=\""
-								+ paletteEntries[m].id
-								+ "\" type=\"image\" src=\""
-								+ paletteEntries[m].iconUrl + "\" "
-								+ "title=\"" + paletteEntries[m].title
-								+ "\" height=\"16\" width=\"16\" alt=\""
-								+ paletteEntries[m].title
-								+ "\" class=\"toolbarButton\" /></td>");
+					if (toolbarPalettes[n].contentHtmlUrl != null) {
+						var extension = toolbarPalettes[n];
 
 						jQuery(
 								"#diagramToolbarTable #paletteRow #"
-										+ toolbarPalettes[n].id + "EntryRow #"
-										+ paletteEntries[m].id)
-								.click(
-										{
-											diagram : this,
-											handler : paletteEntries[m].handler,
-											provider : paletteEntries[m].provider,
-											handlerMethod : paletteEntries[m].handlerMethod
-										},
-										function(event) {
-											m_utils.debug("Clicked "
-													+ event.data.handler + " "
-													+ event.data.handlerMethod);
-											event.data.provider[event.data.handlerMethod]
-													(event.data.diagram);
+										+ toolbarPalettes[n].id + "EntryRow")
+								.load(
+										extension.contentHtmlUrl,
+										function(response, status, xhr) {
+											if (status == "error") {
+												var msg = "Properties Page Load Error: "
+														+ xhr.status
+														+ " "
+														+ xhr.statusText;
+
+												jQuery(
+														"#"
+																+ panel.id
+																+ " #"
+																+ extension.pageId)
+														.append(msg);
+												m_utils.debug(msg);
+											} else {
+												m_utils
+														.debug("Palette loaded: "
+																+ extension.id);
+												extension.controller.create();
+											}
 										});
+					} else {
+						var paletteEntries = m_extensionManager.findExtensions(
+								"diagramToolbarPaletteEntry", "paletteId",
+								toolbarPalettes[n].id);
+
+						for ( var m = 0; m < paletteEntries.length; ++m) {
+							entryRow.append("<td><input id=\""
+									+ paletteEntries[m].id
+									+ "\" type=\"image\" src=\""
+									+ paletteEntries[m].iconUrl + "\" "
+									+ "title=\"" + paletteEntries[m].title
+									+ "\" height=\"16\" width=\"16\" alt=\""
+									+ paletteEntries[m].title
+									+ "\" class=\"toolbarButton\" /></td>");
+
+							jQuery(
+									"#diagramToolbarTable #paletteRow #"
+											+ toolbarPalettes[n].id
+											+ "EntryRow #"
+											+ paletteEntries[m].id)
+									.click(
+											{
+												diagram : this,
+												handler : paletteEntries[m].handler,
+												provider : paletteEntries[m].provider,
+												handlerMethod : paletteEntries[m].handlerMethod
+											},
+											function(event) {
+												m_utils
+														.debug("Clicked "
+																+ event.data.handler
+																+ " "
+																+ event.data.handlerMethod);
+												event.data.provider[event.data.handlerMethod]
+														(event.data.diagram);
+											});
+						}
 					}
 
 				}
@@ -587,8 +621,9 @@ define(
 								m_utils.debug(symbol);
 								// Modifies only modelElement,rather than whole
 								// symbol
-								m_utils.inheritFields(symbol.modelElement, obj.changes.modified[i]);
-								/*symbol.applyChanges(obj.changes.modified[i]);*/
+								m_utils.inheritFields(symbol.modelElement,
+										obj.changes.modified[i]);
+								/* symbol.applyChanges(obj.changes.modified[i]); */
 								m_utils.debug("Changed symbol to:");
 								m_utils.debug(symbol);
 								symbol.refresh();
@@ -819,8 +854,8 @@ define(
 										this.separatorDY = 0;
 
 										for ( var n in this.symbols) {
-											if (this.symbols[n].x > this.separatorX &&
-													this.symbols[n].type != m_constants.SWIMLANE_SYMBOL) {
+											if (this.symbols[n].x > this.separatorX
+													&& this.symbols[n].type != m_constants.SWIMLANE_SYMBOL) {
 												this.separatorList
 														.push(this.symbols[n]);
 											}
@@ -831,8 +866,8 @@ define(
 										this.separatorDY = 0;
 
 										for ( var n in this.symbols) {
-											if (this.symbols[n].x < this.separatorX &&
-													this.symbols[n].type != m_constants.SWIMLANE_SYMBOL) {
+											if (this.symbols[n].x < this.separatorX
+													&& this.symbols[n].type != m_constants.SWIMLANE_SYMBOL) {
 												this.separatorList
 														.push(this.symbols[n]);
 											}
@@ -844,8 +879,8 @@ define(
 										this.separatorDY = -1;
 
 										for ( var n in this.symbols) {
-											if (this.symbols[n].y > this.separatorY &&
-													this.symbols[n].type != m_constants.SWIMLANE_SYMBOL) {
+											if (this.symbols[n].y > this.separatorY
+													&& this.symbols[n].type != m_constants.SWIMLANE_SYMBOL) {
 												this.separatorList
 														.push(this.symbols[n]);
 											}
@@ -855,8 +890,8 @@ define(
 										this.separatorDY = 1;
 
 										for ( var n in this.symbols) {
-											if (this.symbols[n].y > this.separatorY  &&
-													this.symbols[n].type != m_constants.SWIMLANE_SYMBOL) {
+											if (this.symbols[n].y > this.separatorY
+													&& this.symbols[n].type != m_constants.SWIMLANE_SYMBOL) {
 												this.separatorList
 														.push(this.symbols[n]);
 											}
@@ -867,7 +902,7 @@ define(
 								for ( var n in this.separatorList) {
 									this.separatorList[n].moveBy(dX
 											* Math.abs(this.separatorDX), dY
-											* Math.abs(this.separatorDY));
+											* Math.abs(this.separatorDY));								
 									this.separatorList[n].parentSymbol.adjustToSymbolBoundaries();
 								}
 							}
@@ -1394,10 +1429,10 @@ define(
 						this.currentTextPrimitive.attr("text", content);
 						m_utils.debug("text set");
 						var changes = {
-								modelElement : {
-									name : this.currentTextPrimitive.attr("text")
-								}
-							};
+							modelElement : {
+								name : this.currentTextPrimitive.attr("text")
+							}
+						};
 
 						m_commandsController.submitCommand(m_command
 								.createUpdateModelElementCommand(this.currentTextPrimitive.auxiliaryProperties.callbackScope.diagram.modelId,
@@ -1653,51 +1688,6 @@ define(
 						}, m_constants.DIAGRAM_PANNING_INTERVAL_MILLIS);
 					}
 				};
-
-				// === Move to m_toolbar.js ===
-
-				var dialog = jQuery("#dialog").dialog({
-					autoOpen : false,
-					draggable : false
-				});
-
-				var dialogCloseButton = jQuery("#dialog #closeButton");
-
-				dialogCloseButton.click(function() {
-					dialog.dialog("close");
-				});
-
-				var dialogApplyButton = jQuery("#dialog #applyButton");
-				var dummy = this;
-				dialogApplyButton.click(function() {
-					m_commandsController.submitImmediately(m_command
-							.createRetrieveCommand("/models/" + this.modelId
-									+ "/processes/" + this.processId
-									+ "/decorations/" + decorationId, {
-							// Parameters from dialog
-							}), {
-						"callbackScope" : dummy,
-						"method" : "applyDecoration"
-					});
-					dialog.dialog("close");
-				});
-
-				// Decoration list
-
-				var decorationList = jQuery("#decorationList");
-
-				decorationList.change(function() {
-					decorationId = decorationList.val();
-					dialog.dialog('open');
-				});
-
-				var decorationConfigurationButton = jQuery("#decorationConfigurationButton");
-
-				decorationConfigurationButton.click(function() {
-					dialog.dialog('open');
-				});
-
-				// === End move to m_toolbar.js ===
 
 				/**
 				 *
