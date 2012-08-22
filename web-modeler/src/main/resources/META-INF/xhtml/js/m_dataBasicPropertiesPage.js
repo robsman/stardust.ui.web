@@ -176,6 +176,13 @@ define(
 				/**
 				 * 
 				 */
+				DataBasicPropertiesPage.prototype.getModelElement = function() {
+					return this.propertiesPanel.data;
+				};
+
+				/**
+				 * 
+				 */
 				DataBasicPropertiesPage.prototype.getModelElementUuid = function() {
 					return this.getModelElement().uuid;
 				};
