@@ -60,14 +60,12 @@ var extensions = {
 		panelId : "controlFlowPropertiesPanel",
 		pageId : "basicPropertiesPage",
 		pageJavaScriptUrl : "m_controlFlowBasicPropertiesPage"
-	}, 
-	{
+	}, {
 		panelId : "controlFlowPropertiesPanel",
 		pageId : "transactionPropertiesPage",
 		pageHtmlUrl : "controlFlowTransactionPropertiesPage.html",
 		pageJavaScriptUrl : "m_controlFlowTransactionPropertiesPage"
-	}, 
-	{
+	}, {
 		panelId : "dataFlowPropertiesPanel",
 		pageId : "basicPropertiesPage",
 		pageJavaScriptUrl : "m_dataFlowBasicPropertiesPage"
@@ -90,6 +88,11 @@ var extensions = {
 	}, {
 		id : "connectorPalette",
 		title : "Data and Control Flow"
+	}, {
+		id : "decorationPalette",
+		title : "Decoration",
+		contentHtmlUrl : "decorationPalette.html",
+		controllerJavaScriptUrl : "m_decorationPalette"
 	} ],
 	diagramToolbarPaletteEntry : [ {
 		id : "selectModeButton",

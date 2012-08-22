@@ -7,66 +7,80 @@ define(
 		function(m_utils, m_constants, m_user, m_dialog, m_propertiesPage) {
 			return {
 				create : function(propertiesPanel) {
-					return new DataFlowBasicPropertiesPage(propertiesPanel);
+					var page = new DataFlowBasicPropertiesPage(propertiesPanel);
+					
+					page.initialize();
+					
+					return page;
 				}
 			};
 
-			function DataFlowBasicPropertiesPage(newPropertiesPanel, newId,
-					newTitle) {
+			function DataFlowBasicPropertiesPage(propertiesPanel) {
 
 				// Inheritance
 
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						newPropertiesPanel, "basicPropertiesPage", "Basic");
+						propertiesPanel, "basicPropertiesPage", "Basic");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(DataFlowBasicPropertiesPage.prototype,
 						propertiesPage);
 
-				// Field initialization
+				/**
+				 * 
+				 */
+				DataFlowBasicPropertiesPage.prototype.initialize = function()
+				{
+					this.inInput = this.mapInputId("inInput");
+					this.outInput = this.mapInputId("outInput");
+					this.descriptionInput = this.mapInputId("descriptionInput");
+					this.dataPathInput = this.mapInputId("dataPathInput");
+					this.dataPathOutput = this.mapInputId("dataPathOutput");
+					this.inputAccessPointPanel = this
+							.mapInputId("inputAccessPointPanel");
+					this.outputAccessPointPanel = this
+							.mapInputId("outputAccessPointPanel");
+					this.inAccessPointSelectInput = this
+							.mapInputId("inAccessPointSelectInput");
+					this.outAccessPointSelectInput = this
+							.mapInputId("outAccessPointSelectInput");
 
-				this.inInput = this.mapInputId("inInput");
-				this.outInput = this.mapInputId("outInput");
-				this.descriptionInput = this.mapInputId("descriptionInput");
-				this.dataPathInput = this.mapInputId("dataPathInput");
-				this.dataPathOutput = this.mapInputId("dataPathOutput");
-				this.inputAccessPointPanel = this
-						.mapInputId("inputAccessPointPanel");
-				this.outputAccessPointPanel = this
-						.mapInputId("outputAccessPointPanel");
-				this.inAccessPointSelectInput = this
-						.mapInputId("inAccessPointSelectInput");
-				this.outAccessPointSelectInput = this
-						.mapInputId("outAccessPointSelectInput");
+					// Initialize callbacks
 
-				// Initialize callbacks
+					this.inInput.click({
+						"callbackScope" : this
+					}, function(event) {
+						if (event.data.callbackScope.inInput.is(":checked")) {
+							event.data.callbackScope.dataPathInput
+									.removeAttr("disabled");
+						} else {
+							event.data.callbackScope.dataPathInput.attr("disabled",
+									true);
+							event.data.callbackScope.dataPathInput.val(null);
+						}
+					});
 
-				this.inInput.click({
-					"callbackScope" : this
-				}, function(event) {
-					if (event.data.callbackScope.inInput.is(":checked")) {
-						event.data.callbackScope.dataPathInput
-								.removeAttr("disabled");
-					} else {
-						event.data.callbackScope.dataPathInput.attr("disabled",
-								true);
-						event.data.callbackScope.dataPathInput.val(null);
-					}
-				});
-
-				this.outInput.click({
-					"callbackScope" : this
-				}, function(event) {
-					if (event.data.callbackScope.outInput.is(":checked")) {
-						event.data.callbackScope.dataPathOutput
-								.removeAttr("disabled");
-					} else {
-						event.data.callbackScope.dataPathOutput.attr(
-								"disabled", true);
-						event.data.callbackScope.dataPathOutput.val(null);
-					}
-				});
-
+					this.outInput.click({
+						"callbackScope" : this
+					}, function(event) {
+						if (event.data.callbackScope.outInput.is(":checked")) {
+							event.data.callbackScope.dataPathOutput
+									.removeAttr("disabled");
+						} else {
+							event.data.callbackScope.dataPathOutput.attr(
+									"disabled", true);
+							event.data.callbackScope.dataPathOutput.val(null);
+						}
+					});
+					
+					this.registerInputForModelElementChangeSubmission(
+							this.descriptionInput, "description");
+					this.registerCheckboxInputForModelElementChangeSubmission(
+							this.inInput, "inDataMapping");
+					this.registerCheckboxInputForModelElementChangeSubmission(
+							this.outInput, "outDataMapping");
+				};
+				
 				/**
 				 * 
 				 */
@@ -74,7 +88,7 @@ define(
 						dataFlow) {
 					this.inAccessPointSelectInput.empty();
 
-					m_utils.debug("===> Activity");
+					m_utils.debug("===> Data Flow Activity");
 					m_utils.debug(dataFlow.activity);
 					
 					for ( var n in dataFlow.activity.accessPoints) {
@@ -156,35 +170,6 @@ define(
 					// m_dialog.makeInvisible(this.inputAccessPointPanel);
 					// m_dialog.makeInvisible(this.outputAccessPointPanel);
 					// }
-				};
-
-				/**
-				 * 
-				 */
-				DataFlowBasicPropertiesPage.prototype.apply = function() {
-					this.propertiesPanel.element.modelElement.description = this.descriptionInput
-							.val();
-					if (this.inInput.is(":checked")) {
-						// TODO Workaround Consider directions
-						this.propertiesPanel.element.modelElement.outDataMapping = true;
-						this.propertiesPanel.element.modelElement.dataPath = this.dataPathInput
-								.val();
-					} else {
-						// TODO Workaround Consider directions
-						this.propertiesPanel.element.modelElement.outDataMapping = false;
-						this.propertiesPanel.element.modelElement.dataPath = null;
-					}
-
-					if (this.outInput.is(":checked")) {
-						this.propertiesPanel.element.modelElement.inDataMapping = true;
-						// this.propertiesPanel.element.modelElement.applicationPath
-						// = this.applicationPathInput
-						// .val();
-					} else {
-						this.propertiesPanel.element.modelElement.inDataMapping = false;
-						// this.propertiesPanel.element.modelElement.applicationPath
-						// = null;
-					}
 				};
 			}
 		});
