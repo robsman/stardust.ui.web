@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -13,11 +13,11 @@ define(
 				"m_communicationController", "m_commandsController",
 				"m_command", "m_session", "m_model", "m_process",
 				"m_application", "m_dataStructure", "m_participant",
-				"m_outlineToolbarController", "m_data" ],
+				"m_outlineToolbarController", "m_data", "m_elementConfiguration" ],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_communicationController, m_commandsController, m_command,
 				m_session, m_model, m_process, m_application, m_dataStructure,
-				m_participant, m_outlineToolbarController, m_data) {
+				m_participant, m_outlineToolbarController, m_data, m_elementConfiguration) {
 			var modelCounter = 0;
 			var processCounter = 0;
 			var structTypeCounter = 0;
@@ -434,7 +434,8 @@ define(
 					}
 				} else if (data.rslt.obj.attr("rel") == "primitive"
 						|| data.rslt.obj.attr("rel") == "struct"
-						|| data.rslt.obj.attr("rel") == "dmsDocument") {
+						|| data.rslt.obj.attr("rel") == "dmsDocument"
+						|| data.rslt.obj.attr("rel") == "entity") {
 					var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
 					var application = model.findModelElementByUuid(data.rslt.obj.attr("id"));
 
@@ -492,15 +493,15 @@ define(
 			};
 
 			//TODO - delete
-//			var getTreeNodeId = function (modelId, nodeType, nodeId) {				
+//			var getTreeNodeId = function (modelId, nodeType, nodeId) {
 //				return modelId + "__" + nodeType + "__" + nodeId;
 //			};
-			
+
 //			var extractElementIdFromTreeNodeId = function (nodeId) {
 //				var index = m_utils.getLastIndexOf(nodeId, "__");
 //				return nodeId.substring(index);
-//			};			
-			
+//			};
+
 			var setupEventHandling = function() {
 				/* Listen to toolbar events */
 				jQuery(document).bind('TOOL_CLICKED_EVENT',
@@ -908,9 +909,7 @@ define(
 														}
 													}
 												};
-											} else if ("primitive" == node.attr("rel")
-													|| "struct" == node.attr("rel")
-													|| "dmsDocument" == node.attr("rel")) {
+											} else if (m_elementConfiguration.isValidDataType(node.attr("rel"))) {
 												return {
 													"ccp" : false,
 													"create" : false,
@@ -958,14 +957,7 @@ define(
 														}
 													}
 												};
-											} else if ("webservice" == node
-													.attr("rel")
-													|| "messageTransformationBean" == node
-															.attr("rel")
-													|| "camelBean" == node
-															.attr("rel")
-													|| "interactive" == node
-															.attr("rel")) {
+											} else if (m_elementConfiguration.isValidAppType(node.attr("rel"))) {
 												return {
 													"ccp" : false,
 													"create" : false,
@@ -1097,6 +1089,37 @@ define(
 														}
 													}
 												};
+											} else if ("conditionalPerformerParticipant" == node
+													.attr('rel')) {
+												return {
+													"ccp" : false,
+													"create" : false,
+													"rename" : {
+														"label" : "Rename",
+														"action" : function(obj) {
+															jQuery("#outline")
+																	.jstree(
+																			"rename",
+																			"#"
+																					+ obj
+																							.attr("id"));
+														}
+													},
+													"deleteParticipant" : {
+														"label" : "Delete",
+														"action" : function(obj) {
+															deleteElementAction(
+																	obj.context.lastChild.data,
+																	function() {
+																		deleteParticipant(
+																				obj
+																						.attr("modelUUID"),
+																				obj
+																						.attr("elementId"));
+																	});
+														}
+													}
+												};
 											} else if ('organizationParticipant' == node
 													.attr('rel')) {
 												return {
@@ -1167,11 +1190,7 @@ define(
 											"participants" : {
 												"icon" : {
 													"image" : "../images/icons/world.png"
-												},
-												"valid_children" : [
-														"roleParticipant",
-														"organizationParticipant",
-														"conditionalPerformerParticipant" ]
+												}
 											},
 											"roleParticipant" : {
 												"icon" : {
@@ -1181,11 +1200,7 @@ define(
 											"organizationParticipant" : {
 												"icon" : {
 													"image" : "../images/icons/organization.png"
-												},
-												"valid_children" : [
-														"roleParticipant",
-														"organizationParticipant",
-														"conditionalPerformerParticipant" ]
+												}
 											},
 											"conditionalPerformerParticipant" : {
 												"icon" : {
@@ -1195,10 +1210,7 @@ define(
 											"process" : {
 												"icon" : {
 													"image" : "../images/icons/process.png"
-												},
-												"valid_children" : [
-														"manual_activity",
-														"sub_process_activity" ]
+												}
 											},
 											"structuredTypes" : {
 												"icon" : {
@@ -1213,34 +1225,16 @@ define(
 											"applications" : {
 												"icon" : {
 													"image" : "../images/icons/applications.gif"
-												},
-												// TODO Check for node object
-												// type should suffice
-												"valid_children" : [
-														"plainJava",
-														"JMS_Application",
-														"webservice",
-														"messageTransformationBean",
-														"camelBean",
-														"interactive",
-														"DMS_Operation",
-														"mailBean",
-														"Message_Parsing_Application",
-														"Message_Serialization_Application",
-														"Drools_Rules_Engine",
-														"Session_Bean_Application",
-														"Spring_Bean_Application",
-														"Visual_Rules_Engine_Application",
-														"XSL_Message_Transformation_Application" ]
+												}
 											},
 											"interactive" : {
 												"icon" : {
-													"image" : "../images/icons/application_java.gif"
+													"image" : "../images/icons/externalWebApp_context_icon.gif"
 												}
 											},
 											"plainJava" : {
 												"icon" : {
-													"image" : "../images/icons/application_java.gif"
+													"image" : "../images/icons/plainJava_application_icon.gif"
 												}
 											},
 											"jms" : {
@@ -1253,29 +1247,29 @@ define(
 													"image" : "../images/icons/webservice_application.gif"
 												}
 											},
-											"DMS_Operation" : {
+											"dmsOperation" : {
 												"icon" : {
-													"image" : "../images/icons/application_java.gif"
+													"image" : "../images/icons/dms_application.gif"
 												}
 											},
 											"mailBean" : {
 												"icon" : {
-													"image" : "../images/icons/application_java.gif"
+													"image" : "../images/icons/mail_application_icon.gif"
 												}
 											},
-											"Message_Parsing_Application" : {
+											"messageParsingBean" : {
 												"icon" : {
-													"image" : "../images/icons/application_java.gif"
+													"image" : "../images/icons/message_parsing_application_icon.gif"
 												}
 											},
-											"Message_Serialization_Application" : {
+											"messageSerializationBean" : {
 												"icon" : {
-													"image" : "../images/icons/application_java.gif"
+													"image" : "../images/icons/message_serialization_application_icon.gif"
 												}
 											},
 											"messageTransformationBean" : {
 												"icon" : {
-													"image" : "../images/icons/application_java.gif"
+													"image" : "../images/icons/message_transformation_application_icon.gif"
 												}
 											},
 											"camelBean" : {
@@ -1283,46 +1277,35 @@ define(
 													"image" : "../images/icons/application_java.gif"
 												}
 											},
-											"Drools_Rules_Engine" : {
+											"camelSpringProducerApplication" : {
 												"icon" : {
 													"image" : "../images/icons/application_java.gif"
 												}
 											},
-											"Session_Bean_Application" : {
+											"rulesEngineBean" : {
 												"icon" : {
 													"image" : "../images/icons/application_java.gif"
 												}
 											},
-											"Spring_Bean_Application" : {
+											"sessionBean" : {
 												"icon" : {
-													"image" : "../images/icons/application_java.gif"
+													"image" : "../images/icons/sessionBean_application_icon.gif"
 												}
 											},
-											"Visual_Rules_Engine_Application" : {
+											"springBean" : {
 												"icon" : {
-													"image" : "../images/icons/application_java.gif"
+													"image" : "../images/icons/springBean_application_icon.gif"
 												}
 											},
-											"XSL_Message_Transformation_Application" : {
+											"xslMessageTransformationBean" : {
 												"icon" : {
-													"image" : "../images/icons/application_java.gif"
+													"image" : "../images/icons/message_transformation_application_icon.gif"
 												}
 											},
 											"data" : {
 												"icon" : {
 													"image" : "../images/icons/data.gif"
-												},
-												"valid_children" : [
-														"Entity_Bean",
-														"primitive",
-														"dmsDocument",
-														"Serializable_Data",
-														"struct", "Document",
-														"Document_List",
-														"Folder",
-														"Folder_List",
-														"Hibernate_Data",
-														"XML_Document" ]
+												}
 											},
 											"primitive" : {
 												"icon" : {
@@ -1334,12 +1317,12 @@ define(
 													"image" : "../images/icons/struct_data.gif"
 												}
 											},
-											"Serializable_Data" : {
+											"serializable" : {
 												"icon" : {
 													"image" : "../images/icons/serializable_data.gif"
 												}
 											},
-											"Entity_Bean" : {
+											"entity" : {
 												"icon" : {
 													"image" : "../images/icons/entity_data.gif"
 												}
@@ -1349,34 +1332,19 @@ define(
 													"image" : "../images/icons/blue-document.png"
 												}
 											},
-											"Document" : {
+											"dmsDocumentList" : {
 												"icon" : {
-													"image" : "../images/icons/primitive_data.gif"
+													"image" : "../images/icons/dms_document_list.gif"
 												}
 											},
-											"Document_List" : {
+											"dmsFolder" : {
 												"icon" : {
-													"image" : "../images/icons/primitive_data.gif"
+													"image" : "../images/icons/dms_folder.gif"
 												}
 											},
-											"Folder" : {
+											"dmsFolderList" : {
 												"icon" : {
-													"image" : "../images/icons/primitive_data.gif"
-												}
-											},
-											"Folder_List" : {
-												"icon" : {
-													"image" : "../images/icons/primitive_data.gif"
-												}
-											},
-											"Hibernate_Data" : {
-												"icon" : {
-													"image" : "../images/icons/primitive_data.gif"
-												}
-											},
-											"XML_Document" : {
-												"icon" : {
-													"image" : "../images/icons/primitive_data.gif"
+													"image" : "../images/icons/dms_folder_list.gif"
 												}
 											}
 										}
@@ -1410,7 +1378,7 @@ define(
 									new function() {
 										return {
 											success : function(data) {
-												if (parent.iPopupDialog) {													
+												if (parent.iPopupDialog) {
 													parent.iPopupDialog.openPopup(prepareInfoDialogPoupupData(
 															"All models have been saved successfully.",
 															"OK"));
@@ -1419,7 +1387,7 @@ define(
 												}
 											},
 											failure : function(data) {
-												if (parent.iPopupDialog) {													
+												if (parent.iPopupDialog) {
 													parent.iPopupDialog.openPopup(prepareErrorDialogPoupupData(
 															"Error saving models.",
 															"OK"));
@@ -1432,7 +1400,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function prepareInfoDialogPoupupData(msg, okText) {
 					return {
@@ -1450,7 +1418,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function prepareErrorDialogPoupupData(msg, okText) {
 					return {
@@ -1468,7 +1436,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createModel() {
 					var number = (++modelCounter);
@@ -1498,7 +1466,7 @@ define(
 //				}
 
 				/**
-				 * 
+				 *
 				 */
 				function deleteModel(modelId) {
 					var model = m_model.findModel(modelId);
@@ -1507,7 +1475,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createProcess(modelId) {
 					var number = (++processCounter);
@@ -1522,7 +1490,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function deleteProcess(processId, modelUUID) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1543,7 +1511,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function deleteParticipant(modelUUID, id) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1554,7 +1522,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function deleteApplication(modelUUID, appId) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1565,7 +1533,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function deleteData(modelUUID, id) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1606,7 +1574,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createPrimitiveData(modelUUId) {
 					var number = (++dataCounter);
@@ -1625,7 +1593,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createDocumentData(modelUUId) {
 					var number = (++dataCounter);
@@ -1643,7 +1611,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createStructuredData(modelUUId) {
 					var number = (++dataCounter);
@@ -1663,7 +1631,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createRole(modelUUId, targetUUID) {
 					var number = (++participantCounter);
@@ -1681,22 +1649,22 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function setAsManager(modelUUId, orgUUID, roleUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
 					var orgOid = m_model.findElementInModelByUuid(model.id, orgUUID).oid;
 					var roleUUID = m_model.findElementInModelByUuid(model.id, roleUUID).uuid;
-					
+
 					m_commandsController.submitCommand(m_command
 							.createUpdateTeamLeaderCommand(model.id, orgOid,
 									{
 										"uuid" : roleUUID
-									}));					
+									}));
 				}
-				
+
 				/**
-				 * 
+				 *
 				 */
 				function createOrganization(modelUUId, targetUUID) {
 					var number = (++participantCounter);
@@ -1714,7 +1682,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createWebServiceApplication(modelUUId) {
 					var number = (++applicationCounter);
@@ -1732,7 +1700,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createMessageTransformationApplication(modelUUId) {
 					var number = (++applicationCounter);
@@ -1750,7 +1718,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createCamelApplication(modelUUId) {
 					var number = (++applicationCounter);
@@ -1767,7 +1735,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createUiMashupApplication(modelUUId) {
 					var number = (++applicationCounter);
@@ -1784,7 +1752,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 * @param modelId
 				 * @returns
 				 */
@@ -1804,7 +1772,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 * @param modelId
 				 * @param id
 				 * @returns
@@ -1862,18 +1830,18 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function Outline() {
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.toString = function() {
 					return "Lightdust.Outline";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.initialize = function() {
 					// Register with Event Bus
@@ -1882,7 +1850,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.processCommand = function(command) {
 					m_utils.debug("===> Outline Process Event");
@@ -1961,7 +1929,8 @@ define(
 								this.deleteApplication(command.changes.removed[i]);
 							} else if (m_constants.PARTICIPANT == command.changes.removed[i].type
 									|| m_constants.ROLE_PARTICIPANT_TYPE == command.changes.removed[i].type
-									|| m_constants.ORGANIZATION_PARTICIPANT_TYPE == command.changes.removed[i].type) {
+									|| m_constants.ORGANIZATION_PARTICIPANT_TYPE == command.changes.removed[i].type
+									|| m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == command.changes.removed[i].type) {
 								this.deleteParticipant(command.changes.removed[i]);
 							} else if (m_constants.TYPE_DECLARATION_PROPERTY == command.changes.removed[i].type) {
 								this.deleteTypeDeclaration(command.changes.removed[i]);
@@ -1976,7 +1945,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.createModel = function(data) {
 					var model = m_model.createModel(data.id, data.name, data.uuid);
@@ -2041,16 +2010,16 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.deleteModel = function(transferObject) {
 					m_model.deleteModel(transferObject.id);
 					jQuery("#outline").jstree("remove",
 							"#" + transferObject.uuid)
 				}
-				
+
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.deleteProcess = function(transferObject) {
 					jQuery("#outline").jstree("remove",
@@ -2058,9 +2027,9 @@ define(
 					var model = m_model.findModelForElement(transferObject.uuid);
 					m_process.deleteProcess(transferObject.id, model);
 				}
-				
+
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.deleteApplication = function(transferObject) {
 					jQuery("#outline").jstree("remove",
@@ -2068,9 +2037,9 @@ define(
 					var model = m_model.findModelForElement(transferObject.uuid);
 					m_application.deleteApplication(transferObject.id, model);
 				}
-				
+
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.deleteParticipant = function(transferObject) {
 					jQuery("#outline").jstree("remove",
@@ -2080,7 +2049,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.deleteTypeDeclaration = function(transferObject) {
 					jQuery("#outline").jstree("remove",
@@ -2091,7 +2060,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.deleteData = function(transferObject) {
 					jQuery("#outline").jstree("remove",
@@ -2101,7 +2070,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.createProcess = function(transferObject) {
 					var model = m_model.findModel(transferObject.modelId);
@@ -2126,7 +2095,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.createApplication = function(transferObject) {
 					var model = m_model.findModel(transferObject.modelId);
@@ -2151,7 +2120,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.createData = function(transferObject) {
 					var model = m_model.findModelByUuid(transferObject.modelUUID);
@@ -2174,7 +2143,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.createStructuredDataType = function(
 						transferObject) {
@@ -2199,7 +2168,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.createParticipant = function(transferObject) {
 					var model = m_model.findModelByUuid(transferObject.modelUUID);
