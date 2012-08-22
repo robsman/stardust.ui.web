@@ -218,11 +218,13 @@ define(
 				};
 
 				/**
-				 *
+				 * sync : Synchronous AJAX call is made, if set(needed in
+				 * scenario like creating symbol from flyout menu where symbol
+				 * should be created before createConnection)
 				 */
-				Symbol.prototype.complete = function() {
+				Symbol.prototype.complete = function(sync) {
 					this.completeNoTransfer(this);
-					this.createAndSubmitCreateCommand();
+					this.createAndSubmitCreateCommand(sync);
 
 					if (this.requiresParentSymbol()) {
 						// TODO Needs to be called on create, otherwise it may
@@ -1130,12 +1132,21 @@ define(
 					if (!this.isCompleted()) {
 						// returns 'true' if symbol was placed at new loc. else
 						// false
-						var status = this.diagram.placeNewSymbol(x
-								- this.diagram.X_OFFSET, y
-								- this.diagram.Y_OFFSET);
+						if (null != this.diagram.currentConnection) {
+							var status = this.diagram.placeNewSymbol(x
+									- this.diagram.X_OFFSET, y
+									- this.diagram.Y_OFFSET, true);
+							this.diagram.currentConnection.toModelElementOid = this.oid;
+							this.diagram.currentConnection.complete();
+							this.diagram.currentConnection = null;
+						} else {
+							var status = this.diagram.placeNewSymbol(x
+									- this.diagram.X_OFFSET, y
+									- this.diagram.Y_OFFSET);
+						}
 						// If symbol is outside the swimlane, remove it
 						if (!status) {
-							this.removePrimitives();
+							this.remove();
 						}
 					} else {
 						if (this.diagram.isInConnectionMode()) {
@@ -1248,18 +1259,25 @@ define(
 					m_commandsController.submitCommand(command);
 				}
 
-				Symbol.prototype.createAndSubmitCreateCommand = function() {
+				/**
+				 * sync : Synchronous AJAX call is made, if set(needed in
+				 * scenario like creating symbol from flyout menu where symbol
+				 * should be created before createConnection)
+				 */
+				Symbol.prototype.createAndSubmitCreateCommand = function(sync) {
 					var commandType = this.getCommandIdForNode("create");
 					if (commandType) {
 						var command = m_command.createCreateNodeCommand(this
 								.getCommandIdForNode("create"),
 								this.diagram.model.id, this.parentSymbol.oid,
 								this.createTransferObject());
+						command.sync = sync ? true : false;
 						m_commandsController.submitCommand(command);
 					} else {
 						this.submitCreation();
 					}
 				}
+
 				/**
 				 *
 				 */

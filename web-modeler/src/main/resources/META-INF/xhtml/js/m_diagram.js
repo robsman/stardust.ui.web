@@ -902,7 +902,7 @@ define(
 								for ( var n in this.separatorList) {
 									this.separatorList[n].moveBy(dX
 											* Math.abs(this.separatorDX), dY
-											* Math.abs(this.separatorDY));								
+											* Math.abs(this.separatorDY));
 									this.separatorList[n].parentSymbol.adjustToSymbolBoundaries();
 								}
 							}
@@ -1196,10 +1196,12 @@ define(
 				};
 
 				/**
-				 *
+				 * sync : Synchronous AJAX call is made, if set(needed in
+				 * scenario like creating symbol from flyout menu where symbol
+				 * should be created before createConnection)
 				 */
-				Diagram.prototype.placeNewSymbol = function(x, y) {
-					this.newSymbol.complete();
+				Diagram.prototype.placeNewSymbol = function(x, y, sync) {
+					this.newSymbol.complete(sync);
 					// If symbol is not contained in swimlane, return
 					if (!this.newSymbol.isCompleted()) {
 						this.newSymbol = null;
