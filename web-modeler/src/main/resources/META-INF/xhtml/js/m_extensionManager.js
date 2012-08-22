@@ -57,6 +57,9 @@ define(function(require) {
 						} else if (extension.handler) {
 							extension.provider = loadExtension(extension.handler);
 						}
+						else if (extension.controllerJavaScriptUrl) {
+							extension.controller = loadExtension(extension.controllerJavaScriptUrl);
+						}
 					}
 					result.push(extension);
 				}

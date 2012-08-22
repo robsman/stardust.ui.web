@@ -48,7 +48,7 @@ define(
 							.mapInputId("uniquePerRootProcessInstanceInput");
 
 					this.supportsAttachmentsInput
-							.click(
+							.change(
 									{
 										page : this
 									},
@@ -57,20 +57,13 @@ define(
 
 										if (page.supportsAttachmentsInput
 												.is(":checked")) {
-											if (page.getModelElement().dataPathes["PROCESS_ATTACHMENTS"] == null) {
-												// TODO XPDL has 2 entries
-												page.getModelElement().dataPathes["PROCESS_ATTACHMENTS"] = {
-													id : "PROCESS_ATTACHMENTS",
-													name : "PROCESS_ATTACHMENTS",
-													directions : "IN",
-													dataFullId : page
-															.getModelId()
-															+ ":"
-															+ "PROCESS_ATTACHMENTS"
-												};
+											if (!page.hasProcessAttachmentsDataPathes()) {
+												page.addProcessAttachmentsDataPathes(); 
 											}
 										} else {
-											delete page.getModelElement().dataPathes["PROCESS_ATTACHMENTS"];
+											if (page.hasProcessAttachmentsDataPathes()) {
+												page.removeProcessAttachmentsDataPathes(); 
+											}
 										}
 									});
 				};
@@ -78,7 +71,75 @@ define(
 				/**
 				 * 
 				 */
+				ProcessProcessAttachmentsPropertiesPage.prototype.hasProcessAttachmentsDataPathes = function() {
+					for ( var n = 0; n < this.propertiesPanel.element.dataPathes.length; ++n) {
+						if (this.propertiesPanel.element.dataPathes[n].id == "PROCESS_ATTACHMENTS") {
+							return true;
+						}
+					}
+
+					return false;
+				};
+
+				/**
+				 * 
+				 */
+				ProcessProcessAttachmentsPropertiesPage.prototype.addProcessAttachmentsDataPathes = function() {
+					this.propertiesPanel.element.dataPathes.push({
+						id : "PROCESS_ATTACHMENTS",
+						name : "PROCESS_ATTACHMENTS",
+						direction : "IN",
+						descriptor : false,
+						keyDescriptor : false,
+						dataFullId : this
+						.propertiesPanel.diagram.modelId
+						+ ":"
+						+ "PROCESS_ATTACHMENTS",
+						dataPath : null
+					});
+					this.propertiesPanel.element.dataPathes.push({
+						id : "PROCESS_ATTACHMENTS",
+						name : "PROCESS_ATTACHMENTS",
+						direction : "OUT",
+						descriptor : false,
+						keyDescriptor : false,
+						dataFullId : this
+						.propertiesPanel.diagram.modelId
+						+ ":"
+						+ "PROCESS_ATTACHMENTS",
+						dataPath : null
+					});
+					this.submitChanges({
+						dataPathes : this.propertiesPanel.element.dataPathes
+					});
+				};
+
+				/**
+				 * 
+				 */
+				ProcessProcessAttachmentsPropertiesPage.prototype.removeProcessAttachmentsDataPathes = function() {
+					var changedPathes = [];
+
+					for ( var n = 0; n < this.propertiesPanel.element.dataPathes.length; ++n) {
+						if (this.propertiesPanel.element.dataPathes[n].id != "PROCESS_ATTACHMENTS") {
+							changedPathes
+									.push(this.getModelElement().dataPathes[n]);
+						}
+					}
+
+					this.propertiesPanel.element.dataPathes = changedPathes;
+
+					this.submitChanges({
+						dataPathes : this.propertiesPanel.element.dataPathes
+					});
+				};
+
+				/**
+				 * 
+				 */
 				ProcessProcessAttachmentsPropertiesPage.prototype.setElement = function() {
+					this.supportsAttachmentsInput.attr("checked", this
+							.hasProcessAttachmentsDataPathes());
 				};
 
 				/**
