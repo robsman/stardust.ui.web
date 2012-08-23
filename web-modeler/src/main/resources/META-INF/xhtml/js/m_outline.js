@@ -18,15 +18,8 @@ define(
 				m_communicationController, m_commandsController, m_command,
 				m_session, m_model, m_process, m_application, m_dataStructure,
 				m_participant, m_outlineToolbarController, m_data, m_elementConfiguration) {
-			var modelCounter = 0;
-			var processCounter = 0;
-			var structTypeCounter = 0;
-			var dataCounter = 0;
-			var participantCounter = 0;
-			var applicationCounter = 0;
 
 			// TODO Find better location
-
 			var viewManagerExtension = m_extensionManager
 					.findExtension("viewManager");
 			var viewManager = viewManagerExtension.provider.create();
@@ -53,7 +46,6 @@ define(
 						.each(
 								m_model.getModels(),
 								function(index, model) {
-									modelCounter++;
 
 									jQuery("#outline").jstree("create",
 											"#Models", "last", {
@@ -70,7 +62,6 @@ define(
 
 									jQuery.each(model.processes, function(
 											index, process) {
-										processCounter++;
 										jQuery("#outline").jstree(
 												"create",
 												"#" + model.uuid,
@@ -112,7 +103,6 @@ define(
 													model.participants,
 													function(index, participant) {
 														if (!participant.parentUUID) {
-															participantCounter++;
 															jQuery("#outline")
 																	.jstree(
 																			"create",
@@ -169,7 +159,6 @@ define(
 											.each(
 													model.applications,
 													function(index, application) {
-														applicationCounter++;
 														jQuery("#outline")
 																.jstree(
 																		"create",
@@ -219,7 +208,6 @@ define(
 									// Create Data nodes
 									jQuery.each(model.dataItems, function(
 											index, data) {
-										dataCounter++;
 										jQuery("#outline").jstree(
 												"create",
 												"#data_" + model.uuid,
@@ -264,7 +252,6 @@ define(
 													model.structuredDataTypes,
 													function(index,
 															structuredDataType) {
-														structTypeCounter++;
 														jQuery("#outline")
 																.jstree(
 																		"create",
@@ -304,7 +291,6 @@ define(
 					.each(
 							parentParticipant.childParticipants,
 							function(index, participant) {
-								participantCounter++;
 								jQuery("#outline")
 										.jstree(
 												"create",
@@ -435,12 +421,6 @@ define(
 			};
 
 			var refresh = function() {
-				modelCounter = 0;
-				processCounter = 0;
-				structTypeCounter = 0;
-				dataCounter = 0;
-				participantCounter = 0;
-				applicationCounter = 0;
 				jQuery("#outline").jstree("remove", "#Models");
 				readAllModels();
 			};
