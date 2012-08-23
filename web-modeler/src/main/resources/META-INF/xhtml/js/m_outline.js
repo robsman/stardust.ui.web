@@ -526,12 +526,7 @@ define(
 														+ organization.name + "&fullId="
 														+ organization.getFullId(),
 														organization.getFullId());
-									} else if (data.rslt.obj.attr('rel') == 'primitive'
-											|| data.rslt.obj.attr('rel') == 'serializable'
-											|| data.rslt.obj.attr('rel') == 'entity'
-											|| data.rslt.obj.attr('rel') == 'struct'
-											|| data.rslt.obj.attr('rel') == 'dmsDocumentList'
-											|| data.rslt.obj.attr('rel') == 'dmsDocument') {
+									} else if (m_elementConfiguration.isValidDataType(data.rslt.obj.attr('rel'))) {
 
 										// TODO Above is very ugly!
 										var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
@@ -600,7 +595,7 @@ define(
 														+ application.id + "&fullId="
 														+ application.getFullId(),
 														application.getFullId());
-									} else if (data.rslt.obj.attr('rel') == "plainJava") {
+									} else if (m_elementConfiguration.isUnSupportedAppType(data.rslt.obj.attr('rel'))) {
 										var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
 										var application = model.findModelElementByUuid(data.rslt.obj.attr("id"));
 

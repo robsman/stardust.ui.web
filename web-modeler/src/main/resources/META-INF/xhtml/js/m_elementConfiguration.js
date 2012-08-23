@@ -18,12 +18,12 @@ define([ "m_utils" ], function(m_utils) {
 	var validDataTypes = supportedDataTypes.concat(unSupportedDataTypes);
 
 	var supportedAppTypes = [ "webservice", "messageTransformationBean",
-			"camelBean", "interactive", "camelSpringProducerApplication" ];
+			"camelBean", "interactive" ];
 
 	var unSupportedAppTypes = [ "dmsOperation", "messageParsingBean",
 			"messageSerializationBean", "springBean", "mailBean", "jms",
 			"plainJava", "xslMessageTransformationBean", "rulesEngineBean",
-			"sessionBean" ];
+			"sessionBean", "camelSpringProducerApplication" ];
 
 	var validAppTypes = supportedAppTypes.concat(unSupportedAppTypes);
 
@@ -77,6 +77,10 @@ define([ "m_utils" ], function(m_utils) {
 
 		isValidAppType : function(appType) {
 			return (-1 != jQuery.inArray(appType, validAppTypes));
+		},
+
+		isUnSupportedAppType : function(appType) {
+			return (-1 != jQuery.inArray(appType, unSupportedAppTypes));
 		}
 	};
 });
