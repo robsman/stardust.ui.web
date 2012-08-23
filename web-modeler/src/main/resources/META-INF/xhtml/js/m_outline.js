@@ -422,59 +422,12 @@ define(
 									"id" : m_utils.generateIDFromName(data.rslt.name)
 								}));
 					}
-				} else if (data.rslt.obj.attr("rel") == "process") {
+				} else {
 					var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
-					var process = model.findModelElementByUuid(data.rslt.obj.attr("id"));
-					if (process.name != data.rslt.name) {
-						m_commandsController.submitCommand(m_command
-								.createUpdateModelElementCommand(model.id, process.oid, {
-									"name" : data.rslt.name,
-									"id" : m_utils.generateIDFromName(data.rslt.name)
-								}));
-					}
-				} else if (data.rslt.obj.attr("rel") == "primitive"
-						|| data.rslt.obj.attr("rel") == "struct"
-						|| data.rslt.obj.attr("rel") == "dmsDocument"
-						|| data.rslt.obj.attr("rel") == "entity") {
-					var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
-					var application = model.findModelElementByUuid(data.rslt.obj.attr("id"));
+					var modelElement = model.findModelElementByUuid(data.rslt.obj.attr("id"));
 
 					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementWithUUIDCommand(model.id, application.uuid, {
-								"name" : data.rslt.name,
-								"id" : m_utils.generateIDFromName(data.rslt.name)
-							}));
-				} else if (data.rslt.obj.attr("rel") == "webservice"
-						|| data.rslt.obj.attr("rel") == "messageTransformationBean"
-						|| data.rslt.obj.attr("rel") == "camelBean"
-						|| data.rslt.obj.attr("rel") == "interactive") {
-					var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
-					var application = model.findModelElementByUuid(data.rslt.obj.attr("id"));
-
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementWithUUIDCommand(model.id, application.uuid, {
-								"name" : data.rslt.name,
-								"id" : m_utils.generateIDFromName(data.rslt.name)
-							}));
-				} else if (data.rslt.obj.attr("rel") == "structuredDataType") {
-					var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
-					var dataType = model.findModelElementByUuid(data.rslt.obj.attr("id"));
-
-					if (dataType.name != data.rslt.name) {
-						m_commandsController.submitCommand(m_command
-								.createUpdateModelElementWithUUIDCommand(model.id, dataType.uuid, {
-									"name" : data.rslt.name,
-									"id" : m_utils.generateIDFromName(data.rslt.name)
-								}));
-					}
-				} else if (data.rslt.obj.attr("rel") == "roleParticipant"
-						|| data.rslt.obj.attr("rel") == "organizationParticipant"
-						|| data.rslt.obj.attr("rel") == "conditionalPerformerParticipant") {
-					var model = m_model.findModelByUuid(data.rslt.obj.attr("modelUUID"));
-					var participant = model.findModelElementByUuid(data.rslt.obj.attr("id"));
-
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementWithUUIDCommand(model.id, participant.uuid, {
+							.createUpdateModelElementWithUUIDCommand(model.id, modelElement.uuid, {
 								"name" : data.rslt.name,
 								"id" : m_utils.generateIDFromName(data.rslt.name)
 							}));
@@ -1308,6 +1261,12 @@ define(
 												}
 											},
 											"primitive" : {
+												"icon" : {
+													"image" : "../images/icons/primitive_data.gif"
+												}
+											},
+											//TODO - change icon for hibernate data
+											"hibernate" : {
 												"icon" : {
 													"image" : "../images/icons/primitive_data.gif"
 												}

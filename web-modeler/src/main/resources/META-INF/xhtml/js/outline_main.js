@@ -49,7 +49,6 @@ define([
 		 "m_urlUtils",
 		 "m_constants",
 		 "m_user",
-		 "m_elementConfiguration",
 		 "m_outline"
 ], function() {
 	var outline = require('m_outline');

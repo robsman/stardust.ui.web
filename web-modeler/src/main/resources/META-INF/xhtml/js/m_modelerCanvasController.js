@@ -8,13 +8,13 @@ define(
 				"m_communicationController", "m_constants", "m_logger",
 				"m_commandsController", "m_diagram", "m_activitySymbol",
 				"m_eventSymbol", "m_gatewaySymbol", "m_dataSymbol", "m_model",
-				"m_process", "m_activity", "m_data" ],
+				"m_process", "m_activity", "m_data", "m_elementConfiguration" ],
 		function(m_utils, m_constants, m_messageDisplay,
 				m_canvasManager,
 				m_communicationController, m_constants, m_logger,
 				m_commandsController, m_diagram, m_activitySymbol,
 				m_eventSymbol, m_gatewaySymbol, m_dataSymbol, m_model,
-				m_process, m_activity, m_data) {
+				m_process, m_activity, m_data, m_elementConfiguration) {
 			var activityDefaultWidth = 180;
 			var activityDefaultHeight = 50;
 			var activityDefaultColour = '0-white-#DEE0E0';
@@ -98,9 +98,9 @@ define(
 						if (parent.iDnD.getTransferObject()) {
 							var clickCoordinates = parent.iDnD
 									.getMouseCoordinates(eve);
-							if (m_constants.PRIMITIVE_DATA_TYPE == parent.iDnD.getTransferObject().elementType
-									|| m_constants.STRUCTURED_DATA_TYPE == parent.iDnD.getTransferObject().elementType
-									|| m_constants.DOCUMENT_DATA_TYPE == parent.iDnD.getTransferObject().elementType) {
+							if (m_elementConfiguration
+									.isValidDataType(parent.iDnD
+											.getTransferObject().elementType)) {
 								// TODO other check required
 								if (!isElementPresent(allAnnotationsList,
 										"customProps.dataId", parent.iDnD
@@ -157,14 +157,9 @@ define(
 										- diagram.X_OFFSET, clickCoordinates.y
 										- diagram.Y_OFFSET);
 								activitySymbol.refreshFromModelElement();
-							} else if ('plainJava' == parent.iDnD
-									.getTransferObject().elementType
-									|| 'webservice' == parent.iDnD
-											.getTransferObject().elementType
-									|| 'messageTransformationBean' == parent.iDnD
-											.getTransferObject().elementType
-									|| 'camelBean' == parent.iDnD
-											.getTransferObject().elementType) {
+							} else if (m_elementConfiguration
+									.isValidAppType(parent.iDnD
+											.getTransferObject().elementType)) {
 								m_utils.debug("Dragged Application");
 								m_utils
 										.debug(parent.iDnD.getTransferObject().attr.fullId);
@@ -220,7 +215,7 @@ define(
 					setupEventHandling(this);
 
 					var process = m_model.findProcess(fullId);
-					
+
 					modelId = process.model.id;
 					processId = process.id;
 					jQuery("#saveModelForm").attr('action',
