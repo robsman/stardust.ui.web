@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 
@@ -329,7 +330,7 @@ public class ModelService
     * TODO - commented pending review by Robert S
     *
     */
-   //@PreDestroy
+   @PreDestroy
    public void destroyModelingSession()
    {
       if (null != currentUserId)
