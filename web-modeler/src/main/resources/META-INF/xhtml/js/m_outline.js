@@ -1393,10 +1393,11 @@ define(
 				 *
 				 */
 				function createModel() {
-					var name = 'Model ' + (++modelCounter);
+					var count = 0;
+					var name = 'Model ' + (++count);
 					var id = m_utils.generateIDFromName(name);
 					while (m_model.findModel(id)) {
-						name = 'Model ' + (++modelCounter);
+						name = 'Model ' + (++count);
 						id = m_utils.generateIDFromName(name);
 					}
 
@@ -1419,16 +1420,33 @@ define(
 				/**
 				 *
 				 */
+				function getUniqueNameForElement(modelId, namePrefix) {
+					var suffix = 0;
+					var name = namePrefix + (++suffix);
+					var id = m_utils.generateIDFromName(name);
+					var model = m_model.findModel(modelId);
+					if (model) {
+						while (model.findModelElementById(id)) {
+							var name = namePrefix + (++suffix);
+							var id = m_utils.generateIDFromName(name);
+						}
+					}
+
+					return name;
+				}
+
+				/**
+				 *
+				 */
 				function createProcess(modelId) {
-					var number = (++processCounter);
-					var name = "Process " + number;
+					var name = getUniqueNameForElement(modelId, "Process ");
 					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController.submitCommand(m_command
 							.createCreateProcessCommand(modelId, modelId, {
 								"name" : name,
 								"id" : id
-							}, modelId));
+							}));
 				}
 
 				/**
@@ -1519,14 +1537,12 @@ define(
 				 *
 				 */
 				function createPrimitiveData(modelUUId) {
-					var number = (++dataCounter);
-					var name = "Primitive Data " + number;
-					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
-					var modelId = model.id;
+					var name = getUniqueNameForElement(model.id, "Primitive Data ");
+					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController.submitCommand(m_command
-							.createCreatePrimitiveDataCommand(modelId, modelId,
+							.createCreatePrimitiveDataCommand(model.id, model.id,
 									{
 										"name" : name,
 										"id" : id,
@@ -1538,14 +1554,12 @@ define(
 				 *
 				 */
 				function createDocumentData(modelUUId) {
-					var number = (++dataCounter);
-					var name = "Document data " + number;
-					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
-					var modelId = model.id;
+					var name = getUniqueNameForElement(model.id, "Document data ");
+					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController.submitCommand(m_command
-							.createCreateDocumentDataCommand(modelId, modelId,
+							.createCreateDocumentDataCommand(model.id, model.id,
 									{
 										"name" : name,
 										"id" : id
@@ -1556,11 +1570,9 @@ define(
 				 *
 				 */
 				function createStructuredData(modelUUId) {
-					var number = (++dataCounter);
-					var name = "Structured Data " + number;
-					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
-					var modelId = model.id;
+					var name = getUniqueNameForElement(model.id, "Structured Data ");
+					var id = m_utils.generateIDFromName(name);
 					var fullId = model.id + ":" + id;
 
 					m_commandsController.submitCommand(m_command
@@ -1576,10 +1588,9 @@ define(
 				 *
 				 */
 				function createRole(modelUUId, targetUUID) {
-					var number = (++participantCounter);
-					var name = "Role " + number;
-					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
+					var name = getUniqueNameForElement(model.id, "Role ");
+					var id = m_utils.generateIDFromName(name);
 					var targetOid = (targetUUID ? m_model.findElementInModelByUuid(model.id, targetUUID).oid : model.id);
 
 					m_commandsController.submitCommand(m_command
@@ -1609,10 +1620,9 @@ define(
 				 *
 				 */
 				function createOrganization(modelUUId, targetUUID) {
-					var number = (++participantCounter);
-					var name = "Organization " + number;
-					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
+					var name = getUniqueNameForElement(model.id, "Organization ");
+					var id = m_utils.generateIDFromName(name);
 					var targetOid = (targetUUID ? m_model.findElementInModelByUuid(model.id, targetUUID).oid : model.id);
 
 					m_commandsController.submitCommand(m_command
@@ -1627,70 +1637,62 @@ define(
 				 *
 				 */
 				function createWebServiceApplication(modelUUId) {
-					var number = (++applicationCounter);
-					var name = "Web Service " + number;
-					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
-					var modelId = model.id;
+					var name = getUniqueNameForElement(model.id, "Web Service ");
+					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController.submitCommand(m_command
-							.createCreateWebServiceAppCommand(modelId, modelId,
+							.createCreateWebServiceAppCommand(model.id, model.id,
 									{
 										"name" : name,
 										"id" : id
-									}, modelId));
+									}));
 				}
 
 				/**
 				 *
 				 */
 				function createMessageTransformationApplication(modelUUId) {
-					var number = (++applicationCounter);
-					var name = "Message Transformation " + number;
-					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
-					var modelId = model.id;
+					var name = getUniqueNameForElement(model.id, "Message Transformation ");
+					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController.submitCommand(m_command
 							.createCreateMessageTransfromationAppCommand(
-									modelId, modelId, {
+									model.id, model.id, {
 										"name" : name,
 										"id" : id
-									}, modelId));
+									}));
 				}
 
 				/**
 				 *
 				 */
 				function createCamelApplication(modelUUId) {
-					var number = (++applicationCounter);
-					var name = "Camel Route " + number;
-					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
-					var modelId = model.id;
+					var name = getUniqueNameForElement(model.id, "Camel Route ");
+					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController.submitCommand(m_command
-							.createCreateCamelAppCommand(modelId, modelId, {
+							.createCreateCamelAppCommand(model.id, model.id, {
 								"name" : name,
 								"id" : id
-							}, modelId));
+							}));
 				}
 
 				/**
 				 *
 				 */
 				function createUiMashupApplication(modelUUId) {
-					var number = (++applicationCounter);
-					var name = "UI Mashup " + number;
-					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
-					var modelId = model.id;
+					var name = getUniqueNameForElement(model.id, "UI Mashup ");
+					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController.submitCommand(m_command
-							.createCreateUiMashupAppCommand(modelId, modelId, {
+							.createCreateUiMashupAppCommand(model.id, model.id, {
 								"name" : name,
 								"id" : id
-							}, modelId));
+							}));
 				}
 
 				/**
@@ -1699,18 +1701,16 @@ define(
 				 * @returns
 				 */
 				function createXsdStructuredDataType(modelUUId) {
-					var number = (++structTypeCounter);
-					// TODO obtain number from model
-					var name = "XSD Data Structure " + number;
-					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
-					var modelId = model.id;
+					var name = getUniqueNameForElement(model.id, "XSD Data Structure ");
+					var id = m_utils.generateIDFromName(name);
+
 					m_commandsController.submitCommand(m_command
-							.createCreateStructuredDataTypeCommand(modelId,
-									modelId, {
+							.createCreateStructuredDataTypeCommand(model.id,
+									model.id, {
 										"name" : name,
 										"id" : id
-									}, modelId));
+									}));
 				}
 
 				/**

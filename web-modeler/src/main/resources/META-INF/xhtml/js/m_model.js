@@ -17,7 +17,7 @@ define(
 				loadModels : loadModels,
 
 				getModels : getModels,
-				
+
 				createModel : function() {
 					return new Model();
 				},
@@ -70,7 +70,7 @@ define(
 					delete getModels()[id];
 				},
 				/**
-				 * TODO May not be safe as element OIDs are not unique. 
+				 * TODO May not be safe as element OIDs are not unique.
 				 * @param guid
 				 * @returns
 				 */
@@ -102,7 +102,7 @@ define(
 
 				/**
 				 * Fetches the model for given element UUID.
-				 * 
+				 *
 				 * @param elementUUID
 				 * @returns model
 				 */
@@ -121,7 +121,7 @@ define(
 
 				/**
 				 * Fetches the element with given OID within the given modelId.
-				 * 
+				 *
 				 * @param guid
 				 * @returns
 				 */
@@ -142,7 +142,7 @@ define(
 
 				/**
 				 * Fetches the element with given UUID within the given modelId.
-				 * 
+				 *
 				 * @param guid
 				 * @returns
 				 */
@@ -160,7 +160,7 @@ define(
 
 					return null;
 				},
-				
+
 				findElementTypeByPath : function(path) {
 					var steps = path.split("/");
 
@@ -236,9 +236,9 @@ define(
 								+ ".";
 					}
 				},
-				
+
 				/**
-				 * 
+				 *
 				 */
 				getFullId : function(model, symbolId) {
 					return model.id + ":" +symbolId;
@@ -246,7 +246,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function stripModelId(fullId) {
 				// TODO Change to format {modelId}/elementId once server has
@@ -257,7 +257,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function stripElementId(fullId) {
 				// TODO Change to format {modelId}/elementId once server has
@@ -268,7 +268,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Model() {
 				this.type = m_constants.MODEL;
@@ -281,21 +281,21 @@ define(
 				this.participants = {};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.toString = function() {
 					return "Lightdust.Model";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.getFullId = function() {
 					return this.id;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.rename = function(id, name) {
 					m_utils.debug("Renaming model " + this.id);
@@ -307,7 +307,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.getNewDataIndex = function() {
 					var index = 0;
@@ -322,14 +322,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.toJsonString = function() {
 					return JSON.stringify(this);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.getApplicationIndex = function() {
 					var index = 0;
@@ -344,7 +344,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.getStructuredDataTypeIndex = function() {
 					var index = 0;
@@ -396,7 +396,7 @@ define(
 
 					return null;
 				};
-				
+
 				Model.prototype.findModelElementByUuid = function(uuid) {
 					var n;
 
@@ -432,6 +432,42 @@ define(
 
 					return null;
 				};
+
+				Model.prototype.findModelElementById = function(id) {
+					var n;
+
+					for (n in this.processes) {
+						if (this.processes[n].id == id) {
+							return this.processes[n];
+						}
+					}
+
+					for (n in this.applications) {
+						if (this.applications[n].id == id) {
+							return this.applications[n];
+						}
+					}
+
+					for (n in this.dataItems) {
+						if (this.dataItems[n].id == id) {
+							return this.dataItems[n];
+						}
+					}
+
+					for (n in this.participants) {
+						if (this.participants[n].id == id) {
+							return this.participants[n];
+						}
+					}
+
+					for (n in this.structuredDataTypes) {
+						if (this.structuredDataTypes[n].id == id) {
+							return this.structuredDataTypes[n];
+						}
+					}
+
+					return null;
+				};
 			}
 
 			/**
@@ -442,7 +478,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function loadModels() {
 				if (getModels() != null) {
@@ -453,7 +489,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function refreshModels() {
 				m_communicationController.syncGetData({
@@ -472,7 +508,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function bindModels() {
 				for ( var model in getModels()) {
@@ -481,7 +517,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function bindModel(model) {
 				// TODO Ugly, user prototype
