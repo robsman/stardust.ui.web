@@ -1393,9 +1393,12 @@ define(
 				 *
 				 */
 				function createModel() {
-					var number = (++modelCounter);
-					var name = 'Model ' + number;
-					var id = 'Model' + number;
+					var name = 'Model ' + (++modelCounter);
+					var id = m_utils.generateIDFromName(name);
+					while (m_model.findModel(id)) {
+						name = 'Model ' + (++modelCounter);
+						id = m_utils.generateIDFromName(name);
+					}
 
 					m_commandsController.submitCommand(m_command
 							.createCreateModelCommand({
@@ -1403,21 +1406,6 @@ define(
 								"id" : id
 							}));
 				}
-
-				/**
-				 * TODO - WRONG
-				 */
-//				function renameModel() {
-//					var number = (++modelCounter);
-//					var name = 'Model ' + number;
-//					var id = 'Model' + number;
-//
-//					m_commandsController.submitCommand(m_command
-//							.createCreateCommand("/models/", {
-//								"name" : name,
-//								"id" : id
-//							}));
-//				}
 
 				/**
 				 *
@@ -1434,7 +1422,7 @@ define(
 				function createProcess(modelId) {
 					var number = (++processCounter);
 					var name = "Process " + number;
-					var id = "Process" + number;
+					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController.submitCommand(m_command
 							.createCreateProcessCommand(modelId, modelId, {
@@ -1552,7 +1540,7 @@ define(
 				function createDocumentData(modelUUId) {
 					var number = (++dataCounter);
 					var name = "Document data " + number;
-					var id = "DocumentData" + number;
+					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
 					var modelId = model.id;
 
@@ -1641,7 +1629,7 @@ define(
 				function createWebServiceApplication(modelUUId) {
 					var number = (++applicationCounter);
 					var name = "Web Service " + number;
-					var id = "WebService" + number;
+					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
 					var modelId = model.id;
 
@@ -1659,7 +1647,7 @@ define(
 				function createMessageTransformationApplication(modelUUId) {
 					var number = (++applicationCounter);
 					var name = "Message Transformation " + number;
-					var id = "MessageTransformation" + number;
+					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
 					var modelId = model.id;
 
@@ -1677,7 +1665,7 @@ define(
 				function createCamelApplication(modelUUId) {
 					var number = (++applicationCounter);
 					var name = "Camel Route " + number;
-					var id = "CamelRoute" + number;
+					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
 					var modelId = model.id;
 
@@ -1694,7 +1682,7 @@ define(
 				function createUiMashupApplication(modelUUId) {
 					var number = (++applicationCounter);
 					var name = "UI Mashup " + number;
-					var id = "UIMashup" + number;
+					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
 					var modelId = model.id;
 
@@ -1714,7 +1702,7 @@ define(
 					var number = (++structTypeCounter);
 					// TODO obtain number from model
 					var name = "XSD Data Structure " + number;
-					var id = "XSDDataStructure" + number;
+					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModelByUuid(modelUUId);
 					var modelId = model.id;
 					m_commandsController.submitCommand(m_command
