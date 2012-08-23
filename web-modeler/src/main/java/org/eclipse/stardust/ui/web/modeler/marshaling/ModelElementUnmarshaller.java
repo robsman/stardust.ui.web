@@ -331,12 +331,19 @@ public abstract class ModelElementUnmarshaller
          transition.setExpression(expression);
       }
 
-      controlFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
-            controlFlowConnectionJson,
-            ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-      controlFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
-            controlFlowConnectionJson,
-            ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+      // While routing , anchor point orientation changes
+      if (controlFlowConnectionJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      {
+         controlFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
+               controlFlowConnectionJson,
+               ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+      }
+      if (controlFlowConnectionJson.has(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      {
+         controlFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
+               controlFlowConnectionJson,
+               ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+      }
    }
 
    /**

@@ -550,14 +550,44 @@ define(
 				Diagram.prototype.findConnection = function(conn) {
 
 					for ( var i = 0; i < this.connections.length; i++) {
-						if (this.connections[i].oid == conn.oid) {
-							return this.connections[i];
-						} else if (this.connections[i].fromModelElementOid == conn.fromModelElementOid
+						if (this.connections[i].fromModelElementOid == conn.fromModelElementOid
 								&& this.connections[i].toModelElementOid == conn.toModelElementOid) {
+							// while adding a connection, to update connection
+							// connection is searched using modelELementOid
 							return this.connections[i];
 						}
 					}
 
+					return null;
+				};
+
+				/**
+				 *
+				 */
+				Diagram.prototype.findConnectionByGuid = function(guid) {
+
+					if (null != guid) {
+						for ( var i = 0; i < this.connections.length; i++) {
+							if (this.connections[i].oid == guid) {
+								return this.connections[i];
+							}
+						}
+					}
+					return null;
+				};
+
+				/**
+				 *
+				 */
+				Diagram.prototype.findConnectionByModelElementGuid = function(guid) {
+
+					if (null != guid) {
+						for ( var i = 0; i < this.connections.length; i++) {
+							if (this.connections[i].modelElement.oid == guid) {
+								return this.connections[i];
+							}
+						}
+					}
 					return null;
 				};
 
@@ -629,6 +659,23 @@ define(
 								symbol.refresh();
 								// TODO - update properties panel on
 								// modelElement change
+							}
+
+							// Check if connection is modified
+							var conn = this
+									.findConnectionByGuid(obj.changes.modified[i].oid);
+
+							if (null != conn) {
+								conn.applyChanges(obj.changes.modified[i]);
+								conn.refresh();
+							} else {
+								conn = this
+										.findConnectionByModelElementGuid(obj.changes.modified[i].oid);
+								if (null != conn) {
+									m_utils.inheritFields(conn.modelElement,
+											obj.changes.modified[i]);
+									conn.refresh();
+								}
 							}
 						}
 
