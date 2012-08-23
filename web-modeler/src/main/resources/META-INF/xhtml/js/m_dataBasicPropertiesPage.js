@@ -183,8 +183,34 @@ define(
 				/**
 				 * 
 				 */
-				DataBasicPropertiesPage.prototype.getModelElementUuid = function() {
-					return this.getModelElement().uuid;
+				DataBasicPropertiesPage.prototype.assembleChangedObjectFromProperty = function(
+						property, value) {
+					var element = {};
+
+					element[property] = value;
+
+					return element;
+				};
+
+				/**
+				 * 
+				 */
+				DataBasicPropertiesPage.prototype.assembleChangedObjectFromAttribute = function(
+						attribute, value) {
+					var element = {
+						attributes : {}
+					};
+
+					element.attributes[attribute] = value;
+
+					return element;
+				};
+
+				/**
+				 * 
+				 */
+				DataBasicPropertiesPage.prototype.getModelElement = function() {
+					return this.propertiesPanel.data;
 				};
 
 				/**
@@ -200,15 +226,15 @@ define(
 					this.populateDataStructuresSelectInput();
 					this.populateDocumentTypesSelectInput();
 
-					if (this.propertiesPanel.data.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
+					if (this.getModelElement().dataType == m_constants.PRIMITIVE_DATA_TYPE) {
 						this
-								.setPrimitiveDataType(this.propertiesPanel.data.primitiveDataType);
-					} else if (this.propertiesPanel.data.dataType == m_constants.STRUCTURED_DATA_TYPE) {
+								.setPrimitiveDataType(this.getModelElement().primitiveDataType);
+					} else if (this.getModelElement().dataType == m_constants.STRUCTURED_DATA_TYPE) {
 						this
-								.setStructuredDataType(this.propertiesPanel.data.structuredDataTypeFullId);
-					} else if (this.propertiesPanel.data.dataType == m_constants.DOCUMENT_DATA_TYPE) {
+								.setStructuredDataType(this.getModelElement().structuredDataTypeFullId);
+					} else if (this.getModelElement().dataType == m_constants.DOCUMENT_DATA_TYPE) {
 						this
-								.setDocumentDataType(this.propertiesPanel.data.structuredDataTypeFullId);
+								.setDocumentDataType(this.getModelElement().structuredDataTypeFullId);
 					}
 				};
 

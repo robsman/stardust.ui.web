@@ -12,10 +12,6 @@
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
-import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newApplicationActivity;
-import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newSubProcessActivity;
-import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBoolean;
-import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 
 import java.lang.reflect.InvocationTargetException;
@@ -25,9 +21,11 @@ import java.util.Map;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.model.xpdl.builder.activity.BpmApplicationActivityBuilder;
-import org.eclipse.stardust.model.xpdl.builder.activity.BpmSubProcessActivityBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
@@ -59,10 +57,6 @@ import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  *
