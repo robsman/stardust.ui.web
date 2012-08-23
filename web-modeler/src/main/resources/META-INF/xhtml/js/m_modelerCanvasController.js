@@ -119,7 +119,7 @@ define(
 									m_messageDisplay
 											.showErrorMessage("Data symbol already present");
 								}
-							} else if ("participant_role" == parent.iDnD
+							} else if (m_constants.ROLE_PARTICIPANT_TYPE == parent.iDnD
 									.getTransferObject().elementType) {
 								var participant = m_model
 										.findParticipant(parent.iDnD

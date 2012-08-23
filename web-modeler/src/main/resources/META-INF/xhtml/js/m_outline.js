@@ -1924,7 +1924,7 @@ define(
 							"#" + "participants_" + data.uuid, "first", {
 								"attr" : {
 									"id" : data.adminId,
-									"rel" : "participant_role",
+									"rel" : m_constants.ROLE_PARTICIPANT_TYPE,
 									"draggable" : true
 								},
 								"data" : "Administrator"
