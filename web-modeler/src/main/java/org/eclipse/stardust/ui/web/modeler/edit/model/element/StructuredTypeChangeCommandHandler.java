@@ -30,7 +30,6 @@ public class StructuredTypeChangeCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
-   private ModelBuilderFacade modelBuilderFacade;
 
    public static final String TYPE_PROPERTY = "type";
 
@@ -71,14 +70,10 @@ public class StructuredTypeChangeCommandHandler
    {
       return springContext.getBean(ModelService.class);
    }
-   
+
    private ModelBuilderFacade getModelBuilderFacade()
    {
-      if (modelBuilderFacade == null)
-      {
-         modelBuilderFacade = new ModelBuilderFacade(springContext.getBean(ModelService.class)
-               .getModelManagementStrategy());
-      }
-      return modelBuilderFacade;
+      return new ModelBuilderFacade(springContext.getBean(ModelService.class)
+            .getModelManagementStrategy());
    }
 }

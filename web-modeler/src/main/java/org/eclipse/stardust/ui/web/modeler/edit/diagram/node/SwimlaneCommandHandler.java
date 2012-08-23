@@ -42,7 +42,6 @@ public class SwimlaneCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
-   private ModelBuilderFacade modelBuilderFacade;
 
    /**
     * @param parentSymbol
@@ -97,14 +96,10 @@ public class SwimlaneCommandHandler
          parentSymbol.getChildLanes().remove(lane);
       }
    }
-   
+
    private ModelBuilderFacade getModelBuilderFacade()
    {
-      if (modelBuilderFacade == null)
-      {
-         modelBuilderFacade = new ModelBuilderFacade(springContext.getBean(ModelService.class)
-               .getModelManagementStrategy());
-      }
-      return modelBuilderFacade;
+      return new ModelBuilderFacade(springContext.getBean(ModelService.class)
+            .getModelManagementStrategy());
    }
 }

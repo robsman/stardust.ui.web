@@ -32,7 +32,6 @@ public class ApplicationTypeChangeCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
-   private ModelBuilderFacade modelBuilderFacade;
 
    @OnCommand(commandId = "webServiceApplication.create")
    public void createWebServiceApp(ModelType model, JsonObject request)
@@ -53,7 +52,7 @@ public class ApplicationTypeChangeCommandHandler
    public void createMessageTransformationApp(EObject targetElement, JsonObject request)
    {
       ModelType model = (ModelType) targetElement;
-      
+
       String applicationID = extractString(request, ModelerConstants.ID_PROPERTY);
       String applicationName = extractString(request, ModelerConstants.NAME_PROPERTY);
 
@@ -138,14 +137,10 @@ public class ApplicationTypeChangeCommandHandler
    {
       return springContext.getBean(ModelService.class);
    }
-   
+
    private ModelBuilderFacade getModelBuilderFacade()
    {
-      if (modelBuilderFacade == null)
-      {
-         modelBuilderFacade = new ModelBuilderFacade(springContext.getBean(ModelService.class)
-               .getModelManagementStrategy());
-      }
-      return modelBuilderFacade;
+      return new ModelBuilderFacade(springContext.getBean(ModelService.class)
+            .getModelManagementStrategy());
    }
 }

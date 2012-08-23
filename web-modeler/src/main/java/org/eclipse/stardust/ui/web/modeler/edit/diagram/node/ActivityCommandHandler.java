@@ -42,10 +42,9 @@ import com.google.gson.JsonObject;
  */
 @CommandHandler
 public class ActivityCommandHandler
-{   
+{
    @Resource
    private ApplicationContext springContext;
-   private ModelBuilderFacade modelBuilderFacade;
 
    /**
     * @param parentLaneSymbol
@@ -116,16 +115,12 @@ public class ActivityCommandHandler
       }
 
    }
-   
+
    private ModelBuilderFacade getModelBuilderFacade()
    {
-      if (modelBuilderFacade == null)
-      {
-         modelBuilderFacade = new ModelBuilderFacade(springContext.getBean(ModelService.class)
-               .getModelManagementStrategy());
-      }
-      return modelBuilderFacade;
+      return new ModelBuilderFacade(springContext.getBean(ModelService.class)
+            .getModelManagementStrategy());
    }
-         
-   
+
+
 }

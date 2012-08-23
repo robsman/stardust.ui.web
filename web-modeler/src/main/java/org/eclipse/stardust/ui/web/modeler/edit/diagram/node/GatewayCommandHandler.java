@@ -48,8 +48,7 @@ public class GatewayCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
-   private ModelBuilderFacade modelBuilderFacade;
-   
+
    @OnCommand(commandId = "gateSymbol.create")
    public void createGateway(LaneSymbol parentLaneSymbol, JsonObject request)
    {
@@ -114,15 +113,11 @@ public class GatewayCommandHandler
 
       }
    }
-   
+
    private ModelBuilderFacade getModelBuilderFacade()
    {
-      if (modelBuilderFacade == null)
-      {
-         modelBuilderFacade = new ModelBuilderFacade(springContext.getBean(ModelService.class)
-               .getModelManagementStrategy());
-      }
-      return modelBuilderFacade;
+      return new ModelBuilderFacade(springContext.getBean(ModelService.class)
+            .getModelManagementStrategy());
    }
 
 }

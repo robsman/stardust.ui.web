@@ -48,8 +48,7 @@ public class EventCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
-   private ModelBuilderFacade modelBuilderFacade;
-   
+
    @OnCommand(commandId = "eventSymbol.create")
    public void createEvent(LaneSymbol parentLaneSymbol, JsonObject request)
    {
@@ -137,15 +136,11 @@ public class EventCommandHandler
          }
       }
    }
-   
+
    private ModelBuilderFacade getModelBuilderFacade()
    {
-      if (modelBuilderFacade == null)
-      {
-         modelBuilderFacade = new ModelBuilderFacade(springContext.getBean(ModelService.class)
-               .getModelManagementStrategy());
-      }
-      return modelBuilderFacade;
+      return new ModelBuilderFacade(springContext.getBean(ModelService.class)
+            .getModelManagementStrategy());
    }
 
 }

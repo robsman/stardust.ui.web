@@ -46,7 +46,6 @@ public class DataChangeCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
-   private ModelBuilderFacade modelBuilderFacade;
 
    /**
     * @param model
@@ -125,7 +124,7 @@ public class DataChangeCommandHandler
    {
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
       DataType data = getModelBuilderFacade().findData(model, id);
-            
+
       synchronized (model)
       {
          deleteDataDymbolsForData(model, data.getId());
@@ -167,14 +166,10 @@ public class DataChangeCommandHandler
          }
       }
    }
-   
+
    private ModelBuilderFacade getModelBuilderFacade()
    {
-      if (modelBuilderFacade == null)
-      {
-         modelBuilderFacade = new ModelBuilderFacade(springContext.getBean(ModelService.class)
-               .getModelManagementStrategy());
-      }
-      return modelBuilderFacade;
+      return new ModelBuilderFacade(springContext.getBean(ModelService.class)
+            .getModelManagementStrategy());
    }
 }

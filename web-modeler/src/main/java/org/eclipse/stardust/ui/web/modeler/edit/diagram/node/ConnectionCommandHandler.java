@@ -56,8 +56,7 @@ public class ConnectionCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
-   private ModelBuilderFacade modelBuilderFacade;
-   
+
    @OnCommand(commandId = "connection.create")
    public void createConnection(IIdentifiableElement targetElement, JsonObject request)
    {
@@ -404,7 +403,7 @@ public class ConnectionCommandHandler
       {
          dataMapping.setDirection(DirectionType.get(DirectionType.OUT));
       }
-     
+
       dataMapping.setData(data);
       // TODO Incomplete
 
@@ -429,7 +428,7 @@ public class ConnectionCommandHandler
             .get(0)
             .getDataMappingConnection()
             .add(dataMappingConnection);
-      
+
       dataMappingConnection.setElementOid(++maxOid);
       dataMappingConnection.setActivitySymbol(activitySymbol);
       dataMappingConnection.setDataSymbol(dataSymbol);
@@ -468,15 +467,11 @@ public class ConnectionCommandHandler
 
       throw new IllegalArgumentException("Illegal orientation key " + orientation + ".");
    }
-   
+
    private ModelBuilderFacade getModelBuilderFacade()
    {
-      if (modelBuilderFacade == null)
-      {
-         modelBuilderFacade = new ModelBuilderFacade(springContext.getBean(ModelService.class)
-               .getModelManagementStrategy());
-      }
-      return modelBuilderFacade;
+      return new ModelBuilderFacade(springContext.getBean(ModelService.class)
+            .getModelManagementStrategy());
    }
 
 }

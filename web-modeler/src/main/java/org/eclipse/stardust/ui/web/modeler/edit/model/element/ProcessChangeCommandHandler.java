@@ -48,7 +48,6 @@ public class ProcessChangeCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
-   private ModelBuilderFacade modelBuilderFacade;
 
    @OnCommand(commandId = "process.create")
    public void createProcess(ModelType model, JsonObject request)
@@ -135,14 +134,10 @@ public class ProcessChangeCommandHandler
    {
       return springContext.getBean(ModelService.class);
    }
-   
+
    private ModelBuilderFacade getModelBuilderFacade()
    {
-      if (modelBuilderFacade == null)
-      {
-         modelBuilderFacade = new ModelBuilderFacade(springContext.getBean(ModelService.class)
-               .getModelManagementStrategy());
-      }
-      return modelBuilderFacade;
+      return new ModelBuilderFacade(springContext.getBean(ModelService.class)
+            .getModelManagementStrategy());
    }
 }
