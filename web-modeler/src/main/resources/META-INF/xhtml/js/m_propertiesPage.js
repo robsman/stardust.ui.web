@@ -148,7 +148,8 @@ define(
 				};
 
 				/**
-				 * 
+				 * Returns the model element the Properties Pages are working on. This might be the Model Element a Symbol is 
+				 * representing (e.g. an Activity), a Data underneath a Data Symbol or the Process Definition itself.
 				 */
 				PropertiesPage.prototype.getModelElement = function() {
 					return this.propertiesPanel.element.modelElement;
@@ -238,7 +239,7 @@ define(
 						m_utils.debug(page.getModelElement());
 
 						if (page.getModelElement()[property] != input.val()) {
-							page.submitChanges(page
+							page.propertiesPanel.submitChanges(page
 									.assembleChangedObjectFromProperty(
 											property, input.val()));
 						}
@@ -267,7 +268,7 @@ define(
 										if (page.getModelElement().attributes[attribute] != input
 												.val()) {
 											page
-													.submitChanges(page
+													.propertiesPanel.submitChanges(page
 															.assembleChangedObjectFromAttribute(
 																	attribute,
 																	input.val()));
@@ -288,12 +289,12 @@ define(
 						var input = event.data.input;
 
 						if (!page.validate()) {
-							return;
+							return;	
 						}
 
 						if (page.getModelElement()[property] != input
 								.is(":checked")) {
-							page.submitChanges(page
+							page.propertiesPanel.submitChanges(page
 									.assembleChangedObjectFromProperty(
 											property, input.is(":checked")));
 						}
@@ -322,7 +323,7 @@ define(
 										if (page.getModelElement().attributes[attribute] != input
 												.is(":checked")) {
 											page
-													.submitChanges(page
+													.propertiesPanel.submitChanges(page
 															.assembleChangedObjectFromAttribute(
 																	attribute,
 																	input
@@ -330,19 +331,5 @@ define(
 										}
 									});
 				};
-
-				/**
-				 * 
-				 */
-				PropertiesPage.prototype.submitChanges = function(changes) {
-					m_utils.debug("Changes to be submitted: ");
-					m_utils.debug(changes);
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(
-									this.propertiesPanel.getDiagram().modelId,
-									this.propertiesPanel.getElementUuid(),
-									changes));
-				};
-
 			}
 		});

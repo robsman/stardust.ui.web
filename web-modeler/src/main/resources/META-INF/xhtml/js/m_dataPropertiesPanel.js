@@ -8,9 +8,9 @@
  * documentation
  ******************************************************************************/
 
-define([ "m_utils", "m_constants", "m_commandsController", "m_extensionManager", "m_model",
+define([ "m_utils", "m_constants", "m_commandsController", "m_command", "m_extensionManager", "m_model",
 		"m_propertiesPanel", "m_propertiesPage" ], function(m_utils,
-		m_constants, m_commandsController, m_extensionManager, m_model, m_propertiesPanel,
+		m_constants, m_commandsController, m_command, m_extensionManager, m_model, m_propertiesPanel,
 		m_propertiesPage) {
 
 	var dataPropertiesPanel = null;
@@ -79,6 +79,13 @@ define([ "m_utils", "m_constants", "m_commandsController", "m_extensionManager",
 		/**
 		 * 
 		 */
+		DataPropertiesPanel.prototype.getElementUuid = function() {
+			return this.data.uuid;
+		};
+
+		/**
+		 * 
+		 */
 		DataPropertiesPanel.prototype.setElement = function(element) {
 			this.clearErrorMessages();
 
@@ -93,5 +100,19 @@ define([ "m_utils", "m_constants", "m_commandsController", "m_extensionManager",
 				this.propertiesPages[n].setElement();
 			}
 		};
+		
+		/**
+		 * 
+		 */
+		DataPropertiesPanel.prototype.submitChanges = function(changes) {
+			m_utils.debug("Changes to be submitted for UUID " + this.getElementUuid() + ":");
+			m_utils.debug(changes);
+			m_commandsController.submitCommand(m_command
+					.createUpdateModelElementWithUUIDCommand(
+							this.getDiagram().modelId,
+							this.getElementUuid(),
+							changes));
+		};
+
 	}
 });
