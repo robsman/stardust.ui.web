@@ -789,26 +789,26 @@ public abstract class ModelElementMarshaller
                   {
                      modelBuilderFacade = getModelBuilderFacade();
                   }
-                  
+
                   String fullId = modelBuilderFacade.createFullId(containingModel, eObject);
-                  
+
                   dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID, fullId);
                }
                else
                {
                   String typeDeclarationId = AttributeUtil.getAttributeValue(data, StructuredDataConstants.TYPE_DECLARATION_ATT);
-                  
+
                   if(!StringUtils.isEmpty(typeDeclarationId))
                   {
                      TypeDeclarationType typeDeclaration = model.getTypeDeclarations().getTypeDeclaration(typeDeclarationId);
-                  
+
                      if(modelBuilderFacade == null)
                      {
                         modelBuilderFacade = getModelBuilderFacade();
                      }
-                     
+
                      String fullId = modelBuilderFacade.createFullId(model, typeDeclaration);
-                     
+
                      dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID, fullId);
                   }
                }
@@ -826,6 +826,10 @@ public abstract class ModelElementMarshaller
                   ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
             String type = AttributeUtil.getAttributeValue(data, CarnotConstants.TYPE_ATT);
             dataJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
+         }
+         else
+         {
+            dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY, data.getType().getId());
          }
       }
 
@@ -1363,6 +1367,7 @@ public abstract class ModelElementMarshaller
             .getUUID(model));
       modelJson.addProperty(ModelerConstants.FILE_NAME, modelManagementStrategy().getModelFileName(model));
       modelJson.addProperty(ModelerConstants.FILE_PATH, modelManagementStrategy().getModelFilePath(model));
+      modelJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.MODEL_KEY);
 
       if (model.getDescription() != null)
       {
@@ -1412,7 +1417,7 @@ public abstract class ModelElementMarshaller
             .getConditionalPerformer())
       {
          // TODO Separate out in method
-         
+
          JsonObject participantJson = new JsonObject();
          participantsJson.add(conditionalPerformer.getId(), participantJson);
 
@@ -1436,7 +1441,7 @@ public abstract class ModelElementMarshaller
       }
 
       JsonObject dataItemsJson = new JsonObject();
-      
+
       modelJson.add("dataItems", dataItemsJson);
 
       for (DataType data : model.getData())
@@ -1445,7 +1450,7 @@ public abstract class ModelElementMarshaller
       }
 
       JsonObject structuredDataTypesJson = new JsonObject();
-      
+
       modelJson.add("structuredDataTypes", structuredDataTypesJson);
 
       // TODO Check needed?
