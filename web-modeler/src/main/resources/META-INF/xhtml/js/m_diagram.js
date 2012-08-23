@@ -689,7 +689,7 @@ define(
 							}
 							if (null == symbol) {
 								symbol = this
-										.findConnection(obj.changes.removed[i]);
+										.findConnectionByGuid(obj.changes.removed[i].oid);
 							}
 							if (null != symbol) {
 								symbol.remove();
