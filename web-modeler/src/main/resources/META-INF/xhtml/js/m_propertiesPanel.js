@@ -96,10 +96,13 @@ define(
 				PropertiesPanel.prototype.initializePropertiesPages = function() {
 					var propertiesPages = m_extensionManager.findExtensions(
 							"propertiesPage", "panelId", this.id);
+					var extensions = {};
 
 					for ( var n = 0; n < propertiesPages.length; n++) {
 						var extension = propertiesPages[n];
 
+						extensions[extension.pageId] = extension;
+						
 						if (!m_session.initialize().technologyPreview
 								&& extension.visibility == "preview") {
 
@@ -126,30 +129,26 @@ define(
 							// callback
 
 							var panel = this;
-
+							
 							jQuery("#" + this.id + " #" + extension.pageId)
 									.load(
-											extension.pageHtmlUrl,
-											function(response, status, xhr) {
+											extension.pageHtmlUrl, 
+											function(response, status, xhr) {												
 												if (status == "error") {
 													var msg = "Properties Page Load Error: "
 															+ xhr.status
 															+ " "
 															+ xhr.statusText;
 
-													jQuery(
-															"#"
-																	+ panel.id
-																	+ " #"
-																	+ extension.pageId)
+													jQuery(this)
 															.append(msg);
 													m_utils.debug(msg);
 												} else {
 													m_utils
 															.debug("Page loaded: "
-																	+ extension.pageId);
+																	+ extensions[jQuery(this).attr("id")].pageId);
 													panel.propertiesPages
-															.push(extension.provider
+															.push(extensions[jQuery(this).attr("id")].provider
 																	.create(panel));
 												}
 											});
