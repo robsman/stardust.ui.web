@@ -1760,8 +1760,15 @@ define(
 							anchorPoint.select();
 
 							if (this.direction == m_constants.FROM_ANCHOR_POINT) {
+								// Cache the original AnchorPoint for deletion
+								if (!this.dragConnection.originalFromAnchorPoint) {
+									this.dragConnection.originalFromAnchorPoint = this.dragConnection.toAnchorPoint;
+								}
 								this.dragConnection.fromAnchorPoint = anchorPoint;
 							} else {
+								if (!this.dragConnection.originalToAnchorPoint) {
+									this.dragConnection.originalToAnchorPoint = this.dragConnection.toAnchorPoint;
+								}
 								this.dragConnection.toAnchorPoint = anchorPoint;
 							}
 						}
@@ -1848,15 +1855,25 @@ define(
 							if (this.direction == m_constants.TO_ANCHOR_POINT) {
 								newConnection = this.symbol.diagram
 										.createConnection(this.dragConnection.fromAnchorPoint);
-								newConnection.setSecondAnchorPoint(anchorPoint);
+								newConnection.setSecondAnchorPoint(anchorPoint, true);
 							} else {
 								newConnection = this.symbol.diagram
 										.createConnection(anchorPoint);
 								newConnection
-										.setSecondAnchorPoint(this.dragConnection.toAnchorPoint);
+										.setSecondAnchorPoint(this.dragConnection.toAnchorPoint, true);
 							}
 
-							this.dragConnection.createDeleteCommand();
+							// Reset the original Anchor Point in dragConnection
+							// for deletion
+							if (this.dragConnection.originalFromAnchorPoint) {
+								this.dragConnection.fromAnchorPoint = this.dragConnection.originalFromAnchorPoint;
+								this.dragConnection.originalFromAnchorPoint = null;
+							} else if (this.dragConnection.originalToAnchorPoint) {
+								this.dragConnection.toAnchorPoint = this.dragConnection.originalToAnchorPoint;
+								this.dragConnection.originalToAnchorPoint = null;
+							}
+
+							this.dragConnection.createDeleteCommand(true);
 							this.dragConnection = newConnection;
 						}
 					} else {
@@ -1873,7 +1890,6 @@ define(
 
 					this.dragConnection.select();
 					this.dragConnection.toAnchorPoint.deselect();
-					this.remove();
 				}
 
 				/**

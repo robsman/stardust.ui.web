@@ -8,13 +8,15 @@ define(
 				"m_communicationController", "m_constants", "m_logger",
 				"m_commandsController", "m_diagram", "m_activitySymbol",
 				"m_eventSymbol", "m_gatewaySymbol", "m_dataSymbol", "m_model",
-				"m_process", "m_activity", "m_data", "m_elementConfiguration" ],
+				"m_process", "m_activity", "m_data", "m_elementConfiguration",
+				"m_modelerUtils" ],
 		function(m_utils, m_constants, m_messageDisplay,
 				m_canvasManager,
 				m_communicationController, m_constants, m_logger,
 				m_commandsController, m_diagram, m_activitySymbol,
 				m_eventSymbol, m_gatewaySymbol, m_dataSymbol, m_model,
-				m_process, m_activity, m_data, m_elementConfiguration) {
+				m_process, m_activity, m_data, m_elementConfiguration,
+				m_modelerUtils) {
 			var activityDefaultWidth = 180;
 			var activityDefaultHeight = 50;
 			var activityDefaultColour = '0-white-#DEE0E0';
@@ -98,6 +100,11 @@ define(
 						if (parent.iDnD.getTransferObject()) {
 							var clickCoordinates = parent.iDnD
 									.getMouseCoordinates(eve);
+							var scrollPos = m_modelerUtils
+									.getModelerScrollPosition();
+							clickCoordinates.x += scrollPos.left;
+							clickCoordinates.y += scrollPos.top;
+
 							if (m_elementConfiguration
 									.isValidDataType(parent.iDnD
 											.getTransferObject().elementType)) {

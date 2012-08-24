@@ -31,15 +31,15 @@ define(
 					m_utils.inheritMethods(json, new Connection());
 
 					json.bind(diagram);
-					
+
 					json.initializeFromJson();
-					
+
 					return json;
 				}
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function Connection() {
 				var drawable = m_drawable.createDrawable();
@@ -76,7 +76,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.toString = function() {
 					return "Lightdust.Connection";
@@ -93,7 +93,7 @@ define(
 					if (this.fromAnchorPointOrientation == m_constants.UNDEFINED_ORIENTATION) {
 						if (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
 							if (orientation.indexOf("S") == 0) {
-								this.fromAnchorPointOrientation = 2;								
+								this.fromAnchorPointOrientation = 2;
 							} else if (orientation.indexOf("W") == 0) {
 								this.fromAnchorPointOrientation = 3;
 							} else if (orientation.indexOf("E") == 0) {
@@ -109,14 +109,14 @@ define(
 					if (this.toAnchorPointOrientation == m_constants.UNDEFINED_ORIENTATION) {
 						if (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
 							if (orientation.indexOf("S") == 1) {
-								this.toAnchorPointOrientation = 2;								
+								this.toAnchorPointOrientation = 2;
 							} else if (orientation.indexOf("W") == 1) {
 								this.toAnchorPointOrientation = 3;
 							} else if (orientation.indexOf("E") == 1) {
 								this.toAnchorPointOrientation = 1;
 							} else {
 								this.toAnchorPointOrientation = 0;
-							}							
+							}
 						} else {
 							this.toAnchorPointOrientation = 3;
 						}
@@ -145,7 +145,7 @@ define(
 						this.toAnchorPoint = this.diagram.eventSymbols[this.toModelElementOid].anchorPoints[this.toAnchorPointOrientation];
 					} else if (this.toModelElementType == m_constants.DATA) {
 						this.toAnchorPoint = this.diagram.dataSymbols[this.toModelElementOid].anchorPoints[this.toAnchorPointOrientation];
-					} else if (this.toModelElementType == m_constants.GATEWAY) {						
+					} else if (this.toModelElementType == m_constants.GATEWAY) {
 						this.toAnchorPoint = this.diagram.gatewaySymbols[this.toModelElementOid].anchorPoints[this.toAnchorPointOrientation];
 					}
 
@@ -176,13 +176,13 @@ define(
 					}
 
 					this.completeNoTransfer();
-					this.reroute();					
+					this.reroute();
 				};
 
 				/* Determinies orientation of anchorpoints for connections with undefined orientation.
 				 * Orientation string returned follows syntax - FromAnchopointOrientation(N/E/W/S)
 				 * followed by ToAnchopointOrientation(N/E/W/S)
-				 * 
+				 *
 				 * e.g. Orientation NE means From anchorpoint orientation is North and to-anchorpoint orientation is East
 				 *  */
 				Connection.prototype.determineOrientation = function() {
@@ -215,13 +215,13 @@ define(
 							orientation = "SN";
 						} else {
 							orientation = "NS";
-						}						
+						}
 					} else if (Math.abs(frmSmbl.anchorPoints[1].y - toSmbl.anchorPoints[1].y) < parseInt(toSmbl.height / 2)) {
 						if (frmSmbl.anchorPoints[1].x < toSmbl.anchorPoints[1].x) {
 							orientation = "EW";
 						} else {
 							orientation = "WE";
-						}						
+						}
 					} else if (frmSmbl.anchorPoints[0].x < toSmbl.anchorPoints[0].x
 							&& frmSmbl.anchorPoints[1].y < toSmbl.anchorPoints[1].y) {
 						if (toSmbl.anchorPoints[0].x > parseInt(frmSmbl.anchorPoints[1].x + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH)) {
@@ -257,14 +257,14 @@ define(
 							orientation = "SE";
 						} else {
 							orientation = "NS";
-						}						
+						}
 					}
-					
+
 					return orientation;
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.setFirstAnchorPoint = function(anchorPoint) {
 					this.fromAnchorPoint = anchorPoint;
@@ -273,7 +273,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.setSecondAnchorPointNoComplete = function(
 						anchorPoint) {
@@ -309,7 +309,7 @@ define(
 
 							this.modelElement = m_dataFlow.createDataFlow(
 									this.diagram.process, data, activity);
-							
+
 							this.propertiesPanel = m_dataFlowPropertiesPanel
 									.getInstance();
 						} else {
@@ -331,19 +331,21 @@ define(
 				};
 
 				/**
-				 * 
+				 * sync : Synchronous AJAX call is made, if set(needed in
+				 * scenario like rerouting a connection(Create new connection
+				 * and remove original))
 				 */
 				Connection.prototype.setSecondAnchorPoint = function(
-						anchorPoint) {
+						anchorPoint, sync) {
 					this.setSecondAnchorPointNoComplete(anchorPoint);
 
 					if (this.toAnchorPoint.symbol != null) {
-						this.complete();
+						this.complete(sync);
 					}
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.createTransferObject = function() {
 					var transferObject = {};
@@ -384,7 +386,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.getPath = function(withId) {
 					var path = "/models/" + this.diagram.model.id
@@ -394,12 +396,12 @@ define(
 					if (withId) {
 						path += "/" + this.oid;
 					}
-					
+
 					return path;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.refresh = function() {
 					this.adjustGeometry();
@@ -410,14 +412,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.isUnknownFlow = function() {
 					return this.getToSymbol() == null;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.isDataFlow = function() {
 					// TODO Need better type indication
@@ -427,28 +429,28 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.allowsCondition = function() {
 					return this.fromModelElementType == m_constants.GATEWAY;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.isControlFlow = function() {
 					return !this.isDataFlow();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.getFromSymbol = function() {
 					return this.fromAnchorPoint.symbol;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.getToSymbol = function() {
 					return this.toAnchorPoint == null ? null
@@ -456,7 +458,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.setDummySecondAnchorPoint = function() {
 					this.setSecondAnchorPoint(this.fromAnchorPoint
@@ -464,7 +466,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.prepare = function() {
 					this.createPathPrimitives();
@@ -474,34 +476,37 @@ define(
 				};
 
 				/**
-				 * 
+				 * sync : Synchronous AJAX call is made, if set(needed in
+				 * scenario like rerouting a connection(Create new connection
+				 * and remove original))
 				 */
-				Connection.prototype.complete = function() {
+				Connection.prototype.complete = function(sync) {
 					this.completeNoTransfer();
 					var command = m_command.createCreateNodeCommand("connection.create",
 							this.diagram.model.id, this.diagram.process.oid,
 							this.createTransferObject());
+					command.sync = sync ? true : false;
 					m_commandsController.submitCommand(command);
 				};
 
 				// TODO Move to drawable
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.isPrepared = function() {
 					return this.state == m_constants.SYMBOL_PREPARED_STATE;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.isCompleted = function() {
 					return this.state == m_constants.SYMBOL_COMPLETED_STATE;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.completeNoTransfer = function() {
 					this.register();
@@ -534,7 +539,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.register = function() {
 					this.diagram.connections.push(this);
@@ -547,7 +552,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.createPathPrimitives = function() {
 					this.path = m_canvasManager.drawPath("", {
@@ -592,14 +597,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.initializePrepareEventHandling = function() {
 					this.path.click(Connection_clickClosure);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.initializeEventHandling = function() {
 					this.auxiliaryPickPath.click(Connection_clickClosure);
@@ -631,7 +636,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.refreshFromModelElement = function() {
 					this.conditionExpressionText.hide();
@@ -677,7 +682,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.reroute = function() {
 					if (this.isControlFlow()) {
@@ -850,7 +855,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.findPath = function(startSegment, targetX,
 						targetY) {
@@ -894,7 +899,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.getSvgString = function() {
 					var svgString = "M " + this.fromAnchorPoint.x + " "
@@ -913,7 +918,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.select = function() {
 					this.selected = true;
@@ -929,7 +934,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.deselect = function() {
 					this.selected = false;
@@ -942,7 +947,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.dragMove = function(dX, dY, x, y, event) {
 					if (this.clickedSegmentIndex > 0
@@ -993,7 +998,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.click = function(x, y, event) {
 					m_utils.debug("Connection.prototype.click");
@@ -1021,27 +1026,27 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.dragStart = function(x, y, event) {
 					this.clickedSegmentIndex = this.findClickedSegment(x, y);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.dragStop = function(x, y, event) {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.dragStartConditionExpressionText = function(
 						x, y, event) {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.dragConditionExpressionText = function(dX,
 						dY, x, y, event) {
@@ -1061,14 +1066,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.dragStopConditionExpressionText = function(
 						x, y, event) {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.hoverInConditionExpressionText = function() {
 					this.conditionExpressionText.attr({
@@ -1078,7 +1083,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.hoverOutConditionExpressionText = function() {
 					this.conditionExpressionText.attr({
@@ -1089,7 +1094,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.hoverIn = function() {
 					this.path.attr({
@@ -1099,7 +1104,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.hoverOut = function() {
 					this.path
@@ -1111,7 +1116,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.createFlyOutMenu = function() {
 					this.addFlyOutMenuItems([], [], [ {
@@ -1131,7 +1136,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.proximityHoverIn = function(event) {
 					if (this.diagram.isInNormalMode()) {
@@ -1143,7 +1148,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.proximityHoverOut = function(event) {
 					if (this.diagram.isInNormalMode()) {
@@ -1179,14 +1184,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.remove = function() {
 					// TODO add symbol/diagram cleanup
 					this.path.remove();
 					this.removeFlyOutMenu();
 					this.removeProximitySensor();
-					
+
 					m_utils.removeItemFromArray(
 							this.diagram.connections, this);
 					// Remove this connection from FROM and TO Symbol's
@@ -1196,21 +1201,24 @@ define(
 					m_utils.removeItemFromArray(
 							this.fromAnchorPoint.symbol.connections, this);
 				};
-				
+
 				/**
-				 * 
+				 * sync : Synchronous AJAX call is made, if set(needed in
+				 * scenario like rerouting a connection(Create new connection
+				 * and remove original))
 				 */
-				Connection.prototype.createDeleteCommand = function() {
+				Connection.prototype.createDeleteCommand = function(sync) {
 					var command = m_command.createRemoveNodeCommand(
 							"connection.delete", this.diagram.model.id,
 							this.diagram.process.oid, {
 								"oid" : this.oid
 							});
+					command.sync = sync ? true : false;
 					m_commandsController.submitCommand(command);
 				};
-				
+
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.createUpdateCommand = function() {
 					var command = m_command.createUpdateModelElementCommand(
@@ -1218,26 +1226,26 @@ define(
 									.createTransferObject());
 					m_commandsController.submitCommand(command);
 				};
-				
+
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.hide = function() {
 					this.path.hide();
 					this.visible = false;
 					this.hideFlyOutMenu();
 				}
-				
+
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.show = function() {
 					this.path.show();
 					this.visible = true;
 				}
-				
+
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.flipFlowOrientation = function(
 						flowOrientation) {
@@ -1343,7 +1351,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Segment.prototype.toString = function() {
 					return "[object Lightdust.Segment()]";
@@ -1387,7 +1395,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Segment.prototype.getSvgString = function() {
 					var previousXOffset = 0;
