@@ -18,7 +18,8 @@ define(
 				"m_activityPropertiesPanel", "m_dataPropertiesPanel",
 				"m_eventPropertiesPanel", "m_gatewayPropertiesPanel",
 				"m_swimlanePropertiesPanel", "m_controlFlowPropertiesPanel",
-				"m_dataFlowPropertiesPanel", "m_model", "m_process", "m_data" ],
+				"m_dataFlowPropertiesPanel", "m_model", "m_process", "m_data",
+				"m_modelerUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_urlUtils,
 				m_communicationController, m_commandsController, m_command,
 				m_canvasManager, m_messageDisplay, m_symbol, m_poolSymbol,
@@ -27,7 +28,8 @@ define(
 				m_activityPropertiesPanel, m_dataPropertiesPanel,
 				m_eventPropertiesPanel, m_gatewayPropertiesPanel,
 				m_swimlanePropertiesPanel, m_controlFlowPropertiesPanel,
-				m_dataFlowPropertiesPanel, m_model, m_process, m_data) {
+				m_dataFlowPropertiesPanel, m_model, m_process, m_data,
+				m_modelerUtils) {
 
 			var X_OFFSET = 7; // Set fpr #panningSensor
 			var Y_OFFSET = 115; // Set for #toolbar + #messageDisplay
@@ -1445,6 +1447,7 @@ define(
 				 */
 				Diagram.prototype.showEditable = function(textPrimitive) {
 					this.currentTextPrimitive = textPrimitive;
+					var scrollPos = m_modelerUtils.getModelerScrollPosition();
 					// Use the Symbol's x co-ordinate to decide the width of
 					// textbox
 					var textboxWidth = textPrimitive.auxiliaryProperties.callbackScope.width
@@ -1458,9 +1461,9 @@ define(
 							.moveDiv(
 									{
 										"x" : textPrimitive.auxiliaryProperties.callbackScope.x
-												+ X_OFFSET + 27,
+												+ X_OFFSET + 27 - scrollPos.left,
 										"y" : textPrimitive.auxiliaryProperties.callbackScope.y
-												+ Y_OFFSET - 5
+												+ Y_OFFSET - 5 -scrollPos.top
 									}).show().trigger("dblclick");
 					this.symbolEditMode = true;
 					m_utils.debug("editable activated");
