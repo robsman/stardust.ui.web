@@ -1742,11 +1742,11 @@ public class ModelService
     *   <li><code>"services"</code> a JsonArray of JsonObjects each containing specification of one service, including the
     *     dynamically bound meta service, having the structure:
     *     <ul>
-    *     <li><code>"name"</code> a string containing the local name of the port (for display purposes).</li>
+    *     <li><code>"name"</code> a string containing the local name of the service (for display purposes).</li>
     *     <li><code>WSConstants.WS_SERVICE_NAME_ATT</code> a string containing the qualified name of the service.</li>
     *     <li><code>"ports"</code> a JsonArray of JsonObjects each containing specification of one port, with the structure:
     *       <ul>
-    *       <li><code>"name"</code> a string containing the local name of the service (for display purposes).</li>
+    *       <li><code>"name"</code> a string containing the local name of the port (for display purposes).</li>
     *       <li><code>WSConstants.WS_PORT_NAME_ATT</code> a string containing the qualified name of the port.</li>
     *       <li><code>"style"</code> a string containing the binding style, i.e. "document" (for display purposes).
     *               This may be displayed if the operation does not provide a style</li>
