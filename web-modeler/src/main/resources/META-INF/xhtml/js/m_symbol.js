@@ -1890,6 +1890,7 @@ define(
 
 					this.dragConnection.select();
 					this.dragConnection.toAnchorPoint.deselect();
+					this.remove();
 				}
 
 				/**
