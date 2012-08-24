@@ -19,73 +19,34 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLo
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 import static org.eclipse.stardust.ui.web.modeler.service.streaming.JointModellingSessionsController.lookupInviteBroadcaster;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Future;
 
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
+import javax.wsdl.*;
+import javax.wsdl.Service;
+import javax.xml.namespace.QName;
 
 import org.atmosphere.cpr.Broadcaster;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.UserQuery;
-import org.eclipse.stardust.engine.api.runtime.DmsUtils;
-import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
-import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
-import org.eclipse.stardust.engine.api.runtime.QueryService;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
-import org.eclipse.stardust.engine.api.runtime.User;
-import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.eclipse.stardust.engine.api.runtime.*;
+import org.eclipse.stardust.engine.extensions.jaxws.app.WSConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
-import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
-import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.builder.utils.PepperIconFactory;
-import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerConnectionManager;
-import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
-import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
-import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
+import org.eclipse.stardust.model.xpdl.builder.utils.*;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
-import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
-import org.eclipse.stardust.model.xpdl.carnot.ContextType;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
-import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.DataType;
-import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
-import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
-import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
-import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
-import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
-import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
@@ -98,7 +59,13 @@ import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
+import org.eclipse.stardust.ui.web.modeler.portal.JaxWSResource;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  *
@@ -1768,58 +1735,198 @@ public class ModelService
 
    /**
     * Returns a JSON representation of the service structure underneath the <code>wsdlUrl</code> provided with the input JSON.
-    *
-    * @param wsdlUrl
-    * @return
+    * <p>
+    * <b>Members:</b>
+    * <ul>
+    *   <li><code>WSConstants.WS_WSDL_URL_ATT</code> a string containing the URL from which the WSDL document was loaded.</li>
+    *   <li><code>"services"</code> a JsonArray of JsonObjects each containing specification of one service, including the
+    *     dynamically bound meta service, having the structure:
+    *     <ul>
+    *     <li><code>"name"</code> a string containing the local name of the port (for display purposes).</li>
+    *     <li><code>WSConstants.WS_SERVICE_NAME_ATT</code> a string containing the qualified name of the service.</li>
+    *     <li><code>"ports"</code> a JsonArray of JsonObjects each containing specification of one port, with the structure:
+    *       <ul>
+    *       <li><code>"name"</code> a string containing the local name of the service (for display purposes).</li>
+    *       <li><code>WSConstants.WS_PORT_NAME_ATT</code> a string containing the qualified name of the port.</li>
+    *       <li><code>"style"</code> a string containing the binding style, i.e. "document" (for display purposes).
+    *               This may be displayed if the operation does not provide a style</li>
+    *       <li><code>"operations"</code> a JsonArray of JsonObjects each containing specification of one operation, with the structure:
+    *         <ul>
+    *         <li><code>"name"</code> a string containing the operation name (for display purposes).</li>
+    *         <li><code>WSConstants.WS_OPERATION_NAME_ATT</code> a string containing the qualified operation name.</li>
+    *         <li><code>"style"</code> a string containing the operation style, i.e. "document" (for display purposes).</li>
+    *         <li><code>"use"</code> a string containing the operation use, i.e. "literal" (for display purposes).</li>
+    *         <li><code>WSConstants.WS_OPERATION_INPUT_NAME_ATT</code> a string containing the input name.</li>
+    *         <li><code>WSConstants.WS_OPERATION_OUTPUT_NAME_ATT</code> a string containing the output name.</li>
+    *         <li><code>WSConstants.WS_SOAP_ACTION_URI_ATT</code> a string containing the SOAP action URI.</li>
+    *         <li><code>WSConstants.WS_SOAP_PROTOCOL_ATT</code> a string containing the SOAP protocol.</li>
+    *         <li><code>WSConstants.WS_INPUT_ORDER_ATT</code> a string containing the list of parts composing the input message.</li>
+    *         <li><code>WSConstants.WS_OUTPUT_ORDER_ATT</code> a string containing the list of parts composing the output message.</li>
+    *         </ul> 
+    *       </li>
+    *       </ul>  
+    *     </li>
+    *     </ul> 
+    *   </li>
+    * </ul>
+    * @param postedData a JsonObject that containms a primitive (String) member with the
+    *        name "wsdlUrl" that specifies the URL from where the WSDL should be loaded.
+    * @return the JsonObject containing the representation of the services.
     */
    public JsonObject getWebServiceStructure(JsonObject postedData)
    {
-      // TODO Dummy implementation to show JSON structure
+      String wsdlUrl = postedData.get("wsdlUrl").getAsString();
+      Definition definition = JaxWSResource.getDefinition(wsdlUrl);
+      @SuppressWarnings("unchecked")
+      Collection<Service> declaredServices = definition.getServices().values();
+      List<Service> services = new ArrayList<Service>(declaredServices.size() + 1);
+      services.addAll(declaredServices);
+      // TODO:
+      // services.add(new DynamicBoundService(definition));
 
       JsonObject webServiceJson = new JsonObject();
+      webServiceJson.addProperty(WSConstants.WS_WSDL_URL_ATT, wsdlUrl);
+      addServices(webServiceJson, services);
+      return webServiceJson;
+   }
 
-      webServiceJson.addProperty("wsdlUrl", postedData.get("wsdlUrl").getAsString());
-
-      JsonObject servicesJson = new JsonObject();
-
+   private void addServices(JsonObject webServiceJson, Collection<Service> services)
+   {
+      JsonArray servicesJson = new JsonArray();
       webServiceJson.add("services", servicesJson);
-
-      for (int n = 0; n < 3; ++n)
+      for (Service service : services)
       {
+         QName qname = service.getQName();
+         @SuppressWarnings("unchecked")
+         Collection<Port> ports = service.getPorts().values();
+         
          JsonObject serviceJson = new JsonObject();
+         serviceJson.addProperty("name", qname.getLocalPart());
+         serviceJson.addProperty(WSConstants.WS_SERVICE_NAME_ATT, qname.toString());
+         addPorts(serviceJson, ports);
+         servicesJson.add(serviceJson);
+      }
+   }
 
-         servicesJson.add("service" + n, serviceJson);
+   private void addPorts(JsonObject serviceJson, Collection<Port> ports)
+   {
+      JsonArray portsJson = new JsonArray();
+      serviceJson.add("ports", portsJson);
+      for (Port port : ports)
+      {
+         String name = port.getName();
+         Binding binding = port.getBinding();
+         @SuppressWarnings("unchecked")
+         Collection<BindingOperation> operations = binding.getBindingOperations();
+         
+         JsonObject portJson = new JsonObject();
+         portJson.addProperty("name", name);
+         // TODO:
+         portJson.addProperty(WSConstants.WS_PORT_NAME_ATT, /*port instanceof BindingWrapper
+               ? ((BindingWrapper) port).getQName().toString() :*/ name);
+         portJson.addProperty("style", JaxWSResource.getBindingStyle(binding));
+         addOperations(portJson, operations);
+         portsJson.add(portJson);
+      }
+   }
 
-         serviceJson.addProperty("name", "service" + n);
+   private void addOperations(JsonObject portJson, Collection<BindingOperation> operations)
+   {
+      JsonArray operationsJson = new JsonArray();
+      portJson.add("operations", operationsJson);
+      for (BindingOperation operation : operations)
+      {
+         String name = getOperationName(operation);
+         BindingInput bindingInput = operation.getBindingInput();
+         String inputName = bindingInput == null ? null : bindingInput.getName();
+         BindingOutput bindingOutput = operation.getBindingOutput();
+         String outputName = bindingOutput == null ? null : bindingOutput.getName();
+         Input input = operation.getOperation().getInput();
+         Output output = operation.getOperation().getOutput();
+         
+         JsonObject operationJson = new JsonObject();
+         operationJson.addProperty("name", name);
+         operationJson.addProperty(WSConstants.WS_OPERATION_NAME_ATT, operation.getName());
+         operationJson.addProperty("style", JaxWSResource.getOperationStyle(operation));
+         operationJson.addProperty("use", JaxWSResource.getOperationUse(operation));
+         operationJson.addProperty(WSConstants.WS_OPERATION_INPUT_NAME_ATT, inputName);
+         operationJson.addProperty(WSConstants.WS_OPERATION_OUTPUT_NAME_ATT, outputName);
+         operationJson.addProperty(WSConstants.WS_SOAP_ACTION_URI_ATT, JaxWSResource.getSoapActionUri(operation));
+         operationJson.addProperty(WSConstants.WS_SOAP_PROTOCOL_ATT, JaxWSResource.getOperationProtocol(operation));
+         operationJson.addProperty(WSConstants.WS_INPUT_ORDER_ATT, getPartsOrder(input == null ? null : input.getMessage()));
+         operationJson.addProperty(WSConstants.WS_OUTPUT_ORDER_ATT, getPartsOrder(output == null ? null : output.getMessage()));
+      }
+   }
 
-         JsonObject portsJson = new JsonObject();
-
-         serviceJson.add("ports", portsJson);
-
-         for (int m = 0; m < 3; ++m)
+   /**
+    * Computes a string containing a comma separated list of the parts composing the message.
+    * 
+    * @param message the Message
+    * @return the computed list of parts
+    */
+   private String getPartsOrder(Message message)
+   {
+      if (message == null)
+      {
+         return "";
+      }
+      @SuppressWarnings("unchecked")
+      List<Part> parts = message.getOrderedParts(null);
+      if (parts.isEmpty())
+      {
+         return "";
+      }
+      StringBuffer buffer = new StringBuffer();
+      for (Part part : parts)
+      {
+         if (buffer.length() > 0)
          {
-            JsonObject portJson = new JsonObject();
+            buffer.append(',');
+         }
+         buffer.append(part.getName());
+      }
+      return buffer.toString();
+   }
 
-            portsJson.add("port" + m, portJson);
-
-            portJson.addProperty("name", "port" + m);
+   /**
+    * Computes a unique label for the operation by appending the input and output names to the operation name.
+    *  
+    * @param operation the BindingOperation
+    * @return the computed label
+    */
+   private String getOperationName(BindingOperation operation)
+   {
+      String name = operation.getName();
+      BindingInput bindingInput = operation.getBindingInput();
+      String inputName = bindingInput == null ? null : bindingInput.getName();
+      BindingOutput bindingOutput = operation.getBindingOutput();
+      String outputName = bindingOutput == null ? null : bindingOutput.getName();
+      if (name != null)
+      {
+         if (inputName == null)
+         {
+            if (outputName == null)
+            {
+               return name;
+            }
+            else
+            {
+               return name + "(:none," + outputName + ")";
+            }
+         }
+         else
+         {
+            if (outputName == null)
+            {
+               return name + "(" + inputName + ",:none)";
+            }
+            else
+            {
+               return name + "(" + inputName + "," + outputName + ")";
+            }
          }
       }
-
-      JsonObject operationsJson = new JsonObject();
-
-      webServiceJson.add("operations", operationsJson);
-
-      for (int n = 0; n < 10; ++n)
-      {
-         JsonObject operationJson = new JsonObject();
-
-         servicesJson.add("operation" + n, operationJson);
-
-         operationJson.addProperty("name", "operation" + n);
-      }
-
-      return webServiceJson;
+      return "";
    }
 
    /**
