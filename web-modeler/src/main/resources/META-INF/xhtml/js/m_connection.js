@@ -1144,9 +1144,9 @@ define(
 						var scrollPos = m_modelerUtils.getModelerScrollPosition();
 
 						this.adjustFlyOutMenu(event.pageX
-								- this.diagram.X_OFFSET + scrollPos.left - 5,
+								- this.diagram.X_OFFSET + scrollPos.left - m_constants.FLY_OUT_MENU_ITEM_MARGIN,
 								event.pageY - this.diagram.Y_OFFSET
-										+ scrollPos.top - 5, 40, 20);
+										+ scrollPos.top - m_constants.FLY_OUT_MENU_ITEM_MARGIN, 55, 30);
 						this.showFlyOutMenu();
 					}
 				};
@@ -1160,6 +1160,9 @@ define(
 					}
 				};
 
+				/**
+				 *
+				 */
 				Connection.prototype.createFlyOutMenuBackground = function(x,
 						y, height, width) {
 					this.flyOutMenuBackground = m_canvasManager
@@ -1185,6 +1188,40 @@ define(
 					this.flyOutMenuBackground.hover(
 							Connection_hoverInFlyOutMenuClosure,
 							Connection_hoverOutFlyOutMenuClosure);
+				};
+
+				/**
+				 *
+				 */
+				Connection.prototype.adjustFlyOutMenu = function(x, y, width,
+						height) {
+					this.flyOutMenuBackground.attr({
+						'x' : x,
+						'y' : y,
+						width : width,
+						height : height
+					});
+
+					this.adjustFlyOutMenuItems(x, y, width, height);
+				};
+
+				/**
+				 *
+				 */
+				Connection.prototype.adjustFlyOutMenuItems = function(x, y,
+						width, height) {
+					var n = 0;
+					while (n < this.bottomFlyOutMenuItems.length) {
+						this.bottomFlyOutMenuItems[n]
+								.attr({
+									'x' : x
+											+ n
+											* (m_constants.FLY_OUT_MENU_CONTENT_MARGIN),
+									'y' : y
+											+ m_constants.FLY_OUT_MENU_ITEM_MARGIN
+								});
+						++n;
+					}
 				};
 
 				/**
