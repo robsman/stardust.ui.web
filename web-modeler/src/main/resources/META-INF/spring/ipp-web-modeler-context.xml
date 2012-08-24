@@ -28,6 +28,10 @@
 		<qualifier value="default" />
 	</bean>
 
+	<bean id="modelingConfigurationPanel" class="org.eclipse.stardust.ui.web.modeler.portal.ModelingConfigurationPanel"
+		scope="session">
+	</bean>
+
 	<bean id="modelService" class="org.eclipse.stardust.ui.web.modeler.service.ModelService"
 		scope="session">
 		<aop:scoped-proxy/>

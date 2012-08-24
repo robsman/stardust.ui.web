@@ -8,10 +8,28 @@
 <head>
 </head>
 <body>
-	<ice:panelGroup style="margin: 10px;">
+	<ice:panelGroup>
 		<ice:panelGroup styleClass="heading">
-			<ice:outputText value="Process Modeling Configuration" />
+			<ice:outputText value="Process Modeling Configuration #{modelingConfigurationPanel}" />
 		</ice:panelGroup>
+		<ice:panelGrid columns="1">
+			<ice:outputText
+				value="Changes will only become effective after next login." />
+		</ice:panelGrid>
+		<ice:panelGrid columns="2" style="margin-top: 10px;">
+			<ice:selectBooleanCheckbox partialSubmit="true"
+				value="#{modelingConfigurationPanel.defaultProfile}" />
+			<ice:outputLabel value="Show Technology Preview Features" />
+		</ice:panelGrid>
+		<ice:panelGrid columns="2" style="margin-top: 10px;">
+			<ice:outputLabel value="Default Profile" />
+			<ice:selectOneMenu partialSubmit="true"
+				value="#{modelingConfigurationPanel.showTechnologyPreview}">
+				<f:selectItem itemValue="BusinessAnalyst"
+					itemLabel="Business Analyst" />
+				<f:selectItem itemValue="Integrator" itemLabel="Integrator" />
+			</ice:selectOneMenu>
+		</ice:panelGrid>
 	</ice:panelGroup>
 </body>
 </html>
