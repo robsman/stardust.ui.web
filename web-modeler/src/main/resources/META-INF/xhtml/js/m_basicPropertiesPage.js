@@ -9,10 +9,10 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_command", "m_commandsController",
+		[ "m_utils", "m_constants", "m_command", "m_commandsController", "m_user", "m_dialog",
 				"m_propertiesPage", "m_activity" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_propertiesPage, m_activity) {
+				m_user, m_dialog, m_propertiesPage, m_activity) {
 			return {
 				create : function(propertiesPanel) {
 					return new BasicPropertiesPage(propertiesPanel);
@@ -35,15 +35,21 @@ define(
 				 * 
 				 */
 				BasicPropertiesPage.prototype.initializeBasicPropertiesPage = function() {
+					this.guidOutputRow = this.mapInputId("guidOutputRow");
+					this.idOutputRow = this.mapInputId("idOutputRow");
 					this.guidOutput = this.mapInputId("guidOutput");
 					this.idOutput = this.mapInputId("idOutput");
 					this.nameInput = this.mapInputId("nameInput");
 					this.descriptionInput = this.mapInputId("descriptionInput");
-					this.documentationCreationLinkPanel = this.mapInputId("documentationCreationLinkPanel");
-					this.documentationCreationLink = this.mapInputId("documentationCreationLink");
-					this.openDocumentViewLink = this.mapInputId("openDocumentViewLink");
-					this.openDocumentViewLinkPanel = this.mapInputId("openDocumentViewLinkPanel");
-										
+					this.documentationCreationLinkPanel = this
+							.mapInputId("documentationCreationLinkPanel");
+					this.documentationCreationLink = this
+							.mapInputId("documentationCreationLink");
+					this.openDocumentViewLink = this
+							.mapInputId("openDocumentViewLink");
+					this.openDocumentViewLinkPanel = this
+							.mapInputId("openDocumentViewLinkPanel");
+
 					// Initialize callbacks
 
 					this.registerInputForModelElementChangeSubmission(
@@ -56,6 +62,11 @@ define(
 				 * 
 				 */
 				BasicPropertiesPage.prototype.setModelElement = function() {
+					if (m_user.getCurrentRole() != m_constants.INTEGRATOR_ROLE) {
+						m_dialog.makeInvisible(this.guidOutputRow);
+						m_dialog.makeInvisible(this.idOutputRow);
+					}
+
 					this.nameInput.removeClass("error");
 
 					this.guidOutput.empty();
@@ -67,8 +78,11 @@ define(
 					this.descriptionInput
 							.val(this.getModelElement().description);
 
-					if (this.documentationCreationLinkPanel != null &&
-							this.openDocumentViewLinkPanel != null && true/*this.documentUrl == null*/) {
+					if (this.documentationCreationLinkPanel != null
+							&& this.openDocumentViewLinkPanel != null && true/*
+																				 * this.documentUrl ==
+																				 * null
+																				 */) {
 						this.documentationCreationLinkPanel.removeAttr("class");
 						this.openDocumentViewLinkPanel.attr("class",
 								"invisible");
@@ -92,7 +106,7 @@ define(
 				BasicPropertiesPage.prototype.getModelElementUuid = function() {
 					// TODO Replace with uuid
 					return this.propertiesPanel.element.oid;
-					//return this.getModelElement().uuid;
+					// return this.getModelElement().uuid;
 				};
 
 				/**

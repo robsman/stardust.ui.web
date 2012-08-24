@@ -138,6 +138,24 @@ public class ModelerResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
+   @Path("preferences")
+   public Response getPreferences()
+   {
+      try
+      {
+         return Response.ok(getModelService().getPreferences().toString(), MediaType.APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+         
+         throw new RuntimeException(e);
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
    @Path("models")
    public Response getAllModels()
    {

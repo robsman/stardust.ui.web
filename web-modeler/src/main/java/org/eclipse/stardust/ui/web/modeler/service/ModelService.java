@@ -1892,4 +1892,18 @@ public class ModelService
    {
       return new ModelBuilderFacade(getModelManagementStrategy());
    }
+
+   /**
+    * 
+    * @return
+    */
+   public JsonObject getPreferences()
+   {
+      JsonObject preferencesJson = new JsonObject();
+      
+      preferencesJson.addProperty("defaultProfile", "BusinessAnalyst");
+      preferencesJson.addProperty("showTechnologyPreview", false);
+      
+      return preferencesJson;
+   }
 }

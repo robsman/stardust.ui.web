@@ -10,12 +10,9 @@
 
 define([ "m_utils", "m_constants", "m_urlUtils", "m_communicationController" ],
 		function(m_utils, m_constants, m_urlUtils, m_communicationController) {
-
-			// For testing
-
-			var BUSINESS_ANALYST = "BusinessAnalyst";
-			var INTEGRATOR = "Integrator";
-
+			//window.top.currentRole = m_constants.BUSINESS_ANALYST_ROLE;
+			window.top.currentRole = m_constants.INTEGRATOR_ROLE
+			
 			return {
 				initializeCurrentUser : initializeCurrentUser,
 				createUser : function(account, firstName, lastName, email, imageUrl) {
@@ -38,9 +35,7 @@ define([ "m_utils", "m_constants", "m_urlUtils", "m_communicationController" ],
 				},
 				currentUserHasProfileRole : function(role) {
 					return getCurrentUser().hasProfileRole(role);
-				},
-				BUSINESS_ANALYST : BUSINESS_ANALYST,
-				INTEGRATOR : INTEGRATOR
+				}
 			};
 
 			/**

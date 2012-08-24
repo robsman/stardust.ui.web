@@ -50,6 +50,9 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<ippui:view name="organizationView"
 			include="/plugins/bpm-modeler/views/modeler/organizationFrameAdapter.xhtml"
 			controller="organizationView" />
+		<ippui:view name="conditionalPerformerView"
+			include="/plugins/bpm-modeler/views/modeler/conditionalPerformerFrameAdapter.xhtml"
+			controller="conditionalPerformerView" />
 		<ippui:view name="dataView"
 			include="/plugins/bpm-modeler/views/modeler/dataFrameAdapter.xhtml"
 			controller="dataView" />

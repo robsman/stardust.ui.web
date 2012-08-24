@@ -2,10 +2,10 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_extensionManager", "m_dialog" ], // ,
-		// "m_modelerViewLayoutManager" ],
-		function(m_utils, m_constants, m_extensionManager, m_dialog) { // ,
-			// m_modelerViewLayoutManager) {
+		[ "m_utils", "m_constants", "m_extensionManager", "m_session",
+				"m_command", "m_commandsController", "m_dialog" ],
+		function(m_utils, m_constants, m_extensionManager, m_session,
+				m_command, m_commandsController, m_dialog) {
 
 			var currentPropertiesPanel = null;
 
@@ -98,46 +98,66 @@ define(
 							"propertiesPage", "panelId", this.id);
 
 					for ( var n = 0; n < propertiesPages.length; n++) {
-						m_utils.debug("Load Properties Page "
-								+ propertiesPages[n].pageId);
+						var extension = propertiesPages[n];
 
-						if (propertiesPages[n].pageHtmlUrl != null) {
+						if (!m_session.initialize().technologyPreview
+								&& extension.visibility == "preview") {
+
+							if (extension.pageHtmlUrl == null) {
+								m_dialog.makeInvisible(jQuery("#" + this.id
+										+ " #" + extension.pageId));
+							}
+
+							continue;
+						}
+
+						m_utils.debug("Load Properties Page "
+								+ extension.pageId);
+
+						if (extension.pageHtmlUrl != null) {
 							jQuery("#" + this.id + "Table")
 									.append(
 											"<tr><td><div id=\""
-													+ propertiesPages[n].pageId
+													+ extension.pageId
 													+ "\" class=\"propertiesPage\"></div></td></tr>");
 
+							// TODO this variable may be overwritten in the
+							// loop, find mechanism to pass data to load
+							// callback
+
 							var panel = this;
-							var extension = propertiesPages[n];
 
-							jQuery(
-									"#" + this.id + " #"
-											+ propertiesPages[n].pageId).load(
-									extension.pageHtmlUrl,
-									function(response, status, xhr) {
-										if (status == "error") {
-											var msg = "Properties Page Load Error: " + xhr.status
-													+ " " + xhr.statusText;
+							jQuery("#" + this.id + " #" + extension.pageId)
+									.load(
+											extension.pageHtmlUrl,
+											function(response, status, xhr) {
+												if (status == "error") {
+													var msg = "Properties Page Load Error: "
+															+ xhr.status
+															+ " "
+															+ xhr.statusText;
 
-											jQuery(
-													"#" + panel.id + " #"
-															+ extension.pageId)
-													.append(msg);
-											m_utils.debug(msg);
-										} else {
-											m_utils.debug("Page loaded: " + extension.pageId);
-											panel.propertiesPages
-													.push(extension.provider
-															.create(panel));
-										}
-									});
+													jQuery(
+															"#"
+																	+ panel.id
+																	+ " #"
+																	+ extension.pageId)
+															.append(msg);
+													m_utils.debug(msg);
+												} else {
+													m_utils
+															.debug("Page loaded: "
+																	+ extension.pageId);
+													panel.propertiesPages
+															.push(extension.provider
+																	.create(panel));
+												}
+											});
 						} else {
 							// Embedded Markup
 
-							this.propertiesPages
-									.push(propertiesPages[n].provider
-											.create(this));
+							this.propertiesPages.push(extension.provider
+									.create(this));
 						}
 					}
 				};
@@ -270,9 +290,8 @@ define(
 									object.changes.modified[0]);
 
 							this.setElement(this.element);
-						}
-						else if (this.element.modelElement != null &&
-								object.changes.modified[0].oid == this.element.modelElement.oid) {
+						} else if (this.element.modelElement != null
+								&& object.changes.modified[0].oid == this.element.modelElement.oid) {
 
 							m_utils.inheritFields(this.element.modelElement,
 									object.changes.modified[0]);
@@ -281,18 +300,18 @@ define(
 						}
 					}
 				};
-				
+
 				/**
 				 * 
 				 */
 				PropertiesPanel.prototype.submitChanges = function(changes) {
-					m_utils.debug("Changes to be submitted for UUID " + this.getElementUuid() + ":");
+					m_utils.debug("Changes to be submitted for UUID "
+							+ this.getElementUuid() + ":");
 					m_utils.debug(changes);
 					m_commandsController.submitCommand(m_command
 							.createUpdateModelElementCommand(
-									this.getDiagram().modelId,
-									this.getElementUuid(),
-									changes));
+									this.getDiagram().modelId, this
+											.getElementUuid(), changes));
 				};
 			}
 		});

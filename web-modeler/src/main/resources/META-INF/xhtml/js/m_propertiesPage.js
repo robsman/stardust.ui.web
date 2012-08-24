@@ -331,5 +331,12 @@ define(
 										}
 									});
 				};
+				
+				/**
+				 * 
+				 */
+				PropertiesPage.prototype.submitChanges = function(changes) {
+					this.propertiesPanel.submitChanges(changes);
+				};
 			}
 		});
