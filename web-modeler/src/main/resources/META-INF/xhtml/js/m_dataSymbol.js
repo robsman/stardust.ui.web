@@ -11,7 +11,7 @@ define(
 				/**
 				 * Invoked to create a data symbol and (during completion) a
 				 * corresponding primitive data.
-				 * 
+				 *
 				 * @param diagram
 				 * @returns
 				 */
@@ -23,7 +23,7 @@ define(
 					var index = diagram.model.getNewDataIndex();
 
 					// TODO Need to create data before!
-					
+
 					dataSymbol.dataId = "Data_" + index;
 					dataSymbol.dataName = "Data " + index;
 					dataSymbol.dataFullId = m_model.getFullId(diagram.model,
@@ -57,7 +57,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function DataSymbol() {
 				var symbol = m_symbol.createSymbol();
@@ -76,23 +76,23 @@ define(
 				DataSymbol.prototype.bind = function(diagram) {
 					this.type = m_constants.DATA_SYMBOL;
 					this.diagram = diagram;
-					
+
 					this.diagram.lastSymbol = this;
-					
+
 					this.propertiesPanel = m_dataPropertiesPanel.getInstance();
 					this.path = null;
 					this.text = null;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataSymbol.prototype.toString = function() {
 					return "Lightdust.DataSymbol";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataSymbol.prototype.initializeFromJson = function(lane) {
 					// TODO Should come from server
@@ -108,7 +108,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataSymbol.prototype.createTransferObject = function() {
 					var transferObject = {};
@@ -121,14 +121,14 @@ define(
 					transferObject.text = null;
 
 					// Data are not transfered with the symbol
-					
+
 					transferObject.modelElement = null;
 
 					return transferObject;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataSymbol.prototype.getPath = function(withId) {
 					var path = "/models/" + this.diagram.model.id
@@ -138,32 +138,12 @@ define(
 					if (withId) {
 						path += "/" + this.dataFullId;
 					}
-					
+
 					return path;
 				};
 
 				/**
-				 * 
-				 */
-				DataSymbol.prototype.createUpdateCommand = function() {
-					return m_command.createUpdateCommand("/models/"
-							+ this.diagram.model.id + "/processes/"
-							+ this.diagram.process.id + "/dataSymbols/"
-							+ this.dataFullId, this.createTransferObject());
-				};
-
-				/**
-				 * 
-				 */
-				DataSymbol.prototype.createDeleteCommand = function() {
-					return m_command.createDeleteCommand("/models/"
-							+ this.diagram.model.id + "/processes/"
-							+ this.diagram.process.id + "/dataSymbols/"
-							+ this.dataFullId, this.createTransferObject());
-				};
-
-				/**
-				 * 
+				 *
 				 */
 				DataSymbol.prototype.createPrimitives = function() {
 					this.path = m_canvasManager
@@ -189,7 +169,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataSymbol.prototype.initializeEventHandling = function() {
 				};
@@ -201,13 +181,13 @@ define(
 					this.oid = transferObject.oid;
 
 					this.register();
-					
+
 					if (transferObject.data != null) {
 						// Bind data to model if newly created
 
 						this.diagram.model.dataItems[transferObject.data.id] = transferObject.data;
 					}
-					
+
 					m_messageDisplay.markModified();
 				};
 
@@ -220,7 +200,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataSymbol.prototype.getPathSvgString = function() {
 					return "M "
@@ -256,7 +236,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataSymbol.prototype.adjustPrimitives = function() {
 					this.path.attr({
@@ -273,23 +253,24 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataSymbol.prototype.refreshFromModelElement = function() {
-					var data = m_model.findData(this.dataFullId);
-						
-					// Data mayno have been created yet
+					if (this.modelElement) {
+						var data = m_model.findData(this.modelElement
+								.getFullId());
+					} else {
+						var data = m_model.findData(this.dataFullId);
+					}
+					// Data may not have been created yet
 					if (data != null) {
 						this.text.attr("text", data.name);
-						if (null == this.modelElement) {
-							this.modelElement = data;
-						}
+						this.modelElement = data;
 					}
-					
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataSymbol.prototype.createFlyOutMenu = function() {
 					this.addFlyOutMenuItems([], [ {
@@ -306,7 +287,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataSymbol.prototype.highlight = function() {
 					this.path.attr({
@@ -315,7 +296,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataSymbol.prototype.dehighlight = function() {
 					this.path.attr({
@@ -325,7 +306,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function DataSymbol_connectToClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -333,7 +314,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function DataSymbol_removeClosure() {
 				this.auxiliaryProperties.callbackScope.createAndSubmitDeleteCommand();

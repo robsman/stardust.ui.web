@@ -760,6 +760,7 @@ public abstract class ModelElementMarshaller
          dataJson.addProperty(ModelerConstants.NAME_PROPERTY, data.getName());
          dataJson.addProperty(ModelerConstants.UUID_PROPERTY,
                eObjectUUIDMapper().getUUID(data));
+         dataJson.addProperty(ModelerConstants.OID_PROPERTY, data.getElementOid());
          ModelType model = ModelUtils.findContainingModel(data);
          dataJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY,
                eObjectUUIDMapper().getUUID(model));
