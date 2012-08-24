@@ -7,12 +7,13 @@ define(
 				"m_propertiesPanel", "m_dataFlowPropertiesPanel",
 				"m_controlFlowPropertiesPanel", "m_activitySymbol",
 				"m_gatewaySymbol", "m_eventSymbol", "m_controlFlow",
-				"m_dataFlow" ],
+				"m_dataFlow", "m_modelerUtils" ],
 		function(m_utils, m_constants, m_canvasManager, m_drawable,
 				m_commandsController, m_command, m_controlFlow,
 				m_propertiesPanel, m_dataFlowPropertiesPanel,
 				m_controlFlowPropertiesPanel, m_activitySymbol,
-				m_gatewaySymbol, m_eventSymbol, m_controlFlow, m_dataFlow) {
+				m_gatewaySymbol, m_eventSymbol, m_controlFlow, m_dataFlow,
+				m_modelerUtils) {
 
 			return {
 				createConnection : function(diagram, fromAnchorPoint) {
@@ -1140,9 +1141,12 @@ define(
 				 */
 				Connection.prototype.proximityHoverIn = function(event) {
 					if (this.diagram.isInNormalMode()) {
+						var scrollPos = m_modelerUtils.getModelerScrollPosition();
+
 						this.adjustFlyOutMenu(event.pageX
-								- this.diagram.X_OFFSET - 5, event.pageY
-								- this.diagram.Y_OFFSET - 5, 40, 20);
+								- this.diagram.X_OFFSET + scrollPos.left - 5,
+								event.pageY - this.diagram.Y_OFFSET
+										+ scrollPos.top - 5, 40, 20);
 						this.showFlyOutMenu();
 					}
 				};
