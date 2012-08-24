@@ -1240,10 +1240,9 @@ define(
 													"image" : "../images/icons/primitive_data.gif"
 												}
 											},
-											//TODO - change icon for hibernate data
 											"hibernate" : {
 												"icon" : {
-													"image" : "../images/icons/primitive_data.gif"
+													"image" : "../images/icons/hibernate_data_icon.gif"
 												}
 											},
 											"struct" : {
