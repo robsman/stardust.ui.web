@@ -304,10 +304,13 @@ define(
 				/**
 				 *
 				 */
-				Symbol.prototype.getClosestAnchorPoint = function(x, y) {
-					var scrollPos = m_modelerUtils.getModelerScrollPosition();
-					x += scrollPos.left;
-					y += scrollPos.top;
+				Symbol.prototype.getClosestAnchorPoint = function(x, y, skipScrollAdjustment) {
+					//Skips scroll adjustment if skipScrollAdjustment is set.
+					if (!skipScrollAdjustment) {
+						var scrollPos = m_modelerUtils.getModelerScrollPosition();
+						x += scrollPos.left;
+						y += scrollPos.top;
+					}
 
 					var distance = this.width + this.height;
 					var resultAnchorPoint = null;
@@ -1727,11 +1730,12 @@ define(
 						return;
 					}
 
+					var scrollPos = m_modelerUtils.getModelerScrollPosition();
 					// Calculate diagram coordinates
 
-					this.moveTo(x * this.symbol.diagram.zoomFactor
+					this.moveTo((x + scrollPos.left) * this.symbol.diagram.zoomFactor
 							- this.symbol.diagram.X_OFFSET - 0.5
-							* m_constants.DEFAULT_ANCHOR_WIDTH, y
+							* m_constants.DEFAULT_ANCHOR_WIDTH, (y + scrollPos.top)
 							* this.symbol.diagram.zoomFactor
 							- this.symbol.diagram.Y_OFFSET - 0.5
 							* m_constants.DEFAULT_ANCHOR_HEIGHT);
@@ -1754,7 +1758,7 @@ define(
 						symbol.deselectAnchorPoints();
 
 						var anchorPoint = symbol.getClosestAnchorPoint(this.x,
-								this.y);
+								this.y, true);
 
 						if (anchorPoint != null) {
 							anchorPoint.select();
@@ -1841,7 +1845,7 @@ define(
 
 					if (symbol != null) {
 						var anchorPoint = symbol.getClosestAnchorPoint(this.x,
-								this.y);
+								this.y, true);
 
 						if (symbol == this.symbol) {
 							if (this.direction == m_constants.FROM_ANCHOR_POINT) {
