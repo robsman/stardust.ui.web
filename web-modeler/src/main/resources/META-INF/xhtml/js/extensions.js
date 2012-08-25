@@ -6,115 +6,115 @@ var extensions = {
 		panelId : "processPropertiesPanel",
 		pageId : "basicPropertiesPage",
 		pageJavaScriptUrl : "m_processBasicPropertiesPage",
-			visibility: "always"
+		visibility : "always"
 	}, {
 		panelId : "processPropertiesPanel",
 		pageId : "processInterfacePropertiesPage",
 		pageJavaScriptUrl : "m_processProcessInterfacePropertiesPage",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		panelId : "processPropertiesPanel",
 		pageId : "dataPathPropertiesPage",
 		pageJavaScriptUrl : "m_processDataPathPropertiesPage",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		panelId : "processPropertiesPanel",
 		pageId : "displayPropertiesPage",
 		pageJavaScriptUrl : "m_processDisplayPropertiesPage",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		panelId : "processPropertiesPanel",
 		pageId : "processAttachmentsPropertiesPage",
 		pageHtmlUrl : "processDefinitionProcessAttachmentsPropertiesPage.html",
 		pageJavaScriptUrl : "m_processProcessAttachmentsPropertiesPage",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		panelId : "activityPropertiesPanel",
 		pageId : "basicPropertiesPage",
 		pageJavaScriptUrl : "m_activityBasicPropertiesPage",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		panelId : "activityPropertiesPanel",
 		pageId : "processingPropertiesPage",
 		pageJavaScriptUrl : "m_activityProcessingPropertiesPage",
-		visibility: "preview"
+		visibility : "preview"
 	}, {
 		panelId : "activityPropertiesPanel",
 		pageId : "controllingPropertiesPage",
 		pageHtmlUrl : "activityControllingPropertiesPage.html",
 		pageJavaScriptUrl : "m_activityControllingPropertiesPage",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		panelId : "activityPropertiesPanel",
 		pageId : "qualityControlPropertiesPage",
 		pageJavaScriptUrl : "m_activityQualityControlPropertiesPage",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		panelId : "eventPropertiesPanel",
 		pageId : "basicPropertiesPage",
 		pageJavaScriptUrl : "m_eventBasicPropertiesPage",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		panelId : "gatewayPropertiesPanel",
 		pageId : "basicPropertiesPage",
 		pageJavaScriptUrl : "m_gatewayBasicPropertiesPage",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		panelId : "swimlanePropertiesPanel",
 		pageId : "basicPropertiesPage",
 		pageJavaScriptUrl : "m_swimlaneBasicPropertiesPage",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		panelId : "dataPropertiesPanel",
 		pageId : "basicPropertiesPage",
 		pageJavaScriptUrl : "m_dataBasicPropertiesPage",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		panelId : "controlFlowPropertiesPanel",
 		pageId : "basicPropertiesPage",
 		pageJavaScriptUrl : "m_controlFlowBasicPropertiesPage",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		panelId : "controlFlowPropertiesPanel",
 		pageId : "transactionPropertiesPage",
 		pageHtmlUrl : "controlFlowTransactionPropertiesPage.html",
 		pageJavaScriptUrl : "m_controlFlowTransactionPropertiesPage",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		panelId : "dataFlowPropertiesPanel",
 		pageId : "basicPropertiesPage",
 		pageJavaScriptUrl : "m_dataFlowBasicPropertiesPage",
-		visibility: "always"
+		visibility : "always"
 	} ],
 	diagramToolbarPalette : [ {
 		id : "drawingPalette",
 		title : "Drawing",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		id : "activityPalette",
 		title : "Activities and Gateways",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		id : "eventPalette",
 		title : "Events",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		id : "dataPalette",
 		title : "Data"
 	}, {
 		id : "lanePalette",
 		title : "Pools and Lanes",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		id : "connectorPalette",
-		title : "Data and Control Flow",
-		visibility: "always"
+		title : "Data and Sequence Flow",
+		visibility : "always"
 	}, {
 		id : "decorationPalette",
 		title : "Decoration",
 		contentHtmlUrl : "decorationPalette.html",
 		controllerJavaScriptUrl : "m_decorationPalette",
-		visibility: "preview"
+		visibility : "preview"
 	} ],
 	diagramToolbarPaletteEntry : [ {
 		id : "selectModeButton",
@@ -123,7 +123,7 @@ var extensions = {
 		iconUrl : "../../images/icons/select.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "setSelectMode",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		id : "separatorModeButton",
 		paletteId : "drawingPalette",
@@ -131,7 +131,7 @@ var extensions = {
 		iconUrl : "../../images/icons/separator.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "setSeparatorMode",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		id : "zoomInButton",
 		paletteId : "drawingPalette",
@@ -139,7 +139,7 @@ var extensions = {
 		iconUrl : "../../images/icons/zoom-in.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "zoomIn",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		id : "zoomOutButton",
 		paletteId : "drawingPalette",
@@ -147,7 +147,7 @@ var extensions = {
 		iconUrl : "../../images/icons/zoom-out.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "zoomOut",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		id : "undoButton",
 		paletteId : "drawingPalette",
@@ -155,7 +155,7 @@ var extensions = {
 		iconUrl : "../../images/icons/undo.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "undo",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		id : "redoButton",
 		paletteId : "drawingPalette",
@@ -163,7 +163,7 @@ var extensions = {
 		iconUrl : "../../images/icons/redo.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "redo",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		id : "flipOrientationButton",
 		paletteId : "drawingPalette",
@@ -171,7 +171,7 @@ var extensions = {
 		iconUrl : "../../images/icons/horizontal-flip.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "flipOrientation",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		id : "printButton",
 		paletteId : "drawingPalette",
@@ -179,7 +179,7 @@ var extensions = {
 		iconUrl : "../../images/icons/print.gif",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "print",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		id : "activityButton",
 		paletteId : "activityPalette",
@@ -187,7 +187,7 @@ var extensions = {
 		iconUrl : "../../images/icons/activity-manual.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "createActivity",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		id : "gatewayButton",
 		paletteId : "activityPalette",
@@ -195,7 +195,7 @@ var extensions = {
 		iconUrl : "../../images/icons/gateway.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "createGateway",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		id : "startEventButton",
 		paletteId : "eventPalette",
@@ -203,7 +203,7 @@ var extensions = {
 		iconUrl : "../../images/icons/start.PNG",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "createStartEvent",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		id : "endEventButton",
 		paletteId : "eventPalette",
@@ -211,7 +211,7 @@ var extensions = {
 		iconUrl : "../../images/icons/stop.PNG",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "createEndEvent",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		id : "dataButton",
 		paletteId : "dataPalette",
@@ -219,7 +219,7 @@ var extensions = {
 		iconUrl : "../../images/icons/database.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "createData",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		id : "swimlaneButton",
 		paletteId : "lanePalette",
@@ -227,7 +227,7 @@ var extensions = {
 		iconUrl : "../../images/icons/lane.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "createSwimlane",
-		visibility: "always"
+		visibility : "always"
 	}, {
 		id : "connectorButton",
 		paletteId : "connectorPalette",
@@ -235,27 +235,40 @@ var extensions = {
 		iconUrl : "../../images/icons/connector.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "createConnector",
-		visibility: "always"
+		visibility : "always"
 	} ],
-	applicationType : [ {
-		id : "interactive",
-		readableName : "UI Mashup",
-		viewId : "uiMashupApplicationView"
-	}, {
-		id : "webservice",
-		readableName : "Web Service",
-		viewId : "webServiceApplicationView"
-	}, {
-		id : "messageTransformationBean",
-		readableName : "Message Transformation Application",
-		viewId : "messageTransformationApplicationView"
-	}, {
-		id : "camelBean",
-		readableName : "Camel Application",
-		viewId : "camelApplicationView"
-	}, {
-		id : "plainJava",
-		readableName : "Plain Java Application",
-		viewId : "genericApplicationView"
-	} ]
+	applicationType : [
+			{
+				id : "interactive",
+				readableName : "UI Mashup",
+				iconPath : "../images/icons/externalWebApp_context_icon.gif",
+				viewId : "uiMashupApplicationView"
+			},
+			{
+				id : "webservice",
+				readableName : "Web Service",
+				iconPath : "../images/icons/webservice_application.gif",
+				viewId : "webServiceApplicationView"
+			},
+			{
+				id : "messageTransformationBean",
+				readableName : "Message Transformation Application",
+				iconPath : "../images/icons/message_transformation_application_icon.gif",
+				viewId : "messageTransformationApplicationView"
+			}, {
+				id : "camelBean",
+				readableName : "Camel Application",
+				iconPath : "../images/icons/application_java.gif",
+				viewId : "camelApplicationView"
+			}, {
+				id : "plainJava",
+				readableName : "Plain Java Application",
+				iconPath : "../images/icons/plainJava_application_icon.gif",
+				viewId : "genericApplicationView"
+			}, {
+				id : "rulesEngineBean",
+				readableName : "Business Rules Application",
+				iconPath : "../images/icons/plainJava_application_icon.gif",
+				viewId : "genericApplicationView"
+			} ]
 };

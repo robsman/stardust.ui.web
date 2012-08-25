@@ -11,6 +11,8 @@
 
 package org.eclipse.stardust.ui.web.modeler.portal;
 
+import javax.faces.event.ValueChangeEvent;
+
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.views.PortalConfiguration;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
@@ -50,6 +52,13 @@ public class ModelingConfigurationPanel
       this.defaultProfile = defaultProfile;
    }
 
+   public void defaultProfileChanged(ValueChangeEvent event)
+   {
+      System.out.println("Set Default Profile: " + event.getNewValue());
+      
+      //userPrefsHelper.setXYX()/.getXYZ()
+   }
+   
    public boolean isShowTechnologyPreview()
    {
       System.out.println("Is Technology Preview: " + showTechnologyPreview);
@@ -62,5 +71,12 @@ public class ModelingConfigurationPanel
       System.out.println("Set Technology Preview: " + showTechnologyPreview);
       
       this.showTechnologyPreview = showTechnologyPreview;
+   }
+
+   public void showTechnologyPreviewChanged(ValueChangeEvent event)
+   {
+      System.out.println("Set Technology Preview: " + event.getNewValue());
+      
+      //userPrefsHelper.setXYX()/.getXYZ()
    }
 }

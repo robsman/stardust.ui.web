@@ -1769,7 +1769,7 @@ public class ModelService
     *     </ul> 
     *   </li>
     * </ul>
-    * @param postedData a JsonObject that containms a primitive (String) member with the
+    * @param postedData a JsonObject that contains a primitive (String) member with the
     *        name "wsdlUrl" that specifies the URL from where the WSDL should be loaded.
     * @return the JsonObject containing the representation of the services.
     */
@@ -1849,12 +1849,12 @@ public class ModelService
          operationJson.addProperty(WSConstants.WS_OPERATION_NAME_ATT, operation.getName());
          operationJson.addProperty("style", JaxWSResource.getOperationStyle(operation));
          operationJson.addProperty("use", JaxWSResource.getOperationUse(operation));
-         operationJson.addProperty(WSConstants.WS_OPERATION_INPUT_NAME_ATT, inputName);
-         operationJson.addProperty(WSConstants.WS_OPERATION_OUTPUT_NAME_ATT, outputName);
-         operationJson.addProperty(WSConstants.WS_SOAP_ACTION_URI_ATT, JaxWSResource.getSoapActionUri(operation));
-         operationJson.addProperty(WSConstants.WS_SOAP_PROTOCOL_ATT, JaxWSResource.getOperationProtocol(operation));
-         operationJson.addProperty(WSConstants.WS_INPUT_ORDER_ATT, getPartsOrder(input == null ? null : input.getMessage()));
-         operationJson.addProperty(WSConstants.WS_OUTPUT_ORDER_ATT, getPartsOrder(output == null ? null : output.getMessage()));
+//         operationJson.addProperty(WSConstants.WS_OPERATION_INPUT_NAME_ATT, inputName);
+//         operationJson.addProperty(WSConstants.WS_OPERATION_OUTPUT_NAME_ATT, outputName);
+//         operationJson.addProperty(WSConstants.WS_SOAP_ACTION_URI_ATT, JaxWSResource.getSoapActionUri(operation));
+//         operationJson.addProperty(WSConstants.WS_SOAP_PROTOCOL_ATT, JaxWSResource.getOperationProtocol(operation));
+//         operationJson.addProperty(WSConstants.WS_INPUT_ORDER_ATT, getPartsOrder(input == null ? null : input.getMessage()));
+//         operationJson.addProperty(WSConstants.WS_OUTPUT_ORDER_ATT, getPartsOrder(output == null ? null : output.getMessage()));
       }
    }
 

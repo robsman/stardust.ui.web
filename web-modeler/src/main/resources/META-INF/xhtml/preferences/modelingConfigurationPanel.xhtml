@@ -10,7 +10,8 @@
 <body>
 	<ice:panelGroup>
 		<ice:panelGroup styleClass="heading">
-			<ice:outputText value="Process Modeling Configuration #{modelingConfigurationPanel}" />
+			<ice:outputText
+				value="Process Modeling Configuration" />
 		</ice:panelGroup>
 		<ice:panelGrid columns="1">
 			<ice:outputText
@@ -18,13 +19,14 @@
 		</ice:panelGrid>
 		<ice:panelGrid columns="2" style="margin-top: 10px;">
 			<ice:selectBooleanCheckbox partialSubmit="true"
-				value="#{modelingConfigurationPanel.defaultProfile}" />
+				value="#{modelingConfigurationPanel.showTechnologyPreview}"
+				valueChangeListener="#{modelingConfigurationPanel.showTechnologyPreviewChanged}" />
 			<ice:outputLabel value="Show Technology Preview Features" />
 		</ice:panelGrid>
 		<ice:panelGrid columns="2" style="margin-top: 10px;">
 			<ice:outputLabel value="Default Profile" />
 			<ice:selectOneMenu partialSubmit="true"
-				value="#{modelingConfigurationPanel.showTechnologyPreview}">
+				value="#{modelingConfigurationPanel.defaultProfile}" valueChangeListener="#{modelingConfigurationPanel.defaultProfileChanged}">
 				<f:selectItem itemValue="BusinessAnalyst"
 					itemLabel="Business Analyst" />
 				<f:selectItem itemValue="Integrator" itemLabel="Integrator" />
