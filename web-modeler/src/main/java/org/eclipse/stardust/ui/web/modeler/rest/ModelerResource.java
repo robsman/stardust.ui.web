@@ -240,55 +240,6 @@ public class ModelerResource
       }
    }
 
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/processes/{processId}/connections/{connectionOid}")
-   public Response updateConnection(@PathParam("modelId") String modelId,
-         @PathParam("processId") String processId,
-         @PathParam("connectionOid") long connectionOid, String postedData)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(postedData);
-
-         String result = getModelService().updateConnection(modelId, processId,
-               connectionOid, json);
-         return Response.ok(result, APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-
-         throw new RuntimeException(e);
-      }
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/processes/{processId}/lanes/{laneId}")
-   public Response updateLane(@PathParam("modelId") String modelId,
-         @PathParam("processId") String processId, @PathParam("laneId") String laneId,
-         String postedData)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(postedData);
-
-         String result = getModelService().updateLane(modelId, processId, laneId, json);
-
-         return Response.ok(result, APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-
-         throw new RuntimeException(e);
-      }
-   }
-
    @GET
    @Path("models/{modelId}")
    public Response saveModel(@PathParam("modelId") String modelId)
