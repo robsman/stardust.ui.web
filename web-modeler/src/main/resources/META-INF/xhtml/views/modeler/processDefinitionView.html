@@ -200,20 +200,13 @@
 																					</td>
 																				</tr>
 																				<tr>
-																					<td><label>Direction</label>
+																					<td><label for="dataPathDirectionSelect">Direction</label>
 																					</td>
-																					<td><table>
-																							<tr>
-																								<td><input id="inDataPathInput"
-																									type="checkbox" /></td>
-																								<td><label for="inDataPathInput">In</label>
-																								</td>
-																								<td><input id="outDataPathInput"
-																									type="checkbox" /></td>
-																								<td><label for="outDataPathInput">Out</label>
-																								</td>
-																							</tr>
-																						</table></td>
+																					<td><select id="dataPathDirectionSelect">
+																							<option value="IN">In</option>
+																							<option value="OUT">Out</option>
+																							<option value="INOUT">In/Out</option>
+																					</select></td>
 																				</tr>
 																				<tr>
 																					<td><input id="descriptorInput"
@@ -324,23 +317,53 @@
 																									class="layoutTable">
 																									<tr>
 																										<td><div class="toolBar">
-																												<a
-																													id="processInterfaceFromDataCreationWizardLink">Create
-																													from Process Data &raquo;</a>
-																											</div>
-																										</td>
+																												<table>
+																													<tr>
+																														<td><a
+																															id="processInterfaceFromDataCreationWizardLink">Create
+																																from Process Data &raquo;</a>
+																														</td>
+																													</tr>
+																												</table>
+																												<table>
+																													<tr>
+																														<td><input id="deleteDataPathButton"
+																															type="image"
+																															src="../../images/icons/delete.png"
+																															title="Delete" alt="Delete"
+																															class="toolbarButton" /></td>
+																														<td><img
+																															src="../../images/icons/toolbar-separator.png"></img>
+																														</td>
+																														<td><input id="moveDataPathUpButton"
+																															type="image"
+																															src="../../images/icons/arrow-up.png"
+																															title="Move Up" alt="Move Up"
+																															class="toolbarButton" /></td>
+																														<td><img
+																															src="../../images/icons/toolbar-separator.png"></img>
+																														</td>
+																														<td><input
+																															id="moveDataPathDownButton" type="image"
+																															src="../../images/icons/arrow-down.png"
+																															title="Move Down" alt="Move Down"
+																															class="toolbarButton" /></td>
+																													</tr>
+																												</table>
+																									</div>
+																									</td>
 																									</tr>
 																									<tr>
 																										<td>
 																											<div class="dataTable">
 																												<table id="parameterDefinitionsTable"
-																													class="treeTable" style="width: 500px;">
+																													class="treeTable" style="width: 400px;">
 																													<thead>
 																														<tr>
 																															<th style="width: 100px;">Parameter</th>
-																															<th style="width: 50px;">Type</th>
-																															<th style="width: 100px;">Direction</th>
-																															<th style="width: 100px;">Mapping</th>
+																															<th style="width: 100px;">Type</th>
+																															<th style="width: 50px;">Direction</th>
+																															<th style="width: 150px;">Mapping</th>
 																														</tr>
 																													</thead>
 																													<tbody />
@@ -350,6 +373,54 @@
 																									</tr>
 																								</table>
 																							</div>
+																						</td>
+																					</tr>
+																					<tr>
+																						<td>
+																							<table style="margin-top: 10px;">
+																								<tr>
+																									<td><label
+																										for="parameterDefinitionNameInput">Name</label>
+																									</td>
+																									<td><input
+																										id="parameterDefinitionNameInput" type="text" />
+																									</td>
+																								</tr>
+																								<tr>
+																									<td><label
+																										for="parameterDefinitionDirectionSelect">Direction</label>
+																									</td>
+																									<td><select
+																										id="parameterDefinitionDirectionSelect">
+																											<option value="IN">In</option>
+																											<option value="OUT">Out</option>
+																											<option value="INOUT">In/Out</option>
+																									</select></td>
+																								</tr>
+																								<tr>
+																									<td><label
+																										for="parameterDefinitionDataSelect">Data</label>
+																									</td>
+																									<td><select
+																										id="parameterDefinitionDataSelect">
+																									</select></td>
+																								</tr>
+																								<tr>
+																									<td><label
+																										for="parameterDefinitionPathInput">Path</label>
+																									</td>
+																									<td><input
+																										id="parameterDefinitionPathInput" type="text" />
+																									</td>
+																								</tr>
+																								<tr>
+																									<td><input
+																										id="addParameterDefinitionButton" type="image"
+																										src="../../images/icons/add.png" title="Add"
+																										alt="Add" class="toolbarButton" /></td>
+																									<td></td>
+																								</tr>
+																							</table>
 																						</td>
 																					</tr>
 																				</table>
@@ -935,6 +1006,13 @@
 																		</td>
 																		<td><select id="documentTypeList" size="1">
 																		</select></td>
+																	</tr>
+																	<tr>
+																		<td><input id="otherTypeInput" type="radio" /></td>
+																		<td><label for="otherTypeInput">Other
+																				Type</label>
+																		</td>
+																		<td><div id="otherTypeName"></div></td>
 																	</tr>
 																</table>
 															</div>

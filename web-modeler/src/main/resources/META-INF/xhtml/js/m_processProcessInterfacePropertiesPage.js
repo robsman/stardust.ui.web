@@ -47,6 +47,24 @@ define(
 					this.processInterfaceFromDataCreationWizardLink = this
 							.mapInputId("processInterfaceFromDataCreationWizardLink");
 					this.processDataTableBody = jQuery("#processDataTable tbody"); // TODO
+					this.parameterDefinitionNameInput = this
+							.mapInputId("parameterDefinitionNameInput");
+					this.parameterDefinitionDirectionSelect = this
+							.mapInputId("parameterDefinitionDirectionSelect");
+					this.parameterDefinitionDataSelect = this
+							.mapInputId("parameterDefinitionDataSelect");
+					this.parameterDefinitionPathInput = this
+							.mapInputId("parameterDefinitionPathInput");
+					this.addParameterDefinitionButton = this
+							.mapInputId("addParameterDefinitionButton");
+
+					this.addParameterDefinitionButton.click({
+						page : this
+					}, function(event) {
+						event.data.page.addParameterDefinition();
+
+					});
+
 					// embed
 					// dialog
 					// into
@@ -241,60 +259,38 @@ define(
 				ProcessProcessInterfacePropertiesPage.prototype.initializeParameterDefinitionsTable = function() {
 					this.parameterDefinitionsTableBody.empty();
 
-					for ( var m in this.propertiesPanel.element.formalParameters) {
-						var formalParameter = this.propertiesPanel.element.formalParameters[m];
+					for ( var m in this.getModelElement().formalParameters) {
+						var formalParameter = this.getModelElement().formalParameters[m];
 
 						this.parameterDefinitionsTableBody.append("<tr><td>"
 								+ formalParameter.name
-								+ "</td><td></td><td></td><td></td>");
+								+ "</td><td>" + formalParameter.direction + "</td><td>" + formalParameter.path + "</td>");
 					}
 
-					this.parameterDefinitionsTableBody
-							.append("<tr id=\"newRow\"><td><a id=\"newLink\"><img src=\"../../images/icons/add.png\"/></a></td><td></td><td></td><td></td>");
-
 					// Initialize event handling
-
-					// jQuery("table#typeDeclarationsTable #newRow #newLink")
-					// .click({
-					// "view" : this
-					// }, function(event) {
-					// m_utils.debug("Clicked");
-					// event.data.view.addElement();
-					// });
-					// jQuery("table#typeDeclarationsTable .nameInput")
-					// .change(
-					// {
-					// "view" : this
-					// },
-					// function(event) {
-					// jQuery(this).parent().parent().data().schemaElement.name
-					// = jQuery(
-					// this).val();
-					// });
-					// jQuery("table#typeDeclarationsTable .typeSelect")
-					// .change(
-					// {
-					// "view" : this
-					// },
-					// function(event) {
-					// jQuery(this).parent().parent().data().schemaElement.typeName
-					// = jQuery(
-					// this).val();
-					// });
-					// jQuery("table#typeDeclarationsTable .cardinalitySelect")
-					// .change(
-					// {
-					// "view" : this
-					// },
-					// function(event) {
-					// jQuery(this).parent().parent().data().schemaElement.cardinality
-					// = jQuery(
-					// this).val();
-					// });
 
 					this.parameterDefinitionsTable.tableScroll({
 						height : 150
 					});
+				};
+
+				/**
+				 * 
+				 */
+				ProcessProcessInterfacePropertiesPage.prototype.addParameterDefinition = function() {
+					var parameterDefinition = {
+						id : this.parameterDefinitionNameInput.val(),
+						name : this.parameterDefinitionNameInput.val(),
+						dataFullId : this.parameterDefinitionDataSelect.val(),
+						direction : this.parameterDefinitionDirectionSelect.val(),
+						path : this.parameterDefinitionPathInput.val()
+					};
+
+					this.getModelElement().formalParameters[parameterDefinition.id] = parameterDefinition;
+
+					// TODO Replace by submit
+
+					this.initializeParameterDefinitionsTable();
 				};
 
 				/**
@@ -327,12 +323,6 @@ define(
 				 * 
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.validate = function() {
-				};
-
-				/**
-				 * 
-				 */
-				ProcessProcessInterfacePropertiesPage.prototype.apply = function() {
 				};
 
 				/**

@@ -9,10 +9,10 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_command", "m_commandsController",
+		[ "m_utils", "m_constants", "m_extensionManager", "m_command", "m_commandsController",
 				"m_dialog", "m_modelElementView", "m_model",
 				"m_typeDeclaration" ],
-		function(m_utils, m_constants, m_command, m_commandsController,
+		function(m_utils, m_constants, m_extensionManager, m_command, m_commandsController,
 				m_dialog, m_modelElementView, m_model, m_typeDeclaration) {
 			var view;
 
@@ -22,7 +22,7 @@ define(
 
 					m_utils.debug("===>  Data");
 					m_utils.debug(data);
-					
+
 					view = new DataView();
 					// TODO Unregister!
 					// In Initializer?
@@ -58,6 +58,8 @@ define(
 					this.dataStructureList = jQuery("#dataStructureList");
 					this.documentInput = jQuery("#documentInput");
 					this.documentTypeList = jQuery("#documentTypeList");
+					this.otherTypeInput = jQuery("#otherTypeInput");
+					this.otherTypeName = jQuery("#otherTypeName");
 
 					this.primitiveInput
 							.click(
@@ -95,7 +97,6 @@ define(
 													.setDocumentDataType(m_constants.TO_BE_DEFINED);
 										}
 									});
-
 					this.populateDataStructuresSelectInput();
 					this.populateDocumentTypesSelectInput();
 					this.initializeModelElement(data);
@@ -108,6 +109,8 @@ define(
 					} else if (this.data.dataType == m_constants.DOCUMENT_DATA_TYPE) {
 						this
 								.setDocumentDataType(this.data.structuredDataTypeFullId);
+					} else {
+						this.setOtherDataType(this.data.dataType);
 					}
 				};
 
@@ -203,6 +206,8 @@ define(
 					this.dataStructureList.attr("disabled", true);
 					this.documentInput.attr("checked", false);
 					this.documentTypeList.attr("disabled", true);
+					this.otherTypeInput.attr("checked", false);
+					this.otherTypeInput.attr("disabled", true);
 				};
 
 				/**
@@ -217,6 +222,8 @@ define(
 					this.primitiveList.attr("disabled", true);
 					this.documentInput.attr("checked", false);
 					this.documentTypeList.attr("disabled", true);
+					this.otherTypeInput.attr("checked", false);
+					this.otherTypeInput.attr("disabled", true);
 				};
 
 				/**
@@ -231,6 +238,27 @@ define(
 					this.documentInput.attr("checked", true);
 					this.documentTypeList.removeAttr("disabled");
 					this.documentTypeList.val(documentDataTypeFullId);
+					this.otherTypeInput.attr("checked", false);
+					this.otherTypeInput.attr("disabled", true);
+				};
+
+				/**
+				 * 
+				 */
+				DataView.prototype.setOtherDataType = function(dataType) {
+					this.primitiveInput.attr("checked", false);
+					this.primitiveList.attr("disabled", true);
+					this.dataStructureInput.attr("checked", false);
+					this.dataStructureList.attr("disabled", true);
+					this.documentInput.attr("checked", false);
+					this.documentTypeList.attr("disabled", true);
+					this.otherTypeInput.attr("checked", true);
+					this.otherTypeName.empty();
+					
+					var extension = m_extensionManager.findExtensions(
+							"dataType", "id", dataType)[0];
+							
+					this.otherTypeName.append("<b>" + extension.readableName + "</b> (Not yet supported for the Browser Modeler)");
 				};
 
 				/**

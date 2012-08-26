@@ -43,8 +43,8 @@ define(
 				this.moveDataPathDownButton = this
 						.mapInputId("moveDataPathDownButton");
 				this.dataPathNameInput = this.mapInputId("dataPathNameInput");
-				this.inDataPathInput = this.mapInputId("inDataPathInput");
-				this.outDataPathInput = this.mapInputId("outDataPathInput");
+				this.dataPathDirectionSelect = this
+						.mapInputId("dataPathDirectionSelect");
 				this.descriptorInput = this.mapInputId("descriptorInput");
 				this.keyDescriptorInput = this.mapInputId("keyDescriptorInput");
 				this.dataPathDataSelect = this.mapInputId("dataPathDataSelect");
@@ -55,40 +55,34 @@ define(
 				}, function(event) {
 					event.data.page.addDataPath();
 				});
-
 				this.deleteDataPathButton.click({
 					"page" : this
 				}, function(event) {
-					event.data.page.removeDataPath(jQuery("table#dataPathTable tr.selected")
-							.attr("id"));
+					event.data.page.removeDataPath(jQuery(
+							"table#dataPathTable tr.selected").attr("id"));
 				});
-
 				this.moveDataPathUpButton.click({
 					"page" : this
 				}, function(event) {
-					event.data.page.moveDataPathUp(jQuery("table#dataPathTable tr.selected")
-							.attr("id"));
+					event.data.page.moveDataPathUp(jQuery(
+							"table#dataPathTable tr.selected").attr("id"));
 				});
-
 				this.moveDataPathDownButton.click({
 					"page" : this
 				}, function(event) {
-					event.data.page.moveDataPathDown(jQuery("table#dataPathTable tr.selected")
-							.attr("id"));
+					event.data.page.moveDataPathDown(jQuery(
+							"table#dataPathTable tr.selected").attr("id"));
 				});
-
-				this.outDataPathInput.click({
-					"page" : this
-				}, function(event) {
-					event.data.page.setOutDataPath();
-				});
-
-				this.inDataPathInput.click({
-					"page" : this
-				}, function(event) {
-					event.data.page.setInDataPath();
-				});
-
+				this.dataPathDirectionSelect
+						.change(
+								{
+									"page" : this
+								},
+								function(event) {
+									event.data.page
+											.setDataPathDirection(event.data.page.dataPathDirectionSelect
+													.val());
+								});
 				this.descriptorInput.click({
 					"page" : this
 				}, function(event) {
@@ -104,23 +98,19 @@ define(
 				/**
 				 * 
 				 */
-				ProcessDataPathPropertiesPage.prototype.setInDataPath = function() {
-					this.inDataPathInput.attr("checked", true);
-					this.outDataPathInput.attr("checked", false);
-					this.descriptorInput.removeAttr("disabled");
-					this.keyDescriptorInput.removeAttr("disabled");
-				};
-
-				/**
-				 * 
-				 */
-				ProcessDataPathPropertiesPage.prototype.setOutDataPath = function() {
-					this.outDataPathInput.attr("checked", true);
-					this.inDataPathInput.attr("checked", false);
-					this.descriptorInput.attr("disabled", true);
-					this.descriptorInput.attr("checked", false);
-					this.keyDescriptorInput.attr("disabled", true);
-					this.keyDescriptorInput.attr("checked", false);
+				ProcessDataPathPropertiesPage.prototype.setDataPathDirection = function(
+						direction) {
+					m_utils.debug("===> Direction: " + direction);
+					
+					if (direction == "IN" || direction == "INOUT") {
+						this.descriptorInput.removeAttr("disabled");
+						this.keyDescriptorInput.removeAttr("disabled");
+					} else {
+						this.descriptorInput.attr("disabled", true);
+						this.descriptorInput.attr("checked", false);
+						this.keyDescriptorInput.attr("disabled", true);
+						this.keyDescriptorInput.attr("checked", false);
+					}
 				};
 
 				/**
@@ -211,18 +201,15 @@ define(
 				 */
 				ProcessDataPathPropertiesPage.prototype.addDataPath = function() {
 					if (this.validate()) {
-						this.getModelElement().dataPathes
-								.push({
-									name : this.dataPathNameInput.val(),
-									direction : this.inDataPathInput
-											.is(":checked") ? "IN" : "OUT",
-									descriptor : this.descriptorInput
-											.is(":checked"),
-									keyDescriptor : this.keyDescriptorInput
-											.is(":checked"),
-									dataFullId : this.dataPathDataSelect.val(),
-									dataPath : this.dataPathPathInput.val()
-								});
+						this.getModelElement().dataPathes.push({
+							name : this.dataPathNameInput.val(),
+							direction : this.dataPathDirectionSelect.val(),
+							descriptor : this.descriptorInput.is(":checked"),
+							keyDescriptor : this.keyDescriptorInput
+									.is(":checked"),
+							dataFullId : this.dataPathDataSelect.val(),
+							dataPath : this.dataPathPathInput.val()
+						});
 
 						this.submitChanges({
 							dataPathes : this.getModelElement().dataPathes
@@ -312,7 +299,7 @@ define(
 
 					this.dataPathTable.empty();
 
-					for (var m = 0; m < this.propertiesPanel.element.dataPathes.length; ++m) {
+					for ( var m = 0; m < this.propertiesPanel.element.dataPathes.length; ++m) {
 						var dataPath = this.propertiesPanel.element.dataPathes[m];
 
 						var item = "<tr id=\"";

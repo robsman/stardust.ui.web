@@ -32,8 +32,6 @@ define(
 			 * 
 			 */
 			function ModelView() {
-				// Inheritance
-
 				var view = m_view.create();
 
 				m_utils.inheritFields(this, view);
@@ -205,6 +203,8 @@ define(
 												var model = m_model
 														.findModel(segments[0]);
 
+												m_utils.debug("Path: " + json[n].modelElement);
+												
 												if (model.applications[segments[1]] != null) {
 													var application = model.applications[segments[1]];
 													jQuery(

@@ -270,5 +270,21 @@ var extensions = {
 				readableName : "Business Rules Application",
 				iconPath : "../images/icons/plainJava_application_icon.gif",
 				viewId : "genericApplicationView"
-			} ]
+			} ],
+			dataType : [
+			       			{
+			       				id : "serializable",
+			       				readableName : "Serializable Java Class",
+			       				iconPath : "../images/icons/externalWebApp_context_icon.gif",
+			       			},
+			       			{
+			       				id : "entity",
+			       				readableName : "Entity Bean",
+			       				iconPath : "../images/icons/webservice_application.gif",
+			       			},
+			       			{
+			       				id : "dmsDocumentList",
+			       				readableName : "Document List",
+			       				iconPath : "../images/icons/webservice_application.gif",
+			       			}]			
 };

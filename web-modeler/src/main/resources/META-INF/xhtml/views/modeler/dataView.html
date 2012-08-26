@@ -23,8 +23,7 @@
 					<div class="errorMessagesPanel">
 						<ul id="errorMessagesList">
 						</ul>
-					</div>
-				</td>
+					</div></td>
 			</tr>
 			<tr>
 				<td>
@@ -34,26 +33,29 @@
 								<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 									style="margin-bottom: 10px;">
 									<tr>
-										<td><label for="guidOutput">GUID</label></td>
-										<td><div id="guidOutput" class="output"></div></td>
+										<td><label for="guidOutput">GUID</label>
+										</td>
+										<td><div id="guidOutput" class="output"></div>
+										</td>
 									</tr>
 									<tr>
-										<td><label for="idOutput">ID</label></td>
-										<td><div id="idOutput" class="output"></div></td>
+										<td><label for="idOutput">ID</label>
+										</td>
+										<td><div id="idOutput" class="output"></div>
+										</td>
 									</tr>
 									<tr>
-										<td><label for="nameInput">Data Name</label></td>
-										<td><input id="nameInput" type="text"></input></td>
+										<td><label for="nameInput">Data Name</label>
+										</td>
+										<td><input id="nameInput" type="text"></input>
+										</td>
 									</tr>
-								</table>
-							</td>
+								</table></td>
 						</tr>
-					</table>
-				</td>
+					</table></td>
 			</tr>
 			<tr>
-				<td><label for="descriptionTextarea">Description</label>
-				</td>
+				<td><label for="descriptionTextarea">Description</label></td>
 			</tr>
 			<tr>
 				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
@@ -63,9 +65,9 @@
 				<td>
 					<table style="margin-top: 10px;">
 						<tr>
-							<td><input id="primitiveInput" type="radio" /></td>
-							<td><label for="primitiveInput">Primitive</label>
+							<td><input id="primitiveInput" type="radio" />
 							</td>
+							<td><label for="primitiveInput">Primitive</label></td>
 							<td><select id="primitiveList" size="1">
 									<option value="String">Text</option>
 									<option value="boolean">Boolean (True, False)</option>
@@ -75,24 +77,33 @@
 									<option value="Decimal">Money Amount (e.g.
 										$4,500,600.42)</option>
 									<option value="Calendar">Date (e.g. 14/05/2011)</option>
-							</select></td>
+							</select>
+							</td>
 						</tr>
 						<tr>
-							<td><input id="dataStructureInput" type="radio" />
-							</td>
-							<td><label for="dataStructureInput">Data Structure</label>
-							</td>
+							<td><input id="dataStructureInput" type="radio" /></td>
+							<td><label for="dataStructureInput">Data Structure</label></td>
 							<td><select id="dataStructureList" size="1">
-							</select></td>
+							</select>
+							</td>
 						</tr>
 						<tr>
-							<td><input id="documentInput" type="radio" /></td>
-							<td><label for="documentInput">Document</label>
+							<td><input id="documentInput" type="radio" />
 							</td>
+							<td><label for="documentInput">Document</label></td>
 							<td><select id="documentTypeList" size="1">
-							</select></td>
+							</select>
+							</td>
 						</tr>
-					</table></td>
+						<tr>
+							<td><input id="otherTypeInput" type="radio" />
+							</td>
+							<td><label for="otherTypeInput">Other Type</label></td>
+							<td><div id="otherTypeName"></div>
+							</td>
+						</tr>
+					</table>
+				</td>
 			</tr>
 		</table>
 	</div>

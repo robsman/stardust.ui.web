@@ -64,7 +64,8 @@ require(["require",
 	 "modeler-plugins",
 	 "extensions",
 	 "m_extensionManager",
-	 "m_modelerViewLayoutManager"
+	 "m_modelerViewLayoutManager",
+	 "m_testPaletteHandler",
 	], function (require) {
 
 		// after modeler-plugins are loaded the properly initialized module loader will be injected into m_extensionManager

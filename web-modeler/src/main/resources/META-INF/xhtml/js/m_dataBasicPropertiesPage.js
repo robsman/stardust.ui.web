@@ -9,8 +9,8 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_command", "m_commandsController", "m_basicPropertiesPage" ],
-		function(m_utils, m_constants, m_command, m_commandsController, m_basicPropertiesPage) {
+		[ "m_utils", "m_constants", "m_extensionManager", "m_command", "m_commandsController", "m_basicPropertiesPage" ],
+		function(m_utils, m_constants, m_extensionManager, m_command, m_commandsController, m_basicPropertiesPage) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new DataBasicPropertiesPage(propertiesPanel);
@@ -40,6 +40,8 @@ define(
 					this.dataStructureList = this.mapInputId("dataStructureList");
 					this.documentInput = this.mapInputId("documentInput");
 					this.documentTypeList = this.mapInputId("documentTypeList");
+					this.otherTypeInput = jQuery("#otherTypeInput");
+					this.otherTypeName = jQuery("#otherTypeName");
 
 					this.primitiveInput
 							.click(
@@ -143,6 +145,8 @@ define(
 					this.dataStructureList.attr("disabled", true);
 					this.documentInput.attr("checked", false);
 					this.documentTypeList.attr("disabled", true);
+					this.otherTypeInput.attr("checked", false);
+					this.otherTypeInput.attr("disabled", true);
 				};
 
 				/**
@@ -157,6 +161,8 @@ define(
 					this.primitiveList.attr("disabled", true);
 					this.documentInput.attr("checked", false);
 					this.documentTypeList.attr("disabled", true);
+					this.otherTypeInput.attr("checked", false);
+					this.otherTypeInput.attr("disabled", true);
 				};
 
 				/**
@@ -171,7 +177,29 @@ define(
 					this.documentInput.attr("checked", true);
 					this.documentTypeList.removeAttr("disabled");
 					this.documentTypeList.val(documentDataTypeFullId);
+					this.otherTypeInput.attr("checked", false);
+					this.otherTypeInput.attr("disabled", true);
 				};
+				
+				/**
+				 * 
+				 */
+				DataBasicPropertiesPage.prototype.setOtherDataType = function(dataType) {
+					this.primitiveInput.attr("checked", false);
+					this.primitiveList.attr("disabled", true);
+					this.dataStructureInput.attr("checked", false);
+					this.dataStructureList.attr("disabled", true);
+					this.documentInput.attr("checked", false);
+					this.documentTypeList.attr("disabled", true);
+					this.otherTypeInput.attr("checked", true);
+					this.otherTypeName.empty();
+					
+					var extension = m_extensionManager.findExtensions(
+							"dataType", "id", dataType)[0];
+							
+					this.otherTypeName.append("<b>" + extension.readableName + "</b> (Not yet supported for the Browser Modeler)");
+				};
+
 
 				/**
 				 * 
@@ -235,6 +263,8 @@ define(
 					} else if (this.getModelElement().dataType == m_constants.DOCUMENT_DATA_TYPE) {
 						this
 								.setDocumentDataType(this.getModelElement().structuredDataTypeFullId);
+					} else {
+						this.setOtherDataType(this.getModelElement().dataType);
 					}
 				};
 

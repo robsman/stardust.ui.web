@@ -43,9 +43,7 @@ define([
 		 "m_utils",
 		 "m_communicationController",
 		 "extensions",
-
 		 "m_jsfViewManager",
-
 		 "m_urlUtils",
 		 "m_constants",
 		 "m_user",
