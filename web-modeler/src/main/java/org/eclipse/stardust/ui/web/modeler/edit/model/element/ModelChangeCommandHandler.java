@@ -98,7 +98,7 @@ public class ModelChangeCommandHandler
             .put(model.getId(), model);
 
       JsonArray added = new JsonArray();
-      JsonObject addedModel = modelService().modelElementMarshaller().toModel(model);
+      JsonObject addedModel = modelService().modelElementMarshaller().toModelJson(model);
       added.add(addedModel);
       return generateResponse(commandId, null, added, null);
    }
@@ -117,7 +117,7 @@ public class ModelChangeCommandHandler
          ModelManagementStrategy modelMgtStrategy = springContext.getBean(ModelService.class).getModelManagementStrategy();
          modelMgtStrategy.deleteModel(model);
          JsonArray deleted = new JsonArray();
-         JsonObject deletedModel = modelService().modelElementMarshaller().toModel(model);
+         JsonObject deletedModel = modelService().modelElementMarshaller().toModelJson(model);
          deleted.add(deletedModel);
 
          return generateResponse(commandId, null, null, deleted);
@@ -146,7 +146,7 @@ public class ModelChangeCommandHandler
          modelMgtStrategy.saveModel(model);
 
          JsonArray modified = new JsonArray();
-         JsonObject modifiedModel = modelService().modelElementMarshaller().toModel(model);
+         JsonObject modifiedModel = modelService().modelElementMarshaller().toModelJson(model);
          modified.add(modifiedModel);
          return generateResponse(commandId, modified, null, null);
       }

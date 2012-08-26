@@ -78,13 +78,19 @@ define(
 										}
 									});
 
+					this.registerInputForModelElementAttributeChangeSubmission(this.performerTypeSelect, "carnot:engine:conditionalPerformer:kind");
+			
 					this.populateBindingDataSelect();
 
-					if ("Public" == this.conditionalPerformer.attributes["carnot:engine:visibility"])) {
+					if ("Public" == this.conditionalPerformer.attributes["carnot:engine:visibility"]) {
 						this.publicVisibilityCheckbox.attr("checked", true);
 					} else {
 						this.publicVisibilityCheckbox.attr("checked", false);
 					}
+					
+					this.performerTypeSelect.val(this.conditionalPerformer.attributes["carnot:engine:conditionalPerformer:kind"]);
+					this.bindingDataSelect.val(this.conditionalPerformer.dataFullId);
+					this.bindingDataPathInput.val(this.conditionalPerformer.dataPath);
 				};
 
 				/**

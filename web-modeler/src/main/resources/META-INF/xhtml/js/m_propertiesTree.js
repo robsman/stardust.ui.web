@@ -184,7 +184,7 @@ define(
 					}
 
 					this.table.tableScroll({
-						height : 200
+						height : 150
 					});
 					this.table.treeTable();
 

@@ -2,12 +2,12 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_communicationController", "m_command", "m_commandsController", "m_dialog",
-				"m_modelElementView", "m_model", "m_typeDeclaration",
-				"m_propertiesTree" ],
-		function(m_utils, m_communicationController, m_command, m_commandsController, m_dialog,
-				m_modelElementView, m_model, m_typeDeclaration,
-				m_propertiesTree) {
+		[ "m_utils", "m_communicationController", "m_command",
+				"m_commandsController", "m_dialog", "m_modelElementView",
+				"m_model", "m_typeDeclaration", "m_propertiesTree" ],
+		function(m_utils, m_communicationController, m_command,
+				m_commandsController, m_dialog, m_modelElementView, m_model,
+				m_typeDeclaration, m_propertiesTree) {
 			return {
 				initialize : function(fullId) {
 					var view = new XsdStructuredDataTypeView();
@@ -41,9 +41,13 @@ define(
 
 					this.structuredDataType = structuredDataType;
 
+					m_utils.debug("===> Structured Data");
+					m_utils.debug(this.structuredDataType);
+
 					this.tree = jQuery("#typeDeclarationsTable");
 					this.tableBody = jQuery("table#typeDeclarationsTable tbody");
 					this.urlTextInput = jQuery("#urlTextInput");
+					this.urlRow = jQuery("#urlRow");
 					this.loadFromUrlButton = jQuery("#loadFromUrlButton");
 					this.importFromUrlRadioButton = jQuery("#importFromUrlRadioButton");
 					this.defineManuallyRadioButton = jQuery("#defineManuallyRadioButton");
@@ -126,6 +130,7 @@ define(
 				 * 
 				 */
 				XsdStructuredDataTypeView.prototype.initializeForManualDefinition = function() {
+					m_dialog.makeInvisible(this.urlRow);
 					m_dialog.makeInvisible(this.structureDefinitionHintPanel);
 					m_dialog.makeVisible(this.manualDefinitionRadioButtonPanel);
 					this.defineManuallyRadioButton.attr("checked", true);
@@ -134,6 +139,13 @@ define(
 					this.loadFromUrlButton.attr("disabled", true);
 					this.upButton.attr("disabled", false);
 					this.downButton.attr("disabled", false);
+
+					// TODO Workaround. Remove when JSON structure is fully
+					// clear.
+
+					if (this.structuredDataType.typeDeclaration.type == null) {
+						this.structuredDataType.typeDeclaration.type = m_typeDeclaration.STRUCTURE_TYPE;
+					}
 
 					if (this.structuredDataType.typeDeclaration.type == m_typeDeclaration.STRUCTURE_TYPE) {
 						this.structureRadioButton.attr("checked", true);
@@ -171,19 +183,20 @@ define(
 
 						var content = "<tr id=\"schemaElementRow-" + n + "\">";
 
-						content += "<td>";
+						content += "<td style=\"width: 400px;\">";
 						content += "<input type=\"text\" value=\""
 								+ schemaElement.name
 								+ "\" class=\"nameInput\"></input>";
 						content += "</td>";
-						content += "<td>";
+						content += "<td style=\"width: 100px;\">";
 
 						if (this.structuredDataType.typeDeclaration.type == m_typeDeclaration.STRUCTURE_TYPE) {
 							content += this
 									.getTypeSelectList(schemaElement.typeName);
 						}
 
-						content += "</td>" + "<td align=\"right\">";
+						content += "</td>"
+								+ "<td align=\"right\"  style=\"width: 100px;\">";
 
 						if (this.structuredDataType.typeDeclaration.type == m_typeDeclaration.STRUCTURE_TYPE) {
 							content += ("<select size=\"1\" class=\"cardinalitySelect\"><option value=\"1\""
@@ -266,7 +279,7 @@ define(
 									});
 
 					this.tree.tableScroll({
-						height : 200
+						height : 150
 					});
 					this.tree.treeTable();
 				};
@@ -288,6 +301,7 @@ define(
 				 * 
 				 */
 				XsdStructuredDataTypeView.prototype.initializeForLoadFromUrl = function() {
+					m_dialog.makeVisible(this.urlRow);
 					m_dialog.makeVisible(this.structureDefinitionHintPanel);
 					m_dialog
 							.makeInvisible(this.manualDefinitionRadioButtonPanel);
@@ -340,7 +354,7 @@ define(
 					}
 
 					this.tree.tableScroll({
-						height : 200
+						height : 150
 					});
 					this.tree.treeTable();
 
@@ -475,6 +489,30 @@ define(
 											m_utils.debug("Error");
 										}
 									});
+				};
+
+				/**
+				 * 
+				 */
+				XsdStructuredDataTypeView.prototype.validate = function() {
+					this.clearErrorMessages();
+
+					this.nameInput.removeClass("error");
+
+					if (this.nameInput.val() == null
+							|| this.nameInput.val() == "") {
+						this.errorMessages
+								.push("Data type name must not be empty.");
+						this.nameInput.addClass("error");
+					}
+
+					if (this.errorMessages.length > 0) {
+						this.showErrorMessages();
+
+						return false;
+					}
+
+					return true;
 				};
 
 				/**

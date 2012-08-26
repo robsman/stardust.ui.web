@@ -56,6 +56,7 @@ import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 
 /**
@@ -69,8 +70,6 @@ public abstract class ModelElementUnmarshaller
 
    private Map<Class<? >, String[]> modelElementPropertiesMap;
 
-   private Map<Class<? >, String[]> modelElementReferencePropertiesMap;
-
    protected abstract ModelManagementStrategy modelManagementStrategy();
 
    private ModelBuilderFacade modelBuilderFacade;
@@ -82,7 +81,6 @@ public abstract class ModelElementUnmarshaller
    {
       symbolPropertiesMap = newHashMap();
       modelElementPropertiesMap = newHashMap();
-      modelElementReferencePropertiesMap = newHashMap();
 
       modelElementPropertiesMap.put(ProcessDefinitionType.class, new String[] {
             ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY,
@@ -114,7 +112,7 @@ public abstract class ModelElementUnmarshaller
       modelElementPropertiesMap.put(OrganizationType.class, new String[] {
             ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY});
       modelElementPropertiesMap.put(ConditionalPerformerType.class, new String[] {
-         ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY});
+         ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY, ModelerConstants.BINDING_DATA_PATH_PROPERTY});
    }
 
    /**
@@ -389,6 +387,22 @@ public abstract class ModelElementUnmarshaller
       storeAttributes(processDefinition, processDefinitionJson);
       storeDescription(processDefinition, processDefinitionJson);
 
+      
+      if (processDefinitionJson.has(ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY))
+      {
+         if (processDefinitionJson.get(ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY).getAsString().equals(ModelerConstants.NO_PROCESS_INTERFACE_KEY))
+         {
+         }
+         else if (processDefinitionJson.get(ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY).getAsString().equals(ModelerConstants.PROVIDES_PROCESS_INTERFACE_KEY))
+         {
+            
+         }
+         else if (processDefinitionJson.get(ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY).getAsString().equals(ModelerConstants.IMPLEMENTS_PROCESS_INTERFACE_KEY))
+         {
+            
+         }
+      }
+      
       processDefinition.getDataPath().clear();
 
       if (processDefinitionJson.has(ModelerConstants.DATA_PATHES_PROPERTY))
@@ -543,15 +557,21 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * @param cp
-    * @param cpJson
+    * @param conditionalPerformer
+    * @param conditionalPerformerJson
     */
-   private void updateConditionalPerformer(ConditionalPerformerType cp, JsonObject cpJson)
+   private void updateConditionalPerformer(ConditionalPerformerType conditionalPerformer, JsonObject conditionalPerformerJson)
    {
-      mapDeclaredModelElementProperties(cp, cpJson,
-            modelElementPropertiesMap.get(ConditionalPerformerType.class));
-      storeAttributes(cp, cpJson);
-      storeDescription(cp, cpJson);
+      mapDeclaredModelElementProperties(conditionalPerformer, conditionalPerformerJson,
+            modelElementPropertiesMap.get(ConditionalPerformerType.class)); 
+      
+      if (conditionalPerformerJson.has(ModelerConstants.BINDING_DATA_FULL_ID_PROPERTY))
+      {
+         conditionalPerformer.setData(getModelBuilderFacade().findData(conditionalPerformerJson.get(ModelerConstants.BINDING_DATA_FULL_ID_PROPERTY).getAsString()));
+      }
+      
+      storeAttributes(conditionalPerformer, conditionalPerformerJson);
+      storeDescription(conditionalPerformer, conditionalPerformerJson);
    }
 
    /**

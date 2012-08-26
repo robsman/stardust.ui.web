@@ -1247,7 +1247,7 @@ public class ModelService
     */
    private JsonObject loadModelOutline(ModelType model)
    {
-      return modelElementMarshaller().toModel(model);
+      return modelElementMarshaller().toModelJson(model);
    }
 
    /**
@@ -1775,12 +1775,18 @@ public class ModelService
     */
    public JsonObject getWebServiceStructure(JsonObject postedData)
    {
+      System.out.println("===> Get Web Service Structure for URL " + postedData.get("wsdlUrl").getAsString());
+      
       String wsdlUrl = postedData.get("wsdlUrl").getAsString();
       Definition definition = JaxWSResource.getDefinition(wsdlUrl);
+      
       @SuppressWarnings("unchecked")
+      
       Collection<Service> declaredServices = definition.getServices().values();
       List<Service> services = new ArrayList<Service>(declaredServices.size() + 1);
+      
       services.addAll(declaredServices);
+      
       // TODO:
       // services.add(new DynamicBoundService(definition));
 
@@ -1790,50 +1796,77 @@ public class ModelService
       return webServiceJson;
    }
 
+   /**
+    * 
+    * @param webServiceJson
+    * @param services
+    */
    private void addServices(JsonObject webServiceJson, Collection<Service> services)
    {
-      JsonArray servicesJson = new JsonArray();
+      JsonObject servicesJson = new JsonObject();
       webServiceJson.add("services", servicesJson);
+      
       for (Service service : services)
       {
          QName qname = service.getQName();
+         
          @SuppressWarnings("unchecked")
+         
          Collection<Port> ports = service.getPorts().values();
          
          JsonObject serviceJson = new JsonObject();
+         
          serviceJson.addProperty("name", qname.getLocalPart());
          serviceJson.addProperty(WSConstants.WS_SERVICE_NAME_ATT, qname.toString());
          addPorts(serviceJson, ports);
-         servicesJson.add(serviceJson);
+         servicesJson.add(qname.getLocalPart(), serviceJson);
       }
    }
 
+   /**
+    * 
+    * @param serviceJson
+    * @param ports
+    */
    private void addPorts(JsonObject serviceJson, Collection<Port> ports)
    {
-      JsonArray portsJson = new JsonArray();
+      JsonObject portsJson = new JsonObject();
+      
       serviceJson.add("ports", portsJson);
+      
       for (Port port : ports)
       {
          String name = port.getName();
          Binding binding = port.getBinding();
+       
          @SuppressWarnings("unchecked")
+         
          Collection<BindingOperation> operations = binding.getBindingOperations();
          
          JsonObject portJson = new JsonObject();
+         
          portJson.addProperty("name", name);
+         
          // TODO:
          portJson.addProperty(WSConstants.WS_PORT_NAME_ATT, /*port instanceof BindingWrapper
                ? ((BindingWrapper) port).getQName().toString() :*/ name);
          portJson.addProperty("style", JaxWSResource.getBindingStyle(binding));
          addOperations(portJson, operations);
-         portsJson.add(portJson);
+         portsJson.add(name, portJson);
       }
    }
 
+   /**
+    * 
+    * @param portJson
+    * @param operations
+    */
    private void addOperations(JsonObject portJson, Collection<BindingOperation> operations)
    {
-      JsonArray operationsJson = new JsonArray();
+      JsonObject operationsJson = new JsonObject();
+      
       portJson.add("operations", operationsJson);
+      
       for (BindingOperation operation : operations)
       {
          String name = getOperationName(operation);
@@ -1845,6 +1878,7 @@ public class ModelService
          Output output = operation.getOperation().getOutput();
          
          JsonObject operationJson = new JsonObject();
+         
          operationJson.addProperty("name", name);
          operationJson.addProperty(WSConstants.WS_OPERATION_NAME_ATT, operation.getName());
          operationJson.addProperty("style", JaxWSResource.getOperationStyle(operation));
@@ -1855,6 +1889,8 @@ public class ModelService
 //         operationJson.addProperty(WSConstants.WS_SOAP_PROTOCOL_ATT, JaxWSResource.getOperationProtocol(operation));
 //         operationJson.addProperty(WSConstants.WS_INPUT_ORDER_ATT, getPartsOrder(input == null ? null : input.getMessage()));
 //         operationJson.addProperty(WSConstants.WS_OUTPUT_ORDER_ATT, getPartsOrder(output == null ? null : output.getMessage()));
+         
+         operationsJson.add(name, operationJson);
       }
    }
 
@@ -1870,13 +1906,19 @@ public class ModelService
       {
          return "";
       }
+      
       @SuppressWarnings("unchecked")
+      
       List<Part> parts = message.getOrderedParts(null);
+      
       if (parts.isEmpty())
       {
          return "";
       }
+      
+      
       StringBuffer buffer = new StringBuffer();
+      
       for (Part part : parts)
       {
          if (buffer.length() > 0)
@@ -1885,6 +1927,7 @@ public class ModelService
          }
          buffer.append(part.getName());
       }
+      
       return buffer.toString();
    }
 
@@ -1901,6 +1944,7 @@ public class ModelService
       String inputName = bindingInput == null ? null : bindingInput.getName();
       BindingOutput bindingOutput = operation.getBindingOutput();
       String outputName = bindingOutput == null ? null : bindingOutput.getName();
+
       if (name != null)
       {
          if (inputName == null)
@@ -1926,6 +1970,7 @@ public class ModelService
             }
          }
       }
+      
       return "";
    }
 

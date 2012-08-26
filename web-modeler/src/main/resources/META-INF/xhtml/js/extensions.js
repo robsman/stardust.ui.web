@@ -48,7 +48,7 @@ var extensions = {
 		panelId : "activityPropertiesPanel",
 		pageId : "qualityControlPropertiesPage",
 		pageJavaScriptUrl : "m_activityQualityControlPropertiesPage",
-		visibility : "always"
+		visibility : "preview"
 	}, {
 		panelId : "eventPropertiesPanel",
 		pageId : "basicPropertiesPage",

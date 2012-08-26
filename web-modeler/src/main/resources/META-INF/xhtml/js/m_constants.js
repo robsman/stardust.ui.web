@@ -179,6 +179,9 @@ define(function() {
 
 		PROCESS_DEFINITION : "processDefinition",
 		PROCESS : "process",
+		NO_PROCESS_INTERFACE_KEY : "noInterface",
+		PROVIDES_PROCESS_INTERFACE_KEY : "providesProcessInterface",
+		IMPLEMENTS_PROCESS_INTERFACE_KEY : "implementsProcessInterface",
 
 		// Application
 		

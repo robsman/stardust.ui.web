@@ -17,8 +17,9 @@
 	padding: 0 2px 0 1px !important;
 	background: none repeat scroll 0 0 #BEEBFF !important;
 }
-#vakata-contextmenu.jstree-classic-context li.jstree-contextmenu-disabled a,
-#vakata-contextmenu.jstree-classic-context li.jstree-contextmenu-disabled a:hover {
+
+#vakata-contextmenu.jstree-classic-context li.jstree-contextmenu-disabled a,#vakata-contextmenu.jstree-classic-context li.jstree-contextmenu-disabled a:hover
+	{
 	color: gray !important;
 	background: transparent;
 	border: 0;
@@ -81,6 +82,30 @@ td#toolbar div.toolSeparator {
 <body>
 	<table style="width: 100%;">
 		<tr>
+			<td><div id="messagePanel">
+					<table style="width: 100%;" cellpadding="0" cellspacing="0">
+						<tr valign="middle">
+							<td align="left">
+								<div id="messageDisplay"></div></td>
+							<td align="right">
+								<table cellpadding="0" cellspacing="0">
+									<tr valign="middle">
+										<td><div id="modificationDisplayLabel">Last Save:</div>
+										</td>
+										<td>
+											<div id="lastSaveDateDisplay" />
+										</td>
+										<td>
+											<div id="modificationStatusDisplay" />
+										</td>
+									</tr>
+								</table></td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
+		<tr>
 			<td id="toolbar">
 				<div id="outlineToolbar">
 					<div class="toolDiv">
@@ -111,15 +136,15 @@ td#toolbar div.toolSeparator {
 						<img id="refreshModels" src="../images/icons/refresh.png"
 							title="Refresh models" />
 					</div>
-				</div></td>
+				</div>
+			</td>
 		</tr>
 		<tr>
 			<td>
 				<div id="outline"
 					style="text-align: left; list-style-type: none; background-color: white;">
 					<li id="models_root" />
-				</div>
-			</td>
+				</div></td>
 		</tr>
 	</table>
 </body>
