@@ -1766,7 +1766,7 @@ define(
 							if (this.direction == m_constants.FROM_ANCHOR_POINT) {
 								// Cache the original AnchorPoint for deletion
 								if (!this.dragConnection.originalFromAnchorPoint) {
-									this.dragConnection.originalFromAnchorPoint = this.dragConnection.toAnchorPoint;
+									this.dragConnection.originalFromAnchorPoint = this.dragConnection.fromAnchorPoint;
 								}
 								this.dragConnection.fromAnchorPoint = anchorPoint;
 							} else {
