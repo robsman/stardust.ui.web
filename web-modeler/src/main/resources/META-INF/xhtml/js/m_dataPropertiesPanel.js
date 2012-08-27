@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -29,7 +29,7 @@ define([ "m_utils", "m_constants", "m_commandsController", "m_command", "m_exten
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	function DataPropertiesPanel(models) {
 		// Inheritance
@@ -58,14 +58,14 @@ define([ "m_utils", "m_constants", "m_commandsController", "m_command", "m_exten
 		});
 
 		/**
-		 * 
+		 *
 		 */
 		DataPropertiesPanel.prototype.toString = function() {
 			return "Lightdust.DataPropertiesPanel";
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		DataPropertiesPanel.prototype.openView = function() {
 			m_utils.debug("Open View");
@@ -77,20 +77,27 @@ define([ "m_utils", "m_constants", "m_commandsController", "m_command", "m_exten
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		DataPropertiesPanel.prototype.getElementUuid = function() {
 			return this.data.uuid;
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		DataPropertiesPanel.prototype.setElement = function(element) {
 			this.clearErrorMessages();
 
 			this.element = element;
-			this.data = m_model.findData(this.element.dataFullId);
+			// dataFullId doesn't get updated on rename, using
+			// modelElement.getFullId() to find data
+			if (this.element.modelElement != null) {
+				this.data = m_model.findData(this.element.modelElement
+						.getFullId());
+			} else {
+				this.data = m_model.findData(this.element.dataFullId);
+			}
 
 			if (this.element.properties == null) {
 				this.element.properties = {};
@@ -100,9 +107,9 @@ define([ "m_utils", "m_constants", "m_commandsController", "m_command", "m_exten
 				this.propertiesPages[n].setElement();
 			}
 		};
-		
+
 		/**
-		 * 
+		 *
 		 */
 		DataPropertiesPanel.prototype.submitChanges = function(changes) {
 			m_utils.debug("Changes to be submitted for UUID " + this.getElementUuid() + ":");

@@ -26,6 +26,8 @@ define(
 
 					dataSymbol.dataId = "Data_" + index;
 					dataSymbol.dataName = "Data " + index;
+					// Data is not present at server side, using DataIndex and
+					// modelId to create dataId
 					dataSymbol.dataFullId = m_model.getFullId(diagram.model,
 							"Data" + index);
 					return dataSymbol;
