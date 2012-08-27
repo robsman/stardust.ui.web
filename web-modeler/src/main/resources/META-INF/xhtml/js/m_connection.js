@@ -1144,9 +1144,12 @@ define(
 						var scrollPos = m_modelerUtils.getModelerScrollPosition();
 
 						this.adjustFlyOutMenu(event.pageX
-								- this.diagram.X_OFFSET + scrollPos.left - m_constants.FLY_OUT_MENU_ITEM_MARGIN,
+								- this.diagram.X_OFFSET + scrollPos.left
+								- m_constants.FLY_OUT_MENU_ITEM_MARGIN,
 								event.pageY - this.diagram.Y_OFFSET
-										+ scrollPos.top + m_constants.FLY_OUT_MENU_EMPTY_MARGIN, 55, 30);
+										+ scrollPos.top
+										+ m_constants.FLY_OUT_MENU_EMPTY_MARGIN
+										+ 5, 60, 30);
 						this.showFlyOutMenu();
 					}
 				};
@@ -1198,8 +1201,8 @@ define(
 					this.flyOutMenuBackground.attr({
 						'x' : x,
 						'y' : y,
-						width : width,
-						height : height
+						width :width,
+						height :height
 					});
 
 					this.adjustFlyOutMenuItems(x, y, width, height);
@@ -1216,9 +1219,9 @@ define(
 								.attr({
 									'x' : x
 											+ n
-											* (m_constants.FLY_OUT_MENU_CONTENT_MARGIN),
+											* (m_constants.FLY_OUT_MENU_CONTENT_MARGIN) + 5,
 									'y' : y
-											+ m_constants.FLY_OUT_MENU_ITEM_MARGIN
+											+ m_constants.FLY_OUT_MENU_EMPTY_MARGIN
 								});
 						++n;
 					}
