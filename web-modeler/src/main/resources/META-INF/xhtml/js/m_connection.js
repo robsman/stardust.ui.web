@@ -1146,7 +1146,7 @@ define(
 						this.adjustFlyOutMenu(event.pageX
 								- this.diagram.X_OFFSET + scrollPos.left - m_constants.FLY_OUT_MENU_ITEM_MARGIN,
 								event.pageY - this.diagram.Y_OFFSET
-										+ scrollPos.top - m_constants.FLY_OUT_MENU_ITEM_MARGIN, 55, 30);
+										+ scrollPos.top + m_constants.FLY_OUT_MENU_EMPTY_MARGIN, 55, 30);
 						this.showFlyOutMenu();
 					}
 				};
