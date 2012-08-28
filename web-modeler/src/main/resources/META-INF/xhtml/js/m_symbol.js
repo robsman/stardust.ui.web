@@ -767,7 +767,7 @@ define(
 				 *
 				 */
 				Symbol.prototype.move = function(x, y) {
-					this.moveBy(x - this.x, y - this.y);
+					this.moveBy(x - (this.x + (this.width / 2)), y - (this.y + (this.height / 2)));
 				};
 
 				/**
