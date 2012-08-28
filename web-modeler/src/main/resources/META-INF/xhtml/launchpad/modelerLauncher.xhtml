@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
@@ -9,13 +9,13 @@
 <head>
 <link href="../css/lightdust.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript">
-	//         
+	//
 	function openViewHandler(modelerLinkId, formId, viewId, viewParams,
 			viewIdentity) {
 		var form = document.getElementById(formId);
 		var link = document.getElementById(modelerLinkId);
 
-		// formOf and iceSubmit are javascript functions provided by icefaces 
+		// formOf and iceSubmit are javascript functions provided by icefaces
 		var linkForm = formOf(link);
 
 		linkForm[formId + ':_idcl'].value = modelerLinkId;
@@ -128,7 +128,7 @@
 				<f:param name="viewParams" value="REPLACEME" />
 				<ice:outputText value="Open Data View &amp;raquo;"
 					styleClass="action-link" escape="false" />
-			</ice:commandLink>			
+			</ice:commandLink>
 			<ice:commandLink id="modeler_view_link"
 				action="#{ippPortalApp.openView}" visible="false">
 				<f:param name="viewId" value="modelerView" />
@@ -205,16 +205,17 @@
 					value="Deploy Model" />
 			</ice:commandLink>
 		</ice:panelGroup>
-		<div id="outlineAnchor" style="width: 280px; height: 550px;"></div>
+		<div id="outlineAnchor" style="width: 280px; height: 580px;"></div>
+		<ice:panelGroup styleClass="clearing" />
 	</ice:panelGrid>
 
 	<ice:panelGroup styleClass="panelHeader">
-		<ice:commandLink action="#{processesView.toggleSessionLogPanel}">
+		<ice:commandLink action="#{sessionLogPanel.toggle}">
 			<ice:panelGrid columns="2">
-				<ice:graphicImage rendered="#{!processesView.sessionLogPanelExpanded}"
+				<ice:graphicImage rendered="#{!sessionLogPanel.expanded}"
 					value="/plugins/common/images/panelHeader-triggerExpand.png"
 					style="border: none" />
-				<ice:graphicImage rendered="#{processesView.sessionLogPanelExpanded}"
+				<ice:graphicImage rendered="#{sessionLogPanel.expanded}"
 					value="/plugins/common/images/panelHeader-triggerCollapse.png"
 					style="border: none" />
 				<ice:outputText styleClass="panelHeaderTitle"
@@ -223,20 +224,21 @@
 		</ice:commandLink>
 	</ice:panelGroup>
 
-	<ice:panelGrid columns="1" rendered="#{processesView.sessionLogPanelExpanded}"
+	<ice:panelGrid columns="1" rendered="#{sessionLogPanel.expanded}"
 		style="width: 280px;">
 		<ice:panelGroup>
 			<ice:commandLink action="#{inviteParticipantsDialog.openPopup}">
-				<ice:graphicImage 
+				<ice:graphicImage
 					value="/plugins/views-common/images/icons/user_add.png"
 					style="border: none" />
 			</ice:commandLink>
 		</ice:panelGroup>
-		<div id="sessionLogPanelAnchor" style="width: 280px;"></div>
+		<div id="sessionLogPanelAnchor" style="width: 280px; height: 450px;"></div>
+		<ice:panelGroup styleClass="clearing" />
 	</ice:panelGrid>
 
 	<ice:panelPopup id="inviteParticipantsDialog" draggable="true"
-		modal="true" 
+		modal="true"
 		visible="#{inviteParticipantsDialog.visible}"
 		styleClass="dialog">
 		<f:facet name="header">

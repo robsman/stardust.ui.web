@@ -11,9 +11,9 @@
 
 package org.eclipse.stardust.ui.web.modeler.portal;
 
+import javax.annotation.Resource;
 import javax.faces.context.FacesContext;
 
-import org.eclipse.stardust.ui.web.common.ResourcePaths;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.event.PerspectiveEvent;
 import org.eclipse.stardust.ui.web.common.event.PerspectiveEventHandler;
@@ -28,12 +28,24 @@ import org.springframework.stereotype.Component;
 
 import com.icesoft.faces.context.effects.JavascriptContext;
 
+/**
+ * @author Shrikant.Gangal
+ *
+ */
 @Component
 @Scope("session")
 public class ProcessesView extends AbstractLaunchPanel implements
-		ResourcePaths, PerspectiveEventHandler {
-	private boolean sessionLogPanelExpanded = true;
-	
+		PerspectiveEventHandler {
+
+   /**
+    *
+    */
+   @Resource
+   SessionLogPanel sessionLogPanel;
+
+	/**
+	 *
+	 */
 	public ProcessesView() {
 		super("processesView");
 		SessionSharedObjectsMap sessionMap = SessionSharedObjectsMap
@@ -41,38 +53,23 @@ public class ProcessesView extends AbstractLaunchPanel implements
 		sessionMap.setObject("SESSION_CONTEXT",
 				SessionContext.findSessionContext());
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.stardust.ui.web.common.uielement.AbstractLaunchPanel#toggle()
+	 */
 	@Override
 	public void toggle() {
 		super.toggle();
-
 		if (isExpanded()) {
 			activateIframe();
 		} else {
 			deActivateIframe();
 		}
+		sessionLogPanel.repositionPanelIframe();
 	}
-
-	public void toggleSessionLogPanel() {
-        setSessionLogPanelExpanded(!this.sessionLogPanelExpanded);		
-		if (isSessionLogPanelExpanded()) {
-			activateSessionLogPanelIframe();
-		} else {
-			deactivateSessionLogPanelIframe();
-		}
-	}
-
-	public boolean isSessionLogPanelExpanded() {
-		return sessionLogPanelExpanded;
-	}
-
-	public void setSessionLogPanelExpanded(boolean sessionLogPanelExpanded) {
-		this.sessionLogPanelExpanded = sessionLogPanelExpanded;
-	}
-
 
 	/**
-    * 
+    *
     */
 	private static void deActivateIframe() {
 		String deActivateIframeJS = "InfinityBpm.ProcessPortal.deactivateContentFrame('modelOutlineFrame');";
@@ -82,34 +79,13 @@ public class ProcessesView extends AbstractLaunchPanel implements
 	}
 
 	/**
-	    * 
-	    */
-		private static void deactivateSessionLogPanelIframe() {
-			String deactivateSessionLogPanelPanelIframeJS = "InfinityBpm.ProcessPortal.deactivateContentFrame('sessionLogPanelFrame');";
-
-			JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-					deactivateSessionLogPanelPanelIframeJS);
-			PortalApplication.getInstance().addEventScript(
-					deactivateSessionLogPanelPanelIframeJS);
-		}
-
-		/**
-    * 
-    */
+	 *
+	 */
 	private static void activateIframe() {
-		String deActivateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('modelOutlineFrame', '../bpm-modeler/launchpad/outline.xhtml', {anchorId:'outlineAnchor', width:280, height:800, maxWidth:350, maxHeight:1000, anchorYAdjustment:10, zIndex:200, noUnloadWarning: 'true'});";
+		String deActivateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('modelOutlineFrame', '../bpm-modeler/launchpad/outline.xhtml', {anchorId:'outlineAnchor', width:280, height:570, maxWidth:350, maxHeight:1000, anchorYAdjustment:10, zIndex:200, noUnloadWarning: 'true'});";
 		JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
 				deActivateIframeJS);
 		PortalApplication.getInstance().addEventScript(deActivateIframeJS);
-	}
-
-	private static void activateSessionLogPanelIframe() {
-		String activateSessionLogPanelIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('sessionLogPanelFrame', '../bpm-modeler/launchpad/sessionLogPanel.xhtml', {anchorId:'sessionLogPanelAnchor', width:280, height:400, maxWidth:350, maxHeight:1000, anchorYAdjustment:10, zIndex:200, noUnloadWarning: 'true'});";
-
-		JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-				activateSessionLogPanelIframeJS);
-		PortalApplication.getInstance().addEventScript(
-				activateSessionLogPanelIframeJS);
 	}
 
 	@Override
@@ -119,7 +95,7 @@ public class ProcessesView extends AbstractLaunchPanel implements
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see
     * org.eclipse.stardust.ui.web.common.event.PerspectiveEventHandler#handleEvent(org
     * .eclipse.stardust.ui.web.common.event.PerspectiveEvent)
@@ -137,15 +113,10 @@ public class ProcessesView extends AbstractLaunchPanel implements
          {
             activateIframe();
          }
-         if (isSessionLogPanelExpanded() && PortalApplication.getInstance().isLaunchPanelsActivated())
-         {
-            activateSessionLogPanelIframe();
-         }
          break;
       case DEACTIVATED:
       case LAUNCH_PANELS_DEACTIVATED:
          deActivateIframe();
-         deactivateSessionLogPanelIframe();
          FacesUtils.refreshPage();
          break;
       }
