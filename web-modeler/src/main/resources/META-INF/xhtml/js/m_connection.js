@@ -44,6 +44,7 @@ define(
 			 */
 			function Connection() {
 				var drawable = m_drawable.createDrawable();
+				var FLYOUT_MENU_LOC_OFFSET = 20;
 
 				m_utils.inheritFields(this, drawable);
 				m_utils.inheritMethods(Connection.prototype, drawable);
@@ -1146,10 +1147,9 @@ define(
 						this.adjustFlyOutMenu(event.pageX
 								- this.diagram.X_OFFSET + scrollPos.left
 								- m_constants.FLY_OUT_MENU_ITEM_MARGIN,
-								event.pageY - this.diagram.Y_OFFSET
+								event.pageY - this.diagram.Y_OFFSET -FLYOUT_MENU_LOC_OFFSET
 										+ scrollPos.top
-										+ m_constants.FLY_OUT_MENU_EMPTY_MARGIN
-										+ 5, 60, 30);
+										, 60, 30);
 						this.showFlyOutMenu();
 					}
 				};
