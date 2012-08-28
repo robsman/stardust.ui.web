@@ -33,6 +33,6 @@ public class OrganizationView extends AbstractAdapterView {
    {
       super.handleEvent(event);
       
-      event.getView().setIcon("/plugins/bpm-modeler/images/icons/organization.gif");
+      event.getView().setIcon("/plugins/bpm-modeler/images/icons/organization.png");
    }	
 }

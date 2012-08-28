@@ -24,7 +24,7 @@ define(
 
 					activitySymbol.modelElement = m_activity.createActivity(
 							diagram.process, type);
-					
+
 					activitySymbol.diagram.process.activities[activitySymbol.modelElement.id] = activitySymbol.modelElement;
 
 					return activitySymbol;
@@ -87,14 +87,14 @@ define(
 				 */
 				ActivitySymbol.prototype.bind = function(diagram) {
 					this.type = m_constants.ACTIVITY_SYMBOL;
-					
+
 					this.diagram = diagram;
-					
+
 					this.diagram.lastSymbol = this;
-					
+
 					this.propertiesPanel = m_activityPropertiesPanel
 							.getInstance();
-					
+
 					this.rectangle = null;
 					this.text = null;
 					this.icon = null;
@@ -159,7 +159,7 @@ define(
 					if (withId) {
 						path += "/" + this.modelElement.id;
 					}
-					
+
 					return path;
 				};
 
@@ -182,6 +182,12 @@ define(
 									});
 
 					this.addToPrimitives(this.rectangle);
+
+//					this.glow = this.rectangle.glow({
+//						width : 5.0,
+//						color : m_constants.DEFAULT_STROKE_COLOR,
+//						opacity : 0.7
+//					});
 
 					this.text = m_canvasManager.drawTextNode(
 							this.x + 0.5 * this.width,
@@ -269,7 +275,7 @@ define(
 					this.text.show();
 					this.refreshFromModelElement();
 				};
-				
+
 				/**
 				 * 
 				 */
@@ -303,53 +309,113 @@ define(
 						this.parallelMultiProcessingMarkerIcon.hide();
 						this.sequentialMultiProcessingMarkerIcon.show();
 					}
+
+//					if (this.diagram.symbolGlow
+//							&& this.lastModifyingUser != null) {
+//					}
 				};
 
 				/**
 				 * 
 				 */
 				ActivitySymbol.prototype.adjustPrimitives = function() {
-					this.rectangle.attr({
+					this.rectangle.animate({
 						"x" : this.x,
 						"y" : this.y,
 						"width" : this.width,
 						"height" : this.height
-					});
-					this.manualActivityIcon.attr({
+					}, this.diagram.animationDelay,
+							this.diagram.animationEasing);
+
+//					this.glow.remove();
+//					this.glow = this.rectangle.glow({
+//						width : 5.0,
+//						color : m_constants.DEFAULT_STROKE_COLOR,
+//						opacity : 0.7
+//					});
+
+					this.manualActivityIcon.animate({
 						"x" : this.x + 5,
 						"y" : this.y + 5
-					});
-					this.subprocessIcon.attr({
+					}, this.diagram.animationDelay,
+							this.diagram.animationEasing);
+					this.subprocessIcon.animate({
 						"x" : this.x + 5,
 						"y" : this.y + 5
-					});
-					this.applicationIcon.attr({
+					}, this.diagram.animationDelay,
+							this.diagram.animationEasing);
+					this.applicationIcon.animate({
 						"x" : this.x + 5,
 						"y" : this.y + 5
-					});
-					this.applicationIcon.attr({
+					}, this.diagram.animationDelay,
+							this.diagram.animationEasing);
+					this.applicationIcon.animate({
 						"x" : this.x + 5,
 						"y" : this.y + 5
-					});
-					this.text.attr({
+					}, this.diagram.animationDelay,
+							this.diagram.animationEasing);
+					this.text.animate({
 						"x" : this.x + 0.5 * this.width,
 						"y" : this.y + 0.5 * this.height
-					});
-
-					this.parallelMultiProcessingMarkerIcon.attr({
+					}, this.diagram.animationDelay,
+							this.diagram.animationEasing);
+					this.parallelMultiProcessingMarkerIcon.animate({
 						"x" : this.x + 0.5 * this.width - 4,
 						"y" : this.y + 2
-					});
-
-					this.sequentialMultiProcessingMarkerIcon.attr({
+					}, this.diagram.animationDelay,
+							this.diagram.animationEasing);
+					this.sequentialMultiProcessingMarkerIcon.animate({
 						"x" : this.x + 0.5 * this.width - 4,
 						"y" : this.y + 2
-					});
-
-					this.subprocessMarkerIcon.attr({
+					}, this.diagram.animationDelay,
+							this.diagram.animationEasing);
+					this.subprocessMarkerIcon.animate({
 						"x" : this.x + 0.5 * this.width - 4,
 						"y" : this.y + this.height - 16
-					});
+					}, this.diagram.animationDelay,
+							this.diagram.animationEasing);
+
+					// this.rectangle.attr({
+					// "x" : this.x,
+					// "y" : this.y,
+					// "width" : this.width,
+					// "height" : this.height
+					// });
+					// this.manualActivityIcon.attr({
+					// "x" : this.x + 5,
+					// "y" : this.y + 5
+					// });
+					// this.subprocessIcon.attr({
+					// "x" : this.x + 5,
+					// "y" : this.y + 5
+					// });
+					// this.applicationIcon.attr({
+					// "x" : this.x + 5,
+					// "y" : this.y + 5
+					// });
+					// this.applicationIcon.attr({
+					// "x" : this.x + 5,
+					// "y" : this.y + 5
+					// });
+					// this.text.attr({
+					// "x" : this.x + 0.5 * this.width,
+					// "y" : this.y + 0.5 * this.height
+					// });
+					//
+					// this.parallelMultiProcessingMarkerIcon.attr({
+					// "x" : this.x + 0.5 * this.width - 4,
+					// "y" : this.y + 2
+					// });
+					//
+					// this.sequentialMultiProcessingMarkerIcon.attr({
+					// "x" : this.x + 0.5 * this.width - 4,
+					// "y" : this.y + 2
+					// });
+					//
+					// this.subprocessMarkerIcon.attr({
+					// "x" : this.x + 0.5 * this.width - 4,
+					// "y" : this.y + this.height - 16
+					// });
 				};
 
 				/**
@@ -528,7 +594,8 @@ define(
 			 * 
 			 */
 			function ActivitySymbol_removeClosure() {
-				this.auxiliaryProperties.callbackScope.createAndSubmitDeleteCommand();
+				this.auxiliaryProperties.callbackScope
+						.createAndSubmitDeleteCommand();
 			}
 
 			/**

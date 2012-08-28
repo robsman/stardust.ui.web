@@ -133,6 +133,9 @@ define(
 				this.newSymbol = null;
 				// Caches the last newly created Symbol for server callbacks
 				this.newSymbol = null;
+				this.animationDelay = 0;
+				this.animationEasing = null;
+				this.symbolGlow = true;
 
 				this.background = m_canvasManager.drawRectangle(0, 0,
 						m_canvasManager.getCanvasWidth(), m_canvasManager
@@ -643,6 +646,9 @@ define(
 
 						// Apply changes
 
+						this.animationDelay = 1000;
+						this.animationEasing = "<";
+
 						for ( var i = 0; i < obj.changes.modified.length; i++) {
 							var symbol = this
 									.findSymbolByGuid(obj.changes.modified[i].oid);
@@ -691,6 +697,9 @@ define(
 								}
 							}
 						}
+
+						this.animationDelay = 0;
+						this.animationEasing = null;
 
 						// Delete removed elements
 						for ( var i = 0; i < obj.changes.removed.length; i++) {

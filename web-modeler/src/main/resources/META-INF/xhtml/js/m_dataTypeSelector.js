@@ -7,10 +7,10 @@ define(
 		[ "m_utils", "m_constants", "m_extensionManager", "m_model", "m_dialog" ],
 		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog) {
 			return {
-				create : function(scope) {
+				create : function(scope, submitHandler) {
 					var panel = new DataTypeSelector();
 
-					panel.initialize(scope);
+					panel.initialize(scope, submitHandler);
 
 					return panel;
 				}
@@ -23,7 +23,9 @@ define(
 				/**
 				 * 
 				 */
-				DataTypeSelector.prototype.initialize = function(scope) {
+				DataTypeSelector.prototype.initialize = function(scope,
+						submitHandler) {
+					this.submitHandler = submitHandler;
 					this.dataTypeSelect = jQuery("#" + scope
 							+ " #dataTypeSelect");
 					this.primitiveDataTypeRow = jQuery("#" + scope
@@ -38,6 +40,7 @@ define(
 							+ " #documentTypeSelect");
 					this.documentTypeRow = jQuery("#" + scope
 							+ " #documentTypeRow");
+					this.otherTypeRow = jQuery("#" + scope + " #otherTypeRow");
 					this.otherTypeName = jQuery("#" + scope + " #otherTypeName");
 
 					this.dataTypeSelect.change({
@@ -55,9 +58,9 @@ define(
 				DataTypeSelector.prototype.setScopeModel = function(scopeModel) {
 					this.scopeModel = scopeModel;
 					this.populateDataStructuresSelectInput();
-					this.populateDocumentTypesSelectInput();					
+					this.populateDocumentTypesSelectInput();
 				};
-				
+
 				/**
 				 * 
 				 */
@@ -67,8 +70,9 @@ define(
 							+ m_constants.TO_BE_DEFINED
 							+ "'>(To be defined)</option>");
 
-					this.structuredDataTypeSelect.append("<optgroup label=\"This Model\"></optgroup>");
-					
+					this.structuredDataTypeSelect
+							.append("<optgroup label=\"This Model\"></optgroup>");
+
 					for ( var i in this.scopeModel.structuredDataTypes) {
 						this.structuredDataTypeSelect.append("<option value='"
 								+ this.scopeModel.structuredDataTypes[i]
@@ -77,7 +81,8 @@ define(
 								+ "</option>");
 					}
 
-					this.structuredDataTypeSelect.append("</optgroup><optgroup label=\"Other Models\">");
+					this.structuredDataTypeSelect
+							.append("</optgroup><optgroup label=\"Other Models\">");
 
 					for ( var n in m_model.getModels()) {
 						if (m_model.getModels()[n] == this.scopeModel) {
@@ -109,10 +114,11 @@ define(
 							+ m_constants.TO_BE_DEFINED
 							+ "'>(To be defined)</option>");
 					this.documentTypeSelect
-					.append("<option value='GENERIC_DOCUMENT_TYPE'>(Generic Document)</option>");
+							.append("<option value='GENERIC_DOCUMENT_TYPE'>(Generic Document)</option>");
 
-					this.documentTypeSelect.append("<optgroup label=\"This Model\"></optgroup>");
-					
+					this.documentTypeSelect
+							.append("<optgroup label=\"This Model\"></optgroup>");
+
 					for ( var i in this.scopeModel.structuredDataTypes) {
 						this.documentTypeSelect.append("<option value='"
 								+ this.scopeModel.structuredDataTypes[i]
@@ -121,7 +127,8 @@ define(
 								+ "</option>");
 					}
 
-					this.documentTypeSelect.append("</optgroup><optgroup label=\"Other Models\">");
+					this.documentTypeSelect
+							.append("</optgroup><optgroup label=\"Other Models\">");
 
 					for ( var n in m_model.getModels()) {
 						if (m_model.getModels()[n] == this.scopeModel) {
@@ -159,6 +166,7 @@ define(
 					} else if (data.dataType == m_constants.DOCUMENT_DATA_TYPE) {
 						this.setDocumentDataType(data.structuredDataTypeFullId);
 					} else {
+						this.dataTypeSelect.val("others");
 						this.setOtherDataType(data.dataType);
 					}
 				};
@@ -198,10 +206,11 @@ define(
 					m_dialog.makeInvisible(this.structuredDataTypeRow);
 					m_dialog.makeInvisible(this.documentTypeRow);
 
-					// if (this.otherTypeInput != null) {
-					// this.otherTypeInput.attr("checked", false);
-					// this.otherTypeInput.attr("disabled", true);
-					// }
+					if (this.otherTypeRow != null) {
+						m_dialog.makeInvisible(this.otherTypeRow);
+					}
+
+					this.submitChanges();
 				};
 
 				/**
@@ -215,10 +224,11 @@ define(
 					m_dialog.makeVisible(this.structuredDataTypeRow);
 					m_dialog.makeInvisible(this.documentTypeRow);
 
-					// if (this.otherTypeInput != null) {
-					// this.otherTypeInput.attr("checked", false);
-					// this.otherTypeInput.attr("disabled", true);
-					// }
+					if (this.otherTypeRow != null) {
+						m_dialog.makeInvisible(this.otherTypeRow);
+					}
+
+					this.submitChanges();
 				};
 
 				/**
@@ -232,29 +242,52 @@ define(
 					m_dialog.makeInvisible(this.structuredDataTypeRow);
 					m_dialog.makeVisible(this.documentTypeRow);
 
-					// if (this.otherTypeInput != null) {
-					// this.otherTypeInput.attr("checked", false);
-					// this.otherTypeInput.attr("disabled", true);
-					// }
+					if (this.otherTypeRow != null) {
+						m_dialog.makeInvisible(this.otherTypeRow);
+					}
+
+					this.submitChanges();
 				};
 
 				/**
 				 * 
 				 */
 				DataTypeSelector.prototype.setOtherDataType = function(dataType) {
-					// if (this.otherTypeInput == null) {
-					// throw "otherTypeInput not initialized.";
-					// }
-					//
-					// this.otherTypeName.empty();
-					//
-					// var extension = m_extensionManager.findExtensions(
-					// "dataType", "id", dataType)[0];
-					//
-					// this.otherTypeName
-					// .append("<b>"
-					// + extension.readableName
-					// + "</b> (Not yet supported for the Browser Modeler)");
+					if (this.otherTypeRow == null || this.otherTypeName == null) {
+						throw "otherTypeInput not initialized.";
+					}
+
+					m_dialog.makeInvisible(this.primitiveDataTypeRow);
+					m_dialog.makeInvisible(this.structuredDataTypeRow);
+					m_dialog.makeInvisible(this.documentTypeRow);
+					m_dialog.makeVisible(this.otherTypeRow);
+
+					this.otherTypeName.empty();
+
+					var extension = m_extensionManager.findExtensions(
+							"dataType", "id", dataType)[0];
+
+					this.otherTypeName
+							.append("<b>"
+									+ extension.readableName
+									+ "</b> not yet supported for the Browser Modeler.");
+				};
+
+				/**
+				 * 
+				 */
+				DataTypeSelector.prototype.submitChanges = function() {
+					if (this.submitHandler) {
+						// TODO Check for changes?
+						this.submitHandler
+								.submitDataChanges({
+									dataType : this.dataTypeSelect.val(),
+									primitiveDataType : this.primitiveDataTypeSelect
+											.val(),
+									structuredDataTypeFullId : this.structuredDataTypeSelect
+											.val()
+								});
+					}
 				};
 			}
 		});

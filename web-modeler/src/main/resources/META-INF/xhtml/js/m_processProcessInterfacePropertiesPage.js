@@ -33,6 +33,7 @@ define(
 				 * 
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.initialize = function() {
+					this.currentParameterDefinition = null;
 					this.processInterfaceTypeSelectInput = this
 							.mapInputId("processInterfaceTypeSelectInput");
 					this.noInterfacePanel = this.mapInputId("noInterfacePanel");
@@ -205,22 +206,26 @@ define(
 					this.parameterDefinitionNameInput.change({
 						page : this
 					}, function(event) {
-						event.data.page.deselectParameterDefinitions();
+						event.data.page.currentParameterDefinition.name = event.data.page.parameterDefinitionNameInput.val();
+						event.data.page.initializeParameterDefinitionsTable();
 					});
 					this.parameterDefinitionDirectionSelect.change({
 						page : this
 					}, function(event) {
-						event.data.page.deselectParameterDefinitions();
+						event.data.page.currentParameterDefinition.direction = event.data.page.parameterDefinitionDirectionSelect.val();
+						event.data.page.initializeParameterDefinitionsTable();
 					});
 					this.parameterDefinitionDataSelect.change({
 						page : this
 					}, function(event) {
-						event.data.page.deselectParameterDefinitions();
+						event.data.page.currentParameterDefinition.dataFullId = event.data.page.parameterDefinitionDataSelect.val();
+						event.data.page.initializeParameterDefinitionsTable();
 					});
 					this.parameterDefinitionPathInput.change({
 						page : this
 					}, function(event) {
-						event.data.page.deselectParameterDefinitions();
+						event.data.page.currentParameterDefinition.path = event.data.page.parameterDefinitionPathInput.val();
+						event.data.page.initializeParameterDefinitionsTable();
 					});
 					
 					this.populateDataItemsList();
@@ -363,7 +368,6 @@ define(
 						dataPath) {
 					jQuery("table#parameterDefinitionsTable tr.selected")
 							.removeClass("selected");
-					this.addParameterDefinitionButton.removeAttr("disabled");
 				};
 
 				/**
@@ -371,6 +375,8 @@ define(
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.populateParameterDefinitionFields = function(
 						parameterDefinition) {
+					this.currentParameterDefinition = parameterDefinition;
+					
 					this.parameterDefinitionNameInput
 							.val(parameterDefinition.name);
 					this.parameterDefinitionDirectionSelect
@@ -380,20 +386,26 @@ define(
 					this.parameterDefinitionPathInput
 							.val(parameterDefinition.path);
 					this.dataTypeSelector.setDataType(parameterDefinition);
-					this.addParameterDefinitionButton.attr("disabled", true);
 				};
 
 				/**
 				 * 
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.addParameterDefinition = function() {
+					var n = 0;
+					
+					for ( var m in this.getModelElement().formalParameters) {
+						++n;
+					}
+					
+					m_utils.debug("Adding New " + n);
+					
 					var parameterDefinition = {
-						id : this.parameterDefinitionNameInput.val(),
-						name : this.parameterDefinitionNameInput.val(),
-						dataFullId : this.parameterDefinitionDataSelect.val(),
-						direction : this.parameterDefinitionDirectionSelect
-								.val(),
-						path : this.parameterDefinitionPathInput.val()
+						id : "New" + n,
+						name : "New " + n,
+						dataFullId : null,
+						direction : "IN",
+						path : null
 					};
 
 					this.dataTypeSelector.getDataType(parameterDefinition);
@@ -403,6 +415,9 @@ define(
 					// TODO Replace by submit
 
 					this.initializeParameterDefinitionsTable();
+
+					this
+					.populateParameterDefinitionFields(parameterDefinition);
 				};
 
 				/**

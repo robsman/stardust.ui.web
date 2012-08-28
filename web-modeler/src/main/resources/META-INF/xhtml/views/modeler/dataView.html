@@ -15,7 +15,7 @@
 	src="../../js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
-	<div class="panel">
+	<div id="dataView" class="panel">
 		<table cellpadding="0" cellspacing="0" class="layoutTable"
 			style="width: 800px;">
 			<tr>
@@ -23,7 +23,8 @@
 					<div class="errorMessagesPanel">
 						<ul id="errorMessagesList">
 						</ul>
-					</div></td>
+					</div>
+				</td>
 			</tr>
 			<tr>
 				<td>
@@ -33,29 +34,26 @@
 								<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 									style="margin-bottom: 10px;">
 									<tr>
-										<td><label for="guidOutput">GUID</label>
-										</td>
-										<td><div id="guidOutput" class="output"></div>
-										</td>
+										<td><label for="guidOutput">GUID</label></td>
+										<td><div id="guidOutput" class="output"></div></td>
 									</tr>
 									<tr>
-										<td><label for="idOutput">ID</label>
-										</td>
-										<td><div id="idOutput" class="output"></div>
-										</td>
+										<td><label for="idOutput">ID</label></td>
+										<td><div id="idOutput" class="output"></div></td>
 									</tr>
 									<tr>
-										<td><label for="nameInput">Data Name</label>
-										</td>
-										<td><input id="nameInput" type="text"></input>
-										</td>
+										<td><label for="nameInput">Data Name</label></td>
+										<td><input id="nameInput" type="text"></input></td>
 									</tr>
-								</table></td>
+								</table>
+							</td>
 						</tr>
-					</table></td>
+					</table>
+				</td>
 			</tr>
 			<tr>
-				<td><label for="descriptionTextarea">Description</label></td>
+				<td><label for="descriptionTextarea">Description</label>
+				</td>
 			</tr>
 			<tr>
 				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
@@ -65,10 +63,19 @@
 				<td>
 					<table style="margin-top: 10px;">
 						<tr>
-							<td><input id="primitiveInput" type="radio" />
+							<td><label for="dataTypeSelect">Data Type</label>
 							</td>
-							<td><label for="primitiveInput">Primitive</label></td>
-							<td><select id="primitiveList" size="1">
+							<td><select id="dataTypeSelect" size="1">
+									<option value="primitive">Primitive</option>
+									<option value="struct">Data Structure</option>
+									<option value="dmsDocument">Document</option>
+									<option value="other">Other</option>
+							</select></td>
+						</tr>
+						<tr id="primitiveDataTypeRow">
+							<td><label for="primitiveDataTypeSelect" />Primitive Type</label>
+							</td>
+							<td><select id="primitiveDataTypeSelect" size="1">
 									<option value="String">Text</option>
 									<option value="boolean">Boolean (True, False)</option>
 									<option value="int">Number (e.g. 18756)</option>
@@ -80,30 +87,21 @@
 							</select>
 							</td>
 						</tr>
-						<tr>
-							<td><input id="dataStructureInput" type="radio" /></td>
-							<td><label for="dataStructureInput">Data Structure</label></td>
-							<td><select id="dataStructureList" size="1">
-							</select>
-							</td>
+						<tr id="structuredDataTypeRow">
+							<td><label for="structuredDataTypeSelect">Data
+									Structure</label></td>
+							<td><select id="structuredDataTypeSelect" size="1">
+							</select></td>
 						</tr>
-						<tr>
-							<td><input id="documentInput" type="radio" />
-							</td>
-							<td><label for="documentInput">Document</label></td>
-							<td><select id="documentTypeList" size="1">
-							</select>
-							</td>
+						<tr id="documentTypeRow">
+							<td><label for="documentTypeSelect">Document Type</label></td>
+							<td><select id="documentTypeSelect" size="1">
+							</select></td>
 						</tr>
-						<tr>
-							<td><input id="otherTypeInput" type="radio" />
-							</td>
-							<td><label for="otherTypeInput">Other Type</label></td>
-							<td><div id="otherTypeName"></div>
-							</td>
+						<tr id="otherTypeRow">
+							<td colspan="2"><div id="otherTypeName"></div></td>
 						</tr>
-					</table>
-				</td>
+					</table></td>
 			</tr>
 		</table>
 	</div>

@@ -11,9 +11,9 @@
 define(
 		[ "m_utils", "m_constants", "m_extensionManager", "m_command", "m_commandsController",
 				"m_dialog", "m_modelElementView", "m_model",
-				"m_typeDeclaration" ],
+				"m_typeDeclaration", "m_dataTypeSelector" ],
 		function(m_utils, m_constants, m_extensionManager, m_command, m_commandsController,
-				m_dialog, m_modelElementView, m_model, m_typeDeclaration) {
+				m_dialog, m_modelElementView, m_model, m_typeDeclaration, m_dataTypeSelector) {
 			var view;
 
 			return {
@@ -37,8 +37,6 @@ define(
 			 * 
 			 */
 			function DataView() {
-				// Inheritance
-
 				var view = m_modelElementView.create();
 
 				m_utils.inheritFields(this, view);
@@ -51,67 +49,14 @@ define(
 					this.data = data;
 
 					this.initializeModelElementView();
-
-					this.primitiveInput = jQuery("#primitiveInput");
-					this.primitiveList = jQuery("#primitiveList");
-					this.dataStructureInput = jQuery("#dataStructureInput");
-					this.dataStructureList = jQuery("#dataStructureList");
-					this.documentInput = jQuery("#documentInput");
-					this.documentTypeList = jQuery("#documentTypeList");
-					this.otherTypeInput = jQuery("#otherTypeInput");
-					this.otherTypeName = jQuery("#otherTypeName");
-
-					this.primitiveInput
-							.click(
-									{
-										"view" : this
-									},
-									function(event) {
-										if (event.data.view.primitiveInput
-												.is(":checked")) {
-											event.data.view
-													.setPrimitiveDataType(m_constants.STRING_PRIMITIVE_DATA_TYPE);
-										}
-									});
-					this.dataStructureInput
-							.click(
-									{
-										"view" : this
-									},
-									function(event) {
-										if (event.data.view.dataStructureInput
-												.is(":checked")) {
-											event.data.view
-													.setStructuredDataType(m_constants.TO_BE_DEFINED);
-										}
-									});
-					this.documentInput
-							.click(
-									{
-										"view" : this
-									},
-									function(event) {
-										if (event.data.view.documentInput
-												.is(":checked")) {
-											event.data.view
-													.setDocumentDataType(m_constants.TO_BE_DEFINED);
-										}
-									});
-					this.populateDataStructuresSelectInput();
-					this.populateDocumentTypesSelectInput();
 					this.initializeModelElement(data);
 
-					if (this.data.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
-						this.setPrimitiveDataType(this.data.primitiveDataType);
-					} else if (this.data.dataType == m_constants.STRUCTURED_DATA_TYPE) {
-						this
-								.setStructuredDataType(this.data.structuredDataTypeFullId);
-					} else if (this.data.dataType == m_constants.DOCUMENT_DATA_TYPE) {
-						this
-								.setDocumentDataType(this.data.structuredDataTypeFullId);
-					} else {
-						this.setOtherDataType(this.data.dataType);
-					}
+					this.primitiveInput = jQuery("#primitiveInput");
+
+					this.dataTypeSelector = m_dataTypeSelector.create("dataView", this);
+
+					this.dataTypeSelector.setScopeModel(this.data.model);
+					this.dataTypeSelector.setDataType(data);
 				};
 
 				/**
@@ -119,56 +64,6 @@ define(
 				 */
 				DataView.prototype.toString = function() {
 					return "Lightdust.DataView";
-				};
-
-				/**
-				 * 
-				 */
-				DataView.prototype.populateDataStructuresSelectInput = function() {
-					this.dataStructureList.empty();
-					this.dataStructureList.append("<option value='"
-							+ m_constants.TO_BE_DEFINED
-							+ "'>(To be defined)</option>");
-
-					for ( var n in m_model.getModels()) {
-						for ( var m in m_model.getModels()[n].structuredDataTypes) {
-							this.dataStructureList
-									.append("<option value='"
-											+ m_model.getModels()[n].structuredDataTypes[m]
-													.getFullId()
-											+ "'>"
-											+ m_model.getModels()[n].name
-											+ "/"
-											+ m_model.getModels()[n].structuredDataTypes[m].name
-											+ "</option>");
-						}
-					}
-				};
-
-				/**
-				 * 
-				 */
-				DataView.prototype.populateDocumentTypesSelectInput = function() {
-					this.documentTypeList.empty();
-					this.documentTypeList.append("<option value='"
-							+ m_constants.TO_BE_DEFINED
-							+ "'>(To be defined)</option>");
-					this.documentTypeList
-							.append("<option value='GENERIC_DOCUMENT_TYPE'>(Generic Document)</option>");
-
-					for ( var n in m_model.getModels()) {
-						for ( var m in m_model.getModels()[n].structuredDataTypes) {
-							this.documentTypeList
-									.append("<option value='"
-											+ m_model.getModels()[n].structuredDataTypes[m]
-													.getFullId()
-											+ "'>"
-											+ m_model.getModels()[n].name
-											+ "/"
-											+ m_model.getModels()[n].structuredDataTypes[m].name
-											+ "</option>");
-						}
-					}
 				};
 
 				/**
@@ -197,70 +92,10 @@ define(
 				/**
 				 * 
 				 */
-				DataView.prototype.setPrimitiveDataType = function(
-						primitiveDataType) {
-					this.primitiveInput.attr("checked", true);
-					this.primitiveList.removeAttr("disabled");
-					this.primitiveList.val(primitiveDataType);
-					this.dataStructureInput.attr("checked", false);
-					this.dataStructureList.attr("disabled", true);
-					this.documentInput.attr("checked", false);
-					this.documentTypeList.attr("disabled", true);
-					this.otherTypeInput.attr("checked", false);
-					this.otherTypeInput.attr("disabled", true);
+				DataView.prototype.submitDataChanges = function(dataChanges) {
+					this.submitChanges(dataChanges);
 				};
-
-				/**
-				 * 
-				 */
-				DataView.prototype.setStructuredDataType = function(
-						structuredDataTypeFullId) {
-					this.dataStructureInput.attr("checked", true);
-					this.dataStructureList.removeAttr("disabled");
-					this.dataStructureList.val(structuredDataTypeFullId);
-					this.primitiveInput.attr("checked", false);
-					this.primitiveList.attr("disabled", true);
-					this.documentInput.attr("checked", false);
-					this.documentTypeList.attr("disabled", true);
-					this.otherTypeInput.attr("checked", false);
-					this.otherTypeInput.attr("disabled", true);
-				};
-
-				/**
-				 * 
-				 */
-				DataView.prototype.setDocumentDataType = function(
-						documentDataTypeFullId) {
-					this.primitiveInput.attr("checked", false);
-					this.primitiveList.attr("disabled", true);
-					this.dataStructureInput.attr("checked", false);
-					this.dataStructureList.attr("disabled", true);
-					this.documentInput.attr("checked", true);
-					this.documentTypeList.removeAttr("disabled");
-					this.documentTypeList.val(documentDataTypeFullId);
-					this.otherTypeInput.attr("checked", false);
-					this.otherTypeInput.attr("disabled", true);
-				};
-
-				/**
-				 * 
-				 */
-				DataView.prototype.setOtherDataType = function(dataType) {
-					this.primitiveInput.attr("checked", false);
-					this.primitiveList.attr("disabled", true);
-					this.dataStructureInput.attr("checked", false);
-					this.dataStructureList.attr("disabled", true);
-					this.documentInput.attr("checked", false);
-					this.documentTypeList.attr("disabled", true);
-					this.otherTypeInput.attr("checked", true);
-					this.otherTypeName.empty();
-					
-					var extension = m_extensionManager.findExtensions(
-							"dataType", "id", dataType)[0];
-							
-					this.otherTypeName.append("<b>" + extension.readableName + "</b> (Not yet supported for the Browser Modeler)");
-				};
-
+				
 				/**
 				 * 
 				 */
