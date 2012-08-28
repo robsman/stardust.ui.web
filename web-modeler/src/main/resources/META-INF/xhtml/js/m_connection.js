@@ -1232,7 +1232,7 @@ define(
 				 */
 				Connection.prototype.remove = function() {
 					// TODO add symbol/diagram cleanup
-					this.path.remove();
+					this.removePrimitives();
 					this.removeFlyOutMenu();
 					this.removeProximitySensor();
 					m_utils.removeItemFromArray(
@@ -1247,6 +1247,17 @@ define(
 							this.fromAnchorPoint.symbol.connections, this);
 				};
 
+				/**
+				 *
+				 */
+				Connection.prototype.removePrimitives = function() {
+					var n = 0;
+
+					while (n < this.primitives.length) {
+						this.primitives[n].remove();
+						++n;
+					}
+				};
 				/**
 				 * sync : Synchronous AJAX call is made, if set(needed in
 				 * scenario like rerouting a connection(Create new connection
