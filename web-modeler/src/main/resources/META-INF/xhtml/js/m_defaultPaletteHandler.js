@@ -80,7 +80,7 @@ define([ "m_utils", "m_constants", "m_messageDisplay",
 
 		undo : function(diagram) {
 			m_communicationController.postData({
-				url : getEndpointUrl()
+				url : m_communicationController.getEndpointUrl()
 						+ "/sessions/changes/mostCurrent/navigation"
 			}, "undoMostCurrent", {
 				success : function(data) {
@@ -106,7 +106,7 @@ define([ "m_utils", "m_constants", "m_messageDisplay",
 
 		redo : function(diagram) {
 			m_communicationController.postData({
-				url : getEndpointUrl()
+				url : m_communicationController.getEndpointUrl()
 						+ "/sessions/changes/mostCurrent/navigation"
 			}, "redoLastUndo", {
 				success : function(data) {
