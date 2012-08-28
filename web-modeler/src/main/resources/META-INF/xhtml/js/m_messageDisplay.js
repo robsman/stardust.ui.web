@@ -2,8 +2,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants" ],
-		function(m_utils, m_constants) {
+		[ "jquery", "m_utils", "m_constants" ],
+		function(jQuery, m_utils, m_constants) {
 
 			var INFO_MESSAGE = 0;
 			var ERROR_MESSAGE = 1;
