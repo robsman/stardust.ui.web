@@ -10,8 +10,8 @@
 
 define([ "m_utils", "m_constants", "m_urlUtils", "m_communicationController" ],
 		function(m_utils, m_constants, m_urlUtils, m_communicationController) {
-			//window.top.currentRole = m_constants.BUSINESS_ANALYST_ROLE;
-			window.top.currentRole = m_constants.INTEGRATOR_ROLE
+			window.top.currentRole = m_constants.BUSINESS_ANALYST_ROLE;
+			//window.top.currentRole = m_constants.INTEGRATOR_ROLE
 			
 			return {
 				initializeCurrentUser : initializeCurrentUser,

@@ -94,6 +94,36 @@ define(
 				}, function(event) {
 					event.data.page.setKeyDescriptor();
 				});
+				this.dataPathNameInput.change({
+					page : this
+				}, function(event) {
+					event.data.page.deselectDataPathes();
+				});
+				this.dataPathDirectionSelect.change({
+					page : this
+				}, function(event) {
+					event.data.page.deselectDataPathes();
+				});
+				this.descriptorInput.change({
+					page : this
+				}, function(event) {
+					event.data.page.deselectDataPathes();
+				});
+				this.keyDescriptorInput.change({
+					page : this
+				}, function(event) {
+					event.data.page.deselectDataPathes();
+				});
+				this.dataPathDataSelect.change({
+					page : this
+				}, function(event) {
+					event.data.page.deselectDataPathes();
+				});
+				this.dataPathPathInput.change({
+					page : this
+				}, function(event) {
+					event.data.page.deselectDataPathes();
+				});
 
 				/**
 				 * 
@@ -101,7 +131,7 @@ define(
 				ProcessDataPathPropertiesPage.prototype.setDataPathDirection = function(
 						direction) {
 					m_utils.debug("===> Direction: " + direction);
-					
+
 					if (direction == "IN" || direction == "INOUT") {
 						this.descriptorInput.removeAttr("disabled");
 						this.keyDescriptorInput.removeAttr("disabled");
@@ -289,6 +319,7 @@ define(
 						dataPathes : this.getModelElement().dataPathes
 					});
 				};
+
 				/**
 				 * 
 				 */
@@ -304,7 +335,7 @@ define(
 
 						var item = "<tr id=\"";
 
-						item += dataPath.id;
+						item += "dataPath" + m;
 
 						item += "\"><td class=\"";
 
@@ -338,14 +369,55 @@ define(
 						this.dataPathTable.append(item);
 					}
 
-					jQuery("table#dataPathTable tr").mousedown(function() {
-						jQuery("tr.selected").removeClass("selected");
-						jQuery(this).addClass("selected");
-					});
+					jQuery("table#dataPathTable tr")
+							.mousedown(
+									{
+										page : this
+									},
+									function(event) {
+										event.data.page.deselectDataPathes();										
+										jQuery(this).addClass("selected");
+
+										var index = jQuery(this).attr("id");
+
+										index = index.substring(8);
+
+										m_utils.debug("Selected " + index);
+										m_utils
+												.debug(event.data.page
+														.getModelElement().dataPathes[index]);
+										event.data.page
+												.populateDataPathFields(event.data.page
+														.getModelElement().dataPathes[index]);
+									});
 
 					// this.dataPathTable.tableScroll({
 					// height : 200
 					// });
+				};
+
+				/**
+				 * 
+				 */
+				ProcessDataPathPropertiesPage.prototype.deselectDataPathes= function(
+						dataPath) {
+					jQuery("table#dataPathTable tr.selected").removeClass(
+					"selected");		
+					this.addDataPathButton.removeAttr("disabled");
+				};
+				
+				/**
+				 * 
+				 */
+				ProcessDataPathPropertiesPage.prototype.populateDataPathFields = function(
+						dataPath) {
+					this.dataPathNameInput.val(dataPath.name);
+					this.dataPathDirectionSelect.val(dataPath.direction);
+					this.descriptorInput.val(dataPath.descriptor);
+					this.keyDescriptorInput.val(dataPath.keyDescriptor);
+					this.dataPathDataSelect.val(dataPath.dataFullId);
+					this.dataPathPathInput.val(dataPath.dataPath);
+					this.addDataPathButton.attr("disabled", true);
 				};
 			}
 		});

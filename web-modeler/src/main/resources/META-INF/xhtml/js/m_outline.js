@@ -707,6 +707,8 @@ define(
 																+ model.id
 																+ "&structuredDataTypeId="
 																+ structuredDataType.id
+																+ "&structuredDataTypeName="
+																+ structuredDataType.name
 																+ "&fullId="
 																+ structuredDataType
 																		.getFullId(),
