@@ -1473,9 +1473,9 @@ define(
 							.moveDiv(
 									{
 										"x" : textPrimitive.auxiliaryProperties.callbackScope.x
-												+ X_OFFSET + 27 - scrollPos.left,
+												+ X_OFFSET + textPrimitive.auxiliaryProperties.callbackScope.width/5 - scrollPos.left,
 										"y" : textPrimitive.auxiliaryProperties.callbackScope.y
-												+ Y_OFFSET - 5 -scrollPos.top
+												+ Y_OFFSET + textPrimitive.auxiliaryProperties.callbackScope.height/3 -scrollPos.top
 									}).show().trigger("dblclick");
 					this.symbolEditMode = true;
 					m_utils.debug("editable activated");
