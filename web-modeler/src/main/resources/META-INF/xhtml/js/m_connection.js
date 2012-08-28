@@ -1235,7 +1235,8 @@ define(
 					this.path.remove();
 					this.removeFlyOutMenu();
 					this.removeProximitySensor();
-
+					m_utils.removeItemFromArray(
+							this.diagram.currentSelection, this);
 					m_utils.removeItemFromArray(
 							this.diagram.connections, this);
 					// Remove this connection from FROM and TO Symbol's
