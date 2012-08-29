@@ -25,6 +25,8 @@ define(
 
 					gatewaySymbol.modelElement = m_activity
 							.createGatewayActivity(diagram.process);
+					// Register the symbol
+					gatewaySymbol.diagram.process.gateways[gatewaySymbol.modelElement.id] = gatewaySymbol.modelElement;
 
 					return gatewaySymbol;
 				},
@@ -56,11 +58,11 @@ define(
 				 */
 				GatewaySymbol.prototype.bind = function(diagram) {
 					this.type = m_constants.GATEWAY_SYMBOL;
-					
+
 					this.diagram = diagram;
-										
+
 					this.diagram.lastSymbol = this;
-					
+
 					this.propertiesPanel = m_gatewayPropertiesPanel
 							.getInstance();
 					this.path = null;
@@ -70,14 +72,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.toString = function() {
 					return "Lightdust.GatewaySymbol";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.initializeFromJson = function(lane) {
 					m_utils.inheritMethods(this.modelElement.prototype,
@@ -90,7 +92,7 @@ define(
 					this.parentSymbolId = lane.id;
 
 					// Patch width and height
-					
+
 					this.width = m_constants.GATEWAY_SYMBOL_DEFAULT_WIDTH;
 					this.height = m_constants.GATEWAY_SYMBOL_DEFAULT_HEIGHT;
 					this.parentSymbol.containedSymbols.push(this);
@@ -100,7 +102,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.createTransferObject = function() {
 					var transferObject = {};
@@ -118,7 +120,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.getPath = function(withId) {
 					var path = "/models/" + this.diagram.model.id
@@ -128,12 +130,12 @@ define(
 					if (withId) {
 						path += "/" + this.modelElement.id;
 					}
-					
+
 					return path;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.createPrimitives = function() {
 					this.path = m_canvasManager
@@ -192,13 +194,13 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.initializeEventHandling = function() {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.getPathSvgString = function() {
 					return "M "
@@ -224,7 +226,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.getPlusPathSvgString = function() {
 					return "M "
@@ -248,7 +250,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.getCrossPathSvgString = function() {
 					return "M "
@@ -274,7 +276,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.adjustPrimitives = function(dX, dY) {
 					this.path.attr({
@@ -294,7 +296,7 @@ define(
 					});
 
 				};
-				
+
 				/**
 				 * Registers symbol in specific lists in the diagram and model
 				 * element in the process.
@@ -305,7 +307,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.refreshFromModelElement = function() {
 					if (this.modelElement.gatewayType == m_constants.AND_GATEWAY_TYPE) {
@@ -328,7 +330,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.createFlyOutMenu = function() {
 					this
@@ -383,7 +385,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.highlight = function() {
 					this.path.attr({
@@ -401,7 +403,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.dehighlight = function() {
 					this.path.attr({
@@ -436,7 +438,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function GatewaySymbol_connectToClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -444,7 +446,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function GatewaySymbol_connectToActivityClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -452,7 +454,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function GatewaySymbol_connectToGatewayClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -460,7 +462,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function GatewaySymbol_connectToEndEventClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -468,21 +470,21 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function GatewaySymbol_removeClosure() {
 				this.auxiliaryProperties.callbackScope.createAndSubmitDeleteCommand();
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function GatewaySymbol_switchToXorGatewayClosure() {
 				this.auxiliaryProperties.callbackScope.switchToXorGateway();
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function GatewaySymbol_switchToAndGatewayClosure() {
 				this.auxiliaryProperties.callbackScope.switchToAndGateway();

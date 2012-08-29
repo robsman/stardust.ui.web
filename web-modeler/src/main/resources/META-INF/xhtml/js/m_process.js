@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -25,20 +25,20 @@ define([ "m_utils", "m_constants", "m_modelElement" ], function(m_utils,
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	function Process() {
 		m_utils.inheritMethods(Process.prototype, m_modelElement.create());
 
 		/**
-		 * 
+		 *
 		 */
 		Process.prototype.toString = function() {
 			return "Lightdust.Process";
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		Process.prototype.initializeFromJson = function(model) {
 			this.type = m_constants.PROCESS_DEFINITION;
@@ -48,7 +48,7 @@ define([ "m_utils", "m_constants", "m_modelElement" ], function(m_utils,
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		Process.prototype.getPath = function(withId) {
 			var path = "/models/" + this.model.id + "/processes";
@@ -61,7 +61,7 @@ define([ "m_utils", "m_constants", "m_modelElement" ], function(m_utils,
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		Process.prototype.rename = function(id, name) {
 			delete this.model.processes[this.id];
@@ -72,7 +72,7 @@ define([ "m_utils", "m_constants", "m_modelElement" ], function(m_utils,
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		Process.prototype.getNewEventIndex = function() {
 			var index = 0;
@@ -87,7 +87,7 @@ define([ "m_utils", "m_constants", "m_modelElement" ], function(m_utils,
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		Process.prototype.getNewActivityIndex = function() {
 			var index = 0;
@@ -102,7 +102,22 @@ define([ "m_utils", "m_constants", "m_modelElement" ], function(m_utils,
 		};
 
 		/**
-		 * 
+		 *
+		 */
+		Process.prototype.getNewGatewayIndex = function() {
+			var index = 0;
+
+			for ( var n in this.gateways) {
+				++index;
+			}
+
+			++index;
+
+			return index;
+		};
+
+		/**
+		 *
 		 */
 		Process.prototype.getDataFlowIndex = function() {
 			var index = 0;
@@ -117,7 +132,7 @@ define([ "m_utils", "m_constants", "m_modelElement" ], function(m_utils,
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		Process.prototype.getControlFlowIndex = function() {
 			var index = 0;

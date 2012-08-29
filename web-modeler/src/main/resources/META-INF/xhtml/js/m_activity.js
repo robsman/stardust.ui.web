@@ -48,7 +48,7 @@ define(
 				},
 
 				createGatewayActivity : function(process) {
-					var index = process.getNewActivityIndex();
+					var index = process.getNewGatewayIndex();
 					var activity = new Activity("Gateway" + index);
 
 					activity.initialize("Gateway " + index,
