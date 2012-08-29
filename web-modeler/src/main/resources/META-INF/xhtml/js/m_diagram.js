@@ -297,7 +297,6 @@ define(
 					"diagram" : this
 				},
 						function(event) {
-							m_utils.debug(event.pageX + ", " + event.pageY);
 							event.data.diagram
 									.onGlobalMouseMove(event.pageX
 											- X_OFFSET
@@ -1025,8 +1024,8 @@ define(
 							// get their events first
 
 							if (this.currentConnection.toAnchorPoint.symbol == null) {
-								m_utils
-										.debug("this.currentConnection.toAnchorPoint.symbol == null");
+								/*m_utils
+										.debug("this.currentConnection.toAnchorPoint.symbol == null");*/
 
 								this.currentConnection.toAnchorPoint.moveTo(x
 										* this.zoomFactor, y * this.zoomFactor);
