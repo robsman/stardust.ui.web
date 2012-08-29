@@ -51,7 +51,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function SwimlaneSymbol() {
 				var symbol = m_symbol.createSymbol();
@@ -77,7 +77,7 @@ define(
 				 */
 				SwimlaneSymbol.prototype.bind = function(diagram, parentSymbol) {
 					this.type = m_constants.SWIMLANE_SYMBOL;
-					
+
 					this.diagram = diagram;
 					this.orientation = diagram.flowOrientation;
 					this.parentSymbol = parentSymbol;
@@ -92,7 +92,7 @@ define(
 								: m_constants.LANE_DEFAULT_WIDTH;
 					}
 					// TODO Hack to only apply it to new symbols
-					
+
 					if (this.width == 0) {
 						this.width = diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? m_constants.LANE_DEFAULT_WIDTH
 								: m_constants.LANE_DEFAULT_HEIGHT;
@@ -110,14 +110,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.toString = function() {
 					return "Lightdust.SwimlaneSymbol";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.initializeFromJson = function() {
 					this.prepareNoPosition();
@@ -155,7 +155,7 @@ define(
 				 * after the swimlane is repositioned.
 				 */
 				SwimlaneSymbol.prototype.complete = function() {
-					this.completeNoTransfer(this);					
+					this.completeNoTransfer(this);
 
 					if (this.requiresParentSymbol())
 					{
@@ -165,7 +165,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.createTransferObject = function() {
 					var transferObject = {};
@@ -230,7 +230,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.getPath = function(withId) {
 					var path = "/models/" + this.diagram.model.id
@@ -240,19 +240,19 @@ define(
 					if (withId) {
 						path += "/" + this.id;
 					}
-					
+
 					return path;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.isContainerSymbol = function() {
 					return true;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.createPrimitives = function() {
 					this.borderRectangle = m_canvasManager
@@ -303,7 +303,7 @@ define(
 									});
 
 					this.addToPrimitives(this.text);
-					
+
 
 					this.minimizeIcon = m_canvasManager
 							.drawImageAt(
@@ -331,7 +331,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.adjustPrimitives = function(dX, dY) {
 					this.borderRectangle.attr({
@@ -400,7 +400,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.createFlyOutMenuBackground = function(
 						x, y, height, width) {
@@ -430,7 +430,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.initializeEventHandling = function() {
 					this.borderRectangle.auxiliaryProperties.callbackScope = this;
@@ -442,16 +442,16 @@ define(
 
 					this.topRectangle.click(SwimlaneSymbol_clickClosure);
 					this.topRectangle.hover(SwimlaneSymbol_topRect_hoverInClosure,
-							SwimlaneSymbol_hoverOutClosure);
+							SwimlaneSymbol_topRect_hoverOutClosure);
 					this.minimizeIcon
 							.click(SwimlaneSymbol_minimizeClickClosure);
 					this.maximizeIcon
 							.click(SwimlaneSymbol_maximizeClickClosure);
 				};
-				
+
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.onMinimizeIconClick = function() {
 					this.cacheWidth = this.width;
@@ -472,7 +472,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.onMaximizeIconClick = function() {
 					this.width = this.cacheWidth;
@@ -488,7 +488,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.adjustFlyOutMenu = function(x, y,
 						width, height) {
@@ -499,9 +499,9 @@ define(
 
 					this.adjustFlyOutMenuItems(x, y, width, height);
 				};
-				
+
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.adjustFlyOutMenuItems = function(x, y,
 						width, height) {
@@ -516,7 +516,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.createFlyOutMenu = function() {
 					this.addFlyOutMenuItems(
@@ -527,11 +527,11 @@ define(
 								clickHandler : SwimlaneSymbol_removeClosure
 							}],[]);
 				};
-				
+
 
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.createProximitySensorPrimitive = function() {
 					var offset = m_constants.PROXIMITY_SENSOR_MARGIN / 2;
@@ -548,7 +548,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 * @param x
 				 * @param y
 				 * @param width
@@ -569,16 +569,16 @@ define(
 				SwimlaneSymbol.prototype.click = function(x, y, event) {
 					this.select();
 				};
-				
+
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.proximityHoverIn = function(event) {
 					if (this.diagram.isInNormalMode()) {
 						var scrollPos = m_modelerUtils.getModelerScrollPosition();
 						var xPos=event.pageX - this.diagram.X_OFFSET;
 						var yPos=event.pageY - this.diagram.Y_OFFSET;
-						
+
 						var offset = m_constants.PROXIMITY_SENSOR_MARGIN;
 						//the lane x co-ord , width minus proximity width will give the right proximity margin
 						var rigthProximityMargin=this.x + this.width - offset - this.diagram.X_OFFSET;
@@ -588,7 +588,7 @@ define(
 						var topProximityMargin=this.y + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT + offset;
 						// the lane height minus proximity width will give the bottom proximity margin
 						var bottomProximityMargin = this.height - offset -this.diagram.Y_OFFSET;
-						
+
 						// If the mouse pointer is on edge of top header
 						// the flyout menu should appear below Header and within swimlane
 						if (yPos <= topProximityMargin) {
@@ -599,14 +599,14 @@ define(
 							this.adjustFlyOutMenu(xPos + scrollPos.left, yPos);
 						}
 						else if((rigthProximityMargin - scrollPos.left) < parseInt(xPos.valueOf())){
-							this.adjustFlyOutMenu(rigthProximityMargin - offset,yPos+scrollPos.top);	
+							this.adjustFlyOutMenu(rigthProximityMargin - offset,yPos+scrollPos.top);
 						}
 						else if((leftProximityMargin - scrollPos.left) > parseInt(xPos.valueOf())){
-							this.adjustFlyOutMenu(leftProximityMargin -  offset,yPos+scrollPos.top);	
+							this.adjustFlyOutMenu(leftProximityMargin -  offset,yPos+scrollPos.top);
 						}
 						else if(bottomProximityMargin < parseInt(yPos.valueOf())){
 							this.adjustFlyOutMenu(xPos + scrollPos.left, this.y
-									+ bottomProximityMargin + scrollPos.top + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT);	
+									+ bottomProximityMargin + scrollPos.top + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
 						}
  						else {
 							return;
@@ -615,9 +615,9 @@ define(
 					}
 				};
 
-				
+
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.proximityHoverOut = function(event) {
 					if (this.diagram.isInNormalMode()) {
@@ -626,7 +626,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				/*
 				 * SwimlaneSymbol.prototype.deselect = function() {
@@ -635,7 +635,7 @@ define(
 				 */
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.refreshFromModelElement = function() {
 					if (this.participantFullId != null) {
@@ -649,58 +649,66 @@ define(
 					}
 					this.participantName = this.text.attr("text");
 				};
-				
+
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.remove = function(){
-					
+
 					/* Remove child symbols. */
 					while (this.containedSymbols.length > 0) {
 						this.containedSymbols[0].remove();
 					}
-					
+
 					this.removePrimitives();
 					this.removeFlyOutMenu();
 					this.removeProximitySensor();
-					
+
 					this.parentSymbol.removeLane(this);
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.hoverIn = function(x,y) {
 					this.showPointerCursor();
 					this.borderRectangle.attr("stroke",
 							m_constants.SELECT_STROKE_COLOR);
 				};
-				
+
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.topRectangleHoverIn = function(event){
-					this.showPointerCursor();
-					this.topRectangle.attr({
-						"stroke" : m_constants.SELECT_STROKE_COLOR,
-						"fill" : m_constants.SELECT_STROKE_COLOR
-					});
-					
-					var scrollPos = m_modelerUtils.getModelerScrollPosition();
-					var xPos=event.pageX - this.diagram.X_OFFSET + scrollPos.left;
-					var yPos=event.pageY - this.diagram.Y_OFFSET + scrollPos.top;
-					var xMargin = this.x + this.width; // get the right x margin
-					if(xPos + m_constants.DEFAULT_FLY_OUT_MENU_WIDTH >  xMargin) //if the box extends from the box, move to left
-					{
-						xPos = xPos - m_constants.DEFAULT_FLY_OUT_MENU_WIDTH;
+					if (this.diagram.isInNormalMode()) {
+						this.showPointerCursor();
+						this.topRectangle.attr({
+							"stroke" : m_constants.SELECT_STROKE_COLOR,
+							"fill" : m_constants.SELECT_STROKE_COLOR
+						});
+
+						var scrollPos = m_modelerUtils
+								.getModelerScrollPosition();
+						var xPos = event.pageX - this.diagram.X_OFFSET
+								+ scrollPos.left;
+						var yPos = event.pageY - this.diagram.Y_OFFSET
+								+ scrollPos.top;
+						// get the right x margin
+						var xMargin = this.x + this.width;
+						// if the box extends from the box, move to left
+						if (xPos + m_constants.DEFAULT_FLY_OUT_MENU_WIDTH > xMargin) {
+							xPos = xPos
+									- m_constants.DEFAULT_FLY_OUT_MENU_WIDTH;
+						}
+						this.adjustFlyOutMenu(xPos, this.y
+								+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
+						this.showFlyOutMenu();
 					}
-					this.adjustFlyOutMenu(xPos,this.y+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT);	
-					this.showFlyOutMenu();
 				};
-				
-				
+
+
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.hoverOut = function() {
 					this.showDefaultCursor();
@@ -713,21 +721,21 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.dragStart = function() {
 					// Do nothing
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.drag = function(dX, dY, x, y) {
 					// Do nothing
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.dragStop = function() {
 					// Do nothing
@@ -739,7 +747,7 @@ define(
 				SwimlaneSymbol.prototype.stretchLeft = function(dX, dY, x, y) {
 					this.width = this.preDragState.width - dX;
 					this.x = this.preDragState.x + dX;
-						
+
 					this.adjustGeometry();
 				};
 
@@ -749,21 +757,21 @@ define(
 				SwimlaneSymbol.prototype.stretchTop = function(dX, dY, x, y) {
 					this.height = this.preDragState.height - dY;
 					this.y = this.preDragState.y + dY;
-					
+
 					this.adjustGeometry();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.stretchRight = function(dX, dY, x, y) {
 					this.width = this.preDragState.width + dX;
-					
+
 					this.adjustGeometry();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.stretchBottom = function(dX, dY, x, y) {
 					this.height = this.preDragState.height + dY;
@@ -772,10 +780,10 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.stretchStop = function() {
-					
+
 					// Check if the minimizing of the lane height is permissible given that
 					// adjoining lanes may have content longer than this lane.
 					var isStretchWithinLimitForOtherLanes = true;
@@ -792,7 +800,7 @@ define(
 							|| parseInt(this.x + this.width) < parseInt(this.preDragState.containedSymbolsRight)
 							|| parseInt(this.y) > parseInt(this.preDragState.containedSymbolsTop)
 							|| parseInt(this.y + this.height) < parseInt(this.preDragState.containedSymbolsBottom)) {
-						
+
 						//Reset the lane to pre-drag position
 						this.x = this.preDragState.x;
 						this.y = this.preDragState.y;
@@ -850,7 +858,7 @@ define(
 					var right = this.x;
 					var top = this.y + this.height;
 					var bottom = this.y;
-					
+
 					for ( var n in this.containedSymbols) {
 						left = Math.min(this.containedSymbols[n].x
 								- m_constants.POOL_SWIMLANE_MARGIN, left);
@@ -863,7 +871,7 @@ define(
 								+ this.containedSymbols[n].height
 								+ m_constants.POOL_SWIMLANE_MARGIN, bottom);
 					}
-					
+
 					return {
 						left : left,
 						right : right,
@@ -873,7 +881,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.containsPosition = function(x, y) {
 					// TODO Add recursion for nested swimlanes
@@ -887,7 +895,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.adjustToSymbolBoundaries = function(x,
 						y) {
@@ -901,7 +909,7 @@ define(
 						x : this.x,
 						y : this.y,
 						width : this.width,
-						height : this.height						
+						height : this.height
 					}
 
 					for ( var n in this.containedSymbols) {
@@ -921,7 +929,7 @@ define(
 					this.width = right - left;
 					this.y = top;
 					this.height = bottom - top;
-					
+
 					// If Symbol is moved beyond the starting Y margin and
 					// Height has increased, calculate the height change to move
 					// Symbol
@@ -960,9 +968,9 @@ define(
 						this.containedSymbols[n].onParentSymbolChange();
 					}
 				};
-				
+
 				/**
-				 * 
+				 *
 				 */
 				SwimlaneSymbol.prototype.getAllDataSymbols = function(dataSymbols) {
 					for ( var n in this.dataSymbols) {
@@ -982,32 +990,42 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function SwimlaneSymbol_clickClosure() {
 				this.auxiliaryProperties.callbackScope.click();
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function SwimlaneSymbol_hoverInClosure() {
 				this.auxiliaryProperties.callbackScope.hoverIn();
 			}
-			
+
+			/**
+			 *
+			 */
 			function SwimlaneSymbol_topRect_hoverInClosure(event){
 				this.auxiliaryProperties.callbackScope.topRectangleHoverIn(event);
 			}
 
 			/**
-			 * 
+			 *
+			 */
+			function SwimlaneSymbol_topRect_hoverOutClosure(event){
+				this.auxiliaryProperties.callbackScope.proximityHoverOut(event);
+			}
+
+			/**
+			 *
 			 */
 			function SwimlaneSymbol_hoverOutClosure() {
 				this.auxiliaryProperties.callbackScope.hoverOut();
 			}
-			
+
 			function SwimlaneSymbol_removeClosure(){
-				var cbObj = this;	
+				var cbObj = this;
 				if (parent.iPopupDialog) {
 					parent.iPopupDialog.openPopup({
 						attributes : {
@@ -1032,19 +1050,19 @@ define(
 					m_utils.debug("Error: unable to get iPopupDialog");
 				}
 			}
-			
+
 			/**
-			 * 
+			 *
 			 */
 			function SwimlaneSymbol_minimizeClickClosure() {
 				this.auxiliaryProperties.callbackScope.onMinimizeIconClick();
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function SwimlaneSymbol_maximizeClickClosure() {
 				this.auxiliaryProperties.callbackScope.onMaximizeIconClick();
 			}
-			
+
 		});
