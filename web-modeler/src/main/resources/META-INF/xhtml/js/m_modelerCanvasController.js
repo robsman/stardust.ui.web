@@ -1352,7 +1352,7 @@ define(
 								y + 1, 20, 16);
 					} else if ('Structured_Data' == attrs.dataTypeType) {
 						var icon = m_canvasManager.drawImageAt(
-								"../../images/icons/struct_data.gif", x + 17,
+								"../../images/icons/data-structured.png", x + 17,
 								y + 1, 20, 16);
 					}
 				}
@@ -1514,7 +1514,7 @@ define(
 					} else if ('Structured_Data' == attrs.dataTypeType
 							|| 'structuredDataType' == attrs.dataTypeType) {
 						var icon = m_canvasManager.drawImageAt(
-								"../../images/icons/struct_data.gif", x + 17,
+								"../../images/icons/data-structured.png", x + 17,
 								y + 1, 20, 16);
 						datatype.customProps.type = "structuredDataType";
 					}

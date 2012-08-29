@@ -1269,13 +1269,13 @@ define(
 										"types" : {
 											"models" : {
 												"icon" : {
-													"image" : "../images/icons/model.gif"
+													"image" : "../images/icons/model.png"
 												},
 												"valid_children" : [ "model" ]
 											},
 											"model" : {
 												"icon" : {
-													"image" : "../images/icons/model.gif"
+													"image" : "../images/icons/model.png"
 												},
 												"valid_children" : [
 														"participants",
@@ -1286,7 +1286,7 @@ define(
 											},
 											"participants" : {
 												"icon" : {
-													"image" : "../images/icons/world.png"
+													"image" : "../images/icons/participants.png"
 												}
 											},
 											"roleParticipant" : {
@@ -1301,7 +1301,7 @@ define(
 											},
 											"conditionalPerformerParticipant" : {
 												"icon" : {
-													"image" : "../images/icons/conditional.gif"
+													"image" : "../images/icons/conditional.png"
 												}
 											},
 											"process" : {
@@ -1321,72 +1321,72 @@ define(
 											},
 											"applications" : {
 												"icon" : {
-													"image" : "../images/icons/applications.gif"
+													"image" : "../images/icons/applications.png"
 												}
 											},
 											"interactive" : {
 												"icon" : {
-													"image" : "../images/icons/externalWebApp_context_icon.gif"
+													"image" : "../images/icons/application-c-ext-web.png"
 												}
 											},
 											"plainJava" : {
 												"icon" : {
-													"image" : "../images/icons/plainJava_application_icon.gif"
+													"image" : "../images/icons/application-plain-java.png"
 												}
 											},
 											"jms" : {
 												"icon" : {
-													"image" : "../images/icons/jms_application.gif"
+													"image" : "../images/icons/application-jms.png"
 												}
 											},
 											"webservice" : {
 												"icon" : {
-													"image" : "../images/icons/webservice_application.gif"
+													"image" : "../images/icons/application-web-service.png"
 												}
 											},
 											"dmsOperation" : {
 												"icon" : {
-													"image" : "../images/icons/dms_application.gif"
+													"image" : "../images/icons/application-dms.png"
 												}
 											},
 											"mailBean" : {
 												"icon" : {
-													"image" : "../images/icons/mail_application_icon.gif"
+													"image" : "../images/icons/application-mail.png"
 												}
 											},
 											"messageParsingBean" : {
 												"icon" : {
-													"image" : "../images/icons/message_parsing_application_icon.gif"
+													"image" : "../images/icons/application-message-p.png"
 												}
 											},
 											"messageSerializationBean" : {
 												"icon" : {
-													"image" : "../images/icons/message_serialization_application_icon.gif"
+													"image" : "../images/icons/application-message-s.png"
 												}
 											},
 											"messageTransformationBean" : {
 												"icon" : {
-													"image" : "../images/icons/message_transformation_application_icon.gif"
+													"image" : "../images/icons/application-message-trans.png"
 												}
 											},
 											"camelBean" : {
 												"icon" : {
-													"image" : "../images/icons/application_java.gif"
+													"image" : "../images/icons/application-camel.png"
 												}
 											},
 											"camelSpringProducerApplication" : {
 												"icon" : {
-													"image" : "../images/icons/application_java.gif"
+													"image" : "../images/icons/application-camel.png"
 												}
 											},
 											"rulesEngineBean" : {
 												"icon" : {
-													"image" : "../images/icons/application_java.gif"
+													"image" : "../images/icons/application-plain-java.png"
 												}
 											},
 											"sessionBean" : {
 												"icon" : {
-													"image" : "../images/icons/sessionBean_application_icon.gif"
+													"image" : "../images/icons/application-session.png"
 												}
 											},
 											"springBean" : {
@@ -1396,57 +1396,57 @@ define(
 											},
 											"xslMessageTransformationBean" : {
 												"icon" : {
-													"image" : "../images/icons/message_transformation_application_icon.gif"
+													"image" : "../images/icons/application-message-trans.png"
 												}
 											},
 											"data" : {
 												"icon" : {
-													"image" : "../images/icons/data.gif"
+													"image" : "../images/icons/data.png"
 												}
 											},
 											"primitive" : {
 												"icon" : {
-													"image" : "../images/icons/primitive_data.gif"
+													"image" : "../images/icons/data-primitive.png"
 												}
 											},
 											"hibernate" : {
 												"icon" : {
-													"image" : "../images/icons/hibernate_data_icon.gif"
+													"image" : "../images/icons/data-hibernate.png"
 												}
 											},
 											"struct" : {
 												"icon" : {
-													"image" : "../images/icons/struct_data.gif"
+													"image" : "../images/icons/data-structured.png"
 												}
 											},
 											"serializable" : {
 												"icon" : {
-													"image" : "../images/icons/serializable_data.gif"
+													"image" : "../images/icons/data-serializable.png"
 												}
 											},
 											"entity" : {
 												"icon" : {
-													"image" : "../images/icons/entity_data.gif"
+													"image" : "../images/icons/data-entity.png"
 												}
 											},
 											"dmsDocument" : {
 												"icon" : {
-													"image" : "../images/icons/blue-document.png"
+													"image" : "../images/icons/data-document.png"
 												}
 											},
 											"dmsDocumentList" : {
 												"icon" : {
-													"image" : "../images/icons/dms_document_list.gif"
+													"image" : "../images/icons/data-document-list.png"
 												}
 											},
 											"dmsFolder" : {
 												"icon" : {
-													"image" : "../images/icons/dms_folder.gif"
+													"image" : "../images/icons/data-folder.png"
 												}
 											},
 											"dmsFolderList" : {
 												"icon" : {
-													"image" : "../images/icons/dms_folder_list.gif"
+													"image" : "../images/icons/data-folder-list.png"
 												}
 											}
 										}
@@ -1465,10 +1465,18 @@ define(
 						alert("Funtionality not implemented yet");
 					} else if ("saveAllModels" == data.id) {
 						saveAllModels();
+						updateLastSavedDate();
 					} else if ("refreshModels" == data.id) {
 						refresh();
 					}
 				};
+
+				function updateLastSavedDate()
+				{
+					$("#lastSaveDateDisplay").html(
+							"<label>" + moment().format("HH:mm MM-DD-YYYY") + "</label>");
+					$("#lastSaveDateDisplay label").css("font");
+				}
 
 				function saveAllModels() {
 					m_communicationController
@@ -1932,11 +1940,11 @@ define(
 				function changeProfileHandler(profile)
 				{
 					m_utils.debug("===> Changed profile to " + profile);
-					
+
 					m_user.setCurrentRole(profile);
 					m_commandsController.broadcastCommand(m_command.createUserProfileChangeCommand(profile));
 				}
-				
+
 				if (window.parent.EventHub != null) {
 					window.parent.EventHub.events.subscribe("CHANGE_PROFILE", changeProfileHandler);
 				}

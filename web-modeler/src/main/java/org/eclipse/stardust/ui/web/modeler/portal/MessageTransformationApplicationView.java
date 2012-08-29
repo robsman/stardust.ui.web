@@ -9,7 +9,7 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 public class MessageTransformationApplicationView extends AbstractAdapterView
 {
    /**
-    * 
+    *
     */
    public MessageTransformationApplicationView()
    {
@@ -17,12 +17,12 @@ public class MessageTransformationApplicationView extends AbstractAdapterView
             "/plugins/bpm-modeler/views/modeler/messageTransformationApplicationView.html",
             "messageTransformationApplicationFrameAnchor");
    }
-   
+
    @Override
    public void handleEvent(ViewEvent event)
    {
       super.handleEvent(event);
-      
-      event.getView().setIcon("/plugins/bpm-modeler/images/icons/message_transformation_application_icon.gif");
-   }  
+
+      event.getView().setIcon("/plugins/bpm-modeler/images/icons/application-message-trans.png");
+   }
 }

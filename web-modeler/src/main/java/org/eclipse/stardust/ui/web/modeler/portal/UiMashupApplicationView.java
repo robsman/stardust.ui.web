@@ -11,12 +11,12 @@ public class UiMashupApplicationView extends AbstractAdapterView {
    {
       super("/plugins/bpm-modeler/views/modeler/uiMashupApplicationView.html", "uiMashupApplicationFrameAnchor");
    }
-   
+
    @Override
    public void handleEvent(ViewEvent event)
    {
       super.handleEvent(event);
-      
-      event.getView().setIcon("/plugins/bpm-modeler/images/icons/applications.gif");
-   }  
+
+      event.getView().setIcon("/plugins/bpm-modeler/images/icons/applications.png");
+   }
 }

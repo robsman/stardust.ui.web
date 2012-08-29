@@ -6,7 +6,7 @@ require.config({
 	paths : {
 		'jquery' : 'libs/jquery/jquery-1.7.2',
 		'raphael' : 'libs/raphael/2.0.1/raphael',
-
+		'moment' : 'libs/date/moment.min',
 		'jquery-ui': 'libs/jquery/plugins/jquery-ui-1.8.19.custom.min',
 		'jquery.download': 'libs/jquery/plugins/download.jQuery',
 		'jquery.form': 'libs/jquery/plugins/jquery.form',
@@ -19,7 +19,6 @@ require.config({
 		'raphael': {
 			exports: "Raphael"
 		},
-
 		'jquery-ui': ['jquery'],
 		'jquery.download': ['jquery'],
 		'jquery.form': ['jquery'],
@@ -40,6 +39,7 @@ define([
 		 "jquery.simplemodal",
 		 "jquery.url",
 		 "jquery.jstree",
+		 "moment",
 		 "m_utils",
 		 "m_communicationController",
 		 "extensions",

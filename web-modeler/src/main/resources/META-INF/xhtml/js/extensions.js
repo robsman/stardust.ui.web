@@ -241,50 +241,50 @@ var extensions = {
 			{
 				id : "interactive",
 				readableName : "UI Mashup",
-				iconPath : "../images/icons/externalWebApp_context_icon.gif",
+				iconPath : "../images/icons/application-c-ext-web.png",
 				viewId : "uiMashupApplicationView"
 			},
 			{
 				id : "webservice",
 				readableName : "Web Service",
-				iconPath : "../images/icons/webservice_application.gif",
+				iconPath : "../images/icons/application-web-service.png",
 				viewId : "webServiceApplicationView"
 			},
 			{
 				id : "messageTransformationBean",
 				readableName : "Message Transformation Application",
-				iconPath : "../images/icons/message_transformation_application_icon.gif",
+				iconPath : "../images/icons/application-message-trans.png",
 				viewId : "messageTransformationApplicationView"
 			}, {
 				id : "camelBean",
 				readableName : "Camel Application",
-				iconPath : "../images/icons/application_java.gif",
+				iconPath : "../images/icons/application-camel.png",
 				viewId : "camelApplicationView"
 			}, {
 				id : "plainJava",
 				readableName : "Plain Java Application",
-				iconPath : "../images/icons/plainJava_application_icon.gif",
+				iconPath : "../images/icons/application-plain-java.png",
 				viewId : "genericApplicationView"
 			}, {
 				id : "rulesEngineBean",
 				readableName : "Business Rules Application",
-				iconPath : "../images/icons/plainJava_application_icon.gif",
+				iconPath : "../images/icons/application-plain-java.png",
 				viewId : "genericApplicationView"
 			} ],
 			dataType : [
 			       			{
 			       				id : "serializable",
 			       				readableName : "Serializable Java Class",
-			       				iconPath : "../images/icons/externalWebApp_context_icon.gif",
+			       				iconPath : "../images/icons/application-c-ext-web.png",
 			       			},
 			       			{
 			       				id : "entity",
 			       				readableName : "Entity Bean",
-			       				iconPath : "../images/icons/webservice_application.gif",
+			       				iconPath : "../images/icons/application-web-service.png",
 			       			},
 			       			{
 			       				id : "dmsDocumentList",
 			       				readableName : "Document List",
-			       				iconPath : "../images/icons/webservice_application.gif",
-			       			}]			
+			       				iconPath : "../images/icons/application-web-service.png",
+			       			}]
 };

@@ -17,6 +17,6 @@ public class CamelApplicationView extends AbstractAdapterView {
    {
       super.handleEvent(event);
       
-      event.getView().setIcon("/plugins/bpm-modeler/images/icons/applications.gif");
+      event.getView().setIcon("/plugins/bpm-modeler/images/icons/applications.png");
    }  
 }

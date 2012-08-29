@@ -11,12 +11,12 @@ public class WebServiceApplicationView extends AbstractAdapterView {
    {
       super("/plugins/bpm-modeler/views/modeler/webServiceApplicationView.html", "webServiceApplicationFrameAnchor");
    }
-   
+
    @Override
    public void handleEvent(ViewEvent event)
    {
       super.handleEvent(event);
-      
-      event.getView().setIcon("/plugins/bpm-modeler/images/icons/webservice_application.gif");
-   }  
+
+      event.getView().setIcon("/plugins/bpm-modeler/images/icons/application-web-service.png");
+   }
 }
