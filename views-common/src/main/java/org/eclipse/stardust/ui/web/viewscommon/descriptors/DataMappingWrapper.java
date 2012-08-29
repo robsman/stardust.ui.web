@@ -40,6 +40,7 @@ import org.eclipse.stardust.engine.core.struct.IXPathMap;
 import org.eclipse.stardust.engine.core.struct.StructuredDataXPathUtils;
 import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.engine.extensions.dms.data.AuditTrailUtils;
+import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalErrorClass;
@@ -372,32 +373,59 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
     */
    public void setValue(Object value)
    {
-
-      if ("Long".equals(type) && value instanceof Long)
+      if ("Long".equals(type))
       {
-         setLongValue((Long) value);
+         if (value instanceof Long)
+         {
+            setLongValue((Long) value);
+         }
+         else if(value instanceof Integer)
+         {
+            setLongValue( Long.valueOf(((Integer)value).intValue()));
+         }
+         else if (value instanceof String)
+         {
+            setLongValue(Long.parseLong((String)value));
+         }
       }
-      if ("Long".equals(type) && value instanceof Integer)
+      else if ("Double".equals(type))
       {
-         setLongValue( Long.valueOf(((Integer)value).intValue()));
-      }
-      else if ("Double".equals(type) && value instanceof Double)
-      {
-         setDoubleValue((Double) value);
+         if(value instanceof Double)
+         {
+            setDoubleValue((Double) value);
+         }
+         else if (value instanceof String)
+         {
+            setDoubleValue(Double.parseDouble((String)value));
+         }
       }
       else if ("String".equals(type) && value instanceof String)
       {
          setStringValue( (String)value);
       }
-      else if ("Boolean".equals(type) && value instanceof Boolean)
+      else if ("Boolean".equals(type))
       {
-         setBooleanValue((Boolean) value);
+         if (value instanceof Boolean)
+         {
+            setBooleanValue((Boolean) value);
+         }
+         else if (value instanceof String)
+         {
+            setBooleanValue(Boolean.parseBoolean((String)value));
+         }
       }
-      else if ("Date".equals(type) && value instanceof Date)
+      else if ("Date".equals(type))
       {
-         setDateValue((Date) value);
+         if(value instanceof Date)
+         {
+            setDateValue((Date) value);
+         }
+         else if (value instanceof String)
+         {
+            setDateValue(DateUtils.parseDateTime((String)value));
+         }
       }
-      else if (null != value && value instanceof Character)
+      else if (null != value && (value instanceof Character || value instanceof String))
       {
          setStringValue(value.toString());
       }
@@ -405,7 +433,6 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
       {
          this.value = value;
       }
-      
    }
 
    private Number convertToNumber(Number value, Class type)

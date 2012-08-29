@@ -10,11 +10,15 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.bcc.views;
 
+
+import static org.eclipse.stardust.ui.web.common.util.DateUtils.parseDateTime;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -23,6 +27,7 @@ import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Direction;
+import org.eclipse.stardust.common.Pair;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -41,6 +46,7 @@ import org.eclipse.stardust.ui.web.bcc.ProcessSearchProvider.FilterAttributes;
 import org.eclipse.stardust.ui.web.bcc.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.bcc.jsf.BusinessControlCenterLocalizerKey;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
+import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
@@ -74,7 +80,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
  * 
  */
 @SuppressWarnings("unchecked")
-public class ProcessSearchBean extends UIComponentBean implements ViewEventHandler
+public class ProcessSearchBean extends UIComponentBean implements ViewEventHandler, ProcessSearchParameterConstants
 {
    private static final long serialVersionUID = 1L;
    public static final String BEAN_ID = "processSearchBean";
@@ -84,14 +90,13 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    public static final String AUXILIARY_ACTIVITIES = "Auxiliary Activities";
    public static final String AUXILIARY_PROCESSES = "Auxiliary Processes";
 
-   // Case related
-   public static final String ALL_PROCESS_SEARCH = "ALL_PROCESS";
-   public static final String CASE_SEARCH = "CASE";
-   public static final String ROOT_PROC_SEARCH = "ROOT_PROCESS";
-
    private static enum SEARCH_OPTION {
       PROCESSES, ACTIVITIES
    }
+
+   private static List<Pair<String, Integer>> ACT_STATES = new ArrayList<Pair<String,Integer>>();
+   private static List<Pair<String, Integer>> PROC_STATES = new ArrayList<Pair<String,Integer>>();
+   private static List<Pair<String, Integer>> PRIORITY_LIST = new ArrayList<Pair<String,Integer>>();
 
    private List<SelectItem> searchOptions;
    private SEARCH_OPTION selectedSearchOption;
@@ -131,6 +136,34 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    private UserAutocompleteMultiSelector ownerSelector;
    private String hierarchyFilter; 
   
+   private boolean preSearch;
+
+   static
+   {
+      PROC_STATES.add(new Pair<String, Integer>("Alive", ProcessSearchProvider.PROCESS_INSTANCE_STATE_ALIVE));
+      PROC_STATES.add(new Pair<String, Integer>("Completed", ProcessSearchProvider.PROCESS_INSTANCE_STATE_COMPLETED));
+      PROC_STATES.add(new Pair<String, Integer>("Aborted", ProcessSearchProvider.PROCESS_INSTANCE_STATE_ABORTED));
+      PROC_STATES.add(new Pair<String, Integer>("Interrupted", ProcessSearchProvider.PROCESS_INSTANCE_STATE_INTERRUPTED));
+      PROC_STATES.add(new Pair<String, Integer>("All", ProcessSearchProvider.PROCESS_INSTANCE_STATE_ALL));
+
+      PRIORITY_LIST.add(new Pair<String, Integer>("All", ProcessSearchProvider.ALL_PRIORITIES));
+      PRIORITY_LIST.add(new Pair<String, Integer>("High", 1));
+      PRIORITY_LIST.add(new Pair<String, Integer>("Normal", 0));
+      PRIORITY_LIST.add(new Pair<String, Integer>("Low", -1));
+
+      ACT_STATES.add(new Pair<String, Integer>("Alive", ActivitySearchProvider.ACTIVITY_INSTANCE_STATE_ALIVE));
+      ACT_STATES.add(new Pair<String, Integer>("Completed", ActivitySearchProvider.ACTIVITY_INSTANCE_STATE_COMPLETED));
+      ACT_STATES.add(new Pair<String, Integer>("Aborted", ActivitySearchProvider.ACTIVITY_INSTANCE_STATE_ABORTED));
+      ACT_STATES.add(new Pair<String, Integer>("Suspended", ActivitySearchProvider.ACTIVITY_INSTANCE_STATE_SUSPENDED));
+      ACT_STATES.add(new Pair<String, Integer>("Hibernated", ActivitySearchProvider.ACTIVITY_INSTANCE_STATE_HIBERNATED));
+      ACT_STATES.add(new Pair<String, Integer>("Aborting", ActivitySearchProvider.ACTIVITY_INSTANCE_STATE_ABORTING));
+      ACT_STATES.add(new Pair<String, Integer>("Created", ActivitySearchProvider.ACTIVITY_INSTANCE_STATE_CREATED));
+      ACT_STATES.add(new Pair<String, Integer>("Application", ActivitySearchProvider.ACTIVITY_INSTANCE_STATE_APPLICATION));
+      ACT_STATES.add(new Pair<String, Integer>("Interrupted", ActivitySearchProvider.ACTIVITY_INSTANCE_STATE_INTERRUPTED));
+      ACT_STATES.add(new Pair<String, Integer>("All", ActivitySearchProvider.ACTIVITY_INSTANCE_STATE_ALL));
+   }
+   
+   
    public ProcessSearchBean()
    {
       super(ResourcePaths.V_processSearch);
@@ -158,7 +191,214 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       {
          trace.debug("Initializing ProcessSearchBean...");
          initializeBean();
+
+         prepopulateCriteria(event.getView());
       }
+      else if (ViewEventType.ACTIVATED == event.getType())
+      {
+         if (preSearch)
+         {
+            performSearch();
+            preSearch = false;
+         }
+      }
+   }
+
+   /**
+    * @param view
+    */
+   private void prepopulateCriteria(View view)
+   {
+      if ("PROC".equals(view.getViewParams().get("searchOption")))
+      {
+         prePopulateProcessCriteria(view);   
+      }
+      else if ("ACT".equals(view.getViewParams().get("searchOption")))
+      {
+         prePopulateActivityCriteria(view);  
+      }
+   }
+
+   /**
+    * @param view
+    */
+   private void prePopulateProcessCriteria(View view)
+   {
+      preSearch = false;
+      Map<String, Object> params = view.getViewParams();
+      
+      if (SEARCH_OPT_PROCESS.equals(params.get(SEARCH_OPT)))
+      {
+         setSearchOption(0);
+
+         FilterAttributes filterAttributes = getFilterAttributes();
+
+         if (StringUtils.isNotEmpty((String)params.get(STARTED_FROM)))
+            filterAttributes.setStartedFrom(parseDateTime((String)params.get(STARTED_FROM)));
+         
+         if (StringUtils.isNotEmpty((String)params.get(STARTED_TO)))
+            filterAttributes.setStartedTo(parseDateTime((String)params.get(STARTED_TO)));
+         
+         if (StringUtils.isNotEmpty((String)params.get(END_TIME_FROM)))
+            filterAttributes.setEndTimeFrom(parseDateTime((String)params.get(END_TIME_FROM)));
+         
+         if (StringUtils.isNotEmpty((String)params.get(END_TIME_TO)))
+            filterAttributes.setEndTimeTo(parseDateTime((String)params.get(END_TIME_TO)));
+         
+         if (StringUtils.isNotEmpty((String)params.get(STATE)))
+            filterAttributes.setState(findMatch(PROC_STATES, (String)params.get(STATE)));
+         
+         if (StringUtils.isNotEmpty((String)params.get(PRIORITY)))
+            filterAttributes.setPriority(findMatch(PRIORITY_LIST, (String)params.get(PRIORITY)));
+         
+         if (StringUtils.isNotEmpty((String)params.get(ROOT_OID)))
+            filterAttributes.setRootOid(Long.parseLong((String)params.get(ROOT_OID)));
+         
+         if (StringUtils.isNotEmpty((String)params.get(OID)))
+            filterAttributes.setOid(Long.parseLong((String)params.get(OID)));
+         
+         if (StringUtils.isNotEmpty((String)params.get(HIERARCHY)))
+            setHierarchyValue((String)params.get(HIERARCHY));
+
+         if (StringUtils.isNotEmpty((String)params.get(CASE_OWNER)))
+            ownerSelector.searchAndPreSelect((String)params.get(CASE_OWNER));
+       
+         if (CollectionUtils.isNotEmpty((List<String>)params.get(PROCESSES)))
+            preSelectProcesses((List<String>)params.get(PROCESSES));
+
+         if (CollectionUtils.isNotEmpty((Map<String, Object>)params.get(DESCRIPTORS)))
+            preSelectDescriptors((Map<String, Object>)params.get(DESCRIPTORS));
+         
+         preSearch = true;
+      }
+   }
+
+   /**
+    * @param view
+    */
+   private void prePopulateActivityCriteria(View view)
+   {
+      preSearch = false;
+      Map<String, Object> params = view.getViewParams();
+      
+      if (SEARCH_OPT_ACTIVITY.equals(params.get(SEARCH_OPT)))
+      {
+         setSearchOption(1);
+
+         ActivityFilterAttributes filterAttributes = getActivityFilterAttributes();
+
+         if (StringUtils.isNotEmpty((String)params.get(STARTED_FROM)))
+            filterAttributes.setStartedFrom(parseDateTime((String)params.get(STARTED_FROM)));
+         
+         if (StringUtils.isNotEmpty((String)params.get(STARTED_TO)))
+            filterAttributes.setStartedTo(parseDateTime((String)params.get(STARTED_TO)));
+         
+         if (StringUtils.isNotEmpty((String)params.get(MODIFY_TIME_FROM)))
+            filterAttributes.setModifyTimeFrom(parseDateTime((String)params.get(MODIFY_TIME_FROM)));
+         
+         if (StringUtils.isNotEmpty((String)params.get(MODIFY_TIME_TO)))
+            filterAttributes.setModifyTimeTo(parseDateTime((String)params.get(MODIFY_TIME_TO)));
+         
+         if (StringUtils.isNotEmpty((String)params.get(STATE)))
+            filterAttributes.setState(findMatch(ACT_STATES, (String)params.get(STATE)));
+
+         if (StringUtils.isNotEmpty((String)params.get(PRIORITY)))
+            getFilterAttributes().setPriority(findMatch(PRIORITY_LIST, (String)params.get(PRIORITY)));
+
+         if (StringUtils.isNotEmpty((String)params.get(CRITICALITY)))
+            filterAttributes.setCriticality((String)params.get(CRITICALITY));
+
+         if (StringUtils.isNotEmpty((String)params.get(OID)))
+            filterAttributes.setActivityOID(Long.parseLong((String)params.get(OID)));
+
+         if (StringUtils.isNotEmpty((String)params.get(PERFORMER)))
+            performerSelector.searchAndPreSelect((String)params.get(PERFORMER));
+
+         if (CollectionUtils.isNotEmpty((List<String>)params.get(PROCESSES)))
+            preSelectProcesses((List<String>)params.get(PROCESSES));
+
+         if (CollectionUtils.isNotEmpty((List<String>)params.get(ACTIVITIES)))
+            preSelectActivities((List<String>)params.get(ACTIVITIES));
+
+         if (CollectionUtils.isNotEmpty((Map<String, Object>)params.get(DESCRIPTORS)))
+            preSelectDescriptors((Map<String, Object>)params.get(DESCRIPTORS));
+
+         preSearch = true;
+      }
+   }
+
+   /**
+    * @param processes
+    */
+   private void preSelectProcesses(List<String> processes)
+   {
+      List<String> procs = new ArrayList<String>();
+      for (String proc : processes)
+      {
+         if (null != processDefinitions.get(proc))
+         {
+            procs.add(proc);
+         }
+      }
+      selectedProcesses = procs.toArray(new String[1]);
+      processesSelectionChanged();
+   }
+
+   /**
+    * @param activities
+    */
+   private void preSelectActivities(List<String> activities)
+   {
+      List<String> acts = new ArrayList<String>();
+      for (String act : activities)
+      {
+         if (null != activityDefinitions.get(act))
+         {
+            acts.add(act);
+         }
+      }
+      selectedActivities = acts.toArray(new String[1]);
+   }
+
+   /**
+    * @param descriptors
+    */
+   private void preSelectDescriptors(Map<String, Object> descriptors)
+   {
+      String descId;
+      for (Entry<String, Object> descEntry: descriptors.entrySet())
+      {
+         descId = descEntry.getKey();
+         for (DataMappingWrapper dmWrapper : descriptorItems)
+         {
+            String dmId = dmWrapper.getDataMapping().getId();
+            if (dmWrapper.getDataMapping().getId().equals(descId))
+            {
+               dmWrapper.setValue(descEntry.getValue());
+               break;
+            }
+         }
+      }
+   }
+
+   /**
+    * @param list
+    * @param search
+    * @return
+    */
+   private int findMatch(List<Pair<String, Integer>> list, String search)
+   {
+      int defaultVal = list.get(0).getSecond();
+
+      for (Pair<String, Integer> pair : list)
+      {
+         if (search.equals(pair.getFirst()))
+         {
+            return pair.getSecond();
+         }
+      }
+      
+      return defaultVal;
    }
 
    /**
@@ -166,7 +406,15 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
     */
    public void searchOptionChangeListener(ValueChangeEvent event)
    {
-      if (new Integer(1).equals(event.getNewValue()))
+      setSearchOption((Integer)event.getNewValue());
+   }
+
+   /**
+    * @param option = 1 for Activity, else Proc
+    */
+   private void setSearchOption(Integer option)
+   {
+      if (new Integer(1).equals(option))
       {
          selectedSearchOption = SEARCH_OPTION.ACTIVITIES;
          initializeActivityCriteria();
@@ -177,7 +425,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          selectedSearchOption = SEARCH_OPTION.PROCESSES;
       }
       // Will reset the hierarchy filter on change from Activity to Process
-      setHierarchyValue(ALL_PROCESS_SEARCH);
+      setHierarchyValue(HIERARCHY_ALL_PROCESS_SEARCH);
       // This is just to remove/add case related descriptors
       // TODO: Review following code - separate filter can be used show/hide case
       // descriptors
@@ -325,6 +573,14 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          return;
       }
       selectedProcesses = (String[]) event.getNewValue();
+      processesSelectionChanged();
+   }
+
+   /**
+    * 
+    */
+   private void processesSelectionChanged()
+   {
       List<ProcessDefinition> selectedProcessDefs = getSelectedProcessDefs();
       refreshDescriptorTable(selectedProcessDefs);
       refreshActivities(selectedProcessDefs);
@@ -569,13 +825,13 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
     */
    private void setHierarchyValue(String hierarchy)
    {
-      if (CASE_SEARCH.equals(hierarchy))
+      if (HIERARCHY_CASE_SEARCH.equals(hierarchy))
       {
          getFilterAttributes().setIncludeCase(true);
          ownerSelector.setDisabled(false);
          getFilterAttributes().setIncludeRootProcess(false);
       }
-      else if (ROOT_PROC_SEARCH.equals(hierarchy))
+      else if (HIERARCHY_ROOT_PROC_SEARCH.equals(hierarchy))
       {
          getFilterAttributes().setIncludeCase(false);
          ownerSelector.setDisabled(true);
@@ -683,7 +939,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
             "chooseProcess.options.all.label")));
 
       // Case
-      hierarchyFilter = ALL_PROCESS_SEARCH;
+      hierarchyFilter = HIERARCHY_ALL_PROCESS_SEARCH;
       ownerSelector = new UserAutocompleteMultiSelector(false, true);
       ownerSelector.setShowOnlineIndicator(false);
       ownerSelector.setDisabled(true);

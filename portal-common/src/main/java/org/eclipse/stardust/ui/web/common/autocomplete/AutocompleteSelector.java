@@ -91,6 +91,19 @@ public abstract class AutocompleteSelector<T> implements IAutocompleteSelector<T
          }
       }
    }
+   
+   /**
+    * @param searchWord
+    */
+   public void searchAndPreSelect(String searchWord)
+   {
+      matchingData = dataProvider.getMatchingData(searchWord, maxRows);
+      if (matchingData.size() >= 1)
+      {
+         selectedItem = matchingData.get(0);
+         searchValue = selectedItem.getLabel();
+      }
+   }
 
    /* (non-Javadoc)
     * @see org.eclipse.stardust.ui.web.common.autocomplete.IAutocompleteSelector#getSelectedValue()

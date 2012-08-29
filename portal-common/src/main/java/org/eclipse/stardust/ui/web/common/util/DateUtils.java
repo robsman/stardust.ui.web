@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.common.util;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -149,6 +150,48 @@ public class DateUtils
       return simpleDateFormat.format(date);
    }
 
+   /**
+    * @param date
+    * @return
+    */
+   public static Date parseDateTime(String date)
+   {
+      UIViewRoot view = FacesContext.getCurrentInstance().getViewRoot();
+      Locale locale = Locale.getDefault();
+      if (view != null)
+      {
+         locale = view.getLocale();
+      }
+
+      return parseDateTime(date, getDateTimeFormat(), locale, PortalApplication.getInstance().getTimeZone());
+   }
+
+   /**
+    * @param date
+    * @param format
+    * @param locale
+    * @param timezone
+    * @return
+    */
+   public static Date parseDateTime(String date, String format, Locale locale, TimeZone timezone)
+   {
+      if (StringUtils.isNotEmpty(date))
+      {
+         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, locale);
+         simpleDateFormat.setTimeZone(timezone);
+         try
+         {
+            return simpleDateFormat.parse(date);
+         }
+         catch (ParseException e)
+         {
+            // Ignore
+         }
+      }
+      
+      return null;
+   }
+   
    /**
     * TODO: Can use tools like Pretty Time Instead if permissible 
     * @param timeStamp
