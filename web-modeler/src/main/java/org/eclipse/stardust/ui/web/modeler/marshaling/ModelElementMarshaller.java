@@ -1357,19 +1357,16 @@ public abstract class ModelElementMarshaller
       else if (transitionConnection.getSourceNode() instanceof StartEventSymbol)
       {
          modelElementJson = new JsonObject();
-
+         String activityId = ((ActivitySymbolType) transitionConnection.getTargetActivitySymbol()).getActivity()
+               .getId();
          connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
                transitionConnection.getElementOid());
          connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, modelElementJson);
 
          modelElementJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                ModelerConstants.CONTROL_FLOW_LITERAL);
-         modelElementJson.addProperty(
-               ModelerConstants.ID_PROPERTY,
-               transitionConnection.getSourceNode().getElementOid()
-                     + "-"
-                     + ((ActivitySymbolType) transitionConnection.getTargetActivitySymbol()).getActivity()
-                           .getId());
+         modelElementJson.addProperty(ModelerConstants.ID_PROPERTY,
+               transitionConnection.getSourceNode().getElementOid() + "-" + activityId);
 
          connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
                transitionConnection.getSourceNode().getElementOid());
@@ -1377,8 +1374,18 @@ public abstract class ModelElementMarshaller
                ModelerConstants.EVENT_KEY);
          connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
                transitionConnection.getTargetActivitySymbol().getElementOid());
-         connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
-               ModelerConstants.ACTIVITY_KEY);
+         // Added to identify the Gateway for target Symbol
+         if (activityId.toLowerCase().startsWith("gateway"))
+         {
+            connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
+                  ModelerConstants.GATEWAY);
+         }
+         else
+         {
+            connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
+                  ModelerConstants.ACTIVITY_KEY);
+         }
+
       }
       else if (transitionConnection.getTargetNode() instanceof EndEventSymbol)
       {
@@ -1394,7 +1401,7 @@ public abstract class ModelElementMarshaller
                + String.valueOf(transitionConnection.getTargetNode().getElementOid()));
          connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
                transitionConnection.getSourceActivitySymbol().getElementOid());
-         // Added to identify the Activity Type for source Symbol
+         // Added to identify the Gateway for source Symbol
          if (activityId.toLowerCase().startsWith("gateway"))
          {
             connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
