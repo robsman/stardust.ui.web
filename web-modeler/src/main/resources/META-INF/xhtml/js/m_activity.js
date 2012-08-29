@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -55,7 +55,7 @@ define(
 							m_constants.GATEWAY_ACTIVITY_TYPE);
 
 					activity.type = m_constants.GATEWAY;
-					activity.gatewayType = m_constants.AND_GATEWAY_TYPE;
+					activity.gatewayType = m_constants.XOR_GATEWAY_TYPE;
 
 					return activity;
 				},
@@ -64,7 +64,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function Activity(id) {
 				m_utils.inheritMethods(Activity.prototype, m_modelElement
@@ -82,14 +82,14 @@ define(
 				this.processingType = m_constants.SINGLE_PROCESSING_TYPE;
 
 				/**
-				 * 
+				 *
 				 */
 				Activity.prototype.toString = function() {
 					return "Lightdust.Activity";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Activity.prototype.initialize = function(name, activityType) {
 					this.name = name;
