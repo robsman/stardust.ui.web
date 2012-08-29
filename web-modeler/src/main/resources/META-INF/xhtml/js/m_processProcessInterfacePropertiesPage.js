@@ -356,11 +356,21 @@ define(
 
 					for ( var m in this.getModelElement().formalParameters) {
 						var formalParameter = this.getModelElement().formalParameters[m];
+						var content = "<tr id=\"" + m + "\"><td class=\"";
 
-						this.parameterDefinitionsTableBody.append("<tr id=\""
-								+ m + "\"><td>" + formalParameter.name
-								+ "</td><td>" + formalParameter.direction
-								+ "</td><td>" + formalParameter.path + "</td>");
+						if (formalParameter.direction == "IN") {
+							content += "outDataPathListItem";
+						} else {
+							content += "inDataPathListItem";
+						}
+
+						content += "\"><td>" + formalParameter.name;
+
+						content += "</td><td>" + formalParameter.direction
+						content += "</td><td>" + formalParameter.path + "</td>";
+
+						this.parameterDefinitionsTableBody.append(content);
+
 						jQuery("table#parameterDefinitionsTable tr")
 								.mousedown(
 										{

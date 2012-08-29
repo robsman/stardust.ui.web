@@ -613,6 +613,8 @@ define(
 														+ model.id
 														+ "&applicationId="
 														+ application.id
+														+ "&applicationName="
+														+ application.name
 														+ "&fullId="
 														+ application
 																.getFullId(),
@@ -632,6 +634,8 @@ define(
 																+ model.id
 																+ "&applicationId="
 																+ application.id
+																+ "&applicationName="
+																+ application.name
 																+ "&fullId="
 																+ application
 																		.getFullId(),
@@ -650,6 +654,8 @@ define(
 														+ model.id
 														+ "&applicationId="
 														+ application.id
+														+ "&applicationName="
+														+ application.name
 														+ "&fullId="
 														+ application
 																.getFullId(),
@@ -690,6 +696,8 @@ define(
 														+ model.id
 														+ "&applicationId="
 														+ application.id
+														+ "&applicationName="
+														+ application.name
 														+ "&fullId="
 														+ application
 																.getFullId(),

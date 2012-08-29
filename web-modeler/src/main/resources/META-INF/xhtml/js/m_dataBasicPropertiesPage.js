@@ -101,5 +101,12 @@ define(
 					
 					return false;
 				};
+				
+				/**
+				 * 
+				 */
+				DataBasicPropertiesPage.prototype.submitDataChanges = function(dataChanges) {
+					this.submitChanges(dataChanges);
+				};
 			}
 		});
