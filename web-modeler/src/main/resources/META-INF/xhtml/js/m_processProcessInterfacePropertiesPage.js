@@ -62,11 +62,12 @@ define(
 							.mapInputId("parameterDefinitionPathInput");
 					this.addParameterDefinitionButton = this
 							.mapInputId("addParameterDefinitionButton");
-					
-					this.dataTypeSelector = m_dataTypeSelector.create("parameterDefinitionTypeSelector");
-					
+
+					this.dataTypeSelector = m_dataTypeSelector
+							.create("parameterDefinitionTypeSelector");
+
 					this.dataTypeSelector.setPrimitiveDataType();
-					
+
 					this.addParameterDefinitionButton.click({
 						page : this
 					}, function(event) {
@@ -203,31 +204,59 @@ define(
 					}, function(event) {
 						event.data.page.submitProtocol();
 					});
-					this.parameterDefinitionNameInput.change({
-						page : this
-					}, function(event) {
-						event.data.page.currentParameterDefinition.name = event.data.page.parameterDefinitionNameInput.val();
-						event.data.page.initializeParameterDefinitionsTable();
-					});
-					this.parameterDefinitionDirectionSelect.change({
-						page : this
-					}, function(event) {
-						event.data.page.currentParameterDefinition.direction = event.data.page.parameterDefinitionDirectionSelect.val();
-						event.data.page.initializeParameterDefinitionsTable();
-					});
-					this.parameterDefinitionDataSelect.change({
-						page : this
-					}, function(event) {
-						event.data.page.currentParameterDefinition.dataFullId = event.data.page.parameterDefinitionDataSelect.val();
-						event.data.page.initializeParameterDefinitionsTable();
-					});
-					this.parameterDefinitionPathInput.change({
-						page : this
-					}, function(event) {
-						event.data.page.currentParameterDefinition.path = event.data.page.parameterDefinitionPathInput.val();
-						event.data.page.initializeParameterDefinitionsTable();
-					});
-					
+					this.parameterDefinitionNameInput
+							.change(
+									{
+										page : this
+									},
+									function(event) {
+										if (event.data.page.currentParameterDefinition != null) {
+											event.data.page.currentParameterDefinition.name = event.data.page.parameterDefinitionNameInput
+													.val();
+											event.data.page
+													.initializeParameterDefinitionsTable();
+										}
+									});
+					this.parameterDefinitionDirectionSelect
+							.change(
+									{
+										page : this
+									},
+									function(event) {
+										if (event.data.page.currentParameterDefinition != null) {
+											event.data.page.currentParameterDefinition.direction = event.data.page.parameterDefinitionDirectionSelect
+													.val();
+											event.data.page
+													.initializeParameterDefinitionsTable();
+										}
+									});
+					this.parameterDefinitionDataSelect
+							.change(
+									{
+										page : this
+									},
+									function(event) {
+										if (event.data.page.currentParameterDefinition != null) {
+											event.data.page.currentParameterDefinition.dataFullId = event.data.page.parameterDefinitionDataSelect
+													.val();
+											event.data.page
+													.initializeParameterDefinitionsTable();
+										}
+									});
+					this.parameterDefinitionPathInput
+							.change(
+									{
+										page : this
+									},
+									function(event) {
+										if (event.data.page.currentParameterDefinition != null) {
+											event.data.page.currentParameterDefinition.path = event.data.page.parameterDefinitionPathInput
+													.val();
+											event.data.page
+													.initializeParameterDefinitionsTable();
+										}
+									});
+
 					this.populateDataItemsList();
 				};
 
@@ -304,15 +333,17 @@ define(
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.populateDataItemsList = function() {
 					this.parameterDefinitionDataSelect.empty();
-					
+
 					for ( var n in this.propertiesPanel.models) {
 						for ( var m in this.propertiesPanel.models[n].dataItems) {
 							var dataItem = this.propertiesPanel.models[n].dataItems[m];
 
-							this.parameterDefinitionDataSelect.append("<option value='"
-									+ dataItem.getFullId() + "'>"
-									+ this.propertiesPanel.models[n].name + "/"
-									+ dataItem.name + "</option>");
+							this.parameterDefinitionDataSelect
+									.append("<option value='"
+											+ dataItem.getFullId()
+											+ "'>"
+											+ this.propertiesPanel.models[n].name
+											+ "/" + dataItem.name + "</option>");
 						}
 					}
 				};
@@ -344,13 +375,10 @@ define(
 
 											var id = jQuery(this).attr("id");
 
-											m_utils.debug("Selected " + id);
-											m_utils
-													.debug(event.data.page
-															.getModelElement().formalParameters[id]);
+											event.data.page.currentParameterDefinition = event.data.page
+													.getModelElement().formalParameters[id];
 											event.data.page
-													.populateParameterDefinitionFields(event.data.page
-															.getModelElement().formalParameters[id]);
+													.populateParameterDefinitionFields();
 										});
 					}
 
@@ -373,34 +401,34 @@ define(
 				/**
 				 * 
 				 */
-				ProcessProcessInterfacePropertiesPage.prototype.populateParameterDefinitionFields = function(
-						parameterDefinition) {
-					this.currentParameterDefinition = parameterDefinition;
-					
+				ProcessProcessInterfacePropertiesPage.prototype.populateParameterDefinitionFields = function() {
 					this.parameterDefinitionNameInput
-							.val(parameterDefinition.name);
+							.val(this.currentParameterDefinition.name);
 					this.parameterDefinitionDirectionSelect
-							.val(parameterDefinition.direction);
+							.val(this.currentParameterDefinition.direction);
 					this.parameterDefinitionDataSelect
-							.val(parameterDefinition.data);
+							.val(this.currentParameterDefinition.dataFullId);
 					this.parameterDefinitionPathInput
-							.val(parameterDefinition.path);
-					this.dataTypeSelector.setDataType(parameterDefinition);
+							.val(this.currentParameterDefinition.path);
+					this.dataTypeSelector
+							.setDataType(this.currentParameterDefinition);
 				};
 
 				/**
 				 * 
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.addParameterDefinition = function() {
-					var n = 0;
-					
-					for ( var m in this.getModelElement().formalParameters) {
-						++n;
+					var n = 1;
+
+					if (this.getModelElement().formalParameters == null) {
+						this.getModelElement().formalParameters = {};
+					} else {
+						for ( var m in this.getModelElement().formalParameters) {
+							++n;
+						}
 					}
-					
-					m_utils.debug("Adding New " + n);
-					
-					var parameterDefinition = {
+
+					this.currentParameterDefinition = {
 						id : "New" + n,
 						name : "New " + n,
 						dataFullId : null,
@@ -408,16 +436,16 @@ define(
 						path : null
 					};
 
-					this.dataTypeSelector.getDataType(parameterDefinition);
-					
-					this.getModelElement().formalParameters[parameterDefinition.id] = parameterDefinition;
+					this.dataTypeSelector
+							.getDataType(this.currentParameterDefinition);
+
+					this.getModelElement().formalParameters[this.currentParameterDefinition.id] = this.currentParameterDefinition;
 
 					// TODO Replace by submit
 
 					this.initializeParameterDefinitionsTable();
 
-					this
-					.populateParameterDefinitionFields(parameterDefinition);
+					this.populateParameterDefinitionFields();
 				};
 
 				/**
@@ -431,7 +459,8 @@ define(
 				 * 
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setElement = function() {
-					this.dataTypeSelector.setScopeModel(this.getModelElement().model);
+					this.dataTypeSelector
+							.setScopeModel(this.getModelElement().model);
 					if (this.getModelElement().processInterfaceType == m_constants.NO_PROCESS_INTERFACE_KEY) {
 						this.setNoInterface();
 					} else if (this.getModelElement().processInterfaceType == m_constants.PROVIDES_PROCESS_INTERFACE_KEY) {

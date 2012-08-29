@@ -6,7 +6,6 @@ define(
 		function(m_utils, m_constants, m_communicationController, m_command) {
 			var executeImmediate;
 			var needUndoSupport;
-			var commandsController = new CommandsController(null);
 
 			return {
 				init : function(immediate, undoSupport) {

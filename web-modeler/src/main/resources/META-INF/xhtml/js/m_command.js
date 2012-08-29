@@ -188,7 +188,7 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 			return new ChangeEvent(m_constants.SUBMIT_CHAT_MESSAGE_COMMAND, "/users", "submitChatMessage", null, message);
 		},
 		createUserProfileChangeCommand : function(profile) {
-			return new ChangeEvent(m_constants.CHANGE_USER_PROFILE_COMMAND, message);
+			return new ChangeEvent(m_constants.CHANGE_USER_PROFILE_COMMAND, profile);
 		}
 	};
 

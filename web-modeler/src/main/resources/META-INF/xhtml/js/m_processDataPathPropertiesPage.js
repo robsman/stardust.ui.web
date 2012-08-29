@@ -32,7 +32,7 @@ define(
 				m_utils.inheritMethods(ProcessDataPathPropertiesPage.prototype,
 						propertiesPage);
 
-				this.dataPaths = [];
+				this.currentDataPath = null;
 
 				this.dataPathTable = this.mapInputId("dataPathTable");
 				this.addDataPathButton = this.mapInputId("addDataPathButton");
@@ -82,47 +82,45 @@ define(
 									event.data.page
 											.setDataPathDirection(event.data.page.dataPathDirectionSelect
 													.val());
-								});
-				this.descriptorInput.click({
-					"page" : this
-				}, function(event) {
-					event.data.page.setDescriptor();
-				});
 
-				this.keyDescriptorInput.click({
+									event.data.page.currentDataPath.direction = event.data.page.dataPathDirectionSelect
+											.val();
+									event.data.page.populateDataPathTable();
+								});
+				this.descriptorInput.change({
 					"page" : this
 				}, function(event) {
-					event.data.page.setKeyDescriptor();
+					event.data.page.currentDataPath.descriptor = event.data.page.descriptorInput
+					.val();
+					event.data.page.populateDataPathTable();
+				});
+				this.keyDescriptorInput.change({
+					"page" : this
+				}, function(event) {
+					event.data.page.currentDataPath.keyDescriptor = event.data.page.keyDescriptorInput
+					.val();
+					event.data.page.populateDataPathTable();
 				});
 				this.dataPathNameInput.change({
 					page : this
 				}, function(event) {
-					event.data.page.deselectDataPathes();
-				});
-				this.dataPathDirectionSelect.change({
-					page : this
-				}, function(event) {
-					event.data.page.deselectDataPathes();
-				});
-				this.descriptorInput.change({
-					page : this
-				}, function(event) {
-					event.data.page.deselectDataPathes();
-				});
-				this.keyDescriptorInput.change({
-					page : this
-				}, function(event) {
-					event.data.page.deselectDataPathes();
+					event.data.page.currentDataPath.name = event.data.page.dataPathNameInput
+					.val();
+					event.data.page.populateDataPathTable();
 				});
 				this.dataPathDataSelect.change({
 					page : this
 				}, function(event) {
-					event.data.page.deselectDataPathes();
+					event.data.page.currentDataPath.dataFulId = event.data.page.dataPathDataSelect
+					.val();
+					event.data.page.populateDataPathTable();
 				});
 				this.dataPathPathInput.change({
 					page : this
 				}, function(event) {
-					event.data.page.deselectDataPathes();
+					event.data.page.currentDataPath.path = event.data.page.dataPathPathInput
+					.val();
+					event.data.page.populateDataPathTable();
 				});
 
 				/**
@@ -130,8 +128,6 @@ define(
 				 */
 				ProcessDataPathPropertiesPage.prototype.setDataPathDirection = function(
 						direction) {
-					m_utils.debug("===> Direction: " + direction);
-
 					if (direction == "IN" || direction == "INOUT") {
 						this.descriptorInput.removeAttr("disabled");
 						this.keyDescriptorInput.removeAttr("disabled");
@@ -230,23 +226,34 @@ define(
 				 * 
 				 */
 				ProcessDataPathPropertiesPage.prototype.addDataPath = function() {
-					if (this.validate()) {
-						this.getModelElement().dataPathes.push({
-							name : this.dataPathNameInput.val(),
-							direction : this.dataPathDirectionSelect.val(),
-							descriptor : this.descriptorInput.is(":checked"),
-							keyDescriptor : this.keyDescriptorInput
-									.is(":checked"),
-							dataFullId : this.dataPathDataSelect.val(),
-							dataPath : this.dataPathPathInput.val()
-						});
+					var n = 1;
 
-						this.submitChanges({
-							dataPathes : this.getModelElement().dataPathes
-						});
-
-						this.dataPathNameInput.val(null);
+					if (this.getModelElement().dataPathes == null) {
+						this.getModelElement().dataPathes = [];
+					} else {
+						for ( var m in this.getModelElement().dataPathes) {
+							++n;
+						}
 					}
+
+					this.currentDataPath = {
+						id : "New" + n,
+						name : "New " + n,
+						direction : "IN",
+						descriptor : false,
+						keyDescriptor : false,
+						dataFullId : null,
+						dataPath : this.dataPathPathInput.val()
+					};
+
+					this.getModelElement().dataPathes.push(this.currentDataPath);
+
+					this.populateDataPathTable();
+					// this.submitChanges({
+					// dataPathes : this.getModelElement().dataPathes
+					// });
+
+					this.populateDataPathFields();
 				};
 
 				/**
@@ -375,20 +382,17 @@ define(
 										page : this
 									},
 									function(event) {
-										event.data.page.deselectDataPathes();										
+										event.data.page.deselectDataPathes();
 										jQuery(this).addClass("selected");
 
 										var index = jQuery(this).attr("id");
 
 										index = index.substring(8);
 
-										m_utils.debug("Selected " + index);
-										m_utils
-												.debug(event.data.page
-														.getModelElement().dataPathes[index]);
+										event.data.page.currentDataPath = event.data.page
+												.getModelElement().dataPathes[index];
 										event.data.page
-												.populateDataPathFields(event.data.page
-														.getModelElement().dataPathes[index]);
+												.populateDataPathFields();
 									});
 
 					// this.dataPathTable.tableScroll({
@@ -399,25 +403,25 @@ define(
 				/**
 				 * 
 				 */
-				ProcessDataPathPropertiesPage.prototype.deselectDataPathes= function(
+				ProcessDataPathPropertiesPage.prototype.deselectDataPathes = function(
 						dataPath) {
 					jQuery("table#dataPathTable tr.selected").removeClass(
-					"selected");		
-					this.addDataPathButton.removeAttr("disabled");
+							"selected");
 				};
-				
+
 				/**
 				 * 
 				 */
-				ProcessDataPathPropertiesPage.prototype.populateDataPathFields = function(
-						dataPath) {
-					this.dataPathNameInput.val(dataPath.name);
-					this.dataPathDirectionSelect.val(dataPath.direction);
-					this.descriptorInput.val(dataPath.descriptor);
-					this.keyDescriptorInput.val(dataPath.keyDescriptor);
-					this.dataPathDataSelect.val(dataPath.dataFullId);
-					this.dataPathPathInput.val(dataPath.dataPath);
-					this.addDataPathButton.attr("disabled", true);
+				ProcessDataPathPropertiesPage.prototype.populateDataPathFields = function() {
+					this.dataPathNameInput.val(this.currentDataPath.name);
+					this.dataPathDirectionSelect
+							.val(this.currentDataPath.direction);
+					this.descriptorInput.val(this.currentDataPath.descriptor);
+					this.keyDescriptorInput
+							.val(this.currentDataPath.keyDescriptor);
+					this.dataPathDataSelect
+							.val(this.currentDataPath.dataFullId);
+					this.dataPathPathInput.val(this.currentDataPath.dataPath);
 				};
 			}
 		});

@@ -11,6 +11,8 @@
 
 package org.eclipse.stardust.ui.web.modeler.portal;
 
+import org.eclipse.stardust.ui.web.common.event.ViewEvent;
+
 /**
  * 
  * @author Marc.Gille
@@ -25,4 +27,12 @@ public class ConditionalPerformerView extends AbstractAdapterView {
    {
       super("/plugins/bpm-modeler/views/modeler/conditionalPerformerView.html", "conditionalPerformerFrameAnchor");
    }
+	
+   @Override
+   public void handleEvent(ViewEvent event)
+   {
+      super.handleEvent(event);
+      
+      event.getView().setIcon("/plugins/bpm-modeler/images/icons/conditional.gif");
+   }  
 }

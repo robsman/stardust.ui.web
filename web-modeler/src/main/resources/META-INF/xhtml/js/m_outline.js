@@ -668,6 +668,8 @@ define(
 														+ model.id
 														+ "&applicationId="
 														+ application.id
+														+ "&applicationName="
+														+ application.name
 														+ "&fullId="
 														+ application
 																.getFullId(),
@@ -1269,13 +1271,13 @@ define(
 										"types" : {
 											"models" : {
 												"icon" : {
-													"image" : "../images/icons/model.png"
+													"image" : "../images/icons/model.gif"
 												},
 												"valid_children" : [ "model" ]
 											},
 											"model" : {
 												"icon" : {
-													"image" : "../images/icons/model.png"
+													"image" : "../images/icons/model.gif"
 												},
 												"valid_children" : [
 														"participants",
@@ -1286,7 +1288,7 @@ define(
 											},
 											"participants" : {
 												"icon" : {
-													"image" : "../images/icons/participants.png"
+													"image" : "../images/icons/world.png"
 												}
 											},
 											"roleParticipant" : {
@@ -1939,12 +1941,10 @@ define(
 
 				function changeProfileHandler(profile)
 				{
-					m_utils.debug("===> Changed profile to " + profile);
-
 					m_user.setCurrentRole(profile);
 					m_commandsController.broadcastCommand(m_command.createUserProfileChangeCommand(profile));
 				}
-
+				
 				if (window.parent.EventHub != null) {
 					window.parent.EventHub.events.subscribe("CHANGE_PROFILE", changeProfileHandler);
 				}

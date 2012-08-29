@@ -46,243 +46,259 @@
 	window.parent.EventHub.events.subscribe("SELECT_MODEL_FOR_DEPLOYMENT",
 			setSelectedModleParams);
 
-	/**
-	 * Propagates user profile change to pure JavaScript components.
-	 */
+	function findUserProfileSelect() {
+		var userProfileSelect = null;
+		var selects = document.getElementsByTagName("select");
+		var message = "";
+
+		for ( var i = 0; selects.length > i; i++) {
+			var select = selects[i];
+
+			message += select.id + "\n";
+
+			if (select.id.match("userProfileSelect" + "$") == "userProfileSelect") {
+				return select;
+			}
+
+			return null;
+		}
+	}
+
 	function changeUserProfile() {
-		// TODO Identify select better
-		
-		var userProfileSelect = document.getElementById("_id88:userProfileSelect");
+		var userProfileSelect = findUserProfileSelect();
+
 		var selectedProfile = userProfileSelect.options[userProfileSelect.selectedIndex].value;
-		
-		window.parent.EventHub.events.publish("CHANGE_PROFILE", selectedProfile);
+
+		window.parent.EventHub.events
+				.publish("CHANGE_PROFILE", selectedProfile);
 	}
 </script>
 </head>
 <pc:wizard bean="#{modelDeploymentDialogBean}" modal="true" popupX="325"
 	popupY="225" />
 <body>
-		<ice:panelGroup styleClass="panelHeader">
-			<ice:outputText styleClass="panelHeaderTitle" value="Profile" />
-		</ice:panelGroup>
+	<ice:panelGroup styleClass="panelHeader">
+		<ice:outputText styleClass="panelHeaderTitle" value="Profile" />
+	</ice:panelGroup>
 
-		<ice:panelGrid columns="1">
-			<ice:outputText value="Select Your Profile" escape="false" />
-			<ice:selectOneMenu id="userProfileSelect"
-				onchange="changeUserProfile();">
-				<f:selectItem itemLabel="Business Analyst" itemValue="BusinessAnalyst" />
-				<f:selectItem itemLabel="Integrator" itemValue="Integrator" />
-			</ice:selectOneMenu>
-		</ice:panelGrid>
+	<ice:panelGrid columns="1">
+		<ice:outputText value="Select Your Profile" escape="false" />
+		<ice:selectOneMenu id="userProfileSelect"
+			onchange="changeUserProfile();">
+			<f:selectItem itemLabel="Business Analyst"
+				itemValue="BusinessAnalyst" />
+			<f:selectItem itemLabel="Integrator" itemValue="Integrator" />
+		</ice:selectOneMenu>
+	</ice:panelGrid>
 
-		<ice:panelGroup styleClass="panelHeader">
-			<ice:commandLink action="#{processesView.toggle}">
-				<ice:panelGrid columns="2">
-					<ice:graphicImage rendered="#{!processesView.expanded}"
-						value="/plugins/common/images/panelHeader-triggerExpand.png"
-						style="border: none" />
-					<ice:graphicImage rendered="#{processesView.expanded}"
-						value="/plugins/common/images/panelHeader-triggerCollapse.png"
-						style="border: none" />
-					<ice:outputText styleClass="panelHeaderTitle"
-						value="My Process Models" />
-				</ice:panelGrid>
+	<ice:panelGroup styleClass="panelHeader">
+		<ice:commandLink action="#{processesView.toggle}">
+			<ice:panelGrid columns="2">
+				<ice:graphicImage rendered="#{!processesView.expanded}"
+					value="/plugins/common/images/panelHeader-triggerExpand.png"
+					style="border: none" />
+				<ice:graphicImage rendered="#{processesView.expanded}"
+					value="/plugins/common/images/panelHeader-triggerCollapse.png"
+					style="border: none" />
+				<ice:outputText styleClass="panelHeaderTitle"
+					value="My Process Models" />
+			</ice:panelGrid>
+		</ice:commandLink>
+	</ice:panelGroup>
+
+	<ice:panelGrid columns="1" rendered="#{processesView.expanded}"
+		style="width: 280px;">
+		<ice:panelGroup style="display: none;">
+			<ice:commandLink id="model_view_link"
+				action="#{ippPortalApp.openView}" visible="false">
+				<f:param name="viewId" value="modelView" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText value="Open Model &amp;raquo;"
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>
+			<ice:commandLink id="role_view_link"
+				action="#{ippPortalApp.openView}" visible="false">
+				<f:param name="viewId" value="roleView" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText value="Open Role View &amp;raquo;"
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>
+			<ice:commandLink id="organization_view_link"
+				action="#{ippPortalApp.openView}" visible="false">
+				<f:param name="viewId" value="organizationView" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText value="Open Organization View &amp;raquo;"
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>
+			<ice:commandLink id="data_view_link"
+				action="#{ippPortalApp.openView}" visible="false">
+				<f:param name="viewId" value="dataView" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText value="Open Data View &amp;raquo;"
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>
+			<ice:commandLink id="modeler_view_link"
+				action="#{ippPortalApp.openView}" visible="false">
+				<f:param name="viewId" value="modelerView" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText value="Open Modeler &amp;raquo;"
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>
+			<ice:commandLink id="webservice_application_view_link"
+				action="#{ippPortalApp.openView}" visible="false">
+				<f:param name="viewId" value="webServiceApplicationView" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText value="Open Web Service Application &amp;raquo;"
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>
+			<ice:commandLink id="ui_mashup_application_view_link"
+				action="#{ippPortalApp.openView}" visible="false">
+				<f:param name="viewId" value="uiMashupApplicationView" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText value="Open UI Mashup Application &amp;raquo;"
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>
+			<ice:commandLink id="xsd_structured_data_type_view_link"
+				action="#{ippPortalApp.openView}" visible="false">
+				<f:param name="viewId" value="xsdStructuredDataTypeView" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText value="Open XSD Structured Data Type &amp;raquo;"
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>
+			<ice:commandLink id="message_transformation_application_view_link"
+				action="#{ippPortalApp.openView}" visible="false">
+				<f:param name="viewId" value="messageTransformationApplicationView" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText
+					value="Open Message Transformation Application &amp;raquo;"
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>
+			<ice:commandLink id="camel_application_view_link"
+				action="#{ippPortalApp.openView}" visible="false">
+				<f:param name="viewId" value="camelApplicationView" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText value="Open Camel Application &amp;raquo;"
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>
+			<ice:commandLink id="generic_application_view_link"
+				action="#{ippPortalApp.openView}" visible="false">
+				<f:param name="viewId" value="genericApplicationView" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText value="Open Generic Application &amp;raquo;"
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>
+			<ice:commandLink id="modeling_work_assignment_view_link"
+				action="#{ippPortalApp.openView}" visible="false">
+				<f:param name="viewId" value="modelingWorkAssignmentView" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText value="Open Modeling Work Assignment &amp;raquo;"
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>
+			<ice:commandLink id="model_deployer_link"
+				actionListener="#{modelDeploymentDialogBean.openDeployModelDialog}"
+				style="vertical-align: middle;padding-left: 3px;" visible="false">
+				<f:param name="allowBrowse" />
+				<f:param name="fileName" />
+				<f:param name="filePath" />
+				<ice:outputText
+					style="color: #00629A; font-family: Arial,Helvetica,sans-serif;"
+					value="Deploy Model" />
 			</ice:commandLink>
 		</ice:panelGroup>
+		<div id="outlineAnchor" style="width: 280px; height: 580px;"></div>
+		<ice:panelGroup styleClass="clearing" />
+	</ice:panelGrid>
 
-		<ice:panelGrid columns="1" rendered="#{processesView.expanded}"
-			style="width: 280px;">
-			<ice:panelGroup style="display: none;">
-				<ice:commandLink id="model_view_link"
-					action="#{ippPortalApp.openView}" visible="false">
-					<f:param name="viewId" value="modelView" />
-					<f:param name="viewIdentity" value="REPLACEME" />
-					<f:param name="viewParams" value="REPLACEME" />
-					<ice:outputText value="Open Model &amp;raquo;"
-						styleClass="action-link" escape="false" />
-				</ice:commandLink>
-				<ice:commandLink id="role_view_link"
-					action="#{ippPortalApp.openView}" visible="false">
-					<f:param name="viewId" value="roleView" />
-					<f:param name="viewIdentity" value="REPLACEME" />
-					<f:param name="viewParams" value="REPLACEME" />
-					<ice:outputText value="Open Role View &amp;raquo;"
-						styleClass="action-link" escape="false" />
-				</ice:commandLink>
-				<ice:commandLink id="organization_view_link"
-					action="#{ippPortalApp.openView}" visible="false">
-					<f:param name="viewId" value="organizationView" />
-					<f:param name="viewIdentity" value="REPLACEME" />
-					<f:param name="viewParams" value="REPLACEME" />
-					<ice:outputText value="Open Organization View &amp;raquo;"
-						styleClass="action-link" escape="false" />
-				</ice:commandLink>
-				<ice:commandLink id="data_view_link"
-					action="#{ippPortalApp.openView}" visible="false">
-					<f:param name="viewId" value="dataView" />
-					<f:param name="viewIdentity" value="REPLACEME" />
-					<f:param name="viewParams" value="REPLACEME" />
-					<ice:outputText value="Open Data View &amp;raquo;"
-						styleClass="action-link" escape="false" />
-				</ice:commandLink>
-				<ice:commandLink id="modeler_view_link"
-					action="#{ippPortalApp.openView}" visible="false">
-					<f:param name="viewId" value="modelerView" />
-					<f:param name="viewIdentity" value="REPLACEME" />
-					<f:param name="viewParams" value="REPLACEME" />
-					<ice:outputText value="Open Modeler &amp;raquo;"
-						styleClass="action-link" escape="false" />
-				</ice:commandLink>
-				<ice:commandLink id="webservice_application_view_link"
-					action="#{ippPortalApp.openView}" visible="false">
-					<f:param name="viewId" value="webServiceApplicationView" />
-					<f:param name="viewIdentity" value="REPLACEME" />
-					<f:param name="viewParams" value="REPLACEME" />
-					<ice:outputText value="Open Web Service Application &amp;raquo;"
-						styleClass="action-link" escape="false" />
-				</ice:commandLink>
-				<ice:commandLink id="ui_mashup_application_view_link"
-					action="#{ippPortalApp.openView}" visible="false">
-					<f:param name="viewId" value="uiMashupApplicationView" />
-					<f:param name="viewIdentity" value="REPLACEME" />
-					<f:param name="viewParams" value="REPLACEME" />
-					<ice:outputText value="Open UI Mashup Application &amp;raquo;"
-						styleClass="action-link" escape="false" />
-				</ice:commandLink>
-				<ice:commandLink id="xsd_structured_data_type_view_link"
-					action="#{ippPortalApp.openView}" visible="false">
-					<f:param name="viewId" value="xsdStructuredDataTypeView" />
-					<f:param name="viewIdentity" value="REPLACEME" />
-					<f:param name="viewParams" value="REPLACEME" />
-					<ice:outputText value="Open XSD Structured Data Type &amp;raquo;"
-						styleClass="action-link" escape="false" />
-				</ice:commandLink>
-				<ice:commandLink id="message_transformation_application_view_link"
-					action="#{ippPortalApp.openView}" visible="false">
-					<f:param name="viewId" value="messageTransformationApplicationView" />
-					<f:param name="viewIdentity" value="REPLACEME" />
-					<f:param name="viewParams" value="REPLACEME" />
-					<ice:outputText
-						value="Open Message Transformation Application &amp;raquo;"
-						styleClass="action-link" escape="false" />
-				</ice:commandLink>
-				<ice:commandLink id="camel_application_view_link"
-					action="#{ippPortalApp.openView}" visible="false">
-					<f:param name="viewId" value="camelApplicationView" />
-					<f:param name="viewIdentity" value="REPLACEME" />
-					<f:param name="viewParams" value="REPLACEME" />
-					<ice:outputText value="Open Camel Application &amp;raquo;"
-						styleClass="action-link" escape="false" />
-				</ice:commandLink>
-				<ice:commandLink id="generic_application_view_link"
-					action="#{ippPortalApp.openView}" visible="false">
-					<f:param name="viewId" value="genericApplicationView" />
-					<f:param name="viewIdentity" value="REPLACEME" />
-					<f:param name="viewParams" value="REPLACEME" />
-					<ice:outputText value="Open Generic Application &amp;raquo;"
-						styleClass="action-link" escape="false" />
-				</ice:commandLink>
-				<ice:commandLink id="modeling_work_assignment_view_link"
-					action="#{ippPortalApp.openView}" visible="false">
-					<f:param name="viewId" value="modelingWorkAssignmentView" />
-					<f:param name="viewIdentity" value="REPLACEME" />
-					<f:param name="viewParams" value="REPLACEME" />
-					<ice:outputText value="Open Modeling Work Assignment &amp;raquo;"
-						styleClass="action-link" escape="false" />
-				</ice:commandLink>
-				<ice:commandLink id="model_deployer_link"
-					actionListener="#{modelDeploymentDialogBean.openDeployModelDialog}"
-					style="vertical-align: middle;padding-left: 3px;" visible="false">
-					<f:param name="allowBrowse" />
-					<f:param name="fileName" />
-					<f:param name="filePath" />
-					<ice:outputText
-						style="color: #00629A; font-family: Arial,Helvetica,sans-serif;"
-						value="Deploy Model" />
-				</ice:commandLink>
-			</ice:panelGroup>
-			<div id="outlineAnchor" style="width: 280px; height: 580px;"></div>
-			<ice:panelGroup styleClass="clearing" />
-		</ice:panelGrid>
+	<ice:panelGroup styleClass="panelHeader">
+		<ice:commandLink action="#{sessionLogPanel.toggle}">
+			<ice:panelGrid columns="2">
+				<ice:graphicImage rendered="#{!sessionLogPanel.expanded}"
+					value="/plugins/common/images/panelHeader-triggerExpand.png"
+					style="border: none" />
+				<ice:graphicImage rendered="#{sessionLogPanel.expanded}"
+					value="/plugins/common/images/panelHeader-triggerCollapse.png"
+					style="border: none" />
+				<ice:outputText styleClass="panelHeaderTitle"
+					value="Modeling Session Log" />
+			</ice:panelGrid>
+		</ice:commandLink>
+	</ice:panelGroup>
 
-		<ice:panelGroup styleClass="panelHeader">
-			<ice:commandLink action="#{sessionLogPanel.toggle}">
-				<ice:panelGrid columns="2">
-					<ice:graphicImage rendered="#{!sessionLogPanel.expanded}"
-						value="/plugins/common/images/panelHeader-triggerExpand.png"
-						style="border: none" />
-					<ice:graphicImage rendered="#{sessionLogPanel.expanded}"
-						value="/plugins/common/images/panelHeader-triggerCollapse.png"
-						style="border: none" />
-					<ice:outputText styleClass="panelHeaderTitle"
-						value="Modeling Session Log" />
-				</ice:panelGrid>
+	<ice:panelGrid columns="1" rendered="#{sessionLogPanel.expanded}"
+		style="width: 280px;">
+		<ice:panelGroup>
+			<ice:commandLink action="#{inviteParticipantsDialog.openPopup}">
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/user_add.png"
+					style="border: none" />
 			</ice:commandLink>
 		</ice:panelGroup>
+		<div id="sessionLogPanelAnchor" style="width: 280px; height: 450px;"></div>
+		<ice:panelGroup styleClass="clearing" />
+	</ice:panelGrid>
 
-		<ice:panelGrid columns="1" rendered="#{sessionLogPanel.expanded}"
-			style="width: 280px;">
-			<ice:panelGroup>
-				<ice:commandLink action="#{inviteParticipantsDialog.openPopup}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/user_add.png"
-						style="border: none" />
-				</ice:commandLink>
+	<ice:panelPopup id="inviteParticipantsDialog" draggable="true"
+		modal="true" visible="#{inviteParticipantsDialog.visible}"
+		styleClass="dialog">
+		<f:facet name="header">
+			<ice:panelGroup styleClass="dialog-header">
+				<ice:outputText value="Invite Participants" />
 			</ice:panelGroup>
-			<div id="sessionLogPanelAnchor" style="width: 280px; height: 450px;"></div>
-			<ice:panelGroup styleClass="clearing" />
-		</ice:panelGrid>
-
-		<ice:panelPopup id="inviteParticipantsDialog" draggable="true"
-			modal="true" visible="#{inviteParticipantsDialog.visible}"
-			styleClass="dialog">
-			<f:facet name="header">
-				<ice:panelGroup styleClass="dialog-header">
-					<ice:outputText value="Invite Participants" />
-				</ice:panelGroup>
-			</f:facet>
-			<f:facet name="body">
-				<ice:panelGroup styleClass="dialog-body">
-					<ice:panelGrid columns="1" cellpadding="0" cellspacing="0"
-						columnClasses="center-aligned-column">
+		</f:facet>
+		<f:facet name="body">
+			<ice:panelGroup styleClass="dialog-body">
+				<ice:panelGrid columns="1" cellpadding="0" cellspacing="0"
+					columnClasses="center-aligned-column">
+					<ice:panelGrid columns="1" cellpadding="0" cellspacing="0">
+						<ice:panelGrid columns="2" cellpadding="0" cellspacing="0">
+							<ice:outputLabel for="filterStringInput" value="Filter" />
+							<ice:inputText id="filterStringInput"
+								value="#{inviteParticipantsDialog.filterString}" />
+						</ice:panelGrid>
 						<ice:panelGrid columns="1" cellpadding="0" cellspacing="0">
-							<ice:panelGrid columns="2" cellpadding="0" cellspacing="0">
-								<ice:outputLabel for="filterStringInput" value="Filter" />
-								<ice:inputText id="filterStringInput"
-									value="#{inviteParticipantsDialog.filterString}" />
-							</ice:panelGrid>
-							<ice:panelGrid columns="1" cellpadding="0" cellspacing="0">
-								<ice:outputLabel for="participantListbox" value="Participant" />
-								<ice:selectManyListbox id="participantListbox"
-									valueChangeListener="#{inviteParticipantsDialog.userChanged}"
-									partialSubmit="true" size="5" style="margin-top: 5px;">
-									<f:selectItems
-										value="#{inviteParticipantsDialog.notInvitedUsers}" />
-								</ice:selectManyListbox>
-							</ice:panelGrid>
-							<ice:panelGrid columns="2" cellpadding="0" cellspacing="0"
-								style="margin-top: 10px;">
-								<ice:selectBooleanCheckbox id="notifyViaEmailCheckbox"
-									value="#{inviteParticipantsDialog.notifyViaEmail}" />
-								<ice:outputLabel for="notifyViaEmailCheckbox"
-									value="Notify via E-Mail" />
-								<ice:selectBooleanCheckbox id="notifyViaAlertCheckbox"
-									value="#{inviteParticipantsDialog.notifyViaAlert}" />
-								<ice:outputLabel for="notifyViaAlertCheckbox"
-									value="Notify via Portal Alert" />
-							</ice:panelGrid>
+							<ice:outputLabel for="participantListbox" value="Participant" />
+							<ice:selectManyListbox id="participantListbox"
+								valueChangeListener="#{inviteParticipantsDialog.userChanged}"
+								partialSubmit="true" size="5" style="margin-top: 5px;">
+								<f:selectItems
+									value="#{inviteParticipantsDialog.notInvitedUsers}" />
+							</ice:selectManyListbox>
 						</ice:panelGrid>
 						<ice:panelGrid columns="2" cellpadding="0" cellspacing="0"
-							styleClass="button-grid" style="margin-top: 10px;">
-							<ice:commandButton type="submit"
-								action="#{inviteParticipantsDialog.inviteParticipants}"
-								value="Invite" style="margin-right: 10px;" />
-							<ice:commandButton type="submit"
-								action="#{inviteParticipantsDialog.closePopup}" value="Cancel" />
+							style="margin-top: 10px;">
+							<ice:selectBooleanCheckbox id="notifyViaEmailCheckbox"
+								value="#{inviteParticipantsDialog.notifyViaEmail}" />
+							<ice:outputLabel for="notifyViaEmailCheckbox"
+								value="Notify via E-Mail" />
+							<ice:selectBooleanCheckbox id="notifyViaAlertCheckbox"
+								value="#{inviteParticipantsDialog.notifyViaAlert}" />
+							<ice:outputLabel for="notifyViaAlertCheckbox"
+								value="Notify via Portal Alert" />
 						</ice:panelGrid>
 					</ice:panelGrid>
-				</ice:panelGroup>
-			</f:facet>
-		</ice:panelPopup>
+					<ice:panelGrid columns="2" cellpadding="0" cellspacing="0"
+						styleClass="button-grid" style="margin-top: 10px;">
+						<ice:commandButton type="submit"
+							action="#{inviteParticipantsDialog.inviteParticipants}"
+							value="Invite" style="margin-right: 10px;" />
+						<ice:commandButton type="submit"
+							action="#{inviteParticipantsDialog.closePopup}" value="Cancel" />
+					</ice:panelGrid>
+				</ice:panelGrid>
+			</ice:panelGroup>
+		</f:facet>
+	</ice:panelPopup>
 </body>
 </html>

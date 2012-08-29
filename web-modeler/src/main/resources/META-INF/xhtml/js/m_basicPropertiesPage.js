@@ -9,10 +9,10 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_command", "m_commandsController", "m_user", "m_dialog",
-				"m_propertiesPage", "m_activity" ],
-		function(m_utils, m_constants, m_command, m_commandsController,
-				m_user, m_dialog, m_propertiesPage, m_activity) {
+		[ "m_utils", "m_constants", "m_command", "m_commandsController",
+				"m_user", "m_dialog", "m_propertiesPage", "m_activity" ],
+		function(m_utils, m_constants, m_command, m_commandsController, m_user,
+				m_dialog, m_propertiesPage, m_activity) {
 			return {
 				create : function(propertiesPanel) {
 					return new BasicPropertiesPage(propertiesPanel);
@@ -65,6 +65,9 @@ define(
 					if (m_user.getCurrentRole() != m_constants.INTEGRATOR_ROLE) {
 						m_dialog.makeInvisible(this.guidOutputRow);
 						m_dialog.makeInvisible(this.idOutputRow);
+					} else {
+						m_dialog.makeVisible(this.guidOutputRow);
+						m_dialog.makeVisible(this.idOutputRow);
 					}
 
 					this.nameInput.removeClass("error");
