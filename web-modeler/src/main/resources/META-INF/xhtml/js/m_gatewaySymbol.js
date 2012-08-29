@@ -344,7 +344,7 @@ define(
 												clickHandler : GatewaySymbol_connectToClosure
 											},
 											{
-												imageUrl : "../../images/icons/activity.gif",
+												imageUrl : "../../images/icons/activity.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_connectToActivityClosure

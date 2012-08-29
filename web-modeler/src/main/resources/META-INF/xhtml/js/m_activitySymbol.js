@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -67,7 +67,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol() {
 				var symbol = m_symbol.createSymbol();
@@ -104,14 +104,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.toString = function() {
 					return "Lightdust.ActivitySymbol";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.initializeFromJson = function(lane) {
 					m_utils.inheritMethods(this.modelElement.prototype,
@@ -126,7 +126,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.createTransferObject = function() {
 					var transferObject = {};
@@ -149,7 +149,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.getPath = function(withId) {
 					var path = "/models/" + this.diagram.model.id
@@ -164,7 +164,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.createPrimitives = function() {
 					this.rectangle = m_canvasManager
@@ -249,7 +249,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.initializeEventHandling = function() {
 					this.subprocessMarkerIcon
@@ -268,7 +268,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.showPrimitives = function() {
 					this.rectangle.show();
@@ -277,7 +277,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.refreshFromModelElement = function() {
 					this.text.attr("text", this.modelElement.name);
@@ -316,7 +316,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.adjustPrimitives = function() {
 					this.rectangle.animate({
@@ -419,7 +419,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.createFlyOutMenu = function() {
 					this
@@ -433,7 +433,7 @@ define(
 												clickHandler : ActivitySymbol_connectToClosure
 											},
 											{
-												imageUrl : "../../images/icons/activity.gif",
+												imageUrl : "../../images/icons/activity.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_connectToActivityClosure
@@ -472,7 +472,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.highlight = function() {
 					this.rectangle.attr({
@@ -481,7 +481,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.dehighlight = function() {
 					this.rectangle.attr({
@@ -490,7 +490,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.switchToSubprocessActivity = function() {
 					this.icon.hide();
@@ -502,7 +502,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.switchToApplicationActivity = function() {
 					this.icon.hide();
@@ -514,14 +514,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.onComplete = function() {
 					this.onParentSymbolChange();
 				};
 
 				/*
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.onParentSymbolChange = function() {
 					if ((this.modelElement.activityType == m_constants.MANUAL_ACTIVITY_TYPE || this.modelElement.activityType == m_constants.APPLICATION_ACTIVITY_TYPE)
@@ -531,14 +531,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.onSubprocessMarkerIconMouseMove = function() {
 					this.showPointerCursor();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.onSubprocessMarkerIconClick = function() {
 					var link = jQuery("a[id $= 'modeler_view_link']",
@@ -559,7 +559,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_connectToClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -567,7 +567,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_connectToActivityClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -575,7 +575,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_connectToGatewayClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -583,7 +583,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_connectToEndEventClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -591,7 +591,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_removeClosure() {
 				this.auxiliaryProperties.callbackScope
@@ -599,7 +599,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_switchToSubprocessActivityClosure() {
 				this.auxiliaryProperties.callbackScope
@@ -607,7 +607,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_switchToApplicationActivityClosure() {
 				this.auxiliaryProperties.callbackScope
@@ -615,7 +615,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_subprocessMarkerIconMouseMoveClosure() {
 				this.auxiliaryProperties.callbackScope
@@ -623,7 +623,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_subprocessMarkerIconClickClosure() {
 				this.auxiliaryProperties.callbackScope

@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -42,7 +42,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function TestSymbol() {
 				var symbol = m_symbol.createSymbol();
@@ -74,14 +74,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TestSymbol.prototype.toString = function() {
 					return "Lightdust.TestSymbol";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TestSymbol.prototype.initializeFromJson = function(lane) {
 					// m_utils.inheritMethods(this.modelElement.prototype,
@@ -92,7 +92,7 @@ define(
 
 					this.parentSymbol = lane;
 					this.parentSymbolId = lane.id;
-					
+
 					this.parentSymbol.containedSymbols.push(this);
 					this.prepareNoPosition();
 					this.completeNoTransfer();
@@ -100,23 +100,23 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TestSymbol.prototype.createTransferObject = function() {
 					var transferObject = {};
-					
+
 					m_utils.inheritFields(transferObject, this);
-					
+
 					transferObject = this.prepareTransferObject(transferObject);
 
 					transferObject.rect = null;
 					transferObject.image = null;
-					
+
 					return transferObject;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TestSymbol.prototype.getPath = function(withId) {
 					var path = "/models/" + this.diagram.model.id
@@ -126,12 +126,12 @@ define(
 					if (withId) {
 						path += "/" + this.modelElement.id;
 					}
-					
+
 					return path;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TestSymbol.prototype.createPrimitives = function() {
 					this.rect = m_canvasManager
@@ -169,19 +169,19 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TestSymbol.prototype.initializeEventHandling = function() {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TestSymbol.prototype.refreshFromModelElement = function() {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TestSymbol.prototype.createFlyOutMenu = function() {
 					this.addFlyOutMenuItems([], [ {
@@ -190,7 +190,7 @@ define(
 						imageHeight : 16,
 						clickHandler : TestSymbol_connectToClosure
 					}, {
-						imageUrl : "../../images/icons/activity.gif",
+						imageUrl : "../../images/icons/activity.png",
 						imageWidth : 16,
 						imageHeight : 16,
 						clickHandler : TestSymbol_connectToActivityClosure
@@ -208,7 +208,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TestSymbol.prototype.highlight = function() {
 					this.rect.attr({
@@ -217,7 +217,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TestSymbol.prototype.dehighlight = function() {
 					this.rect.attr({
@@ -226,7 +226,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TestSymbol.prototype.adjustPrimitives = function(dX, dY) {
 					this.rect.attr({
@@ -242,14 +242,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TestSymbol.prototype.recalculateBoundingBox = function() {
 					// Noting to be done here
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TestSymbol.prototype.validateCreateConnection = function() {
 					m_messageDisplay
@@ -259,21 +259,21 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TestSymbol.prototype.onComplete = function() {
 					this.onParentSymbolChange();
 				};
 
 				/*
-				 * 
+				 *
 				 */
 				TestSymbol.prototype.onParentSymbolChange = function() {
 				};
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function TestSymbol_connectToClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -281,7 +281,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function TestSymbol_connectToGatewayClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -289,7 +289,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function TestSymbol_connectToActivityClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -297,7 +297,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function TestSymbol_removeClosure() {
 				this.auxiliaryProperties.callbackScope

@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -19,18 +19,18 @@ define(
 			return {
 				createStartEventSymbol : function(diagram) {
 					var eventSymbol = new EventSymbol();
-					
+
 					eventSymbol.bind(diagram);
 					eventSymbol.modelElement = m_event
 							.createStartEvent(diagram.process);
-					
+
 					eventSymbol.diagram.process.events[eventSymbol.modelElement.id] = eventSymbol.modelElement;
-					
+
 					return eventSymbol;
 				},
 				createStopEventSymbol : function(diagram) {
 					var eventSymbol = new EventSymbol();
-					
+
 					eventSymbol.bind(diagram);
 					eventSymbol.modelElement = m_event
 							.createStopEvent(diagram.process);
@@ -50,7 +50,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function EventSymbol() {
 				var symbol = m_symbol.createSymbol();
@@ -66,32 +66,32 @@ define(
 				 */
 				EventSymbol.prototype.bind = function(diagram) {
 					this.type = m_constants.EVENT_SYMBOL;
-					
+
 					this.diagram = diagram;
-					
+
 					this.diagram.lastSymbol = this;
-					
+
 					this.propertiesPanel = m_eventPropertiesPanel.getInstance();
 					this.circle = null;
 					this.image = null;
 					this.startImageUrl = "../../images/icons/start-event.png";
 					this.stopImageUrl = "../../images/icons/stop-event.png";
-					
+
 					// Size is not transfered from the server
-					
+
 					this.width = 2 * m_constants.EVENT_DEFAULT_RADIUS;
 					this.height = 2 * m_constants.EVENT_DEFAULT_RADIUS;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.toString = function() {
 					return "Lightdust.EventSymbol";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.initializeFromJson = function(lane) {
 					m_utils.inheritMethods(
@@ -99,10 +99,10 @@ define(
 							m_event.prototype);
 
 					// Overwrite width and height
-					
+
 					this.width = 2 * m_constants.EVENT_DEFAULT_RADIUS;
 					this.height = 2 * m_constants.EVENT_DEFAULT_RADIUS;
-					
+
 					this.parentSymbol = lane;
 					this.parentSymbolId = lane.id;
 					this.parentSymbol.containedSymbols.push(this);
@@ -112,25 +112,25 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.createTransferObject = function() {
 					var transferObject = {};
-					
+
 					m_utils.inheritFields(transferObject, this);
-					
+
 					transferObject = this.prepareTransferObject(transferObject);
 
 					transferObject.circle = null;
 					transferObject.image = null;
 					transferObject.startImageUrl = null;
 					transferObject.stopImageUrl = null;
-					
+
 					return transferObject;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.getPath = function(withId) {
 					var path = "/models/" + this.diagram.model.id
@@ -140,12 +140,12 @@ define(
 					if (withId) {
 						path += "/" + this.modelElement.id;
 					}
-					
+
 					return path;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.createPrimitives = function() {
 					this.circle = m_canvasManager.drawCircle(
@@ -177,13 +177,13 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.initializeEventHandling = function() {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.refreshFromModelElement = function() {
 					if (this.modelElement.eventType == m_constants.START_EVENT_TYPE) {
@@ -196,7 +196,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.createFlyOutMenu = function() {
 					this.addFlyOutMenuItems([], [ {
@@ -205,7 +205,7 @@ define(
 						imageHeight : 16,
 						clickHandler : EventSymbol_connectToClosure
 					}, {
-						imageUrl : "../../images/icons/activity.gif",
+						imageUrl : "../../images/icons/activity.png",
 						imageWidth : 16,
 						imageHeight : 16,
 						clickHandler : EventSymbol_connectToActivityClosure
@@ -223,7 +223,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.highlight = function() {
 					this.circle.attr({
@@ -232,7 +232,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.dehighlight = function() {
 					this.circle.attr({
@@ -241,7 +241,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.adjustPrimitives = function(dX, dY) {
 					this.circle.attr({
@@ -257,14 +257,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.recalculateBoundingBox = function() {
 					// Noting to be done here
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.validateCreateConnection = function() {
 					if (this.connections.length > 0) {
@@ -278,14 +278,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.onComplete = function() {
 					this.onParentSymbolChange();
 				};
 
 				/*
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.onParentSymbolChange = function() {
 					if (this.modelElement.eventType == m_constants.START_EVENT_TYPE
@@ -300,7 +300,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function EventSymbol_connectToClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -308,7 +308,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function EventSymbol_connectToGatewayClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -316,7 +316,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function EventSymbol_connectToActivityClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -324,7 +324,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function EventSymbol_removeClosure() {
 				this.auxiliaryProperties.callbackScope.createAndSubmitDeleteCommand();
