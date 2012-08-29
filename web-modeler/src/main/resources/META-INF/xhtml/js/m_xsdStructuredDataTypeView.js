@@ -523,7 +523,11 @@ define(
 					m_utils.debug("===> Structured Data Process Command");
 					m_utils.debug(command);
 
-					// Parse the response JSON from command pattern
+					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
+						this.initialize(this.structuredDataType);
+						
+						return;
+					}
 
 					var obj = ("string" == typeof (command)) ? jQuery
 							.parseJSON(command) : command;

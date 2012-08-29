@@ -215,6 +215,12 @@ define(
 					m_utils.debug("===> Role View Process Command");
 					m_utils.debug(command);
 
+					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
+						this.initialize(this.role);
+						
+						return;
+					}
+
 					// Parse the response JSON from command pattern
 
 					var object = ("string" == typeof (command)) ? jQuery

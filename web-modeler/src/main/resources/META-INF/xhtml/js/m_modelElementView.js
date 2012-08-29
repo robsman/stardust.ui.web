@@ -2,8 +2,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_command", "m_commandsController", "m_dialog", "m_view" ],
-		function(m_utils, m_constants, m_command, m_commandsController, m_dialog, m_view) {
+		[ "m_utils", "m_constants", "m_command", "m_commandsController", "m_user", "m_dialog", "m_view" ],
+		function(m_utils, m_constants, m_command, m_commandsController, m_user, m_dialog, m_view) {
 			return {
 				create : function(id) {
 					var view = new ModelElementView();
@@ -28,6 +28,8 @@ define(
 				 */
 				ModelElementView.prototype.initializeModelElementView = function() {
 					this.modelElement = null;
+					this.guidOutputRow = jQuery("#guidOutputRow");
+					this.idOutputRow = jQuery("#idOutputRow");
 					this.guidOutput = jQuery("#guidOutput");
 					this.idOutput = jQuery("#idOutput");
 					this.nameInput = jQuery("#nameInput");
@@ -58,10 +60,19 @@ define(
 				ModelElementView.prototype.initializeModelElement = function(
 						modelElement) {
 					this.modelElement = modelElement;
-					this.guidOutput.empty();
-					this.guidOutput.append(this.modelElement.uuid);
-					this.idOutput.empty();
-					this.idOutput.append(this.modelElement.id);
+					
+					if (m_user.getCurrentRole() != m_constants.INTEGRATOR_ROLE) {
+						m_dialog.makeInvisible(this.guidOutputRow);
+						m_dialog.makeInvisible(this.idOutputRow);
+					} else {
+						m_dialog.makeVisible(this.guidOutputRow);
+						m_dialog.makeVisible(this.idOutputRow);
+						this.guidOutput.empty();
+						this.guidOutput.append(this.modelElement.uuid);
+						this.idOutput.empty();
+						this.idOutput.append(this.modelElement.id);
+					}
+
 					this.nameInput.val(this.modelElement.name);
 					this.descriptionTextarea.val(this.modelElement.description);
 

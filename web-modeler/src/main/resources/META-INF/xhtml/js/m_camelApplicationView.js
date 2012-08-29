@@ -114,6 +114,12 @@ define(
 				 */
 				CamelApplicationView.prototype.processCommand = function(
 						command) {
+					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
+						this.initialize(this.application);
+						
+						return;
+					}
+
 					m_utils.debug("===> Camel Process Command");
 					m_utils.debug(command);
 

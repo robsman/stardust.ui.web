@@ -527,7 +527,11 @@ define(
 				 */
 				WebServiceApplicationView.prototype.processCommand = function(
 						command) {
-					// Parse the response JSON from command pattern
+					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
+						this.initialize(this.application);
+						
+						return;
+					}
 
 					var object = ("string" == typeof (command)) ? jQuery
 							.parseJSON(command) : command;
