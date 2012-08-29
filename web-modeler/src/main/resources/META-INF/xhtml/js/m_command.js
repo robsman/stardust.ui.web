@@ -63,6 +63,12 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 				changes : changes
 			} ]);
 		},
+		createCreateConditionalPerformerCommand : function(modelId, oid, changes) {
+			return new ChangeDescriptor("conditionalPerformer.create", modelId, [ {
+				oid : oid,
+				changes : changes
+			} ]);
+		},
 		createCreateOrganizationCommand : function(modelId, oid, changes) {
 			return new ChangeDescriptor("organization.create", modelId, [ {
 				oid : oid,
@@ -156,7 +162,7 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 		createRemoveNodeCommand : function(commandType, modelId, oid, changes) {
 			return new ChangeDescriptor(commandType, modelId, [{oid: oid, changes: changes}]);
 		},
-		
+
 		createAcceptInvite: function(oldObject, prospect) {
 									//type,                            path,      operation,  oldObject, newObject, modelElement
 			return new ChangeEvent(m_constants.ACCEPT_INVITE_COMMAND, "/users", "acceptInvite", oldObject, prospect);
@@ -164,11 +170,11 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 		createDeclineInvite: function(oldObject, prospect) {
 			return new ChangeEvent(m_constants.DECLINE_INVITE_COMMAND, "/users", "declineInvite", oldObject, prospect);
 		},
-		
+
 		createFetchProspects : function(owner){
 			return new ChangeEvent(m_constants.UPDATE_INVITED_USERS_COMMAND, "/users", "getAllProspects", owner, null);
 		},
-		
+
 		createFetchCollaborators : function(owner){
 			return new ChangeEvent(m_constants.UPDATE_INVITED_USERS_COMMAND, "/users", "getAllCollaborators", owner, null);
 		},

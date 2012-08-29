@@ -92,6 +92,30 @@ public class ParticipantChangeCommandHandler
    }
 
    /**
+    * @param model
+    * @param request
+    */
+   @OnCommand(commandId = "conditionalPerformer.create")
+   public void createConditionalPerformer(ModelType model, JsonObject request)
+   {
+      String conditionalPerformerID = extractString(request, ModelerConstants.ID_PROPERTY);
+      String conditionalPerformerName = extractString(request,
+            ModelerConstants.NAME_PROPERTY);
+      ConditionalPerformerType conditionalPerformer = null;
+      synchronized (model)
+      {
+         conditionalPerformer = getModelBuilderFacade().createConditionalPerformer(model,
+               conditionalPerformerID, conditionalPerformerName);
+      }
+      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
+      conditionalPerformer.setElementOid(++maxOid);
+
+      // Map newly created data element to a UUID
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
+      mapper.map(conditionalPerformer);
+   }
+
+   /**
     * @param org
     * @param request
     */

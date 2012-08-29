@@ -1030,6 +1030,13 @@ define(
 															createOrganization(obj
 																	.attr("modelUUID"));
 														}
+													},
+													"createConditionalPerformer" : {
+														"label" : "Create Conditional Performer",
+														"action" : function(obj) {
+															createConditionalPerformer(obj
+																	.attr("modelUUID"));
+														}
 													}
 												};
 											} else if (m_elementConfiguration
@@ -1294,7 +1301,7 @@ define(
 											},
 											"conditionalPerformerParticipant" : {
 												"icon" : {
-													"image" : "../images/icons/role.png"
+													"image" : "../images/icons/conditional.gif"
 												}
 											},
 											"process" : {
@@ -1758,6 +1765,24 @@ define(
 				/**
 				 *
 				 */
+				function createConditionalPerformer(modelUUId, targetUUID) {
+					var model = m_model.findModelByUuid(modelUUId);
+					var name = getUniqueNameForElement(model.id, "Conditional Performer ");
+					var id = m_utils.generateIDFromName(name);
+					var targetOid = (targetUUID ? m_model
+							.findElementInModelByUuid(model.id, targetUUID).oid
+							: model.id);
+
+					m_commandsController.submitCommand(m_command
+							.createCreateConditionalPerformerCommand(model.id, targetOid, {
+								"name" : name,
+								"id" : id
+							}));
+				}
+
+				/**
+				 *
+				 */
 				function setAsManager(modelUUId, orgUUID, roleUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
 					var orgOid = m_model.findElementInModelByUuid(model.id,
@@ -1977,7 +2002,8 @@ define(
 								this
 										.createApplication(command.changes.added[i]);
 							} else if (m_constants.ROLE_PARTICIPANT_TYPE == command.changes.added[i].type
-									|| m_constants.ORGANIZATION_PARTICIPANT_TYPE == command.changes.added[i].type) {
+									|| m_constants.ORGANIZATION_PARTICIPANT_TYPE == command.changes.added[i].type
+									|| m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == command.changes.added[i].type) {
 								this
 										.createParticipant(command.changes.added[i], false);
 							}
