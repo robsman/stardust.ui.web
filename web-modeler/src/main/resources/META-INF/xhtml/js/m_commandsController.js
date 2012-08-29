@@ -21,12 +21,12 @@ define(
 
 				submitImmediately : function(command, successCallback,
 						errorCallback) {
-					commandsController.submitImmediately(command,
+					getInstance().submitImmediately(command,
 							successCallback, errorCallback);
 				},
 
 				submitCommand : function(command) {
-					commandsController.submitCommand(command);
+					getInstance().submitCommand(command);
 				},
 				registerCommandHandler : function(commandHandler) {
 					getInstance().registerCommandHandler(commandHandler);
@@ -65,11 +65,11 @@ define(
 								for (var i = 0; i < this.callbackScope.objectsToUnregister.length; i++) {
 									m_utils.debug("Unregistering command handler: " + this.callbackScope.objectsToUnregister[i]);
 									getInstance().unregisterCommandHandler(this.callbackScope.objectsToUnregister[i]);
-								}							
+								}
 							}
 						};
 				}
-				window.callbackScope.objectsToUnregister.push(commandHandler);	
+				window.callbackScope.objectsToUnregister.push(commandHandler);
 			}
 
 			/**
