@@ -72,7 +72,7 @@ public abstract class ModelElementMarshaller
    private ModelBuilderFacade modelBuilderFacade;
 
    /**
-    * 
+    *
     * @param modelElement
     * @return
     */
@@ -208,21 +208,21 @@ public abstract class ModelElementMarshaller
                ModelerConstants.PROVIDES_PROCESS_INTERFACE_KEY);
 
          JsonObject formalParametersJson = new JsonObject();
-         
+
          processJson.add(ModelerConstants.FORMAL_PARAMETERS_PROPERTY,
                formalParametersJson);
-         
+
          for (FormalParameterType formalParameter : processDefinition.getFormalParameters()
                .getFormalParameter())
          {
             JsonObject formalParameterJson = new JsonObject();
-            
+
             formalParametersJson.add(formalParameter.getId(), formalParameterJson);
-            
+
             formalParameterJson.addProperty(ModelerConstants.ID_PROPERTY, formalParameter.getId());
             formalParameterJson.addProperty(ModelerConstants.NAME_PROPERTY, formalParameter.getName());
             //formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, formalParameter.getMode());
-            
+
             System.out.println(formalParameter);
             System.out.println(formalParameter.getDataType());
             System.out.println(formalParameter.getMode());
@@ -290,7 +290,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param laneSymbol
     * @return
     */
@@ -481,7 +481,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @return
     */
@@ -613,7 +613,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @return
     */
@@ -703,7 +703,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -758,7 +758,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -812,7 +812,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param data
     * @return
     */
@@ -913,7 +913,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1180,7 +1180,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param dataMappingConnection
     * @return
     */
@@ -1268,7 +1268,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -1383,23 +1383,29 @@ public abstract class ModelElementMarshaller
       else if (transitionConnection.getTargetNode() instanceof EndEventSymbol)
       {
          modelElementJson = new JsonObject();
-
+         String activityId = ((ActivitySymbolType) transitionConnection.getSourceActivitySymbol()).getActivity()
+               .getId();
          connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
                transitionConnection.getElementOid());
          connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, modelElementJson);
          modelElementJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                ModelerConstants.CONTROL_FLOW_LITERAL);
-         modelElementJson.addProperty(
-               ModelerConstants.ID_PROPERTY,
-               ((ActivitySymbolType) transitionConnection.getSourceActivitySymbol()).getActivity()
-                     .getId()
-                     + "-"
-                     + String.valueOf(transitionConnection.getTargetNode()
-                           .getElementOid()));
+         modelElementJson.addProperty(ModelerConstants.ID_PROPERTY, activityId + "-"
+               + String.valueOf(transitionConnection.getTargetNode().getElementOid()));
          connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
                transitionConnection.getSourceActivitySymbol().getElementOid());
-         connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
-               ModelerConstants.ACTIVITY_KEY);
+         // Added to identify the Activity Type for source Symbol
+         if (activityId.toLowerCase().startsWith("gateway"))
+         {
+            connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
+                  ModelerConstants.GATEWAY);
+         }
+         else
+         {
+            connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
+                  ModelerConstants.ACTIVITY_KEY);
+         }
+
          connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
                String.valueOf(transitionConnection.getTargetNode().getElementOid()));
          connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
@@ -1418,7 +1424,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -1765,7 +1771,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -1796,7 +1802,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -1815,7 +1821,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     * @throws JSONException
@@ -1840,9 +1846,9 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * TODO From DynamicConnectionCommand. Refactor?
-    * 
+    *
     * @param activity
     * @return
     */
