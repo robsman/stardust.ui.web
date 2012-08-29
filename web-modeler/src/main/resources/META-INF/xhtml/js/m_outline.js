@@ -11,13 +11,13 @@
 define(
 		[ "m_utils", "m_urlUtils", "m_constants", "m_extensionManager",
 				"m_communicationController", "m_commandsController",
-				"m_command", "m_session", "m_model", "m_process",
+				"m_command", "m_session", "m_user", "m_model", "m_process",
 				"m_application", "m_dataStructure", "m_participant",
 				"m_outlineToolbarController", "m_data",
 				"m_elementConfiguration" ],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_communicationController, m_commandsController, m_command,
-				m_session, m_model, m_process, m_application, m_dataStructure,
+				m_session, m_user, m_model, m_process, m_application, m_dataStructure,
 				m_participant, m_outlineToolbarController, m_data,
 				m_elementConfiguration) {
 
@@ -1929,13 +1929,16 @@ define(
 					parent.iPopupDialog.openPopup(popupData);
 				}
 
-				// TODO Should be encapsulated in module
-				// TODO - check and delete
+				function changeProfileHandler(profile)
+				{
+					m_utils.debug("===> Changed profile to " + profile);
+					
+					m_user.setCurrentRole(profile);
+					m_commandsController.broadcastCommand(m_command.createUserProfileChangeCommand(profile));
+				}
+				
 				if (window.parent.EventHub != null) {
-					window.parent.EventHub.events.subscribe("ELEMENT_CREATED",
-							elementCreationHandler);
-					window.parent.EventHub.events.subscribe("ELEMENT_RENAMED",
-							elementRenamingHandler);
+					window.parent.EventHub.events.subscribe("CHANGE_PROFILE", changeProfileHandler);
 				}
 
 				readAllModels();

@@ -102,7 +102,7 @@ define(
 						var extension = propertiesPages[n];
 
 						extensions[extension.pageId] = extension;
-						
+
 						if (!m_session.initialize().technologyPreview
 								&& extension.visibility == "preview") {
 
@@ -129,26 +129,30 @@ define(
 							// callback
 
 							var panel = this;
-							
+
 							jQuery("#" + this.id + " #" + extension.pageId)
 									.load(
-											extension.pageHtmlUrl, 
-											function(response, status, xhr) {												
+											extension.pageHtmlUrl,
+											function(response, status, xhr) {
 												if (status == "error") {
 													var msg = "Properties Page Load Error: "
 															+ xhr.status
 															+ " "
 															+ xhr.statusText;
 
-													jQuery(this)
-															.append(msg);
+													jQuery(this).append(msg);
 													m_utils.debug(msg);
 												} else {
 													m_utils
 															.debug("Page loaded: "
-																	+ extensions[jQuery(this).attr("id")].pageId);
+																	+ extensions[jQuery(
+																			this)
+																			.attr(
+																					"id")].pageId);
 													panel.propertiesPages
-															.push(extensions[jQuery(this).attr("id")].provider
+															.push(extensions[jQuery(
+																	this).attr(
+																	"id")].provider
 																	.create(panel));
 												}
 											});
@@ -277,6 +281,12 @@ define(
 				 * 
 				 */
 				PropertiesPanel.prototype.processCommand = function(command) {
+					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
+						this.setElement(this.element);
+						
+						return;
+					}
+
 					var object = ("string" == typeof (command)) ? jQuery
 							.parseJSON(command) : command;
 
