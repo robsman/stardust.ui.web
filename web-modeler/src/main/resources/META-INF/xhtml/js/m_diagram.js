@@ -1248,16 +1248,17 @@ define(
 				 */
 				Diagram.prototype.onClick = function(x, y) {
 					if (this.newSymbol != null) {
-						this.placeNewSymbol(x * this.zoomFactor, y
-								* this.zoomFactor);
-
 						// If the symbol was created with a connection traversal
 						// the connection needs to be completed, too
-
-						if (this.currentConnection != null) {
+						if (null != this.currentConnection) {
+							var status = this.placeNewSymbol(x - this.X_OFFSET,
+									y - this.Y_OFFSET, true);
+							this.currentConnection.toModelElementOid = this.lastSymbol.oid;
 							this.currentConnection.complete();
-
 							this.currentConnection = null;
+						} else {
+							this.placeNewSymbol(x * this.zoomFactor, y
+									* this.zoomFactor);
 						}
 					} else if (this.mode == this.NORMAL_MODE) {
 						this.clearCurrentSelection();
