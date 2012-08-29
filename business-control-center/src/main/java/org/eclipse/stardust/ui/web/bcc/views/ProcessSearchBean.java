@@ -67,6 +67,7 @@ import org.eclipse.stardust.ui.web.viewscommon.user.UserWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DateUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.IceComponentUtil;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
@@ -209,13 +210,20 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
     */
    private void prepopulateCriteria(View view)
    {
-      if ("PROC".equals(view.getViewParams().get("searchOption")))
+      try
       {
-         prePopulateProcessCriteria(view);   
+         if (SEARCH_OPT_PROCESS.equals(view.getViewParams().get(SEARCH_OPT)))
+         {
+            prePopulateProcessCriteria(view);   
+         }
+         else if (SEARCH_OPT_ACTIVITY.equals(view.getViewParams().get(SEARCH_OPT)))
+         {
+            prePopulateActivityCriteria(view);  
+         }
       }
-      else if ("ACT".equals(view.getViewParams().get("searchOption")))
+      catch (Exception e)
       {
-         prePopulateActivityCriteria(view);  
+         ExceptionHandler.handleException(e);
       }
    }
 
