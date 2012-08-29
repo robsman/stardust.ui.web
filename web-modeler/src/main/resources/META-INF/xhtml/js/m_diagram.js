@@ -1254,6 +1254,7 @@ define(
 							var status = this.placeNewSymbol(x - this.X_OFFSET,
 									y - this.Y_OFFSET, true);
 							this.currentConnection.toModelElementOid = this.lastSymbol.oid;
+							this.currentConnection.updateAnchorPointForGateway();
 							this.currentConnection.complete();
 							this.currentConnection = null;
 						} else {

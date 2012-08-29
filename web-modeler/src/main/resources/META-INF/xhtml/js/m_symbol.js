@@ -1139,7 +1139,9 @@ define(
 							var status = this.diagram.placeNewSymbol(x
 									- this.diagram.X_OFFSET, y
 									- this.diagram.Y_OFFSET, true);
+
 							this.diagram.currentConnection.toModelElementOid = this.oid;
+							this.diagram.currentConnection.updateAnchorPointForGateway();
 							this.diagram.currentConnection.complete();
 							this.diagram.currentConnection = null;
 						} else {

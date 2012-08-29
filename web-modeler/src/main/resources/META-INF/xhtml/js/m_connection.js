@@ -266,6 +266,30 @@ define(
 				}
 
 				/**
+				 * when connection is created from Flyout Menu, anchor points
+				 * needs to be moved to 6 O’clock or 3 O'clock
+				 */
+				Connection.prototype.updateAnchorPointForGateway = function() {
+					var orientation = null;
+					if (this.fromAnchorPoint.symbol.type == m_constants.GATEWAY_SYMBOL) {
+						var startSymbol = this.fromAnchorPoint.symbol;
+						var targetSymbol = this.toAnchorPoint.symbol;
+						if (startSymbol.x > targetSymbol.x + targetSymbol.width) {
+							// Start Symbol is at right, show arrow at left
+							orientation = 3;
+						} else if (startSymbol.x + startSymbol.width < targetSymbol.x) {
+							// Start Symbol is at left, show arrow at right
+							orientation = 1;
+						} else {
+							// default orientation is SOUTH for gateway
+							orientation = 2;
+						}
+						this
+								.setFirstAnchorPoint(startSymbol.anchorPoints[orientation]);
+					}
+				};
+
+				/**
 				 *
 				 */
 				Connection.prototype.setFirstAnchorPoint = function(anchorPoint) {
