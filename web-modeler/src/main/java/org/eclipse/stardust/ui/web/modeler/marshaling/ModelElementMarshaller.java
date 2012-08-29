@@ -7,11 +7,7 @@ import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
-import org.w3c.dom.Node;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
+import org.eclipse.emf.ecore.change.ChangeDescription;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
@@ -58,10 +54,13 @@ import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.util.IConnectionManager;
 import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
-import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.modeling.repository.common.descriptors.EObjectDescriptor;
+import org.w3c.dom.Node;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 public abstract class ModelElementMarshaller
 {
@@ -565,40 +564,44 @@ public abstract class ModelElementMarshaller
 
          for (String context : contexts)
          {
-            for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(activity,
-                  true, context))
+            //Activity has no model as parent --> it has been deleted from the model
+            if (!(activity.eContainer() instanceof ChangeDescription))
             {
-               System.out.println(accessPoint);
+               for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(activity,
+                     true, context))
+               {
+                  System.out.println(accessPoint);
 
-               JsonObject accessPointJson = new JsonObject();
+                  JsonObject accessPointJson = new JsonObject();
 
-               accessPointsJson.add(accessPoint.getId(), accessPointJson);
-               accessPointJson.addProperty(ModelerConstants.ID_PROPERTY,
-                     accessPoint.getId());
-               accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                     accessPoint.getName());
-               accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
-                     accessPoint.getDirection().getLiteral());
-               accessPointJson.addProperty(ModelerConstants.CONTEXT_PROPERTY, context);
-               loadDescription(accessPointJson, accessPoint);
-            }
+                  accessPointsJson.add(accessPoint.getId(), accessPointJson);
+                  accessPointJson.addProperty(ModelerConstants.ID_PROPERTY,
+                        accessPoint.getId());
+                  accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                        accessPoint.getName());
+                  accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+                        accessPoint.getDirection().getLiteral());
+                  accessPointJson.addProperty(ModelerConstants.CONTEXT_PROPERTY, context);
+                  loadDescription(accessPointJson, accessPoint);
+               }
 
-            for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(activity,
-                  false, context))
-            {
-               System.out.println(accessPoint);
+               for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(activity,
+                     false, context))
+               {
+                  System.out.println(accessPoint);
 
-               JsonObject accessPointJson = new JsonObject();
+                  JsonObject accessPointJson = new JsonObject();
 
-               accessPointsJson.add(accessPoint.getId(), accessPointJson);
-               accessPointJson.addProperty(ModelerConstants.ID_PROPERTY,
-                     accessPoint.getId());
-               accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                     accessPoint.getName());
-               accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
-                     accessPoint.getDirection().getLiteral());
-               accessPointJson.addProperty(ModelerConstants.CONTEXT_PROPERTY, context);
-               loadDescription(accessPointJson, accessPoint);
+                  accessPointsJson.add(accessPoint.getId(), accessPointJson);
+                  accessPointJson.addProperty(ModelerConstants.ID_PROPERTY,
+                        accessPoint.getId());
+                  accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                        accessPoint.getName());
+                  accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+                        accessPoint.getDirection().getLiteral());
+                  accessPointJson.addProperty(ModelerConstants.CONTEXT_PROPERTY, context);
+                  loadDescription(accessPointJson, accessPoint);
+               }
             }
          }
 
