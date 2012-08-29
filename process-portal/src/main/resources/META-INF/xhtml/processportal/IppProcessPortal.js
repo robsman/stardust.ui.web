@@ -318,10 +318,41 @@ InfinityBpm.ProcessPortal = new function() {
 
 	function handleRemoteControlMessage(e) {
 		//alert("Received event '" + e.data + "' from " + e.origin);
-		handleIppAiClosePanelCommandConfirmation(e.data);
+		// TODO: Check origin (e.origin) for Security
+		if (e.data.startsWith("{")) {
+			postMessageReceived(e.data);
+		} else {
+			// Backward compatible
+			handleIppAiClosePanelCommandConfirmation(e.data);
+		}
 	}
 
-	
+	function postMessageReceived(input) {
+		var proceed = false;
+		var jsonStr;
+		try {
+			if (typeof input === 'string' || input instanceof String){
+				// String. So it will be Stringified JSON, Validate it 
+				var jsonInput = JSON.parse(input);
+				if (typeof jsonInput === 'object' && jsonInput.type && jsonInput.data) {
+					jsonStr = input; // Input is valid
+					proceed = true;
+				}
+			} else if (typeof input === 'object' && input.type && input.data) {
+				jsonStr = JSON.stringify(input);
+				proceed = true;
+			}
+		} catch(x) {}
+
+		if (proceed) {
+			var messageDataInput = document.getElementById("msgFrm:messageData");
+			messageDataInput.value = jsonStr;
+			iceSubmitPartial(document.getElementById("msgFrm"), messageDataInput);
+		} else {
+			// TODO: Show error message
+		}
+	}
+
 	function doInstallRemoteControlApi()
 	{
 		if ( !isIppWindow(window)) {
@@ -788,8 +819,11 @@ InfinityBpm.ProcessPortal = new function() {
           } catch (e) {
         	  alert(getMessage("portal.common.js.externalWebApp.notify.failed", 'Failed notifying external Web App: ') + e.message);
           }
-        }
+        },
 
+        postMessage: function(input) {
+        	postMessageReceived(input);
+        }
 	};
 	
 };

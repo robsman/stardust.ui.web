@@ -11,6 +11,7 @@
 <head>
 
 	<ui:include src="portalHead.xhtml" />
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/plugins/common/js/thirdparty/json2.js" />
 
 	<c:if test="#{not ippPortalApp.clientTimeZoneSet}">
 	    <script type="text/javascript">
@@ -50,7 +51,16 @@
 						<div id="ippPortalContentWidthEnd"></div>
 					</td>
 				</tr>
-			</table>			
+			</table>
+			<div id="messaging">
+				<ice:form id="msgFrm">
+					<ice:panelGroup>
+				       	<ice:inputHidden id="messageData" value="#{ippPortalApp.messageBlank}"
+				   			valueChangeListener="#{ippPortalApp.messageReceived}"
+		   					partialSubmit="true" immediate="true" />
+		   			</ice:panelGroup>
+	   			</ice:form>
+			</div>
 		<script id="postScripts" lang="javascript">
 			#{ippPortalApp.eventScripts}
 		</script>

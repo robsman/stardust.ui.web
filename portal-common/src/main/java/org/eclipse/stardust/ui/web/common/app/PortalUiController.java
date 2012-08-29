@@ -311,9 +311,7 @@ public class PortalUiController
       IPerspectiveDefinition perspectiveDef = getPerspective(perspectiveId);
       if (null != perspectiveDef)
       {
-         this.currentPerspective = perspectiveDef;
-         this.perspectiveController = new PerspectiveController(this);
-
+         setPerspective(perspectiveDef);
          return true;
       }
       else

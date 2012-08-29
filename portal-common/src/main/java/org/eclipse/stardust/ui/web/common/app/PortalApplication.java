@@ -27,6 +27,8 @@ import org.eclipse.stardust.ui.web.common.PreferencePage;
 import org.eclipse.stardust.ui.web.common.PreferencesDefinition;
 import org.eclipse.stardust.ui.web.common.ViewDefinition;
 import org.eclipse.stardust.ui.web.common.app.View.ViewState;
+import org.eclipse.stardust.ui.web.common.app.messaging.Message;
+import org.eclipse.stardust.ui.web.common.app.messaging.MessageProcessor;
 import org.eclipse.stardust.ui.web.common.configuration.ConfigurationConstants;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
@@ -43,11 +45,13 @@ import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.common.util.AbstractMessageBean;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.SessionRendererHelper;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.google.gson.JsonObject;
 import com.icesoft.faces.component.paneltabset.TabChangeEvent;
 import com.icesoft.faces.component.paneltabset.TabChangeListener;
 import com.icesoft.faces.context.effects.JavascriptContext;
@@ -1686,6 +1690,41 @@ public class PortalApplication
          clientTimeZone = java.util.TimeZone.getDefault();
          trace.error("Not supporting client timezone. Server Time will be referred", e);
       }
+   }
+
+   /**
+    * New value would be a Json Object, with following Info
+    *   command: String
+    *   data: Object, if multiple.. it will be a Map 
+    * 
+    * @param event
+    */
+   public void messageReceived(ValueChangeEvent event)
+   {
+      try
+      {
+         JsonObject jsonObject = GsonUtils.readJsonObject((String)event.getNewValue());
+         String command = GsonUtils.extractString(jsonObject, "type");
+         JsonObject data = GsonUtils.extractObject(jsonObject, "data");
+
+         Message message = new Message(command, data);
+         MessageProcessor.processs(message);
+      }
+      catch (Exception e)
+      {
+         MessageDialog.addErrorMessage(
+               MessagePropertiesBean.getInstance().getString("portalFramework.error.messageProcessError"), e);
+      }
+   }
+   
+   public String getMessageBlank()
+   {
+      return "empty";
+   }
+
+   public void setMessageBlank(String message)
+   {
+      // Nop;
    }
 
    public void setRuntimeEnvironmentInfoProvider(RuntimeEnvironmentInfoProvider runtimeEnvironmentInfoProvider)

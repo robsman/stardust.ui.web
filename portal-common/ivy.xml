@@ -67,6 +67,7 @@
       <dependency org="com.infinity.bpm" name="stardust-engine-base-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->logging-log4j-module-compile"/>
       <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->logging-slf4j-log4j-module-compile"/>
       <dependency org="javax.ws.rs" name="jsr311-api" rev="1.1.1" conf="ipp-portal-common-compile->default" />
+      <dependency org="com.google.code.gson" name="gson" rev="1.6" conf="ipp-portal-common-compile->default" />
 
       <!-- ipp-portal-common-runtime -->
       <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-runtime->engine-module-runtime" />
