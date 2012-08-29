@@ -1701,9 +1701,17 @@ public class PortalApplication
     */
    public void messageReceived(ValueChangeEvent event)
    {
+      postMessage((String)event.getNewValue());
+   }
+
+   /**
+    * @param jsonMessage
+    */
+   public void postMessage(String jsonMessage)
+   {
       try
       {
-         JsonObject jsonObject = GsonUtils.readJsonObject((String)event.getNewValue());
+         JsonObject jsonObject = GsonUtils.readJsonObject(jsonMessage);
          String command = GsonUtils.extractString(jsonObject, "type");
          JsonObject data = GsonUtils.extractObject(jsonObject, "data");
 

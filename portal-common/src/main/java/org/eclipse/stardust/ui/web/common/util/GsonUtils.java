@@ -28,6 +28,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 public class GsonUtils
 {
@@ -62,6 +63,54 @@ public class GsonUtils
       }
    }
 
+   /**
+    * @param data
+    * @return
+    */
+   public static String stringify(Object data)
+   {
+      JsonElement jsonElement = readJsonObject(data);
+      return null != jsonElement ? jsonElement.toString() : null;
+   }
+
+   /**
+    * @param data
+    * @return
+    */
+   @SuppressWarnings({"rawtypes", "unchecked"})
+   public static JsonElement readJsonObject(Object data)
+   {
+      JsonElement jsonElem = null;
+      if (null != data)
+      {
+         // TODO Support other Primitives
+         if (data instanceof String)
+         {
+            jsonElem = new JsonPrimitive((String)data);
+         }
+         else if (data instanceof Map)
+         {
+            JsonObject jsonObj = new JsonObject();
+            for (Entry<String, Object> entry : ((Map<String, Object>)data).entrySet())
+            {
+               jsonObj.add(entry.getKey(), readJsonObject(entry.getValue()));
+            }
+            jsonElem = jsonObj;
+         }
+         else if (data instanceof List)
+         {
+            JsonArray jsonArray = new JsonArray();
+            for (Object obj : ((List)data))
+            {
+               jsonArray.add(readJsonObject(obj));
+            }
+            jsonElem = jsonArray;
+         }
+      }
+      
+      return jsonElem;
+   }
+   
    public static String extractString(JsonObject json, String memberName)
    {
       JsonElement member = json.get(memberName);
@@ -153,7 +202,7 @@ public class GsonUtils
    public static Map<String, Object> extractMap(JsonObject json, String memberName)
    {
       JsonElement member = json.get(memberName);
-      return processJson(member.getAsJsonObject());
+      return (null != member) ? processJson(member.getAsJsonObject()) : null;
    }
    
    /**
@@ -179,7 +228,18 @@ public class GsonUtils
    {
       if (jsonElem.isJsonPrimitive())
       {
-         return jsonElem.getAsJsonPrimitive().getAsString();
+         if (jsonElem.getAsJsonPrimitive().isBoolean())
+         {
+            return jsonElem.getAsJsonPrimitive().getAsBoolean();
+         }
+         else if(jsonElem.getAsJsonPrimitive().isNumber())
+         {
+            return jsonElem.getAsJsonPrimitive().getAsNumber();
+         }
+         else
+         {
+            return jsonElem.getAsJsonPrimitive().getAsString();
+         }
       }
       else if (jsonElem.isJsonArray())
       {

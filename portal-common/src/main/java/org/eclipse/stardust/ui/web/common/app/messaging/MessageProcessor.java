@@ -23,6 +23,9 @@ import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
  */
 public class MessageProcessor implements MessageTypeConstants
 {
+   /**
+    * @param message
+    */
    public static void processs(Message message)
    {
       if (T_OPEN_VIEW.equalsIgnoreCase(message.getType()))
