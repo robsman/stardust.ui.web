@@ -1271,13 +1271,13 @@ define(
 										"types" : {
 											"models" : {
 												"icon" : {
-													"image" : "../images/icons/model.gif"
+													"image" : "../images/icons/model.png"
 												},
 												"valid_children" : [ "model" ]
 											},
 											"model" : {
 												"icon" : {
-													"image" : "../images/icons/model.gif"
+													"image" : "../images/icons/model.png"
 												},
 												"valid_children" : [
 														"participants",
@@ -1288,7 +1288,7 @@ define(
 											},
 											"participants" : {
 												"icon" : {
-													"image" : "../images/icons/world.png"
+													"image" : "../images/icons/participants.png"
 												}
 											},
 											"roleParticipant" : {
@@ -1944,7 +1944,7 @@ define(
 					m_user.setCurrentRole(profile);
 					m_commandsController.broadcastCommand(m_command.createUserProfileChangeCommand(profile));
 				}
-				
+
 				if (window.parent.EventHub != null) {
 					window.parent.EventHub.events.subscribe("CHANGE_PROFILE", changeProfileHandler);
 				}
