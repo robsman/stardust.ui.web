@@ -67,7 +67,7 @@ public class GatewayCommandHandler
                      extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.NAME_PROPERTY))
                .havingDefaultPerformer(ADMINISTRATOR_ROLE).build();
 
-         gateway.setElementOid(maxOid);
+         gateway.setElementOid(++maxOid);
          gateway.setImplementation(ActivityImplementationType.ROUTE_LITERAL);
 
          processDefinition.getActivity().add(gateway);
