@@ -1401,7 +1401,7 @@ define(
 											},
 											"springBean" : {
 												"icon" : {
-													"image" : "../images/icons/application_plain_java.png"
+													"image" : "../images/icons/application-plain-java.png"
 												}
 											},
 											"xslMessageTransformationBean" : {
