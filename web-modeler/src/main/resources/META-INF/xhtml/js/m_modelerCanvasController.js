@@ -1340,7 +1340,7 @@ define(
 				};
 				// Default data icon
 				var icon = m_canvasManager.drawImageAt(
-						"../../images/icons/database.png", x + 17, y + 1, 20,
+						"../../images/icons/data.png", x + 17, y + 1, 20,
 						16);
 
 				datatype.customProps.type = "dataSymbol";
@@ -1348,7 +1348,7 @@ define(
 				if (attrs.dataTypeType) {
 					if ('Primitive_Data' == attrs.dataTypeType) {
 						var icon = m_canvasManager.drawImageAt(
-								"../../images/icons/database.png", x + 17,
+								"../../images/icons/data.png", x + 17,
 								y + 1, 20, 16);
 					} else if ('Structured_Data' == attrs.dataTypeType) {
 						var icon = m_canvasManager.drawImageAt(
@@ -1501,14 +1501,14 @@ define(
 				};
 				// Default data icon
 				var icon = m_canvasManager.drawImageAt(
-						"../../images/icons/database.png", x + 17, y + 1, 20,
+						"../../images/icons/data.png", x + 17, y + 1, 20,
 						16);
 				// Overwrite the icon for specific data types
 				if (attrs.dataTypeType) {
 					if ('Primitive_Data' == attrs.dataTypeType
 							|| 'primitiveDataType' == attrs.dataTypeType) {
 						var icon = m_canvasManager.drawImageAt(
-								"../../images/icons/database.png", x + 17,
+								"../../images/icons/data.png", x + 17,
 								y + 1, 20, 16);
 						datatype.customProps.type = "primitiveDataType";
 					} else if ('Structured_Data' == attrs.dataTypeType

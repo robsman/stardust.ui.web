@@ -216,7 +216,7 @@ var extensions = {
 		id : "dataButton",
 		paletteId : "dataPalette",
 		title : "Create Primitive Data",
-		iconUrl : "../../images/icons/database.png",
+		iconUrl : "../../images/icons/data.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "createData",
 		visibility : "always"
