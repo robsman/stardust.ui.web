@@ -929,10 +929,8 @@ define(
 								"oid" : this.oid
 							};
 							var newGeometry = {
-								"x" : this.x - m_constants.POOL_LANE_MARGIN,
-								"y" : this.y
-										- m_constants.POOL_LANE_MARGIN
-										- m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT,
+								"x" : this.x,
+								"y" : this.y,
 								"oid" : this.oid
 							};
 
@@ -955,10 +953,8 @@ define(
 									"oid" : this.oid
 								};
 								var newGeometry = {
-									"x" : this.x - m_constants.POOL_LANE_MARGIN,
-									"y" : this.y
-											- m_constants.POOL_LANE_MARGIN
-											- m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT,
+									"x" : this.x,
+									"y" : this.y,
 									"oid" : this.oid
 								};
 

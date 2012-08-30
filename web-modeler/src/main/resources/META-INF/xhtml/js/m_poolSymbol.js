@@ -34,7 +34,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function PoolSymbol() {
 				var symbol = m_symbol.createSymbol();
@@ -50,7 +50,7 @@ define(
 				this.height = 0;
 				this.orientation = null;
 				var laneIndex = 1;
-				
+
 
 				/**
 				 * Binds all client-side aspects to the object (graphics
@@ -66,14 +66,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.toString = function() {
 					return "[object Lightdust.PoolSymbol()]";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.initializeFromJson = function() {
 					var hasLanes = false;
@@ -97,7 +97,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.createTransferObject = function() {
 					var transferObject = {};
@@ -115,7 +115,7 @@ define(
 						transferObject.laneSymbols[laneSymbol] = this.laneSymbols[laneSymbol]
 								.createTransferObject();
 					}
-					
+
 					transferObject.containedSymbols = [];
 
 					for ( var symbol in this.containedSymbols) {
@@ -127,7 +127,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.createCreateCommand = function() {
 					return m_command.createCommand("/models/"
@@ -137,7 +137,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.createUpdateCommand = function() {
 					return m_command.createCommand("/models/"
@@ -147,7 +147,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.createPrimitives = function() {
 					this.borderRectangle = m_canvasManager
@@ -202,7 +202,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.createChildSymbols = function() {
 					// if (this.laneSymbols.size() == 0) {
@@ -211,14 +211,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.isContainerSymbol = function() {
 					return true;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.createDefaultLane = function() {
 					laneIndex = 0;
@@ -239,14 +239,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.createSwimlaneSymbol = function() {
 					this.createSwimlaneSymbolFromParticipant(null, this);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.createSwimlaneSymbolFromParticipant = function(
 						participant) {
@@ -262,9 +262,9 @@ define(
 					}
 
 					this.laneSymbols.push(swimlaneSymbol);
-					
+
 					// Required to receive command callbacks
-					
+
 					this.diagram.lastSymbol = swimlaneSymbol;
 
 					swimlaneSymbol
@@ -290,7 +290,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.recalculateBoundingBox = function() {
 					this.width = this.calculateWidth();
@@ -302,7 +302,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.calculateWidth = function() {
 					if (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
@@ -327,7 +327,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.calculateHeight = function() {
 					if (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
@@ -353,7 +353,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.adjustPrimitives = function(dX, dY) {
 					if (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
@@ -384,7 +384,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.adjustChildSymbols = function() {
 					if (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
@@ -395,14 +395,20 @@ define(
 						//(due to a lane being shrunk from top)
 						var dY = 0;
 						for ( var n in this.laneSymbols) {
-							dY = (this.y
-									+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
-									+ m_constants.POOL_SWIMLANE_MARGIN) - this.laneSymbols[n].y;
-							if (parseInt(dY) != 0) {
-								break;
+							var dYNew = (this.y + 2
+									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT + m_constants.POOL_SWIMLANE_MARGIN)
+									- this.laneSymbols[n].y;
+							// If child symbols are on lane header, dY is set to
+							// move the child symbols
+							for ( var c in this.laneSymbols[n].containedSymbols) {
+								if (this.laneSymbols[n].containedSymbols[c].y <= dYNew) {
+									if (dY < dYNew) {
+										dY = dYNew;
+									}
+								}
 							}
 						}
-						
+
 						for ( var n in this.laneSymbols) {
 							var dX = currentX - this.laneSymbols[n].x;
 							this.laneSymbols[n].x = currentX;
@@ -411,7 +417,7 @@ define(
 									+ m_constants.POOL_SWIMLANE_MARGIN;
 							currentX += this.laneSymbols[n].width;
 							currentX += m_constants.POOL_SWIMLANE_MARGIN;
-							
+
 							for (var c in this.laneSymbols[n].containedSymbols) {
 								this.laneSymbols[n].containedSymbols[c].moveBy(dX, dY);
 							}
@@ -424,7 +430,7 @@ define(
 
 						for ( var n in this.laneSymbols) {
 							var dY = currentY - this.laneSymbols[n].y;
-							
+
 							this.laneSymbols[n].x = this.x
 									+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
 									+ m_constants.POOL_SWIMLANE_MARGIN;
@@ -439,14 +445,14 @@ define(
 							this.laneSymbols[n].adjustGeometry();
 						}
 					}
-					
-					/* Call hideSnapLines, as the moveBy function invokes checkSnaplines causing the 
+
+					/* Call hideSnapLines, as the moveBy function invokes checkSnaplines causing the
 					 * snap lines to be created. */
 					this.diagram.hideSnapLines();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.flipFlowOrientation = function(
 						flowOrientation) {
@@ -459,7 +465,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.createFlyOutMenuBackground = function(x,
 						y, height, width) {
@@ -487,7 +493,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.initializeEventHandling = function() {
 					// this.borderRectangle.auxiliaryProperties.callbackScope =
@@ -495,7 +501,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.adjustFlyOutMenu = function(x, y, width,
 						height) {
@@ -508,13 +514,13 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.createFlyOutMenu = function() {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.createProximitySensorPrimitive = function() {
 					var POOL_PROXIMITY_SENSOR_WIDTH = 3;
@@ -530,7 +536,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 * @param x
 				 * @param y
 				 * @param width
@@ -542,7 +548,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.findContainerSymbol = function(x, y) {
 					// TODO Add recursion for nested swimlanes
@@ -556,7 +562,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.findLane = function(id) {
 					// TODO Add recursion for nested swimlanes
@@ -570,14 +576,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.requiresParentSymbol = function() {
 					return false;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PoolSymbol.prototype.getLaneIndex = function() {
 
@@ -591,7 +597,7 @@ define(
 
 					return laneIndex;
 				};
-				
+
 				PoolSymbol.prototype.getAllDataSymbols = function(dataSymbols) {
 					for ( var n in this.laneSymbols) {
 						this.laneSymbols[n].getAllDataSymbols(dataSymbols);
@@ -599,16 +605,16 @@ define(
 
 					return dataSymbols;
 				};
-				
+
 				PoolSymbol.prototype.removeLane = function(laneSymbol) {
 					/* remove lane from lane symbols array. */
 					m_utils.removeItemFromArray(this.laneSymbols, laneSymbol);
-					
+
 					/* Create a default lane if the very last lane was deleted. */
 					if(this.laneSymbols.length == 0) {
 						this.createDefaultLane();
 					}
-					
+
 					this.recalculateBoundingBox();
 					this.adjustGeometry();
 				};

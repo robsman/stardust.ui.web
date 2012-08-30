@@ -69,9 +69,8 @@ public class ActivityCommandHandler
       String subProcessID = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
             ModelerConstants.SUBPROCESS_ID);
       //TODO -Remove the adjustment and pass correct co-ordinates for symbols.
-      int xProperty = extractInt(request, X_PROPERTY) - ModelerConstants.POOL_LANE_MARGIN;
-      int yProperty = extractInt(request, Y_PROPERTY) - ModelerConstants.POOL_LANE_MARGIN
-            - ModelerConstants.POOL_SWIMLANE_TOP_BOX_HEIGHT;
+      int xProperty = extractInt(request, X_PROPERTY);
+      int yProperty = extractInt(request, Y_PROPERTY);
       int widthProperty = extractInt(request, WIDTH_PROPERTY);
       int heightProperty = extractInt(request, HEIGHT_PROPERTY);
       synchronized (model)

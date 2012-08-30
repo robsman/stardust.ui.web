@@ -643,10 +643,9 @@ public abstract class ModelElementMarshaller
       activitySymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             activitySymbol.getElementOid());
       activitySymbolJson.addProperty(ModelerConstants.X_PROPERTY,
-            activitySymbol.getXPos() + laneOffsetX + ModelerConstants.POOL_LANE_MARGIN);
+            activitySymbol.getXPos() + laneOffsetX);
       activitySymbolJson.addProperty(ModelerConstants.Y_PROPERTY,
-            activitySymbol.getYPos() + laneOffsetY + ModelerConstants.POOL_LANE_MARGIN
-                  + ModelerConstants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
+            activitySymbol.getYPos() + laneOffsetY);
       activitySymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY,
             activitySymbol.getWidth());
       activitySymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
@@ -734,13 +733,11 @@ public abstract class ModelElementMarshaller
             startEventSymbol.getElementOid());
 
       // TODO check this math
-      eventSymbolJson.addProperty(ModelerConstants.X_PROPERTY,
-            startEventSymbol.getXPos() + laneOffsetX + ModelerConstants.POOL_LANE_MARGIN
-                  + (startEventSymbol.getWidth() / 2)
-                  - ModelerConstants.START_END_SYMBOL_LEFT_OFFSET);
+      eventSymbolJson.addProperty(ModelerConstants.X_PROPERTY, startEventSymbol.getXPos()
+            + laneOffsetX + (startEventSymbol.getWidth() / 2)
+            - ModelerConstants.START_END_SYMBOL_LEFT_OFFSET);
       eventSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, startEventSymbol.getYPos()
-            + laneOffsetY + ModelerConstants.POOL_LANE_MARGIN
-            + ModelerConstants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
+            + laneOffsetY);
 
       JsonObject eventJson = new JsonObject();
       eventSymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, eventJson);
@@ -788,11 +785,9 @@ public abstract class ModelElementMarshaller
       eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             endEventSymbol.getElementOid());
       eventSymbolJson.addProperty(ModelerConstants.X_PROPERTY, endEventSymbol.getXPos()
-            + laneOffsetX + ModelerConstants.POOL_LANE_MARGIN
-            + ModelerConstants.START_END_SYMBOL_LEFT_OFFSET);
+            + laneOffsetX + ModelerConstants.START_END_SYMBOL_LEFT_OFFSET);
       eventSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, endEventSymbol.getYPos()
-            + laneOffsetY + ModelerConstants.POOL_LANE_MARGIN
-            + ModelerConstants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
+            + laneOffsetY);
 
       JsonObject eventJson = new JsonObject();
       eventSymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, eventJson);
@@ -943,10 +938,9 @@ public abstract class ModelElementMarshaller
       dataSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             dataSymbol.getElementOid());
       dataSymbolJson.addProperty(ModelerConstants.X_PROPERTY, dataSymbol.getXPos()
-            + laneOffsetX + ModelerConstants.POOL_LANE_MARGIN);
+            + laneOffsetX);
       dataSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, dataSymbol.getYPos()
-            + laneOffsetY + ModelerConstants.POOL_LANE_MARGIN
-            + ModelerConstants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
+            + laneOffsetY);
       dataSymbolJson.addProperty(ModelerConstants.UUID_PROPERTY,
             eObjectUUIDMapper().getUUID(dataSymbol));
       dataSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,

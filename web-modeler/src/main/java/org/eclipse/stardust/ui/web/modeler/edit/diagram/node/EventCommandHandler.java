@@ -66,10 +66,9 @@ public class EventCommandHandler
             startEventSymbol.setElementOid(++maxOid);
             // TODO - Pass correct x,y co-ordinates rather than adjustment at server
             startEventSymbol.setXPos(extractInt(request, X_PROPERTY)
-                  - parentLaneSymbol.getXPos() - ModelerConstants.POOL_LANE_MARGIN);
+                  - parentLaneSymbol.getXPos());
             startEventSymbol.setYPos(extractInt(request, Y_PROPERTY)
-                  - parentLaneSymbol.getYPos() - ModelerConstants.POOL_LANE_MARGIN
-                  - ModelerConstants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
+                  - parentLaneSymbol.getYPos());
             startEventSymbol.setWidth(extractInt(request, WIDTH_PROPERTY));
             startEventSymbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
 
@@ -87,10 +86,9 @@ public class EventCommandHandler
             endEventSymbol.setElementOid(++maxOid);
 
             endEventSymbol.setXPos(extractInt(request, X_PROPERTY)
-                  - parentLaneSymbol.getXPos() - ModelerConstants.POOL_LANE_MARGIN);
+                  - parentLaneSymbol.getXPos());
             endEventSymbol.setYPos(extractInt(request, Y_PROPERTY)
-                  - parentLaneSymbol.getYPos() - ModelerConstants.POOL_LANE_MARGIN
-                  - ModelerConstants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
+                  - parentLaneSymbol.getYPos());
             endEventSymbol.setWidth(extractInt(request, WIDTH_PROPERTY));
             endEventSymbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
 

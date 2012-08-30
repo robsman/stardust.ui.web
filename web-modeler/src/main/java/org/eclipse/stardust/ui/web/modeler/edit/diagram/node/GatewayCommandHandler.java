@@ -77,10 +77,9 @@ public class GatewayCommandHandler
          gatewaySymbol.setElementOid(++maxOid);
          // TODO - Pass correct x,y co-ordinates rather than adjustment at server
          gatewaySymbol.setXPos(extractInt(request, X_PROPERTY)
-               - parentLaneSymbol.getXPos() - ModelerConstants.POOL_LANE_MARGIN);
+               - parentLaneSymbol.getXPos());
          gatewaySymbol.setYPos(extractInt(request, Y_PROPERTY)
-               - parentLaneSymbol.getYPos() - ModelerConstants.POOL_LANE_MARGIN
-               - ModelerConstants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
+               - parentLaneSymbol.getYPos());
          gatewaySymbol.setActivity(gateway);
          gatewaySymbol.setWidth(extractInt(request, WIDTH_PROPERTY));
          gatewaySymbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
