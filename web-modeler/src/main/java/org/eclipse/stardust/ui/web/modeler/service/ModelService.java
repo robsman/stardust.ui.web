@@ -33,14 +33,18 @@ import javax.xml.namespace.QName;
 import org.atmosphere.cpr.Broadcaster;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
+import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.stardust.common.Predicate;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.runtime.*;
+import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.engine.extensions.jaxws.app.WSConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
@@ -52,10 +56,6 @@ import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
-import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
-import org.eclipse.stardust.model.xpdl.xpdl2.util.XsdContentProvider;
-import org.eclipse.stardust.model.xpdl.xpdl2.util.XsdIconProvider;
-import org.eclipse.stardust.model.xpdl.xpdl2.util.XsdTextProvider;
 import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
 import org.eclipse.stardust.modeling.validation.Issue;
 import org.eclipse.stardust.modeling.validation.ValidationService;
@@ -64,11 +64,12 @@ import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
-import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.portal.JaxWSResource;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.xsd.*;
+import org.eclipse.xsd.impl.XSDImportImpl;
+import org.eclipse.xsd.util.XSDResourceFactoryImpl;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.google.gson.JsonArray;
@@ -1863,6 +1864,16 @@ public class ModelService
    }
 
    /**
+    * Duplicated from WSConstants in 7.1
+    */
+   public static final String WS_OPERATION_INPUT_NAME_ATT = "carnot:engine:wsOperationInputName";
+   public static final String WS_OPERATION_OUTPUT_NAME_ATT = "carnot:engine:wsOperationOutputName";
+   public static final String WS_SOAP_ACTION_URI_ATT = "carnot:engine:wsSoapActionUri";
+   public static final String WS_SOAP_PROTOCOL_ATT = "carnot:engine:wsSoapProtocol";
+   public static final String WS_INPUT_ORDER_ATT = "carnot:engine:wsInputOrder";
+   public static final String WS_OUTPUT_ORDER_ATT = "carnot:engine:wsOutputOrder";
+   
+   /**
     * Adds operation definitions to the port json.
     * 
     * @param portJson the json object representing the parent port.
@@ -1890,12 +1901,12 @@ public class ModelService
          operationJson.addProperty(WSConstants.WS_OPERATION_NAME_ATT, operation.getName());
          operationJson.addProperty("style", JaxWSResource.getOperationStyle(operation));
          operationJson.addProperty("use", JaxWSResource.getOperationUse(operation));
-         operationJson.addProperty(WSConstants.WS_OPERATION_INPUT_NAME_ATT, inputName);
-         operationJson.addProperty(WSConstants.WS_OPERATION_OUTPUT_NAME_ATT, outputName);
-         operationJson.addProperty(WSConstants.WS_SOAP_ACTION_URI_ATT, JaxWSResource.getSoapActionUri(operation));
-         operationJson.addProperty(WSConstants.WS_SOAP_PROTOCOL_ATT, JaxWSResource.getOperationProtocol(operation));
-         operationJson.addProperty(WSConstants.WS_INPUT_ORDER_ATT, getPartsOrder(input == null ? null : input.getMessage()));
-         operationJson.addProperty(WSConstants.WS_OUTPUT_ORDER_ATT, getPartsOrder(output == null ? null : output.getMessage()));
+         operationJson.addProperty(WS_OPERATION_INPUT_NAME_ATT, inputName);
+         operationJson.addProperty(WS_OPERATION_OUTPUT_NAME_ATT, outputName);
+         operationJson.addProperty(WS_SOAP_ACTION_URI_ATT, JaxWSResource.getSoapActionUri(operation));
+         operationJson.addProperty(WS_SOAP_PROTOCOL_ATT, JaxWSResource.getOperationProtocol(operation));
+         operationJson.addProperty(WS_INPUT_ORDER_ATT, getPartsOrder(input == null ? null : input.getMessage()));
+         operationJson.addProperty(WS_OUTPUT_ORDER_ATT, getPartsOrder(output == null ? null : output.getMessage()));
          
          operationsJson.add(name, operationJson);
       }
@@ -2114,7 +2125,7 @@ public class ModelService
 
       try
       {
-         XSDSchema schema = TypeDeclarationUtils.loadSchema(xsdUrl, null);
+         XSDSchema schema = loadSchema(xsdUrl);
          loadSchemaInfo(json, schema);
       }
       catch (IOException ioex)
@@ -2227,6 +2238,88 @@ public class ModelService
          }
       }
    }
+
+   /* remove */ private static final String EXTERNAL_SCHEMA_MAP = "com.infinity.bpm.rt.data.structured.ExternalSchemaMap";
+   /* remove */ private static final XSDResourceFactoryImpl XSD_RESOURCE_FACTORY = new XSDResourceFactoryImpl();
+   /* remove */ private static final ClasspathUriConverter CLASSPATH_URI_CONVERTER = new ClasspathUriConverter();
+
+   /**
+    * Duplicate of StructuredTypeRtUtils.getSchema(String, String).
+    * <p>
+    * Should be removed after repackaging of XSDSchema for runtime is dropped.
+    */
+   public static XSDSchema loadSchema(String location) throws IOException
+   {
+      Parameters parameters = Parameters.instance();
+      Map<String, Object> loadedSchemas = null;
+      synchronized (StructuredTypeRtUtils.class)
+      {
+          loadedSchemas = parameters.getObject(EXTERNAL_SCHEMA_MAP);
+          if (loadedSchemas == null)
+          {
+             // (fh) using Hashtable to avoid concurrency problems.
+             loadedSchemas = new Hashtable<String, Object>();
+             parameters.set(EXTERNAL_SCHEMA_MAP, loadedSchemas);
+          }
+      }
+      Object o = loadedSchemas.get(location);
+      if (o != null)
+      {
+          return o instanceof XSDSchema ? (XSDSchema) o : null;
+      }
+      
+      ResourceSetImpl resourceSet = new ResourceSetImpl();
+      URI uri = URI.createURI(location);
+      if (uri.scheme() == null)
+      {
+         resourceSet.setURIConverter(CLASSPATH_URI_CONVERTER);
+         if(location.startsWith("/"))
+         {
+            location = location.substring(1);
+         }
+         uri = URI.createURI(ClasspathUriConverter.CLASSPATH_SCHEME + ":/" + location);
+      }
+      // (fh) register the resource factory directly with the resource set and do not tamper with the global registry.
+      resourceSet.getResourceFactoryRegistry().getProtocolToFactoryMap().put(uri.scheme(), XSD_RESOURCE_FACTORY);
+      resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xsd", XSD_RESOURCE_FACTORY);
+      org.eclipse.emf.ecore.resource.Resource resource = resourceSet.createResource(uri);
+      Map<Object, Object> options = new HashMap<Object, Object>();
+      options.put(XMLResource.OPTION_EXTENDED_META_DATA, Boolean.TRUE);
+      resource.load(options);
+      
+      for (EObject eObject : resource.getContents())
+      {
+         if (eObject instanceof XSDSchema)
+         {
+            XSDSchema schema = (XSDSchema) eObject;
+            resolveImports(schema);
+            if (trace.isDebugEnabled())
+            {
+               trace.debug("Found schema for namespace: " + schema.getTargetNamespace() + " at location: " + uri.toString());
+            }
+            loadedSchemas.put(location, schema);
+            return schema;
+         }
+      }
+      loadedSchemas.put(location, "NULL");
+      return null;
+   }
+
+   /**
+    * Should be removed together with loadSchema
+    */
+   private static void resolveImports(XSDSchema schema)
+   {
+      for (XSDSchemaContent item : schema.getContents())
+      {
+         if (item instanceof XSDImportImpl)
+         {
+            // force schema resolving.
+            // it's a noop if the schema is already resolved.
+            ((XSDImportImpl) item).importSchema();
+         }
+      }
+   }   
 
    private ModelBuilderFacade getModelBuilderFacade()
    {
