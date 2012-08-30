@@ -734,8 +734,7 @@ public abstract class ModelElementMarshaller
 
       // TODO check this math
       eventSymbolJson.addProperty(ModelerConstants.X_PROPERTY, startEventSymbol.getXPos()
-            + laneOffsetX + (startEventSymbol.getWidth() / 2)
-            - ModelerConstants.START_END_SYMBOL_LEFT_OFFSET);
+            + laneOffsetX);
       eventSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, startEventSymbol.getYPos()
             + laneOffsetY);
 
@@ -785,7 +784,7 @@ public abstract class ModelElementMarshaller
       eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             endEventSymbol.getElementOid());
       eventSymbolJson.addProperty(ModelerConstants.X_PROPERTY, endEventSymbol.getXPos()
-            + laneOffsetX + ModelerConstants.START_END_SYMBOL_LEFT_OFFSET);
+            + laneOffsetX);
       eventSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, endEventSymbol.getYPos()
             + laneOffsetY);
 
