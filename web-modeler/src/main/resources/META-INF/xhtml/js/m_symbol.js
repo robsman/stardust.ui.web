@@ -1795,7 +1795,11 @@ define(
 				 *
 				 */
 				AnchorPoint.prototype.dragStart = function() {
-					this.dragConnection = this.symbol.connections[0];
+					for ( var n in this.symbol.connections) {
+						if (this.symbol.connections[n].selected) {
+							this.dragConnection = this.symbol.connections[n];
+						}
+					}
 
 					if (this.dragConnection == null) {
 						return;
