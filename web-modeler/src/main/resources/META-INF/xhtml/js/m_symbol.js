@@ -224,7 +224,9 @@ define(
 				 */
 				Symbol.prototype.complete = function(sync) {
 					this.completeNoTransfer(this);
-					this.createAndSubmitCreateCommand(sync);
+					if(this.isCompleted()){
+						this.createAndSubmitCreateCommand(sync);
+					}
 
 					if (this.requiresParentSymbol()) {
 						// TODO Needs to be called on create, otherwise it may
