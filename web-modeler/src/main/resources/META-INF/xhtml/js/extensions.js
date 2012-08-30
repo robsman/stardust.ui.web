@@ -200,7 +200,7 @@ var extensions = {
 		id : "startEventButton",
 		paletteId : "eventPalette",
 		title : "Create Start Event",
-		iconUrl : "../../images/icons/start.PNG",
+		iconUrl : "../../images/icons/start_event_with_border.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "createStartEvent",
 		visibility : "always"
@@ -208,7 +208,7 @@ var extensions = {
 		id : "endEventButton",
 		paletteId : "eventPalette",
 		title : "Create End Event",
-		iconUrl : "../../images/icons/stop.PNG",
+		iconUrl : "../../images/icons/end_event_with_border.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "createEndEvent",
 		visibility : "always"

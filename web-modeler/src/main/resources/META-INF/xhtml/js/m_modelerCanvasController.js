@@ -1630,10 +1630,10 @@ define(
 				var eventType = null;
 
 				if (type == 'start') {
-					imageUrl = "../../images/icons/start.PNG";
+					imageUrl = "../../images/icons/start_event_with_border.png";
 					eventType = "startEvent";
 				} else {
-					imageUrl = "../../images/icons/stop.PNG";
+					imageUrl = "../../images/icons/end_event_with_border.png";
 					eventType = "stopEvent";
 				}
 
