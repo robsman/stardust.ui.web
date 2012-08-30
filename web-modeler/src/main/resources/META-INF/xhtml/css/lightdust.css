@@ -523,14 +523,14 @@ td.dataPathTableCell {
 }
 
 td.inDataPathListItem {
-	background: url("../images/icons/in-datapath.gif") no-repeat;
+	background: url("../images/icons/datapath-in.png") no-repeat;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 20px;
 }
 
 td.outDataPathListItem {
-	background: url("../images/icons/out-datapath.gif") no-repeat;
+	background: url("../images/icons/datapath-out.png") no-repeat;
 	padding-left: 20px;
 	padding-top: 2px;
 	padding-bottom: 2px;
