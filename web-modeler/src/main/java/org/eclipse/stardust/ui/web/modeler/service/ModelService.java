@@ -19,6 +19,7 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLo
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 import static org.eclipse.stardust.ui.web.modeler.service.streaming.JointModellingSessionsController.lookupInviteBroadcaster;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.Future;
 
@@ -33,6 +34,7 @@ import org.atmosphere.cpr.Broadcaster;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
+import org.eclipse.stardust.common.Predicate;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -50,6 +52,10 @@ import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
+import org.eclipse.stardust.model.xpdl.xpdl2.util.XsdContentProvider;
+import org.eclipse.stardust.model.xpdl.xpdl2.util.XsdIconProvider;
+import org.eclipse.stardust.model.xpdl.xpdl2.util.XsdTextProvider;
 import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
 import org.eclipse.stardust.modeling.validation.Issue;
 import org.eclipse.stardust.modeling.validation.ValidationService;
@@ -58,9 +64,11 @@ import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
+import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.portal.JaxWSResource;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.eclipse.xsd.*;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.google.gson.JsonArray;
@@ -1775,33 +1783,30 @@ public class ModelService
     */
    public JsonObject getWebServiceStructure(JsonObject postedData)
    {
-      System.out.println("===> Get Web Service Structure for URL " + postedData.get("wsdlUrl").getAsString());
-      
       String wsdlUrl = postedData.get("wsdlUrl").getAsString();
+      System.out.println("===> Get Web Service Structure for URL " + wsdlUrl);
+      
       Definition definition = JaxWSResource.getDefinition(wsdlUrl);
       
       @SuppressWarnings("unchecked")
-      
-      Collection<Service> declaredServices = definition.getServices().values();
-      List<Service> services = new ArrayList<Service>(declaredServices.size() + 1);
-      
-      services.addAll(declaredServices);
-      
-      // TODO:
-      // services.add(new DynamicBoundService(definition));
+      Collection<Service> services = definition.getServices().values();
+      @SuppressWarnings("unchecked")
+      Collection<Binding> bindings = definition.getBindings().values();
 
       JsonObject webServiceJson = new JsonObject();
       webServiceJson.addProperty(WSConstants.WS_WSDL_URL_ATT, wsdlUrl);
-      addServices(webServiceJson, services);
+      addServices(webServiceJson, services, bindings);
       return webServiceJson;
    }
 
    /**
+    * Adds the service definitions to the parent json object.
     * 
-    * @param webServiceJson
-    * @param services
+    * @param webServiceJson the parent json object.
+    * @param services the list of services declared in the wsdl document.
+    * @param bindings the list of bindings declared in the wsdl document.
     */
-   private void addServices(JsonObject webServiceJson, Collection<Service> services)
+   private void addServices(JsonObject webServiceJson, Collection<Service> services, Collection<Binding> bindings)
    {
       JsonObject servicesJson = new JsonObject();
       webServiceJson.add("services", servicesJson);
@@ -1811,7 +1816,6 @@ public class ModelService
          QName qname = service.getQName();
          
          @SuppressWarnings("unchecked")
-         
          Collection<Port> ports = service.getPorts().values();
          
          JsonObject serviceJson = new JsonObject();
@@ -1821,35 +1825,37 @@ public class ModelService
          addPorts(serviceJson, ports);
          servicesJson.add(qname.getLocalPart(), serviceJson);
       }
+
+      JsonObject serviceJson = new JsonObject();
+      serviceJson.addProperty("name", WSConstants.DYNAMIC_BOUND_SERVICE_QNAME.getLocalPart());
+      serviceJson.addProperty(WSConstants.WS_SERVICE_NAME_ATT, WSConstants.DYNAMIC_BOUND_SERVICE_QNAME.toString());
+      addPorts(serviceJson, bindings);
+      servicesJson.add(WSConstants.DYNAMIC_BOUND_SERVICE_QNAME.getLocalPart(), serviceJson);
    }
 
    /**
+    * Adds port or binding definitions to the service json.
     * 
-    * @param serviceJson
-    * @param ports
+    * @param serviceJson the json object representing the parent service.
+    * @param ports the list of ports or bindings declared for the service.
     */
-   private void addPorts(JsonObject serviceJson, Collection<Port> ports)
+   private void addPorts(JsonObject serviceJson, Collection<?> ports)
    {
       JsonObject portsJson = new JsonObject();
       
       serviceJson.add("ports", portsJson);
       
-      for (Port port : ports)
+      for (Object port : ports)
       {
-         String name = port.getName();
-         Binding binding = port.getBinding();
+         String name = port instanceof Port ? ((Port) port).getName() : ((Binding) port).getQName().getLocalPart();
+         Binding binding = port instanceof Port ? ((Port) port).getBinding() : (Binding) port;
        
          @SuppressWarnings("unchecked")
-         
          Collection<BindingOperation> operations = binding.getBindingOperations();
          
          JsonObject portJson = new JsonObject();
-         
          portJson.addProperty("name", name);
-         
-         // TODO:
-         portJson.addProperty(WSConstants.WS_PORT_NAME_ATT, /*port instanceof BindingWrapper
-               ? ((BindingWrapper) port).getQName().toString() :*/ name);
+         portJson.addProperty(WSConstants.WS_PORT_NAME_ATT, name);
          portJson.addProperty("style", JaxWSResource.getBindingStyle(binding));
          addOperations(portJson, operations);
          portsJson.add(name, portJson);
@@ -1857,9 +1863,10 @@ public class ModelService
    }
 
    /**
+    * Adds operation definitions to the port json.
     * 
-    * @param portJson
-    * @param operations
+    * @param portJson the json object representing the parent port.
+    * @param operations the list of operations declared for the port.
     */
    private void addOperations(JsonObject portJson, Collection<BindingOperation> operations)
    {
@@ -1883,12 +1890,12 @@ public class ModelService
          operationJson.addProperty(WSConstants.WS_OPERATION_NAME_ATT, operation.getName());
          operationJson.addProperty("style", JaxWSResource.getOperationStyle(operation));
          operationJson.addProperty("use", JaxWSResource.getOperationUse(operation));
-//         operationJson.addProperty(WSConstants.WS_OPERATION_INPUT_NAME_ATT, inputName);
-//         operationJson.addProperty(WSConstants.WS_OPERATION_OUTPUT_NAME_ATT, outputName);
-//         operationJson.addProperty(WSConstants.WS_SOAP_ACTION_URI_ATT, JaxWSResource.getSoapActionUri(operation));
-//         operationJson.addProperty(WSConstants.WS_SOAP_PROTOCOL_ATT, JaxWSResource.getOperationProtocol(operation));
-//         operationJson.addProperty(WSConstants.WS_INPUT_ORDER_ATT, getPartsOrder(input == null ? null : input.getMessage()));
-//         operationJson.addProperty(WSConstants.WS_OUTPUT_ORDER_ATT, getPartsOrder(output == null ? null : output.getMessage()));
+         operationJson.addProperty(WSConstants.WS_OPERATION_INPUT_NAME_ATT, inputName);
+         operationJson.addProperty(WSConstants.WS_OPERATION_OUTPUT_NAME_ATT, outputName);
+         operationJson.addProperty(WSConstants.WS_SOAP_ACTION_URI_ATT, JaxWSResource.getSoapActionUri(operation));
+         operationJson.addProperty(WSConstants.WS_SOAP_PROTOCOL_ATT, JaxWSResource.getOperationProtocol(operation));
+         operationJson.addProperty(WSConstants.WS_INPUT_ORDER_ATT, getPartsOrder(input == null ? null : input.getMessage()));
+         operationJson.addProperty(WSConstants.WS_OUTPUT_ORDER_ATT, getPartsOrder(output == null ? null : output.getMessage()));
          
          operationsJson.add(name, operationJson);
       }
@@ -1908,7 +1915,6 @@ public class ModelService
       }
       
       @SuppressWarnings("unchecked")
-      
       List<Part> parts = message.getOrderedParts(null);
       
       if (parts.isEmpty())
@@ -2040,6 +2046,188 @@ public class ModelService
       return json;
    }
 
+   /**
+    * Loads a JSON representation of a type hierarchy loaded from an XSD or WSDL URL.
+    * <p>
+    * <b>Members:</b>
+    * <ul>
+    *   <li><code>targetNamespace</code> the schema namespace.</li>
+    *   <li><code>elements</code> a list of elements declared in the schema.</li>
+    *   <li><code>types</code> a list of types declared in the schema.</li>
+    * </ul>
+    * <p>
+    * Each <b>element</b> declaration has the following structure:
+    * <ul>
+    *   <li><code>name</code> a string containing the name of the item (for display purposes).</li>
+    *   <li><code>type</code> the xsd type of the element (optional).</li>
+    *   <li><code>attributes</code> a list of attributes (optional).</li>
+    *   <li><code>body</code> the body of the element (optional).</li>
+    * </ul>
+    * <p>
+    * Each <b>type</b> declaration has the following structure:
+    * <ul>
+    *   <li><code>name</code> a string containing the name of the item (for display purposes).</li>
+    *   <li><code>attributes</code> a list of attributes (optional).</li>
+    *   <li><code>facets</code> the constraining facets if the type is a simple type (optional).</li>
+    *   <li><code>body</code> the body of the type (optional).</li>
+    * </ul>
+    * <p>
+    * Each <b>attribute</b> declaration has the following structure:
+    * <ul>
+    *   <li><code>name</code> a string containing the name of the item (for display purposes).</li>
+    *   <li><code>type</code> the xsd type of the attribute.</li>
+    *   <li><code>cardinality</code> the cardinality of the attribute (<code>required</code> | <code>optional</code>).</li>
+    * </ul>
+    * <p>
+    * Each <b>body</b> declaration has the following structure:
+    * <ul>
+    *   <li><code>name</code> a string containing the name of the item (for display purposes).</li>
+    *   <li><code>classifier</code> a string identifying the category of the item (<code>sequence</code> | <code>choice</code> | <code>all</code>).</li>
+    *   <li><code>elements</code> a list containing element references.</li>
+    * </ul>
+    * <p>
+    * Each <b>element</b> reference has the following structure:
+    * <ul>
+    *   <li><code>name</code> a string containing the name of the item (for display purposes).</li>
+    *   <li><code>type</code> the xsd type of the element reference.</li>
+    *   <li><code>cardinality</code> the cardinality of the element reference (<code>required</code> | <code>optional</code> | <code>many</code> | <code>at least one</code>).</li>
+    *   <li><code>body</code> the body of the element reference (optional).</li>
+    * </ul>
+    * Each <b>facet</b> has the following structure:
+    * <ul>
+    *   <li><code>name</code> a string containing the value of the facet.</li>
+    *   <li><code>classifier</code> a string identifying the type of the facet, i.e. <code>enumeration</code>, <code>pattern</code>, etc.</li>
+    * </ul>
+    * 
+    * Each item described above has a member <code>icon</code> that specifies the corresponding icon. 
+    * 
+    * @param postedData a JsonObject that contains a primitive (String) member with the
+    *        name "url" that specifies the URL from where the XSD should be loaded.
+    * @return the JsonObject containing the representation of the element and type declarations.
+    */
+   public JsonObject getXsdStructure(JsonObject postedData)
+   {
+      String xsdUrl = postedData.get("url").getAsString();
+      System.out.println("===> Get XSD Structure for URL " + xsdUrl);
+      
+      JsonObject json = new JsonObject();
+
+      try
+      {
+         XSDSchema schema = TypeDeclarationUtils.loadSchema(xsdUrl, null);
+         loadSchemaInfo(json, schema);
+      }
+      catch (IOException ioex)
+      {
+         // TODO: do something with the exception
+      }
+
+      return json;
+   }
+
+   public static void loadSchemaInfo(JsonObject json, XSDSchema schema)
+   {
+      XsdContentProvider cp = new XsdContentProvider(true);
+      XsdTextProvider lp = new XsdTextProvider();
+      XsdIconProvider ip = new XsdIconProvider();
+  
+      json.addProperty("targetNamespace", schema.getTargetNamespace());
+      json.addProperty("icon", ip.doSwitch(schema).getSimpleName());
+
+      JsonObject elements = new JsonObject();
+      addChildren(elements, schema, cp, lp, ip, new Predicate<EObject>()
+      {
+         @Override
+         public boolean accept(EObject arg)
+         {
+            return arg instanceof XSDElementDeclaration;
+         }
+      });
+      if (!elements.entrySet().isEmpty())
+      {
+         json.add("elements", elements);
+      }
+
+      JsonObject types = new JsonObject();
+      addChildren(types, schema, cp, lp, ip, new Predicate<EObject>()
+      {
+         @Override
+         public boolean accept(EObject arg)
+         {
+            return arg instanceof XSDTypeDefinition;
+         }
+      });
+      if (!types.entrySet().isEmpty())
+      {
+         json.add("types", types);
+      }
+   }
+
+   private static void addChildren(JsonObject json, EObject component, XsdContentProvider cp, XsdTextProvider lp, XsdIconProvider ip, Predicate<EObject> filter)
+   {
+      EObject[] children = cp.doSwitch(component);
+      if (children.length > 0)
+      {
+         JsonObject att = null;
+         JsonObject facets = null;
+         for (EObject child : children)
+         {
+            if (filter == null || filter.accept(child))
+            {
+               JsonObject js = new JsonObject();
+               lp.setColumn(0);
+               String name = lp.doSwitch(child);
+               js.addProperty("name", name);
+               js.addProperty("icon", ip.doSwitch(child).getSimpleName());
+               lp.setColumn(1);
+               String type = lp.doSwitch(child);
+               if (!type.isEmpty())
+               {
+                  js.addProperty("type", type);
+               }
+               lp.setColumn(2);
+               String cardinality = lp.doSwitch(child);
+               if (!cardinality.isEmpty())
+               {
+                  js.addProperty("cardinality", cardinality);
+               }
+               if (child instanceof XSDFacet)
+               {
+                  js.addProperty("classifier", ((XSDFacet) child).getFacetName());
+                  if (facets == null)
+                  {
+                     facets = new JsonObject();
+                     json.add("facets", facets);
+                  }
+                  facets.add(name, js);
+               }
+               else if (child instanceof XSDAttributeDeclaration)
+               {
+                  if (att == null)
+                  {
+                     att = new JsonObject();
+                     json.add("attributes", att);
+                  }
+                  att.add(name, js);
+               }
+               else if (child instanceof XSDModelGroup)
+               {
+                  js.addProperty("classifier", ((XSDModelGroup) child).getCompositor().getLiteral());
+                  json.add("body", js);
+                  JsonObject c = new JsonObject();
+                  js.add("elements", c);
+                  js = c;
+               }
+               else
+               {
+                  json.add(name, js);
+               }
+               addChildren(js, child, cp, lp, ip, null);
+            }
+         }
+      }
+   }
+
    private ModelBuilderFacade getModelBuilderFacade()
    {
       return new ModelBuilderFacade(getModelManagementStrategy());
@@ -2058,4 +2246,18 @@ public class ModelService
       
       return preferencesJson;
    }
+   
+   /*public static void main(String[] args)
+   {
+      JsonObject postedData = new JsonObject();
+      postedData.addProperty("wsdlUrl",
+                             "file:/development/wks/trunk/runtime-blank/testprj/src/wsdl/hello_world_wssec.wsdl");
+      postedData.addProperty("url",
+                             "file:/development/wks/trunk/runtime-blank/testprj/src/xsd/anf/security_master_update.xsd");
+      
+      ModelService ms = new ModelService();
+      JsonMarshaller m = new JsonMarshaller();
+      System.out.println(m.writeJsonObject(ms.getWebServiceStructure(postedData)));
+      System.out.println(m.writeJsonObject(ms.getXsdStructure(postedData)));
+   }*/
 }
