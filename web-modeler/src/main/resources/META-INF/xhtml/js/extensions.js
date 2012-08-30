@@ -232,7 +232,7 @@ var extensions = {
 		id : "connectorButton",
 		paletteId : "connectorPalette",
 		title : "Create Connector",
-		iconUrl : "../../images/icons/connector.png",
+		iconUrl : "../../images/icons/connect.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "createConnector",
 		visibility : "always"
