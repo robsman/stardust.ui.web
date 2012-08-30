@@ -253,16 +253,19 @@ define(
 				 *
 				 */
 				EventSymbol.prototype.adjustPrimitives = function(dX, dY) {
-					this.circle.attr({
+					this.circle.animate({
 						cx : this.x + m_constants.EVENT_DEFAULT_RADIUS,
 						cy : this.y + m_constants.EVENT_DEFAULT_RADIUS
-					});
-					this.image.attr({
+					}, , this.diagram.animationDelay,
+					this.diagram.animationEasing);
+					
+					this.image.animate({
 						x : this.x + m_constants.EVENT_DEFAULT_RADIUS - 0.5
 								* m_constants.EVENT_ICON_WIDTH,
 						y : this.y + m_constants.EVENT_DEFAULT_RADIUS - 0.5
 								* m_constants.EVENT_ICON_WIDTH
-					});
+					}, , this.diagram.animationDelay,
+					this.diagram.animationEasing);
 				};
 
 				/**

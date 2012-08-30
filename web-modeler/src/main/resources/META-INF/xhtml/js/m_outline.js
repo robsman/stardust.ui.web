@@ -740,7 +740,7 @@ define(
 																+ "&conditionalPerformerId="
 																+ conditionalPerformer.id
 																+ "&conditionalPerformerName="
-																+ conditionalPerformer.id
+																+ conditionalPerformer.name
 																+ "&fullId="
 																+ conditionalPerformer
 																		.getFullId(),

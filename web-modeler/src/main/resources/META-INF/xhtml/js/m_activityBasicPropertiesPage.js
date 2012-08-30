@@ -152,6 +152,23 @@ define(
 							+ m_constants.AUTO_GENERATED_UI
 							+ "'>(Auto-generated Screen)</option>");
 
+					this.applicationList
+					.append("<optgroup label=\"This Model\"></optgroup>");
+
+//						for ( var m in this.propertiesPanel.diagram.model.applications) {
+//							this.applicationList
+//									.append("<option value='"
+//											+ this.propertiesPanel.diagram.model.applications[m]
+//													.getFullId()
+//											+ "'>"
+//											+ this.propertiesPanel.models[n].applications[m].name
+//											+ "</option>");
+//						}
+
+
+					this.applicationList
+					.append("<optgroup label=\"Others Model\">");
+
 					for ( var n in this.propertiesPanel.models) {
 						for ( var m in this.propertiesPanel.models[n].applications) {
 							this.applicationList
@@ -165,6 +182,9 @@ define(
 											+ "</option>");
 						}
 					}
+
+					this.applicationList
+					.append("</optgroup>");
 
 					// Populate subprocesses from model
 
