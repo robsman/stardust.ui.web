@@ -1391,7 +1391,7 @@ define(
 											},
 											"rulesEngineBean" : {
 												"icon" : {
-													"image" : "../images/icons/application-plain-java.png"
+													"image" : "../images/icons/application-drools.png"
 												}
 											},
 											"sessionBean" : {

@@ -212,7 +212,7 @@ define(
 					m_canvasManager.initialize(divId, width, height);
 
 					currentImage = m_canvasManager.addImage(
-							"../../images/white_bg.png", width, height);
+							"../../images/white-bg.png", width, height);
 
 					diagram = m_diagram.createDiagram(divId);
 

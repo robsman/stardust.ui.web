@@ -268,7 +268,7 @@ var extensions = {
 			}, {
 				id : "rulesEngineBean",
 				readableName : "Business Rules Application",
-				iconPath : "../images/icons/application-plain-java.png",
+				iconPath : "../images/icons/application-drools.png",
 				viewId : "genericApplicationView"
 			} ],
 			dataType : [
