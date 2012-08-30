@@ -199,22 +199,31 @@ define(
 				 *
 				 */
 				EventSymbol.prototype.createFlyOutMenu = function() {
-					this.addFlyOutMenuItems([], [ {
-						imageUrl : "../../images/icons/connect.png",
-						imageWidth : 16,
-						imageHeight : 16,
-						clickHandler : EventSymbol_connectToClosure
-					}, {
-						imageUrl : "../../images/icons/activity.png",
-						imageWidth : 16,
-						imageHeight : 16,
-						clickHandler : EventSymbol_connectToActivityClosure
-					}, {
-						imageUrl : "../../images/icons/gateway.png",
-						imageWidth : 16,
-						imageHeight : 16,
-						clickHandler : EventSymbol_connectToGatewayClosure
-					} ], [ {
+					// For stop event, right menu will be empty.
+					var rightMenu = [];
+
+					//If start event
+					if (this.modelElement.eventType == m_constants.START_EVENT_TYPE)
+					{
+						rightMenu = [ {
+							imageUrl : "../../images/icons/connect.png",
+							imageWidth : 16,
+							imageHeight : 16,
+							clickHandler : EventSymbol_connectToClosure
+						}, {
+							imageUrl : "../../images/icons/activity.png",
+							imageWidth : 16,
+							imageHeight : 16,
+							clickHandler : EventSymbol_connectToActivityClosure
+						}, {
+							imageUrl : "../../images/icons/gateway.png",
+							imageWidth : 16,
+							imageHeight : 16,
+							clickHandler : EventSymbol_connectToGatewayClosure
+						} ];
+					}
+
+					this.addFlyOutMenuItems([], rightMenu, [ {
 						imageUrl : "../../images/icons/remove.png",
 						imageWidth : 16,
 						imageHeight : 16,
