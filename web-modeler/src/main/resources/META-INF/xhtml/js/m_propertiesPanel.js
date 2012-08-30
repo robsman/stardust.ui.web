@@ -2,9 +2,9 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_extensionManager", "m_session",
+		[ "m_utils", "m_constants", "m_extensionManager", "m_session", "m_user",
 				"m_command", "m_commandsController", "m_dialog" ],
-		function(m_utils, m_constants, m_extensionManager, m_session,
+		function(m_utils, m_constants, m_extensionManager, m_session, m_user,
 				m_command, m_commandsController, m_dialog) {
 
 			var currentPropertiesPanel = null;
@@ -94,6 +94,8 @@ define(
 				 * 
 				 */
 				PropertiesPanel.prototype.initializePropertiesPages = function() {
+					this.propertiesPages = [];
+					
 					var propertiesPages = m_extensionManager.findExtensions(
 							"propertiesPage", "panelId", this.id);
 					var extensions = {};
@@ -113,6 +115,19 @@ define(
 
 							continue;
 						}
+
+						m_utils.debug("===> Before checking profile " + m_user.getCurrentRole());
+
+						if (!extension.supportedInProfile(m_user.getCurrentRole())) {
+							if (extension.pageHtmlUrl == null) {
+								m_dialog.makeInvisible(jQuery("#" + this.id
+										+ " #" + extension.pageId));
+							}
+
+							continue;
+						}
+
+						m_utils.debug("===> After checking profile " + m_user.getCurrentRole());
 
 						m_utils.debug("Load Properties Page "
 								+ extension.pageId);
@@ -282,6 +297,7 @@ define(
 				 */
 				PropertiesPanel.prototype.processCommand = function(command) {
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
+						//this.initializePropertiesPages();
 						this.setElement(this.element);
 						
 						return;

@@ -11,7 +11,8 @@ var extensions = {
 		panelId : "processPropertiesPanel",
 		pageId : "processInterfacePropertiesPage",
 		pageJavaScriptUrl : "m_processProcessInterfacePropertiesPage",
-		visibility : "always"
+		visibility : "always",
+		profiles : "Integrator"
 	}, {
 		panelId : "processPropertiesPanel",
 		pageId : "dataPathPropertiesPage",
@@ -79,7 +80,8 @@ var extensions = {
 		pageId : "transactionPropertiesPage",
 		pageHtmlUrl : "controlFlowTransactionPropertiesPage.html",
 		pageJavaScriptUrl : "m_controlFlowTransactionPropertiesPage",
-		visibility : "always"
+		visibility : "always",
+		profiles : "Integrator"
 	}, {
 		panelId : "dataFlowPropertiesPanel",
 		pageId : "basicPropertiesPage",

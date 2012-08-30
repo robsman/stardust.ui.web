@@ -10,9 +10,9 @@
 
 define(
 		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_modelElementView",
-				"m_model", "m_typeDeclaration" ],
+				"m_model", "m_typeDeclaration", "m_dataTypeSelector" ],
 		function(m_utils, m_command, m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_typeDeclaration) {
+				m_typeDeclaration, m_dataTypeSelector) {
 			return {
 				initialize : function(fullId) {
 					var view = new UiMashupApplicationView();
@@ -46,6 +46,11 @@ define(
 					this.application = application;
 
 					this.initializeModelElement(application);
+					
+					this.dataTypeSelector = m_dataTypeSelector.create("uiMashupApplicationView", this);
+
+					this.dataTypeSelector.setScopeModel(this.application.model);
+					this.dataTypeSelector.setPrimitiveDataType();
 				};
 
 				/**
@@ -80,6 +85,13 @@ define(
 					return true;
 				};
 
+				/**
+				 * 
+				 */
+				UiMashupApplicationView.prototype.submitDataChanges = function(changes) {
+					// TODO submit access points
+				};
+				
 				/**
 				 * 
 				 */

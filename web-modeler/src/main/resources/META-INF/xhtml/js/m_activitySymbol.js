@@ -9,10 +9,10 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_command", "m_canvasManager", "m_symbol",
+		[ "m_utils", "m_constants", "m_extensionManager", "m_command", "m_canvasManager", "m_symbol",
 				"m_gatewaySymbol", "m_eventSymbol",
 				"m_activityPropertiesPanel", "m_model", "m_activity" ],
-		function(m_utils, m_constants, m_command, m_canvasManager, m_symbol,
+		function(m_utils, m_constants, m_extensionManager, m_command, m_canvasManager, m_symbol,
 				m_gatewaySymbol, m_eventSymbol, m_activityPropertiesPanel,
 				m_model, m_activity) {
 
@@ -80,7 +80,7 @@ define(
 				this.width = m_constants.ACTIVITY_SYMBOL_DEFAULT_WIDTH;
 				this.height = m_constants.ACTIVITY_SYMBOL_DEFAULT_HEIGHT;
 				this.modelElement = null;
-
+				
 				/**
 				 * Binds all client-side aspects to the object (graphics
 				 * objects, diagram, base classes).
@@ -101,6 +101,12 @@ define(
 					this.parallelMultiProcessingMarkerIcon = null;
 					this.sequentialMultiProcessingMarkerIcon = null;
 					this.subprocessMarkerIcon = null;
+
+					var viewManagerExtension = m_extensionManager
+					.findExtension("viewManager");
+					
+					this.viewManager = viewManagerExtension.provider.create();
+
 				};
 
 				/**
@@ -541,20 +547,21 @@ define(
 				 *
 				 */
 				ActivitySymbol.prototype.onSubprocessMarkerIconClick = function() {
-					var link = jQuery("a[id $= 'modeler_view_link']",
-							window.parent.frames['ippPortalMain'].document);
-					var linkId = link.attr('id');
-					var form = link.parents('form:first');
-					var formId = form.attr('id');
 					var model = m_model.findModel(m_model
 							.stripModelId(this.modelElement.subprocessFullId));
 					var process = m_model
 							.findProcess(this.modelElement.subprocessFullId);
 
-					window.parent.EventHub.events.publish("OPEN_VIEW", linkId,
-							formId, "modelerView", "processId=" + process.id
-									+ "&modelId=" + model.id + "&processName="
-									+ process.name, process.id);
+					this.viewManager.openView(
+							"processDefinitionView",
+							"processId=" + process.id
+									+ "&modelId="
+									+ model.id
+									+ "&processName="
+									+ process.name
+									+ "&fullId="
+									+ process.getFullId(),
+							process.getFullId());
 				};
 			}
 
