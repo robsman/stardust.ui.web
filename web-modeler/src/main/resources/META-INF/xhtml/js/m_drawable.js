@@ -29,7 +29,7 @@ define(
 				var FLY_OUT_MENU_EMPTY_MARGIN = 10;
 				var FLY_OUT_MENU_ITEM_MARGIN = 5;
 
-				this.lastModifyingUser = {firstName: ""};
+				this.lastModifyingUser = null;
 				this.properties = [];
 				this.selected = false;
 				this.primitives = [];

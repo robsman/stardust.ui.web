@@ -9,28 +9,34 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_communicationController", "m_commandsController", "m_command",
-				"m_user" ],
-		function(m_utils, m_constants, m_communicationController, m_commandsController, m_command, m_user) {
+		[ "m_utils", "m_constants", "m_communicationController",
+				"m_commandsController", "m_command", "m_user" ],
+		function(m_utils, m_constants, m_communicationController,
+				m_commandsController, m_command, m_user) {
 			this.prospects = new Array();
 			this.participants = new Array();
 			return {
-				initialize : function() {
-					if (window.top.modelingSession == null) {
-
-						window.top.modelingSession = new Session(
-								m_user.getCurrentUser);
-						m_commandsController
-								.registerCommandHandler(window.top.modelingSession);
-						refreshPreferences();
-					}
-
-					m_utils.debug("Session: ");
-					m_utils.debug(window.top.modelingSession);
-
-					return window.top.modelingSession;
+				initialize : initialize,
+				getInstance : function() {
+					return initialize();
 				}
 			};
+
+			function initialize() {
+				if (window.top.modelingSession == null) {
+
+					window.top.modelingSession = new Session(
+							m_user.getCurrentUser);
+					m_commandsController
+							.registerCommandHandler(window.top.modelingSession);
+					refreshPreferences();
+				}
+
+				m_utils.debug("Session: ");
+				m_utils.debug(window.top.modelingSession);
+
+				return window.top.modelingSession;
+			}
 
 			/**
 			 * 
@@ -41,7 +47,7 @@ define(
 				var prospects = [];
 				var collaborators = [];
 				var joined = false;
-				
+
 				this.technologyPreview = false;
 
 				Session.prototype.toString = function() {
@@ -83,32 +89,36 @@ define(
 														.push(value.account);
 											}
 										});
-						
+
 						console.log(collaborators);
 						console.log(prospects);
 					}
 				};
 			}
-			
+
 			/**
 			 * 
 			 */
 			function refreshPreferences() {
-				m_communicationController.syncGetData({
-					url : m_communicationController.getEndpointUrl()
-							+ "/preferences"
-				}, {
-					"success" : function(json) {
-						m_utils.debug("===> Preferences");
-						m_utils.debug(json);
-						
-						window.top.modelingSession.technologyPreview = json.showTechnologyPreview;
-						window.top.modelingSession.defaultProfile = json.defaultProfile;
-					},
-					"error" : function() {
-						alert('Error occured while fetching models');
-					}
-				});
+				m_communicationController
+						.syncGetData(
+								{
+									url : m_communicationController
+											.getEndpointUrl()
+											+ "/preferences"
+								},
+								{
+									"success" : function(json) {
+										m_utils.debug("===> Preferences");
+										m_utils.debug(json);
+
+										window.top.modelingSession.technologyPreview = json.showTechnologyPreview;
+										window.top.modelingSession.defaultProfile = json.defaultProfile;
+									},
+									"error" : function() {
+										alert('Error occured while fetching models');
+									}
+								});
 			}
 
 		});

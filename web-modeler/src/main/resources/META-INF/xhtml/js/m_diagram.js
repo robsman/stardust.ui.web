@@ -135,7 +135,7 @@ define(
 				this.newSymbol = null;
 				this.animationDelay = 0;
 				this.animationEasing = null;
-				this.symbolGlow = true;
+				this.symbolGlow = false;
 
 				this.background = m_canvasManager.drawRectangle(0, 0,
 						m_canvasManager.getCanvasWidth(), m_canvasManager
@@ -655,6 +655,9 @@ define(
 							if (symbol != null) {
 								m_utils.debug("Up to changed symbol:");
 								m_utils.debug(symbol);
+								
+								symbol.lastModifyingUser = command.account; //m_session.getUserByAccount(command.account);
+
 								symbol.applyChanges(obj.changes.modified[i]);
 								m_utils.debug("Changed symbol to:");
 								m_utils.debug(symbol);
