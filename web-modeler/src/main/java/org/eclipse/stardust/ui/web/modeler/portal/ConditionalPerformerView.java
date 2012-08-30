@@ -33,6 +33,6 @@ public class ConditionalPerformerView extends AbstractAdapterView {
    {
       super.handleEvent(event);
       
-      event.getView().setIcon("/plugins/bpm-modeler/images/icons/conditional.gif");
+      event.getView().setIcon("/plugins/bpm-modeler/images/icons/conditional.png");
    }  
 }
