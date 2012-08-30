@@ -14,12 +14,12 @@ define(
 				"m_command", "m_session", "m_user", "m_model", "m_process",
 				"m_application", "m_dataStructure", "m_participant",
 				"m_outlineToolbarController", "m_data",
-				"m_elementConfiguration" ],
+				"m_elementConfiguration", "m_messageDisplay" ],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_communicationController, m_commandsController, m_command,
 				m_session, m_user, m_model, m_process, m_application, m_dataStructure,
 				m_participant, m_outlineToolbarController, m_data,
-				m_elementConfiguration) {
+				m_elementConfiguration, m_messageDisplay) {
 
 			// TODO Find better location
 			var viewManagerExtension = m_extensionManager
@@ -347,6 +347,18 @@ define(
 										jQuery("#outline").jstree("close_node",
 												"#" + participant.uuid);
 									});
+				}
+			}
+
+			var lastSaved;
+			function updateLastSavedPeriod()
+			{
+//				$("#lastSaveDateDisplay").html(
+//						"<label>" + moment().format("HH:mm MM-DD-YYYY") + "</label>");
+				if (lastSaved)
+				{
+					$("#lastSaveDateDisplay").html(
+							"<label>" + prettyDateTime(lastSaved) + "</label>");
 				}
 			}
 
@@ -1475,18 +1487,10 @@ define(
 						alert("Funtionality not implemented yet");
 					} else if ("saveAllModels" == data.id) {
 						saveAllModels();
-						updateLastSavedDate();
 					} else if ("refreshModels" == data.id) {
 						refresh();
 					}
 				};
-
-				function updateLastSavedDate()
-				{
-					$("#lastSaveDateDisplay").html(
-							"<label>" + moment().format("HH:mm MM-DD-YYYY") + "</label>");
-					$("#lastSaveDateDisplay label").css("font");
-				}
 
 				function saveAllModels() {
 					m_communicationController
@@ -1499,14 +1503,15 @@ define(
 									new function() {
 										return {
 											success : function(data) {
-												if (parent.iPopupDialog) {
-													parent.iPopupDialog
-															.openPopup(prepareInfoDialogPoupupData(
-																	"All models have been saved successfully.",
-																	"OK"));
-												} else {
-													alert("All models have been saved successfully.");
-												}
+												m_messageDisplay.markSaved();
+//												if (parent.iPopupDialog) {
+//													parent.iPopupDialog
+//															.openPopup(prepareInfoDialogPoupupData(
+//																	"All models have been saved successfully.",
+//																	"OK"));
+//												} else {
+//													alert("All models have been saved successfully.");
+//												}
 											},
 											failure : function(data) {
 												if (parent.iPopupDialog) {
@@ -2006,6 +2011,7 @@ define(
 							.parseJSON(command) : command;
 
 					if (null != obj && null != obj.changes) {
+						m_messageDisplay.markModified();
 						for ( var i = 0; i < obj.changes.added.length; i++) {
 							// Create Process
 							if (m_constants.PROCESS == command.changes.added[i].type) {

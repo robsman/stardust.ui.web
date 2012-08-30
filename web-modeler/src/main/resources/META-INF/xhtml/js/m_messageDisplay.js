@@ -7,14 +7,13 @@ define(
 
 			var INFO_MESSAGE = 0;
 			var ERROR_MESSAGE = 1;
-			var lastSaveDate = null;
+			var lastSaveDate;
 
+			var messagePanel = jQuery("#messagePanel");
 			var messageDisplay = jQuery("#messageDisplay");
+			var messageIcon = jQuery("#messageIcon");
 			var lastSaveDateDisplay = jQuery("#lastSaveDateDisplay");
-
-			lastSaveDateDisplay.append("Not saved yet");
-
-			var modificationStatusDisplay = jQuery("#modificationStatusDisplay");
+			updateLastSavedLabel("Not saved yet", "blue");
 
 			var messages = [];
 
@@ -27,51 +26,64 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function markModified() {
-				modificationStatusDisplay.empty();
-				modificationStatusDisplay.append("(Modified)");
-				lastSaveDateDisplay.empty();
-				lastSaveDateDisplay.append(prettyDateTime(lastSaveDate));
+				if (lastSaveDate) {
+					updateLastSavedLabel(prettyDateTime(lastSaveDate), "blue");
+				} else {
+					updateLastSavedLabel("Not saved yet");
+				}
 			}
 
 			/**
-			 * 
+			 *
+			 */
+			function updateLastSavedLabel(label, color) {
+				if (color) {
+					lastSaveDateDisplay.css("color", color);
+				}
+				$("#lastSaveDateDisplay").html(label);
+			}
+
+			/**
+			 *
 			 */
 			function markSaved() {
 				lastSaveDate = new Date();
-
-				modificationStatusDisplay.empty();
-				lastSaveDateDisplay.empty();
-				lastSaveDateDisplay.append("Just Now");
+				updateLastSavedLabel("Just Now", "green");
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function showMessage(message) {
 				clearDisplay();
 				messages.push(new Message(INFO_MESSAGE, message));
+				messagePanel.attr("class", "messagePanelHighlight");
+				messageIcon.parent().attr("class", "infoSeverityIssueItem");
 				messageDisplay.append(message);
 
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function showErrorMessage(message) {
 				clearDisplay();
 				messages.push(new Message(ERROR_MESSAGE, message));
-				messageDisplay.attr("class", "errorMessage");
+				messagePanel.attr("class", "messagePanelHighlight");
+				messageIcon.parent().attr("class", "errorSeverityIssueItem");
 				messageDisplay.append(message);
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function clear() {
 				clearDisplay();
+				messagePanel.removeAttr("class");
+				messageIcon.parent().removeAttr("class");
 				messageDisplay.removeAttr("class");
 				messageDisplay.empty();
 				messages.pop();
@@ -90,7 +102,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function clearDisplay() {
 				messageDisplay.removeAttr("class");
@@ -103,13 +115,13 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function prettyDateTime(date) {
 				if (date == null) {
 					return "-";
 				}
-				
+
 				var time_formats = [ [ 60, 'Less than a Minute' ], [ 90, '1 Minute' ], // 60*1.5
 				[ 3600, 'Minutes', 60 ], // 60*60, 60
 				[ 5400, '1 Hour' ], // 60*60*1.5
@@ -147,7 +159,7 @@ define(
 									+ format[1] + suffix;
 						}
 					}
-					
+
 					++n;
 				}
 
