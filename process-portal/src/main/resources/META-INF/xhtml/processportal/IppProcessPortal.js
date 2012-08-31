@@ -319,7 +319,9 @@ InfinityBpm.ProcessPortal = new function() {
 	function handleRemoteControlMessage(e) {
 		//alert("Received event '" + e.data + "' from " + e.origin);
 		// TODO: Check origin (e.origin) for Security
-		if (e.data.startsWith("{")) {
+		if ((typeof e.data === 'string' || e.data instanceof String) && (e.data.startsWith("{") || e.data.startsWith("["))) {
+			postMessageReceived(e.data);
+		} else if (typeof e.data === 'object') {
 			postMessageReceived(e.data);
 		} else {
 			// Backward compatible
@@ -334,8 +336,8 @@ InfinityBpm.ProcessPortal = new function() {
 			if (typeof input === 'string' || input instanceof String){
 				// String. So it will be Stringified JSON, Validate it 
 				var jsonInput = JSON.parse(input);
-				if (typeof jsonInput === 'object' && jsonInput.type && jsonInput.data) {
-					jsonStr = input; // Input is valid
+				if (null != jsonInput && typeof jsonInput === 'object') {
+					jsonStr = input;
 					proceed = true;
 				}
 			} else if (typeof input === 'object' && input.type && input.data) {
@@ -349,7 +351,7 @@ InfinityBpm.ProcessPortal = new function() {
 			messageDataInput.value = jsonStr;
 			iceSubmitPartial(document.getElementById("msgFrm"), messageDataInput);
 		} else {
-			// TODO: Show error message
+			//alert("Post Error");
 		}
 	}
 

@@ -27,7 +27,6 @@ import org.eclipse.stardust.ui.web.common.PreferencePage;
 import org.eclipse.stardust.ui.web.common.PreferencesDefinition;
 import org.eclipse.stardust.ui.web.common.ViewDefinition;
 import org.eclipse.stardust.ui.web.common.app.View.ViewState;
-import org.eclipse.stardust.ui.web.common.app.messaging.Message;
 import org.eclipse.stardust.ui.web.common.app.messaging.MessageProcessor;
 import org.eclipse.stardust.ui.web.common.configuration.ConfigurationConstants;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesEntries;
@@ -45,13 +44,11 @@ import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.common.util.AbstractMessageBean;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
-import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.SessionRendererHelper;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 
-import com.google.gson.JsonObject;
 import com.icesoft.faces.component.paneltabset.TabChangeEvent;
 import com.icesoft.faces.component.paneltabset.TabChangeListener;
 import com.icesoft.faces.context.effects.JavascriptContext;
@@ -1694,29 +1691,38 @@ public class PortalApplication
 
    /**
     * New value would be a Json Object, with following Info
-    *   command: String
-    *   data: Object, if multiple.. it will be a Map 
+    *   type: String
+    *   data: Object 
     * 
     * @param event
     */
    public void messageReceived(ValueChangeEvent event)
    {
+      trace.debug("Received Message: " + event.getNewValue());
       postMessage((String)event.getNewValue());
    }
 
    /**
-    * @param jsonMessage
+    * Called from XHTML action
+    */
+   @SuppressWarnings("unchecked")
+   public void postMessage()
+   {
+      FacesContext context = FacesContext.getCurrentInstance();
+      Map<String, String> params = context.getExternalContext().getRequestParameterMap();
+      String jsonMessage = (String) params.get("message");
+      postMessage(jsonMessage);
+   }
+
+   /**
+    * This is a utility method, to be called from Java Classes
+    * @param jsonMessage Stringified Json
     */
    public void postMessage(String jsonMessage)
    {
       try
       {
-         JsonObject jsonObject = GsonUtils.readJsonObject(jsonMessage);
-         String command = GsonUtils.extractString(jsonObject, "type");
-         JsonObject data = GsonUtils.extractObject(jsonObject, "data");
-
-         Message message = new Message(command, data);
-         MessageProcessor.processs(message);
+         MessageProcessor.processs(jsonMessage);
       }
       catch (Exception e)
       {

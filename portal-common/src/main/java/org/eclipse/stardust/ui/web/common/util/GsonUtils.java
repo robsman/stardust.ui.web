@@ -17,9 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
-
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 
@@ -30,6 +27,10 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
+/**
+ * @author Subodh.Godbole
+ *
+ */
 public class GsonUtils
 {
    private static final Logger trace = LogManager.getLogger(GsonUtils.class);
@@ -39,9 +40,8 @@ public class GsonUtils
    /**
     * @param jsonText
     * @return
-    * @throws WebApplicationException
     */
-   public static JsonObject readJsonObject(String jsonText) throws WebApplicationException
+   public static JsonObject readJsonObject(String jsonText)
    {
       try
       {
@@ -53,13 +53,39 @@ public class GsonUtils
          else
          {
             trace.warn("Expected a JSON object, but received something else.");
-            throw new WebApplicationException(Status.BAD_REQUEST);
+            throw new IllegalArgumentException();
          }
       }
       catch (JsonParseException jpe)
       {
          trace.warn("Expected a JSON object, but received no valid JSON at all.", jpe);
-         throw new WebApplicationException(jpe, Status.BAD_REQUEST);
+         throw new IllegalArgumentException(jpe);
+      }
+   }
+
+   /**
+    * @param jsonText
+    * @return
+    */
+   public static JsonElement readJsonElement(String jsonText)
+   {
+      try
+      {
+         JsonElement parsedJson = jsonParser.parse(jsonText);
+         if (null != parsedJson)
+         {
+            return parsedJson;
+         }
+         else
+         {
+            trace.warn("Expected a JSON Elemnent, but received something else.");
+            throw new IllegalArgumentException();
+         }
+      }
+      catch (JsonParseException jpe)
+      {
+         trace.warn("Expected a JSON Elemnent, but received no valid JSON at all.", jpe);
+         throw new IllegalArgumentException(jpe);
       }
    }
 
