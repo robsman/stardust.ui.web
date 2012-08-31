@@ -267,7 +267,7 @@ define(
 
 				/**
 				 * when connection is created from Flyout Menu, anchor points
-				 * needs to be moved to 6 O’clock or 3 O'clock
+				 * needs to be moved to 6 O'clock or 3 O'clock
 				 */
 				Connection.prototype.updateAnchorPointForGateway = function() {
 					var orientation = null;
@@ -321,12 +321,16 @@ define(
 								this.fromModelElementOid = this.fromAnchorPoint.symbol.oid;
 								this.fromModelElementType = m_constants.DATA;
 								this.toModelElementOid = this.toAnchorPoint.symbol.oid;
-								this.toModelElementType = this.toAnchorPoint.symbol.modelElement.type;
+								if (this.toAnchorPoint.symbol.modelElement) {
+									this.toModelElementType = this.toAnchorPoint.symbol.modelElement.type;
+								}
 								data = this.fromAnchorPoint.symbol.modelElement;
 								activity = this.toAnchorPoint.symbol.modelElement;
 							} else {
 								this.fromModelElementOid = this.fromAnchorPoint.symbol.oid;
-								this.fromModelElementType = this.fromAnchorPoint.symbol.modelElement.type;
+								if(this.fromAnchorPoint.symbol.modelElement){
+									this.fromModelElementType = this.fromAnchorPoint.symbol.modelElement.type;
+								}
 								this.toModelElementOid = this.toAnchorPoint.symbol.oid;
 								this.toModelElementType = m_constants.DATA;
 								data = this.toAnchorPoint.symbol.modelElement;
@@ -340,9 +344,13 @@ define(
 									.getInstance();
 						} else {
 							this.fromModelElementOid = this.fromAnchorPoint.symbol.oid;
-							this.fromModelElementType = this.fromAnchorPoint.symbol.modelElement.type;
+							if(this.fromAnchorPoint.symbol.modelElement){
+								this.fromModelElementType = this.fromAnchorPoint.symbol.modelElement.type;
+							}
 							this.toModelElementOid = this.toAnchorPoint.symbol.oid;
-							this.toModelElementType = this.toAnchorPoint.symbol.modelElement.type;
+							if (this.toAnchorPoint.symbol.modelElement) {
+								this.toModelElementType = this.toAnchorPoint.symbol.modelElement.type;
+							}
 
 							this.modelElement = m_controlFlow
 									.createControlFlow(this.diagram.process);
