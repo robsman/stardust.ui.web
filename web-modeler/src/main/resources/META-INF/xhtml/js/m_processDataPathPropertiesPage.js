@@ -87,41 +87,56 @@ define(
 											.val();
 									event.data.page.populateDataPathTable();
 								});
-				this.descriptorInput.change({
-					"page" : this
-				}, function(event) {
-					event.data.page.currentDataPath.descriptor = event.data.page.descriptorInput
-					.val();
-					event.data.page.populateDataPathTable();
-				});
-				this.keyDescriptorInput.change({
-					"page" : this
-				}, function(event) {
-					event.data.page.currentDataPath.keyDescriptor = event.data.page.keyDescriptorInput
-					.val();
-					event.data.page.populateDataPathTable();
-				});
-				this.dataPathNameInput.change({
-					page : this
-				}, function(event) {
-					event.data.page.currentDataPath.name = event.data.page.dataPathNameInput
-					.val();
-					event.data.page.populateDataPathTable();
-				});
-				this.dataPathDataSelect.change({
-					page : this
-				}, function(event) {
-					event.data.page.currentDataPath.dataFulId = event.data.page.dataPathDataSelect
-					.val();
-					event.data.page.populateDataPathTable();
-				});
-				this.dataPathPathInput.change({
-					page : this
-				}, function(event) {
-					event.data.page.currentDataPath.path = event.data.page.dataPathPathInput
-					.val();
-					event.data.page.populateDataPathTable();
-				});
+				this.descriptorInput
+						.change(
+								{
+									"page" : this
+								},
+								function(event) {
+									event.data.page.currentDataPath.descriptor = event.data.page.descriptorInput
+											.val();
+									event.data.page.populateDataPathTable();
+								});
+				this.keyDescriptorInput
+						.change(
+								{
+									"page" : this
+								},
+								function(event) {
+									event.data.page.currentDataPath.keyDescriptor = event.data.page.keyDescriptorInput
+											.val();
+									event.data.page.populateDataPathTable();
+								});
+				this.dataPathNameInput
+						.change(
+								{
+									page : this
+								},
+								function(event) {
+									event.data.page.currentDataPath.name = event.data.page.dataPathNameInput
+											.val();
+									event.data.page.populateDataPathTable();
+								});
+				this.dataPathDataSelect
+						.change(
+								{
+									page : this
+								},
+								function(event) {
+									event.data.page.currentDataPath.dataFulId = event.data.page.dataPathDataSelect
+											.val();
+									event.data.page.populateDataPathTable();
+								});
+				this.dataPathPathInput
+						.change(
+								{
+									page : this
+								},
+								function(event) {
+									event.data.page.currentDataPath.path = event.data.page.dataPathPathInput
+											.val();
+									event.data.page.populateDataPathTable();
+								});
 
 				/**
 				 * 
@@ -246,7 +261,8 @@ define(
 						dataPath : this.dataPathPathInput.val()
 					};
 
-					this.getModelElement().dataPathes.push(this.currentDataPath);
+					this.getModelElement().dataPathes
+							.push(this.currentDataPath);
 
 					this.populateDataPathTable();
 					// this.submitChanges({
@@ -254,6 +270,8 @@ define(
 					// });
 
 					this.populateDataPathFields();
+
+					jQuery("table#dataPathTable tr#dataPath" + (n - 1)).addClass("selected");
 				};
 
 				/**

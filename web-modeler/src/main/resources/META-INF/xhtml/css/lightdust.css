@@ -424,6 +424,7 @@ div.messagePanelHighlight {
 div#lastSaveDateDisplay {
 	min-width: 100px;
 	margin-left: 5px;
+	color: grey
 }
 
 div#modificationStatusDisplay {

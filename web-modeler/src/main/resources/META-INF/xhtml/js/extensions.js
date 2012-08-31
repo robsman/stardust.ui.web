@@ -11,8 +11,7 @@ var extensions = {
 		panelId : "processPropertiesPanel",
 		pageId : "processInterfacePropertiesPage",
 		pageJavaScriptUrl : "m_processProcessInterfacePropertiesPage",
-		visibility : "always",
-		profiles : "Integrator"
+		visibility : "always"
 	}, {
 		panelId : "processPropertiesPanel",
 		pageId : "dataPathPropertiesPage",
@@ -80,8 +79,7 @@ var extensions = {
 		pageId : "transactionPropertiesPage",
 		pageHtmlUrl : "controlFlowTransactionPropertiesPage.html",
 		pageJavaScriptUrl : "m_controlFlowTransactionPropertiesPage",
-		visibility : "always",
-		profiles : "Integrator"
+		visibility : "always"
 	}, {
 		panelId : "dataFlowPropertiesPanel",
 		pageId : "basicPropertiesPage",
@@ -186,7 +184,7 @@ var extensions = {
 		id : "activityButton",
 		paletteId : "activityPalette",
 		title : "Create Activity",
-		iconUrl : "../../images/icons/activity-manual.png",
+		iconUrl : "../../images/icons/activity.png",
 		handler : "m_defaultPaletteHandler",
 		handlerMethod : "createActivity",
 		visibility : "always"

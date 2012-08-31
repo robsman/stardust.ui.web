@@ -366,8 +366,28 @@ define(
 
 						content += "\"><td>" + formalParameter.name;
 
-						content += "</td><td>" + formalParameter.direction
-						content += "</td><td>" + formalParameter.path + "</td>";
+						content += "</td><td>";
+
+						if (formalParameter.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
+							content += formalParameter.primitiveDataType; // TODO
+							// Convert
+						} else {
+							content += formalParameter.structuredDataTypeFullId; // TODO
+							// Format
+						}
+
+						content += "</td><td>";
+
+						if (formalParameter.dataFullId != null) {
+							content += formalParameter.path;
+
+							if (formalParameter.path != null) {
+								content += ".";
+								content += formalParameter.path;
+							}
+						}
+
+						content += "</td>";
 
 						this.parameterDefinitionsTableBody.append(content);
 
@@ -441,8 +461,11 @@ define(
 					this.currentParameterDefinition = {
 						id : "New" + n,
 						name : "New " + n,
-						dataFullId : null,
+						dataType : m_constants.PRIMITIVE_DATA_TYPE,
+						primitiveDataType : "String",
+						structuredDataTypeFullId : null,
 						direction : "IN",
+						dataFullId : null,
 						path : null
 					};
 
@@ -456,6 +479,11 @@ define(
 					this.initializeParameterDefinitionsTable();
 
 					this.populateParameterDefinitionFields();
+
+					jQuery(
+							"table#parameterDefinitionsTable tr#"
+									+ this.currentParameterDefinition.id)
+							.addClass("selected");
 				};
 
 				/**
