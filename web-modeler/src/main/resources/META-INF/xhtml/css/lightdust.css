@@ -434,6 +434,13 @@ fieldset {
 	margin-top: 15px;
 }
 
+.label-form {
+    color: #708090;
+    font-weight: normal;
+    padding: 3px 5px 3px 0;
+    white-space: nowrap;
+}
+
 /* Tabs */
 .tabLabel {
 	padding-left: 4px;

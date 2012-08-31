@@ -13,7 +13,7 @@ define(
 			var messageDisplay = jQuery("#messageDisplay");
 			var messageIcon = jQuery("#messageIcon");
 			var lastSaveDateDisplay = jQuery("#lastSaveDateDisplay");
-			updateLastSavedLabel("Not saved yet", "blue");
+			updateLastSavedLabel("Not saved yet");
 
 			var messages = [];
 
@@ -30,7 +30,7 @@ define(
 			 */
 			function markModified() {
 				if (lastSaveDate) {
-					updateLastSavedLabel(prettyDateTime(lastSaveDate), "blue");
+					updateLastSavedLabel(prettyDateTime(lastSaveDate));
 				} else {
 					updateLastSavedLabel("Not saved yet");
 				}
@@ -39,10 +39,7 @@ define(
 			/**
 			 *
 			 */
-			function updateLastSavedLabel(label, color) {
-				if (color) {
-					lastSaveDateDisplay.css("color", color);
-				}
+			function updateLastSavedLabel(label) {
 				$("#lastSaveDateDisplay").html(label);
 			}
 
@@ -51,7 +48,7 @@ define(
 			 */
 			function markSaved() {
 				lastSaveDate = new Date();
-				updateLastSavedLabel("Just Now", "green");
+				updateLastSavedLabel("Just Now");
 			}
 
 			/**
