@@ -125,4 +125,14 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		class="org.eclipse.stardust.ui.web.processportal.PollingProperties"
 		scope="session" />
 
+	<bean name="selectProcessPopup"
+		class="org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.SelectProcessPopup"
+		scope="portalTab">
+	</bean>
+
+	<bean name="worklistColumnSelectorPopup"
+		class="org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.WorklistColumnSelectorPopup"
+		scope="portalTab">
+	</bean>
+	
 </beans>

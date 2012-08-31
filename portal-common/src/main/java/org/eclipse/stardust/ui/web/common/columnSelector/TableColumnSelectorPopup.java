@@ -17,10 +17,14 @@ import java.util.Set;
 
 import javax.faces.event.ValueChangeEvent;
 
+import org.eclipse.stardust.common.ICallable;
+import org.eclipse.stardust.ui.web.common.ICallbackHandler;
+import org.eclipse.stardust.ui.web.common.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.configuration.PreferencesScopesHelper;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.PopupDialog;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
@@ -42,6 +46,9 @@ public class TableColumnSelectorPopup extends PopupDialog
    private PreferenceScope selectedPreferenceScope;
    private Set<String> columnsPreviouslyVisible;
 
+   private boolean updatePreferences = true;
+   private ICallbackHandler callbackHandler;
+   
    /**
     * @param treeTable
     * @param title
@@ -92,14 +99,22 @@ public class TableColumnSelectorPopup extends PopupDialog
          columnPreference = columnModel.getColumn(cp.getColumnName());
          columnPreference.setVisible(cp.getVisible());
          columnPreference.setNewlyVisible(isColumnNewlyVisible(cp));
+         System.out.println("cp.getColumnName()" + cp.getColumnName() + ": " + columnPreference.getVisible());
          finalCols.add(columnPreference);
       }
       columnModel.setSelectableColumns(finalCols);
 
       setVisible(false);
-      
-      prefScopesHelper.setSelectedPreferenceScope(selectedPreferenceScope);
-      columnModel.saveSelectableColumns(prefScopesHelper.getSelectedPreferenceScope());
+
+      if (updatePreferences)
+      {
+         prefScopesHelper.setSelectedPreferenceScope(selectedPreferenceScope);
+         columnModel.saveSelectableColumns(prefScopesHelper.getSelectedPreferenceScope());
+      }
+      if (null != callbackHandler)
+      {
+         callbackHandler.handleEvent(EventType.APPLY);
+      }
    }
 
    @Override
@@ -194,5 +209,20 @@ public class TableColumnSelectorPopup extends PopupDialog
    private boolean isColumnNewlyVisible(ColumnPreference cp)
    {
       return (cp.getVisible() && !columnsPreviouslyVisible.contains(cp.getColumnName()));
+   }
+
+   public boolean isUpdatePreferences()
+   {
+      return updatePreferences;
+   }
+
+   public void setUpdatePreferences(boolean updatePreferences)
+   {
+      this.updatePreferences = updatePreferences;
+   }
+
+   public void setCallbackHandler(ICallbackHandler callbackHandler)
+   {
+      this.callbackHandler = callbackHandler;
    }
 }

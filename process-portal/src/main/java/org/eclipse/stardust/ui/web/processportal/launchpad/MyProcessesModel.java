@@ -49,6 +49,7 @@ public class MyProcessesModel
       params.put(Query.class.getName(), ProcessWorklistCacheManager.getInstance().getActivityInstanceQuery(processDefinition));
       params.put("id", processDefinition.getQualifiedId());
       params.put("name", I18nUtils.getProcessName(processDefinition));
+      params.put("processDefinition", processDefinition);
 
       PPUtils.openWorklistView("id=" + processDefinition.getQualifiedId(), params);
 

@@ -90,6 +90,15 @@ public class GsonUtils
    }
 
    /**
+    * @param jsonText
+    * @return
+    */
+   public static Map<String, Object> readJsonMap(String jsonText)
+   {
+      return processJson(readJsonObject(jsonText));
+   }
+   
+   /**
     * @param data
     * @return
     */

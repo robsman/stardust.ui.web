@@ -100,4 +100,19 @@ public class ModelHelper
 
       return participantlabel;
    }
+   
+   /**
+    * @param departmentInfo
+    * @return
+    */
+   public static ParticipantLabel getDepartmentLabel(DepartmentInfo departmentInfo)
+   {
+      ParticipantLabel participantlabel = new ParticipantLabel();
+      AdministrationService as = SessionContext.findSessionContext().getServiceFactory().getAdministrationService();
+      Department department = as.getDepartment(departmentInfo.getOID());
+      String organizationName = I18nUtils.getParticipantName(department.getOrganization());
+      participantlabel.setParticipantName(organizationName);
+      participantlabel.setDepartmentName(department.getName());
+      return participantlabel;
+   }
 }

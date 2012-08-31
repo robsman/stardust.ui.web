@@ -15,6 +15,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -115,6 +116,7 @@ public class DelegationBean extends PopupUIComponentBean
    private boolean fireCloseEvent = true;
    private boolean delegateCase = false;
    private ParticipantTree participantTree;
+   private boolean selectedParticipantCase = false;
    
    private String id;  
    
@@ -168,6 +170,12 @@ public class DelegationBean extends PopupUIComponentBean
       Participant participant = null;
       Department department = null;
       Object obj = getSelectedParticipant();
+      
+      if (handleSelectedParticipant(obj))
+      {
+         return;
+      }
+      
       if (obj instanceof Participant)
       {
          participant = (Participant) obj;
@@ -266,6 +274,12 @@ public class DelegationBean extends PopupUIComponentBean
          else
          {
             ICallbackHandler iCH = iCallbackHandler;
+            if (iCH instanceof IParametricCallbackHandler)
+            {
+               Map<String, Object> parameters = new HashMap<String, Object>();
+               parameters.put("selectedParticipant", obj);
+               ((IParametricCallbackHandler) iCH).setParameters(parameters);
+            }
             fireCloseEvent = false;
             closePopup();
 
@@ -280,6 +294,24 @@ public class DelegationBean extends PopupUIComponentBean
       }
    }
 
+   public boolean handleSelectedParticipant(Object obj)
+   {
+      if (selectedParticipantCase)
+      {
+         Map<String, Object> parameters = new HashMap<String, Object>();
+         parameters.put("selectedParticipant", obj);
+         ((IParametricCallbackHandler) iCallbackHandler).setParameters(parameters);
+         fireCloseEvent = false;
+         ICallbackHandler ich = iCallbackHandler;
+         closePopup();
+
+         ich.handleEvent(EventType.APPLY);
+
+         return true;
+      }
+      return false;
+   }
+   
    /**
     * fires on clicking Cancel button refresh the page
     */
@@ -291,11 +323,16 @@ public class DelegationBean extends PopupUIComponentBean
    @Override
    public void initialize()
    {
+      typeFilters = CollectionUtils.newList();
       typeFilters.add(new SelectItem(new Integer(0), propsBean.getString("delegation.allTypes")));
-      typeFilters.add(new SelectItem(new Integer(1), propsBean.getString("delegation.users")));
+      if (!selectedParticipantCase)
+      {
+         typeFilters.add(new SelectItem(new Integer(1), propsBean.getString("delegation.users")));
+      }
       typeFilters.add(new SelectItem(new Integer(2), propsBean.getString("delegation.roles")));
       typeFilters.add(new SelectItem(new Integer(3), propsBean.getString("delegation.orgs")));
       typeFilters.add(new SelectItem(new Integer(4), propsBean.getString("delegation.departments")));
+      
 
       if (autoCompleteSelector == null)
       {
@@ -330,6 +367,7 @@ public class DelegationBean extends PopupUIComponentBean
                });
          delegatesProvider = delegateCase ? CaseDelegateProvider.INSTANCE : delegatesProvider;
          delegatesDataProvider.setDelegatesProvider(delegatesProvider);
+         delegatesDataProvider.setDepartmentProvider(deptProvider);
          autoCompleteSelector = new ParticipantAutocompleteSelector(delegatesDataProvider, null);
       }
    }
@@ -595,12 +633,12 @@ public class DelegationBean extends PopupUIComponentBean
    public void openPopup()
    {
       boolean isCaseActivities = ActivityInstanceUtils.isContainsCaseActivity(ais);
-      if (!delegateCase && isCaseActivities)
+      if (!delegateCase && isCaseActivities && !selectedParticipantCase)
       {
          MessageDialog.addErrorMessage(MessagesViewsCommonBean.getInstance().getString("views.switchProcessDialog.caseAbort.message"));
          return;
       }
-      else if (delegateCase && !isCaseActivities)
+      else if (delegateCase && !isCaseActivities && !selectedParticipantCase)
       {
          MessageDialog.addErrorMessage(MessagesViewsCommonBean.getInstance().getString("delegation.selectOnlyCase.message"));
          return;
@@ -1313,5 +1351,15 @@ public class DelegationBean extends PopupUIComponentBean
             return limitedSearch;
          }
       };
+   }
+
+   public void setSelectedParticipantCase(boolean selectedParticipantCase)
+   {
+      this.selectedParticipantCase = selectedParticipantCase;
+   }
+
+   public boolean isSelectedParticipantCase()
+   {
+      return selectedParticipantCase;
    }  
 }

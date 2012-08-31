@@ -67,4 +67,12 @@ public interface IColumnModel extends Serializable
     */
    void initialize();
    void notifyListeners();
+   
+   void setPreferenceScope(PreferenceScope preferenceScope);
+   
+   void setStoredList(List<String> storedList);
+   List<String> getStoredList();
+   void setLock(boolean lock);
+   boolean isLock();
+   
 }

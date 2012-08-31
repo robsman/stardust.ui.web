@@ -1,0 +1,59 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		row*= Instance of Row Class
+		col*= Instance of ColumnPreference 
+	 -->
+
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+		<ice:panelGroup rendered="#{col.columnName == 'elementName'}">
+			<ice:panelGrid columns="2" style="width:100%">
+				<ice:panelGrid columns="1">
+					<ice:commandLink value="#{row.elementName}"
+						style="white-space: nowrap;">
+					</ice:commandLink>
+				</ice:panelGrid>
+			</ice:panelGrid>
+		</ice:panelGroup>
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'actions'}">
+		<ice:panelGrid columns="3" style="text-align:center">
+
+			<ice:panelGroup>
+				<ice:commandLink action="#{row.configureColumns}"
+					onclick="Event.stop(event);">
+					<pc:automationTag value="auto-PP-WorkList-ActionsProcDetails"
+						standAlone="false" />
+					<ice:graphicImage
+						value="/plugins/common/images/icons/adjust-columns.png"
+						title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.configureCols']}"
+						styleClass="portal-std-icon" style="margin-right:5px" />
+				</ice:commandLink>
+			</ice:panelGroup>
+
+			<ice:commandLink action="#{row.lockValueChanged}"
+				onclick="Event.stop(event);">
+				<pc:automationTag value="auto-PP-WorkList-ActionsProcDetails"
+					standAlone="false" />
+				<ice:graphicImage rendered="#{row.lock}"
+					value="/plugins/views-common/images/icons/lock.png"
+					title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.unlock']}"
+					styleClass="portal-std-icon" />
+				<ice:graphicImage rendered="#{!row.lock}"
+					value="/plugins/views-common/images/icons/lock_open.png"
+					title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.lock']}"
+					styleClass="portal-std-icon" />
+			</ice:commandLink>
+
+		</ice:panelGrid>
+	</ice:panelGroup>
+
+</f:view>

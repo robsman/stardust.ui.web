@@ -5,7 +5,15 @@
 	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
-	
+
+	<ice:panelGroup>
+		<ui:include src="/plugins/views-common/dialogs/delegation.xhtml" />
+		<ui:include
+			src="/plugins/processportal/views/worklistConfiguration/selectProcessPopup.xhtml" />
+		<ui:include
+			src="/plugins/processportal/views/worklistConfiguration/worklistcolumnSelector.xhtml" />
+	</ice:panelGroup>
+
 	<ice:panelGroup rendered="#{ippPortalApp.loggedInUser.administrator}">
 		<ui:include
 			src="/plugins/common/views/dialog/confirmationDialog.xhtml">
@@ -26,6 +34,23 @@
 		</ice:panelGrid>
 	
 		<ice:panelGroup styleClass="clearing" />
+
+		<pc:genericDataTable exportCsv="false" exportExcel="false"
+			title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.participantTable']}"
+			bean="#{worklistConfigurationBean.participantWorklistConfBean}"
+			table="#{worklistConfigurationBean.participantWorklistConfBean.participantWorkConfTable}"
+			sortSupported="true" 
+			toolbarUrl="/plugins/processportal/toolbar/WorklistConfigurationToolbar.xhtml" />
+
+		<ice:panelGroup styleClass="clearing" />
+		
+		<pc:genericDataTable exportExcel="false" exportCsv="false"
+			title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.processTable']}"
+			bean="#{worklistConfigurationBean.processWorklistConfBean}"
+			table="#{worklistConfigurationBean.processWorklistConfBean.processWorkConfTable}"
+			sortSupported="true"
+			toolbarUrl="/plugins/processportal/toolbar/WorklistConfigurationToolbar.xhtml" />
+
 		<ice:panelGroup styleClass="clearing" />
 		
 		<ice:panelGrid columns="2" style="text-align: left">
@@ -34,6 +59,12 @@
 				value="#{common_msgPropsBean['views.configurationPanel.button.save']}"
 				action="#{worklistConfigurationBean.save}"
 				partialSubmit="true" styleClass="button" />
+			
+			<!-- <ice:commandButton
+				value="RELOAD"
+				action="#{worklistConfigurationBean.reload}"
+				partialSubmit="true" styleClass="button" />	 -->
+				
 			<ice:commandButton
 				value="#{common_msgPropsBean['views.configurationPanel.button.reset']}"
 				action="#{worklistConfigurationBean.openConfirmationDialog}"

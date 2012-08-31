@@ -38,4 +38,8 @@ public interface UserPreferencesEntries
    public static final String F_SHOW_MAPPED_DOC_WARNING = "prefs.showMappedDocWarning"; // true/false
    public static final String F_NO_OF_COLUMNS_IN_COLUMN_LAYOUT = "prefs.noOfColumnsInColumnLayout"; // int
    public static final String F_NO_OF_COLUMNS_IN_TABLE = "prefs.noOfColumnsInTable"; // int
+   
+   public static final String V_WORKLIST_PART_CONF = "worklistPartConf";
+   public static final String V_WORKLIST_PROC_CONF = "worklistProcConf";
+   
 }

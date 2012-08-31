@@ -31,11 +31,11 @@
 
 		<!-- Anchor to Launch Filter -->
 		<ice:panelGroup>
-			<ice:commandLink action="#{filterPopup.openPopup}" disabled="#{disabled}">
+			<ice:commandLink action="#{filterPopup.openPopup}" disabled="#{disabled || filterPopup.columnModel.lock}">
 				<pc:automationTag value="auto-DT-ColSelector" standAlone="false" />
 				<ice:graphicImage value="/plugins/common/images/icons/adjust-columns.png"
 						style="vertical-align:top; border:none;"
-						styleClass="#{disabled ? 'iceCmdBtn-dis' : ''}"
+						styleClass="#{(disabled || filterPopup.columnModel.lock) ? 'iceCmdBtn-dis' : ''}"
 						title="#{filterPopup.title}" />
 			</ice:commandLink>
 		</ice:panelGroup>

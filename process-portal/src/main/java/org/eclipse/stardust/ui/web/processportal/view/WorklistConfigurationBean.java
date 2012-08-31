@@ -24,10 +24,10 @@ import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.processportal.common.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.processportal.common.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.ParticipantWorklistColumnConfigurationBean;
+import org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.ProcessWorklistColumnConfigurationBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.FilterProviderUtil;
 import org.springframework.beans.factory.InitializingBean;
-
-
 
 /**
  * @author Subodh.Godbole
@@ -41,10 +41,9 @@ public class WorklistConfigurationBean implements InitializingBean, Confirmation
    private static final Logger trace = LogManager.getLogger(WorklistConfigurationBean.class);
    private String configFilterProviders;
    private ConfirmationDialog worklistConfirmationDialog;
+   private ParticipantWorklistColumnConfigurationBean participantWorklistConfBean;
+   private ProcessWorklistColumnConfigurationBean processWorklistConfBean;
 
-   /**
-    * 
-    */
    public WorklistConfigurationBean()
    {     
    }
@@ -57,6 +56,14 @@ public class WorklistConfigurationBean implements InitializingBean, Confirmation
       return (WorklistConfigurationBean) FacesUtils.getBeanFromContext(BEAN_NAME);
    }
 
+   /**
+    * TODO temp method 
+    */
+   public void reload()
+   {
+      initializeWorklistConf();
+   }
+   
    /*
     * (non-Javadoc)
     * 
@@ -65,6 +72,7 @@ public class WorklistConfigurationBean implements InitializingBean, Confirmation
    public void afterPropertiesSet() throws Exception
    {
       configFilterProviders = FilterProviderUtil.getInstance().getFilterProviderPreferences();     
+      initializeWorklistConf();
    }
 
    /**
@@ -74,16 +82,33 @@ public class WorklistConfigurationBean implements InitializingBean, Confirmation
    {
       setFilterProviderPreferences(configFilterProviders);
       FilterProviderUtil.getInstance().initializeFilterProviders();
+      
+      saveWorklistColumnConf();
+      
       MessageDialog.addInfoMessage(MessagePropertiesBean.getInstance().getString(
             "views.worklistPanelConfiguration.saveSuccessful"));
    }
 
-   /**
-    * 
-    */
+   private void saveWorklistColumnConf()
+   {
+      participantWorklistConfBean.save();
+      processWorklistConfBean.save();
+      initializeWorklistConf();
+   }
+   
+   private void initializeWorklistConf()
+   {
+      participantWorklistConfBean = new ParticipantWorklistColumnConfigurationBean();
+      participantWorklistConfBean.initialize();
+      processWorklistConfBean = new ProcessWorklistColumnConfigurationBean();
+      processWorklistConfBean.initialize();
+   }
+
    public void reset()
    {
       getUserPreferencesHelper().resetValue(UserPreferencesEntries.V_WORKLIST, UserPreferencesEntries.F_PROVIDERS);
+      participantWorklistConfBean.reset();
+      processWorklistConfBean.reset();
       FacesUtils.clearFacesTreeValues();
       configFilterProviders = FilterProviderUtil.getInstance().getFilterProviderPreferences();
    }
@@ -154,7 +179,14 @@ public class WorklistConfigurationBean implements InitializingBean, Confirmation
    {
       return worklistConfirmationDialog;
    }
-   
-   
-  
+
+   public ParticipantWorklistColumnConfigurationBean getParticipantWorklistConfBean()
+   {
+      return participantWorklistConfBean;
+   }
+
+   public ProcessWorklistColumnConfigurationBean getProcessWorklistConfBean()
+   {
+      return processWorklistConfBean;
+   }
 }

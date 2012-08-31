@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.processportal.view;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -51,6 +52,7 @@ import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.event.ActivityEventObserver;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
@@ -86,9 +88,11 @@ import org.eclipse.stardust.ui.web.common.table.export.ExportType;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.processportal.EventController;
+import org.eclipse.stardust.ui.web.processportal.common.Constants;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
 import org.eclipse.stardust.ui.web.processportal.common.Resources;
 import org.eclipse.stardust.ui.web.processportal.common.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.WorklistConfigurationUtil;
 import org.eclipse.stardust.ui.web.viewscommon.common.ProcessActivityDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutoCompleteItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutocompleteTableDataFilter;
@@ -136,30 +140,6 @@ public class WorklistTableBean extends UIComponentBean
    
    private static final long serialVersionUID = -4541966602037548481L;
 
-   private static final String COL_OID = "OID";
-
-   private static final String COL_LAST_MODIFIED = "Last Modified";
-
-   private static final String COL_STARTED = "Started";
-
-   private static final String COL_PRIORITY = "Priority";
-
-   private static final String COL_DESCRIPTORS = "Descriptors";
-
-   private static final String COL_ACTIVITY_NAME = "Overview";
-
-   private static final String COL_PROCESS_DEFINITION = "Process Definition";
-
-   private static final String COL_STATUS = "Status";
-
-   private static final String COL_DURATION = "Duration";
-
-   private static final String COL_LAST_PERFORMER = "Last Performer";
-
-   private static final String COL_ASSIGNED_TO = "Assigned to";
-
-   private static final String COL_ACTIONS = "Actions";
-
    private static final Logger trace = LogManager.getLogger(WorklistTableBean.class);   
 
    private PaginatorDataTable<WorklistTableEntry, ? extends Object> worklistTable;
@@ -199,6 +179,8 @@ public class WorklistTableBean extends UIComponentBean
    
    private boolean fetchAllDescriptors;
 
+   private ProcessDefinition processDefintion;
+   
    public WorklistTableBean()
    {
       super("worklistPanel");
@@ -414,7 +396,7 @@ public class WorklistTableBean extends UIComponentBean
    {
       query = (Query) getParamFromView(Query.class.getName());
       participantInfo = (ParticipantInfo) getParamFromView("participantInfo");
-      
+      processDefintion = (ProcessDefinition) getParamFromView("processDefinition");
       id = (String) getParamFromView("id");
    }
    
@@ -503,71 +485,70 @@ public class WorklistTableBean extends UIComponentBean
 
    private void initColumnModel()
    {
-
-      ColumnPreference activityNameCol = new ColumnPreference(COL_ACTIVITY_NAME,
+      ColumnPreference activityNameCol = new ColumnPreference(Constants.COL_ACTIVITY_NAME,
             "activityName", this.getMessages().getString("column.overview"),
             Resources.VIEW_WORKLIST_COLUMNS, true, true);
 
       activityNameCol.setColumnDataFilterPopup(new TableDataFilterPopup(new ProcessActivityDataFilter(
             ResourcePaths.V_PROCESS_ACTIVITY_FILTER, true)));
 
-      ColumnPreference colOid = new ColumnPreference(COL_OID, "oid", ColumnDataType.NUMBER, this.getMessages()
-            .getString("column.oid"), new TableDataFilterPopup(new TableDataFilterNumber(COL_OID, "", DataType.LONG,
+      ColumnPreference colOid = new ColumnPreference(Constants.COL_OID, "oid", ColumnDataType.NUMBER, this.getMessages()
+            .getString("column.oid"), new TableDataFilterPopup(new TableDataFilterNumber(Constants.COL_OID, "", DataType.LONG,
             true, null, null)), true, true);
 
-      ColumnPreference processDefnCol = new ColumnPreference(COL_PROCESS_DEFINITION,
+      ColumnPreference processDefnCol = new ColumnPreference(Constants.COL_PROCESS_DEFINITION,
             "processDefinition", ColumnDataType.STRING, this.getMessages().getString(
                   "processName"), false, false);
       
       processDefnCol.setColumnDataFilterPopup(new TableDataFilterPopup(new ProcessActivityDataFilter(
             "/plugins/views-common/processActivityDataFilter.xhtml", false)));
       
-      ColumnPreference criticalityCol = new ColumnPreference("Criticality", "criticality",
+      ColumnPreference criticalityCol = new ColumnPreference(Constants.COL_CRITICALITY, "criticality",
             this.getMessages().getString("column.criticality"),
             Resources.VIEW_WORKLIST_COLUMNS, true, true);
       criticalityCol.setColumnAlignment(ColumnAlignment.CENTER);
       criticalityCol.setColumnDataFilterPopup(new TableDataFilterPopup(new CriticalityAutocompleteTableDataFilter()));
       
-      ColumnPreference colDescriptors = new ColumnPreference(COL_DESCRIPTORS,
+      ColumnPreference colDescriptors = new ColumnPreference(Constants.COL_DESCRIPTORS,
             "processDescriptorsList", this.getMessages().getString("column.descriptors"),
             Resources.VIEW_WORKLIST_COLUMNS, true, false);
 
-      ColumnPreference colPriority = new ColumnPreference(COL_PRIORITY, "priority", this
+      ColumnPreference colPriority = new ColumnPreference(Constants.COL_PRIORITY, "priority", this
             .getMessages().getString("column.priority"), Resources.VIEW_WORKLIST_COLUMNS,
             true, true);
       colPriority.setColumnAlignment(ColumnAlignment.CENTER);
       colPriority.setColumnDataFilterPopup(new TableDataFilterPopup(new PriorityAutocompleteTableDataFilter()));
 
-      ColumnPreference colStarted = new ColumnPreference(COL_STARTED, "startDate",
+      ColumnPreference colStarted = new ColumnPreference(Constants.COL_STARTED, "startDate",
             ColumnDataType.DATE, this.getMessages().getString("column.started"),
-            new TableDataFilterPopup(new TableDataFilterDate(COL_STARTED, "",
+            new TableDataFilterPopup(new TableDataFilterDate(Constants.COL_STARTED, "",
                   DataType.DATE, true, null, null)), true, true);
       colStarted.setNoWrap(true);
 
-      ColumnPreference colLastMod = new ColumnPreference(COL_LAST_MODIFIED,
+      ColumnPreference colLastMod = new ColumnPreference(Constants.COL_LAST_MODIFIED,
             "lastModificationTime", ColumnDataType.DATE, this.getMessages().getString(
                   "column.lastmodification"), new TableDataFilterPopup(
-                  new TableDataFilterDate(COL_LAST_MODIFIED, "", DataType.DATE, true,
+                  new TableDataFilterDate(Constants.COL_LAST_MODIFIED, "", DataType.DATE, true,
                         null, null)), true, true);
       colLastMod.setNoWrap(true);
 
-      ColumnPreference durationCol = new ColumnPreference(COL_DURATION, "duration",
+      ColumnPreference durationCol = new ColumnPreference(Constants.COL_DURATION, "duration",
             ColumnDataType.STRING, this.getMessages().getString("column.duration"), null, true, false);
       durationCol.setNoWrap(true);
       durationCol.setColumnAlignment(ColumnAlignment.CENTER);
 
-      ColumnPreference lastPerformerCol = new ColumnPreference(COL_LAST_PERFORMER,
+      ColumnPreference lastPerformerCol = new ColumnPreference(Constants.COL_LAST_PERFORMER,
             "lastPerformer", ColumnDataType.STRING, this.getMessages().getString("column.lastPerformer"), null, true, false);
 
-      ColumnPreference statusCol = new ColumnPreference(COL_STATUS, "status",
+      ColumnPreference statusCol = new ColumnPreference(Constants.COL_STATUS, "status",
             ColumnDataType.STRING, this.getMessages().getString("column.status"),new TableDataFilterPopup(new TableDataFilterPickList(
             FilterCriteria.SELECT_MANY, getAllStatus(), RenderType.LIST, 3, null)), false, false);
 
-      ColumnPreference assignedToCol = new ColumnPreference(COL_ASSIGNED_TO,
+      ColumnPreference assignedToCol = new ColumnPreference(Constants.COL_ASSIGNED_TO,
             "assignedTo", ColumnDataType.STRING, this.getMessages().getString("column.assignedTo"), false, false);
 
       // Fixed Column 2
-      ColumnPreference colActions = new ColumnPreference(COL_ACTIONS,
+      ColumnPreference colActions = new ColumnPreference(Constants.COL_ACTIONS,
             "processActionsList", this.getMessages().getString("column.actions"),
             Resources.VIEW_WORKLIST_COLUMNS, true, false);
       colActions.setExportable(false);
@@ -598,12 +579,101 @@ public class WorklistTableBean extends UIComponentBean
       IColumnModel worklistColumnModel = new DefaultColumnModel(standardColumns, fixedColumns1,
             fixedColumns2, UserPreferencesEntries.M_WORKFLOW, preferenceId, new ColumnModelListener());
       DescriptorColumnUtils.setDescriptorColumnFilters(worklistColumnModel, allDescriptors);
+      
+      setConfiguration(worklistColumnModel);
+      
       worklistColSelecpopup = new TableColumnSelectorPopup(worklistColumnModel);
+      worklistColSelecpopup.setUpdatePreferences(false);
+      worklistColSelecpopup.setCallbackHandler(new org.eclipse.stardust.ui.web.common.ICallbackHandler()
+      {
+         public void handleEvent(EventType eventType)
+         {
+            if (EventType.APPLY == eventType)
+            {
+               saveColumnPreferences();
+            }
+         }
+      });
 
       initWorklistTable(); 
    }
-   
 
+   private void saveColumnPreferences()
+   {
+      if (null != participantInfo)
+      {
+         savePartColumnPreferences();
+      }
+      else if (null != processDefintion)
+      {
+         saveProcessColumnPreferences();
+      }
+   }
+   
+   private void savePartColumnPreferences()
+   {
+      Map<String, Object> worklistConfiguration = WorklistConfigurationUtil
+            .getParticipantWorklistConfigurationMap(PreferenceScope.USER);
+      ArrayList<String> savedCols = ((DefaultColumnModel) worklistColSelecpopup.getColumnModel()).getColsToBeSaved();
+      WorklistConfigurationUtil.updateValues(getOID(), savedCols, false, worklistConfiguration);
+      WorklistConfigurationUtil.saveParticipantWorklistConfiguration(worklistConfiguration);
+      worklistColSelecpopup.getColumnModel().setStoredList(savedCols);
+      worklistColSelecpopup.getColumnModel().initialize();
+   }
+
+   private void saveProcessColumnPreferences()
+   {
+      Map<String, Object> worklistConfiguration = WorklistConfigurationUtil
+            .getProcessWorklistConfigurationMap(PreferenceScope.USER);
+      ArrayList<String> savedCols = ((DefaultColumnModel) worklistColSelecpopup.getColumnModel()).getColsToBeSaved();
+      WorklistConfigurationUtil.updateValues(getOID(), savedCols, false, worklistConfiguration);
+      WorklistConfigurationUtil.saveProcessWorklistConfiguration(worklistConfiguration);
+      worklistColSelecpopup.getColumnModel().setStoredList(savedCols);
+      worklistColSelecpopup.getColumnModel().initialize();
+   }
+   
+   private String getOID()
+   {
+      String strOid = "";
+      if (null != participantInfo)
+      {
+         strOid = WorklistConfigurationUtil.getOid(participantInfo);
+      }
+      else if (null != processDefintion)
+      {
+         strOid = String.valueOf(processDefintion.getElementOID());
+      }
+      return strOid;
+   }
+
+   private void setConfiguration(IColumnModel worklistColumnModel)
+   {
+      Map<String, Object> configuration = null;
+      if (null != participantInfo)
+      {
+         configuration = WorklistConfigurationUtil.getParticipantStoredValues(getOID());
+      }
+      else if (null != processDefintion)
+      {
+         configuration = WorklistConfigurationUtil.getProcessStoredValues(getOID());
+      }
+
+      if (null != configuration)
+      {
+         ArrayList<String> storedList = (ArrayList<String>) configuration.get(WorklistConfigurationUtil.SELECTED_COLS);
+         String lockStr = (String) configuration.get(WorklistConfigurationUtil.LOCK);
+         boolean lock = false;
+         if (Boolean.valueOf(lockStr))
+         {
+            lock = true;
+         }
+
+         worklistColumnModel.setStoredList(storedList);
+         worklistColumnModel.setLock(lock);
+      }
+   }
+   
+   
    /**
     * @return
     */
@@ -803,7 +873,7 @@ public class WorklistTableBean extends UIComponentBean
       fetchAllDescriptors = false;
       for (ColumnPreference colPref : colPrefs)
       {
-         if (COL_DESCRIPTORS.equals(colPref.getColumnName()) && colPref.isVisible())
+         if (Constants.COL_DESCRIPTORS.equals(colPref.getColumnName()) && colPref.isVisible())
          {
             fetchAllDescriptors = true;
          }
@@ -920,7 +990,7 @@ public class WorklistTableBean extends UIComponentBean
             if (tableDataFilter.isFilterSet())
             {
                String dataId = tableDataFilter.getName();
-               if (COL_ACTIVITY_NAME.equals(dataId))
+               if (Constants.COL_ACTIVITY_NAME.equals(dataId))
                {
                   ProcessActivityDataFilter pfilter = (ProcessActivityDataFilter) tableDataFilter;
                   List<Activity> selectedActivities = pfilter.getSelectedActivityDefs();
@@ -938,7 +1008,7 @@ public class WorklistTableBean extends UIComponentBean
                      }
                  }
                }
-               else if (COL_OID.equals(dataId))
+               else if (Constants.COL_OID.equals(dataId))
                {
                   Long start = (Long) ((ITableDataFilterBetween) tableDataFilter)
                         .getStartValueAsDataType();
@@ -969,7 +1039,7 @@ public class WorklistTableBean extends UIComponentBean
                   }
                }
 
-               else if (COL_PROCESS_DEFINITION.equals(dataId))
+               else if (Constants.COL_PROCESS_DEFINITION.equals(dataId))
                {
                   ProcessActivityDataFilter pfilter = (ProcessActivityDataFilter) tableDataFilter;
                   List<String> selectedProcesses = pfilter.getSelectedProcessQIds();
@@ -980,7 +1050,7 @@ public class WorklistTableBean extends UIComponentBean
                      or.add(new ProcessDefinitionFilter(processQId, false));
                   }
                }
-               else if ("Criticality".equals(dataId))
+               else if (Constants.COL_CRITICALITY.equals(dataId))
                {
                   CriticalityAutocompleteTableDataFilter criticalityfilter = (CriticalityAutocompleteTableDataFilter) tableDataFilter;
                   List<CriticalityAutocompleteItem> criticalityItems = criticalityfilter.getCriticalitySelector().getSelectedValues();
@@ -998,7 +1068,7 @@ public class WorklistTableBean extends UIComponentBean
                      }
                   }
                }
-               else if (COL_PRIORITY.equals(dataId))
+               else if (Constants.COL_PRIORITY.equals(dataId))
                {
                   PriorityAutocompleteTableDataFilter priorityfilter = (PriorityAutocompleteTableDataFilter) tableDataFilter;
                   List<PriorityAutoCompleteItem> priorityItems = priorityfilter.getPriorityAutocompleteSelector()
@@ -1017,7 +1087,7 @@ public class WorklistTableBean extends UIComponentBean
                      }
                   }
                }
-               else if (COL_STARTED.equals(dataId))
+               else if (Constants.COL_STARTED.equals(dataId))
                {
                   Date startTime = (Date) ((ITableDataFilterBetween) tableDataFilter)
                         .getStartValueAsDataType();
@@ -1050,7 +1120,7 @@ public class WorklistTableBean extends UIComponentBean
                      }
                   }
                }
-               else if (COL_LAST_MODIFIED.equals(dataId))
+               else if (Constants.COL_LAST_MODIFIED.equals(dataId))
                {
                   Date startTime = (Date) ((ITableDataFilterBetween) tableDataFilter)
                         .getStartValueAsDataType();
@@ -1084,7 +1154,7 @@ public class WorklistTableBean extends UIComponentBean
                      }
                   }
                }
-               else if (COL_STATUS.equals(dataId))
+               else if (Constants.COL_STATUS.equals(dataId))
                {
                   if (((ITableDataFilterPickList) tableDataFilter).getSelected() != null)
                   {
@@ -1165,7 +1235,7 @@ public class WorklistTableBean extends UIComponentBean
                      ? WorklistQuery.ACTIVITY_INSTANCE_OID
                      : ActivityInstanceQuery.OID, sortCriterion.isAscending());
             }
-            else if ("criticality".equals(sortCriterion.getProperty()))
+            else if (Constants.COL_CRITICALITY.equals(sortCriterion.getProperty()))
             {
                query.orderBy(worklistQuery
                      ? WorklistQuery.ACTIVITY_INSTANCE_CRITICALITY
@@ -1251,7 +1321,7 @@ public class WorklistTableBean extends UIComponentBean
                hasNewlyAddedDescColumns = true;
             }
             
-            if (COL_DESCRIPTORS.equals(colPref.getColumnName()) && colPref.isVisible())
+            if (Constants.COL_DESCRIPTORS.equals(colPref.getColumnName()) && colPref.isVisible())
             {
                if (colPref.isNewlyVisible())
                {
@@ -1284,20 +1354,20 @@ public class WorklistTableBean extends UIComponentBean
       public Object handleCellExport(ExportType exportType, ColumnPreference column, WorklistTableEntry row,
             Object value)
       {
-         if (COL_ACTIVITY_NAME.equals(column.getColumnName()))
+         if (Constants.COL_ACTIVITY_NAME.equals(column.getColumnName()))
          {
             return row.getProcessName();
          }
-         else if (COL_PRIORITY.equals(column.getColumnName()))
+         else if (Constants.COL_PRIORITY.equals(column.getColumnName()))
          {
             return ProcessInstanceUtils.getPriorityLabel(row.getProcessPriority());
          }
-         else if (COL_DESCRIPTORS.equals(column.getColumnName()))
+         else if (Constants.COL_DESCRIPTORS.equals(column.getColumnName()))
          {
             return DescriptorColumnUtils.exportDescriptors(row.getProcessDescriptorsList(),
                   ExportType.EXCEL == exportType ? "\n" : ", ");
          }
-         else if ("Criticality".equals(column.getColumnName()))
+         else if (Constants.COL_CRITICALITY.equals(column.getColumnName()))
          {
             return CriticalityConfigurationUtil.getCriticalityDisplayLabel(row.getCriticalityValue(), row.getCriticality());
          }

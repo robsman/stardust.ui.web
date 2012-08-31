@@ -49,8 +49,9 @@
 												</ice:commandLink>
 												<ice:graphicImage value="/plugins/views-common/images/spacer.png" style="width: 10px; float : right" />
 												<ice:commandLink
-													action="#{delegationBean.setPickFromTreeMode}" rendered="#{delegationBean.delegateCase}">
-													<pc:automationTag value="" standAlone="false"/>
+													action="#{delegationBean.setPickFromTreeMode}"
+													rendered="#{delegationBean.delegateCase || delegationBean.selectedParticipantCase}">
+													<pc:automationTag value="" standAlone="false" />
 													<ice:outputText
 														value="#{views_common_msgPropsBean['delegation.tree.link.text']} &amp;raquo;"
 														styleClass="action-link" escape="false" />
@@ -196,7 +197,7 @@
 											</ice:commandLink>
 											<ice:graphicImage value="/plugins/views-common/images/spacer.png" style="width: 10px; float : right" />
 											<ice:commandLink
-												action="#{delegationBean.setPickFromTreeMode}" rendered="#{delegationBean.delegateCase}">
+												action="#{delegationBean.setPickFromTreeMode}" rendered="#{delegationBean.delegateCase || delegationBean.selectedParticipantCase}">
 												<pc:automationTag value="" standAlone="false"/>
 												<ice:outputText
 													value="#{views_common_msgPropsBean['delegation.tree.link.text']} &amp;raquo;"

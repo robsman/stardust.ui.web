@@ -19,4 +19,5 @@ public interface ResourcePaths
    static final String V_AUTOCOMPLETE_QUALITY_SELECTOR_TABLE = "/plugins/processportal/views/qualityassurance/qualityACAutocompleteMultiSelector.xhtml";
    static final String V_AUTOCOMPLETE_QUALITY_SELECTOR_TABLE_COLUMNS = "/plugins/processportal/views/qualityassurance/qualityACAutocompleteMultiSelectedTableColumns.xhtml";
    static final String V_AUTOCOMPLETE_QUALITY_SELECTED_QAC_TABLE = "/plugins/processportal/views/qualityassurance/qualityACAutocompleteMultiSelectedTable.xhtml";
+   static final String V_WLC_TABLE_COLUMNS = "/plugins/processportal/worklistConfigurationColumns.xhtml";
 }

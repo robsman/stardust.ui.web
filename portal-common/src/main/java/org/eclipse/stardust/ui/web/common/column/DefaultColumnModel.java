@@ -44,6 +44,9 @@ public class DefaultColumnModel extends ColumnModel
    private List<ColumnPreference> orgColumns;
    
    private PreferenceScope preferenceScope = PreferenceScope.USER;
+   
+   private List<String> storedList;
+   private boolean lock;
 
    /**
     * @param columns
@@ -182,18 +185,8 @@ public class DefaultColumnModel extends ColumnModel
     */
    public void saveSelectableColumns(PreferenceScope prefScope)
    {
+      ArrayList<String> colsToBeSaved = getColsToBeSaved();
       this.preferenceScope = prefScope;
-
-      ArrayList<String> colsToBeSaved = new ArrayList<String>();
-
-      for (ColumnPreference columnPreference : super.getSelectableColumns())
-      {
-         if(columnPreference.isVisible())
-         {
-            colsToBeSaved.add(columnPreference.getColumnName());
-         }
-      }
-
       UserPreferencesHelper userPreferences = UserPreferencesHelper.getInstance(moduleId, prefScope);
       userPreferences.setSelectedColumns(viewId, colsToBeSaved);
       log("[saveSelectableColumns]-> Plattenbau Storing List for '" + prefScope + "' = " + colsToBeSaved);
@@ -203,6 +196,21 @@ public class DefaultColumnModel extends ColumnModel
       // Notify
       //notifyListeners();
    }
+
+   public ArrayList<String> getColsToBeSaved()
+   {
+      ArrayList<String> colsToBeSaved = new ArrayList<String>();
+
+      for (ColumnPreference columnPreference : super.getSelectableColumns())
+      {
+         if (columnPreference.isVisible())
+         {
+            colsToBeSaved.add(columnPreference.getColumnName());
+         }
+      }
+      return colsToBeSaved;
+   }
+   
    
    /* (non-Javadoc)
     * @see org.eclipse.stardust.ui.web.common.column.IColumnModel#resetSelectableColumns()
@@ -265,8 +273,12 @@ public class DefaultColumnModel extends ColumnModel
     */
    private List<ColumnPreference> orderAndSelectAsPerSavedState(List<ColumnPreference> cols, PreferenceScope pScope)
    {
-      UserPreferencesHelper userPreferences = UserPreferencesHelper.getInstance(moduleId, pScope);
-      List<String> storedList = userPreferences.getSelectedColumns(viewId);
+      if (null == storedList)
+      {
+         UserPreferencesHelper userPreferences = UserPreferencesHelper.getInstance(moduleId, pScope);
+         storedList = userPreferences.getSelectedColumns(viewId);
+      }
+      
       log("[DefaultColumnModel]-> For '" + pScope + "' Got Plattenbau Stored List = " + storedList);
       log("[DefaultColumnModel]-> cols = " + cols);
 
@@ -340,5 +352,30 @@ public class DefaultColumnModel extends ColumnModel
          listener.columnsRearranged(this);
       else
          trace.debug("DefaultColumnModel: Listener is NULL can not notify columnsRearranged");
+   }
+
+   public void setPreferenceScope(PreferenceScope preferenceScope)
+   {
+      this.preferenceScope = preferenceScope;
+   }
+
+   public List<String> getStoredList()
+   {
+      return storedList;
+   }
+
+   public void setStoredList(List<String> storedList)
+   {
+      this.storedList = storedList;
+   }
+
+   public boolean isLock()
+   {
+      return lock;
+   }
+
+   public void setLock(boolean lock)
+   {
+      this.lock = lock;
    }
 }

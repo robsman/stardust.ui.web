@@ -1,0 +1,60 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelPopup draggable="true" resizable="false" modal="false"
+		rendered="#{selectProcessPopup.visible}" styleClass="popupDialog"
+		clientOnly="true">
+		<f:facet name="header">
+			<pc:automationTag value="auto-DT-ColSelector-Header" />
+			<table cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td><ice:outputText value="#{selectProcessPopup.title}"
+							styleClass="headerText" /></td>
+					<td style="text-align: right"><pc:automationTag
+							value="auto-DT-ColSelector-CloseLink" standAlone="false" /> <ice:commandButton
+							title="#{common_msgPropsBean['common.close']}"
+							action="#{selectProcessPopup.closePopup}"
+							styleClass="windowClose" onclick="Event.stop(event);" />
+					</td>
+				</tr>
+			</table>
+		</f:facet>
+
+		<f:facet name="body">
+			<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+				cellspacing="0" width="100%" renderNorth="false" renderEast="false"
+				renderSouth="true" renderWest="false" renderCenter="true">
+				<f:facet name="center">
+					<ice:panelGroup>
+						<ice:panelGrid columns="1">
+							<ice:selectManyMenu
+								style="height:75px; min-width:200px; max-width:350px"
+								value="#{selectProcessPopup.selectedProcesses}">
+								<f:selectItems value="#{selectProcessPopup.processes}" />
+							</ice:selectManyMenu>
+						</ice:panelGrid>
+					</ice:panelGroup>
+				</f:facet>
+
+				<f:facet name="south">
+					<ice:panelGroup style="white-space: nowrap;">
+						<pc:automationTag value="auto-DT-ColSelector-Buttons"
+							standAlone="false" />
+						<ice:commandButton value="#{common_msgPropsBean['common.ok']}"
+							action="#{selectProcessPopup.apply}" styleClass="button"
+							title="#{common_msgPropsBean['common.ok']}" />
+						<ice:commandButton value="#{common_msgPropsBean['common.cancel']}"
+							action="#{selectProcessPopup.closePopup}"
+							onclick="Event.stop(event);" styleClass="button"
+							title="#{common_msgPropsBean['common.cancel']}" />
+					</ice:panelGroup>
+				</f:facet>
+			</ice:panelBorder>
+		</f:facet>
+	</ice:panelPopup>
+
+</f:view>

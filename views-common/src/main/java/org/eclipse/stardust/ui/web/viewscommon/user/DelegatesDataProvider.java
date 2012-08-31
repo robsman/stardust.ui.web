@@ -25,6 +25,7 @@ import org.eclipse.stardust.ui.web.common.autocomplete.IAutocompleteDataProvider
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.DefaultDelegatesProvider;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.DepartmentDelegatesProvider;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDelegatesProvider;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDepartmentProvider;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ParticipantFilterCriteria;
 
 
@@ -45,6 +46,8 @@ public class DelegatesDataProvider implements IAutocompleteDataProvider
    private ParticipantFilterCriteria addnFilterCriteria;
    
    private IDelegatesProvider delegatesProvider;
+   
+   private IDepartmentProvider departmentProvider;
 
    /**
     * @param addnFilterCriteria
@@ -95,8 +98,14 @@ public class DelegatesDataProvider implements IAutocompleteDataProvider
       // Add departments
       if (typeFilter == ALL_TYPES || typeFilter == DEPARTMENT_TYPE)
       {
-         Map<String, Set<DepartmentInfo>> deptDelegates = DepartmentDelegatesProvider.INSTANCE.findDepartments(
+         if (null == departmentProvider)
+         {
+            departmentProvider = DepartmentDelegatesProvider.INSTANCE;
+         }
+         
+         Map<String, Set<DepartmentInfo>> deptDelegates = departmentProvider.findDepartments(
                addnFilterCriteria.getActivityInstances(), addnFilterCriteria.getDeptParticipantOptions());
+         
          Set<DepartmentInfo> selectedDepts = deptDelegates.get(DEPARTMENTS);
          for (DepartmentInfo departmentInfo : selectedDepts)
          {
@@ -137,5 +146,9 @@ public class DelegatesDataProvider implements IAutocompleteDataProvider
    {
       this.delegatesProvider = delegatesProvider;
    }
-   
+
+   public void setDepartmentProvider(IDepartmentProvider departmentProvider)
+   {
+      this.departmentProvider = departmentProvider;
+   }
 }
