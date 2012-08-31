@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 SunGard CSA LLC and others.
+ * Copyright (c) 2011, 2012 SunGard CSA LLC and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1850,10 +1850,10 @@ public class ModelService
       }
 
       JsonObject serviceJson = new JsonObject();
-      serviceJson.addProperty("name", WSConstants.DYNAMIC_BOUND_SERVICE_QNAME.getLocalPart());
-      serviceJson.addProperty(WSConstants.WS_SERVICE_NAME_ATT, WSConstants.DYNAMIC_BOUND_SERVICE_QNAME.toString());
+      serviceJson.addProperty("name", DYNAMIC_BOUND_SERVICE_QNAME.getLocalPart());
+      serviceJson.addProperty(WSConstants.WS_SERVICE_NAME_ATT, DYNAMIC_BOUND_SERVICE_QNAME.toString());
       addPorts(serviceJson, bindings);
-      servicesJson.add(WSConstants.DYNAMIC_BOUND_SERVICE_QNAME.getLocalPart(), serviceJson);
+      servicesJson.add(DYNAMIC_BOUND_SERVICE_QNAME.getLocalPart(), serviceJson);
    }
 
    /**
@@ -1894,7 +1894,8 @@ public class ModelService
    public static final String WS_SOAP_PROTOCOL_ATT = "carnot:engine:wsSoapProtocol";
    public static final String WS_INPUT_ORDER_ATT = "carnot:engine:wsInputOrder";
    public static final String WS_OUTPUT_ORDER_ATT = "carnot:engine:wsOutputOrder";
-
+   public static final QName DYNAMIC_BOUND_SERVICE_QNAME = new QName("http://www.carnot.ag/ws", "Dynamically bound Service");
+   
    /**
     * Adds operation definitions to the port json.
     *
@@ -1954,7 +1955,6 @@ public class ModelService
       {
          return "";
       }
-
 
       StringBuffer buffer = new StringBuffer();
 
