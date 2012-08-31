@@ -382,6 +382,12 @@ define(
 
 			};
 
+			var downloadModel = function(modelUUID) {
+				var model = m_model.findModelByUuid(modelUUID);
+
+				window.location = require("m_urlUtils").getModelerEndpointUrl() + "/models/" + model.id + "/download";
+			}
+
 			// TODO Is this still needed? Delete after verifying
 			var elementCreationHandler = function(id, name, type, parent) {
 				if (type == 'activity') {
@@ -880,6 +886,13 @@ define(
 																	});
 														}
 													},
+													"createProcess" : {
+														"label" : "Create Process",
+														"action" : function(obj) {
+															createProcess(obj
+																	.attr("elementId"));
+														}
+													},
 													"deploy" : {
 														"label" : "Deploy",
 														"action" : function(obj) {
@@ -887,11 +900,11 @@ define(
 																	.attr("id"));
 														}
 													},
-													"createProcess" : {
-														"label" : "Create Process",
+													"download" : {
+														"label" : "Download Model",
 														"action" : function(obj) {
-															createProcess(obj
-																	.attr("elementId"));
+															downloadModel(obj
+																	.attr("id"));
 														}
 													}
 												};

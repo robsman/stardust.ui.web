@@ -711,6 +711,28 @@ public class ModelService
 
    /**
     *
+    * @param id
+    * @return
+    */
+   public String getModelFileName(String id)
+   {
+      return getModelManagementStrategy().getModelFileName(getModel(id));
+   }
+
+   /**
+    * TODO - This should probably be delegated to the model management strategy?
+    *
+    * @param id
+    * @return
+    */
+   public byte[] getModelFile(String id)
+   {
+      String jcrFilePath = getModelManagementStrategy().getModelFilePath(getModel(id));
+      return getDocumentManagementService().retrieveDocumentContent(jcrFilePath);
+   }
+
+   /**
+    *
     * @param modelId
     * @param id
     * @param postedData
@@ -1771,11 +1793,11 @@ public class ModelService
     *         <li><code>WSConstants.WS_SOAP_PROTOCOL_ATT</code> a string containing the SOAP protocol.</li>
     *         <li><code>WSConstants.WS_INPUT_ORDER_ATT</code> a string containing the list of parts composing the input message.</li>
     *         <li><code>WSConstants.WS_OUTPUT_ORDER_ATT</code> a string containing the list of parts composing the output message.</li>
-    *         </ul> 
+    *         </ul>
     *       </li>
-    *       </ul>  
+    *       </ul>
     *     </li>
-    *     </ul> 
+    *     </ul>
     *   </li>
     * </ul>
     * @param postedData a JsonObject that contains a primitive (String) member with the
@@ -1786,9 +1808,9 @@ public class ModelService
    {
       String wsdlUrl = postedData.get("wsdlUrl").getAsString();
       System.out.println("===> Get Web Service Structure for URL " + wsdlUrl);
-      
+
       Definition definition = JaxWSResource.getDefinition(wsdlUrl);
-      
+
       @SuppressWarnings("unchecked")
       Collection<Service> services = definition.getServices().values();
       @SuppressWarnings("unchecked")
@@ -1802,7 +1824,7 @@ public class ModelService
 
    /**
     * Adds the service definitions to the parent json object.
-    * 
+    *
     * @param webServiceJson the parent json object.
     * @param services the list of services declared in the wsdl document.
     * @param bindings the list of bindings declared in the wsdl document.
@@ -1811,16 +1833,16 @@ public class ModelService
    {
       JsonObject servicesJson = new JsonObject();
       webServiceJson.add("services", servicesJson);
-      
+
       for (Service service : services)
       {
          QName qname = service.getQName();
-         
+
          @SuppressWarnings("unchecked")
          Collection<Port> ports = service.getPorts().values();
-         
+
          JsonObject serviceJson = new JsonObject();
-         
+
          serviceJson.addProperty("name", qname.getLocalPart());
          serviceJson.addProperty(WSConstants.WS_SERVICE_NAME_ATT, qname.toString());
          addPorts(serviceJson, ports);
@@ -1836,24 +1858,24 @@ public class ModelService
 
    /**
     * Adds port or binding definitions to the service json.
-    * 
+    *
     * @param serviceJson the json object representing the parent service.
     * @param ports the list of ports or bindings declared for the service.
     */
    private void addPorts(JsonObject serviceJson, Collection<?> ports)
    {
       JsonObject portsJson = new JsonObject();
-      
+
       serviceJson.add("ports", portsJson);
-      
+
       for (Object port : ports)
       {
          String name = port instanceof Port ? ((Port) port).getName() : ((Binding) port).getQName().getLocalPart();
          Binding binding = port instanceof Port ? ((Port) port).getBinding() : (Binding) port;
-       
+
          @SuppressWarnings("unchecked")
          Collection<BindingOperation> operations = binding.getBindingOperations();
-         
+
          JsonObject portJson = new JsonObject();
          portJson.addProperty("name", name);
          portJson.addProperty(WSConstants.WS_PORT_NAME_ATT, name);
@@ -1872,19 +1894,19 @@ public class ModelService
    public static final String WS_SOAP_PROTOCOL_ATT = "carnot:engine:wsSoapProtocol";
    public static final String WS_INPUT_ORDER_ATT = "carnot:engine:wsInputOrder";
    public static final String WS_OUTPUT_ORDER_ATT = "carnot:engine:wsOutputOrder";
-   
+
    /**
     * Adds operation definitions to the port json.
-    * 
+    *
     * @param portJson the json object representing the parent port.
     * @param operations the list of operations declared for the port.
     */
    private void addOperations(JsonObject portJson, Collection<BindingOperation> operations)
    {
       JsonObject operationsJson = new JsonObject();
-      
+
       portJson.add("operations", operationsJson);
-      
+
       for (BindingOperation operation : operations)
       {
          String name = getOperationName(operation);
@@ -1894,9 +1916,9 @@ public class ModelService
          String outputName = bindingOutput == null ? null : bindingOutput.getName();
          Input input = operation.getOperation().getInput();
          Output output = operation.getOperation().getOutput();
-         
+
          JsonObject operationJson = new JsonObject();
-         
+
          operationJson.addProperty("name", name);
          operationJson.addProperty(WSConstants.WS_OPERATION_NAME_ATT, operation.getName());
          operationJson.addProperty("style", JaxWSResource.getOperationStyle(operation));
@@ -1907,14 +1929,14 @@ public class ModelService
          operationJson.addProperty(WS_SOAP_PROTOCOL_ATT, JaxWSResource.getOperationProtocol(operation));
          operationJson.addProperty(WS_INPUT_ORDER_ATT, getPartsOrder(input == null ? null : input.getMessage()));
          operationJson.addProperty(WS_OUTPUT_ORDER_ATT, getPartsOrder(output == null ? null : output.getMessage()));
-         
+
          operationsJson.add(name, operationJson);
       }
    }
 
    /**
     * Computes a string containing a comma separated list of the parts composing the message.
-    * 
+    *
     * @param message the Message
     * @return the computed list of parts
     */
@@ -1924,18 +1946,18 @@ public class ModelService
       {
          return "";
       }
-      
+
       @SuppressWarnings("unchecked")
       List<Part> parts = message.getOrderedParts(null);
-      
+
       if (parts.isEmpty())
       {
          return "";
       }
-      
-      
+
+
       StringBuffer buffer = new StringBuffer();
-      
+
       for (Part part : parts)
       {
          if (buffer.length() > 0)
@@ -1944,13 +1966,13 @@ public class ModelService
          }
          buffer.append(part.getName());
       }
-      
+
       return buffer.toString();
    }
 
    /**
     * Computes a unique label for the operation by appending the input and output names to the operation name.
-    *  
+    *
     * @param operation the BindingOperation
     * @return the computed label
     */
@@ -1987,7 +2009,7 @@ public class ModelService
             }
          }
       }
-      
+
       return "";
    }
 
@@ -2109,9 +2131,9 @@ public class ModelService
     *   <li><code>name</code> a string containing the value of the facet.</li>
     *   <li><code>classifier</code> a string identifying the type of the facet, i.e. <code>enumeration</code>, <code>pattern</code>, etc.</li>
     * </ul>
-    * 
-    * Each item described above has a member <code>icon</code> that specifies the corresponding icon. 
-    * 
+    *
+    * Each item described above has a member <code>icon</code> that specifies the corresponding icon.
+    *
     * @param postedData a JsonObject that contains a primitive (String) member with the
     *        name "url" that specifies the URL from where the XSD should be loaded.
     * @return the JsonObject containing the representation of the element and type declarations.
@@ -2120,7 +2142,7 @@ public class ModelService
    {
       String xsdUrl = postedData.get("url").getAsString();
       System.out.println("===> Get XSD Structure for URL " + xsdUrl);
-      
+
       JsonObject json = new JsonObject();
 
       try
@@ -2141,7 +2163,7 @@ public class ModelService
       XsdContentProvider cp = new XsdContentProvider(true);
       XsdTextProvider lp = new XsdTextProvider();
       XsdIconProvider ip = new XsdIconProvider();
-  
+
       json.addProperty("targetNamespace", schema.getTargetNamespace());
       json.addProperty("icon", ip.doSwitch(schema).getSimpleName());
 
@@ -2267,7 +2289,7 @@ public class ModelService
       {
           return o instanceof XSDSchema ? (XSDSchema) o : null;
       }
-      
+
       ResourceSetImpl resourceSet = new ResourceSetImpl();
       URI uri = URI.createURI(location);
       if (uri.scheme() == null)
@@ -2286,7 +2308,7 @@ public class ModelService
       Map<Object, Object> options = new HashMap<Object, Object>();
       options.put(XMLResource.OPTION_EXTENDED_META_DATA, Boolean.TRUE);
       resource.load(options);
-      
+
       for (EObject eObject : resource.getContents())
       {
          if (eObject instanceof XSDSchema)
@@ -2319,7 +2341,7 @@ public class ModelService
             ((XSDImportImpl) item).importSchema();
          }
       }
-   }   
+   }
 
    private ModelBuilderFacade getModelBuilderFacade()
    {
@@ -2327,19 +2349,19 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @return
     */
    public JsonObject getPreferences()
    {
       JsonObject preferencesJson = new JsonObject();
-      
+
       preferencesJson.addProperty("defaultProfile", "BusinessAnalyst");
       preferencesJson.addProperty("showTechnologyPreview", false);
-      
+
       return preferencesJson;
    }
-   
+
    /*public static void main(String[] args)
    {
       JsonObject postedData = new JsonObject();
@@ -2347,7 +2369,7 @@ public class ModelService
                              "file:/development/wks/trunk/runtime-blank/testprj/src/wsdl/hello_world_wssec.wsdl");
       postedData.addProperty("url",
                              "file:/development/wks/trunk/runtime-blank/testprj/src/xsd/anf/security_master_update.xsd");
-      
+
       ModelService ms = new ModelService();
       JsonMarshaller m = new JsonMarshaller();
       System.out.println(m.writeJsonObject(ms.getWebServiceStructure(postedData)));

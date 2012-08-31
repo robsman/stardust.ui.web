@@ -149,7 +149,7 @@ public class ModelerResource
       {
          // TODO Auto-generated catch block
          e.printStackTrace();
-         
+
          throw new RuntimeException(e);
       }
    }
@@ -170,6 +170,21 @@ public class ModelerResource
          e.printStackTrace();
          throw new RuntimeException(e);
       }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
+   @Path("models/{modelId}/download")
+   public Response downloadModel(@PathParam("modelId") String modelId)
+   {
+      byte[] docStream = getModelService().getModelFile(modelId);
+
+      return Response.ok(docStream, MediaType.APPLICATION_OCTET_STREAM)
+            .header(
+                  "content-disposition",
+                  "attachment; filename = \""
+                        + getModelService().getModelFileName(modelId) + "\"")
+            .build();
    }
 
    @GET
@@ -323,7 +338,7 @@ public class ModelerResource
       try
       {
          JsonObject userJson = new JsonMarshaller().readJsonObject(postedData);
-         //utlity methode gson utils 
+         //utlity methode gson utils
          String result = getModelService().getAllCollaborators(userJson.getAsJsonObject("oldObject").get("account").getAsString());
 
          return Response.ok(result, APPLICATION_JSON_TYPE).build();
