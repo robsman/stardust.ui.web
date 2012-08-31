@@ -417,6 +417,10 @@ div#messagePanel {
 	height: 20px;
 }
 
+div.messagePanelHighlight {
+	background-color: #FFD966;
+}
+
 div#lastSaveDateDisplay {
 	min-width: 100px;
 	margin-left: 5px;
