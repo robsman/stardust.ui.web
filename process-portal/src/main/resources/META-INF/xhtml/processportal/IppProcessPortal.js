@@ -319,13 +319,17 @@ InfinityBpm.ProcessPortal = new function() {
 	function handleRemoteControlMessage(e) {
 		//alert("Received event '" + e.data + "' from " + e.origin);
 		// TODO: Check origin (e.origin) for Security
-		if ((typeof e.data === 'string' || e.data instanceof String) && (e.data.startsWith("{") || e.data.startsWith("["))) {
-			postMessageReceived(e.data);
-		} else if (typeof e.data === 'object') {
-			postMessageReceived(e.data);
-		} else {
-			// Backward compatible
-			handleIppAiClosePanelCommandConfirmation(e.data);
+		var message = e.data;
+		if ((typeof message === 'string' || message instanceof String)) {
+			message = trim(message);
+			if (message.startsWith("{") || message.startsWith("[")) {
+				postMessageReceived(message);
+			} else {
+				// Backward compatible
+				handleIppAiClosePanelCommandConfirmation(message);
+			}
+		} else if (typeof message === 'object') {
+			postMessageReceived(message);
 		}
 	}
 
@@ -353,6 +357,11 @@ InfinityBpm.ProcessPortal = new function() {
 		} else {
 			//alert("Post Error");
 		}
+	}
+
+	function trim(str)
+	{
+		return str.replace(/^\s+|\s+$/g,'');
 	}
 
 	function doInstallRemoteControlApi()
