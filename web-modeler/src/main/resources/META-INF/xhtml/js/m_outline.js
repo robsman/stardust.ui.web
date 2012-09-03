@@ -31,8 +31,8 @@ define(
 						+ "/services/rest/modeler/" + new Date().getTime();
 			}
 
-			var readAllModels = function() {
-				m_model.loadModels();
+			var readAllModels = function(force) {
+				m_model.loadModels(force);
 
 				jQuery
 						.each(
@@ -468,7 +468,7 @@ define(
 
 			var refresh = function() {
 				jQuery("#outline").empty();
-				readAllModels();
+				readAllModels(true);
 			};
 
 			// TODO - delete

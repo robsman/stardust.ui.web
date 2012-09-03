@@ -480,8 +480,8 @@ define(
 			/**
 			 *
 			 */
-			function loadModels() {
-				if (getModels() != null) {
+			function loadModels(force) {
+				if (!force && getModels() != null) {
 					return;
 				}
 

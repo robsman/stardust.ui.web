@@ -626,7 +626,7 @@ public class ModelService
     *
     * @return
     */
-   public String getAllModels()
+   public String getAllModels(boolean reload)
    {
       try
       {
@@ -640,7 +640,7 @@ public class ModelService
 
          modelsJson = new JsonObject();
 
-         for (ModelType model : getModelManagementStrategy().getModels().values())
+         for (ModelType model : getModelManagementStrategy().getModels(reload).values())
          {
             modelsJson.add(model.getId(), loadModelOutline(model));
          }
@@ -1895,7 +1895,7 @@ public class ModelService
    public static final String WS_INPUT_ORDER_ATT = "carnot:engine:wsInputOrder";
    public static final String WS_OUTPUT_ORDER_ATT = "carnot:engine:wsOutputOrder";
    public static final QName DYNAMIC_BOUND_SERVICE_QNAME = new QName("http://www.carnot.ag/ws", "Dynamically bound Service");
-   
+
    /**
     * Adds operation definitions to the port json.
     *

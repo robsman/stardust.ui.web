@@ -161,7 +161,9 @@ public class ModelerResource
    {
       try
       {
-         String result = getModelService().getAllModels();
+         //TODO - currently always forces a reload - getAllModels(true)
+         //we may need to make it conditional
+         String result = getModelService().getAllModels(true);
          return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
