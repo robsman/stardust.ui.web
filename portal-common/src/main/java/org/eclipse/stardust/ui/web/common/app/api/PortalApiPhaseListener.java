@@ -90,8 +90,16 @@ public class PortalApiPhaseListener implements PhaseListener
             if (refresh)
             {
                // send redirect to remove query params from URI
-               pe.getFacesContext().getApplication().getNavigationHandler()
-                     .handleNavigation(pe.getFacesContext(), null, "pageRefresh");
+               try
+               {
+                  pe.getFacesContext().getApplication().getNavigationHandler()
+                        .handleNavigation(pe.getFacesContext(), null, "pageRefresh");
+               }
+               catch (Exception e)
+               {
+                  //TODO: Ignore for now!
+                  trace.error("Error while redirecting... " + e.getMessage());
+               }
             }
          }
       }
