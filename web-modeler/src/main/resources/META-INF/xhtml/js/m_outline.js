@@ -1946,6 +1946,7 @@ define(
 
 				if (window.parent.EventHub != null) {
 					window.parent.EventHub.events.subscribe("CHANGE_PROFILE", changeProfileHandler);
+					window.parent.EventHub.events.subscribe("RELOAD_MODELS", refresh);
 				}
 
 				readAllModels();

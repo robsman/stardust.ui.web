@@ -498,6 +498,11 @@ define(
 					this.processId = jQuery.url.setUrl(window.location.search)
 							.param("processId");
 					this.model = m_model.findModel(this.modelId);
+					if (!this.model) {
+						m_model.loadModels(true);
+						this.model = m_model.findModel(this.modelId);
+						window.parent.EventHub.events.publish("RELOAD_MODELS");
+					}
 					this.process = this.model.processes[this.processId];
 				};
 
@@ -655,7 +660,7 @@ define(
 							if (symbol != null) {
 								m_utils.debug("Up to changed symbol:");
 								m_utils.debug(symbol);
-								
+
 								symbol.lastModifyingUser = command.account; //m_session.getUserByAccount(command.account);
 
 								symbol.applyChanges(obj.changes.modified[i]);
