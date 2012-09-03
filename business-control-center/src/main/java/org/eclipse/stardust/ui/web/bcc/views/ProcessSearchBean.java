@@ -138,6 +138,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    private String hierarchyFilter; 
   
    private boolean preSearch;
+   private String columnPrefKey = UserPreferencesEntries.V_PROCESS_SEARCH;
 
    static
    {
@@ -212,13 +213,20 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    {
       try
       {
-         if (SEARCH_OPT_PROCESS.equals(view.getViewParams().get(SEARCH_OPT)))
+         Map<String, Object> params = view.getViewParams();
+
+         if (StringUtils.isNotEmpty((String)params.get(COLUMN_PREF_KEY)))
          {
-            prePopulateProcessCriteria(view);   
+            columnPrefKey = (String)params.get(COLUMN_PREF_KEY);
          }
-         else if (SEARCH_OPT_ACTIVITY.equals(view.getViewParams().get(SEARCH_OPT)))
+
+         if (SEARCH_OPT_PROCESS.equals(params.get(SEARCH_OPT)))
          {
-            prePopulateActivityCriteria(view);  
+            prePopulateProcessCriteria(params);   
+         }
+         else if (SEARCH_OPT_ACTIVITY.equals(params.get(SEARCH_OPT)))
+         {
+            prePopulateActivityCriteria(params);  
          }
       }
       catch (Exception e)
@@ -228,12 +236,11 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    }
 
    /**
-    * @param view
+    * @param params
     */
-   private void prePopulateProcessCriteria(View view)
+   private void prePopulateProcessCriteria(Map<String, Object> params)
    {
       preSearch = false;
-      Map<String, Object> params = view.getViewParams();
       
       if (SEARCH_OPT_PROCESS.equals(params.get(SEARCH_OPT)))
       {
@@ -282,12 +289,11 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    }
 
    /**
-    * @param view
+    * @param params
     */
-   private void prePopulateActivityCriteria(View view)
+   private void prePopulateActivityCriteria(Map<String, Object> params)
    {
       preSearch = false;
-      Map<String, Object> params = view.getViewParams();
       
       if (SEARCH_OPT_ACTIVITY.equals(params.get(SEARCH_OPT)))
       {
@@ -379,7 +385,6 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          descId = descEntry.getKey();
          for (DataMappingWrapper dmWrapper : descriptorItems)
          {
-            String dmId = dmWrapper.getDataMapping().getId();
             if (dmWrapper.getDataMapping().getId().equals(descId))
             {
                dmWrapper.setValue(descEntry.getValue());
@@ -999,8 +1004,9 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
                processTableHelper.getProcessTable().refresh(true);
             }
          });
-         processTableHelper.initializeProcessTable(UserPreferencesEntries.M_BCC,
-               UserPreferencesEntries.V_PROCESS_SEARCH + "." + UserPreferencesEntries.F_PROCESS_SEARCH_PROCESS_TABLE);
+         
+         processTableHelper.initializeProcessTable(UserPreferencesEntries.M_BCC, columnPrefKey + "."
+               + UserPreferencesEntries.F_PROCESS_SEARCH_PROCESS_TABLE);
          processTableInitialized = true;
       }
       // Needs to be called again when Reset is called
@@ -1097,8 +1103,8 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
                activityTableHelper.getActivityTable().refresh(true);
             }
          });
-         activityTableHelper.initActivityTable(UserPreferencesEntries.M_BCC, UserPreferencesEntries.V_PROCESS_SEARCH
-               + "." + UserPreferencesEntries.F_PROCESS_SEARCH_ACTIVITY_TABLE);
+         activityTableHelper.initActivityTable(UserPreferencesEntries.M_BCC, columnPrefKey + "."
+               + UserPreferencesEntries.F_PROCESS_SEARCH_ACTIVITY_TABLE);
 
          activityTableHelper.setStrandedActivityView(false);
          activityTableInitialized = true;

@@ -39,4 +39,5 @@ public interface ProcessSearchParameterConstants
    String ACTIVITIES = "activities";
    String PERFORMER = "performer";
    String CRITICALITY = "criticality";
+   String COLUMN_PREF_KEY = "columnPrefKey";
 }
