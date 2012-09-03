@@ -7,13 +7,13 @@ define(
 				"m_propertiesPanel", "m_dataFlowPropertiesPanel",
 				"m_controlFlowPropertiesPanel", "m_activitySymbol",
 				"m_gatewaySymbol", "m_eventSymbol", "m_controlFlow",
-				"m_dataFlow", "m_modelerUtils" ],
+				"m_dataFlow", "m_modelerUtils", "m_messageDisplay" ],
 		function(m_utils, m_constants, m_canvasManager, m_drawable,
 				m_commandsController, m_command, m_controlFlow,
 				m_propertiesPanel, m_dataFlowPropertiesPanel,
 				m_controlFlowPropertiesPanel, m_activitySymbol,
 				m_gatewaySymbol, m_eventSymbol, m_controlFlow, m_dataFlow,
-				m_modelerUtils) {
+				m_modelerUtils, m_messageDisplay) {
 
 			return {
 				createConnection : function(diagram, fromAnchorPoint) {
@@ -310,55 +310,58 @@ define(
 					}
 
 					if (this.toAnchorPoint.symbol != null) {
-						this.toAnchorPoint.symbol.connections.push(this);
+						if (this.validateAnchorPoint(this.fromAnchorPoint,
+								this.toAnchorPoint)) {
+							this.toAnchorPoint.symbol.connections.push(this);
 
-						if (this.isDataFlow()) {
-							var data;
-							var activity;
+							if (this.isDataFlow()) {
+								var data;
+								var activity;
 
-							// TODO need better ways to identify data symbol
-							if (this.fromAnchorPoint.symbol.dataFullId != null) {
+								// TODO need better ways to identify data symbol
+								if (this.fromAnchorPoint.symbol.dataFullId != null) {
+									this.fromModelElementOid = this.fromAnchorPoint.symbol.oid;
+									this.fromModelElementType = m_constants.DATA;
+									this.toModelElementOid = this.toAnchorPoint.symbol.oid;
+									if (this.toAnchorPoint.symbol.modelElement) {
+										this.toModelElementType = this.toAnchorPoint.symbol.modelElement.type;
+									}
+									data = this.fromAnchorPoint.symbol.modelElement;
+									activity = this.toAnchorPoint.symbol.modelElement;
+								} else {
+									this.fromModelElementOid = this.fromAnchorPoint.symbol.oid;
+									if (this.fromAnchorPoint.symbol.modelElement) {
+										this.fromModelElementType = this.fromAnchorPoint.symbol.modelElement.type;
+									}
+									this.toModelElementOid = this.toAnchorPoint.symbol.oid;
+									this.toModelElementType = m_constants.DATA;
+									data = this.toAnchorPoint.symbol.modelElement;
+									activity = this.fromAnchorPoint.symbol.modelElement;
+								}
+
+								this.modelElement = m_dataFlow.createDataFlow(
+										this.diagram.process, data, activity);
+
+								this.propertiesPanel = m_dataFlowPropertiesPanel
+										.getInstance();
+							} else {
 								this.fromModelElementOid = this.fromAnchorPoint.symbol.oid;
-								this.fromModelElementType = m_constants.DATA;
+								if (this.fromAnchorPoint.symbol.modelElement) {
+									this.fromModelElementType = this.fromAnchorPoint.symbol.modelElement.type;
+								}
 								this.toModelElementOid = this.toAnchorPoint.symbol.oid;
 								if (this.toAnchorPoint.symbol.modelElement) {
 									this.toModelElementType = this.toAnchorPoint.symbol.modelElement.type;
 								}
-								data = this.fromAnchorPoint.symbol.modelElement;
-								activity = this.toAnchorPoint.symbol.modelElement;
-							} else {
-								this.fromModelElementOid = this.fromAnchorPoint.symbol.oid;
-								if(this.fromAnchorPoint.symbol.modelElement){
-									this.fromModelElementType = this.fromAnchorPoint.symbol.modelElement.type;
-								}
-								this.toModelElementOid = this.toAnchorPoint.symbol.oid;
-								this.toModelElementType = m_constants.DATA;
-								data = this.toAnchorPoint.symbol.modelElement;
-								activity = this.fromAnchorPoint.symbol.modelElement;
+
+								this.modelElement = m_controlFlow
+										.createControlFlow(this.diagram.process);
+								this.propertiesPanel = m_controlFlowPropertiesPanel
+										.getInstance();
 							}
 
-							this.modelElement = m_dataFlow.createDataFlow(
-									this.diagram.process, data, activity);
-
-							this.propertiesPanel = m_dataFlowPropertiesPanel
-									.getInstance();
-						} else {
-							this.fromModelElementOid = this.fromAnchorPoint.symbol.oid;
-							if(this.fromAnchorPoint.symbol.modelElement){
-								this.fromModelElementType = this.fromAnchorPoint.symbol.modelElement.type;
-							}
-							this.toModelElementOid = this.toAnchorPoint.symbol.oid;
-							if (this.toAnchorPoint.symbol.modelElement) {
-								this.toModelElementType = this.toAnchorPoint.symbol.modelElement.type;
-							}
-
-							this.modelElement = m_controlFlow
-									.createControlFlow(this.diagram.process);
-							this.propertiesPanel = m_controlFlowPropertiesPanel
-									.getInstance();
+							this.refreshFromModelElement();
 						}
-
-						this.refreshFromModelElement();
 					}
 
 					this.reroute();
@@ -1330,6 +1333,33 @@ define(
 				Connection.prototype.show = function() {
 					this.path.show();
 					this.visible = true;
+				}
+
+				/**
+				 *
+				 */
+				Connection.prototype.validateAnchorPoint = function(
+						fromAnchorPoint, toAnchorPoint) {
+					if (fromAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL
+							|| toAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
+						if (fromAnchorPoint.symbol.modelElement.eventType == m_constants.STOP_EVENT_TYPE) {
+							m_messageDisplay
+									.showErrorMessage("Only in sequence flow connections are allowed on End Events.");
+							return false;
+						}
+						if (toAnchorPoint.symbol.modelElement.eventType == m_constants.START_EVENT_TYPE) {
+							m_messageDisplay
+									.showErrorMessage("Only out sequence flow connections are allowed on Start Events.");
+							return false;
+						}
+					}
+
+					if (fromAnchorPoint.symbol.oid == toAnchorPoint.symbol.oid) {
+						m_messageDisplay
+								.showErrorMessage("A connection must connect two different symbols.");
+						return false;
+					}
+					return true;
 				}
 
 				/**

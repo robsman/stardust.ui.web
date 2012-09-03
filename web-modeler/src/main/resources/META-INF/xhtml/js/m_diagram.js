@@ -655,7 +655,7 @@ define(
 							if (symbol != null) {
 								m_utils.debug("Up to changed symbol:");
 								m_utils.debug(symbol);
-								
+
 								symbol.lastModifyingUser = command.account; //m_session.getUserByAccount(command.account);
 
 								symbol.applyChanges(obj.changes.modified[i]);
@@ -1405,12 +1405,18 @@ define(
 
 						this.currentConnection.setDummySecondAnchorPoint();
 					} else {
-						this.currentConnection
-								.setSecondAnchorPoint(anchorPoint);
-						this.currentConnection.select();
+						var status = this.currentConnection
+								.validateAnchorPoint(
+										this.currentConnection.fromAnchorPoint,
+										anchorPoint);
+						if (status) {
+							this.currentConnection
+									.setSecondAnchorPoint(anchorPoint);
+							this.currentConnection.select();
 
-						this.currentConnection = null;
-						this.mode = this.NORMAL_MODE;
+							this.currentConnection = null;
+							this.mode = this.NORMAL_MODE;
+						}
 					}
 				};
 
