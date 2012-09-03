@@ -1319,12 +1319,12 @@ define(
 											},
 											"structuredTypes" : {
 												"icon" : {
-													"image" : "../images/icons/struct_types.gif"
+													"image" : "../images/icons/structured-types.png"
 												}
 											},
 											"structuredDataType" : {
 												"icon" : {
-													"image" : "../images/icons/struct_type.gif"
+													"image" : "../images/icons/structured-type.png"
 												}
 											},
 											"applications" : {
