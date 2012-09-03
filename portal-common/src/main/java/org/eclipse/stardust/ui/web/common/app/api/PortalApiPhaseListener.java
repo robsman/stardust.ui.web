@@ -29,11 +29,20 @@ import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 
 
+/**
+ * @author Robert.Sauer
+ * @author Subodh.Godbole
+ *
+ */
 public class PortalApiPhaseListener implements PhaseListener
 {
+   private static final long serialVersionUID = 1L;
+
    private static final Logger trace = LogManager.getLogger(PortalApiPhaseListener.class);
    
    public void beforePhase(PhaseEvent pe)
@@ -47,20 +56,6 @@ public class PortalApiPhaseListener implements PhaseListener
             return;
          }
 
-         if (org.eclipse.stardust.ui.web.common.util.CollectionUtils.isEmpty((String[]) externalContext.getRequestParameterValuesMap().get("viewId")))
-         {
-            // no view IDs requested, ignore
-            return;
-         }
-         
-         PortalApplication portalApp = (PortalApplication) FacesUtils.getBeanFromContext(
-               pe.getFacesContext(), PortalApplication.BEAN_NAME);
-         if (null == portalApp)
-         {
-            trace.info("Ignoring request to open views via URI as the portal is not properly bootstrapped.");
-            return;
-         }
-         
          HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
          String queryString = request.getQueryString();
          if (isEmpty(queryString))
@@ -70,92 +65,176 @@ public class PortalApiPhaseListener implements PhaseListener
             return;
          }
 
-         // this will allow for multiple views being opened at once
-         trace.debug("Query string is " + queryString);
-         
-         String[] queryParams = queryString.split("&");
-
-         try
+         if (!CollectionUtils.isEmpty((String[]) externalContext.getRequestParameterValuesMap().get("viewId"))
+               || !CollectionUtils.isEmpty((String[]) externalContext.getRequestParameterValuesMap().get("message")))
          {
-            ViewDefinition viewDef = null;
-            StringBuilder viewParams = new StringBuilder();
-            
-            int nViewsOpened = 0;
-
-            for (String queryParam : queryParams)
+            // Check if portal is properly bootstrapped or not
+            PortalApplication portalApp = getPortalApplication(pe.getFacesContext());
+            if (null == portalApp)
             {
-               if (isEmpty(queryParam))
-               {
-                  continue;
-               }
-               
-               String queryParamName = URLDecoder.decode(queryParam.split("=")[0], "UTF-8");
-               
-               if ("viewId".equals(queryParamName))
-               {
-                  // if there was any previous view, go open it now
-                  openViewFromUri(portalApp, viewDef, viewParams.toString());
-                  
-                  // prepare for new view
-                  viewDef = null;
-                  viewParams.setLength(0);
-                  
-                  String queryParamValue = queryParam.contains("=") ? queryParam.split("=")[1] : "";
-
-                  String perspectiveId = null;
-                  String viewId = URLDecoder.decode(queryParamValue, "UTF-8");
-                  if ( !isEmpty(viewId) && viewId.contains("::"))
-                  {
-                     perspectiveId = viewId.substring(0, viewId.indexOf("::"));
-                     viewId = viewId.substring(viewId.indexOf("::") + 2);
-                  }
-
-                  IPerspectiveDefinition perspectiveDef = isEmpty(perspectiveId)
-                        ? portalApp.getPortalUiController().getPerspective()
-                        : portalApp.getPortalUiController().getPerspective(perspectiveId);
-                  if (null != perspectiveDef)
-                  {
-                     viewDef = perspectiveDef.getViewDefinition(viewId);
-                  }
-                  
-                  if (null != viewDef)
-                  {
-                     ++nViewsOpened;
-                  }
-               }
-               else if (null != viewDef)
-               {
-                  if (0 < viewParams.length())
-                  {
-                     viewParams.append("&");
-                  }
-                  viewParams.append(queryParam);
-               }
+               trace.info("Ignoring request to open views via URI as the portal is not properly bootstrapped.");
+               return;
             }
-            
-            // if there was any view specified, go open it now
-            openViewFromUri(portalApp, viewDef, viewParams.toString());
-            
-            if (0 < nViewsOpened)
+
+            boolean refresh = false;
+
+            if (!CollectionUtils.isEmpty((String[]) externalContext.getRequestParameterValuesMap().get("viewId")))
+            {
+               refresh = processOpenViewViaViewIds(portalApp, queryString);
+            }
+            else if (!CollectionUtils.isEmpty((String[]) externalContext.getRequestParameterValuesMap().get("message")))
+            {
+               refresh = processMessage(portalApp, queryString);
+            }
+
+            if (refresh)
             {
                // send redirect to remove query params from URI
-               pe.getFacesContext()
-                     .getApplication()
-                     .getNavigationHandler()
+               pe.getFacesContext().getApplication().getNavigationHandler()
                      .handleNavigation(pe.getFacesContext(), null, "pageRefresh");
             }
          }
-         catch (UnsupportedEncodingException uee)
-         {
-            // well, UTF-8 is guaranteed to be there
-            trace.error("Failed decoding query parameters.", uee);
-         };
       }
    }
 
    public void afterPhase(PhaseEvent pe)
    {
       // ignore
+   }
+
+   /**
+    * @param facesContext
+    * @return
+    */
+   private PortalApplication getPortalApplication(FacesContext facesContext)
+   {
+      return (PortalApplication) FacesUtils.getBeanFromContext(facesContext, PortalApplication.BEAN_NAME);
+   }
+
+   /**
+    * @param portalApp
+    * @param queryString
+    */
+   private boolean processMessage(PortalApplication portalApp, String queryString)
+   {
+      boolean refresh = false;
+      String[] queryParams = queryString.split("&");
+      try
+      {
+         for (String queryParam : queryParams)
+         {
+            if (isEmpty(queryParam))
+            {
+               continue;
+            }
+
+            String queryParamValue;
+            String jsonMessage;
+            String queryParamName = URLDecoder.decode(queryParam.split("=")[0], "UTF-8");
+            if ("message".equals(queryParamName))
+            {
+               queryParamValue = queryParam.contains("=") ? queryParam.split("=")[1] : "";
+               jsonMessage = URLDecoder.decode(queryParamValue, "UTF-8");
+               if (StringUtils.isNotEmpty(jsonMessage))
+               {
+                  portalApp.postMessage(jsonMessage);
+                  refresh = true;
+               }
+            }
+         }
+      }
+      catch (Exception e)
+      {
+         trace.error("Failed to process query parameters.", e);
+         refresh = true;
+      }
+
+      return refresh;
+   }
+
+   /**
+    * @param portalApp
+    * @param queryString
+    */
+   private boolean processOpenViewViaViewIds(PortalApplication portalApp, String queryString)
+   {
+      // this will allow for multiple views being opened at once
+      trace.debug("Query string is " + queryString);
+
+      String[] queryParams = queryString.split("&");
+      try
+      {
+         ViewDefinition viewDef = null;
+         StringBuilder viewParams = new StringBuilder();
+         
+         int nViewsOpened = 0;
+
+         for (String queryParam : queryParams)
+         {
+            if (isEmpty(queryParam))
+            {
+               continue;
+            }
+            
+            String queryParamName = URLDecoder.decode(queryParam.split("=")[0], "UTF-8");
+            
+            if ("viewId".equals(queryParamName))
+            {
+               // if there was any previous view, go open it now
+               openViewFromUri(portalApp, viewDef, viewParams.toString());
+               
+               // prepare for new view
+               viewDef = null;
+               viewParams.setLength(0);
+               
+               String queryParamValue = queryParam.contains("=") ? queryParam.split("=")[1] : "";
+
+               String perspectiveId = null;
+               String viewId = URLDecoder.decode(queryParamValue, "UTF-8");
+               if ( !isEmpty(viewId) && viewId.contains("::"))
+               {
+                  perspectiveId = viewId.substring(0, viewId.indexOf("::"));
+                  viewId = viewId.substring(viewId.indexOf("::") + 2);
+               }
+
+               IPerspectiveDefinition perspectiveDef = isEmpty(perspectiveId)
+                     ? portalApp.getPortalUiController().getPerspective()
+                     : portalApp.getPortalUiController().getPerspective(perspectiveId);
+               if (null != perspectiveDef)
+               {
+                  viewDef = perspectiveDef.getViewDefinition(viewId);
+               }
+               
+               if (null != viewDef)
+               {
+                  ++nViewsOpened;
+               }
+            }
+            else if (null != viewDef)
+            {
+               if (0 < viewParams.length())
+               {
+                  viewParams.append("&");
+               }
+               viewParams.append(queryParam);
+            }
+         }
+         
+         // if there was any view specified, go open it now
+         openViewFromUri(portalApp, viewDef, viewParams.toString());
+         
+         if (0 < nViewsOpened)
+         {
+            return true;
+         }
+      }
+      catch (UnsupportedEncodingException uee)
+      {
+         // well, UTF-8 is guaranteed to be there
+         trace.error("Failed decoding query parameters.", uee);
+      };
+
+      return false;
    }
    
    private View openViewFromUri(PortalApplication portalApp, ViewDefinition viewDef,
