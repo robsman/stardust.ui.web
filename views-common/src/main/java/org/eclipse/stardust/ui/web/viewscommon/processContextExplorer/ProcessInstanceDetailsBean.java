@@ -121,6 +121,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    private boolean hasSwitchProcessPermission;
    private boolean hasJoinProcessPermission;
    private boolean disableSpawnProcess = false;
+   private View thisView;
 
    /**
     * 
@@ -142,6 +143,12 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
 
       processInstance = ProcessInstanceUtils.getProcessInstance(processInstanceOID, true, true);
      
+      //set process Name
+      if (null != thisView && StringUtils.isEmpty((String) thisView.getViewParams().get("processInstanceName")))
+      {
+         thisView.getViewParams().put("processInstanceName", getProcessName());
+      }
+      
       duration=ProcessInstanceUtils.getDuration(processInstance);
       // Only initialize in refresh/update, for 1st time this will be initialized in
       // expand methods
@@ -188,15 +195,10 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    {
       if (ViewEventType.CREATED == event.getType())
       {
-         View focusView = event.getView();
-         if (focusView != null && processInstance == null) // Only when first time created
+         thisView = event.getView();
+         if (thisView != null && processInstance == null) // Only when first time created
          {
-            String pOID = focusView.getParamValue("processInstanceOID");
-            ProcessInstance pi = ProcessInstanceUtils.getProcessInstance(Long.valueOf(pOID));
-            ProcessDefinition processDef = ProcessDefinitionUtils.getProcessDefinition(pi.getModelOID(),
-                  pi.getProcessID());
-            focusView.getViewParams().put("processInstanceName", I18nUtils.getProcessName(processDef));
-            
+            String pOID = thisView.getParamValue("processInstanceOID");
             if (!StringUtils.isEmpty(pOID))
             {
                try
