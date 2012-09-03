@@ -498,6 +498,9 @@ define(
 					this.processId = jQuery.url.setUrl(window.location.search)
 							.param("processId");
 					this.model = m_model.findModel(this.modelId);
+
+					//TODO - this is a temporary workaround. This will have to be replaced with
+					// a solution where we can refresh / reload models from server side
 					if (!this.model) {
 						m_model.loadModels(true);
 						this.model = m_model.findModel(this.modelId);
