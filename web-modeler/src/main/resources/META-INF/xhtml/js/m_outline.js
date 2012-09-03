@@ -32,16 +32,6 @@ define(
 			}
 
 			var readAllModels = function() {
-				jQuery("#outline").jstree("create", "#models_root", "last", {
-					"attr" : {
-						"id" : "Models",
-						"rel" : "models"
-					},
-					"data" : "Models"
-				}, null, true);
-
-				jQuery("#outline").jstree("set_type", "models", "#Models");
-
 				m_model.loadModels();
 
 				jQuery
@@ -50,7 +40,7 @@ define(
 								function(index, model) {
 
 									jQuery("#outline").jstree("create",
-											"#Models", "last", {
+											"#outline", "first", {
 												"attr" : {
 													"id" : model.uuid,
 													"rel" : "model",
@@ -477,7 +467,7 @@ define(
 			};
 
 			var refresh = function() {
-				jQuery("#outline").jstree("remove", "#Models");
+				jQuery("#outline").empty();
 				readAllModels();
 			};
 
@@ -908,17 +898,6 @@ define(
 														}
 													}
 												};
-											} else if ('models' == node
-													.attr('rel')) {
-												return {
-													"ccp" : false,
-													"create" : false,
-													"rename" : false,
-													"createModel" : {
-														"label" : "Create Model",
-														"action" : createModel
-													}
-												};
 											} else if ('process' == node
 													.attr('rel')) {
 												return {
@@ -1302,12 +1281,6 @@ define(
 									},
 									types : {
 										"types" : {
-											"models" : {
-												"icon" : {
-													"image" : "../images/icons/model.png"
-												},
-												"valid_children" : [ "model" ]
-											},
 											"model" : {
 												"icon" : {
 													"image" : "../images/icons/model.png"
@@ -2128,7 +2101,7 @@ define(
 					var outlineObj = this;
 					var model = m_model.createModel(data.id, data.name,
 							data.uuid);
-					jQuery("#outline").jstree("create", "#Models", "last", {
+					jQuery("#outline").jstree("create", "#outline", "last", {
 						"attr" : {
 							"elementId" : data.id,
 							"id" : data.uuid,
