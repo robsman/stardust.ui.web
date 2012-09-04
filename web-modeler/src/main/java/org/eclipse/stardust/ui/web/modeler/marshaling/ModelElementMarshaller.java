@@ -41,7 +41,7 @@ public abstract class ModelElementMarshaller
    private ModelBuilderFacade modelBuilderFacade;
 
    /**
-    * 
+    *
     * @param modelElement
     * @return
     */
@@ -266,7 +266,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param laneSymbol
     * @return
     */
@@ -457,7 +457,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @return
     */
@@ -465,135 +465,135 @@ public abstract class ModelElementMarshaller
    {
       JsonObject activityJson = new JsonObject();
 
-      activityJson.addProperty(ModelerConstants.OID_PROPERTY, activity.getElementOid());
-      activityJson.addProperty(ModelerConstants.ID_PROPERTY, activity.getId());
-      activityJson.addProperty(ModelerConstants.NAME_PROPERTY, activity.getName());
-
-      loadDescription(activityJson, activity);
-      loadAttributes(activity, activityJson);
-
-      // TODO Hack to identify gateways
-
-      if (activity.getId().toLowerCase().startsWith("gateway"))
+      if (null != activity)
       {
-         activityJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-               ModelerConstants.ACTIVITY_KEY);
-         activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
-               ModelerConstants.GATEWAY_ACTIVITY);
-
-         // TODO Throw error for inconsistent Split/Join settings
-
-         if (activity.getJoin().equals(JoinSplitType.XOR_LITERAL)
-               && activity.getSplit().equals(JoinSplitType.XOR_LITERAL))
+         activityJson.addProperty(ModelerConstants.OID_PROPERTY, activity.getElementOid());
+         activityJson.addProperty(ModelerConstants.ID_PROPERTY, activity.getId());
+         activityJson.addProperty(ModelerConstants.NAME_PROPERTY, activity.getName());
+         loadDescription(activityJson, activity);
+         loadAttributes(activity, activityJson);
+         if (activity.getId().toLowerCase().startsWith("gateway"))
          {
-            activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
-                  ModelerConstants.XOR_GATEWAY_TYPE);
-         }
-         else if (activity.getJoin().equals(JoinSplitType.AND_LITERAL)
-               && activity.getSplit().equals(JoinSplitType.AND_LITERAL))
-         {
-            activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
-                  ModelerConstants.AND_GATEWAY_TYPE);
+            activityJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                  ModelerConstants.ACTIVITY_KEY);
+            activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
+                  ModelerConstants.GATEWAY_ACTIVITY);
+
+            // TODO Throw error for inconsistent Split/Join settings
+
+            if (activity.getJoin().equals(JoinSplitType.XOR_LITERAL)
+                  && activity.getSplit().equals(JoinSplitType.XOR_LITERAL))
+            {
+               activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
+                     ModelerConstants.XOR_GATEWAY_TYPE);
+            }
+            else if (activity.getJoin().equals(JoinSplitType.AND_LITERAL)
+                  && activity.getSplit().equals(JoinSplitType.AND_LITERAL))
+            {
+               activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
+                     ModelerConstants.AND_GATEWAY_TYPE);
+            }
+            else
+            {
+               // Default behavior for incorrectly defined Gateways
+
+               activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
+                     ModelerConstants.XOR_GATEWAY_TYPE);
+            }
          }
          else
          {
-            // Default behavior for incorrectly defined Gateways
+            activityJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                  ModelerConstants.ACTIVITY_KEY);
+            activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
+                  activity.getImplementation().getLiteral());
 
-            activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
-                  ModelerConstants.XOR_GATEWAY_TYPE);
-         }
-      }
-      else
-      {
-         activityJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-               ModelerConstants.ACTIVITY_KEY);
-         activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
-               activity.getImplementation().getLiteral());
-
-         if (activity.getImplementationProcess() != null)
-         {
-            activityJson.addProperty(
-                  ModelerConstants.SUBPROCESS_ID,
-                  getModelBuilderFacade().createFullId(
-                        ModelUtils.findContainingModel(activity),
-                        activity.getImplementationProcess()));
-         }
-         else if (activity.getApplication() != null)
-         {
-            activityJson.addProperty(
-                  ModelerConstants.APPLICATION_FULL_ID_PROPERTY,
-                  getModelBuilderFacade().createFullId(
-                        ModelUtils.findContainingModel(activity),
-                        activity.getApplication()));
-         }
-
-         JsonObject accessPointsJson = new JsonObject();
-
-         activityJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);
-
-         String[] contexts = new String[] {
-               PredefinedConstants.DEFAULT_CONTEXT,
-               PredefinedConstants.APPLICATION_CONTEXT,
-               PredefinedConstants.PROCESSINTERFACE_CONTEXT,
-               PredefinedConstants.ENGINE_CONTEXT};
-
-         System.out.println("Access Points: ");
-
-         for (String context : contexts)
-         {
-            // Activity has no model as parent --> it has been deleted from the model
-            if ( !(activity.eContainer() instanceof ChangeDescription))
+            if (activity.getImplementationProcess() != null)
             {
-               for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(activity,
-                     true, context))
+               activityJson.addProperty(
+                     ModelerConstants.SUBPROCESS_ID,
+                     getModelBuilderFacade().createFullId(
+                           ModelUtils.findContainingModel(activity),
+                           activity.getImplementationProcess()));
+            }
+            else if (activity.getApplication() != null)
+            {
+               activityJson.addProperty(
+                     ModelerConstants.APPLICATION_FULL_ID_PROPERTY,
+                     getModelBuilderFacade().createFullId(
+                           ModelUtils.findContainingModel(activity),
+                           activity.getApplication()));
+            }
+
+            JsonObject accessPointsJson = new JsonObject();
+
+            activityJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);
+
+            String[] contexts = new String[] {
+                  PredefinedConstants.DEFAULT_CONTEXT,
+                  PredefinedConstants.APPLICATION_CONTEXT,
+                  PredefinedConstants.PROCESSINTERFACE_CONTEXT,
+                  PredefinedConstants.ENGINE_CONTEXT};
+
+            System.out.println("Access Points: ");
+
+            for (String context : contexts)
+            {
+               // Activity has no model as parent --> it has been deleted from the model
+               if ( !(activity.eContainer() instanceof ChangeDescription))
                {
-                  System.out.println(accessPoint);
+                  for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(
+                        activity, true, context))
+                  {
+                     System.out.println(accessPoint);
 
-                  JsonObject accessPointJson = new JsonObject();
+                     JsonObject accessPointJson = new JsonObject();
 
-                  accessPointsJson.add(accessPoint.getId(), accessPointJson);
-                  accessPointJson.addProperty(ModelerConstants.ID_PROPERTY,
-                        accessPoint.getId());
-                  accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                        accessPoint.getName());
-                  accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
-                        accessPoint.getDirection().getLiteral());
-                  accessPointJson.addProperty(ModelerConstants.CONTEXT_PROPERTY, context);
-                  loadDescription(accessPointJson, accessPoint);
-               }
+                     accessPointsJson.add(accessPoint.getId(), accessPointJson);
+                     accessPointJson.addProperty(ModelerConstants.ID_PROPERTY,
+                           accessPoint.getId());
+                     accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                           accessPoint.getName());
+                     accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+                           accessPoint.getDirection().getLiteral());
+                     accessPointJson.addProperty(ModelerConstants.CONTEXT_PROPERTY,
+                           context);
+                     loadDescription(accessPointJson, accessPoint);
+                  }
 
-               for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(activity,
-                     false, context))
-               {
-                  System.out.println(accessPoint);
+                  for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(
+                        activity, false, context))
+                  {
+                     System.out.println(accessPoint);
 
-                  JsonObject accessPointJson = new JsonObject();
+                     JsonObject accessPointJson = new JsonObject();
 
-                  accessPointsJson.add(accessPoint.getId(), accessPointJson);
-                  accessPointJson.addProperty(ModelerConstants.ID_PROPERTY,
-                        accessPoint.getId());
-                  accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                        accessPoint.getName());
-                  accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
-                        accessPoint.getDirection().getLiteral());
-                  accessPointJson.addProperty(ModelerConstants.CONTEXT_PROPERTY, context);
-                  loadDescription(accessPointJson, accessPoint);
+                     accessPointsJson.add(accessPoint.getId(), accessPointJson);
+                     accessPointJson.addProperty(ModelerConstants.ID_PROPERTY,
+                           accessPoint.getId());
+                     accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                           accessPoint.getName());
+                     accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+                           accessPoint.getDirection().getLiteral());
+                     accessPointJson.addProperty(ModelerConstants.CONTEXT_PROPERTY,
+                           context);
+                     loadDescription(accessPointJson, accessPoint);
+                  }
                }
             }
+
+            /*
+             * if (null != activity.getPerformer()) { act.getProps().setPerformerid(
+             * activity.getPerformer().getId()); }
+             */
+
          }
-
-         /*
-          * if (null != activity.getPerformer()) { act.getProps().setPerformerid(
-          * activity.getPerformer().getId()); }
-          */
-
       }
-
       return activityJson;
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @return
     */
@@ -630,59 +630,58 @@ public abstract class ModelElementMarshaller
 
       ActivityType activity = activitySymbol.getActivity();
 
-      activitySymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY,
-            toActivityJson(activity));
-
-      // TODO Hack to identify gateways
-
-      if (activity.getId().toLowerCase().startsWith("gateway"))
+      if (null != activity)
       {
-         activitySymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-               ModelerConstants.GATEWAY_SYMBOL);
+         activitySymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY,
+               toActivityJson(activity));
+         if (activity.getId().toLowerCase().startsWith("gateway"))
+         {
+            activitySymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                  ModelerConstants.GATEWAY_SYMBOL);
 
-         // // TODO REVIEW There is no gateway symbol needed!!!
-         //
-         // // TODO Refactor
-         // // Identify the gateway symbol for this activity and update the
-         // // location and dimension attributes.
-         // GatewaySymbol thisGatewaySymbol = null;
-         // // for (GatewaySymbol gs : laneSymbol.getGatewaySymbol()) {
-         // // if (gs.getActivitySymbol().getActivity().equals(activity)) {
-         // // thisGatewaySymbol = gs;
-         // // break;
-         // // }
-         // // }
-         //
-         // if (null != thisGatewaySymbol)
-         // {
-         // activitySymbolJson.remove(ModelerConstants.X_PROPERTY);
-         // activitySymbolJson.addProperty(ModelerConstants.X_PROPERTY,
-         // thisGatewaySymbol.getXPos() + laneOffsetX
-         // + ModelerConstants.POOL_LANE_MARGIN);
-         // activitySymbolJson.remove(ModelerConstants.Y_PROPERTY);
-         // activitySymbolJson.addProperty(ModelerConstants.Y_PROPERTY,
-         // thisGatewaySymbol.getYPos() + laneOffsetY
-         // + ModelerConstants.POOL_LANE_MARGIN
-         // + ModelerConstants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
-         // activitySymbolJson.remove(ModelerConstants.WIDTH_PROPERTY);
-         // activitySymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY,
-         // thisGatewaySymbol.getWidth());
-         // activitySymbolJson.remove(ModelerConstants.HEIGHT_PROPERTY);
-         // activitySymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
-         // thisGatewaySymbol.getHeight());
-         // }
+            // // TODO REVIEW There is no gateway symbol needed!!!
+            //
+            // // TODO Refactor
+            // // Identify the gateway symbol for this activity and update the
+            // // location and dimension attributes.
+            // GatewaySymbol thisGatewaySymbol = null;
+            // // for (GatewaySymbol gs : laneSymbol.getGatewaySymbol()) {
+            // // if (gs.getActivitySymbol().getActivity().equals(activity)) {
+            // // thisGatewaySymbol = gs;
+            // // break;
+            // // }
+            // // }
+            //
+            // if (null != thisGatewaySymbol)
+            // {
+            // activitySymbolJson.remove(ModelerConstants.X_PROPERTY);
+            // activitySymbolJson.addProperty(ModelerConstants.X_PROPERTY,
+            // thisGatewaySymbol.getXPos() + laneOffsetX
+            // + ModelerConstants.POOL_LANE_MARGIN);
+            // activitySymbolJson.remove(ModelerConstants.Y_PROPERTY);
+            // activitySymbolJson.addProperty(ModelerConstants.Y_PROPERTY,
+            // thisGatewaySymbol.getYPos() + laneOffsetY
+            // + ModelerConstants.POOL_LANE_MARGIN
+            // + ModelerConstants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
+            // activitySymbolJson.remove(ModelerConstants.WIDTH_PROPERTY);
+            // activitySymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY,
+            // thisGatewaySymbol.getWidth());
+            // activitySymbolJson.remove(ModelerConstants.HEIGHT_PROPERTY);
+            // activitySymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
+            // thisGatewaySymbol.getHeight());
+            // }
+         }
+         else
+         {
+            activitySymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                  ModelerConstants.ACTIVITY_SYMBOL);
+         }
       }
-      else
-      {
-         activitySymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-               ModelerConstants.ACTIVITY_SYMBOL);
-      }
-
       return activitySymbolJson;
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -734,7 +733,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -786,7 +785,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param data
     * @return
     */
@@ -887,7 +886,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1161,7 +1160,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param dataMappingConnection
     * @return
     */
@@ -1249,7 +1248,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -1265,12 +1264,11 @@ public abstract class ModelElementMarshaller
             mapAnchorOrientation(transitionConnection.getSourceAnchor()));
       connectionJson.addProperty(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
             mapAnchorOrientation(transitionConnection.getTargetAnchor()));
+      connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
+            transitionConnection.getElementOid());
 
       if (transitionConnection.getTransition() != null)
       {
-         connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
-               transitionConnection.getElementOid());
-
          TransitionType transition = transitionConnection.getTransition();
 
          modelElementJson = toTransitionJson(transition);
@@ -1340,8 +1338,6 @@ public abstract class ModelElementMarshaller
          modelElementJson = new JsonObject();
          String activityId = ((ActivitySymbolType) transitionConnection.getTargetActivitySymbol()).getActivity()
                .getId();
-         connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
-               transitionConnection.getElementOid());
          connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, modelElementJson);
 
          modelElementJson.addProperty(ModelerConstants.TYPE_PROPERTY,
@@ -1373,8 +1369,6 @@ public abstract class ModelElementMarshaller
          modelElementJson = new JsonObject();
          String activityId = ((ActivitySymbolType) transitionConnection.getSourceActivitySymbol()).getActivity()
                .getId();
-         connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
-               transitionConnection.getElementOid());
          connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, modelElementJson);
          modelElementJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                ModelerConstants.CONTROL_FLOW_LITERAL);
@@ -1412,7 +1406,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -1426,7 +1420,7 @@ public abstract class ModelElementMarshaller
       controlFlowJson.addProperty(ModelerConstants.OID_PROPERTY,
             transition.getElementOid());
 
-      if (transition.getCondition().equals("CONDITION"))
+      if (null != transition.getCondition() && transition.getCondition().equals("CONDITION"))
       {
          controlFlowJson.addProperty(ModelerConstants.CONDITION_EXPRESSION_PROPERTY,
                (String) transition.getExpression().getMixed().getValue(0));
@@ -1761,7 +1755,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -1792,7 +1786,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -1811,7 +1805,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     * @throws JSONException
@@ -1836,9 +1830,9 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * TODO From DynamicConnectionCommand. Refactor?
-    * 
+    *
     * @param activity
     * @return
     */
