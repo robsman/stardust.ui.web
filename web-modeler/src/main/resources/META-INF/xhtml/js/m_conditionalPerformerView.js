@@ -78,8 +78,10 @@ define(
 										}
 									});
 
-					this.registerInputForModelElementAttributeChangeSubmission(this.performerTypeSelect, "carnot:engine:conditionalPerformer:kind");
-			
+					this.registerInputForModelElementAttributeChangeSubmission(
+							this.performerTypeSelect,
+							"carnot:engine:conditionalPerformer:kind");
+
 					this.populateBindingDataSelect();
 
 					if ("Public" == this.conditionalPerformer.attributes["carnot:engine:visibility"]) {
@@ -87,10 +89,20 @@ define(
 					} else {
 						this.publicVisibilityCheckbox.attr("checked", false);
 					}
-					
-					this.performerTypeSelect.val(this.conditionalPerformer.attributes["carnot:engine:conditionalPerformer:kind"]);
-					this.bindingDataSelect.val(this.conditionalPerformer.dataFullId);
-					this.bindingDataPathInput.val(this.conditionalPerformer.dataPath);
+
+					this.performerTypeSelect
+							.val(this.conditionalPerformer.attributes["carnot:engine:conditionalPerformer:kind"]);
+					this.bindingDataSelect
+							.val(this.conditionalPerformer.dataFullId);
+					this.bindingDataPathInput
+							.val(this.conditionalPerformer.dataPath);
+				};
+
+				/**
+				 * 
+				 */
+				ConditionalPerformerView.prototype.getModelElement = function() {
+					return this.conditionalPerformer;
 				};
 
 				/**
@@ -99,16 +111,36 @@ define(
 				ConditionalPerformerView.prototype.populateBindingDataSelect = function() {
 					this.bindingDataSelect.empty();
 
+					this.bindingDataSelect
+							.append("<optgroup label=\"This Model\">");
+
+					for ( var i in this.getModelElement().model.dataItems) {
+						var dataItem = this.getModelElement().model.dataItems[i];
+
+						this.bindingDataSelect.append("<option value='"
+								+ dataItem.getFullId() + "'>" + dataItem.name
+								+ "</option>");
+					}
+
+					this.bindingDataSelect
+							.append("</optgroup><optgroup label=\"Other Models\">");
+
 					for ( var n in m_model.getModels()) {
+						if (m_model.getModels()[n] == this.getModelElement().model) {
+							continue;
+						}
+
 						for ( var m in m_model.getModels()[n].dataItems) {
-							var data = m_model.getModels()[n].dataItems[m];
+							var dataItem = m_model.getModels()[n].dataItems[m];
 
 							this.bindingDataSelect.append("<option value='"
-									+ data.getFullId() + "'>"
+									+ dataItem.getFullId() + "'>"
 									+ m_model.getModels()[n].name + "/"
-									+ data.name + "</option>");
+									+ dataItem.name + "</option>");
 						}
 					}
+
+					this.bindingDataSelect.append("</optgroup>");
 				};
 
 				/**

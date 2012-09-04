@@ -9,10 +9,12 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_command", "m_commandsController", "m_dialog", "m_modelElementView",
-				"m_model", "m_typeDeclaration", "m_dataTypeSelector" ],
-		function(m_utils, m_command, m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_typeDeclaration, m_dataTypeSelector) {
+		[ "m_utils", "m_constants", "m_command", "m_commandsController",
+				"m_dialog", "m_modelElementView", "m_model",
+				"m_typeDeclaration", "m_dataTypeSelector", "m_parameterDefinitionsPanel" ],
+		function(m_utils, m_constants, m_command, m_commandsController,
+				m_dialog, m_modelElementView, m_model, m_typeDeclaration,
+				m_dataTypeSelector, m_parameterDefinitionsPanel) {
 			return {
 				initialize : function(fullId) {
 					var view = new UiMashupApplicationView();
@@ -42,15 +44,25 @@ define(
 				UiMashupApplicationView.prototype.initialize = function(
 						application) {
 					this.initializeModelElementView();
-					
+
 					this.application = application;
 
-					this.initializeModelElement(application);
-					
-					this.dataTypeSelector = m_dataTypeSelector.create("uiMashupApplicationView", this);
+					m_utils.debug("===> Application");
+					m_utils.debug(this.application);
 
-					this.dataTypeSelector.setScopeModel(this.application.model);
-					this.dataTypeSelector.setPrimitiveDataType();
+					this.currentAccessPoint = null;
+
+					this.initializeModelElement(application);
+
+					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel.create({scope: "uiMashupApplicationView",
+						submitHandler: this, listType: "object", 
+						supportsDataMappings : false,
+						supportsDescriptors : false,
+						supportsDataTypeSelection : true
+						});
+					
+					this.parameterDefinitionsPanel.setScopeModel(this.application.model);
+					this.parameterDefinitionsPanel.setParameterDefinitions(this.application.accessPoints);
 				};
 
 				/**
@@ -71,8 +83,7 @@ define(
 
 					if (this.nameInput.val() == null
 							|| this.nameInput.val() == "") {
-						this.errorMessages
-								.push("Data name must not be empty.");
+						this.errorMessages.push("Data name must not be empty.");
 						this.nameInput.addClass("error");
 					}
 
@@ -88,24 +99,16 @@ define(
 				/**
 				 * 
 				 */
-				UiMashupApplicationView.prototype.submitDataChanges = function(changes) {
-					// TODO submit access points
+				UiMashupApplicationView.prototype.getModelElement = function() {
+					return this.application;
 				};
-				
+
 				/**
 				 * 
 				 */
-				UiMashupApplicationView.prototype.submitChanges = function(changes) {
-					// Generic attributes
-
-					if (changes.attributes == null) {
-						changes.attributes = {};
-					}
-
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(
-									this.application.model.id,
-									this.application.oid, changes));
+				UiMashupApplicationView.prototype.submitParameterDefinitionsChanges = function(
+						parameterDefinitionsChanges) {
+					this.submitChanges({accessPoints: parameterDefinitionsChanges});
 				};
 
 				/**
@@ -113,22 +116,26 @@ define(
 				 */
 				UiMashupApplicationView.prototype.processCommand = function(
 						command) {
+					m_dialog.showAutoCursor();					
+
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
 						this.initialize(this.application);
-						
+
 						return;
 					}
 
 					var object = ("string" == typeof (command)) ? jQuery
 							.parseJSON(command) : command;
 
-					if (null != object && null != object.changes
+					if (null != object
+							&& null != object.changes
 							&& null != object.changes.modified
 							&& 0 != object.changes.modified.length
 							&& object.changes.modified[0].oid == this.application.oid) {
 
-						m_utils.inheritFields(this.application, object.changes.modified[0]);
-						
+						m_utils.inheritFields(this.application,
+								object.changes.modified[0]);
+
 						this.initialize(this.application);
 					}
 				};

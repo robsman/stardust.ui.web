@@ -11,6 +11,13 @@ define([ "m_utils", "m_constants" ], function(m_utils, m_constants) {
 		makeVisible : function(element) {
 			element.removeClass("invisible");
 		},
+		showWaitCursor : function(element) {
+			jQuery("body").css("cursor", "wait");
+		},
+		showAutoCursor: function(element)
+		{
+			jQuery("body").css("cursor", "auto");		
+		},
 		registerForIntegerFormatValidation: function(input)
 		{
 //			input.keypress({input: input}, function(event){

@@ -182,10 +182,10 @@ define(
 									view.departmentDataPathInput
 											.removeAttr("disabled");
 								} else {
-									view.departmentDataSelect
-											.attr("disabled", true);
-									view.departmentDataPathInput
-											.attr("disabled", true);
+									view.departmentDataSelect.attr("disabled",
+											true);
+									view.departmentDataPathInput.attr(
+											"disabled", true);
 								}
 							});
 
@@ -231,19 +231,42 @@ define(
 				/**
 				 * 
 				 */
+				OrganizationView.prototype.getModelElement = function() {
+					return this.organization;
+				};
+				
+				/**
+				 * 
+				 */
 				OrganizationView.prototype.populateDepartmentDataSelectInput = function() {
 					this.departmentDataSelect.empty();
 
+					this.departmentDataSelect
+							.append("<optgroup label=\"This Model\">");
+
+					for ( var i in this.getModelElement().model.dataItems) {
+						var dataItem = this.getModelElement().model.dataItems[i];
+
+						this.departmentDataSelect.append("<option value='"
+								+ dataItem.getFullId() + "'>" + dataItem.name
+								+ "</option>");
+					}
+
+					this.departmentDataSelect
+							.append("</optgroup><optgroup label=\"Other Models\">");
+
 					for ( var n in m_model.getModels()) {
 						for ( var m in m_model.getModels()[n].dataItems) {
-							var data = m_model.getModels()[n].dataItems[m];
+							var dataItem = m_model.getModels()[n].dataItems[m];
 
 							this.departmentDataSelect.append("<option value='"
-									+ data.getFullId() + "'>"
+									+ dataItem.getFullId() + "'>"
 									+ m_model.getModels()[n].name + "/"
-									+ data.name + "</option>");
+									+ dataItem.name + "</option>");
 						}
 					}
+
+					this.departmentDataSelect.append("</optgroup>");
 				};
 
 				/**
@@ -251,10 +274,33 @@ define(
 				 */
 				OrganizationView.prototype.populateLeaderSelectInput = function() {
 					this.leaderSelect.empty();
+					this.leaderSelect
+							.append("<option value='NONE'>(None)</option>");
+
+					this.leaderSelect.append("<optgroup label=\"This Model\">");
+
+					var participant = null;
+
+					for ( var i in this.getModelElement().model.participants) {
+						participant = this.getModelElement().model.participants[i];
+
+						if (participant.type == m_constants.ROLE_PARTICIPANT_TYPE) {
+							this.leaderSelect.append("<option value='"
+									+ participant.getFullId() + "'>"
+									+ participant.name + "</option>");
+						}
+					}
+
+					this.leaderSelect
+							.append("</optgroup><optgroup label=\"Other Models\">");
 
 					for ( var n in m_model.getModels()) {
+						if (m_model.getModels()[n] == this.getModelElement().model) {
+							continue;
+						}
+
 						for ( var m in m_model.getModels()[n].participants) {
-							var participant = m_model.getModels()[n].participants[m];
+							participant = m_model.getModels()[n].participants[m];
 
 							if (participant.type == m_constants.ROLE_PARTICIPANT_TYPE) {
 								this.leaderSelect.append("<option value='"
@@ -264,6 +310,9 @@ define(
 							}
 						}
 					}
+
+					this.leaderSelect.append("</optgroup>");
+
 				};
 
 				/**
@@ -303,7 +352,7 @@ define(
 				OrganizationView.prototype.processCommand = function(command) {
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
 						this.initialize(this.organization);
-						
+
 						return;
 					}
 

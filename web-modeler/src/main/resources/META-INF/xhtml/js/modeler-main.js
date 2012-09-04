@@ -65,6 +65,8 @@ require(["require",
 	 "extensions",
 	 "m_extensionManager",
 	 "m_modelerViewLayoutManager",
+	 "m_dataTypeSelector", 
+	 "m_parameterDefinitionsPanel",	 
 	 "m_testPaletteHandler",
 	], function (require) {
 

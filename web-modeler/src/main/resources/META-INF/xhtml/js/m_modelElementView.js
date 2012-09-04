@@ -79,18 +79,20 @@ define(
 					if (this.modelElement.attributes == null) {
 						this.modelElement.attributes = {};
 					}
-				}
+				};
 
 				/**
 				 * 
 				 */
 				ModelElementView.prototype.submitChanges = function(changes) {
 					// Generic attributes
-
+					// TODO Is this really needed?
+					
 					if (changes.attributes == null) {
 						changes.attributes = {};
 					}
 
+					m_dialog.showWaitCursor();					
 					m_commandsController.submitCommand(m_command
 							.createUpdateModelElementWithUUIDCommand(this.modelElement.model.id, this.modelElement.uuid, changes));
 				};

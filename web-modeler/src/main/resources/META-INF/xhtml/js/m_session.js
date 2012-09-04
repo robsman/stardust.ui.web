@@ -48,7 +48,7 @@ define(
 				var collaborators = [];
 				var joined = false;
 
-				this.technologyPreview = false;
+				this.technologyPreview = true;
 
 				Session.prototype.toString = function() {
 					return "Lightdust.Session";

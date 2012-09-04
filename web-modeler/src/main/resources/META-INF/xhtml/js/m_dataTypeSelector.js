@@ -50,6 +50,16 @@ define(
 							dataType : event.data.panel.dataTypeSelect.val()
 						});
 					});
+					this.structuredDataTypeSelect.change({
+						"panel" : this
+					}, function(event) {
+						event.data.panel.submitChanges();
+					});
+					this.documentTypeSelect.change({
+						"panel" : this
+					}, function(event) {
+						event.data.panel.submitChanges();
+					});
 				};
 
 				/**
@@ -71,7 +81,7 @@ define(
 							+ "'>(To be defined)</option>");
 
 					this.structuredDataTypeSelect
-							.append("<optgroup label=\"This Model\"></optgroup>");
+							.append("<optgroup label=\"This Model\">");
 
 					for ( var i in this.scopeModel.structuredDataTypes) {
 						this.structuredDataTypeSelect.append("<option value='"
@@ -271,6 +281,34 @@ define(
 							.append("<b>"
 									+ extension.readableName
 									+ "</b> not yet supported for the Browser Modeler.");
+				};
+
+				/**
+				 * 
+				 */
+				DataTypeSelector.prototype.enable = function() {
+					this.dataTypeSelect.removeAttr("disabled");
+					this.primitiveDataTypeSelect.removeAttr("disabled");
+					this.structuredDataTypeSelect.removeAttr("disabled");
+					this.documentTypeSelect.removeAttr("disabled");
+
+					if (this.otherTypeRow != null) {
+						this.otherTypeRow.removeAttr("disabled");
+					}
+				};
+
+				/**
+				 * 
+				 */
+				DataTypeSelector.prototype.disable = function() {
+					this.dataTypeSelect.attr("disabled", true);
+					this.primitiveDataTypeSelect.attr("disabled", true);
+					this.structuredDataTypeSelect.attr("disabled", true);
+					this.documentTypeSelect.attr("disabled", true);
+
+					if (this.otherTypeSelect!= null) {
+						this.otherTypeSelect.attr("disabled", true);
+					}
 				};
 
 				/**

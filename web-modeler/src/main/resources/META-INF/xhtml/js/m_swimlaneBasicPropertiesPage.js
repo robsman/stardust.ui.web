@@ -96,9 +96,29 @@ define(
 				SwimlaneBasicPropertiesPage.prototype.refreshParticipantList = function() {
 					this.participantList.empty();
 					this.participantList
-							.append("<option value='NONE'>None</option>");
+							.append("<option value='NONE'>(None)</option>");
+
+					this.participantList
+							.append("<optgroup label=\"This Model\">");
+
+					for ( var i in this.propertiesPanel.element.diagram.model.participants) {
+						this.participantList
+								.append("<option value='"
+										+ this.propertiesPanel.element.diagram.model.participants[i]
+												.getFullId()
+										+ "'>"
+										+ this.propertiesPanel.element.diagram.model.participants[i].name
+										+ "</option>");
+					}
+
+					this.participantList
+							.append("</optgroup><optgroup label=\"Other Models\">");
 
 					for ( var n in this.propertiesPanel.models) {
+						if (this.propertiesPanel.models[n] == this.propertiesPanel.element.model) {
+							continue;
+						}
+
 						for ( var m in this.propertiesPanel.models[n].participants) {
 							this.participantList
 									.append("<option value='"
@@ -111,6 +131,8 @@ define(
 											+ "</option>");
 						}
 					}
+
+					this.participantList.append("</optgroup>");
 				};
 
 				/**
