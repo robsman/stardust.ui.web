@@ -30,6 +30,7 @@ import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
@@ -82,18 +83,17 @@ public abstract class ModelElementUnmarshaller
             ModelerConstants.DEFAULT_PRIORITY_PROPERTY});
       propertiesMap.put(ActivitySymbolType.class, new String[] {
             ModelerConstants.X_PROPERTY, ModelerConstants.Y_PROPERTY});
-      propertiesMap.put(ActivityType.class,
-            new String[] {ModelerConstants.NAME_PROPERTY});
+      propertiesMap.put(ActivityType.class, new String[] {ModelerConstants.NAME_PROPERTY});
       propertiesMap.put(StartEventSymbol.class, new String[] {
             ModelerConstants.X_PROPERTY, ModelerConstants.Y_PROPERTY});
-//      propertiesMap.put(EventSymbol.class,
-//            new String[] {ModelerConstants.NAME_PROPERTY});
+      // propertiesMap.put(EventSymbol.class,
+      // new String[] {ModelerConstants.NAME_PROPERTY});
       propertiesMap.put(EndEventSymbol.class, new String[] {
             ModelerConstants.X_PROPERTY, ModelerConstants.Y_PROPERTY});
       propertiesMap.put(LaneSymbol.class, new String[] {
             ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY});
-//      propertiesMap.put(EndEventSymbol.class,
-//            new String[] {ModelerConstants.NAME_PROPERTY});
+      // propertiesMap.put(EndEventSymbol.class,
+      // new String[] {ModelerConstants.NAME_PROPERTY});
       propertiesMap.put(ApplicationType.class, new String[] {
             ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY});
       propertiesMap.put(TypeDeclarationType.class, new String[] {
@@ -164,7 +164,7 @@ public abstract class ModelElementUnmarshaller
       }
       else if (element instanceof DataType)
       {
-         updateDataType((DataType) element, json);
+         updateData((DataType) element, json);
       }
       else if (element instanceof RoleType)
       {
@@ -203,8 +203,7 @@ public abstract class ModelElementUnmarshaller
     */
    private void updateActivity(ActivityType activity, JsonObject activityJson)
    {
-      mapDeclaredProperties(activity, activityJson,
-            propertiesMap.get(ActivityType.class));
+      mapDeclaredProperties(activity, activityJson, propertiesMap.get(ActivityType.class));
       storeAttributes(activity, activityJson);
       storeDescription(activity, activityJson);
 
@@ -249,8 +248,8 @@ public abstract class ModelElementUnmarshaller
          {
             activity.setImplementation(ActivityImplementationType.SUBPROCESS_LITERAL);
 
-            if (activityJson.has(ModelerConstants.SUBPROCESS_ID) &&
-                  !activityJson.get(ModelerConstants.SUBPROCESS_ID).isJsonNull())
+            if (activityJson.has(ModelerConstants.SUBPROCESS_ID)
+                  && !activityJson.get(ModelerConstants.SUBPROCESS_ID).isJsonNull())
             {
                String subprocessFullId = extractString(activityJson,
                      ModelerConstants.SUBPROCESS_ID);
@@ -267,8 +266,9 @@ public abstract class ModelElementUnmarshaller
          {
             activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
 
-            if (activityJson.has(ModelerConstants.APPLICATION_FULL_ID_PROPERTY) &&
-                  !activityJson.get(ModelerConstants.APPLICATION_FULL_ID_PROPERTY).isJsonNull())
+            if (activityJson.has(ModelerConstants.APPLICATION_FULL_ID_PROPERTY)
+                  && !activityJson.get(ModelerConstants.APPLICATION_FULL_ID_PROPERTY)
+                        .isJsonNull())
             {
                String applicationFullId = extractString(activityJson,
                      ModelerConstants.APPLICATION_FULL_ID_PROPERTY);
@@ -405,7 +405,19 @@ public abstract class ModelElementUnmarshaller
                .getAsString()
                .equals(ModelerConstants.PROVIDES_PROCESS_INTERFACE_KEY))
          {
+            if (processDefinitionJson.has(ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
+            {
+               processDefinition.getFormalParameters().getFormalParameter().clear();
+               
+               for (Map.Entry<String, ? > entry : processDefinitionJson.get(ModelerConstants.FORMAL_PARAMETERS_PROPERTY).getAsJsonObject().entrySet())
+               {
+                  String key = entry.getKey();
+                  JsonObject formalParameter = processDefinitionJson.get(ModelerConstants.FORMAL_PARAMETERS_PROPERTY).getAsJsonObject().get(key).getAsJsonObject();
 
+                  System.out.println("Formal parameter " + key + " to " + formalParameter);
+               }
+
+            }
          }
          else if (processDefinitionJson.get(
                ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY)
@@ -504,8 +516,8 @@ public abstract class ModelElementUnmarshaller
    {
       JsonObject startEventJson = startEventSymbolJson.getAsJsonObject("modelElement");
 
-      mapDeclaredProperties(startEventSymbol.getModelElement(),
-            startEventJson, propertiesMap.get(StartEventSymbol.class));
+      mapDeclaredProperties(startEventSymbol.getModelElement(), startEventJson,
+            propertiesMap.get(StartEventSymbol.class));
       storeAttributes(startEventSymbol.getModelElement(), startEventJson);
       storeDescription(startEventSymbol.getModelElement(), startEventJson);
    }
@@ -540,6 +552,70 @@ public abstract class ModelElementUnmarshaller
             propertiesMap.get(ApplicationType.class));
       storeAttributes(application, applicationJson);
       storeDescription(application, applicationJson);
+
+      if (applicationJson.has(ModelerConstants.ACCESS_POINTS_PROPERTY))
+      {
+         application.getAccessPoint().clear();
+
+         for (Map.Entry<String, ? > entry : applicationJson.get(
+               ModelerConstants.ACCESS_POINTS_PROPERTY)
+               .getAsJsonObject()
+               .entrySet())
+         {
+            String key = entry.getKey();
+            JsonObject accessPointJson = applicationJson.get(
+                  ModelerConstants.ACCESS_POINTS_PROPERTY)
+                  .getAsJsonObject()
+                  .get(key)
+                  .getAsJsonObject();
+
+            System.out.println("Access point " + accessPointJson);
+
+            AccessPointType accessPoint = AbstractElementBuilder.F_CWM.createAccessPointType();
+
+            application.getAccessPoint().add(accessPoint);
+
+            accessPoint.setId(accessPointJson.get(ModelerConstants.ID_PROPERTY)
+                  .getAsString());
+            accessPoint.setName(accessPointJson.get(ModelerConstants.NAME_PROPERTY)
+                  .getAsString());
+
+            // if (accessPointJson.get(ModelerConstants.ID_PROPERTY)
+            // .getAsString()
+            // .equals(DirectionType.IN_LITERAL))
+            // {
+            // accessPoint.setDirection(DirectionType.IN_LITERAL);
+            // }
+            // else
+            // {
+            // accessPoint.setDirection(DirectionType.OUT_LITERAL);
+            // }
+
+            if (accessPointJson.has(ModelerConstants.DATA_TYPE_PROPERTY))
+            {
+               String dataType = accessPointJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
+                     .getAsString();
+
+               if (dataType.equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
+               {
+                  // accessPoint.setType(@accessPointJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY));
+               }
+               else if (dataType.equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
+               {
+                  // accessPoint.setType(getModelBuilderFacade().findDataType(accessPointJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID).getAsString()));
+               }
+               else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
+               {
+                  // accessPoint.setType(getModelBuilderFacade().findDataType(accessPointJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID).getAsString()));
+               }
+               else
+               {
+               }
+            }
+
+            storeDescription(accessPoint, accessPointJson);
+         }
+      }
    }
 
    /**
@@ -559,8 +635,7 @@ public abstract class ModelElementUnmarshaller
     */
    private void updateRole(RoleType role, JsonObject roleJson)
    {
-      mapDeclaredProperties(role, roleJson,
-            propertiesMap.get(RoleType.class));
+      mapDeclaredProperties(role, roleJson, propertiesMap.get(RoleType.class));
       storeAttributes(role, roleJson);
       storeDescription(role, roleJson);
    }
@@ -603,10 +678,9 @@ public abstract class ModelElementUnmarshaller
     * @param data
     * @param dataJson
     */
-   private void updateDataType(DataType data, JsonObject dataJson)
+   private void updateData(DataType data, JsonObject dataJson)
    {
-      mapDeclaredProperties(data, dataJson,
-            propertiesMap.get(DataType.class));
+      mapDeclaredProperties(data, dataJson, propertiesMap.get(DataType.class));
       storeAttributes(data, dataJson);
       storeDescription(data, dataJson);
    }
@@ -617,8 +691,7 @@ public abstract class ModelElementUnmarshaller
     */
    private void updateModel(ModelType model, JsonObject modelJson)
    {
-      mapDeclaredProperties(model, modelJson,
-            propertiesMap.get(ModelType.class));
+      mapDeclaredProperties(model, modelJson, propertiesMap.get(ModelType.class));
       // storeAttributes(model, modelJson);
       // storeDescription(model, modelJson);
    }
@@ -629,8 +702,8 @@ public abstract class ModelElementUnmarshaller
     * @param elementJson
     * @param elementProperties
     */
-   private void mapDeclaredProperties(EObject element,
-         JsonObject elementJson, String[] elementProperties)
+   private void mapDeclaredProperties(EObject element, JsonObject elementJson,
+         String[] elementProperties)
    {
       if (element != null)
       {
@@ -813,6 +886,7 @@ public abstract class ModelElementUnmarshaller
    private static String extractString(JsonObject json, String memberName)
    {
       JsonElement member = json.get(memberName);
+
       return (null != member) && member.isJsonPrimitive()
             && member.getAsJsonPrimitive().isString()
             ? member.getAsString()

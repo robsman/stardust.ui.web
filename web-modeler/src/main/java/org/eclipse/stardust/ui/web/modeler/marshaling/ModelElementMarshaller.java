@@ -41,7 +41,7 @@ public abstract class ModelElementMarshaller
    private ModelBuilderFacade modelBuilderFacade;
 
    /**
-    *
+    * 
     * @param modelElement
     * @return
     */
@@ -130,6 +130,10 @@ public abstract class ModelElementMarshaller
       {
          jsResult = toOrganizationJson((OrganizationType) modelElement);
       }
+      else if (modelElement instanceof AccessPointType)
+      {
+         // Do nothing, handled via Application/Activity
+      }
 
       if (null == jsResult)
       {
@@ -188,9 +192,12 @@ public abstract class ModelElementMarshaller
 
             formalParametersJson.add(formalParameter.getId(), formalParameterJson);
 
-            formalParameterJson.addProperty(ModelerConstants.ID_PROPERTY, formalParameter.getId());
-            formalParameterJson.addProperty(ModelerConstants.NAME_PROPERTY, formalParameter.getName());
-            //formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, formalParameter.getMode());
+            formalParameterJson.addProperty(ModelerConstants.ID_PROPERTY,
+                  formalParameter.getId());
+            formalParameterJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                  formalParameter.getName());
+            // formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+            // formalParameter.getMode());
 
             System.out.println(formalParameter);
             System.out.println(formalParameter.getDataType());
@@ -259,7 +266,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param laneSymbol
     * @return
     */
@@ -450,7 +457,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param activity
     * @return
     */
@@ -534,8 +541,8 @@ public abstract class ModelElementMarshaller
 
          for (String context : contexts)
          {
-            //Activity has no model as parent --> it has been deleted from the model
-            if (!(activity.eContainer() instanceof ChangeDescription))
+            // Activity has no model as parent --> it has been deleted from the model
+            if ( !(activity.eContainer() instanceof ChangeDescription))
             {
                for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(activity,
                      true, context))
@@ -586,7 +593,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param activitySymbol
     * @return
     */
@@ -675,7 +682,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -727,7 +734,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -779,7 +786,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param data
     * @return
     */
@@ -880,7 +887,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -1134,10 +1141,18 @@ public abstract class ModelElementMarshaller
          accessPointJson.addProperty(ModelerConstants.ID_PROPERTY, accessPoint.getId());
          accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
                accessPoint.getName());
-         accessPointJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-               accessPoint.getType().getName());
-         accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
-               accessPoint.getDirection().getLiteral());
+
+         if (accessPoint.getType() != null)
+         {
+            accessPointJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                  accessPoint.getType().getName());
+         }
+
+         if (accessPoint.getDirection() != null)
+         {
+            accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+                  accessPoint.getDirection().getLiteral());
+         }
 
          loadAttributes(accessPoint, accessPointJson);
       }
@@ -1146,7 +1161,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param dataMappingConnection
     * @return
     */
@@ -1234,7 +1249,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -1397,7 +1412,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -1728,23 +1743,25 @@ public abstract class ModelElementMarshaller
    public JsonObject toTypeDeclarationJson(TypeDeclarationType structType)
    {
       JsonObject structJson = new JsonObject();
-      
+
       structJson.addProperty(ModelerConstants.ID_PROPERTY, structType.getId());
       structJson.addProperty(ModelerConstants.NAME_PROPERTY, structType.getName());
-      structJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(structType));
+      structJson.addProperty(ModelerConstants.UUID_PROPERTY,
+            eObjectUUIDMapper().getUUID(structType));
       setContainingModelIdProperty(structJson, structType);
       JsonObject typeDeclarationJson = new JsonObject();
       structJson.add(ModelerConstants.TYPE_DECLARATION_PROPERTY, typeDeclarationJson);
       JsonObject schemaJson = new JsonObject();
       ModelService.loadSchemaInfo(schemaJson, structType.getSchema());
       typeDeclarationJson.add("schema", schemaJson);
-      structJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.TYPE_DECLARATION_PROPERTY);
+      structJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+            ModelerConstants.TYPE_DECLARATION_PROPERTY);
 
       return structJson;
    }
 
    /**
-    *
+    * 
     * @param orientation
     * @return
     */
@@ -1775,7 +1792,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param modelElementJson
     * @param element
     */
@@ -1794,7 +1811,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param element
     * @param json
     * @throws JSONException
@@ -1819,9 +1836,9 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * TODO From DynamicConnectionCommand. Refactor?
-    *
+    * 
     * @param activity
     * @return
     */
