@@ -1406,19 +1406,30 @@ define(
 				 */
 				Diagram.prototype.setAnchorPoint = function(anchorPoint) {
 					if (this.currentConnection == null) {
+						// createConnection returns null, if anchorPoint is not
+						// valid.Ex. trying to create a connection from End
+						// Event
 						this.currentConnection = this
 								.createConnection(anchorPoint);
 
 						// Set dummy anchor point
-
-						this.currentConnection.setDummySecondAnchorPoint();
+						if (this.currentConnection) {
+							this.currentConnection.setDummySecondAnchorPoint();
+						}
 					} else {
-						this.currentConnection
-								.setSecondAnchorPoint(anchorPoint);
-						this.currentConnection.select();
+						// Validate if connection is allowed on current anchor
+						// point
+						if (this.currentConnection.validateAnchorPoint(
+								this.currentConnection.fromAnchorPoint,
+								anchorPoint)) {
+							this.currentConnection
+									.setSecondAnchorPoint(anchorPoint);
+							this.currentConnection.select();
+							this.currentConnection = null;
+							this.mode = this.NORMAL_MODE;
+						}
 
-						this.currentConnection = null;
-						this.mode = this.NORMAL_MODE;
+
 					}
 				};
 

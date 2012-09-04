@@ -7,21 +7,26 @@ define(
 				"m_propertiesPanel", "m_dataFlowPropertiesPanel",
 				"m_controlFlowPropertiesPanel", "m_activitySymbol",
 				"m_gatewaySymbol", "m_eventSymbol", "m_controlFlow",
-				"m_dataFlow", "m_modelerUtils" ],
+				"m_dataFlow", "m_modelerUtils", "m_messageDisplay" ],
 		function(m_utils, m_constants, m_canvasManager, m_drawable,
 				m_commandsController, m_command, m_controlFlow,
 				m_propertiesPanel, m_dataFlowPropertiesPanel,
 				m_controlFlowPropertiesPanel, m_activitySymbol,
 				m_gatewaySymbol, m_eventSymbol, m_controlFlow, m_dataFlow,
-				m_modelerUtils) {
+				m_modelerUtils, m_messageDisplay) {
 
 			return {
 				createConnection : function(diagram, fromAnchorPoint) {
 					var connection = new Connection();
 
 					connection.bind(diagram);
-
-					connection.setFirstAnchorPoint(fromAnchorPoint);
+					// Validate the connection rules for anchor Point
+					if(connection.validateAnchorPoint(fromAnchorPoint)){
+						connection.setFirstAnchorPoint(fromAnchorPoint);
+					}else{
+						// reset the connection
+						connection = null;
+					}
 
 					return connection;
 				},
@@ -309,7 +314,10 @@ define(
 						this.prepare();
 					}
 
-					if (this.toAnchorPoint.symbol != null) {
+					if (this.toAnchorPoint.symbol != null && this.validateAnchorPoint(this.fromAnchorPoint, this.toAnchorPoint)) {
+						// On Mouse move , the same connection is added again,
+						// so remove if present then add(update)
+						this.toAnchorPoint.symbol.connections.pop(this);
 						this.toAnchorPoint.symbol.connections.push(this);
 
 						if (this.isDataFlow()) {
@@ -1274,9 +1282,11 @@ define(
 					// Remove this connection from FROM and TO Symbol's
 					// connection array
 					m_utils.removeItemFromArray(
-							this.toAnchorPoint.symbol.connections, this);
-					m_utils.removeItemFromArray(
 							this.fromAnchorPoint.symbol.connections, this);
+					if(this.toAnchorPoint.symbol){
+						m_utils.removeItemFromArray(
+								this.toAnchorPoint.symbol.connections, this);
+					}
 				};
 
 				/**
@@ -1330,6 +1340,47 @@ define(
 				Connection.prototype.show = function() {
 					this.path.show();
 					this.visible = true;
+				}
+
+				/**
+				 * Validate connection rules for symbols
+				 */
+				Connection.prototype.validateAnchorPoint = function(
+						fromAnchorPoint, toAnchorPoint) {
+					m_messageDisplay.clear();
+					if (fromAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
+						// Check for OUT connections on End Event
+						if (fromAnchorPoint.symbol.modelElement.eventType == m_constants.STOP_EVENT_TYPE) {
+							m_messageDisplay
+									.showErrorMessage("Only in sequence flow connections are allowed on End Events.");
+							return false;
+						} else if (fromAnchorPoint.symbol.connections.length > 1) {
+							// Start Event can have only one OUT connection
+							m_messageDisplay
+									.showErrorMessage("No further connection allowed for this Event.");
+							return false;
+						}
+					} else if ((toAnchorPoint != null && toAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL)) {
+						// Check for IN connections on Start Event
+						if (toAnchorPoint.symbol.modelElement.eventType == m_constants.START_EVENT_TYPE) {
+							m_messageDisplay
+									.showErrorMessage("Only out sequence flow connections are allowed on Start Events.");
+							return false;
+						} else if (toAnchorPoint.symbol.connections.length > 1) {
+							// End Event can have only one IN connection
+							m_messageDisplay
+									.showErrorMessage("No further connection allowed for this Event.");
+							return false;
+						}
+					}
+					// If Start and End symbol are same, show error
+					if (toAnchorPoint != null
+							&& fromAnchorPoint.symbol.oid == toAnchorPoint.symbol.oid) {
+						m_messageDisplay
+								.showErrorMessage("A connection must connect two different symbols.");
+						return false;
+					}
+					return true;
 				}
 
 				/**

@@ -17,7 +17,7 @@ define(
 
 			/**
 			 * Does not have a position and a bounding box.
-			 * 
+			 *
 			 * Supports Flyout Menu layout.
 			 */
 			function Drawable() {
@@ -41,7 +41,7 @@ define(
 				this.bottomFlyOutMenuItems = [];
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.applyChanges = function(changedObject) {
 					m_utils.inheritFields(this, changedObject);
@@ -64,53 +64,53 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.onCreate = function(transferObject) {
 					this.oid = transferObject.oid;
-					
+
 					this.register();
-					
+
 					m_messageDisplay.markModified();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.onUpdate = function(transferObject) {
 					m_messageDisplay.markModified();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.onDelete = function(transferObject) {
 					m_messageDisplay.markModified();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.addToPrimitives = function(element) {
 					this.primitives.push(element);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.hoverIn = function() {
 					this.showPointerCursor();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.hoverOut = function() {
 					this.showDefaultCursor();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.showPointerCursor = function() {
 					for ( var n in this.primitives) {
@@ -119,7 +119,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.showDefaultCursor = function() {
 					for ( var n in this.primitives) {
@@ -128,7 +128,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.showMoveCursor = function() {
 					for ( var n in this.primitives) {
@@ -137,7 +137,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.addToEditableTextPrimitives = function(
 						element) {
@@ -180,7 +180,7 @@ define(
 				/**
 				 * Refreshes all graphics elements e.g. text, icons against the
 				 * model element properties e.g. names, types.
-				 * 
+				 *
 				 * To be overloaded for subclasses.
 				 */
 				Drawable.prototype.refreshFromModelElement = function() {
@@ -197,21 +197,21 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.showProximitySensor = function() {
 					this.proximitySensor.show();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.hideProximitySensor = function() {
 					this.proximitySensor.hide();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.adjustFlyOutMenu = function(x, y, width,
 						height) {
@@ -227,7 +227,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.adjustFlyOutMenuItems = function(x, y,
 						width, height) {
@@ -275,7 +275,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.showFlyOutMenu = function() {
 					this.flyOutMenuBackground.show();
@@ -321,7 +321,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.hideFlyOutMenu = function() {
 					this.flyOutMenuBackground.animate({
@@ -364,7 +364,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.addFlyOutMenuItems = function(left, right,
 						bottom) {
@@ -435,31 +435,35 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.proximityHoverIn = function(event) {
 					this.showFlyOutMenu();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.proximityHoverOut = function(event) {
 					this.hideFlyOutMenu();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.removeProximitySensor = function() {
-					this.proximitySensor.remove();
+					if (this.proximitySensor) {
+						this.proximitySensor.remove();
+					}
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.removeFlyOutMenu = function() {
-					this.flyOutMenuBackground.remove();
+					if (this.flyOutMenuBackground) {
+						this.flyOutMenuBackground.remove();
+					}
 
 					var n = 0;
 
@@ -487,14 +491,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.deselect = function() {
 					this.selected = false;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.doubleClickEditableTextPrimitive = function(
 						element) {
@@ -503,7 +507,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Drawable.prototype.showDashboard = function(dashboardContent) {
 					m_canvasManager.drawRectangle(
@@ -580,7 +584,7 @@ define(
 							// Draw axis
 
 							var pathString = "";
-							
+
 							pathString += "M" + (this.getDashboardX() + 10) + " " + (this.getDashboardY() + yOffset);
 							pathString += "L" + (this.getDashboardX() + 10) + " " + (this.getDashboardY() + yOffset - 80);
 
@@ -591,7 +595,7 @@ define(
 							}).show();
 
 							pathString = "";
-							
+
 							pathString += "M" + (this.getDashboardX() + 10) + " " + (this.getDashboardY() + yOffset);
 							pathString += "L" + (this.getDashboardX() + 210) + " " + (this.getDashboardY() + yOffset);
 
@@ -602,7 +606,7 @@ define(
 							}).show();
 
 							var data = dashboardContent[contentItem].data;
-							
+
 							pathString = "";
 
 							for ( var n in data) {
@@ -612,7 +616,7 @@ define(
 									pathString += ("L" + (this.getDashboardX() + 10 + data[n][0]) + " " + (this.getDashboardY() + yOffset - data[n][1]));
 								}
 							}
-							
+
 							m_canvasManager.drawPath(pathString, {
 								"stroke" : "red",
 								"stroke-width" : 1.5
@@ -648,7 +652,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Drawable_doubleClickEditableTextPrimitiveClosure() {
 				this.auxiliaryProperties.callbackScope
