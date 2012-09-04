@@ -129,8 +129,6 @@ public class ModelService
 
    public static final String APPLICATION_TYPE_PROPERTY = "applicationType";
 
-   public static final String ACCESS_POINTS_PROPERTY = "accessPoints";
-
    public static final String IN_ACCESS_POINT_KEY = "IN_ACCESS_POINT";
 
    public static final String OUT_ACCESS_POINT_KEY = "OUT_ACCESS_POINT";
