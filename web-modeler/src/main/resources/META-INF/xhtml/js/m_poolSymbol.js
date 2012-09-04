@@ -3,9 +3,9 @@
  */
 define(
 		[ "m_utils", "m_constants", "m_commandsController", "m_command",
-				"m_canvasManager", "m_symbol", "m_swimlaneSymbol" ],
+				"m_canvasManager", "m_symbol", "m_swimlaneSymbol", "m_messageDisplay" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
-				m_canvasManager, m_symbol, m_swimlaneSymbol) {
+				m_canvasManager, m_symbol, m_swimlaneSymbol, m_messageDisplay) {
 
 			return {
 				createPoolSymbol : function(diagram) {
@@ -248,45 +248,67 @@ define(
 				/**
 				 *
 				 */
+				PoolSymbol.prototype.getSwimlaneSymbolForParticipant = function(
+						participant) {
+					var ln;
+					if (participant && this.laneSymbols) {
+						jQuery.each(this.laneSymbols, function(index, element) {
+							if (element.participantFullId == participant
+									.getFullId()) {
+								ln = element;
+							}
+						});
+					}
+
+					return ln;
+				};
+
+				/**
+				 *
+				 */
 				PoolSymbol.prototype.createSwimlaneSymbolFromParticipant = function(
 						participant) {
-					var swimlaneSymbol = null;
+					if (!this.getSwimlaneSymbolForParticipant(participant)) {
+						var swimlaneSymbol = null;
 
-					if (participant == null) {
-						swimlaneSymbol = m_swimlaneSymbol.createSwimlaneSymbol(
-								this.diagram, this);
+						if (participant == null) {
+							swimlaneSymbol = m_swimlaneSymbol.createSwimlaneSymbol(
+									this.diagram, this);
+						} else {
+							swimlaneSymbol = m_swimlaneSymbol
+									.createSwimlaneSymbolFromParticipant(
+											this.diagram, this, participant);
+						}
+
+						this.laneSymbols.push(swimlaneSymbol);
+
+						// Required to receive command callbacks
+
+						this.diagram.lastSymbol = swimlaneSymbol;
+
+						swimlaneSymbol
+								.initialize(
+										this.x
+												+ m_constants.POOL_SWIMLANE_MARGIN
+												+ (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? 0
+														: m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
+										this.y
+												+ m_constants.POOL_SWIMLANE_MARGIN
+												+ (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
+														: 0));
+
+						if (participant != null) {
+							swimlaneSymbol.refreshFromModelElement();
+						}
+
+						this.recalculateBoundingBox();
+						this.adjustGeometry();
+
+						//The create REST call for swimlanes is made after the swimlabe is created and re-positioned.
+						swimlaneSymbol.createAndSubmitCreateCommand();
 					} else {
-						swimlaneSymbol = m_swimlaneSymbol
-								.createSwimlaneSymbolFromParticipant(
-										this.diagram, this, participant);
+						m_messageDisplay.showMessage("Swimlane for participant (" + participant.name + ") exists already" );
 					}
-
-					this.laneSymbols.push(swimlaneSymbol);
-
-					// Required to receive command callbacks
-
-					this.diagram.lastSymbol = swimlaneSymbol;
-
-					swimlaneSymbol
-							.initialize(
-									this.x
-											+ m_constants.POOL_SWIMLANE_MARGIN
-											+ (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? 0
-													: m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
-									this.y
-											+ m_constants.POOL_SWIMLANE_MARGIN
-											+ (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
-													: 0));
-
-					if (participant != null) {
-						swimlaneSymbol.refreshFromModelElement();
-					}
-
-					this.recalculateBoundingBox();
-					this.adjustGeometry();
-
-					//The create REST call for swimlanes is made after the swimlabe is created and re-positioned.
-					swimlaneSymbol.createAndSubmitCreateCommand();
 				};
 
 				/**
