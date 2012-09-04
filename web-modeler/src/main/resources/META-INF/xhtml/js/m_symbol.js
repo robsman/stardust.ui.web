@@ -864,91 +864,70 @@ define(
 				 */
 				Symbol.prototype.dragStart = function() {
 					// TODO hide for all selected
+					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
+						this.hideProximitySensor();
 
-					this.hideProximitySensor();
+						if (!this.selected) {
+							// deselect other symbols before drag
+							this.diagram.deselectCurrentSelection();
+							this.diagram.currentSelection = [];
+							this.select();
+						}
 
-					if (!this.selected) {
-						// deselect other symbols before drag
-						this.diagram.deselectCurrentSelection();
-						this.diagram.currentSelection = [];
-						this.select();
+						// Remember drag start position
+
+						this.dragStartX = this.x;
+						this.dragStartY = this.y;
 					}
-
-					// Remember drag start position
-
-					this.dragStartX = this.x;
-					this.dragStartY = this.y;
 				};
 
 				/**
 				 *
 				 */
 				Symbol.prototype.dragStop = function() {
-					this.showProximitySensor();
-
+					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
+						this.showProximitySensor();
 					// Only process if symbol has been moved at all
+						if (this.x != this.dragStartX
+								|| this.y != this.dragStartY) {
+							if (this.requiresParentSymbol()) {
+								var newParentSymbol = this.diagram.poolSymbol
+										.findContainerSymbol(this.getXCenter(),
+												this.getYCenter());
 
-					if (this.x != this.dragStartX || this.y != this.dragStartY) {
-						if (this.requiresParentSymbol()) {
-							var newParentSymbol = this.diagram.poolSymbol
-									.findContainerSymbol(this.getXCenter(),
-											this.getYCenter());
+								if (newParentSymbol == null) {
+									this.move(this.dragStartX, this.dragStartY);
 
-							if (newParentSymbol == null) {
-								this.move(this.dragStartX, this.dragStartY);
+									m_messageDisplay
+											.showErrorMessage("Symbol is not contained in Swimlane. Reverting drag.");
 
-								m_messageDisplay
-										.showErrorMessage("Symbol is not contained in Swimlane. Reverting drag.");
+									return;
+								}
 
-								return;
-							}
+								if (newParentSymbol != this.parentSymbol) {
+									m_utils.removeItemFromArray(
+											this.parentSymbol.containedSymbols,
+											this);
 
-							if (newParentSymbol != this.parentSymbol) {
-								m_utils.removeItemFromArray(
-										this.parentSymbol.containedSymbols,
-										this);
+									this.parentSymbol = newParentSymbol;
 
-								this.parentSymbol = newParentSymbol;
+									this.parentSymbol.containedSymbols
+											.push(this);
 
-								this.parentSymbol.containedSymbols.push(this);
+									this.parentSymbolId = newParentSymbol.id;
 
-								this.parentSymbolId = newParentSymbol.id;
+									this.onParentSymbolChange();
+								}
 
-								this.onParentSymbolChange();
-							}
+								this.diagram.snapSymbol(this);
+								this.parentSymbol.adjustToSymbolBoundaries(
+										this.x, this.y);
 
-							this.diagram.snapSymbol(this);
-							this.parentSymbol.adjustToSymbolBoundaries(this.x,
-									this.y);
+								// Other parts of the diagram may have been
+								// affected
+								// - update the diagram
 
-							// Other parts of the diagram may have been affected
-							// - update the diagram
-
-							// this.diagram.submitUpdate();
-							var oldGeometry = {
-								"x" : this.dragStartX,
-								"y" : this.dragStartY,
-								"oid" : this.oid
-							};
-							var newGeometry = {
-								"x" : this.x,
-								"y" : this.y,
-								"oid" : this.oid
-							};
-
-							var command = m_command
-									.createMoveNodeSymbolCommand(
-											this.diagram.model.id, this.oid,
-											newGeometry);
-							m_commandsController.submitCommand(command);
-						} else {
-							this.diagram.snapSymbol(this);
-
-							// TODO Put in method
-
-							if (this.isCompleted() != null) {
-								// this.submitUpdate();
-
+								// this.diagram.submitUpdate();
 								var oldGeometry = {
 									"x" : this.dragStartX,
 									"y" : this.dragStartY,
@@ -965,6 +944,31 @@ define(
 												this.diagram.model.id,
 												this.oid, newGeometry);
 								m_commandsController.submitCommand(command);
+							} else {
+								this.diagram.snapSymbol(this);
+
+								// TODO Put in method
+
+								if (this.isCompleted() != null) {
+									// this.submitUpdate();
+
+									var oldGeometry = {
+										"x" : this.dragStartX,
+										"y" : this.dragStartY,
+										"oid" : this.oid
+									};
+									var newGeometry = {
+										"x" : this.x,
+										"y" : this.y,
+										"oid" : this.oid
+									};
+
+									var command = m_command
+											.createMoveNodeSymbolCommand(
+													this.diagram.model.id,
+													this.oid, newGeometry);
+									m_commandsController.submitCommand(command);
+								}
 							}
 						}
 					}

@@ -745,38 +745,46 @@ define(
 				 * Temporarily commented out as left stretch is disabled
 				 */
 				SwimlaneSymbol.prototype.stretchLeft = function(dX, dY, x, y) {
-					this.width = this.preDragState.width - dX;
-					this.x = this.preDragState.x + dX;
+					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
+						this.width = this.preDragState.width - dX;
+						this.x = this.preDragState.x + dX;
 
-					this.adjustGeometry();
+						this.adjustGeometry();
+					}
 				};
 
 				/**
 				 * Temporarily commented out as top stretch is disabled
 				 */
 				SwimlaneSymbol.prototype.stretchTop = function(dX, dY, x, y) {
-					this.height = this.preDragState.height - dY;
-					this.y = this.preDragState.y + dY;
+					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
+						this.height = this.preDragState.height - dY;
+						this.y = this.preDragState.y + dY;
 
-					this.adjustGeometry();
+						this.adjustGeometry();
+					}
 				};
 
 				/**
 				 *
 				 */
 				SwimlaneSymbol.prototype.stretchRight = function(dX, dY, x, y) {
-					this.width = this.preDragState.width + dX;
+					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
+						this.width = this.preDragState.width + dX;
 
-					this.adjustGeometry();
+						this.adjustGeometry();
+					}
 				};
 
 				/**
 				 *
 				 */
 				SwimlaneSymbol.prototype.stretchBottom = function(dX, dY, x, y) {
-					this.height = this.preDragState.height + dY;
+					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
+						this.height = this.preDragState.height + dY;
 
-					this.adjustGeometry();
+						this.adjustGeometry();
+					}
 				};
 
 				/**

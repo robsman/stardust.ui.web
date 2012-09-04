@@ -1274,6 +1274,11 @@ define(
 					} else if (this.mode == this.NORMAL_MODE) {
 						this.clearCurrentSelection();
 						m_messageDisplay.clear();
+					} else if (this.mode == this.CONNECTION_MODE
+							&& this.currentConnection != null) {
+						this.currentConnection.remove();
+						this.currentConnection = null;
+						this.mode = this.NORMAL_MODE;
 					}
 				};
 
