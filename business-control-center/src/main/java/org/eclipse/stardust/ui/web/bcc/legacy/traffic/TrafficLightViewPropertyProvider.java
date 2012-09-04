@@ -68,6 +68,8 @@ public class TrafficLightViewPropertyProvider
    public static final String PROPERTY_VALUE_STATE_CALCULATOR = "StateCalculator";
 
    public static final String PROPERTY_VALUE_DESCRIPTOR_FILTER = "DescriptorFilter";
+   
+   public static final String PRESELECTED_PROCESSES = "preSelectedProcesses";
 
    private IPreferencesManager pm;
 
@@ -175,6 +177,44 @@ public class TrafficLightViewPropertyProvider
       return result;
    }
 
+   public List<String> getAllPreSelectedProcesses()
+   {
+      List<String> processesQIDs = CollectionUtils.newArrayList();
+
+      String value = preferencesStore.getString(PROPERTY_PREFIX + PROPERTY_KEY_SEPARATOR
+            + PRESELECTED_PROCESSES);
+
+      if (value != null)
+      {
+         StringTokenizer strTok = new StringTokenizer(value, PROPERTY_VALUE_SEPARATOR);
+
+         while (strTok.hasMoreElements())
+         {
+            String key = (String) strTok.nextElement();
+            if (!processesQIDs.contains(key))
+               processesQIDs.add(key);
+         }
+      }
+      return processesQIDs;
+   }
+   
+   public void setAllPreSelectedProcesses(List<ProcessDefinition> processDefinitions)
+   {
+      StringBuffer ids = new StringBuffer();
+      for (Iterator<ProcessDefinition> iterator = processDefinitions.iterator(); iterator.hasNext();)
+      {
+         ProcessDefinition pd = iterator.next();
+         ids.append(pd.getQualifiedId());
+         if (iterator.hasNext())
+         {
+            ids.append(PROPERTY_VALUE_SEPARATOR);
+         }
+      }
+      preferencesEditor.setValue(PROPERTY_PREFIX + PROPERTY_KEY_SEPARATOR
+            + PRESELECTED_PROCESSES, ids.toString());
+   }
+   
+   
    public List<String> getAllColumnIDs(String processFQId)
    {
       List<String> result = CollectionUtils.newArrayList();

@@ -128,7 +128,7 @@ public class TrafficLightViewConfigurationBean extends UIComponentBean implement
       try
       {
          this.selectedProcessDefinitions = new ArrayList<ProcessDefinition>();
-         // preSelectedProcesses();
+         preSelectedProcesses();
       }
       catch (Exception e)
       {
@@ -144,7 +144,7 @@ public class TrafficLightViewConfigurationBean extends UIComponentBean implement
       try
       {
          List<String> tempPreSelectedProcesses = TrafficLightViewPropertyProvider.getInstance()
-               .getAllProcessDefinitionIDs();
+               .getAllPreSelectedProcesses();
 
          selectedProcessDefinition = tempPreSelectedProcesses.toArray(new String[0]);
          for (String process : tempPreSelectedProcesses)
@@ -423,8 +423,10 @@ public class TrafficLightViewConfigurationBean extends UIComponentBean implement
                }
 
                List<ProcessDefinition> tempProcessDefinitions = CollectionUtils.newArrayList();
+               TrafficLightViewPropertyProvider provider = TrafficLightViewPropertyProvider.getInstance();
                if (this.selectedProcessDefinitions != null)
                {
+                  provider.setAllPreSelectedProcesses(selectedProcessDefinitions);
                   
                   TrafficLightPropertyEntry tempPropertyEntry = null;
                   for (int i = 0; i < this.selectedProcessDefinitions.size(); i++)
@@ -446,7 +448,6 @@ public class TrafficLightViewConfigurationBean extends UIComponentBean implement
                }
                if (tempProcessDefinitions != null)
                {
-                  TrafficLightViewPropertyProvider provider = TrafficLightViewPropertyProvider.getInstance();
                   provider.setAllProcessDefinitionIds(tempProcessDefinitions);
                   provider.save();                 
                   MessageDialog.addInfoMessage(propsBean.getString("common.successConfigurationMsg"));
