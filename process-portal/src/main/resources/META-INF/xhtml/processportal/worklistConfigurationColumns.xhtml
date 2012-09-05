@@ -16,7 +16,8 @@
 		<ice:panelGroup rendered="#{col.columnName == 'elementName'}">
 			<ice:panelGrid columns="2" style="width:100%">
 				<ice:panelGrid columns="1">
-					<ice:commandLink value="#{row.elementName}"
+					<ice:commandLink value="#{row.elementName}" 
+					action="#{row.configureColumns}" onclick="Event.stop(event);"
 						style="white-space: nowrap;">
 					</ice:commandLink>
 				</ice:panelGrid>

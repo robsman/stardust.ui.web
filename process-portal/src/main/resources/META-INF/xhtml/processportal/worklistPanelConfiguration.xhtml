@@ -38,7 +38,7 @@
 		<pc:genericDataTable exportCsv="false" exportExcel="false"
 			title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.participantTable']}"
 			bean="#{worklistConfigurationBean.participantWorklistConfBean}"
-			table="#{worklistConfigurationBean.participantWorklistConfBean.participantWorkConfTable}"
+			table="#{worklistConfigurationBean.participantWorklistConfBean.columnConfigurationTable}"
 			sortSupported="true" 
 			toolbarUrl="/plugins/processportal/toolbar/WorklistConfigurationToolbar.xhtml" />
 
@@ -47,8 +47,8 @@
 		<pc:genericDataTable exportExcel="false" exportCsv="false"
 			title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.processTable']}"
 			bean="#{worklistConfigurationBean.processWorklistConfBean}"
-			table="#{worklistConfigurationBean.processWorklistConfBean.processWorkConfTable}"
-			sortSupported="true"
+			table="#{worklistConfigurationBean.processWorklistConfBean.columnConfigurationTable}"
+			sortSupported="true" 
 			toolbarUrl="/plugins/processportal/toolbar/WorklistConfigurationToolbar.xhtml" />
 
 		<ice:panelGroup styleClass="clearing" />
@@ -60,10 +60,10 @@
 				action="#{worklistConfigurationBean.save}"
 				partialSubmit="true" styleClass="button" />
 			
-			<!-- <ice:commandButton
+			<ice:commandButton
 				value="RELOAD"
 				action="#{worklistConfigurationBean.reload}"
-				partialSubmit="true" styleClass="button" />	 -->
+				partialSubmit="true" styleClass="button" />	 
 				
 			<ice:commandButton
 				value="#{common_msgPropsBean['views.configurationPanel.button.reset']}"

@@ -20,23 +20,12 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.PerformerType;
-import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
-import org.eclipse.stardust.engine.core.preferences.Preferences;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
-import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
-import org.eclipse.stardust.ui.web.common.column.IColumnModel;
-import org.eclipse.stardust.ui.web.common.table.DataTable;
-import org.eclipse.stardust.ui.web.common.table.DataTableRowSelector;
-import org.eclipse.stardust.ui.web.common.table.SortableTable;
-import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
-import org.eclipse.stardust.ui.web.processportal.common.MessagePropertiesBean;
-import org.eclipse.stardust.ui.web.processportal.common.ResourcePaths;
+import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.processportal.common.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.DelegationBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDelegatesProvider;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDelegatesProvider.Options;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDepartmentProvider;
-import org.eclipse.stardust.ui.web.viewscommon.dialogs.PreferencesResource;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.WorklistParticipantsProvider;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
@@ -49,32 +38,18 @@ public class ParticipantWorklistColumnConfigurationBean extends WorklistColumnCo
 {
    WorklistParticipantsProvider provider;
 
-   @Override
-   public void initialize()
+   public ParticipantWorklistColumnConfigurationBean()
    {
-      ColumnPreference participantNameCol = new ColumnPreference("elementName", "elementName", MessagePropertiesBean
-            .getInstance().getString("views.worklistPanelConfiguration.participant"),
-            ResourcePaths.V_WLC_TABLE_COLUMNS, true, true);
+      this(UserPreferencesEntries.V_WORKLIST_PART_CONF);
+   }
 
-      ColumnPreference actions = new ColumnPreference("actions", "actions", MessagePropertiesBean.getInstance()
-            .getString("views.worklistPanelConfiguration.actions"), ResourcePaths.V_WLC_TABLE_COLUMNS, true, false);
-
-      List<ColumnPreference> participantWorkConfCols = new ArrayList<ColumnPreference>();
-      participantWorkConfCols.add(participantNameCol);
-      participantWorkConfCols.add(actions);
-
-      IColumnModel participantsColumnModel = new DefaultColumnModel(participantWorkConfCols, null, null,
-            UserPreferencesEntries.M_WORKFLOW, UserPreferencesEntries.V_WORKLIST_PART_CONF);
-
-      participantWorkConfTable = new SortableTable<WorklistConfigTableEntry>(participantsColumnModel, null,
-            new SortableTableComparator<WorklistConfigTableEntry>("elementName", true));
-
-      participantWorkConfTable.setRowSelector(new DataTableRowSelector("selected", true));
-      participantWorkConfTable.initialize();
-      worklistConfiguration = WorklistConfigurationUtil
-            .getParticipantWorklistConfigurationMap(PreferenceScope.PARTITION);
-      retrieveandSetConfigurationValues();
-      initializeFileResource();
+   /**
+    * @param preferenceID
+    */
+   private ParticipantWorklistColumnConfigurationBean(String preferenceID)
+   {
+      super(preferenceID);
+      initialize();
    }
 
    @Override
@@ -100,46 +75,13 @@ public class ParticipantWorklistColumnConfigurationBean extends WorklistColumnCo
       delegationBean.openPopup();
    }
 
-   @Override
-   public void save()
-   {
-      ArrayList<String> colsToBeSaved;
-      for (WorklistConfigTableEntry confTableEntry : participantWorkConfTableEntries)
-      {
-         colsToBeSaved = confTableEntry.getColumnsToBeSaved();
-         WorklistConfigurationUtil.updateValues(confTableEntry.getElementOID(), colsToBeSaved, confTableEntry.isLock(),
-               worklistConfiguration);
-      }
-      WorklistConfigurationUtil.saveParticipantWorklistConfiguration(worklistConfiguration);
-   }
-
-   @Override
-   public void delete()
-   {
-      for (WorklistConfigTableEntry confTableEntry : participantWorkConfTableEntries)
-      {
-         if (confTableEntry.isSelected() && !WorklistConfigurationUtil.DEFAULT.equals(confTableEntry.getElementOID()))
-         {
-            WorklistConfigurationUtil.deleteValues(confTableEntry.getElementOID(), worklistConfiguration);
-            participantWorkConfTableEntries.remove(confTableEntry);
-         }
-      }
-   }
-
-   public void reset()
-   {
-      initialize();
-   }
-
-   @Override
-   public void initializeFileResource()
-   {
-      List<Preferences> preferencesList = new ArrayList<Preferences>();
-      preferencesList.add(WorklistConfigurationUtil.getPartcipantWorklistConfiguration(PreferenceScope.PARTITION));
-      fileResource = new PreferencesResource(preferencesList);
-   }
-
-   private void retrieveandSetConfigurationValues()
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.
+    * WorklistColumnConfigurationBean#retrieveandSetConfigurationValues()
+    */
+   protected void retrieveandSetConfigurationValues()
    {
       try
       {
@@ -148,38 +90,33 @@ public class ParticipantWorklistColumnConfigurationBean extends WorklistColumnCo
 
          List< ? extends ParticipantInfo> modelParticipants = delegates.get(PerformerType.ModelParticipant);
 
-         participantWorkConfTableEntries = new ArrayList<WorklistConfigTableEntry>();
+         columnConfTableEntries = new ArrayList<WorklistConfigTableEntry>();
 
          // set default configuration
-         defaultConf = WorklistConfigurationUtil.getStoredValues(WorklistConfigurationUtil.DEFAULT,
-               worklistConfiguration);
+         defaultConf = WorklistConfigurationUtil
+               .getStoredValues(WorklistConfigurationUtil.DEFAULT, columnConfiguration);
          WorklistConfigTableEntry defaultEntry = new WorklistConfigTableEntry(WorklistConfigurationUtil.DEFAULT);
          defaultEntry.setConfiguration(defaultConf);
-         participantWorkConfTableEntries.add(defaultEntry);
-
-         List<String> participantOIDs = new ArrayList<String>();
+         columnConfTableEntries.add(defaultEntry);
 
          for (ParticipantInfo participantInfo : modelParticipants)
          {
             WorklistConfigTableEntry confTableEntry = new WorklistConfigTableEntry(participantInfo);
-            if (participantOIDs.contains(String.valueOf(confTableEntry.getElementOID())))
+            if (existingoIds.contains(confTableEntry.getElementOID()))
             {
                continue;
             }
-            participantOIDs.add(String.valueOf(confTableEntry.getElementOID()));
-            addifEligible(confTableEntry);
+            fetchStoredValues(confTableEntry);
          }
          Set<DepartmentInfo> departments = getProvider().findDepartments(null, getDepartmentOptions()).get(
                "Departments");
          for (DepartmentInfo departmentInfo : departments)
          {
             WorklistConfigTableEntry confTableEntry = new WorklistConfigTableEntry(departmentInfo);
-            addifEligible(confTableEntry);
+            fetchStoredValues(confTableEntry);
          }
 
-         // Set<ParticipantInfo> participants =
-         // ParticipantWorklistCacheManager.getInstance().getWorklistParticipants();
-         participantWorkConfTable.setList(participantWorkConfTableEntries);
+         columnConfigurationTable.setList(columnConfTableEntries);
       }
       catch (Exception e)
       {
@@ -187,6 +124,9 @@ public class ParticipantWorklistColumnConfigurationBean extends WorklistColumnCo
       }
    }
 
+   /**
+    * @return provider
+    */
    private WorklistParticipantsProvider getProvider()
    {
       if (null == provider)
@@ -196,37 +136,40 @@ public class ParticipantWorklistColumnConfigurationBean extends WorklistColumnCo
       return provider;
    }
 
-   private void addParticipant(Object obj)
+   /**
+    * @param participant
+    */
+   private void addParticipant(Object participant)
    {
-      if (obj instanceof ParticipantInfo)
+      if (participant instanceof ParticipantInfo)
       {
-         WorklistConfigTableEntry entry = new WorklistConfigTableEntry((ParticipantInfo) obj);
-         entry.setConfiguration(defaultConf);
-         participantWorkConfTableEntries.add(entry);
+         WorklistConfigTableEntry entry = new WorklistConfigTableEntry((ParticipantInfo) participant);
+         if (existingoIds.contains(entry.getElementOID()))
+         {
+            MessageDialog.addErrorMessage(getMessage("views.worklistPanelConfiguration.error.participantExist"));
+         }
+         else
+         {
+            addEntry(entry);
+         }
       }
-      else if (obj instanceof DepartmentInfo)
+      else if (participant instanceof DepartmentInfo)
       {
-         WorklistConfigTableEntry entry = new WorklistConfigTableEntry((DepartmentInfo) obj);
-         entry.setConfiguration(defaultConf);
-         participantWorkConfTableEntries.add(entry);
+         WorklistConfigTableEntry entry = new WorklistConfigTableEntry((DepartmentInfo) participant);
+         if (existingoIds.contains(entry.getElementOID()))
+         {
+            MessageDialog.addErrorMessage(getMessage("views.worklistPanelConfiguration.error.departmentExist"));
+         }
+         else
+         {
+            addEntry(entry);
+         }
       }
    }
 
    /**
-    * @param confTableEntry
+    * @return DepartmentOptions
     */
-   private void addifEligible(WorklistConfigTableEntry confTableEntry)
-   {
-      Map<String, Object> participantConf = WorklistConfigurationUtil.getStoredValues(confTableEntry.getElementOID(),
-            worklistConfiguration);
-
-      if (null != participantConf)
-      {
-         confTableEntry.setConfiguration(participantConf);
-         participantWorkConfTableEntries.add(confTableEntry);
-      }
-   }
-
    private IDepartmentProvider.Options getDepartmentOptions()
    {
       return new IDepartmentProvider.Options()
@@ -244,6 +187,9 @@ public class ParticipantWorklistColumnConfigurationBean extends WorklistColumnCo
       };
    }
 
+   /**
+    * @return delegateProviderOptions
+    */
    private Options getDelegateProviderOptions()
    {
       return new IDelegatesProvider.Options()
@@ -288,10 +234,5 @@ public class ParticipantWorklistColumnConfigurationBean extends WorklistColumnCo
             return "";
          }
       };
-   }
-
-   public DataTable<WorklistConfigTableEntry> getParticipantWorkConfTable()
-   {
-      return participantWorkConfTable;
    }
 }

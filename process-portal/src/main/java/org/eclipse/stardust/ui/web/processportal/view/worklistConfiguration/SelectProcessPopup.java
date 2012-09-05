@@ -37,6 +37,8 @@ public class SelectProcessPopup extends PopupUIComponentBean
    private static final long serialVersionUID = 7327885270237102911L;
    private static final String BEAN_NAME = "selectProcessPopup";
    private static final String ALL = "ALL";
+   public static final String PROCESSES = "processes";
+   
 
    private Map<String, ProcessDefinition> processDefinitions = new HashMap<String, ProcessDefinition>();
    private List<ProcessDefinition> allAccessibleProcesses = null;
@@ -134,7 +136,7 @@ public class SelectProcessPopup extends PopupUIComponentBean
       if (null != callbackHandler)
       {
          Map<String, Object> selectedProcesses = new HashMap<String, Object>();
-         selectedProcesses.put("processes", getSelectedProcessDefs());
+         selectedProcesses.put(PROCESSES, getSelectedProcessDefs());
          callbackHandler.setParameters(selectedProcesses);
          callbackHandler.handleEvent(ICallbackHandler.EventType.APPLY);
       }

@@ -99,9 +99,7 @@ public class WorklistConfigurationBean implements InitializingBean, Confirmation
    private void initializeWorklistConf()
    {
       participantWorklistConfBean = new ParticipantWorklistColumnConfigurationBean();
-      participantWorklistConfBean.initialize();
       processWorklistConfBean = new ProcessWorklistColumnConfigurationBean();
-      processWorklistConfBean.initialize();
    }
 
    public void reset()

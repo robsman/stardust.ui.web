@@ -181,6 +181,8 @@ public class WorklistTableBean extends UIComponentBean
 
    private ProcessDefinition processDefintion;
    
+   private String preferenceId;
+   
    public WorklistTableBean()
    {
       super("worklistPanel");
@@ -397,6 +399,15 @@ public class WorklistTableBean extends UIComponentBean
       query = (Query) getParamFromView(Query.class.getName());
       participantInfo = (ParticipantInfo) getParamFromView("participantInfo");
       processDefintion = (ProcessDefinition) getParamFromView("processDefinition");
+      
+      if (null != participantInfo)
+      {
+         preferenceId = UserPreferencesEntries.V_WORKLIST_PART_CONF;
+      }
+      else if (null != processDefintion)
+      {
+         preferenceId = UserPreferencesEntries.V_WORKLIST_PROC_CONF;
+      }
       id = (String) getParamFromView("id");
    }
    
@@ -600,38 +611,15 @@ public class WorklistTableBean extends UIComponentBean
 
    private void saveColumnPreferences()
    {
-      if (null != participantInfo)
-      {
-         savePartColumnPreferences();
-      }
-      else if (null != processDefintion)
-      {
-         saveProcessColumnPreferences();
-      }
-   }
-   
-   private void savePartColumnPreferences()
-   {
-      Map<String, Object> worklistConfiguration = WorklistConfigurationUtil
-            .getParticipantWorklistConfigurationMap(PreferenceScope.USER);
+      Map<String, Object> worklistConfiguration = WorklistConfigurationUtil.getWorklistConfigurationMap(
+            PreferenceScope.USER, preferenceId);
       ArrayList<String> savedCols = ((DefaultColumnModel) worklistColSelecpopup.getColumnModel()).getColsToBeSaved();
       WorklistConfigurationUtil.updateValues(getOID(), savedCols, false, worklistConfiguration);
-      WorklistConfigurationUtil.saveParticipantWorklistConfiguration(worklistConfiguration);
+      WorklistConfigurationUtil.saveWorklistConfiguration(preferenceId, worklistConfiguration);
       worklistColSelecpopup.getColumnModel().setStoredList(savedCols);
       worklistColSelecpopup.getColumnModel().initialize();
    }
 
-   private void saveProcessColumnPreferences()
-   {
-      Map<String, Object> worklistConfiguration = WorklistConfigurationUtil
-            .getProcessWorklistConfigurationMap(PreferenceScope.USER);
-      ArrayList<String> savedCols = ((DefaultColumnModel) worklistColSelecpopup.getColumnModel()).getColsToBeSaved();
-      WorklistConfigurationUtil.updateValues(getOID(), savedCols, false, worklistConfiguration);
-      WorklistConfigurationUtil.saveProcessWorklistConfiguration(worklistConfiguration);
-      worklistColSelecpopup.getColumnModel().setStoredList(savedCols);
-      worklistColSelecpopup.getColumnModel().initialize();
-   }
-   
    private String getOID()
    {
       String strOid = "";
@@ -651,11 +639,11 @@ public class WorklistTableBean extends UIComponentBean
       Map<String, Object> configuration = null;
       if (null != participantInfo)
       {
-         configuration = WorklistConfigurationUtil.getParticipantStoredValues(getOID());
+         configuration = WorklistConfigurationUtil.getStoredValues(getOID(), UserPreferencesEntries.V_WORKLIST_PART_CONF);
       }
       else if (null != processDefintion)
       {
-         configuration = WorklistConfigurationUtil.getProcessStoredValues(getOID());
+         configuration = WorklistConfigurationUtil.getStoredValues(getOID(), UserPreferencesEntries.V_WORKLIST_PROC_CONF);
       }
 
       if (null != configuration)

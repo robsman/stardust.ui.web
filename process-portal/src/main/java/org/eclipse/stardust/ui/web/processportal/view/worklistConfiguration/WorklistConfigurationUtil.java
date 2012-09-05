@@ -46,7 +46,7 @@ public class WorklistConfigurationUtil
       ArrayList<String> colsToBeSaved = new ArrayList<String>();
       colsToBeSaved.add(Constants.COL_ACTIVITY_NAME);
       colsToBeSaved.add(Constants.COL_OID);
-      //colsToBeSaved.add(Constants.COL_PROCESS_DEFINITION);
+      // colsToBeSaved.add(Constants.COL_PROCESS_DEFINITION);
       colsToBeSaved.add(Constants.COL_CRITICALITY);
       colsToBeSaved.add(Constants.COL_PRIORITY);
       colsToBeSaved.add(Constants.COL_DESCRIPTORS);
@@ -54,15 +54,10 @@ public class WorklistConfigurationUtil
       colsToBeSaved.add(Constants.COL_LAST_MODIFIED);
       colsToBeSaved.add(Constants.COL_DURATION);
       colsToBeSaved.add(Constants.COL_LAST_PERFORMER);
-      //colsToBeSaved.add(Constants.COL_STATUS);
-      //colsToBeSaved.add(Constants.COL_ASSIGNED_TO);
+      // colsToBeSaved.add(Constants.COL_STATUS);
+      // colsToBeSaved.add(Constants.COL_ASSIGNED_TO);
       DEFAULT_CONF.put(WorklistConfigurationUtil.SELECTED_COLS, colsToBeSaved);
       DEFAULT_CONF.put(WorklistConfigurationUtil.LOCK, "false");
-   }
-
-   public static Map<String, Object> getParticipantStoredValues(ParticipantInfo participantInfo)
-   {
-      return getParticipantStoredValues(getOid(participantInfo));
    }
 
    public static String getOid(ParticipantInfo participantInfo)
@@ -97,28 +92,11 @@ public class WorklistConfigurationUtil
       return strOid;
    }
 
-   public static Map<String, Object> getParticipantStoredValues(String oId)
-   {
-      return getStoredValues(oId, true);
-   }
-
-   public static Map<String, Object> getProcessStoredValues(String oId)
-   {
-      return getStoredValues(oId, false);
-   }
-
-   public static Map<String, Object> getStoredValues(String oId, boolean isParticipant)
+   public static Map<String, Object> getStoredValues(String oId, String preferenceId)
    {
       // check for the lock in default table
       Map<String, Object> worklistConf;
-      if (isParticipant)
-      {
-         worklistConf = getParticipantWorklistConfigurationMap(PreferenceScope.PARTITION);
-      }
-      else
-      {
-         worklistConf = getProcessWorklistConfigurationMap(PreferenceScope.PARTITION);
-      }
+      worklistConf = getWorklistConfigurationMap(PreferenceScope.PARTITION, preferenceId);
 
       Map<String, Object> configuration = getStoredValues(oId, worklistConf);
       boolean fetchUserConf = false;
@@ -138,15 +116,7 @@ public class WorklistConfigurationUtil
 
       if (fetchUserConf)
       {
-
-         if (isParticipant)
-         {
-            worklistConf = getParticipantWorklistConfigurationMap(PreferenceScope.USER);
-         }
-         else
-         {
-            worklistConf = getProcessWorklistConfigurationMap(PreferenceScope.USER);
-         }
+         worklistConf = getWorklistConfigurationMap(PreferenceScope.USER, preferenceId);
 
          if (CollectionUtils.isNotEmpty(worklistConf))
          {
@@ -199,31 +169,15 @@ public class WorklistConfigurationUtil
       elementPreference.put(LOCK, String.valueOf(lock));
    }
 
-   public static void deleteValues(String Oid, Map<String, Object> procPartWorklistConf)
+   public static void saveWorklistConfiguration(String preferenceId, Map<String, Object> preferences)
    {
-      if (null != procPartWorklistConf)
-      {
-         procPartWorklistConf.remove(Oid);
-      }
-   }
-
-   public static void saveParticipantWorklistConfiguration(Map<String, Object> preferences)
-   {
-      savePreferenceMap(PreferenceScope.PARTITION, UserPreferencesEntries.M_WORKFLOW,
-            UserPreferencesEntries.V_WORKLIST_PART_CONF, preferences);
-   }
-
-   public static void saveProcessWorklistConfiguration(Map<String, Object> preferences)
-   {
-      savePreferenceMap(PreferenceScope.PARTITION, UserPreferencesEntries.M_WORKFLOW,
-            UserPreferencesEntries.V_WORKLIST_PROC_CONF, preferences);
+      savePreferenceMap(PreferenceScope.PARTITION, preferenceId, preferences);
    }
 
    /**
     * @return
     */
-   private static void savePreferenceMap(PreferenceScope scope, String moduleId, String preferenceId,
-         Map<String, Object> preferences)
+   private static void savePreferenceMap(PreferenceScope scope, String preferenceId, Map<String, Object> preferences)
    {
       Map<String, Serializable> preferencesNew = new HashMap<String, Serializable>();
 
@@ -232,37 +186,59 @@ public class WorklistConfigurationUtil
          preferencesNew.put(preferenceId, GsonUtils.stringify(preferences));
       }
 
-      Preferences prefs = new Preferences(scope, moduleId, preferenceId, preferencesNew);
+      Preferences prefs = new Preferences(scope, UserPreferencesEntries.M_WORKFLOW, preferenceId, preferencesNew);
 
       AdministrationService adminService = SessionContext.findSessionContext().getServiceFactory()
             .getAdministrationService();
       adminService.savePreferences(prefs);
    }
 
-   public static Map<String, Object> getParticipantWorklistConfigurationMap(PreferenceScope preferenceScope)
-   {
-      Map<String, Object> prefMap = new HashMap<String, Object>();
-      Preferences prefs = getPartcipantWorklistConfiguration(preferenceScope);
-      if (null != prefs)
-      {
-         Object prefObject = prefs.getPreferences().get(UserPreferencesEntries.V_WORKLIST_PART_CONF);
-         if (null != prefObject)
-         {
-            prefMap = GsonUtils.readJsonMap((String) prefObject);
-         }
-      }
-      return prefMap;
-   }
+   // public static Map<String, Object>
+   // getParticipantWorklistConfigurationMap(PreferenceScope preferenceScope)
+   // {
+   // Map<String, Object> prefMap = new HashMap<String, Object>();
+   // Preferences prefs = getPartcipantWorklistConfiguration(preferenceScope);
+   // if (null != prefs)
+   // {
+   // Object prefObject =
+   // prefs.getPreferences().get(UserPreferencesEntries.V_WORKLIST_PART_CONF);
+   // if (null != prefObject)
+   // {
+   // prefMap = GsonUtils.readJsonMap((String) prefObject);
+   // }
+   // }
+   // return prefMap;
+   // }
+   //
+   // public static Map<String, Object> getProcessWorklistConfigurationMap(PreferenceScope
+   // preferenceScope)
+   // {
+   // Map<String, Object> prefMap = new HashMap<String, Object>();
+   // Preferences prefs = getProcessWorklistConfiguration(PreferenceScope.PARTITION);
+   // if (null != prefs)
+   // {
+   // if (null != prefs)
+   // {
+   // Object prefObject =
+   // prefs.getPreferences().get(UserPreferencesEntries.V_WORKLIST_PROC_CONF);
+   // if (null != prefObject)
+   // {
+   // prefMap = GsonUtils.readJsonMap((String) prefObject);
+   // }
+   // }
+   // }
+   // return prefMap;
+   // }
 
-   public static Map<String, Object> getProcessWorklistConfigurationMap(PreferenceScope preferenceScope)
+   public static Map<String, Object> getWorklistConfigurationMap(PreferenceScope preferenceScope, String preferenceId)
    {
       Map<String, Object> prefMap = new HashMap<String, Object>();
-      Preferences prefs = getProcessWorklistConfiguration(PreferenceScope.PARTITION);
+      Preferences prefs = getWorklistConfiguration(PreferenceScope.PARTITION, preferenceId);
       if (null != prefs)
       {
          if (null != prefs)
          {
-            Object prefObject = prefs.getPreferences().get(UserPreferencesEntries.V_WORKLIST_PROC_CONF);
+            Object prefObject = prefs.getPreferences().get(preferenceId);
             if (null != prefObject)
             {
                prefMap = GsonUtils.readJsonMap((String) prefObject);
@@ -272,16 +248,9 @@ public class WorklistConfigurationUtil
       return prefMap;
    }
 
-   public static Preferences getPartcipantWorklistConfiguration(PreferenceScope preferenceScope)
+   public static Preferences getWorklistConfiguration(PreferenceScope preferenceScope, String preferenceId)
    {
-      return getPreferences(preferenceScope, UserPreferencesEntries.M_WORKFLOW,
-            UserPreferencesEntries.V_WORKLIST_PART_CONF);
-   }
-
-   public static Preferences getProcessWorklistConfiguration(PreferenceScope preferenceScope)
-   {
-      return getPreferences(preferenceScope, UserPreferencesEntries.M_WORKFLOW,
-            UserPreferencesEntries.V_WORKLIST_PROC_CONF);
+      return getPreferences(preferenceScope, UserPreferencesEntries.M_WORKFLOW, preferenceId);
    }
 
    /**

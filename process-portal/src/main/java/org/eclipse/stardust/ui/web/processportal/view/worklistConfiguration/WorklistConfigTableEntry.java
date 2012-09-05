@@ -17,6 +17,7 @@ import java.util.Map;
 import org.eclipse.stardust.engine.api.dto.ModelParticipantInfoDetails;
 import org.eclipse.stardust.engine.api.model.ModelParticipant;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
@@ -46,14 +47,21 @@ public class WorklistConfigTableEntry extends DefaultRowModel
    {
       elementName = ModelHelper.getParticipantLabel(participantInfo).getLabel();
 
-      if (participantInfo instanceof ModelParticipant)
+      if (PredefinedConstants.ADMINISTRATOR_ROLE.equals(participantInfo.getId()))
       {
-         elementOID = String.valueOf(((ModelParticipant) participantInfo).getElementOID());
-
+         elementOID = PredefinedConstants.ADMINISTRATOR_ROLE;
       }
-      else if (participantInfo instanceof ModelParticipantInfoDetails)
+      else
       {
-         elementOID = String.valueOf(((ModelParticipantInfoDetails) participantInfo).getRuntimeElementOID());
+         if (participantInfo instanceof ModelParticipant)
+         {
+            elementOID = String.valueOf(((ModelParticipant) participantInfo).getElementOID());
+
+         }
+         else if (participantInfo instanceof ModelParticipantInfoDetails)
+         {
+            elementOID = String.valueOf(((ModelParticipantInfoDetails) participantInfo).getRuntimeElementOID());
+         }
       }
    }
 
@@ -150,6 +158,7 @@ public class WorklistConfigTableEntry extends DefaultRowModel
             setSelectableColumns((List<WorklistColumn>) getParameter("columns"));
          }
       });
+      columnSelectorPopup.setElementName(getElementName());
       columnSelectorPopup.openPopup();
    }
 

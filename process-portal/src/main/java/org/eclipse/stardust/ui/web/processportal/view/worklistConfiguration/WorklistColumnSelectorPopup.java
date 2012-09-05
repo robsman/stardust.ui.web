@@ -37,6 +37,7 @@ public class WorklistColumnSelectorPopup extends PopupUIComponentBean
 
    private List<WorklistColumn> columns;
    private ParametricCallbackHandler parametricCallbackHandler;
+   private String elementName = "";
 
    public static WorklistColumnSelectorPopup getInstance()
    {
@@ -176,9 +177,6 @@ public class WorklistColumnSelectorPopup extends PopupUIComponentBean
       return descriptorColumns;
    }
 
-   /**
-    * 
-    */
    public void initialize()
    {}
 
@@ -190,5 +188,15 @@ public class WorklistColumnSelectorPopup extends PopupUIComponentBean
    public void setParametricCallbackHandler(ParametricCallbackHandler parametricCallbackHandler)
    {
       this.parametricCallbackHandler = parametricCallbackHandler;
+   }
+
+   public String getElementName()
+   {
+      return elementName;
+   }
+
+   public void setElementName(String elementName)
+   {
+      this.elementName = elementName;
    }
 }
