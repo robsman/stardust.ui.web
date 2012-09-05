@@ -18,13 +18,12 @@ define(
 			var controlFlowPropertiesPanel = null;
 
 			return {
-				initialize : function(models) {
-					controlFlowPropertiesPanel = new ControlFlowPropertiesPanel(
-							models);
+				initialize : function(diagram) {
+					controlFlowPropertiesPanel = new ControlFlowPropertiesPanel();
 
 					m_commandsController.registerCommandHandler(controlFlowPropertiesPanel);
 
-					controlFlowPropertiesPanel.initialize();
+					controlFlowPropertiesPanel.initialize(diagram);
 				},
 				getInstance : function(element) {
 					return controlFlowPropertiesPanel;
@@ -35,17 +34,12 @@ define(
 			 * 
 			 */
 			function ControlFlowPropertiesPanel() {
-
-				// Inheritance
-
 				var propertiesPanel = m_propertiesPanel
 						.createPropertiesPanel("controlFlowPropertiesPanel");
 
 				m_utils.inheritFields(this, propertiesPanel);
 				m_utils.inheritMethods(ControlFlowPropertiesPanel.prototype,
 						propertiesPanel);
-
-				// Member initialization
 
 				/**
 				 * 
@@ -58,10 +52,10 @@ define(
 				 * 
 				 */
 				ControlFlowPropertiesPanel.prototype.setElement = function(
-						newElement) {
+						element) {
 					this.clearErrorMessages();
 
-					this.element = newElement;
+					this.element = element;
 
 					if (this.element.properties == null) {
 						this.element.properties = {};

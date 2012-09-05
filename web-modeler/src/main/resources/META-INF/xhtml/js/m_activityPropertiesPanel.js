@@ -19,13 +19,12 @@ define(
 			var activityPropertiesPanel = null;
 
 			return {
-				initialize : function(models) {
-					activityPropertiesPanel = new ActivityPropertiesPanel(
-							models);
+				initialize : function(diagram) {
+					activityPropertiesPanel = new ActivityPropertiesPanel();
 
 					m_commandsController.registerCommandHandler(activityPropertiesPanel);
 
-					activityPropertiesPanel.initialize();
+					activityPropertiesPanel.initialize(diagram);
 				},
 				getInstance : function() {
 					return activityPropertiesPanel;

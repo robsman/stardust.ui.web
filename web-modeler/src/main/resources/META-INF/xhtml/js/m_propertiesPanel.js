@@ -64,7 +64,9 @@ define(
 				/**
 				 * 
 				 */
-				PropertiesPanel.prototype.initialize = function(element) {
+				PropertiesPanel.prototype.initialize = function(diagram) {
+					this.diagram = diagram;
+
 					this.initializePropertiesPages();
 					this.hide();
 				};
@@ -72,15 +74,15 @@ define(
 				/**
 				 * 
 				 */
-				PropertiesPanel.prototype.mapInputId = function(inputId) {
-					return jQuery("#" + this.id + " #" + inputId);
+				PropertiesPanel.prototype.getModel = function() {
+					return this.diagram.model;
 				};
-
+				
 				/**
 				 * 
 				 */
-				PropertiesPanel.prototype.getDiagram = function() {
-					return this.element.diagram;
+				PropertiesPanel.prototype.mapInputId = function(inputId) {
+					return jQuery("#" + this.id + " #" + inputId);
 				};
 
 				/**
@@ -335,7 +337,7 @@ define(
 					m_utils.debug(changes);
 					m_commandsController.submitCommand(m_command
 							.createUpdateModelElementCommand(
-									this.getDiagram().modelId, this
+									this.getModel().id, this
 											.getElementUuid(), changes));
 				};
 			}

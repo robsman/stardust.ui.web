@@ -16,12 +16,12 @@ define([ "m_utils", "m_constants", "m_commandsController", "m_command", "m_exten
 	var dataPropertiesPanel = null;
 
 	return {
-		initialize : function(models) {
-			dataPropertiesPanel = new DataPropertiesPanel(models);
+		initialize : function(diagram) {
+			dataPropertiesPanel = new DataPropertiesPanel();
 
 			m_commandsController.registerCommandHandler(dataPropertiesPanel);
 
-			dataPropertiesPanel.initialize();
+			dataPropertiesPanel.initialize(diagram);
 		},
 		getInstance : function(element) {
 			return dataPropertiesPanel;
@@ -31,7 +31,7 @@ define([ "m_utils", "m_constants", "m_commandsController", "m_command", "m_exten
 	/**
 	 *
 	 */
-	function DataPropertiesPanel(models) {
+	function DataPropertiesPanel() {
 		// Inheritance
 
 		var propertiesPanel = m_propertiesPanel
@@ -42,7 +42,6 @@ define([ "m_utils", "m_constants", "m_commandsController", "m_command", "m_exten
 
 		this.viewLink = jQuery("#dataPropertiesPanel #viewLink");
 
-		this.models = models;
 		this.data = null;
 
 		var viewManagerExtension = m_extensionManager
@@ -53,7 +52,6 @@ define([ "m_utils", "m_constants", "m_commandsController", "m_command", "m_exten
 		this.viewLink.click({
 			panel : this
 		}, function(event) {
-			m_utils.debug("Click");
 			event.data.panel.openView();
 		});
 

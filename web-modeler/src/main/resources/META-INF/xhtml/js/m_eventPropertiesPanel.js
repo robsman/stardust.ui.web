@@ -18,15 +18,14 @@ define(
 			var eventPropertiesPanel = null;
 
 			return {
-				initialize : function(models) {
-					eventPropertiesPanel = new EventPropertiesPanel(
-							models);
+				initialize : function(diagram) {
+					eventPropertiesPanel = new EventPropertiesPanel();
 				
 					m_commandsController.registerCommandHandler(eventPropertiesPanel);					
 					
-					eventPropertiesPanel.initialize();
+					eventPropertiesPanel.initialize(diagram);
 				},
-				getInstance : function(element) {
+				getInstance : function() {
 					return eventPropertiesPanel;
 				}
 			};
@@ -44,10 +43,6 @@ define(
 				m_utils.inheritFields(this, propertiesPanel);
 				m_utils.inheritMethods(EventPropertiesPanel.prototype,
 						propertiesPanel);
-
-				// Member initialization
-
-				this.models = models;
 
 				/**
 				 * 

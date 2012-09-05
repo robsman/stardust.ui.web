@@ -9,9 +9,9 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_command", "m_commandsController",
+		[ "m_utils", "m_constants", "m_command", "m_commandsController", "m_model",
 				"m_basicPropertiesPage", "m_activity" ],
-		function(m_utils, m_constants, m_command, m_commandsController,
+		function(m_utils, m_constants, m_command, m_commandsController, m_model,
 				m_basicPropertiesPage, m_activity) {
 			return {
 				create : function(propertiesPanel) {
@@ -73,34 +73,28 @@ define(
 					this
 							.registerCheckboxInputForModelElementAttributeChangeSubmission(
 									this.shareDataInput, "@synchshared");
-					this.applicationList
-							.change(
-									{
-										"page" : this
-									},
-									function(event) {
-										var page = event.data.page;
+					this.applicationList.change({
+						"page" : this
+					}, function(event) {
+						var page = event.data.page;
 
-										if (!page.validate()) {
-											return;
-										}
+						if (!page.validate()) {
+							return;
+						}
 
-										page.submitApplicationChanges();
-									});
-					this.subprocessList
-							.change(
-									{
-										"page" : this
-									},
-									function(event) {
-										var page = event.data.page;
+						page.submitApplicationChanges();
+					});
+					this.subprocessList.change({
+						"page" : this
+					}, function(event) {
+						var page = event.data.page;
 
-										if (!page.validate()) {
-											return;
-										}
+						if (!page.validate()) {
+							return;
+						}
 
-										page.submitSubprocessChanges();
-									});
+						page.submitSubprocessChanges();
+					});
 					this.applicationInput.click({
 						"page" : this
 					}, function(event) {
@@ -112,8 +106,7 @@ define(
 					this.subprocessInput.click({
 						"page" : this
 					}, function(event) {
-						if (event.data.page.subprocessInput
-								.is(":checked")) {
+						if (event.data.page.subprocessInput.is(":checked")) {
 							event.data.page.setSubprocessType();
 							event.data.pae.submitSubprocessChanges();
 						}
@@ -135,7 +128,7 @@ define(
 					this.applicationList
 							.append("<optgroup label=\"This Model\">");
 
-					for ( var i in this.propertiesPanel.getDiagram().model.applications) {
+					for ( var i in this.getModel().applications) {
 						this.applicationList
 								.append("<option value='"
 										+ this.propertiesPanel.getDiagram().model.applications[i]
@@ -149,21 +142,20 @@ define(
 					this.applicationList
 							.append("</optgroup><optgroup label=\"Others Model\">");
 
-					for ( var n in this.propertiesPanel.models) {
-						if (this.propertiesPanel.models[n] == this.propertiesPanel
-								.getDiagram().model) {
+					for ( var n in m_model.getModels()) {
+						if (m_model.getModels()[n] == this.getModel()) {
 							continue;
 						}
 
-						for ( var m in this.propertiesPanel.models[n].applications) {
+						for ( var m in m_model.getModels()[n].applications) {
 							this.applicationList
 									.append("<option value='"
-											+ this.propertiesPanel.models[n].applications[m]
+											+ m_model.getModels()[n].applications[m]
 													.getFullId()
 											+ "'>"
-											+ this.propertiesPanel.models[n].name
+											+ m_model.getModels()[n].name
 											+ "/"
-											+ this.propertiesPanel.models[n].applications[m].name
+											+ m_model.getModels()[n].applications[m].name
 											+ "</option>");
 						}
 					}
@@ -183,14 +175,11 @@ define(
 					this.subprocessList
 							.append("<optgroup label=\"This Model\"></optgroup>");
 
-					for ( var i in this.propertiesPanel.getDiagram().model.processes) {
-						this.subprocessList
-								.append("<option value='"
-										+ this.propertiesPanel.getDiagram().model.processes[i]
-												.getFullId()
-										+ "'>"
-										+ this.propertiesPanel.getDiagram().model.processes[i].name
-										+ "</option>");
+					for ( var i in this.getModel().processes) {
+						this.subprocessList.append("<option value='"
+								+ this.getModel().processes[i].getFullId()
+								+ "'>" + this.getModel().processes[i].name
+								+ "</option>");
 					}
 
 					this.subprocessList.append("</optgroup>");
@@ -198,22 +187,18 @@ define(
 					this.subprocessList
 							.append("<optgroup label=\"Others Model\">");
 
-					for ( var n in this.propertiesPanel.models) {
-						if (this.propertiesPanel.models[n] == this.propertiesPanel
-								.getDiagram().model) {
+					for ( var n in m_model.getModels()) {
+						if (m_model.getModels()[n] == this.getModel()) {
 							continue;
 						}
 
-						for ( var m in this.propertiesPanel.models[n].processes) {
-							this.subprocessList
-									.append("<option value='"
-											+ this.propertiesPanel.models[n].processes[m]
-													.getFullId()
-											+ "'>"
-											+ this.propertiesPanel.models[n].name
-											+ "/"
-											+ this.propertiesPanel.models[n].processes[m].name
-											+ "</option>");
+						for ( var m in m_model.getModels()[n].processes) {
+							this.subprocessList.append("<option value='"
+									+ m_model.getModels()[n].processes[m]
+											.getFullId() + "'>"
+									+ m_model.getModels()[n].name + "/"
+									+ m_model.getModels()[n].processes[m].name
+									+ "</option>");
 						}
 					}
 
@@ -324,8 +309,8 @@ define(
 									modelElement : {
 										activityType : m_constants.SUBPROCESS_ACTIVITY_TYPE,
 										subprocessFullId : this.subprocessList
-										.val() == m_constants.TO_BE_DEFINED ? null : this.subprocessList
-												.val()
+												.val() == m_constants.TO_BE_DEFINED ? null
+												: this.subprocessList.val()
 									}
 								});
 					}

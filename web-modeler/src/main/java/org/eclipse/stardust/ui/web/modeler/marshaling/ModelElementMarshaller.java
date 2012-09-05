@@ -835,7 +835,7 @@ public abstract class ModelElementMarshaller
                   String fullId = modelBuilderFacade.createFullId(containingModel,
                         eObject);
 
-                  dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID,
+                  dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY,
                         fullId);
                }
                else
@@ -856,7 +856,7 @@ public abstract class ModelElementMarshaller
                      String fullId = modelBuilderFacade.createFullId(model,
                            typeDeclaration);
 
-                     dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID,
+                     dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY,
                            fullId);
                   }
                }

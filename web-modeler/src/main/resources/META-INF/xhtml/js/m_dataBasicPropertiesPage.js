@@ -106,7 +106,18 @@ define(
 				 * 
 				 */
 				DataBasicPropertiesPage.prototype.submitDataChanges = function(dataChanges) {
+					// These are changes on the data, not the symbol
+					
 					this.submitChanges(dataChanges);
+				};
+				
+				/**
+				 * 
+				 */
+				DataBasicPropertiesPage.prototype.submitChanges = function(changes) {
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementWithUUIDCommand(
+									this.getModel().id, this.getModelElement().uuid, changes));
 				};
 			}
 		});

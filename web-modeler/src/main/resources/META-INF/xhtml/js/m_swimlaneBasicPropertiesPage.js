@@ -101,33 +101,33 @@ define(
 					this.participantList
 							.append("<optgroup label=\"This Model\">");
 
-					for ( var i in this.propertiesPanel.element.diagram.model.participants) {
+					for ( var i in this.getModel().participants) {
 						this.participantList
 								.append("<option value='"
-										+ this.propertiesPanel.element.diagram.model.participants[i]
+										+ this.getModel().participants[i]
 												.getFullId()
 										+ "'>"
-										+ this.propertiesPanel.element.diagram.model.participants[i].name
+										+ this.getModel().participants[i].name
 										+ "</option>");
 					}
 
 					this.participantList
 							.append("</optgroup><optgroup label=\"Other Models\">");
 
-					for ( var n in this.propertiesPanel.models) {
-						if (this.propertiesPanel.models[n] == this.propertiesPanel.element.diagram.model) {
+					for ( var n in m_model.getModels()) {
+						if (m_model.getModels()[n] == this.getModel()) {
 							continue;
 						}
 
-						for ( var m in this.propertiesPanel.models[n].participants) {
+						for ( var m in m_model.getModels()[n].participants) {
 							this.participantList
 									.append("<option value='"
-											+ this.propertiesPanel.models[n].participants[m]
+											+ m_model.getModels()[n].participants[m]
 													.getFullId()
 											+ "'>"
-											+ this.propertiesPanel.models[n].name
+											+ m_model.getModels()[n].name
 											+ "/"
-											+ this.propertiesPanel.models[n].participants[m].name
+											+ m_model.getModels()[n].participants[m].name
 											+ "</option>");
 						}
 					}

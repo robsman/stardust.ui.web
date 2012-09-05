@@ -18,15 +18,14 @@ define(
 			var swimlanePropertiesPanel = null;
 
 			return {
-				initialize : function(models) {
-					swimlanePropertiesPanel = new SwimlanePropertiesPanel(
-							models);
+				initialize : function(diagram) {
+					swimlanePropertiesPanel = new SwimlanePropertiesPanel();
 				
 					m_commandsController.registerCommandHandler(swimlanePropertiesPanel);					
 					
-					swimlanePropertiesPanel.initialize();
+					swimlanePropertiesPanel.initialize(diagram);
 				},				
-				getInstance : function(element) {
+				getInstance : function() {
 					return swimlanePropertiesPanel;
 				}
 			};
@@ -34,20 +33,13 @@ define(
 			/**
 			 * 
 			 */
-			function SwimlanePropertiesPanel(models) {
-
-				// Inheritance
-
+			function SwimlanePropertiesPanel() {
 				var propertiesPanel = m_propertiesPanel
 						.createPropertiesPanel("swimlanePropertiesPanel");
 
 				m_utils.inheritFields(this, propertiesPanel);
 				m_utils.inheritMethods(SwimlanePropertiesPanel.prototype,
 						propertiesPanel);
-
-				// Member initialization
-
-				this.models = models;
 
 				/**
 				 * 

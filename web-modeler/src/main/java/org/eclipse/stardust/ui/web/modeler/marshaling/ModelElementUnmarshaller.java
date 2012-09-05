@@ -26,7 +26,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.engine.core.pojo.data.Type;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
@@ -57,7 +56,6 @@ import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
-import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 
 /**
@@ -722,54 +720,37 @@ public abstract class ModelElementUnmarshaller
     */
    private void updateData(DataType data, JsonObject dataJson)
    {
+      System.out.println("Data Json " + dataJson);
+
       mapDeclaredProperties(data, dataJson, propertiesMap.get(DataType.class));
       storeAttributes(data, dataJson);
       storeDescription(data, dataJson);
 
       if (dataJson.has(ModelerConstants.DATA_TYPE_PROPERTY))
       {
-         if (dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).equals(
+         System.out.println("Has property " + dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString());
+
+         if (dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString().equals(
                ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
          {
-            // @@@ data.setType(mapPrimitiveType(""));
+            System.out.println("Creating Primitive Type: " + dataJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY));
+
+            getModelBuilderFacade().updatePrimitiveData(data, dataJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY).getAsString());
+            
+            System.out.println("Primitive Type: " + data.getType());
          }
-         else if (dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).equals(
+         else if (dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString().equals(
                ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
          {
-            // @@@
+            getModelBuilderFacade().updateStructuredDataType(data, dataJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY).getAsString());
+
+            System.out.println("Structured Type: " + data.getType());
+         }
+         else
+         {
+            System.out.println("Other type " + dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString());            
          }
       }
-   }
-
-   /**
-    * 
-    * @param primitiveTypeId
-    * @return
-    */
-   private Type mapPrimitiveType(String primitiveTypeId)
-   {
-      if (primitiveTypeId.equals(ModelerConstants.STRING_PRIMITIVE_DATA_TYPE))
-      {
-         return Type.String;
-      }
-      else if (primitiveTypeId.equals(ModelerConstants.DATE_PRIMITIVE_DATA_TYPE))
-      {
-         return Type.Calendar;
-      }
-      else if (primitiveTypeId.equals(ModelerConstants.INTEGER_PRIMITIVE_DATA_TYPE))
-      {
-         return Type.Integer;
-      }
-      else if (primitiveTypeId.equals(ModelerConstants.DOUBLE_PRIMITIVE_DATA_TYPE))
-      {
-         return Type.Double;
-      }
-      else if (primitiveTypeId.equals(ModelerConstants.DECIMAL_PRIMITIVE_DATA_TYPE))
-      {
-         return Type.Money;
-      }
-
-      throw new IllegalArgumentException("Type " + primitiveTypeId + " is not supported.");
    }
 
    /**

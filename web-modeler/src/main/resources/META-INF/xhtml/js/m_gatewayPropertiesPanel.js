@@ -18,15 +18,14 @@ define(
 			var gatewayPropertiesPanel = null;
 
 			return {
-				initialize : function(models) {
-					gatewayPropertiesPanel = new GatewayPropertiesPanel(
-							models);
+				initialize : function(diagram) {
+					gatewayPropertiesPanel = new GatewayPropertiesPanel();
 					
 					m_commandsController.registerCommandHandler(gatewayPropertiesPanel);					
 					
-					gatewayPropertiesPanel.initialize();
+					gatewayPropertiesPanel.initialize(diagram);
 				},				
-				getInstance : function(element) {
+				getInstance : function() {
 					return gatewayPropertiesPanel;
 				}
 			};
@@ -34,19 +33,13 @@ define(
 			/**
 			 * 
 			 */
-			function GatewayPropertiesPanel(models) {
-				// Inheritance
-
+			function GatewayPropertiesPanel() {
 				var propertiesPanel = m_propertiesPanel
 						.createPropertiesPanel("gatewayPropertiesPanel");
 
 				m_utils.inheritFields(this, propertiesPanel);
 				m_utils.inheritMethods(GatewayPropertiesPanel.prototype,
 						propertiesPanel);
-
-				// Member initialization
-
-				this.models = models;
 
 				/**
 				 * 
@@ -59,10 +52,10 @@ define(
 				 * 
 				 */
 				GatewayPropertiesPanel.prototype.setElement = function(
-						newElement) {
+						element) {
 					this.clearErrorMessages();
 
-					this.element = newElement;
+					this.element = element;
 
 					if (this.element.properties == null) {
 						this.element.properties = {};

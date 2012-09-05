@@ -239,7 +239,7 @@ define(
 						m_utils.debug(page.getModelElement());
 
 						if (page.getModelElement()[property] != input.val()) {
-							page.propertiesPanel.submitChanges(page
+							page.submitChanges(page
 									.assembleChangedObjectFromProperty(
 											property, input.val()));
 						}
@@ -268,7 +268,7 @@ define(
 										if (page.getModelElement().attributes[attribute] != input
 												.val()) {
 											page
-													.propertiesPanel.submitChanges(page
+													.submitChanges(page
 															.assembleChangedObjectFromAttribute(
 																	attribute,
 																	input.val()));
@@ -294,7 +294,7 @@ define(
 
 						if (page.getModelElement()[property] != input
 								.is(":checked")) {
-							page.propertiesPanel.submitChanges(page
+							page.submitChanges(page
 									.assembleChangedObjectFromProperty(
 											property, input.is(":checked")));
 						}
@@ -322,8 +322,7 @@ define(
 
 										if (page.getModelElement().attributes[attribute] != input
 												.is(":checked")) {
-											page
-													.propertiesPanel.submitChanges(page
+											page.submitChanges(page
 															.assembleChangedObjectFromAttribute(
 																	attribute,
 																	input
@@ -335,8 +334,18 @@ define(
 				/**
 				 * 
 				 */
+				PropertiesPage.prototype.getModel = function() {
+					return this.propertiesPanel.diagram.model;
+				};
+				
+				/**
+				 * 
+				 */
 				PropertiesPage.prototype.submitChanges = function(changes) {
-					this.propertiesPanel.submitChanges(changes);
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementCommand(
+									this.getModel().id, this.propertiesPanel
+											.getElementUuid(), changes));
 				};
 			}
 		});

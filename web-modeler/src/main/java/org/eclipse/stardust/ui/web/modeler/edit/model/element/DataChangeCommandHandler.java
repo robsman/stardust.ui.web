@@ -76,9 +76,9 @@ public class DataChangeCommandHandler
    {
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String dataFullID = extractString(request, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID);
+      String dataFullID = extractString(request, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY);
       String stripFullId_ = getModelBuilderFacade().getModelId(extractString(request,
-            ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID));
+            ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY));
       if (StringUtils.isEmpty(stripFullId_))
       {
          stripFullId_ = model.getId();

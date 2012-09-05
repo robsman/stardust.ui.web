@@ -19,15 +19,14 @@ define(
 			var dataFlowPropertiesPanel = null;
 
 			return {
-				initialize : function(models) {
-					dataFlowPropertiesPanel = new DataFlowPropertiesPanel(
-							models);
+				initialize : function(diagram) {
+					dataFlowPropertiesPanel = new DataFlowPropertiesPanel();
 
 					m_commandsController.registerCommandHandler(dataFlowPropertiesPanel);					
 					
-					dataFlowPropertiesPanel.initialize();
+					dataFlowPropertiesPanel.initialize(diagram);
 				},
-				getInstance : function(element) {
+				getInstance : function() {
 					return dataFlowPropertiesPanel;
 				}
 			};
@@ -36,17 +35,12 @@ define(
 			 * 
 			 */
 			function DataFlowPropertiesPanel() {
-
-				// Inheritance
-
 				var propertiesPanel = m_propertiesPanel
 						.createPropertiesPanel("dataFlowPropertiesPanel");
 
 				m_utils.inheritFields(this, propertiesPanel);
 				m_utils.inheritMethods(DataFlowPropertiesPanel.prototype,
 						propertiesPanel);
-
-				// Member initialization
 
 				/**
 				 * 
@@ -67,15 +61,6 @@ define(
 					for ( var n in this.propertiesPages) {
 						this.propertiesPages[n].setElement();
 					}
-				};
-
-				/**
-				 * 
-				 */
-				DataFlowPropertiesPanel.prototype.apply = function() {
-					this.applyPropertiesPages();
-					this.element.refresh();
-					this.element.submitUpdate();
 				};
 			}
 		});

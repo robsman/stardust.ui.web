@@ -18,15 +18,14 @@ define(
 			var processPropertiesPanel = null;
 
 			return {
-				initialize : function(models, diagram) {
-					processPropertiesPanel = new ProcessPropertiesPanel(
-							models, diagram);
+				initialize : function(diagram) {
+					processPropertiesPanel = new ProcessPropertiesPanel();
 					
 					m_commandsController.registerCommandHandler(processPropertiesPanel);
 
-					processPropertiesPanel.initialize();
+					processPropertiesPanel.initialize(diagram);
 				},
-				getInstance : function(element) {
+				getInstance : function() {
 					return processPropertiesPanel;
 				}
 			};
@@ -34,7 +33,7 @@ define(
 			/**
 			 * 
 			 */
-			function ProcessPropertiesPanel(models, diagram) {
+			function ProcessPropertiesPanel() {
 				// Inheritance
 
 				var propertiesPanel = m_propertiesPanel
@@ -43,11 +42,6 @@ define(
 				m_utils.inheritFields(this, propertiesPanel);
 				m_utils.inheritMethods(ProcessPropertiesPanel.prototype,
 						propertiesPanel);
-
-				// Member initialization
-
-				this.models = models;
-				this.diagram = diagram;
 
 				/**
 				 * 
@@ -70,13 +64,6 @@ define(
 					}
 				};
 				
-				/**
-				 * 
-				 */
-				ProcessPropertiesPanel.prototype.getDiagram = function() {
-					return this.diagram;
-				};
-
 				/**
 				 * 
 				 */

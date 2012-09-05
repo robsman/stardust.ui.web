@@ -478,19 +478,6 @@ define(
 					m_utils.debug("===> Loaded Models");
 					m_utils.debug(m_model.getModels());
 
-					// Initialize Properties Panels
-
-					m_processPropertiesPanel.initialize(m_model.getModels(),
-							this);
-					m_activityPropertiesPanel.initialize(m_model.getModels());
-					m_dataPropertiesPanel.initialize(m_model.getModels());
-					m_eventPropertiesPanel.initialize(m_model.getModels());
-					m_gatewayPropertiesPanel.initialize(m_model.getModels());
-					m_swimlanePropertiesPanel.initialize(m_model.getModels());
-					m_controlFlowPropertiesPanel
-							.initialize(m_model.getModels());
-					m_dataFlowPropertiesPanel.initialize(m_model.getModels());
-
 					// TODO Bind against loaded models
 
 					this.modelId = jQuery.url.setUrl(window.location.search)
@@ -506,7 +493,20 @@ define(
 						this.model = m_model.findModel(this.modelId);
 						window.parent.EventHub.events.publish("RELOAD_MODELS");
 					}
+
 					this.process = this.model.processes[this.processId];
+
+					// Initialize Properties Panels
+
+					m_processPropertiesPanel.initialize(this);
+					m_activityPropertiesPanel.initialize(this);
+					m_dataPropertiesPanel.initialize(this);
+					m_eventPropertiesPanel.initialize(this);
+					m_gatewayPropertiesPanel.initialize(this);
+					m_swimlanePropertiesPanel.initialize(this);
+					m_controlFlowPropertiesPanel
+							.initialize(this);
+					m_dataFlowPropertiesPanel.initialize(this);
 				};
 
 				/**
