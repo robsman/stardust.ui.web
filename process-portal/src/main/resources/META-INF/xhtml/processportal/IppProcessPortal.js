@@ -338,13 +338,10 @@ InfinityBpm.ProcessPortal = new function() {
 		var jsonStr;
 		try {
 			if (typeof input === 'string' || input instanceof String){
-				// String. So it will be Stringified JSON, Validate it 
-				var jsonInput = JSON.parse(input);
-				if (null != jsonInput && typeof jsonInput === 'object') {
-					jsonStr = input;
-					proceed = true;
-				}
-			} else if (typeof input === 'object' && input.type && input.data) {
+				// String. So it will be Stringified JSON, Validation is done at serverside 
+				jsonStr = input;
+				proceed = true;
+			} else if (typeof input === 'object') {
 				jsonStr = JSON.stringify(input);
 				proceed = true;
 			}
