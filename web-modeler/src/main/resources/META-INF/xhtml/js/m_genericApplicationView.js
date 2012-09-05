@@ -53,7 +53,7 @@ define(
 							"applicationType", "id", this.application.applicationType)[0];
 					
 					this.unsupportedMessagePanel.empty();
-					this.unsupportedMessagePanel.append("Display and editing of the Application Type <b>" + extension.readableName + "</b> is not yet supported for the Browser Modeler. However, Applications of this type can be used for modeling.");
+					this.unsupportedMessagePanel.append("Display and editing of the Application Type <b>" + extension.readableName + "</b> is not yet supported for the Browser Modeler. Please use the Eclipse Modeler to configure this Application. However, configured Applications of this type can be used for modeling.");
 				};
 
 				/**
