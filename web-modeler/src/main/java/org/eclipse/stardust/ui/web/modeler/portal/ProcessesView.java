@@ -82,7 +82,7 @@ public class ProcessesView extends AbstractLaunchPanel implements
 	 *
 	 */
 	private static void activateIframe() {
-		String deActivateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('modelOutlineFrame', '../bpm-modeler/launchpad/outline.xhtml', {anchorId:'outlineAnchor', width:280, height:570, maxWidth:350, maxHeight:1000, anchorYAdjustment:10, zIndex:200, noUnloadWarning: 'true'});";
+		String deActivateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('modelOutlineFrame', '../bpm-modeler/launchpad/outline.xhtml', {anchorId:'outlineAnchor', width:280, height:570, maxWidth:350, maxHeight:1000, zIndex:200, noUnloadWarning: 'true'});";
 		JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
 				deActivateIframeJS);
 		PortalApplication.getInstance().addEventScript(deActivateIframeJS);
