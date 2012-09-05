@@ -348,6 +348,14 @@ define(
 							this.modelElement = m_dataFlow.createDataFlow(
 									this.diagram.process, data, activity);
 
+							if (this.fromModelElementType == m_constants.DATA) {
+								this.modelElement.inDataMapping = true;
+								this.modelElement.outDataMapping = false;
+							} else {
+								this.modelElement.inDataMapping = false;
+								this.modelElement.outDataMapping = true;
+							}
+
 							this.propertiesPanel = m_dataFlowPropertiesPanel
 									.getInstance();
 						} else {
@@ -379,6 +387,21 @@ define(
 				 */
 				Connection.prototype.setSecondAnchorPoint = function(
 						anchorPoint, sync) {
+					/*if (this.isDataFlow()) {
+						if (this.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
+							var dataSymbol = this.fromAnchorPoint.symbol;
+							var activity = this.toAnchorPoint.symbol;
+						} else {
+							var dataSymbol = this.toAnchorPoint.symbol;
+							var activity = this.fromAnchorPoint.symbol;
+						}
+						for ( var n in dataSymbol.connections) {
+							if (dataSymbol.connections[n].oid
+									&& (dataSymbol.connections[n].fromAnchorPoint.symbol.oid == activity.oid || dataSymbol.connections[n].toAnchorPoint.symbol.oid)) {
+
+							}
+						}
+					}*/
 					this.setSecondAnchorPointNoComplete(anchorPoint);
 
 					if (this.toAnchorPoint.symbol != null) {
@@ -1354,13 +1377,34 @@ define(
 							m_messageDisplay
 									.showErrorMessage("Only in sequence flow connections are allowed on End Events.");
 							return false;
-						} else if (fromAnchorPoint.symbol.connections.length > 1) {
+						} else if (null != toAnchorPoint
+								&& toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
+							m_messageDisplay
+									.showErrorMessage("Data connections/associations are not supported for symbol.");
+							return false;
+						}else if (fromAnchorPoint.symbol.connections.length > 1) {
 							// Start Event can have only one OUT connection
 							m_messageDisplay
 									.showErrorMessage("No further connection allowed for this Event.");
 							return false;
 						}
-					} else if ((toAnchorPoint != null && toAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL)) {
+					} else if (fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
+						if (null != toAnchorPoint
+								&& (toAnchorPoint.symbol.type == m_constants.GATEWAY_SYMBOL || toAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL)) {
+							m_messageDisplay
+									.showErrorMessage("Data connections/associations are not supported for symbol.");
+							return false;
+						}
+					}
+					else if (fromAnchorPoint.symbol.type == m_constants.GATEWAY_SYMBOL) {
+						if (null != toAnchorPoint
+								&& toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
+							m_messageDisplay
+									.showErrorMessage("Data connections/associations are not supported for symbol.");
+							return false;
+						}
+					}
+					else if ((toAnchorPoint != null && toAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL)) {
 						// Check for IN connections on Start Event
 						if (toAnchorPoint.symbol.modelElement.eventType == m_constants.START_EVENT_TYPE) {
 							m_messageDisplay

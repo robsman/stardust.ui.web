@@ -124,7 +124,7 @@ public class ConnectionCommandHandler
                            extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID)),
                      getModelBuilderFacade().findDataSymbol(processDefinition.getDiagram().get(0),
                            extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
-                     maxOid, false);
+                     maxOid);
             }
             else
             {
@@ -188,7 +188,7 @@ public class ConnectionCommandHandler
                            extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
                      getModelBuilderFacade().findDataSymbol(processDefinition.getDiagram().get(0),
                            extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID)),
-                     maxOid, true);
+                     maxOid);
             }
             else
             {
@@ -379,13 +379,16 @@ public class ConnectionCommandHandler
     */
    private void createDataFlowConnection(JsonObject connectionJson,
          ProcessDefinitionType processDefinition, ActivitySymbolType activitySymbol,
-         DataSymbolType dataSymbol, long maxOid, boolean inDataMapping)
+         DataSymbolType dataSymbol, long maxOid)
    {
 
       System.out.println("Create data flow connection");
 
       DataType data = dataSymbol.getData();
       ActivityType activity = activitySymbol.getActivity();
+      boolean inDataMapping = extractBoolean(
+            connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
+            ModelerConstants.IN_DATA_MAPPING_PROPERTY);
 
       DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
       DataMappingConnectionType dataMappingConnection = AbstractElementBuilder.F_CWM.createDataMappingConnectionType();
