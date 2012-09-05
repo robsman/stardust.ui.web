@@ -131,10 +131,10 @@ define(
 					for ( var i in this.getModel().applications) {
 						this.applicationList
 								.append("<option value='"
-										+ this.propertiesPanel.getDiagram().model.applications[i]
+										+ this.getModel().applications[i]
 												.getFullId()
 										+ "'>"
-										+ this.propertiesPanel.getDiagram().model.applications[i].name
+										+ this.getModel().applications[i].name
 										+ "</option>");
 					}
 
