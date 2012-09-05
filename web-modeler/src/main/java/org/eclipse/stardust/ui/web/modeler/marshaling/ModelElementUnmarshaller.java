@@ -38,6 +38,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
 import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
@@ -59,9 +60,9 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 
 /**
- * 
+ *
  * @author Marc.Gille
- * 
+ *
  */
 public abstract class ModelElementUnmarshaller
 {
@@ -112,7 +113,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     */
@@ -197,7 +198,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     */
@@ -284,7 +285,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param controlFlowJson
     */
@@ -344,22 +345,46 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param dataFlowConnection
     * @param dataFlowConnectionJson
     */
    private void updateDataFlowConnection(DataMappingConnectionType dataFlowConnection,
          JsonObject dataFlowConnectionJson)
    {
-      dataFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
-            dataFlowConnectionJson,
-            ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-      dataFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
-            dataFlowConnectionJson, ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+      JsonObject dataFlowJson = dataFlowConnectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+      if (dataFlowConnectionJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      {
+         dataFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
+               dataFlowConnectionJson,
+               ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+      }
+      if (dataFlowConnectionJson.has(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      {
+         dataFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
+               dataFlowConnectionJson,
+               ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+      }
+
+      if (dataFlowJson.has(ModelerConstants.IN_DATA_MAPPING_PROPERTY)
+            || dataFlowJson.has(ModelerConstants.OUT_DATA_MAPPING_PROPERTY))
+      {
+         for (DataMappingType dataMapping : dataFlowConnection.getActivitySymbol()
+               .getActivity()
+               .getDataMapping())
+         {
+            if (dataMapping.getId() == dataFlowConnection.getDataSymbol()
+                  .getData()
+                  .getId())
+            {
+             updateDataMapping(dataFlowJson, dataMapping);
+            }
+         }
+      }
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     */
@@ -381,7 +406,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param processDefinition
     * @param processDefinitionJson
     */
@@ -513,7 +538,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @param activitySymbolJson
     */
@@ -530,7 +555,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @param gatewaySymbolJson
     */
@@ -547,7 +572,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @param startEventSymbolJson
     */
@@ -563,7 +588,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param endEventSymbol
     * @param endEventSymbolJson
     */
@@ -736,7 +761,7 @@ public abstract class ModelElementUnmarshaller
             System.out.println("Creating Primitive Type: " + dataJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY));
 
             getModelBuilderFacade().updatePrimitiveData(data, dataJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY).getAsString());
-            
+
             System.out.println("Primitive Type: " + data.getType());
          }
          else if (dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString().equals(
@@ -748,7 +773,7 @@ public abstract class ModelElementUnmarshaller
          }
          else
          {
-            System.out.println("Other type " + dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString());            
+            System.out.println("Other type " + dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString());
          }
       }
    }
@@ -765,7 +790,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param elementJson
     * @param elementProperties
@@ -783,7 +808,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param targetElement
     * @param request
     * @param property
@@ -853,7 +878,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param json
     * @param element
     * @throws JSONException
@@ -882,7 +907,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -906,7 +931,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -933,7 +958,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @return
     */
    private ModelBuilderFacade getModelBuilderFacade()
@@ -946,7 +971,7 @@ public abstract class ModelElementUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param json
     * @param memberName
     * @return
@@ -960,4 +985,71 @@ public abstract class ModelElementUnmarshaller
             ? member.getAsString()
             : (String) null;
    }
+
+   /**
+    *
+    * @param dataFlowJson
+    * @param dataMapping
+    */
+   private void updateDataMapping(JsonObject dataFlowJson, DataMappingType dataMapping)
+   {
+      // If both IN-OUT mapping is present
+      if (dataFlowJson.has(ModelerConstants.IN_DATA_MAPPING_PROPERTY)
+            && dataFlowJson.has(ModelerConstants.OUT_DATA_MAPPING_PROPERTY))
+      {
+         if (dataFlowJson.get(ModelerConstants.IN_DATA_MAPPING_PROPERTY).getAsBoolean()
+               && dataFlowJson.get(ModelerConstants.OUT_DATA_MAPPING_PROPERTY)
+                     .getAsBoolean())
+         {
+            dataMapping.setDirection(DirectionType.INOUT_LITERAL);
+         }
+      }
+      // IN data mapping is updates
+      else if (dataFlowJson.has(ModelerConstants.IN_DATA_MAPPING_PROPERTY))
+      {
+         if (dataFlowJson.get(ModelerConstants.IN_DATA_MAPPING_PROPERTY).getAsBoolean())
+         {
+            //If OUT mapping was already set , update to IN-OUT mapping
+            if (dataMapping.getDirection().equals(DirectionType.OUT_LITERAL))
+            {
+               dataMapping.setDirection(DirectionType.INOUT_LITERAL);
+            }
+            else
+            {
+               dataMapping.setDirection(DirectionType.IN_LITERAL);
+            }
+         }
+         else
+         {
+            if (dataMapping.getDirection().equals(DirectionType.INOUT_LITERAL))
+            {
+               dataMapping.setDirection(DirectionType.OUT_LITERAL);
+            }
+         }
+      }
+      // OUT data mapping is updates
+      else if (dataFlowJson.has(ModelerConstants.OUT_DATA_MAPPING_PROPERTY))
+      {
+         if (dataFlowJson.get(ModelerConstants.OUT_DATA_MAPPING_PROPERTY).getAsBoolean())
+         {
+          //If IN mapping was already set , update to IN-OUT mapping
+            if (dataMapping.getDirection().equals(DirectionType.IN_LITERAL))
+            {
+               dataMapping.setDirection(DirectionType.INOUT_LITERAL);
+            }
+            else
+            {
+               dataMapping.setDirection(DirectionType.OUT_LITERAL);
+            }
+         }
+         else
+         {
+            if (dataMapping.getDirection().equals(DirectionType.INOUT_LITERAL))
+            {
+               dataMapping.setDirection(DirectionType.IN_LITERAL);
+            }
+         }
+      }
+   }
+
 }

@@ -1429,12 +1429,14 @@ define(
 								anchorPoint)) {
 							this.currentConnection
 									.setSecondAnchorPoint(anchorPoint);
-							this.currentConnection.select();
+							if (!this.currentConnection.isCompleted()) {
+								this.currentConnection.remove();
+							} else {
+								this.currentConnection.select();
+							}
 							this.currentConnection = null;
 							this.mode = this.NORMAL_MODE;
 						}
-
-
 					}
 				};
 

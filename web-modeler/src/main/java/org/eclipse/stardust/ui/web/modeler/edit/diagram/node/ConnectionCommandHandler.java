@@ -393,8 +393,7 @@ public class ConnectionCommandHandler
       DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
       DataMappingConnectionType dataMappingConnection = AbstractElementBuilder.F_CWM.createDataMappingConnectionType();
 
-      // TODO Add index
-
+      dataMapping.setElementOid(++maxOid);
       dataMapping.setId(data.getId());
       dataMapping.setName(data.getName());
 

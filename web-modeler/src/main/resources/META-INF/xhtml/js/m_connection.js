@@ -387,25 +387,43 @@ define(
 				 */
 				Connection.prototype.setSecondAnchorPoint = function(
 						anchorPoint, sync) {
-					/*if (this.isDataFlow()) {
-						if (this.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
-							var dataSymbol = this.fromAnchorPoint.symbol;
-							var activity = this.toAnchorPoint.symbol;
-						} else {
-							var dataSymbol = this.toAnchorPoint.symbol;
-							var activity = this.fromAnchorPoint.symbol;
-						}
-						for ( var n in dataSymbol.connections) {
-							if (dataSymbol.connections[n].oid
-									&& (dataSymbol.connections[n].fromAnchorPoint.symbol.oid == activity.oid || dataSymbol.connections[n].toAnchorPoint.symbol.oid)) {
 
+					this.setSecondAnchorPointNoComplete(anchorPoint);
+					var updateConnection = null;
+					if (this.toAnchorPoint.symbol != null) {
+						// When IN mapping present and OUT mapping is added,
+						// same connection is modified viceversa
+						if (this.isDataFlow()) {
+							if (this.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
+								var dataSymbol = this.fromAnchorPoint.symbol;
+								var activity = this.toAnchorPoint.symbol;
+							} else {
+								var dataSymbol = this.toAnchorPoint.symbol;
+								var activity = this.fromAnchorPoint.symbol;
+							}
+							for ( var n in dataSymbol.connections) {
+								// Identify if connection exist between same
+								// Data and Activity symbol
+								if (dataSymbol.connections[n].oid
+										&& (dataSymbol.connections[n].fromAnchorPoint.symbol.oid == activity.oid || dataSymbol.connections[n].toAnchorPoint.symbol.oid)) {
+									// Use the existing connection
+									updateConnection = dataSymbol.connections[n];
+									// This will be the case always, just cross
+									// verification for IN-OUT mapping
+									if ((updateConnection.modelElement.inDataMapping && this.modelElement.outDataMapping)
+											|| (updateConnection.modelElement.outDataMapping && this.modelElement.inDataMapping)) {
+										updateConnection.modelElement.inDataMapping = true;
+										updateConnection.modelElement.outDataMapping = true;
+										updateConnection.createUpdateCommand();
+										break;
+									}
+								}
 							}
 						}
-					}*/
-					this.setSecondAnchorPointNoComplete(anchorPoint);
-
-					if (this.toAnchorPoint.symbol != null) {
-						this.complete(sync);
+						// If update is not called, new connection is created
+						if (updateConnection == null) {
+							this.complete(sync);
+						}
 					}
 				};
 
@@ -445,6 +463,8 @@ define(
 						transferObject.segments = null;
 					} else {
 						transferObject.modelElement = transferObject.modelElement.createTransferObject();
+						if (this.modelElement)
+						transferObject.modelElement.oid = this.modelElement.oid;
 					}
 
 					return transferObject;
@@ -733,13 +753,33 @@ define(
 							"stroke-dasharray" : "-"
 						});
 
-						//For In-Mapping path will be from Data to Activity
-						//vice-versa for Out mapping
+						// For In-Mapping path will be from Data to Activity
+						// vice-versa for Out mapping
 						if (this.modelElement.inDataMapping
-								|| this.modelElement.outDataMapping) {
-							this.path.attr("arrow-start", "none");
+								&& this.modelElement.outDataMapping) {
+							this.path.attr("arrow-start", "block-wide-long");
 							this.path.attr("arrow-end", "block-wide-long");
-						} else {
+						} else if (this.modelElement.inDataMapping) {
+							// When dataFlow modified from properties panel the
+							// From,To anchor point symbols to not change
+							if (this.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
+								this.path
+										.attr("arrow-start", "block-wide-long");
+								this.path.attr("arrow-end", "none");
+							} else {
+								this.path.attr("arrow-start", "none");
+								this.path.attr("arrow-end", "block-wide-long");
+							}
+						} else if (this.modelElement.outDataMapping) {
+							if (this.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
+								this.path
+										.attr("arrow-start", "block-wide-long");
+								this.path.attr("arrow-end", "none");
+							} else {
+								this.path.attr("arrow-start", "none");
+								this.path.attr("arrow-end", "block-wide-long");
+							}
+						}else {
 							this.path.attr("arrow-start", "none");
 							this.path.attr("arrow-end", "none");
 						}
