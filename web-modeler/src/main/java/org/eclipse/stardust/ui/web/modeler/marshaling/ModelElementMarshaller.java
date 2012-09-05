@@ -41,7 +41,7 @@ public abstract class ModelElementMarshaller
    private ModelBuilderFacade modelBuilderFacade;
 
    /**
-    *
+    * 
     * @param modelElement
     * @return
     */
@@ -270,7 +270,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param laneSymbol
     * @return
     */
@@ -463,7 +463,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param activity
     * @return
     */
@@ -599,7 +599,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param activitySymbol
     * @return
     */
@@ -687,7 +687,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -739,7 +739,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -791,7 +791,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param data
     * @return
     */
@@ -841,8 +841,8 @@ public abstract class ModelElementMarshaller
                   String fullId = modelBuilderFacade.createFullId(containingModel,
                         eObject);
 
-                  dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY,
-                        fullId);
+                  dataJson.addProperty(
+                        ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
                }
                else
                {
@@ -862,8 +862,8 @@ public abstract class ModelElementMarshaller
                      String fullId = modelBuilderFacade.createFullId(model,
                            typeDeclaration);
 
-                     dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY,
-                           fullId);
+                     dataJson.addProperty(
+                           ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
                   }
                }
             }
@@ -892,7 +892,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -1073,6 +1073,18 @@ public abstract class ModelElementMarshaller
          orgJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
       }
 
+      if (org.getTeamLead() != null)
+      {
+         orgJson.addProperty(
+               ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY,
+               getModelBuilderFacade().createFullId(
+                     ModelUtils.findContainingModel(org.getTeamLead()), org.getTeamLead()));
+      }
+      else
+      {
+         orgJson.addProperty(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY, (String) null);
+      }
+
       loadDescription(orgJson, org);
       loadAttributes(org, orgJson);
 
@@ -1166,7 +1178,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param dataMappingConnection
     * @return
     */
@@ -1236,7 +1248,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -1394,7 +1406,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -1408,7 +1420,8 @@ public abstract class ModelElementMarshaller
       controlFlowJson.addProperty(ModelerConstants.OID_PROPERTY,
             transition.getElementOid());
 
-      if (null != transition.getCondition() && transition.getCondition().equals("CONDITION"))
+      if (null != transition.getCondition()
+            && transition.getCondition().equals("CONDITION"))
       {
          controlFlowJson.addProperty(ModelerConstants.CONDITION_EXPRESSION_PROPERTY,
                (String) transition.getExpression().getMixed().getValue(0));
@@ -1785,7 +1798,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param orientation
     * @return
     */
@@ -1816,7 +1829,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param modelElementJson
     * @param element
     */
@@ -1835,7 +1848,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * @param element
     * @param json
     * @throws JSONException
@@ -1860,9 +1873,9 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    *
+    * 
     * TODO From DynamicConnectionCommand. Refactor?
-    *
+    * 
     * @param activity
     * @return
     */

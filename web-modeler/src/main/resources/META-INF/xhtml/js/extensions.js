@@ -270,7 +270,55 @@ var extensions = {
 				readableName : "Business Rules Application",
 				iconPath : "../images/icons/application-drools.png",
 				viewId : "genericApplicationView"
-			} ],
+			}, 
+			{
+				id : "dmsOperation",
+				readableName : "Document Management Application",
+				iconPath : "../images/icons/application-plain-java.png",
+				viewId : "genericApplicationView"
+			}, 			
+			{
+				id : "jms",
+				readableName : "JMS Application",
+				iconPath : "../images/icons/application-plain-java.png",
+				viewId : "genericApplicationView"
+			}, 			
+			{
+				id : "mailBean",
+				readableName : "Business Rules Application",
+				iconPath : "../images/icons/application-plain-java.png",
+				viewId : "genericApplicationView"
+			}, 			
+			{
+				id : "messageParsingBean",
+				readableName : "Message Parsing Application",
+				iconPath : "../images/icons/application-plain-java.png",
+				viewId : "genericApplicationView"
+			}, 			
+			{
+				id : "messageSerializationBean",
+				readableName : "Message Serialization Application",
+				iconPath : "../images/icons/application-plain-java.png",
+				viewId : "genericApplicationView"
+			}, 
+			{
+				id : "sessionBean",
+				readableName : "EJB Session Bean Application",
+				iconPath : "../images/icons/application-plain-java.png",
+				viewId : "genericApplicationView"
+			}, 
+			{
+				id : "springBean",
+				readableName : "Spring Bean Application",
+				iconPath : "../images/icons/application-drools.png",
+				viewId : "genericApplicationView"
+			}, 
+			{
+				id : "xslMessageTransformationBean",
+				readableName : "XSL Message Transformation Application",
+				iconPath : "../images/icons/application-drools.png",
+				viewId : "genericApplicationView"
+			}],
 			dataType : [
 			       			{
 			       				id : "serializable",

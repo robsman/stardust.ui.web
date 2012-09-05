@@ -167,7 +167,7 @@ define(
 					input
 							.click(
 									{
-										"page" : this,
+										"view" : this,
 										"input" : input
 									},
 									function(event) {

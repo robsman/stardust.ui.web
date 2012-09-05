@@ -737,6 +737,11 @@ public abstract class ModelElementUnmarshaller
             propertiesMap.get(OrganizationType.class));
       storeAttributes(organization, organizationJson);
       storeDescription(organization, organizationJson);
+      
+      if (organizationJson.has(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY))
+      {
+      organization.setTeamLead((RoleType)getModelBuilderFacade().findParticipant(organizationJson.get(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY).getAsString()));
+      }
    }
 
    /**
@@ -753,26 +758,42 @@ public abstract class ModelElementUnmarshaller
 
       if (dataJson.has(ModelerConstants.DATA_TYPE_PROPERTY))
       {
-         System.out.println("Has property " + dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString());
+         System.out.println("Has property "
+               + dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString());
 
-         if (dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString().equals(
-               ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
+         if (dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
+               .getAsString()
+               .equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
          {
-            System.out.println("Creating Primitive Type: " + dataJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY));
+            System.out.println("Creating Primitive Type: "
+                  + dataJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY));
+
+            getModelBuilderFacade().updatePrimitiveData(
+                  data,
+                  dataJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY)
+                        .getAsString());
+
 
             getModelBuilderFacade().updatePrimitiveData(data, dataJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY).getAsString());
 
             System.out.println("Primitive Type: " + data.getType());
          }
-         else if (dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString().equals(
-               ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
+         else if (dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
+               .getAsString()
+               .equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
          {
-            getModelBuilderFacade().updateStructuredDataType(data, dataJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY).getAsString());
+            getModelBuilderFacade().updateStructuredDataType(
+                  data,
+                  dataJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
+                        .getAsString());
 
             System.out.println("Structured Type: " + data.getType());
          }
          else
          {
+            System.out.println("Other type "
+                  + dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString());
+            System.out.println("Other type " + dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString());
             System.out.println("Other type " + dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString());
          }
       }
@@ -897,11 +918,19 @@ public abstract class ModelElementUnmarshaller
          for (Map.Entry<String, ? > entry : attributes.entrySet())
          {
             String key = entry.getKey();
-            String value = attributes.get(key).getAsString();
 
-            System.out.println("Setting extended attribute " + key + " to " + value);
+            if (attributes.get(key).isJsonNull())
+            {
+               System.out.println("Setting extended attribute " + key + " to null.");
 
-            AttributeUtil.setAttribute(element, key, value);
+               AttributeUtil.setAttribute(element, key, null);
+            }
+            else
+            {
+               System.out.println("Setting extended attribute " + key + " to " + attributes.get(key).getAsString());
+
+               AttributeUtil.setAttribute(element, key, attributes.get(key).getAsString());
+            }
          }
       }
    }

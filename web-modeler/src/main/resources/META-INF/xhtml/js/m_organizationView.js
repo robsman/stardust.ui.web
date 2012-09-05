@@ -83,11 +83,22 @@ define(
 											return;
 										}
 
-										if (view.modelElement.attributes["carnot:engine:visibility"] != "Public") {
+										if (publicVisibilityCheckbox
+												.is(":checked")
+												&& view.modelElement.attributes["carnot:engine:visibility"] != "Public") {
 											view
 													.submitChanges({
 														attributes : {
 															"carnot:engine:visibility" : "Public"
+														}
+													});
+										} else if (!publicVisibilityCheckbox
+												.is(":checked")
+												&& view.modelElement.attributes["carnot:engine:visibility"] == "Public") {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:engine:visibility" : "Private"
 														}
 													});
 										}
@@ -146,7 +157,7 @@ define(
 											}
 										}
 									});
-					this.publicVisibilityCheckbox
+					this.costCenterInput
 							.change(
 									{
 										"view" : this
@@ -158,36 +169,77 @@ define(
 											return;
 										}
 
-										if (view.modelElement.attributes["carnot:pwh:costCenter"] != view.publicVisibilityCheckbox
+										if (view.modelElement.attributes["carnot:pwh:costCenter"] != view.costCenterInput
 												.val()) {
 											view
 													.submitChanges({
 														attributes : {
-															"carnot:pwh:costCenter" : view.publicVisibilityCheckbox
+															"carnot:pwh:costCenter" : view.costCenterInput
 																	.val()
 														}
 													});
 										}
 									});
-					this.supportsDepartmentsCheckbox.click({
-						view : this
-					},
-							function(event) {
-								var view = event.data.view;
+					this.supportsDepartmentsCheckbox
+							.change(
+									{
+										view : this
+									},
+									function(event) {
+										var view = event.data.view;
 
-								if (view.supportsDepartmentsCheckbox
-										.is(":checked")) {
-									view.departmentDataSelect
-											.removeAttr("disabled");
-									view.departmentDataPathInput
-											.removeAttr("disabled");
-								} else {
-									view.departmentDataSelect.attr("disabled",
-											true);
-									view.departmentDataPathInput.attr(
-											"disabled", true);
-								}
-							});
+										view
+												.setSupportDepartments(view.supportsDepartmentsCheckbox
+														.is(":checked"));
+
+										// Submit changes
+									});
+					this.departmentDataSelect
+							.change(
+									{
+										view : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										view.departmentDataPathInput.val(null);
+										view
+												.submitChanges({
+													attributes : {
+														"carnot:engine:dataId" : view.departmentDataSelect
+																.val() == m_constants.TO_BE_DEFINED ? null
+																: view.departmentDataSelect
+																		.val(),
+														"carnot:engine:dataId" : null
+													}
+												});
+									});
+					this.departmentDataPathInput
+							.change(
+									{
+										view : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										view
+												.submitChanges({
+													attributes : {
+														"carnot:engine:dataId" : view.departmentDataPathInput
+																.val()
+													}
+												});
+									});
+
+					this.leaderSelect.change({
+						view : this
+					}, function(event) {
+						var view = event.data.view;
+
+						view.submitChanges({
+							teamLeadFullId : view.leaderSelect.val()
+						});
+					});
 
 					this.populateDepartmentDataSelectInput();
 					this.populateLeaderSelectInput();
@@ -196,6 +248,18 @@ define(
 
 					if (this.organization.attributes == null) {
 						this.organization.attributes = {};
+					}
+
+					if (this.organization.teamLeadFullId != null) {
+						this.leaderSelect.val(this.organization.teamLeadFullId);
+					} else {
+						this.leaderSelect.val(m_constants.TO_BE_DEFINED);
+					}
+
+					// Set default
+
+					if (this.organization.attributes["carnot:engine:visibility"] == null) {
+						this.organization.attributes["carnot:engine:visibility"] = "Public";
 					}
 
 					if ("Public" == this.organization.attributes["carnot:engine:visibility"]) {
@@ -212,18 +276,11 @@ define(
 						this.chooseAssignmentRadio.attr("checked", true);
 					}
 
-					if (this.organization.attributes["carnot:engine:bound"]) {
-						this.supportsDepartmentsCheckbox.attr("checked", true);
-						this.departmentDataSelect
-								.val(this.organization.attributes["carnot:engine:dataId"]);
-						this.departmentDataPathInput
-								.val(this.organization.attributes["carnot:engine:dataPath"]);
-					} else {
-						this.supportsDepartmentsCheckbox.attr("checked", false);
-						this.departmentDataSelect.addAttr("disabled");
-						this.departmentDataPathInput.addAttr("disabled");
-					}
-
+					this
+							.setSupportDepartments(
+									this.organization.attributes["carnot:engine:bound"],
+									this.organization.attributes["carnot:engine:dataId"],
+									this.organization.attributes["carnot:engine:dataPath"]);
 					this.costCenterInput
 							.val(this.organization.attributes["carnot:pwh:costCenter"]);
 				};
@@ -234,13 +291,15 @@ define(
 				OrganizationView.prototype.getModelElement = function() {
 					return this.organization;
 				};
-				
+
 				/**
 				 * 
 				 */
 				OrganizationView.prototype.populateDepartmentDataSelectInput = function() {
 					this.departmentDataSelect.empty();
-
+					this.departmentDataSelect.append("<option value='"
+							+ m_constants.TO_BE_DEFINED
+							+ "'>(To be defined)</option>");
 					this.departmentDataSelect
 							.append("<optgroup label=\"This Model\">");
 
@@ -272,10 +331,38 @@ define(
 				/**
 				 * 
 				 */
+				OrganizationView.prototype.setSupportDepartments = function(
+						supportDepartments, departmentDataId,
+						departmentDataPath) {
+					if (supportDepartments) {
+						this.departmentDataSelect.removeAttr("disabled");
+						this.departmentDataPathInput.removeAttr("disabled");
+						this.supportsDepartmentsCheckbox.attr("checked", true);
+
+						if (departmentDataId == null) {
+							this.departmentDataSelect
+									.val(m_constants.TO_BE_DEFINED);
+							this.departmentDataPathInput.val(null);
+						} else {
+							this.departmentDataSelect.val(departmentDataId);
+							this.departmentDataPathInput
+									.val(departmentDataPath);
+
+						}
+					} else {
+						this.supportsDepartmentsCheckbox.attr("checked", false);
+						this.departmentDataSelect.attr("disabled", true);
+						this.departmentDataPathInput.attr("disabled", true);
+					}
+				};
+
+				/**
+				 * 
+				 */
 				OrganizationView.prototype.populateLeaderSelectInput = function() {
 					this.leaderSelect.empty();
 					this.leaderSelect
-							.append("<option value='NONE'>(None)</option>");
+							.append("<option value='" + m_constants.TO_BE_DEFINED + "'>(None)</option>");
 
 					this.leaderSelect.append("<optgroup label=\"This Model\">");
 
