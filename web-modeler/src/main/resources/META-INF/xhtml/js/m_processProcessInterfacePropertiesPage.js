@@ -240,6 +240,10 @@ define(
 					m_dialog
 							.makeInvisible(this.implementsProcessInterfacePanel);
 
+					if (this.getModelElement().formalParameters == null) {
+						this.getModelElement().formalParameters = {};
+					}
+
 					this.parameterDefinitionsPanel.setScopeModel(this
 							.getModelElement().model);
 					this.parameterDefinitionsPanel.setParameterDefinitions(this
@@ -328,13 +332,13 @@ define(
 				};
 
 				/**
-				 * Callback for parameterDefinitionsPanel. 
+				 * Callback for parameterDefinitionsPanel.
 				 */
-				ProcessProcessInterfacePropertiesPage.prototype.submitParameterDefinitionsChanges = function(formalParameters)
-				{
-					this.propertiesPanel.submitChanges(this
-							.assembleChangedObjectFromProperty(
-									"formalParameters", formalParameters));
+				ProcessProcessInterfacePropertiesPage.prototype.submitParameterDefinitionsChanges = function(
+						formalParameters) {
+					this.propertiesPanel.submitChanges({
+						"formalParameters" : formalParameters
+					});
 				};
 			}
 		});

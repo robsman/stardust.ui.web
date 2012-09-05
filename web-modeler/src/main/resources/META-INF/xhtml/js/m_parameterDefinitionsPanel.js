@@ -206,8 +206,14 @@ define(
 										},
 										function(event) {
 											if (event.data.panel.currentParameterDefinition != null) {
-												event.data.panel.currentParameterDefinition.dataFullId = event.data.panel.parameterDefinitionDataSelect
-														.val();
+												if (event.data.panel.parameterDefinitionDataSelect
+														.val() == m_constants.TO_BE_DEFINED) {
+													event.data.panel.currentParameterDefinition.dataFullId = null;
+												} else {
+													event.data.panel.currentParameterDefinition.dataFullId = event.data.panel.parameterDefinitionDataSelect
+															.val();
+												}
+
 												event.data.panel
 														.initializeParameterDefinitionsTable();
 											}
@@ -220,10 +226,10 @@ define(
 												panel : this
 											},
 											function(event) {
-												if (event.data.page.currentParameterDefinition != null) {
-													event.data.page.currentParameterDefinition.path = event.data.page.parameterDefinitionPathInput
+												if (event.data.panel.currentParameterDefinition != null) {
+													event.data.panel.currentParameterDefinition.dataPath = event.data.panel.parameterDefinitionPathInput
 															.val();
-													event.data.page
+													event.data.panel
 															.initializeParameterDefinitionsTable();
 												}
 											});
@@ -237,10 +243,37 @@ define(
 				ParameterDefinitionsPanel.prototype.setParameterDefinitions = function(
 						parameterDefinitions) {
 					this.parameterDefinitions = parameterDefinitions;
-					this.currentParameterDefinition = null;
 
 					this.initializeParameterDefinitionsTable();
 					this.populateParameterDefinitionFields();
+
+					this.selectCurrentParameterDefinition();
+				};
+
+				/**
+				 * 
+				 */
+				ParameterDefinitionsPanel.prototype.selectCurrentParameterDefinition = function() {
+					if (this.currentParameterDefinition == null) {
+						return;
+					}
+
+					var id = 0;
+
+					if (this.options.listType == "array") {
+						for ( var n = 0; n < this.parameterDefinitions.length; ++n) {
+							if (this.parameterDefinitions[n].id == this.currentParameterDefinition.id) {
+								id = n;
+
+								break;
+							}
+						}
+					} else {
+						id = this.currentParameterDefinition.id;
+					}
+
+					jQuery("table#parameterDefinitionsTable tr#" + id)
+							.addClass("selected");
 				};
 
 				/**
@@ -292,6 +325,9 @@ define(
 					this.parameterDefinitionDataSelect.empty();
 
 					this.parameterDefinitionDataSelect
+							.append("<option value=\"TO_BE_DEFINED\">(To be defined))</option>");
+
+					this.parameterDefinitionDataSelect
 							.append("<optgroup label=\"This Model\">");
 
 					for ( var i in this.scopeModel.dataItems) {
@@ -307,7 +343,7 @@ define(
 							.append("</optgroup><optgroup label=\"Other Models\">");
 
 					for ( var n in m_model.getModels()) {
-						if (m_model.getModels[n] == this.scopeModel) {
+						if (m_model.getModels()[n] == this.scopeModel) {
 							continue;
 						}
 
@@ -333,15 +369,8 @@ define(
 
 					for ( var m in this.parameterDefinitions) {
 						var parameterDefinition = this.parameterDefinitions[m];
-						var key = null;
 
-						if (this.options.listType == "array") {
-							key = "parameterDefinition" + m;
-						} else {
-							key = m;
-						}
-
-						var content = "<tr id=\"" + key + "\">";
+						var content = "<tr id=\"" + m + "\">";
 
 						content += "<td class=\"";
 
@@ -395,9 +424,9 @@ define(
 								content += data.name;
 
 								if (this.options.supportsDataPathes) {
-									if (parameterDefinition.path != null) {
+									if (parameterDefinition.dataPath != null) {
 										content += ".";
-										content += parameterDefinition.path;
+										content += parameterDefinition.dataPath;
 									}
 								}
 							}
@@ -419,15 +448,7 @@ define(
 													.deselectParameterDefinitions();
 											jQuery(this).addClass("selected");
 
-											var id = null;
-
-											if (event.data.panel.options.listType == "array") {
-												id = jQuery(this).attr("id")
-														.substring(19);
-												;
-											} else {
-												id = jQuery(this).attr("id");
-											}
+											id = jQuery(this).attr("id");
 
 											event.data.panel.currentParameterDefinition = event.data.panel.parameterDefinitions[id];
 											event.data.panel
@@ -508,14 +529,20 @@ define(
 						if (this.options.supportsDataMappings) {
 							this.parameterDefinitionDataSelect
 									.removeAttr("disabled");
-							this.parameterDefinitionDataSelect
-									.val(this.currentParameterDefinition.dataFullId);
+
+							if (this.currentParameterDefinition.dataFullId == null) {
+								this.parameterDefinitionDataSelect
+										.val(m_constants.TO_BE_DEFINED);
+							} else {
+								this.parameterDefinitionDataSelect
+										.val(this.currentParameterDefinition.dataFullId);
+							}
 
 							if (this.options.supportsDataPathes) {
 								this.parameterDefinitionPathInput
 										.removeAttr("disabled");
 								this.parameterDefinitionPathInput
-										.val(this.currentParameterDefinition.path);
+										.val(this.currentParameterDefinition.dataPath);
 							}
 						}
 					}
@@ -538,12 +565,9 @@ define(
 					this.currentParameterDefinition = {
 						id : "New" + n,
 						name : "New " + n,
-						dataType : m_constants.PRIMITIVE_DATA_TYPE,
-						primitiveDataType : "String",
-						structuredDataTypeFullId : null,
 						direction : "IN",
 						dataFullId : null,
-						path : null
+						dataPath : null
 					};
 
 					if (this.options.supportsDescriptors) {
@@ -564,11 +588,6 @@ define(
 					}
 
 					this.submitChanges(this.parameterDefinitions);
-
-					jQuery(
-							"table#parameterDefinitionsTable tr#"
-									+ this.currentParameterDefinition.id)
-							.addClass("selected");
 				};
 
 				/**
@@ -649,8 +668,6 @@ define(
 					if (this.currentParameterDefinition == null) {
 						return null;
 					}
-
-					m_utils.debug("==> submitDataChanges");
 
 					this.currentParameterDefinition.dataType = dataChanges.dataType;
 					this.currentParameterDefinition.primitiveDataType = dataChanges.primitiveDataType;

@@ -219,8 +219,8 @@ public abstract class ModelElementMarshaller
       for (DataPathType dataPath : processDefinition.getDataPath())
       {
          JsonObject dataPathJson = new JsonObject();
+         
          dataPathesJson.add(dataPathJson);
-
          dataPathJson.addProperty(ModelerConstants.ID_PROPERTY, dataPath.getId());
          dataPathJson.addProperty(ModelerConstants.NAME_PROPERTY, dataPath.getName());
          dataPathJson.addProperty(

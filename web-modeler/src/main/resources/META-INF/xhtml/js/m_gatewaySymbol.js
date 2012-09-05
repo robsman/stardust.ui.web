@@ -369,13 +369,13 @@ define(
 												clickHandler : GatewaySymbol_removeClosure
 											},
 											{
-												imageUrl : "../../images/icons/xor-gateway-menu-icon.png",
+												imageUrl : "../../images/icons/gateway-xor.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_switchToXorGatewayClosure
 											},
 											{
-												imageUrl : "../../images/icons/and-gateway-menu-icon.png",
+												imageUrl : "../../images/icons/gateway-and.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_switchToAndGatewayClosure

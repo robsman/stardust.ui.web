@@ -102,9 +102,7 @@ define(
 				 */
 				ProcessDataPathPropertiesPage.prototype.submitParameterDefinitionsChanges = function(dataPathes)
 				{
-					this.propertiesPanel.submitChanges(this
-							.assembleChangedObjectFromProperty(
-									"dataPathes", dataPathes));
+					this.propertiesPanel.submitChanges({"dataPathes": dataPathes});
 				};
 			}
 		});

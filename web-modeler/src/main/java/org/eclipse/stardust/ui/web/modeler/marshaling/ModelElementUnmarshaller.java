@@ -26,6 +26,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.engine.core.pojo.data.Type;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
@@ -56,6 +57,7 @@ import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 
 /**
@@ -408,15 +410,42 @@ public abstract class ModelElementUnmarshaller
             if (processDefinitionJson.has(ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
             {
                processDefinition.getFormalParameters().getFormalParameter().clear();
-               
-               for (Map.Entry<String, ? > entry : processDefinitionJson.get(ModelerConstants.FORMAL_PARAMETERS_PROPERTY).getAsJsonObject().entrySet())
+
+               for (Map.Entry<String, ? > entry : processDefinitionJson.get(
+                     ModelerConstants.FORMAL_PARAMETERS_PROPERTY)
+                     .getAsJsonObject()
+                     .entrySet())
                {
                   String key = entry.getKey();
-                  JsonObject formalParameter = processDefinitionJson.get(ModelerConstants.FORMAL_PARAMETERS_PROPERTY).getAsJsonObject().get(key).getAsJsonObject();
+                  JsonObject formalParameter = processDefinitionJson.get(
+                        ModelerConstants.FORMAL_PARAMETERS_PROPERTY)
+                        .getAsJsonObject()
+                        .get(key)
+                        .getAsJsonObject();
 
-                  System.out.println("Formal parameter " + key + " to " + formalParameter);
+                  if (formalParameter.get(ModelerConstants.DATA_TYPE_PROPERTY).equals(
+                        ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
+                  {
+                     // getModelBuilderFacade().setFormalParameter(processDefinition,
+                     // formalParameter.get(ModelerConstants.ID_PROPERTY).getAsString(),
+                     // getModelBuilderFacade().createPrimitiveParameter(processDefinition,
+                     // localPrimitive,
+                     // formalParameter.get(ModelerConstants.ID_PROPERTY).getAsString(),
+                     // formalParameter.get(ModelerConstants.NAME_PROPERTY).getAsString(),
+                     // ModeType.IN));
+                  }
+                  else if (formalParameter.get(ModelerConstants.DATA_TYPE_PROPERTY)
+                        .equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
+                  {
+                     // getModelBuilderFacade().setFormalParameter(processDefinition,
+                     // formalParameter.get(ModelerConstants.ID_PROPERTY).getAsString(),
+                     // getModelBuilderFacade().createPrimitiveParameter(processDefinition,
+                     // localPrimitive,
+                     // formalParameter.get(ModelerConstants.ID_PROPERTY).getAsString(),
+                     // formalParameter.get(ModelerConstants.NAME_PROPERTY).getAsString(),
+                     // ModeType.IN));
+                  }
                }
-
             }
          }
          else if (processDefinitionJson.get(
@@ -424,14 +453,14 @@ public abstract class ModelElementUnmarshaller
                .getAsString()
                .equals(ModelerConstants.IMPLEMENTS_PROCESS_INTERFACE_KEY))
          {
-
+            // TODO
          }
       }
 
-      processDefinition.getDataPath().clear();
-
       if (processDefinitionJson.has(ModelerConstants.DATA_PATHES_PROPERTY))
       {
+         processDefinition.getDataPath().clear();
+
          JsonArray dataPathes = processDefinitionJson.get(
                ModelerConstants.DATA_PATHES_PROPERTY).getAsJsonArray();
 
@@ -439,18 +468,31 @@ public abstract class ModelElementUnmarshaller
          {
             JsonObject dataPathJson = dataPathes.get(n).getAsJsonObject();
             DataPathType dataPath = getModelBuilderFacade().createDataPath();
-            String dataFullId = dataPathJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)
-                  .getAsString();
 
-            DataType data = getModelBuilderFacade().findData(dataFullId);
-
-            dataPath.setData(data);
-            dataPath.setDataPath(dataPathJson.get(ModelerConstants.DATA_PATH_PROPERTY)
-                  .getAsString());
             dataPath.setId(getModelBuilderFacade().createIdFromName(
                   dataPathJson.get(ModelerConstants.NAME_PROPERTY).getAsString()));
             dataPath.setName(dataPathJson.get(ModelerConstants.NAME_PROPERTY)
                   .getAsString());
+
+            if (dataPathJson.has(ModelerConstants.DATA_FULL_ID_PROPERTY)
+                  && !dataPathJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)
+                        .isJsonNull())
+            {
+               String dataFullId = dataPathJson.get(
+                     ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
+
+               DataType data = getModelBuilderFacade().findData(dataFullId);
+
+               dataPath.setData(data);
+            }
+
+            if (dataPathJson.has(ModelerConstants.DATA_PATH_PROPERTY)
+                  && !dataPathJson.get(ModelerConstants.DATA_PATH_PROPERTY).isJsonNull())
+            {
+               dataPath.setDataPath(dataPathJson.get(ModelerConstants.DATA_PATH_PROPERTY)
+                     .getAsString());
+            }
+
             dataPath.setDescriptor(dataPathJson.get(ModelerConstants.DESCRIPTOR_PROPERTY)
                   .getAsBoolean());
             dataPath.setKey(dataPathJson.get(ModelerConstants.KEY_DESCRIPTOR_PROPERTY)
@@ -683,6 +725,51 @@ public abstract class ModelElementUnmarshaller
       mapDeclaredProperties(data, dataJson, propertiesMap.get(DataType.class));
       storeAttributes(data, dataJson);
       storeDescription(data, dataJson);
+
+      if (dataJson.has(ModelerConstants.DATA_TYPE_PROPERTY))
+      {
+         if (dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).equals(
+               ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
+         {
+            // @@@ data.setType(mapPrimitiveType(""));
+         }
+         else if (dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).equals(
+               ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
+         {
+            // @@@
+         }
+      }
+   }
+
+   /**
+    * 
+    * @param primitiveTypeId
+    * @return
+    */
+   private Type mapPrimitiveType(String primitiveTypeId)
+   {
+      if (primitiveTypeId.equals(ModelerConstants.STRING_PRIMITIVE_DATA_TYPE))
+      {
+         return Type.String;
+      }
+      else if (primitiveTypeId.equals(ModelerConstants.DATE_PRIMITIVE_DATA_TYPE))
+      {
+         return Type.Calendar;
+      }
+      else if (primitiveTypeId.equals(ModelerConstants.INTEGER_PRIMITIVE_DATA_TYPE))
+      {
+         return Type.Integer;
+      }
+      else if (primitiveTypeId.equals(ModelerConstants.DOUBLE_PRIMITIVE_DATA_TYPE))
+      {
+         return Type.Double;
+      }
+      else if (primitiveTypeId.equals(ModelerConstants.DECIMAL_PRIMITIVE_DATA_TYPE))
+      {
+         return Type.Money;
+      }
+
+      throw new IllegalArgumentException("Type " + primitiveTypeId + " is not supported.");
    }
 
    /**
