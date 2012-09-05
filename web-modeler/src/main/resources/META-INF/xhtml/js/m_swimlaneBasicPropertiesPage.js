@@ -115,7 +115,7 @@ define(
 							.append("</optgroup><optgroup label=\"Other Models\">");
 
 					for ( var n in this.propertiesPanel.models) {
-						if (this.propertiesPanel.models[n] == this.propertiesPanel.element.model) {
+						if (this.propertiesPanel.models[n] == this.propertiesPanel.element.diagram.model) {
 							continue;
 						}
 
