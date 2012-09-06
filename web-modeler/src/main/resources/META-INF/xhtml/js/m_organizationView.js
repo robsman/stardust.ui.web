@@ -83,7 +83,7 @@ define(
 											return;
 										}
 
-										if (publicVisibilityCheckbox
+										if (view.publicVisibilityCheckbox
 												.is(":checked")
 												&& view.modelElement.attributes["carnot:engine:visibility"] != "Public") {
 											view
@@ -92,7 +92,7 @@ define(
 															"carnot:engine:visibility" : "Public"
 														}
 													});
-										} else if (!publicVisibilityCheckbox
+										} else if (!view.publicVisibilityCheckbox
 												.is(":checked")
 												&& view.modelElement.attributes["carnot:engine:visibility"] == "Public") {
 											view

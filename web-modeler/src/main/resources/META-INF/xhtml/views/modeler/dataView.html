@@ -23,8 +23,7 @@
 					<div class="errorMessagesPanel">
 						<ul id="errorMessagesList">
 						</ul>
-					</div>
-				</td>
+					</div></td>
 			</tr>
 			<tr>
 				<td>
@@ -34,26 +33,29 @@
 								<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 									style="margin-bottom: 10px;">
 									<tr id="guidOutputRow">
-										<td><label for="guidOutput">GUID</label></td>
-										<td><div id="guidOutput" class="output"></div></td>
+										<td><label for="guidOutput">GUID</label>
+										</td>
+										<td><div id="guidOutput" class="output"></div>
+										</td>
 									</tr>
 									<tr id="idOutputRow">
-										<td><label for="idOutput">ID</label></td>
-										<td><div id="idOutput" class="output"></div></td>
+										<td><label for="idOutput">ID</label>
+										</td>
+										<td><div id="idOutput" class="output"></div>
+										</td>
 									</tr>
 									<tr>
-										<td><label for="nameInput">Data Name</label></td>
-										<td><input id="nameInput" type="text"></input></td>
+										<td><label for="nameInput">Data Name</label>
+										</td>
+										<td><input id="nameInput" type="text"></input>
+										</td>
 									</tr>
-								</table>
-							</td>
+								</table></td>
 						</tr>
-					</table>
-				</td>
+					</table></td>
 			</tr>
 			<tr>
-				<td><label for="descriptionTextarea">Description</label>
-				</td>
+				<td><label for="descriptionTextarea">Description</label></td>
 			</tr>
 			<tr>
 				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
@@ -61,20 +63,32 @@
 			</tr>
 			<tr>
 				<td>
+					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+						style="margin-bottom: 10px;">
+						<tr>
+							<td><input id="publicVisibilityCheckbox" type="checkbox"></input>
+							</td>
+							<td><label for="publicVisibilityCheckbox">Public
+									Visibility</label>
+							</td>
+						</tr>
+					</table></td>
+			</tr>			
+			<tr>
+				<td>
 					<table style="margin-top: 10px;">
 						<tr>
-							<td><label for="dataTypeSelect">Data Type</label>
-							</td>
+							<td><label for="dataTypeSelect">Data Type</label></td>
 							<td><select id="dataTypeSelect" size="1">
 									<option value="primitive">Primitive</option>
 									<option value="struct">Data Structure</option>
 									<option value="dmsDocument">Document</option>
 									<option value="other">Other</option>
-							</select></td>
+							</select>
+							</td>
 						</tr>
 						<tr id="primitiveDataTypeRow">
-							<td><label for="primitiveDataTypeSelect" />Primitive Type</label>
-							</td>
+							<td><label for="primitiveDataTypeSelect" />Primitive Type</label></td>
 							<td><select id="primitiveDataTypeSelect" size="1">
 									<option value="String">Text</option>
 									<option value="boolean">Boolean (True, False)</option>
@@ -84,24 +98,44 @@
 									<option value="Decimal">Money Amount (e.g.
 										$4,500,600.42)</option>
 									<option value="Calendar">Date (e.g. 14/05/2011)</option>
-							</select>
-							</td>
+							</select></td>
 						</tr>
 						<tr id="structuredDataTypeRow">
 							<td><label for="structuredDataTypeSelect">Data
-									Structure</label></td>
+									Structure</label>
+							</td>
 							<td><select id="structuredDataTypeSelect" size="1">
-							</select></td>
+							</select>
+							</td>
 						</tr>
 						<tr id="documentTypeRow">
-							<td><label for="documentTypeSelect">Document Type</label></td>
+							<td><label for="documentTypeSelect">Document Type</label>
+							</td>
 							<td><select id="documentTypeSelect" size="1">
-							</select></td>
+							</select>
+							</td>
 						</tr>
 						<tr id="otherTypeRow">
-							<td colspan="2"><div id="otherTypeName"></div></td>
+							<td colspan="2"><div id="otherTypeName"></div>
+							</td>
 						</tr>
-					</table></td>
+						<tr id="primitiveDefaultTextInputRow">
+							<td><label for="primitiveDefaultTextInput">Default
+									Value</label>
+							</td>
+							<td><input id="primitiveDefaultTextInput" type="text" />
+							</td>
+						</tr>
+						<tr id="primitiveDefaultCheckboxInputRow">
+							<td><label for="primitiveDefaultCheckboxInput">Default
+									Value</label>
+							</td>
+							<td><input id="primitiveDefaultCheckboxInput"
+								type="checkbox" />
+							</td>
+						</tr>
+					</table>
+				</td>
 			</tr>
 		</table>
 	</div>

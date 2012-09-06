@@ -50,6 +50,11 @@ define(
 							dataType : event.data.panel.dataTypeSelect.val()
 						});
 					});
+					this.primitiveDataTypeSelect.change({
+						"panel" : this
+					}, function(event) {
+						event.data.panel.submitChanges();
+					});
 					this.structuredDataTypeSelect.change({
 						"panel" : this
 					}, function(event) {

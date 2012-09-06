@@ -213,6 +213,7 @@ define(function() {
 
 		DATA : "data",
 		PRIMITIVE_DATA_TYPE : "primitive",
+		BOOLEAN_PRIMITIVE_DATA_TYPE : "boolean",
 		STRING_PRIMITIVE_DATA_TYPE : "string",
 		DATE_PRIMITIVE_DATA_TYPE : "date",
 		INTEGER_PRIMITIVE_DATA_TYPE : "integer",
