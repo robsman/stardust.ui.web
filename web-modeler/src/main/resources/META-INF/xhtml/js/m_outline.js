@@ -1974,6 +1974,8 @@ define(
 				Outline.prototype.openElementView = function(element) {
 					jQuery("#outline").jstree("select_node", "#" + element.uuid);
 					jQuery("#outline").jstree("deselect_all");
+					//Delay of 1000ms is added to avoid issues of node getting out or rename mode if the view takes
+					// a little longer to open - observed specifically on first node creation after login,
 					window.setTimeout(function() {jQuery("#outline").jstree("rename", "#" + element.uuid)}, 1000);
 				}
 
