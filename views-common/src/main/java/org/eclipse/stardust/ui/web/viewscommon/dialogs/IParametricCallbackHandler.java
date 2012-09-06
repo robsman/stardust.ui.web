@@ -10,23 +10,21 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.dialogs;
 
-import java.util.Map;
-
 /**
  * @author Yogesh.Manware
  * 
  */
 public interface IParametricCallbackHandler extends ICallbackHandler
 {
-
    /**
-    * @param parameters
+    * @param key
+    * @param value
     */
-   void setParameters(Map<String, Object> parameters);
-
+   void setParameter(String key, Object value);
+   
    /**
-    * @param parameters
+    * @param key
     * @return
     */
-   Map<String, Object> getParameters();
+   Object getParameter(String key);
 }

@@ -258,9 +258,9 @@
 						<ice:outputText rendered="#{!nodesSelectable}" value="#{item.userObject.text}"/>
 						<ice:commandLink rendered="#{nodesSelectable}"
 							value="#{item.userObject.text}"
-							actionListener="#{participantTree.nodeClicked}">
-							<f:attribute name="userObject" value="#{item.userObject}"
-								style="#{item.userObject.selected ? 'font-weight: bold;' : 'font-weight: normal;'}" />
+							actionListener="#{participantTree.nodeClicked}"
+							style="#{item.userObject.selected ? 'font-weight: bold;' : 'font-weight: normal;'}" >
+							<f:attribute name="userObject" value="#{item.userObject}"/>
 						</ice:commandLink>
 						<ice:menuPopup id="menuPopupUserGroup" hideOn="mouseout">
 							<c:if

@@ -9,18 +9,19 @@
 		rendered="#{worklistColumnSelectorPopup.visible}"
 		styleClass="popupDialog" clientOnly="true">
 		<f:facet name="header">
-			<pc:automationTag value="auto-DT-ColSelector-Header" />
+			<pc:automationTag value="auto-PP-WorklistColSelector-Header" />
 			<table cellpadding="0" cellspacing="0" width="100%">
 				<tr>
-					<td><ice:outputText title="#{worklistColumnSelectorPopup.elementName}"
+					<td><ice:outputText
+							title="#{worklistColumnSelectorPopup.elementName}"
 							value="#{worklistColumnSelectorPopup.title}"
-							styleClass="headerText" /></td>
-					<td style="text-align: right"><pc:automationTag
-							value="auto-DT-ColSelector-CloseLink" standAlone="false" /> <ice:commandButton
-							title="#{common_msgPropsBean['common.close']}"
-							action="#{worklistColumnSelectorPopup.closePopup}"
-							styleClass="windowClose" />
+							styleClass="headerText" />
 					</td>
+					<td style="text-align: right"><pc:automationTag
+							value="auto-PP-WorklistColSelector-CloseLink" standAlone="false" />
+						<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+							action="#{worklistColumnSelectorPopup.closePopup}"
+							styleClass="windowClose" /></td>
 				</tr>
 			</table>
 		</f:facet>
@@ -31,11 +32,11 @@
 				renderSouth="true" renderWest="false" renderCenter="true">
 				<f:facet name="center">
 					<ice:panelGroup>
-						<pc:automationTag value="auto-DT-ColSelector-ColumnsList"
+						<pc:automationTag value="auto-PP-WorklistColSelector-ColumnsList"
 							standAlone="false" />
 						<ice:panelPositioned var="tableColumn" styleClass="columnsListBox"
-							value="#{worklistColumnSelectorPopup.columns}" style="height:250px"
-							constraint="vertical">
+							value="#{worklistColumnSelectorPopup.columns}"
+							style="height:250px" constraint="vertical">
 							<ice:panelGroup styleClass="columnItemBox">
 								<ice:panelGroup styleClass="columnItemBoxInput">
 									<ice:selectBooleanCheckbox value="#{tableColumn.visible}" />
@@ -50,7 +51,7 @@
 
 				<f:facet name="south">
 					<ice:panelGroup style="white-space: nowrap;">
-						<pc:automationTag value="auto-DT-ColSelector-Buttons"
+						<pc:automationTag value="auto-PP-WorklistColSelector-Buttons"
 							standAlone="false" />
 						<ice:commandButton value="#{common_msgPropsBean['common.ok']}"
 							action="#{worklistColumnSelectorPopup.apply}" styleClass="button"

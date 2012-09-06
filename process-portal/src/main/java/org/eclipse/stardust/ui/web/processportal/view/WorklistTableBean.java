@@ -402,11 +402,11 @@ public class WorklistTableBean extends UIComponentBean
       
       if (null != participantInfo)
       {
-         preferenceId = UserPreferencesEntries.V_WORKLIST_PART_CONF;
+         preferenceId = UserPreferencesEntries.P_WORKLIST_PART_CONF;
       }
       else if (null != processDefintion)
       {
-         preferenceId = UserPreferencesEntries.V_WORKLIST_PROC_CONF;
+         preferenceId = UserPreferencesEntries.P_WORKLIST_PROC_CONF;
       }
       id = (String) getParamFromView("id");
    }
@@ -614,37 +614,30 @@ public class WorklistTableBean extends UIComponentBean
       Map<String, Object> worklistConfiguration = WorklistConfigurationUtil.getWorklistConfigurationMap(
             PreferenceScope.USER, preferenceId);
       ArrayList<String> savedCols = ((DefaultColumnModel) worklistColSelecpopup.getColumnModel()).getColsToBeSaved();
-      WorklistConfigurationUtil.updateValues(getOID(), savedCols, false, worklistConfiguration);
-      WorklistConfigurationUtil.saveWorklistConfiguration(preferenceId, worklistConfiguration);
+      WorklistConfigurationUtil.updateValues(getIdentityKey(), savedCols, false, worklistConfiguration);
+      WorklistConfigurationUtil.savePreferences(PreferenceScope.USER, preferenceId, worklistConfiguration);
       worklistColSelecpopup.getColumnModel().setStoredList(savedCols);
       worklistColSelecpopup.getColumnModel().initialize();
    }
 
-   private String getOID()
+   private String getIdentityKey()
    {
-      String strOid = "";
+      String identityKey = "";
       if (null != participantInfo)
       {
-         strOid = WorklistConfigurationUtil.getOid(participantInfo);
+         identityKey = WorklistConfigurationUtil.getParticipantKey(participantInfo);
       }
       else if (null != processDefintion)
       {
-         strOid = String.valueOf(processDefintion.getElementOID());
+         identityKey = String.valueOf(processDefintion.getQualifiedId());
       }
-      return strOid;
+      return identityKey;
    }
 
+   @SuppressWarnings("unchecked")
    private void setConfiguration(IColumnModel worklistColumnModel)
    {
-      Map<String, Object> configuration = null;
-      if (null != participantInfo)
-      {
-         configuration = WorklistConfigurationUtil.getStoredValues(getOID(), UserPreferencesEntries.V_WORKLIST_PART_CONF);
-      }
-      else if (null != processDefintion)
-      {
-         configuration = WorklistConfigurationUtil.getStoredValues(getOID(), UserPreferencesEntries.V_WORKLIST_PROC_CONF);
-      }
+      Map<String, Object> configuration = WorklistConfigurationUtil.getStoredValues(getIdentityKey(), preferenceId);
 
       if (null != configuration)
       {

@@ -9,14 +9,14 @@
 		rendered="#{selectProcessPopup.visible}" styleClass="popupDialog"
 		clientOnly="true">
 		<f:facet name="header">
-			<pc:automationTag value="auto-DT-ColSelector-Header" />
+			<pc:automationTag value="auto-PP-selectProcessesPopup-Header" />
 			<table cellpadding="0" cellspacing="0" width="100%">
 				<tr>
 					<td><ice:outputText value="#{selectProcessPopup.title}"
 							styleClass="headerText" /></td>
 					<td style="text-align: right"><pc:automationTag
-							value="auto-DT-ColSelector-CloseLink" standAlone="false" /> <ice:commandButton
-							title="#{common_msgPropsBean['common.close']}"
+							value="auto-PP-selectProcessesPopup-CloseLink" standAlone="false" />
+						<ice:commandButton title="#{common_msgPropsBean['common.close']}"
 							action="#{selectProcessPopup.closePopup}"
 							styleClass="windowClose" onclick="Event.stop(event);" />
 					</td>
@@ -34,6 +34,8 @@
 							<ice:selectManyMenu
 								style="height:75px; min-width:200px; max-width:350px"
 								value="#{selectProcessPopup.selectedProcesses}">
+								<pc:automationTag value="auto-PP-selectProcessesPopup-AvailProcDefs"
+									standAlone="false" />
 								<f:selectItems value="#{selectProcessPopup.processes}" />
 							</ice:selectManyMenu>
 						</ice:panelGrid>
@@ -42,7 +44,7 @@
 
 				<f:facet name="south">
 					<ice:panelGroup style="white-space: nowrap;">
-						<pc:automationTag value="auto-DT-ColSelector-Buttons"
+						<pc:automationTag value="auto-PP-selectProcessesPopup-Buttons"
 							standAlone="false" />
 						<ice:commandButton value="#{common_msgPropsBean['common.ok']}"
 							action="#{selectProcessPopup.apply}" styleClass="button"

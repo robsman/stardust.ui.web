@@ -95,9 +95,7 @@ public class UserDetailsTableEntry extends DefaultRowModel
       this.selectedRow = selectedRow;
       if (null != parametricCallbackHandler)
       {
-         Map<String, Object> parameters = new HashMap<String, Object>();
-         parameters.put("selectedUser", this);
-         parametricCallbackHandler.setParameters(parameters);
+         parametricCallbackHandler.setParameter("selectedUser", this);
          parametricCallbackHandler.handleEvent(EventType.APPLY);
       }
    }

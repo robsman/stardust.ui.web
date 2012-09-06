@@ -14,14 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.stardust.engine.api.dto.ModelParticipantInfoDetails;
-import org.eclipse.stardust.engine.api.model.ModelParticipant;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
 import org.eclipse.stardust.ui.web.processportal.common.MessagePropertiesBean;
+import org.eclipse.stardust.ui.web.processportal.dialogs.WorklistColumnSelectorPopup;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
@@ -35,7 +34,7 @@ public class WorklistConfigTableEntry extends DefaultRowModel
    private static final long serialVersionUID = 1533502219424771534L;
    private boolean selected;
    private boolean lock = false;
-   protected String elementOID;
+   protected String identityKey;
    private ArrayList<String> storedList;
    private List<WorklistColumn> worklistColumns;
    private String elementName;
@@ -49,37 +48,38 @@ public class WorklistConfigTableEntry extends DefaultRowModel
 
       if (PredefinedConstants.ADMINISTRATOR_ROLE.equals(participantInfo.getId()))
       {
-         elementOID = PredefinedConstants.ADMINISTRATOR_ROLE;
+         identityKey = PredefinedConstants.ADMINISTRATOR_ROLE;
       }
       else
       {
-         if (participantInfo instanceof ModelParticipant)
-         {
-            elementOID = String.valueOf(((ModelParticipant) participantInfo).getElementOID());
-
-         }
-         else if (participantInfo instanceof ModelParticipantInfoDetails)
-         {
-            elementOID = String.valueOf(((ModelParticipantInfoDetails) participantInfo).getRuntimeElementOID());
-         }
+         identityKey = WorklistConfigurationUtil.getParticipantKey(participantInfo);
       }
    }
 
+   /**
+    * @param departmentInfo
+    */
    public WorklistConfigTableEntry(DepartmentInfo departmentInfo)
    {
       elementName = ModelHelper.getDepartmentLabel(departmentInfo).getLabel();
-      elementOID = String.valueOf(departmentInfo.getOID());
+      identityKey = WorklistConfigurationUtil.getDepartmentKey(departmentInfo);
    }
 
+   /**
+    * @param processDefinition
+    */
    public WorklistConfigTableEntry(ProcessDefinition processDefinition)
    {
       elementName = I18nUtils.getProcessName(processDefinition);
-      this.elementOID = String.valueOf(processDefinition.getElementOID());
+      this.identityKey = processDefinition.getQualifiedId();
    }
 
+   /**
+    * @param customRow
+    */
    public WorklistConfigTableEntry(String customRow)
    {
-      this.elementOID = customRow;
+      this.identityKey = customRow;
       elementName = MessagePropertiesBean.getInstance().getString("views.worklistPanelConfiguration.default");
    }
 
@@ -153,6 +153,7 @@ public class WorklistConfigTableEntry extends DefaultRowModel
 
       columnSelectorPopup.setParametricCallbackHandler(new ParametricCallbackHandler()
       {
+         @SuppressWarnings("unchecked")
          public void handleEvent(EventType eventType)
          {
             setSelectableColumns((List<WorklistColumn>) getParameter("columns"));
@@ -182,13 +183,8 @@ public class WorklistConfigTableEntry extends DefaultRowModel
       return lock;
    }
 
-   public String getElementOID()
+   public String getIdentityKey()
    {
-      return elementOID;
-   }
-
-   public List<String> getStoredList()
-   {
-      return storedList;
+      return identityKey;
    }
 }

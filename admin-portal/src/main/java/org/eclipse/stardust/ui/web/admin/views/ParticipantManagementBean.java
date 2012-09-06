@@ -13,13 +13,11 @@ package org.eclipse.stardust.ui.web.admin.views;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
-import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.admin.AdminportalConstants;
 import org.eclipse.stardust.ui.web.admin.ResourcePaths;
@@ -35,7 +33,7 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ContextMenuItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.IContextMenuActionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
-import org.eclipse.stardust.ui.web.viewscommon.dialogs.IParametricCallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.participantManagement.ParticipantTree;
 import org.eclipse.stardust.ui.web.viewscommon.participantManagement.ParticipantUserObject;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
@@ -210,10 +208,8 @@ public class ParticipantManagementBean extends PopupUIComponentBean implements V
     * @author Yogesh.Manware
     * 
     */
-   private class HighlightUsersCallbackHandler implements IParametricCallbackHandler
+   private class HighlightUsersCallbackHandler extends ParametricCallbackHandler
    {
-      private Map<String, Object> parameters;
-
       /*
        * (non-Javadoc)
        * 
@@ -225,16 +221,13 @@ public class ParticipantManagementBean extends PopupUIComponentBean implements V
       {
          Set<User> selecteUsers = new HashSet<User>();
          User recentlySelectedUser = null;
-         if (CollectionUtils.isNotEmpty(parameters))
+         if (null != getParameter("selectedUser"))
          {
-            if (null != parameters.get("selectedUser"))
+            UserDetailsTableEntry userTabEntry = (UserDetailsTableEntry) getParameter("selectedUser");
+            if (userTabEntry.isSelectedRow())
             {
-               UserDetailsTableEntry userTabEntry = (UserDetailsTableEntry) parameters.get("selectedUser");
-               if (userTabEntry.isSelectedRow())
-               {
-                  recentlySelectedUser = ServiceFactoryUtils.getUserService().getUser(userTabEntry.getUser().getOID());
-                  selecteUsers.add(recentlySelectedUser);
-               }
+               recentlySelectedUser = ServiceFactoryUtils.getUserService().getUser(userTabEntry.getUser().getOID());
+               selecteUsers.add(recentlySelectedUser);
             }
          }
 
@@ -253,30 +246,6 @@ public class ParticipantManagementBean extends PopupUIComponentBean implements V
          }
          participantTree.setSelectedUsers(selecteUsers);
          participantTree.highlightSelectedUsers();
-      }
-
-      /*
-       * (non-Javadoc)
-       * 
-       * @see
-       * org.eclipse.stardust.ui.web.viewscommon.dialogs.IParametricCallbackHandler#getParameters
-       * (java.util.Map)
-       */
-      public Map<String, Object> getParameters()
-      {
-         return this.parameters;
-      }
-
-      /*
-       * (non-Javadoc)
-       * 
-       * @see
-       * org.eclipse.stardust.ui.web.viewscommon.dialogs.IParametricCallbackHandler#setParameters
-       * (java.util.Map)
-       */
-      public void setParameters(Map<String, Object> parameters)
-      {
-         this.parameters = parameters;
       }
    }
 

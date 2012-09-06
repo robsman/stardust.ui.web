@@ -16,9 +16,11 @@
 		<ice:panelGroup rendered="#{col.columnName == 'elementName'}">
 			<ice:panelGrid columns="2" style="width:100%">
 				<ice:panelGrid columns="1">
-					<ice:commandLink value="#{row.elementName}" 
-					action="#{row.configureColumns}" onclick="Event.stop(event);"
+					<ice:commandLink value="#{row.elementName}"
+						action="#{row.configureColumns}" onclick="Event.stop(event);"
 						style="white-space: nowrap;">
+						<pc:automationTag value="auto-PP-WorklistPnlConf-worklistTable-ConfColumns"
+							standAlone="false" />
 					</ice:commandLink>
 				</ice:panelGrid>
 			</ice:panelGrid>
@@ -31,7 +33,7 @@
 			<ice:panelGroup>
 				<ice:commandLink action="#{row.configureColumns}"
 					onclick="Event.stop(event);">
-					<pc:automationTag value="auto-PP-WorkList-ActionsProcDetails"
+					<pc:automationTag value="auto-PP-WorklistPnlConf-worklistTable-ConfColumns"
 						standAlone="false" />
 					<ice:graphicImage
 						value="/plugins/common/images/icons/adjust-columns.png"
@@ -42,7 +44,7 @@
 
 			<ice:commandLink action="#{row.lockValueChanged}"
 				onclick="Event.stop(event);">
-				<pc:automationTag value="auto-PP-WorkList-ActionsProcDetails"
+				<pc:automationTag value="auto-PP-WorklistPnlConf-worklistTable-LockColumns"
 					standAlone="false" />
 				<ice:graphicImage rendered="#{row.lock}"
 					value="/plugins/views-common/images/icons/lock.png"

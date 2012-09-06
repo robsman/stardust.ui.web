@@ -10,25 +10,25 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
+import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
+import org.eclipse.stardust.engine.api.query.UserGroupQuery;
+import org.eclipse.stardust.engine.api.query.UserGroups;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
-import org.eclipse.stardust.engine.api.runtime.PerformerType;
+import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.engine.api.runtime.UserGroup;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.processportal.common.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.DelegationBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDelegatesProvider;
-import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDelegatesProvider.Options;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDepartmentProvider;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.WorklistParticipantsProvider;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 
 /**
  * @author Yogesh.Manware
@@ -36,11 +36,20 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
  */
 public class ParticipantWorklistColumnConfigurationBean extends WorklistColumnConfigurationBean
 {
-   WorklistParticipantsProvider provider;
+   private static final String PARTICIPANT_KEY = "participant.";
+   private static final String PARTICIPANT_EXIST_KEY = PARTICIPANT_KEY + "exist";
+   private static final String SELECT_PARTICIPANT_KEY = PARTICIPANT_KEY + "select";
 
+   WorklistParticipantsProvider provider;
+   List<QualifiedModelParticipantInfo> modelParticipants;
+   UserGroups allUserGroups;
+
+   /**
+    * default constructor
+    */
    public ParticipantWorklistColumnConfigurationBean()
    {
-      this(UserPreferencesEntries.V_WORKLIST_PART_CONF);
+      this(UserPreferencesEntries.P_WORKLIST_PART_CONF);
    }
 
    /**
@@ -61,6 +70,7 @@ public class ParticipantWorklistColumnConfigurationBean extends WorklistColumnCo
       WorklistParticipantsProvider provider = getProvider();
       delegationBean.setDelegatesProvider((IDelegatesProvider) provider);
       delegationBean.setDepartmentDelegatesProvider((IDepartmentProvider) provider);
+      delegationBean.setTitle(getMessage(SELECT_PARTICIPANT_KEY));
 
       delegationBean.setICallbackHandler(new ParametricCallbackHandler()
       {
@@ -68,7 +78,7 @@ public class ParticipantWorklistColumnConfigurationBean extends WorklistColumnCo
          {
             if (EventType.APPLY == eventType)
             {
-               addParticipant(getParameters().get("selectedParticipant"));
+               addParticipant(getParameter(DelegationBean.SELECTED_PARTICIPANT));
             }
          }
       });
@@ -81,38 +91,38 @@ public class ParticipantWorklistColumnConfigurationBean extends WorklistColumnCo
     * @see org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.
     * WorklistColumnConfigurationBean#retrieveandSetConfigurationValues()
     */
-   protected void retrieveandSetConfigurationValues()
+   protected void retrieveConfigurations()
    {
       try
       {
-         Map<PerformerType, List< ? extends ParticipantInfo>> delegates = getProvider().findDelegates(null,
-               getDelegateProviderOptions());
+         if (null == modelParticipants)
+         {
+            modelParticipants = ParticipantUtils.fetchAllParticipants(true);
+         }
 
-         List< ? extends ParticipantInfo> modelParticipants = delegates.get(PerformerType.ModelParticipant);
-
-         columnConfTableEntries = new ArrayList<WorklistConfigTableEntry>();
-
-         // set default configuration
-         defaultConf = WorklistConfigurationUtil
-               .getStoredValues(WorklistConfigurationUtil.DEFAULT, columnConfiguration);
-         WorklistConfigTableEntry defaultEntry = new WorklistConfigTableEntry(WorklistConfigurationUtil.DEFAULT);
-         defaultEntry.setConfiguration(defaultConf);
-         columnConfTableEntries.add(defaultEntry);
-
-         for (ParticipantInfo participantInfo : modelParticipants)
+         for (QualifiedModelParticipantInfo participantInfo : modelParticipants)
          {
             WorklistConfigTableEntry confTableEntry = new WorklistConfigTableEntry(participantInfo);
-            if (existingoIds.contains(confTableEntry.getElementOID()))
+            if (existingConfigurations.contains(confTableEntry.getIdentityKey()))
             {
                continue;
             }
             fetchStoredValues(confTableEntry);
          }
-         Set<DepartmentInfo> departments = getProvider().findDepartments(null, getDepartmentOptions()).get(
-               "Departments");
-         for (DepartmentInfo departmentInfo : departments)
+
+         // set User Groups
+         if (null == allUserGroups)
          {
-            WorklistConfigTableEntry confTableEntry = new WorklistConfigTableEntry(departmentInfo);
+            allUserGroups = getAllUserGroups();
+         }
+
+         for (UserGroup userGroup : allUserGroups)
+         {
+            WorklistConfigTableEntry confTableEntry = new WorklistConfigTableEntry(userGroup);
+            if (existingConfigurations.contains(confTableEntry.getIdentityKey()))
+            {
+               continue;
+            }
             fetchStoredValues(confTableEntry);
          }
 
@@ -122,6 +132,29 @@ public class ParticipantWorklistColumnConfigurationBean extends WorklistColumnCo
       {
          ExceptionHandler.handleException(e);
       }
+   }
+
+   protected String getPropertyKey()
+   {
+      return PARTICIPANT_KEY;
+   }
+
+   /**
+    * @param node
+    * @return
+    */
+   private UserGroups getAllUserGroups()
+   {
+      UserGroupQuery userGroupQuery = UserGroupQuery.findAll();
+      return getQryService().getAllUserGroups(userGroupQuery);
+   }
+
+   /**
+    * @return
+    */
+   private QueryService getQryService()
+   {
+      return SessionContext.findSessionContext().getServiceFactory().getQueryService();
    }
 
    /**
@@ -141,98 +174,32 @@ public class ParticipantWorklistColumnConfigurationBean extends WorklistColumnCo
     */
    private void addParticipant(Object participant)
    {
-      if (participant instanceof ParticipantInfo)
+      if (null != participant)
       {
-         WorklistConfigTableEntry entry = new WorklistConfigTableEntry((ParticipantInfo) participant);
-         if (existingoIds.contains(entry.getElementOID()))
+         if (participant instanceof ParticipantInfo)
          {
-            MessageDialog.addErrorMessage(getMessage("views.worklistPanelConfiguration.error.participantExist"));
+            WorklistConfigTableEntry entry = new WorklistConfigTableEntry((ParticipantInfo) participant);
+            if (existingConfigurations.contains(entry.getIdentityKey()))
+            {
+               MessageDialog.addErrorMessage(getMessage(PARTICIPANT_EXIST_KEY));
+            }
+            else
+            {
+               addEntry(entry);
+            }
          }
-         else
+         else if (participant instanceof DepartmentInfo)
          {
-            addEntry(entry);
+            WorklistConfigTableEntry entry = new WorklistConfigTableEntry((DepartmentInfo) participant);
+            if (existingConfigurations.contains(entry.getIdentityKey()))
+            {
+               MessageDialog.addErrorMessage(getMessage(PARTICIPANT_EXIST_KEY));
+            }
+            else
+            {
+               addEntry(entry);
+            }
          }
       }
-      else if (participant instanceof DepartmentInfo)
-      {
-         WorklistConfigTableEntry entry = new WorklistConfigTableEntry((DepartmentInfo) participant);
-         if (existingoIds.contains(entry.getElementOID()))
-         {
-            MessageDialog.addErrorMessage(getMessage("views.worklistPanelConfiguration.error.departmentExist"));
-         }
-         else
-         {
-            addEntry(entry);
-         }
-      }
-   }
-
-   /**
-    * @return DepartmentOptions
-    */
-   private IDepartmentProvider.Options getDepartmentOptions()
-   {
-      return new IDepartmentProvider.Options()
-      {
-
-         public String getNameFilter()
-         {
-            return "";
-         }
-
-         public boolean isStrictSearch()
-         {
-            return false;
-         }
-      };
-   }
-
-   /**
-    * @return delegateProviderOptions
-    */
-   private Options getDelegateProviderOptions()
-   {
-      return new IDelegatesProvider.Options()
-      {
-         /*
-          * (non-Javadoc)
-          * 
-          * @see
-          * org.eclipse.stardust.ui.web.viewscommon.dialogs.IDelegatesProvider.Options
-          * #getPerformerTypes()
-          */
-         public Set<Integer> getPerformerTypes()
-         {
-            Set<Integer> result = CollectionUtils.newSet();
-            result.add(IDelegatesProvider.ROLE_TYPE);
-            result.add(IDelegatesProvider.ORGANIZATION_TYPE);
-            result.add(IDelegatesProvider.DEPARTMENT_TYPE);
-            return Collections.unmodifiableSet(result);
-         }
-
-         /*
-          * (non-Javadoc)
-          * 
-          * @see
-          * org.eclipse.stardust.ui.web.viewscommon.dialogs.IDelegatesProvider.Options
-          * #isStrictSearch()
-          */
-         public boolean isStrictSearch()
-         {
-            return true;
-         }
-
-         /*
-          * (non-Javadoc)
-          * 
-          * @see
-          * org.eclipse.stardust.ui.web.viewscommon.dialogs.IDelegatesProvider.Options
-          * #getNameFilter()
-          */
-         public String getNameFilter()
-         {
-            return "";
-         }
-      };
    }
 }

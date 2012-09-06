@@ -8,7 +8,7 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration;
+package org.eclipse.stardust.ui.web.processportal.dialogs;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,15 +33,12 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
  */
 public class SelectProcessPopup extends PopupUIComponentBean
 {
-
+   public static final String PROCESSES = "processes";
    private static final long serialVersionUID = 7327885270237102911L;
    private static final String BEAN_NAME = "selectProcessPopup";
    private static final String ALL = "ALL";
-   public static final String PROCESSES = "processes";
-   
 
-   private Map<String, ProcessDefinition> processDefinitions = new HashMap<String, ProcessDefinition>();
-   private List<ProcessDefinition> allAccessibleProcesses = null;
+   private Map<String, ProcessDefinition> processDefinitions;
    private List<SelectItem> processes = null;
    private String[] selectedProcesses;
 
@@ -81,10 +78,9 @@ public class SelectProcessPopup extends PopupUIComponentBean
       this.setPopupAutoCenter(false);
       setTitle("Select Processes");
       processes = new ArrayList<SelectItem>();
-      processDefinitions.clear();
+      processDefinitions = new HashMap<String, ProcessDefinition>();
       List<ProcessDefinition> allProcessDefinitions = null;
-      allAccessibleProcesses = ProcessDefinitionUtils.getAllAccessibleProcessDefinitions();
-      allProcessDefinitions = allAccessibleProcesses;
+      allProcessDefinitions = ProcessDefinitionUtils.getAllBusinessRelevantProcesses();
       // sort process in ascending order
       Collections.sort(allProcessDefinitions, ProcessDefinitionUtils.PROCESS_ORDER);
 
@@ -95,10 +91,12 @@ public class SelectProcessPopup extends PopupUIComponentBean
 
       for (ProcessDefinition procDefn : allProcessDefinitions)
       {
-         processDefinitions.put(procDefn.getQualifiedId(), procDefn);
-         processes.add(new SelectItem(procDefn.getQualifiedId(), I18nUtils.getProcessName(procDefn)));
+         if (!ProcessDefinitionUtils.isCaseProcess(procDefn.getId()))
+         {
+            processDefinitions.put(procDefn.getQualifiedId(), procDefn);
+            processes.add(new SelectItem(procDefn.getQualifiedId(), I18nUtils.getProcessName(procDefn)));
+         }
       }
-
       resetSelectedProcesses();
    }
 

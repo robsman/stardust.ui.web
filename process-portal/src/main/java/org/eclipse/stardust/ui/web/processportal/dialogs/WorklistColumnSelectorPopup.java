@@ -8,7 +8,7 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration;
+package org.eclipse.stardust.ui.web.processportal.dialogs;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +21,7 @@ import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.processportal.common.Constants;
 import org.eclipse.stardust.ui.web.processportal.common.MessagePropertiesBean;
+import org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.WorklistColumn;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
@@ -44,6 +45,9 @@ public class WorklistColumnSelectorPopup extends PopupUIComponentBean
       return (WorklistColumnSelectorPopup) FacesUtils.getBeanFromContext(BEAN_NAME);
    }
 
+   /**
+    * @param storedList
+    */
    public void initializePopup(List<String> storedList)
    {
       setTitle(org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean.getInstance().getString(
@@ -89,11 +93,9 @@ public class WorklistColumnSelectorPopup extends PopupUIComponentBean
       columns = orderAndSelectAsPerSavedState(storedList);
    }
 
-   private String getMessage(String partialKey)
-   {
-      return MessagePropertiesBean.getInstance().getString("views.worklistPanel." + partialKey);
-   }
-
+   /**
+    * @param columns
+    */
    public void initializePopupWithColumns(List<WorklistColumn> columns)
    {
       this.setPopupAutoCenter(false);
@@ -114,6 +116,10 @@ public class WorklistColumnSelectorPopup extends PopupUIComponentBean
       }
    }
 
+   /**
+    * @param storedList
+    * @return
+    */
    private List<WorklistColumn> orderAndSelectAsPerSavedState(List<String> storedList)
    {
       if (storedList == null)
@@ -175,6 +181,15 @@ public class WorklistColumnSelectorPopup extends PopupUIComponentBean
          descriptorColumns.add(descriptorColumn);
       }
       return descriptorColumns;
+   }
+
+   /**
+    * @param partialKey
+    * @return
+    */
+   private String getMessage(String partialKey)
+   {
+      return MessagePropertiesBean.getInstance().getString("views.worklistPanel." + partialKey);
    }
 
    public void initialize()

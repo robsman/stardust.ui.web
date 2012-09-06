@@ -49,35 +49,82 @@ import com.icesoft.faces.context.Resource;
  */
 public abstract class WorklistColumnConfigurationBean
 {
-   protected Resource fileResource;
+   private static final String COMMON_PROPERTY_KEY = "views.worklistPanelConfiguration.";
+   private static final String PROPERTY_KEY_TITLE = "title";
+   private static final String PROPERTY_KEY_HEADERMSG = "headerMsg";
+   private static final String PROPERTY_KEY_NAME = "name";
+   private static final String PROPERTY_KEY_ACTIONS = "actions";
+   private static final String PROPERTY_KEY_FILE_NAME = "fileName";
+
+   private static final String COLUMN_NAME = "elementName";
+   private static final String COLUMN_ACTIONS = "actions";
+
    protected Map<String, Object> columnConfiguration;
    protected DataTable<WorklistConfigTableEntry> columnConfigurationTable;
    protected List<WorklistConfigTableEntry> columnConfTableEntries;
-   protected Set<String> existingoIds = new HashSet<String>();
+   protected Set<String> existingConfigurations;
+   protected Map<String, Object> defaultConf;
+   protected Resource fileResource;
    private String preferenceId;
 
+   /**
+    * @param preferenceId
+    */
    public WorklistColumnConfigurationBean(String preferenceId)
    {
       this.preferenceId = preferenceId;
    }
 
-   public Map<String, Object> defaultConf;
+   public abstract void add();
 
-   public void initializeFileResource()
+   /**
+    * soft delete the entry, actually gets deleted when the configuration is saved
+    */
+   public void delete()
    {
-      List<Preferences> preferencesList = new ArrayList<Preferences>();
-      preferencesList.add(WorklistConfigurationUtil.getWorklistConfiguration(PreferenceScope.PARTITION, preferenceId));
-      fileResource = new PreferencesResource(preferencesList);
+      for (WorklistConfigTableEntry confTableEntry : columnConfTableEntries)
+      {
+         if (confTableEntry.isSelected() && !WorklistConfigurationUtil.DEFAULT.equals(confTableEntry.getIdentityKey()))
+         {
+            columnConfiguration.remove(confTableEntry.getIdentityKey());
+            columnConfTableEntries.remove(confTableEntry);
+            existingConfigurations.remove(confTableEntry.getIdentityKey());
+         }
+      }
    }
 
+   /**
+    * save configuration
+    */
+   public void save()
+   {
+      ArrayList<String> colsToBeSaved;
+      for (WorklistConfigTableEntry confTableEntry : columnConfTableEntries)
+      {
+         colsToBeSaved = confTableEntry.getColumnsToBeSaved();
+         WorklistConfigurationUtil.updateValues(confTableEntry.getIdentityKey(), colsToBeSaved,
+               confTableEntry.isLock(), columnConfiguration);
+      }
+      WorklistConfigurationUtil.savePreferences(PreferenceScope.PARTITION, preferenceId, columnConfiguration);
+   }
+
+   public void reset()
+   {
+      initializeStoredValues();
+      // WorklistConfigurationUtil.resetPreference();
+   }
+
+   /**
+    * import and load uploaded configuration
+    */
    public void importConfiguration()
    {
       CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getInstance();
       fileUploadDialog.initializeBean();
 
       FileUploadDialogAttributes attributes = fileUploadDialog.getAttributes();
-      attributes.setHeaderMessage("Upload configuration TODO");
-      attributes.setTitle("Upload configuration TODO21");
+      attributes.setTitle(getMessage(getPropertyKey() + PROPERTY_KEY_TITLE));
+      attributes.setHeaderMessage(getMessage(getPropertyKey() + PROPERTY_KEY_HEADERMSG));
       attributes.setViewDescription(false);
       attributes.setViewComment(false);
       attributes.setViewDocumentType(false);
@@ -104,20 +151,89 @@ public abstract class WorklistColumnConfigurationBean
 
    }
 
+   protected void initialize()
+   {
+      ColumnPreference nameCol = new ColumnPreference(COLUMN_NAME, COLUMN_NAME, getMessage(getPropertyKey()
+            + PROPERTY_KEY_NAME), ResourcePaths.V_WLC_TABLE_COLUMNS, true, true);
+
+      ColumnPreference actions = new ColumnPreference(COLUMN_ACTIONS, COLUMN_ACTIONS, getMessage(PROPERTY_KEY_ACTIONS),
+            ResourcePaths.V_WLC_TABLE_COLUMNS, true, false);
+
+      List<ColumnPreference> workConfCols = new ArrayList<ColumnPreference>();
+      workConfCols.add(nameCol);
+      workConfCols.add(actions);
+
+      IColumnModel worklistColumnModel = new DefaultColumnModel(workConfCols, null, null,
+            UserPreferencesEntries.M_WORKFLOW, null);
+
+      columnConfigurationTable = new SortableTable<WorklistConfigTableEntry>(worklistColumnModel, null,
+            new SortableTableComparator<WorklistConfigTableEntry>(COLUMN_NAME, true));
+
+      columnConfigurationTable.setRowSelector(new DataTableRowSelector("selected", true));
+      columnConfigurationTable.initialize();
+
+      initializeStoredValues();
+   }
+
    /**
-    * @param key
-    * @return
+    * 
     */
-   protected String getMessage(String key)
+   protected void initializeStoredValues()
    {
-      return MessagePropertiesBean.getInstance().getString(key);
+      columnConfTableEntries = new ArrayList<WorklistConfigTableEntry>();
+      existingConfigurations = new HashSet<String>();
+      columnConfiguration = WorklistConfigurationUtil.getWorklistConfigurationMap(PreferenceScope.PARTITION,
+            preferenceId);
+
+      // set default entry
+      defaultConf = WorklistConfigurationUtil.getStoredValues(WorklistConfigurationUtil.DEFAULT, columnConfiguration);
+      WorklistConfigTableEntry defaultEntry = new WorklistConfigTableEntry(WorklistConfigurationUtil.DEFAULT);
+      defaultEntry.setConfiguration(defaultConf);
+      columnConfTableEntries.add(defaultEntry);
+
+      retrieveConfigurations();
+      initializeFileResource();
+      columnConfigurationTable.setList(columnConfTableEntries);
    }
 
-   protected String getParamMessage(String key, String... params)
+   /**
+    * @param confTableEntry
+    */
+   protected void addEntry(WorklistConfigTableEntry confTableEntry)
    {
-      return MessagePropertiesBean.getInstance().getParamString(key, params);
+      existingConfigurations.add(confTableEntry.getIdentityKey());
+      confTableEntry.setConfiguration(defaultConf);
+      columnConfTableEntries.add(confTableEntry);
    }
 
+   /**
+    * @param confTableEntry
+    */
+   protected void fetchStoredValues(WorklistConfigTableEntry confTableEntry)
+   {
+      Map<String, Object> configuration = WorklistConfigurationUtil.getStoredValues(confTableEntry.getIdentityKey(),
+            columnConfiguration);
+
+      if (null != configuration)
+      {
+         confTableEntry.setConfiguration(configuration);
+         columnConfTableEntries.add(confTableEntry);
+         existingConfigurations.add(confTableEntry.getIdentityKey());
+      }
+   }
+
+   public String getFileName()
+   {
+      return getMessage(getPropertyKey() + PROPERTY_KEY_FILE_NAME);
+   }
+
+   protected abstract void retrieveConfigurations();
+
+   protected abstract String getPropertyKey();
+
+   /**
+    * @param file
+    */
    private void loadConfiguration(FileInfo file)
    {
       String filePath = file.getPhysicalPath();
@@ -144,95 +260,13 @@ public abstract class WorklistColumnConfigurationBean
    }
 
    /**
-    * @return
+    * prepare download file resource
     */
-   public Resource getFileResource()
+   private void initializeFileResource()
    {
-      return fileResource;
-   }
-
-   protected void initialize()
-   {
-      ColumnPreference participantNameCol = new ColumnPreference("elementName", "elementName", MessagePropertiesBean
-            .getInstance().getString("views.worklistPanelConfiguration.participant"),
-            ResourcePaths.V_WLC_TABLE_COLUMNS, true, true);
-
-      ColumnPreference actions = new ColumnPreference("actions", "actions",
-            getMessage("views.worklistPanelConfiguration.actions"), ResourcePaths.V_WLC_TABLE_COLUMNS, true, false);
-
-      List<ColumnPreference> participantWorkConfCols = new ArrayList<ColumnPreference>();
-      participantWorkConfCols.add(participantNameCol);
-      participantWorkConfCols.add(actions);
-
-      IColumnModel participantsColumnModel = new DefaultColumnModel(participantWorkConfCols, null, null,
-            UserPreferencesEntries.M_WORKFLOW, null);
-
-      columnConfigurationTable = new SortableTable<WorklistConfigTableEntry>(participantsColumnModel, null,
-            new SortableTableComparator<WorklistConfigTableEntry>("elementName", true));
-
-      columnConfigurationTable.setRowSelector(new DataTableRowSelector("selected", true));
-      columnConfigurationTable.initialize();
-      columnConfiguration = WorklistConfigurationUtil.getWorklistConfigurationMap(PreferenceScope.PARTITION,
-            preferenceId);
-      retrieveandSetConfigurationValues();
-      initializeFileResource();
-   }
-
-   /**
-    * @param confTableEntry
-    */
-   public void fetchStoredValues(WorklistConfigTableEntry confTableEntry)
-   {
-      Map<String, Object> participantConf = WorklistConfigurationUtil.getStoredValues(confTableEntry.getElementOID(),
-            columnConfiguration);
-
-      if (null != participantConf)
-      {
-         confTableEntry.setConfiguration(participantConf);
-         columnConfTableEntries.add(confTableEntry);
-         existingoIds.add(confTableEntry.getElementOID());
-      }
-   }
-
-   public void addEntry(WorklistConfigTableEntry confTableEntry)
-   {
-      existingoIds.add(confTableEntry.getElementOID());
-      confTableEntry.setConfiguration(defaultConf);
-      columnConfTableEntries.add(confTableEntry);
-   }
-
-   protected abstract void retrieveandSetConfigurationValues();
-
-   public abstract void add();
-
-   public void delete()
-   {
-      for (WorklistConfigTableEntry confTableEntry : columnConfTableEntries)
-      {
-         if (confTableEntry.isSelected() && !WorklistConfigurationUtil.DEFAULT.equals(confTableEntry.getElementOID()))
-         {
-            columnConfiguration.remove(confTableEntry.getElementOID());
-            columnConfTableEntries.remove(confTableEntry);
-            existingoIds.remove(confTableEntry.getElementOID());
-         }
-      }
-   }
-
-   public void save()
-   {
-      ArrayList<String> colsToBeSaved;
-      for (WorklistConfigTableEntry confTableEntry : columnConfTableEntries)
-      {
-         colsToBeSaved = confTableEntry.getColumnsToBeSaved();
-         WorklistConfigurationUtil.updateValues(confTableEntry.getElementOID(), colsToBeSaved, confTableEntry.isLock(),
-               columnConfiguration);
-      }
-      WorklistConfigurationUtil.saveWorklistConfiguration(preferenceId, columnConfiguration);
-   }
-
-   public void reset()
-   {
-      initialize();
+      List<Preferences> preferencesList = new ArrayList<Preferences>();
+      preferencesList.add(WorklistConfigurationUtil.getWorklistConfiguration(PreferenceScope.PARTITION, preferenceId));
+      fileResource = new PreferencesResource(preferencesList);
    }
 
    public boolean isDeleteDisabled()
@@ -243,7 +277,7 @@ public abstract class WorklistColumnConfigurationBean
          if (confTableEntry.isSelected())
          {
             disabled = false;
-            if (WorklistConfigurationUtil.DEFAULT.equals(confTableEntry.getElementOID()))
+            if (WorklistConfigurationUtil.DEFAULT.equals(confTableEntry.getIdentityKey()))
             {
                disabled = true;
                break;
@@ -253,9 +287,35 @@ public abstract class WorklistColumnConfigurationBean
       return disabled;
    }
 
+   /**
+    * @return
+    */
+   public Resource getFileResource()
+   {
+      return fileResource;
+   }
+
    public DataTable<WorklistConfigTableEntry> getColumnConfigurationTable()
    {
       return columnConfigurationTable;
    }
 
+   /**
+    * @param key
+    * @return
+    */
+   protected String getMessage(String key)
+   {
+      return MessagePropertiesBean.getInstance().getString(COMMON_PROPERTY_KEY + key);
+   }
+
+   /**
+    * @param key
+    * @param params
+    * @return
+    */
+   protected String getParamMessage(String key, String... params)
+   {
+      return MessagePropertiesBean.getInstance().getParamString(COMMON_PROPERTY_KEY + key, params);
+   }
 }

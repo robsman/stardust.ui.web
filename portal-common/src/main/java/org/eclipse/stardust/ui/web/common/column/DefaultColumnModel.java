@@ -354,16 +354,6 @@ public class DefaultColumnModel extends ColumnModel
          trace.debug("DefaultColumnModel: Listener is NULL can not notify columnsRearranged");
    }
 
-   public void setPreferenceScope(PreferenceScope preferenceScope)
-   {
-      this.preferenceScope = preferenceScope;
-   }
-
-   public List<String> getStoredList()
-   {
-      return storedList;
-   }
-
    public void setStoredList(List<String> storedList)
    {
       this.storedList = storedList;

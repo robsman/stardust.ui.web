@@ -10,14 +10,15 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.processportal.common.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.processportal.dialogs.SelectProcessPopup;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
@@ -28,23 +29,32 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager
  */
 public class ProcessWorklistColumnConfigurationBean extends WorklistColumnConfigurationBean
 {
+   private static final String PROCESS_KEY = "process.";
+   private static final String PROCESS_EXIST_KEY = PROCESS_KEY + "exist";
+   private static final String NEW_LINE_CHAR = "\n";
 
+   /**
+    * default constructor
+    */
+   public ProcessWorklistColumnConfigurationBean()
+   {
+      this(UserPreferencesEntries.P_WORKLIST_PROC_CONF);
+      initialize();
+   }
+
+   /**
+    * @param preferenceID
+    */
    private ProcessWorklistColumnConfigurationBean(String preferenceID)
    {
       super(preferenceID);
    }
 
-   public ProcessWorklistColumnConfigurationBean()
-   {
-      this(UserPreferencesEntries.V_WORKLIST_PROC_CONF);
-      initialize();
-   }
-
    @Override
    public void add()
    {
-      SelectProcessPopup dialog = SelectProcessPopup.getInstance();
-      dialog.setCallbackHandler(new ParametricCallbackHandler()
+      SelectProcessPopup selectProcessPopup = SelectProcessPopup.getInstance();
+      selectProcessPopup.setCallbackHandler(new ParametricCallbackHandler()
       {
          @SuppressWarnings("unchecked")
          public void handleEvent(EventType eventType)
@@ -55,8 +65,8 @@ public class ProcessWorklistColumnConfigurationBean extends WorklistColumnConfig
             }
          }
       });
-      dialog.initializeBean();
-      dialog.openPopup();
+      selectProcessPopup.initializeBean();
+      selectProcessPopup.openPopup();
    }
 
    /**
@@ -64,25 +74,27 @@ public class ProcessWorklistColumnConfigurationBean extends WorklistColumnConfig
     */
    private void addProcess(List<ProcessDefinition> processes)
    {
-      StringBuffer existingProcess = new StringBuffer();
-      for (ProcessDefinition processDefinition : processes)
+      StringBuffer existingProcesses = new StringBuffer();
+      if (CollectionUtils.isNotEmpty(processes))
       {
-         WorklistConfigTableEntry entry = new WorklistConfigTableEntry(processDefinition);
-         if (existingoIds.contains(entry.getElementOID()))
+         for (ProcessDefinition processDefinition : processes)
          {
-            existingProcess.append("\n");
-            existingProcess.append(entry.getElementName());
+            WorklistConfigTableEntry entry = new WorklistConfigTableEntry(processDefinition);
+            if (existingConfigurations.contains(entry.getIdentityKey()))
+            {
+               existingProcesses.append(NEW_LINE_CHAR);
+               existingProcesses.append(entry.getElementName());
+            }
+            else
+            {
+               addEntry(entry);
+            }
          }
-         else
-         {
-            addEntry(entry);
-         }
-      }
 
-      if (StringUtils.isNotEmpty(existingProcess.toString()))
-      {
-         MessageDialog.addErrorMessage(getParamMessage("views.worklistPanelConfiguration.error.processExist",
-               existingProcess.toString()));
+         if (StringUtils.isNotEmpty(existingProcesses.toString()))
+         {
+            MessageDialog.addErrorMessage(getParamMessage(PROCESS_EXIST_KEY, existingProcesses.toString()));
+         }
       }
    }
 
@@ -92,37 +104,32 @@ public class ProcessWorklistColumnConfigurationBean extends WorklistColumnConfig
     * @see org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.
     * WorklistColumnConfigurationBean#retrieveandSetConfigurationValues()
     */
-   protected void retrieveandSetConfigurationValues()
+   protected void retrieveConfigurations()
    {
       try
       {
          ProcessWorklistCacheManager.getInstance().reset();
          Set<ProcessDefinition> processDefs = ProcessWorklistCacheManager.getInstance().getProcesses();
 
-         columnConfTableEntries = new ArrayList<WorklistConfigTableEntry>();
-
-         // set default entry
-         defaultConf = WorklistConfigurationUtil
-               .getStoredValues(WorklistConfigurationUtil.DEFAULT, columnConfiguration);
-         WorklistConfigTableEntry defaultEntry = new WorklistConfigTableEntry(WorklistConfigurationUtil.DEFAULT);
-         defaultEntry.setConfiguration(defaultConf);
-         columnConfTableEntries.add(defaultEntry);
-
          for (ProcessDefinition processDefinition : processDefs)
          {
             WorklistConfigTableEntry confTableEntry = new WorklistConfigTableEntry(processDefinition);
-            if (existingoIds.contains(confTableEntry.getElementOID()))
+            if (existingConfigurations.contains(confTableEntry.getIdentityKey()))
             {
                continue;
             }
             fetchStoredValues(confTableEntry);
          }
          columnConfigurationTable.setList(columnConfTableEntries);
-
       }
       catch (Exception e)
       {
          ExceptionHandler.handleException(e);
       }
+   }
+
+   protected String getPropertyKey()
+   {
+      return PROCESS_KEY;
    }
 }

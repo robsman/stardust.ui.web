@@ -75,6 +75,8 @@ import com.icesoft.faces.component.ext.RowSelectorEvent;
  */
 public class DelegationBean extends PopupUIComponentBean
 {
+   public static final String SELECTED_PARTICIPANT = "selectedParticipant";
+   
    private static final long serialVersionUID = 2419043753205151128L;
    
    private static final String BEAN_NAME = "delegationBean";
@@ -171,8 +173,9 @@ public class DelegationBean extends PopupUIComponentBean
       Department department = null;
       Object obj = getSelectedParticipant();
       
-      if (handleSelectedParticipant(obj))
+      if (selectedParticipantCase)
       {
+         handleSelectedParticipant(obj);
          return;
       }
       
@@ -276,9 +279,7 @@ public class DelegationBean extends PopupUIComponentBean
             ICallbackHandler iCH = iCallbackHandler;
             if (iCH instanceof IParametricCallbackHandler)
             {
-               Map<String, Object> parameters = new HashMap<String, Object>();
-               parameters.put("selectedParticipant", obj);
-               ((IParametricCallbackHandler) iCH).setParameters(parameters);
+               ((IParametricCallbackHandler) iCH).setParameter("selectedParticipant", obj);
             }
             fireCloseEvent = false;
             closePopup();
@@ -294,22 +295,16 @@ public class DelegationBean extends PopupUIComponentBean
       }
    }
 
-   public boolean handleSelectedParticipant(Object obj)
+   /**
+    * @param obj
+    */
+   public void handleSelectedParticipant(Object obj)
    {
-      if (selectedParticipantCase)
-      {
-         Map<String, Object> parameters = new HashMap<String, Object>();
-         parameters.put("selectedParticipant", obj);
-         ((IParametricCallbackHandler) iCallbackHandler).setParameters(parameters);
-         fireCloseEvent = false;
-         ICallbackHandler ich = iCallbackHandler;
-         closePopup();
-
-         ich.handleEvent(EventType.APPLY);
-
-         return true;
-      }
-      return false;
+      ((IParametricCallbackHandler) iCallbackHandler).setParameter(SELECTED_PARTICIPANT, obj);
+      fireCloseEvent = false;
+      ICallbackHandler ich = iCallbackHandler;
+      closePopup();
+      ich.handleEvent(EventType.APPLY);
    }
    
    /**
@@ -323,6 +318,12 @@ public class DelegationBean extends PopupUIComponentBean
    @Override
    public void initialize()
    {
+      if (selectedParticipantCase)
+      {
+         participantTree.setShowUserGroupNodes(true);
+         participantTree.initialize();
+      }
+      
       typeFilters = CollectionUtils.newList();
       typeFilters.add(new SelectItem(new Integer(0), propsBean.getString("delegation.allTypes")));
       if (!selectedParticipantCase)
@@ -675,13 +676,20 @@ public class DelegationBean extends PopupUIComponentBean
     */
    public String getDialogTitle()
    {
-      if (delegateCase)
+      if (StringUtils.isEmpty(getTitle()))
       {
-         return propsBean.getString("delegation.case.title");
+         if (delegateCase)
+         {
+            return propsBean.getString("delegation.case.title");
+         }
+         else
+         {
+            return propsBean.getString("delegation.title");
+         }
       }
       else
       {
-         return propsBean.getString("delegation.title");
+         return getTitle();
       }
    }
    

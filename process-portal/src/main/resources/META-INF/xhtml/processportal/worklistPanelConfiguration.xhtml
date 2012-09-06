@@ -9,9 +9,9 @@
 	<ice:panelGroup>
 		<ui:include src="/plugins/views-common/dialogs/delegation.xhtml" />
 		<ui:include
-			src="/plugins/processportal/views/worklistConfiguration/selectProcessPopup.xhtml" />
+			src="/plugins/processportal/dialogs/selectProcessPopup.xhtml" />
 		<ui:include
-			src="/plugins/processportal/views/worklistConfiguration/worklistcolumnSelector.xhtml" />
+			src="/plugins/processportal/dialogs/worklistcolumnSelector.xhtml" />
 	</ice:panelGroup>
 
 	<ice:panelGroup rendered="#{ippPortalApp.loggedInUser.administrator}">
@@ -21,57 +21,86 @@
 				value="#{worklistConfigurationBean.worklistConfirmationDialog}" />
 		</ui:include>
 		<ice:panelGroup styleClass="heading">
-			<ice:outputText value="#{processportal_msgPropsBean['views.worklistPanelConfiguration.filterProviders.title']}" />
+			<ice:outputText
+				value="#{processportal_msgPropsBean['views.worklistPanelConfiguration.filterProviders.title']}" />
 		</ice:panelGroup>
-	
+
 		<ice:panelGrid columns="2">
 			<ice:outputLabel styleClass="label-form"
 				value="#{processportal_msgPropsBean['views.worklistPanelConfiguration.filterProviders.filterProviderList']}" />
-			<ice:inputTextarea cols="65" rows="4" partialSubmit="true" 
+			<ice:inputTextarea cols="65" rows="4" partialSubmit="true"
 				value="#{worklistConfigurationBean.configFilterProviders}">
-				<pc:automationTag value="auto-PP-WorklistPnlConf-FilterProvList" standAlone="false" />
-			</ice:inputTextarea>	
+				<pc:automationTag value="auto-PP-WorklistPnlConf-FilterProvList"
+					standAlone="false" />
+			</ice:inputTextarea>
 		</ice:panelGrid>
-	
-		<ice:panelGroup styleClass="clearing" />
-
-		<pc:genericDataTable exportCsv="false" exportExcel="false"
-			title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.participantTable']}"
-			bean="#{worklistConfigurationBean.participantWorklistConfBean}"
-			table="#{worklistConfigurationBean.participantWorklistConfBean.columnConfigurationTable}"
-			sortSupported="true" 
-			toolbarUrl="/plugins/processportal/toolbar/WorklistConfigurationToolbar.xhtml" />
 
 		<ice:panelGroup styleClass="clearing" />
-		
-		<pc:genericDataTable exportExcel="false" exportCsv="false"
-			title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.processTable']}"
-			bean="#{worklistConfigurationBean.processWorklistConfBean}"
-			table="#{worklistConfigurationBean.processWorklistConfBean.columnConfigurationTable}"
-			sortSupported="true" 
-			toolbarUrl="/plugins/processportal/toolbar/WorklistConfigurationToolbar.xhtml" />
+
+
+		<ice:panelCollapsible
+			expanded="#{worklistConfigurationBean.participantsSectionExpanded}">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText
+						value="#{processportal_msgPropsBean['views.worklistPanelConfiguration.participant.table']}">
+						<pc:automationTag value="auto-PP-WorklistPnlConf-participant"
+							standAlone="false" />
+					</ice:outputText>
+				</ice:panelGroup>
+			</f:facet>
+			<ice:panelGroup>
+				<pc:automationTag value="auto-PP-WorklistPnlConf-participant-Table" />
+				<pc:genericDataTable exportCsv="false" exportExcel="false"
+					bean="#{worklistConfigurationBean.participantWorklistConfBean}"
+					table="#{worklistConfigurationBean.participantWorklistConfBean.columnConfigurationTable}"
+					sortSupported="true"
+					toolbarUrl="/plugins/processportal/toolbar/WorklistConfigurationToolbar.xhtml" />
+			</ice:panelGroup>
+		</ice:panelCollapsible>
 
 		<ice:panelGroup styleClass="clearing" />
-		
+
+		<ice:panelCollapsible
+			expanded="#{worklistConfigurationBean.processesSectionExpanded}">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText
+						value="#{processportal_msgPropsBean['views.worklistPanelConfiguration.process.table']}">
+						<pc:automationTag value="auto-PP-WorklistPnlConf-process"
+							standAlone="false" />
+					</ice:outputText>
+				</ice:panelGroup>
+			</f:facet>
+			<ice:panelGroup>
+				<pc:automationTag value="auto-PP-WorklistPnlConf-process-Table" />
+				<pc:genericDataTable exportExcel="false" exportCsv="false"
+					bean="#{worklistConfigurationBean.processWorklistConfBean}"
+					table="#{worklistConfigurationBean.processWorklistConfBean.columnConfigurationTable}"
+					sortSupported="true"
+					toolbarUrl="/plugins/processportal/toolbar/WorklistConfigurationToolbar.xhtml" />
+			</ice:panelGroup>
+		</ice:panelCollapsible>
+
+		<ice:panelGroup styleClass="clearing" />
+
 		<ice:panelGrid columns="2" style="text-align: left">
-			<pc:automationTag value="auto-PP-WorklistPnlConf-BtnsBar" standAlone="false" />
+			<pc:automationTag value="auto-PP-WorklistPnlConf-BtnsBar"
+				standAlone="false" />
 			<ice:commandButton
 				value="#{common_msgPropsBean['views.configurationPanel.button.save']}"
-				action="#{worklistConfigurationBean.save}"
-				partialSubmit="true" styleClass="button" />
-			
-			<ice:commandButton
-				value="RELOAD"
-				action="#{worklistConfigurationBean.reload}"
-				partialSubmit="true" styleClass="button" />	 
-				
+				action="#{worklistConfigurationBean.save}" partialSubmit="true"
+				styleClass="button" />
+
 			<ice:commandButton
 				value="#{common_msgPropsBean['views.configurationPanel.button.reset']}"
 				action="#{worklistConfigurationBean.openConfirmationDialog}"
 				partialSubmit="true" styleClass="button" />
 		</ice:panelGrid>
 	</ice:panelGroup>
-	<ice:panelGroup rendered="#{not ippPortalApp.loggedInUser.administrator}">
-		<ice:outputText value="#{processportal_msgPropsBean['views.worklistPanelConfiguration.noAuthorization']}"/>
+	<ice:panelGroup
+		rendered="#{not ippPortalApp.loggedInUser.administrator}">
+		<ice:outputText
+			value="#{processportal_msgPropsBean['views.worklistPanelConfiguration.noAuthorization']}" />
 	</ice:panelGroup>
 </f:view>

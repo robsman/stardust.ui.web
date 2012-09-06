@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.processportal.view;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
@@ -38,11 +36,16 @@ public class WorklistConfigurationBean implements InitializingBean, Confirmation
    public static final String BEAN_NAME = "worklistConfigurationBean";
 
    private static final long serialVersionUID = 1L;
-   private static final Logger trace = LogManager.getLogger(WorklistConfigurationBean.class);
    private String configFilterProviders;
    private ConfirmationDialog worklistConfirmationDialog;
+   
+   //Participant Table
    private ParticipantWorklistColumnConfigurationBean participantWorklistConfBean;
+   private boolean participantsSectionExpanded;
+
+   //Process Table
    private ProcessWorklistColumnConfigurationBean processWorklistConfBean;
+   private boolean processesSectionExpanded;
 
    public WorklistConfigurationBean()
    {     
@@ -56,14 +59,6 @@ public class WorklistConfigurationBean implements InitializingBean, Confirmation
       return (WorklistConfigurationBean) FacesUtils.getBeanFromContext(BEAN_NAME);
    }
 
-   /**
-    * TODO temp method 
-    */
-   public void reload()
-   {
-      initializeWorklistConf();
-   }
-   
    /*
     * (non-Javadoc)
     * 
@@ -72,7 +67,7 @@ public class WorklistConfigurationBean implements InitializingBean, Confirmation
    public void afterPropertiesSet() throws Exception
    {
       configFilterProviders = FilterProviderUtil.getInstance().getFilterProviderPreferences();     
-      initializeWorklistConf();
+      initializeWorklistColumnConfiguration();
    }
 
    /**
@@ -83,30 +78,16 @@ public class WorklistConfigurationBean implements InitializingBean, Confirmation
       setFilterProviderPreferences(configFilterProviders);
       FilterProviderUtil.getInstance().initializeFilterProviders();
       
-      saveWorklistColumnConf();
+      saveWorklistColumnConfiguration();
       
       MessageDialog.addInfoMessage(MessagePropertiesBean.getInstance().getString(
             "views.worklistPanelConfiguration.saveSuccessful"));
    }
 
-   private void saveWorklistColumnConf()
-   {
-      participantWorklistConfBean.save();
-      processWorklistConfBean.save();
-      initializeWorklistConf();
-   }
-   
-   private void initializeWorklistConf()
-   {
-      participantWorklistConfBean = new ParticipantWorklistColumnConfigurationBean();
-      processWorklistConfBean = new ProcessWorklistColumnConfigurationBean();
-   }
-
    public void reset()
    {
       getUserPreferencesHelper().resetValue(UserPreferencesEntries.V_WORKLIST, UserPreferencesEntries.F_PROVIDERS);
-      participantWorklistConfBean.reset();
-      processWorklistConfBean.reset();
+      resetWorklistColumnConfiguration();
       FacesUtils.clearFacesTreeValues();
       configFilterProviders = FilterProviderUtil.getInstance().getFilterProviderPreferences();
    }
@@ -142,6 +123,43 @@ public class WorklistConfigurationBean implements InitializingBean, Confirmation
    {
       worklistConfirmationDialog=null;
       return true;
+   }
+   
+   private void saveWorklistColumnConfiguration()
+   {
+      if (null != participantWorklistConfBean)
+      {
+         participantWorklistConfBean.save();
+      }
+      if (null != processWorklistConfBean)
+      {
+         processWorklistConfBean.save();
+      }
+   }
+
+   private void initializeWorklistColumnConfiguration()
+   {
+      if (participantsSectionExpanded && null == participantWorklistConfBean)
+      {
+         participantWorklistConfBean = new ParticipantWorklistColumnConfigurationBean();
+
+      }
+      if (processesSectionExpanded && null == processWorklistConfBean)
+      {
+         processWorklistConfBean = new ProcessWorklistColumnConfigurationBean();
+      }
+   }
+
+   private void resetWorklistColumnConfiguration()
+   {
+      if (null != participantWorklistConfBean)
+      {
+         participantWorklistConfBean.reset();
+      }
+      if (null != processWorklistConfBean)
+      {
+         processWorklistConfBean.reset();
+      }
    }
    
    /**
@@ -186,5 +204,27 @@ public class WorklistConfigurationBean implements InitializingBean, Confirmation
    public ProcessWorklistColumnConfigurationBean getProcessWorklistConfBean()
    {
       return processWorklistConfBean;
+   }
+
+   public boolean isProcessesSectionExpanded()
+   {
+      return processesSectionExpanded;
+   }
+
+   public void setProcessesSectionExpanded(boolean processesSectionExpanded)
+   {
+      this.processesSectionExpanded = processesSectionExpanded;
+      initializeWorklistColumnConfiguration();
+   }
+
+   public boolean isParticipantsSectionExpanded()
+   {
+      return participantsSectionExpanded;
+   }
+
+   public void setParticipantsSectionExpanded(boolean participantsSectionExpanded)
+   {
+      this.participantsSectionExpanded = participantsSectionExpanded;
+      initializeWorklistColumnConfiguration();
    }
 }

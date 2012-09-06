@@ -39,7 +39,8 @@ public interface UserPreferencesEntries
    public static final String F_NO_OF_COLUMNS_IN_COLUMN_LAYOUT = "prefs.noOfColumnsInColumnLayout"; // int
    public static final String F_NO_OF_COLUMNS_IN_TABLE = "prefs.noOfColumnsInTable"; // int
    
-   public static final String V_WORKLIST_PART_CONF = "worklistPartConf";
-   public static final String V_WORKLIST_PROC_CONF = "worklistProcConf";
+   //Preference IDs for Participant/Process Worklist Column Configuration and 
+   public static final String P_WORKLIST_PART_CONF = "worklist-participant-columns";
+   public static final String P_WORKLIST_PROC_CONF = "worklist-process-columns";
    
 }

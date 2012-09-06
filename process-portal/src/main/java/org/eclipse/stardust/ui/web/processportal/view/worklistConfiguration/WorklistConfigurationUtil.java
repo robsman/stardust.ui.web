@@ -14,20 +14,23 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.engine.api.dto.ModelParticipantInfoDetails;
-import org.eclipse.stardust.engine.api.dto.UserInfoDetails;
-import org.eclipse.stardust.engine.api.model.ModelParticipant;
+import org.eclipse.stardust.engine.api.dto.DepartmentDetails;
+import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
+import org.eclipse.stardust.engine.api.runtime.UserGroupInfo;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
+import org.eclipse.stardust.engine.extensions.dms.data.DmsPrincipal;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.processportal.common.Constants;
 import org.eclipse.stardust.ui.web.processportal.common.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 
 /**
  * @author Yogesh.Manware
@@ -38,8 +41,11 @@ public class WorklistConfigurationUtil
    public static final String SELECTED_COLS = "selectedColumns";
    public static final String LOCK = "lock";
    public static final String DEFAULT = "Default";
+   public static final String PREFERNCE_NAME = ".prefs";
 
    public static Map<String, Object> DEFAULT_CONF;
+
+   // system level configuration
    static
    {
       DEFAULT_CONF = new HashMap<String, Object>();
@@ -60,45 +66,18 @@ public class WorklistConfigurationUtil
       DEFAULT_CONF.put(WorklistConfigurationUtil.LOCK, "false");
    }
 
-   public static String getOid(ParticipantInfo participantInfo)
+   /**
+    * @param id
+    * @param preferenceId
+    * @return
+    */
+   public static Map<String, Object> getStoredValues(String id, String preferenceId)
    {
-      Long oId = null;
-      String strOid;
-      if (participantInfo instanceof UserInfoDetails)
-      {
-         oId = ((UserInfoDetails) participantInfo).getOID();
-      }
-      else if (participantInfo instanceof ModelParticipant)
-      {
-         oId = (long) ((ModelParticipant) participantInfo).getElementOID();
-      }
-      else if (participantInfo instanceof ModelParticipantInfoDetails)
-      {
-         oId = ((ModelParticipantInfoDetails) participantInfo).getRuntimeElementOID();
-      }
-      else if (participantInfo instanceof DepartmentInfo)
-      {
-         oId = ((DepartmentInfo) participantInfo).getOID();
-      }
-
-      if (null == oId)
-      {
-         strOid = String.valueOf(oId);
-      }
-      else
-      {
-         strOid = DEFAULT;
-      }
-      return strOid;
-   }
-
-   public static Map<String, Object> getStoredValues(String oId, String preferenceId)
-   {
-      // check for the lock in default table
+      // Check at partition level
       Map<String, Object> worklistConf;
       worklistConf = getWorklistConfigurationMap(PreferenceScope.PARTITION, preferenceId);
 
-      Map<String, Object> configuration = getStoredValues(oId, worklistConf);
+      Map<String, Object> configuration = getStoredValues(id, worklistConf);
       boolean fetchUserConf = false;
 
       if (CollectionUtils.isNotEmpty(configuration))
@@ -114,13 +93,14 @@ public class WorklistConfigurationUtil
          fetchUserConf = true;
       }
 
+      // Check at user level
       if (fetchUserConf)
       {
          worklistConf = getWorklistConfigurationMap(PreferenceScope.USER, preferenceId);
 
          if (CollectionUtils.isNotEmpty(worklistConf))
          {
-            configuration = getStoredValues(oId, worklistConf);
+            configuration = getStoredValues(id, worklistConf);
          }
       }
 
@@ -131,12 +111,17 @@ public class WorklistConfigurationUtil
       return configuration;
    }
 
-   public static Map<String, Object> getStoredValues(String oId, Map<String, Object> worklistConf)
+   /**
+    * @param id
+    * @param worklistConf
+    * @return
+    */
+   @SuppressWarnings("unchecked")
+   public static Map<String, Object> getStoredValues(String id, Map<String, Object> worklistConf)
    {
-      @SuppressWarnings("unchecked")
-      Map<String, Object> configuration = (Map<String, Object>) worklistConf.get(oId);
+      Map<String, Object> configuration = (Map<String, Object>) worklistConf.get(id);
 
-      if (DEFAULT.equals(oId))
+      if (DEFAULT.equals(id))
       {
          if (CollectionUtils.isEmpty(configuration))
          {
@@ -155,112 +140,163 @@ public class WorklistConfigurationUtil
       return configuration;
    }
 
-   public static void updateValues(String Oid, ArrayList<String> selectColumns, boolean lock,
-         Map<String, Object> procPartWorklistConf)
+   /**
+    * @param id
+    * @param selectColumns
+    * @param lock
+    * @param worklistConf
+    */
+   @SuppressWarnings("unchecked")
+   public static void updateValues(String id, ArrayList<String> selectColumns, boolean lock,
+         Map<String, Object> worklistConf)
    {
-      HashMap<String, Serializable> elementPreference = (HashMap<String, Serializable>) procPartWorklistConf.get(Oid);
+      HashMap<String, Serializable> elementPreference = (HashMap<String, Serializable>) worklistConf.get(id);
 
       if (null == elementPreference)
       {
          elementPreference = new HashMap<String, Serializable>();
-         procPartWorklistConf.put(String.valueOf(Oid), elementPreference);
+         worklistConf.put(String.valueOf(id), elementPreference);
       }
       elementPreference.put(SELECTED_COLS, selectColumns);
       elementPreference.put(LOCK, String.valueOf(lock));
    }
 
-   public static void saveWorklistConfiguration(String preferenceId, Map<String, Object> preferences)
-   {
-      savePreferenceMap(PreferenceScope.PARTITION, preferenceId, preferences);
-   }
-
    /**
-    * @return
+    * @param scope
+    * @param preferenceId
+    * @param preferences
     */
-   private static void savePreferenceMap(PreferenceScope scope, String preferenceId, Map<String, Object> preferences)
+   public static void savePreferences(PreferenceScope scope, String preferenceId, Map<String, Object> preferences)
    {
-      Map<String, Serializable> preferencesNew = new HashMap<String, Serializable>();
+      Map<String, Serializable> preferencesEnc = new HashMap<String, Serializable>();
 
-      if (null != preferences)
+      for (Entry<String, Object> entry : preferences.entrySet())
       {
-         preferencesNew.put(preferenceId, GsonUtils.stringify(preferences));
+         preferencesEnc.put(entry.getKey(), GsonUtils.stringify(entry.getValue()));
       }
 
-      Preferences prefs = new Preferences(scope, UserPreferencesEntries.M_WORKFLOW, preferenceId, preferencesNew);
+      Preferences prefs = new Preferences(scope, UserPreferencesEntries.M_WORKFLOW, preferenceId, preferencesEnc);
 
       AdministrationService adminService = SessionContext.findSessionContext().getServiceFactory()
             .getAdministrationService();
       adminService.savePreferences(prefs);
    }
 
-   // public static Map<String, Object>
-   // getParticipantWorklistConfigurationMap(PreferenceScope preferenceScope)
-   // {
-   // Map<String, Object> prefMap = new HashMap<String, Object>();
-   // Preferences prefs = getPartcipantWorklistConfiguration(preferenceScope);
-   // if (null != prefs)
-   // {
-   // Object prefObject =
-   // prefs.getPreferences().get(UserPreferencesEntries.V_WORKLIST_PART_CONF);
-   // if (null != prefObject)
-   // {
-   // prefMap = GsonUtils.readJsonMap((String) prefObject);
-   // }
-   // }
-   // return prefMap;
-   // }
-   //
-   // public static Map<String, Object> getProcessWorklistConfigurationMap(PreferenceScope
-   // preferenceScope)
-   // {
-   // Map<String, Object> prefMap = new HashMap<String, Object>();
-   // Preferences prefs = getProcessWorklistConfiguration(PreferenceScope.PARTITION);
-   // if (null != prefs)
-   // {
-   // if (null != prefs)
-   // {
-   // Object prefObject =
-   // prefs.getPreferences().get(UserPreferencesEntries.V_WORKLIST_PROC_CONF);
-   // if (null != prefObject)
-   // {
-   // prefMap = GsonUtils.readJsonMap((String) prefObject);
-   // }
-   // }
-   // }
-   // return prefMap;
-   // }
-
+   /**
+    * @param preferenceScope
+    * @param preferenceId
+    * @return
+    */
    public static Map<String, Object> getWorklistConfigurationMap(PreferenceScope preferenceScope, String preferenceId)
    {
       Map<String, Object> prefMap = new HashMap<String, Object>();
-      Preferences prefs = getWorklistConfiguration(PreferenceScope.PARTITION, preferenceId);
+      Preferences prefs = getWorklistConfiguration(preferenceScope, preferenceId);
       if (null != prefs)
       {
-         if (null != prefs)
+         for (Entry<String, Serializable> entry : prefs.getPreferences().entrySet())
          {
-            Object prefObject = prefs.getPreferences().get(preferenceId);
-            if (null != prefObject)
+            if (null != entry.getValue())
             {
-               prefMap = GsonUtils.readJsonMap((String) prefObject);
+               prefMap.put(entry.getKey(), GsonUtils.readJsonMap((String) entry.getValue()));
             }
          }
       }
       return prefMap;
    }
 
-   public static Preferences getWorklistConfiguration(PreferenceScope preferenceScope, String preferenceId)
-   {
-      return getPreferences(preferenceScope, UserPreferencesEntries.M_WORKFLOW, preferenceId);
-   }
-
    /**
+    * @param preferenceScope
+    * @param preferenceId
     * @return
     */
-   private static Preferences getPreferences(PreferenceScope scope, String moduleId, String preferenceId)
+   public static Preferences getWorklistConfiguration(PreferenceScope preferenceScope, String preferenceId)
    {
       AdministrationService adminService = SessionContext.findSessionContext().getServiceFactory()
             .getAdministrationService();
-      return adminService.getPreferences(scope, moduleId, preferenceId);
+      return adminService.getPreferences(preferenceScope, UserPreferencesEntries.M_WORKFLOW, preferenceId);
    }
 
+   /**
+    * @param participantInfo
+    * @return
+    */
+   public static String getParticipantKey(ParticipantInfo participantInfo)
+   {
+      if (participantInfo instanceof ModelParticipantInfo)
+      {
+         ModelParticipantInfo modelParticipantInfo = (ModelParticipantInfo) participantInfo;
+         String modelId = ModelUtils.extractModelId(modelParticipantInfo.getQualifiedId());
+         DmsPrincipal dp = new DmsPrincipal(modelParticipantInfo, modelId);
+         return dp.getName();
+      }
+      else if (participantInfo instanceof UserGroupInfo)
+      {
+         DmsPrincipal dp = new DmsPrincipal((UserGroupInfo) participantInfo);
+         return dp.getName();
+      }
+      return participantInfo.getQualifiedId();
+   }
+
+   /**
+    * @param departmentInfo
+    * @return
+    */
+   public static String getDepartmentKey(DepartmentInfo departmentInfo)
+   {
+      if (departmentInfo instanceof DepartmentDetails)
+      {
+         DepartmentDetails departmentDetails = (DepartmentDetails) departmentInfo;
+         String modelId = ModelUtils.extractModelId(departmentDetails.getOrganization().getQualifiedId());
+         return DmsPrincipal.getModelParticipantPrincipalName(departmentDetails.getOrganization().getId(),
+               departmentDetails.getId(), modelId);
+      }
+      return departmentInfo.getId();
+   }
+
+   /**
+    * utility method for DEV
+    */
+   private static void resetPreference()
+   {
+      savePreferences(PreferenceScope.PARTITION, "worklist-participant-columns", new HashMap<String, Object>());
+      savePreferences(PreferenceScope.PARTITION, "worklist-process-columns", new HashMap<String, Object>());
+      // savePreferenceMap(PreferenceScope.PARTITION, "preference", new HashMap<String,
+      // Object>());
+      //
+
+      Preferences prefs = new Preferences(PreferenceScope.PARTITION, "bcc", "traffic-light-view",
+            new HashMap<String, Serializable>());
+      AdministrationService adminService = SessionContext.findSessionContext().getServiceFactory()
+            .getAdministrationService();
+      adminService.savePreferences(prefs);
+
+      // prefs = new Preferences(PreferenceScope.PARTITION,
+      // UserPreferencesEntries.M_WORKFLOW,
+      // "worklist-participant-columns", new HashMap<String, Serializable>());
+      // adminService.savePreferences(prefs);
+      //
+      // prefs = new Preferences(PreferenceScope.PARTITION,
+      // UserPreferencesEntries.M_WORKFLOW, "worklist-process-columns",
+      // new HashMap<String, Serializable>());
+      // adminService.savePreferences(prefs);
+
+      prefs = new Preferences(PreferenceScope.PARTITION, UserPreferencesEntries.M_WORKFLOW, "preference",
+            new HashMap<String, Serializable>());
+      adminService.savePreferences(prefs);
+      // UserPreferencesHelper helper =
+      // UserPreferencesHelper.getInstance(UserPreferencesEntries.M_WORKFLOW,
+      // org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope.PARTITION);
+      // helper.setString(UserPreferencesEntries.V_WORKLIST, new ArrayList<String>());
+      /*
+       * prefs = new Preferences(PreferenceScope.USER, UserPreferencesEntries.M_WORKFLOW,
+       * "worklist-process-columns", new HashMap<String, Serializable>());
+       * adminService.savePreferences(prefs);
+       */
+
+      /*
+       * prefs = new Preferences(PreferenceScope.USER, "ipp-views-common", "preference",
+       * new HashMap<String, Serializable>()); adminService.savePreferences(prefs);
+       */
+
+   }
 }
