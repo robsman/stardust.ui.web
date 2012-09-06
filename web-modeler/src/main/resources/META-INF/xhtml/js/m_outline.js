@@ -340,18 +340,6 @@ define(
 				}
 			}
 
-			var lastSaved;
-			function updateLastSavedPeriod()
-			{
-//				$("#lastSaveDateDisplay").html(
-//						"<label>" + moment().format("HH:mm MM-DD-YYYY") + "</label>");
-				if (lastSaved)
-				{
-					$("#lastSaveDateDisplay").html(
-							"<label>" + prettyDateTime(lastSaved) + "</label>");
-				}
-			}
-
 			var deployModel = function(modelUUID) {
 				var model = m_model.findModelByUuid(modelUUID);
 				var modeleDeployerLink = jQuery(
