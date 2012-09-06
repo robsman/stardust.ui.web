@@ -2111,7 +2111,7 @@ define(
 							"#" + data.uuid);
 
 					jQuery("#outline").jstree("create", "#" + data.uuid,
-							"first", {
+							"last", {
 								"attr" : {
 									"id" : "structuredTypes_" + data.uuid,
 									"rel" : "structuredTypes",
@@ -2121,7 +2121,7 @@ define(
 								"data" : "Structured Types"
 							}, null, true);
 					jQuery("#outline").jstree("create", "#" + data.uuid,
-							"first", {
+							"last", {
 								"attr" : {
 									"id" : "data_" + data.uuid,
 									"rel" : "data",
@@ -2132,8 +2132,9 @@ define(
 					jQuery.each(data.dataItems, function(key, value) {
 						outlineObj.createData(value, true);
 					});
+					jQuery("#outline").jstree("close_node","#" + "data_" + data.uuid);
 					jQuery("#outline").jstree("create", "#" + data.uuid,
-							"first", {
+							"last", {
 								"attr" : {
 									"modelId" : data.id,
 									"id" : "applications_" + data.uuid,
@@ -2143,7 +2144,7 @@ define(
 								"data" : "Applications"
 							}, null, true);
 					jQuery("#outline").jstree("create", "#" + data.uuid,
-							"first", {
+							"last", {
 								"attr" : {
 									"id" : "participants_" + data.uuid,
 									"rel" : "participants",
@@ -2154,6 +2155,7 @@ define(
 					jQuery.each(data.participants, function(key, value) {
 						outlineObj.createParticipant(value, true);
 					});
+					jQuery("#outline").jstree("close_node","#" + "participants_" + data.uuid);
 
 					return modelLi;
 				}
