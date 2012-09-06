@@ -1980,7 +1980,7 @@ define(
 					m_commandsController.registerCommandHandler(this);
 				};
 
-				Outline.prototype.openNodePropertiesView = function(nodeLi) {
+				Outline.prototype.openElementView = function(nodeLi) {
 					jQuery(nodeLi[0]).children("a").get(0).click();
 				}
 
@@ -1998,21 +1998,21 @@ define(
 						for ( var i = 0; i < obj.changes.added.length; i++) {
 							// Create Process
 							if (m_constants.PROCESS == command.changes.added[i].type) {
-								this.createProcess(command.changes.added[i]);
+								this.openElementView(this.createProcess(command.changes.added[i]));
 							} else if (m_constants.MODEL == command.changes.added[i].type) {
-								this.openNodePropertiesView(this.createModel(command.changes.added[i]));
+								this.openElementView(this.createModel(command.changes.added[i]));
 							} else if (m_constants.TYPE_DECLARATION_PROPERTY == command.changes.added[i].type) {
-								this.openNodePropertiesView(this
+								this.openElementView(this
 										.createStructuredDataType(command.changes.added[i]));
 							} else if (m_constants.DATA == command.changes.added[i].type) {
-								this.openNodePropertiesView(this.createData(command.changes.added[i]));
+								this.openElementView(this.createData(command.changes.added[i]));
 							} else if (m_constants.APPLICATION == command.changes.added[i].type) {
-								this.openNodePropertiesView(this
+								this.openElementView(this
 										.createApplication(command.changes.added[i]));
 							} else if (m_constants.ROLE_PARTICIPANT_TYPE == command.changes.added[i].type
 									|| m_constants.ORGANIZATION_PARTICIPANT_TYPE == command.changes.added[i].type
 									|| m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == command.changes.added[i].type) {
-								this.openNodePropertiesView(this
+								this.openElementView(this
 										.createParticipant(command.changes.added[i]));
 							}
 						}
@@ -2248,7 +2248,7 @@ define(
 									"draggable" : true
 								},
 								"data" : process.name
-							}, null, false);
+							}, null, true);
 				};
 
 				/**
