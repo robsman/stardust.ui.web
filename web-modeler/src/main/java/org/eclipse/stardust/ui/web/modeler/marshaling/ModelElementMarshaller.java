@@ -1,6 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 
 import java.util.Iterator;
 import java.util.List;
@@ -437,10 +438,12 @@ public abstract class ModelElementMarshaller
             JsonObject connectionJson = toDataMappingConnectionType(dataMappingConnection);
             if (connectionJson.has(ModelerConstants.MODEL_ELEMENT_PROPERTY))
             {
-            connectionsJson.add(
-                  extractString(
-                        connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
-                        ModelerConstants.ID_PROPERTY), connectionJson);
+               // ModelElement Id for dataFlow is DataId, which duplicates in case of
+               // IN-OUT mapping for data, using DATA MAPPING OID
+               connectionsJson.add(
+                     extractInt(
+                           connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
+                           ModelerConstants.OID_PROPERTY).toString(), connectionJson);
             }
          }
 
