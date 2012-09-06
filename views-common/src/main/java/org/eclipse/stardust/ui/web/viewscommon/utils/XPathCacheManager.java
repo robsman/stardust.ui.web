@@ -101,7 +101,6 @@ public class XPathCacheManager
 
       Data data = refModel.getData(dataPath.getData());
 
-      cacheEnabled = false;
       if (!cacheEnabled)
       {
          if (trace.isDebugEnabled())
