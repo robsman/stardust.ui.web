@@ -767,12 +767,7 @@ public abstract class ModelElementUnmarshaller
             System.out.println("Creating Primitive Type: "
                   + dataJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY));
 
-            getModelBuilderFacade().updatePrimitiveData(
-                  data,
-                  dataJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY)
-                        .getAsString());
-
-
+            getModelBuilderFacade().convertDataType(data, ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
             getModelBuilderFacade().updatePrimitiveData(data, dataJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY).getAsString());
 
             System.out.println("Primitive Type: " + data.getType());
@@ -781,10 +776,8 @@ public abstract class ModelElementUnmarshaller
                .getAsString()
                .equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
          {
-            getModelBuilderFacade().updateStructuredDataType(
-                  data,
-                  dataJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
-                        .getAsString());
+            getModelBuilderFacade().convertDataType(data, ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
+            getModelBuilderFacade().updateStructuredDataType(data, dataJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY).getAsString());
 
             System.out.println("Structured Type: " + data.getType());
          }
