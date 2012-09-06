@@ -41,7 +41,7 @@ public abstract class ModelElementMarshaller
    private ModelBuilderFacade modelBuilderFacade;
 
    /**
-    * 
+    *
     * @param modelElement
     * @return
     */
@@ -270,7 +270,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param laneSymbol
     * @return
     */
@@ -463,7 +463,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @return
     */
@@ -599,7 +599,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @return
     */
@@ -687,7 +687,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -739,7 +739,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -791,7 +791,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param data
     * @return
     */
@@ -892,7 +892,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1178,7 +1178,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param dataMappingConnection
     * @return
     */
@@ -1203,13 +1203,13 @@ public abstract class ModelElementMarshaller
          for (DataMappingType dataMapping : activity.getDataMapping())
          {
             // Update the dataFlowJson for currentData symbol
-            if (dataMapping.getData().getId() == data.getId())
+            if (dataMapping.getId().equals(data.getId()))
             {
                dataFlowJson = toDataMappingJson(dataMapping);
                // TODO - Currently API always assumes connectionJson.getSourceNode will
                // be data, to set Activity in sourceNode for OUT Mapping for data below
                // code is added.
-               if (dataFlowJson.has(ModelerConstants.OUT_DATA_MAPPING_PROPERTY))
+               if (dataFlowJson.get(ModelerConstants.OUT_DATA_MAPPING_PROPERTY).getAsBoolean())
                {
                   connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
                         dataMappingConnection.getActivitySymbol().getElementOid());
@@ -1248,7 +1248,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -1406,7 +1406,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -1798,7 +1798,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -1829,7 +1829,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -1848,7 +1848,7 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     * @throws JSONException
@@ -1873,9 +1873,9 @@ public abstract class ModelElementMarshaller
    }
 
    /**
-    * 
+    *
     * TODO From DynamicConnectionCommand. Refactor?
-    * 
+    *
     * @param activity
     * @return
     */

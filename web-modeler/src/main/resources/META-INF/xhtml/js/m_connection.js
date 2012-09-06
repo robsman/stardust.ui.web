@@ -317,7 +317,8 @@ define(
 					if (this.toAnchorPoint.symbol != null && this.validateAnchorPoint(this.fromAnchorPoint, this.toAnchorPoint)) {
 						// On Mouse move , the same connection is added again,
 						// so remove if present then add(update)
-						this.toAnchorPoint.symbol.connections.pop(this);
+						m_utils.removeItemFromArray(
+								this.toAnchorPoint.symbol.connections, this);
 						this.toAnchorPoint.symbol.connections.push(this);
 
 						if (this.isDataFlow()) {
@@ -405,7 +406,8 @@ define(
 								// Identify if connection exist between same
 								// Data and Activity symbol
 								if (dataSymbol.connections[n].oid
-										&& (dataSymbol.connections[n].fromAnchorPoint.symbol.oid == activity.oid || dataSymbol.connections[n].toAnchorPoint.symbol.oid)) {
+										&& (dataSymbol.connections[n].fromAnchorPoint.symbol.oid == activity.oid
+												|| dataSymbol.connections[n].toAnchorPoint.symbol.oid == activity.oid)) {
 									// Use the existing connection
 									updateConnection = dataSymbol.connections[n];
 									// This will be the case always, just cross
@@ -490,10 +492,6 @@ define(
 				 */
 				Connection.prototype.refresh = function() {
 					this.adjustGeometry();
-
-					// TODO Why here? Replace by command
-//					m_commandsController.submitImmediately(this
-//							.createUpdateCommand());
 				};
 
 				/**
@@ -750,7 +748,9 @@ define(
 					} else if (this.isDataFlow()) {
 						this.path.attr({
 							"stroke" : m_constants.DATA_FLOW_COLOR,
-							"stroke-dasharray" : "-"
+							"stroke-dasharray" : "-",
+							"arrow-start" : "none",
+							"arrow-end" : "none"
 						});
 
 						// For In-Mapping path will be from Data to Activity
@@ -763,8 +763,7 @@ define(
 							// When dataFlow modified from properties panel the
 							// From,To anchor point symbols to not change
 							if (this.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
-								this.path
-										.attr("arrow-start", "block-wide-long");
+								this.path.attr("arrow-start", "block-wide-long");
 								this.path.attr("arrow-end", "none");
 							} else {
 								this.path.attr("arrow-start", "none");
@@ -772,16 +771,12 @@ define(
 							}
 						} else if (this.modelElement.outDataMapping) {
 							if (this.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
-								this.path
-										.attr("arrow-start", "block-wide-long");
+								this.path.attr("arrow-start", "block-wide-long");
 								this.path.attr("arrow-end", "none");
 							} else {
 								this.path.attr("arrow-start", "none");
 								this.path.attr("arrow-end", "block-wide-long");
 							}
-						}else {
-							this.path.attr("arrow-start", "none");
-							this.path.attr("arrow-end", "none");
 						}
 					}
 				};

@@ -373,9 +373,8 @@ public abstract class ModelElementUnmarshaller
                .getActivity()
                .getDataMapping())
          {
-            if (dataMapping.getId() == dataFlowConnection.getDataSymbol()
-                  .getData()
-                  .getId())
+            if (dataMapping.getId().equals(
+                  dataFlowConnection.getDataSymbol().getData().getId()))
             {
              updateDataMapping(dataFlowJson, dataMapping);
             }
@@ -737,7 +736,7 @@ public abstract class ModelElementUnmarshaller
             propertiesMap.get(OrganizationType.class));
       storeAttributes(organization, organizationJson);
       storeDescription(organization, organizationJson);
-      
+
       if (organizationJson.has(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY))
       {
       organization.setTeamLead((RoleType)getModelBuilderFacade().findParticipant(organizationJson.get(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY).getAsString()));
