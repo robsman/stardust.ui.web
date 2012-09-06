@@ -1426,8 +1426,11 @@ public abstract class ModelElementMarshaller
       if (null != transition.getCondition()
             && transition.getCondition().equals("CONDITION"))
       {
-         controlFlowJson.addProperty(ModelerConstants.CONDITION_EXPRESSION_PROPERTY,
-               (String) transition.getExpression().getMixed().getValue(0));
+         if (null != transition.getExpression())
+         {
+            controlFlowJson.addProperty(ModelerConstants.CONDITION_EXPRESSION_PROPERTY,
+                  (String) transition.getExpression().getMixed().getValue(0));
+         }
          controlFlowJson.addProperty(ModelerConstants.OTHERWISE_PROPERTY, false);
       }
       else
