@@ -55,6 +55,8 @@ public abstract class WorklistColumnConfigurationBean
    private static final String PROPERTY_KEY_NAME = "name";
    private static final String PROPERTY_KEY_ACTIONS = "actions";
    private static final String PROPERTY_KEY_FILE_NAME = "fileName";
+   private static final String FILE_EXT = ".zip";
+   
 
    private static final String COLUMN_NAME = "elementName";
    private static final String COLUMN_ACTIONS = "actions";
@@ -110,8 +112,8 @@ public abstract class WorklistColumnConfigurationBean
 
    public void reset()
    {
+      //WorklistConfigurationUtil.resetPreference();
       initializeStoredValues();
-      // WorklistConfigurationUtil.resetPreference();
    }
 
    /**
@@ -224,7 +226,7 @@ public abstract class WorklistColumnConfigurationBean
 
    public String getFileName()
    {
-      return getMessage(getPropertyKey() + PROPERTY_KEY_FILE_NAME);
+      return getMessage(getPropertyKey() + PROPERTY_KEY_FILE_NAME) + FILE_EXT;
    }
 
    protected abstract void retrieveConfigurations();
