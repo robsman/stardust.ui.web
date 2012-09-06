@@ -1968,8 +1968,13 @@ define(
 					m_commandsController.registerCommandHandler(this);
 				};
 
-				Outline.prototype.openElementView = function(nodeLi) {
-					jQuery(nodeLi[0]).children("a").get(0).click();
+				/**
+				 *
+				 */
+				Outline.prototype.openElementView = function(element) {
+					jQuery("#outline").jstree("select_node", "#" + element.uuid);
+					jQuery("#outline").jstree("deselect_all");
+					jQuery("#outline").jstree("rename", "#" + element.uuid);
 				}
 
 				/**
@@ -2086,7 +2091,7 @@ define(
 					var outlineObj = this;
 					var model = m_model.createModel(data.id, data.name,
 							data.uuid);
-					var modelLi = jQuery("#outline").jstree("create", "#outline", "last", {
+					jQuery("#outline").jstree("create", "#outline", "last", {
 						"attr" : {
 							"elementId" : data.id,
 							"id" : data.uuid,
@@ -2145,7 +2150,7 @@ define(
 					});
 					jQuery("#outline").jstree("close_node","#" + "participants_" + data.uuid);
 
-					return modelLi;
+					return model;
 				}
 
 				/**
@@ -2225,7 +2230,7 @@ define(
 							transferObject);
 					var parentSelector = '#' + model.uuid;
 
-					return jQuery("#outline").jstree("create", parentSelector, "last",
+					jQuery("#outline").jstree("create", parentSelector, "last",
 							{
 								"attr" : {
 									"id" : process.uuid,
@@ -2239,6 +2244,8 @@ define(
 								},
 								"data" : process.name
 							}, null, true);
+
+					return process;
 				};
 
 				/**
@@ -2250,7 +2257,7 @@ define(
 							transferObject);
 					var parentSelector = '#applications_' + model.uuid;
 
-					return jQuery("#outline").jstree("create", parentSelector, "last",
+					jQuery("#outline").jstree("create", parentSelector, "last",
 							{
 								"attr" : {
 									"rel" : application.applicationType,
@@ -2263,6 +2270,8 @@ define(
 								},
 								"data" : application.name
 							}, null, true);
+
+					return application;
 				};
 
 				/**
@@ -2274,7 +2283,7 @@ define(
 					var data = m_data.initializeFromJson(model, transferObject);
 					var parentSelector = '#data_' + model.uuid;
 
-					return jQuery("#outline").jstree("create", parentSelector, "last",
+					jQuery("#outline").jstree("create", parentSelector, "last",
 							{
 								"attr" : {
 									"rel" : data.dataType,
@@ -2287,6 +2296,8 @@ define(
 								},
 								"data" : data.name
 							}, null, true);
+
+					return data;
 				};
 
 				/**
@@ -2299,7 +2310,7 @@ define(
 							model, transferObject);
 					var parentSelector = '#structuredTypes_' + model.uuid;
 
-					return jQuery("#outline").jstree("create", parentSelector, "last",
+					jQuery("#outline").jstree("create", parentSelector, "last",
 							{
 								"attr" : {
 									"rel" : "structuredDataType",
@@ -2312,6 +2323,8 @@ define(
 								},
 								"data" : dataStructure.name
 							}, null, true);
+
+					return dataStructure;
 				};
 
 				/**
@@ -2324,7 +2337,7 @@ define(
 							transferObject);
 					var parentSelector = (transferObject.parentUUID ? ("#" + transferObject.parentUUID)
 							: ("#participants_" + model.uuid));
-					return jQuery("#outline").jstree("create", parentSelector, "last",
+					jQuery("#outline").jstree("create", parentSelector, "last",
 							{
 								"attr" : {
 									"id" : participant.uuid,
@@ -2339,6 +2352,8 @@ define(
 								},
 								"data" : participant.name
 							}, null, true);
+
+					return participant;
 				}
 			}
 		});
