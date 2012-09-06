@@ -1490,14 +1490,6 @@ define(
 										return {
 											success : function(data) {
 												m_messageDisplay.markSaved();
-//												if (parent.iPopupDialog) {
-//													parent.iPopupDialog
-//															.openPopup(prepareInfoDialogPoupupData(
-//																	"All models have been saved successfully.",
-//																	"OK"));
-//												} else {
-//													alert("All models have been saved successfully.");
-//												}
 											},
 											failure : function(data) {
 												if (parent.iPopupDialog) {
@@ -1988,6 +1980,10 @@ define(
 					m_commandsController.registerCommandHandler(this);
 				};
 
+				Outline.prototype.openNodePropertiesView = function(nodeLi) {
+					jQuery(nodeLi[0]).children("a").get(0).click();
+				}
+
 				/**
 				 *
 				 */
@@ -2004,20 +2000,20 @@ define(
 							if (m_constants.PROCESS == command.changes.added[i].type) {
 								this.createProcess(command.changes.added[i]);
 							} else if (m_constants.MODEL == command.changes.added[i].type) {
-								this.createModel(command.changes.added[i]);
+								this.openNodePropertiesView(this.createModel(command.changes.added[i]));
 							} else if (m_constants.TYPE_DECLARATION_PROPERTY == command.changes.added[i].type) {
-								this
-										.createStructuredDataType(command.changes.added[i]);
+								this.openNodePropertiesView(this
+										.createStructuredDataType(command.changes.added[i]));
 							} else if (m_constants.DATA == command.changes.added[i].type) {
-								this.createData(command.changes.added[i], false);
+								this.openNodePropertiesView(this.createData(command.changes.added[i]));
 							} else if (m_constants.APPLICATION == command.changes.added[i].type) {
-								this
-										.createApplication(command.changes.added[i]);
+								this.openNodePropertiesView(this
+										.createApplication(command.changes.added[i]));
 							} else if (m_constants.ROLE_PARTICIPANT_TYPE == command.changes.added[i].type
 									|| m_constants.ORGANIZATION_PARTICIPANT_TYPE == command.changes.added[i].type
 									|| m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == command.changes.added[i].type) {
-								this
-										.createParticipant(command.changes.added[i], false);
+								this.openNodePropertiesView(this
+										.createParticipant(command.changes.added[i]));
 							}
 						}
 						for ( var i = 0; i < obj.changes.modified.length; i++) {
@@ -2102,7 +2098,7 @@ define(
 					var outlineObj = this;
 					var model = m_model.createModel(data.id, data.name,
 							data.uuid);
-					jQuery("#outline").jstree("create", "#outline", "last", {
+					var modelLi = jQuery("#outline").jstree("create", "#outline", "last", {
 						"attr" : {
 							"elementId" : data.id,
 							"id" : data.uuid,
@@ -2110,9 +2106,10 @@ define(
 							"rel" : "model"
 						},
 						"data" : data.name
-					}, null, false);
+					}, null, true);
 					jQuery("#outline").jstree("set_type", "model",
 							"#" + data.uuid);
+
 					jQuery("#outline").jstree("create", "#" + data.uuid,
 							"first", {
 								"attr" : {
@@ -2157,6 +2154,8 @@ define(
 					jQuery.each(data.participants, function(key, value) {
 						outlineObj.createParticipant(value, true);
 					});
+
+					return modelLi;
 				}
 
 				/**
@@ -2236,7 +2235,7 @@ define(
 							transferObject);
 					var parentSelector = '#' + model.uuid;
 
-					jQuery("#outline").jstree("create", parentSelector, "last",
+					return jQuery("#outline").jstree("create", parentSelector, "last",
 							{
 								"attr" : {
 									"id" : process.uuid,
@@ -2261,7 +2260,7 @@ define(
 							transferObject);
 					var parentSelector = '#applications_' + model.uuid;
 
-					jQuery("#outline").jstree("create", parentSelector, "last",
+					return jQuery("#outline").jstree("create", parentSelector, "last",
 							{
 								"attr" : {
 									"rel" : application.applicationType,
@@ -2273,19 +2272,19 @@ define(
 									"draggable" : true
 								},
 								"data" : application.name
-							}, null, false);
+							}, null, true);
 				};
 
 				/**
 				 *
 				 */
-				Outline.prototype.createData = function(transferObject, skipRename) {
+				Outline.prototype.createData = function(transferObject) {
 					var model = m_model
 							.findModelByUuid(transferObject.modelUUID);
 					var data = m_data.initializeFromJson(model, transferObject);
 					var parentSelector = '#data_' + model.uuid;
 
-					jQuery("#outline").jstree("create", parentSelector, "last",
+					return jQuery("#outline").jstree("create", parentSelector, "last",
 							{
 								"attr" : {
 									"rel" : data.dataType,
@@ -2297,7 +2296,7 @@ define(
 									"draggable" : true
 								},
 								"data" : data.name
-							}, null, skipRename);
+							}, null, true);
 				};
 
 				/**
@@ -2310,7 +2309,7 @@ define(
 							model, transferObject);
 					var parentSelector = '#structuredTypes_' + model.uuid;
 
-					jQuery("#outline").jstree("create", parentSelector, "last",
+					return jQuery("#outline").jstree("create", parentSelector, "last",
 							{
 								"attr" : {
 									"rel" : "structuredDataType",
@@ -2322,20 +2321,20 @@ define(
 									"draggable" : true
 								},
 								"data" : dataStructure.name
-							}, null, false);
+							}, null, true);
 				};
 
 				/**
 				 *
 				 */
-				Outline.prototype.createParticipant = function(transferObject, skipRename) {
+				Outline.prototype.createParticipant = function(transferObject) {
 					var model = m_model
 							.findModelByUuid(transferObject.modelUUID);
 					var participant = m_participant.initializeFromJson(model,
 							transferObject);
 					var parentSelector = (transferObject.parentUUID ? ("#" + transferObject.parentUUID)
 							: ("#participants_" + model.uuid));
-					jQuery("#outline").jstree("create", parentSelector, "last",
+					return jQuery("#outline").jstree("create", parentSelector, "last",
 							{
 								"attr" : {
 									"id" : participant.uuid,
@@ -2349,7 +2348,7 @@ define(
 									"isTeamLeader" : participant.isTeamLeader
 								},
 								"data" : participant.name
-							}, null, skipRename);
+							}, null, true);
 				}
 			}
 		});
