@@ -270,6 +270,19 @@ define(
 								* m_constants.EVENT_ICON_WIDTH
 					}, this.diagram.animationDelay,
 							this.diagram.animationEasing);
+					
+					if (this.diagram.symbolGlow
+							&& this.lastModifyingUser != null) {
+						if (this.glow) {
+							this.glow.remove();
+						}
+
+						this.glow = this.circle.glow({
+							width : m_constants.GLOW_WIDTH,
+							color : window.top.modelingSession.getColorByUser(this.lastModifyingUser),
+							opacity : m_constants.GLOW_OPACITY
+						});
+					}
 				};
 
 				/**

@@ -13,6 +13,7 @@ require.config({
 		'jquery.impromptu': 'libs/jquery/plugins/jquery-impromptu.3.1.min',
 		'jquery.simplemodal': 'libs/jquery/plugins/jquery.simplemodal.1.4.1.min',
 		'jquery.url': 'libs/jquery/plugins/jquery.url',
+		'mustache': 'libs/mustache/mustache'
 	},
 	shim: {
 		'jquery-ui': ['jquery'],

@@ -104,6 +104,7 @@ public class ModelingSessionManager
          {
             session = context.getBean(beanName, ModelingSession.class);
             session.setOwnerId(userId);
+            session.setOwnerColor(session.generateColor());
             session.addStateListener(new ModelingSession.SessionStateListener()
             {
                @Override

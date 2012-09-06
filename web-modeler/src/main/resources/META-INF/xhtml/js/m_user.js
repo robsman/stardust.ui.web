@@ -15,7 +15,7 @@ define([ "m_utils", "m_constants", "m_urlUtils", "m_communicationController" ],
 			
 			return {
 				initializeCurrentUser : initializeCurrentUser,
-				createUser : function(account, firstName, lastName, email, imageUrl) {
+				createUser : function(account, firstName, lastName, email, imageUrl, color) {
 					var user = new User();
 					
 					user.account = account;
@@ -23,6 +23,7 @@ define([ "m_utils", "m_constants", "m_urlUtils", "m_communicationController" ],
 					user.lastName = lastName;
 					user.imageUrl = imageUrl;
 					user.email = email;
+					user.color = color;
 					user.isInvited = false;
 					
 					return user;

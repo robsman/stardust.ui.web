@@ -419,19 +419,24 @@ public class ModelService
 
    public String getAllCollaborators(String account)
    {
-      ModelingSession currentSession = sessionManager.currentSession(account);
+      UserService userService = getUserService();
+      User sessionOwner = userService.getUser(account);
+      String uniqueID = ModelingSessionManager.getUniqueId(sessionOwner);
+
+      ModelingSession currentSession = sessionManager.currentSession(uniqueID);
 
       JsonObject allInvitedUsers = new JsonObject();
       allInvitedUsers.addProperty(TYPE_PROPERTY, "UPDATE_INVITED_USERS_COMMAND");
       allInvitedUsers.addProperty("account", account);
       allInvitedUsers.addProperty("timestamp", System.currentTimeMillis());
       allInvitedUsers.addProperty("path", "users");
+      allInvitedUsers.addProperty("ownerColor", Integer.toHexString( currentSession.getOwnerColor().getRGB() & 0x00ffffff));
       allInvitedUsers.addProperty("operation", "updateCollaborators");
 
       JsonObject old = new JsonObject();
       JsonArray allUsers = new JsonArray();
       Collection<User> collaborators = currentSession.getAllCollaborators();
-      for(User user : collaborators)
+      for (User user : collaborators)
       {
          JsonObject userJson = new JsonObject();
          userJson.addProperty("account", user.getAccount());
@@ -439,13 +444,16 @@ public class ModelService
          userJson.addProperty("lastName", user.getLastName());
          userJson.addProperty("email", user.getEMail());
          userJson.addProperty("imageUrl", "");
+         trace.info(">>>>>>>>>>>>>>>> usercolour: " +Integer.toHexString(currentSession.getColor(user).getRGB()));
+         userJson.addProperty("color", Integer.toHexString( currentSession.getColor(user).getRGB() & 0x00ffffff));
 
          allUsers.add(userJson);
       }
       old.add("users", allUsers);
       allInvitedUsers.add("oldObject", old);
       allInvitedUsers.add("newObject", new JsonObject());
-      trace.info(">>>>>>>>>>>>>>>> following Json Object will be send: "+allInvitedUsers.toString());
+      trace.info(">>>>>>>>>>>>>>>> following Json Object will be send: "
+            + allInvitedUsers.toString());
       return allInvitedUsers.toString();
    }
 
@@ -456,7 +464,11 @@ public class ModelService
     */
    public String getAllProspects(String account)
    {
-      ModelingSession currentSession = sessionManager.currentSession(account);
+      UserService userService = getUserService();
+      User sessionOwner = userService.getUser(account);
+      String uniqueID = ModelingSessionManager.getUniqueId(sessionOwner);
+
+      ModelingSession currentSession = sessionManager.currentSession(uniqueID);
 
       JsonObject allProspectUsers = new JsonObject();
       allProspectUsers.addProperty(TYPE_PROPERTY, "UPDATE_INVITED_USERS_COMMAND");
@@ -468,7 +480,7 @@ public class ModelService
       JsonObject old = new JsonObject();
       JsonArray allUsers = new JsonArray();
       Collection<User> prospects = currentSession.getAllProspects();
-      for(User user : prospects)
+      for (User user : prospects)
       {
          JsonObject userJson = new JsonObject();
          userJson.addProperty("account", user.getAccount());
@@ -503,23 +515,25 @@ public class ModelService
       JsonObject requestJoinJson = new JsonObject();
       UserService userService = getUserService();
       User sessionOwner = userService.getUser(sessionOwnerId);
-
-      ModelingSession currentSession = sessionManager.currentSession(sessionOwner);
+      String uniqueID = ModelingSessionManager.getUniqueId(sessionOwner);
+     
+      ModelingSession currentSession = sessionManager.currentSession(uniqueID);
+      
+      requestJoinJson.addProperty("account", sessionOwnerId);
+      requestJoinJson.addProperty("timestamp", System.currentTimeMillis());
+      requestJoinJson.addProperty("path", "/users");
+      requestJoinJson.addProperty("operation", "requestJoin");
 
       for (String inviteeId : userAccountList)
       {
          User invitee = userService.getUser(inviteeId);
-
+         JsonObject oldObject = new JsonObject();
+         String inviteeUniqueId = ModelingSessionManager.getUniqueId(invitee);
          if ( !currentSession.participantContainsUser(invitee)
-               && !currentSession.prospectContainsUser(invitee))
+               && !currentSession.prospectContainsUser(invitee) && !currentSession.isOwner(inviteeUniqueId))
          {
             requestJoinJson.addProperty(TYPE_PROPERTY, "REQUEST_JOIN_COMMAND");
-            requestJoinJson.addProperty("account", sessionOwnerId);
-            requestJoinJson.addProperty("timestamp", System.currentTimeMillis());
-            requestJoinJson.addProperty("path", "/users");
-            requestJoinJson.addProperty("operation", "requestJoin");
 
-            JsonObject oldObject = new JsonObject();
             oldObject.addProperty("account", invitee.getAccount());
             oldObject.addProperty("sessionId", currentSession.getId());
             oldObject.addProperty("firstName", invitee.getFirstName());
@@ -542,10 +556,43 @@ public class ModelService
             }
             currentSession.inviteUser(invitee);
 
-            Broadcaster ownerBroadcaster = lookupInviteBroadcaster(sessionOwnerId);
-            trace.info(">>>>>>>>>>>>> Broadcasting Message REQUEST_JOIN_COMMAND to session owner " + sessionOwnerId);
-            ownerBroadcaster.broadcast(requestJoinJson.toString());
          }
+         else if(!currentSession.participantContainsUser(invitee)
+               && currentSession.prospectContainsUser(invitee))
+         {
+            requestJoinJson.addProperty(TYPE_PROPERTY, "ERROR");
+            oldObject.addProperty("errormessage", "You are trying to invite a user already invited. Please confirm the pending invite or decline it");
+            requestJoinJson.add("newObject", new JsonObject());
+            requestJoinJson.add("oldObject", oldObject);
+            
+         }
+         else if(currentSession.participantContainsUser(invitee)
+               && !currentSession.prospectContainsUser(invitee))
+         {
+            requestJoinJson.addProperty(TYPE_PROPERTY, "ERROR");
+            oldObject.addProperty("errormessage", "You are trying to invite a user who has already joined the session.");
+            requestJoinJson.add("newObject", new JsonObject());
+            requestJoinJson.add("oldObject", oldObject);
+            
+         }
+         else if(currentSession.isOwner(inviteeUniqueId))
+         {
+            requestJoinJson.addProperty(TYPE_PROPERTY, "ERROR");
+            oldObject.addProperty("errormessage", "You are trying to invite yourself.");
+            requestJoinJson.add("newObject", new JsonObject());
+            requestJoinJson.add("oldObject", oldObject);
+         }
+         else
+         {
+            requestJoinJson.addProperty(TYPE_PROPERTY, "ERROR");
+            oldObject.addProperty("errormessage", "An unknown error occured.");
+            requestJoinJson.add("newObject", new JsonObject());
+            requestJoinJson.add("oldObject", oldObject);
+         }
+         
+         Broadcaster ownerBroadcaster = lookupInviteBroadcaster(sessionOwnerId);
+         trace.info(">>>>>>>>>>>>> Broadcasting Message REQUEST_JOIN_COMMAND to session owner " + sessionOwnerId);
+         ownerBroadcaster.broadcast(requestJoinJson.toString());
       }
 
    }
@@ -580,18 +627,18 @@ public class ModelService
       JsonObject oldObject = new JsonObject();
       JsonObject newObject = new JsonObject();
 
-
       oldObject.addProperty("account", currentUser.getAccount());
       oldObject.addProperty("firstName", currentUser.getFirstName());
       oldObject.addProperty("lastName", currentUser.getLastName());
       oldObject.addProperty("email", currentUser.getEMail());
       oldObject.addProperty("imageUrl", "");
-      if (!sessionOwners.isEmpty())
+      if ( !sessionOwners.isEmpty())
       {
          for (String owner : sessionOwners)
          {
-            User sessionOwner = us.getUser(owner);
-            trace.info(">>>>>>>>>>>>> Session owner " + owner);
+            String ownername = unwrapUsername(owner);
+            User sessionOwner = us.getUser(ownername);
+            trace.info(">>>>>>>>>>>>> Session owner " + ownername);
             offlineInvite.addProperty(TYPE_PROPERTY, "REQUEST_JOIN_COMMAND");
             offlineInvite.addProperty("account", sessionOwner.getAccount());
             offlineInvite.addProperty("timestamp", System.currentTimeMillis());
@@ -601,21 +648,28 @@ public class ModelService
             offlineInvite.add("newObject", newObject);
 
             Broadcaster b = lookupInviteBroadcaster(username);
-            if(null != b)
+            if (null != b)
             {
-               trace.info(">>>>>>>>>>>>> Broadcasting Message REQUEST_JOIN_COMMAND to " + username);
+               trace.info(">>>>>>>>>>>>> Broadcasting Message REQUEST_JOIN_COMMAND to " +username);
                Future<String> myFuture = b.broadcast(offlineInvite.toString());
             }
             else
             {
-               trace.info(">>>>>>>>>>>>> Broadcaster null for " + username);
+               trace.info(">>>>>>>>>>>>> Broadcaster null for " +username);
             }
          }
       }
       else
       {
-         trace.info(">>>>>>>>>>>>> No current Session found where user " + username + " was invited");
+         trace.info(">>>>>>>>>>>>> No current Session found where user" +username +" was invited");
       }
+   }
+   
+   private String unwrapUsername(String owner){
+      String username = null;
+      String[] parts = owner.split(":");
+      
+      return parts[parts.length-1];
    }
 
    /**

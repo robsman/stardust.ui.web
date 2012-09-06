@@ -117,11 +117,14 @@ public class JointModellingSessionsController
          String joiner = extractAsString(obj.getAsJsonObject("newObject"), "account");
          modelServiceFacade.requestJoin(sessionId, joiner);
 
-         for (User user : modelServiceFacade.getProspects(sessionId))
+         for (User user : modelServiceFacade.getCollaborators(sessionId))
          {
-            Broadcaster invitee = lookupInviteBroadcaster(user.getAccount());
-            invitee.broadcast(message);
+            Broadcaster collabs = lookupInviteBroadcaster(user.getAccount());
+            collabs.broadcast(message);
          }
+
+         Broadcaster invitee = lookupInviteBroadcaster(joiner);
+         invitee.broadcast(message);
 
          String sessionOwner = extractAsString(obj.getAsJsonObject("oldObject"), "sessionOwner");
          Broadcaster owner = lookupInviteBroadcaster(sessionOwner);
@@ -135,8 +138,11 @@ public class JointModellingSessionsController
 
          for (User user : modelServiceFacade.getProspects(sessionId))
          {
-            Broadcaster invitee = lookupInviteBroadcaster(user.getAccount());
-            invitee.broadcast(message);
+            if(joiner.equals(user.getAccount()))
+            {
+               Broadcaster invitee = lookupInviteBroadcaster(user.getAccount());
+               invitee.broadcast(message);
+            }
          }
 
          String sessionOwner = extractAsString(obj.getAsJsonObject("oldObject"), "sessionOwner");

@@ -5,6 +5,7 @@ import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 import static org.eclipse.stardust.common.CompareHelper.areEqual;
 import static org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager.getUniqueId;
 
+import java.awt.Color;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,10 @@ public class ModelingSession
    private Map<String, User> prospectUsers = newHashMap();
 
    private Map<String, User> collaborators = newHashMap();
+   
+   private Map<User, Color> joinedUserColor = newHashMap();
+   
+   private Color ownerColor; 
 
    private final EditingSession editingSession = new EditingSession();
 
@@ -144,6 +149,7 @@ public class ModelingSession
       if (prospectUsers.containsKey(getUniqueId(user)))
       {
          collaborators.put(getUniqueId(user), user);
+         joinedUserColor.put(user, generateColor());
          prospectUsers.remove(getUniqueId(user));
 
          for (SessionStateListener listener : stateListeners)
@@ -151,6 +157,27 @@ public class ModelingSession
             listener.addedCollaborator(this, user);
          }
       }
+   }
+
+   protected Color generateColor()
+   {
+     
+      float r = (float) (Math.random() * (1 - 0.5) + 0.5);
+      float g = (float) (Math.random() * (1 - 0.5) + 0.5);
+      float b = (float) (Math.random() * (1 - 0.5) + 0.5);
+      
+      Color color = new Color(r, g, b);
+      return color;
+   }
+   
+   public Color getColor(User user)
+   {
+      Color color = null;
+      if(collaborators.containsKey(getUniqueId(user)))
+      {
+         color = joinedUserColor.get(user);
+      }
+     return color; 
    }
 
    public synchronized EditingSession getSession(ModelType... models)
@@ -230,5 +257,16 @@ public class ModelingSession
       public void removedCollaborator(ModelingSession session, User collaborator)
       {
       }
+   }
+
+   public void setOwnerColor(Color color)
+   {
+      this.ownerColor = color;
+      
+   }
+   
+   public Color getOwnerColor()
+   {
+      return ownerColor;
    }
 }

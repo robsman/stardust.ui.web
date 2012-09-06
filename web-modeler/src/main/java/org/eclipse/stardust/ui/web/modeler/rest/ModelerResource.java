@@ -320,7 +320,7 @@ public class ModelerResource
    {
       try
       {
-         JsonObject userJson = new JsonMarshaller().readJsonObject(postedData);
+         JsonObject userJson = jsonIo.readJsonObject(postedData);
          String result = getModelService().getAllProspects(userJson.getAsJsonObject("oldObject").get("account").getAsString());
          return Response.ok(result, APPLICATION_JSON_TYPE).build();
       }

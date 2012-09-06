@@ -135,7 +135,7 @@ define(
 				this.newSymbol = null;
 				this.animationDelay = 0;
 				this.animationEasing = null;
-				this.symbolGlow = false;
+				this.symbolGlow = true;
 
 				this.background = m_canvasManager.drawRectangle(0, 0,
 						m_canvasManager.getCanvasWidth(), m_canvasManager
