@@ -871,63 +871,63 @@ define(
 							this.segments.push(lastSegment);
 						}
 
-						if (this.toAnchorPoint.orientation == m_constants.NORTH) {
+						if (this.fromAnchorPoint.orientation == m_constants.NORTH) {
 							this.defaultIndicatorPath
 									.attr({
 										'path' : "M"
-												+ (this.toAnchorPoint.x - m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
+												+ (this.fromAnchorPoint.x - m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
 												+ " "
-												+ (this.toAnchorPoint.y
+												+ (this.fromAnchorPoint.y
 														- m_constants.CONNECTION_DEFAULT_PATH_OFFSET - m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
 												+ "L"
-												+ (this.toAnchorPoint.x + m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
+												+ (this.fromAnchorPoint.x + m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
 												+ " "
-												+ (this.toAnchorPoint.y
+												+ (this.fromAnchorPoint.y
 														- m_constants.CONNECTION_DEFAULT_PATH_OFFSET + m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
 									});
-						} else if (this.toAnchorPoint.orientation == m_constants.EAST) {
+						} else if (this.fromAnchorPoint.orientation == m_constants.EAST) {
 							this.defaultIndicatorPath
 									.attr({
 										'path' : "M"
-												+ (this.toAnchorPoint.x
+												+ (this.fromAnchorPoint.x
 														+ m_constants.CONNECTION_DEFAULT_PATH_OFFSET - m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
 												+ " "
-												+ (this.toAnchorPoint.y - m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
+												+ (this.fromAnchorPoint.y - m_constants.CONNECTION_DEFAULT_PATH_OFFSET/2)
 												+ "L"
-												+ (this.toAnchorPoint.x
-														+ m_constants.CONNECTION_DEFAULT_PATH_OFFSET + m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
+												+ (this.fromAnchorPoint.x
+														+ m_constants.CONNECTION_DEFAULT_PATH_OFFSET + m_constants.CONNECTION_DEFAULT_PATH_LENGTH)
 												+ " "
-												+ (this.toAnchorPoint.y
-														- m_constants.CONNECTION_DEFAULT_PATH_OFFSET + m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
+												+ (this.fromAnchorPoint.y
+														+ m_constants.CONNECTION_DEFAULT_PATH_OFFSET/2)
 									});
-						} else if (this.toAnchorPoint.orientation == m_constants.SOUTH) {
+						} else if (this.fromAnchorPoint.orientation == m_constants.SOUTH) {
 							this.defaultIndicatorPath
 									.attr({
 										'path' : "M"
-												+ (this.toAnchorPoint.x - m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
+												+ (this.fromAnchorPoint.x - m_constants.CONNECTION_DEFAULT_PATH_OFFSET + m_constants.CONNECTION_DEFAULT_PATH_LENGTH)
 												+ " "
-												+ (this.toAnchorPoint.y
-														+ m_constants.CONNECTION_DEFAULT_PATH_OFFSET - m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
+												+ (this.fromAnchorPoint.y
+														+ m_constants.CONNECTION_DEFAULT_PATH_LENGTH)
 												+ "L"
-												+ (this.toAnchorPoint.x + m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
+												+ (this.fromAnchorPoint.x + m_constants.CONNECTION_DEFAULT_PATH_OFFSET/2)
 												+ " "
-												+ (this.toAnchorPoint.y
-														+ m_constants.CONNECTION_DEFAULT_PATH_OFFSET + m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
+												+ (this.fromAnchorPoint.y
+														+ m_constants.CONNECTION_DEFAULT_PATH_OFFSET + m_constants.CONNECTION_DEFAULT_PATH_LENGTH)
 									});
-						} else if (this.toAnchorPoint.orientation == m_constants.WEST) {
+						} else if (this.fromAnchorPoint.orientation == m_constants.WEST) {
 							this.defaultIndicatorPath
 									.attr({
 										'path' : "M"
-												+ (this.toAnchorPoint.x
+												+ (this.fromAnchorPoint.x
 														- m_constants.CONNECTION_DEFAULT_PATH_OFFSET - m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
 												+ " "
-												+ (this.toAnchorPoint.y - m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
+												+ (this.fromAnchorPoint.y - m_constants.CONNECTION_DEFAULT_PATH_LENGTH )
 												+ "L"
-												+ (this.toAnchorPoint.x
+												+ (this.fromAnchorPoint.x
 														- m_constants.CONNECTION_DEFAULT_PATH_OFFSET + m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
 												+ " "
-												+ (this.toAnchorPoint.y
-														- m_constants.CONNECTION_DEFAULT_PATH_OFFSET + m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
+												+ (this.fromAnchorPoint.y
+														+ m_constants.CONNECTION_DEFAULT_PATH_OFFSET/2)
 									});
 
 						}
