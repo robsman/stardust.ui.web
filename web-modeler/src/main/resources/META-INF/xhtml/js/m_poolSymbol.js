@@ -268,6 +268,7 @@ define(
 				 */
 				PoolSymbol.prototype.createSwimlaneSymbolFromParticipant = function(
 						participant) {
+					m_messageDisplay.clear();
 					if (!this.getSwimlaneSymbolForParticipant(participant)) {
 						var swimlaneSymbol = null;
 
@@ -307,7 +308,7 @@ define(
 						//The create REST call for swimlanes is made after the swimlabe is created and re-positioned.
 						swimlaneSymbol.createAndSubmitCreateCommand();
 					} else {
-						m_messageDisplay.showMessage("Swimlane for participant (" + participant.name + ") exists already" );
+						m_messageDisplay.showMessage("Swimlane for participant (" + participant.name + ") exists already");
 					}
 				};
 
