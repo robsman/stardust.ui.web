@@ -781,6 +781,15 @@ public abstract class ModelElementUnmarshaller
 
             System.out.println("Structured Type: " + data.getType());
          }
+         else if (dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
+               .getAsString()
+               .equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
+         {
+            getModelBuilderFacade().convertDataType(data, ModelerConstants.DOCUMENT_DATA_TYPE_KEY);
+            getModelBuilderFacade().updateDocumentDataType(data, dataJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY).getAsString());
+
+            System.out.println("Dpcument Type: " + data.getType());
+         }
          else
          {
             System.out.println("Other type "
