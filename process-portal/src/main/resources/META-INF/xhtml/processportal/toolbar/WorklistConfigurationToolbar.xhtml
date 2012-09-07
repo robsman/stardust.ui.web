@@ -11,50 +11,50 @@
 			src="/plugins/views-common/views/doctree/commonFileUploadDialog.xhtml" />
 	</ice:panelGroup>
 
-	<ice:panelGrid columns="6">
-		<ice:panelGroup styleClass="toolbarGroupRight">
-			<ice:panelGrid columns="2" styleClass="#{styleClass}UserToolbar">
-				<ice:commandLink action="#{bean.importConfiguration}">
-					<pc:automationTag
-						value="auto-PP-WorklistPnlConf-worklistTable-toolbar-Import"
-						standAlone="false" />
-					<ice:graphicImage styleClass="toolbar-button"
-						value="/plugins/views-common/images/icons/page_white_get.png"
-						title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.loadConf']}" />
-				</ice:commandLink>
+	<ice:panelGrid columns="4">
+		<ice:panelGrid columns="2">
+			<ice:commandLink action="#{bean.importConfiguration}">
+				<pc:automationTag
+					value="auto-PP-WorklistPnlConf-worklistTable-toolbar-Import"
+					standAlone="false" />
+				<ice:graphicImage styleClass="toolbar-button"
+					value="/plugins/views-common/images/icons/page_white_get.png"
+					title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.loadConf']}" />
+			</ice:commandLink>
 
-				<ice:panelGroup
-					title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.saveConf']}">
-					<ice:outputResource resource="#{bean.fileResource}"
-						fileName="#{bean.fileName}" type="link"
-						image="/plugins/views-common/images/icons/page_white_put.png" />
-					<pc:automationTag
-						value="auto-PP-WorklistPnlConf-worklistTable-toolbar-export"
-						standAlone="false" />
-				</ice:panelGroup>
-			</ice:panelGrid>
+			<ice:panelGroup styleClass="toolbar-button"
+				title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.saveConf']}">
+				<ice:outputResource resource="#{bean.fileResource}"
+					fileName="#{bean.fileName}" type="link"
+					image="/plugins/views-common/images/icons/page_white_put.png" />
+				<pc:automationTag
+					value="auto-PP-WorklistPnlConf-worklistTable-toolbar-export"
+					standAlone="false" />
+			</ice:panelGroup>
+		</ice:panelGrid>
+
+		<span class="toolbarGroupRight4" />
+
+		<ice:panelGroup>
+			<ice:commandLink action="#{bean.add}">
+				<pc:automationTag
+					value="auto-PP-WorklistPnlConf-worklistTable-toolbar-add"
+					standAlone="false" />
+				<ice:graphicImage value="/plugins/views-common/images/icons/add.png"
+					styleClass="toolbar-button"
+					title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.add']}" />
+			</ice:commandLink>
+
+			<ice:commandLink action="#{bean.delete}"
+				disabled="#{bean.deleteDisabled}">
+				<pc:automationTag
+					value="auto-PP-WorklistPnlConf-worklistTable-toolbar-delete"
+					standAlone="false" />
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/delete.png"
+					title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.delete']}"
+					styleClass="#{bean.deleteDisabled ? 'toolbar-button-dis' : 'toolbar-button'}" />
+			</ice:commandLink>
 		</ice:panelGroup>
-
-		<ice:commandLink action="#{bean.add}">
-			<pc:automationTag
-				value="auto-PP-WorklistPnlConf-worklistTable-toolbar-add"
-				standAlone="false" />
-			<ice:graphicImage styleClass="toolbar-button"
-				value="/plugins/views-common/images/icons/add.png"
-				title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.add']}" />
-		</ice:commandLink>
-
-
-		<ice:commandLink action="#{bean.delete}"
-			disabled="#{bean.deleteDisabled}">
-			<pc:automationTag
-				value="auto-PP-WorklistPnlConf-worklistTable-toolbar-delete"
-				standAlone="false" />
-			<ice:graphicImage
-				value="/plugins/views-common/images/icons/delete.png"
-				title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.delete']}"
-				styleClass="#{bean.deleteDisabled ? 'iceCmdBtn-dis' : ''}" />
-		</ice:commandLink>
-
 	</ice:panelGrid>
 </f:view>
