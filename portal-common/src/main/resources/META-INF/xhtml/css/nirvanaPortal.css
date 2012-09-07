@@ -275,6 +275,13 @@ div#loginBox .buttonContainer input{
 	white-space: nowrap;
 }
 
+.toolbarGroupRight4 {
+	background: url(../images/icons/toolbar-separator.png) left no-repeat;
+	padding-left: 0px;
+	padding-right: 3px;
+	white-space: nowrap;
+}
+
 .toolbar-show-launch-panel {
 	padding-left: 4px;
 	padding-right: 4px;
