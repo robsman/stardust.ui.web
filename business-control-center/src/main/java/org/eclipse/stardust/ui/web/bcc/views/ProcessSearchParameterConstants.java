@@ -28,10 +28,10 @@ public interface ProcessSearchParameterConstants
    String OID = "oid";
    String ROOT_OID = "rootOid";
    String HIERARCHY = "hierarchy";
-   String HIERARCHY_ALL_PROCESS_SEARCH = "ALL_PROCESS";
-   String HIERARCHY_ALL_PROCESS_CASE_SEARCH = "ALL_PROCESS_CASE";
-   String HIERARCHY_CASE_SEARCH = "CASE";
-   String HIERARCHY_ROOT_PROC_SEARCH = "ROOT_PROCESS";
+   String HIERARCHY_PROCESS = "PROCESS";
+   String HIERARCHY_PROCESS_AND_CASE = "PROCESS_AND_CASE";
+   String HIERARCHY_CASE = "CASE";
+   String HIERARCHY_ROOT_PROCESS = "ROOT_PROCESS";
    String CASE_OWNER = "caseOwner";
    String PROCESSES = "processes";
    String DESCRIPTORS = "descriptors";

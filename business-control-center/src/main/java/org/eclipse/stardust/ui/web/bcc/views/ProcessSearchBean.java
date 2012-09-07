@@ -439,7 +439,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          selectedSearchOption = SEARCH_OPTION.PROCESSES;
       }
       // Will reset the hierarchy filter on change from Activity to Process
-      setHierarchyValue(HIERARCHY_ALL_PROCESS_SEARCH);
+      setHierarchyValue(HIERARCHY_PROCESS);
       // This is just to remove/add case related descriptors
       // TODO: Review following code - separate filter can be used show/hide case
       // descriptors
@@ -840,14 +840,14 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
     */
    private void setHierarchyValue(String hierarchy)
    {
-      if (HIERARCHY_CASE_SEARCH.equals(hierarchy))
+      if (HIERARCHY_CASE.equals(hierarchy))
       {
          getFilterAttributes().setCaseOnlySearch(true);
          getFilterAttributes().setIncludeCaseSearch(true);
          ownerSelector.setDisabled(false);
          getFilterAttributes().setIncludeRootProcess(false);
       }
-      else if (HIERARCHY_ROOT_PROC_SEARCH.equals(hierarchy))
+      else if (HIERARCHY_ROOT_PROCESS.equals(hierarchy))
       {
          getFilterAttributes().setCaseOnlySearch(false);
          getFilterAttributes().setIncludeCaseSearch(false);
@@ -856,11 +856,11 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       }
       else
       {
-         if (HIERARCHY_ALL_PROCESS_CASE_SEARCH.equals(hierarchy))
+         if (HIERARCHY_PROCESS_AND_CASE.equals(hierarchy))
          {
             getFilterAttributes().setIncludeCaseSearch(true);
          }
-         else if (HIERARCHY_ALL_PROCESS_SEARCH.equals(hierarchy))
+         else if (HIERARCHY_PROCESS.equals(hierarchy))
          {
             getFilterAttributes().setIncludeCaseSearch(false);
          }
@@ -970,16 +970,16 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       
       // Case
       hierarchyTypes = new ArrayList<SelectItem>();
-      hierarchyTypes.add(new SelectItem(HIERARCHY_ALL_PROCESS_SEARCH, this.getMessages().getString(
+      hierarchyTypes.add(new SelectItem(HIERARCHY_PROCESS, this.getMessages().getString(
             "processHierarchy.options.allPIs")));
-      hierarchyTypes.add(new SelectItem(HIERARCHY_ALL_PROCESS_CASE_SEARCH, this.getMessages().getString(
+      hierarchyTypes.add(new SelectItem(HIERARCHY_PROCESS_AND_CASE, this.getMessages().getString(
       "processHierarchy.options.allPIsCases")));
-      hierarchyTypes.add(new SelectItem(HIERARCHY_CASE_SEARCH, this.getMessages().getString(
+      hierarchyTypes.add(new SelectItem(HIERARCHY_CASE, this.getMessages().getString(
             "processHierarchy.options.cases")));
-      hierarchyTypes.add(new SelectItem(HIERARCHY_ROOT_PROC_SEARCH, this.getMessages().getString(
+      hierarchyTypes.add(new SelectItem(HIERARCHY_ROOT_PROCESS, this.getMessages().getString(
             "processHierarchy.options.rootProc")));
 
-      selectedHierarchy = HIERARCHY_ALL_PROCESS_SEARCH;
+      selectedHierarchy = HIERARCHY_PROCESS;
       setHierarchyValue(selectedHierarchy);
       
       // Priority
