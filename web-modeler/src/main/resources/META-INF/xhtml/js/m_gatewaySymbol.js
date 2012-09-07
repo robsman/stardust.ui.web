@@ -298,6 +298,94 @@ define(
 				};
 
 				/**
+				 * Returns max height for flyout menu
+				 * based on number of vertical menu items and symbol height
+				 */
+				GatewaySymbol.prototype.getFlyoutMenuHeight = function(height) {
+					var defaultheight = height
+							+ m_constants.FLY_OUT_MENU_EMPTY_MARGIN
+							+ m_constants.FLY_OUT_MENU_CONTENT_MARGIN;
+					var rightVertMenuHeight = m_constants.FLY_OUT_MENU_ITEM_MARGIN
+							+ this.rightFlyOutMenuItems.length
+							* (16 + m_constants.FLY_OUT_MENU_ITEM_MARGIN);
+					var leftVertMenuHeight = m_constants.FLY_OUT_MENU_ITEM_MARGIN
+							+ this.leftFlyOutMenuItems.length
+							* (16 + m_constants.FLY_OUT_MENU_ITEM_MARGIN);
+
+					return Math.max(defaultheight, rightVertMenuHeight, leftVertMenuHeight);
+				}
+
+				/**
+				 * Overrides Drawable.prototype.adjustFlyOutMenu
+				 *
+				 * TODO - this can be the default implementation as it caclulates the height
+				 * dynamically. Will also need to determine width dynamically if moved
+				 * to Diagram as default implementation.
+				 */
+				GatewaySymbol.prototype.adjustFlyOutMenu = function(x, y, width,
+						height) {
+
+					this.flyOutMenuBackground.attr({
+						'x' : x - m_constants.FLY_OUT_MENU_CONTENT_MARGIN,
+						'y' : y - m_constants.FLY_OUT_MENU_EMPTY_MARGIN,
+						'width' : width + 2 * m_constants.FLY_OUT_MENU_CONTENT_MARGIN,
+						'height' : this.getFlyoutMenuHeight(height)
+					});
+
+					this.adjustFlyOutMenuItems(x, y, width, height);
+				};
+
+				/**
+				 * Overrides Drawable.prototype.adjustFlyOutMenuItems
+				 */
+				GatewaySymbol.prototype.adjustFlyOutMenuItems = function(x, y,
+						width, height) {
+					var n = 0;
+
+					while (n < this.leftFlyOutMenuItems.length) {
+						this.leftFlyOutMenuItems[n].attr({
+							x : x - m_constants.FLY_OUT_MENU_CONTENT_MARGIN
+									+ m_constants.FLY_OUT_MENU_ITEM_MARGIN,
+							y : y - m_constants.FLY_OUT_MENU_EMPTY_MARGIN
+									+ m_constants.FLY_OUT_MENU_ITEM_MARGIN + n
+									* (16 + m_constants.FLY_OUT_MENU_ITEM_MARGIN)
+						});
+
+						++n;
+					}
+
+					n = 0;
+
+					while (n < this.rightFlyOutMenuItems.length) {
+						this.rightFlyOutMenuItems[n].attr({
+							x : x + width + m_constants.FLY_OUT_MENU_CONTENT_MARGIN
+									- m_constants.FLY_OUT_MENU_ITEM_MARGIN - 16,
+							y : y - m_constants.FLY_OUT_MENU_EMPTY_MARGIN
+									+ m_constants.FLY_OUT_MENU_ITEM_MARGIN + n
+									* (16 + m_constants.FLY_OUT_MENU_ITEM_MARGIN)
+						});
+
+						++n;
+					}
+
+					n = 0;
+
+					while (n < this.bottomFlyOutMenuItems.length) {
+						this.bottomFlyOutMenuItems[n].attr({
+							x : x - m_constants.FLY_OUT_MENU_CONTENT_MARGIN
+									+ m_constants.FLY_OUT_MENU_ITEM_MARGIN + n
+									* (16 + m_constants.FLY_OUT_MENU_ITEM_MARGIN),
+							y : y - m_constants.FLY_OUT_MENU_EMPTY_MARGIN
+									+ this.getFlyoutMenuHeight(height)
+									- (16 + m_constants.FLY_OUT_MENU_ITEM_MARGIN)
+
+						});
+
+						++n;
+					}
+				}
+
+				/**
 				 * Registers symbol in specific lists in the diagram and model
 				 * element in the process.
 				 */
