@@ -1249,9 +1249,10 @@ define(
 					this.removeFlyOutMenu();
 					this.removeProximitySensor();
 					this.removeAnchorPoints();
-
-					m_utils.removeItemFromArray(
-							this.parentSymbol.containedSymbols, this);
+					if(this.parentSymbol){
+						m_utils.removeItemFromArray(
+								this.parentSymbol.containedSymbols, this);
+					}
 					m_utils.removeItemFromArray(this.diagram.symbols, this);
 				};
 

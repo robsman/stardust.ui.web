@@ -1431,12 +1431,19 @@ define(
 							m_messageDisplay
 									.showErrorMessage("Only in sequence flow connections are allowed on End Events.");
 							return false;
-						} else if (null != toAnchorPoint
+						}// Connection between Event and Data not supported
+						else if (null != toAnchorPoint
 								&& toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
 							m_messageDisplay
 									.showErrorMessage("Data connections/associations are not supported for symbol.");
 							return false;
-						}else if (fromAnchorPoint.symbol.connections.length > 1) {
+						}else if (null != toAnchorPoint
+								&& toAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
+							m_messageDisplay
+									.showErrorMessage("Events can be connected only to activities and gateways.");
+							return false;
+						}
+						else if (fromAnchorPoint.symbol.connections.length > 1) {
 							// Start Event can have only one OUT connection
 							m_messageDisplay
 									.showErrorMessage("No further connection allowed for this Event.");

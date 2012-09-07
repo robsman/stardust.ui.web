@@ -1344,13 +1344,13 @@ define(
 						this.currentConnection = m_connection.createConnection(
 								this, symbol.anchorPoints[1]);
 					}
+					if(null!=this.currentConnection){
+						m_messageDisplay
+						.showMessage("Select second anchor point for connection.");
 
-					m_messageDisplay
-							.showMessage("Select second anchor point for connection.");
-
-					// Set dummy anchor point
-
-					this.currentConnection.setDummySecondAnchorPoint();
+						// Set dummy anchor point
+						this.currentConnection.setDummySecondAnchorPoint();
+					}
 				};
 
 				/**
@@ -1389,9 +1389,18 @@ define(
 								startSymbol.y + 200);
 						this.currentConnection = m_connection.createConnection(
 								this, startSymbol.anchorPoints[2]);
-						this.currentConnection.prepare();
-						this.currentConnection
-								.setSecondAnchorPointNoComplete(this.newSymbol.anchorPoints[0]);
+						if (null != this.currentConnection
+								&& this.currentConnection.validateAnchorPoint(
+										this.currentConnection.fromAnchorPoint,
+										this.newSymbol.anchorPoints[0])) {
+							this.currentConnection.prepare();
+							this.currentConnection
+									.setSecondAnchorPointNoComplete(this.newSymbol.anchorPoints[0]);
+						} else {
+							this.newSymbol.remove();
+							this.newSymbol = null;
+							this.currentConnection = null;
+						}
 					} else {
 						this.newSymbol.prepare(startSymbol.x + 200,
 								startSymbol.y);
