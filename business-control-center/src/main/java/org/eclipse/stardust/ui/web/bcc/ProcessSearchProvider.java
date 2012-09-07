@@ -130,10 +130,11 @@ public class ProcessSearchProvider implements Serializable
       private Date endTimeFrom;
       private Date endTimeTo;
       
-      private boolean includeCase;
+      private boolean caseOnlySearch;
       private boolean includeRootProcess;
       private User user;
       private int priority;
+      private boolean includeCaseSearch;
 
       /**
        * 
@@ -155,7 +156,7 @@ public class ProcessSearchProvider implements Serializable
          Query query;
          
          // Case search by ActivityInstanceQuery
-         if (includeCase && null != user)
+         if (caseOnlySearch && null != user)
          {
             query = getActivityQueryByProcessState(state);
             FilterAndTerm filter = query.getFilter().addAndTerm();
@@ -258,15 +259,20 @@ public class ProcessSearchProvider implements Serializable
          {
             filter.and(ProcessInstanceQuery.PRIORITY.isEqual(priority));
          }
-         if (includeRootProcess)
+
+         if (!includeCaseSearch)
          {
             FilterTerm orFilter = filter.addOrTerm();
             ProcessDefinition caseProcessDefination = ModelCache.findModelCache().getCaseProcessDefination();
             orFilter.add(ProcessInstanceQuery.PROCESS_DEFINITION_OID.notEqual(caseProcessDefination
                   .getRuntimeElementOID()));
+         }
+         
+         if (includeRootProcess)
+         {
             filter.and(ProcessInstanceHierarchyFilter.ROOT_PROCESS);
          }
-         if (includeCase)
+         if (caseOnlySearch)
          {
             String qualifiedGroupId = "{" + PredefinedConstants.PREDEFINED_MODEL_ID + "}"
             + PredefinedConstants.CASE_PROCESS_ID;
@@ -356,14 +362,14 @@ public class ProcessSearchProvider implements Serializable
          this.endTimeTo = endTimeTo;
       }
 
-      public boolean isIncludeCase()
+      public boolean isCaseOnlySearch()
       {
-         return includeCase;
+         return caseOnlySearch;
       }
 
-      public void setIncludeCase(boolean includeCase)
+      public void setCaseOnlySearch(boolean caseOnlySearch)
       {
-         this.includeCase = includeCase;
+         this.caseOnlySearch = caseOnlySearch;
       }
 
       public boolean isIncludeRootProcess()
@@ -396,6 +402,16 @@ public class ProcessSearchProvider implements Serializable
          this.priority = priority;
       }
       
+      public void setIncludeCaseSearch(boolean includeCaseSearch)
+      {
+         this.includeCaseSearch = includeCaseSearch;
+      }
+
+      public boolean isIncludeCaseSearch()
+      {
+         return includeCaseSearch;
+      }
+      
       /**
        * 
        * @param state
@@ -425,7 +441,6 @@ public class ProcessSearchProvider implements Serializable
          }
          return query;
       }
-      
    }
 
    /**
@@ -444,7 +459,7 @@ public class ProcessSearchProvider implements Serializable
 
          FilterAndTerm filter = query.getFilter().addAndTerm();
          
-         if (filterAttributes.isIncludeCase())
+         if (filterAttributes.isCaseOnlySearch())
          {            
             filter = DescriptorFilterUtils.createCaseDescriptors(descriptorItems, filter);
          }
@@ -468,7 +483,7 @@ public class ProcessSearchProvider implements Serializable
                else
                {
                   DescriptorFilterUtils.evaluateAndApplyFilters(query, descriptorItems, commonDescriptors);
-                  if (!filterAttributes.isIncludeRootProcess())
+                  if (filterAttributes.isIncludeCaseSearch())
                   {
                      query.setPolicy(CasePolicy.INCLUDE_CASES);
                   }

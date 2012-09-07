@@ -428,7 +428,7 @@ public class ActivitySearchProvider implements Serializable
          {
             // For Case PI search, selectedActivities will be null
             ProcessSearchBean processSearch = ProcessSearchBean.getInstance();
-            if (processSearch.getFilterAttributes().isIncludeCase())
+            if (processSearch.getFilterAttributes().isCaseOnlySearch())
             {
                filter.add(ActivityFilter.forProcess(PredefinedConstants.DEFAULT_CASE_ACTIVITY_ID,
                      PredefinedConstants.CASE_PROCESS_ID, false));

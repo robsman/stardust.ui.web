@@ -29,6 +29,7 @@ public interface ProcessSearchParameterConstants
    String ROOT_OID = "rootOid";
    String HIERARCHY = "hierarchy";
    String HIERARCHY_ALL_PROCESS_SEARCH = "ALL_PROCESS";
+   String HIERARCHY_ALL_PROCESS_CASE_SEARCH = "ALL_PROCESS_CASE";
    String HIERARCHY_CASE_SEARCH = "CASE";
    String HIERARCHY_ROOT_PROC_SEARCH = "ROOT_PROCESS";
    String CASE_OWNER = "caseOwner";

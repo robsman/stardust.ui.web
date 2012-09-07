@@ -149,37 +149,30 @@
 							value="#{processSearchBean.messages['processHierarchy.label']}#{processSearchBean.messages['colon']}"
 							styleClass="label-form" />
 					</ice:column>
-
 					<ice:column>
-						<ice:panelGrid columns="1" styleClass="procSearchSelOneRadio">
-							<ice:selectOneRadio readOnly="#{processSearchBean.selectedSearchOption eq 1}"
-								value="#{processSearchBean.hierarchyFilter}"
-								partialSubmit="true" disabled="#{(processSearchBean.selectedSearchOption eq 1)}"
-								valueChangeListener="#{processSearchBean.updateHierarchy}" layout="pageDirection">
-								<f:selectItem
-									itemValue="ALL_PROCESS"
-									itemLabel="#{processSearchBean.messages['processHierarchy.options.allPIs']}" />
-								<f:selectItem
-									itemValue="CASE"
-									itemLabel="#{processSearchBean.messages['processHierarchy.options.cases']}" />
-								<f:selectItem
-									itemValue="ROOT_PROCESS"
-									itemLabel="#{processSearchBean.messages['processHierarchy.options.rootProc']}" />	
-							</ice:selectOneRadio>
-						</ice:panelGrid>
+						<ice:selectOneMenu valueChangeListener="#{processSearchBean.hierarchyTypeChangeListener}"
+							disabled="#{processSearchBean.selectedSearchOption eq 1}"
+							id="SlctHierarchyType" partialSubmit="true"
+							value="#{processSearchBean.selectedHierarchy}"
+							style="margin:4px;margin-left:5px;">
+							<pc:automationTag value="auto-BCC-ProcSrch-Hierarchy"
+								standAlone="false" />
+							<f:selectItems id="SlctHierarchyTypeItms"
+								value="#{processSearchBean.hierarchyTypes}" />
+						</ice:selectOneMenu>
 					</ice:column>
 
 					<ice:column>						
-							<ice:outputText value="#{processSearchBean.messages['processState.label']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
-						</ice:column>
-						<ice:column>
-							<ice:selectOneMenu disabled="#{processSearchBean.selectedSearchOption eq 1}" id="SlctProcessState" partialSubmit="true"
-								value="#{processSearchBean.filterAttributes.state}" style="margin:4px;margin-left:5px;">
-								<pc:automationTag value="auto-BCC-ProcSrch-State" standAlone="false"/>
-								<f:selectItems id="SlctProcessStateItms"
-									value="#{processSearchBean.processStates}" />
-							</ice:selectOneMenu>
-						</ice:column>
+						<ice:outputText value="#{processSearchBean.messages['processState.label']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
+					</ice:column>
+					<ice:column>
+						<ice:selectOneMenu disabled="#{processSearchBean.selectedSearchOption eq 1}" id="SlctProcessState" partialSubmit="true"
+							value="#{processSearchBean.filterAttributes.state}" style="margin:4px;margin-left:5px;">
+							<pc:automationTag value="auto-BCC-ProcSrch-State" standAlone="false"/>
+							<f:selectItems id="SlctProcessStateItms"
+								value="#{processSearchBean.processStates}" />
+						</ice:selectOneMenu>
+					</ice:column>
 					<ice:column>
 						<ice:outputText
 							value="#{processSearchBean.messages['activityTable.column.priority']}#{processSearchBean.messages['colon']}"

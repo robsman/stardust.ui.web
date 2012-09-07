@@ -135,7 +135,8 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
 
    // Case
    private UserAutocompleteMultiSelector ownerSelector;
-   private String hierarchyFilter; 
+   private String selectedHierarchy;
+   private List<SelectItem> hierarchyTypes;
   
    private boolean preSearch;
    private String columnPrefKey = UserPreferencesEntries.V_PROCESS_SEARCH;
@@ -484,7 +485,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          }
 
          // set case attributes
-         if (getFilterAttributes().isIncludeCase() & ownerSelector.getSelectedValue() != null)
+         if (getFilterAttributes().isCaseOnlySearch() & ownerSelector.getSelectedValue() != null)
          {
             UserWrapper userWrapper = ownerSelector.getSelectedValue();
             if (userWrapper != null)
@@ -509,7 +510,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       // activity search
       if (SEARCH_OPTION.ACTIVITIES.equals(selectedSearchOption))
       {
-         getFilterAttributes().setIncludeCase(false);
+         getFilterAttributes().setCaseOnlySearch(false);
 
          // Validate start time and end time
          if (!DateUtils.validateDateRange(getActivityFilterAttributes().getStartedFrom(), getActivityFilterAttributes()
@@ -634,7 +635,8 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          activityCriteriaInitialized = false;
       }
       initializeBean();
-
+      resetProcessTable();
+      resetActivityTable();
    }
 
    /**
@@ -809,7 +811,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          // If selected Process doesn't contain Case Process, and Hierarchy is Case
          // RootPI add Case descriptors to filter criteria
          if (!includeCaseDescriptor
-               & (SEARCH_OPTION.PROCESSES.equals(selectedSearchOption) & getFilterAttributes().isIncludeCase()))
+               & (SEARCH_OPTION.PROCESSES.equals(selectedSearchOption) & getFilterAttributes().isCaseOnlySearch()))
          {
             descriptorItems.addAll(caseDescriptorItems);
          }
@@ -840,31 +842,42 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    {
       if (HIERARCHY_CASE_SEARCH.equals(hierarchy))
       {
-         getFilterAttributes().setIncludeCase(true);
+         getFilterAttributes().setCaseOnlySearch(true);
+         getFilterAttributes().setIncludeCaseSearch(true);
          ownerSelector.setDisabled(false);
          getFilterAttributes().setIncludeRootProcess(false);
       }
       else if (HIERARCHY_ROOT_PROC_SEARCH.equals(hierarchy))
       {
-         getFilterAttributes().setIncludeCase(false);
+         getFilterAttributes().setCaseOnlySearch(false);
+         getFilterAttributes().setIncludeCaseSearch(false);
          ownerSelector.setDisabled(true);
          getFilterAttributes().setIncludeRootProcess(true);
       }
       else
       {
-         getFilterAttributes().setIncludeCase(false);
+         if (HIERARCHY_ALL_PROCESS_CASE_SEARCH.equals(hierarchy))
+         {
+            getFilterAttributes().setIncludeCaseSearch(true);
+         }
+         else if (HIERARCHY_ALL_PROCESS_SEARCH.equals(hierarchy))
+         {
+            getFilterAttributes().setIncludeCaseSearch(false);
+         }
+         getFilterAttributes().setCaseOnlySearch(false);
          ownerSelector.setDisabled(true);
          getFilterAttributes().setIncludeRootProcess(false);
       }
       ownerSelector.setSearchValue(null);
-      hierarchyFilter = hierarchy;
+      selectedHierarchy = hierarchy;
    }
 
+   
    /**
     * 
     * @param event
     */
-   public void updateHierarchy(ValueChangeEvent event)
+   public void hierarchyTypeChangeListener(ValueChangeEvent event)
    {
       if (!event.getPhaseId().equals(javax.faces.event.PhaseId.INVOKE_APPLICATION))
       {
@@ -881,7 +894,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          refreshDescriptorTable(getSelectedProcessDefs());
       }
    }
-
+   
    /**
     * @param filterToolbarItems
     * @param ae
@@ -951,12 +964,24 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       processStates.add(new SelectItem(ProcessSearchProvider.PROCESS_INSTANCE_STATE_ALL, this.getMessages().getString(
             "chooseProcess.options.all.label")));
 
-      // Case
-      hierarchyFilter = HIERARCHY_ALL_PROCESS_SEARCH;
       ownerSelector = new UserAutocompleteMultiSelector(false, true);
       ownerSelector.setShowOnlineIndicator(false);
       ownerSelector.setDisabled(true);
-      setHierarchyValue(hierarchyFilter);
+      
+      // Case
+      hierarchyTypes = new ArrayList<SelectItem>();
+      hierarchyTypes.add(new SelectItem(HIERARCHY_ALL_PROCESS_SEARCH, this.getMessages().getString(
+            "processHierarchy.options.allPIs")));
+      hierarchyTypes.add(new SelectItem(HIERARCHY_ALL_PROCESS_CASE_SEARCH, this.getMessages().getString(
+      "processHierarchy.options.allPIsCases")));
+      hierarchyTypes.add(new SelectItem(HIERARCHY_CASE_SEARCH, this.getMessages().getString(
+            "processHierarchy.options.cases")));
+      hierarchyTypes.add(new SelectItem(HIERARCHY_ROOT_PROC_SEARCH, this.getMessages().getString(
+            "processHierarchy.options.rootProc")));
+
+      selectedHierarchy = HIERARCHY_ALL_PROCESS_SEARCH;
+      setHierarchyValue(selectedHierarchy);
+      
       // Priority
       priorityList = new ArrayList<SelectItem>();
       priorityList.add(new SelectItem(ProcessSearchProvider.ALL_PRIORITIES, this.getMessages().getString(
@@ -1007,11 +1032,20 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          
          processTableHelper.initializeProcessTable(UserPreferencesEntries.M_BCC, columnPrefKey + "."
                + UserPreferencesEntries.F_PROCESS_SEARCH_PROCESS_TABLE);
+         
+         processTableHelper.getProcessTable().setISearchHandler(processSearchProvider.getSearchHandler());
+         processTableHelper.getProcessTable().initialize();
+         
          processTableInitialized = true;
       }
-      // Needs to be called again when Reset is called
-      processTableHelper.getProcessTable().setISearchHandler(processSearchProvider.getSearchHandler());
-      processTableHelper.getProcessTable().initialize();
+   }
+   
+   private void resetProcessTable()
+   {
+      if (processTableInitialized)
+      {
+         processTableHelper.getProcessTable().setISearchHandler(processSearchProvider.getSearchHandler());
+      }
    }
 
    /**
@@ -1107,12 +1141,22 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
                + UserPreferencesEntries.F_PROCESS_SEARCH_ACTIVITY_TABLE);
 
          activityTableHelper.setStrandedActivityView(false);
+         
+         activityTableHelper.getActivityTable().setISearchHandler(activitySearchProvider.getSearchHandler());
+         activityTableHelper.getActivityTable().initialize();
+         
          activityTableInitialized = true;
       }
-      activityTableHelper.getActivityTable().setISearchHandler(activitySearchProvider.getSearchHandler());
-      activityTableHelper.getActivityTable().initialize();
    }
 
+   private void resetActivityTable()
+   {
+      if (activityTableInitialized)
+      {
+         activityTableHelper.getActivityTable().setISearchHandler(activitySearchProvider.getSearchHandler());
+      }
+   }
+   
    private boolean isNonInteractiveActivitiesSwitchOn()
    {
       return isActivitySwitchOn(NONINTERACT_ACTIVITIES);
@@ -1166,7 +1210,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
     */
    public boolean isCaseSpecificSearch()
    {
-      if (getFilterAttributes().isIncludeCase() & StringUtils.isNotEmpty(ownerSelector.getSearchValue()))
+      if (getFilterAttributes().isCaseOnlySearch() & StringUtils.isNotEmpty(ownerSelector.getSearchValue()))
       {
          return true;
       }
@@ -1299,16 +1343,21 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       return priorityList;
    }
 
-   public String getHierarchyFilter()
+   public String getSelectedHierarchy()
    {
-      return hierarchyFilter;
+      return selectedHierarchy;
    }
 
-   public void setHierarchyFilter(String hierarchyFilter)
+   public void setSelectedHierarchy(String selectedHierarchy)
    {
-      this.hierarchyFilter = hierarchyFilter;
+      this.selectedHierarchy = selectedHierarchy;
    }
 
+   public List<SelectItem> getHierarchyTypes()
+   {
+      return hierarchyTypes;
+   }
+   
    public UserAutocompleteMultiSelector getOwnerSelector()
    {
       return ownerSelector;
@@ -1346,6 +1395,4 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          }
       }
    }
-   
-   
 }
