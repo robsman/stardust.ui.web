@@ -788,7 +788,7 @@ public abstract class ModelElementUnmarshaller
             getModelBuilderFacade().convertDataType(data, ModelerConstants.DOCUMENT_DATA_TYPE_KEY);
             getModelBuilderFacade().updateDocumentDataType(data, dataJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY).getAsString());
 
-            System.out.println("Dpcument Type: " + data.getType());
+            System.out.println("Document Type: " + data.getType());
          }
          else
          {
