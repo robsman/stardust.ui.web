@@ -7,10 +7,12 @@ define(
 		[ "m_utils", "m_constants", "m_extensionManager", "m_model", "m_dialog" ],
 		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog) {
 			return {
-				create : function(scope, submitHandler) {
+				create : function(options) {
+					m_utils.debug("Options");
+					m_utils.debug(options);
 					var panel = new DataTypeSelector();
 
-					panel.initialize(scope, submitHandler);
+					panel.initialize(options);
 
 					return panel;
 				}
@@ -21,27 +23,48 @@ define(
 			 */
 			function DataTypeSelector() {
 				/**
+				 * Options are
 				 * 
+				 * scope submitHandler supportsOtherData
 				 */
-				DataTypeSelector.prototype.initialize = function(scope,
-						submitHandler) {
-					this.submitHandler = submitHandler;
-					this.dataTypeSelect = jQuery("#" + scope
+				DataTypeSelector.prototype.initialize = function(options) {
+					m_utils.debug("Options");
+					m_utils.debug(options);
+					this.scope = options.scope;
+					this.submitHandler = options.submitHandler;
+					this.supportsOtherData = options.supportsOtherData;
+
+					this.dataTypeSelect = jQuery("#" + this.scope
 							+ " #dataTypeSelect");
-					this.primitiveDataTypeRow = jQuery("#" + scope
+					this.primitiveDataTypeRow = jQuery("#" + this.scope
 							+ " #primitiveDataTypeRow");
-					this.primitiveDataTypeSelect = jQuery("#" + scope
+					this.primitiveDataTypeSelect = jQuery("#" + this.scope
 							+ " #primitiveDataTypeSelect");
-					this.structuredDataTypeRow = jQuery("#" + scope
+					this.structuredDataTypeRow = jQuery("#" + this.scope
 							+ " #structuredDataTypeRow");
-					this.structuredDataTypeSelect = jQuery("#" + scope
+					this.structuredDataTypeSelect = jQuery("#" + this.scope
 							+ " #structuredDataTypeSelect");
-					this.documentTypeSelect = jQuery("#" + scope
+					this.documentTypeSelect = jQuery("#" + this.scope
 							+ " #documentTypeSelect");
-					this.documentTypeRow = jQuery("#" + scope
+					this.documentTypeRow = jQuery("#" + this.scope
 							+ " #documentTypeRow");
-					this.otherTypeRow = jQuery("#" + scope + " #otherTypeRow");
-					this.otherTypeName = jQuery("#" + scope + " #otherTypeName");
+					this.otherTypeRow = jQuery("#" + this.scope
+							+ " #otherTypeRow");
+					this.otherTypeName = jQuery("#" + this.scope
+							+ " #otherTypeName");
+
+					this.dataTypeSelect.empty();
+					this.dataTypeSelect
+							.append("<option value='primitive'>Primitive</option>");
+					this.dataTypeSelect
+							.append("<option value='struct'>Data Structure</option>");
+					this.dataTypeSelect
+							.append("<option value='dmsDocument'>Document</option>");
+
+					if (this.supportsOtherData) {
+						this.dataTypeSelect
+								.append("<option value='other'>Other</option>");
+					}
 
 					this.dataTypeSelect.change({
 						"panel" : this
@@ -181,7 +204,7 @@ define(
 					} else if (data.dataType == m_constants.DOCUMENT_DATA_TYPE) {
 						this.setDocumentDataType(data.structuredDataTypeFullId);
 					} else {
-						this.dataTypeSelect.val("others");
+						this.dataTypeSelect.val("other");
 						this.setOtherDataType(data.dataType);
 					}
 				};
@@ -311,7 +334,7 @@ define(
 					this.structuredDataTypeSelect.attr("disabled", true);
 					this.documentTypeSelect.attr("disabled", true);
 
-					if (this.otherTypeSelect!= null) {
+					if (this.otherTypeSelect != null) {
 						this.otherTypeSelect.attr("disabled", true);
 					}
 				};

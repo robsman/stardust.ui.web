@@ -90,8 +90,11 @@ define(
 					}
 
 					if (this.options.supportsDataTypeSelection) {
-						this.dataTypeSelector = m_dataTypeSelector.create(
-								"parameterDefinitionTypeSelector", this);
+						this.dataTypeSelector = m_dataTypeSelector.create({
+							scope : "parameterDefinitionTypeSelector",
+							submitHandler : this,
+							supportsOtherData : false
+						});
 					}
 
 					if (this.options.listType == "array") {

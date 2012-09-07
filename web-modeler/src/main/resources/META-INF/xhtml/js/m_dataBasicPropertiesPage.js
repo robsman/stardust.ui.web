@@ -39,8 +39,11 @@ define(
 				DataBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
 
-					this.dataTypeSelector = m_dataTypeSelector.create(
-							"dataPropertiesPanel", this);
+					this.dataTypeSelector = m_dataTypeSelector.create({
+						scope : "dataPropertiesPanel",
+						submitHandler : this,
+						supportsOtherData : true
+					});
 					this.publicVisibilityCheckbox = this
 							.mapInputId("publicVisibilityCheckbox");
 					this.primitiveDefaultTextInputRow = this
@@ -213,7 +216,7 @@ define(
 						}
 					} else {
 						m_dialog
-								.makeInvisible(this.primitiveDefaultCheckboxInputRow);
+								.makeInvisible(this.primitiveDefaultTextInputRow);
 						m_dialog
 								.makeInvisible(this.primitiveDefaultCheckboxInputRow);
 					}

@@ -1155,6 +1155,8 @@ public abstract class ModelElementMarshaller
 
       for (AccessPointType accessPoint : application.getAccessPoint())
       {
+         System.out.println("Access Model: " + accessPoint.getId());
+
          JsonObject accessPointJson = new JsonObject();
 
          accessPointsJson.add(accessPoint.getId(), accessPointJson);

@@ -58,8 +58,11 @@ define(
 					this.primitiveDefaultCheckboxInputRow = jQuery("#primitiveDefaultCheckboxInputRow ");
 					this.primitiveDefaultCheckboxInput = jQuery("#primitiveDefaultCheckboxInput");
 
-					this.dataTypeSelector = m_dataTypeSelector.create(
-							"dataView", this);
+					this.dataTypeSelector = m_dataTypeSelector.create({
+						scope : "dataView",
+						submitHandler : this,
+						supportsOtherData : true
+					});
 
 					this.publicVisibilityCheckbox
 							.change(
@@ -175,7 +178,7 @@ define(
 						}
 					} else {
 						m_dialog
-								.makeInvisible(this.primitiveDefaultCheckboxInputRow);
+								.makeInvisible(this.primitiveDefaultTextInputRow);
 						m_dialog
 								.makeInvisible(this.primitiveDefaultCheckboxInputRow);
 					}
