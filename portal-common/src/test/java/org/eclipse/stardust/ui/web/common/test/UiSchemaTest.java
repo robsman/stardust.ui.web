@@ -67,12 +67,10 @@ public class UiSchemaTest
       LaunchPanel lsOverview = pd.getLaunchPanels().get(0);
       assertEquals("overview", lsOverview.getName());
       assertNotNull(lsOverview.getInclude());
-      assertFalse(lsOverview.isCollapsible());
 
       LaunchPanel lsMswl = pd.getLaunchPanels().get(1);
       assertEquals("mySharedWorklists", lsMswl.getName());
       assertNotNull(lsMswl.getInclude());
-      assertTrue(lsMswl.isCollapsible());
 
       assertEquals(1, pd.getToolbarSections().size());
 

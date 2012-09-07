@@ -24,7 +24,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
       <ippui:menuSection name="administration" requiredRoles="ADMINISTRATOR"
          include="/process-portal/menu/administration.xhtml" />
    
-      <ippui:launchPanel name="overview" collapsible="false"
+      <ippui:launchPanel name="overview"
          include="/process-portal/launchpad/overview.xhtml" />
       <ippui:launchPanel name="mySharedWorklists"
          include="/process-portal/launchpad/mySharedWorklists.xhtml" />     

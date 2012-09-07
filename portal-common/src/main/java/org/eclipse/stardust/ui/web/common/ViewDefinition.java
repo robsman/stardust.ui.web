@@ -30,7 +30,6 @@ public class ViewDefinition extends UiElement
    private PreferencesDefinition preferences;
    private String controller;
    private String closingPolicy;
-   private boolean administrative;
 
    private String identityParams;
    private Set<String> identityParamsSet;
@@ -74,16 +73,6 @@ public class ViewDefinition extends UiElement
    public void setClosingPolicy(String closingPolicy)
    {
       this.closingPolicy = closingPolicy;
-   }
-
-   public boolean isAdministrative()
-   {
-      return administrative;
-   }
-
-   public void setAdministrative(boolean administrative)
-   {
-      this.administrative = administrative;
    }
 
    public String getIdentityParams()

@@ -25,33 +25,20 @@
                   <xsd:element name="toolbarSection" type="ToolbarSection" minOccurs="0" maxOccurs="unbounded" />
 
                   <xsd:element name="view" type="View" minOccurs="0" maxOccurs="unbounded" />
-               
-<!-- 
-                  <xsd:element name="defaultViews">
-                     <xsd:complexType>
-                        <xsd:sequence>
-                           <xsd:element name="viewRef" minOccurs="0" maxOccurs="unbounded">
-                              <xsd:complexType>
-                                 <xsd:attribute name="name" type="xsd:string" use="required" />
-                              </xsd:complexType>
-                           </xsd:element>
-                        </xsd:sequence>
-                     </xsd:complexType>
-                  </xsd:element>
- -->                  
+              
                </xsd:sequence>
             
                <xsd:attribute name="name" type="xsd:string" />
                
-               <xsd:attribute name="messageBundles" type="xsd:string" use="optional" />
+               <xsd:attribute name="messageBundles" type="xsd:string" />
                
                <xsd:attribute name="requiredRoles" type="xsd:string" />
                
                <xsd:attribute name="excludeRoles" type="xsd:string" />
 
-			   <xsd:attribute name="default" type="xsd:boolean" use="optional" />
+			   <xsd:attribute name="default" type="xsd:boolean" />
 
-			   <xsd:attribute name="controller" type="xsd:string" use="optional" />
+			   <xsd:attribute name="controller" type="xsd:string" />
 
             </xsd:extension>
          </xsd:complexContent>
@@ -71,16 +58,13 @@
                   <xsd:element name="toolbarExtension" type="ToolbarExtension" minOccurs="0" maxOccurs="unbounded" />
 
                   <xsd:element name="viewsExtension" type="ViewsExtension" minOccurs="0" maxOccurs="unbounded" />
-<!-- 
-                  <xsd:element name="defaultViewsExtension" type="DefaultViewsExtension" minOccurs="0" maxOccurs="unbounded" />
- -->
                </xsd:sequence>
             
                <xsd:attribute name="name" type="xsd:string" />
 
                <xsd:attribute name="targetPerspective" type="xsd:string" use="required" />
                
-               <xsd:attribute name="messageBundles" type="xsd:string" use="optional" />
+               <xsd:attribute name="messageBundles" type="xsd:string" />
                
                <xsd:attribute name="requiredRoles" type="xsd:string" />
                
@@ -131,13 +115,11 @@
              </xsd:sequence>
             <xsd:attribute name="include" type="xsd:string" use="required" />
 
-            <xsd:attribute name="controller" type="xsd:string" use="optional" />
+            <xsd:attribute name="controller" type="xsd:string" />
             
-            <xsd:attribute name="closingPolicy" type="xsd:string" use="optional" />
+            <xsd:attribute name="closingPolicy" type="xsd:string" />
             
-            <xsd:attribute name="administrative" type="xsd:boolean" use="optional" />
-            
-            <xsd:attribute name="identityParams" type="xsd:string" use="optional" />
+            <xsd:attribute name="identityParams" type="xsd:string" />
          </xsd:extension>
       </xsd:complexContent>
    </xsd:complexType>
@@ -153,7 +135,6 @@
    <xsd:complexType name="LaunchPanel">
       <xsd:complexContent>
          <xsd:extension base="AbstractSectionDefinition">
-            <xsd:attribute name="collapsible" type="xsd:boolean" />
             <xsd:attribute name="include" type="xsd:string" />
          </xsd:extension>
       </xsd:complexContent>
@@ -164,15 +145,6 @@
          <xsd:extension base="AbstractSectionDefinition">
          
             <xsd:sequence>
-<!-- 
-               <xsd:element name="toolbarButton" minOccurs="0" maxOccurs="unbounded">
-                  <xsd:complexType>
-                     <xsd:attribute name="handler" type="xsd:string" use="required" />
-                     <xsd:attribute name="icon" type="xsd:string" use="required" />
-                     <xsd:attribute name="disabledIcon" type="xsd:string" use="required" />
-                  </xsd:complexType>
-               </xsd:element>
- -->
             </xsd:sequence>
          
             <xsd:attribute name="requiredView" type="xsd:string" />
@@ -235,45 +207,9 @@
          <xsd:extension base="AbstractSectionExtension">
             <xsd:sequence>
                <xsd:element name="view" type="View" minOccurs="0" maxOccurs="unbounded" />
-
-<!-- 
-               <xsd:element name="viewOverride" type="ViewOverride" minOccurs="0" maxOccurs="unbounded" />
- -->
             </xsd:sequence>
          </xsd:extension>
       </xsd:complexContent>
    </xsd:complexType>
 
-   <xsd:complexType name="ViewOverride">
-      <xsd:complexContent>
-         <xsd:extension base="View">
-               <xsd:attribute name="targetView" type="xsd:string" use="required" />
-         </xsd:extension>
-      </xsd:complexContent>
-   </xsd:complexType>
-
-<!-- 
-   <xsd:complexType name="DefaultViewsExtension">
-      <xsd:complexContent>
-         <xsd:extension base="AbstractSectionExtension">
-            <xsd:sequence>
-               <xsd:element name="viewRef" type="ViewRef" minOccurs="0" maxOccurs="unbounded" />
-            </xsd:sequence>
-         </xsd:extension>
-      </xsd:complexContent>
-   </xsd:complexType>
-   
-   <xsd:complexType name="ViewRef">
-      <xsd:complexContent>
-         <xsd:extension base="beans:identifiedType">
-         
-            <xsd:attribute name="name" type="xsd:string" use="required" />
-         
-            <xsd:attribute name="requiredRoles" type="xsd:string" />
-            
-         </xsd:extension>
-      </xsd:complexContent>
-   </xsd:complexType>
- -->
-   
 </xsd:schema>

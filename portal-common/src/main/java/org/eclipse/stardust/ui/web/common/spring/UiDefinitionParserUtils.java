@@ -153,10 +153,6 @@ public class UiDefinitionParserUtils
 
       if (LaunchPanel.class == beanClazz)
       {
-         if (element.hasAttribute(A_COLLAPSIBLE))
-         {
-            uis.addConstructorArgValue(Boolean.valueOf(element.getAttribute(A_COLLAPSIBLE)));
-         }
       }
       else if (ToolbarSection.class == beanClazz)
       {
@@ -204,11 +200,6 @@ public class UiDefinitionParserUtils
          if (element.hasAttribute(A_CLOSING_POLICY))
          {
             uis.addPropertyValue(A_CLOSING_POLICY, element.getAttribute(A_CLOSING_POLICY));
-         }
-         
-         if (element.hasAttribute(A_ADMINISTRATIVE))
-         {
-            uis.addPropertyValue(A_ADMINISTRATIVE, element.getAttribute(A_ADMINISTRATIVE));
          }
          
          if (element.hasAttribute(A_IDENTITY_PARAMS))

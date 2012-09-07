@@ -16,28 +16,14 @@ package org.eclipse.stardust.ui.web.common;
  */
 public class LaunchPanel extends UiElement
 {
-   private final boolean collapsible;
-
    public LaunchPanel(String name, String include)
    {
-      this(name, include, true);
-   }
-
-   public LaunchPanel(String name, String include, boolean collapsible)
-   {
       super(name, include);
-
-      this.collapsible = collapsible;
    }
 
    @Override
    protected String getMessageCodePrefix()
    {
       return "launchPanels.";
-   }
-   
-   public boolean isCollapsible()
-   {
-      return collapsible;
    }
 }

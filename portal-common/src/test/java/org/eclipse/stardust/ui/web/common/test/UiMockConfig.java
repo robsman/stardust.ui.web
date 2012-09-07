@@ -31,7 +31,7 @@ public class UiMockConfig
             "/process-portal/menu/administration.xhtml"));
 
       perspective.addLaunchPanel(new LaunchPanel("overview",
-            "/process-portal/outline/overview.xhtml", false));
+            "/process-portal/outline/overview.xhtml"));
       perspective.addLaunchPanel(new LaunchPanel("mySharedWorklists",
             "/process-portal/outline/mySharedWorklists.xhtml"));
       

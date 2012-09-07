@@ -62,11 +62,7 @@ public class UiDefinitionTokens
    
    public static final String A_CLOSING_POLICY = "closingPolicy";
    
-   public static final String A_ADMINISTRATIVE = "administrative";
-   
    public static final String A_IDENTITY_PARAMS = "identityParams";
-
-   public static final String A_COLLAPSIBLE = "collapsible";
 
    public static final String A_REQUIRED_VIEW = "requiredView";
 
