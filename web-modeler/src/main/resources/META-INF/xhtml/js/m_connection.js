@@ -746,36 +746,55 @@ define(
 							}
 						}
 					} else if (this.isDataFlow()) {
+
 						this.path.attr({
 							"stroke" : m_constants.DATA_FLOW_COLOR,
-							"stroke-dasharray" : "-",
-							"arrow-start" : "none",
-							"arrow-end" : "none"
+							"stroke-dasharray" : "-"
 						});
 
-						// For In-Mapping path will be from Data to Activity
-						// vice-versa for Out mapping
-						if (this.modelElement.inDataMapping
-								&& this.modelElement.outDataMapping) {
-							this.path.attr("arrow-start", "block-wide-long");
-							this.path.attr("arrow-end", "block-wide-long");
-						} else if (this.modelElement.inDataMapping) {
-							// When dataFlow modified from properties panel the
-							// From,To anchor point symbols to not change
-							if (this.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
-								this.path.attr("arrow-start", "block-wide-long");
-								this.path.attr("arrow-end", "none");
-							} else {
-								this.path.attr("arrow-start", "none");
-								this.path.attr("arrow-end", "block-wide-long");
-							}
-						} else if (this.modelElement.outDataMapping) {
-							if (this.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
-								this.path.attr("arrow-start", "block-wide-long");
-								this.path.attr("arrow-end", "none");
-							} else {
-								this.path.attr("arrow-start", "none");
-								this.path.attr("arrow-end", "block-wide-long");
+						// Remove the Marker attr(marker-start,marker-end)-commonId for all connection
+						jQuery("path[stroke='" + m_constants.DATA_FLOW_COLOR + "']").removeAttr(
+						"marker-end").removeAttr("marker-start");
+
+						for ( var n in this.diagram.connections) {
+							if (this.diagram.connections[n].isDataFlow()) {
+								var connTemp = this.diagram.connections[n];
+								// For In-Mapping path will be from Data to Activity
+								// vice-versa for Out mapping
+								if (connTemp.modelElement.inDataMapping
+										&& connTemp.modelElement.outDataMapping) {
+									connTemp.path.attr("arrow-start",
+											"block-wide-long");
+									connTemp.path.attr("arrow-end",
+											"block-wide-long");
+								} else if (connTemp.modelElement.inDataMapping) {
+									// When dataFlow modified from properties panel
+									// the From,To anchor point symbols to not change
+									if (connTemp.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
+										connTemp.path.attr("arrow-start",
+												"block-wide-long");
+										connTemp.path.attr("arrow-end", "none");
+									} else {
+										connTemp.path.attr("arrow-start",
+												"none");
+										connTemp.path.attr("arrow-end",
+												"block-wide-long");
+									}
+								} else if (connTemp.modelElement.outDataMapping) {
+									if (connTemp.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
+										connTemp.path.attr("arrow-start",
+												"block-wide-long");
+										connTemp.path.attr("arrow-end", "none");
+									} else {
+										connTemp.path.attr("arrow-start",
+												"none");
+										connTemp.path.attr("arrow-end",
+												"block-wide-long");
+									}
+								} else {
+									connTemp.path.attr("arrow-start", "none");
+									connTemp.path.attr("arrow-end", "none");
+								}
 							}
 						}
 					}
