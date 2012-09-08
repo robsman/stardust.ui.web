@@ -6,12 +6,19 @@
 	href="../css/jstree/default/style.css"></link>
 <link href="../css/lightdust.css" rel="stylesheet" type="text/css" />
 <style>
-div#sessionLogPanel {
+#sessionLogPanel {
+}
 
+#sessionUserPanel {
+	height: 50px;
+	width: 100%;
+	overflow: auto;
+	border: 1px solid #e8e8e8;
 }
 
 #sessionLogPanel #sessionLogTablePanel {
-	height: 200px;
+	height: 150px;
+	width: 100%;
 	overflow: auto;
 	border: 1px solid #e8e8e8;
 }
@@ -25,57 +32,49 @@ div#sessionLogPanel {
 	color: #aaaaaa;
 	font-size: 9px;
 }
+
 </style>
 <script type="text/javascript" data-main="../js/sessionLogPanelMain"
 	src="../js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
-	<div id="sessionUserPanel">
-		
-		<label for="sessionJoined">Joined Users</label>
-		<ul id="sessionJoined" width="100%">
-
-		</ul>
-		
-	</div>
 	<div id="sessionLogPanel">
 		<table width="100%">
-
+			<tr>
+				<td><label for="sessionJoined">Joined Users</label>
+				</td>
+			</tr>
+			<tr>
+				<td><div id="sessionUserPanel">
+						<ul id="sessionJoined">
+						</ul>
+					</div></td>
+			</tr>
+			<tr>
+				<td><label>Log</label>
+				</td>
+			</tr>
+			<tr>
+				<td valign="top">
+					<div id="sessionLogTablePanel">
+						<table id="sessionLogTable">
+						</table>
+					</div></td>
+			</tr>
 			<tr>
 				<td>
-					<table width="100%">
+					<table>
 						<tr>
-							<td valign="top">
-								<div id="sessionLogTablePanel">
-									<table id="sessionLogTable" width="100%">
-									</table>
-								</div>
+							<td><label for="chatTextArea">Chat Message to</label></td>
+							<td><select id="chatAddresseeList" size="1">
+									<option value="all">All Participants</option>
+							</select>
 							</td>
 						</tr>
-						<tr>
-							<td width="250" valign="top">
-								<table>
-									<tr>
-										<td>
-											<table>
-												<tr>
-													<td><label for="chatTextArea">Chat Message to</label>
-													</td>
-													<td><select id="chatAddresseeList" size="1">
-															<option value="all">All Participants</option>
-													</select></td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-									<tr>
-										<td><textarea id="chatTextArea" rows="5" cols="30"></textarea>
-										</td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-					</table>
+					</table></td>
+			</tr>
+			<tr>
+				<td><textarea id="chatTextArea" rows="5" cols="30"></textarea>
 				</td>
 			</tr>
 		</table>

@@ -9,10 +9,10 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_command", "m_commandsController", "m_model",
-				"m_basicPropertiesPage", "m_activity" ],
-		function(m_utils, m_constants, m_command, m_commandsController, m_model,
-				m_basicPropertiesPage, m_activity) {
+		[ "m_utils", "m_constants", "m_command", "m_commandsController",
+				"m_model", "m_basicPropertiesPage", "m_activity" ],
+		function(m_utils, m_constants, m_command, m_commandsController,
+				m_model, m_basicPropertiesPage, m_activity) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new ActivityBasicPropertiesPage(propertiesPanel);
@@ -43,7 +43,8 @@ define(
 					this.applicationList = this.mapInputId("applicationList");
 					this.subprocessInput = this.mapInputId("subprocessInput");
 					this.subprocessList = this.mapInputId("subprocessList");
-					this.shareDataInput = this.mapInputId("shareDataInput");
+					this.shareDataSelect = this.mapInputId("shareDataSelect");
+					this.copyDataInput = this.mapInputId("copyDataInput");
 					this.allowAbortByParticipantInput = this
 							.mapInputId("allowAbortByParticipantInput");
 					this.participantOutput = this
@@ -70,9 +71,12 @@ define(
 							.registerCheckboxInputForModelElementAttributeChangeSubmission(
 									this.isRelocationTargetInput,
 									"carnot:engine:relocate:target");
+					this.registerInputForModelElementAttributeChangeSubmission(
+							this.shareDataSelect, "@synchshared");
 					this
 							.registerCheckboxInputForModelElementAttributeChangeSubmission(
-									this.shareDataInput, "@synchshared");
+									this.copyDataInput, "@copydata");
+
 					this.applicationList.change({
 						"page" : this
 					}, function(event) {
@@ -108,9 +112,23 @@ define(
 					}, function(event) {
 						if (event.data.page.subprocessInput.is(":checked")) {
 							event.data.page.setSubprocessType();
-							event.data.pae.submitSubprocessChanges();
+							event.data.page.submitSubprocessChanges();
 						}
 					});
+					this.shareDataSelect.change({
+						"page" : this
+					},
+							function(event) {
+								if (event.data.page.shareDataSelect
+										.val() == "synchShared") {
+									event.data.page.copyDataInput.removeAttr("checked");
+									event.data.page.copyDataInput.attr(
+											"disabled", true);
+								} else {
+									event.data.page.copyDataInput
+											.removeAttr("disabled");
+								}
+							});
 				};
 
 				/**
@@ -129,13 +147,10 @@ define(
 							.append("<optgroup label=\"This Model\">");
 
 					for ( var i in this.getModel().applications) {
-						this.applicationList
-								.append("<option value='"
-										+ this.getModel().applications[i]
-												.getFullId()
-										+ "'>"
-										+ this.getModel().applications[i].name
-										+ "</option>");
+						this.applicationList.append("<option value='"
+								+ this.getModel().applications[i].getFullId()
+								+ "'>" + this.getModel().applications[i].name
+								+ "</option>");
 					}
 
 					this.applicationList.append("</optgroup>");
@@ -213,7 +228,8 @@ define(
 					this.propertiesPanel.showHelpPanel();
 					this.subprocessInput.attr("checked", false);
 					this.subprocessList.attr("disabled", true);
-					this.shareDataInput.attr("disabled", true);
+					this.shareDataSelect.attr("disabled", true);
+					this.copyDataInput.attr("disabled", true);
 					this.subprocessList.val(m_constants.TO_BE_DEFINED);
 					this.applicationInput.attr("checked", true);
 					this.applicationList.removeAttr("disabled");
@@ -222,39 +238,6 @@ define(
 						this.applicationList.val(applicationFullId);
 					}
 
-					if (this.propertiesPanel.element.modelElement.applicationFullId != this.applicationList
-							.val()) {
-						this
-								.submitChanges({
-									modelElement : {
-										activityType : this.applicationList
-												.val() == m_constants.AUTO_GENERATED_UI ? m_constants.MANUAL_ACTIVITY_TYPE
-												: m_constants.APPLICATION_ACTIVITY_TYPE,
-										applicationFullId : (this.applicationList
-												.val() == m_constants.TO_BE_DEFINED || this.applicationList
-												.val() == m_constants.AUTO_GENERATED_UI) ? null
-												: this.applicationList.val()
-									}
-								});
-					}
-				};
-
-				/**
-				 * 
-				 */
-				ActivityBasicPropertiesPage.prototype.setApplicationType = function(
-						applicationFullId) {
-					this.propertiesPanel.showHelpPanel();
-					this.subprocessInput.attr("checked", false);
-					this.subprocessList.attr("disabled", true);
-					this.shareDataInput.attr("disabled", true);
-					this.subprocessList.val(m_constants.TO_BE_DEFINED);
-					this.applicationInput.attr("checked", true);
-					this.applicationList.removeAttr("disabled");
-
-					if (applicationFullId != null) {
-						this.applicationList.val(applicationFullId);
-					}
 				};
 
 				/**
@@ -286,7 +269,8 @@ define(
 					this.propertiesPanel.showHelpPanel();
 					this.subprocessInput.attr("checked", true);
 					this.subprocessList.removeAttr("disabled");
-					this.shareDataInput.removeAttr("disabled");
+					this.shareDataSelect.removeAttr("disabled");
+					this.copyDataInput.removeAttr("disabled");
 
 					if (subprocessFullId != null) {
 						this.subprocessList.val(subprocessFullId);

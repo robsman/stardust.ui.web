@@ -462,7 +462,7 @@ public class ModelerResource
    {
       try
       {
-         return Response.ok(getModelService().loadTypeDeclarations(jsonIo.readJsonObject(postedData)).toString(),
+         return Response.ok(getModelService().getXsdStructure(jsonIo.readJsonObject(postedData)).toString(),
                APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)

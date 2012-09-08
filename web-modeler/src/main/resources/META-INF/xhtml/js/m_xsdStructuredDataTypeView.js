@@ -329,18 +329,18 @@ define(
 
 					this.tableBody.empty();
 
-					for ( var typeDeclaration in typeDeclarations) {
-						var path = typeDeclaration.replace(/:/g, "-");
+					for ( var element in typeDeclarations.elements) {
+						var path = element.replace(/:/g, "-");
 
 						var content = "<tr id=\"" + path + "\">";
 
 						content += "<td>";
 						content += "<span class=\"data-element\">"
-								+ typeDeclarations[typeDeclaration].name
+								+ typeDeclarations.elements[element].name
 								+ "</span>";
 						content += "</td>";
 						content += "<td>";
-						content += typeDeclarations[typeDeclaration].name;
+						content += typeDeclarations.elements[element].name;
 						content += "</td>";
 						content += "<td>";
 						content += "</td>";
@@ -348,9 +348,12 @@ define(
 
 						this.tableBody.append(content);
 
-						this.populateRecursively(
-								typeDeclarations[typeDeclaration].children,
-								path, true);
+						if (typeDeclarations.elements[element].body != null) {
+							this
+									.populateRecursively(
+											typeDeclarations.elements[element].body.elements,
+											path, true);
+						}
 					}
 
 					this.tree.tableScroll({
@@ -369,41 +372,41 @@ define(
 				 * 
 				 */
 				XsdStructuredDataTypeView.prototype.populateRecursively = function(
-						children, parentPath, readonly) {
-					if (children == null) {
+						elements, parentPath, readonly) {
+					if (elements == null) {
 						return;
 					}
 
-					for ( var childElement in children) {
+					for ( var childElement in elements) {
 						var path = parentPath + "."
-								+ children[childElement].name;
+								+ elements[childElement].name;
 
 						var content = "<tr id=\"" + path + "\" "
 								+ "class=\"child-of-" + parentPath + "\"" + ">";
 
 						content += "<td>";
 						content += "<span class=\"data-element\">"
-								+ children[childElement].name + "</span>";
+								+ elements[childElement].name + "</span>";
 						content += "</td>";
 						content += "<td>";
 
 						if (readonly) {
-							content += children[childElement].typeName;
+							content += elements[childElement].type;
 						} else {
 							content += this
-									.getTypeSelectList(children[childElement].typeName);
+									.getTypeSelectList(elements[childElement].type);
 						}
 
 						content += "</td>" + "<td align=\"right\">";
 
 						if (readonly) {
-							content += children[childElement].cardinality;
+							content += elements[childElement].cardinality;
 						} else {
 							content += ("<select size=\"1\"><option value=\"1\""
-									+ (children[childElement].cardinality == "1" ? "selected"
+									+ (elements[childElement].cardinality == "1" ? "selected"
 											: "")
 									+ ">1</option><option value=\"N\""
-									+ (children[childElement].cardinality == "N" ? "selected"
+									+ (elements[childElement].cardinality == "N" ? "selected"
 											: "") + ">N</option></select>");
 
 						}
@@ -412,10 +415,10 @@ define(
 
 						this.tableBody.append(content);
 
-						if (children[childElement].type != null) {
+						if (elements[childElement].type != null) {
 							this
 									.populateRecursively(
-											children[childElement].children,
+											elements[childElement].children,
 											path, true);
 						}
 					}
@@ -462,13 +465,21 @@ define(
 				};
 
 				/**
-				 * 
+				 * <code>structure</code> allows to pass a structure if no
+				 * structure cannot be retrieved from the server.
 				 */
-				XsdStructuredDataTypeView.prototype.loadFromUrl = function() {
+				XsdStructuredDataTypeView.prototype.loadFromUrl = function(
+						structure) {
 					var successCallback = {
 						callbackScope : this,
 						callbackMethod : "setTypeDeclarations"
 					};
+
+					jQuery("body").css("cursor", "progress");
+					this.clearErrorMessages();
+					this.urlTextInput.removeClass("error");
+
+					var view = this;
 
 					m_communicationController
 							.syncPostData(
@@ -478,15 +489,31 @@ define(
 												+ "/typeDeclarations/loadFromUrl"
 									},
 									JSON.stringify({
-										url : "bla"
+										url : this.urlTextInput.val()
 									}),
 									{
 										"success" : function(serverData) {
 											successCallback.callbackScope[successCallback.callbackMethod]
 													(serverData);
+											jQuery("body")
+													.css("cursor", "auto");
 										},
 										"error" : function() {
-											m_utils.debug("Error");
+											jQuery("body")
+													.css("cursor", "auto");
+											if (structure == null) {
+												view.errorMessages
+														.push("Could not load XSD from URL.");
+												view.showErrorMessages();
+												view.urlTextInput
+														.addClass("error");
+												view.serviceSelect.empty();
+												view.portSelect.empty();
+												view.operationSelect.empty();
+											} else {
+												successCallback.callbackScope[successCallback.callbackMethod]
+														(structure);
+											}
 										}
 									});
 				};
@@ -525,7 +552,7 @@ define(
 
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
 						this.initialize(this.structuredDataType);
-						
+
 						return;
 					}
 

@@ -61,7 +61,7 @@ define(
 						m_commandsController.submitCommand(m_command.createFetchProspects(oldObject));
 						
 					}else if(command.type == m_constants.CONFIRM_JOIN_COMMAND){
-						joined = true;
+						this.joined = true;
 						if(command.account != this.owner.account){
 							this.owner =  m_user.createUser(command.account, "name", "lastname", null, null); //cannot retrieve data while sending acceptinvitecommand. In the class the user service is not available therefor I cannot get any information about the owner. 
 						}
