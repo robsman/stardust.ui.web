@@ -13,19 +13,29 @@
 	cursor: pointer;
 }
 
-.jstree-default .jstree-clicked {
-	border: 1px solid navy;
+.jstree-classic .jstree-clicked {
+	border: 1px solid navy !important;
 	color: white;
-	padding: 0 2px 0 1px;
+	padding: 0 2px 0 1px !important;
+	background: none repeat scroll 0 0 #BEEBFF !important;
 }
 
-#vakata-contextmenu.jstree-default-context a {
+#vakata-contextmenu.jstree-classic-context li.jstree-contextmenu-disabled a,#vakata-contextmenu.jstree-classic-context li.jstree-contextmenu-disabled a:hover
+	{
+	color: gray !important;
+	background: transparent;
+	border: 0;
+	padding: 1px 4px;
+	cursor: default !important;
+}
+
+#vakata-contextmenu.jstree-classic-context a {
 	color: #00629A !important;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 11px;
 }
 
-#vakata-contextmenu.jstree-default-context,#vakata-contextmenu.jstree-default-context li ul
+#vakata-contextmenu.jstree-classic-context,#vakata-contextmenu.jstree-classic-context li ul
 	{
 	background: none repeat scroll 0 0 #FFFFFF !important;
 	border: 1px solid #979797;
@@ -45,7 +55,6 @@ input {
 }
 
 div#outline {
-	height: 500px;
 	overflow: auto;
 	border: none;
 }
@@ -72,16 +81,23 @@ td#toolbar div.toolSeparator {
 	src="../js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
-	<table style="width: 100%;">
+	<table width="100%">
 		<tr>
-			<td>
-
+			<td valign="top">
 				<table>
 					<tr>
 						<td>
-							<div id="loadAnchor"></div> <script>
-
-							</script></td>
+							<div id="lastSaveStatusPanel">
+								<table cellpadding="0" cellspacing="0">
+									<tr>
+										<td><span class="label-form">Last Save:</span></td>
+										<td style="text-align: left;">
+											<div id="lastSaveDateDisplay"></div>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</td>
 					</tr>
 					<tr>
 						<td id="toolbar">
@@ -105,7 +121,7 @@ td#toolbar div.toolSeparator {
 								<div class="toolDiv">
 									<img id="saveAllModels"
 										src="../../views-common/images/icons/disk_multiple.png"
-										style="cursor: pointer" title="Save All Models" />
+										title="Save All Models" />
 								</div>
 								<div class="toolSeparator">
 									<img src="../../common/images/icons/toolbar-separator.png" />
@@ -114,20 +130,21 @@ td#toolbar div.toolSeparator {
 									<img id="refreshModels" src="../images/icons/refresh.png"
 										title="Refresh models" />
 								</div>
-							</div>
-						</td>
+							</div></td>
 					</tr>
 					<tr>
 						<td>
 							<div id="outline"
 								style="text-align: left; list-style-type: none; background-color: white;">
-								<li id="models_root" />
-							</div></td>
+							</div>
+							<div id="canvas" />
+						</td>
 					</tr>
 				</table>
 			</td>
-			<td width="1200" valign="top" align="left"><iframe id="viewAnchor" frameborder="0" width="1200" height="600"></iframe>
-			<td>
+			<td valign="top"><iframe id="viewAnchor" width="1600"
+					height="800" style="border: none;"></iframe>
+			</td>
 		</tr>
 	</table>
 </body>

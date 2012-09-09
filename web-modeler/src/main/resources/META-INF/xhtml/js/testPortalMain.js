@@ -16,7 +16,7 @@ require.config({
 		'jquery.simplemodal': 'libs/jquery/plugins/jquery.simplemodal.1.4.1.min',
 		'jquery.tablescroll': 'libs/jquery/plugins/jquery.tablescroll',
 		'jquery.treeTable': 'libs/jquery/plugins/jquery.treeTable',
-		'jquery.url': 'libs/jquery/plugins/jquery.url',
+		'jquery.url': 'libs/jquery/plugins/jquery.url'
 	},
 	shim: {
 		'json': {
@@ -66,8 +66,7 @@ require(["require",
 		 "m_messageTransformationApplicationView",
 		 "m_camelApplicationView",
 		 "m_xsdStructuredDataTypeView",
-		 "m_modelerViewLayoutManager",
-
+		 "m_modelerViewLayoutManager",		 
 		 "m_urlUtils",
 		 "m_constants",
 		 "m_user",
