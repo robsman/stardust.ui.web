@@ -10,9 +10,10 @@
 
 define(
 		[ "m_utils", "m_constants", "m_command", "m_commandsController",
-				"m_model", "m_basicPropertiesPage", "m_activity" ],
-		function(m_utils, m_constants, m_command, m_commandsController,
-				m_model, m_basicPropertiesPage, m_activity) {
+				"m_user", "m_model", "m_dialog", "m_basicPropertiesPage",
+				"m_activity" ],
+		function(m_utils, m_constants, m_command, m_commandsController, m_user,
+				m_model, m_dialog, m_basicPropertiesPage, m_activity) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new ActivityBasicPropertiesPage(propertiesPanel);
@@ -43,7 +44,10 @@ define(
 					this.applicationList = this.mapInputId("applicationList");
 					this.subprocessInput = this.mapInputId("subprocessInput");
 					this.subprocessList = this.mapInputId("subprocessList");
-					this.shareDataSelect = this.mapInputId("shareDataSelect");
+					this.subprocessExecutionRow = this
+							.mapInputId("subprocessExecutionRow");
+					this.subprocessModeSelect = this
+							.mapInputId("subprocessModeSelect");
 					this.copyDataInput = this.mapInputId("copyDataInput");
 					this.allowAbortByParticipantInput = this
 							.mapInputId("allowAbortByParticipantInput");
@@ -71,11 +75,10 @@ define(
 							.registerCheckboxInputForModelElementAttributeChangeSubmission(
 									this.isRelocationTargetInput,
 									"carnot:engine:relocate:target");
-					this.registerInputForModelElementAttributeChangeSubmission(
-							this.shareDataSelect, "@synchshared");
 					this
 							.registerCheckboxInputForModelElementAttributeChangeSubmission(
-									this.copyDataInput, "@copydata");
+									this.copyDataInput,
+									"carnot:engine:subprocess:copyAllData");
 
 					this.applicationList.change({
 						"page" : this
@@ -115,20 +118,18 @@ define(
 							event.data.page.submitSubprocessChanges();
 						}
 					});
-					this.shareDataSelect.change({
-						"page" : this
-					},
-							function(event) {
-								if (event.data.page.shareDataSelect
-										.val() == "synchShared") {
-									event.data.page.copyDataInput.removeAttr("checked");
-									event.data.page.copyDataInput.attr(
-											"disabled", true);
-								} else {
-									event.data.page.copyDataInput
-											.removeAttr("disabled");
-								}
-							});
+					this.subprocessModeSelect
+							.change(
+									{
+										"page" : this
+									},
+									function(event) {
+										event.data.page
+												.setSubprocessMode(event.data.page.subprocessModeSelect
+														.val());
+										event.data.page
+												.submitSubprocessChanges();
+									});
 				};
 
 				/**
@@ -228,7 +229,7 @@ define(
 					this.propertiesPanel.showHelpPanel();
 					this.subprocessInput.attr("checked", false);
 					this.subprocessList.attr("disabled", true);
-					this.shareDataSelect.attr("disabled", true);
+					this.subprocessModeSelect.attr("disabled", true);
 					this.copyDataInput.attr("disabled", true);
 					this.subprocessList.val(m_constants.TO_BE_DEFINED);
 					this.applicationInput.attr("checked", true);
@@ -265,12 +266,10 @@ define(
 				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.setSubprocessType = function(
-						subprocessFullId) {
+						subprocessFullId, executionType, copyData) {
 					this.propertiesPanel.showHelpPanel();
 					this.subprocessInput.attr("checked", true);
 					this.subprocessList.removeAttr("disabled");
-					this.shareDataSelect.removeAttr("disabled");
-					this.copyDataInput.removeAttr("disabled");
 
 					if (subprocessFullId != null) {
 						this.subprocessList.val(subprocessFullId);
@@ -279,6 +278,28 @@ define(
 					this.applicationInput.attr("checked", false);
 					this.applicationList.attr("disabled", true);
 					this.applicationList.val(m_constants.TO_BE_DEFINED);
+
+					this.setSubprocessMode(executionType, copyData);
+				};
+
+				/**
+				 * 
+				 */
+				ActivityBasicPropertiesPage.prototype.setSubprocessMode = function(
+						executionType, copyData) {
+					this.subprocessModeSelect.val(executionType);
+
+					m_utils.debug("===> subprocessMode " + executionType + " "
+							+ copyData);
+
+					if (executionType == "synchShared") {
+						this.copyDataInput.attr("disabled", true);
+						this.copyDataInput.removeAttr("checked");
+					} else {
+						this.copyDataInput.removeAttr("disabled");
+						this.copyDataInput.attr("checked", copyData);
+					}
+
 				};
 
 				/**
@@ -286,18 +307,23 @@ define(
 				 */
 				ActivityBasicPropertiesPage.prototype.submitSubprocessChanges = function(
 						subprocessFullId) {
-					if (this.propertiesPanel.element.modelElement.subprocessFullId != this.subprocessList
-							.val()) {
-						this
-								.submitChanges({
-									modelElement : {
-										activityType : m_constants.SUBPROCESS_ACTIVITY_TYPE,
-										subprocessFullId : this.subprocessList
-												.val() == m_constants.TO_BE_DEFINED ? null
-												: this.subprocessList.val()
-									}
-								});
-					}
+					var attributes = {};
+
+					attributes["carnot:engine:subprocess:copyAllData"] = this.copyDataInput
+							.is(":checked");
+
+					this
+							.submitChanges({
+								modelElement : {
+									activityType : m_constants.SUBPROCESS_ACTIVITY_TYPE,
+									subprocessFullId : this.subprocessList
+											.val() == m_constants.TO_BE_DEFINED ? null
+											: this.subprocessList.val(),
+									subprocessMode : this.subprocessModeSelect
+											.val(),
+									attributes : attributes
+								}
+							});
 				};
 
 				/**
@@ -311,6 +337,13 @@ define(
 
 					this.populateApplicationSelect();
 					this.populateSubprocessSelect();
+
+					if (m_user.getCurrentRole() != m_constants.INTEGRATOR_ROLE) {
+						m_dialog.makeInvisible(this.subprocessExecutionRow);
+
+					} else {
+						m_dialog.makeVisible(this.subprocessExecutionRow);
+					}
 
 					this.allowAbortByParticipantInput.attr("checked", this
 							.getModelElement().attributes["@TOADD@"] == true);
@@ -339,7 +372,10 @@ define(
 						}
 					} else if (this.getModelElement().activityType == m_constants.SUBPROCESS_ACTIVITY_TYPE) {
 						this
-								.setSubprocessType(this.getModelElement().subprocessFullId);
+								.setSubprocessType(
+										this.getModelElement().subprocessFullId,
+										this.getModelElement().subprocessMode,
+										this.getModelElement().attributes["carnot:engine:subprocess:copyAllData"]);
 					} else if (this.getModelElement().activityType == m_constants.APPLICATION_ACTIVITY_TYPE) {
 						this
 								.setApplicationType(this.getModelElement().applicationFullId);

@@ -399,6 +399,7 @@ define(
 
 						content += "</td>" + "<td align=\"right\">";
 
+						// many, required, optional
 						if (readonly) {
 							content += elements[childElement].cardinality;
 						} else {

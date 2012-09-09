@@ -52,6 +52,7 @@ import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.SubProcessModeType;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
@@ -260,6 +261,22 @@ public abstract class ModelElementUnmarshaller
                      getModelBuilderFacade().stripFullId(subprocessFullId));
 
                activity.setImplementationProcess(subProcessDefinition);
+               
+               if (activityJson.has(ModelerConstants.SUBPROCESS_MODE_PROPERTY))
+               {
+                  if (activityJson.get(ModelerConstants.SUBPROCESS_MODE_PROPERTY).getAsString().equals(ModelerConstants.ASYNC_SEPARATE_KEY))
+                  {
+                     activity.setSubProcessMode(SubProcessModeType.ASYNC_SEPARATE_LITERAL);
+                  }
+                  else if (activityJson.get(ModelerConstants.SUBPROCESS_MODE_PROPERTY).getAsString().equals(ModelerConstants.SYNC_SEPARATE_KEY))
+                  {
+                     activity.setSubProcessMode(SubProcessModeType.SYNC_SEPARATE_LITERAL);
+                  }
+                  else if (activityJson.get(ModelerConstants.SUBPROCESS_MODE_PROPERTY).getAsString().equals(ModelerConstants.SYNC_SHARED_KEY))
+                  {
+                     activity.setSubProcessMode(SubProcessModeType.SYNC_SHARED_LITERAL);
+                  }
+               }
             }
          }
          else if (ModelerConstants.APPLICATION_ACTIVITY.equals(extractString(

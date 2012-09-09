@@ -523,7 +523,19 @@ public abstract class ModelElementMarshaller
                      ModelerConstants.SUBPROCESS_ID,
                      getModelBuilderFacade().createFullId(
                            ModelUtils.findContainingModel(activity),
-                           activity.getImplementationProcess()));
+                           activity.getImplementationProcess()));    
+               if (activity.getSubProcessMode().equals(SubProcessModeType.SYNC_SEPARATE_LITERAL))
+               {
+                  activityJson.addProperty(ModelerConstants.SUBPROCESS_MODE_PROPERTY, ModelerConstants.SYNC_SEPARATE_KEY);                  
+               }
+               else if (activity.getSubProcessMode().equals(SubProcessModeType.SYNC_SHARED_LITERAL))
+               {
+                  activityJson.addProperty(ModelerConstants.SUBPROCESS_MODE_PROPERTY, ModelerConstants.SYNC_SHARED_KEY);                  
+               }
+               else if (activity.getSubProcessMode().equals(SubProcessModeType.ASYNC_SEPARATE_LITERAL))
+               {
+                  activityJson.addProperty(ModelerConstants.SUBPROCESS_MODE_PROPERTY, ModelerConstants.ASYNC_SEPARATE_KEY);                  
+               }
             }
             else if (activity.getApplication() != null)
             {

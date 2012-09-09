@@ -9,16 +9,16 @@
 #sessionLogPanel {
 }
 
-#sessionUserPanel {
-	height: 50px;
-	width: 100%;
+#sessionParticipantsPanel {
+	height: 100px;
+	width: 250px;
 	overflow: auto;
 	border: 1px solid #e8e8e8;
 }
 
 #sessionLogPanel #sessionLogTablePanel {
-	height: 150px;
-	width: 100%;
+	height: 100px;
+	width: 250px;
 	overflow: auto;
 	border: 1px solid #e8e8e8;
 }
@@ -33,6 +33,26 @@
 	font-size: 9px;
 }
 
+#startTimeSpan {
+	color: #aaaaaa;
+}
+
+.nameSpan {
+}
+
+.accountSpan {
+	color: #aaaaaa;
+}
+
+.roleTag {
+	color: #aaaaaa;
+}
+
+.errorMessage
+{
+	background: #ffcc33;
+}
+
 </style>
 <script type="text/javascript" data-main="../js/sessionLogPanelMain"
 	src="../js/libs/require/2.0.5/require.js"></script>
@@ -41,23 +61,23 @@
 	<div id="sessionLogPanel">
 		<table width="100%">
 			<tr>
-				<td><label for="sessionJoined">Joined Users</label>
+				<td><label for="sessionParticipantsPanel">Session Participants</label>
 				</td>
 			</tr>
 			<tr>
-				<td><div id="sessionUserPanel">
-						<ul id="sessionJoined">
-						</ul>
+				<td><div id="sessionParticipantsPanel">
+						<table id="sessionParticipantsTable" width="100%">
+						</table>
 					</div></td>
 			</tr>
 			<tr>
-				<td><label>Log</label>
+				<td><label>Session Log <span id="startTimeSpan"></span></label>
 				</td>
 			</tr>
 			<tr>
 				<td valign="top">
 					<div id="sessionLogTablePanel">
-						<table id="sessionLogTable">
+						<table id="sessionLogTable" width="100%">
 						</table>
 					</div></td>
 			</tr>
