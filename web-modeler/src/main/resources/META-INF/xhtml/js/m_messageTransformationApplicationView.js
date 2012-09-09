@@ -319,13 +319,13 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.initialize = function(
 						application) {
+					this.initializeModelElementView();
+					this.initializeModelElement(application);
+
 					this.application = application;
 
 					m_utils.debug("===> Application");
 					m_utils.debug(application);
-
-					this.initializeModelElementView();
-					this.initializeModelElement(application);
 
 					this
 					.convertFromMappingsXml(this.application.attributes["messageTransformation:TransformationProperty"]);

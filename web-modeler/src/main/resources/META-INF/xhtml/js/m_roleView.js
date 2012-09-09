@@ -9,9 +9,9 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_command", "m_commandsController", "m_dialog",
+		[ "m_utils", "m_constants", "m_command", "m_commandsController", "m_dialog",
 				"m_modelElementView", "m_model" ],
-		function(m_utils, m_command, m_commandsController, m_dialog,
+		function(m_utils, m_constants, m_command, m_commandsController, m_dialog,
 				m_modelElementView, m_model) {
 			return {
 				initialize : function(fullId) {

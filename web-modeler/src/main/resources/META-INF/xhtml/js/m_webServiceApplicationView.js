@@ -9,10 +9,10 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_communicationController", "m_command",
+		[ "m_utils", "m_constants", "m_communicationController", "m_command",
 				"m_commandsController", "m_dialog", "m_modelElementView",
 				"m_model", "m_typeDeclaration" ],
-		function(m_utils, m_communicationController, m_command,
+		function(m_utils, m_constants, m_communicationController, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
 				m_typeDeclaration) {
 			return {
@@ -31,8 +31,6 @@ define(
 			 * 
 			 */
 			function WebServiceApplicationView() {
-				// Inheritance
-
 				var view = m_modelElementView.create();
 
 				m_utils.inheritFields(this, view);
@@ -45,13 +43,12 @@ define(
 				WebServiceApplicationView.prototype.initialize = function(
 						application) {
 					this.initializeModelElementView();
-
-					m_utils.debug("===> Application");
-					m_utils.debug(application);
+					this.initializeModelElement(application);
 
 					this.application = application;
 
-					this.initializeModelElement(application);
+					m_utils.debug("===> Application");
+					m_utils.debug(application);
 
 					this.webServiceStructure = {};
 					this.wsdlUrlInput = jQuery("#wsdlUrlInput");
@@ -541,10 +538,6 @@ define(
 							&& null != object.changes.modified
 							&& 0 != object.changes.modified.length
 							&& object.changes.modified[0].oid == this.application.oid) {
-
-						m_utils.inheritFields(this.application,
-								object.changes.modified[0]);
-
 						this.initialize(this.application);
 					}
 				};

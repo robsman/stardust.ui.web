@@ -2,10 +2,10 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_communicationController", "m_command",
+		[ "m_utils", "m_constants", "m_communicationController", "m_command",
 				"m_commandsController", "m_dialog", "m_modelElementView",
 				"m_model", "m_typeDeclaration", "m_propertiesTree" ],
-		function(m_utils, m_communicationController, m_command,
+		function(m_utils, m_constants, m_communicationController, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
 				m_typeDeclaration, m_propertiesTree) {
 			return {
@@ -183,12 +183,12 @@ define(
 
 						var content = "<tr id=\"schemaElementRow-" + n + "\">";
 
-						content += "<td style=\"width: 400px;\">";
+						content += "<td class='elementCell'>";
 						content += "<input type=\"text\" value=\""
 								+ schemaElement.name
 								+ "\" class=\"nameInput\"></input>";
 						content += "</td>";
-						content += "<td style=\"width: 100px;\">";
+						content += "<td class='typeCell'>";
 
 						if (this.structuredDataType.typeDeclaration.type == m_typeDeclaration.STRUCTURE_TYPE) {
 							content += this
@@ -196,15 +196,15 @@ define(
 						}
 
 						content += "</td>"
-								+ "<td align=\"right\"  style=\"width: 100px;\">";
+								+ "<td align=\"right\" class='cardinalityCell'>";
 
 						if (this.structuredDataType.typeDeclaration.type == m_typeDeclaration.STRUCTURE_TYPE) {
 							content += ("<select size=\"1\" class=\"cardinalitySelect\"><option value=\"1\""
 									+ (schemaElement.cardinality == "1" ? "selected"
 											: "")
-									+ ">1</option><option value=\"N\""
+									+ ">Required</option><option value=\"N\""
 									+ (schemaElement.cardinality == "N" ? "selected"
-											: "") + ">N</option></select>");
+											: "") + ">Many</option></select>");
 						}
 
 						content += "</td></tr>";
@@ -311,6 +311,7 @@ define(
 					this.loadFromUrlButton.attr("disabled", false);
 					this.upButton.attr("disabled", true);
 					this.downButton.attr("disabled", true);
+					this.tableBody.empty();
 				};
 
 				XsdStructuredDataTypeView.prototype.initializeFromJson = function(
@@ -381,14 +382,14 @@ define(
 						var path = parentPath + "."
 								+ elements[childElement].name;
 
-						var content = "<tr id=\"" + path + "\" "
-								+ "class=\"child-of-" + parentPath + "\"" + ">";
+						var content = "<tr id='" + path + "' class=\"child-of-"
+								+ parentPath + "'" + ">";
 
-						content += "<td>";
-						content += "<span class=\"data-element\">"
+						content += "<td class='elementCell'>";
+						content += "<span class='data-element'>"
 								+ elements[childElement].name + "</span>";
 						content += "</td>";
-						content += "<td>";
+						content += "<td class='typeCell'>";
 
 						if (readonly) {
 							content += elements[childElement].type;
@@ -397,19 +398,25 @@ define(
 									.getTypeSelectList(elements[childElement].type);
 						}
 
-						content += "</td>" + "<td align=\"right\">";
+						content += "</td>"
+								+ "<td align='right' class='cardinalityCell'>";
 
 						// many, required, optional
 						if (readonly) {
-							content += elements[childElement].cardinality;
+							if (elements[childElement].cardinality == "optional") {
+								content += "Optional";
+							} else if (elements[childElement].cardinality == "required") {
+								content += "Required";
+							} else if (elements[childElement].cardinality == "many") {
+								content += "Many";
+							}
 						} else {
-							content += ("<select size=\"1\"><option value=\"1\""
+							content += ("<select size='1'><option value='1'"
 									+ (elements[childElement].cardinality == "1" ? "selected"
 											: "")
-									+ ">1</option><option value=\"N\""
+									+ ">Required</option><option value='N'"
 									+ (elements[childElement].cardinality == "N" ? "selected"
-											: "") + ">N</option></select>");
-
+											: "") + ">Many</option></select>");
 						}
 
 						content += "</td></tr>";
@@ -548,25 +555,21 @@ define(
 				 */
 				XsdStructuredDataTypeView.prototype.processCommand = function(
 						command) {
-					m_utils.debug("===> Structured Data Process Command");
-					m_utils.debug(command);
-
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
 						this.initialize(this.structuredDataType);
-
+						
 						return;
 					}
 
-					var obj = ("string" == typeof (command)) ? jQuery
+					var object = ("string" == typeof (command)) ? jQuery
 							.parseJSON(command) : command;
 
-					if (null != obj
-							&& null != obj.changes
-							&& object.changes[this.structuredDataType.oid] != null) {
-						this.nameInput
-								.val(object.changes[this.structuredDataType.oid].name);
-
-						// Other attributes
+					if (null != object
+							&& null != object.changes
+							&& null != object.changes.modified
+							&& 0 != object.changes.modified.length
+							&& object.changes.modified[0].oid == this.structuredDataType.oid) {
+						this.initialize(this.structuredDataType);
 					}
 				};
 			}
