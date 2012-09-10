@@ -24,7 +24,7 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 
 /**
- * 
+ *
  * @author Marc.Gille
  *
  */
@@ -34,20 +34,20 @@ public class AbstractAdapterView implements ViewEventHandler {
    private String anchorId;
 
    /**
-    * 
+    *
     * @param viewPath
     * @param anchorId
     */
 	public AbstractAdapterView(String viewPath, String anchorId)
    {
       super();
-      
+
       this.viewPath = viewPath;
       this.anchorId = anchorId;
    }
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
    public ModelService getModelService() {
@@ -55,7 +55,7 @@ public class AbstractAdapterView implements ViewEventHandler {
 	}
 
    /**
-    * 
+    *
     * @param modelService
     */
 	public void setModelService(ModelService modelService) {
@@ -63,7 +63,7 @@ public class AbstractAdapterView implements ViewEventHandler {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void handleEvent(ViewEvent event) {
 		String pagePath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
@@ -98,9 +98,11 @@ public class AbstractAdapterView implements ViewEventHandler {
 		case LAUNCH_PANELS_DEACTIVATED:
 		case FULL_SCREENED:
 		case RESTORED_TO_NORMAL:
+      case PINNED:
+		case PERSPECTIVE_CHANGED:
 			PortalApplication.getInstance().addEventScript(
 					"InfinityBpm.ProcessPortal.resizeContentFrame('"
-					+ iframeId + "');");
+					+ iframeId + "', {anchorId:'" + anchorId + "'});");
 			break;
 		}
 
