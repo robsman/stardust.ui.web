@@ -1063,8 +1063,7 @@ define(
 								* this.diagram.zoomFactor
 								- this.diagram.X_OFFSET, y
 								* this.diagram.zoomFactor
-								- this.diagram.Y_OFFSET
-								+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
+								- this.diagram.Y_OFFSET);
 
 						anchorPoint.select();
 
@@ -1091,8 +1090,7 @@ define(
 								* this.diagram.zoomFactor
 								- this.diagram.X_OFFSET, y
 								* this.diagram.zoomFactor
-								- this.diagram.Y_OFFSET
-								+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
+								- this.diagram.Y_OFFSET);
 
 						anchorPoint.select();
 
@@ -1165,8 +1163,7 @@ define(
 															- this.diagram.X_OFFSET,
 													y
 															* this.diagram.zoomFactor
-															- this.diagram.Y_OFFSET
-															+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT));
+															- this.diagram.Y_OFFSET));
 							this.hideAnchorPoints();
 						} else {
 							this.select();
