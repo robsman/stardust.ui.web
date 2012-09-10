@@ -107,13 +107,10 @@ public class DefaultModelManagementStrategy extends
 	 */
 	public void saveModel(ModelType model) {
 			String modelContent = new String(XpdlModelIoUtils.saveModel(model));
-			Document modelDocument;
-
-				modelDocument = getDocumentManagementService().getDocument(
-						MODELS_DIR + model.getName() + ".xpdl");
+			Document modelDocument = getDocumentManagementService().getDocument(getModelFilePath(model));
 
 			if (null == modelDocument) {
-				DocumentInfo docInfo = DmsUtils.createDocumentInfo(model.getName()
+				DocumentInfo docInfo = DmsUtils.createDocumentInfo(model.getId()
 						+ ".xpdl");
 
 				docInfo.setOwner(getServiceFactory().getWorkflowService().getUser()
@@ -127,12 +124,11 @@ public class DefaultModelManagementStrategy extends
 
 				getDocumentManagementService().versionDocument(
 						modelDocument.getId(), null);
+				mapModelFileName(model);
 			} else {
 				getDocumentManagementService().updateDocument(modelDocument,
 						modelContent.getBytes(), null, false, null, false);
 			}
-
-			mapModelFileName(model);
 	}
 
 	/**
@@ -216,7 +212,7 @@ public class DefaultModelManagementStrategy extends
     */
    private void mapModelFileName(ModelType model)
    {
-      mapModelFileName(model, model.getName() + ".xpdl");
+      mapModelFileName(model, model.getId() + ".xpdl");
 
    }
 
