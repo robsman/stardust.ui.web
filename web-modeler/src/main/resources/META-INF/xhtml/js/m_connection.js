@@ -1352,15 +1352,14 @@ define(
 					this.removePrimitives();
 					this.removeFlyOutMenu();
 					this.removeProximitySensor();
-					m_utils.removeItemFromArray(
-							this.diagram.currentSelection, this);
-					m_utils.removeItemFromArray(
-							this.diagram.connections, this);
+					m_utils.removeItemFromArray(this.diagram.currentSelection,
+							this);
+					m_utils.removeItemFromArray(this.diagram.connections, this);
 					// Remove this connection from FROM and TO Symbol's
 					// connection array
 					m_utils.removeItemFromArray(
 							this.fromAnchorPoint.symbol.connections, this);
-					if(this.toAnchorPoint.symbol){
+					if (this.toAnchorPoint.symbol) {
 						m_utils.removeItemFromArray(
 								this.toAnchorPoint.symbol.connections, this);
 					}
@@ -1443,7 +1442,7 @@ define(
 									.showErrorMessage("Events can be connected only to activities and gateways.");
 							return false;
 						}
-						else if (fromAnchorPoint.symbol.connections.length > 1) {
+						else if (!fromAnchorPoint.symbol.validateCreateConnection()) {
 							// Start Event can have only one OUT connection
 							m_messageDisplay
 									.showErrorMessage("No further connection allowed for this Event.");
@@ -1471,7 +1470,7 @@ define(
 							m_messageDisplay
 									.showErrorMessage("Only out sequence flow connections are allowed on Start Events.");
 							return false;
-						} else if (toAnchorPoint.symbol.connections.length > 1) {
+						} else if (!toAnchorPoint.symbol.validateCreateConnection()) {
 							// End Event can have only one IN connection
 							m_messageDisplay
 									.showErrorMessage("No further connection allowed for this Event.");
