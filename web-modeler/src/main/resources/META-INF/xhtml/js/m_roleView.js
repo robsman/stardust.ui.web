@@ -151,13 +151,13 @@ define(
 
 					// Set values
 
-					if ("Public".equals(this.role.attributes["carnot:engine:visibility"])) {
+					if (this.role.attributes["carnot:engine:visibility"] == "Public") {
 						this.publicVisibilityCheckbox.attr("checked", true);
 					} else {
 						this.publicVisibilityCheckbox.attr("checked", false);
 					}
 
-					if ("assemblyLine".equals(this.role.attributes["carnot:engine:tasks:assignment:mode"])) {
+					if (this.role.attributes["carnot:engine:tasks:assignment:mode"] == "assemblyLine") {
 						this.assignAutomaticallyRadio.attr("checked", true);
 						this.chooseAssignmentRadio.attr("checked", false);
 					} else {

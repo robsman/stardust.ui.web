@@ -333,10 +333,10 @@ define(
 					for ( var element in typeDeclarations.elements) {
 						var path = element.replace(/:/g, "-");
 
-						var content = "<tr id=\"" + path + "\">";
+						var content = "<tr id='" + path + "'>";
 
 						content += "<td>";
-						content += "<span class=\"data-element\">"
+						content += "<span class='data-element'>"
 								+ typeDeclarations.elements[element].name
 								+ "</span>";
 						content += "</td>";
@@ -353,6 +353,33 @@ define(
 							this
 									.populateRecursively(
 											typeDeclarations.elements[element].body.elements,
+											path, true);
+						}
+					}
+
+					for ( var type in typeDeclarations.types) {
+						var path = type.replace(/:/g, "-");
+
+						var content = "<tr id='" + path + "'>";
+
+						content += "<td>";
+						content += "<span class='data-element'>"
+								+ typeDeclarations.types[type].name
+								+ "</span>";
+						content += "</td>";
+						content += "<td>";
+						content += typeDeclarations.types[type].name;
+						content += "</td>";
+						content += "<td>";
+						content += "</td>";
+						content += "</tr>";
+
+						this.tableBody.append(content);
+
+						if (typeDeclarations.types[type].body != null) {
+							this
+									.populateRecursively(
+											typeDeclarations.types[type].body.elements,
 											path, true);
 						}
 					}
@@ -382,8 +409,8 @@ define(
 						var path = parentPath + "."
 								+ elements[childElement].name;
 
-						var content = "<tr id='" + path + "' class=\"child-of-"
-								+ parentPath + "'" + ">";
+						var content = "<tr id='" + path + "' class='child-of-"
+								+ parentPath + "'>";
 
 						content += "<td class='elementCell'>";
 						content += "<span class='data-element'>"

@@ -58,6 +58,7 @@ import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 
 /**
@@ -465,24 +466,20 @@ public abstract class ModelElementUnmarshaller
                   if (formalParameter.get(ModelerConstants.DATA_TYPE_PROPERTY).equals(
                         ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
                   {
-                     // getModelBuilderFacade().setFormalParameter(processDefinition,
-                     // formalParameter.get(ModelerConstants.ID_PROPERTY).getAsString(),
-                     // getModelBuilderFacade().createPrimitiveParameter(processDefinition,
-                     // localPrimitive,
-                     // formalParameter.get(ModelerConstants.ID_PROPERTY).getAsString(),
-                     // formalParameter.get(ModelerConstants.NAME_PROPERTY).getAsString(),
-                     // ModeType.IN));
+                     getModelBuilderFacade().createPrimitiveParameter(processDefinition,
+                           getModelBuilderFacade().findData(formalParameter.get(ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString()), 
+                           getModelBuilderFacade().createIdFromName(formalParameter.get(ModelerConstants.NAME_PROPERTY).getAsString()), formalParameter.get(ModelerConstants.NAME_PROPERTY).getAsString(), 
+                           ModeType.IN);
+                     
+                     // @Rainer formalParameter.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY);
                   }
                   else if (formalParameter.get(ModelerConstants.DATA_TYPE_PROPERTY)
                         .equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
                   {
-                     // getModelBuilderFacade().setFormalParameter(processDefinition,
-                     // formalParameter.get(ModelerConstants.ID_PROPERTY).getAsString(),
-                     // getModelBuilderFacade().createPrimitiveParameter(processDefinition,
-                     // localPrimitive,
-                     // formalParameter.get(ModelerConstants.ID_PROPERTY).getAsString(),
-                     // formalParameter.get(ModelerConstants.NAME_PROPERTY).getAsString(),
-                     // ModeType.IN));
+                     getModelBuilderFacade().createStructuredParameter(processDefinition, getModelBuilderFacade().findData(formalParameter.get(ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString()), getModelBuilderFacade().createIdFromName(formalParameter.get(ModelerConstants.NAME_PROPERTY).getAsString()), formalParameter.get(ModelerConstants.NAME_PROPERTY).getAsString(), 
+                           ModeType.IN);
+                     
+                     // @Rainer formalParameter.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY);
                   }
                }
             }
