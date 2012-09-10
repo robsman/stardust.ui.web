@@ -95,34 +95,6 @@ public class ApplicationTypeChangeCommandHandler
    public void createUiMashupApp(EObject targetElement, JsonObject request)
    {
       ModelType model = (ModelType) targetElement;
-      ApplicationType applicationType = AbstractElementBuilder.F_CWM.createApplicationType();
-
-      //Map newly created application to a UUID
-      EObjectUUIDMapper mapper = modelService().uuidMapper();
-      mapper.map(applicationType);
-
-      model.getApplication().add(applicationType);
-
-      applicationType.setId(extractString(request, ModelerConstants.ID_PROPERTY));
-      applicationType.setName(extractString(request, ModelerConstants.NAME_PROPERTY));
-
-      // TODO - check if needed
-      AttributeUtil.setAttribute(applicationType,
-            ModelerConstants.APPLICATION_TYPE_PROPERTY,
-            ModelerConstants.INTERACTIVE_APPLICATION_TYPE_KEY);
-
-      // TODO
-      // applicationType.setType(getModelBuilderFacade().findApplicationTypeType(model,
-      // ModelerConstants.MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID));
-   }
-
-   //TODO: The same as above using the ModelBuilderFacade which adds all attributes and references
-   //needed to the raw application type. Problem: For some reasons the Icon is shown as Folder.
-   
-   //@OnCommand(commandId = "uiMashupApplication.create")
-   /*public void createUiMashupApp(EObject targetElement, JsonObject request)
-   {
-      ModelType model = (ModelType) targetElement;
 
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
@@ -130,15 +102,11 @@ public class ApplicationTypeChangeCommandHandler
       ApplicationType applicationType = getModelBuilderFacade().createApplication(model,
             id, name, ModelerConstants.EXTERNAL_WEB_APP_CONTEXT_TYPE_KEY);
 
-      AttributeUtil.setAttribute(applicationType,
-            ModelerConstants.APPLICATION_TYPE_PROPERTY,
-            ModelerConstants.INTERACTIVE_APPLICATION_TYPE_KEY);
-
       //Map newly created application to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(applicationType);
 
-   }*/
+   }
 
    /**
     * @param targetElement
