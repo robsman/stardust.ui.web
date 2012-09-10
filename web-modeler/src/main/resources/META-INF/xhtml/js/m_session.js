@@ -77,7 +77,7 @@ define(
 								.createFetchProspects(oldObject));
 
 					} else if (command.type == m_constants.CONFIRM_JOIN_COMMAND) {
-						this.joined = true;
+						joined = true;
 						if (command.account != this.owner.account) {
 							this.owner = m_user.createUser(command.account,
 									"name", "lastname", null, null); // cannot
