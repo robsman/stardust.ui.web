@@ -490,6 +490,27 @@ define(
 				/**
 				 *
 				 */
+				PoolSymbol.prototype.dragStart = function() {
+					// Do nothing
+				};
+
+				/**
+				 *
+				 */
+				PoolSymbol.prototype.drag = function(dX, dY, x, y) {
+					// Do nothing
+				};
+
+				/**
+				 *
+				 */
+				PoolSymbol.prototype.dragStop = function() {
+					// Do nothing
+				};
+
+				/**
+				 *
+				 */
 				PoolSymbol.prototype.createFlyOutMenuBackground = function(x,
 						y, height, width) {
 					this.flyOutMenuBackground = m_canvasManager
@@ -650,4 +671,5 @@ define(
 			function PoolSymbol_hoverOutFlyOutMenuClosure() {
 				this.auxiliaryProperties.callbackScope.hideFlyOutMenu();
 			}
+
 		});
