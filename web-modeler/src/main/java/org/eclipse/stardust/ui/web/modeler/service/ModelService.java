@@ -1189,12 +1189,14 @@ public class ModelService
                   participantModelID);
          }
 
+         String participantId = getModelBuilderFacade().stripFullId(
+               extractString(laneSymbolJson,
+                     ModelerConstants.PARTICIPANT_FULL_ID));
+         
          IModelParticipant modelParticipant = getModelBuilderFacade()
                .findParticipant(
                      getModelManagementStrategy().getModels().get(participantModelID),
-                     getModelBuilderFacade().stripFullId(
-                           extractString(laneSymbolJson,
-                                 ModelerConstants.PARTICIPANT_FULL_ID)));
+                     participantId);
 
          if (!participantModelID.equals(model.getId()))
          {
@@ -1204,14 +1206,21 @@ public class ModelService
             String bundleId = CarnotConstants.DIAGRAM_PLUGIN_ID;
             URI uri = URI.createURI("cnx://" + fileConnectionId + "/");
 
+            ModelType loadModel = getModelManagementStrategy().loadModel(participantModelID + ".xpdl");
+            IModelParticipant participantCopy = getModelBuilderFacade().findParticipant(loadModel, participantId);            
+            if(participantCopy == null)
+            {
+               ElementCopier copier = new ElementCopier(loadModel, null);
+               participantCopy = (IModelParticipant) copier.copy(modelParticipant);               
+            }
+            
+            
             ReplaceModelElementDescriptor descriptor = new ReplaceModelElementDescriptor(
-                  uri, modelParticipant, bundleId, null, true);
-
+                  uri, participantCopy, bundleId, null, true);
             PepperIconFactory iconFactory = new PepperIconFactory();
-
-            descriptor.importElements(iconFactory, model, true);
+            descriptor.importElements(iconFactory, model, true);            
+            modelParticipant = getModelBuilderFacade().findParticipant(model, participantId);
          }
-
          laneSymbol.setParticipant(modelParticipant);
       }
 
