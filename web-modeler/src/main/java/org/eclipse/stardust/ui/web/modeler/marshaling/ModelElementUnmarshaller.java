@@ -11,6 +11,7 @@
 
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
+import static org.eclipse.stardust.common.CollectionUtils.isEmpty;
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 
@@ -40,6 +41,9 @@ import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
+import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
+import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
@@ -65,7 +69,7 @@ import com.google.gson.JsonObject;
  * @author Marc.Gille
  *
  */
-public abstract class ModelElementUnmarshaller
+public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 {
    private Map<Class<? >, String[]> propertiesMap;
 
@@ -83,15 +87,9 @@ public abstract class ModelElementUnmarshaller
       propertiesMap.put(ProcessDefinitionType.class, new String[] {
             ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY,
             ModelerConstants.DEFAULT_PRIORITY_PROPERTY});
-      propertiesMap.put(ActivitySymbolType.class, new String[] {
-            ModelerConstants.X_PROPERTY, ModelerConstants.Y_PROPERTY});
       propertiesMap.put(ActivityType.class, new String[] {ModelerConstants.NAME_PROPERTY});
-      propertiesMap.put(StartEventSymbol.class, new String[] {
-            ModelerConstants.X_PROPERTY, ModelerConstants.Y_PROPERTY});
       // propertiesMap.put(EventSymbol.class,
       // new String[] {ModelerConstants.NAME_PROPERTY});
-      propertiesMap.put(EndEventSymbol.class, new String[] {
-            ModelerConstants.X_PROPERTY, ModelerConstants.Y_PROPERTY});
       propertiesMap.put(LaneSymbol.class, new String[] {
             ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY});
       // propertiesMap.put(EndEventSymbol.class,
@@ -244,6 +242,16 @@ public abstract class ModelElementUnmarshaller
                ModelerConstants.ACTIVITY_TYPE)))
          {
             activity.setImplementation(ActivityImplementationType.MANUAL_LITERAL);
+
+            if (activityJson.has(ModelerConstants.PARTICIPANT_FULL_ID) &&
+                  !activityJson.get(ModelerConstants.PARTICIPANT_FULL_ID).isJsonNull())
+            {
+               String participantFullId = extractString(activityJson,
+                     ModelerConstants.PARTICIPANT_FULL_ID);
+
+               IModelParticipant performer = getModelBuilderFacade().findParticipant(participantFullId);
+               activity.setPerformer(performer);
+            }
          }
          else if (ModelerConstants.SUBPROCESS_ACTIVITY.equals(extractString(activityJson,
                ModelerConstants.ACTIVITY_TYPE)))
@@ -575,6 +583,8 @@ public abstract class ModelElementUnmarshaller
    private void updateActivitySymbol(ActivitySymbolType activitySymbol,
          JsonObject activitySymbolJson)
    {
+      updateNodeSymbol(activitySymbol, activitySymbolJson);
+
       mapDeclaredProperties(activitySymbol, activitySymbolJson,
             propertiesMap.get(ActivitySymbolType.class));
 
@@ -582,6 +592,48 @@ public abstract class ModelElementUnmarshaller
       JsonObject activityJson = activitySymbolJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
 
       updateActivity(activity, activityJson);
+   }
+
+   /**
+    *
+    * @param activitySymbol
+    * @param activitySymbolJson
+    */
+   private void updateNodeSymbol(INodeSymbol nodeSymbol, JsonObject nodeSymbolJto)
+   {
+      int x = extractInt(nodeSymbolJto, ModelerConstants.X_PROPERTY);
+      int y = extractInt(nodeSymbolJto, ModelerConstants.Y_PROPERTY);
+
+      // adjust coordinates from global to local
+      int laneOffsetX = 0;
+      int laneOffsetY = 0;
+      ISwimlaneSymbol container = (nodeSymbol.eContainer() instanceof ISwimlaneSymbol)
+            ? (ISwimlaneSymbol) nodeSymbol.eContainer()
+            : null;
+      while (null != container)
+      {
+         laneOffsetX += container.getXPos();
+         laneOffsetY += container.getYPos();
+
+         // recurse
+         container = (container.eContainer() instanceof ISwimlaneSymbol)
+               ? (ISwimlaneSymbol) container.eContainer()
+               : null;
+      }
+
+      nodeSymbol.setXPos(x - laneOffsetX);
+      nodeSymbol.setYPos(y - laneOffsetY);
+
+      if (nodeSymbolJto.has(ModelerConstants.WIDTH_PROPERTY))
+      {
+         int width = extractInt(nodeSymbolJto, ModelerConstants.WIDTH_PROPERTY);
+         nodeSymbol.setWidth(width);
+      }
+      if (nodeSymbolJto.has(ModelerConstants.HEIGHT_PROPERTY))
+      {
+         int height = extractInt(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY);
+         nodeSymbol.setHeight(height);
+      }
    }
 
    /**
@@ -611,6 +663,8 @@ public abstract class ModelElementUnmarshaller
    {
       JsonObject startEventJson = startEventSymbolJson.getAsJsonObject("modelElement");
 
+      updateNodeSymbol(startEventSymbol, startEventJson);
+
       mapDeclaredProperties(startEventSymbol.getModelElement(), startEventJson,
             propertiesMap.get(StartEventSymbol.class));
       storeAttributes(startEventSymbol.getModelElement(), startEventJson);
@@ -626,6 +680,8 @@ public abstract class ModelElementUnmarshaller
          JsonObject endEventSymbolJson)
    {
       JsonObject endEventJson = endEventSymbolJson.getAsJsonObject("modelElement");
+
+      updateNodeSymbol(endEventSymbol, endEventJson);
 
       mapDeclaredProperties(endEventSymbol.getModelElement(),
             endEventSymbolJson.getAsJsonObject("modelElement"),
@@ -851,7 +907,7 @@ public abstract class ModelElementUnmarshaller
    private void mapDeclaredProperties(EObject element, JsonObject elementJson,
          String[] elementProperties)
    {
-      if (element != null)
+      if ((element != null) && !isEmpty(elementProperties))
       {
          for (String property : elementProperties)
          {

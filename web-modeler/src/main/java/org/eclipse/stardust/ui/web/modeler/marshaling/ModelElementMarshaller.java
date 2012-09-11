@@ -33,7 +33,13 @@ import org.w3c.dom.Node;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-public abstract class ModelElementMarshaller
+/**
+ * IPP XPDL marshaller.
+ *
+ * @author Marc.Gille
+ * @author Robert Sauer
+ */
+public abstract class ModelElementMarshaller implements ModelMarshaller
 {
    protected abstract EObjectUUIDMapper eObjectUUIDMapper();
 
@@ -848,12 +854,7 @@ public abstract class ModelElementMarshaller
                   }
                   ModelType containingModel = ModelUtils.findContainingModel(eObject);
 
-                  if (modelBuilderFacade == null)
-                  {
-                     modelBuilderFacade = getModelBuilderFacade();
-                  }
-
-                  String fullId = modelBuilderFacade.createFullId(containingModel,
+                  String fullId = getModelBuilderFacade().createFullId(containingModel,
                         eObject);
 
                   dataJson.addProperty(
@@ -869,12 +870,7 @@ public abstract class ModelElementMarshaller
                      TypeDeclarationType typeDeclaration = model.getTypeDeclarations()
                            .getTypeDeclaration(typeDeclarationId);
 
-                     if (modelBuilderFacade == null)
-                     {
-                        modelBuilderFacade = getModelBuilderFacade();
-                     }
-
-                     String fullId = modelBuilderFacade.createFullId(model,
+                     String fullId = getModelBuilderFacade().createFullId(model,
                            typeDeclaration);
 
                      dataJson.addProperty(
@@ -1456,6 +1452,19 @@ public abstract class ModelElementMarshaller
       loadAttributes(transition, controlFlowJson);
 
       return controlFlowJson;
+   }
+
+   @Override
+   public JsonObject toModelJson(EObject model)
+   {
+      return toModelJson((ModelType) model);
+   }
+
+   @Override
+   public JsonObject toProcessDiagramJson(EObject model, String processId)
+   {
+      return toProcessDefinitionDiagram(ModelUtils.findIdentifiableElement(
+            ((ModelType) model).getProcessDefinition(), processId));
    }
 
    /**

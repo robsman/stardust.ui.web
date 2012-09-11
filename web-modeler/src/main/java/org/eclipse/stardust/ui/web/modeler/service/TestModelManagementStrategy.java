@@ -1,6 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.service;
 
-import java.util.ArrayList;
+import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
+
 import java.util.List;
 
 import org.eclipse.stardust.engine.api.runtime.Document;
@@ -63,9 +64,9 @@ public class TestModelManagementStrategy extends
 	/**
 	 * Return only the first model file for testing
 	 */
-	public List<ModelType> loadModels() {
+	public List<ModelDescriptor> loadModels() {
 
-		List<ModelType> models = new ArrayList<ModelType>();
+		List<ModelDescriptor> models = newArrayList();
 		List<Document> candidateModelDocuments = getDocumentManagementService()
 				.getFolder(MODELS_DIR).getDocuments();
 
@@ -75,7 +76,7 @@ public class TestModelManagementStrategy extends
 				ModelType model = XpdlModelIoUtils
 						.loadModel(readModelContext(modelDocument), this);
 
-				getModels().put(model.getId(), model);
+				models.add(new ModelDescriptor(model.getId(), modelDocument.getName(), model, model));
 
 				break;
 			}

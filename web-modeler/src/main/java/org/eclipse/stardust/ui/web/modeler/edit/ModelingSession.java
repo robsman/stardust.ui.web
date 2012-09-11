@@ -21,6 +21,7 @@ import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
 
@@ -47,7 +48,9 @@ public class ModelingSession
    @Resource
    @Qualifier("default")
    private ModelManagementStrategy modelManagementStrategy;
-   
+
+   private ModelRepository modelRepository;
+
    private ModelElementMarshaller modelElementMarshaller = new ModelElementMarshaller()
    {
       @Override
@@ -55,10 +58,10 @@ public class ModelingSession
       {
          return uuidMapper();
       }
-      
+
       @Override
       protected ModelManagementStrategy modelManagementStrategy()
-      {         
+      {
          return ModelingSession.this.modelManagementStrategy();
       }
    };
@@ -67,7 +70,7 @@ public class ModelingSession
    {
       @Override
       protected ModelManagementStrategy modelManagementStrategy()
-      {         
+      {
          return ModelingSession.this.modelManagementStrategy();
       }
    };
@@ -101,6 +104,15 @@ public class ModelingSession
    public void setModelManagementStrategy(ModelManagementStrategy strategy)
    {
       this.modelManagementStrategy = strategy;
+   }
+
+   public ModelRepository modelRepository()
+   {
+      if (null == modelRepository)
+      {
+         this.modelRepository = new ModelRepository(this);
+      }
+      return modelRepository;
    }
 
    public ModelElementMarshaller modelElementMarshaller()

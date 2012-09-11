@@ -20,13 +20,27 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractSt
 import static org.eclipse.stardust.ui.web.modeler.service.streaming.JointModellingSessionsController.lookupInviteBroadcaster;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
-import javax.wsdl.*;
+import javax.wsdl.Binding;
+import javax.wsdl.BindingInput;
+import javax.wsdl.BindingOperation;
+import javax.wsdl.BindingOutput;
+import javax.wsdl.Definition;
+import javax.wsdl.Input;
+import javax.wsdl.Message;
+import javax.wsdl.Output;
+import javax.wsdl.Part;
+import javax.wsdl.Port;
 import javax.wsdl.Service;
 import javax.xml.namespace.QName;
 
@@ -36,6 +50,21 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.xsd.XSDAttributeDeclaration;
+import org.eclipse.xsd.XSDElementDeclaration;
+import org.eclipse.xsd.XSDFacet;
+import org.eclipse.xsd.XSDModelGroup;
+import org.eclipse.xsd.XSDSchema;
+import org.eclipse.xsd.XSDSchemaContent;
+import org.eclipse.xsd.XSDTypeDefinition;
+import org.eclipse.xsd.impl.XSDImportImpl;
+import org.eclipse.xsd.util.XSDResourceFactoryImpl;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import org.eclipse.stardust.common.Predicate;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.config.Parameters;
@@ -43,16 +72,50 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.UserQuery;
-import org.eclipse.stardust.engine.api.runtime.*;
+import org.eclipse.stardust.engine.api.runtime.DmsUtils;
+import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
+import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
+import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.engine.extensions.jaxws.app.WSConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
-import org.eclipse.stardust.model.xpdl.builder.utils.*;
-import org.eclipse.stardust.model.xpdl.carnot.*;
+import org.eclipse.stardust.model.xpdl.builder.utils.ElementCopier;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.model.xpdl.builder.utils.PepperIconFactory;
+import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerConnectionManager;
+import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
+import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
+import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
+import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
+import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
+import org.eclipse.stardust.model.xpdl.carnot.ContextType;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
+import org.eclipse.stardust.model.xpdl.carnot.DataType;
+import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
+import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
+import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
+import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
+import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
@@ -61,20 +124,14 @@ import org.eclipse.stardust.modeling.validation.Issue;
 import org.eclipse.stardust.modeling.validation.ValidationService;
 import org.eclipse.stardust.modeling.validation.ValidatorRegistry;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.portal.JaxWSResource;
+import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
-import org.eclipse.xsd.*;
-import org.eclipse.xsd.impl.XSDImportImpl;
-import org.eclipse.xsd.util.XSDResourceFactoryImpl;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  *
@@ -516,9 +573,9 @@ public class ModelService
       UserService userService = getUserService();
       User sessionOwner = userService.getUser(sessionOwnerId);
       String uniqueID = ModelingSessionManager.getUniqueId(sessionOwner);
-     
+
       ModelingSession currentSession = sessionManager.currentSession(uniqueID);
-      
+
       requestJoinJson.addProperty("account", sessionOwnerId);
       requestJoinJson.addProperty("timestamp", System.currentTimeMillis());
       requestJoinJson.addProperty("path", "/users");
@@ -564,7 +621,7 @@ public class ModelService
             oldObject.addProperty("errormessage", "You are trying to invite a user already invited. Please confirm the pending invite or decline it");
             requestJoinJson.add("newObject", new JsonObject());
             requestJoinJson.add("oldObject", oldObject);
-            
+
          }
          else if(currentSession.participantContainsUser(invitee)
                && !currentSession.prospectContainsUser(invitee))
@@ -573,7 +630,7 @@ public class ModelService
             oldObject.addProperty("errormessage", "You are trying to invite a user who has already joined the session.");
             requestJoinJson.add("newObject", new JsonObject());
             requestJoinJson.add("oldObject", oldObject);
-            
+
          }
          else if(currentSession.isOwner(inviteeUniqueId))
          {
@@ -589,7 +646,7 @@ public class ModelService
             requestJoinJson.add("newObject", new JsonObject());
             requestJoinJson.add("oldObject", oldObject);
          }
-         
+
          Broadcaster ownerBroadcaster = lookupInviteBroadcaster(sessionOwnerId);
          trace.info(">>>>>>>>>>>>> Broadcasting Message REQUEST_JOIN_COMMAND to session owner " + sessionOwnerId);
          ownerBroadcaster.broadcast(requestJoinJson.toString());
@@ -664,11 +721,11 @@ public class ModelService
          trace.info(">>>>>>>>>>>>> No current Session found where user" +username +" was invited");
       }
    }
-   
+
    private String unwrapUsername(String owner){
       String username = null;
       String[] parts = owner.split(":");
-      
+
       return parts[parts.length-1];
    }
 
@@ -682,19 +739,20 @@ public class ModelService
    {
       try
       {
-         // Reload only if model map was empty
-         // TODO Review
-         getModelManagementStrategy().getModels(
-               getModelManagementStrategy().getModels().isEmpty());
-
-         // Refresh JSON
-         // TODO Smarter caching
+         if (reload || getModelManagementStrategy().getModels().isEmpty())
+         {
+            // reload upon request or if never loaded before
+            // TODO Review
+            getModelManagementStrategy().getModels(true);
+         }
 
          modelsJson = new JsonObject();
 
-         for (ModelType model : getModelManagementStrategy().getModels(reload).values())
+         ModelRepository modelRepository = currentSession().modelRepository();
+         for (EObject model : modelRepository.getAllModels())
          {
-            modelsJson.add(model.getId(), loadModelOutline(model));
+            JsonObject modelJson = modelRepository.getModelBinding(model).getMarshaller().toModelJson(model);
+            modelsJson.add(extractString(modelJson, ModelerConstants.ID_PROPERTY), modelJson);
          }
 
          return modelsJson.toString();
@@ -715,7 +773,7 @@ public class ModelService
     */
    public void saveModel(String modelId)
    {
-      ModelType model = getModelManagementStrategy().getModels().get(modelId);
+      ModelType model = findModel(modelId);
 
       getModelManagementStrategy().saveModel(model);
    }
@@ -756,19 +814,9 @@ public class ModelService
     * @param id
     * @return
     */
-   public ModelType getModel(String id)
-   {
-      return getModelManagementStrategy().getModels().get(id);
-   }
-
-   /**
-    *
-    * @param id
-    * @return
-    */
    public String getModelFileName(String id)
    {
-      return getModelManagementStrategy().getModelFileName(getModel(id));
+      return getModelManagementStrategy().getModelFileName(findModel(id));
    }
 
    /**
@@ -779,7 +827,7 @@ public class ModelService
     */
    public byte[] getModelFile(String id)
    {
-      String jcrFilePath = getModelManagementStrategy().getModelFilePath(getModel(id));
+      String jcrFilePath = getModelManagementStrategy().getModelFilePath(findModel(id));
       return getDocumentManagementService().retrieveDocumentContent(jcrFilePath);
    }
 
@@ -792,7 +840,7 @@ public class ModelService
     */
    public JsonObject createProcessJson(String modelId, JsonObject postedData)
    {
-      ModelType model = getModelManagementStrategy().getModels().get(modelId);
+      ModelType model = findModel(modelId);
       String name = extractString(postedData, NEW_OBJECT_PROPERTY,
             ModelerConstants.NAME_PROPERTY);
       String id = getModelBuilderFacade().createIdFromName(name);
@@ -829,7 +877,7 @@ public class ModelService
    public String renameActivity(String modelId, String processId, String activityId,
          JsonObject commandJson)
    {
-      ModelType model = getModelManagementStrategy().getModels().get(modelId);
+      ModelType model = findModel(modelId);
       ProcessDefinitionType processDefinition = getModelBuilderFacade()
             .findProcessDefinition(model, processId);
       ActivityType activity = getModelBuilderFacade().findActivity(processDefinition,
@@ -1017,7 +1065,7 @@ public class ModelService
       // connections , can be removed from here
       JsonObject modelElementJson = connectionJson
             .getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-      ModelType model = getModelManagementStrategy().getModels().get(modelId);
+      ModelType model = findModel(modelId);
       ProcessDefinitionType processDefinition = getModelBuilderFacade()
             .findProcessDefinition(model, processId);
       EditingSession editSession = getEditingSession(model);
@@ -1126,7 +1174,7 @@ public class ModelService
    public String updateLane(String modelId, String processId, String laneId,
          JsonObject laneSymbolJson)
    {
-      ModelType model = getModelManagementStrategy().getModels().get(modelId);
+      ModelType model = findModel(modelId);
       ProcessDefinitionType processDefinition = getModelBuilderFacade()
             .findProcessDefinition(model, processId);
       LaneSymbol laneSymbol = getModelBuilderFacade().findLaneSymbolById(
@@ -1185,17 +1233,16 @@ public class ModelService
          ModelType participantModel = model;
          if (!participantModelID.equals(model.getId()))
          {
-            participantModel = getModelManagementStrategy().getModels().get(
-                  participantModelID);
+            participantModel = findModel(participantModelID);
          }
 
          String participantId = getModelBuilderFacade().stripFullId(
                extractString(laneSymbolJson,
                      ModelerConstants.PARTICIPANT_FULL_ID));
-         
+
          IModelParticipant modelParticipant = getModelBuilderFacade()
                .findParticipant(
-                     getModelManagementStrategy().getModels().get(participantModelID),
+                     findModel(participantModelID),
                      participantId);
 
          if (!participantModelID.equals(model.getId()))
@@ -1207,18 +1254,18 @@ public class ModelService
             URI uri = URI.createURI("cnx://" + fileConnectionId + "/");
 
             ModelType loadModel = getModelManagementStrategy().loadModel(participantModelID + ".xpdl");
-            IModelParticipant participantCopy = getModelBuilderFacade().findParticipant(loadModel, participantId);            
+            IModelParticipant participantCopy = getModelBuilderFacade().findParticipant(loadModel, participantId);
             if(participantCopy == null)
             {
                ElementCopier copier = new ElementCopier(loadModel, null);
-               participantCopy = (IModelParticipant) copier.copy(modelParticipant);               
+               participantCopy = (IModelParticipant) copier.copy(modelParticipant);
             }
-            
-            
+
+
             ReplaceModelElementDescriptor descriptor = new ReplaceModelElementDescriptor(
                   uri, participantCopy, bundleId, null, true);
             PepperIconFactory iconFactory = new PepperIconFactory();
-            descriptor.importElements(iconFactory, model, true);            
+            descriptor.importElements(iconFactory, model, true);
             modelParticipant = getModelBuilderFacade().findParticipant(model, participantId);
          }
          laneSymbol.setParticipant(modelParticipant);
@@ -1283,18 +1330,28 @@ public class ModelService
     */
    public String loadProcessDiagram(String modelId, String processId)
    {
+      ModelRepository modelRepository = currentSession().modelRepository();
+      EObject model = modelRepository.findModel(modelId);
+      if (null != model)
+      {
+         return modelRepository.getModelBinding(model)
+               .getMarshaller()
+               .toProcessDiagramJson(model, processId)
+               .toString();
+      }
+
       // TODO Try to ModelBuilderFascade.find in loaded models first. Correct?
-      ModelType model = getModelManagementStrategy().getModels().get(modelId);
+      ModelType xpdlModel = findModel(modelId);
 
       // TODO Very ugly - only for newly created models
 
       if (model == null)
       {
-         model = getModelManagementStrategy().attachModel(modelId);
+         xpdlModel = getModelManagementStrategy().attachModel(modelId);
       }
 
       ProcessDefinitionType processDefinition = getModelBuilderFacade()
-            .findProcessDefinition(model, processId);
+            .findProcessDefinition(xpdlModel, processId);
 
       return modelElementMarshaller().toProcessDefinitionDiagram(processDefinition)
             .toString();
@@ -1306,7 +1363,7 @@ public class ModelService
    public String updateProcessDiagram(String modelId, String processId, String diagramId,
          JsonObject diagramJson)
    {
-      ModelType model = getModelManagementStrategy().getModels().get(modelId);
+      ModelType model = findModel(modelId);
       ProcessDefinitionType processDefinition = getModelBuilderFacade()
             .findProcessDefinition(model, processId);
       DiagramType diagram = processDefinition.getDiagram().get(0);
@@ -1333,17 +1390,6 @@ public class ModelService
 
    /**
     *
-    * @param httpRequest
-    * @param modelId
-    * @return
-    */
-   private JsonObject loadModelOutline(ModelType model)
-   {
-      return modelElementMarshaller().toModelJson(model);
-   }
-
-   /**
-    *
     * @param modelId
     * @param processId
     * @param postedData
@@ -1352,7 +1398,7 @@ public class ModelService
    public String dropDataSymbol(String modelId, String processId,
          JsonObject dataSymbolJson)
    {
-      ModelType model = getModelManagementStrategy().getModels().get(modelId);
+      ModelType model = findModel(modelId);
       ProcessDefinitionType processDefinition = getModelBuilderFacade()
             .findProcessDefinition(model, processId);
       EditingSession editSession = getEditingSession(model);
@@ -1374,7 +1420,7 @@ public class ModelService
 	 */
    public String createWrapperProcess(String modelId, JsonObject json)
    {
-      ModelType model = getModel(modelId);
+      ModelType model = findModel(modelId);
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
 
       // Create process definition
@@ -1777,6 +1823,11 @@ public class ModelService
       return getModelManagementStrategy().getModels().get(modelId);
    }
 
+   public ModelBinding findModelBinding(String modelId)
+   {
+      return currentSession().modelRepository().getModelBinding(findModel(modelId));
+   }
+
    /**
     *
     * @param modelId
@@ -1786,7 +1837,7 @@ public class ModelService
    {
       System.out.println("Validating model " + modelId);
 
-      ModelType model = getModelManagementStrategy().getModels().get(modelId);
+      ModelType model = findModel(modelId);
 
       ValidatorRegistry.setFilters(new HashMap<String, String>());
       ValidatorRegistry.setValidationExtensionRegistry(ValidationExtensionRegistry
@@ -2152,7 +2203,7 @@ public class ModelService
       }
 
       System.out.println("===> Result " + json);
-      
+
       return json;
    }
 

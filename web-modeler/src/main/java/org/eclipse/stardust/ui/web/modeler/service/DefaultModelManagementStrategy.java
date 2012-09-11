@@ -1,10 +1,18 @@
 package org.eclipse.stardust.ui.web.modeler.service;
 
-import java.util.ArrayList;
+import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
+
+import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.emf.ecore.EObject;
+
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
@@ -12,18 +20,24 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
+import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.AbstractModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelIoUtils;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
+import org.eclipse.stardust.ui.web.modeler.xpdl.XpdlPersistenceHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
 /**
  *
  * @author Marc.Gille
+ * @author Robert Sauer
  *
  */
 public class DefaultModelManagementStrategy extends
 		AbstractModelManagementStrategy {
+
+   private static final Logger trace = LogManager.getLogger(DefaultModelManagementStrategy.class);
 
 	private static final String MODELS_DIR = "/process-models/";
 
@@ -35,32 +49,96 @@ public class DefaultModelManagementStrategy extends
 	 */
 	private Map<String, String> modelFileNameMap = new HashMap<String, String>();
 
-	/**
+   private final List<ModelPersistenceHandler> persistenceHandlers;
+
+	public DefaultModelManagementStrategy()
+   {
+	   this.persistenceHandlers = newArrayList();
+	   persistenceHandlers.add(new XpdlPersistenceHandler(this));
+
+	   // TODO migrate to Spring based discovery?
+	   // see also ModelRepository
+	   try
+	   {
+	      String fqcnBpmn2Handler = "org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2PersistenceHandler";
+	      @SuppressWarnings("unchecked")
+         Class<? extends ModelPersistenceHandler> clsBpmn2Handler = Reflect.getClassFromClassName(fqcnBpmn2Handler, false);
+	      if (null != clsBpmn2Handler)
+         {
+	         ModelPersistenceHandler bpmn2Handler = (ModelPersistenceHandler) Reflect.createInstance(clsBpmn2Handler, null, null);
+	         persistenceHandlers.add(bpmn2Handler);
+	         trace.info("Registered BPMN2 persistence handler.");
+         }
+	      else
+	      {
+	         trace.info("Could not load BPMN2 persistence handler, BPMN2 support will not be available.");
+	      }
+	   }
+	   catch (Exception e)
+	   {
+	      trace.warn("Failed loading BPMN2 persistence handler.", e);
+	   }
+   }
+
+   /**
 	 *
 	 */
-	public List<ModelType> loadModels() {
+   public List<ModelDescriptor> loadModels()
+   {
+      List<ModelDescriptor> models = newArrayList();
 
-		List<ModelType> models = new ArrayList<ModelType>();
-		List<Document> candidateModelDocuments = getDocumentManagementService()
-				.getFolder(MODELS_DIR).getDocuments();
+      @SuppressWarnings("unchecked")
+      List<Document> candidateModelDocuments = getDocumentManagementService().getFolder(
+            MODELS_DIR).getDocuments();
 
-		XpdlModelIoUtils.clearModelsMap();
+      XpdlModelIoUtils.clearModelsMap();
 
-		for (Document modelDocument : candidateModelDocuments) {
-			if (modelDocument.getName().endsWith(".xpdl")) {
+      for (Document modelDocument : candidateModelDocuments)
+      {
+         ModelType xpdlModel = null;
+         EObject model = null;
 
-				ModelType model = XpdlModelIoUtils
-						.loadModel(readModelContext(modelDocument), this);
-				//TODO - This method needs to move to some place where it will be called only once for
-				loadEObjectUUIDMap(model);
-				mapModelFileName(model, modelDocument.getName());
+         byte[] modelContent = readModelContext(modelDocument);
+         for (ModelPersistenceHandler persistenceHandler : persistenceHandlers)
+         {
+            ByteArrayInputStream baos = new ByteArrayInputStream(modelContent);
+            ModelPersistenceHandler.ModelDescriptor descriptor = persistenceHandler.loadModel(
+                  modelDocument.getName(), baos);
+            if (null != descriptor)
+            {
+               model = descriptor.model;
+               if (descriptor.model instanceof ModelType)
+               {
+                  xpdlModel = (ModelType) descriptor.model;
+               }
+               else
+               {
+                  // use just the most basic XPDL representation, rest will be handled
+                  // directly from native format (e.g. BPMN2)
+                  xpdlModel = BpmModelBuilder.newBpmModel()
+                        .withIdAndName(descriptor.id,
+                              !isEmpty(descriptor.name) ? descriptor.name : descriptor.id)
+                        .build();
 
-				getModels().put(model.getId(), model);
-			}
-		}
+                  break;
+               }
+            }
+         }
 
-		return models;
-	}
+         if (null != xpdlModel)
+         {
+            // TODO - This method needs to move to some place where it will be called only
+            // once for
+            loadEObjectUUIDMap(xpdlModel);
+            mapModelFileName(xpdlModel, modelDocument.getName());
+
+            models.add(new ModelDescriptor(xpdlModel.getId(), modelDocument.getName(),
+                  model, xpdlModel));
+         }
+      }
+
+      return models;
+   }
 
     /**
      *
