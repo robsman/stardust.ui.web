@@ -3,8 +3,6 @@ package org.eclipse.stardust.ui.web.modeler.rest;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
-import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
-import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 import static org.eclipse.stardust.ui.web.modeler.rest.RestControllerUtils.resolveSpringBean;
 
 import java.net.URI;
@@ -31,12 +29,10 @@ import com.google.gson.JsonObject;
 import org.eclipse.stardust.common.Pair;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
-import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
 import org.eclipse.stardust.ui.web.modeler.edit.CommandHandlingMediator;
-import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.edit.model.element.ModelChangeCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
@@ -60,7 +56,6 @@ public class ModelerSessionRestController
       JsonObject result = new JsonObject();
 
       result.addProperty("id", change.getId());
-      result.addProperty("account", "sheldor"); // TODO Robert add!
       result.addProperty("timestamp", System.currentTimeMillis());
 
       if (change.getMetadata().containsKey("commandId"))
@@ -207,8 +202,8 @@ public class ModelerSessionRestController
    {
       try
       {
-         JsonObject json = jsonIo().readJsonObject(postedData);
-         Response outcome = applyChange(json);
+         CommandJto commandJto = jsonIo().gson().fromJson(postedData, CommandJto.class);
+         Response outcome = applyChange(commandJto);
 
          return outcome;
       }
@@ -219,14 +214,14 @@ public class ModelerSessionRestController
       }
    }
 
-   private Response applyChange(JsonObject commandJson)
+   private Response applyChange(CommandJto commandJto)
    {
-      String commandId = extractString(commandJson, "commandId");
-      String modelId = extractString(commandJson, "modelId");
+      String commandId = commandJto.commandId;
+      String modelId = commandJto.modelId;
 
       if (isEmpty(modelId))
       {
-         return applyGlobalChange(commandId, commandJson);
+         return applyGlobalChange(commandId, commandJto);
       }
       else
       {
@@ -239,7 +234,7 @@ public class ModelerSessionRestController
                   .build();
          }
 
-         return applyModelElementChange(commandId, model, commandJson);
+         return applyModelElementChange(commandId, model, commandJto);
       }
    }
 
@@ -248,23 +243,23 @@ public class ModelerSessionRestController
     * @param commandJson
     * @return
     */
-   private Response applyGlobalChange(String commandId, JsonObject commandJson)
+   private Response applyGlobalChange(String commandId, CommandJto commandJto)
    {
       // TODO global command (e.g. "model.create")
       if ("model.create".equalsIgnoreCase(commandId)
             || "model.delete".equalsIgnoreCase(commandId)
             || "model.update".equalsIgnoreCase(commandId))
       {
-         JsonArray changesJson = commandJson.getAsJsonArray("changeDescriptions");
-         for (JsonElement cJson : changesJson) {
+         List<ChangeDescriptionJto> changesJson = commandJto.changeDescriptions;
+         for (ChangeDescriptionJto cJson : changesJson) {
             if (null != cJson) {
                EObject targetElement = null;
-               if (null != cJson.getAsJsonObject().get(ModelerConstants.UUID_PROPERTY)) {
-                  String uuid = cJson.getAsJsonObject().get(ModelerConstants.UUID_PROPERTY).getAsString();
+               if (null != cJson.uuid) {
+                  String uuid = cJson.uuid;
                   targetElement = modelService().uuidMapper().getEObject(uuid);
                }
 
-               JsonElement changeJson = cJson.getAsJsonObject().get("changes");
+               JsonElement changeJson = cJson.changes;
                ModelChangeCommandHandler handler = resolveSpringBean(ModelChangeCommandHandler.class, servletContext);
                JsonObject response = handler.handleCommand(commandId, targetElement, changeJson.getAsJsonObject());
                if (null != response) {
@@ -278,22 +273,20 @@ public class ModelerSessionRestController
    }
 
 
-   private Response applyModelElementChange(String commandId, ModelType model, JsonObject commandJson)
+   private Response applyModelElementChange(String commandId, ModelType model, CommandJto commandJto)
    {
       List<Pair<EObject, JsonObject>> changeDescriptors = newArrayList();
-      JsonArray targetElementsJson = commandJson.getAsJsonArray("changeDescriptions");
-      for (JsonElement targetElementJson : targetElementsJson)
+      List<ChangeDescriptionJto> targetElementsJson = commandJto.changeDescriptions;
+      for (ChangeDescriptionJto changeDescrJto : targetElementsJson)
       {
          EObject targetElement = null;
 
-         if (targetElementJson.isJsonObject()
-               && (targetElementJson.getAsJsonObject().has("oid") || targetElementJson.getAsJsonObject()
-                     .has("uuid")))
+         if ((null != changeDescrJto.oid) || (null != changeDescrJto.uuid))
          {
             // existing target, identified by uuid
-            if (targetElementJson.getAsJsonObject().has("uuid"))
+            if (null != changeDescrJto.uuid)
             {
-               String uuid = extractAsString(targetElementJson.getAsJsonObject(), "uuid");
+               String uuid = changeDescrJto.uuid;
                targetElement = modelService().uuidMapper().getEObject(uuid);
 
                if (null == targetElement)
@@ -304,15 +297,16 @@ public class ModelerSessionRestController
                }
             }
             // existing target, identified by oid
-            else if (targetElementJson.getAsJsonObject().has("oid"))
+            else if (null != changeDescrJto.oid)
             {
-               String oid = extractAsString(targetElementJson.getAsJsonObject(), "oid");
+               String oid = changeDescrJto.oid;
                if (model.getId().equals(oid))
                {
                   targetElement = model;
                }
                else
                {
+                  long parsedOid = Long.parseLong(oid);
                   // deep search for model element by OID
                   // TODO can lookup faster as oid is declared the XML index
                   // field?
@@ -320,7 +314,7 @@ public class ModelerSessionRestController
                   {
                      Object element = i.next();
                      if ((element instanceof IModelElement)
-                           && ((((IModelElement) element).getElementOid() == Long.parseLong(oid))))
+                           && ((((IModelElement) element).getElementOid() == parsedOid)))
                      {
                         targetElement = (IModelElement) element;
                         break;
@@ -338,8 +332,7 @@ public class ModelerSessionRestController
                }
             }
 
-            JsonElement jsTargetElementChanges = targetElementJson.getAsJsonObject().get(
-                  "changes");
+            JsonElement jsTargetElementChanges = changeDescrJto.changes;
 
             changeDescriptors.add(new Pair<EObject, JsonObject>(targetElement,
                   jsTargetElementChanges.getAsJsonObject()));
@@ -347,7 +340,7 @@ public class ModelerSessionRestController
          else
          {
             return Response.status(Status.BAD_REQUEST) //
-                  .entity("Missing target element identifier: " + targetElementJson)
+                  .entity("Missing target element identifier: " + changeDescrJto)
                   .build();
          }
       }
@@ -359,9 +352,9 @@ public class ModelerSessionRestController
       {
          change.getMetadata().put("commandId", commandId);
          change.getMetadata().put("modelId", model.getId());
-         if (commandJson.has("account"))
+         if (null != commandJto.account)
          {
-            change.getMetadata().put("account", extractString(commandJson, "account"));
+            change.getMetadata().put("account", commandJto.account);
          }
 
          // Notify unsaved models tracker of the change to the model.
@@ -385,11 +378,6 @@ public class ModelerSessionRestController
       }
    }
 
-   private ModelingSessionManager editingSessionManager()
-   {
-      return resolveSpringBean(ModelingSessionManager.class, servletContext);
-   }
-
    private ModelService modelService()
    {
       return resolveSpringBean(ModelService.class, servletContext);
@@ -403,5 +391,23 @@ public class ModelerSessionRestController
    private CommandHandlingMediator commandHandlerRegistry()
    {
       return resolveSpringBean(CommandHandlingMediator.class, servletContext);
+   }
+
+   private static class CommandJto
+   {
+      public String commandId;
+      public String modelId;
+
+      public String account;
+
+      public List<ChangeDescriptionJto> changeDescriptions;
+   }
+
+   private static class ChangeDescriptionJto
+   {
+      public String uuid;
+      public String oid;
+
+      public JsonObject changes;
    }
 }

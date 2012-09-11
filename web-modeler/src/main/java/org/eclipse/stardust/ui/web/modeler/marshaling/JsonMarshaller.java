@@ -1,18 +1,30 @@
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
+import java.lang.reflect.Type;
+import java.util.Map;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 
 @Component
 @Scope("singleton")
@@ -20,7 +32,15 @@ public class JsonMarshaller
 {
    private static final Logger trace = LogManager.getLogger(JsonMarshaller.class);
 
-   private final Gson gson = new Gson();
+   private final Gson gson = new GsonBuilder() //
+      .registerTypeAdapter(JsonObject.class, new JsonObjectDeserializer())
+      .registerTypeAdapter(JsonObject.class, new JsonObjectSerializer())
+      .create();
+
+   private final Gson gsonForUpdates = new GsonBuilder().serializeNulls()
+         .registerTypeAdapter(JsonObject.class, new JsonObjectDeserializer())
+         .registerTypeAdapter(JsonObject.class, new JsonObjectSerializer())
+         .create();
 
    private final JsonParser jsonParser = new JsonParser();
 
@@ -55,5 +75,126 @@ public class JsonMarshaller
    public String writeJsonObject(JsonObject json)
    {
       return gson.toJson(json);
+   }
+
+   public void writeIntoJsonObject(JsonObject update, JsonObject master)
+   {
+      // merge
+      mergeUpdate(update, master);
+   }
+
+   public <T> void writeIntoJsonObject(T update, JsonObject master)
+   {
+      // merge
+      mergeUpdate(gsonForUpdates.toJsonTree(update).getAsJsonObject(), master);
+   }
+
+   private void mergeUpdate(JsonObject update, JsonObject master)
+   {
+      for (Map.Entry<String, JsonElement> attr : update.entrySet())
+      {
+         if ((null == attr.getValue()) || attr.getValue().isJsonNull())
+         {
+            // TODO use singleton to reduce memory footprint
+            master.add(attr.getKey(), new JsonNull());
+         }
+
+         assertCompatibility(master.get(attr.getKey()), attr.getValue());
+         if (attr.getValue() instanceof JsonPrimitive)
+         {
+            if (!master.has(attr.getKey()) || !master.get(attr.getKey()).equals(attr.getValue()))
+            {
+               master.add(attr.getKey(), attr.getValue());
+            }
+         }
+         else if (attr.getValue() instanceof JsonObject)
+         {
+            if ( !master.has(attr.getKey()) || master.get(attr.getKey()).isJsonNull())
+            {
+               // copy whole subtree
+               master.add(attr.getKey(), attr.getValue());
+            }
+            else
+            {
+               // recurse to merge attribute updates
+               mergeUpdate(attr.getValue().getAsJsonObject(), master.get(attr.getKey()).getAsJsonObject());
+            }
+         }
+         else if (attr.getValue() instanceof JsonArray)
+         {
+            // TODO any way to correlate elements between arrays? will need concept of
+            // element identity to merge elements
+            master.add(attr.getKey(), attr.getValue());
+         }
+      }
+   }
+
+   private void assertCompatibility(JsonElement master, JsonElement update)
+   {
+      if ((null == update) || update.isJsonNull())
+      {
+         // assume any attribute can be set to null
+      }
+      else if (null != update)
+      {
+         if ((null == master) || master.isJsonNull())
+         {
+            // assume compatibility as null carries no type
+         }
+         else if (update.isJsonPrimitive())
+         {
+            if ( !master.isJsonPrimitive())
+            {
+               throw new IllegalArgumentException(
+                     "Must not structurally change JSON objects (expecting primitive, got " + master + ").");
+            }
+            // TODO further checks for check primitive types?
+         }
+         else if (update.isJsonArray())
+         {
+            if ( !master.isJsonArray())
+            {
+               throw new IllegalArgumentException(
+                     "Must not structurally change JSON objects (expecting array, got " + master + ").");
+            }
+         }
+         else if (update.isJsonObject())
+         {
+            if ( !master.isJsonObject())
+            {
+               throw new IllegalArgumentException(
+                     "Must not structurally change JSON objects (expecting object, got " + master + ").");
+            }
+         }
+      }
+   }
+
+   private static class JsonObjectSerializer implements JsonSerializer<JsonObject>
+   {
+      @Override
+      public JsonElement serialize(JsonObject src, Type typeOfSrc,
+            JsonSerializationContext context)
+      {
+         // just use the object as is
+         return src;
+      }
+   }
+
+   private static class JsonObjectDeserializer implements JsonDeserializer<JsonObject>
+   {
+      @Override
+      public JsonObject deserialize(JsonElement json, Type typeOfT,
+            JsonDeserializationContext context) throws JsonParseException
+      {
+         if (json.isJsonObject() && JsonObject.class.equals(typeOfT))
+         {
+            // just use the object as is
+            return json.getAsJsonObject();
+         }
+         else
+         {
+            return new JsonObject();
+         }
+      }
    }
 }
