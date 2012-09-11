@@ -1,7 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
-import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
 import java.util.Iterator;
 import java.util.List;
@@ -23,14 +23,13 @@ import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.util.IConnectionManager;
-import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
-import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
+import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.modeling.repository.common.descriptors.EObjectDescriptor;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.w3c.dom.Node;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -1817,13 +1816,40 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       setContainingModelIdProperty(structJson, structType);
       JsonObject typeDeclarationJson = new JsonObject();
       structJson.add(ModelerConstants.TYPE_DECLARATION_PROPERTY, typeDeclarationJson);
+      
+      // TODO: external references
+      XpdlTypeType type = structType.getDataType();
+      typeDeclarationJson.add("type", toXpdlTypeJson(type));
+      
       JsonObject schemaJson = new JsonObject();
       ModelService.loadSchemaInfo(schemaJson, structType.getSchema());
       typeDeclarationJson.add("schema", schemaJson);
-      structJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-            ModelerConstants.TYPE_DECLARATION_PROPERTY);
+      structJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.TYPE_DECLARATION_PROPERTY);
 
       return structJson;
+   }
+
+   private JsonElement toXpdlTypeJson(XpdlTypeType type)
+   {
+      JsonObject typeJson = new JsonObject();
+      
+      String name = type.eClass().getName();
+      typeJson.addProperty("classifier", name.substring(0, name.length() - 4)); // exclude "Type" suffix
+      if (type instanceof ExternalReferenceType)
+      {
+         ExternalReferenceType ref = (ExternalReferenceType) type;
+         typeJson.addProperty("location", ref.getLocation());
+         if (!StringUtils.isEmpty(ref.getNamespace()))
+         {
+            typeJson.addProperty("namespace", ref.getNamespace());
+         }
+         if (!StringUtils.isEmpty(ref.getXref()))
+         {
+            typeJson.addProperty("xref", ref.getXref());
+         }
+      }
+      
+      return typeJson;
    }
 
    /**

@@ -20,27 +20,13 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractSt
 import static org.eclipse.stardust.ui.web.modeler.service.streaming.JointModellingSessionsController.lookupInviteBroadcaster;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Future;
 
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
-import javax.wsdl.Binding;
-import javax.wsdl.BindingInput;
-import javax.wsdl.BindingOperation;
-import javax.wsdl.BindingOutput;
-import javax.wsdl.Definition;
-import javax.wsdl.Input;
-import javax.wsdl.Message;
-import javax.wsdl.Output;
-import javax.wsdl.Part;
-import javax.wsdl.Port;
+import javax.wsdl.*;
 import javax.wsdl.Service;
 import javax.xml.namespace.QName;
 
@@ -50,21 +36,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.xsd.XSDAttributeDeclaration;
-import org.eclipse.xsd.XSDElementDeclaration;
-import org.eclipse.xsd.XSDFacet;
-import org.eclipse.xsd.XSDModelGroup;
-import org.eclipse.xsd.XSDSchema;
-import org.eclipse.xsd.XSDSchemaContent;
-import org.eclipse.xsd.XSDTypeDefinition;
-import org.eclipse.xsd.impl.XSDImportImpl;
-import org.eclipse.xsd.util.XSDResourceFactoryImpl;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.common.Predicate;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.config.Parameters;
@@ -72,50 +43,16 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.UserQuery;
-import org.eclipse.stardust.engine.api.runtime.DmsUtils;
-import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
-import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
-import org.eclipse.stardust.engine.api.runtime.QueryService;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
-import org.eclipse.stardust.engine.api.runtime.User;
-import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.engine.extensions.jaxws.app.WSConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
-import org.eclipse.stardust.model.xpdl.builder.utils.ElementCopier;
-import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
-import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.builder.utils.PepperIconFactory;
-import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerConnectionManager;
-import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
-import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
-import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
+import org.eclipse.stardust.model.xpdl.builder.utils.*;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
-import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
-import org.eclipse.stardust.model.xpdl.carnot.ContextType;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
-import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.DataType;
-import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
-import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
-import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
-import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
-import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
-import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
@@ -132,6 +69,14 @@ import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.portal.JaxWSResource;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.eclipse.xsd.*;
+import org.eclipse.xsd.impl.XSDImportImpl;
+import org.eclipse.xsd.util.XSDResourceFactoryImpl;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  *
@@ -2419,9 +2364,99 @@ public class ModelService
       postedData.addProperty("url",
                              "file:/development/wks/trunk/runtime-blank/testprj/src/xsd/anf/security_master_update.xsd");
 
-      ModelService ms = new ModelService();
+      //ModelService ms = new ModelService();
       JsonMarshaller m = new JsonMarshaller();
-      System.out.println(m.writeJsonObject(ms.getWebServiceStructure(postedData)));
-      System.out.println(m.writeJsonObject(ms.getXsdStructure(postedData)));
+      //System.out.println(m.writeJsonObject(ms.getWebServiceStructure(postedData)));
+      //System.out.println(m.writeJsonObject(ms.getXsdStructure(postedData)));
+      
+      org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager wmm = new org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager();
+      try
+      {
+         wmm.load(new java.io.File("C:\\development\\wks\\trunk\\runtime-blank\\testprj\\models\\Provider.xpdl"));
+      }
+      catch (IOException e)
+      {
+         e.printStackTrace();
+      }
+      ModelType model = wmm.getModel();
+      ModelElementMarshaller mem = new ModelElementMarshaller()
+      {
+         EObjectUUIDMapper mapper = new EObjectUUIDMapper();
+         
+         @Override
+         protected EObjectUUIDMapper eObjectUUIDMapper()
+         {
+            return mapper;
+         }
+
+         @Override
+         protected ModelManagementStrategy modelManagementStrategy()
+         {
+            // TODO Auto-generated method stub
+            return null;
+         }
+      };
+
+      System.out.println(m.writeJsonObject(mem.toJson(model.getTypeDeclarations().getTypeDeclaration("Pattern1"))));
+      
+      TypeDeclarationType typeDeclaration = model.getTypeDeclarations().getTypeDeclaration("Composite1");
+      JsonObject json = mem.toJson(typeDeclaration);
+      System.out.println(m.writeJsonObject(json));
+      
+      //typeDeclaration = model.getTypeDeclarations().getTypeDeclaration("Enumeration1");
+      //json = mem.toJson(typeDeclaration);
+      //System.out.println(m.writeJsonObject(json));
+      
+      modifyComplexType(json);     
+      //modifyEnumType(json);     
+      
+      ModelElementUnmarshaller um = new ModelElementUnmarshaller()
+      {
+         @Override
+         protected ModelManagementStrategy modelManagementStrategy()
+         {
+            // TODO Auto-generated method stub
+            return null;
+         }
+      };
+      um.populateFromJson(typeDeclaration, json);
+      System.out.println(typeDeclaration);
+  }*/
+
+   /*private static void modifyEnumType(JsonObject json)
+   {
+      JsonObject tds = json.getAsJsonObject("typeDeclaration");
+      JsonObject ss = tds.getAsJsonObject("schema");
+      JsonObject ts = ss.getAsJsonObject("types");
+      JsonObject cs = ts.getAsJsonObject("Enumeration1");
+      JsonObject es = cs.getAsJsonObject("facets");
+      
+      JsonObject d = new JsonObject();
+      d.addProperty("name", "4");
+      d.addProperty("icon", "XSDEnumerationFacet.gif");
+      d.addProperty("classifier", "enumeration");
+      es.add("4", d);
+   }*/
+
+   /*private static void modifyComplexType(JsonObject json)
+   {
+      JsonObject tds = json.getAsJsonObject("typeDeclaration");
+      JsonObject ss = tds.getAsJsonObject("schema");
+      JsonObject ts = ss.getAsJsonObject("types");
+      JsonObject cs = ts.getAsJsonObject("Composite1");
+      JsonObject bs = cs.getAsJsonObject("body");
+      JsonObject es = bs.getAsJsonObject("elements");
+      
+      es.remove("b");
+      
+      JsonObject c = es.getAsJsonObject("c");
+      c.addProperty("name", "NewC");
+      
+      JsonObject d = new JsonObject();
+      d.addProperty("name", "NewD");
+      d.addProperty("icon", "XSDElementDeclaration.gif");
+      d.addProperty("type", "xsd:string");
+      d.addProperty("cardinality", "required");
+      es.add("NewD", d);
    }*/
 }

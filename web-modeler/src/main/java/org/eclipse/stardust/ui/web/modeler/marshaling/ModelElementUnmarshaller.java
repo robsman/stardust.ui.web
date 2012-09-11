@@ -17,48 +17,24 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractIn
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
-import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
-import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
-import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
-import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
-import org.eclipse.stardust.model.xpdl.carnot.DataType;
-import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
-import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
-import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
-import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
-import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
-import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.RoleType;
-import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.SubProcessModeType;
-import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
-import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
-import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
+import org.eclipse.xsd.*;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -771,13 +747,196 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
    /**
     * @param typeDeclaration
-    * @param applicationJson
+    * @param json
     */
    private void updateTypeDeclaration(TypeDeclarationType typeDeclaration,
-         JsonObject applicationJson)
+         JsonObject json)
    {
-      mapDeclaredProperties(typeDeclaration, applicationJson,
+      mapDeclaredProperties(typeDeclaration, json,
             propertiesMap.get(TypeDeclarationType.class));
+      JsonObject declarationJson = json.getAsJsonObject("typeDeclaration");
+      JsonObject typeJson = declarationJson.getAsJsonObject("type");
+      if ("SchemaType".equals(typeJson.getAsJsonPrimitive("classifier").getAsString()))
+      {
+         updateXSDSchemaType(typeDeclaration.getSchemaType(), declarationJson.getAsJsonObject("schema"));
+      }
+      // ExternalReference ?
+   }
+
+   private void updateXSDSchemaType(SchemaTypeType schemaType, JsonObject schemaJson)
+   {
+      XSDSchema schema = schemaType.getSchema();
+      if (schemaJson.has("targetNamespace"))
+      {
+         schema.setTargetNamespace(schemaJson.getAsJsonPrimitive("targetNamespace").getAsString());
+      }
+      if (schemaJson.has("types"))
+      {
+         updateXSDTypeDefinitions(schema, schemaJson.getAsJsonObject("types"));
+      }
+      if (schemaJson.has("elements"))
+      {
+         updateElementDeclarations(schema, schemaJson.getAsJsonObject("elements"));
+      }
+   }
+
+   private void updateXSDTypeDefinitions(XSDSchema schema, JsonObject json)
+   {
+      Map<String, XSDTypeDefinition> existing = CollectionUtils.newMap();
+      List<XSDTypeDefinition> list = schema.getTypeDefinitions();
+      for (XSDTypeDefinition def : list)
+      {
+         existing.put(def.getName(), def);
+      }
+      list.clear();
+      
+      for (Map.Entry<String, JsonElement> entry : json.entrySet())
+      {
+         XSDTypeDefinition def = existing.get(entry.getKey());
+         JsonObject defJson = (JsonObject) entry.getValue();
+         boolean isComplexType = defJson.has("body");
+         if (def == null)
+         {
+            def = isComplexType
+               ? XSDFactory.eINSTANCE.createXSDComplexTypeDefinition()
+               : XSDFactory.eINSTANCE.createXSDSimpleTypeDefinition();
+         }
+         def.setName(defJson.getAsJsonPrimitive("name").getAsString());
+         if (isComplexType)
+         {
+            updateXSDComplexTypeDefinition((XSDComplexTypeDefinition) def, defJson);
+         }
+         else
+         {
+            updateXSDSimpleTypeDefinition((XSDSimpleTypeDefinition) def, defJson);
+         }
+         list.add(def);
+      }
+   }
+
+   private void updateXSDSimpleTypeDefinition(XSDSimpleTypeDefinition def, JsonObject simpleTypeJson)
+   {
+      List<XSDConstrainingFacet> facets = def.getFacetContents();
+      facets.clear();
+      
+      if (simpleTypeJson.has("facets"))
+      {
+         JsonObject facetsJson = simpleTypeJson.getAsJsonObject("facets");
+         for (Map.Entry<String, JsonElement> entry : facetsJson .entrySet())
+         {
+            JsonObject facetJson = (JsonObject) entry.getValue();
+            String classifier = facetJson.getAsJsonPrimitive("classifier").getAsString();
+            XSDConstrainingFacet facet = SupportedXSDConstrainingFacets.valueOf(classifier).create();
+            facet.setLexicalValue(facetJson.getAsJsonPrimitive("name").getAsString());
+            facets.add(facet);
+         }
+      }
+   }
+   
+   private static enum SupportedXSDConstrainingFacets
+   {
+      // (fh) Only added what is supported by the eclipse modeler. Should be all of them.
+      enumeration, pattern, maxLength, minLength;
+      
+      XSDConstrainingFacet create()
+      {
+         switch (this)
+         {
+         case enumeration: return XSDFactory.eINSTANCE.createXSDEnumerationFacet();
+         case pattern: return XSDFactory.eINSTANCE.createXSDPatternFacet();
+         case maxLength: return XSDFactory.eINSTANCE.createXSDMaxLengthFacet();
+         case minLength: return XSDFactory.eINSTANCE.createXSDMinLengthFacet();
+         }
+         return null; // (fh) unreachable
+      }
+   }
+
+   private void updateXSDComplexTypeDefinition(XSDComplexTypeDefinition def, JsonObject json)
+   {
+      JsonObject bodyJson = json.getAsJsonObject("body");
+      XSDComplexTypeContent content = def.getContent();
+      if (content instanceof XSDParticle)
+      {
+         XSDParticle particle = (XSDParticle) content;
+         XSDTerm term = particle.getTerm();
+         if (term instanceof XSDModelGroup)
+         {
+            XSDModelGroup group = (XSDModelGroup) term;
+            String classifier = bodyJson.getAsJsonPrimitive("classifier").getAsString();
+            group.setCompositor(XSDCompositor.get(classifier));
+            List<XSDParticle> particles = group.getContents();
+            particles.clear();
+            if (bodyJson.has("elements"))
+            {
+               JsonObject elements = bodyJson.getAsJsonObject("elements");
+               for (Map.Entry<String, JsonElement> entry : elements .entrySet())
+               {
+                  JsonObject elementJson = (JsonObject) entry.getValue();
+                  XSDParticle p = XSDFactory.eINSTANCE.createXSDParticle();
+                  ParticleCardinality.get(elementJson.getAsJsonPrimitive("cardinality").getAsString()).update(p);
+                  XSDElementDeclaration decl = XSDFactory.eINSTANCE.createXSDElementDeclaration();
+                  p.setContent(decl);
+                  decl.setName(elementJson.getAsJsonPrimitive("name").getAsString());
+                  String type = elementJson.getAsJsonPrimitive("type").getAsString();
+                  String prefix = null;
+                  int ix = type.indexOf(':');
+                  if (ix > 0)
+                  {
+                     prefix = type.substring(0, ix);
+                     type = type.substring(ix + 1);
+                  }
+                  String namespace = def.getSchema().getQNamePrefixToNamespaceMap().get(prefix);
+                  XSDTypeDefinition typeDefinition = def.resolveTypeDefinition(namespace, type);
+                  decl.setTypeDefinition(typeDefinition);
+                  particles.add(p);
+               }
+            }
+         }
+         // else unsupported wildcard and element declaration
+      }
+      // else unsupported simple & complex content
+   }
+   
+   private static enum ParticleCardinality
+   {
+      required, optional, many, at_least_one;
+      
+      void update(XSDParticle particle)
+      {
+         switch (this)
+         {
+         case required:
+            particle.unsetMinOccurs();
+            particle.unsetMaxOccurs();
+            break;
+         case optional:
+            particle.setMinOccurs(0);
+            particle.unsetMaxOccurs();
+            break;
+         case many:
+            particle.setMinOccurs(0);
+            particle.setMaxOccurs(XSDParticle.UNBOUNDED);
+            break;
+         case at_least_one:
+            particle.unsetMinOccurs();
+            particle.setMaxOccurs(XSDParticle.UNBOUNDED);
+            break;
+         }
+      }
+      
+      static ParticleCardinality get(String name)
+      {
+         if ("at least one".equals(name))
+         {
+            return at_least_one;
+         }
+         return valueOf(name);
+      }
+   }
+
+   private void updateElementDeclarations(XSDSchema schema, JsonObject json)
+   {
+      // TODO Auto-generated method stub
    }
 
    /**
