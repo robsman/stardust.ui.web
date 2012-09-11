@@ -92,8 +92,7 @@ public class ModelChangeCommandHandler
 
       model.getRole().add(admin);
 
-      modelService().currentSession()
-            .modelManagementStrategy()
+      modelService().getModelManagementStrategy()
             .getModels()
             .put(model.getId(), model);
 
@@ -114,7 +113,7 @@ public class ModelChangeCommandHandler
       if (null != obj && obj instanceof ModelType) {
          ModelType model = (ModelType) obj;
 
-         ModelManagementStrategy modelMgtStrategy = springContext.getBean(ModelService.class).getModelManagementStrategy();
+         ModelManagementStrategy modelMgtStrategy = modelService(). getModelManagementStrategy();
          modelMgtStrategy.deleteModel(model);
          JsonArray deleted = new JsonArray();
          JsonObject deletedModel = modelService().modelElementMarshaller().toModelJson(model);

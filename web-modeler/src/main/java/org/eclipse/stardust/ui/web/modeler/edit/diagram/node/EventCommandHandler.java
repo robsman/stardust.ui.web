@@ -23,6 +23,8 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERT
 
 import javax.annotation.Resource;
 
+import org.springframework.context.ApplicationContext;
+
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
@@ -37,8 +39,7 @@ import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
-import org.eclipse.stardust.ui.web.modeler.service.ModelService;
-import org.springframework.context.ApplicationContext;
+import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
 
 /**
  * @author Sidharth.Singh
@@ -137,8 +138,7 @@ public class EventCommandHandler
 
    private ModelBuilderFacade getModelBuilderFacade()
    {
-      return new ModelBuilderFacade(springContext.getBean(ModelService.class)
-            .getModelManagementStrategy());
+      return CommandHandlerUtils.getModelBuilderFacade(springContext);
    }
 
 }

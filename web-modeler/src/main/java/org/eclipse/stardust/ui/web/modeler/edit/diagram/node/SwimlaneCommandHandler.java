@@ -29,6 +29,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
+import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.springframework.context.ApplicationContext;
 
@@ -99,7 +100,6 @@ public class SwimlaneCommandHandler
 
    private ModelBuilderFacade getModelBuilderFacade()
    {
-      return new ModelBuilderFacade(springContext.getBean(ModelService.class)
-            .getModelManagementStrategy());
+      return CommandHandlerUtils.getModelBuilderFacade(springContext);
    }
 }

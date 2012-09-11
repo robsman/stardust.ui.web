@@ -35,6 +35,7 @@ import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
+import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
@@ -169,7 +170,6 @@ public class DataChangeCommandHandler
 
    private ModelBuilderFacade getModelBuilderFacade()
    {
-      return new ModelBuilderFacade(springContext.getBean(ModelService.class)
-            .getModelManagementStrategy());
+      return CommandHandlerUtils.getModelBuilderFacade(springContext);
    }
 }
