@@ -11,7 +11,7 @@
 
 /**
  * View Management
- * 
+ *
  * @author Marc.Gille
  */
 define([ "m_utils" ], function(m_utils) {
@@ -22,18 +22,18 @@ define([ "m_utils" ], function(m_utils) {
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	function JsfViewManager() {
 		/**
-		 * 
+		 *
 		 */
 		JsfViewManager.prototype.toString = function() {
 			return "Lightdust.JsfViewManager";
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		JsfViewManager.prototype.openView = function(viewId, queryString,
 				objectId) {
@@ -44,6 +44,21 @@ define([ "m_utils" ], function(m_utils) {
 			var formId = form.attr('id');
 
 			window.parent.EventHub.events.publish("OPEN_VIEW", linkId, formId,
+					viewId, queryString, objectId);
+		};
+
+		/**
+		 *
+		 */
+		JsfViewManager.prototype.updateView = function(viewId, queryString,
+				objectId) {
+			var link = jQuery("a[id $= 'view_updater_link']",
+					window.parent.frames['ippPortalMain'].document);
+			var linkId = link.attr('id');
+			var form = link.parents('form:first');
+			var formId = form.attr('id');
+
+			window.parent.EventHub.events.publish("UPDATE_VIEW", linkId, formId,
 					viewId, queryString, objectId);
 		};
 	}

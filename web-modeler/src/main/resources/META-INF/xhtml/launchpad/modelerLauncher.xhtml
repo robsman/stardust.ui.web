@@ -42,9 +42,25 @@
 		iceSubmit(linkForm, link);
 	}
 
+	function updateView(modelerLinkId, formId, viewId, viewParams,
+			viewIdentity) {
+		var form = document.getElementById(formId);
+		var link = document.getElementById(modelerLinkId);
+
+		// formOf and iceSubmit are javascript functions provided by icefaces
+		var linkForm = formOf(link);
+
+		linkForm[formId + ':_idcl'].value = modelerLinkId;
+		linkForm['viewParams'].value = viewParams;
+		linkForm['viewId'].value = viewId;
+		linkForm['viewIdentity'].value = viewIdentity;
+		iceSubmit(linkForm, link);
+	}
+
 	window.parent.EventHub.events.subscribe("OPEN_VIEW", openViewHandler);
 	window.parent.EventHub.events.subscribe("SELECT_MODEL_FOR_DEPLOYMENT",
 			setSelectedModleParams);
+	window.parent.EventHub.events.subscribe("UPDATE_VIEW", updateView);
 
 	function findUserProfileSelect() {
 		var userProfileSelect = null;
@@ -216,6 +232,14 @@
 				<ice:outputText
 					style="color: #00629A; font-family: Arial,Helvetica,sans-serif;"
 					value="Deploy Model" />
+			</ice:commandLink>
+			<ice:commandLink id="view_updater_link"
+				action="#{jsfViewUpdaterBean.updateView}" visible="false">
+				<f:param name="viewId" value="REPLACEME" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText value="Update view &amp;raquo;"
+					styleClass="action-link" escape="false" />
 			</ice:commandLink>
 		</ice:panelGroup>
 		<ice:panelGroup styleClass="clearing" />

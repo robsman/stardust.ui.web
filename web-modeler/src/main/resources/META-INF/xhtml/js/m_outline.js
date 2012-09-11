@@ -454,6 +454,38 @@ define(
 				}
 			};
 
+			var renameElementViewLabel = function(type, uuid, name) {
+				if (type == 'model') {
+					renameView("modelView", uuid, "modelName", name);
+				} else if (type == 'process') {
+					renameView("processDefinitionView", uuid, "processName", name);
+				} else if (type == "roleParticipant") {
+					renameView("roleView", uuid, "roleName", name)
+				} else if (type == 'organizationParticipant') {
+					renameView("organizationView", uuid, "organizationName", name)
+				} else if (m_elementConfiguration.isValidDataType(type)) {
+					renameView("dataView", uuid, "dataName", name)
+				} else if (type == "webservice") {
+					renameView("webServiceApplicationView", uuid, "applicationName", name)
+				} else if (type == "messageTransformationBean") {
+					renameView("messageTransformationApplicationView", uuid, "applicationName", name)
+				} else if (type == "camelBean") {
+					renameView("camelApplicationView", uuid, "applicationName", name)
+				} else if (type == "interactive") {
+					renameView("uiMashupApplicationView", uuid, "applicationName", name)
+				} else if (m_elementConfiguration.isUnSupportedAppType(type)) {
+					renameView("genericApplicationView", uuid, "applicationName", name)
+				} else if (type == "structuredDataType") {
+					renameView("xsdStructuredDataTypeView", uuid, "structuredDataTypeName", name)
+				} else if (type == "conditionalPerformerParticipant") {
+					renameView("conditionalPerformerView", uuid, "conditionalPerformerName", name)
+				}
+			}
+
+			var renameView = function(viewId, viewIdentifier, nameParamName, newName) {
+				viewManager.updateView(viewId, nameParamName + "=" + newName, viewIdentifier);
+			}
+
 			var refresh = function() {
 				jQuery("#outline").empty();
 				readAllModels(true);
@@ -518,7 +550,7 @@ define(
 										viewManager.openView("modelView",
 												"modelId=" + model.id
 														+ "&modelName="
-														+ model.name, model.id);
+														+ model.name, model.uuid);
 									} else if (data.rslt.obj.attr('rel') == "roleParticipant") {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
@@ -535,7 +567,7 @@ define(
 														+ role.name
 														+ "&fullId="
 														+ role.getFullId(),
-												role.getFullId());
+												role.uuid);
 									} else if (data.rslt.obj.attr('rel') == 'organizationParticipant') {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
@@ -555,7 +587,7 @@ define(
 														+ "&fullId="
 														+ organization
 																.getFullId(),
-												organization.getFullId());
+												organization.uuid);
 									} else if (m_elementConfiguration
 											.isValidDataType(data.rslt.obj
 													.attr('rel'))) {
@@ -576,7 +608,7 @@ define(
 														+ data.name
 														+ "&fullId="
 														+ data.getFullId(),
-												data.getFullId());
+												data.uuid);
 									} else if (data.rslt.obj.attr('rel') == 'process') {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
@@ -594,7 +626,7 @@ define(
 														+ process.name
 														+ "&fullId="
 														+ process.getFullId(),
-												process.getFullId());
+												process.uuid);
 									} else if (data.rslt.obj.attr('rel') == "webservice") {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
@@ -614,7 +646,7 @@ define(
 														+ "&fullId="
 														+ application
 																.getFullId(),
-												application.getFullId());
+												application.uuid);
 									} else if (data.rslt.obj.attr('rel') == "messageTransformationBean") {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
@@ -635,7 +667,7 @@ define(
 																+ "&fullId="
 																+ application
 																		.getFullId(),
-														application.getFullId());
+														application.uuid);
 									} else if (data.rslt.obj.attr('rel') == "camelBean") {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
@@ -655,7 +687,7 @@ define(
 														+ "&fullId="
 														+ application
 																.getFullId(),
-												application.getFullId());
+												application.uuid);
 									} else if (data.rslt.obj.attr('rel') == "interactive") {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
@@ -675,7 +707,7 @@ define(
 														+ "&fullId="
 														+ application
 																.getFullId(),
-												application.getFullId());
+												application.uuid);
 									} else if (m_elementConfiguration
 											.isUnSupportedAppType(data.rslt.obj
 													.attr('rel'))) {
@@ -697,7 +729,7 @@ define(
 														+ "&fullId="
 														+ application
 																.getFullId(),
-												application.getFullId());
+												application.uuid);
 									} else if (data.rslt.obj.attr('rel') == "structuredDataType") {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
@@ -719,7 +751,7 @@ define(
 																+ structuredDataType
 																		.getFullId(),
 														structuredDataType
-																.getFullId());
+																.uuid);
 									} else if (data.rslt.obj.attr('rel') == "conditionalPerformerParticipant") {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
@@ -741,7 +773,7 @@ define(
 																+ conditionalPerformer
 																		.getFullId(),
 														conditionalPerformer
-																.getFullId());
+																.uuid);
 									}
 
 									else {
@@ -2039,7 +2071,6 @@ define(
 							if (modelElement != null) {
 								modelElement.rename(obj.changes.modified[i].id,
 										obj.changes.modified[i].name);
-
 								var uuid = modelElement.uuid;
 								var link = jQuery("li#" + uuid + " a")[0];
 								var node = jQuery("li#" + uuid);
@@ -2057,6 +2088,7 @@ define(
 													m_constants.TEAM_LEADER_KEY,
 													obj.changes.modified[i].isTeamLeader);
 								}
+								renameElementViewLabel(node.attr("rel"), node.attr("id"), node.attr("name"));
 							}
 						}
 						for ( var i = 0; i < obj.changes.removed.length; i++) {

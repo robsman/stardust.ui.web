@@ -37,6 +37,10 @@
 		<aop:scoped-proxy/>
 	</bean>
 
+	<bean name="jsfViewUpdaterBean" class="org.eclipse.stardust.ui.web.modeler.portal.JsfViewUpdaterBean"
+		scope="session">
+	</bean>
+
 	<bean id="testModelManagementStrategy" class="org.eclipse.stardust.ui.web.modeler.service.TestModelManagementStrategy"
 		scope="session">
 		<qualifier value="test" />
