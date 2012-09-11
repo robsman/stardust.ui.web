@@ -20,11 +20,6 @@ import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
@@ -60,6 +55,10 @@ import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  *
@@ -262,7 +261,7 @@ public abstract class ModelElementUnmarshaller
                      getModelBuilderFacade().stripFullId(subprocessFullId));
 
                activity.setImplementationProcess(subProcessDefinition);
-               
+
                if (activityJson.has(ModelerConstants.SUBPROCESS_MODE_PROPERTY))
                {
                   if (activityJson.get(ModelerConstants.SUBPROCESS_MODE_PROPERTY).getAsString().equals(ModelerConstants.ASYNC_SEPARATE_KEY))
@@ -466,20 +465,38 @@ public abstract class ModelElementUnmarshaller
                   if (formalParameter.get(ModelerConstants.DATA_TYPE_PROPERTY).equals(
                         ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
                   {
-                     getModelBuilderFacade().createPrimitiveParameter(processDefinition,
-                           getModelBuilderFacade().findData(formalParameter.get(ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString()), 
-                           getModelBuilderFacade().createIdFromName(formalParameter.get(ModelerConstants.NAME_PROPERTY).getAsString()), formalParameter.get(ModelerConstants.NAME_PROPERTY).getAsString(), 
-                           ModeType.IN);
-                     
-                     // @Rainer formalParameter.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY);
+                     getModelBuilderFacade().createPrimitiveParameter(
+                           processDefinition,
+                           getModelBuilderFacade().findData(
+                                 formalParameter.get(
+                                       ModelerConstants.DATA_FULL_ID_PROPERTY)
+                                       .getAsString()),
+                           getModelBuilderFacade().createIdFromName(
+                                 formalParameter.get(ModelerConstants.NAME_PROPERTY)
+                                       .getAsString()),
+                           formalParameter.get(ModelerConstants.NAME_PROPERTY)
+                                 .getAsString(),
+                           formalParameter.get(
+                                 ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY)
+                                 .getAsString(), ModeType.IN);
                   }
                   else if (formalParameter.get(ModelerConstants.DATA_TYPE_PROPERTY)
                         .equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
                   {
-                     getModelBuilderFacade().createStructuredParameter(processDefinition, getModelBuilderFacade().findData(formalParameter.get(ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString()), getModelBuilderFacade().createIdFromName(formalParameter.get(ModelerConstants.NAME_PROPERTY).getAsString()), formalParameter.get(ModelerConstants.NAME_PROPERTY).getAsString(), 
-                           ModeType.IN);
-                     
-                     // @Rainer formalParameter.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY);
+                     getModelBuilderFacade().createStructuredParameter(
+                           processDefinition,
+                           getModelBuilderFacade().findData(
+                                 formalParameter.get(
+                                       ModelerConstants.DATA_FULL_ID_PROPERTY)
+                                       .getAsString()),
+                           getModelBuilderFacade().createIdFromName(
+                                 formalParameter.get(ModelerConstants.NAME_PROPERTY)
+                                       .getAsString()),
+                           formalParameter.get(ModelerConstants.NAME_PROPERTY)
+                                 .getAsString(),
+                           formalParameter.get(
+                                 ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
+                                 .getAsString(), ModeType.IN);
                   }
                }
             }
