@@ -14,8 +14,8 @@ define(
 				"m_eventSymbol", "m_activityPropertiesPanel", "m_model",
 				"m_activity" ],
 		function(m_utils, m_constants, m_extensionManager, m_command,
-				m_canvasManager, m_symbol, m_gatewaySymbol, m_eventSymbol, m_session,
-				m_activityPropertiesPanel, m_model, m_activity) {
+				m_canvasManager, m_symbol, m_gatewaySymbol, m_eventSymbol,
+				m_session, m_activityPropertiesPanel, m_model, m_activity) {
 
 			return {
 				createActivitySymbol : function(diagram, type) {
@@ -316,26 +316,21 @@ define(
 				 * 
 				 */
 				ActivitySymbol.prototype.adjustPrimitives = function() {
-					this.rectangle.animate({
-						"x" : this.x,
-						"y" : this.y,
-						"width" : this.width,
-						"height" : this.height
-					}, this.diagram.animationDelay,
-							this.diagram.animationEasing);
-
-					if (this.diagram.symbolGlow
-							&& this.lastModifyingUser != null) {
-						if (this.glow) {
-							this.glow.remove();
-						}
-
-						this.glow = this.rectangle.glow({
-							width : m_constants.GLOW_WIDTH,
-							color : window.top.modelingSession.getColorByUser(this.lastModifyingUser),
-							opacity : m_constants.GLOW_OPACITY
-						});
+					if (this.glow != null) {
+						this.glow.hide();
+						this.glow.remove();
 					}
+
+					this.rectangle
+							.animate(
+									{
+										"x" : this.x,
+										"y" : this.y,
+										"width" : this.width,
+										"height" : this.height,
+										"callback" : ActivitySymbol_updateGlow
+									}, this.diagram.animationDelay,
+									this.diagram.animationEasing);
 
 					this.manualActivityIcon.animate({
 						"x" : this.x + 5,
@@ -627,5 +622,21 @@ define(
 			function ActivitySymbol_subprocessMarkerIconClickClosure() {
 				this.auxiliaryProperties.callbackScope
 						.onSubprocessMarkerIconClick();
+			}
+
+			/**
+			 * 
+			 */
+			function ActivitySymbol_updateGlow() {
+				if (this.auxiliaryProperties.callbackScope.diagram.symbolGlow
+						&& this.auxiliaryProperties.callbackScope.lastModifyingUser != null) {
+					this.auxiliaryProperties.callbackScope.glow = this.auxiliaryProperties.callbackScope.rectangle
+							.glow({
+								width : m_constants.GLOW_WIDTH,
+								color : window.top.modelingSession
+										.getColorByUser(this.auxiliaryProperties.callbackScope.lastModifyingUser),
+								opacity : m_constants.GLOW_OPACITY
+							});
+				}
 			}
 		});

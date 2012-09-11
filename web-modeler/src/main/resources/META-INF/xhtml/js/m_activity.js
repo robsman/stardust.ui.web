@@ -19,6 +19,8 @@ define(
 					var activity = new Activity("Activity" + index);
 
 					activity.initialize("Activity " + index, type);
+					
+					activity.activityType == m_constants.MANUAL_ACTIVITY_TYPE
 
 					return activity;
 				},
@@ -96,15 +98,6 @@ define(
 					this.description = null;
 					this.activityType = activityType;
 					this.accessPoints = {};
-
-					if (this.activityType == m_constants.MANUAL_ACTIVITY_TYPE) {
-						var accessPoint = m_accessPoint.createDefault(
-								"Default", "Default",
-								m_constants.INOUT_ACCESS_POINT);
-
-						this.accessPoints[accessPoint.id] = accessPoint;
-					}
-
 					this.subprocessFullId = null;
 					this.applicationFullId = null;
 					this.participantFullId = null;
