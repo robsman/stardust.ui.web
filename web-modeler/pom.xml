@@ -67,11 +67,6 @@
          <version>${ipp.version}</version>
       </dependency>
       <dependency>
-         <groupId>com.infinity.bpm</groupId>
-         <artifactId>ipp-engine-ws-metro</artifactId>
-         <version>${ipp.version}</version>
-      </dependency>
-      <dependency>
          <groupId>wsdl4j</groupId>
          <artifactId>wsdl4j</artifactId>
          <version>1.6.2</version>
