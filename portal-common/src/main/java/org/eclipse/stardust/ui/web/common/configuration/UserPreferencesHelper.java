@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.common.configuration;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +30,10 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
 /**
  * @author Subodh.Godbole
  */
-public class UserPreferencesHelper
+public class UserPreferencesHelper implements Serializable
 {
+   private static final long serialVersionUID = 4324790377778190020L;
+
    private static final Logger trace = LogManager.getLogger(UserPreferencesHelper.class);
    
    private static final String INSTANCE_FOR_MODULE = "#.?.UserPreferencesHelper/instance"; // scope.moduleId.UserPreferencesHelper/instance

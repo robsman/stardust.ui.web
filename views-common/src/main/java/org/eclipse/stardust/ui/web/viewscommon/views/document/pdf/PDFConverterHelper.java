@@ -11,7 +11,11 @@
 package org.eclipse.stardust.ui.web.viewscommon.views.document.pdf;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,10 +31,11 @@ import org.eclipse.stardust.ui.web.viewscommon.views.correspondence.Attachment;
  * @author Yogesh.Manware
  * 
  */
-public class PDFConverterHelper
+public class PDFConverterHelper implements Serializable
 {
+   private static final long serialVersionUID = -7021679894798906663L;
    public static final Logger logger = LogManager.getLogger(PDFConverterHelper.class);
-   private IPdfConverter pdfConverter;
+   private transient IPdfConverter pdfConverter;
 
    public PDFConverterHelper()
    {
@@ -82,6 +87,26 @@ public class PDFConverterHelper
       return pdfConverter.concat2Pdfs(part1, part2);
    }
 
+   /**
+    * @param out
+    * @throws IOException
+    */
+   private void writeObject(ObjectOutputStream out) throws IOException
+   {
+      out.defaultWriteObject();
+   }
+
+   /**
+    * @param in
+    * @throws IOException
+    * @throws ClassNotFoundException
+    */
+   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+   {
+      in.defaultReadObject();
+      pdfConverter = getConverter();
+   }
+   
    /**
     * @return
     */

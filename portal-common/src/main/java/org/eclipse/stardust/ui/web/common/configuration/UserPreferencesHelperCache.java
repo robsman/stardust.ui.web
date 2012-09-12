@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.common.configuration;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,8 +21,10 @@ import org.eclipse.stardust.ui.web.common.util.FacesUtils;
  * @author Subodh.Godbole
  *
  */
-public class UserPreferencesHelperCache
+public class UserPreferencesHelperCache implements Serializable
 {
+   private static final long serialVersionUID = 8636253562228142901L;
+
    public static String BEAN_NAME = "ippUserPreferencesHelperCache";
 
    private Map<String, UserPreferencesHelper> allUserPreferences = new HashMap<String, UserPreferencesHelper>();

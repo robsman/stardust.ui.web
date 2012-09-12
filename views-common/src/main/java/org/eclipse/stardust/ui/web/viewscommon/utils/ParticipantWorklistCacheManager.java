@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -34,8 +35,9 @@ import org.springframework.beans.factory.InitializingBean;
  * @author subodh.godbole
  *
  */
-public class ParticipantWorklistCacheManager implements InitializingBean
+public class ParticipantWorklistCacheManager implements InitializingBean, Serializable
 {
+   private static final long serialVersionUID = -4467279164688998487L;
    public static final String BEAN_ID = "ippParticipantWorklistCacheManager";
    public static final Logger trace = LogManager.getLogger(ParticipantWorklistCacheManager.class);
 
@@ -189,8 +191,9 @@ public class ParticipantWorklistCacheManager implements InitializingBean
     * @author anoop.nair
     *
     */
-   private static final class ParticipantInfoWrapper
+   private static final class ParticipantInfoWrapper implements Serializable
    {
+      private static final long serialVersionUID = -2659357845106111645L;
       private ParticipantInfo participantInfo;
       
       /**

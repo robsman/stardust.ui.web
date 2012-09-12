@@ -10,14 +10,17 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.views.document.pdf;
 
+import java.io.Serializable;
+
 import javax.faces.model.SelectItem;
 
 /**
  * @author Yogesh.Manware
  * 
  */
-public class PrintingPreferences
+public class PrintingPreferences implements Serializable
 {
+   private static final long serialVersionUID = -5008324954880775898L;
    private String pageSize = "letter";
    private String orientation = "portrait";
    private float right = 1;

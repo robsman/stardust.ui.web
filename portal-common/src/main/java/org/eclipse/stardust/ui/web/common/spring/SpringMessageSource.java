@@ -12,13 +12,18 @@ package org.eclipse.stardust.ui.web.common.spring;
 
 import static org.eclipse.stardust.ui.web.common.util.StringUtils.isEmpty;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Locale;
 
 import javax.faces.context.FacesContext;
 
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.common.MessageSource;
 import org.eclipse.stardust.ui.web.common.impl.HierarchicalMessageSource;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 
 /**
@@ -27,9 +32,13 @@ import org.springframework.context.NoSuchMessageException;
  */
 public class SpringMessageSource implements HierarchicalMessageSource
 {
-   private final org.springframework.context.MessageSource springMsgSource;
+   private static final long serialVersionUID = -4723507212828384604L;
+
+   private transient org.springframework.context.MessageSource springMsgSource;
 
    private MessageSource parent;
+   
+   private String[] baseNames;
 
    public SpringMessageSource(org.springframework.context.MessageSource springMsgSource)
    {
@@ -67,17 +76,20 @@ public class SpringMessageSource implements HierarchicalMessageSource
    private String getMessage(String code, String defaultMessage, Locale locale, boolean replaceWithDefault)
    {
       String message = null;
-      try
+      if (null != springMsgSource)
       {
-         if (null == locale)
+         try
          {
-            locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
+            if (null == locale)
+            {
+               locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
+            }
+            message = springMsgSource.getMessage(code, null, locale);
          }
-         message = springMsgSource.getMessage(code, null, locale);
-      }
-      catch (NoSuchMessageException nsme)
-      {
-         // ignore
+         catch (NoSuchMessageException nsme)
+         {
+            // ignore
+         }
       }
 
       if ((null == message) && (null != parent))
@@ -91,5 +103,59 @@ public class SpringMessageSource implements HierarchicalMessageSource
       }
 
       return message;
+   }
+   
+   /**
+    * @param out
+    * @throws IOException
+    */
+   private void writeObject(ObjectOutputStream out) throws IOException
+   {
+      // handle transient variables
+      if (springMsgSource instanceof ResourceBundleMessageSource)
+      {
+         ResourceBundleMessageSource resourceBundle = (ResourceBundleMessageSource) springMsgSource;
+         baseNames = extractBaseNames(resourceBundle.toString());
+      }
+      out.defaultWriteObject();
+   }
+
+   /**
+    * @param in
+    * @throws IOException
+    * @throws ClassNotFoundException
+    */
+   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+   {
+      in.defaultReadObject();
+      // handle transient variables
+      if (null != baseNames)
+      {
+         ResourceBundleMessageSource resourceBundle = new ResourceBundleMessageSource();
+         resourceBundle.setBasenames(baseNames);
+         this.springMsgSource = resourceBundle;
+      }
+   }
+
+   /**
+    * utility method to extract Basenames from configuration string
+    * 
+    * @param configurationString
+    * @return
+    */
+   private String[] extractBaseNames(String configurationString)
+   {
+      String[] baseNames = null;
+      if (StringUtils.isNotEmpty(configurationString))
+      {
+         String baseNameStr = configurationString.substring(configurationString.indexOf("basenames=[") + 11,
+               configurationString.indexOf("]"));
+
+         if (StringUtils.isNotEmpty(baseNameStr))
+         {
+            baseNames = baseNameStr.split(",");
+         }
+      }
+      return baseNames;
    }
 }

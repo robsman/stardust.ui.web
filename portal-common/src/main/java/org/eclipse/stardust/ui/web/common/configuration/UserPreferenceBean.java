@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.common.configuration;
 
+import java.io.Serializable;
+
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceProvider;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 
@@ -19,8 +21,11 @@ import org.eclipse.stardust.ui.web.common.util.FacesUtils;
  * @author Subodh.Godbole
  *
  */
-public class UserPreferenceBean
+public class UserPreferenceBean implements Serializable
 {
+
+   private static final long serialVersionUID = -2977908229268476133L;
+
    private static final String BEAN_ID = "ippUserPreferenceBean";
    
    private PreferenceProvider preferenceProvider;

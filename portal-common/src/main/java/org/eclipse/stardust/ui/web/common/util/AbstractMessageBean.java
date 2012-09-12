@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.common.util;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,15 +32,18 @@ import javax.faces.context.FacesContext;
  */
 public abstract class AbstractMessageBean implements Map<String, String>, Serializable
 {
-   private ResourceBundle bundle;
+
+   private static final long serialVersionUID = 6752664049471262496L;
+   private String bundleName;
+   private transient ResourceBundle bundle;
 
    /**
     * 
     */
    public AbstractMessageBean(String bundleName)
    {
-      bundle = ResourceBundle.getBundle(bundleName, FacesContext.getCurrentInstance()
-            .getExternalContext().getRequestLocale());
+      this.bundleName = bundleName;
+      initBundle();
    }
 
    /**
@@ -141,6 +147,35 @@ public abstract class AbstractMessageBean implements Map<String, String>, Serial
       return "Locale." + country;
    }
 
+   /**
+    * 
+    */
+   private void initBundle()
+   {
+      bundle = ResourceBundle.getBundle(bundleName, FacesContext.getCurrentInstance().getExternalContext()
+            .getRequestLocale());
+   }
+
+   /**
+    * @param out
+    * @throws IOException
+    */
+   private void writeObject(ObjectOutputStream out) throws IOException
+   {
+      out.defaultWriteObject();
+   }
+
+   /**
+    * @param in
+    * @throws IOException
+    * @throws ClassNotFoundException
+    */
+   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+   {
+      in.defaultReadObject();
+      initBundle();
+   }
+   
    /**
     * @return
     */

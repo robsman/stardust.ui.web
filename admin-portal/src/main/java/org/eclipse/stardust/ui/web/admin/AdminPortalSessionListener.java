@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.admin;
 
+import java.io.Serializable;
+
 import org.eclipse.stardust.common.error.LoginFailedException;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
@@ -20,8 +22,10 @@ import org.eclipse.stardust.ui.web.viewscommon.common.AbstractBpmJsfClientSessio
  * @author rsauer
  * @version $Revision: 26037 $
  */
-public class AdminPortalSessionListener extends AbstractBpmJsfClientSessionListener
+public class AdminPortalSessionListener extends AbstractBpmJsfClientSessionListener implements Serializable
 {
+   private static final long serialVersionUID = -9049732250528133086L;
+
    public void intializeSession(ServiceFactory serviceFactory) throws LoginFailedException
    {
       initializeBeans();

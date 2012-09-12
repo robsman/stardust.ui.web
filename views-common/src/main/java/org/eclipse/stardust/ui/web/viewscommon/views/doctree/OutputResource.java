@@ -33,8 +33,8 @@ public class OutputResource implements Resource, Serializable
    private static final long serialVersionUID = 1L;
    private String resourceName;
    private final Date lastModified;
-   private InputStream inputStream;
-   private DocumentManagementService dms;
+   private transient InputStream inputStream;
+   private transient DocumentManagementService dms;
    private String mimeType = "";
    private String resourceId = null;
    private DownloadPopupDialog downloadPopupDialog;

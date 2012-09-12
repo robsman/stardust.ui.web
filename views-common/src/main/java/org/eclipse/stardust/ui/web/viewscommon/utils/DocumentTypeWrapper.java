@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
+import java.io.Serializable;
+
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.TypeDeclaration;
@@ -20,8 +22,9 @@ import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
  * @author Subodh.Godbole
  *
  */
-public class DocumentTypeWrapper
+public class DocumentTypeWrapper implements Serializable
 {
+   private static final long serialVersionUID = -3594172065772142292L;
    private DocumentType documentType;
    private TypeDeclaration typeDeclaration;
    private Model model;

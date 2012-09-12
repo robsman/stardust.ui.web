@@ -15,6 +15,9 @@ import static org.eclipse.stardust.ui.web.common.util.CollectionUtils.newArrayLi
 import static org.eclipse.stardust.ui.web.common.util.StringUtils.areEqual;
 import static org.eclipse.stardust.ui.web.common.util.StringUtils.isEmpty;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -85,7 +88,7 @@ public class PortalUiController
 
    private static final Logger trace = LogManager.getLogger(PortalUiController.class);
    
-   private ApplicationContext appContext;
+   private transient ApplicationContext appContext;
 
    private IPerspectiveDefinition currentPerspective;
 
@@ -93,7 +96,7 @@ public class PortalUiController
 
    private PerspectiveController perspectiveController;
    
-   private List<MenuItem> perspectiveItems;
+   private transient List<MenuItem> perspectiveItems;
    
    private Map<String, View> views;
 
@@ -109,11 +112,12 @@ public class PortalUiController
 
    private CommonMenuProvider commonMenuProvider;
    
-   private Map<View, List<ViewDataEventHandler>> viewDataEventHandlers;
+   private transient Map<View, List<ViewDataEventHandler>> viewDataEventHandlers;
+   
+   private List<IPerspectiveDefinition> allPerspectives;
    
    public PortalUiController()
    {
-      this.perspectiveItems = new ArrayList<MenuItem>();
       this.views = new HashMap<String, View>();
       this.openViews = new ArrayList<View>();
       this.recreatableViews = new HashMap<String, View>();
@@ -245,14 +249,15 @@ public class PortalUiController
       if ((null != perspectives) && (0 < perspectives.size()))
       {
          // Collect All Perspectives
-         List<IPerspectiveDefinition> allPerspectives = new ArrayList<IPerspectiveDefinition>();
+         allPerspectives = new ArrayList<IPerspectiveDefinition>();
          for (IPerspectiveDefinition perspectiveDef : perspectives.values())
          {
             allPerspectives.add(perspectiveDef);
          }
 
          // Sort Perspectives
-         Collections.sort(allPerspectives, new Comparator<IPerspectiveDefinition>(){
+         Collections.sort(allPerspectives, new Comparator<IPerspectiveDefinition>()
+         {
             public int compare(IPerspectiveDefinition arg0, IPerspectiveDefinition arg1)
             {
                // For time being till Authorization is not implemented for
@@ -262,27 +267,7 @@ public class PortalUiController
             }
          });
 
-         for (IPerspectiveDefinition perspective : allPerspectives)
-         {
-            if (null == currentPerspective && perspective.isDefaultPerspective())
-            {
-               // Set default perspective
-               setPerspective(perspective);
-            }
-            
-            perspectiveItems.add(createMenuItem(perspective));
-
-            Map<String, PerspectiveExtension> extensions = appContext.getBeansOfType(PerspectiveExtension.class);
-
-            for (PerspectiveExtension extension : extensions.values())
-            {
-               if (UserUtils.isAuthorized(userProvider.getUser(), extension.getRequiredRolesSet(), extension
-                     .getExcludeRolesSet()))
-               {
-                  perspective.addExtension(extension);
-               }
-            }
-         }
+         initPerspectiveItems();
 
          if (null == currentPerspective)
          {
@@ -297,8 +282,35 @@ public class PortalUiController
          PerspectiveDefinition pdDefault = new PerspectiveDefinition();
          pdDefault.setName("NoPerspectiveDefined");
          perspectives.put(pdDefault.getName(), pdDefault);
-         
+
          setPerspective(pdDefault);
+      }
+   }
+   
+   private void initPerspectiveItems()
+   {
+      this.perspectiveItems = new ArrayList<MenuItem>();
+      
+      for (IPerspectiveDefinition perspective : allPerspectives)
+      {
+         if (null == currentPerspective && perspective.isDefaultPerspective())
+         {
+            // Set default perspective
+            setPerspective(perspective);
+         }
+
+         perspectiveItems.add(createMenuItem(perspective));
+
+         Map<String, PerspectiveExtension> extensions = appContext.getBeansOfType(PerspectiveExtension.class);
+
+         for (PerspectiveExtension extension : extensions.values())
+         {
+            if (UserUtils.isAuthorized(userProvider.getUser(), extension.getRequiredRolesSet(),
+                  extension.getExcludeRolesSet()))
+            {
+               perspective.addExtension(extension);
+            }
+         }
       }
    }
    
@@ -1380,6 +1392,28 @@ public class PortalUiController
       }
    }
 
+   /**
+    * @param out
+    * @throws IOException
+    */
+   private void writeObject(ObjectOutputStream out) throws IOException
+   {
+      out.defaultWriteObject();
+   }
+
+   /**
+    * @param in
+    * @throws IOException
+    * @throws ClassNotFoundException
+    */
+   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+   {
+      in.defaultReadObject();
+      // handle transient variables
+      initPerspectiveItems();
+      this.viewDataEventHandlers = new HashMap<View, List<ViewDataEventHandler>>();
+   }
+   
    /**
     * @param userProvider the userProvider to set
     */

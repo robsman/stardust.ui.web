@@ -10,13 +10,13 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.processportal.launchpad;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
 import javax.swing.tree.DefaultTreeModel;
 
 import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.Model;
@@ -39,8 +39,9 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
  * @author roland.stamm
  * 
  */
-public class StartableProcessModel
+public class StartableProcessModel implements Serializable
 {
+   private static final long serialVersionUID = 850502793679842857L;
 
    private ProcessDefinition processDefinition;
 

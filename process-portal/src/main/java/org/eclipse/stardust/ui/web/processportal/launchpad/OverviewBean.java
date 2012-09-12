@@ -61,9 +61,9 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
 
    private static final int MAX_PRIORITY_ITEM_COUNT = 10;
 
-   private Map<String, LastNWorkedOnQueryBuilder> lastNWorkedOnQueryBuilders;
+   private transient Map<String, LastNWorkedOnQueryBuilder> lastNWorkedOnQueryBuilders;
 
-   private PriorityActivityQueryBuilder priorityActivityQueryBuilder;
+   private transient PriorityActivityQueryBuilder priorityActivityQueryBuilder;
 
    public OverviewBean()
    {
@@ -77,8 +77,6 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
     */
    public void afterPropertiesSet() throws Exception
    {
-      lastNWorkedOnQueryBuilders = new HashMap<String, LastNWorkedOnQueryBuilder>();
-      priorityActivityQueryBuilder = new PriorityActivityQueryBuilder(MAX_PRIORITY_ITEM_COUNT);
    }
 
    public void lastNSelectListener(ValueChangeEvent event)
@@ -190,7 +188,7 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
    private void selectPriorityActivityInstances()
    {
       Map<String, Object> params = CollectionUtils.newTreeMap();
-      params.put(Query.class.getName(), priorityActivityQueryBuilder.createQuery());
+      params.put(Query.class.getName(), getPriorityActivityQueryBuilder().createQuery());
       // TODO use unique id
       params.put("id", "priorityActivityInstances");
       params.put("name", "High Priority"); //$NON-NLS-N$
@@ -225,11 +223,11 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
     */
    private void selectLastNWorklist(Date date, String dateId)
    {
-      LastNWorkedOnQueryBuilder lastNWorkedOnQueryBuilder = lastNWorkedOnQueryBuilders.get(dateId);
+      LastNWorkedOnQueryBuilder lastNWorkedOnQueryBuilder = getLastNWorkedOnQueryBuilders().get(dateId);
       if (null == lastNWorkedOnQueryBuilder)
       {
          lastNWorkedOnQueryBuilder = new LastNWorkedOnQueryBuilder(date, dateId);
-         lastNWorkedOnQueryBuilders.put(dateId, lastNWorkedOnQueryBuilder);
+         getLastNWorkedOnQueryBuilders().put(dateId, lastNWorkedOnQueryBuilder);
       }
       lastNWorkedOnQueryBuilder.executeCountQuery();
 
@@ -289,6 +287,30 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
       }
    }
 
+   /**
+    * @return
+    */
+   private Map<String, LastNWorkedOnQueryBuilder> getLastNWorkedOnQueryBuilders()
+   {
+      if (null == lastNWorkedOnQueryBuilders)
+      {
+         lastNWorkedOnQueryBuilders = new HashMap<String, LastNWorkedOnQueryBuilder>();
+      }
+      return lastNWorkedOnQueryBuilders;
+   }
+   
+   /**
+    * @return
+    */
+   private PriorityActivityQueryBuilder getPriorityActivityQueryBuilder()
+   {
+      if (null == priorityActivityQueryBuilder)
+      {
+         priorityActivityQueryBuilder = new PriorityActivityQueryBuilder(MAX_PRIORITY_ITEM_COUNT);
+      }
+      return priorityActivityQueryBuilder;
+   }
+   
    private class LastNWorkedOnQueryBuilder implements IQueryBuilder
    {
       private ActivityInstances countQueryResult;

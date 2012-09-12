@@ -10,14 +10,17 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
+import java.io.Serializable;
+
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 
 /**
  * @author subodh.godbole
  *
  */
-public class ParticipantWorklistCacheEntry
+public class ParticipantWorklistCacheEntry implements Serializable
 {
+   private static final long serialVersionUID = 7571234851632442390L;
    private long count;
    private WorklistQuery worklistQuery;
 

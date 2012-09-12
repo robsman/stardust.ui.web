@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.viewscommon.views.correspondence;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
@@ -25,10 +26,11 @@ import com.icesoft.faces.component.inputfile.FileInfo;
  * @author Yogesh.Manware
  * @version $Revision: $
  */
-public class Attachment
+public class Attachment implements Serializable
 {
+   private static final long serialVersionUID = 3942500793139504764L;
    private Document document;
-   private DocumentManagementService documentManagementService;
+   private transient DocumentManagementService documentManagementService;
    private FileInfo fileInfo;
    private boolean containsDocument = false;
    private String documentKey;
