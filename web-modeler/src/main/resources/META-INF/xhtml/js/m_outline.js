@@ -26,6 +26,7 @@ define(
 					.findExtension("viewManager");
 			var viewManager = viewManagerExtension.provider.create();
 
+			var isDataCreatedViaOutline = false;
 			function getURL() {
 				return require('m_urlUtils').getContextName()
 						+ "/services/rest/modeler/" + new Date().getTime();
@@ -1727,6 +1728,7 @@ define(
 												"id" : id,
 												"primitiveType" : m_constants.STRING_PRIMITIVE_DATA_TYPE
 											}));
+					isDataCreatedViaOutline = true;
 				}
 
 				/**
@@ -1744,6 +1746,7 @@ define(
 										"name" : name,
 										"id" : id
 									}));
+					isDataCreatedViaOutline = true;
 				}
 
 				/**
@@ -1763,6 +1766,7 @@ define(
 										"id" : id,
 										"structuredDataTypeFullId" : fullId
 									}));
+					isDataCreatedViaOutline = true;
 				}
 
 				/**
@@ -2032,7 +2036,11 @@ define(
 								this.openElementView(this
 										.createStructuredDataType(command.changes.added[i]));
 							} else if (m_constants.DATA == command.changes.added[i].type) {
-								this.openElementView(this.createData(command.changes.added[i]));
+								var createdData = this.createData(command.changes.added[i]);
+								if (isDataCreatedViaOutline) {
+									this.openElementView(createdData);
+								}
+								isDataCreatedViaOutline = false;
 							} else if (m_constants.APPLICATION == command.changes.added[i].type) {
 								this.openElementView(this
 										.createApplication(command.changes.added[i]));
