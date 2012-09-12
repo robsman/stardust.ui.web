@@ -81,16 +81,16 @@ public class ServiceLoaderUtils
    {
       try
       {
-         trace.info("searchProviders: Searching providers usng JSE1.6 = " + clazz.getName());
+         trace.info("searchProviders: Searching providers using JSE1.6 = " + clazz.getName());
          ServiceLoader<S> serviceLoader = ServiceLoader.load(clazz);
          Iterator<S> servicesIterator = serviceLoader.iterator();
-         trace.info("searchProviders: Found provider usng JSE1.6");
+         trace.info("searchProviders: Found provider using JSE1.6");
 
          return servicesIterator;
       }
       catch(Exception e)
       {
-         trace.error("searchProviders: Error in searching providers usng JSE1.6 -> " + e);
+         trace.error("searchProviders: Error in searching providers using JSE1.6 -> " + e);
       }
       
       return null;
@@ -106,11 +106,11 @@ public class ServiceLoaderUtils
    {
       try
       {
-         trace.info("searchProviders: Searching providers usng IPP = " + clazz.getName());
+         trace.info("searchProviders: Searching providers using IPP = " + clazz.getName());
          Object services = ReflectionUtils.invokeStaticMethod("org.eclipse.stardust.common.config.ExtensionProviderUtils",
                "getExtensionProviders(java.lang.Class)", clazz);
          List<S> servicesList = (List<S>)services;
-         trace.info("searchProviders: Found provider usng IPP -> " + servicesList);
+         trace.info("searchProviders: Found provider using IPP -> " + servicesList);
 
          return servicesList.iterator();
       }
