@@ -34,7 +34,7 @@ define(function() {
 		SELECT_STROKE_COLOR : "#9d2127",
 		SELECT_STROKE_WIDTH : 1.5,
 
-		GLOW_WIDTH : 5.0,
+		GLOW_WIDTH : 7.0,
 		GLOW_OPACITY : 0.8,
 		
 		SELECT_FRAME_MARGIN : 7,

@@ -440,47 +440,62 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                      .entrySet())
                {
                   String key = entry.getKey();
-                  JsonObject formalParameter = processDefinitionJson.get(
+                  JsonObject formalParameterJson = processDefinitionJson.get(
                         ModelerConstants.FORMAL_PARAMETERS_PROPERTY)
                         .getAsJsonObject()
                         .get(key)
                         .getAsJsonObject();
 
-                  if (formalParameter.get(ModelerConstants.DATA_TYPE_PROPERTY).equals(
+                  ModeType mode = null;
+                  
+                  if (formalParameterJson.get(ModelerConstants.DIRECTION_PROPERTY).equals(ModelerConstants.IN_PARAMETER_KEY))
+                  {
+                     mode = ModeType.IN;                     
+                  }
+                  else if (formalParameterJson.get(ModelerConstants.DIRECTION_PROPERTY).equals(ModelerConstants.INOUT_PARAMETER_KEY))
+                  {
+                     mode = ModeType.INOUT;                     
+                  }
+                  else 
+                  {
+                     mode = ModeType.OUT;
+                  }
+                  
+                  if (formalParameterJson.get(ModelerConstants.DATA_TYPE_PROPERTY).equals(
                         ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
                   {
                      getModelBuilderFacade().createPrimitiveParameter(
                            processDefinition,
                            getModelBuilderFacade().findData(
-                                 formalParameter.get(
+                                 formalParameterJson.get(
                                        ModelerConstants.DATA_FULL_ID_PROPERTY)
                                        .getAsString()),
                            getModelBuilderFacade().createIdFromName(
-                                 formalParameter.get(ModelerConstants.NAME_PROPERTY)
+                                 formalParameterJson.get(ModelerConstants.NAME_PROPERTY)
                                        .getAsString()),
-                           formalParameter.get(ModelerConstants.NAME_PROPERTY)
+                           formalParameterJson.get(ModelerConstants.NAME_PROPERTY)
                                  .getAsString(),
-                           formalParameter.get(
+                           formalParameterJson.get(
                                  ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY)
-                                 .getAsString(), ModeType.IN);
+                                 .getAsString(), mode);
                   }
-                  else if (formalParameter.get(ModelerConstants.DATA_TYPE_PROPERTY)
+                  else if (formalParameterJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
                         .equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
                   {
                      getModelBuilderFacade().createStructuredParameter(
                            processDefinition,
                            getModelBuilderFacade().findData(
-                                 formalParameter.get(
+                                 formalParameterJson.get(
                                        ModelerConstants.DATA_FULL_ID_PROPERTY)
                                        .getAsString()),
                            getModelBuilderFacade().createIdFromName(
-                                 formalParameter.get(ModelerConstants.NAME_PROPERTY)
+                                 formalParameterJson.get(ModelerConstants.NAME_PROPERTY)
                                        .getAsString()),
-                           formalParameter.get(ModelerConstants.NAME_PROPERTY)
+                           formalParameterJson.get(ModelerConstants.NAME_PROPERTY)
                                  .getAsString(),
-                           formalParameter.get(
+                           formalParameterJson.get(
                                  ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
-                                 .getAsString(), ModeType.IN);
+                                 .getAsString(), mode);
                   }
                }
             }

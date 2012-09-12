@@ -316,21 +316,16 @@ define(
 				 * 
 				 */
 				ActivitySymbol.prototype.adjustPrimitives = function() {
-					if (this.glow != null) {
-						this.glow.hide();
-						this.glow.remove();
-					}
-
-					this.rectangle
-							.animate(
-									{
-										"x" : this.x,
-										"y" : this.y,
-										"width" : this.width,
-										"height" : this.height,
-										"callback" : ActivitySymbol_updateGlow
-									}, this.diagram.animationDelay,
-									this.diagram.animationEasing);
+					this.hideGlow();
+					
+					this.rectangle.animate({
+						"x" : this.x,
+						"y" : this.y,
+						"width" : this.width,
+						"height" : this.height,
+						"callback" : ActivitySymbol_updateGlow
+					}, this.diagram.animationDelay,
+							this.diagram.animationEasing);
 
 					this.manualActivityIcon.animate({
 						"x" : this.x + 5,
@@ -628,6 +623,8 @@ define(
 			 * 
 			 */
 			function ActivitySymbol_updateGlow() {
+				this.auxiliaryProperties.callbackScope.removeGlow();
+
 				if (this.auxiliaryProperties.callbackScope.diagram.symbolGlow
 						&& this.auxiliaryProperties.callbackScope.lastModifyingUser != null) {
 					this.auxiliaryProperties.callbackScope.glow = this.auxiliaryProperties.callbackScope.rectangle
@@ -637,6 +634,8 @@ define(
 										.getColorByUser(this.auxiliaryProperties.callbackScope.lastModifyingUser),
 								opacity : m_constants.GLOW_OPACITY
 							});
+				} else {
+					this.auxiliaryProperties.callbackScope.glow = null;
 				}
 			}
 		});

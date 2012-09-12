@@ -204,9 +204,9 @@ define(
 						row += "</td>";
 						row += "<td>";
 						row += "<select>";
-						row += "<option value=\"IN\">IN</option>";
-						row += "<option value=\"OUT\">OUT</option>";
-						row += "<option value=\"INOUT\">INOUT</option>";
+						row += "<option value=\"in\">In</option>";
+						row += "<option value=\"out\">Out</option>";
+						row += "<option value=\"inOut\">In/Out</option>";
 						row += "</select>";
 						row += "</td>";
 						row += "</tr>";

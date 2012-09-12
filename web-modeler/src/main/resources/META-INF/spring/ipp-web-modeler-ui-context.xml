@@ -57,8 +57,8 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			include="/plugins/bpm-modeler/views/modeler/dataFrameAdapter.xhtml"
 			controller="dataView" />
 	</ippui:perspective>
-	<ippui:perspective id="test" messageBundles="bpm-modeler-messages">
+	<!-- <ippui:perspective id="test" messageBundles="bpm-modeler-messages">
 		<ippui:launchPanel name="testLaunchPanel"
 			include="/plugins/bpm-modeler/launchpad/testLaunchPanel.xhtml" />
-	</ippui:perspective>
+	</ippui:perspective> -->
 </beans>

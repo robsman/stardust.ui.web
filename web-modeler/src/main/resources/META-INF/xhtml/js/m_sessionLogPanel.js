@@ -130,7 +130,7 @@ define(
 					this.populateParticipantTable();
 					this.startTimeSpan.empty();
 					this.startTimeSpan.append(" (started "
-							+ m_utils.formatDate(new Date(), "H:i:s") + ")");
+							+ m_utils.formatDate(new Date(), "H:i:s") + ")"); // I18N
 					this.sessionLogTable.empty();
 				};
 
@@ -390,11 +390,11 @@ define(
 					participant.imageUrl = "../images/" + "anonymous-user.gif"; // m_session.current().participants[command.account].imageUrl;
 
 					row
-							.append("<td><table><tr><td style='width: 50px;'><img src='"
+							.append("<td><table><tr><td><img src='"
 									+ participant.imageUrl
-									+ "'></td><td style='background-color: #"
+									+ "'></td><td><div style='background-color: #"
 									+ participant.color
-									+ "; padding: 2px; width: 10px;'></td></tr></table></td>");
+									+ "; width: 10px; height: 50px;'/></td></tr></table></td>");
 
 					var cell = jQuery("<td valign='top'></td>");
 					var content = "<span class='nameSpan'>"
