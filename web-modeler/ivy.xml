@@ -43,15 +43,22 @@
       <!-- dependency org="com.infinity.bpm" name="ipp-engine-ws-metro" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-engine-ws-metro-compile" / -->
       <dependency org="wsdl4j" name="wsdl4j" rev="1.6.2" conf="stardust-web-modeler-compile->default" />
       
-      <dependency org="com.infinity.bpm" name="ipp-bpm-model" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->prereq-ipp-bpm-model"/>
-      <dependency org="com.infinity.bpm" name="ipp-bpm-model-validation" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->prereq-ipp-bpm-model-validation"/>
+      <dependency org="com.infinity.bpm" name="ipp-bpm-model" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-bpm-model-runtime"/>
+      <dependency org="com.infinity.bpm" name="ipp-bpm-model-validation" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-bpm-model-validation-runtime"/>
       <dependency org="org.eclipse.stardust.modeling.model" name="org.eclipse.stardust.model.xpdl.builder" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->stardust-xpdl-builder-compile"/>
       
-      <!-- TODO: use current versions! -->
-      <dependency org="org.eclipse.emf" name="emf-ecore" rev="2.4.2" conf="stardust-web-modeler-compile->default"/>
-      <dependency org="org.eclipse.emf" name="emf-ecore-xmi" rev="2.4.2" conf="stardust-web-modeler-compile->default"/>
-      <dependency org="org.eclipse.emf" name="emf-ecore-change" rev="2.4.2" conf="stardust-web-modeler-compile->default"/>
-      <dependency org="org.eclipse.xsd" name="xsd" rev="2.4.2" conf="stardust-web-modeler-compile->default"/>
+      <!-- The following Eclipse dependencies are part of Eclipse 3.6.2 -->
+      <dependency org="org.eclipse.emf" name="org.eclipse.emf.common" rev="2.6.0.v20100914-1218" conf="stardust-web-modeler-compile->default"/>
+      <dependency org="org.eclipse.emf" name="org.eclipse.emf.ecore" rev="2.6.1.v20100914-1218" conf="stardust-web-modeler-compile->default">
+         <exclude org="org.eclipse.emf" module="org.eclipse.emf.common" />
+      </dependency>
+      <dependency org="org.eclipse.emf" name="org.eclipse.emf.ecore.xmi" rev="2.5.0.v20100521-1846" conf="stardust-web-modeler-compile->default">
+         <exclude org="org.eclipse.emf" module="org.eclipse.emf.ecore" />
+      </dependency>
+      <dependency org="org.eclipse.emf" name="org.eclipse.emf.ecore.change" rev="2.5.1.v20100907-1643" conf="stardust-web-modeler-compile->default">
+         <exclude org="org.eclipse.emf" module="org.eclipse.emf.ecore" />
+      </dependency>
+      <dependency org="org.eclipse.xsd" name="org.eclipse.xsd" rev="2.6.0.v20100914-1218" conf="stardust-web-modeler-compile->default"/>
 
       <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-portal-common-compile"/>
       <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-views-common-compile"/>
