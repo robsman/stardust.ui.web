@@ -1,0 +1,30 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		bean* = Instance of ActivityTable
+		id = Id of the Table
+		title = Title of the Table
+		rendered = true / false
+	-->
+
+	<ui:component>
+		<c:if test="#{empty rendered}">
+			<c:set var="rendered" value="#{true}" />
+		</c:if>
+
+		<ice:panelGroup rendered="#{rendered}">
+			<ui:include src="/plugins/views-common/activityTableHelper/activityTableHelper.xhtml">
+				<ui:param name="title" value="#{title}"/>
+				<ui:param name="id" value="#{id}"/>
+				<ui:param name="bean" value="#{bean.activityTableHelper}"/>
+			</ui:include>
+		</ice:panelGroup>
+	</ui:component>
+
+</f:view>
