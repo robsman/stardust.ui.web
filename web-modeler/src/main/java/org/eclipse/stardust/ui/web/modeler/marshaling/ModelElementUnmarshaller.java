@@ -592,38 +592,43 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private void updateNodeSymbol(INodeSymbol nodeSymbol, JsonObject nodeSymbolJto)
    {
-      int x = extractInt(nodeSymbolJto, ModelerConstants.X_PROPERTY);
-      int y = extractInt(nodeSymbolJto, ModelerConstants.Y_PROPERTY);
-
-      // adjust coordinates from global to local
-      int laneOffsetX = 0;
-      int laneOffsetY = 0;
-      ISwimlaneSymbol container = (nodeSymbol.eContainer() instanceof ISwimlaneSymbol)
-            ? (ISwimlaneSymbol) nodeSymbol.eContainer()
-            : null;
-      while (null != container)
+      if (nodeSymbolJto.has(ModelerConstants.X_PROPERTY)
+            && nodeSymbolJto.has(ModelerConstants.Y_PROPERTY))
       {
-         laneOffsetX += container.getXPos();
-         laneOffsetY += container.getYPos();
+         int x = extractInt(nodeSymbolJto, ModelerConstants.X_PROPERTY);
+         int y = extractInt(nodeSymbolJto, ModelerConstants.Y_PROPERTY);
 
-         // recurse
-         container = (container.eContainer() instanceof ISwimlaneSymbol)
-               ? (ISwimlaneSymbol) container.eContainer()
+         // adjust coordinates from global to local
+         int laneOffsetX = 0;
+         int laneOffsetY = 0;
+         ISwimlaneSymbol container = (nodeSymbol.eContainer() instanceof ISwimlaneSymbol)
+               ? (ISwimlaneSymbol) nodeSymbol.eContainer()
                : null;
-      }
+         while (null != container)
+         {
+            laneOffsetX += container.getXPos();
+            laneOffsetY += container.getYPos();
 
-      nodeSymbol.setXPos(x - laneOffsetX);
-      nodeSymbol.setYPos(y - laneOffsetY);
+            // recurse
+            container = (container.eContainer() instanceof ISwimlaneSymbol)
+                  ? (ISwimlaneSymbol) container.eContainer()
+                  : null;
+         }
 
-      if (nodeSymbolJto.has(ModelerConstants.WIDTH_PROPERTY))
-      {
-         int width = extractInt(nodeSymbolJto, ModelerConstants.WIDTH_PROPERTY);
-         nodeSymbol.setWidth(width);
-      }
-      if (nodeSymbolJto.has(ModelerConstants.HEIGHT_PROPERTY))
-      {
-         int height = extractInt(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY);
-         nodeSymbol.setHeight(height);
+         nodeSymbol.setXPos(x - laneOffsetX);
+         nodeSymbol.setYPos(y - laneOffsetY);
+
+         if (nodeSymbolJto.has(ModelerConstants.WIDTH_PROPERTY))
+         {
+            int width = extractInt(nodeSymbolJto, ModelerConstants.WIDTH_PROPERTY);
+            nodeSymbol.setWidth(width);
+         }
+         if (nodeSymbolJto.has(ModelerConstants.HEIGHT_PROPERTY))
+         {
+            int height = extractInt(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY);
+            nodeSymbol.setHeight(height);
+         }
+
       }
    }
 
