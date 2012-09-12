@@ -185,6 +185,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       System.out.println("===> Formal Parameters: ");
 
+      // TODO Better way to determine whether a process provides an interface?
+      
       if (processDefinition.getFormalParameters() != null)
       {
          processJson.addProperty(ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY,
@@ -201,17 +203,27 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             JsonObject formalParameterJson = new JsonObject();
 
             formalParametersJson.add(formalParameter.getId(), formalParameterJson);
-
             formalParameterJson.addProperty(ModelerConstants.ID_PROPERTY,
                   formalParameter.getId());
             formalParameterJson.addProperty(ModelerConstants.NAME_PROPERTY,
                   formalParameter.getName());
-            // formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
-            // formalParameter.getMode());
-
-            System.out.println(formalParameter);
-            System.out.println(formalParameter.getDataType());
-            System.out.println(formalParameter.getMode());
+            
+            if (formalParameter.getMode().equals(ModeType.IN))
+            {
+               formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, ModelerConstants.IN_PARAMETER_KEY);                     
+            }
+            else if (formalParameter.getMode().equals(ModeType.INOUT))
+            {
+               formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, ModelerConstants.INOUT_PARAMETER_KEY);                     
+            }
+            else 
+            {
+               formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, ModelerConstants.OUT_PARAMETER_KEY);                     
+            }
+            
+            // TODO @Rainer To be completed with the logic in toData()
+            
+            //DataTypeType dataType = formalParameter.getDataType();
          }
       }
       else
@@ -835,6 +847,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          loadDescription(dataJson, data);
          loadAttributes(data, dataJson);
 
+         // TODO @Rainer All of this should be a utility, should be completed (Dcoument Type) and also applied to e.g. formal parameters of process definition
+        
          if (data.getType().getId().equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
          {
             dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
