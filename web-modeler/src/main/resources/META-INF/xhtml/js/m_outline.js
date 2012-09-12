@@ -26,7 +26,7 @@ define(
 					.findExtension("viewManager");
 			var viewManager = viewManagerExtension.provider.create();
 
-			var isDataCreatedViaOutline = false;
+			var isElementCreatedViaOutline = false;
 			function getURL() {
 				return require('m_urlUtils').getContextName()
 						+ "/services/rest/modeler/" + new Date().getTime();
@@ -1579,6 +1579,7 @@ define(
 								"name" : name,
 								"id" : id
 							}));
+					isElementCreatedViaOutline = true;
 				}
 
 				/**
@@ -1620,6 +1621,7 @@ define(
 								"name" : name,
 								"id" : id
 							}));
+					isElementCreatedViaOutline = true;
 				}
 
 				/**
@@ -1728,7 +1730,7 @@ define(
 												"id" : id,
 												"primitiveType" : m_constants.STRING_PRIMITIVE_DATA_TYPE
 											}));
-					isDataCreatedViaOutline = true;
+					isElementCreatedViaOutline = true;
 				}
 
 				/**
@@ -1746,7 +1748,7 @@ define(
 										"name" : name,
 										"id" : id
 									}));
-					isDataCreatedViaOutline = true;
+					isElementCreatedViaOutline = true;
 				}
 
 				/**
@@ -1766,7 +1768,7 @@ define(
 										"id" : id,
 										"structuredDataTypeFullId" : fullId
 									}));
-					isDataCreatedViaOutline = true;
+					isElementCreatedViaOutline = true;
 				}
 
 				/**
@@ -1785,6 +1787,7 @@ define(
 								"name" : name,
 								"id" : id
 							}));
+					isElementCreatedViaOutline = true;
 				}
 
 				/**
@@ -1803,6 +1806,7 @@ define(
 								"name" : name,
 								"id" : id
 							}));
+					isElementCreatedViaOutline = true;
 				}
 
 				/**
@@ -1839,6 +1843,7 @@ define(
 										"name" : name,
 										"id" : id
 									}));
+					isElementCreatedViaOutline = true;
 				}
 
 				/**
@@ -1855,6 +1860,7 @@ define(
 										"name" : name,
 										"id" : id
 									}));
+					isElementCreatedViaOutline = true;
 				}
 
 				/**
@@ -1872,6 +1878,7 @@ define(
 										"name" : name,
 										"id" : id
 									}));
+					isElementCreatedViaOutline = true;
 				}
 
 				/**
@@ -1887,6 +1894,7 @@ define(
 								"name" : name,
 								"id" : id
 							}));
+					isElementCreatedViaOutline = true;
 				}
 
 				/**
@@ -1903,6 +1911,7 @@ define(
 										"name" : name,
 										"id" : id
 									}));
+					isElementCreatedViaOutline = true;
 				}
 
 				/**
@@ -1922,6 +1931,7 @@ define(
 										"name" : name,
 										"id" : id
 									}));
+					isElementCreatedViaOutline = true;
 				}
 
 				/**
@@ -2008,11 +2018,14 @@ define(
 				 *
 				 */
 				Outline.prototype.openElementView = function(element) {
-					jQuery("#outline").jstree("select_node", "#" + element.uuid);
-					jQuery("#outline").jstree("deselect_all");
-					//Delay of 1000ms is added to avoid issues of node getting out or rename mode if the view takes
-					// a little longer to open - observed specifically on first node creation after login,
-					window.setTimeout(function() {jQuery("#outline").jstree("rename", "#" + element.uuid)}, 1000);
+					if (isElementCreatedViaOutline) {
+						jQuery("#outline").jstree("select_node", "#" + element.uuid);
+						jQuery("#outline").jstree("deselect_all");
+						//Delay of 1000ms is added to avoid issues of node getting out or rename mode if the view takes
+						// a little longer to open - observed specifically on first node creation after login,
+						window.setTimeout(function() {jQuery("#outline").jstree("rename", "#" + element.uuid)}, 1000);
+					}
+					isElementCreatedViaOutline = false;
 				}
 
 				/**
@@ -2036,11 +2049,7 @@ define(
 								this.openElementView(this
 										.createStructuredDataType(command.changes.added[i]));
 							} else if (m_constants.DATA == command.changes.added[i].type) {
-								var createdData = this.createData(command.changes.added[i]);
-								if (isDataCreatedViaOutline) {
-									this.openElementView(createdData);
-								}
-								isDataCreatedViaOutline = false;
+								this.openElementView(this.createData(command.changes.added[i]));
 							} else if (m_constants.APPLICATION == command.changes.added[i].type) {
 								this.openElementView(this
 										.createApplication(command.changes.added[i]));
