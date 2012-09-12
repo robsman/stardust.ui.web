@@ -60,7 +60,7 @@ public class ModelRepository
    public EObject findModel(String modelId)
    {
       return (session.modelManagementStrategy() instanceof AbstractModelManagementStrategy)
-            ? ((AbstractModelManagementStrategy) session.modelManagementStrategy()).getOriginalModel(modelId)
+            ? ((AbstractModelManagementStrategy) session.modelManagementStrategy()).getNativeModel(modelId)
             : session.modelManagementStrategy().getModels().get(modelId);
    }
 
@@ -80,7 +80,7 @@ public class ModelRepository
                      public EObject execute(ModelType xpdlModel)
                      {
                         return (session.modelManagementStrategy() instanceof AbstractModelManagementStrategy)
-                              ? ((AbstractModelManagementStrategy) session.modelManagementStrategy()).getOriginalModel(xpdlModel.getId())
+                              ? ((AbstractModelManagementStrategy) session.modelManagementStrategy()).getNativeModel(xpdlModel.getId())
                               : xpdlModel;
                      }
                   });
