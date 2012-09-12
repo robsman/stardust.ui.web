@@ -447,20 +447,20 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                         .getAsJsonObject();
 
                   ModeType mode = null;
-                  
+
                   if (formalParameterJson.get(ModelerConstants.DIRECTION_PROPERTY).equals(ModelerConstants.IN_PARAMETER_KEY))
                   {
-                     mode = ModeType.IN;                     
+                     mode = ModeType.IN;
                   }
                   else if (formalParameterJson.get(ModelerConstants.DIRECTION_PROPERTY).equals(ModelerConstants.INOUT_PARAMETER_KEY))
                   {
-                     mode = ModeType.INOUT;                     
+                     mode = ModeType.INOUT;
                   }
-                  else 
+                  else
                   {
                      mode = ModeType.OUT;
                   }
-                  
+
                   if (formalParameterJson.get(ModelerConstants.DATA_TYPE_PROPERTY).equals(
                         ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
                   {
@@ -713,34 +713,22 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
             System.out.println("Access point " + accessPointJson);
 
-            AccessPointType accessPoint = AbstractElementBuilder.F_CWM.createAccessPointType();
 
-            application.getAccessPoint().add(accessPoint);
+            String id = accessPointJson.get(ModelerConstants.ID_PROPERTY)
+            .getAsString();
+            String name = accessPointJson.get(ModelerConstants.NAME_PROPERTY)
+            .getAsString();
+            String direction = accessPointJson.get(ModelerConstants.DIRECTION_PROPERTY).getAsString();
 
-            accessPoint.setId(accessPointJson.get(ModelerConstants.ID_PROPERTY)
-                  .getAsString());
-            accessPoint.setName(accessPointJson.get(ModelerConstants.NAME_PROPERTY)
-                  .getAsString());
-
-            // if (accessPointJson.get(ModelerConstants.ID_PROPERTY)
-            // .getAsString()
-            // .equals(DirectionType.IN_LITERAL))
-            // {
-            // accessPoint.setDirection(DirectionType.IN_LITERAL);
-            // }
-            // else
-            // {
-            // accessPoint.setDirection(DirectionType.OUT_LITERAL);
-            // }
+            AccessPointType accessPoint = null;
 
             if (accessPointJson.has(ModelerConstants.DATA_TYPE_PROPERTY))
             {
-               String dataType = accessPointJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
-                     .getAsString();
-
+               String dataType = accessPointJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString();
                if (dataType.equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
                {
-                  // accessPoint.setType(@accessPointJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY));
+                  String primitiveDataType = accessPointJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY).getAsString();
+                  accessPoint = getModelBuilderFacade().createPrimitiveAccessPoint(application, id, name, primitiveDataType, direction);
                }
                else if (dataType.equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
                {
@@ -804,7 +792,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          existing.put(def.getName(), def);
       }
       list.clear();
-      
+
       for (Map.Entry<String, JsonElement> entry : json.entrySet())
       {
          XSDTypeDefinition def = existing.get(entry.getKey());
@@ -833,7 +821,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       List<XSDConstrainingFacet> facets = def.getFacetContents();
       facets.clear();
-      
+
       if (simpleTypeJson.has("facets"))
       {
          JsonObject facetsJson = simpleTypeJson.getAsJsonObject("facets");
@@ -847,12 +835,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
    }
-   
+
    private static enum SupportedXSDConstrainingFacets
    {
       // (fh) Only added what is supported by the eclipse modeler. Should be all of them.
       enumeration, pattern, maxLength, minLength;
-      
+
       XSDConstrainingFacet create()
       {
          switch (this)
@@ -911,11 +899,11 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
       // else unsupported simple & complex content
    }
-   
+
    private static enum ParticleCardinality
    {
       required, optional, many, at_least_one;
-      
+
       void update(XSDParticle particle)
       {
          switch (this)
@@ -938,7 +926,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             break;
          }
       }
-      
+
       static ParticleCardinality get(String name)
       {
          if ("at least one".equals(name))
