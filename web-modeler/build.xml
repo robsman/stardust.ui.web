@@ -148,41 +148,7 @@
       </ipp:jar>
    </target>
    
-   <target name="preparePrerequisites" depends="init">
-      <!-- mkdir dir="${publish.src.artifacts.dir}"/>
-      
-      <unzip src="${processWorkbenchFeatures.dir}/processWorkbenchFeatures33-${carnot.version}.zip"
-         dest="${publish.src.artifacts.dir}">
-         <patternset id="pepperProcessWorkbenchFeatures33PluginDependencies">
-            <include name="**/org.eclipse.stardust.model.xpdl_${carnot.version}.jar" />
-            <include name="**/org.eclipse.stardust.modeling.repository.common_${carnot.version}.jar" />
-            <include name="**/org.eclipse.stardust.modeling.validation_${carnot.version}.jar" />
-         </patternset>
-      </unzip>
-      
-      <copyfile src="${publish.src.artifacts.dir}/eclipse/plugins/org.eclipse.stardust.model.xpdl_${carnot.version}.jar"
-              dest="${publish.src.artifacts.dir}/ipp-bpm-model-${ipp.version.full}.jar"/>
-      <copyfile src="${publish.src.artifacts.dir}/eclipse/plugins/org.eclipse.stardust.modeling.repository.common_${carnot.version}.jar"
-              dest="${publish.src.artifacts.dir}/ipp-bpm-repository-${ipp.version.full}.jar"/>
-      <copyfile src="${publish.src.artifacts.dir}/eclipse/plugins/org.eclipse.stardust.modeling.validation_${carnot.version}.jar"
-              dest="${publish.src.artifacts.dir}/ipp-bpm-model-validation-${ipp.version.full}.jar"/>
-      
-      <delete dir="${publish.src.artifacts.dir}/eclipse" / -->
-   </target>
-
-   <target name="publishPrerequisites" depends="preparePrerequisites, init"  xmlns:ivy="antlib:org.apache.ivy.ant">
-      <!-- ivy:publish srcivypattern="${project.dir}/prereq-ipp-bpm-model.xml" conf="prereq-ipp-bpm-model" resolver="buildenv" merge="false"
-         organisation="com.infinity.bpm" module="ipp-bpm-model" revision="${ipp.version.full}"
-         overwrite="true" haltonmissing="true"/>
-      <ivy:publish srcivypattern="${project.dir}/prereq-ipp-bpm-repository.xml" conf="prereq-ipp-bpm-repository" resolver="buildenv" merge="false"
-         organisation="com.infinity.bpm" module="ipp-bpm-repository" revision="${ipp.version.full}"
-         overwrite="true" haltonmissing="true"/>
-      <ivy:publish srcivypattern="${project.dir}/prereq-ipp-bpm-model-validation.xml" conf="prereq-ipp-bpm-model-validation" resolver="buildenv" merge="false"
-         organisation="com.infinity.bpm" module="ipp-bpm-model-validation" revision="${ipp.version.full}"
-         overwrite="true" haltonmissing="true"/ -->
-   </target>
-
-   <target name="build" depends="publishPrerequisites, jar, jar.src" xmlns:ivy="antlib:org.apache.ivy.ant">
+   <target name="build" depends="jar, jar.src" xmlns:ivy="antlib:org.apache.ivy.ant">
       <ivy:resolve file="${project.dir}/ivy.xml" />
       <ivy-publish-local artifactId="${artifactId}" artifactDir="${build.lib}" srcArtifactDir="${build.lib.src}" 
          conf="stardust-web-modeler-compile" 
