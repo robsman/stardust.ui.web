@@ -11,11 +11,9 @@
 package org.eclipse.stardust.ui.web.common;
 
 import static org.eclipse.stardust.ui.web.common.util.StringUtils.isEmpty;
-import static org.eclipse.stardust.ui.web.common.util.StringUtils.splitUnique;
 
 import java.io.Serializable;
 import java.util.Locale;
-import java.util.Set;
 
 import javax.faces.context.FacesContext;
 
@@ -32,21 +30,19 @@ public abstract class UiElement implements MessageSource, Serializable
    private final String name;
 
    private final String include;
-
-   private String requiredRoles;
    
-   private Set<String> requiredRolesSet;
+   private final String definedIn;
    
-   private String excludeRoles;
-
-   private Set<String> excludeRolesSet;
+   private final boolean global;
 
    private MessageSourceProvider messagesProvider;
 
-   public UiElement(String name, String include)
+   public UiElement(String name, String include, String definedIn, boolean global)
    {
       this.name = name;
       this.include = include;
+      this.definedIn = definedIn;
+      this.global = global;
    }
 
    protected abstract String getMessageCodePrefix();
@@ -181,32 +177,6 @@ public abstract class UiElement implements MessageSource, Serializable
       }
    }
 
-   /**
-    * @return
-    */
-   public Set<String> getRequiredRolesSet()
-   {
-      if(requiredRolesSet == null)
-      {
-         requiredRolesSet = splitUnique(requiredRoles, ",");
-      }
-
-      return requiredRolesSet;
-   }
-
-   /**
-    * @return
-    */
-   public Set<String> getExcludeRolesSet()
-   {
-      if(excludeRolesSet == null)
-      {
-         excludeRolesSet = splitUnique(excludeRoles, ",");
-      }
-
-      return excludeRolesSet;
-   }
-   
    public String getName()
    {
       return name;
@@ -217,23 +187,13 @@ public abstract class UiElement implements MessageSource, Serializable
       return include;
    }
 
-   public String getRequiredRoles()
+   public String getDefinedIn()
    {
-      return requiredRoles;
-   }
-   
-   public void setRequiredRoles(String requiredRoles)
-   {
-      this.requiredRoles = requiredRoles;
+      return definedIn;
    }
 
-   public String getExcludeRoles()
+   public boolean isGlobal()
    {
-      return excludeRoles;
-   }
-
-   public void setExcludeRoles(String excludeRoles)
-   {
-      this.excludeRoles = excludeRoles;
+      return global;
    }
 }

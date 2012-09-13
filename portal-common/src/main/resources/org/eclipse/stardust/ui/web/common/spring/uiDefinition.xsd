@@ -80,6 +80,14 @@
          <xsd:extension base="beans:identifiedType">
          
             <xsd:attribute name="name" type="xsd:string" use="required" />
+            
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+
+   <xsd:complexType name="AbstractSectionDefinitionWithPermissions" abstract="true">
+      <xsd:complexContent>
+         <xsd:extension base="AbstractSectionDefinition">
          
             <xsd:attribute name="requiredRoles" type="xsd:string" />
             
@@ -109,7 +117,7 @@
    
    <xsd:complexType name="View">
       <xsd:complexContent>
-         <xsd:extension base="AbstractSectionDefinition">
+         <xsd:extension base="AbstractSectionDefinitionWithPermissions">
              <xsd:sequence>
              	<xsd:element name="preferences" type="Preferences" minOccurs="0" maxOccurs="1" />
              </xsd:sequence>
@@ -134,7 +142,7 @@
    
    <xsd:complexType name="LaunchPanel">
       <xsd:complexContent>
-         <xsd:extension base="AbstractSectionDefinition">
+         <xsd:extension base="AbstractSectionDefinitionWithPermissions">
             <xsd:attribute name="include" type="xsd:string" />
          </xsd:extension>
       </xsd:complexContent>

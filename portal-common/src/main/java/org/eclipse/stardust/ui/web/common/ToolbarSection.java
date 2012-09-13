@@ -25,9 +25,9 @@ public class ToolbarSection extends UiElement
 
    private List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 
-   public ToolbarSection(String name, String include)
+   public ToolbarSection(String name, String include, String definedIn, boolean global)
    {
-      super(name, include);
+      super(name, include, definedIn, global);
    }
 
    @Override

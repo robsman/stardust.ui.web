@@ -23,12 +23,15 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.stardust.ui.web.common.*;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 
 /**
@@ -37,6 +40,8 @@ import org.w3c.dom.Element;
  */
 public class UiDefinitionParserUtils
 {
+   private static final Logger trace = LogManager.getLogger(UiDefinitionParserUtils.class);
+
    @SuppressWarnings("unchecked")
    public static BeanDefinitionBuilder parsePerspective(Element element)
    {
@@ -89,9 +94,14 @@ public class UiDefinitionParserUtils
             ? element.getAttribute(A_NAME)
             : element.getAttribute(A_ID));
 
-      pd.addPropertyValue(A_TARGET_PERSPECTIVE,
-            element.getAttribute(A_TARGET_PERSPECTIVE));
-
+      String targetPerspective = element.getAttribute(A_TARGET_PERSPECTIVE);
+      pd.addPropertyValue(A_TARGET_PERSPECTIVE, targetPerspective);
+      if (StringUtils.isNotEmpty(targetPerspective) && targetPerspective.contains(","))
+      {
+         trace.warn("Multiple values for attribute '" + A_TARGET_PERSPECTIVE + "' is now depricated. But it's used in '"
+               + element.getAttribute(A_ID) + "'.");
+      }
+      
       if (element.hasAttribute(A_MESSAGE_BUNDLES))
       {
          pd.addPropertyValue(A_MESSAGES, parseMessageSource(element));
@@ -108,6 +118,63 @@ public class UiDefinitionParserUtils
       }
 
       return pd;
+   }
+
+   /**
+    * @param element
+    * @return
+    */
+   private static Node getMainNode(Element element)
+   {
+      if (null != element.getParentNode())
+      {
+         Node node = element.getParentNode();
+         while(null != node)
+         {
+            if (E_PERSPECTIVE.equals(node.getLocalName()) || E_PERSPECTIVE_EXT.equals(node.getLocalName()))
+            {
+               return node;
+            }
+            
+            node = node.getParentNode();
+         }
+      }
+      return null;
+   }
+
+   /**
+    * @param element
+    * @return
+    */
+   private static String getDefinedIn(Element element)
+   {
+      Node node = getMainNode(element);
+      String definedIn = (null != node) ? definedIn = node.getAttributes().getNamedItem(A_ID).getNodeValue() : "";
+      return definedIn;
+   }
+
+   /**
+    * @param element
+    * @return
+    */
+   private static boolean isElementGlobal(Element element)
+   {
+      boolean global = false;
+      Node node = getMainNode(element);
+      if (null != node && E_PERSPECTIVE_EXT.equals(node.getLocalName()))
+      {
+         String targetPerspective = node.getAttributes().getNamedItem(A_TARGET_PERSPECTIVE).getNodeValue();
+         if (StringUtils.isNotEmpty(targetPerspective))
+         {
+            targetPerspective = targetPerspective.trim();
+            if ("*".equals(targetPerspective))
+            {
+               global = true;
+            }
+         }
+      }
+
+      return global;
    }
 
    @SuppressWarnings("unchecked")
@@ -140,6 +207,8 @@ public class UiDefinitionParserUtils
 
       uis.addConstructorArgValue(element.getAttribute(A_NAME));
       uis.addConstructorArgValue(element.getAttribute(A_INCLUDE));
+      uis.addConstructorArgValue(getDefinedIn(element));
+      uis.addConstructorArgValue(isElementGlobal(element));
       
       if (element.hasAttribute(A_REQUIRED_ROLES))
       {
@@ -244,6 +313,8 @@ public class UiDefinitionParserUtils
 
       uis.addConstructorArgValue(element.getAttribute(A_NAME));
       uis.addConstructorArgValue(element.getAttribute(A_INCLUDE));
+      uis.addConstructorArgValue(getDefinedIn(element));
+      uis.addConstructorArgValue(isElementGlobal(element));
 
       return uis;
    }

@@ -14,11 +14,11 @@ package org.eclipse.stardust.ui.web.common;
  * @author robert.sauer
  * @version $Revision: $
  */
-public class LaunchPanel extends UiElement
+public class LaunchPanel extends UiElementWithPermissions
 {
-   public LaunchPanel(String name, String include)
+   public LaunchPanel(String name, String include, String definedIn, boolean global)
    {
-      super(name, include);
+      super(name, include, definedIn, global);
    }
 
    @Override

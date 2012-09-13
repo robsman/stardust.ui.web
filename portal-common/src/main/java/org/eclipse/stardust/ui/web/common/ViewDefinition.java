@@ -19,7 +19,7 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
  * @author Robert.Sauer
  * @version $Revision: $
  */
-public class ViewDefinition extends UiElement
+public class ViewDefinition extends UiElementWithPermissions
 {
    private static final long serialVersionUID = 1L;
 
@@ -34,9 +34,9 @@ public class ViewDefinition extends UiElement
    private String identityParams;
    private Set<String> identityParamsSet;
 
-   public ViewDefinition(String name, String include)
+   public ViewDefinition(String name, String include, String definedIn, boolean global)
    {
-      super(name, include);
+      super(name, include, definedIn, global);
    }
    
    @Override

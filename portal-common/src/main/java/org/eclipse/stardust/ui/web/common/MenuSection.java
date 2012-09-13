@@ -16,9 +16,9 @@ package org.eclipse.stardust.ui.web.common;
  */
 public class MenuSection extends UiElement
 {
-   public MenuSection(String name, String include)
+   public MenuSection(String name, String include, String definedIn, boolean global)
    {
-      super(name, include);
+      super(name, include, definedIn, global);
    }
    
    @Override

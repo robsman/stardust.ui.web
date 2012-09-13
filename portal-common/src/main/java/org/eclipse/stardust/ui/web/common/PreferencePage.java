@@ -21,9 +21,9 @@ public class PreferencePage extends UiElement
     * @param name
     * @param include
     */
-   public PreferencePage(String name, String include)
+   public PreferencePage(String name, String include, String definedIn, boolean global)
    {
-      super(name, include);
+      super(name, include, definedIn, global);
    }
 
    @Override
