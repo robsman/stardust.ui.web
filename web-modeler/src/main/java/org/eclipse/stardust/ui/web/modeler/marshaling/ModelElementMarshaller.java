@@ -24,6 +24,7 @@ import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.util.IConnectionManager;
 import org.eclipse.stardust.model.xpdl.xpdl2.*;
+import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
 import org.eclipse.stardust.modeling.repository.common.descriptors.EObjectDescriptor;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.w3c.dom.Node;
@@ -186,7 +187,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       System.out.println("===> Formal Parameters: ");
 
       // TODO Better way to determine whether a process provides an interface?
-      
+
       if (processDefinition.getFormalParameters() != null)
       {
          processJson.addProperty(ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY,
@@ -207,23 +208,67 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   formalParameter.getId());
             formalParameterJson.addProperty(ModelerConstants.NAME_PROPERTY,
                   formalParameter.getName());
-            
+
             if (formalParameter.getMode().equals(ModeType.IN))
             {
-               formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, ModelerConstants.IN_PARAMETER_KEY);                     
+               formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, ModelerConstants.IN_PARAMETER_KEY);
             }
             else if (formalParameter.getMode().equals(ModeType.INOUT))
             {
-               formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, ModelerConstants.INOUT_PARAMETER_KEY);                     
+               formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, ModelerConstants.INOUT_PARAMETER_KEY);
             }
-            else 
+            else
             {
-               formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, ModelerConstants.OUT_PARAMETER_KEY);                     
+               formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, ModelerConstants.OUT_PARAMETER_KEY);
             }
-            
-            // TODO @Rainer To be completed with the logic in toData()
-            
-            //DataTypeType dataType = formalParameter.getDataType();
+
+            DataTypeType dataTypeType = formalParameter.getDataType();
+            ModelType model = ModelUtils.findContainingModel(formalParameter);
+
+            if (dataTypeType.getCarnotType().equals(
+                  ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
+            {
+               formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                     ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
+
+               String typeDeclarationId = dataTypeType.getDeclaredType().getId();
+
+               TypeDeclarationType typeDeclaration = model.getTypeDeclarations()
+                     .getTypeDeclaration(typeDeclarationId);
+
+               String fullId = getModelBuilderFacade().createFullId(model,
+                     typeDeclaration);
+
+               formalParameterJson.addProperty(
+                     ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
+            }
+            else if (dataTypeType.getCarnotType().equals(
+                  ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
+            {
+               formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                     ModelerConstants.DOCUMENT_DATA_TYPE_KEY);
+
+               String typeDeclarationId = dataTypeType.getDeclaredType().getId();
+
+               TypeDeclarationType typeDeclaration = model.getTypeDeclarations()
+                     .getTypeDeclaration(typeDeclarationId);
+
+               String fullId = getModelBuilderFacade().createFullId(model,
+                     typeDeclaration);
+
+               formalParameterJson.addProperty(
+                     ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
+            }
+            else if (dataTypeType.getCarnotType().equals(
+                  ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
+            {
+               formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                     ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
+               String type = formalParameter.getDataType().getBasicType().getType()
+                     .getLiteral();
+               formalParameterJson.addProperty(
+                     ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
+            }
          }
       }
       else
@@ -540,18 +585,18 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                      ModelerConstants.SUBPROCESS_ID,
                      getModelBuilderFacade().createFullId(
                            ModelUtils.findContainingModel(activity),
-                           activity.getImplementationProcess()));    
+                           activity.getImplementationProcess()));
                if (activity.getSubProcessMode().equals(SubProcessModeType.SYNC_SEPARATE_LITERAL))
                {
-                  activityJson.addProperty(ModelerConstants.SUBPROCESS_MODE_PROPERTY, ModelerConstants.SYNC_SEPARATE_KEY);                  
+                  activityJson.addProperty(ModelerConstants.SUBPROCESS_MODE_PROPERTY, ModelerConstants.SYNC_SEPARATE_KEY);
                }
                else if (activity.getSubProcessMode().equals(SubProcessModeType.SYNC_SHARED_LITERAL))
                {
-                  activityJson.addProperty(ModelerConstants.SUBPROCESS_MODE_PROPERTY, ModelerConstants.SYNC_SHARED_KEY);                  
+                  activityJson.addProperty(ModelerConstants.SUBPROCESS_MODE_PROPERTY, ModelerConstants.SYNC_SHARED_KEY);
                }
                else if (activity.getSubProcessMode().equals(SubProcessModeType.ASYNC_SEPARATE_LITERAL))
                {
-                  activityJson.addProperty(ModelerConstants.SUBPROCESS_MODE_PROPERTY, ModelerConstants.ASYNC_SEPARATE_KEY);                  
+                  activityJson.addProperty(ModelerConstants.SUBPROCESS_MODE_PROPERTY, ModelerConstants.ASYNC_SEPARATE_KEY);
                }
             }
             else if (activity.getApplication() != null)
@@ -847,8 +892,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          loadDescription(dataJson, data);
          loadAttributes(data, dataJson);
 
-         // TODO @Rainer All of this should be a utility, should be completed (Dcoument Type) and also applied to e.g. formal parameters of process definition
-        
          if (data.getType().getId().equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
          {
             dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
@@ -896,7 +939,27 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          {
             dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                   ModelerConstants.DOCUMENT_DATA_TYPE_KEY);
-            // dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID,
+            String uri = AttributeUtil.getAttributeValue(data,
+                  IConnectionManager.URI_ATTRIBUTE_NAME);
+            if (null != model)
+            {
+               IConnectionManager manager = model.getConnectionManager();
+               if (manager != null & uri != null)
+               {
+                  EObject eObject = manager.find(uri);
+                  if (eObject instanceof EObjectDescriptor)
+                  {
+                     eObject = ((EObjectDescriptor) eObject).getEObject();
+                  }
+                  ModelType containingModel = ModelUtils.findContainingModel(eObject);
+
+                  String fullId = getModelBuilderFacade().createFullId(containingModel,
+                        eObject);
+
+                  dataJson.addProperty(
+                        ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
+               }
+            }
          }
          else if (data.getType().getId().equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
          {
@@ -1830,11 +1893,11 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       setContainingModelIdProperty(structJson, structType);
       JsonObject typeDeclarationJson = new JsonObject();
       structJson.add(ModelerConstants.TYPE_DECLARATION_PROPERTY, typeDeclarationJson);
-      
+
       // TODO: external references
       XpdlTypeType type = structType.getDataType();
       typeDeclarationJson.add("type", toXpdlTypeJson(type));
-      
+
       JsonObject schemaJson = new JsonObject();
       ModelService.loadSchemaInfo(schemaJson, structType.getSchema());
       typeDeclarationJson.add("schema", schemaJson);
@@ -1846,7 +1909,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private JsonElement toXpdlTypeJson(XpdlTypeType type)
    {
       JsonObject typeJson = new JsonObject();
-      
+
       String name = type.eClass().getName();
       typeJson.addProperty("classifier", name.substring(0, name.length() - 4)); // exclude "Type" suffix
       if (type instanceof ExternalReferenceType)
@@ -1862,7 +1925,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             typeJson.addProperty("xref", ref.getXref());
          }
       }
-      
+
       return typeJson;
    }
 
