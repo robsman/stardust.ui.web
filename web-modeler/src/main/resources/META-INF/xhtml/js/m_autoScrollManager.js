@@ -84,7 +84,7 @@ define(
 					return false;
 				};
 
-				AutoScrollManager.prototype.isCursorInTopMargin = function() {
+				AutoScrollManager.prototype.isCursorInBottomMargin = function() {
 					if (pageY > parseInt(scrollDiv.position().top + scrollDiv.height() - PANNING_SENSOR_WIDTH)
 							&& pageY < parseInt(scrollDiv.position().top + scrollDiv.height())) {
 						return true;
@@ -93,7 +93,7 @@ define(
 					return false;
 				};
 
-				AutoScrollManager.prototype.isCursorInBottomMargin = function() {
+				AutoScrollManager.prototype.isCursorInTopMargin = function() {
 					if (pageY < parseInt(scrollDiv.position().top + PANNING_SENSOR_WIDTH)
 							&& pageY > parseInt(scrollDiv.position().top)) {
 						return true;
@@ -158,11 +158,11 @@ define(
 					scrollDiv.animate({scrollLeft : '-=' + PANNING_INCREMENT + 'px'}, PANNING_INTERVAL);
 				};
 
-				AutoScrollManager.prototype.scrollTop = function() {
+				AutoScrollManager.prototype.scrollBottom = function() {
 					scrollDiv.animate({scrollTop : '+=' + PANNING_INCREMENT + 'px'}, PANNING_INTERVAL);
 				};
 
-				AutoScrollManager.prototype.scrollBottom = function() {
+				AutoScrollManager.prototype.scrollTop = function() {
 					scrollDiv.animate({scrollTop : '-=' + PANNING_INCREMENT + 'px'}, PANNING_INTERVAL);
 				};
 			}
