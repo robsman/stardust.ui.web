@@ -98,7 +98,7 @@ public class UiDefinitionParserUtils
       pd.addPropertyValue(A_TARGET_PERSPECTIVE, targetPerspective);
       if (StringUtils.isNotEmpty(targetPerspective) && targetPerspective.contains(","))
       {
-         trace.warn("Multiple values for attribute '" + A_TARGET_PERSPECTIVE + "' is now depricated. But it's used in '"
+         trace.warn("Multiple values for attribute '" + A_TARGET_PERSPECTIVE + "' is now deprecated. But it's used in '"
                + element.getAttribute(A_ID) + "'.");
       }
       
