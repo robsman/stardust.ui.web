@@ -41,13 +41,20 @@ public class ProcessWorklistCacheManager implements InitializingBean
 
    private Map<String, ProcessDefinition> processDefinitions = new HashMap<String, ProcessDefinition>();
    private Map<ProcessDefinition, ProcessWorklistCacheEntry> processWorklists = new HashMap<ProcessDefinition, ProcessWorklistCacheEntry>();
+   private boolean initialized = false;
 
    /**
     * @return
     */
    public static ProcessWorklistCacheManager getInstance()
    {
-      return (ProcessWorklistCacheManager) FacesUtils.getBeanFromContext(BEAN_ID);
+      ProcessWorklistCacheManager cacheManager = (ProcessWorklistCacheManager) FacesUtils.getBeanFromContext(BEAN_ID);
+      if (!cacheManager.initialized)
+      {
+         cacheManager.reset();
+         cacheManager.initialized = true;
+      }
+      return cacheManager;
    }
 
    /*
@@ -65,7 +72,7 @@ public class ProcessWorklistCacheManager implements InitializingBean
    /**
     * 
     */
-   public void reset()
+   private void reset()
    {
       processDefinitions = new LinkedHashMap<String, ProcessDefinition>();
       processWorklists = new LinkedHashMap<ProcessDefinition, ProcessWorklistCacheEntry>();

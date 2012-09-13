@@ -56,7 +56,6 @@ public class MyProcessesPanelBean extends AbstractLaunchPanel implements Initial
    public void update()
    {
       initialized = true;
-      ProcessWorklistCacheManager.getInstance().reset();
       buildList();
    }
    

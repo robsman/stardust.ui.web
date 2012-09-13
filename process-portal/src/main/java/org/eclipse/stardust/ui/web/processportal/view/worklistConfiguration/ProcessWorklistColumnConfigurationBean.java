@@ -108,7 +108,6 @@ public class ProcessWorklistColumnConfigurationBean extends WorklistColumnConfig
    {
       try
       {
-         ProcessWorklistCacheManager.getInstance().reset();
          Set<ProcessDefinition> processDefs = ProcessWorklistCacheManager.getInstance().getProcesses();
 
          for (ProcessDefinition processDefinition : processDefs)
