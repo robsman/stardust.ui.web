@@ -53,13 +53,13 @@ define(
 							if ((true == thisCallbackRef.isCursorInRightMargin()) && (false == scrollRightEnabled)) {
 								thisCallbackRef.triggerScrollRight();
 							}
-							if ((true == thisCallbackRef.isCursorInLeftMargin()) && (false == scrollLeftEnabled)) {
+							else if ((true == thisCallbackRef.isCursorInLeftMargin()) && (false == scrollLeftEnabled)) {
 								thisCallbackRef.triggerScrollLeft();
 							}
-							if ((true == thisCallbackRef.isCursorInTopMargin()) && (false == scrollTopEnabled)) {
+							else if ((true == thisCallbackRef.isCursorInTopMargin()) && (false == scrollTopEnabled)) {
 								thisCallbackRef.triggerScrollTop();
 							}
-							if ((true == thisCallbackRef.isCursorInBottomMargin()) && (false == scrollBottomEnabled)) {
+							else if ((true == thisCallbackRef.isCursorInBottomMargin()) && (false == scrollBottomEnabled)) {
 								thisCallbackRef.triggerScrollBottom();
 							}
 						}

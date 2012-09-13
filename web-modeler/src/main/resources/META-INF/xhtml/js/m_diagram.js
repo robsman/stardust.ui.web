@@ -511,7 +511,8 @@ define(
 						var inAutoScrollMode = false;
 						if (true == currentDiagram.isInConnectionMode()
 								|| currentDiagram.mode == currentDiagram.RUBBERBAND_MODE
-								|| null != currentDiagram.newSymbol) {
+								|| null != currentDiagram.newSymbol
+								|| true == currentDiagram.isDragAndDropMode()) {
 							inAutoScrollMode = true;
 						} else {
 							inAutoScrollMode = false;
@@ -841,6 +842,17 @@ define(
 				Diagram.prototype.addActivitySymbol = function() {
 					this.newSymbol = m_activitySymbol.createActivitySymbol(
 							this, m_constants.MANUAL_ACTIVITY_TYPE);
+				};
+
+				/**
+				 *
+				 */
+				Diagram.prototype.isDragAndDropMode = function() {
+					if (parent.iDnD.getTransferObject()) {
+						return true;
+					}
+
+					return false;
 				};
 
 				/**
