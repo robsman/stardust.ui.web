@@ -43,10 +43,9 @@ define(
 				ConditionalPerformerView.prototype.initialize = function(
 						conditionalPerformer) {
 					this.initializeModelElementView();
+					this.initializeModelElement(conditionalPerformer);
 
 					this.conditionalPerformer = conditionalPerformer;
-
-					this.initializeModelElement(conditionalPerformer);
 
 					m_utils.debug("===> Conditional Performer");
 					m_utils.debug(conditionalPerformer);

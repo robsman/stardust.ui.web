@@ -53,6 +53,7 @@ define([ "m_utils", "m_constants", "m_model" ], function(m_utils, m_constants, m
 			this.name = name;
 			this.accessPointType = m_constants.ANY_ACCESS_POINT;
 			this.direction = direction;
+			this.attributes = {};
 		};
 
 		/**
@@ -62,16 +63,16 @@ define([ "m_utils", "m_constants", "m_model" ], function(m_utils, m_constants, m
 			this.id = id;
 			this.name = name;
 			this.accessPointType = m_constants.DATA_STRUCTURE_ACCESS_POINT;
-			this.datastructure = dataStructure;
 			this.datastructureFullId = dataStructure.getFullId();
 			this.direction = direction;
+			this.attributes = {};
+			this.attributes["carnot:engine:dataType"] = dataStructure.id;
 		};
 
 		/**
 		 * 
 		 */
-		AccessPoint.prototype.initializeFromJson = function() {
-			
+		AccessPoint.prototype.initializeFromJson = function() {			
 		};
 	}
 });

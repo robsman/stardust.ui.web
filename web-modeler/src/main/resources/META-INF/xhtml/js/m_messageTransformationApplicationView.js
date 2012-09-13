@@ -195,7 +195,7 @@ define(
 								},
 								function(event) {
 									event.data.view
-											.addInputData(
+											.addInputAccessPoint(
 													jQuery(
 															"#inputDataDialog #nameTextInput")
 															.val(),
@@ -214,10 +214,11 @@ define(
 								},
 								function(event) {
 									var inputDataTypeSelectInput = jQuery("#inputDataDialog #typeSelectInput");
-									var models = m_model.getModels();
-
-									for ( var m in models) {
-										var model = models[m];
+//									var models = m_model.getModels();
+//
+//									for ( var m in models) {
+//										var model = models[m];
+									var model = event.data.view.application.model;
 										for ( var n in model.structuredDataTypes) {
 											var dataStructure = model.structuredDataTypes[n];
 											inputDataTypeSelectInput
@@ -229,7 +230,7 @@ define(
 																	.getFullId()
 															+ "</option>");
 										}
-									}
+//									}
 
 									jQuery("#inputDataDialog").dialog("open");
 								});
@@ -250,7 +251,7 @@ define(
 								},
 								function(event) {
 									event.data.view
-											.addOutputData(
+											.addOutputAccessPoint(
 													jQuery(
 															"#outputDataDialog #nameTextInput")
 															.val(),
@@ -264,27 +265,31 @@ define(
 
 				jQuery("#addOutputDataButton")
 						.click(
-								function() {
+								{
+									view : this
+								},
+								function(event) {
 									var outputDataTypeSelectInput = jQuery("#outputDataDialog #typeSelectInput");
 									var typeDeclarations = m_typeDeclaration
 											.getTypeDeclarations();
 
-									var models = m_model.getModels();
-
-									for ( var m in models) {
-										var model = models[m];
-										for ( var n in model.structuredDataTypes) {
-											var dataStructure = model.structuredDataTypes[n];
-											outputDataTypeSelectInput
-													.append("<option value='"
-															+ dataStructure
-																	.getFullId()
-															+ "'>"
-															+ dataStructure
-																	.getFullId()
-															+ "</option>");
-										}
+									// var models = m_model.getModels();
+									//
+									// for ( var m in models) {
+									// var model = models[m];
+									var model = event.data.view.application.model;
+									for ( var n in model.structuredDataTypes) {
+										var dataStructure = model.structuredDataTypes[n];
+										outputDataTypeSelectInput
+												.append("<option value='"
+														+ dataStructure
+																.getFullId()
+														+ "'>"
+														+ dataStructure
+																.getFullId()
+														+ "</option>");
 									}
+									// }
 
 									jQuery("#outputDataDialog").dialog("open");
 								});
@@ -328,7 +333,7 @@ define(
 					m_utils.debug(application);
 
 					this
-					.convertFromMappingsXml(this.application.attributes["messageTransformation:TransformationProperty"]);
+							.convertFromMappingsXml(this.application.attributes["messageTransformation:TransformationProperty"]);
 
 					m_utils.debug("===> Mapping Expressions");
 					m_utils.debug(this.mappingExpressions);
@@ -376,12 +381,10 @@ define(
 								.substr(fieldMappings[n]
 										.indexOf('mappingExpression="') + 19,
 										fieldMappings[n].indexOf('"/>') - 10);
-						mappingExpression = mappingExpression
-						.substr(0,
+						mappingExpression = mappingExpression.substr(0,
 								mappingExpression.indexOf('"/>'));
-						
-						fieldPath = fieldPath.replace(/\//g,
-								".");
+
+						fieldPath = fieldPath.replace(/\//g, ".");
 
 						this.mappingExpressions[fieldPath] = mappingExpression;
 					}
@@ -467,24 +470,24 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.addInputAccessPoint = function(
 						dataName, dataStructure) {
-					
 					this.application.accessPoints[dataName] = m_accessPoint
-					.createFromDataStructure(dataStructure, dataName,
-							dataName, m_constants.IN_ACCESS_POINT);
-					
-					addInputData(this.application.accessPoints[dataName]);
+							.createFromDataStructure(dataStructure, dataName,
+									dataName, m_constants.IN_ACCESS_POINT);
+
+					this.addInputData(this.application.accessPoints[dataName]);
 				};
-				
+
 				/**
 				 * 
 				 */
 				MessageTransformationApplicationView.prototype.addInputData = function(
 						accessPoint) {
 					// TODO Works only for references in the same model
-					
-					var typeDeclaration = 
-						m_model
-						.findDataStructure(this.application.model.id + ":" + accessPoint.attributes["carnot:engine:dataType"]).typeDeclaration;
+
+					var typeDeclaration = m_model
+							.findDataStructure(this.application.model.id
+									+ ":"
+									+ accessPoint.attributes["carnot:engine:dataType"]).typeDeclaration;
 
 					typeDeclaration.resolveTypes(m_typeDeclaration
 							.getTypeDeclarations());
@@ -500,22 +503,23 @@ define(
 				MessageTransformationApplicationView.prototype.addOutputAccessPoint = function(
 						dataName, dataStructure) {
 					this.application.accessPoints[dataName] = m_accessPoint
-					.createFromDataStructure(dataStructure, dataName,
-							dataName, m_constants.OUT_ACCESS_POINT);
-					
-					addOutputData(this.application.accessPoints[dataName]);
+							.createFromDataStructure(dataStructure, dataName,
+									dataName, m_constants.OUT_ACCESS_POINT);
+
+					this.addOutputData(this.application.accessPoints[dataName]);
 				};
-				
+
 				/**
 				 * 
 				 */
 				MessageTransformationApplicationView.prototype.addOutputData = function(
 						accessPoint) {
 					// TODO Works only for references in the same model
-					
-					var typeDeclaration = 
-						m_model
-						.findDataStructure(this.application.model.id + ":" + accessPoint.attributes["carnot:engine:dataType"]).typeDeclaration;
+
+					var typeDeclaration = m_model
+							.findDataStructure(this.application.model.id
+									+ ":"
+									+ accessPoint.attributes["carnot:engine:dataType"]).typeDeclaration;
 
 					typeDeclaration.resolveTypes(m_typeDeclaration
 							.getTypeDeclarations());
@@ -530,8 +534,8 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.initializeInputTableRowsRecursively = function(
 						accessPoint, element, parentPath) {
-					var path = parentPath == null ? accessPoint.id : (parentPath
-							+ "." + element.name);
+					var path = parentPath == null ? accessPoint.id
+							: (parentPath + "." + element.name);
 					var tableRow = {};
 
 					this.inputTableRows.push(tableRow);
@@ -560,8 +564,8 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.initializeOutputTableRowsRecursively = function(
 						accessPoint, element, parentPath) {
-					var path = parentPath == null ? accessPoint.id : (parentPath
-							+ "." + element.name);
+					var path = parentPath == null ? accessPoint.id
+							: (parentPath + "." + element.name);
 					var tableRow = {};
 
 					this.outputTableRows.push(tableRow);
@@ -575,8 +579,10 @@ define(
 					tableRow.typeName = parentPath == null ? ""
 							: element.typeName;
 					m_utils.debug("===> Path: " + path);
-					m_utils.debug("===> Expression: " + this.mappingExpressions[path]);
-					tableRow.mappingExpression = this.mappingExpressions[path] == null ? "" : this.mappingExpressions[path];
+					m_utils.debug("===> Expression: "
+							+ this.mappingExpressions[path]);
+					tableRow.mappingExpression = this.mappingExpressions[path] == null ? ""
+							: this.mappingExpressions[path];
 					tableRow.problems = "";
 
 					if (element.children == null) {
@@ -611,7 +617,7 @@ define(
 								+ tableRows[tableRow].name + "</span>";
 						content += "</td>";
 						content += "<td>" + tableRows[tableRow].typeName;
-						+ "</td>";
+						+"</td>";
 
 						if (source) {
 							content += "</tr>";
@@ -645,7 +651,7 @@ define(
 							});
 
 						} else {
-							content += "<td class=\"mapping\">";											
+							content += "<td class=\"mapping\">";
 							content += tableRows[tableRow].mappingExpression;
 							content += "<td/>";
 							content += "<td>";
@@ -932,7 +938,7 @@ define(
 						command) {
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
 						this.initialize(this.application);
-						
+
 						return;
 					}
 

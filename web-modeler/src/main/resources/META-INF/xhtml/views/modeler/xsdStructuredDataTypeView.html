@@ -7,13 +7,10 @@
 	xmlns:ice="http://www.icesoft.com/icefaces/component"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <head>
-<title>Modeler Canvas</title>
+<title>Structured Data Type View</title>
 <link rel="stylesheet" type="text/css"
 	href="../../css/jquery-ui-1.8.20.custom.css"></link>
 <link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript"
-	data-main="../../js/xsdStructuredDataTypeViewMain"
-	src="../../js/libs/require/2.0.5/require.js"></script>
 <style>
 #typeDeclarationsTable {
 	width: 600px;
@@ -31,6 +28,9 @@
 	width: 100px;
 }
 </style>
+<script type="text/javascript"
+	data-main="../../js/xsdStructuredDataTypeViewMain"
+	src="../../js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
 	<div class="panel">
@@ -41,7 +41,7 @@
 					<div style="margin-bottom: 10px;">
 						<table cellpadding="0" cellspacing="0" class="fieldSetTable">
 							<tr id="guidOutputRow">
-								<td><label for="guidOutput">GUID</label>
+								<td><label for="guidOutput">UUID</label>
 								</td>
 								<td><div id="guidOutput" class="output">168999</div>
 								</td>
@@ -71,49 +71,16 @@
 				</td>
 			</tr>
 			<tr>
-				<td>
-					<div style="margin-bottom: 10px; margin-top: 10px;">
-						<table cellpadding="0" cellspacing="0" class="layoutTable">
-							<tr>
-								<td><input id="defineManuallyRadioButton" type="radio" />
-								</td>
-								<td>Define manually</td>
-								<td><input id="importFromUrlRadioButton" type="radio" />
-								</td>
-								<td>Import from URL</td>
-							</tr>
-						</table>
-					</div></td>
-			</tr>
-			<tr id="urlRow">
-				<td colspan="2">
-					<div style="margin-bottom: 10px;">
-						<table cellpadding="0" cellspacing="0" class="layoutTable">
-							<tr>
-								<td><input id="urlTextInput" type="text"
-									style="width: 400px;" />
-								</td>
-								<td><input id="loadFromUrlButton" type="button"
-									value="Load" />
-								</td>
-							</tr>
-						</table>
-					</div></td>
-			</tr>
-			<tr>
 				<td><div class="heading">Data Structure Elements</div></td>
 			</tr>
 			<tr>
-				<td><div id="structureDefinitionHintPanel"
-						style="margin-bottom: 10px;">Select a type declaration from
-						the imported schema.</div>
-					<div id="manualDefinitionRadioButtonPanel"
+				<td>
+					<div
 						style="margin-bottom: 10px;">
 						<table cellpadding="0" cellspacing="0" class="layoutTable">
 							<tr>
-								<td colspan="2">Create a type definition manually by adding
-									schema elements, specifying their names and cardinalities. A
-									name for the Type Declaration has to be provided.</td>
+								<td colspan="2">Create and modify a Data Structure manually by adding
+									elements, specifying their names and cardinalities.</td>
 							</tr>
 							<tr>
 								<td>
@@ -145,8 +112,7 @@
 													<table cellpadding="0" cellspacing="0" class="layoutTable">
 														<tr>
 															<td><input id="deleteElementButton" type="image"
-																src="../../images/icons/delete.png" height="16"
-																width="16" title="Delete" alt="Delete"
+																src="../../images/icons/delete.png" title="Delete" alt="Delete"
 																class="toolbarButton" />
 															</td>
 															<td><img
@@ -165,7 +131,7 @@
 															</td>
 														</tr>
 													</table>
-												</div>
+												</div></td>
 										</tr>
 										<tr>
 											<td>

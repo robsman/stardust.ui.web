@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -17,9 +17,9 @@ define(
 				"m_elementConfiguration", "m_messageDisplay" ],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_communicationController, m_commandsController, m_command,
-				m_session, m_user, m_model, m_process, m_application, m_dataStructure,
-				m_participant, m_outlineToolbarController, m_data,
-				m_elementConfiguration, m_messageDisplay) {
+				m_session, m_user, m_model, m_process, m_application,
+				m_dataStructure, m_participant, m_outlineToolbarController,
+				m_data, m_elementConfiguration, m_messageDisplay) {
 
 			// TODO Find better location
 			var viewManagerExtension = m_extensionManager
@@ -364,7 +364,8 @@ define(
 			var downloadModel = function(modelUUID) {
 				var model = m_model.findModelByUuid(modelUUID);
 
-				window.location = require("m_urlUtils").getModelerEndpointUrl() + "/models/" + model.id + "/download";
+				window.location = require("m_urlUtils").getModelerEndpointUrl()
+						+ "/models/" + model.id + "/download";
 			}
 
 			// TODO Is this still needed? Delete after verifying
@@ -459,32 +460,43 @@ define(
 				if (type == 'model') {
 					renameView("modelView", uuid, "modelName", name);
 				} else if (type == 'process') {
-					renameView("processDefinitionView", uuid, "processName", name);
+					renameView("processDefinitionView", uuid, "processName",
+							name);
 				} else if (type == "roleParticipant") {
 					renameView("roleView", uuid, "roleName", name)
 				} else if (type == 'organizationParticipant') {
-					renameView("organizationView", uuid, "organizationName", name)
+					renameView("organizationView", uuid, "organizationName",
+							name)
 				} else if (m_elementConfiguration.isValidDataType(type)) {
 					renameView("dataView", uuid, "dataName", name)
 				} else if (type == "webservice") {
-					renameView("webServiceApplicationView", uuid, "applicationName", name)
+					renameView("webServiceApplicationView", uuid,
+							"applicationName", name)
 				} else if (type == "messageTransformationBean") {
-					renameView("messageTransformationApplicationView", uuid, "applicationName", name)
+					renameView("messageTransformationApplicationView", uuid,
+							"applicationName", name)
 				} else if (type == "camelBean") {
-					renameView("camelApplicationView", uuid, "applicationName", name)
+					renameView("camelApplicationView", uuid, "applicationName",
+							name)
 				} else if (type == "interactive") {
-					renameView("uiMashupApplicationView", uuid, "applicationName", name)
+					renameView("uiMashupApplicationView", uuid,
+							"applicationName", name)
 				} else if (m_elementConfiguration.isUnSupportedAppType(type)) {
-					renameView("genericApplicationView", uuid, "applicationName", name)
+					renameView("genericApplicationView", uuid,
+							"applicationName", name)
 				} else if (type == "structuredDataType") {
-					renameView("xsdStructuredDataTypeView", uuid, "structuredDataTypeName", name)
+					renameView("xsdStructuredDataTypeView", uuid,
+							"structuredDataTypeName", name)
 				} else if (type == "conditionalPerformerParticipant") {
-					renameView("conditionalPerformerView", uuid, "conditionalPerformerName", name)
+					renameView("conditionalPerformerView", uuid,
+							"conditionalPerformerName", name)
 				}
 			}
 
-			var renameView = function(viewId, viewIdentifier, nameParamName, newName) {
-				viewManager.updateView(viewId, nameParamName + "=" + newName, viewIdentifier);
+			var renameView = function(viewId, viewIdentifier, nameParamName,
+					newName) {
+				viewManager.updateView(viewId, nameParamName + "=" + newName,
+						viewIdentifier);
 			}
 
 			var refresh = function() {
@@ -551,7 +563,8 @@ define(
 										viewManager.openView("modelView",
 												"modelId=" + model.id
 														+ "&modelName="
-														+ model.name, model.uuid);
+														+ model.name,
+												model.uuid);
 									} else if (data.rslt.obj.attr('rel') == "roleParticipant") {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
@@ -751,8 +764,7 @@ define(
 																+ "&fullId="
 																+ structuredDataType
 																		.getFullId(),
-														structuredDataType
-																.uuid);
+														structuredDataType.uuid);
 									} else if (data.rslt.obj.attr('rel') == "conditionalPerformerParticipant") {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
@@ -773,8 +785,7 @@ define(
 																+ "&fullId="
 																+ conditionalPerformer
 																		.getFullId(),
-														conditionalPerformer
-																.uuid);
+														conditionalPerformer.uuid);
 									}
 
 									else {
@@ -1129,10 +1140,18 @@ define(
 													"createXSDStructuredDataType" : {
 														"label" : "Create Data Type",
 														"action" : function(obj) {
-															// createXsdStructuredDataType(obj
-															// .attr("modelId"));
 															createXsdStructuredDataType(obj
 																	.attr("modelUUID"));
+														}
+													},
+													importTypeDeclarations : {
+														"label" : "Import Type Declarations",
+														"action" : function(obj) {
+															var model = m_model
+																	.findModelByUuid(obj
+																			.attr("modelUUID"));
+
+															importTypeDeclarations(model);
 														}
 													}
 												};
@@ -1527,7 +1546,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function prepareInfoDialogPoupupData(msg, okText) {
 					return {
@@ -1545,7 +1564,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function prepareErrorDialogPoupupData(msg, okText) {
 					return {
@@ -1563,7 +1582,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createModel() {
 					var count = 0;
@@ -1583,7 +1602,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteModel(modelId) {
 					var model = m_model.findModel(modelId);
@@ -1592,7 +1611,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function getUniqueNameForElement(modelId, namePrefix) {
 					var suffix = 0;
@@ -1610,7 +1629,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createProcess(modelId) {
 					var name = getUniqueNameForElement(modelId, "Process ");
@@ -1625,7 +1644,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteProcess(processId, modelUUID) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1647,7 +1666,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteParticipant(modelUUID, id) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1659,7 +1678,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteApplication(modelUUID, appId) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1671,7 +1690,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteData(modelUUID, id) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1712,7 +1731,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createPrimitiveData(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1734,7 +1753,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createDocumentData(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1752,7 +1771,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createStructuredData(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1772,7 +1791,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createRole(modelUUId, targetUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1791,26 +1810,28 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createConditionalPerformer(modelUUId, targetUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
-					var name = getUniqueNameForElement(model.id, "Conditional Performer ");
+					var name = getUniqueNameForElement(model.id,
+							"Conditional Performer ");
 					var id = m_utils.generateIDFromName(name);
 					var targetOid = (targetUUID ? m_model
 							.findElementInModelByUuid(model.id, targetUUID).oid
 							: model.id);
 
 					m_commandsController.submitCommand(m_command
-							.createCreateConditionalPerformerCommand(model.id, targetOid, {
-								"name" : name,
-								"id" : id
-							}));
+							.createCreateConditionalPerformerCommand(model.id,
+									targetOid, {
+										"name" : name,
+										"id" : id
+									}));
 					isElementCreatedViaOutline = true;
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function setAsManager(modelUUId, orgUUID, roleUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1826,7 +1847,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createOrganization(modelUUId, targetUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1847,7 +1868,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createWebServiceApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1864,7 +1885,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createMessageTransformationApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1882,7 +1903,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createCamelApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1898,7 +1919,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createUiMashupApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1915,7 +1936,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 * @param modelId
 				 * @returns
 				 */
@@ -1935,7 +1956,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 * @param modelId
 				 * @param id
 				 * @returns
@@ -1964,15 +1985,47 @@ define(
 					parent.iPopupDialog.openPopup(popupData);
 				}
 
-				function changeProfileHandler(profile)
-				{
+				/**
+				 * 
+				 * @param modelId
+				 * @param id
+				 * @returns
+				 */
+				function importTypeDeclarations(model) {
+					var popupData = {
+						attributes : {
+							width : "900px",
+							height : "700px",
+							src : "../bpm-modeler/views/modeler/importTypeDeclarationsWizard.html"
+						},
+						payload : {
+							model : model,
+							importCallback : function(parameter) {
+//								m_commandsController
+//										.submitCommand(m_command
+//												.createCreateCommand(
+//														"/models/"
+//																+ application.model.id
+//																+ "/processes/createWrapperProcess",
+//														parameter));
+							}
+						}
+					};
+
+					parent.iPopupDialog.openPopup(popupData);
+				}
+
+				function changeProfileHandler(profile) {
 					m_user.setCurrentRole(profile);
-					m_commandsController.broadcastCommand(m_command.createUserProfileChangeCommand(profile));
+					m_commandsController.broadcastCommand(m_command
+							.createUserProfileChangeCommand(profile));
 				}
 
 				if (window.parent.EventHub != null) {
-					window.parent.EventHub.events.subscribe("CHANGE_PROFILE", changeProfileHandler);
-					window.parent.EventHub.events.subscribe("RELOAD_MODELS", refresh);
+					window.parent.EventHub.events.subscribe("CHANGE_PROFILE",
+							changeProfileHandler);
+					window.parent.EventHub.events.subscribe("RELOAD_MODELS",
+							refresh);
 				}
 
 				readAllModels();
@@ -1995,18 +2048,18 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function Outline() {
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.toString = function() {
 					return "Lightdust.Outline";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.initialize = function() {
 					// Register with Event Bus
@@ -2015,21 +2068,27 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.openElementView = function(element) {
 					if (isElementCreatedViaOutline) {
-						jQuery("#outline").jstree("select_node", "#" + element.uuid);
+						jQuery("#outline").jstree("select_node",
+								"#" + element.uuid);
 						jQuery("#outline").jstree("deselect_all");
-						//Delay of 1000ms is added to avoid issues of node getting out or rename mode if the view takes
-						// a little longer to open - observed specifically on first node creation after login,
-						window.setTimeout(function() {jQuery("#outline").jstree("rename", "#" + element.uuid)}, 1000);
+						// Delay of 1000ms is added to avoid issues of node
+						// getting out or rename mode if the view takes
+						// a little longer to open - observed specifically on
+						// first node creation after login,
+						window.setTimeout(function() {
+							jQuery("#outline").jstree("rename",
+									"#" + element.uuid)
+						}, 1000);
 					}
 					isElementCreatedViaOutline = false;
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.processCommand = function(command) {
 					m_utils.debug("===> Outline Process Event");
@@ -2042,22 +2101,29 @@ define(
 						for ( var i = 0; i < obj.changes.added.length; i++) {
 							// Create Process
 							if (m_constants.PROCESS == command.changes.added[i].type) {
-								this.openElementView(this.createProcess(command.changes.added[i]));
+								this
+										.openElementView(this
+												.createProcess(command.changes.added[i]));
 							} else if (m_constants.MODEL == command.changes.added[i].type) {
-								this.openElementView(this.createModel(command.changes.added[i]));
+								this.openElementView(this
+										.createModel(command.changes.added[i]));
 							} else if (m_constants.TYPE_DECLARATION_PROPERTY == command.changes.added[i].type) {
-								this.openElementView(this
-										.createStructuredDataType(command.changes.added[i]));
+								this
+										.openElementView(this
+												.createStructuredDataType(command.changes.added[i]));
 							} else if (m_constants.DATA == command.changes.added[i].type) {
-								this.openElementView(this.createData(command.changes.added[i]));
-							} else if (m_constants.APPLICATION == command.changes.added[i].type) {
 								this.openElementView(this
-										.createApplication(command.changes.added[i]));
+										.createData(command.changes.added[i]));
+							} else if (m_constants.APPLICATION == command.changes.added[i].type) {
+								this
+										.openElementView(this
+												.createApplication(command.changes.added[i]));
 							} else if (m_constants.ROLE_PARTICIPANT_TYPE == command.changes.added[i].type
 									|| m_constants.ORGANIZATION_PARTICIPANT_TYPE == command.changes.added[i].type
 									|| m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == command.changes.added[i].type) {
-								this.openElementView(this
-										.createParticipant(command.changes.added[i]));
+								this
+										.openElementView(this
+												.createParticipant(command.changes.added[i]));
 							}
 						}
 						for ( var i = 0; i < obj.changes.modified.length; i++) {
@@ -2105,7 +2171,8 @@ define(
 													m_constants.TEAM_LEADER_KEY,
 													obj.changes.modified[i].isTeamLeader);
 								}
-								renameElementViewLabel(node.attr("rel"), node.attr("id"), node.attr("name"));
+								renameElementViewLabel(node.attr("rel"), node
+										.attr("id"), node.attr("name"));
 							}
 						}
 						for ( var i = 0; i < obj.changes.removed.length; i++) {
@@ -2136,7 +2203,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createModel = function(data) {
 					var outlineObj = this;
@@ -2176,7 +2243,8 @@ define(
 					jQuery.each(data.dataItems, function(key, value) {
 						outlineObj.createData(value, true);
 					});
-					jQuery("#outline").jstree("close_node","#" + "data_" + data.uuid);
+					jQuery("#outline").jstree("close_node",
+							"#" + "data_" + data.uuid);
 					jQuery("#outline").jstree("create", "#" + data.uuid,
 							"last", {
 								"attr" : {
@@ -2199,13 +2267,14 @@ define(
 					jQuery.each(data.participants, function(key, value) {
 						outlineObj.createParticipant(value, true);
 					});
-					jQuery("#outline").jstree("close_node","#" + "participants_" + data.uuid);
+					jQuery("#outline").jstree("close_node",
+							"#" + "participants_" + data.uuid);
 
 					return model;
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteModel = function(transferObject) {
 					m_model.deleteModel(transferObject.id);
@@ -2214,7 +2283,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteProcess = function(transferObject) {
 					jQuery("#outline").jstree("remove",
@@ -2225,7 +2294,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteApplication = function(transferObject) {
 					jQuery("#outline").jstree("remove",
@@ -2236,7 +2305,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteParticipant = function(transferObject) {
 					jQuery("#outline").jstree("remove",
@@ -2248,7 +2317,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteTypeDeclaration = function(
 						transferObject) {
@@ -2262,7 +2331,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteData = function(transferObject) {
 					jQuery("#outline").jstree("remove",
@@ -2273,7 +2342,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createProcess = function(transferObject) {
 					var model = m_model.findModel(transferObject.modelId);
@@ -2300,7 +2369,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createApplication = function(transferObject) {
 					var model = m_model.findModel(transferObject.modelId);
@@ -2326,7 +2395,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createData = function(transferObject) {
 					var model = m_model
@@ -2352,7 +2421,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createStructuredDataType = function(
 						transferObject) {
@@ -2379,7 +2448,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createParticipant = function(transferObject) {
 					var model = m_model

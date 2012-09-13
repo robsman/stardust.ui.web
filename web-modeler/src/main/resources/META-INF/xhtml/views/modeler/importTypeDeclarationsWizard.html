@@ -1,0 +1,130 @@
+<html>
+<head>
+<link type="text/css" rel="stylesheet"
+	href="../../../common/css/iPopupDialogStyle.css" />
+<link rel="stylesheet" type="text/css"
+	href="../../css/jquery-ui-1.8.20.custom.css"></link>
+<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
+<style>
+.swWizardPopupDialogCloseControl {
+	background:
+		url("../../../common/images/icons/dialog-windowbttn-close.png")
+		no-repeat scroll 0 50% transparent !important;
+	border: medium none !important;
+	cursor: pointer;
+	float: right;
+	padding: 5px 10px;
+}
+
+.swWizardPopupDialogContentArea {
+	background-color: white;
+	height: 400px;
+	width: 100%;
+}
+</style>
+<script type="text/javascript"
+	data-main="../../js/importTypeDeclarationsWizardMain"
+	src="../../js/libs/require/2.0.5/require.js"></script>
+</head>
+<body style="width: 100%; height: 100%; overflow: auto; margin: 0px;">
+	<div id="titleBar" class="iPopupDialogTitleBar">
+		<span id="titleText" class="iPopupDialogTitleText">XSD Data
+			Structure Import</span> <input id="dialogCloseIcon" type="button"
+			title="Close" class="swWizardPopupDialogCloseControl" />
+	</div>
+	<div id="contentArea" class="swWizardPopupDialogContentArea">
+		<div class="iPopupDialogSpacerDiv"></div>
+		<div style="margin: 10px;">
+			<table>
+				<tr>
+					<td>
+						<table>
+							<tr>
+								<td><img src="../../images/icons/wand.png" /></td>
+								<td><label>Import Data Structures from XSD or WSDL.</label>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<div style="margin-bottom: 10px;">
+							<table cellpadding="0" cellspacing="0" class="layoutTable">
+								<tr>
+									<td><label for="urlTextInput">URL</label>
+									</td>
+									<td><input id="urlTextInput" type="text"
+										style="width: 400px;" />
+									</td>
+									<td><input id="loadFromUrlButton" type="button"
+										value="Load" />
+									</td>
+								</tr>
+							</table>
+						</div></td>
+				</tr>
+				<tr>
+					<td><div class="heading">Data Structure Elements</div>
+					</td>
+				</tr>
+				<tr>
+					<td><div id="structureDefinitionHintPanel"
+							style="margin-bottom: 10px;">
+							<label>Select a type declaration from the imported
+								schema.<label
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<table cellpadding="0" cellspacing="0" class="layoutTable">
+							<tr>
+								<td>
+									<div class="panelBorder">
+										<table cellpadding="0" cellspacing="0" class="layoutTable">
+										<tr>
+											<td><div class="toolBar">
+													<table cellpadding="0" cellspacing="0" class="layoutTable">
+														<tr>
+															<td><input id="selectAllCheckbox" type="checkbox" title="Select/Deselect All"/>
+															<label for="selectAllCheckbox">Select/Deselect All</label>
+															</td>
+														</tr>
+													</table>
+												</div></td>
+										</tr>
+											<tr>
+												<td>
+													<div class="dataTable">
+														<table id="typeDeclarationsTable" cellpadding="0"
+															cellspacing="0" class="treeTable">
+															<thead>
+																<tr>
+																	<th id="elementColumn">Element</th>
+																	<th id="typeColumn">Type</th>
+																	<th id="cardinalityColumn" class="last">Cardinality</th>
+																</tr>
+															</thead>
+															<tbody />
+														</table>
+													</div>
+												</td>
+											</tr>
+										</table>
+									</div>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div id="controlsBar" class="iPopupDialogControlsArea">
+		<input id="importButton" type="button" value="Import"
+			class="iPopupDialogControlButton" /> <input id="cancelButton"
+			type="button" value="Cancel" class="iPopupDialogControlButton" />
+	</div>
+</body>
+</html>
