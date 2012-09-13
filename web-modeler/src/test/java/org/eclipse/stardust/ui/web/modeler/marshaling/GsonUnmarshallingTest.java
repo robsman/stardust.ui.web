@@ -9,31 +9,32 @@ import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public class GsonUnmarshallingTest
 {
-   private final String testData = "{a: '1', b: {c:2, d:'3'}}";
+   private final String testData = "{a: '1', b: {c:2, d:'3'}, d: [{d1_id: 'd1'}, {d1_id: 'd2'}]}";
 
-   private Gson gson;
+   private JsonMarshaller jsonIo;
 
    @Before
    public void initGson()
    {
-      this.gson = new Gson();
+      this.jsonIo = new JsonMarshaller();
    }
 
    @Test
    public void unmarshallingPartialStructuresMustIgnoreUnmappedAttributes()
    {
-      Partial_a partial_a = gson.fromJson(testData, Partial_a.class);
+      Partial_a partial_a = jsonIo.gson().fromJson(testData, Partial_a.class);
 
       assertThat(partial_a, is(not(nullValue())));
       assertThat(partial_a.a, is("1"));
       assertThat(partial_a.b, is(instanceOf(JsonObject.class)));
+      assertThat(partial_a.d, is(instanceOf(JsonArray.class)));
 
-      Partial_b partial_b = gson.fromJson(testData, Partial_b.class);
+      Partial_b partial_b = jsonIo.gson().fromJson(testData, Partial_b.class);
 
       assertThat(partial_b, is(not(nullValue())));
       assertThat(partial_b.a, is("1"));
@@ -46,6 +47,8 @@ public class GsonUnmarshallingTest
       public String a;
 
       public JsonObject b;
+
+      public JsonArray d;
    }
 
    public static class Partial_b

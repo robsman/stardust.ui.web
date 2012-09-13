@@ -33,13 +33,13 @@ public class JsonMarshaller
    private static final Logger trace = LogManager.getLogger(JsonMarshaller.class);
 
    private final Gson gson = new GsonBuilder() //
-      .registerTypeAdapter(JsonObject.class, new JsonObjectDeserializer())
-      .registerTypeAdapter(JsonObject.class, new JsonObjectSerializer())
+      .registerTypeAdapter(JsonObject.class, new JsonObjectSerializationHandler())
+      .registerTypeAdapter(JsonArray.class, new JsonArraySerializationHandler())
       .create();
 
    private final Gson gsonForUpdates = new GsonBuilder().serializeNulls()
-         .registerTypeAdapter(JsonObject.class, new JsonObjectDeserializer())
-         .registerTypeAdapter(JsonObject.class, new JsonObjectSerializer())
+         .registerTypeAdapter(JsonObject.class, new JsonObjectSerializationHandler())
+         .registerTypeAdapter(JsonArray.class, new JsonArraySerializationHandler())
          .create();
 
    private final JsonParser jsonParser = new JsonParser();
@@ -169,19 +169,17 @@ public class JsonMarshaller
       }
    }
 
-   private static class JsonObjectSerializer implements JsonSerializer<JsonObject>
+   private static class JsonObjectSerializationHandler
+         implements JsonSerializer<JsonObject>, JsonDeserializer<JsonObject>
    {
       @Override
-      public JsonElement serialize(JsonObject src, Type typeOfSrc,
+      public JsonObject serialize(JsonObject src, Type typeOfSrc,
             JsonSerializationContext context)
       {
          // just use the object as is
          return src;
       }
-   }
 
-   private static class JsonObjectDeserializer implements JsonDeserializer<JsonObject>
-   {
       @Override
       public JsonObject deserialize(JsonElement json, Type typeOfT,
             JsonDeserializationContext context) throws JsonParseException
@@ -194,6 +192,33 @@ public class JsonMarshaller
          else
          {
             return new JsonObject();
+         }
+      }
+   }
+
+   private static class JsonArraySerializationHandler
+         implements JsonSerializer<JsonArray>, JsonDeserializer<JsonArray>
+   {
+      @Override
+      public JsonArray serialize(JsonArray src, Type typeOfSrc,
+            JsonSerializationContext context)
+      {
+         // just use the object as is
+         return src;
+      }
+
+      @Override
+      public JsonArray deserialize(JsonElement json, Type typeOfT,
+            JsonDeserializationContext context) throws JsonParseException
+      {
+         if (json.isJsonArray() && JsonArray.class.equals(typeOfT))
+         {
+            // just use the object as is
+            return json.getAsJsonArray();
+         }
+         else
+         {
+            return new JsonArray();
          }
       }
    }

@@ -46,55 +46,50 @@ public class ModelerSessionRestController
    @Context
    private UriInfo uriInfo;
 
-   public URI toChangeUri(Modification change)
+   public String toChangeUri(Modification change)
    {
-      return URI.create(uriInfo.getAbsolutePath().toString() + "/changes/" + change.getId());
+      return uriInfo.getAbsolutePath().toString() + "/changes/" + change.getId();
    }
 
-   public JsonObject toJson(Modification change)
+   public ChangeJto toJto(Modification change)
    {
-      JsonObject result = new JsonObject();
+      ChangeJto jto = new ChangeJto();
 
-      result.addProperty("id", change.getId());
-      result.addProperty("timestamp", System.currentTimeMillis());
+      jto.id= change.getId();
+      jto.timestamp = System.currentTimeMillis();
 
       if (change.getMetadata().containsKey("commandId"))
       {
-          result.addProperty("commandId", change.getMetadata().get("commandId"));
+          jto.commandId = change.getMetadata().get("commandId");
       }
       if (change.getMetadata().containsKey("modelId"))
       {
-          result.addProperty("modelId", change.getMetadata().get("modelId"));
+          jto.modelId= change.getMetadata().get("modelId");
       }
       if (change.getMetadata().containsKey("account"))
       {
-          result.addProperty("account", change.getMetadata().get("account"));
+          jto.account = change.getMetadata().get("account");
       }
 
-      JsonObject jsChanges = new JsonObject();
-      result.add("changes", jsChanges);
-      JsonArray jsModified = new JsonArray();
       for (EObject changedObject : change.changedObjects())
       {
-         jsModified.add(modelService().modelElementMarshaller().toJson(changedObject));
+         jto.changes.modified.add(modelService().modelElementMarshaller().toJson(changedObject));
       }
-      jsChanges.add("modified", jsModified);
-
-      JsonArray jsAdded = new JsonArray();
       for (EObject addedObject : change.addedObjects())
       {
-         jsAdded.add(modelService().modelElementMarshaller().toJson(addedObject));
+         jto.changes.added.add(modelService().modelElementMarshaller().toJson(addedObject));
       }
-      jsChanges.add("added", jsAdded);
-
-      JsonArray jsRemoved = new JsonArray();
       for (EObject removedObject : change.removedObjects())
       {
-         jsRemoved.add(modelService().modelElementMarshaller().toJson(removedObject));
+         jto.changes.removed.add(modelService().modelElementMarshaller().toJson(removedObject));
       }
-      jsChanges.add("removed", jsRemoved);
 
-      return result;
+      return jto;
+   }
+
+   public JsonObject toJson(ChangeJto changeJto)
+   {
+      return jsonIo().gson().toJsonTree(changeJto).getAsJsonObject();
    }
 
    @GET
@@ -107,14 +102,15 @@ public class ModelerSessionRestController
       if (editingSession.canUndo())
       {
          Modification pendingUndo = editingSession.getPendingUndo();
-         result = toJson(pendingUndo);
+         ChangeJto jto = toJto(pendingUndo);
 
-         result.addProperty("pendingUndo", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingUndo.getId());
+         jto.pendingUndo = toChangeUri(pendingUndo);
          if (editingSession.canRedo())
          {
             Modification pendingRedo = editingSession.getPendingRedo();
-            result.addProperty("pendingRedo", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingRedo.getId());
+            jto.pendingRedo = toChangeUri(pendingRedo);
          }
+         result = toJson(toJto(pendingUndo));
       }
 
       return jsonIo().writeJsonObject(result);
@@ -131,19 +127,20 @@ public class ModelerSessionRestController
          if (editingSession.canUndo())
          {
             Modification undoneChange = editingSession.undoLast();
-
-            result = toJson(undoneChange);
+            ChangeJto jto = toJto(undoneChange);
 
             if (editingSession.canUndo())
             {
                Modification pendingUndo = editingSession.getPendingUndo();
-               result.addProperty("pendingUndo", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingUndo.getId());
+               jto.pendingUndo = toChangeUri(pendingUndo);
             }
             if (editingSession.canRedo())
             {
                Modification pendingRedo = editingSession.getPendingRedo();
-               result.addProperty("pendingRedo", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingRedo.getId());
+               jto.pendingRedo = toChangeUri(pendingRedo);
             }
+
+            result = toJson(jto);
 
             commandHandlerRegistry().broadcastChange(undoneChange.getSession(), result);
 
@@ -163,19 +160,20 @@ public class ModelerSessionRestController
          if (editingSession.canRedo())
          {
             Modification redoneChange = editingSession.redoNext();
-
-            result = toJson(redoneChange);
+            ChangeJto jto = toJto(redoneChange);
 
             if (editingSession.canUndo())
             {
                Modification pendingUndo = editingSession.getPendingUndo();
-               result.addProperty("pendingUndo", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingUndo.getId());
+               jto.pendingUndo = toChangeUri(pendingUndo);
             }
             if (editingSession.canRedo())
             {
                Modification pendingRedo = editingSession.getPendingRedo();
-               result.addProperty("pendingRedo", uriInfo.getAbsolutePath().toString() + "/changes/" + pendingRedo.getId());
+               jto.pendingRedo = toChangeUri(pendingRedo);
             }
+
+            result = toJson(toJto(redoneChange));
 
             commandHandlerRegistry().broadcastChange(redoneChange.getSession(), result);
 
@@ -251,15 +249,15 @@ public class ModelerSessionRestController
             || "model.update".equalsIgnoreCase(commandId))
       {
          List<ChangeDescriptionJto> changesJson = commandJto.changeDescriptions;
-         for (ChangeDescriptionJto cJson : changesJson) {
-            if (null != cJson) {
+         for (ChangeDescriptionJto changeDescrJto : changesJson) {
+            if (null != changeDescrJto) {
                EObject targetElement = null;
-               if (null != cJson.uuid) {
-                  String uuid = cJson.uuid;
+               if (null != changeDescrJto.uuid) {
+                  String uuid = changeDescrJto.uuid;
                   targetElement = modelService().uuidMapper().getEObject(uuid);
                }
 
-               JsonElement changeJson = cJson.changes;
+               JsonElement changeJson = changeDescrJto.changes;
                ModelChangeCommandHandler handler = resolveSpringBean(ModelChangeCommandHandler.class, servletContext);
                JsonObject response = handler.handleCommand(commandId, targetElement, changeJson.getAsJsonObject());
                if (null != response) {
@@ -360,11 +358,11 @@ public class ModelerSessionRestController
          // Notify unsaved models tracker of the change to the model.
          UnsavedModelsTracker.getInstance().notifyModelModfied(model.getId());
 
-         JsonObject changeJto = toJson(change);
+         JsonObject changeJto = toJson(toJto(change));
 
          commandHandlerRegistry().broadcastChange(change.getSession(), changeJto);
 
-         return Response.created(toChangeUri(change)) //
+         return Response.created(URI.create(toChangeUri(change))) //
                .entity(jsonIo().writeJsonObject(changeJto))
                .type(MediaType.APPLICATION_JSON_TYPE)
                .build();
@@ -392,6 +390,27 @@ public class ModelerSessionRestController
    {
       return resolveSpringBean(CommandHandlingMediator.class, servletContext);
    }
+
+   public static class ChangeJto
+   {
+      public String id;
+      public long timestamp;
+      public String commandId;
+      public String modelId;
+      public String account;
+
+      public ChangesJto changes = new ChangesJto();
+
+      public String pendingUndo;
+      public String pendingRedo;
+
+      static class ChangesJto
+      {
+         public JsonArray modified = new JsonArray();
+         public JsonArray added = new JsonArray();
+         public JsonArray removed = new JsonArray();
+      };
+   };
 
    private static class CommandJto
    {

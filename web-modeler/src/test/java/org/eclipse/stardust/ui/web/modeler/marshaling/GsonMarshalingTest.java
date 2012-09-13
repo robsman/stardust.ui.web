@@ -8,11 +8,13 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 public class GsonMarshalingTest
 {
-   private final String testData = "{a: '1', b: {b1:2, b2:'3'}, c: null, d:{d1:{d11:true}, d2:{d22:false} }, e: [{e_id: 'e1'}, {e_id: 'e2'}] }";
+   private final String testData = "{a: '1', b: {b1:2, b2:'3'}, c: null, d:{d1:{d11:true}, d2:{d22:false} }, e: [{e_id: 'e1', e_tags: ['e1a']}, {e_id: 'e2', e_tags: ['e2a', 'e2b']}] }";
 
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
@@ -158,7 +160,7 @@ public class GsonMarshalingTest
    }
 
    @Test
-   public void updatesToArrayMambersMustPropagate()
+   public void updatesToArrayMembersMustPropagate()
    {
       assertThat(master.get("a").getAsString(), is("1"));
       assertThat(master.get("b").isJsonObject(), is(true));
@@ -170,8 +172,12 @@ public class GsonMarshalingTest
       Partial_e update = jsonIo.gson().fromJson(master, Partial_e.class);
 
       assertThat(update.e.size(), is(2));
+      assertThat(update.e.get(0).e_id, is("e1"));
+      assertThat(update.e.get(0).e_tags.size(), is(1));
+      assertThat(update.e.get(1).e_id, is("e2"));
+      assertThat(update.e.get(1).e_tags.size(), is(2));
 
-      update.e.add(new Full_e("e3"));
+      update.e.add(new Full_e("e3", "e3a", "e3b", "e3c"));
 
       jsonIo.writeIntoJsonObject(update, master);
 
@@ -223,14 +229,20 @@ public class GsonMarshalingTest
    public static class Full_e
    {
       public String e_id;
+      public JsonArray e_tags;
 
       public Full_e()
       {
       }
 
-      public Full_e(String e_id)
+      public Full_e(String e_id, String... tags)
       {
          this.e_id = e_id;
+         this.e_tags = new JsonArray();
+         for (String tag : tags)
+         {
+            e_tags.add(new JsonPrimitive(tag));
+         }
       }
    }
 
