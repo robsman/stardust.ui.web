@@ -121,6 +121,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.QueryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -372,6 +373,7 @@ public class WorklistTableBean extends UIComponentBean
          if (!filtersAddedToQuery)
          {
             ProcessWorklistCacheManager.getInstance().setWorklistCount(id, queryResult.getTotalCount());
+            SpecialWorklistCacheManager.getInstance().setWorklistCount(id, queryResult.getTotalCount());
          }
       }
       

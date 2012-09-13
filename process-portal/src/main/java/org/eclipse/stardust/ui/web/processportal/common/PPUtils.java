@@ -69,6 +69,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheMan
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ResubmissionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.WorklistUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ResubmissionUtils.ModelResubmissionActivity;
 
@@ -663,6 +664,7 @@ public class PPUtils
    {
       ParticipantWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
       ProcessWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
+      SpecialWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
       ClientContextBean.getCurrentInstance().getClientContext().sendActivityEvent(activityEvent);
    }
 }

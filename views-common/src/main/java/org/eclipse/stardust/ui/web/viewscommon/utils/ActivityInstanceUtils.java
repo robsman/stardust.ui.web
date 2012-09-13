@@ -611,6 +611,7 @@ public class ActivityInstanceUtils
    {
       ParticipantWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
       ProcessWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
+      SpecialWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
       ClientContextBean.getCurrentInstance().getClientContext().sendActivityEvent(activityEvent);
    }
 

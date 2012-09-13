@@ -32,6 +32,7 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
 import org.springframework.beans.factory.InitializingBean;
 
 
@@ -213,6 +214,44 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
       params.put("name", name);
 
       PPUtils.openWorklistView("id=" + participantInfo.getId(), params);
+
+      PPUtils.selectWorklist(participantInfo);
+   }
+
+   public void selectAllAssignedActivitiesAction()
+   {
+      openWorklist(SpecialWorklistCacheManager.ALL_ACTVITIES, SpecialWorklistCacheManager.getInstance()
+            .getWorklistQuery(SpecialWorklistCacheManager.ALL_ACTVITIES));
+   }
+   
+   public void selectCriticalActivitiesAction()
+   {
+      openWorklist(SpecialWorklistCacheManager.CRITICAL_ACTVITIES, SpecialWorklistCacheManager.getInstance()
+            .getWorklistQuery(SpecialWorklistCacheManager.CRITICAL_ACTVITIES));
+   }
+
+   public long getAllAssignedActivitiesCount()
+   {
+      return SpecialWorklistCacheManager.getInstance().getWorklistCount(SpecialWorklistCacheManager.ALL_ACTVITIES);
+   }      
+  
+   public long getCriticalActivitiesCount()
+   {
+      return SpecialWorklistCacheManager.getInstance().getWorklistCount(SpecialWorklistCacheManager.CRITICAL_ACTVITIES);
+   }
+   
+   private void openWorklist(String id, Object activityInstanceQuery)
+   {
+      ParticipantInfo participantInfo = SessionContext.findSessionContext().getUser();
+
+      Map<String, Object> params = CollectionUtils.newTreeMap();
+      params.put(Query.class.getName(), activityInstanceQuery);
+      params.put("participantInfo", participantInfo);
+      params.put("id", id);
+      String name = I18nUtils.getParticipantName(ParticipantUtils.getParticipant(participantInfo));
+      params.put("name", name);
+
+      PPUtils.openWorklistView("id=" + id, params);
 
       PPUtils.selectWorklist(participantInfo);
    }

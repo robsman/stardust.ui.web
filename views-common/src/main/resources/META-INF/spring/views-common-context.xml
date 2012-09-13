@@ -374,6 +374,11 @@
 		scope="session">
 	</bean>
 		
+	<bean name="ippSpecialWorklistCacheManager"
+		class="org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager"
+		scope="session">
+	</bean>	
+		
 	<bean name="imageViewerConfigurationBean"
 		class="org.eclipse.stardust.ui.web.viewscommon.views.document.ImageViewerConfigurationBean"
 		scope="portalTab">

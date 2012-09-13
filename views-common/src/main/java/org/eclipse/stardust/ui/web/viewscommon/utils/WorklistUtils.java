@@ -53,10 +53,9 @@ import org.eclipse.stardust.engine.api.runtime.UserGroup;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.TaskAssignmentConstants;
+import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
+import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IFilterProvider;
-import org.eclipse.stardust.ui.web.viewscommon.utils.FilterProviderUtil;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
 
 /**
@@ -66,6 +65,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 public class WorklistUtils
 {
    private static final Logger trace = LogManager.getLogger(WorklistUtils.class);
+   
    private static User getLoginUser()
    {
       SessionContext sessionContext = SessionContext.findSessionContext();
@@ -415,6 +415,47 @@ public class WorklistUtils
       return ServiceFactoryUtils.getQueryService().getAllActivityInstances(query);
    }
 
+   /**
+    * returns unified list of activities assigned to user
+    * 
+    * @return
+    */
+   public static ActivityInstances getAllAssignedActivities()
+   {
+      ActivityInstanceQuery allAssignedActivitiesQuery = ActivityInstanceQuery.findAll();
+      FilterOrTerm or = allAssignedActivitiesQuery.getFilter().addOrTerm();
+      or.add(PerformingParticipantFilter.ANY_FOR_USER).add(PerformingUserFilter.CURRENT_USER);
+      allAssignedActivitiesQuery.setPolicy(new SubsetPolicy(0, true));
+      allAssignedActivitiesQuery.orderBy(ActivityInstanceQuery.START_TIME);
+
+      applyFilterProviders(allAssignedActivitiesQuery);
+
+      return ServiceFactoryUtils.getQueryService().getAllActivityInstances(allAssignedActivitiesQuery);
+   }
+
+   /**
+    * returns unified list of activities which are critical assigned to user
+    * 
+    * @param criticality
+    * @return
+    */
+   public static ActivityInstances getCriticalActivities(CriticalityCategory criticality)
+   {
+      ActivityInstanceQuery criticalActivitiesQuery = ActivityInstanceQuery.findAll();
+      FilterOrTerm or = criticalActivitiesQuery.getFilter().addOrTerm();
+      or.add(PerformingParticipantFilter.ANY_FOR_USER).add(PerformingUserFilter.CURRENT_USER);
+      criticalActivitiesQuery.setPolicy(new SubsetPolicy(0, true));
+      criticalActivitiesQuery.orderBy(ActivityInstanceQuery.START_TIME);
+
+      criticalActivitiesQuery.where(ActivityInstanceQuery.CRITICALITY.between(
+            CriticalityConfigurationUtil.getEngineCriticality(criticality.getRangeFrom()),
+            CriticalityConfigurationUtil.getEngineCriticality(criticality.getRangeTo())));
+
+      applyFilterProviders(criticalActivitiesQuery);
+
+      return ServiceFactoryUtils.getQueryService().getAllActivityInstances(criticalActivitiesQuery);
+   }
+   
    /**
     * @param query
     * @param process

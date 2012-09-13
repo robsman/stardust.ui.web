@@ -129,4 +129,29 @@ public class CriticalityCategory implements Comparable<CriticalityCategory>
    {
       return other.getRangeFrom() - getRangeFrom();
    }
+
+   @Override
+   public int hashCode()
+   {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + rangeFrom;
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj)
+   {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      CriticalityCategory other = (CriticalityCategory) obj;
+      if (rangeFrom != other.rangeFrom)
+         return false;
+      return true;
+   }
+   
 }

@@ -34,6 +34,7 @@ public class CriticalityConfigurationUtil
 {
    public static final String COLUMN_SEPARATOR = "#!#";
    
+   public static final int PORTAL_CRITICALITY_MAX = 1000;
    public static final int PORTAL_CRITICALITY_MULTIPLICATION_FACTOR = 1000;
    public static final double PORTAL_CRITICALITY_DIV_FACTOR = 1000;
    public static final String CRITICALITY_CAT_PREF_KEY_PREFIX = "Criticality.Ranges.Range";
