@@ -31,6 +31,7 @@ import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
@@ -461,10 +462,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                      mode = ModeType.OUT;
                   }
 
+                  FormalParameterType formalParameter = null;
+
                   if (formalParameterJson.get(ModelerConstants.DATA_TYPE_PROPERTY).equals(
                         ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
                   {
-                     getModelBuilderFacade().createPrimitiveParameter(
+                     formalParameter = getModelBuilderFacade().createPrimitiveParameter(
                            processDefinition,
                            getModelBuilderFacade().findData(
                                  formalParameterJson.get(
@@ -482,7 +485,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   else if (formalParameterJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
                         .equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
                   {
-                     getModelBuilderFacade().createStructuredParameter(
+                     formalParameter = getModelBuilderFacade().createStructuredParameter(
                            processDefinition,
                            getModelBuilderFacade().findData(
                                  formalParameterJson.get(
@@ -737,7 +740,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                }
                else if (dataType.equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
                {
-                  // accessPoint.setType(getModelBuilderFacade().findDataType(accessPointJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID).getAsString()));
+                  String structTypeFullID = accessPointJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY).getAsString();
+                  accessPoint = getModelBuilderFacade().createStructuredAccessPoint(application, id, name, structTypeFullID, direction);
                }
                else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
                {

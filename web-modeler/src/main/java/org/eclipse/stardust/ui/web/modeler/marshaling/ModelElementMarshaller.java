@@ -259,16 +259,16 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, ModelerConstants.OUT_PARAMETER_KEY);
             }
 
-            DataTypeType dataTypeType = formalParameter.getDataType();
+            DataTypeType dataType = formalParameter.getDataType();
             ModelType model = ModelUtils.findContainingModel(formalParameter);
 
-            if (dataTypeType.getCarnotType().equals(
+            if (dataType.getCarnotType().equals(
                   ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
             {
                formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                      ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
 
-               String typeDeclarationId = dataTypeType.getDeclaredType().getId();
+               String typeDeclarationId = dataType.getDeclaredType().getId();
 
                TypeDeclarationType typeDeclaration = model.getTypeDeclarations()
                      .getTypeDeclaration(typeDeclarationId);
@@ -279,13 +279,13 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                formalParameterJson.addProperty(
                      ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
             }
-            else if (dataTypeType.getCarnotType().equals(
+            else if (dataType.getCarnotType().equals(
                   ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
             {
                formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                      ModelerConstants.DOCUMENT_DATA_TYPE_KEY);
 
-               String typeDeclarationId = dataTypeType.getDeclaredType().getId();
+               String typeDeclarationId = dataType.getDeclaredType().getId();
 
                TypeDeclarationType typeDeclaration = model.getTypeDeclarations()
                      .getTypeDeclaration(typeDeclarationId);
@@ -296,7 +296,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                formalParameterJson.addProperty(
                      ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
             }
-            else if (dataTypeType.getCarnotType().equals(
+            else if (dataType.getCarnotType().equals(
                   ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
             {
                formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
