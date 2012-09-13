@@ -5,7 +5,7 @@
     are made available under the terms of the Eclipse Public License v1.0
     which accompanies this distribution, and is available at
     http://www.eclipse.org/legal/epl-v10.html
-   
+
     Contributors:
        SunGard CSA LLC - initial API and implementation and/or initial documentation
  -->
@@ -14,16 +14,16 @@
    xmlns:m="http://ant.apache.org/ivy/maven"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-   <info organisation="org.eclipse.stardust.ui.web" 
+   <info organisation="org.eclipse.stardust.ui.web"
       module="stardust-web-modeler"
       revision="${ipp.version.full}">
    </info>
 
    <configurations>
       <conf name="stardust-web-modeler-compile" description="Web Modeler - Compile Scope" />
-      
+
       <conf name="compile" extends="stardust-web-modeler-compile" visibility="private" description="Compile Time Dependencies" />
-      
+
       <conf name="test" visibility="private" description="Test dependencies" />
 
       <conf name="pom" description="PDL Modeler - POMs" />
@@ -34,7 +34,7 @@
       <!-- artifact name="stardust-web-modeler" type="pom" conf="pom" ext="pom" / -->
    </publications>
 
-   <dependencies>      
+   <dependencies>
       <!-- override org="org.slf4" module="slf4j-api" rev="1.6.1" / -->
 
       <!-- compile -->
@@ -42,11 +42,11 @@
       <!-- TODO: change to ipp-engine-ws-cxf! -->
       <!-- dependency org="com.infinity.bpm" name="ipp-engine-ws-metro" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-engine-ws-metro-compile" / -->
       <dependency org="wsdl4j" name="wsdl4j" rev="1.6.2" conf="stardust-web-modeler-compile->default" />
-      
+
       <dependency org="com.infinity.bpm" name="ipp-bpm-model" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-bpm-model-runtime"/>
       <dependency org="com.infinity.bpm" name="ipp-bpm-model-validation" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-bpm-model-validation-runtime"/>
       <dependency org="org.eclipse.stardust.modeling.model" name="org.eclipse.stardust.model.xpdl.builder" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->stardust-xpdl-builder-compile"/>
-      
+
       <!-- The following Eclipse dependencies are part of Eclipse 3.6.2 -->
       <dependency org="org.eclipse.emf" name="org.eclipse.emf.common" rev="2.6.0.v20100914-1218" conf="stardust-web-modeler-compile->default"/>
       <dependency org="org.eclipse.emf" name="org.eclipse.emf.ecore" rev="2.6.1.v20100914-1218" conf="stardust-web-modeler-compile->default">
@@ -64,10 +64,10 @@
       <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-views-common-compile"/>
 
       <dependency org="org.apache.myfaces.core" name="myfaces-api" rev="1.2.9" conf="stardust-web-modeler-compile->default"/>
-      <dependency org="javax.servlet" name="servlet-api" rev="2.5" conf="stardust-web-modeler-compile->default"/>
+      <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="stardust-web-modeler-compile->default"/>
       <dependency org="com.google.code.gson" name="gson" rev="1.6" conf="stardust-web-modeler-compile->default"/>
       <dependency org="org.atmosphere" name="atmosphere-runtime" rev="0.9.7" conf="stardust-web-modeler-compile->default" />
-      
+
       <dependency org="junit" name="junit" rev="4.10" conf="test->default"/>
 
       <override org="org.slf4j" module="slf4j-api" rev="1.6.1" />
