@@ -19,7 +19,7 @@ define(
 			"m_eventPropertiesPanel", "m_gatewayPropertiesPanel",
 			"m_swimlanePropertiesPanel", "m_controlFlowPropertiesPanel",
 			"m_dataFlowPropertiesPanel", "m_model", "m_process", "m_data",
-			"m_modelerUtils" ],
+			"m_modelerUtils", "m_autoScrollManager" ],
 	function(m_utils, m_constants, m_extensionManager, m_urlUtils,
 			m_communicationController, m_commandsController, m_command,
 			m_session, m_canvasManager, m_messageDisplay, m_symbol, m_poolSymbol,
@@ -29,7 +29,7 @@ define(
 			m_eventPropertiesPanel, m_gatewayPropertiesPanel,
 			m_swimlanePropertiesPanel, m_controlFlowPropertiesPanel,
 			m_dataFlowPropertiesPanel, m_model, m_process, m_data,
-			m_modelerUtils) {
+			m_modelerUtils, m_autoScrollManager) {
 
 			var canvasPos = $("#canvas").position();
 			var X_OFFSET = canvasPos.left; // Set fpr #panningSensor
@@ -507,6 +507,18 @@ define(
 					m_controlFlowPropertiesPanel
 							.initialize(this);
 					m_dataFlowPropertiesPanel.initialize(this);
+					m_autoScrollManager.initScrollManager("scrollpane", function() {
+						var inAutoScrollMode = false;
+						if (true == currentDiagram.isInConnectionMode()
+								|| currentDiagram.mode == currentDiagram.RUBBERBAND_MODE
+								|| null != currentDiagram.newSymbol) {
+							inAutoScrollMode = true;
+						} else {
+							inAutoScrollMode = false;
+						}
+
+						return inAutoScrollMode;
+					});
 				};
 
 				/**
@@ -648,6 +660,20 @@ define(
 									conn.applyChanges(obj.changes.added[i]);
 									conn.refresh();
 								}
+//								else {
+//									//Find swimlane from modified array
+//									var swimlane;
+//									for ( var j = 0; j < obj.changes.modified.length; j++) {
+//										if (obj.changes.modified[j].type == m_constants.SWIMLANE_SYMBOL) {
+//											swimlane = obj.changes.modified[j];
+//										}
+//									}
+//									if (swimlane) {
+//										if (obj.changes.added[i].type == m_constants.ACTIVITY_SYMBOL) {
+//											m_activitySymbol.createActivitySymbolFromJson(this, swimlane, obj.changes.added[i]);
+//										}
+//									}
+//								}
 							}
 						}
 
