@@ -24,7 +24,7 @@
    <property name="project.etc" value="${project.dir}/etc" />
    <property file="${project.etc}/private.properties" />
 
-   <property name="organizationId" value="org.eclipse.stardust.ui.web" />
+   <property name="organizationId" value="com.infinity.bpm" />
    <property name="artifactId" value="stardust-web-modeler" />
 
    <import file="${project.dir}/../../build.tools/commons-build.xml" />
@@ -61,9 +61,9 @@
       <property name="build.src" value="${build.dir}/src" />
       <property name="build.src.none" location="${build.dir}/src-none" />
 
-      <property name="web.modeler.jarfile" value="stardust-web-modeler.jar" />
+      <property name="web.modeler.jarfile" value="${artifactId}.jar" />
       <property name="web.modeler.jar" value="${build.lib}/${web.modeler.jarfile}" />
-      <property name="web.modeler.src-jarfile" value="stardust-web-modeler-sources.jar" />
+      <property name="web.modeler.src-jarfile" value="${artifactId}-sources.jar" />
       <property name="web.modeler.src-jar" value="${build.lib.src}/${web.modeler.src-jarfile}" />
    </target>
 
@@ -150,9 +150,8 @@
    
    <target name="build" depends="jar, jar.src" xmlns:ivy="antlib:org.apache.ivy.ant">
       <ivy:resolve file="${project.dir}/ivy.xml" />
-      <ivy-publish-local artifactId="${artifactId}" artifactDir="${build.lib}" srcArtifactDir="${build.lib.src}" 
-         conf="stardust-web-modeler-compile" 
-         publishIvy="true" />
+      <ivy-publish-local artifactId="${artifactId}" artifactDir="${build.lib}" srcArtifactDir="${build.lib.src}"  
+         publishIvy="true" publishPom="true" />
    </target>
    
    <target name="report" depends="init" xmlns:ivy="antlib:org.apache.ivy.ant">

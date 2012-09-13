@@ -14,10 +14,7 @@
    xmlns:m="http://ant.apache.org/ivy/maven"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-   <info organisation="org.eclipse.stardust.ui.web"
-      module="stardust-web-modeler"
-      revision="${ipp.version.full}">
-   </info>
+   <info organisation="com.infinity.bpm" module="stardust-web-modeler" revision="${ipp.version.full}"/>
 
    <configurations>
       <conf name="stardust-web-modeler-compile" description="Web Modeler - Compile Scope" />
@@ -31,7 +28,7 @@
 
    <publications>
       <artifact name="stardust-web-modeler" type="jar" conf="stardust-web-modeler-compile" ext="jar" />
-      <!-- artifact name="stardust-web-modeler" type="pom" conf="pom" ext="pom" / -->
+      <artifact name="stardust-web-modeler" type="pom" conf="pom" ext="pom" />
    </publications>
 
    <dependencies>
@@ -45,7 +42,7 @@
 
       <dependency org="com.infinity.bpm" name="ipp-bpm-model" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-bpm-model-runtime"/>
       <dependency org="com.infinity.bpm" name="ipp-bpm-model-validation" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-bpm-model-validation-runtime"/>
-      <dependency org="org.eclipse.stardust.modeling.model" name="org.eclipse.stardust.model.xpdl.builder" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->stardust-xpdl-builder-compile"/>
+      <dependency org="com.infinity.bpm" name="ipp-bpm-model-builder" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-bpm-model-builder-compile"/>
 
       <!-- The following Eclipse dependencies are part of Eclipse 3.6.2 -->
       <dependency org="org.eclipse.emf" name="org.eclipse.emf.common" rev="2.6.0.v20100914-1218" conf="stardust-web-modeler-compile->default"/>
