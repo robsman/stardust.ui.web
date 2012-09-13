@@ -75,7 +75,7 @@
     text-align: center;
     font: 11px tahoma;
     color: #484848;
-    padding: 5px;
+    padding: 0px;
     font-weight: bold;
     background: #FFF url( './css-images/table_col_header.gif' ) repeat-x bottom left;
     border: 1px solid #d9d9d9;
@@ -203,8 +203,8 @@
 
 /* This is required for Pop ups under data table, like Table Filter Popup */
 .iceDatTbl td span.iceOutTxt {
-	padding-left: 10px;
-	padding-right: 10px;
+	padding-left: 5px;
+	padding-right: 5px;
 }
 
 /* Following style is added to appropriate the calendar popup size */
