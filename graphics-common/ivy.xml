@@ -46,8 +46,12 @@
       <!-- ipp-graphics-common-runtime -->
       <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-graphics-common-runtime->web-client-module-runtime" />
       <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-graphics-common-runtime->ipp-views-common-runtime" />
-      <dependency org="com.sun.jersey" name="jersey-core" rev="1.1.5.1" conf="ipp-graphics-common-runtime->default" />
-      <dependency org="com.sun.jersey" name="jersey-server" rev="1.1.5.1" conf="ipp-graphics-common-runtime->default" />
+      
+      <dependency org="org.apache.cxf" name="cxf-api" rev="2.6.1-stardust01" conf="ipp-graphics-common-runtime->default" >
+	       <exclude org="org.apache.geronimo.specs" module="geronimo-javamail_1.4_spec" />
+	       <exclude org="org.codehaus.woodstox" module="woodstox-core-asl" />
+	  </dependency>
+      <dependency org="org.apache.cxf" name="cxf-rt-frontend-jaxrs" rev="2.6.1" conf="ipp-graphics-common-runtime->default" />
       
       <!-- ipp-graphics-common-provided -->
       <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="ipp-graphics-common-provided->default" />
@@ -58,6 +62,8 @@
       <override org="commons-beanutils" module="commons-beanutils" rev="1.8.0" />
       <override org="commons-logging" module="commons-logging" rev="1.1.1" />
       <override org="javax.ws.rs" module="jsr311-api" rev="1.1.1" />
+      <override org="com.sun.xml.bind" module="jaxb-impl" rev="2.1.12" />
+      <override org="org.apache.cxf" module="cxf-api" rev="2.6.1-stardust01" />
    </dependencies>
    
 </ivy-module>
