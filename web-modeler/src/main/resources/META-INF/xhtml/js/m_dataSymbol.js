@@ -305,6 +305,65 @@ define(
 						stroke : m_constants.DEFAULT_STROKE_COLOR
 					});
 				};
+
+				/**
+				 *
+				 */
+				DataSymbol.prototype.validateCreateConnection = function() {
+					var inMapping = new Array();
+					var outMapping = new Array();
+					var inOutMapping = new Array();
+					var i = 0;
+					var j = 0;
+					var z = 0;
+					for ( var n in this.connections) {
+						var connection = this.connections[n];
+						if (connection.oid > 0) {
+							if (connection.modelElement.inDataMapping
+									&& connection.modelElement.outDataMapping) {
+								inOutMapping[z] = connection.fromAnchorPoint.symbol.oid;
+								z++;
+							} else if (connection.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
+								outMapping[i] = connection.fromAnchorPoint.symbol.oid;
+								i++;
+							} else if (null != connection.toAnchorPoint
+									&& null != connection.toAnchorPoint.symbol) {
+								if (connection.toAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
+									inMapping[j] = connection.toAnchorPoint.symbol.oid;
+									j++;
+								}
+							}
+						} else {
+							if (connection.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
+								if (-1 != jQuery.inArray(
+										connection.fromAnchorPoint.symbol.oid,
+										inOutMapping)) {
+									return false;
+								} else {
+									return (-1 == jQuery
+											.inArray(
+													connection.fromAnchorPoint.symbol.oid,
+													outMapping));
+								}
+							} else if (null != connection.toAnchorPoint
+									&& null != connection.toAnchorPoint.symbol) {
+								if (-1 != jQuery.inArray(
+										connection.fromAnchorPoint.symbol.oid,
+										inOutMapping)) {
+									return false;
+								} else {
+									return (-1 == jQuery
+											.inArray(
+													connection.toAnchorPoint.symbol.oid,
+													inMapping));
+								}
+							}
+
+						}
+					}
+
+					return true;
+				};
 			}
 
 			/**

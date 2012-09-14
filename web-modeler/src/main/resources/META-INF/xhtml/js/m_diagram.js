@@ -1388,6 +1388,8 @@ define(
 
 						// Set dummy anchor point
 						this.currentConnection.setDummySecondAnchorPoint();
+					}else{
+						this.mode = this.NORMAL_MODE;
 					}
 				};
 
@@ -1425,19 +1427,25 @@ define(
 					if (this.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
 						this.newSymbol.prepare(startSymbol.x,
 								startSymbol.y + 200);
+						// Create connection if connectionValidation passes
 						this.currentConnection = m_connection.createConnection(
 								this, startSymbol.anchorPoints[2]);
 						if (null != this.currentConnection
-								&& this.currentConnection.validateAnchorPoint(
+								&& this.currentConnection.validateCreateConnection(
 										this.currentConnection.fromAnchorPoint,
 										this.newSymbol.anchorPoints[0])) {
 							this.currentConnection.prepare();
 							this.currentConnection
 									.setSecondAnchorPointNoComplete(this.newSymbol.anchorPoints[0]);
 						} else {
+							// Remove the connection and symbol created, if
+							// validation fails
+							if (this.currentConnection) {
+								this.currentConnection.remove();
+								this.currentConnection
+							}
 							this.newSymbol.remove();
 							this.newSymbol = null;
-							this.currentConnection = null;
 						}
 					} else {
 						this.newSymbol.prepare(startSymbol.x + 200,
@@ -1467,11 +1475,14 @@ define(
 						// Set dummy anchor point
 						if (this.currentConnection) {
 							this.currentConnection.setDummySecondAnchorPoint();
+						}else{
+							this.currentConnection = null;
+							this.mode = this.NORMAL_MODE;
 						}
 					} else {
 						// Validate if connection is allowed on current anchor
 						// point
-						if (this.currentConnection.validateAnchorPoint(
+						if (this.currentConnection.validateCreateConnection(
 								this.currentConnection.fromAnchorPoint,
 								anchorPoint)) {
 							this.currentConnection
@@ -1483,6 +1494,9 @@ define(
 							}
 							this.currentConnection = null;
 							this.mode = this.NORMAL_MODE;
+						}else{
+							m_utils.removeItemFromArray(
+									this.currentConnection.toAnchorPoint.symbol.connections, this);
 						}
 					}
 				};
@@ -1588,7 +1602,7 @@ define(
 								.submitCommand(m_command
 										.createUpdateModelElementCommand(
 												this.currentTextPrimitive.auxiliaryProperties.callbackScope.diagram.modelId,
-												this.currentTextPrimitive.auxiliaryProperties.callbackScope.oid,
+												this.currentTextPrimitive.auxiliaryProperties.callbackScope.modelElement.oid,
 												changes));
 						this.currentTextPrimitive.show();
 						this.symbolEditMode = false;

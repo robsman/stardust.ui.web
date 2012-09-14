@@ -21,7 +21,7 @@ define(
 
 					connection.bind(diagram);
 					// Validate the connection rules for anchor Point
-					if(connection.validateAnchorPoint(fromAnchorPoint)){
+					if(connection.validateCreateConnection(fromAnchorPoint)){
 						connection.setFirstAnchorPoint(fromAnchorPoint);
 					}else{
 						// reset the connection
@@ -314,7 +314,7 @@ define(
 						this.prepare();
 					}
 
-					if (this.toAnchorPoint.symbol != null && this.validateAnchorPoint(this.fromAnchorPoint, this.toAnchorPoint)) {
+					if (this.toAnchorPoint.symbol != null && this.validateCreateConnection(this.fromAnchorPoint, this.toAnchorPoint)) {
 						// On Mouse move , the same connection is added again,
 						// so remove if present then add(update)
 						m_utils.removeItemFromArray(
@@ -1359,7 +1359,7 @@ define(
 					// connection array
 					m_utils.removeItemFromArray(
 							this.fromAnchorPoint.symbol.connections, this);
-					if (this.toAnchorPoint.symbol) {
+					if (this.toAnchorPoint && this.toAnchorPoint.symbol) {
 						m_utils.removeItemFromArray(
 								this.toAnchorPoint.symbol.connections, this);
 					}
@@ -1373,7 +1373,7 @@ define(
 
 					while (n < this.primitives.length) {
 						this.primitives[n].remove();
-						++n;
+						n++;
 					}
 				};
 				/**
@@ -1421,7 +1421,7 @@ define(
 				/**
 				 * Validate connection rules for symbols
 				 */
-				Connection.prototype.validateAnchorPoint = function(
+				Connection.prototype.validateCreateConnection = function(
 						fromAnchorPoint, toAnchorPoint) {
 					m_messageDisplay.clear();
 					if (fromAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
@@ -1434,15 +1434,15 @@ define(
 						else if (null != toAnchorPoint
 								&& toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
 							m_messageDisplay
-									.showErrorMessage("Data connections/associations are not supported for symbol.");
+									.showErrorMessage("Data connections/associations are not supported for this symbol.");
 							return false;
-						}else if (null != toAnchorPoint
+						} else if (null != toAnchorPoint
 								&& toAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
 							m_messageDisplay
 									.showErrorMessage("Events can be connected only to activities and gateways.");
 							return false;
-						}
-						else if (!fromAnchorPoint.symbol.validateCreateConnection()) {
+						} else if (!fromAnchorPoint.symbol
+								.validateCreateConnection()) {
 							// Start Event can have only one OUT connection
 							m_messageDisplay
 									.showErrorMessage("No further connection allowed for this Event.");
@@ -1452,38 +1452,78 @@ define(
 						if (null != toAnchorPoint
 								&& (toAnchorPoint.symbol.type == m_constants.GATEWAY_SYMBOL || toAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL)) {
 							m_messageDisplay
-									.showErrorMessage("Data connections/associations are not supported for symbol.");
+									.showErrorMessage("Data associations are not supported for this symbol.");
+							return false;
+						} else if (null != toAnchorPoint
+								&& (toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL)) {
+							m_messageDisplay
+									.showErrorMessage("Data symbols can connect to activity only.");
+						} else if (!fromAnchorPoint.symbol
+								.validateCreateConnection()) {
+							m_messageDisplay
+									.showErrorMessage("No further IN Connection allowed with this activity.");
 							return false;
 						}
-					}
-					else if (fromAnchorPoint.symbol.type == m_constants.GATEWAY_SYMBOL) {
+					} else if (fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
+						// Data symbol validation called
+						if (null != toAnchorPoint
+								&& (toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL)) {
+							if (!toAnchorPoint.symbol
+									.validateCreateConnection()) {
+								m_messageDisplay
+										.showErrorMessage("No further OUT Connection allowed with this activity.");
+							}
+						} else if (!fromAnchorPoint.symbol
+								.validateCreateConnection()) {
+							m_messageDisplay
+									.showErrorMessage("No more connection allowed from this activity.");
+							return false;
+						}
+					} else if (fromAnchorPoint.symbol.type == m_constants.GATEWAY_SYMBOL) {
 						if (null != toAnchorPoint
 								&& toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
 							m_messageDisplay
-									.showErrorMessage("Data connections/associations are not supported for symbol.");
+									.showErrorMessage("Data connections/associations are not supported for this symbol.");
 							return false;
 						}
 					}
-					else if ((toAnchorPoint != null && toAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL)) {
-						// Check for IN connections on Start Event
-						if (toAnchorPoint.symbol.modelElement.eventType == m_constants.START_EVENT_TYPE) {
+					if (toAnchorPoint != null) {
+						if (toAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
+							// Check for IN connections on Start Event
+							if (toAnchorPoint.symbol.modelElement.eventType == m_constants.START_EVENT_TYPE) {
+								m_messageDisplay
+										.showErrorMessage("Only out sequence flow connections are allowed on Start Events.");
+								return false;
+							} else if (!toAnchorPoint.symbol
+									.validateCreateConnection()) {
+								// End Event can have only one IN connection
+								m_messageDisplay
+										.showErrorMessage("No more connection allowed to this Event.");
+								return false;
+							}
+						} else if (toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
+							if (!toAnchorPoint.symbol
+									.validateCreateConnection()) {
+								m_messageDisplay
+										.showErrorMessage("No more OUT Connection allowed to this activity.");
+								return false;
+							}
+						}/*else if (toAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
+							if (!toAnchorPoint.symbol
+									.validateCreateConnection()) {
+								m_messageDisplay
+										.showErrorMessage("No more connections allowed to this symbol.");
+								return false;
+							}
+						}*/
+						// If Start and End symbol are same, show error
+						if (fromAnchorPoint.symbol.oid == toAnchorPoint.symbol.oid) {
 							m_messageDisplay
-									.showErrorMessage("Only out sequence flow connections are allowed on Start Events.");
-							return false;
-						} else if (!toAnchorPoint.symbol.validateCreateConnection()) {
-							// End Event can have only one IN connection
-							m_messageDisplay
-									.showErrorMessage("No further connection allowed for this Event.");
+									.showErrorMessage("A connection must connect two different symbols.");
 							return false;
 						}
 					}
-					// If Start and End symbol are same, show error
-					if (toAnchorPoint != null
-							&& fromAnchorPoint.symbol.oid == toAnchorPoint.symbol.oid) {
-						m_messageDisplay
-								.showErrorMessage("A connection must connect two different symbols.");
-						return false;
-					}
+
 					return true;
 				}
 
