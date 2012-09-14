@@ -1453,9 +1453,11 @@ define(
 			 *
 			 */
 			function Symbol_clickClosure(event, x, y) {
-				//Reset tool selection
-				$(".selected-tool").removeClass("selected-tool");
 				this.auxiliaryProperties.callbackScope.click(x, y);
+				//Reset tool selection
+				if (this.auxiliaryProperties.callbackScope.diagram.isInNormalMode()) {
+					$(".selected-tool").removeClass("selected-tool");
+				}
 			}
 
 			/**
