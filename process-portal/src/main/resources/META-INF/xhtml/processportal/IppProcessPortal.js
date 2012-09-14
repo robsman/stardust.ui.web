@@ -41,8 +41,42 @@ InfinityBpm.ProcessPortal = new function() {
 		portalWin.onscroll = function(event){
 			handleScroll();
 		};
+
+	    registerMessageHandler();
 	}
 
+	/*
+	 * Registers message handler for postMessage() API
+	 */
+    function registerMessageHandler() {
+    	try {
+    		var ippPortalWin = ippPortalWindow();
+    		var ippMainWind = ippMainWindow();
+
+			if (ippPortalWin.postMessage) {
+			  if (ippPortalWin.addEventListener) {
+			    //alert('Subscribing for postMessage ..');
+				  ippPortalWin.addEventListener("message", handleRemoteControlMessage, true);
+			    
+			    // main window will just forward to portal window
+				  ippMainWind.addEventListener("message", handleRemoteControlMessage, true);
+              } else if (ippPortalWin.attachEvent) {
+                //alert('Attaching to onmessage event ..');
+            	  ippPortalWin.attachEvent("onmessage", handleRemoteControlMessage);
+                
+                // main window will just forward to portal window
+            	  ippMainWind.attachEvent("onmessage", handleRemoteControlMessage);
+              } else {
+                debug("This browser does not support safe cross iframe messaging.");
+              }
+			} else {
+              debug("This browser does not support safe cross iframe messaging.");
+			}
+		} catch (e) {
+			alert(getMessage("portal.common.js.safeCrossDomainMessaging.enable.failed", 'Failed enabling safe cross domain iframe messaging: ') + e.message);
+		}
+    }
+	
 	/*
 	 * Adjusts all active iFrames as per current browser scroll position
 	 */
@@ -418,31 +452,9 @@ InfinityBpm.ProcessPortal = new function() {
 			if ((null != clientApiContainer) && (0 < clientApiContainer.length)) {
 				parentDiv.removeChild(clientApiContainer[0]);
 			}
-		
-			try {
-				if (ippPortalWindow().postMessage) {
-				  if (ippPortalWindow().addEventListener) {
-				    //alert('Subscribing for postMessage ..');
-				    ippPortalWindow().addEventListener("message", handleRemoteControlMessage, true);
-				    
-				    // main window will just forward to portal window
-				    ippMainWindow().addEventListener("message", handleRemoteControlMessage, true);
-                  } else if (ippPortalWindow().attachEvent) {
-                    //alert('Attaching to onmessage event ..');
-                    ippPortalWindow().attachEvent("onmessage", handleRemoteControlMessage);
-                    
-                    // main window will just forward to portal window
-                    ippMainWindow().attachEvent("onmessage", handleRemoteControlMessage);
-                  } else {
-                    debug("This browser does not support safe cross iframe messaging.");
-                  }
-				} else {
-                  debug("This browser does not support safe cross iframe messaging.");
-				}
-			} catch (e) {
-				alert(getMessage("portal.common.js.safeCrossDomainMessaging.enable.failed", 'Failed enabling safe cross domain iframe messaging: ') + e.message);
-			}
-		}
+
+			// Nop : postMessage() API handles are already in place
+		  }
 		} catch (e) {
 			alert(getMessage("portal.common.js.remoteControlInfrastructure.enable.failed", 'Failed enabling IPP remote control infrastructure: ') + e.message);
 		}
