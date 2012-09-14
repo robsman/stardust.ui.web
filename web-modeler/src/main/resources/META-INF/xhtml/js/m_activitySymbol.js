@@ -558,10 +558,11 @@ define(
 						var connection = this.connections[n];
 						if (connection.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL
 								&& connection.fromAnchorPoint.symbol.oid == this.oid) {
-							if ((null != connection.toAnchorPoint && null != connection.toAnchorPoint.symbol)
+							if ((null != connection.toAnchorPoint
+									&& null != connection.toAnchorPoint.symbol)
 									&& connection.toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
-								// do nothing
-							} else {
+								//do nothing
+							}else{
 								outMappingActivity[i] = true;
 								i++;
 							}
@@ -571,7 +572,7 @@ define(
 								// do nothing
 							} else if (connection.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
 								// do nothing
-							} else {
+							} else if (connection.toAnchorPoint.symbol.oid == this.oid) {
 								inMappingActivity[j] = true;
 								j++;
 							}

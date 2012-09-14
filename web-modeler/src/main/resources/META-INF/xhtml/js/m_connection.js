@@ -806,16 +806,6 @@ define(
 				 *
 				 */
 				Connection.prototype.reroute = function() {
-					if (this.path.removed) {
-						// If dummy connections are there,remove it
-						this.remove();
-						var symbol = this.diagram
-								.findSymbolByGuid(this.toModelElementOid)
-						if (null != symbol) {
-							m_utils.removeItemFromArray(symbol, this);
-						}
-						return;
-					}
 					if (this.isControlFlow()) {
 						this.segments = new Array();
 
@@ -1378,7 +1368,7 @@ define(
 						var symbol = this.diagram
 								.findSymbolByGuid(this.toModelElementOid)
 						if (null != symbol) {
-							m_utils.removeItemFromArray(symbol, this);
+							m_utils.removeItemFromArray(symbol.connections, this);
 						}
 					}
 				};
