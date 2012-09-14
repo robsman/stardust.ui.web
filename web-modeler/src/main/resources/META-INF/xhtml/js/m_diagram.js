@@ -519,6 +519,32 @@ define(
 						}
 
 						return inAutoScrollMode;
+					}, function(event) {
+						if (null != currentDiagram.newSymbol
+								|| currentDiagram.isInConnectionMode()) {
+							currentDiagram.onGlobalMouseMove(event.pageX
+									- X_OFFSET
+									+ currentDiagram.scrollPane
+											.scrollLeft(), event.pageY
+									- Y_OFFSET
+									+ currentDiagram.scrollPane
+											.scrollTop());
+						} else if (currentDiagram.currentSelection.length > 0) {
+							for (var i in currentDiagram.currentSelection) {
+								if (currentDiagram.currentSelection[i].toString() == "Lightdust.Connection") {
+									//TODO - The connnection should stick with mouse pointer
+									// in case of auto-scroll in case of a re-route
+								} else {
+									currentDiagram.currentSelection[i].move(event.pageX
+											- X_OFFSET
+											+ currentDiagram.scrollPane
+													.scrollLeft(), event.pageY
+											- Y_OFFSET
+											+ currentDiagram.scrollPane
+													.scrollTop())
+								}
+							}
+						}
 					});
 				};
 

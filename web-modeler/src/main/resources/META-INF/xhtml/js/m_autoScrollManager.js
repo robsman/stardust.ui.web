@@ -17,9 +17,9 @@ define(
 			var PANNING_SENSOR_WIDTH = 50;
 
 			return {
-				initScrollManager : function(divId, inAutoScrollModeCallback) {
+				initScrollManager : function(divId, inAutoScrollModeCallback, autoScrollCallback) {
 					if (!managerMap[divId]) {
-						var scrollManager = new AutoScrollManager(divId, inAutoScrollModeCallback);
+						var scrollManager = new AutoScrollManager(divId, inAutoScrollModeCallback, autoScrollCallback);
 						scrollManager.intialize();
 						managerMap[divId] = scrollManager;
 					}
@@ -28,9 +28,10 @@ define(
 				}
 			};
 
-			function AutoScrollManager(divId, inAutoScrollModeCallback) {
+			function AutoScrollManager(divId, inAutoScrollModeCallback, autoScrollCallback) {
 				this.divId = divId;
 				this.inAutoScrollModeCallback = inAutoScrollModeCallback;
+				this.autoScrollCallback = autoScrollCallback;
 
 				var thisCallbackRef = this;
 				var scrollDiv = $("#" + divId);
@@ -40,6 +41,7 @@ define(
 				var scrollBottomEnabled = false;
 				var pageX;
 				var pageY;
+				var mouseMoveEvent;
 
 				AutoScrollManager.prototype.intialize = function() {
 					this.setupEventHandling();
@@ -49,6 +51,7 @@ define(
 					$(document).mousemove(function(event) {
 						pageX = event.pageX;
 						pageY = event.pageY;
+						mouseMoveEvent = event;
 						if (true == thisCallbackRef.inAutoScrollModeCallback()) {
 							if ((true == thisCallbackRef.isCursorInRightMargin()) && (false == scrollRightEnabled)) {
 								thisCallbackRef.triggerScrollRight();
@@ -108,6 +111,7 @@ define(
 						if (true == thisCallbackRef.isCursorInRightMargin()) {
 							thisCallbackRef.scrollRight();
 							thisCallbackRef.triggerScrollRight();
+							thisCallbackRef.autoScrollCallback(mouseMoveEvent);
 						} else {
 							scrollRightEnabled = false;
 						}
@@ -120,6 +124,7 @@ define(
 						if (true == thisCallbackRef.isCursorInLeftMargin()) {
 							thisCallbackRef.scrollLeft();
 							thisCallbackRef.triggerScrollLeft();
+							thisCallbackRef.autoScrollCallback(mouseMoveEvent);
 						} else {
 							scrollLeftEnabled = false;
 						}
@@ -132,6 +137,7 @@ define(
 						if (true == thisCallbackRef.isCursorInTopMargin()) {
 							thisCallbackRef.scrollTop();
 							thisCallbackRef.triggerScrollTop();
+							thisCallbackRef.autoScrollCallback(mouseMoveEvent);
 						} else {
 							scrollTopEnabled = false;
 						}
@@ -144,6 +150,7 @@ define(
 						if (true == thisCallbackRef.isCursorInBottomMargin()) {
 							thisCallbackRef.scrollBottom();
 							thisCallbackRef.triggerScrollBottom();
+							thisCallbackRef.autoScrollCallback(mouseMoveEvent);
 						} else {
 							scrollBottomEnabled = false;
 						}
