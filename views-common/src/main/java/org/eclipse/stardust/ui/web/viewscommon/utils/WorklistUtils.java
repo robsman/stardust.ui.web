@@ -422,7 +422,8 @@ public class WorklistUtils
     */
    public static ActivityInstances getAllAssignedActivities()
    {
-      ActivityInstanceQuery allAssignedActivitiesQuery = ActivityInstanceQuery.findAll();
+      ActivityInstanceQuery allAssignedActivitiesQuery = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
+            ActivityInstanceState.Application, ActivityInstanceState.Suspended});
       FilterOrTerm or = allAssignedActivitiesQuery.getFilter().addOrTerm();
       or.add(PerformingParticipantFilter.ANY_FOR_USER).add(PerformingUserFilter.CURRENT_USER);
       allAssignedActivitiesQuery.setPolicy(new SubsetPolicy(0, true));
@@ -441,7 +442,9 @@ public class WorklistUtils
     */
    public static ActivityInstances getCriticalActivities(CriticalityCategory criticality)
    {
-      ActivityInstanceQuery criticalActivitiesQuery = ActivityInstanceQuery.findAll();
+      ActivityInstanceQuery criticalActivitiesQuery = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
+            ActivityInstanceState.Application, ActivityInstanceState.Suspended});
+
       FilterOrTerm or = criticalActivitiesQuery.getFilter().addOrTerm();
       or.add(PerformingParticipantFilter.ANY_FOR_USER).add(PerformingUserFilter.CURRENT_USER);
       criticalActivitiesQuery.setPolicy(new SubsetPolicy(0, true));
