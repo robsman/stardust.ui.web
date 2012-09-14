@@ -18,6 +18,7 @@
 
    <configurations>
       <conf name="stardust-web-modeler-compile" description="Web Modeler - Compile Scope" />
+      <conf name="stardust-web-modeler-runtime" extends="stardust-web-modeler-compile" description="Web Modeler - Runtime Scope" />
 
       <conf name="compile" extends="stardust-web-modeler-compile" visibility="private" description="Compile Time Dependencies" />
 
@@ -27,7 +28,7 @@
    </configurations>
 
    <publications>
-      <artifact name="stardust-web-modeler" type="jar" conf="stardust-web-modeler-compile" ext="jar" />
+      <artifact name="stardust-web-modeler" type="jar" conf="stardust-web-modeler-compile,stardust-web-modeler-runtime" ext="jar" />
       <artifact name="stardust-web-modeler" type="pom" conf="pom" ext="pom" />
    </publications>
 
