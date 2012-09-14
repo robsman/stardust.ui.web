@@ -3,13 +3,13 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
 
 /**
- * 
+ *
  */
 define([ "m_utils", "m_constants", "m_messageDisplay",
 		"m_canvasManager",
@@ -22,16 +22,23 @@ define([ "m_utils", "m_constants", "m_messageDisplay",
 		m_diagram, m_activitySymbol, m_eventSymbol, m_gatewaySymbol,
 		m_dataSymbol, m_model, m_process, m_activity, m_data) {
 
+	function selectTool(toolButtonId) {
+		$(".selected-tool").removeClass("selected-tool");
+		$("#" + toolButtonId).addClass("selected-tool");
+	}
 	return {
 		setSelectMode : function(diagram) {
+			selectTool("selectModeButton");
 			diagram.setSelectMode();
 		},
 
 		setSeparatorMode : function(diagram) {
+			selectTool("separatorModeButton");
 			diagram.setSeparatorMode();
 		},
 
 		createActivity : function(diagram) {
+			selectTool("activityButton");
 			diagram.newSymbol = m_activitySymbol.createActivitySymbol(diagram,
 					m_constants.MANUAL_ACTIVITY_TYPE);
 		},
@@ -41,22 +48,27 @@ define([ "m_utils", "m_constants", "m_messageDisplay",
 		},
 
 		createStartEvent : function(diagram) {
+			selectTool("startEventButton");
 			diagram.newSymbol = m_eventSymbol.createStartEventSymbol(diagram);
 		},
 
 		createEndEvent : function(diagram) {
+			selectTool("endEventButton");
 			diagram.newSymbol = m_eventSymbol.createStopEventSymbol(diagram);
 	},
 
 		createData : function(diagram) {
+			selectTool("dataButton");
 			diagram.newSymbol = m_dataSymbol.createDataSymbol(diagram);
 		},
 
 		createGateway : function(diagram) {
+			selectTool("gatewayButton");
 			diagram.newSymbol = m_gatewaySymbol.createGatewaySymbol(diagram);
 		},
 
 		createConnector : function(diagram) {
+			selectTool("connectorButton");
 			diagram.mode = diagram.CONNECTION_MODE;
 			m_messageDisplay
 					.showMessage("Select first anchor point for connection.");

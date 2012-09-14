@@ -110,7 +110,6 @@ input[type=image] {
 }
 
 input[type=image]:focus {
-	border: 1px solid #6699ff;
 }
 
 input[type=text].rightAligned {
@@ -349,8 +348,10 @@ div.toolBar {
 	color: #397d9f;
 }
 
-.toolSelectedStyle {
-	background-image: url(../../images/toolbarIconSelectHover.png);
+.selected-tool {
+	background: url(../../images/toolbarIconSelectHover.png) center repeat-x
+		#ffd700 ! important;
+	border: 1px solid #6699ff !important;
 }
 
 input.toolbarButton {
@@ -450,10 +451,10 @@ fieldset {
 }
 
 .label-form {
-    color: #708090;
-    font-weight: normal;
-    padding: 3px 5px 3px 0;
-    white-space: nowrap;
+	color: #708090;
+	font-weight: normal;
+	padding: 3px 5px 3px 0;
+	white-space: nowrap;
 }
 
 /* Tabs */
