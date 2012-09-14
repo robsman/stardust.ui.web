@@ -274,9 +274,9 @@ define(
 				 * when connection is created from Flyout Menu, anchor points
 				 * needs to be moved to 6 O'clock or 3 O'clock
 				 */
-				Connection.prototype.updateAnchorPointForGateway = function() {
+				Connection.prototype.updateAnchorPointForSymbol = function() {
 					var orientation = null;
-					if (this.fromAnchorPoint.symbol.type == m_constants.GATEWAY_SYMBOL) {
+					if (this.fromAnchorPoint.symbol.type == m_constants.GATEWAY_SYMBOL || this.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
 						var startSymbol = this.fromAnchorPoint.symbol;
 						var targetSymbol = this.toAnchorPoint.symbol;
 						if (startSymbol.x > targetSymbol.x + targetSymbol.width) {

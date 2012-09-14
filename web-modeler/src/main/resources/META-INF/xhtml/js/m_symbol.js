@@ -1144,7 +1144,7 @@ define(
 
 							this.diagram.currentConnection.toModelElementOid = this.oid;
 							this.diagram.currentConnection
-									.updateAnchorPointForGateway();
+									.updateAnchorPointForSymbol();
 							this.diagram.currentConnection.complete();
 							this.diagram.currentConnection = null;
 						} else {

@@ -1328,7 +1328,7 @@ define(
 							var status = this.placeNewSymbol(x - this.X_OFFSET,
 									y - this.Y_OFFSET, true);
 							this.currentConnection.toModelElementOid = this.lastSymbol.oid;
-							this.currentConnection.updateAnchorPointForGateway();
+							this.currentConnection.updateAnchorPointForSymbol();
 							this.currentConnection.complete();
 							this.currentConnection = null;
 						} else {
@@ -1512,6 +1512,7 @@ define(
 						if (this.currentConnection.validateCreateConnection(
 								this.currentConnection.fromAnchorPoint,
 								anchorPoint)) {
+							this.currentConnection.updateAnchorPointForSymbol();
 							this.currentConnection
 									.setSecondAnchorPoint(anchorPoint);
 							if (!this.currentConnection.isCompleted()) {
