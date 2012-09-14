@@ -28,14 +28,17 @@ define([ "m_utils", "m_constants", "m_model" ],
 			 * 
 			 */
 			function DataFlow(id) {
-				this.type = m_constants.CONTROL_FLOW;
+				this.type = m_constants.DATA_FLOW;
 				this.id = id;
 				this.description = null;
 				this.inDataMapping = true;
 				this.outDataMapping = true;
 				this.dataPath = null;
 				this.applicationPath = null;
-				this.dataMappings = null;
+				this.inAccessPointId = null;
+				this.inContext = null;
+				this.outAccessPointId = null;
+				this.outContext = null;
 
 				/**
 				 * 

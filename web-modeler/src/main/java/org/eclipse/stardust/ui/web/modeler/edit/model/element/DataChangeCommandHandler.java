@@ -72,6 +72,17 @@ public class DataChangeCommandHandler
     * @param model
     * @param request
     */
+   @OnCommand(commandId = "typeDeclaration.create")
+   public void createTypeDeclaration(ModelType model, JsonObject request)
+   {
+      // TODO @Florin
+      System.out.println("Creating Type Declaration " + request);
+   }
+   
+   /**
+    * @param model
+    * @param request
+    */
    @OnCommand(commandId = "structuredData.create")
    public void createStructuredData(ModelType model, JsonObject request)
    {
@@ -80,6 +91,7 @@ public class DataChangeCommandHandler
       String dataFullID = extractString(request, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY);
       String stripFullId_ = getModelBuilderFacade().getModelId(extractString(request,
             ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY));
+      
       if (StringUtils.isEmpty(stripFullId_))
       {
          stripFullId_ = model.getId();

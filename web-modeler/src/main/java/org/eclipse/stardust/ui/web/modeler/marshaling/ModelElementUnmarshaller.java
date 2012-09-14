@@ -721,7 +721,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
             System.out.println("Access point " + accessPointJson);
 
-
             String id = accessPointJson.get(ModelerConstants.ID_PROPERTY)
             .getAsString();
             String name = accessPointJson.get(ModelerConstants.NAME_PROPERTY)
@@ -1338,6 +1337,11 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             }
          }
       }
+    
+      if (dataFlowJson.has(ModelerConstants.ACCESS_POINT_ID_PROPERTY))
+      {
+         dataMapping.setApplicationAccessPoint(dataFlowJson.get(ModelerConstants.ACCESS_POINT_ID_PROPERTY).getAsString());
+         dataMapping.setContext(dataFlowJson.get(ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY).getAsString());
+      }
    }
-
 }

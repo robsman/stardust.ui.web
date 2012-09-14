@@ -8,9 +8,9 @@ define(
 			return {
 				create : function(propertiesPanel) {
 					var page = new DataFlowBasicPropertiesPage(propertiesPanel);
-					
+
 					page.initialize();
-					
+
 					return page;
 				}
 			};
@@ -29,8 +29,7 @@ define(
 				/**
 				 * 
 				 */
-				DataFlowBasicPropertiesPage.prototype.initialize = function()
-				{
+				DataFlowBasicPropertiesPage.prototype.initialize = function() {
 					this.inInput = this.mapInputId("inInput");
 					this.outInput = this.mapInputId("outInput");
 					this.descriptionInput = this.mapInputId("descriptionInput");
@@ -40,10 +39,8 @@ define(
 							.mapInputId("inputAccessPointPanel");
 					this.outputAccessPointPanel = this
 							.mapInputId("outputAccessPointPanel");
-					this.inAccessPointSelectInput = this
-							.mapInputId("inAccessPointSelectInput");
-					this.outAccessPointSelectInput = this
-							.mapInputId("outAccessPointSelectInput");
+					this.accessPointSelectInput = this
+							.mapInputId("accessPointSelectInput");
 
 					// Initialize callbacks
 
@@ -54,8 +51,8 @@ define(
 							event.data.callbackScope.dataPathInput
 									.removeAttr("disabled");
 						} else {
-							event.data.callbackScope.dataPathInput.attr("disabled",
-									true);
+							event.data.callbackScope.dataPathInput.attr(
+									"disabled", true);
 							event.data.callbackScope.dataPathInput.val(null);
 						}
 					});
@@ -72,71 +69,62 @@ define(
 							event.data.callbackScope.dataPathOutput.val(null);
 						}
 					});
-					
+
 					this.registerInputForModelElementChangeSubmission(
 							this.descriptionInput, "description");
 					this.registerCheckboxInputForModelElementChangeSubmission(
 							this.inInput, "inDataMapping");
 					this.registerCheckboxInputForModelElementChangeSubmission(
 							this.outInput, "outDataMapping");
+
+					this.accessPointSelectInput
+							.change(
+									{
+										page : this
+									},
+									function(event) {
+										var page = event.data.page;
+										var dataFlow = page.propertiesPanel.element.modelElement;
+
+										// TODO Adjust flow direction based on
+										// access point direction?
+										page
+												.submitChange({
+													accessPointId : dataFlow.activity.accessPoints[page.accessPointSelectInput
+															.val()].id,
+													accessPointContext : dataFlow.activity.accessPoints[page.accessPointSelectInput
+															.val()].context
+												});
+									});
 				};
-				
+
 				/**
 				 * 
 				 */
-				DataFlowBasicPropertiesPage.prototype.populateInAccessPointSelectInput = function(
+				DataFlowBasicPropertiesPage.prototype.populateAccessPointSelectInput = function(
 						dataFlow) {
-					this.inAccessPointSelectInput.empty();
+					this.accessPointSelectInput.empty();
 
 					m_utils.debug("===> Data Flow Activity");
 					m_utils.debug(dataFlow.activity);
-					
-					for ( var n in dataFlow.activity.accessPoints) {
-						var accessPoint = dataFlow.activity.accessPoints[n];
-
-						if (accessPoint.direction == m_constants.IN_ACCESS_POINT
-								|| accessPoint.direction == m_constants.INOUT_ACCESS_POINT) {
-							m_utils.debug("Access Point");
-							m_utils.debug(accessPoint);
-
-							var option = "<option value\"";
-
-							option += accessPoint.id;
-							option += "\">";
-							option += accessPoint.name;
-							option += "</option>";
-
-							this.inAccessPointSelectInput.append(option);
-						}
-					}
-				};
-
-				/**
-				 * 
-				 */
-				DataFlowBasicPropertiesPage.prototype.populateOutAccessPointSelectInput = function(
-						dataFlow) {
-					this.outAccessPointSelectInput.empty();
 
 					for ( var n in dataFlow.activity.accessPoints) {
 						var accessPoint = dataFlow.activity.accessPoints[n];
 
-						if (accessPoint.direction == m_constants.OUT_ACCESS_POINT
-								|| accessPoint.direction == m_constants.INOUT_ACCESS_POINT) {
-							m_utils.debug("Acess Point");
-							m_utils.debug(accessPoint);
+						m_utils.debug("Access Point");
+						m_utils.debug(accessPoint);
 
-							var option = "<option value\"";
+						var option = "<option value\"";
 
-							option += accessPoint.id;
-							option += "\">";
-							option += accessPoint.name;
-							option += "</option>";
+						option += accessPoint.id;
+						option += "\">";
+						option += accessPoint.name;
+						option += " (";
+						option += accessPoint.context;
+						option += ")</option>";
 
-							this.outAccessPointSelectInput.append(option);
-						}
+						this.accessPointSelectInput.append(option);
 					}
-
 				};
 
 				/**
@@ -144,9 +132,7 @@ define(
 				 */
 				DataFlowBasicPropertiesPage.prototype.setElement = function() {
 					this
-							.populateInAccessPointSelectInput(this.propertiesPanel.element.modelElement);
-					this
-							.populateOutAccessPointSelectInput(this.propertiesPanel.element.modelElement);
+							.populateAccessPointSelectInput(this.propertiesPanel.element.modelElement);
 					this.descriptionInput
 							.val(this.propertiesPanel.element.modelElement.description);
 					this.inInput
@@ -159,17 +145,6 @@ define(
 									this.propertiesPanel.element.modelElement.outDataMapping);
 					this.dataPathInput
 							.val(this.propertiesPanel.element.modelElement.dataPath);
-					// this.applicationPathInput
-					// .val(this.propertiesPanel.element.modelElement.applicationPath);
-
-					// if (m_user.currentUserHasProfileRole(m_user.INTEGRATOR))
-					// {
-					// m_dialog.makeVisible(this.inputAccessPointPanel);
-					// m_dialog.makeVisible(this.outputAccessPointPanel);
-					// } else {
-					// m_dialog.makeInvisible(this.inputAccessPointPanel);
-					// m_dialog.makeInvisible(this.outputAccessPointPanel);
-					// }
 				};
 			}
 		});

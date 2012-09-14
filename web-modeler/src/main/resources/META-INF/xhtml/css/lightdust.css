@@ -22,6 +22,16 @@ label {
 	font-family: Helvetica, Arial, sans-serif;
 }
 
+th {
+	font-size: 11px;
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+td {
+	font-size: 11px;
+	font-family: Helvetica, Arial, sans-serif;
+}
+
 select {
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 11px;

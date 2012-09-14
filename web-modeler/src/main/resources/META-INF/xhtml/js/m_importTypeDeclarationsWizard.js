@@ -9,16 +9,15 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_communicationController", "m_command", "m_commandsController",
-				"m_model", "m_typeDeclaration", "m_accessPoint",
-				"m_dataTraversal", "m_dialog" ],
-		function(m_utils, m_constants, m_communicationController, m_command, m_commandsController,
-				m_model, m_typeDeclaration, m_accessPoint, m_dataTraversal,
-				m_dialog) {
+		[ "m_utils", "m_constants", "m_communicationController", "m_command",
+				"m_commandsController", "m_model", "m_typeDeclaration",
+				"m_accessPoint", "m_dataTraversal", "m_dialog" ],
+		function(m_utils, m_constants, m_communicationController, m_command,
+				m_commandsController, m_model, m_typeDeclaration,
+				m_accessPoint, m_dataTraversal, m_dialog) {
 			return {
 				initialize : function() {
-					var wizard = new ImportTypeDeclarationsWizard(
-							payloadObj.importCallback);
+					var wizard = new ImportTypeDeclarationsWizard();
 
 					wizard.initialize(payloadObj.model);
 				}
@@ -27,8 +26,7 @@ define(
 			/**
 			 * 
 			 */
-			function ImportTypeDeclarationsWizard(importCallback) {
-				this.importCallback = importCallback;
+			function ImportTypeDeclarationsWizard() {
 				this.tree = jQuery("#typeDeclarationsTable");
 				this.tableBody = jQuery("table#typeDeclarationsTable tbody");
 				this.urlTextInput = jQuery("#urlTextInput");
@@ -45,7 +43,7 @@ define(
 				this.importButton.click({
 					wizard : this
 				}, function(event) {
-					event.data.wizard.create();
+					event.data.wizard.import();
 					closePopup();
 				});
 
@@ -58,7 +56,8 @@ define(
 				/**
 				 * 
 				 */
-				ImportTypeDeclarationsWizard.prototype.initialize = function(model) {
+				ImportTypeDeclarationsWizard.prototype.initialize = function(
+						model) {
 					this.model = model;
 
 					this.tree.tableScroll({
@@ -79,7 +78,7 @@ define(
 					};
 
 					jQuery("body").css("cursor", "progress");
-					//this.clearErrorMessages();
+					// this.clearErrorMessages();
 					this.urlTextInput.removeClass("error");
 
 					var view = this;
@@ -126,23 +125,24 @@ define(
 				 */
 				ImportTypeDeclarationsWizard.prototype.setTypeDeclarations = function(
 						typeDeclarations) {
+					this.typeDeclarations = typeDeclarations;
 					m_utils.debug("===> Type Declarations");
 					m_utils.debug(typeDeclarations);
 
 					this.tableBody.empty();
 
-					for ( var element in typeDeclarations.elements) {
+					for ( var element in this.typeDeclarations.elements) {
 						var path = element.replace(/:/g, "-");
 
 						var content = "<tr id='" + path + "'>";
 
 						content += "<td>";
 						content += "<span class='data-element'>"
-								+ typeDeclarations.elements[element].name
+								+ this.typeDeclarations.elements[element].name
 								+ "</span>";
 						content += "</td>";
 						content += "<td>";
-						content += typeDeclarations.elements[element].name;
+						content += this.typeDeclarations.elements[element].name;
 						content += "</td>";
 						content += "<td>";
 						content += "</td>";
@@ -150,26 +150,26 @@ define(
 
 						this.tableBody.append(content);
 
-						if (typeDeclarations.elements[element].body != null) {
+						if (this.typeDeclarations.elements[element].body != null) {
 							this
 									.populateRecursively(
-											typeDeclarations.elements[element].body.elements,
+											this.typeDeclarations.elements[element].body.elements,
 											path, true);
 						}
 					}
 
-					for ( var type in typeDeclarations.types) {
+					for ( var type in this.typeDeclarations.types) {
 						var path = type.replace(/:/g, "-");
 
 						var content = "<tr id='" + path + "'>";
 
 						content += "<td>";
 						content += "<span class='data-element'>"
-								+ typeDeclarations.types[type].name
+								+ this.typeDeclarations.types[type].name
 								+ "</span>";
 						content += "</td>";
 						content += "<td>";
-						content += typeDeclarations.types[type].name;
+						content += this.typeDeclarations.types[type].name;
 						content += "</td>";
 						content += "<td>";
 						content += "</td>";
@@ -177,10 +177,10 @@ define(
 
 						this.tableBody.append(content);
 
-						if (typeDeclarations.types[type].body != null) {
+						if (this.typeDeclarations.types[type].body != null) {
 							this
 									.populateRecursively(
-											typeDeclarations.types[type].body.elements,
+											this.typeDeclarations.types[type].body.elements,
 											path, true);
 						}
 					}
@@ -264,12 +264,28 @@ define(
 				 * 
 				 */
 				ImportTypeDeclarationsWizard.prototype.import = function() {
-//					this
-//							.createCallback({
-//								id : this.application.id,
-//								name : this.processDefinitionNameInput
-//										.val(),
-//							});
+					for ( var type in this.typeDeclarations.types) {
+						m_commandsController
+								.submitCommand(m_command
+										.createCreateTypeDeclarationCommand(
+												this.model.id,
+												this.model.id,
+												{
+													"typeDeclaration" : this.typeDeclarations.types[type]
+												}));
+					}
+
+					for ( var type in this.typeDeclarations.types) {
+						m_commandsController
+								.submitCommand(m_command
+										.createCreateStructuredDataTypeCommand(
+												this.model.id,
+												this.model.id,
+												{
+													"name" : this.typeDeclarations.types[type].name,
+													"id" : this.typeDeclarations.types[type].name,
+												}));
+					}
 				};
 			}
 			;

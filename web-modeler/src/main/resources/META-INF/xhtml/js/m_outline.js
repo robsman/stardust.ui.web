@@ -1994,21 +1994,12 @@ define(
 				function importTypeDeclarations(model) {
 					var popupData = {
 						attributes : {
-							width : "900px",
-							height : "700px",
+							width : "750px",
+							height : "600px",
 							src : "../bpm-modeler/views/modeler/importTypeDeclarationsWizard.html"
 						},
 						payload : {
-							model : model,
-							importCallback : function(parameter) {
-//								m_commandsController
-//										.submitCommand(m_command
-//												.createCreateCommand(
-//														"/models/"
-//																+ application.model.id
-//																+ "/processes/createWrapperProcess",
-//														parameter));
-							}
+							model : model
 						}
 					};
 

@@ -475,6 +475,7 @@ define(
 									dataName, m_constants.IN_ACCESS_POINT);
 
 					this.addInputData(this.application.accessPoints[dataName]);
+					this.submitChanges(this.application.accessPoints);
 				};
 
 				/**
@@ -507,6 +508,7 @@ define(
 									dataName, m_constants.OUT_ACCESS_POINT);
 
 					this.addOutputData(this.application.accessPoints[dataName]);
+					this.submitChanges(this.application.accessPoints);
 				};
 
 				/**
