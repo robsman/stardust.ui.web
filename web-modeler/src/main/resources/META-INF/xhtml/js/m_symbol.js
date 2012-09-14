@@ -1000,7 +1000,6 @@ define(
 						this.hideFlyOutMenu();
 					} else {
 						this.hideAnchorPoints();
-						m_messageDisplay.clear();
 					}
 				};
 

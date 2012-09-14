@@ -417,6 +417,8 @@ define(
 										updateConnection.modelElement.inDataMapping = true;
 										updateConnection.modelElement.outDataMapping = true;
 										updateConnection.createUpdateCommand();
+										m_messageDisplay
+												.showMessage("Connection updated");
 										break;
 									}
 								}
@@ -804,6 +806,16 @@ define(
 				 *
 				 */
 				Connection.prototype.reroute = function() {
+					if (this.path.removed) {
+						// If dummy connections are there,remove it
+						this.remove();
+						var symbol = this.diagram
+								.findSymbolByGuid(this.toModelElementOid)
+						if (null != symbol) {
+							m_utils.removeItemFromArray(symbol, this);
+						}
+						return;
+					}
 					if (this.isControlFlow()) {
 						this.segments = new Array();
 
@@ -1348,7 +1360,6 @@ define(
 				 *
 				 */
 				Connection.prototype.remove = function() {
-					// TODO add symbol/diagram cleanup
 					this.removePrimitives();
 					this.removeFlyOutMenu();
 					this.removeProximitySensor();
@@ -1362,6 +1373,13 @@ define(
 					if (this.toAnchorPoint && this.toAnchorPoint.symbol) {
 						m_utils.removeItemFromArray(
 								this.toAnchorPoint.symbol.connections, this);
+
+					} else if (this.toModelElementOid != null) {
+						var symbol = this.diagram
+								.findSymbolByGuid(this.toModelElementOid)
+						if (null != symbol) {
+							m_utils.removeItemFromArray(symbol, this);
+						}
 					}
 				};
 
@@ -1372,7 +1390,9 @@ define(
 					var n = 0;
 
 					while (n < this.primitives.length) {
-						this.primitives[n].remove();
+						if(this.primitives[n].node){
+							this.primitives[n].remove();
+						}
 						n++;
 					}
 				};
@@ -1423,7 +1443,7 @@ define(
 				 */
 				Connection.prototype.validateCreateConnection = function(
 						fromAnchorPoint, toAnchorPoint) {
-					m_messageDisplay.clear();
+					/*m_messageDisplay.clear();*/
 					if (fromAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
 						// Check for OUT connections on End Event
 						if (fromAnchorPoint.symbol.modelElement.eventType == m_constants.STOP_EVENT_TYPE) {
@@ -1508,14 +1528,14 @@ define(
 										.showErrorMessage("No more OUT Connection allowed to this activity.");
 								return false;
 							}
-						}/*else if (toAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
+						}else if (toAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
 							if (!toAnchorPoint.symbol
 									.validateCreateConnection()) {
 								m_messageDisplay
 										.showErrorMessage("No more connections allowed to this symbol.");
 								return false;
 							}
-						}*/
+						}
 						// If Start and End symbol are same, show error
 						if (fromAnchorPoint.symbol.oid == toAnchorPoint.symbol.oid) {
 							m_messageDisplay

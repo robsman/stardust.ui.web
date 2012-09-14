@@ -1342,6 +1342,7 @@ define(
 							&& this.currentConnection != null) {
 						this.currentConnection.remove();
 						this.currentConnection = null;
+						m_messageDisplay.clear();
 						this.mode = this.NORMAL_MODE;
 					}
 				};
@@ -1517,12 +1518,17 @@ define(
 								this.currentConnection.remove();
 							} else {
 								this.currentConnection.select();
+								m_messageDisplay
+								.showMessage("Connection created");
 							}
 							this.currentConnection = null;
 							this.mode = this.NORMAL_MODE;
 						}else{
-							m_utils.removeItemFromArray(
-									this.currentConnection.toAnchorPoint.symbol.connections, this);
+							if(this.currentConnection.toAnchorPoint.symbol){
+								m_utils.removeItemFromArray(
+										this.currentConnection.toAnchorPoint.symbol.connections, this.currentConnection);
+							}
+
 						}
 					}
 				};
