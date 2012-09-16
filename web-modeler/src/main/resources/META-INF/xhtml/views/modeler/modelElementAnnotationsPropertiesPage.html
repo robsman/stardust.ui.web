@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<head>
+<title>Annotations</title>
+<style>
+.annotationUserTimestampSpan {
+	color: #999999;
+}
+
+.annotationContentSpan {
+}
+</style>
+</head>
+<body>
+	<div class="heading">Annotations</div>
+	<table>
+		<tr>
+			<td>
+				<div class="panelBorder" style="width: 400px;">
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tr>
+							<td><div class="toolBar">
+									<table width="100%">
+										<tr>
+											<td><input id="deleteAnnotationButton" type="image"
+												src="../../images/icons/delete.png" title="Delete"
+												alt="Delete" class="toolbarButton" /></td>
+										</tr>
+									</table>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="dataTable">
+									<table id="annotationsTable" cellpadding="0" cellspacing="0" style="width: 400px;">
+										<tbody />
+									</table>
+								</div></td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<table style="margin-top: 10px;">
+					<tr>
+						<td><textarea id="contentTextArea" rows="4" cols="30"></textarea></td>
+					</tr>
+					<tr>
+						<td><input id="submitButton" type="button" value="Submit" /></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>
