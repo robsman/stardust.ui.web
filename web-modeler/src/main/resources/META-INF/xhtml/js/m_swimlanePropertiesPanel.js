@@ -11,59 +11,66 @@
 /**
  * @author Marc.Gille
  */
-define(
-		[ "m_utils", "m_constants", "m_commandsController", "m_propertiesPanel", "m_propertiesPage" ],
-		function(m_utils, m_constants, m_commandsController, m_propertiesPanel, m_propertiesPage) {
+define([ "m_utils", "m_constants", "m_commandsController", "m_propertiesPanel",
+		"m_propertiesPage" ], function(m_utils, m_constants,
+		m_commandsController, m_propertiesPanel, m_propertiesPage) {
 
-			var swimlanePropertiesPanel = null;
+	var swimlanePropertiesPanel = null;
 
-			return {
-				initialize : function(diagram) {
-					swimlanePropertiesPanel = new SwimlanePropertiesPanel();
-				
-					m_commandsController.registerCommandHandler(swimlanePropertiesPanel);					
-					
-					swimlanePropertiesPanel.initialize(diagram);
-				},				
-				getInstance : function() {
-					return swimlanePropertiesPanel;
-				}
-			};
+	return {
+		initialize : function(diagram) {
+			swimlanePropertiesPanel = new SwimlanePropertiesPanel();
 
-			/**
-			 * 
-			 */
-			function SwimlanePropertiesPanel() {
-				var propertiesPanel = m_propertiesPanel
-						.createPropertiesPanel("swimlanePropertiesPanel");
+			m_commandsController
+					.registerCommandHandler(swimlanePropertiesPanel);
 
-				m_utils.inheritFields(this, propertiesPanel);
-				m_utils.inheritMethods(SwimlanePropertiesPanel.prototype,
-						propertiesPanel);
+			swimlanePropertiesPanel.initialize(diagram);
+		},
+		getInstance : function() {
+			return swimlanePropertiesPanel;
+		}
+	};
 
-				/**
-				 * 
-				 */
-				SwimlanePropertiesPanel.prototype.toString = function() {
-					return "Lightdust.SwimlanePropertiesPanel";
-				};
+	/**
+	 * 
+	 */
+	function SwimlanePropertiesPanel() {
+		var propertiesPanel = m_propertiesPanel
+				.createPropertiesPanel("swimlanePropertiesPanel");
 
-				/**
-				 * 
-				 */
-				SwimlanePropertiesPanel.prototype.setElement = function(
-						element) {
-					this.clearErrorMessages();
+		m_utils.inheritFields(this, propertiesPanel);
+		m_utils.inheritMethods(SwimlanePropertiesPanel.prototype,
+				propertiesPanel);
 
-					this.element = element;
+		/**
+		 * 
+		 */
+		SwimlanePropertiesPanel.prototype.toString = function() {
+			return "Lightdust.SwimlanePropertiesPanel";
+		};
 
-					if (this.element.properties == null) {
-						this.element.properties = {};
-					}
+		/**
+		 * 
+		 */
+		SwimlanePropertiesPanel.prototype.getModelElement = function() {
+			return this.element;
+		};
 
-					for ( var n in this.propertiesPages) {
-						this.propertiesPages[n].setElement();
-					}
-				};
+		/**
+		 * 
+		 */
+		SwimlanePropertiesPanel.prototype.setElement = function(element) {
+			this.clearErrorMessages();
+
+			this.element = element;
+
+			if (this.element.properties == null) {
+				this.element.properties = {};
 			}
-		});
+
+			for ( var n in this.propertiesPages) {
+				this.propertiesPages[n].setElement();
+			}
+		};
+	}
+});

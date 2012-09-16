@@ -67,6 +67,21 @@ define(
 				/**
 				 * 
 				 */
+				ProcessPropertiesPanel.prototype.getModelElement = function() {
+					// TODO More elegantly?
+					return this.diagram.process;
+				};
+
+				/**
+				 * 
+				 */
+				ProcessPropertiesPanel.prototype.wrapModelElementProperties = function(modelElementProperties) {
+					return modelElementProperties;
+				};
+
+				/**
+				 * 
+				 */
 				ProcessPropertiesPanel.prototype.getElementUuid = function() {
 					return this.element.oid;
 				};

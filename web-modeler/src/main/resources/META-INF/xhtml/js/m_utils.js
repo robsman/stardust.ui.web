@@ -43,7 +43,9 @@ define(
 				generateIDFromName : function(name) {
 					return name.replace(/ /g, '_');
 				},
-				
+
+				prettyDateTime : prettyDateTime,
+
 				formatDate : formatDate
 			};
 
@@ -161,6 +163,62 @@ define(
 						+ "\n"
 						+ "*** Constructor ***\n" + obj.constructor ? "\t"
 						+ obj.constructor.prototype + "\n" : "undefined");
+			}
+
+			/**
+			 *
+			 */
+			function prettyDateTime(date) {
+				if (date == null) {
+					return "-";
+				}
+
+				var time_formats = [ [ 60, 'Less than a Minute' ], [ 90, '1 Minute' ], // 60*1.5
+				[ 3600, 'Minutes', 60 ], // 60*60, 60
+				[ 5400, '1 Hour' ], // 60*60*1.5
+				[ 86400, 'Hours', 3600 ], // 60*60*24, 60*60
+				[ 129600, '1 Day' ], // 60*60*24*1.5
+				[ 604800, 'Days', 86400 ], // 60*60*24*7, 60*60*24
+				[ 907200, '1 Week' ], // 60*60*24*7*1.5
+				[ 2628000, 'Weeks', 604800 ], // 60*60*24*(365/12), 60*60*24*7
+				[ 3942000, '1 Month' ], // 60*60*24*(365/12)*1.5
+				[ 31536000, 'Months', 2628000 ], // 60*60*24*365,
+				// 60*60*24*(365/12)
+				[ 47304000, '1 Year' ], // 60*60*24*365*1.5
+				[ 3153600000, 'Years', 31536000 ], // 60*60*24*365*100,
+				// 60*60*24*365
+				[ 4730400000, '1 Century' ], // 60*60*24*365*100*1.5
+				];
+
+				var seconds = (new Date().getTime() - date.getTime()) / 1000;
+				var suffix = " ago";
+
+				if (seconds < 0) {
+					seconds = Math.abs(seconds);
+					suffix = " from now";
+				}
+
+				var n = 0;
+				var format;
+
+				while (format = time_formats[n]) {
+					if (seconds < format[0]) {
+						if (format.length == 2) {
+							return format[1] + suffix;
+						} else {
+							return Math.round(seconds / format[2]) + " "
+									+ format[1] + suffix;
+						}
+					}
+
+					++n;
+				}
+
+				if (seconds > 4730400000)
+					return Math.round(seconds / 4730400000) + " Centuries"
+							+ token;
+
+				return "(Unknown)";
 			}
 
 			// TODO I18N

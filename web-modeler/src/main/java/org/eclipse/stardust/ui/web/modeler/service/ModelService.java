@@ -85,8 +85,6 @@ import com.google.gson.JsonObject;
  */
 public class ModelService
 {
-   public static final String MODELING_DOCUMENTS_DIR = "/process-modeling-documents/";
-
    public static final String NULL_VALUE = "null";
 
    public static final String DIRECTORY_MODE = "DIRECTORY_MODE";
@@ -261,8 +259,6 @@ public class ModelService
     */
    public static final int START_END_SYMBOL_LEFT_OFFSET = 12;
 
-   private static final String MODEL_DOCUMENTATION_TEMPLATES_FOLDER = "/documents/templates/modeling/";
-
    @Resource
    private UserIdProvider me;
 
@@ -288,7 +284,9 @@ public class ModelService
    public ServiceFactory getServiceFactory()
    {
       if (serviceFactory == null)
-      {
+      { 
+         // TODO Bind against user!
+         
          serviceFactory = ServiceFactoryLocator.get("motu", "motu");
       }
 
@@ -1610,83 +1608,6 @@ public class ModelService
    }
 
    /**
-	 *
-	 */
-   public String createDocumentation(String modelId, JsonObject json)
-   {
-      return createModelElementDocumentation(modelId, json);
-   }
-
-   /**
-	 *
-	 */
-   public String createDocumentation(String modelId, String processId, JsonObject json)
-   {
-      return createModelElementDocumentation(modelId + "-" + processId, json);
-   }
-
-   /**
-	 *
-	 */
-   private String createModelElementDocumentation(String pathPrefix, JsonObject json)
-   {
-
-      // TODO Make folder structure
-
-      String fileName = pathPrefix + "-" + extractString(json, "id") + ".html";
-
-      DocumentInfo documentInfo = DmsUtils.createDocumentInfo(fileName);
-      documentInfo.setOwner(getServiceFactory().getWorkflowService().getUser()
-            .getAccount());
-      documentInfo.setContentType(MimeTypesHelper.HTML.getType());
-      Document document = getDocumentManagementService().getDocument(
-            MODELING_DOCUMENTS_DIR + fileName);
-
-      if (null == document)
-      {
-         document = getDocumentManagementService().createDocument(MODELING_DOCUMENTS_DIR,
-               documentInfo,
-               replaceProperties("", json, getTemplateContent("activity")).getBytes(),
-               null);
-
-         getDocumentManagementService().versionDocument(document.getId(), null);
-      }
-
-      JsonObject result = new JsonObject();
-
-      result.addProperty("documentUrl", document.getId());
-
-      return result.toString();
-   }
-
-   /**
-    *
-    * @param elementType
-    * @return
-    */
-   private String getTemplateContent(String elementType)
-   {
-      Document document = getDocumentManagementService().getDocument(
-            MODEL_DOCUMENTATION_TEMPLATES_FOLDER + elementType + "-template.html");
-
-      // Try extension ".htm"
-
-      if (document == null)
-      {
-         getDocumentManagementService().getDocument(
-               MODEL_DOCUMENTATION_TEMPLATES_FOLDER + elementType + "-template.html");
-      }
-
-      if (document != null)
-      {
-         return new String(getDocumentManagementService().retrieveDocumentContent(
-               document.getId()));
-      }
-
-      return "";
-   }
-
-   /**
     *
     * @return
     */
@@ -1726,36 +1647,6 @@ public class ModelService
       }
 
       return queryService;
-   }
-
-   /**
-	 */
-   private String replaceProperties(String path, JsonObject json, String content)
-   {
-      if (path.length() > 0)
-      {
-         path += ".";
-      }
-
-      for (Map.Entry<String, JsonElement> entry : json.entrySet())
-      {
-         String key = entry.getKey();
-         JsonElement value = entry.getValue();
-
-         if (value != null)
-         {
-            if (value.isJsonObject())
-            {
-               content = replaceProperties(path + key, value.getAsJsonObject(), content);
-            }
-            else
-            {
-               content = content.replace("#{" + path + key + "}", value.toString());
-            }
-         }
-      }
-
-      return content;
    }
 
    public ProcessDefinitionType findProcessDefinition(ModelType model, String id)

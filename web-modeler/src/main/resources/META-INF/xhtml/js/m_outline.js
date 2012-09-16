@@ -368,6 +368,12 @@ define(
 						+ "/models/" + model.id + "/download";
 			}
 
+			var openModelReport = function(modelUUID) {
+				var model = m_model.findModelByUuid(modelUUID);
+
+                window.open("../public/reportTest.html?modelId=" + model.id);
+			}
+
 			// TODO Is this still needed? Delete after verifying
 			var elementCreationHandler = function(id, name, type, parent) {
 				if (type == 'activity') {
@@ -926,6 +932,13 @@ define(
 														"label" : "Download Model",
 														"action" : function(obj) {
 															downloadModel(obj
+																	.attr("id"));
+														}
+													},
+													"openModelReport" : {
+														"label" : "Open Model Report",
+														"action" : function(obj) {
+															openModelReport(obj
 																	.attr("id"));
 														}
 													}

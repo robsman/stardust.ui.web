@@ -394,9 +394,6 @@ public class ModelerResource
       }
    }
 
-   // ======================== TODO Put in separate resource as we are not
-   // going to share this with Eclipse =====================
-
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
@@ -405,52 +402,6 @@ public class ModelerResource
    {
       String result = jsonIo.writeJsonObject(new JsonObject());
       return Response.ok(result, APPLICATION_JSON_TYPE).build();
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/createDocumentation")
-   public Response createDocumentation(@PathParam("modelId") String modelId,
-         String postedData)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(postedData);
-
-         String result = getModelService().createDocumentation(modelId, json);
-
-         return Response.ok(result, APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-
-         return Response.serverError().build();
-      }
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/processes/{processId}/createDocumentation")
-   public Response createDocumentation(@PathParam("modelId") String modelId,
-         @PathParam("processId") String processId, String postedData)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(postedData);
-
-         String result = getModelService().createDocumentation(modelId, processId, json);
-
-         return Response.ok(result, APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-
-         return Response.serverError().build();
-      }
    }
 
    @POST

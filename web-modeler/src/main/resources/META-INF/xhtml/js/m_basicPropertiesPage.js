@@ -9,19 +9,21 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_command", "m_commandsController",
-				"m_user", "m_dialog", "m_propertiesPage", "m_activity" ],
-		function(m_utils, m_constants, m_command, m_commandsController, m_user,
-				m_dialog, m_propertiesPage, m_activity) {
+		[ "m_utils", "m_constants", "m_extensionManager", "m_command",
+				"m_commandsController", "m_user", "m_dialog",
+				"m_propertiesPage" ],
+		function(m_utils, m_constants, m_extensionManager, m_command,
+				m_commandsController, m_user, m_dialog, m_propertiesPage) {
 			return {
 				create : function(propertiesPanel) {
 					return new BasicPropertiesPage(propertiesPanel);
 				}
 			};
 
+			/**
+			 * 
+			 */
 			function BasicPropertiesPage(propertiesPanel) {
-				// Inheritance
-
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "basicPropertiesPage",
 						"General Properties",
@@ -50,12 +52,51 @@ define(
 					this.openDocumentViewLinkPanel = this
 							.mapInputId("openDocumentViewLinkPanel");
 
-					// Initialize callbacks
-
 					this.registerInputForModelElementChangeSubmission(
 							this.nameInput, "name");
 					this.registerInputForModelElementChangeSubmission(
 							this.descriptionInput, "description");
+
+					this.initializeDocumentationHandling();
+
+					var viewManagerExtension = m_extensionManager
+							.findExtension("viewManager");
+					this.viewManager = viewManagerExtension.provider.create();
+				};
+
+				/**
+				 * 
+				 */
+				BasicPropertiesPage.prototype.initializeDocumentationHandling = function() {
+					if (this.documentationCreationLink != null) {
+						this.documentationCreationLink
+								.click(
+										{
+											page : this
+										},
+										function(event) {
+											// TODO Trick to force object update
+											// to create a new document
+											event.data.page
+													.submitChanges(event.data.page.propertiesPanel
+															.wrapModelElementProperties({
+																attributes : {
+																	"documentation:externalDocumentUrl" : "@CREATE"
+																}
+															}));
+										});
+					}
+
+					if (this.openDocumentViewLink != null) {
+						this.openDocumentViewLink.click({
+							page : this
+						}, function(event) {
+							event.data.page.viewManager.openView("documentView", "documentOID="
+									+ event.data.page.documentUrl,
+									"documentOID="
+											+ event.data.page.documentUrl);
+						});
+					}
 				};
 
 				/**
@@ -81,19 +122,7 @@ define(
 					this.descriptionInput
 							.val(this.getModelElement().description);
 
-					if (this.documentationCreationLinkPanel != null
-							&& this.openDocumentViewLinkPanel != null && true/*
-																				 * this.documentUrl ==
-																				 * null
-																				 */) {
-						this.documentationCreationLinkPanel.removeAttr("class");
-						this.openDocumentViewLinkPanel.attr("class",
-								"invisible");
-					} else {
-						this.documentationCreationLinkPanel.attr("class",
-								"invisible");
-						this.openDocumentViewLinkPanel.removeAttr("class");
-					}
+					this.loadDocumentUrl();
 				};
 
 				/**
@@ -132,5 +161,45 @@ define(
 
 					return true;
 				};
+
+				/**
+				 * 
+				 */
+				BasicPropertiesPage.prototype.loadDocumentUrl = function() {
+					if (this.propertiesPanel.getModelElement().attributes == null) {
+						return;
+					}
+
+					this.documentUrl = this.propertiesPanel.getModelElement().attributes["documentation:externalDocumentUrl"];
+
+					if (this.documentationCreationLinkPanel != null
+							&& this.openDocumentViewLinkPanel != null) {
+						if (this.documentUrl == null) {
+							m_dialog
+									.makeVisible(this.documentationCreationLinkPanel);
+							m_dialog
+									.makeInvisible(this.openDocumentViewLinkPanel);
+						} else {
+							m_dialog
+									.makeInvisible(this.documentationCreationLinkPanel);
+							m_dialog
+									.makeVisible(this.openDocumentViewLinkPanel);
+						}
+					}
+				};
+
+				/**
+				 * Server Callback
+				 */
+				BasicPropertiesPage.prototype.setDocumentUrl = function(json) {
+					this
+							.submitChanges(this.propertiesPanel
+									.wrapModelElementProperties({
+										attributes : {
+											"documentation:externalDocumentUrl" : json.documentUrl
+										}
+									}));
+				};
+
 			}
 		});

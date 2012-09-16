@@ -2,8 +2,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_extensionManager", "m_session", "m_user",
-				"m_command", "m_commandsController", "m_dialog" ],
+		[ "m_utils", "m_constants", "m_extensionManager", "m_session",
+				"m_user", "m_command", "m_commandsController", "m_dialog" ],
 		function(m_utils, m_constants, m_extensionManager, m_session, m_user,
 				m_command, m_commandsController, m_dialog) {
 
@@ -77,7 +77,24 @@ define(
 				PropertiesPanel.prototype.getModel = function() {
 					return this.diagram.model;
 				};
-				
+
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.getModelElement = function() {
+					return this.element.modelElement;
+				};
+
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.wrapModelElementProperties = function(
+						modelElementProperties) {
+					return {
+						modelElement : modelElementProperties
+					};
+				};
+
 				/**
 				 * 
 				 */
@@ -97,7 +114,7 @@ define(
 				 */
 				PropertiesPanel.prototype.initializePropertiesPages = function() {
 					this.propertiesPages = [];
-					
+
 					var propertiesPages = m_extensionManager.findExtensions(
 							"propertiesPage", "panelId", this.id);
 					var extensions = {};
@@ -118,9 +135,11 @@ define(
 							continue;
 						}
 
-						m_utils.debug("===> Before checking profile " + m_user.getCurrentRole());
+						m_utils.debug("===> Before checking profile "
+								+ m_user.getCurrentRole());
 
-						if (!extension.supportedInProfile(m_user.getCurrentRole())) {
+						if (!extension.supportedInProfile(m_user
+								.getCurrentRole())) {
 							if (extension.pageHtmlUrl == null) {
 								m_dialog.makeInvisible(jQuery("#" + this.id
 										+ " #" + extension.pageId));
@@ -129,25 +148,27 @@ define(
 							continue;
 						}
 
-						m_utils.debug("===> After checking profile " + m_user.getCurrentRole());
+						m_utils.debug("===> After checking profile "
+								+ m_user.getCurrentRole());
 
 						m_utils.debug("Load Properties Page "
 								+ extension.pageId);
 
 						if (extension.pageHtmlUrl != null) {
-							jQuery("#" + this.id + "Table")
-									.append(
-											"<tr><td><div id=\""
-													+ extension.pageId
-													+ "\" class=\"propertiesPage\"></div></td></tr>");
+							var pageDiv = jQuery("<div id=\""
+									+ extension.pageId
+									+ "\" class=\"propertiesPage\"></div>");
+
+							jQuery("#" + this.id + " #propertiesPagesCell").append(pageDiv);
 
 							// TODO this variable may be overwritten in the
 							// loop, find mechanism to pass data to load
 							// callback
 
 							var panel = this;
-
-							jQuery("#" + this.id + " #" + extension.pageId)
+							
+							// jQuery("#" + this.id + " #" + extension.pageId)
+							pageDiv
 									.load(
 											extension.pageHtmlUrl,
 											function(response, status, xhr) {
@@ -162,15 +183,21 @@ define(
 												} else {
 													m_utils
 															.debug("Page loaded: "
-																	+ extensions[jQuery(
+																	+ jQuery(
 																			this)
 																			.attr(
-																					"id")].pageId);
+																					"id"));
+
+													var extension = extensions[jQuery(
+															this).attr("id")];
+													var page = extension.provider
+															.create(
+																	panel,
+																	extension.pageId, extension.title);
+
+													page.hide();											
 													panel.propertiesPages
-															.push(extensions[jQuery(
-																	this).attr(
-																	"id")].provider
-																	.create(panel));
+															.push(page);
 												}
 											});
 						} else {
@@ -299,9 +326,9 @@ define(
 				 */
 				PropertiesPanel.prototype.processCommand = function(command) {
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
-						//this.initializePropertiesPages();
+						// this.initializePropertiesPages();
 						this.setElement(this.element);
-						
+
 						return;
 					}
 
@@ -337,8 +364,8 @@ define(
 					m_utils.debug(changes);
 					m_commandsController.submitCommand(m_command
 							.createUpdateModelElementCommand(
-									this.getModel().id, this
-											.getElementUuid(), changes));
+									this.getModel().id, this.getElementUuid(),
+									changes));
 				};
 			}
 		});

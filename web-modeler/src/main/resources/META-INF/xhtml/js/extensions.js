@@ -9,6 +9,12 @@ var extensions = {
 		visibility : "always"
 	}, {
 		panelId : "processPropertiesPanel",
+		pageId : "processAnnotationsPropertiesPage",
+		pageHtmlUrl : "modelElementAnnotationsPropertiesPage.html",
+		pageJavaScriptUrl : "m_modelElementAnnotationsPropertiesPage",
+		visibility : "always"
+	}, {
+		panelId : "processPropertiesPanel",
 		pageId : "processInterfacePropertiesPage",
 		pageJavaScriptUrl : "m_processProcessInterfacePropertiesPage",
 		visibility : "always"
@@ -35,6 +41,12 @@ var extensions = {
 		visibility : "always"
 	}, {
 		panelId : "activityPropertiesPanel",
+		pageId : "activityAnnotationsPropertiesPage",
+		pageHtmlUrl : "modelElementAnnotationsPropertiesPage.html",
+		pageJavaScriptUrl : "m_modelElementAnnotationsPropertiesPage",
+		visibility : "always"
+	}, {
+		panelId : "activityPropertiesPanel",
 		pageId : "processingPropertiesPage",
 		pageJavaScriptUrl : "m_activityProcessingPropertiesPage",
 		visibility : "preview"
@@ -55,9 +67,21 @@ var extensions = {
 		pageJavaScriptUrl : "m_eventBasicPropertiesPage",
 		visibility : "always"
 	}, {
+		panelId : "eventPropertiesPanel",
+		pageId : "eventAnnotationsPropertiesPage",
+		pageHtmlUrl : "modelElementAnnotationsPropertiesPage.html",
+		pageJavaScriptUrl : "m_modelElementAnnotationsPropertiesPage",
+		visibility : "always"
+	}, {
 		panelId : "gatewayPropertiesPanel",
 		pageId : "basicPropertiesPage",
 		pageJavaScriptUrl : "m_gatewayBasicPropertiesPage",
+		visibility : "always"
+	}, {
+		panelId : "gatewayPropertiesPanel",
+		pageId : "gatewayAnnotationsPropertiesPage",
+		pageHtmlUrl : "modelElementAnnotationsPropertiesPage.html",
+		pageJavaScriptUrl : "m_modelElementAnnotationsPropertiesPage",
 		visibility : "always"
 	}, {
 		panelId : "swimlanePropertiesPanel",
@@ -65,9 +89,21 @@ var extensions = {
 		pageJavaScriptUrl : "m_swimlaneBasicPropertiesPage",
 		visibility : "always"
 	}, {
+		panelId : "swimlanePropertiesPanel",
+		pageId : "swimlaneAnnotationsPropertiesPage",
+		pageHtmlUrl : "modelElementAnnotationsPropertiesPage.html",
+		pageJavaScriptUrl : "m_modelElementAnnotationsPropertiesPage",
+		visibility : "always"
+	}, {
 		panelId : "dataPropertiesPanel",
 		pageId : "basicPropertiesPage",
 		pageJavaScriptUrl : "m_dataBasicPropertiesPage",
+		visibility : "always"
+	}, {
+		panelId : "dataPropertiesPanel",
+		pageId : "dataAnnotationsPropertiesPage",
+		pageHtmlUrl : "modelElementAnnotationsPropertiesPage.html",
+		pageJavaScriptUrl : "m_modelElementAnnotationsPropertiesPage",
 		visibility : "always"
 	}, {
 		panelId : "controlFlowPropertiesPanel",
@@ -81,9 +117,21 @@ var extensions = {
 		pageJavaScriptUrl : "m_controlFlowTransactionPropertiesPage",
 		visibility : "always"
 	}, {
+		panelId : "controlFlowPropertiesPanel",
+		pageId : "controlFlowAnnotationsPropertiesPage",
+		pageHtmlUrl : "modelElementAnnotationsPropertiesPage.html",
+		pageJavaScriptUrl : "m_modelElementAnnotationsPropertiesPage",
+		visibility : "always"
+	}, {
 		panelId : "dataFlowPropertiesPanel",
 		pageId : "basicPropertiesPage",
 		pageJavaScriptUrl : "m_dataFlowBasicPropertiesPage",
+		visibility : "always"
+	}, {
+		panelId : "dataFlowPropertiesPanel",
+		pageId : "dataFlowgatewayAnnotationsPropertiesPage",
+		pageHtmlUrl : "modelElementAnnotationsPropertiesPage.html",
+		pageJavaScriptUrl : "m_modelElementAnnotationsPropertiesPage",
 		visibility : "always"
 	} ],
 	diagramToolbarPalette : [ {
@@ -237,102 +285,88 @@ var extensions = {
 		handlerMethod : "createConnector",
 		visibility : "always"
 	} ],
-	applicationType : [
-			{
-				id : "interactive",
-				readableName : "UI Mashup",
-				iconPath : "../images/icons/application-c-ext-web.png",
-				viewId : "uiMashupApplicationView"
-			},
-			{
-				id : "webservice",
-				readableName : "Web Service",
-				iconPath : "../images/icons/application-web-service.png",
-				viewId : "webServiceApplicationView"
-			},
-			{
-				id : "messageTransformationBean",
-				readableName : "Message Transformation Application",
-				iconPath : "../images/icons/application-message-trans.png",
-				viewId : "messageTransformationApplicationView"
-			}, {
-				id : "camelBean",
-				readableName : "Camel Application",
-				iconPath : "../images/icons/application-camel.png",
-				viewId : "camelApplicationView"
-			}, {
-				id : "plainJava",
-				readableName : "Plain Java Application",
-				iconPath : "../images/icons/application-plain-java.png",
-				viewId : "genericApplicationView"
-			}, {
-				id : "rulesEngineBean",
-				readableName : "Business Rules Application",
-				iconPath : "../images/icons/application-drools.png",
-				viewId : "genericApplicationView"
-			}, 
-			{
-				id : "dmsOperation",
-				readableName : "Document Management Application",
-				iconPath : "../images/icons/application-plain-java.png",
-				viewId : "genericApplicationView"
-			}, 			
-			{
-				id : "jms",
-				readableName : "JMS Application",
-				iconPath : "../images/icons/application-plain-java.png",
-				viewId : "genericApplicationView"
-			}, 			
-			{
-				id : "mailBean",
-				readableName : "Business Rules Application",
-				iconPath : "../images/icons/application-plain-java.png",
-				viewId : "genericApplicationView"
-			}, 			
-			{
-				id : "messageParsingBean",
-				readableName : "Message Parsing Application",
-				iconPath : "../images/icons/application-plain-java.png",
-				viewId : "genericApplicationView"
-			}, 			
-			{
-				id : "messageSerializationBean",
-				readableName : "Message Serialization Application",
-				iconPath : "../images/icons/application-plain-java.png",
-				viewId : "genericApplicationView"
-			}, 
-			{
-				id : "sessionBean",
-				readableName : "EJB Session Bean Application",
-				iconPath : "../images/icons/application-plain-java.png",
-				viewId : "genericApplicationView"
-			}, 
-			{
-				id : "springBean",
-				readableName : "Spring Bean Application",
-				iconPath : "../images/icons/application-drools.png",
-				viewId : "genericApplicationView"
-			}, 
-			{
-				id : "xslMessageTransformationBean",
-				readableName : "XSL Message Transformation Application",
-				iconPath : "../images/icons/application-drools.png",
-				viewId : "genericApplicationView"
-			}],
-			dataType : [
-			       			{
-			       				id : "serializable",
-			       				readableName : "Serializable Java Class",
-			       				iconPath : "../images/icons/application-c-ext-web.png",
-			       			},
-			       			{
-			       				id : "entity",
-			       				readableName : "Entity Bean",
-			       				iconPath : "../images/icons/application-web-service.png",
-			       			},
-			       			{
-			       				id : "dmsDocumentList",
-			       				readableName : "Document List",
-			       				iconPath : "../images/icons/application-web-service.png",
-			       			}]
+	applicationType : [ {
+		id : "interactive",
+		readableName : "UI Mashup",
+		iconPath : "../images/icons/application-c-ext-web.png",
+		viewId : "uiMashupApplicationView"
+	}, {
+		id : "webservice",
+		readableName : "Web Service",
+		iconPath : "../images/icons/application-web-service.png",
+		viewId : "webServiceApplicationView"
+	}, {
+		id : "messageTransformationBean",
+		readableName : "Message Transformation Application",
+		iconPath : "../images/icons/application-message-trans.png",
+		viewId : "messageTransformationApplicationView"
+	}, {
+		id : "camelBean",
+		readableName : "Camel Application",
+		iconPath : "../images/icons/application-camel.png",
+		viewId : "camelApplicationView"
+	}, {
+		id : "plainJava",
+		readableName : "Plain Java Application",
+		iconPath : "../images/icons/application-plain-java.png",
+		viewId : "genericApplicationView"
+	}, {
+		id : "rulesEngineBean",
+		readableName : "Business Rules Application",
+		iconPath : "../images/icons/application-drools.png",
+		viewId : "genericApplicationView"
+	}, {
+		id : "dmsOperation",
+		readableName : "Document Management Application",
+		iconPath : "../images/icons/application-plain-java.png",
+		viewId : "genericApplicationView"
+	}, {
+		id : "jms",
+		readableName : "JMS Application",
+		iconPath : "../images/icons/application-plain-java.png",
+		viewId : "genericApplicationView"
+	}, {
+		id : "mailBean",
+		readableName : "Business Rules Application",
+		iconPath : "../images/icons/application-plain-java.png",
+		viewId : "genericApplicationView"
+	}, {
+		id : "messageParsingBean",
+		readableName : "Message Parsing Application",
+		iconPath : "../images/icons/application-plain-java.png",
+		viewId : "genericApplicationView"
+	}, {
+		id : "messageSerializationBean",
+		readableName : "Message Serialization Application",
+		iconPath : "../images/icons/application-plain-java.png",
+		viewId : "genericApplicationView"
+	}, {
+		id : "sessionBean",
+		readableName : "EJB Session Bean Application",
+		iconPath : "../images/icons/application-plain-java.png",
+		viewId : "genericApplicationView"
+	}, {
+		id : "springBean",
+		readableName : "Spring Bean Application",
+		iconPath : "../images/icons/application-drools.png",
+		viewId : "genericApplicationView"
+	}, {
+		id : "xslMessageTransformationBean",
+		readableName : "XSL Message Transformation Application",
+		iconPath : "../images/icons/application-drools.png",
+		viewId : "genericApplicationView"
+	} ],
+	dataType : [ {
+		id : "serializable",
+		readableName : "Serializable Java Class",
+		iconPath : "../images/icons/application-c-ext-web.png"
+	}, {
+		id : "entity",
+		readableName : "Entity Bean",
+		iconPath : "../images/icons/application-web-service.png"
+	}, {
+		id : "dmsDocumentList",
+		readableName : "Document List",
+		iconPath : "../images/icons/application-web-service.png"
+	} ]
 };

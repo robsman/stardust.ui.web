@@ -15,8 +15,8 @@ define(
 				}
 			};
 
-			function PropertiesPage(newPropertiesPanel, id, title, imageUrl) {
-				this.propertiesPanel = newPropertiesPanel;
+			function PropertiesPage(propertiesPanel, id, title, imageUrl) {
+				this.propertiesPanel = propertiesPanel;
 				this.id = id;
 				this.title = title;
 				this.page = jQuery("#" + this.propertiesPanel.id + " #"
@@ -44,20 +44,8 @@ define(
 				/**
 				 * 
 				 */
-				PropertiesPage.prototype.apply = function() {
-				};
-
-				/**
-				 * 
-				 */
 				PropertiesPage.prototype.validate = function() {
 					return true;
-				};
-
-				/**
-				 * 
-				 */
-				PropertiesPage.prototype.reset = function() {
 				};
 
 				/**
@@ -75,84 +63,13 @@ define(
 				};
 
 				/**
-				 * 
-				 */
-				PropertiesPage.prototype.initializeDocumentationHandling = function() {
-					this.documentationCreationLink = this
-							.mapInputId("documentationCreationLink");
-					this.documentationCreationLinkPanel = this
-							.mapInputId("documentationCreationLinkPanel");
-					this.openDocumentViewLink = this
-							.mapInputId("openDocumentViewLink");
-					this.openDocumentViewLinkPanel = this
-							.mapInputId("openDocumentViewLinkPanel");
-					this.documentUrl = null;
-
-					if (this.documentationCreationLink != null) {
-						this.documentationCreationLink.click({
-							"callbackScope" : this
-						}, function(event) {
-							var url = event.data.callbackScope
-									.getDocumentationCreationUrl();
-
-							m_commandsController.submitImmediately(m_command
-									.createCommand(url,
-											event.data.callbackScope
-													.getModelElement()), {
-								"callbackScope" : event.data.callbackScope,
-								"method" : "setDocumentUrl"
-							});
-						});
-					}
-
-					if (this.openDocumentViewLink != null) {
-						this.openDocumentViewLink
-								.click(
-										{
-											"callbackScope" : this
-										},
-										function(event) {
-											var link = jQuery(
-													"a[id $= 'modeling_work_assignment_view_link']",
-													window.parent.frames['ippPortalMain'].document);
-											var linkId = link.attr('id');
-											var form = link
-													.parents('form:first');
-											var formId = form.attr('id');
-
-											window.parent.EventHub.events
-													.publish(
-															"OPEN_VIEW",
-															linkId,
-															formId,
-															"documentView",
-															"documentOID="
-																	+ event.data.callbackScope.documentUrl,
-															"documentOID="
-																	+ event.data.callbackScope.documentUrl);
-										});
-					}
-				};
-
-				/**
-				 * 
-				 */
-				PropertiesPage.prototype.getDocumentationCreationUrl = function() {
-					var url = "/models/"
-							+ this.propertiesPanel.element.diagram.modelId
-							+ "/processes/"
-							+ this.propertiesPanel.element.diagram.processId
-							+ "/createDocumentation";
-
-					return url;
-				};
-
-				/**
-				 * Returns the model element the Properties Pages are working on. This might be the Model Element a Symbol is 
-				 * representing (e.g. an Activity), a Data underneath a Data Symbol or the Process Definition itself.
+				 * Returns the model element the Properties Pages are working
+				 * on. This might be the Model Element a Symbol is representing
+				 * (e.g. an Activity), a Data underneath a Data Symbol or the
+				 * Process Definition itself.
 				 */
 				PropertiesPage.prototype.getModelElement = function() {
-					return this.propertiesPanel.element.modelElement;
+					return this.propertiesPanel.getModelElement();
 				};
 
 				/**
@@ -184,41 +101,6 @@ define(
 
 					return element;
 				};
-
-				/**
-				 * 
-				 */
-				PropertiesPage.prototype.loadDocumentUrl = function() {
-					this.documentUrl = this.getModelElement().attributes["carnot:engine:documentUrl"];
-
-					if (this.documentUrl == null) {
-						m_dialog
-								.makeVisible(this.documentationCreationLinkPanel);
-						m_dialog.makeInvisible(this.openDocumentViewLinkPanel);
-					} else {
-						m_dialog
-								.makeInvisible(this.documentationCreationLinkPanel);
-						m_dialog.makeVisible(this.openDocumentViewLinkPanel);
-					}
-				};
-
-				/**
-				 * 
-				 */
-				PropertiesPage.prototype.saveDocumentUrl = function() {
-					this.getModelElement().attributes["carnot:engine:documentUrl"] = this.documentUrl;
-				};
-
-				/**
-				 * 
-				 */
-				PropertiesPage.prototype.setDocumentUrl = function(json) {
-					this.documentUrl = json.documentUrl;
-
-					m_dialog.makeInvisible(this.documentationCreationLinkPanel);
-					m_dialog.makeVisible(this.openDocumentViewLinkPanel);
-				};
-
 				/**
 				 * 
 				 */
@@ -234,9 +116,6 @@ define(
 						if (!page.validate()) {
 							return;
 						}
-
-						m_utils.debug("===> Element");
-						m_utils.debug(page.getModelElement());
 
 						if (page.getModelElement()[property] != input.val()) {
 							page.submitChanges(page
@@ -289,7 +168,7 @@ define(
 						var input = event.data.input;
 
 						if (!page.validate()) {
-							return;	
+							return;
 						}
 
 						if (page.getModelElement()[property] != input
@@ -322,7 +201,8 @@ define(
 
 										if (page.getModelElement().attributes[attribute] != input
 												.is(":checked")) {
-											page.submitChanges(page
+											page
+													.submitChanges(page
 															.assembleChangedObjectFromAttribute(
 																	attribute,
 																	input
@@ -330,14 +210,14 @@ define(
 										}
 									});
 				};
-				
+
 				/**
 				 * 
 				 */
 				PropertiesPage.prototype.getModel = function() {
 					return this.propertiesPanel.diagram.model;
 				};
-				
+
 				/**
 				 * 
 				 */

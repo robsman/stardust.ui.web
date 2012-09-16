@@ -58,5 +58,4 @@ require(["require",
          function (require) {
 	require("m_organizationView").initialize(
 			jQuery.url.setUrl(window.location.search).param("fullId"));
-
 });

@@ -25,8 +25,6 @@ define(
 			};
 
 			function ActivityBasicPropertiesPage(propertiesPanel) {
-				// Inheritance
-
 				var basicPropertiesPage = m_basicPropertiesPage
 						.create(propertiesPanel);
 

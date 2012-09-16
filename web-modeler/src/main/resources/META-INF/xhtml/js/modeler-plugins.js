@@ -24,7 +24,7 @@ define([ "require", "m_extensionManager", "m_logger", "m_utils",
 		"m_gatewayBasicPropertiesPage", "m_swimlaneBasicPropertiesPage",
 		"m_dataBasicPropertiesPage", "m_controlFlowBasicPropertiesPage",
 		"m_controlFlowTransactionPropertiesPage",
-		"m_dataFlowBasicPropertiesPage", "m_decorationPalette" ], function(
+		"m_dataFlowBasicPropertiesPage", "m_decorationPalette", "m_modelElementAnnotationsPropertiesPage" ], function(
 		require, m_extensionManager) {
 	// inject plugins module loader to extensions manager
 	m_extensionManager.initialize(require);
