@@ -220,8 +220,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       setContainingModelIdProperty(processJson, processDefinition);
 
       loadDescription(processJson, processDefinition);
-
-      System.out.println("===> Formal Parameters: ");
+      loadAttributes(processDefinition, processJson);
 
       // TODO Better way to determine whether a process provides an interface?
 
@@ -313,9 +312,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          processJson.addProperty(ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY,
                ModelerConstants.NO_PROCESS_INTERFACE_KEY);
       }
-
-      JsonObject attributesJson = new JsonObject();
-      processJson.add(ModelerConstants.ATTRIBUTES_PROPERTY, attributesJson);
 
       JsonArray dataPathesJson = new JsonArray();
       processJson.add(ModelerConstants.DATA_PATHES_PROPERTY, dataPathesJson);
