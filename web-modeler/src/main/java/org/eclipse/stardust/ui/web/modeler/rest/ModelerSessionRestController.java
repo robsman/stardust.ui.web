@@ -14,6 +14,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -34,6 +35,9 @@ import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
 import org.eclipse.stardust.ui.web.modeler.edit.CommandHandlingMediator;
 import org.eclipse.stardust.ui.web.modeler.edit.model.element.ModelChangeCommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.postprocessing.ChangesetMinifier;
+import org.eclipse.stardust.ui.web.modeler.edit.postprocessing.TouchReferrersUponIdentityChangePostprocessor;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
@@ -71,15 +75,15 @@ public class ModelerSessionRestController
           jto.account = change.getMetadata().get("account");
       }
 
-      for (EObject changedObject : change.changedObjects())
+      for (EObject changedObject : change.getModifiedElements())
       {
          jto.changes.modified.add(modelService().modelElementMarshaller().toJson(changedObject));
       }
-      for (EObject addedObject : change.addedObjects())
+      for (EObject addedObject : change.getAddedElements())
       {
          jto.changes.added.add(modelService().modelElementMarshaller().toJson(addedObject));
       }
-      for (EObject removedObject : change.removedObjects())
+      for (EObject removedObject : change.getRemovedElements())
       {
          jto.changes.removed.add(modelService().modelElementMarshaller().toJson(removedObject));
       }
@@ -127,6 +131,7 @@ public class ModelerSessionRestController
          if (editingSession.canUndo())
          {
             Modification undoneChange = editingSession.undoLast();
+            postprocessChange(undoneChange);
             ChangeJto jto = toJto(undoneChange);
 
             if (editingSession.canUndo())
@@ -160,6 +165,7 @@ public class ModelerSessionRestController
          if (editingSession.canRedo())
          {
             Modification redoneChange = editingSession.redoNext();
+            postprocessChange(redoneChange);
             ChangeJto jto = toJto(redoneChange);
 
             if (editingSession.canUndo())
@@ -259,6 +265,7 @@ public class ModelerSessionRestController
 
                JsonElement changeJson = changeDescrJto.changes;
                ModelChangeCommandHandler handler = resolveSpringBean(ModelChangeCommandHandler.class, servletContext);
+               // TODO make this a regular modification
                JsonObject response = handler.handleCommand(commandId, targetElement, changeJson.getAsJsonObject());
                if (null != response) {
                   return Response.ok(response.toString(), APPLICATION_JSON_TYPE).build();
@@ -274,80 +281,31 @@ public class ModelerSessionRestController
    private Response applyModelElementChange(String commandId, ModelType model, CommandJto commandJto)
    {
       List<Pair<EObject, JsonObject>> changeDescriptors = newArrayList();
-      List<ChangeDescriptionJto> targetElementsJson = commandJto.changeDescriptions;
-      for (ChangeDescriptionJto changeDescrJto : targetElementsJson)
+
+      // pre-process change descriptions
+      try
       {
-         EObject targetElement = null;
-
-         if ((null != changeDescrJto.oid) || (null != changeDescrJto.uuid))
+         for (ChangeDescriptionJto changeDescrJto : commandJto.changeDescriptions)
          {
-            // existing target, identified by uuid
-            if (null != changeDescrJto.uuid)
-            {
-               String uuid = changeDescrJto.uuid;
-               targetElement = modelService().uuidMapper().getEObject(uuid);
-
-               if (null == targetElement)
-               {
-                  return Response.status(Status.BAD_REQUEST) //
-                        .entity("Unknown target element for element UUID " + uuid)
-                        .build();
-               }
-            }
-            // existing target, identified by oid
-            else if (null != changeDescrJto.oid)
-            {
-               String oid = changeDescrJto.oid;
-               if (model.getId().equals(oid))
-               {
-                  targetElement = model;
-               }
-               else
-               {
-                  long parsedOid = Long.parseLong(oid);
-                  // deep search for model element by OID
-                  // TODO can lookup faster as oid is declared the XML index
-                  // field?
-                  for (Iterator<? > i = model.eAllContents(); i.hasNext();)
-                  {
-                     Object element = i.next();
-                     if ((element instanceof IModelElement)
-                           && ((((IModelElement) element).getElementOid() == parsedOid)))
-                     {
-                        targetElement = (IModelElement) element;
-                        break;
-                     }
-                  }
-               }
-
-               if (null == targetElement)
-               {
-                  return Response.status(Status.BAD_REQUEST) //
-                        .entity(
-                              "Unknown target element for element OID " + oid
-                                    + " within model " + model.getId())
-                        .build();
-               }
-            }
-
-            JsonElement jsTargetElementChanges = changeDescrJto.changes;
+            EObject targetElement = findTargetElement(model, changeDescrJto);
 
             changeDescriptors.add(new Pair<EObject, JsonObject>(targetElement,
-                  jsTargetElementChanges.getAsJsonObject()));
+                  changeDescrJto.changes));
          }
-         else
-         {
-            return Response.status(Status.BAD_REQUEST) //
-                  .entity("Missing target element identifier: " + changeDescrJto)
-                  .build();
-         }
+      }
+      catch (WebApplicationException wae)
+      {
+         return wae.getResponse();
       }
 
       // dispatch to actual command handler
-      Modification change = commandHandlerRegistry().handleCommand(
-            modelService().currentSession().getSession(model), commandId, changeDescriptors);
+      EditingSession editingSession = modelService().currentSession().getSession(model);
+      Modification change = commandHandlerRegistry().handleCommand(editingSession,
+            commandId, changeDescriptors);
       if (null != change)
       {
+         postprocessChange(change);
+
          change.getMetadata().put("commandId", commandId);
          change.getMetadata().put("modelId", model.getId());
          if (null != commandJto.account)
@@ -371,8 +329,83 @@ public class ModelerSessionRestController
       {
          return Response.status(Status.BAD_REQUEST) //
                .entity("Unsupported change request: " + commandId //
-                     + " [" + targetElementsJson + "]")
+                     + " [" + commandJto.changeDescriptions + "]")
                .build();
+      }
+   }
+
+   private EObject findTargetElement(ModelType model, ChangeDescriptionJto changeDescrJto)
+         throws WebApplicationException
+   {
+      EObject targetElement = null;
+      // existing target, identified by uuid
+      if (null != changeDescrJto.uuid)
+      {
+         String uuid = changeDescrJto.uuid;
+         targetElement = modelService().uuidMapper().getEObject(uuid);
+
+         if (null == targetElement)
+         {
+            throw new WebApplicationException(Response.status(Status.BAD_REQUEST) //
+                  .entity("Unknown target element for element UUID " + uuid)
+                  .build());
+         }
+      }
+      else if (null != changeDescrJto.oid)
+      {
+         // existing target, identified by oid
+         String oid = changeDescrJto.oid;
+         if (model.getId().equals(oid))
+         {
+            targetElement = model;
+         }
+         else
+         {
+            long parsedOid = Long.parseLong(oid);
+            // deep search for model element by OID
+            // TODO can lookup faster as oid is declared the XML index
+            // field?
+            for (Iterator<? > i = model.eAllContents(); i.hasNext();)
+            {
+               Object element = i.next();
+               if ((element instanceof IModelElement)
+                     && ((((IModelElement) element).getElementOid() == parsedOid)))
+               {
+                  targetElement = (IModelElement) element;
+                  break;
+               }
+            }
+         }
+
+         if (null == targetElement)
+         {
+            throw new WebApplicationException(Response.status(Status.BAD_REQUEST) //
+                  .entity(
+                        "Unknown target element for element OID " + oid
+                              + " within model " + model.getId())
+                  .build());
+         }
+      }
+      else
+      {
+         throw new WebApplicationException(Response.status(Status.BAD_REQUEST) //
+               .entity("Missing target element identifier: " + changeDescrJto)
+               .build());
+      }
+
+      return targetElement;
+   }
+
+   private void postprocessChange(Modification change)
+   {
+      // TODO discover from application context
+      List<ChangePostprocessor> postprocessors = newArrayList();
+      postprocessors.add(new ChangesetMinifier());
+      postprocessors.add(new TouchReferrersUponIdentityChangePostprocessor());
+
+      for (ChangePostprocessor postprocessor : postprocessors)
+      {
+         postprocessor.inspectChange(change);
       }
    }
 
