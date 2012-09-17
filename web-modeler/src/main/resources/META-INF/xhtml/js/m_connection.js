@@ -289,8 +289,7 @@ define(
 							// default orientation is SOUTH for gateway
 							orientation = 2;
 						}
-						this
-								.setFirstAnchorPoint(startSymbol.anchorPoints[orientation]);
+						this.fromAnchorPoint = startSymbol.anchorPoints[orientation];
 					}
 				};
 
@@ -1365,10 +1364,14 @@ define(
 								this.toAnchorPoint.symbol.connections, this);
 
 					} else if (this.toModelElementOid != null) {
+						//On hover over symbol, connection gets added to symbol
+						//It may not be removed when connection is disengaged(canvas click)
+						//if connection is removed , but symbol contains the connection remove It.
 						var symbol = this.diagram
 								.findSymbolByGuid(this.toModelElementOid)
 						if (null != symbol) {
-							m_utils.removeItemFromArray(symbol.connections, this);
+							m_utils.removeItemFromArray(symbol.connections,
+									this);
 						}
 					}
 				};
@@ -1433,7 +1436,6 @@ define(
 				 */
 				Connection.prototype.validateCreateConnection = function(
 						fromAnchorPoint, toAnchorPoint) {
-					/*m_messageDisplay.clear();*/
 					if (fromAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
 						// Check for OUT connections on End Event
 						if (fromAnchorPoint.symbol.modelElement.eventType == m_constants.STOP_EVENT_TYPE) {
@@ -1481,7 +1483,7 @@ define(
 							if (!toAnchorPoint.symbol
 									.validateCreateConnection()) {
 								m_messageDisplay
-										.showErrorMessage("No further OUT Connection allowed with this activity.");
+										.showErrorMessage("No further OUT Connection allowed from this activity.");
 							}
 						} else if (!fromAnchorPoint.symbol
 								.validateCreateConnection()) {
@@ -1515,14 +1517,15 @@ define(
 							if (!toAnchorPoint.symbol
 									.validateCreateConnection()) {
 								m_messageDisplay
-										.showErrorMessage("No more OUT Connection allowed to this activity.");
+										.showErrorMessage("No more OUT Connection allowed from this activity.");
 								return false;
 							}
 						}else if (toAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
-							if (!toAnchorPoint.symbol
-									.validateCreateConnection()) {
+							if ((fromAnchorPoint.symbol.type != m_constants.DATA_SYMBOL && fromAnchorPoint.symbol.type != m_constants.EVENT_SYMBOL)
+									&& !toAnchorPoint.symbol
+											.validateCreateConnection()) {
 								m_messageDisplay
-										.showErrorMessage("No more connections allowed to this symbol.");
+										.showErrorMessage("No more connections allowed to this activity.");
 								return false;
 							}
 						}

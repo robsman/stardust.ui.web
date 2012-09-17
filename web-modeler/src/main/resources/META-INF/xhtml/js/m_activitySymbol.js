@@ -552,8 +552,6 @@ define(
 				ActivitySymbol.prototype.validateCreateConnection = function() {
 					var outMappingActivity = new Array();
 					var inMappingActivity = new Array();
-					var i = 0;
-					var j = 0;
 					for ( var n in this.connections) {
 						var connection = this.connections[n];
 						if (connection.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL
@@ -563,8 +561,12 @@ define(
 									&& connection.toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
 								//do nothing
 							}else{
-								outMappingActivity[i] = true;
-								i++;
+								if (-1 != jQuery.inArray(
+										connection.fromAnchorPoint.symbol.oid,
+										outMappingActivity)) {
+									return false;
+								}else
+								outMappingActivity.push(connection.fromAnchorPoint.symbol.oid);
 							}
 						} else if (null != connection.toAnchorPoint
 								&& null != connection.toAnchorPoint.symbol) {
@@ -573,16 +575,16 @@ define(
 							} else if (connection.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
 								// do nothing
 							} else if (connection.toAnchorPoint.symbol.oid == this.oid) {
-								inMappingActivity[j] = true;
-								j++;
+								if (-1 != jQuery.inArray(
+										connection.toAnchorPoint.symbol.oid,
+										inMappingActivity)) {
+									return false;
+								}else
+								inMappingActivity.push(connection.toAnchorPoint.symbol.oid);
 							}
 						}
 					}
 
-					if (outMappingActivity.length > 1
-							|| inMappingActivity.length > 1) {
-						return false;
-					}
 					return true;
 				};
 
