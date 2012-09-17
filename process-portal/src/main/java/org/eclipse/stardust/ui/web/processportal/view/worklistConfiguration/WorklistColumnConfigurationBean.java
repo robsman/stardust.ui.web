@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -84,12 +85,14 @@ public abstract class WorklistColumnConfigurationBean
     */
    public void delete()
    {
-      for (WorklistConfigTableEntry confTableEntry : columnConfTableEntries)
+      Iterator<WorklistConfigTableEntry> iterator = columnConfTableEntries.iterator();
+      while (iterator.hasNext())
       {
+         WorklistConfigTableEntry confTableEntry = iterator.next();
          if (confTableEntry.isSelected() && !WorklistConfigurationUtil.DEFAULT.equals(confTableEntry.getIdentityKey()))
          {
             columnConfiguration.remove(confTableEntry.getIdentityKey());
-            columnConfTableEntries.remove(confTableEntry);
+            iterator.remove();
             existingConfigurations.remove(confTableEntry.getIdentityKey());
          }
       }
