@@ -67,6 +67,9 @@
 	       <exclude org="org.apache.geronimo.specs" module="geronimo-javamail_1.4_spec" />
 	       <exclude org="org.codehaus.woodstox" module="woodstox-core-asl" />
 	  </dependency>
+	  <dependency org="org.apache.cxf" name="cxf-rt-core" rev="2.6.1" conf="ipp-views-common-runtime->default" >
+	       <exclude org="org.apache.geronimo.specs" module="geronimo-javamail_1.4_spec" />
+	  </dependency>
       <dependency org="org.apache.cxf" name="cxf-rt-frontend-jaxrs" rev="2.6.1" conf="ipp-views-common-runtime->default" />
  
       <!-- ipp-views-common-provided -->
