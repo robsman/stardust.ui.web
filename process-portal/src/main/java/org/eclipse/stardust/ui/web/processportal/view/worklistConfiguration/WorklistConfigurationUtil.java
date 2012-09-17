@@ -90,7 +90,14 @@ public class WorklistConfigurationUtil
       }
       else
       {
-         fetchUserConf = true;
+         // check default configuration for Participant, if it is locked, don't fetch user
+         // level configurations
+         configuration = getStoredValues(DEFAULT, worklistConf);
+         String lock = (String) configuration.get(WorklistConfigurationUtil.LOCK);
+         if (!Boolean.valueOf(lock))
+         {
+            fetchUserConf = true;
+         }
       }
 
       // Check at user level
