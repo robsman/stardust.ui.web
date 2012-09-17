@@ -1567,6 +1567,25 @@ define(
 				};
 
 				/**
+				 * Clears the current selected symbol/connection. New new action
+				 * is made from toolbar(e.x Create Activity), old action(e.x
+				 * create connecion) if in progess in removed
+				 */
+				Diagram.prototype.clearCurrentToolSelection = function() {
+					this.clearCurrentSelection();
+					if (this.currentConnection != null) {
+						this.currentConnection.remove();
+
+						this.currentConnection = null;
+					}
+					if (this.newSymbol != null) {
+						this.newSymbol.remove();
+						this.newSymbol = null;
+					}
+					this.mode = this.NORMAL_MODE;
+				};
+
+				/**
 				 *
 				 */
 				Diagram.prototype.showProcessPropertiesPanel = function() {

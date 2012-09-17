@@ -38,36 +38,43 @@ define([ "m_utils", "m_constants", "m_messageDisplay",
 		},
 
 		createActivity : function(diagram) {
+			diagram.clearCurrentToolSelection();
 			selectTool("activityButton");
 			diagram.newSymbol = m_activitySymbol.createActivitySymbol(diagram,
 					m_constants.MANUAL_ACTIVITY_TYPE);
 		},
 
 		createSwimlane : function(diagram) {
+			diagram.clearCurrentToolSelection();
 			diagram.poolSymbol.createSwimlaneSymbol();
 		},
 
 		createStartEvent : function(diagram) {
+			diagram.clearCurrentToolSelection();
 			selectTool("startEventButton");
 			diagram.newSymbol = m_eventSymbol.createStartEventSymbol(diagram);
 		},
 
 		createEndEvent : function(diagram) {
+			diagram.clearCurrentToolSelection();
 			selectTool("endEventButton");
 			diagram.newSymbol = m_eventSymbol.createStopEventSymbol(diagram);
 	},
 
 		createData : function(diagram) {
+			diagram.clearCurrentToolSelection();
 			selectTool("dataButton");
 			diagram.newSymbol = m_dataSymbol.createDataSymbol(diagram);
 		},
 
 		createGateway : function(diagram) {
+			diagram.clearCurrentToolSelection();
 			selectTool("gatewayButton");
 			diagram.newSymbol = m_gatewaySymbol.createGatewaySymbol(diagram);
 		},
 
 		createConnector : function(diagram) {
+			diagram.clearCurrentToolSelection();
 			selectTool("connectorButton");
 			diagram.mode = diagram.CONNECTION_MODE;
 			m_messageDisplay
