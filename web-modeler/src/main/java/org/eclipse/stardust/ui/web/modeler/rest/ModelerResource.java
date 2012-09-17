@@ -315,6 +315,26 @@ public class ModelerResource
    @POST
    @Consumes (MediaType.APPLICATION_JSON)
    @Produces (MediaType.APPLICATION_JSON)
+   @Path("users/updateOwner")
+   public Response updateOwner(String postedData)
+   {
+      try
+      {
+         JsonObject userJson = jsonIo.readJsonObject(postedData);
+         String sessionID = userJson.getAsJsonObject("oldObject").get("sessionId").getAsString();
+         String result = getModelService().getSessionOwner(sessionID);
+         return Response.ok(result, APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+         throw new RuntimeException(e);
+      }
+   }
+
+   @POST
+   @Consumes (MediaType.APPLICATION_JSON)
+   @Produces (MediaType.APPLICATION_JSON)
    @Path("users/getAllProspects")
    public Response getAllProspects(String postedData)
    {

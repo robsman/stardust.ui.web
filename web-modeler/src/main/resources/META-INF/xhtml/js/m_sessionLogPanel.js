@@ -46,54 +46,7 @@ define(
 				this.startTimeSpan = jQuery("#sessionLogPanel #startTimeSpan");
 				this.chatTextArea = jQuery("#sessionLogPanel #chatTextArea");
 				this.sessionLogTable = jQuery("#sessionLogPanel #sessionLogTable");
-
-				var url = m_communicationController.getEndpointUrl()
-						+ "/users/getOfflineInvites";
-				var command = null;
-
-				// Query for getting a offline Invite. Works if websocket
-				// instantiation is completed
-				// can be put into commandscontroller later on. Just for
-				// simplicity located here.
-
-				// TODO Logic in object creation
-				if (invite) {
-					m_communicationController.getHead({
-						"url" : url
-					}, new function() {
-						return {
-							"success" : function(command) {
-								m_utils.debug("recived command ok");
-							},
-							"error" : function(command) {
-								m_utils
-										.debug("recived command error"
-												+ command);
-							}
-						};
-					});
-				}
-
-				// Query for getting an offline Invite. Works if websocket
-				// instantiation is completed
-				// can be put into commandscontroller later on. Just for
-				// simplicity located here.
-				if (invite) {
-					m_communicationController.getHead({
-						"url" : url
-					}, new function() {
-						return {
-							"success" : function(command) {
-								m_utils.debug("recived command ok");
-							},
-							"error" : function(command) {
-								m_utils
-										.debug("recived command error"
-												+ command);
-							}
-						};
-					});
-				}
+				var command = null;				
 
 				this.chatTextArea
 						.keyup(
@@ -148,19 +101,18 @@ define(
 						date : m_utils.formatDate(new Date(command.timestamp),
 								"H:i:s")
 					};
-					var commandUser = m_session.getInstance()
-							.getUserByAccount(command.account);
+					var commandUser = m_session.getInstance().getUserByAccount(
+							command.account);
 
 					view.commandUserName = command.account;
 
 					if (commandUser != null) {
-						view.commandUserName = commandUser.firstName
-								+ " "
+						view.commandUserName = commandUser.firstName + " "
 								+ commandUser.lastName;
 					}
 
 					var template = "<tr><td><table cellspacing='0' cellpadding='0' width='100%'><tr><td valign=\"top\"><span id=\"userTag\">{{commandUserName}}</span></td>"
-						+ "<td align=\"right\"><span id=\"dateTag\">{{date}}</span></td></tr></table></td></tr>";
+							+ "<td align=\"right\"><span id=\"dateTag\">{{date}}</span></td></tr></table></td></tr>";
 
 					template += "<tr><td valign=\"top\" align=\"left\">";
 
@@ -278,7 +230,6 @@ define(
 						view.lastname = command.oldObject.lastName;
 
 						var rendered = mustache.render(template, view);
-
 						row.append(rendered);
 
 					} else if (command.type == m_constants.SUBMIT_CHAT_MESSAGE_COMMAND) {
@@ -304,32 +255,59 @@ define(
 					} else {
 						template += "{{message}}";
 
-						if (command.commandId == "modelElement.update") {
-							view.message = "Model element updated.";
-						} else if (command.commandId == "activitySymbol.create") {
-							view.message = "Activity created.";
-						} else if (command.commandId == "eventSymbol.create") {
-							view.message = "Event created.";
-						} else if (command.commandId == "gatewaySymbol.create") {
-							view.message = "Gateway created.";
-						} else if (command.commandId == "swimlaneSymbol.create") {
-							view.message = "Swimlane created.";
-						} else if (command.commandId == "process.create") {
-							view.message = "Process Definition created.";
-						} else if (command.commandId == "activitySymbol.delete") {
-							view.message = "Activity deleted.";
-						} else if (command.commandId == "eventSymbol.delete") {
-							view.message = "Event deleted.";
-						} else if (command.commandId == "gatewaySymbol.delete") {
-							view.message = "Gateway deleted.";
-						} else if (command.commandId == "swimlaneSymbol.delete") {
-							view.message = "Swimlane deleted.";
-						} else if (command.commandId == "process.delete") {
-							view.message = "Process Definition deleted.";
+						if (command.isUndo == true || command.isRedo == true) {
+							if (command.commandId == "modelElement.update") {
+								view.message = "Undone Model element update.";
+							} else if (command.commandId == "activitySymbol.create") {
+								view.message = "Undone Activity creation.";
+							} else if (command.commandId == "eventSymbol.create") {
+								view.message = "Undone Event creation.";
+							} else if (command.commandId == "gatewaySymbol.create") {
+								view.message = "Undone Gateway creattion.";
+							} else if (command.commandId == "swimlaneSymbol.create") {
+								view.message = "Undone Swimlane creation.";
+							} else if (command.commandId == "process.create") {
+								view.message = "Undone Process Definition creation.";
+							} else if (command.commandId == "activitySymbol.delete") {
+								view.message = "Undone Activity deletion.";
+							} else if (command.commandId == "eventSymbol.delete") {
+								view.message = "Undone Event deleted.";
+							} else if (command.commandId == "gatewaySymbol.delete") {
+								view.message = "Undone Gateway deletion.";
+							} else if (command.commandId == "swimlaneSymbol.delete") {
+								view.message = "Undone Swimlane deletion.";
+							} else if (command.commandId == "process.delete") {
+								view.message = "Undone Process Definition deletion.";
+							} else {
+								view.message = "Other modification performed.";
+							}
 						} else {
-							view.message = "Other modification performed.";
+							if (command.commandId == "nodeSymbol.move") {
+								view.message = "Model element updated.";
+							} else if (command.commandId == "activitySymbol.create") {
+								view.message = "Activity created.";
+							} else if (command.commandId == "eventSymbol.create") {
+								view.message = "Event created.";
+							} else if (command.commandId == "gatewaySymbol.create") {
+								view.message = "Gateway created.";
+							} else if (command.commandId == "swimlaneSymbol.create") {
+								view.message = "Swimlane created.";
+							} else if (command.commandId == "process.create") {
+								view.message = "Process Definition created.";
+							} else if (command.commandId == "activitySymbol.delete") {
+								view.message = "Activity deleted.";
+							} else if (command.commandId == "eventSymbol.delete") {
+								view.message = "Event deleted.";
+							} else if (command.commandId == "gatewaySymbol.delete") {
+								view.message = "Gateway deleted.";
+							} else if (command.commandId == "swimlaneSymbol.delete") {
+								view.message = "Swimlane deleted.";
+							} else if (command.commandId == "process.delete") {
+								view.message = "Process Definition deleted.";
+							} else {
+								view.message = "Other modification performed.";
+							}
 						}
-
 						var rendered = mustache.render(template, view);
 
 						row.append(rendered);

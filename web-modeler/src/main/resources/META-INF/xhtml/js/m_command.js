@@ -176,7 +176,11 @@ define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_
 		createDeclineInvite: function(oldObject, prospect) {
 			return new ChangeEvent(m_constants.DECLINE_INVITE_COMMAND, "/users", "declineInvite", oldObject, prospect);
 		},
-
+		
+		createFetchOwner : function(owner){
+			return new ChangeEvent(m_constants.UPDATE_OWNER, "/users", "updateOwner", owner, null);
+		},
+		
 		createFetchProspects : function(owner){
 			return new ChangeEvent(m_constants.UPDATE_INVITED_USERS_COMMAND, "/users", "getAllProspects", owner, null);
 		},

@@ -608,6 +608,19 @@ public class ModelService
       currentUserJson.addProperty("account", currentUser.getLoginName());
       return currentUserJson.toString();
    }
+   
+   public String getSessionOwner(String sessionId)
+   {  
+      ModelingSession currentSession = sessionManager.findById(sessionId);
+      User currentUser = getUserService().getUser(unwrapUsername(currentSession.getOwnerId()));
+      JsonObject currentUserJson = new JsonObject();
+      currentUserJson.addProperty(TYPE_PROPERTY, "UPDATE_OWNER");
+      currentUserJson.addProperty("firstName", currentUser.getFirstName());
+      currentUserJson.addProperty("lastName", currentUser.getLastName());
+      currentUserJson.addProperty("account", currentUser.getAccount());
+      currentUserJson.addProperty("email", currentUser.getEMail());
+      return currentUserJson.toString();
+   }
 
    /**
     * Uses the ModelingSessionManager to check whether a given user was invited

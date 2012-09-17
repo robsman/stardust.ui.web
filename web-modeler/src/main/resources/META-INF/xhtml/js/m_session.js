@@ -10,8 +10,9 @@
 
 define(
 		[ "m_utils", "m_constants", "m_commandsController", "m_command",
-				"m_user" ],
-		function(m_utils, m_constants, m_commandsController, m_command, m_user) {
+				"m_user", "m_communicationController" ],
+		function(m_utils, m_constants, m_commandsController, m_command, m_user,
+				m_communicationController) {
 
 			return {
 				initialize : initialize,
@@ -59,6 +60,7 @@ define(
 				this.technologyPreview = false;
 				var sessionCallbackObj = this;
 				var startTime = new Date();
+				this.ownerJson = "";
 
 				Session.prototype.toString = function() {
 					return "Lightdust.Session";
@@ -68,8 +70,7 @@ define(
 				 * 
 				 */
 				Session.prototype.processCommand = function(command) {
-					if (command.type == m_constants.ACCEPT_INVITE_COMMAND
-							&& joined) {
+					if (command.type == m_constants.ACCEPT_INVITE_COMMAND) {
 						var oldObject = {
 							"account" : command.oldObject.sessionOwner
 						};
@@ -78,44 +79,17 @@ define(
 
 					} else if (command.type == m_constants.CONFIRM_JOIN_COMMAND) {
 						joined = true;
-						if (command.account != this.owner.account) {
-							this.owner = m_user.createUser(command.account,
-									"name", "lastname", null, null); // cannot
-							// retrieve
-							// data
-							// while
-							// sending
-							// acceptinvitecommand.
-							// In
-							// the
-							// class
-							// the
-							// user
-							// service
-							// is
-							// not
-							// available
-							// therefor
-							// I
-							// cannot
-							// get
-							// any
-							// information
-							// about
-							// the
-							// owner.
-						}
 
 						var oldObject = {
-							"account" : command.account
+							"sessionId" : command.oldObject.sessionId
 						};
-						m_commandsController.submitCommand(m_command
-								.createFetchCollaborators(oldObject));
+						submitCommand(m_command.createFetchOwner(oldObject));
 
 					} else if (command.type == m_constants.UPDATE_INVITED_USERS_COMMAND) {
 						console.log("Session starts working on "
 								+ m_constants.UPDATE_INVITED_USERS_COMMAND);
 						this.owner.color = command.ownerColor;
+						m_utils.debug(this.owner);
 
 						if (command.operation == "updateProspects") {
 							sessionCallbackObj.prospects = [];
@@ -219,5 +193,64 @@ define(
 						}
 					}
 				};
+				
+				
+				Session.prototype.isOwner = function(username){
+					if(this.owner.account == username){
+						return true;
+					}
+					return false;
+				}
+				
+				function submitCommand(command) {
+					var url = m_communicationController.getEndpointUrl()
+							+ command.path;
+					var obj = [];
+
+					if (command.operation != null) {
+						url += "/" + command.operation;
+					}
+
+					m_communicationController.postData({
+						"url" : url,
+						"sync" : command.sync ? true : false
+					},
+					// Added to remove any cyclic reference
+					JSON.stringify(command, function(key, val) {
+						if (typeof val == "object") {
+							if (obj.indexOf(val) >= 0)
+								return undefined;
+							obj.push(val);
+						}
+						return val;
+					}), new function() {
+						return {
+							"success" : function(command) {
+								sessionCallbackObj.ownerJson = command;
+								m_utils.debug("Command was placed in");
+								m_utils.debug(sessionCallbackObj.ownerJson);
+
+								sessionCallbackObj.owner = m_user.createUser(
+										sessionCallbackObj.ownerJson.account,
+										sessionCallbackObj.ownerJson.firstName,
+										sessionCallbackObj.ownerJson.lastName,
+										sessionCallbackObj.ownerJson.email,
+										null);
+								m_utils.debug(this.owner);
+								m_utils.debug(sessionCallbackObj.owner);
+
+								var oldObject = {
+									"account" : command.account
+								};
+								m_commandsController.submitCommand(m_command
+										.createFetchCollaborators(oldObject));
+							},
+							"error" : function(command) {
+								alert('Error occured while fetching owner');
+							}
+						};
+					});
+				}
+				;
 			}
 		});

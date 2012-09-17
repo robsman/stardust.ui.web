@@ -145,6 +145,7 @@ public class ModelerSessionRestController
                jto.pendingRedo = toChangeUri(pendingRedo);
             }
 
+            jto.isUndo = true;
             result = toJson(jto);
 
             commandHandlerRegistry().broadcastChange(undoneChange.getSession(), result);
@@ -179,6 +180,7 @@ public class ModelerSessionRestController
                jto.pendingRedo = toChangeUri(pendingRedo);
             }
 
+            jto.isRedo = true;
             result = toJson(toJto(redoneChange));
 
             commandHandlerRegistry().broadcastChange(redoneChange.getSession(), result);
@@ -436,6 +438,9 @@ public class ModelerSessionRestController
 
       public String pendingUndo;
       public String pendingRedo;
+
+      public Boolean isUndo;
+      public Boolean isRedo;
 
       static class ChangesJto
       {

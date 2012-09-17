@@ -17,7 +17,8 @@ define(
 					request.transport = "websocket";
 					request.fallbackTransport = 'long-polling';
 					request.loglevel = "debug";
-					request.url = m_urlUtils.getContextName() + '/services/streaming/bpm-modeling/collaboration'
+					request.url = m_urlUtils.getContextName()
+							+ '/services/streaming/bpm-modeling/collaboration'
 							+ url;
 
 					request.onOpen = function(response) {
@@ -30,11 +31,16 @@ define(
 						var message = response.responseBody;
 						var obj = jQuery.parseJSON(message);
 
-						if ((obj.type != null && obj.type == "SUBMIT_CHAT_MESSAGE_COMMAND")
+						if (null != obj.isRedo || null != obj.isUndo) {
+							if (null != obj.commandId) {
+								m_commandsController.broadcastCommand(obj);
+
+							}
+						}else if ((obj.type != null && obj.type == "SUBMIT_CHAT_MESSAGE_COMMAND")
 								|| (obj.commandId != null && currentUser.account != obj.account)) {
 							m_commandsController.broadcastCommand(obj);
-						}
 
+						}
 					};
 
 					request.onReconnect = function(request, response) {
