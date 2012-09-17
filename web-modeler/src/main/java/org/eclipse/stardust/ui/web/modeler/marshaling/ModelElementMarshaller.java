@@ -632,7 +632,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   activityJson.addProperty(ModelerConstants.SUBPROCESS_MODE_PROPERTY, ModelerConstants.ASYNC_SEPARATE_KEY);
                }
             }
-            else if (activity.getApplication() != null)
+            else if ((activity.eContainer() != null && (!(activity.eContainer() instanceof ChangeDescription)))
+                  && activity.getApplication() != null)
             {
                activityJson.addProperty(
                      ModelerConstants.APPLICATION_FULL_ID_PROPERTY,
