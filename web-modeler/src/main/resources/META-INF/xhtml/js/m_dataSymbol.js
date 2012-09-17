@@ -29,7 +29,7 @@ define(
 					// Data is not present at server side, using DataIndex and
 					// modelId to create dataId
 					dataSymbol.dataFullId = m_model.getFullId(diagram.model,
-							"Data" + index);
+							dataSymbol.dataId);
 					return dataSymbol;
 				},
 

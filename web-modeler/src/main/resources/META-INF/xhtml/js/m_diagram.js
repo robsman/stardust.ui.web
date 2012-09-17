@@ -639,6 +639,7 @@ define(
 											.match(this.lastSymbol.type)) {
 								this.lastSymbol
 										.applyChanges(obj.changes.added[i]);
+								this.lastSymbol.refresh();
 								this.lastSymbol = null;
 							}// For connections lastSymbol will be empty
 							else if (null != obj.changes.added[i].modelElement) {
@@ -1366,9 +1367,6 @@ define(
 								this, symbol.anchorPoints[1]);
 					}
 					if(null!=this.currentConnection){
-						m_messageDisplay
-						.showMessage("Select second anchor point for connection.");
-
 						// Set dummy anchor point
 						this.currentConnection.setDummySecondAnchorPoint();
 					}else{

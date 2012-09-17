@@ -547,6 +547,8 @@ define(
 				Connection.prototype.setDummySecondAnchorPoint = function() {
 					this.setSecondAnchorPoint(this.fromAnchorPoint
 							.createFlippedClone());
+					m_messageDisplay
+							.showMessage("Select second anchor point for connection.");
 				};
 
 				/**
@@ -1436,6 +1438,7 @@ define(
 				 */
 				Connection.prototype.validateCreateConnection = function(
 						fromAnchorPoint, toAnchorPoint) {
+					m_messageDisplay.clearErrorMessages();
 					if (fromAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
 						// Check for OUT connections on End Event
 						if (fromAnchorPoint.symbol.modelElement.eventType == m_constants.STOP_EVENT_TYPE) {

@@ -22,7 +22,8 @@ define(
 				markModified : markModified,
 				showMessage : showMessage,
 				showErrorMessage : showErrorMessage,
-				clear : clear
+				clear : clear,
+				clearErrorMessages : clearErrorMessages
 			};
 
 			/**
@@ -75,6 +76,34 @@ define(
 			}
 
 			/**
+			 * clearing error messages
+			 */
+			function clearErrorMessages() {
+				clearDisplay();
+				messagePanel.removeAttr("class");
+				messageIcon.parent().removeAttr("class");
+				messageDisplay.removeAttr("class");
+				messageDisplay.empty();
+
+				for(var n in messages){
+					message = messages[n];
+					// remove all error messages, before connection rules
+					// validation
+					if (message && message.type == ERROR_MESSAGE) {
+						m_utils.removeItemFromArray(messages,message);
+					}
+				}
+
+				if (messages.length > 0) {
+					message = messages[messages.length - 1];
+					messagePanel.attr("class", "messagePanelHighlight");
+					messageIcon.parent().attr("class", "infoSeverityIssueItem");
+					messageDisplay.append(message.content);
+				}
+
+			}
+
+			/**
 			 *
 			 */
 			function clear() {
@@ -93,7 +122,8 @@ define(
 						messageDisplay.append(message.content);
 
 					} else {
-						messageDisplay.append(message.content);
+						//TODO - Do we need this?
+						//messageDisplay.append(message.content);
 					}
 				}
 			}
