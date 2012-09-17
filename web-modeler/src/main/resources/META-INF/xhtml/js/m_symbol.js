@@ -1498,8 +1498,6 @@ define(
 										+ this.auxiliaryProperties.callbackScope.diagram.scrollPane
 												.scrollTop()
 										- (this.auxiliaryProperties.callbackScope.y + (this.auxiliaryProperties.callbackScope.height / 2)));
-
-				this.auxiliaryProperties.callbackScope.diagram.checkPan(x, y);
 			}
 
 			/**

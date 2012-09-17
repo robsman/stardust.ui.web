@@ -45,44 +45,7 @@ define(
 
 			var currentDiagram = null;
 			var panningIntervalId = null;
-			var currentPanningSensor = null;
 			var symbolEditMode = false;
-
-			/**
-			 *
-			 */
-			function panCurrentDiagramNorth() {
-				if (currentDiagram != null) {
-					currentDiagram.panNorth();
-				}
-			}
-
-			/**
-			 *
-			 */
-			function panCurrentDiagramEast() {
-				if (currentDiagram != null) {
-					currentDiagram.panEast();
-				}
-			}
-
-			/**
-			 *
-			 */
-			function panCurrentDiagramSouth() {
-				if (currentDiagram != null) {
-					currentDiagram.panSouth();
-				}
-			}
-
-			/**
-			 *
-			 */
-			function panCurrentDiagramWest() {
-				if (currentDiagram != null) {
-					currentDiagram.panWest();
-				}
-			}
 
 			/**
 			 *
@@ -968,8 +931,6 @@ define(
 							this.newSymbol.prepare(x * this.zoomFactor, y
 									* this.zoomFactor);
 						}
-
-						this.checkPan(x, y);
 					} else if (this.mode == this.RUBBERBAND_MODE) {
 						this.rubberBandWidth = x * this.zoomFactor
 								- this.rubberBandX;
@@ -980,8 +941,6 @@ define(
 							"width" : this.rubberBandWidth,
 							"height" : this.rubberBandHeight
 						});
-
-						this.checkPan(x, y);
 					} else if (this.mode == this.SEPARATOR_MODE) {
 						if (this.separationActive) {
 							var dX = x * this.zoomFactor - this.separatorX;
@@ -1071,8 +1030,6 @@ define(
 
 							this.separatorX = x * this.zoomFactor;
 							this.separatorY = y * this.zoomFactor;
-
-							this.checkPan(x, y);
 						} else {
 							this.verticalSeparatorLine.attr({
 								"path" : "M" + x + " 0L" + x + " "
@@ -1105,7 +1062,6 @@ define(
 								this.currentConnection.toAnchorPoint.moveTo(x
 										* this.zoomFactor, y * this.zoomFactor);
 								this.currentConnection.reroute();
-								this.checkPan(x, y);
 							}
 						}
 					}
@@ -1776,135 +1732,6 @@ define(
 						"height" : height
 					});
 					m_canvasManager.setCanvasSize(width, height);
-				};
-
-				/**
-				 *
-				 */
-				Diagram.prototype.checkPan = function(x, y) {
-					if (this.panningSensorNorth.x <= x
-							&& this.panningSensorNorth.x
-									+ this.panningSensorNorth.width >= x
-							&& this.panningSensorNorth.y <= y
-							&& this.panningSensorNorth.y
-									+ this.panningSensorNorth.height >= y) {
-						if (currentPanningSensor != this.panningSensorNorth) {
-							currentPanningSensor = this.panningSensorNorth;
-
-							if (panningIntervalId) {
-								window.clearInterval(panningIntervalId);
-							}
-
-							panningIntervalId = window.setInterval(function() {
-								panCurrentDiagramNorth();
-							}, m_constants.DIAGRAM_PANNING_INTERVAL_MILLIS);
-						}
-					} else if (this.panningSensorEast.x <= x
-							&& this.panningSensorEast.x
-									+ this.panningSensorEast.width >= x
-							&& this.panningSensorEast.y <= y
-							&& this.panningSensorEast.y
-									+ this.panningSensorEast.height >= y) {
-						if (currentPanningSensor != this.panningSensorEast) {
-							currentPanningSensor = this.panningSensorEast;
-
-							if (panningIntervalId) {
-								window.clearInterval(panningIntervalId);
-							}
-
-							panningIntervalId = window.setInterval(function() {
-								panCurrentDiagramEast();
-							}, m_constants.DIAGRAM_PANNING_INTERVAL_MILLIS);
-						}
-					} else if (this.panningSensorSouth.x <= x
-							&& this.panningSensorSouth.x
-									+ this.panningSensorSouth.width >= x
-							&& this.panningSensorSouth.y <= y
-							&& this.panningSensorSouth.y
-									+ this.panningSensorSouth.height >= y) {
-						if (currentPanningSensor != this.panningSensorSouth) {
-							currentPanningSensor = this.panningSensorSouth;
-
-							if (panningIntervalId) {
-								window.clearInterval(panningIntervalId);
-							}
-
-							panningIntervalId = window.setInterval(function() {
-								panCurrentDiagramSouth();
-							}, m_constants.DIAGRAM_PANNING_INTERVAL_MILLIS);
-						}
-					} else if (this.panningSensorWest.x <= x
-							&& this.panningSensorWest.x
-									+ this.panningSensorWest.width >= x
-							&& this.panningSensorWest.y <= y
-							&& this.panningSensorWest.y
-									+ this.panningSensorWest.height >= y) {
-						if (currentPanningSensor != this.panningSensorWest) {
-							currentPanningSensor = this.panningSensorWest;
-
-							if (panningIntervalId) {
-								window.clearInterval(panningIntervalId);
-							}
-
-							panningIntervalId = window.setInterval(function() {
-								panCurrentDiagramWest();
-							}, m_constants.DIAGRAM_PANNING_INTERVAL_MILLIS);
-						}
-					} else {
-						if (panningIntervalId != null) {
-							window.clearInterval(panningIntervalId);
-						}
-
-						panningIntervalId = null;
-					}
-				};
-
-				/**
-				 *
-				 */
-				Diagram.prototype.panNorth = function() {
-					if (this.scrollPane.scrollTop() > 0) {
-						this.scrollPane.animate({
-							scrollTop : this.scrollPane.scrollTop()
-									- m_constants.DIAGRAM_PANNING_INCREMENT
-						}, m_constants.DIAGRAM_PANNING_INTERVAL_MILLIS);
-					}
-				};
-
-				/**
-				 *
-				 */
-				Diagram.prototype.panEast = function() {
-					if (this.scrollPane.scrollLeft() < this.width) {
-						this.scrollPane.animate({
-							scrollLeft : this.scrollPane.scrollLeft()
-									+ m_constants.DIAGRAM_PANNING_INCREMENT
-						}, m_constants.DIAGRAM_PANNING_INTERVAL_MILLIS);
-					}
-				};
-
-				/**
-				 *
-				 */
-				Diagram.prototype.panSouth = function() {
-					if (this.scrollPane.scrollTop() < this.height) {
-						this.scrollPane.animate({
-							scrollTop : this.scrollPane.scrollTop()
-									+ m_constants.DIAGRAM_PANNING_INCREMENT
-						}, m_constants.DIAGRAM_PANNING_INTERVAL_MILLIS);
-					}
-				};
-
-				/**
-				 *
-				 */
-				Diagram.prototype.panWest = function() {
-					if (this.scrollPane.scrollLeft() > 0) {
-						this.scrollPane.animate({
-							scrollLeft : this.scrollPane.scrollLeft()
-									- m_constants.DIAGRAM_PANNING_INCREMENT
-						}, m_constants.DIAGRAM_PANNING_INTERVAL_MILLIS);
-					}
 				};
 
 				/**
