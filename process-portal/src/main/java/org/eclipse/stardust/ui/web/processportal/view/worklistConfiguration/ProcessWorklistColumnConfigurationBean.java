@@ -11,7 +11,6 @@
 package org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration;
 
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
@@ -21,7 +20,7 @@ import org.eclipse.stardust.ui.web.processportal.common.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.processportal.dialogs.SelectProcessPopup;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 
 /**
  * @author Yogesh.Manware
@@ -108,7 +107,7 @@ public class ProcessWorklistColumnConfigurationBean extends WorklistColumnConfig
    {
       try
       {
-         Set<ProcessDefinition> processDefs = ProcessWorklistCacheManager.getInstance().getProcesses();
+         List<ProcessDefinition> processDefs = ProcessDefinitionUtils.getAllBusinessRelevantProcesses();
 
          for (ProcessDefinition processDefinition : processDefs)
          {
