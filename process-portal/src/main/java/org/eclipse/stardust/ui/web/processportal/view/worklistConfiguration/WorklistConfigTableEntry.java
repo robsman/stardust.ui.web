@@ -45,15 +45,7 @@ public class WorklistConfigTableEntry extends DefaultRowModel
    public WorklistConfigTableEntry(ParticipantInfo participantInfo)
    {
       elementName = ModelHelper.getParticipantLabel(participantInfo).getLabel();
-
-      if (PredefinedConstants.ADMINISTRATOR_ROLE.equals(participantInfo.getId()))
-      {
-         identityKey = PredefinedConstants.ADMINISTRATOR_ROLE;
-      }
-      else
-      {
-         identityKey = WorklistConfigurationUtil.getParticipantKey(participantInfo);
-      }
+      identityKey = WorklistConfigurationUtil.getParticipantKey(participantInfo);
    }
 
    /**
