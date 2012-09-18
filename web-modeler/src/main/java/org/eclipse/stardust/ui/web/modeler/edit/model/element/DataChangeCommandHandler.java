@@ -131,7 +131,7 @@ public class DataChangeCommandHandler
       String targetNamespace = jsSschema.has("targetNamespace")
          ? jsSschema.getAsJsonPrimitive("targetNamespace").getAsString()
          : TypeDeclarationUtils.computeTargetNamespace(model, declaration.getId());
-
+         
       SchemaTypeType schema = XpdlFactory.eINSTANCE.createSchemaTypeType();
       declaration.setSchemaType(schema);
 
@@ -145,18 +145,15 @@ public class DataChangeCommandHandler
       xsdSchema.setSchemaLocation(StructuredDataConstants.URN_INTERNAL_PREFIX + declaration.getId());
       schema.setSchema(xsdSchema);
 
-      XSDComplexTypeDefinition xsdComplexTypeDefinition = XSDFactory.eINSTANCE.createXSDComplexTypeDefinition();
-      xsdComplexTypeDefinition.setName(declaration.getId());
-      XSDParticle particle = XSDFactory.eINSTANCE.createXSDParticle();
-      XSDModelGroup modelGroup = XSDFactory.eINSTANCE.createXSDModelGroup();
-      particle.setContent(modelGroup);
-      modelGroup.setCompositor(XSDCompositor.SEQUENCE_LITERAL);
-      xsdComplexTypeDefinition.setContent(particle);
-      xsdSchema.getContents().add(xsdComplexTypeDefinition);
+      JsonObject jsTypes = jsSschema.getAsJsonObject("types");
+      JsonObject jsType = jsTypes.getAsJsonObject(id);
+
+      XSDTypeDefinition xsdTypeDefinition = jsType.has("body") ? createComplexType(id) : createSimpleType(xsdSchema, id);
+      xsdSchema.getContents().add(xsdTypeDefinition);
 
       XSDElementDeclaration xsdElementDeclaration = XSDFactory.eINSTANCE.createXSDElementDeclaration();
       xsdElementDeclaration.setName(declaration.getId());
-      xsdElementDeclaration.setTypeDefinition(xsdComplexTypeDefinition);
+      xsdElementDeclaration.setTypeDefinition(xsdTypeDefinition);
       xsdSchema.getContents().add(xsdElementDeclaration);
       
       new ModelElementUnmarshaller()
@@ -172,6 +169,27 @@ public class DataChangeCommandHandler
       // Map newly created data element to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(declaration);
+   }
+
+   private XSDComplexTypeDefinition createComplexType(String id)
+   {
+      XSDComplexTypeDefinition xsdComplexTypeDefinition = XSDFactory.eINSTANCE.createXSDComplexTypeDefinition();
+      xsdComplexTypeDefinition.setName(id);
+      XSDParticle particle = XSDFactory.eINSTANCE.createXSDParticle();
+      XSDModelGroup modelGroup = XSDFactory.eINSTANCE.createXSDModelGroup();
+      particle.setContent(modelGroup);
+      modelGroup.setCompositor(XSDCompositor.SEQUENCE_LITERAL);
+      xsdComplexTypeDefinition.setContent(particle);
+      return xsdComplexTypeDefinition;
+   }
+   
+   private XSDSimpleTypeDefinition createSimpleType(XSDSchema xsdSchema, String id)
+   {
+      XSDSimpleTypeDefinition xsdSimpleTypeDefinition = XSDFactory.eINSTANCE.createXSDSimpleTypeDefinition();
+      xsdSimpleTypeDefinition.setName(id);
+      XSDSimpleTypeDefinition baseType = xsdSchema.resolveSimpleTypeDefinition(XMLResource.XML_SCHEMA_URI, "string"); //$NON-NLS-1$
+      xsdSimpleTypeDefinition.setBaseTypeDefinition(baseType);
+      return xsdSimpleTypeDefinition;
    }
    
    /**
