@@ -26,6 +26,7 @@ import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelIoUtils;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
 import org.eclipse.stardust.ui.web.modeler.xpdl.XpdlPersistenceHandler;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
 /**
@@ -225,6 +226,45 @@ public class DefaultModelManagementStrategy extends
       removeModelFileNameMapping(model);
       getModels().remove(model.getId());
 	}
+
+   /**
+    * @param fileName
+    * @param fileContent
+    * @param createNewVersion
+    * @return
+    */
+   @Override
+   public ModelUploadStatus uploadModelFile(String fileName, byte[] fileContent,
+         boolean createNewVersion)
+   {
+
+      if (DocumentMgmtUtility.isExistingResource("/process-models", fileName))
+      {
+         if (createNewVersion)
+         {
+            Document modelDocument = getDocumentManagementService().getDocument(
+                  MODELS_DIR + fileName);
+            DocumentMgmtUtility.updateDocument(modelDocument, fileContent,
+                  modelDocument.getDescription(), "");
+
+            return ModelUploadStatus.NEW_MODEL_VERSION_CREATED;
+         }
+
+         return ModelUploadStatus.MODEL_ALREADY_EXISTS;
+      }
+      else
+      {
+         DocumentInfo docInfo = DmsUtils.createDocumentInfo(fileName);
+
+         docInfo.setOwner(getServiceFactory().getWorkflowService().getUser().getAccount());
+         docInfo.setContentType(MimeTypesHelper.XML.getType());
+
+         getDocumentManagementService().createDocument(MODELS_DIR, docInfo, fileContent,
+               null);
+
+         return ModelUploadStatus.NEW_MODEL_CREATED;
+      }
+   }
 
 	/**
 	 *

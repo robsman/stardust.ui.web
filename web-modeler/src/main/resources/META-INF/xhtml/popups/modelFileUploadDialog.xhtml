@@ -1,0 +1,113 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelPopup id="#{modelFileUploadDialog.beanId}" modal="true"
+		rendered="#{modelFileUploadDialog.visible}" draggable="true"
+		autoCenter="true" positionOnLoadOnly="true"
+		styleClass="popupDialog" clientOnly="true">
+
+		<f:facet name="header">
+			<ice:panelGroup style="min-width: 200px;">
+				<ice:outputText value="File Upload" styleClass="headerText" rendered="#{modelFileUploadDialog.uploadMode}" />
+				<ice:outputText value="Confirmation" styleClass="headerText" rendered="#{!modelFileUploadDialog.uploadMode}" />
+				<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+					action="#{modelFileUploadDialog.closePopup}" immediate="true"
+					styleClass="windowClose" />
+			</ice:panelGroup>
+		</f:facet>
+
+		<f:facet name="body">
+			<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+				cellspacing="0" renderNorth="false" renderEast="false"
+				renderSouth="true" renderWest="false" renderCenter="true"
+				style="width:100%">
+				<f:facet name="center">
+					<ice:panelGroup style="width: 350px">
+						<ice:panelGroup rendered="#{modelFileUploadDialog.uploadMode}">
+							<ice:panelGroup styleClass="clearing" />
+							<ice:outputText value="Upload into My Process Models" styleClass="form-label" />
+							<ice:panelGroup styleClass="clearing" />
+							<h:outputText
+								value="#{views_common_msgPropsBean['common.selectFileForUpload']}"
+								styleClass="label-form" />
+
+							<!-- The iframe that gets rendered as a part of ice:inputFile takes much wider space. So cap it with max-width -->
+							<ice:panelGroup
+								style="margin-top: 5px; margin-bottom: 5px; max-width: auto;">
+								<ice:inputFile id="commonFile#{modelFileUploadDialog.beanId}"
+									failOnEmptyFile="false"
+									actionListener="#{modelFileUploadDialog.uploadFile}"
+									progressListener="#{modelFileUploadDialog.measureProgress}"
+									submitOnUpload="preUpload"
+									label="Upload">
+								</ice:inputFile>
+							</ice:panelGroup>
+							<ice:panelGroup styleClass="msgError">
+								<ice:message for="commonFile#{modelFileUploadDialog.beanId}" />
+							</ice:panelGroup>
+							<ice:panelGroup>
+								<ice:outputProgress
+									value="#{modelFileUploadDialog.fileUploadProgress}">
+								</ice:outputProgress>
+							</ice:panelGroup>
+						</ice:panelGroup>
+						<ice:panelGroup rendered="#{!modelFileUploadDialog.uploadMode}">
+							<ice:panelGrid columns="2">
+								<ice:panelGroup style="padding-right: 5px">
+									<ice:graphicImage value="/plugins/bpm-modeler/images/icons/dialog-icon-warning.jpg" />
+									<ice:panelGroup styleClass="clearing" />
+									<ice:panelGroup styleClass="clearing" />
+									<ice:panelGroup styleClass="clearing" />
+									<ice:panelGroup styleClass="clearing" />
+									<ice:panelGroup styleClass="clearing" />
+								</ice:panelGroup>
+								<ice:panelGroup>
+									<ice:outputText
+										value="Process model #{modelFileUploadDialog.uploadedFileName}" />
+									<ice:panelGroup />
+									<ice:outputText
+										value="already exists." />
+									<ice:panelGroup styleClass="clearing" />
+									<ice:panelGroup styleClass="clearing" />
+									<ice:outputText
+										value="Do you want to continue and create a new version of" />
+									<ice:panelGroup />
+									<ice:outputText
+										value="the existing process model?" />
+									<ice:panelGroup styleClass="clearing" />
+									<ice:panelGroup styleClass="clearing" />
+								</ice:panelGroup>
+							</ice:panelGrid>
+						</ice:panelGroup>
+					</ice:panelGroup>
+				</f:facet>
+
+				<f:facet name="south">
+					<ice:panelGroup>
+						<ice:panelGroup rendered="#{modelFileUploadDialog.uploadMode}">
+							<ice:commandButton
+								value="Close"
+								action="#{modelFileUploadDialog.closePopup}" immediate="true"
+								styleClass="button secondary" />
+						</ice:panelGroup>
+						<ice:panelGroup rendered="#{!modelFileUploadDialog.uploadMode}">
+							<ice:commandButton
+								value="Continue"
+								actionListener="#{modelFileUploadDialog.createNewVersion}"
+								styleClass="button secondary" />
+							<ice:commandButton
+								value="Cancel"
+								action="#{modelFileUploadDialog.closePopup}" immediate="true"
+								styleClass="button secondary" />
+						</ice:panelGroup>
+					</ice:panelGroup>
+				</f:facet>
+			</ice:panelBorder>
+		</f:facet>
+	</ice:panelPopup>
+</f:view>

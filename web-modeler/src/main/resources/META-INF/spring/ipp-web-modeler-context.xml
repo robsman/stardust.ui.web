@@ -37,6 +37,11 @@
 		<aop:scoped-proxy/>
 	</bean>
 
+	<bean id="modelFileUploadDialog" class="org.eclipse.stardust.ui.web.modeler.model.upload.ModelFileUploadDialog"
+		scope="session">
+		<aop:scoped-proxy/>
+	</bean>
+
 	<bean name="jsfViewUpdaterBean" class="org.eclipse.stardust.ui.web.modeler.portal.JsfViewUpdaterBean"
 		scope="session">
 	</bean>

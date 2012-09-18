@@ -27,6 +27,7 @@ define(
 			var viewManager = viewManagerExtension.provider.create();
 
 			var isElementCreatedViaOutline = false;
+			var hasUnsavedModifications = false;
 			function getURL() {
 				return require('m_urlUtils').getContextName()
 						+ "/services/rest/modeler/" + new Date().getTime();
@@ -304,6 +305,7 @@ define(
 									jQuery("#outline").jstree("close_node",
 											"#" + model.uuid);
 								});
+				hasUnsavedModifications = false;
 			};
 
 			var loadChildParticipants = function(model, parentParticipant) {
@@ -531,6 +533,38 @@ define(
 				readAllModels(true);
 			};
 
+			var importModel = function() {
+				if (true == hasUnsavedModifications) {
+					if (parent.iPopupDialog) {
+						parent.iPopupDialog
+								.openPopup({
+									attributes : {
+										width : "400px",
+										height : "200px",
+										src : "../bpm-modeler/popups/confirmationPopupDialogContent.html"
+									},
+									payload : {
+										title : "Warning",
+										message : "Models have unsaved changes.<BR><BR>Please save models before continuing.",
+										acceptButtonText : "Close",
+										acceptFunction : function() {
+											//Do nothing
+										}
+									}
+								});
+					} else {
+						alert("Models have unsaved changes. Please save models before continuing.");
+					}
+				} else {
+					var link = jQuery("a[id $= 'open_model_upload_dialog_link']",
+							window.parent.frames['ippPortalMain'].document);
+					var linkId = link.attr('id');
+					var form = link.parents('form:first');
+					var formId = form.attr('id');
+					window.parent.EventHub.events.publish("OPEN_IMPORT_MODEL_DIALOG", linkId, formId);
+				}
+			}
+
 			function saveAllModels() {
 				m_communicationController
 						.syncGetData(
@@ -543,6 +577,7 @@ define(
 									return {
 										success : function(data) {
 											m_messageDisplay.markSaved();
+											hasUnsavedModifications = false;
 										},
 										failure : function(data) {
 											if (parent.iPopupDialog) {
@@ -1571,7 +1606,7 @@ define(
 					if ("createModel" == data.id) {
 						createModel();
 					} else if ("importModel" == data.id) {
-						alert("Funtionality not implemented yet");
+						importModel();
 					} else if ("saveAllModels" == data.id) {
 						saveAllModels();
 					} else if ("refreshModels" == data.id) {
@@ -2123,6 +2158,7 @@ define(
 
 					if (null != obj && null != obj.changes) {
 						m_messageDisplay.markModified();
+						hasUnsavedModifications = true;
 						for ( var i = 0; i < obj.changes.added.length; i++) {
 							// Create Process
 							if (m_constants.PROCESS == command.changes.added[i].type) {

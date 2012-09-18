@@ -8,19 +8,28 @@
 	{
 		document.getElementById('titleText').innerHTML = payloadObj.title;
 		document.getElementById('contentText').innerHTML = payloadObj.message;
-		document.getElementById('cancelButton').value = payloadObj.cancelButtonText;
-		document.getElementById('acceptButton').value = payloadObj.acceptButtonText;		
-		document.getElementById('cancelButton').onclick = closePopup;
-		document.getElementById('dialogCloseIcon').onclick = closePopup;
-		document.getElementById('acceptButton').onclick = function () {
-			payloadObj.acceptFunction();
-			closePopup();
+		if (payloadObj.cancelButtonText) {
+			document.getElementById('cancelButton').value = payloadObj.cancelButtonText;
+			document.getElementById('cancelButton').onclick = closePopup;
+		} else {
+			document.getElementById('cancelButton').style.visibility = 'hidden';
 		}
+		if (payloadObj.acceptButtonText) {
+			document.getElementById('acceptButton').value = payloadObj.acceptButtonText;
+			document.getElementById('acceptButton').onclick = function () {
+				payloadObj.acceptFunction();
+				closePopup();
+			}
+		} else {
+			document.getElementById('acceptButton').style.visibility = 'hidden';
+		}
+
+		document.getElementById('dialogCloseIcon').onclick = closePopup;
 	}
 </script>
 </head>
 <body onload="init();" style="height: 100%; width: 100%; overflow: hidden; margin: 0px;">
-	<div id="titleBar" class="iPopupDialogTitleBar">			
+	<div id="titleBar" class="iPopupDialogTitleBar">
 		<span id="titleText" class="iPopupDialogTitleText"></span>
 		<input id="dialogCloseIcon" type="button" title="Close" class="iPopupDialogCloseControl" />
 	</div>

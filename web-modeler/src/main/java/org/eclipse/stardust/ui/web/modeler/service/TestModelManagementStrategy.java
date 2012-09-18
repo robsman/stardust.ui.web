@@ -167,4 +167,12 @@ public class TestModelManagementStrategy extends
       // TODO Auto-generated method stub
       return null;
    }
+
+   @Override
+   public ModelUploadStatus uploadModelFile(String fileName, byte[] fileContent,
+         boolean createNewVersion)
+   {
+      // TODO Auto-generated method stub
+      return null;
+   }
 }
