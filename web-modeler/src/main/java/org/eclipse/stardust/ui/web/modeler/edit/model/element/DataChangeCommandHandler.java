@@ -21,8 +21,13 @@ import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
 
+import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.error.PublicException;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
+import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
@@ -33,10 +38,18 @@ import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
+import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationsType;
+import org.eclipse.stardust.model.xpdl.xpdl2.XpdlFactory;
+import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
+import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
+import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.eclipse.xsd.*;
 
 /**
  * @author Shrikant.Gangal
@@ -75,8 +88,90 @@ public class DataChangeCommandHandler
    @OnCommand(commandId = "typeDeclaration.create")
    public void createTypeDeclaration(ModelType model, JsonObject request)
    {
-      // TODO @Florin
+      String id = extractString(request, ModelerConstants.ID_PROPERTY);
+      
+      TypeDeclarationsType declarations = model.getTypeDeclarations();
+      if (declarations != null && declarations.getTypeDeclaration(id) != null)
+      {
+         // TODO: change to error case ?
+         throw new PublicException("Duplicate type declaration id '" + id + "'.");
+      }
+
       System.out.println("Creating Type Declaration " + request);
+      
+      if (declarations == null)
+      {
+         declarations = XpdlFactory.eINSTANCE.createTypeDeclarationsType();
+         model.setTypeDeclarations(declarations);
+      }
+      
+      TypeDeclarationType declaration = XpdlFactory.eINSTANCE.createTypeDeclarationType();
+      declarations.getTypeDeclaration().add(declaration);
+      
+      String name = extractString(request, ModelerConstants.NAME_PROPERTY);
+      
+      declaration.setId(id);
+      declaration.setName(name);
+
+      // TODO: pass that value ?
+      ExtendedAttributeUtil.createAttribute(declaration,
+            PredefinedConstants.MODELELEMENT_VISIBILITY).setValue("Public"); //$NON-NLS-1$
+      
+      JsonObject td = request.getAsJsonObject("typeDeclaration");
+      JsonObject type = td.getAsJsonObject("type");
+      // TODO: support external references
+      String classifier = type.getAsJsonPrimitive("classifier").getAsString();
+      if (!"SchemaType".equals(classifier))
+      {
+         // TODO: change to error case ?
+         throw new PublicException("Only Schema types are supported: '" + classifier + "'.");
+      }
+      
+      JsonObject jsSschema = td.getAsJsonObject("schema");
+      String targetNamespace = jsSschema.has("targetNamespace")
+         ? jsSschema.getAsJsonPrimitive("targetNamespace").getAsString()
+         : TypeDeclarationUtils.computeTargetNamespace(model, declaration.getId());
+
+      SchemaTypeType schema = XpdlFactory.eINSTANCE.createSchemaTypeType();
+      declaration.setSchemaType(schema);
+
+      XSDSchema xsdSchema = XSDFactory.eINSTANCE.createXSDSchema();
+      xsdSchema.getQNamePrefixToNamespaceMap().put(XSDPackage.eNS_PREFIX, XMLResource.XML_SCHEMA_URI);
+      xsdSchema.setSchemaForSchemaQNamePrefix(XSDPackage.eNS_PREFIX);
+      xsdSchema.setTargetNamespace(targetNamespace);
+
+      String prefix = TypeDeclarationUtils.computePrefix(declaration.getId(), xsdSchema.getQNamePrefixToNamespaceMap().keySet());
+      xsdSchema.getQNamePrefixToNamespaceMap().put(prefix, xsdSchema.getTargetNamespace());
+      xsdSchema.setSchemaLocation(StructuredDataConstants.URN_INTERNAL_PREFIX + declaration.getId());
+      schema.setSchema(xsdSchema);
+
+      XSDComplexTypeDefinition xsdComplexTypeDefinition = XSDFactory.eINSTANCE.createXSDComplexTypeDefinition();
+      xsdComplexTypeDefinition.setName(declaration.getId());
+      XSDParticle particle = XSDFactory.eINSTANCE.createXSDParticle();
+      XSDModelGroup modelGroup = XSDFactory.eINSTANCE.createXSDModelGroup();
+      particle.setContent(modelGroup);
+      modelGroup.setCompositor(XSDCompositor.SEQUENCE_LITERAL);
+      xsdComplexTypeDefinition.setContent(particle);
+      xsdSchema.getContents().add(xsdComplexTypeDefinition);
+
+      XSDElementDeclaration xsdElementDeclaration = XSDFactory.eINSTANCE.createXSDElementDeclaration();
+      xsdElementDeclaration.setName(declaration.getId());
+      xsdElementDeclaration.setTypeDefinition(xsdComplexTypeDefinition);
+      xsdSchema.getContents().add(xsdElementDeclaration);
+      
+      new ModelElementUnmarshaller()
+      {
+         @Override
+         protected ModelManagementStrategy modelManagementStrategy()
+         {
+            // TODO Auto-generated method stub
+            return null;
+         }
+      }.populateFromJson(declaration, request);
+
+      // Map newly created data element to a UUID
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
+      mapper.map(declaration);
    }
    
    /**
