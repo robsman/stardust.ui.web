@@ -82,9 +82,7 @@ public class ModelFileUploadDialog extends PopupUIComponentBean
                break;
             case NEW_MODEL_CREATED:
             case NEW_MODEL_VERSION_CREATED:
-               PortalApplication.getInstance().addEventScript(
-                     "window.parent.EventHub.events.publish('RELOAD_MODELS');");
-               closePopup();
+               reloadModelsAndClosePopup();
                break;
             }
          }
@@ -110,6 +108,7 @@ public class ModelFileUploadDialog extends PopupUIComponentBean
       }
       catch (Exception exception)
       {
+         closePopup();
          ExceptionHandler.handleException(exception);
       }
    }
@@ -129,10 +128,7 @@ public class ModelFileUploadDialog extends PopupUIComponentBean
             ModelManagementStrategy.ModelUploadStatus status = modelService.getModelManagementStrategy()
                   .uploadModelFile(fileInfo.getFileName(),
                         FileUtils.fileToBytes(fileInfo.getPhysicalPath()), true);
-            PortalApplication.getInstance().addEventScript(
-                  "window.parent.EventHub.events.publish('RELOAD_MODELS');");
-            closePopup();
-            fileUploadProgress = 0;
+            reloadModelsAndClosePopup();
          }
          else
          {
@@ -171,6 +167,16 @@ public class ModelFileUploadDialog extends PopupUIComponentBean
       uploadedFileName = null;
 
       super.closePopup();
+   }
+
+   /**
+    *
+    */
+   private void reloadModelsAndClosePopup()
+   {
+      PortalApplication.getInstance().addEventScript(
+            "window.parent.EventHub.events.publish('RELOAD_MODELS');");
+      closePopup();
    }
 
    /**
