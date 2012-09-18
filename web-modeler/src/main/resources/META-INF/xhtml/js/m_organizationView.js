@@ -315,6 +315,10 @@ define(
 							.append("</optgroup><optgroup label=\"Other Models\">");
 
 					for ( var n in m_model.getModels()) {
+						if (this.getModelElement().model == m_model.getModels()[n]) {
+							continue;
+						}
+
 						for ( var m in m_model.getModels()[n].dataItems) {
 							var dataItem = m_model.getModels()[n].dataItems[m];
 
@@ -361,8 +365,8 @@ define(
 				 */
 				OrganizationView.prototype.populateLeaderSelectInput = function() {
 					this.leaderSelect.empty();
-					this.leaderSelect
-							.append("<option value='" + m_constants.TO_BE_DEFINED + "'>(None)</option>");
+					this.leaderSelect.append("<option value='"
+							+ m_constants.TO_BE_DEFINED + "'>(None)</option>");
 
 					this.leaderSelect.append("<optgroup label=\"This Model\">");
 
