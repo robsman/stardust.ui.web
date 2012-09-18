@@ -472,7 +472,11 @@ define(
 					m_dataFlowPropertiesPanel.initialize(this);
 					m_autoScrollManager.initScrollManager("scrollpane", function() {
 						var inAutoScrollMode = false;
-						if (true == currentDiagram.isInConnectionMode()
+						if (null != currentDiagram.newSymbol
+						     		&& currentDiagram.newSymbol.type == m_constants.POOL_SYMBOL) {
+							// For Default Pool drag and drop is not allowed.
+							inAutoScrollMode = false;
+						}else if (true == currentDiagram.isInConnectionMode()
 								|| currentDiagram.mode == currentDiagram.RUBBERBAND_MODE
 								|| null != currentDiagram.newSymbol
 								|| true == currentDiagram.isDragAndDropMode()) {

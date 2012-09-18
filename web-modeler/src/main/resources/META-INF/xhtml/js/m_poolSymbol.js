@@ -42,7 +42,6 @@ define(
 				m_utils.inheritFields(this, symbol);
 				m_utils.inheritMethods(PoolSymbol.prototype, symbol);
 
-				this.type = m_constants.POOL_SYMBOL;
 				this.laneSymbols = [];
 				this.x = 0;
 				this.y = 0;
@@ -57,6 +56,7 @@ define(
 				 * objects, diagram, base classes).
 				 */
 				PoolSymbol.prototype.bind = function(diagram) {
+					this.type = m_constants.POOL_SYMBOL;
 					this.diagram = diagram;
 					this.orientation = diagram.flowOrientation;
 					this.borderRectangle = null;
@@ -542,6 +542,7 @@ define(
 				PoolSymbol.prototype.initializeEventHandling = function() {
 					// this.borderRectangle.auxiliaryProperties.callbackScope =
 					// this;
+
 				};
 
 				/**

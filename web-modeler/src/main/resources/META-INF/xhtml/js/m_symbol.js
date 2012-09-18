@@ -1048,10 +1048,12 @@ define(
 								.mousemove(Symbol_mouseMoveClosure);
 						this.primitives[element].hover(Symbol_hoverInClosure,
 								Symbol_hoverOutClosure);
-						this.primitives[element]
-								.drag(Symbol_dragClosure,
-										Symbol_dragStartClosure,
-										Symbol_dragStopClosure);
+						// Drag and Drop not allowed for Pools
+						if (this.type != m_constants.POOL_SYMBOL) {
+							this.primitives[element].drag(Symbol_dragClosure,
+									Symbol_dragStartClosure,
+									Symbol_dragStopClosure);
+						}
 					}
 				};
 
