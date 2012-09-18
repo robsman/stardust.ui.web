@@ -65,6 +65,7 @@ import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
+import org.eclipse.stardust.ui.web.modeler.edit.model.element.DataChangeCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.portal.JaxWSResource;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
@@ -2363,4 +2364,79 @@ public class ModelService
       d.addProperty("cardinality", "required");
       es.add("NewD", d);
    }*/
+   
+   /*
+   public static void testTD()
+   {
+      DataChangeCommandHandler handler = new DataChangeCommandHandler();      
+      
+      org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager wmm = new org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager();
+      try
+      {
+         wmm.load(new java.io.File("C:\\development\\New_configuration_TRUNK\\portal5\\Test.xpdl"));
+      }
+      catch (IOException e)
+      {
+         e.printStackTrace();
+      }
+      ModelType model = wmm.getModel();      
+      
+      String structId = "Composite3", structName = "Composite3";      
+      
+      JsonObject structJson = new JsonObject();
+      structJson.addProperty(ModelerConstants.ID_PROPERTY, structId);
+      structJson.addProperty(ModelerConstants.NAME_PROPERTY, structName);
+      JsonObject typeDeclarationJson = new JsonObject();
+      structJson.add(ModelerConstants.TYPE_DECLARATION_PROPERTY, typeDeclarationJson);
+      
+      JsonObject type = new JsonObject();
+      typeDeclarationJson.add("type", type);
+      type.addProperty("classifier", "SchemaType");
+      JsonObject schema = new JsonObject();
+      typeDeclarationJson.add("schema", schema);
+      JsonObject types = new JsonObject();
+      schema.add("types", types);
+      JsonObject typesType = new JsonObject();
+      types.add(structId, typesType);
+      typesType.addProperty("name", structId);
+      
+      JsonObject facets = new JsonObject();
+      typesType.add("facets", facets);
+      JsonObject facet = new JsonObject();
+      facet.addProperty("name", "abceee");
+      facet.addProperty("classifier", "enumeration");      
+      facets.add("facet", facet);
+
+      */
+      /*
+      JsonObject body = new JsonObject();
+      body.addProperty("classifier", "sequence");      
+      typesType.add("body", body);
+      JsonObject elements = new JsonObject();
+      body.add("elements", elements);
+      JsonObject element = new JsonObject();
+      element.addProperty("type", "xsd:string");
+      element.addProperty("name", "abceee");
+      element.addProperty("cardinality", "at least one");
+      elements.add("element", element);
+      element = new JsonObject();
+      element.addProperty("type", "xsd:int");
+      element.addProperty("name", "integer_test");
+      element.addProperty("cardinality", "at least one");
+      */
+      /*
+   
+      handler.createTypeDeclaration(model, structJson);
+      
+      try
+      {
+         wmm.save(URI.createFileURI(new java.io.File("C:\\development\\New_configuration_TRUNK\\portal5\\Test.xpdl").getAbsolutePath()));
+      }
+      catch (IOException e)
+      {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+   }
+   */
 }
