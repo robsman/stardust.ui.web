@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.common;
 
+import org.eclipse.stardust.engine.api.dto.DepartmentDetails;
 import org.eclipse.stardust.engine.api.model.DynamicParticipantInfo;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Organization;
@@ -17,10 +18,8 @@ import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Role;
 import org.eclipse.stardust.engine.api.model.RoleInfo;
-import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
-import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
@@ -58,31 +57,26 @@ public class ModelHelper
             {
                OrganizationInfo organizationInfo = (OrganizationInfo) modelParticipantInfo;
 
-               // Format: OrgName - DeptName
+               // Format: OrgName (? or period separated DeptNames)
                Organization organization = (Organization) ParticipantUtils.getParticipant(organizationInfo);
+               participantlabel.setType(ParticipantLabel.TYPE.ORGANIZATION);
+               participantlabel.setOrganizationName(I18nUtils.getParticipantName(organization)); 
                
-               participantlabel.setParticipantName(I18nUtils.getParticipantName(organization)); 
-               if (departmentInfo != null)
-               {
-                  participantlabel.setDepartmentName(departmentInfo.getName());
-               }
+               setDepartments(participantlabel, departmentInfo);
             }
             else if (modelParticipantInfo instanceof RoleInfo)
             {
                RoleInfo roleInfo = (RoleInfo) modelParticipantInfo;
                Role role = (Role) ModelUtils.getModelCache().getParticipant(roleInfo.getId(), Role.class);
 
-               // Format: RoleName (OrgName - DeptName)
-
-               participantlabel.setParticipantName(I18nUtils.getParticipantName(role));
+               // Format: RoleName (OrgName? or period separated DeptNames)
+               participantlabel.setType(ParticipantLabel.TYPE.ROLE);
+               participantlabel.setRoleName(I18nUtils.getParticipantName(role));
+               participantlabel.setOrganizationName(I18nUtils
+                     .getParticipantName(role.getAllSuperOrganizations().get(0)));
                if (departmentInfo != null && !Department.DEFAULT.equals(departmentInfo))
                {
-                  AdministrationService as = SessionContext.findSessionContext().getServiceFactory()
-                        .getAdministrationService();
-                  Department department = as.getDepartment(departmentInfo.getOID());
-                  String organizationName = I18nUtils.getParticipantName(department.getOrganization());
-                  participantlabel.setOrganizationName(organizationName);
-                  participantlabel.setDepartmentName(department.getName());
+                  setDepartments(participantlabel, departmentInfo);
                }
             }
          }
@@ -102,17 +96,46 @@ public class ModelHelper
    }
    
    /**
+    * @param participantLabel
+    * @param deptInfo
+    */
+   private static void setDepartments(ParticipantLabel participantLabel, DepartmentInfo deptInfo)
+   {
+      if (null != deptInfo && (deptInfo instanceof Department))
+      {
+         Department dept = (Department) deptInfo;
+         while (null != dept)
+         {
+            participantLabel.addDepartment(dept.getName());
+            dept = dept.getParentDepartment();
+         }
+      }
+   }   
+   
+   /**
     * @param departmentInfo
     * @return
     */
-   public static ParticipantLabel getDepartmentLabel(DepartmentInfo departmentInfo)
+   public static ParticipantLabel getDepartmentLabel(DepartmentInfo department)
    {
       ParticipantLabel participantlabel = new ParticipantLabel();
-      AdministrationService as = SessionContext.findSessionContext().getServiceFactory().getAdministrationService();
-      Department department = as.getDepartment(departmentInfo.getOID());
-      String organizationName = I18nUtils.getParticipantName(department.getOrganization());
-      participantlabel.setParticipantName(organizationName);
-      participantlabel.setDepartmentName(department.getName());
+      participantlabel.setType(ParticipantLabel.TYPE.ORGANIZATION);
+      
+      if (department instanceof Department)
+      {
+         DepartmentDetails deptDetail = (DepartmentDetails) department;
+         if (null != deptDetail.getOrganization() && deptDetail.getOrganization().isDepartmentScoped())
+         {
+            String organizationName = I18nUtils.getParticipantName(deptDetail.getOrganization());
+            participantlabel.setOrganizationName(organizationName);
+            setDepartments(participantlabel, deptDetail);
+         }
+      }
+      else
+      {
+         participantlabel.setParticipantName(department.getName());
+      }
+      
       return participantlabel;
    }
 }

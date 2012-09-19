@@ -10,6 +10,10 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.common;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils;
 
@@ -20,15 +24,21 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils;
 public class ParticipantLabel
 {
    public static final int TOTAL_PERMISSIBLE_LENGTH = 30;
+   private static final String DEFAULT_DEPARTMENT_IND = "?";
+   private static final String SEPARATOR = ".";
+   private static final String POSTFIX_OPEN = "(";
+   private static final String POSTFIX_CLOSE = ")";
 
-   private String participantName = "<Not Found>";
-   private String departmentName = null;
+   public TYPE type = TYPE.PARTICIPANT;
+   private List<String> departments = new ArrayList<String>();
    private String organizationName = null;
+   private String participantName = null;
+   private String roleName = null;
    private String wrappedLabel = null;
    private String label = null;
 
    enum TYPE {
-      PRT, PRT_DPT, PRT_ORG_DPT
+      ROLE, ORGANIZATION, PARTICIPANT
    }
 
    /**
@@ -61,58 +71,98 @@ public class ParticipantLabel
     */
    private void initialize()
    {
-      TYPE type = TYPE.PRT;
-
-      if (null != departmentName && null == organizationName)
-      {
-         type = TYPE.PRT_DPT;
-      }
-      else if (null != departmentName && null != organizationName)
-      {
-         type = TYPE.PRT_ORG_DPT;
-      }
-
       // get configured value if available
       int length = Parameters.instance().getInteger("Portal.WorklistPermissibleLength", TOTAL_PERMISSIBLE_LENGTH);
 
+      if (null == type)
+      {
+         type = TYPE.PARTICIPANT;
+      }
+
       switch (type)
       {
-      case PRT:
+      case ROLE:
+         label = roleName;
+         if (CollectionUtils.isEmpty(departments)) // default department
+         {
+            label += POSTFIX_OPEN + organizationName + DEFAULT_DEPARTMENT_IND + POSTFIX_CLOSE;
+            if (label.length() > TOTAL_PERMISSIBLE_LENGTH)
+            {
+               length = length / 2;
+               wrappedLabel = StringUtils.wrapString(roleName, length);
+               wrappedLabel += POSTFIX_OPEN + StringUtils.wrapString(organizationName, length) + DEFAULT_DEPARTMENT_IND
+                     + POSTFIX_CLOSE;
+            }
+            else
+            {
+               wrappedLabel = label;
+            }
+         }
+         else
+         {
+            label += POSTFIX_OPEN;
+
+            for (String dept : departments)
+            {
+               label += dept + SEPARATOR;
+            }
+            label = label.substring(0, label.length() - 1);
+            label += POSTFIX_CLOSE;
+
+            if (label.length() > TOTAL_PERMISSIBLE_LENGTH)
+            {
+               length = length / (departments.size() + 1);
+               wrappedLabel = StringUtils.wrapString(roleName, length);
+               appendDepartments(length);
+            }
+            else
+            {
+               wrappedLabel = label;
+            }
+         }
+         break;
+
+      case ORGANIZATION:
+         label = organizationName;
+         if (CollectionUtils.isEmpty(departments)) // default department
+         {
+            label += POSTFIX_OPEN + DEFAULT_DEPARTMENT_IND + POSTFIX_CLOSE;
+            if (label.length() > TOTAL_PERMISSIBLE_LENGTH)
+            {
+               wrappedLabel = StringUtils.wrapString(organizationName, length) + POSTFIX_OPEN + DEFAULT_DEPARTMENT_IND
+                     + POSTFIX_CLOSE;
+            }
+            else
+            {
+               wrappedLabel = label;
+            }
+         }
+         else
+         {
+            label += POSTFIX_OPEN;
+            for (String dept : departments)
+            {
+               label += dept + SEPARATOR;
+            }
+            label = label.substring(0, label.length() - 1);
+            label += POSTFIX_CLOSE;
+
+            if (label.length() > TOTAL_PERMISSIBLE_LENGTH)
+            {
+               length = length / (departments.size() + 1);
+               wrappedLabel = StringUtils.wrapString(organizationName, length);
+               appendDepartments(length);
+            }
+            else
+            {
+               wrappedLabel = label;
+            }
+         }
+         break;
+
+      case PARTICIPANT:
          label = participantName;
          wrappedLabel = StringUtils.wrapString(participantName, length);
-         break;
-
-      case PRT_DPT:
-         label = participantName;
-         label += " - " + departmentName;
-
-         if (label.length() > TOTAL_PERMISSIBLE_LENGTH)
-         {
-            length = length / 2;
-            wrappedLabel = StringUtils.wrapString(participantName, length);
-            wrappedLabel += " - " + StringUtils.wrapString(departmentName, length);
-         }
-         else
-         {
-            wrappedLabel = label;
-         }
-         break;
-
-      case PRT_ORG_DPT:
-         label = participantName;
-         label += " (" + organizationName + " - " + departmentName + ")";
-
-         if (label.length() > TOTAL_PERMISSIBLE_LENGTH)
-         {
-            length = length / 3;
-            wrappedLabel = StringUtils.wrapString(participantName, length);
-            wrappedLabel += " (" + StringUtils.wrapString(organizationName, length) + " - "
-                  + StringUtils.wrapString(departmentName, length) + ")";
-         }
-         else
-         {
-            wrappedLabel = label;
-         }
          break;
 
       default:
@@ -120,14 +170,26 @@ public class ParticipantLabel
       }
    }
 
-   public void setParticipantName(String participantName)
+   /**
+    * @param length
+    */
+   private void appendDepartments(int length)
    {
-      this.participantName = participantName;
+      wrappedLabel += POSTFIX_OPEN;
+      for (String dept : departments)
+      {
+         wrappedLabel += StringUtils.wrapString(dept, length) + SEPARATOR;
+      }
+      wrappedLabel = wrappedLabel.substring(0, wrappedLabel.length() - 1);
+      wrappedLabel += POSTFIX_CLOSE;
    }
 
-   public void setDepartmentName(String departmentName)
+   public void addDepartment(String department)
    {
-      this.departmentName = departmentName;
+      if (null != department)
+      {
+         this.departments.add(department);
+      }
    }
 
    public void setOrganizationName(String organizationName)
@@ -135,18 +197,18 @@ public class ParticipantLabel
       this.organizationName = organizationName;
    }
 
-   public String getParticipantName()
+   public void setRoleName(String roleName)
    {
-      return participantName;
+      this.roleName = roleName;
    }
 
-   public String getDepartmentName()
+   public void setType(TYPE type)
    {
-      return departmentName;
+      this.type = type;
    }
 
-   public String getOrganizationName()
+   public void setParticipantName(String participantName)
    {
-      return organizationName;
+      this.participantName = participantName;
    }
 }
