@@ -1,15 +1,13 @@
 <html>
 <head>
-<script src="../js/libs/angular/angular.js"></script>
-<script type="text/javascript" data-main="../js/processReportMain"
+<script type="text/javascript" data-main="../js/reportMain"
 	src="../js/libs/require/2.0.5/require.js"></script>
-<script src="../js/reportControllers.js"></script>
 <link href="../css/lightdust-report.css" rel="stylesheet"
 	type="text/css" />
 </head>
-<body>
-	<div id="reportHeading" class="title"></div>
-	<div id="processDescription"></div>
+<body ng-controller="ProcessReportCtrl" ng-cloak>
+	<div id="reportHeading" class="title">Process {{name}} [{{processId}}]</div>
+	<div id="processDescription">{{description}}</div>
 	<div class="heading">Annotations</div>
 	<table id="annotationsTable" class="dataTable" cellspacing="0" cellpadding="0">
 		<thead>
@@ -19,9 +17,19 @@
 				<th>Comment</th>
 			</tr>
 		</thead>
-		<tbody></tbody>
+		<tbody ng-repeat="annotation in annotations">
+			<tr>
+				<td>{{annotation.timestamp}}</td>
+				<td>{{annotation.userFirstName}} {{annotation.userLastName}}</td>
+				<td>{{annotation.content}}</td>
+			</tr>
+		</tbody>
 	</table>
 	<div class="heading">Activities</div>
-	<div id="activitiesList"></div>
+	<div id="activitiesList">
+		<ul ng-repeat="activity in activities">
+			<li>{{activity.name}}</li>
+		</ul>
+	</div>
 </body>
 </html>

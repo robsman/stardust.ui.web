@@ -1,11 +1,13 @@
+'use strict';
+
 /**
- * @author Omkar.Patil
+ * @author Robert Sauer
  */
 
 require.config({
 	paths : {
 		'jquery' : 'libs/jquery/jquery-1.7.2',
-		'raphael' : 'libs/raphael/2.0.1/raphael',
+		'angularjs' : 'libs/angular/angular-1.0.2',
 		'jquery-ui': 'libs/jquery/plugins/jquery-ui-1.8.19.custom.min',
 		'jquery.download': 'libs/jquery/plugins/download.jQuery',
 		'jquery.form': 'libs/jquery/plugins/jquery.form',
@@ -15,8 +17,9 @@ require.config({
 		'jquery.url': 'libs/jquery/plugins/jquery.url'
 	},
 	shim: {
-		'raphael': {
-			exports: "Raphael"
+		'angularjs': {
+			require: "jquery",
+			exports: "angular",
 		},
 		'jquery-ui': ['jquery'],
 		'jquery.download': ['jquery'],
@@ -28,26 +31,13 @@ require.config({
 	}
 });
 
-define([
-         "jquery",
-		 "extensions_jquery",
-		 "jquery-ui",
-		 "jquery.impromptu",
-		 "jquery.download",
-		 "jquery.form",
-		 "jquery.simplemodal",
-		 "jquery.url",
-		 "jquery.jstree",
-		 "m_utils",
-		 "m_communicationController",
-		 "extensions",
-		 "m_jsfViewManager",
-		 "m_urlUtils",
-		 "m_constants",
-		 "m_user",
-		 "m_modelReport"
-], function() {
-	require("m_modelReport").initialize(
-			jQuery.url.setUrl(window.location.search).param("modelId"));
+define('reportMain',[
+		 "reportApp",
+		 "jquery",
+		 "reportControllers"
+], function(reportApp, jQuery) {
+	jQuery(document).ready(function() {
+		reportApp.init();
+	});
 });
 

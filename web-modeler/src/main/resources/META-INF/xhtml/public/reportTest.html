@@ -1,24 +1,20 @@
+<!-- no ng-app as angular is explicitly bootstrapped -->
 <html>
-<!-- <html ng-app> -->
 <head>
-<script src="../js/libs/angular/angular.js"></script>
-<script type="text/javascript" data-main="../js/modelReportMain"
+<script type="text/javascript" data-main="../js/reportMain"
 	src="../js/libs/require/2.0.5/require.js"></script>
-<script src="../js/reportControllers.js"></script>
 <link href="../css/lightdust-report.css" rel="stylesheet" type="text/css" />
 </head>
-<!-- <body ng-controller="PhoneListCtrl">
-	<ul>
-		<li ng-repeat="phone in phones">{{phone.name}}
-			<p>{{phone.snippet}}</p></li>
-	</ul>
-</body> -->
-<body>
-<div id="reportHeading" class="title"></div>
-<div id="modelDescription"></div>
-<div class="heading">Processes</div>
-<div id="processesList"></div>
-<div class="heading">Applications</div>
-<div id="applicationsList"></div>
+<body ng-controller="ModelReportCtrl" ng-cloak>
+	<div id="reportHeading" class="title">Model {{name}}</div>
+	<div id="modelDescription">{{description}}</div>
+	<div class="heading">Processes</div>
+	<div id="processesList" ng-repeat="process in processes">
+		<a ng-href="../public/processReport.html?modelId={{id}}&processId={{process.id}}">{{process.name}}</a><br/>
+	</div>
+	<div class="heading">Applications</div>
+	<div id="applicationsList" ng-repeat="application in applications">
+		<a ng-href="../public/applicationReport.html?modelId={{modelId}}&applicationId={{application.id}}">{{application.name}}</a><br/>
+	</div>
 </body>
 </html>
