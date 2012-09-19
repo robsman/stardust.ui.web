@@ -15,7 +15,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -32,7 +31,6 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.dto.DepartmentDetails;
 import org.eclipse.stardust.engine.api.model.ModelParticipant;
 import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.Participant;
@@ -1133,19 +1131,7 @@ public class DelegationBean extends PopupUIComponentBean
          }
          else if (isReferencingDepartment())
          {
-            if (department instanceof Department)
-            {
-               DepartmentDetails deptDetail = (DepartmentDetails) department;
-               if (null != deptDetail.getOrganization() && deptDetail.getOrganization().isDepartmentScoped())
-               {
-                  StringBuilder departmentName = new StringBuilder();
-                  departmentName.append(I18nUtils.getParticipantName(deptDetail.getOrganization()));
-                  return departmentName.append(" - ").append(department.getName()).toString();
-              
-               }
-
-            }           
-            return department.getName();
+            return ModelHelper.getDepartmentLabel(department).getLabel();
          }
          return "";
       }
