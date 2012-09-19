@@ -1113,7 +1113,7 @@
             setups="production-withLiberation, development-withLiberation, build" />
          <property
             name="servlet[REST].init-param[CXF_RES_CONFIG_CLASS].param-value"
-            value="classpath:/META-INF/spring/*cxf-context.xml"
+            value="classpath:/META-INF/spring/cxf/*-context.xml"
             setups="production-withLiberation, development-withLiberation, build" />
 
          <property name="servlet[SPRING_REMOTING].servlet-name"
@@ -2218,7 +2218,7 @@
             value="com.infinity.bpm.rt.impl.api.ws.servlet.IppWsServlet"
             setups="production-withLiberation, development-withLiberation, build" />
 
-         <property name="servlet[REST].servlet-name" value="cxf-jaxrs-servlet"            setups="production-withLiberation, development-withLiberation, build" />         <property name="servlet[REST].servlet-class"            value="org.apache.cxf.transport.servlet.CXFServlet"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[REST].init-param[CXF_RES_CONFIG_CLASS].param-name"            value="config-location"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[REST].init-param[CXF_RES_CONFIG_CLASS].param-value"            value="classpath:/META-INF/spring/*cxf-context.xml"            setups="production-withLiberation, development-withLiberation, build" />
+         <property name="servlet[REST].servlet-name" value="cxf-jaxrs-servlet"            setups="production-withLiberation, development-withLiberation, build" />         <property name="servlet[REST].servlet-class"            value="org.apache.cxf.transport.servlet.CXFServlet"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[REST].init-param[CXF_RES_CONFIG_CLASS].param-name"            value="config-location"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[REST].init-param[CXF_RES_CONFIG_CLASS].param-value"            value="classpath:/META-INF/spring/cxf/*-context.xml"            setups="production-withLiberation, development-withLiberation, build" />
          <property
             name="servlet[IPP_LANDING_PAGE].servlet-name" value="ippLandingPage"
             appservers="was6, was7"/>
