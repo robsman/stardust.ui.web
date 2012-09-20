@@ -458,7 +458,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                .getActivity()
                .getDataMapping())
          {
-            if (dataMapping.getId().equals(
+            if (dataMapping.getData().getId().equals(
                   dataFlowConnection.getDataSymbol().getData().getId()))
             {
                updateDataMapping(dataFlowJson, dataMapping);

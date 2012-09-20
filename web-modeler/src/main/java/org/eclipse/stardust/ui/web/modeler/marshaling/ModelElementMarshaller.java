@@ -1326,7 +1326,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          for (DataMappingType dataMapping : activity.getDataMapping())
          {
             // Update the dataFlowJson for currentData symbol
-            if (dataMapping.getId().equals(data.getId()))
+            if (dataMapping.getData().getId().equals(data.getId()))
             {
                dataFlowJson = toDataMappingJson(dataMapping);
                // TODO - Currently API always assumes connectionJson.getSourceNode will
