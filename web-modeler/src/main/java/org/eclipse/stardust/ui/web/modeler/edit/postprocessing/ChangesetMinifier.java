@@ -7,6 +7,7 @@ import org.eclipse.emf.ecore.change.ChangeKind;
 import org.eclipse.emf.ecore.change.FeatureChange;
 import org.eclipse.emf.ecore.change.ListChange;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
 
@@ -22,67 +23,71 @@ public class ChangesetMinifier implements ChangePostprocessor
                .get(candidate);
          // count up to be sure not to miss any non-pure change
          int nPureContainerChanges = 0;
-         for (FeatureChange modification : modifications)
+         if (CollectionUtils.isNotEmpty(modifications))
          {
-            if (modification.getFeature() instanceof EReference)
+            for (FeatureChange modification : modifications)
             {
-               EReference eRef = (EReference) modification.getFeature();
-               if (eRef.isContainment())
+               if (modification.getFeature() instanceof EReference)
                {
-                  if (eRef.isMany())
+                  EReference eRef = (EReference) modification.getFeature();
+                  if (eRef.isContainment())
                   {
-                     if (modification.getListChanges().isEmpty())
+                     if (eRef.isMany())
                      {
-                        @SuppressWarnings("rawtypes")
-                        EList elements = (EList) candidate.eGet(eRef);
-                        if (change.getAddedElements().containsAll(elements))
+                        if (modification.getListChanges().isEmpty())
                         {
-                           ++nPureContainerChanges;
-                           continue;
-                        }
-                     }
-                     else
-                     {
-                        for (ListChange listChange : modification.getListChanges())
-                        {
-                           if (ChangeKind.REMOVE_LITERAL == listChange.getKind())
+                           @SuppressWarnings("rawtypes")
+                           EList elements = (EList) candidate.eGet(eRef);
+                           if (change.getAddedElements().containsAll(elements))
                            {
-                              // this actually means something was added
-                              @SuppressWarnings("rawtypes")
-                              EObject addedElement = (EObject) ((EList) candidate.eGet(eRef)).get(listChange.getIndex());
-                              if (change.getAddedElements().contains(addedElement))
-                              {
-                                 ++nPureContainerChanges;
-                                 continue;
-                              }
+                              ++nPureContainerChanges;
+                              continue;
                            }
-                           else if (ChangeKind.ADD_LITERAL == listChange.getKind())
+                        }
+                        else
+                        {
+                           for (ListChange listChange : modification.getListChanges())
                            {
-                              // this actually means something was removed
-                              if (change.getRemovedElements().containsAll(listChange.getReferenceValues()))
+                              if (ChangeKind.REMOVE_LITERAL == listChange.getKind())
                               {
-                                 ++nPureContainerChanges;
-                                 continue;
+                                 // this actually means something was added
+                                 @SuppressWarnings("rawtypes")
+                                 EObject addedElement = (EObject) ((EList) candidate.eGet(eRef)).get(listChange.getIndex());
+                                 if (change.getAddedElements().contains(addedElement))
+                                 {
+                                    ++nPureContainerChanges;
+                                    continue;
+                                 }
+                              }
+                              else if (ChangeKind.ADD_LITERAL == listChange.getKind())
+                              {
+                                 // this actually means something was removed
+                                 if (change.getRemovedElements().containsAll(
+                                       listChange.getReferenceValues()))
+                                 {
+                                    ++nPureContainerChanges;
+                                    continue;
+                                 }
                               }
                            }
                         }
                      }
                   }
+                  else
+                  {
+                     // other than modified containment reference, exit quickly
+                     break;
+                  }
                }
                else
                {
-                  // other than modified containment reference, exit quickly
+                  // other than modified reference, exit quickly
                   break;
                }
             }
-            else
-            {
-               // other than modified reference, exit quickly
-               break;
-            }
          }
 
-         if (nPureContainerChanges == modifications.size())
+         if (CollectionUtils.isEmpty(modifications) || nPureContainerChanges == modifications.size())
          {
             change.markUnmodified(candidate);
          }
