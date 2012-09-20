@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
 
-import org.eclipse.stardust.common.Pair;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
@@ -65,7 +64,7 @@ public class CommandHandlingMediator
    }
 
    public Modification handleCommand(EditingSession editingSession, String commandId,
-         List<Pair<EObject, JsonObject>> changes)
+         List<ChangeRequest> changes)
    {
       Modification change = null;
       try
@@ -77,19 +76,19 @@ public class CommandHandlingMediator
             editingSession.beginEdit();
          }
 
-         for (Pair<EObject, JsonObject> modification : changes)
+         for (ChangeRequest modification : changes)
          {
             ICommandHandlerInvoker invoker = null;
             if (null != commandHandlerRegistry)
             {
                invoker = commandHandlerRegistry.findCommandHandler(commandId,
-                     modification.getFirst());
+                     modification.getModel(), modification.getContextElement());
             }
 
             if (null != invoker)
             {
-               invoker.handleCommand(commandId, modification.getFirst(),
-                     modification.getSecond());
+               invoker.handleCommand(commandId, modification.getModel(),
+                     modification.getContextElement(), modification.getChangeDescriptor());
             }
             else
             {
@@ -112,5 +111,38 @@ public class CommandHandlingMediator
       }
 
       return change;
+   }
+
+   public static class ChangeRequest
+   {
+      private final EObject model;
+
+      private final EObject contextElement;
+
+      private final JsonObject changeDescriptor;
+
+      public ChangeRequest(EObject model, EObject contextElement,
+            JsonObject changeDescriptor)
+      {
+         this.model = model;
+         this.contextElement = contextElement;
+         this.changeDescriptor = changeDescriptor;
+      }
+
+      public EObject getModel()
+      {
+         return model;
+      }
+
+      public EObject getContextElement()
+      {
+         return contextElement;
+      }
+
+      public JsonObject getChangeDescriptor()
+      {
+         return changeDescriptor;
+      }
+
    }
 }

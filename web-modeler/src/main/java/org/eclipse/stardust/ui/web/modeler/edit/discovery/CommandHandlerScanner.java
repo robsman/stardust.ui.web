@@ -72,9 +72,11 @@ public class CommandHandlerScanner implements BeanFactoryPostProcessor
          {
             // verify arguments
             // TODO parameter annotations instead of positions?
-            if ((2 == candidateMethod.getParameterTypes().length)
-                  && EObject.class.isAssignableFrom(candidateMethod.getParameterTypes()[0])
-                  && (JsonObject.class == candidateMethod.getParameterTypes()[1]))
+            if (((2 == candidateMethod.getParameterTypes().length)
+                  && EObject.class.isAssignableFrom(candidateMethod.getParameterTypes()[0]) && (JsonObject.class == candidateMethod.getParameterTypes()[1]))
+                  || ((3 == candidateMethod.getParameterTypes().length)
+                        && EObject.class.isAssignableFrom(candidateMethod.getParameterTypes()[0])
+                        && EObject.class.isAssignableFrom(candidateMethod.getParameterTypes()[1]) && (JsonObject.class == candidateMethod.getParameterTypes()[2])))
             {
                registry.registerCommandHandler(onCmdAnnotation.commandId(), bf, beanName,
                      candidateMethod);

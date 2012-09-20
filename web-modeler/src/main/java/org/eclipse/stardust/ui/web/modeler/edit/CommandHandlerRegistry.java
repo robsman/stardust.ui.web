@@ -22,15 +22,15 @@ public class CommandHandlerRegistry
 
    private final Map<String, List<HandlerRegistration>> handlerRegistry = newHashMap();
 
-   public <T extends EObject> ICommandHandlerInvoker findCommandHandler(String commandId,
-         T targetElement)
+   public <M extends EObject, T extends EObject> ICommandHandlerInvoker findCommandHandler(
+         String commandId, M model, T contextElement)
    {
       List<HandlerRegistration> handlers = handlerRegistry.get(commandId);
 
       // TODO only invoke most specific handler?
       for (final HandlerRegistration handler : handlers)
       {
-         if (handler.isCompatibleWith(targetElement))
+         if (handler.isCompatibleWith(model, contextElement))
          {
             return handler;
          }
@@ -54,7 +54,7 @@ public class CommandHandlerRegistry
 
    public static interface ICommandHandlerInvoker
    {
-      void handleCommand(String commandId, EObject targetElement, JsonObject request);
+      void handleCommand(String commandId, EObject model, EObject targetElement, JsonObject request);
    }
 
    protected static class HandlerRegistration implements ICommandHandlerInvoker
@@ -73,20 +73,23 @@ public class CommandHandlerRegistry
          this.handlerMethod = handlerMethod;
       }
 
-      <T extends EObject> boolean isCompatibleWith(T targetElement)
+      <M extends EObject, T extends EObject> boolean isCompatibleWith(M model,
+            T contextElement)
       {
-         return isCompatibleWith(targetElement.getClass());
+         return isCompatibleWith(model.getClass(), contextElement.getClass());
       }
 
-      boolean isCompatibleWith(Class<? > targetType)
+      <M extends EObject, T extends EObject> boolean isCompatibleWith(Class<M> modelType,
+            Class<T> contextElementType)
       {
          // TODO parameter annotations instead of positions?
-         return (1 <= handlerMethod.getParameterTypes().length)
-               && handlerMethod.getParameterTypes()[0].isAssignableFrom(targetType);
+         return ((2 == handlerMethod.getParameterTypes().length) && handlerMethod.getParameterTypes()[0].isAssignableFrom(contextElementType))
+               || ((3 == handlerMethod.getParameterTypes().length)
+                     && handlerMethod.getParameterTypes()[0].isAssignableFrom(modelType) && handlerMethod.getParameterTypes()[1].isAssignableFrom(contextElementType));
       }
 
       @Override
-      public void handleCommand(String commandId, EObject targetElement,
+      public void handleCommand(String commandId, EObject model, EObject contextElement,
             JsonObject request)
       {
          Object handlerBean = beanFactory.getBean(beanName);
@@ -97,8 +100,22 @@ public class CommandHandlerRegistry
                trace.debug("About to invoke handler for '" + commandId + "' command: "
                      + handlerBean + "#" + handlerMethod.getName() + "]");
             }
-            // TODO parameter annotations instead of positions?
-            handlerMethod.invoke(handlerBean, targetElement, request);
+
+            if (3 == handlerMethod.getParameterTypes().length)
+            {
+               // TODO parameter annotations instead of positions?
+               handlerMethod.invoke(handlerBean, model, contextElement, request);
+            }
+            else if (2 == handlerMethod.getParameterTypes().length)
+            {
+               // TODO parameter annotations instead of positions?
+               handlerMethod.invoke(handlerBean, contextElement, request);
+            }
+            else
+            {
+               throw new IllegalArgumentException("Incompatible command handler emthod: "
+                     + handlerMethod);
+            }
          }
          catch (IllegalArgumentException iae)
          {

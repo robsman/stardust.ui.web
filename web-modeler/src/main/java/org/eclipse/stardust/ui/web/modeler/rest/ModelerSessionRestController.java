@@ -27,7 +27,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import org.eclipse.stardust.common.Pair;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
@@ -282,7 +281,7 @@ public class ModelerSessionRestController
 
    private Response applyModelElementChange(String commandId, ModelType model, CommandJto commandJto)
    {
-      List<Pair<EObject, JsonObject>> changeDescriptors = newArrayList();
+      List<CommandHandlingMediator.ChangeRequest> changeDescriptors = newArrayList();
 
       // pre-process change descriptions
       try
@@ -291,8 +290,8 @@ public class ModelerSessionRestController
          {
             EObject targetElement = findTargetElement(model, changeDescrJto);
 
-            changeDescriptors.add(new Pair<EObject, JsonObject>(targetElement,
-                  changeDescrJto.changes));
+            changeDescriptors.add(new CommandHandlingMediator.ChangeRequest(model,
+                  targetElement, changeDescrJto.changes));
          }
       }
       catch (WebApplicationException wae)
