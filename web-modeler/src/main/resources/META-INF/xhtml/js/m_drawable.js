@@ -280,8 +280,14 @@ define(
 				Drawable.prototype.showFlyOutMenu = function() {
 					if (this.diagram.currentFlyOutSymbol) {
 						return;
+					} else if (this.type
+							&& (this.type.toLowerCase().indexOf(
+									m_constants.POOL_SYMBOL.toLowerCase()) > 0 || this.type == m_constants.SWIMLANE_SYMBOL)) {
+						// do nothing
+					} else {
+						this.diagram.currentFlyOutSymbol = this;
 					}
-					this.diagram.currentFlyOutSymbol = this;
+
 					this.flyOutMenuBackground.show();
 					this.flyOutMenuBackground.animate({
 						"fill-opacity" : FLY_OUT_MENU_END_OPACITY
