@@ -1061,10 +1061,10 @@ define(
 							// TODO Can we guarantee that Raphael objects always
 							// get their events first
 
-							if (this.currentConnection.toAnchorPoint.symbol == null) {
-								/*m_utils
-										.debug("this.currentConnection.toAnchorPoint.symbol == null");*/
-
+							if (this.currentConnection.toAnchorPoint.symbol == null
+									|| (this.currentConnection.toAnchorPoint.symbol.type == m_constants.SWIMLANE_SYMBOL)) {
+								// when connection moves with toAnchorPoint.symbol as
+								// swimlane , move is allowed on connection
 								this.currentConnection.toAnchorPoint.moveTo(x
 										* this.zoomFactor, y * this.zoomFactor);
 								this.currentConnection.reroute();

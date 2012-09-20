@@ -1503,7 +1503,10 @@ define(
 						}
 					}
 					if (toAnchorPoint != null) {
-						if (toAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
+						if (toAnchorPoint.symbol.type == m_constants.SWIMLANE_SYMBOL
+								|| toAnchorPoint.symbol.type == m_constants.POOL_SYMBOL) {
+							return false;
+						}else if (toAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
 							// Check for IN connections on Start Event
 							if (toAnchorPoint.symbol.modelElement.eventType == m_constants.START_EVENT_TYPE) {
 								m_messageDisplay
