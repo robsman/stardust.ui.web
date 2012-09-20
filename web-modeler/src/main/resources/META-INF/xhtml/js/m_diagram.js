@@ -94,6 +94,7 @@ define(
 				this.currentSelection = [];
 				this.currentConnection = null;
 				this.newSymbol = null;
+				this.currentFlyOutSymbol = null;
 				// Caches the last newly created Symbol for server callbacks
 				this.newSymbol = null;
 				this.animationDelay = 0;

@@ -278,6 +278,10 @@ define(
 				 *
 				 */
 				Drawable.prototype.showFlyOutMenu = function() {
+					if (this.diagram.currentFlyOutSymbol) {
+						return;
+					}
+					this.diagram.currentFlyOutSymbol = this;
 					this.flyOutMenuBackground.show();
 					this.flyOutMenuBackground.animate({
 						"fill-opacity" : FLY_OUT_MENU_END_OPACITY
@@ -361,6 +365,11 @@ define(
 
 						++n;
 					}
+					if (this.diagram.currentFlyOutSymbol
+							&& this.diagram.currentFlyOutSymbol.oid == this.oid) {
+						this.diagram.currentFlyOutSymbol = null;
+					}
+
 				};
 
 				/**
@@ -487,6 +496,10 @@ define(
 						this.bottomFlyOutMenuItems[n].remove();
 
 						++n;
+					}
+					if (this.diagram.currentFlyOutSymbol
+							&& this.diagram.currentFlyOutSymbol.oid == this.oid) {
+						this.diagram.currentFlyOutSymbol = null;
 					}
 				};
 
@@ -648,6 +661,13 @@ define(
 					"fill" : "white",
 					"fill-opacity" : 1
 				});
+				if (this.auxiliaryProperties.callbackScope.type != null) {
+					// check if mouse cursor is outside proximity margin
+					if (this.auxiliaryProperties.callbackScope
+							.validateProximity(event)) {
+						return;
+					}
+				}
 				this.auxiliaryProperties.callbackScope.hideFlyOutMenu(event);
 			}
 

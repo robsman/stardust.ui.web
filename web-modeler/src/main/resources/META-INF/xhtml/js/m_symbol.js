@@ -995,12 +995,63 @@ define(
 				/**
 				 *
 				 */
-				Symbol.prototype.proximityHoverOut = function() {
+				Symbol.prototype.proximityHoverOut = function(event) {
 					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
-						this.hideFlyOutMenu();
+						// Hide flyout menu if mouse cursor is outside proximity of symbol
+						if (!this.validateProximity(event)) {
+							this.hideFlyOutMenu();
+						}
+
 					} else {
 						this.hideAnchorPoints();
 					}
+				};
+
+				/**
+				 * Checks if mouse cursor is inside proximity range of symbol
+				 */
+				Symbol.prototype.validateProximity = function(event) {
+					try {
+						// while in connection mode/or symbol is Pool/swimlane ,
+						// flyout menu can disappear
+						if ((this.diagram.mode == this.diagram.CONNECTION_MODE || this.diagram.currentConnection != null)
+								|| this.type == null
+								|| (this.type && (this.type == m_constants.POOL_SYMBOL || this.type == m_constants.SWIMLANE_SYMBOL))) {
+							return false;
+						}
+
+						var scrollPos = m_modelerUtils
+								.getModelerScrollPosition();
+						var xPos = event.pageX - this.diagram.X_OFFSET
+								+ scrollPos.left;
+						var yPos = event.pageY - this.diagram.Y_OFFSET
+								+ scrollPos.top;
+
+						var proximityMargin = m_constants.PROXIMITY_SENSOR_MARGIN;
+						// symbol x co-ord , width and proximity width will give
+						// the right proximity margin
+						var rightProximityMargin = this.x + this.width
+								+ proximityMargin + scrollPos.left;
+						// symbol x co-ord minus proximity width will give the
+						// left proximity margin
+						var leftProximityMargin = this.x - proximityMargin;
+						// symbol y co-ord minus proximity width will
+						// give the top proximity margin
+						var topProximityMargin = this.y - proximityMargin;
+						// symbol y co-ord , height,proximity width will give
+						// the bottom proximity margin
+						var bottomProximityMargin = this.y + this.height
+								+ proximityMargin;
+
+						if ((xPos <= rightProximityMargin && xPos >= leftProximityMargin)
+								&& (yPos <= bottomProximityMargin && yPos >= topProximityMargin)) {
+							return true;
+						}
+
+					} catch (e) {
+						return false;
+					}
+					return false;
 				};
 
 				/**
@@ -1471,8 +1522,13 @@ define(
 			/**
 			 *
 			 */
-			function Symbol_hoverOutFlyOutMenuClosure() {
-				this.auxiliaryProperties.callbackScope.hideFlyOutMenu();
+			function Symbol_hoverOutFlyOutMenuClosure(event) {
+				// Hover out(hide flyout menu) if mouse cursor is outside
+				// proximity of symbol
+				if (!this.auxiliaryProperties.callbackScope
+						.validateProximity(event)) {
+					this.auxiliaryProperties.callbackScope.hideFlyOutMenu();
+				}
 			}
 
 			/**
