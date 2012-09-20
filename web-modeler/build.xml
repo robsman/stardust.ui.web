@@ -176,7 +176,7 @@
       <exec dir="." executable="${m2.home}/bin/${mvn.exe}" failonerror="true">
          <arg value="install:install-file"/>
          <arg value="-Dfile=${web.modeler.jar}"/>
-         <arg value="-DpomFile=${build.lib}/carnot-base.pom"/>
+         <arg value="-DpomFile=${build.lib}/${artifactId}.pom"/>
          <arg value="-DlocalRepositoryPath=${maven.localRepository}"/>
       </exec>
    </target>
