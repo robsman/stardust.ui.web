@@ -1675,7 +1675,12 @@ public class ModelService
 
    public ModelBinding findModelBinding(String modelId)
    {
-      return currentSession().modelRepository().getModelBinding(findModel(modelId));
+      return findModelBinding(findModel(modelId));
+   }
+
+   public ModelBinding findModelBinding(EObject model)
+   {
+      return currentSession().modelRepository().getModelBinding(model);
    }
 
    /**

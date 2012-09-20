@@ -254,14 +254,23 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private void updateActivity(ActivityType activity, JsonObject activityJson)
    {
+      // detect gateways early to be able to fix accidental ID changes
+      final boolean isGateway = activity.getId().toLowerCase().startsWith("gateway");
+
       updateIdentifiableElement(activity, activityJson);
 
       mapDeclaredProperties(activity, activityJson, propertiesMap.get(ActivityType.class));
       storeAttributes(activity, activityJson);
       storeDescription(activity, activityJson);
 
-      if (activity.getId().toLowerCase().startsWith("gateway"))
+      if (isGateway)
       {
+         if ( !activity.getId().toLowerCase().startsWith("gateway"))
+         {
+            // fix accidental ID change
+            activity.setId("gateway_" + activity.getId());
+         }
+
          if (activityJson.has(ModelerConstants.GATEWAY_TYPE_PROPERTY))
          {
             if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
@@ -815,6 +824,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    private void updateGatewaySymbol(ActivitySymbolType activitySymbol,
          JsonObject gatewaySymbolJson)
    {
+      updateNodeSymbol(activitySymbol, gatewaySymbolJson);
+
       mapDeclaredProperties(activitySymbol, gatewaySymbolJson,
             propertiesMap.get(ActivitySymbolType.class));
 
