@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -25,7 +25,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function GenericApplicationView() {
 				// Inheritance
@@ -38,33 +38,33 @@ define(
 				this.unsupportedMessagePanel = jQuery("#unsupportedMessagePanel");
 
 				/**
-				 * 
+				 *
 				 */
 				GenericApplicationView.prototype.initialize = function(
 						application) {
 					this.initializeModelElementView();
 					this.initializeModelElement(application);
 					this.application = application;
-					
+
 					m_utils.debug("===> Application");
 					m_utils.debug(this.application);
-					
+
 					var extension = m_extensionManager.findExtensions(
 							"applicationType", "id", this.application.applicationType)[0];
-					
+
 					this.unsupportedMessagePanel.empty();
 					this.unsupportedMessagePanel.append("Display and editing of the Application Type <b>" + extension.readableName + "</b> is not yet supported for the Browser Modeler. Please use the Eclipse Modeler to configure this Application. However, configured Applications of this type can be used for modeling.");
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GenericApplicationView.prototype.toString = function() {
 					return "Lightdust.GenericApplicationView";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GenericApplicationView.prototype.validate = function() {
 					this.clearErrorMessages();
@@ -89,7 +89,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GenericApplicationView.prototype.processCommand = function(
 						command) {
@@ -101,10 +101,10 @@ define(
 					if (null != object && null != object.changes
 							&& null != object.changes.modified
 							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].oid == this.application.oid) {
+							&& object.changes.modified[0].uuid == this.application.uuid) {
 
 						m_utils.inheritFields(this.application, object.changes.modified[0]);
-						
+
 						this.initialize(this.application);
 					}
 				};

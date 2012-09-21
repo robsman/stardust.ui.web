@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -29,7 +29,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function MessageTransformationApplicationView() {
 				// Inheritance
@@ -320,7 +320,7 @@ define(
 				});
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.initialize = function(
 						application) {
@@ -356,7 +356,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.convertFromMappingsXml = function(
 						xml) {
@@ -391,7 +391,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.convertToMappingsXml = function() {
 					var xml = "&lt;?xml version=&quot;1.0&quot; encoding=&quot;ASCII&quot;?&gt;&#13;&#10;&lt;mapping:TransformationProperty xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:mapping=&quot;java://com.infinity.bpm.messaging.model&quot; xsi:schemaLocation=&quot;java://com.infinity.bpm.messaging.model java://com.infinity.bpm.messaging.model.mapping.MappingPackage&quot;&gt;&#13;&#10;";
@@ -411,7 +411,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.resume = function() {
 					this.inputTable.tableScroll({
@@ -466,7 +466,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.addInputAccessPoint = function(
 						dataName, dataStructure) {
@@ -479,7 +479,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.addInputData = function(
 						accessPoint) {
@@ -499,7 +499,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.addOutputAccessPoint = function(
 						dataName, dataStructure) {
@@ -512,7 +512,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.addOutputData = function(
 						accessPoint) {
@@ -532,7 +532,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.initializeInputTableRowsRecursively = function(
 						accessPoint, element, parentPath) {
@@ -562,7 +562,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.initializeOutputTableRowsRecursively = function(
 						accessPoint, element, parentPath) {
@@ -598,7 +598,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.populateTableRows = function(
 						tableBody, tableRows, source) {
@@ -718,7 +718,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.highlightSource = function(
 						tableRow) {
@@ -741,7 +741,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.highlightTarget = function(
 						tableRow) {
@@ -764,7 +764,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.filterSource = function(
 						filter) {
@@ -796,7 +796,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.filterTarget = function(
 						filter) {
@@ -814,7 +814,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.filterFieldsWithNoMapping = function() {
 					jQuery("table#targetTable tbody tr").addClass("invisible");
@@ -825,7 +825,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.filterFieldsWithMapping = function() {
 					jQuery("table#targetTable tbody tr").addClass("invisible");
@@ -836,7 +836,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.filterHighlightedSourceFields = function() {
 					m_dialog
@@ -849,7 +849,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.filterHighlightedTargetFields = function() {
 					m_dialog
@@ -862,7 +862,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.showAllSourceFields = function() {
 					m_dialog
@@ -873,7 +873,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.showAllTargetFields = function() {
 					m_dialog
@@ -884,7 +884,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.validate = function() {
 					this.clearErrorMessages();
@@ -908,7 +908,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.determineTransformationChanges = function() {
 					var transformationProperty = "&lt;?xml version=&quot;1.0&quot; encoding=&quot;ASCII&quot;?&gt;&#13;&#10;&lt;mapping:TransformationProperty xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:mapping=&quot;java://com.infinity.bpm.messaging.model&quot; xsi:schemaLocation=&quot;java://com.infinity.bpm.messaging.model java://com.infinity.bpm.messaging.model.mapping.MappingPackage&quot;&gt;&#13;&#10;";
@@ -934,7 +934,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.processCommand = function(
 						command) {
@@ -951,7 +951,7 @@ define(
 							&& null != object.changes
 							&& null != object.changes.modified
 							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].oid == this.application.oid) {
+							&& object.changes.modified[0].uuid == this.application.uuid) {
 						this.initialize(this.application);
 					}
 				};

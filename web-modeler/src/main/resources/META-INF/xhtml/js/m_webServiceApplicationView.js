@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -28,7 +28,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function WebServiceApplicationView() {
 				var view = m_modelElementView.create();
@@ -38,7 +38,7 @@ define(
 						view);
 
 				/**
-				 * 
+				 *
 				 */
 				WebServiceApplicationView.prototype.initialize = function(
 						application) {
@@ -212,14 +212,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				WebServiceApplicationView.prototype.toString = function() {
 					return "Lightdust.WebServiceApplicationView";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				WebServiceApplicationView.prototype.validate = function() {
 					this.clearErrorMessages();
@@ -297,7 +297,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				WebServiceApplicationView.prototype.setWebServiceStructure = function(
 						webServiceStructure) {
@@ -326,7 +326,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				WebServiceApplicationView.prototype.setWebService = function(
 						service) {
@@ -351,7 +351,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				WebServiceApplicationView.prototype.setPort = function(portName) {
 					this.portSelect.val(portName);
@@ -381,7 +381,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				WebServiceApplicationView.prototype.setOperation = function(
 						operationName) {
@@ -412,7 +412,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				WebServiceApplicationView.prototype.setAddressing = function(
 						wsAdressing, implementation) {
@@ -434,7 +434,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				WebServiceApplicationView.prototype.setImplementation = function(
 						implementation) {
@@ -452,7 +452,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				WebServiceApplicationView.prototype.setAuthentication = function(
 						authentication, mechanism, variant) {
@@ -474,7 +474,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				WebServiceApplicationView.prototype.setMechanism = function(
 						mechanism, variant) {
@@ -498,7 +498,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				WebServiceApplicationView.prototype.setVariant = function(
 						variant) {
@@ -520,13 +520,13 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				WebServiceApplicationView.prototype.processCommand = function(
 						command) {
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
 						this.initialize(this.application);
-						
+
 						return;
 					}
 
@@ -537,7 +537,7 @@ define(
 							&& null != object.changes
 							&& null != object.changes.modified
 							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].oid == this.application.oid) {
+							&& object.changes.modified[0].uuid == this.application.uuid) {
 						this.initialize(this.application);
 					}
 				};

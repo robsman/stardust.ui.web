@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -16,7 +16,7 @@ define(
 			return {
 				initialize : function(fullId) {
 					var view = new CamelApplicationView();
-					
+
 					// TODO Unregister!
 					// In Initializer?
 					m_commandsController.registerCommandHandler(view);
@@ -26,7 +26,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function CamelApplicationView() {
 				var view = m_modelElementView.create();
@@ -48,16 +48,16 @@ define(
 						this.additionalBeanSpecificationTextarea, "carnot:engine:camel::additionalSpringBeanDefinitions");
 
 				/**
-				 * 
+				 *
 				 */
 				CamelApplicationView.prototype.initialize = function(
 						application) {
 					this.initializeModelElementView();
-					
+
 					this.application = application;
 
 					this.initializeModelElement(application);
-					
+
 					if (this.application.attributes["carnot:engine:camel::camelContextId"] == null) {
 						this.application.attributes["carnot:engine:camel::camelContextId"] = "Default";
 					}
@@ -71,14 +71,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CamelApplicationView.prototype.toString = function() {
 					return "Lightdust.CamelApplicationView";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CamelApplicationView.prototype.validate = function() {
 					this.clearErrorMessages();
@@ -110,13 +110,13 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CamelApplicationView.prototype.processCommand = function(
 						command) {
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
 						this.initialize(this.application);
-						
+
 						return;
 					}
 
@@ -131,10 +131,10 @@ define(
 					if (null != object && null != object.changes
 							&& null != object.changes.modified
 							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].oid == this.application.oid) {
+							&& object.changes.modified[0].uuid == this.application.uuid) {
 
 						m_utils.inheritFields(this.application, object.changes.modified[0]);
-						
+
 						this.initialize(this.application);
 					}
 				};
