@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
@@ -33,8 +35,15 @@ public class SpecialWorklistCacheManager implements InitializingBean
 {
    public static final String BEAN_ID = "ippSpecialWorklistCacheManager";
    public static final Logger trace = LogManager.getLogger(SpecialWorklistCacheManager.class);
+   
    public static final String ALL_ACTVITIES = "allActivities";
    public static final String CRITICAL_ACTVITIES = "criticalActivities";
+   private static final List<String> WORKLIST_IDS = new ArrayList<String>(2);
+   static
+   {
+      WORKLIST_IDS.add(ALL_ACTVITIES);
+      WORKLIST_IDS.add(CRITICAL_ACTVITIES);
+   }
 
    private Map<String, ProcessWorklistCacheEntry> worklists;
    private CriticalityCategory definedHighCriticality;
@@ -86,6 +95,11 @@ public class SpecialWorklistCacheManager implements InitializingBean
    public void setWorklistCount(String id, long totalCount)
    {
       worklists.get(id).setCount(totalCount);
+   }
+   
+   public static boolean isSpecialWorklist(String worklistId)
+   {
+      return WORKLIST_IDS.contains(worklistId);
    }
    
    /**

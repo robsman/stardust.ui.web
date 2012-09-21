@@ -168,7 +168,7 @@ public class WorklistTableBean extends UIComponentBean
 
    private ParticipantInfo participantInfo;
 
-   private String id;
+   private String worklistId;
 
    private boolean filtersAddedToQuery;
    
@@ -372,8 +372,11 @@ public class WorklistTableBean extends UIComponentBean
          
          if (!filtersAddedToQuery)
          {
-            ProcessWorklistCacheManager.getInstance().setWorklistCount(id, queryResult.getTotalCount());
-            SpecialWorklistCacheManager.getInstance().setWorklistCount(id, queryResult.getTotalCount());
+            ProcessWorklistCacheManager.getInstance().setWorklistCount(worklistId, queryResult.getTotalCount());
+            if (SpecialWorklistCacheManager.isSpecialWorklist(worklistId))
+            {
+               SpecialWorklistCacheManager.getInstance().setWorklistCount(worklistId, queryResult.getTotalCount());
+            }
          }
       }
       
@@ -401,16 +404,22 @@ public class WorklistTableBean extends UIComponentBean
       query = (Query) getParamFromView(Query.class.getName());
       participantInfo = (ParticipantInfo) getParamFromView("participantInfo");
       processDefintion = (ProcessDefinition) getParamFromView("processDefinition");
-      
-      if (null != participantInfo)
-      {
-         preferenceId = UserPreferencesEntries.P_WORKLIST_PART_CONF;
-      }
-      else if (null != processDefintion)
+
+      if (null != processDefintion)
       {
          preferenceId = UserPreferencesEntries.P_WORKLIST_PROC_CONF;
       }
-      id = (String) getParamFromView("id");
+      else
+      {
+         preferenceId = UserPreferencesEntries.P_WORKLIST_PART_CONF;
+      }
+      
+      worklistId = (String) getParamFromView("id");
+
+      if (StringUtils.isEmpty(worklistId))
+      {
+         worklistId = UserPreferencesEntries.V_WORKLIST;
+      }
    }
    
    /**
@@ -586,15 +595,12 @@ public class WorklistTableBean extends UIComponentBean
       List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(worklistTable, allDescriptors);
       standardColumns.addAll(descriptorColumns);
 
-      
-      String preferenceId = (id != null) ? id : UserPreferencesEntries.V_WORKLIST;
-
       IColumnModel worklistColumnModel = new DefaultColumnModel(standardColumns, fixedColumns1,
-            fixedColumns2, UserPreferencesEntries.M_WORKFLOW, preferenceId, new ColumnModelListener());
+            fixedColumns2, UserPreferencesEntries.M_WORKFLOW, worklistId, new ColumnModelListener());
       DescriptorColumnUtils.setDescriptorColumnFilters(worklistColumnModel, allDescriptors);
       
-      setConfiguration(worklistColumnModel);
-      
+      setConfiguration(worklistColumnModel);   
+ 
       worklistColSelecpopup = new TableColumnSelectorPopup(worklistColumnModel);
       worklistColSelecpopup.setUpdatePreferences(false);
       worklistColSelecpopup.setCallbackHandler(new org.eclipse.stardust.ui.web.common.ICallbackHandler()
@@ -655,7 +661,6 @@ public class WorklistTableBean extends UIComponentBean
          worklistColumnModel.setLock(lock);
       }
    }
-   
    
    /**
     * @return
