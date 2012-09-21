@@ -1521,7 +1521,7 @@ define(
 				Diagram.prototype.clearCurrentSelection = function() {
 					this.deselectCurrentSelection();
 					this.currentSelection = [];
-
+					this.currentFlyOutSymbol = null;
 					this.showProcessPropertiesPanel();
 				};
 

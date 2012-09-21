@@ -1014,7 +1014,7 @@ define(
 					try {
 						// while in connection mode/or symbol is Pool/swimlane ,
 						// flyout menu can disappear
-						if ((this.diagram.mode == this.diagram.CONNECTION_MODE || this.diagram.currentConnection != null)
+						if ((this.diagram.mode == this.diagram.CONNECTION_MODE || this.diagram.currentConnection != null || this.diagram.currentSelection.length > 0)
 								|| this.type == null
 								|| (this.type && (this.type.toLowerCase()
 										.indexOf(
@@ -1949,20 +1949,8 @@ define(
 						} else {
 							var newConnection = null;
 
-							if (this.direction == m_constants.TO_ANCHOR_POINT) {
-								newConnection = this.symbol.diagram
-										.createConnection(this.dragConnection.fromAnchorPoint);
-								newConnection.setSecondAnchorPoint(anchorPoint,
-										true);
-							} else {
-								newConnection = this.symbol.diagram
-										.createConnection(anchorPoint);
-								newConnection
-										.setSecondAnchorPoint(
-												this.dragConnection.toAnchorPoint,
-												true);
-							}
-
+							var fromAnchorPoint =this.dragConnection.fromAnchorPoint;
+							var toAnchorPoint =this.dragConnection.toAnchorPoint;
 							// Reset the original Anchor Point in dragConnection
 							// for deletion
 							if (this.dragConnection.originalFromAnchorPoint) {
@@ -1974,6 +1962,21 @@ define(
 							}
 
 							this.dragConnection.createDeleteCommand(true);
+
+							if (this.direction == m_constants.TO_ANCHOR_POINT) {
+								newConnection = this.symbol.diagram
+										.createConnection(fromAnchorPoint);
+								newConnection.setSecondAnchorPoint(anchorPoint,
+										true);
+							} else {
+								newConnection = this.symbol.diagram
+										.createConnection(anchorPoint);
+								newConnection
+										.setSecondAnchorPoint(
+												toAnchorPoint,
+												true);
+							}
+
 							this.dragConnection = newConnection;
 						}
 					} else {
