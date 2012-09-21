@@ -666,10 +666,14 @@ define(
 				PoolSymbol.prototype.removeLane = function(laneSymbol) {
 					/* remove lane from lane symbols array. */
 					m_utils.removeItemFromArray(this.laneSymbols, laneSymbol);
-
+					m_utils.removeItemFromArray(this.diagram.symbols,
+							laneSymbol);
 					/* Create a default lane if the very last lane was deleted. */
 					if(this.laneSymbols.length == 0) {
-						this.createDefaultLane();
+						// Lane Index is reinitialized when all lanes are
+						// deleted
+						laneIndex = 0;
+						this.createSwimlaneSymbol();
 					}
 
 					this.recalculateBoundingBox();
