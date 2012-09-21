@@ -481,7 +481,7 @@ define(
 				} else if (type == "messageTransformationBean") {
 					renameView("messageTransformationApplicationView", uuid,
 							"applicationName", name)
-				} else if (type == "camelBean") {
+				} else if (type == "camelSpringProducerApplication") {
 					renameView("camelApplicationView", uuid, "applicationName",
 							name)
 				} else if (type == "interactive") {
@@ -770,7 +770,7 @@ define(
 																+ application
 																		.getFullId(),
 														application.uuid);
-									} else if (data.rslt.obj.attr('rel') == "camelBean") {
+									} else if (data.rslt.obj.attr('rel') == "camelSpringProducerApplication") {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
 														.attr("modelUUID"));
@@ -1514,11 +1514,6 @@ define(
 											"messageTransformationBean" : {
 												"icon" : {
 													"image" : "../images/icons/application-message-trans.png"
-												}
-											},
-											"camelBean" : {
-												"icon" : {
-													"image" : "../images/icons/application-camel.png"
 												}
 											},
 											"camelSpringProducerApplication" : {
