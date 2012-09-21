@@ -1613,7 +1613,7 @@ define(
 								.submitCommand(m_command
 										.createUpdateModelElementCommand(
 												this.currentTextPrimitive.auxiliaryProperties.callbackScope.diagram.modelId,
-												this.currentTextPrimitive.auxiliaryProperties.callbackScope.modelElement.oid,
+												this.currentTextPrimitive.auxiliaryProperties.callbackScope.oid,
 												changes));
 						this.currentTextPrimitive.show();
 						this.symbolEditMode = false;
