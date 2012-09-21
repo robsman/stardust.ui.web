@@ -62,6 +62,12 @@ var extensions = {
 		pageJavaScriptUrl : "m_activityQualityControlPropertiesPage",
 		visibility : "preview"
 	}, {
+		panelId : "activityPropertiesPanel",
+		pageId : "serviceParametersPropertiesPage",
+		pageHtmlUrl : "activityServiceParametersPropertiesPage.html",
+		pageJavaScriptUrl : "m_activityServiceParametersPropertiesPage",
+		visibility : "always"
+	}, {
 		panelId : "eventPropertiesPanel",
 		pageId : "basicPropertiesPage",
 		pageJavaScriptUrl : "m_eventBasicPropertiesPage",
@@ -301,7 +307,7 @@ var extensions = {
 		iconPath : "../images/icons/application-message-trans.png",
 		viewId : "messageTransformationApplicationView"
 	}, {
-		id : "camelBean",
+		id : "camelSpringProducerApplication",
 		readableName : "Camel Application",
 		iconPath : "../images/icons/application-camel.png",
 		viewId : "camelApplicationView"
