@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -28,7 +28,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function OrganizationView() {
 				var modelElementView = m_modelElementView.create();
@@ -40,7 +40,7 @@ define(
 				jQuery("#organizationTabs").tabs();
 
 				/**
-				 * 
+				 *
 				 */
 				OrganizationView.prototype.initialize = function(organization) {
 					this.initializeModelElementView();
@@ -286,14 +286,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				OrganizationView.prototype.getModelElement = function() {
 					return this.organization;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				OrganizationView.prototype.populateDepartmentDataSelectInput = function() {
 					this.departmentDataSelect.empty();
@@ -333,7 +333,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				OrganizationView.prototype.setSupportDepartments = function(
 						supportDepartments, departmentDataId,
@@ -361,7 +361,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				OrganizationView.prototype.populateLeaderSelectInput = function() {
 					this.leaderSelect.empty();
@@ -375,7 +375,8 @@ define(
 					for ( var i in this.getModelElement().model.participants) {
 						participant = this.getModelElement().model.participants[i];
 
-						if (participant.type == m_constants.ROLE_PARTICIPANT_TYPE) {
+						if (participant.type == m_constants.ROLE_PARTICIPANT_TYPE
+								|| participant.type == m_constants.TEAM_LEADER_TYPE) {
 							this.leaderSelect.append("<option value='"
 									+ participant.getFullId() + "'>"
 									+ participant.name + "</option>");
@@ -393,7 +394,8 @@ define(
 						for ( var m in m_model.getModels()[n].participants) {
 							participant = m_model.getModels()[n].participants[m];
 
-							if (participant.type == m_constants.ROLE_PARTICIPANT_TYPE) {
+							if (participant.type == m_constants.ROLE_PARTICIPANT_TYPE
+									|| participant.type == m_constants.TEAM_LEADER_TYPE) {
 								this.leaderSelect.append("<option value='"
 										+ participant.getFullId() + "'>"
 										+ m_model.getModels()[n].name + "/"
@@ -407,14 +409,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				OrganizationView.prototype.toString = function() {
 					return "Lightdust.OrganizationView";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				OrganizationView.prototype.validate = function() {
 					this.clearErrorMessages();
@@ -438,7 +440,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				OrganizationView.prototype.processCommand = function(command) {
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {

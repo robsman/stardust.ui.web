@@ -1073,7 +1073,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       roleJson.addProperty(ModelerConstants.OID_PROPERTY, role.getElementOid());
       roleJson.addProperty(ModelerConstants.TYPE_PROPERTY,
             ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
-      roleJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "false");
       roleJson.addProperty(ModelerConstants.UUID_PROPERTY,
             eObjectUUIDMapper().getUUID(role));
       ModelType model = ModelUtils.findContainingModel(role);
@@ -1090,7 +1089,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   eObjectUUIDMapper().getUUID(org));
             if (null != org.getTeamLead() && org.getTeamLead().equals(role))
             {
-               roleJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "true");
+               roleJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                     ModelerConstants.TEAM_LEADER_TYPE_KEY);
             }
          }
          roleJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY,
@@ -1128,7 +1128,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   conditionalPerformer.getData()));
       conditionalPerformerJson.addProperty(ModelerConstants.BINDING_DATA_PATH_PROPERTY,
             conditionalPerformer.getDataPath());
-      conditionalPerformerJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "false");
       conditionalPerformerJson.addProperty(ModelerConstants.UUID_PROPERTY,
             eObjectUUIDMapper().getUUID(conditionalPerformer));
 
@@ -1144,13 +1143,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             OrganizationType org = parentOrgs.get(0);
             conditionalPerformerJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
                   eObjectUUIDMapper().getUUID(org));
-
-            if (null != org.getTeamLead()
-                  && org.getTeamLead().equals(conditionalPerformer))
-            {
-               conditionalPerformerJson.addProperty(ModelerConstants.TEAM_LEADER_KEY,
-                     "true");
-            }
          }
          conditionalPerformerJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY,
                eObjectUUIDMapper().getUUID(model));
@@ -1894,12 +1886,16 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                }
                else if (childParticipant instanceof RoleType)
                {
-                  childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                        ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
                   if (null != parent.getTeamLead()
                         && parent.getTeamLead().equals(childParticipant))
                   {
-                     childJson.addProperty(ModelerConstants.TEAM_LEADER_KEY, "true");
+                     childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                           ModelerConstants.TEAM_LEADER_TYPE_KEY);
+                  }
+                  else
+                  {
+                     childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                           ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
                   }
                }
                else if (childParticipant instanceof ConditionalPerformerType)

@@ -128,6 +128,8 @@ define(
 								}
 							} else if (m_constants.ROLE_PARTICIPANT_TYPE == parent.iDnD
 									.getTransferObject().elementType
+									|| m_constants.TEAM_LEADER_TYPE == parent.iDnD
+									.getTransferObject().elementType
 									|| m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == parent.iDnD
 									.getTransferObject().elementType) {
 								var participant = m_model

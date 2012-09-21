@@ -36,7 +36,7 @@ define(function() {
 
 		GLOW_WIDTH : 7.0,
 		GLOW_OPACITY : 0.8,
-		
+
 		SELECT_FRAME_MARGIN : 7,
 		SELECT_FRAME_STROKE : "#DDD7D7",
 		SELECT_FRAME_STROKE_WIDTH : 1.0,
@@ -98,7 +98,7 @@ define(function() {
 		// Gateway Symbol
 
 		GATEWAY_SYMBOL : "gateSymbol",
-		
+
 		GATEWAY_SYMBOL_DEFAULT_WIDTH : 40,
 		GATEWAY_SYMBOL_DEFAULT_HEIGHT : 40,
 		GATEWAY_SYMBOL_DEFAULT_FILL_COLOR : 'white',
@@ -159,13 +159,13 @@ define(function() {
 		LANE_MIN_WIDTH : 80,
 		// Adjustment required on Symbols
 		POOL_LANE_MARGIN : 5,
-		
+
 		// Other graphics
 
 		SNAP_LINE_STROKE_WIDTH : 0.5,
 		SNAP_LINE_COLOR : "#b1252c",
 		SNAP_LINE_DASHARRAY : "- ",
-		
+
 		SEPARATOR_LINE_STROKE_WIDTH : 0.5,
 		SEPARATOR_LINE_COLOR : "green",
 		SEPARATOR_LINE_DASHARRAY : "- ",
@@ -187,13 +187,14 @@ define(function() {
 		IMPLEMENTS_PROCESS_INTERFACE_KEY : "implementsProcessInterface",
 
 		// Application
-		
+
 		APPLICATION : "application",
-		
-		// Participant				
-		
+
+		// Participant
+
 		PARTICIPANT : "participant",
 		ROLE_PARTICIPANT_TYPE : "roleParticipant",
+		TEAM_LEADER_TYPE : "teamLeader",
 		ORGANIZATION_PARTICIPANT_TYPE : "organizationParticipant",
 		CONDITIONAL_PERFORMER_PARTICIPANT_TYPE : "conditionalPerformerParticipant",
 		TEAM_LEADER_KEY : "isTeamLeader",
@@ -242,10 +243,10 @@ define(function() {
 		EVENT_STOP_STROKE_WIDTH : 2.0,
 
 		// Access Points
-		
-		IN_ACCESS_POINT : "IN", 
-		OUT_ACCESS_POINT : "OUT", 
-		INOUT_ACCESS_POINT : "INOUT", 
+
+		IN_ACCESS_POINT : "IN",
+		OUT_ACCESS_POINT : "OUT",
+		INOUT_ACCESS_POINT : "INOUT",
 		PRIMITIVE_ACCESS_POINT : "PRIMITIVE_ACCESS_POINT",
 		JAVA_CLASS_ACCESS_POINT : "JAVA_CLASS_ACCESS_POINT",
 		DATA_STRUCTURE_ACCESS_POINT : "DATA_STRUCTURE_ACCESS_POINT",
@@ -312,13 +313,13 @@ define(function() {
 		ORIENTATION_EAST : 'E',
 		ORIENTATION_WEST : 'W',
 		ORIENTATION_SOUTH : 'S',
-			
+
 		// Commands
-		
+
 		CREATE_COMMAND : "CREATE_COMMAND",
 		RENAME_COMMAND : "RENAME_COMMAND",
-		UPDATE_COMMAND : "UPDATE_COMMAND", 
-		UPDATE_GEOMETRY_COMMAND : "UPDATE_GEOMETRY_COMMAND", 
+		UPDATE_COMMAND : "UPDATE_COMMAND",
+		UPDATE_GEOMETRY_COMMAND : "UPDATE_GEOMETRY_COMMAND",
 		DELETE_COMMAND : "DELETE_COMMAND",
 		REQUEST_JOIN_COMMAND : "REQUEST_JOIN_COMMAND",
 		CONFIRM_JOIN_COMMAND : "CONFIRM_JOIN_COMMAND",
@@ -331,7 +332,7 @@ define(function() {
 		CHANGE_USER_PROFILE_COMMAND : "CHANGE_USER_PROFILE_COMMAND",
 
 		// User
-		
+
 		BUSINESS_ANALYST_ROLE : "BusinessAnalyst",
 		INTEGRATOR_ROLE : "Integrator"
 

@@ -121,8 +121,7 @@ define(
 																					"modelId" : model.id,
 																					"modelUUID" : model.uuid,
 																					"draggable" : true,
-																					"elementId" : participant.id,
-																					"isTeamLeader" : participant.isTeamLeader
+																					"elementId" : participant.id
 																				},
 																				"data" : participant.name
 																			},
@@ -330,8 +329,7 @@ define(
 																"modelUUID" : model.uuid,
 																"parentUUID" : parentParticipant.uuid,
 																"draggable" : true,
-																"elementId" : participant.id,
-																"isTeamLeader" : participant.isTeamLeader
+																"elementId" : participant.id
 															},
 															"data" : participant.name
 														}, null, true);
@@ -470,7 +468,7 @@ define(
 				} else if (type == 'process') {
 					renameView("processDefinitionView", uuid, "processName",
 							name);
-				} else if (type == "roleParticipant") {
+				} else if (type == "roleParticipant" || type == "teamLeader") {
 					renameView("roleView", uuid, "roleName", name)
 				} else if (type == 'organizationParticipant') {
 					renameView("organizationView", uuid, "organizationName",
@@ -654,7 +652,8 @@ define(
 														+ "&modelName="
 														+ model.name,
 												model.uuid);
-									} else if (data.rslt.obj.attr('rel') == "roleParticipant") {
+									} else if (data.rslt.obj.attr('rel') == "roleParticipant"
+										|| data.rslt.obj.attr('rel') == "teamLeader") {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
 														.attr("modelUUID"));
@@ -1282,8 +1281,8 @@ define(
 														}
 													}
 												};
-											} else if ('roleParticipant' == node
-													.attr('rel')) {
+											} else if ('roleParticipant' == node.attr('rel')
+													|| 'teamLeader' == node.attr('rel')) {
 												return {
 													"ccp" : false,
 													"create" : false,
@@ -1315,8 +1314,7 @@ define(
 													"setAsManager" : {
 														"label" : "Set As Manager",
 														"_disabled" : ((undefined == node
-																.attr("parentUUID")) || ("true" == node
-																.attr("isTeamLeader"))),
+																.attr("parentUUID")) || ('teamLeader' == node.attr('rel'))),
 														"action" : function(obj) {
 															setAsManager(
 																	node
@@ -1436,6 +1434,11 @@ define(
 											"roleParticipant" : {
 												"icon" : {
 													"image" : "../images/icons/role.png"
+												}
+											},
+											"teamLeader" : {
+												"icon" : {
+													"image" : "../images/icons/manager.png"
 												}
 											},
 											"organizationParticipant" : {
@@ -2180,6 +2183,7 @@ define(
 										.openElementView(this
 												.createApplication(command.changes.added[i]));
 							} else if (m_constants.ROLE_PARTICIPANT_TYPE == command.changes.added[i].type
+									|| m_constants.TEAM_LEADER_TYPE == command.changes.added[i].type
 									|| m_constants.ORGANIZATION_PARTICIPANT_TYPE == command.changes.added[i].type
 									|| m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == command.changes.added[i].type) {
 								this
@@ -2226,11 +2230,9 @@ define(
 								var textElem = jQuery(link.childNodes[1])[0];
 
 								textElem.nodeValue = modelElement.name;
-								if (m_constants.ROLE_PARTICIPANT_TYPE == modelElement.type) {
-									node
-											.attr(
-													m_constants.TEAM_LEADER_KEY,
-													obj.changes.modified[i].isTeamLeader);
+								if (m_constants.ROLE_PARTICIPANT_TYPE == obj.changes.modified[i].type
+										|| m_constants.TEAM_LEADER_TYPE == obj.changes.modified[i].type) {
+									node.attr("rel", obj.changes.modified[i].type);
 								}
 								renameElementViewLabel(node.attr("rel"), node
 										.attr("id"), node.attr("name"));
@@ -2246,6 +2248,7 @@ define(
 										.deleteApplication(command.changes.removed[i]);
 							} else if (m_constants.PARTICIPANT == command.changes.removed[i].type
 									|| m_constants.ROLE_PARTICIPANT_TYPE == command.changes.removed[i].type
+									|| m_constants.TEAM_LEADER_TYPE == command.changes.removed[i].type
 									|| m_constants.ORGANIZATION_PARTICIPANT_TYPE == command.changes.removed[i].type
 									|| m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == command.changes.removed[i].type) {
 								this
@@ -2528,8 +2531,7 @@ define(
 									"modelUUID" : model.uuid,
 									"parentUUID" : transferObject.parentUUID,
 									"draggable" : true,
-									"elementId" : participant.id,
-									"isTeamLeader" : participant.isTeamLeader
+									"elementId" : participant.id
 								},
 								"data" : participant.name
 							}, null, true);

@@ -27,7 +27,7 @@ define([ "m_utils" ], function(m_utils) {
 
 	var validAppTypes = supportedAppTypes.concat(unSupportedAppTypes);
 
-	var supportedParticipants = [ "roleParticipant", "organizationParticipant" ];
+	var supportedParticipants = [ "roleParticipant", "teamLeader", "organizationParticipant" ];
 
 	var unSupportedParticipants = [ "conditionalPerformerParticipant" ];
 
