@@ -631,16 +631,28 @@ define(
 				 *
 				 */
 				PoolSymbol.prototype.getLaneIndex = function() {
+					if (laneIndex <= this.laneSymbols.length) {
+						laneIndex = this.laneSymbols.length + 1;
+					}
 
-					if (laneIndex == 1) {
-						for ( var n in this.laneSymbols) {
-							++laneIndex;
-						}
-					} else {
-						++laneIndex;
+					while (true == this.hasLaneWithName("Lane " + laneIndex)) {
+						laneIndex++;
 					}
 
 					return laneIndex;
+				};
+
+				/**
+				 *
+				 */
+				PoolSymbol.prototype.hasLaneWithName = function(name) {
+					for ( var n in this.laneSymbols) {
+						if (this.laneSymbols[n].name == name) {
+							return true;
+						}
+					}
+
+					return false;
 				};
 
 				PoolSymbol.prototype.getAllDataSymbols = function(dataSymbols) {

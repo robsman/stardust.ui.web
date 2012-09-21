@@ -14,10 +14,9 @@ define(
 			return {
 				createSwimlaneSymbol : function(diagram, parentSymbol) {
 					var laneSymbol = new SwimlaneSymbol();
-					var laneIndex=parentSymbol.getLaneIndex();
-					laneSymbol.id = "Lane" + laneIndex;
+					var laneIndex = parentSymbol.getLaneIndex();
 					laneSymbol.name = "Lane " + laneIndex;
-
+					laneSymbol.id = m_utils.generateIDFromName(laneSymbol.name);
 					laneSymbol.bind(diagram, parentSymbol);
 
 					return laneSymbol;
@@ -28,9 +27,9 @@ define(
 					var laneSymbol = new SwimlaneSymbol(diagram);
 
 					laneSymbol.bind(diagram, parentSymbol);
-
-					laneSymbol.id = participant.id;
-					laneSymbol.name = participant.name;
+					var laneIndex = parentSymbol.getLaneIndex();
+					laneSymbol.name = "Lane " + laneIndex;
+					laneSymbol.id = m_utils.generateIDFromName(laneSymbol.name)
 					laneSymbol.participantFullId = participant.getFullId();
 
 					return laneSymbol;
