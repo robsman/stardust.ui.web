@@ -282,7 +282,7 @@ define(
 						return;
 					} else if (this.type
 							&& (this.type.toLowerCase().indexOf(
-									m_constants.POOL_SYMBOL.toLowerCase()) > 0 || this.type == m_constants.SWIMLANE_SYMBOL)) {
+									m_constants.POOL_SYMBOL.toLowerCase()) > -1 || this.type == m_constants.SWIMLANE_SYMBOL)) {
 						// do nothing
 					} else {
 						this.diagram.currentFlyOutSymbol = this;

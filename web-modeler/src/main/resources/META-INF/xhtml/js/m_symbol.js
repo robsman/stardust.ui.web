@@ -1016,7 +1016,10 @@ define(
 						// flyout menu can disappear
 						if ((this.diagram.mode == this.diagram.CONNECTION_MODE || this.diagram.currentConnection != null)
 								|| this.type == null
-								|| (this.type && (this.type == m_constants.POOL_SYMBOL || this.type == m_constants.SWIMLANE_SYMBOL))) {
+								|| (this.type && (this.type.toLowerCase()
+										.indexOf(
+												m_constants.POOL_SYMBOL
+														.toLowerCase()) > -1 || this.type == m_constants.SWIMLANE_SYMBOL))) {
 							return false;
 						}
 
