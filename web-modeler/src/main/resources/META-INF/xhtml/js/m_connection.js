@@ -390,7 +390,9 @@ define(
 
 					this.setSecondAnchorPointNoComplete(anchorPoint);
 					var updateConnection = null;
+
 					if (this.toAnchorPoint.symbol != null) {
+
 						// When IN mapping present and OUT mapping is added,
 						// same connection is modified viceversa
 						if (this.isDataFlow()) {
@@ -423,6 +425,7 @@ define(
 								}
 							}
 						}
+
 						// If update is not called, new connection is created
 						if (updateConnection == null) {
 							this.complete(sync);
@@ -1457,7 +1460,7 @@ define(
 									.showErrorMessage("Events can be connected only to activities and gateways.");
 							return false;
 						} else if (!fromAnchorPoint.symbol
-								.validateCreateConnection()) {
+								.validateCreateConnection(this)) {
 							// Start Event can have only one OUT connection
 							m_messageDisplay
 									.showErrorMessage("No further connection allowed for this Event.");
@@ -1483,13 +1486,15 @@ define(
 						// Data symbol validation called
 						if (null != toAnchorPoint
 								&& (toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL)) {
+							// Validation handled on Data Symbol for data
+							// connections.
 							if (!toAnchorPoint.symbol
 									.validateCreateConnection()) {
 								m_messageDisplay
 										.showErrorMessage("No further OUT Connection allowed from this activity.");
 							}
 						} else if (!fromAnchorPoint.symbol
-								.validateCreateConnection()) {
+								.validateCreateConnection(this)) {
 							m_messageDisplay
 									.showErrorMessage("No more connection allowed from this activity.");
 							return false;
@@ -1513,7 +1518,7 @@ define(
 										.showErrorMessage("Only out sequence flow connections are allowed on Start Events.");
 								return false;
 							} else if (!toAnchorPoint.symbol
-									.validateCreateConnection()) {
+									.validateCreateConnection(this)) {
 								// End Event can have only one IN connection
 								m_messageDisplay
 										.showErrorMessage("No more connection allowed to this Event.");
@@ -1529,7 +1534,7 @@ define(
 						}else if (toAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
 							if ((fromAnchorPoint.symbol.type != m_constants.DATA_SYMBOL && fromAnchorPoint.symbol.type != m_constants.EVENT_SYMBOL)
 									&& !toAnchorPoint.symbol
-											.validateCreateConnection()) {
+											.validateCreateConnection(this)) {
 								m_messageDisplay
 										.showErrorMessage("No more connections allowed to this activity.");
 								return false;

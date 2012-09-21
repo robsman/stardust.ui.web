@@ -549,24 +549,25 @@ define(
 				/**
 				 *
 				 */
-				ActivitySymbol.prototype.validateCreateConnection = function() {
+				ActivitySymbol.prototype.validateCreateConnection = function(
+						conn) {
 					var outMappingActivity = new Array();
 					var inMappingActivity = new Array();
 					for ( var n in this.connections) {
 						var connection = this.connections[n];
 						if (connection.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL
 								&& connection.fromAnchorPoint.symbol.oid == this.oid) {
-							if ((null != connection.toAnchorPoint
-									&& null != connection.toAnchorPoint.symbol)
+							if ((null != connection.toAnchorPoint && null != connection.toAnchorPoint.symbol)
 									&& connection.toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
-								//do nothing
-							}else{
+								// do nothing
+							} else {
 								if (-1 != jQuery.inArray(
 										connection.fromAnchorPoint.symbol.oid,
 										outMappingActivity)) {
 									return false;
-								}else
-								outMappingActivity.push(connection.fromAnchorPoint.symbol.oid);
+								} else
+									outMappingActivity
+											.push(connection.fromAnchorPoint.symbol.oid);
 							}
 						} else if (null != connection.toAnchorPoint
 								&& null != connection.toAnchorPoint.symbol) {
@@ -579,12 +580,33 @@ define(
 										connection.toAnchorPoint.symbol.oid,
 										inMappingActivity)) {
 									return false;
-								}else
-								inMappingActivity.push(connection.toAnchorPoint.symbol.oid);
+								} else
+									inMappingActivity
+											.push(connection.toAnchorPoint.symbol.oid);
 							}
 						}
 					}
-
+					// When rerouting happens, connection is not present in
+					// this.connections, check the validation rules with symbol connections list
+					if (conn != null && conn.oid > 0) {
+						if (-1 == jQuery.inArray(conn, this.connections)) {
+							if (conn.fromAnchorPoint
+									&& conn.fromAnchorPoint.symbol) {
+								if (this.oid == conn.fromAnchorPoint.symbol.oid) {
+									return (-1 == jQuery.inArray(
+											conn.fromAnchorPoint.symbol.oid,
+											outMappingActivity))
+								}
+							}
+							if (conn.toAnchorPoint && conn.toAnchorPoint.symbol) {
+								if (this.oid == conn.toAnchorPoint.symbol.oid) {
+									return (-1 == jQuery.inArray(
+											conn.toAnchorPoint.symbol.oid,
+											inMappingActivity))
+								}
+							}
+						}
+					}
 					return true;
 				};
 

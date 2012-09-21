@@ -74,6 +74,7 @@ define(
 				this.process = null;
 				this.mode = this.NORMAL_MODE;
 				this.symbols = [];
+				this.dragEnabled = null;
 
 				// Activity symbols by OIDs
 
@@ -1521,7 +1522,6 @@ define(
 				Diagram.prototype.clearCurrentSelection = function() {
 					this.deselectCurrentSelection();
 					this.currentSelection = [];
-					this.currentFlyOutSymbol = null;
 					this.showProcessPropertiesPanel();
 				};
 

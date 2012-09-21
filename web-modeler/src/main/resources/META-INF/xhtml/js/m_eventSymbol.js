@@ -295,9 +295,9 @@ define(
 				/**
 				 *
 				 */
-				EventSymbol.prototype.validateCreateConnection = function() {
+				EventSymbol.prototype.validateCreateConnection = function(conn) {
 					if (this.connections.length > 0
-							&& this.connections[0].oid > 0) {
+							&& this.connections[0].oid > 0 && (this.connections[0].oid != conn.oid)) {
 						m_messageDisplay
 								.showMessage("No further connection allowed for this Event.");
 

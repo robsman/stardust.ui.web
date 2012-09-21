@@ -881,6 +881,7 @@ define(
 
 						this.dragStartX = this.x;
 						this.dragStartY = this.y;
+						this.diagram.dragEnabled = true;
 					}
 				};
 
@@ -974,6 +975,7 @@ define(
 								}
 							}
 						}
+						this.diagram.dragEnabled = false;
 					}
 				};
 
@@ -1013,8 +1015,10 @@ define(
 				Symbol.prototype.validateProximity = function(event) {
 					try {
 						// while in connection mode/or symbol is Pool/swimlane ,
-						// flyout menu can disappear
-						if ((this.diagram.mode == this.diagram.CONNECTION_MODE || this.diagram.currentConnection != null || this.diagram.currentSelection.length > 0)
+						// or in Drag and Drop mode flyout menu should disappear
+						if ((this.diagram.mode == this.diagram.CONNECTION_MODE
+								|| this.diagram.currentConnection != null || this.diagram.currentSelection.length > 0 || this.diagram.newSymbol)
+								|| this.diagram.dragEnabled
 								|| this.type == null
 								|| (this.type && (this.type.toLowerCase()
 										.indexOf(
@@ -1905,6 +1909,12 @@ define(
 						this.direction = m_constants.TO_ANCHOR_POINT;
 					}
 
+					// Remember drag start position
+					this.dragStartX = this.x;
+					this.dragStartY = this.y;
+					// Flag required to hide flyout menu's in Drag and Drop
+					this.symbol.diagram.dragEnabled = true;
+
 					// Replace and anchor point and keep reference
 
 					for ( var n in this.symbol.anchorPoints) {
@@ -1939,6 +1949,7 @@ define(
 					if (symbol != null) {
 						var anchorPoint = symbol.getClosestAnchorPoint(this.x,
 								this.y, true);
+						var updateConnection = true;
 
 						if (symbol == this.symbol) {
 							if (this.direction == m_constants.FROM_ANCHOR_POINT) {
@@ -1948,36 +1959,56 @@ define(
 							}
 						} else {
 							var newConnection = null;
+							// Store the new Anchor Points to create new
+							// connection
+							var fromAnchorPoint = this.dragConnection.fromAnchorPoint;
+							var toAnchorPoint = this.dragConnection.toAnchorPoint;
+							// Validate the new connection
+							if (this.dragConnection.validateCreateConnection(
+									fromAnchorPoint, toAnchorPoint)) {
 
-							var fromAnchorPoint =this.dragConnection.fromAnchorPoint;
-							var toAnchorPoint =this.dragConnection.toAnchorPoint;
-							// Reset the original Anchor Point in dragConnection
-							// for deletion
-							if (this.dragConnection.originalFromAnchorPoint) {
-								this.dragConnection.fromAnchorPoint = this.dragConnection.originalFromAnchorPoint;
-								this.dragConnection.originalFromAnchorPoint = null;
-							} else if (this.dragConnection.originalToAnchorPoint) {
-								this.dragConnection.toAnchorPoint = this.dragConnection.originalToAnchorPoint;
-								this.dragConnection.originalToAnchorPoint = null;
+								// Reset the original Anchor Point in dragConnection
+								// for deletion
+								if (this.dragConnection.originalFromAnchorPoint) {
+									this.dragConnection.fromAnchorPoint = this.dragConnection.originalFromAnchorPoint;
+									this.dragConnection.originalFromAnchorPoint = null;
+								} else if (this.dragConnection.originalToAnchorPoint) {
+									this.dragConnection.toAnchorPoint = this.dragConnection.originalToAnchorPoint;
+									this.dragConnection.originalToAnchorPoint = null;
+								}
+								this.dragConnection.createDeleteCommand(true);
+
+								if (this.direction == m_constants.TO_ANCHOR_POINT) {
+									newConnection = this.symbol.diagram
+											.createConnection(fromAnchorPoint);
+									// Create the connection
+									newConnection.setSecondAnchorPoint(
+											anchorPoint, true);
+								} else {
+									newConnection = this.symbol.diagram
+											.createConnection(anchorPoint);
+									// Create the connection
+									newConnection.setSecondAnchorPoint(
+											toAnchorPoint, true);
+								}
+
+								this.dragConnection = newConnection;
+
+							}else{
+								// Reset the original Anchor Point in
+								// dragConnection to revert
+								if (this.dragConnection.originalFromAnchorPoint) {
+									this.dragConnection.fromAnchorPoint = this.dragConnection.originalFromAnchorPoint;
+									this.dragConnection.originalFromAnchorPoint = null;
+								} else if (this.dragConnection.originalToAnchorPoint) {
+									this.dragConnection.toAnchorPoint = this.dragConnection.originalToAnchorPoint;
+									this.dragConnection.originalToAnchorPoint = null;
+								}
+								this.dragConnection.toAnchorPointOrientation = this.dragConnection.toAnchorPoint.orientation;
+								this.dragConnection.fromAnchorPointOrientation = this.dragConnection.fromAnchorPoint.orientation;
+								this.moveTo(this.dragStartX,this.dragStartY);
+								updateConnection = false;
 							}
-
-							this.dragConnection.createDeleteCommand(true);
-
-							if (this.direction == m_constants.TO_ANCHOR_POINT) {
-								newConnection = this.symbol.diagram
-										.createConnection(fromAnchorPoint);
-								newConnection.setSecondAnchorPoint(anchorPoint,
-										true);
-							} else {
-								newConnection = this.symbol.diagram
-										.createConnection(anchorPoint);
-								newConnection
-										.setSecondAnchorPoint(
-												toAnchorPoint,
-												true);
-							}
-
-							this.dragConnection = newConnection;
 						}
 					} else {
 						if (this.direction == m_constants.FROM_ANCHOR_POINT) {
@@ -1988,12 +2019,17 @@ define(
 					}
 
 					this.dragConnection.reroute();
-
-					this.dragConnection.createUpdateCommand();
+					// if reroute validation fails no update is required
+					if(updateConnection){
+						this.dragConnection.createUpdateCommand();
+						m_messageDisplay.showMessage("Connection updated");
+						this.remove();
+					}
 
 					this.dragConnection.select();
 					this.dragConnection.toAnchorPoint.deselect();
-					this.remove();
+					// dragEnabled flag is used to hide flyout menu in Drag mode
+					this.symbol.diagram.dragEnabled = false;
 				}
 
 				/**
