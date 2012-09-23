@@ -10,10 +10,10 @@
 
 define(
 		[ "m_utils", "m_constants", "m_communicationController", "m_command",
-				"m_commandsController", "m_model", "m_typeDeclaration",
+				"m_commandsController", "m_model",
 				"m_accessPoint", "m_dataTraversal", "m_dialog" ],
 		function(m_utils, m_constants, m_communicationController, m_command,
-				m_commandsController, m_model, m_typeDeclaration,
+				m_commandsController, m_model, 
 				m_accessPoint, m_dataTraversal, m_dialog) {
 			return {
 				initialize : function() {
@@ -272,18 +272,6 @@ define(
 												this.model.id,
 												{
 													"typeDeclaration" : this.typeDeclarations.types[type]
-												}));
-					}
-
-					for ( var type in this.typeDeclarations.types) {
-						m_commandsController
-								.submitCommand(m_command
-										.createCreateStructuredDataTypeCommand(
-												this.model.id,
-												this.model.id,
-												{
-													"name" : this.typeDeclarations.types[type].name,
-													"id" : this.typeDeclarations.types[type].name,
 												}));
 					}
 				};

@@ -3,11 +3,11 @@
  */
 define(
 		[ "m_utils", "m_constants", "m_urlUtils", "m_communicationController",
-				"m_application", "m_data", "m_process", "m_dataStructure",
-				"m_participant" ],
+				"m_application", "m_data", "m_process", 
+				"m_participant", "m_typeDeclaration" ],
 		function(m_utils, m_constants, m_urlUtils, m_communicationController,
-				m_application, m_data, m_process, m_dataStructure,
-				m_participant) {
+				m_application, m_data, m_process,
+				m_participant, m_typeDeclaration) {
 
 			return {
 				stripModelId : stripModelId,
@@ -30,8 +30,8 @@ define(
 					delete getModels()[id];
 				},
 
-				findDataStructure : function(fullId) {
-					return getModels()[stripModelId(fullId)].structuredDataTypes[stripElementId(fullId)];
+				findTypeDeclaration : function(fullId) {
+					return getModels()[stripModelId(fullId)].typeDeclarations[stripElementId(fullId)];
 				},
 
 				findData : function(fullId) {
@@ -161,82 +161,6 @@ define(
 					return null;
 				},
 
-				findElementTypeByPath : function(path) {
-					var steps = path.split("/");
-
-					if (steps[1] != "models") {
-						m_utils.debug("Path must contain /models element ("
-								+ path + ").");
-					}
-
-					if (steps.length < 4) {
-						return m_constants.MODEL;
-					}
-
-					if (steps[3] == "processes") {
-						if (steps.length < 6) {
-							return m_constants.PROCESS_DEFINITION;
-						}
-
-						return m_constants.ACTIVITY;
-					} else if (steps[3] == "applications") {
-						return m_constants.APPLICATION;
-					} else if (steps[3] == "structuredDataTypes") {
-						return m_constants.STRUCTURED_DATA_TYPE;
-					} else if (steps[3] == "data") {
-						return m_constants.DATA;
-					} else if (steps[3] == "participants") {
-						return m_constants.PARTICIPANT;
-					} else {
-						m_utils.debug("Unsupported model element type "
-								+ steps[3] + " in path " + path)
-								+ ".";
-					}
-				},
-				findElementByPath : function(path) {
-					var steps = path.split("/");
-
-					if (steps[1] != "models") {
-						m_utils.debug("Path must contain /models element ("
-								+ path + ").");
-					}
-
-					var model = getModels()[steps[2]];
-
-					if (steps.length == 3) {
-						return model;
-					}
-
-					if (steps[3] == "processes") {
-						if (steps.length == 5) {
-							return model.processes[steps[4]];
-						}
-
-						if (steps[5] == "activities") {
-							return model.processes[steps[4]].activities[steps[6]];
-						}
-					} else if (steps[3] == "applications") {
-						if (steps.length < 5) {
-							m_utils
-									.debug("Path to application must contain 5 steps ("
-											+ path + ").");
-							return null;
-						}
-
-						return model.applications[steps[4]];
-					} else if (steps[3] == "structuredDataTypes") {
-						return model.structuredDataTypes[steps[4]];
-					} else if (steps[3] == "data") {
-						return model.dataItems[steps[4]];
-					} else if (steps[3] == "participants") {
-						return model.participants[steps[4]];
-					} else {
-						m_utils.debug("Unsupported model element " + steps[3]
-								+ " in path " + path)
-								+ ".";
-					}
-				},
-
 				/**
 				 *
 				 */
@@ -277,7 +201,7 @@ define(
 				this.processes = {};
 				this.applications = {};
 				this.dataItems = {};
-				this.structuredDataTypes = {};
+				this.typeDeclarations = {};
 				this.participants = {};
 
 				/**
@@ -298,7 +222,6 @@ define(
 				 *
 				 */
 				Model.prototype.rename = function(id, name) {
-					m_utils.debug("Renaming model " + this.id);
 					delete getModels()[this.id];
 
 					this.id = id;
@@ -343,60 +266,6 @@ define(
 					return index;
 				};
 
-				/**
-				 *
-				 */
-				Model.prototype.getStructuredDataTypeIndex = function() {
-					var index = 0;
-
-					for ( var n in this.structuredDataTypes) {
-						++index;
-					}
-
-					++index;
-
-					return index;
-				};
-
-				/**
-				 * TODO Make more efficient?
-				 */
-				Model.prototype.findModelElementByGuid = function(guid) {
-					var n;
-
-					for (n in this.processes) {
-						if (this.processes[n].oid == guid) {
-							return this.processes[n];
-						}
-					}
-
-					for (n in this.applications) {
-						if (this.applications[n].oid == guid) {
-							return this.applications[n];
-						}
-					}
-
-					for (n in this.dataItems) {
-						if (this.dataItems[n].oid == guid) {
-							return this.dataItems[n];
-						}
-					}
-
-					for (n in this.participants) {
-						if (this.participants[n].oid == guid) {
-							return this.participants[n];
-						}
-					}
-
-					for (n in this.structuredDataTypes) {
-						if (this.structuredDataTypes[n].oid == guid) {
-							return this.structuredDataTypes[n];
-						}
-					}
-
-					return null;
-				};
-
 				Model.prototype.findModelElementByUuid = function(uuid) {
 					var n;
 
@@ -424,9 +293,9 @@ define(
 						}
 					}
 
-					for (n in this.structuredDataTypes) {
-						if (this.structuredDataTypes[n].uuid == uuid) {
-							return this.structuredDataTypes[n];
+					for (n in this.typeDeclarations) {
+						if (this.typeDeclarations[n].uuid == uuid) {
+							return this.typeDeclarations[n];
 						}
 					}
 
@@ -460,9 +329,9 @@ define(
 						}
 					}
 
-					for (n in this.structuredDataTypes) {
-						if (this.structuredDataTypes[n].id == id) {
-							return this.structuredDataTypes[n];
+					for (n in this.typeDeclarations) {
+						if (this.typeDeclarations[n].id == id) {
+							return this.typeDeclarations[n];
 						}
 					}
 
@@ -532,9 +401,9 @@ define(
 							model.processes[process]);
 				}
 
-				for ( var dataStructure in model.structuredDataTypes) {
-					m_dataStructure.initializeFromJson(model,
-							model.structuredDataTypes[dataStructure]);
+				for ( var typeDeclaration in model.typeDeclarations) {
+					m_typeDeclaration.initializeFromJson(model,
+							model.typeDeclarations[typeDeclaration]);
 				}
 
 				for ( var participant in model.participants) {

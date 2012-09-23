@@ -2,8 +2,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_typeDeclaration", "m_model" ],
-		function(m_utils, m_constants, m_typeDeclaration, m_model) {
+		[ "m_utils", "m_constants", "m_model" ],
+		function(m_utils, m_constants, m_model) {
 			return {
 				split: split,
 				extractLast: extractLast,

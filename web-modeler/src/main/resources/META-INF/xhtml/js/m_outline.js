@@ -12,13 +12,13 @@ define(
 		[ "m_utils", "m_urlUtils", "m_constants", "m_extensionManager",
 				"m_communicationController", "m_commandsController",
 				"m_command", "m_session", "m_user", "m_model", "m_process",
-				"m_application", "m_dataStructure", "m_participant",
+				"m_application", "m_participant", "m_typeDeclaration",
 				"m_outlineToolbarController", "m_data",
 				"m_elementConfiguration", "m_messageDisplay" ],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_communicationController, m_commandsController, m_command,
 				m_session, m_user, m_model, m_process, m_application,
-				m_dataStructure, m_participant, m_outlineToolbarController,
+				m_participant, m_typeDeclaration, m_outlineToolbarController,
 				m_data, m_elementConfiguration, m_messageDisplay) {
 
 			// TODO Find better location
@@ -270,9 +270,9 @@ define(
 
 									jQuery
 											.each(
-													model.structuredDataTypes,
+													model.typeDeclarations,
 													function(index,
-															structuredDataType) {
+															typeDeclaration) {
 														jQuery("#outline")
 																.jstree(
 																		"create",
@@ -281,16 +281,16 @@ define(
 																		"last",
 																		{
 																			"attr" : {
-																				"id" : structuredDataType.uuid,
-																				"fullId" : structuredDataType
+																				"id" : typeDeclaration.uuid,
+																				"fullId" : typeDeclaration
 																						.getFullId(),
-																				"elementId" : structuredDataType.id,
+																				"elementId" : typeDeclaration.id,
 																				"rel" : "structuredDataType",
 																				"modelId" : model.id,
 																				"modelUUID" : model.uuid,
 																				"draggable" : true
 																			},
-																			"data" : structuredDataType.name
+																			"data" : typeDeclaration.name
 																		},
 																		null,
 																		true);
@@ -2225,9 +2225,11 @@ define(
 								var textElem = jQuery(link.childNodes[1])[0];
 
 								textElem.nodeValue = modelElement.name;
-								if (m_constants.ROLE_PARTICIPANT_TYPE == obj.changes.modified[i].type
-										|| m_constants.TEAM_LEADER_TYPE == obj.changes.modified[i].type) {
-									node.attr("rel", obj.changes.modified[i].type);
+								if (m_constants.ROLE_PARTICIPANT_TYPE == modelElement.type) {
+									node
+											.attr(
+													m_constants.TEAM_LEADER_KEY,
+													obj.changes.modified[i].isTeamLeader);
 								}
 								renameElementViewLabel(node.attr("rel"), node
 										.attr("id"), node.attr("name"));
@@ -2485,7 +2487,7 @@ define(
 				Outline.prototype.createStructuredDataType = function(
 						transferObject) {
 					var model = m_model.findModel(transferObject.modelId);
-					var dataStructure = m_dataStructure.initializeFromJson(
+					var dataStructure = m_typeDeclaration.initializeFromJson(
 							model, transferObject);
 					var parentSelector = '#structuredTypes_' + model.uuid;
 

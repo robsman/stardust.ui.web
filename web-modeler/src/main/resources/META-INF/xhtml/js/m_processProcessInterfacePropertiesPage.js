@@ -4,10 +4,10 @@
 
 define(
 		[ "m_utils", "m_constants", "m_dialog", "m_propertiesPage",
-				"m_typeDeclaration", "m_dataTypeSelector",
+				"m_dataTypeSelector",
 				"m_parameterDefinitionsPanel" ],
 		function(m_utils, m_constants, m_dialog, m_propertiesPage,
-				m_typeDeclaration, m_dataTypeSelector,
+				m_dataTypeSelector,
 				m_parameterDefinitionsPanel) {
 			return {
 				create : function(propertiesPanel) {
@@ -244,6 +244,9 @@ define(
 						this.getModelElement().formalParameters = {};
 					}
 
+					m_utils.debug("Set Parameters: " + this
+							.getModelElement().formalParameters);
+					
 					this.parameterDefinitionsPanel.setScopeModel(this
 							.getModelElement().model);
 					this.parameterDefinitionsPanel.setParameterDefinitions(this

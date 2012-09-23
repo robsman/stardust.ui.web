@@ -29,7 +29,7 @@ define(
 			 */
 			function AnnotationsPropertiesPage(propertiesPanel, id) {
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						propertiesPanel, id, "Annotations");
+						propertiesPanel, id, "Comments");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(AnnotationsPropertiesPage.prototype,

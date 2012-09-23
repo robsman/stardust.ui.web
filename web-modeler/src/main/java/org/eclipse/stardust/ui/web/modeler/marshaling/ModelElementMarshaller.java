@@ -1224,6 +1224,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       loadDescription(applicationJson, application);
       loadAttributes(application, applicationJson);
 
+      applicationJson.addProperty(ModelerConstants.INTERACTIVE_PROPERTY, application.isInteractive());
+      
       if (application.getType() != null)
       {
          applicationJson.addProperty(ModelerConstants.APPLICATION_TYPE_PROPERTY,
@@ -1701,129 +1703,14 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          dataItemsJson.add(data.getId(), toDataJson(data));
       }
 
-      JsonObject structuredDataTypesJson = new JsonObject();
+      JsonObject typeDeclarationsJson = new JsonObject();
 
-      modelJson.add("structuredDataTypes", structuredDataTypesJson);
+      modelJson.add("typeDeclarations", typeDeclarationsJson);
 
-      // TODO Check needed?
-
-      if (null != model.getTypeDeclarations())
+      for (TypeDeclarationType typeDeclaration : model.getTypeDeclarations().getTypeDeclaration())
       {
-         for (TypeDeclarationType typeDeclaration : model.getTypeDeclarations()
-               .getTypeDeclaration())
-         {
-            JsonObject structuredDataTypeJson = new JsonObject();
-            structuredDataTypesJson.add(typeDeclaration.getId(), structuredDataTypeJson);
-
-            structuredDataTypeJson.addProperty(ModelerConstants.ID_PROPERTY,
-                  typeDeclaration.getId());
-            structuredDataTypeJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                  typeDeclaration.getName());
-            structuredDataTypeJson.addProperty(ModelerConstants.UUID_PROPERTY,
-                  eObjectUUIDMapper().getUUID(typeDeclaration));
-            // TODO Review why different from other descriptions
-            structuredDataTypeJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
-                  typeDeclaration.getDescription());
-
-            JsonObject typeDeclarationJson = new JsonObject();
-            structuredDataTypeJson.add(ModelerConstants.TYPE_DECLARATION_PROPERTY,
-                  typeDeclarationJson);
-            JsonObject childrenJson = new JsonObject();
-            typeDeclarationJson.add("children", childrenJson);
-
-            // TODO Review code below, very heuristic ...
-
-            SchemaTypeType schemaType = typeDeclaration.getSchemaType();
-
-            if (schemaType != null)
-            {
-               org.eclipse.xsd.XSDSchema xsdSchema = schemaType.getSchema();
-
-               // Determine prefix
-
-               String prefix = null;
-
-               for (Iterator iterator = xsdSchema.getQNamePrefixToNamespaceMap()
-                     .keySet()
-                     .iterator(); iterator.hasNext();)
-               {
-                  String key = (String) iterator.next();
-                  String value = xsdSchema.getQNamePrefixToNamespaceMap().get(key);
-
-                  if (value.equals(xsdSchema.getTargetNamespace()))
-                  {
-                     prefix = key;
-
-                     break;
-                  }
-               }
-
-               typeDeclarationJson.addProperty(ModelerConstants.NAME_PROPERTY, prefix
-                     + ":" + typeDeclaration.getId());
-
-               for (org.eclipse.xsd.XSDTypeDefinition xsdTypeDefinition : xsdSchema.getTypeDefinitions())
-               {
-
-                  if (xsdTypeDefinition.getName().equals(typeDeclaration.getId()))
-                  {
-
-                     if (xsdTypeDefinition.getComplexType() != null
-                           && xsdTypeDefinition.getComplexType().getElement() != null)
-                     {
-
-                        typeDeclarationJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                              "STRUCTURE_TYPE");
-
-                        for (int n = 0; n < xsdTypeDefinition.getComplexType()
-                              .getElement()
-                              .getChildNodes()
-                              .getLength(); ++n)
-                        {
-                           Node node = xsdTypeDefinition.getComplexType()
-                                 .getElement()
-                                 .getChildNodes()
-                                 .item(n);
-                           JsonObject schemaElementJson = new JsonObject();
-
-                           schemaElementJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                                 node.getAttributes().getNamedItem("name").getNodeValue());
-                           schemaElementJson.addProperty("typeName", node.getAttributes()
-                                 .getNamedItem("type")
-                                 .getNodeValue());
-                           childrenJson.add(node.getAttributes()
-                                 .getNamedItem("name")
-                                 .getNodeValue(), schemaElementJson);
-                        }
-                     }
-                     else if (xsdTypeDefinition.getSimpleType() != null)
-                     {
-                        Node restriction = xsdTypeDefinition.getSimpleType()
-                              .getElement()
-                              .getChildNodes()
-                              .item(0);
-
-                        typeDeclarationJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                              "ENUMERATION_TYPE");
-
-                        for (int n = 0; n < restriction.getChildNodes().getLength(); ++n)
-                        {
-                           Node node = restriction.getChildNodes().item(n);
-                           JsonObject schemaElementJson = new JsonObject();
-
-                           schemaElementJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                                 node.getAttributes()
-                                       .getNamedItem("value")
-                                       .getNodeValue());
-                           schemaElementJson.addProperty("typeName", "xsd:string");
-                           childrenJson.add(node.getAttributes()
-                                 .getNamedItem("value")
-                                 .getNodeValue(), schemaElementJson);
-                        }
-                     }
-                  }
-               }
-            }
-         }
+         typeDeclarationsJson.add(typeDeclaration.getId(),
+               toTypeDeclarationJson(typeDeclaration));
       }
 
       return modelJson;
@@ -1921,16 +1808,14 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       structJson.addProperty(ModelerConstants.UUID_PROPERTY,
             eObjectUUIDMapper().getUUID(structType));
       setContainingModelIdProperty(structJson, structType);
-      JsonObject typeDeclarationJson = new JsonObject();
-      structJson.add(ModelerConstants.TYPE_DECLARATION_PROPERTY, typeDeclarationJson);
 
       // TODO: external references
       XpdlTypeType type = structType.getDataType();
-      typeDeclarationJson.add("type", toXpdlTypeJson(type));
+      structJson.add("type", toXpdlTypeJson(type));
 
       JsonObject schemaJson = new JsonObject();
       ModelService.loadSchemaInfo(schemaJson, structType.getSchema());
-      typeDeclarationJson.add("schema", schemaJson);
+      structJson.add("schema", schemaJson);
       structJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.TYPE_DECLARATION_PROPERTY);
 
       return structJson;

@@ -11,10 +11,10 @@
 define(
 		[ "m_utils", "m_constants", "m_extensionManager", "m_command",
 				"m_commandsController", "m_dialog", "m_modelElementView",
-				"m_model", "m_typeDeclaration", "m_dataTypeSelector" ],
+				"m_model", "m_dataTypeSelector" ],
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_typeDeclaration, m_dataTypeSelector) {
+				m_dataTypeSelector) {
 			var view;
 
 			return {

@@ -224,6 +224,11 @@ define(function() {
 		TYPE_DECLARATION_PROPERTY : "typeDeclaration",
 		DOCUMENT_DATA_TYPE : "dmsDocument",
 
+		// Type Declarations
+		
+		STRUCTURE_TYPE : "STRUCTURE_TYPE",
+		ENUMERATION_TYPE : "ENUMERATION_TYPE",
+
 		// Gateway
 
 		GATEWAY : "gateway",

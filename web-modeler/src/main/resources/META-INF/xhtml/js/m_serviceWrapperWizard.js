@@ -10,10 +10,10 @@
 
 define(
 		[ "m_utils", "m_constants", "m_command", "m_commandsController",
-				"m_model", "m_typeDeclaration", "m_accessPoint",
+				"m_model", "m_accessPoint",
 				"m_dataTraversal", "m_dialog" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_model, m_typeDeclaration, m_accessPoint, m_dataTraversal,
+				m_model, m_accessPoint, m_dataTraversal,
 				m_dialog) {
 			return {
 				initialize : function() {

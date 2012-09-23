@@ -11,9 +11,9 @@
 define(
 		[ "m_utils", "m_constants", "m_command", "m_commandsController",
 				"m_dialog", "m_modelElementView", "m_model",
-				"m_typeDeclaration", "m_dataTypeSelector", "m_parameterDefinitionsPanel" ],
+				"m_dataTypeSelector", "m_parameterDefinitionsPanel" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_dialog, m_modelElementView, m_model, m_typeDeclaration,
+				m_dialog, m_modelElementView, m_model,
 				m_dataTypeSelector, m_parameterDefinitionsPanel) {
 			return {
 				initialize : function(fullId) {

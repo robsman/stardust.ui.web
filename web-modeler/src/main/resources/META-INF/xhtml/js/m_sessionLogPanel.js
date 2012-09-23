@@ -10,12 +10,12 @@
 
 define(
 		[ "m_utils", "m_constants", "m_user", "m_session", "m_command",
-				"m_commandsController", "m_model", "m_typeDeclaration",
+				"m_commandsController", "m_model", 
 				"m_accessPoint", "m_dataTraversal", "m_dialog",
 				"m_communicationController", "m_websocketModel",
 				"m_websocketInvite", "mustache" ],
 		function(m_utils, m_constants, m_user, m_session, m_command,
-				m_commandsController, m_model, m_typeDeclaration,
+				m_commandsController, m_model, 
 				m_accessPoint, m_dataTraversal, m_dialog,
 				m_communicationController, m_websocketModel, m_websocketInvite,
 				mustache) {

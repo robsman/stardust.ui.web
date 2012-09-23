@@ -158,8 +158,7 @@ define(
 										if (event.data.panel.currentParameterDefinition != null) {
 											event.data.panel.currentParameterDefinition.name = event.data.panel.parameterDefinitionNameInput
 													.val();
-											event.data.panel
-													.initializeParameterDefinitionsTable();
+											event.data.panel.submitChanges();
 										}
 									});
 					this.parameterDefinitionDirectionSelect
@@ -171,8 +170,7 @@ define(
 										if (event.data.panel.currentParameterDefinition != null) {
 											event.data.panel.currentParameterDefinition.direction = event.data.panel.parameterDefinitionDirectionSelect
 													.val();
-											event.data.panel
-													.initializeParameterDefinitionsTable();
+											event.data.panel.submitChanges();
 										}
 									});
 
@@ -185,8 +183,7 @@ define(
 										function(event) {
 											event.data.panel.currentParameterDefinition.descriptor = event.data.panel.descriptorInput
 													.val();
-											event.data.panel
-													.initializeParameterDefinitionsTable();
+											event.data.panel.submitChanges();
 										});
 						this.keyDescriptorInput
 								.change(
@@ -196,8 +193,7 @@ define(
 										function(event) {
 											event.data.panel.currentDataPath.keyDescriptor = event.data.panel.keyDescriptorInput
 													.val();
-											event.data.panel
-													.initializeParameterDefinitionsTable();
+											event.data.panel.submitChanges();
 										});
 					}
 
@@ -217,8 +213,7 @@ define(
 															.val();
 												}
 
-												event.data.panel
-														.initializeParameterDefinitionsTable();
+												event.data.panel.submitChanges();
 											}
 										});
 
@@ -232,8 +227,7 @@ define(
 												if (event.data.panel.currentParameterDefinition != null) {
 													event.data.panel.currentParameterDefinition.dataPath = event.data.panel.parameterDefinitionPathInput
 															.val();
-													event.data.panel
-															.initializeParameterDefinitionsTable();
+													event.data.panel.submitChanges();
 												}
 											});
 						}
@@ -249,7 +243,6 @@ define(
 
 					this.initializeParameterDefinitionsTable();
 					this.populateParameterDefinitionFields();
-
 					this.selectCurrentParameterDefinition();
 				};
 
@@ -369,6 +362,9 @@ define(
 				 */
 				ParameterDefinitionsPanel.prototype.initializeParameterDefinitionsTable = function() {
 					this.parameterDefinitionsTableBody.empty();
+
+					m_utils.debug("Set Parameters: " + this
+							.parameterDefinitions);
 
 					for ( var m in this.parameterDefinitions) {
 						var parameterDefinition = this.parameterDefinitions[m];
@@ -590,7 +586,7 @@ define(
 						this.parameterDefinitions[this.currentParameterDefinition.id] = this.currentParameterDefinition;
 					}
 
-					this.submitChanges(this.parameterDefinitions);
+					this.submitChanges();
 				};
 
 				/**
@@ -608,7 +604,7 @@ define(
 
 					this.parameterDefinitions = changedParameterDefinitions;
 
-					this.submitChanges(this.parameterDefinitions);
+					this.submitChanges();
 				};
 
 				/**
@@ -631,7 +627,7 @@ define(
 
 					this.parameterDefinitions = changedParameterDefinitions;
 
-					this.submitChanges(this.parameterDefinitions);
+					this.submitChanges();
 				};
 
 				/**
@@ -654,7 +650,7 @@ define(
 
 					this.parameterDefinitions = changedParameterDefinitions;
 
-					this.submitChanges(this.parameterDefinitions);
+					this.submitChanges();
 				};
 
 				/**
@@ -676,7 +672,7 @@ define(
 					this.currentParameterDefinition.primitiveDataType = dataChanges.primitiveDataType;
 					this.currentParameterDefinition.structuredDataTypeFullId = dataChanges.structuredDataTypeFullId;
 
-					this.submitChanges(this.parameterDefinitions);
+					this.submitChanges();
 				};
 			}
 		});

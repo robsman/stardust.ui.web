@@ -8,8 +8,6 @@ define(
 		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog) {
 			return {
 				create : function(options) {
-					m_utils.debug("Options");
-					m_utils.debug(options);
 					var panel = new DataTypeSelector();
 
 					panel.initialize(options);
@@ -28,8 +26,6 @@ define(
 				 * scope submitHandler supportsOtherData
 				 */
 				DataTypeSelector.prototype.initialize = function(options) {
-					m_utils.debug("Options");
-					m_utils.debug(options);
 					this.scope = options.scope;
 					this.submitHandler = options.submitHandler;
 					this.supportsOtherData = options.supportsOtherData;
@@ -111,11 +107,11 @@ define(
 					this.structuredDataTypeSelect
 							.append("<optgroup label=\"This Model\">");
 
-					for ( var i in this.scopeModel.structuredDataTypes) {
+					for ( var i in this.scopeModel.typeDeclarations) {
 						this.structuredDataTypeSelect.append("<option value='"
-								+ this.scopeModel.structuredDataTypes[i]
+								+ this.scopeModel.typeDeclarations[i]
 										.getFullId() + "'>"
-								+ this.scopeModel.structuredDataTypes[i].name
+								+ this.scopeModel.typeDeclarations[i].name
 								+ "</option>");
 					}
 
@@ -127,15 +123,15 @@ define(
 							continue;
 						}
 
-						for ( var m in m_model.getModels()[n].structuredDataTypes) {
+						for ( var m in m_model.getModels()[n].typeDeclarations) {
 							this.structuredDataTypeSelect
 									.append("<option value='"
-											+ m_model.getModels()[n].structuredDataTypes[m]
+											+ m_model.getModels()[n].typeDeclarations[m]
 													.getFullId()
 											+ "'>"
 											+ m_model.getModels()[n].name
 											+ "/"
-											+ m_model.getModels()[n].structuredDataTypes[m].name
+											+ m_model.getModels()[n].typeDeclarations[m].name
 											+ "</option>");
 						}
 					}

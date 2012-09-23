@@ -108,24 +108,6 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 		/**
 		 * 
 		 */
-		Data.prototype.createUpdateCommand = function() {
-			return m_command.createUpdateCommand("/models/"
-					+ this.model.id + "/data/"
-					+ this.dataFullId, this.createTransferObject());
-		};
-
-		/**
-		 * 
-		 */
-		Data.prototype.createDeleteCommand = function() {
-			return m_command.createDeleteCommand("/models/"
-					+ this.model.id + "/data/"
-					+ this.dataFullId, this.createTransferObject());
-		};
-		
-		/**
-		 * 
-		 */
 		Data.prototype.submitCreation = function() {
 			var command =m_command
 					.createCreateStructuredDataCommand(this.model.id, this.model.id,

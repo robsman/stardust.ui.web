@@ -10,10 +10,10 @@
 
 define(
 		[ "m_utils", "m_constants", "m_command", "m_commandsController",
-				"m_model", "m_typeDeclaration", "m_accessPoint",
+				"m_model", "m_accessPoint",
 				"m_dataTraversal", "m_dialog", "m_modelElementView" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_model, m_typeDeclaration, m_accessPoint, m_dataTraversal,
+				m_model, m_accessPoint, m_dataTraversal,
 				m_dialog, m_modelElementView) {
 			return {
 				initialize : function(fullId) {
@@ -270,7 +270,7 @@ define(
 								},
 								function(event) {
 									var outputDataTypeSelectInput = jQuery("#outputDataDialog #typeSelectInput");
-									var typeDeclarations = m_typeDeclaration
+									var typeDeclarations = m_model
 											.getTypeDeclarations();
 
 									// var models = m_model.getModels();
@@ -490,7 +490,7 @@ define(
 									+ ":"
 									+ accessPoint.attributes["carnot:engine:dataType"]).typeDeclaration;
 
-					typeDeclaration.resolveTypes(m_typeDeclaration
+					typeDeclaration.resolveTypes(m_model
 							.getTypeDeclarations());
 
 					this.inputData[accessPoint.id] = typeDeclaration;
@@ -523,7 +523,7 @@ define(
 									+ ":"
 									+ accessPoint.attributes["carnot:engine:dataType"]).typeDeclaration;
 
-					typeDeclaration.resolveTypes(m_typeDeclaration
+					typeDeclaration.resolveTypes(m_model
 							.getTypeDeclarations());
 
 					this.outputData[accessPoint.id] = typeDeclaration;

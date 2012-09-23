@@ -10,9 +10,8 @@
 
 define(
 		[ "m_utils", "m_constants", "m_commandsController", "m_dialog", "m_modelElementView",
-				"m_model", "m_typeDeclaration" ],
-		function(m_utils, m_constants, m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_typeDeclaration) {
+				"m_model"],
+		function(m_utils, m_constants, m_commandsController, m_dialog, m_modelElementView, m_model) {
 			return {
 				initialize : function(fullId) {
 					var view = new CamelApplicationView();
