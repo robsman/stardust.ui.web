@@ -744,7 +744,7 @@ define(
 				 * Temporarily commented out as left stretch is disabled
 				 */
 				SwimlaneSymbol.prototype.stretchLeft = function(dX, dY, x, y) {
-					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
+					if (!this.diagram.isInConnectionMode()) {
 						this.width = this.preDragState.width - dX;
 						this.x = this.preDragState.x + dX;
 
@@ -756,7 +756,7 @@ define(
 				 * Temporarily commented out as top stretch is disabled
 				 */
 				SwimlaneSymbol.prototype.stretchTop = function(dX, dY, x, y) {
-					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
+					if (!this.diagram.isInConnectionMode()) {
 						this.height = this.preDragState.height - dY;
 						this.y = this.preDragState.y + dY;
 
@@ -768,7 +768,7 @@ define(
 				 *
 				 */
 				SwimlaneSymbol.prototype.stretchRight = function(dX, dY, x, y) {
-					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
+					if (!this.diagram.isInConnectionMode()) {
 						this.width = this.preDragState.width + dX;
 
 						this.adjustGeometry();
@@ -779,7 +779,7 @@ define(
 				 *
 				 */
 				SwimlaneSymbol.prototype.stretchBottom = function(dX, dY, x, y) {
-					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
+					if (!this.diagram.isInConnectionMode()) {
 						this.height = this.preDragState.height + dY;
 
 						this.adjustGeometry();
@@ -837,7 +837,7 @@ define(
 						this.parentSymbol.recalculateBoundingBox();
 						this.parentSymbol.adjustGeometry();
 
-						var newGeometry = {"x": this.x, "y" : this.y, "oid" : this.oid, "width" : this.width , "height" :this.height};
+						var newGeometry = {"x": this.x, "y" : this.y, "parentSymbolId" : this.parentSymbol.id, "width" : this.width , "height" :this.height};
 
 						var command = m_command.createMoveNodeSymbolCommand(this.diagram.model.id, this.oid, newGeometry);
 						m_commandsController.submitCommand(command);

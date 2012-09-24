@@ -940,7 +940,8 @@ define(
 								var newGeometry = {
 									"x" : this.x,
 									"y" : this.y,
-									"oid" : this.oid
+									"parentSymbolId" : this.parentSymbol.id,
+									"type" : this.type
 								};
 
 								var command = m_command
@@ -964,7 +965,7 @@ define(
 									var newGeometry = {
 										"x" : this.x,
 										"y" : this.y,
-										"oid" : this.oid
+										"parentSymbolId" : this.parentSymbol.id
 									};
 
 									var command = m_command
@@ -1378,7 +1379,7 @@ define(
 					var newGeometry = {
 						"x" : this.x,
 						"y" : this.y,
-						"oid" : this.oid,
+						"parentSymbolId" : this.parentSymbol.id,
 						"width" : this.width,
 						"height" : this.height
 					};
