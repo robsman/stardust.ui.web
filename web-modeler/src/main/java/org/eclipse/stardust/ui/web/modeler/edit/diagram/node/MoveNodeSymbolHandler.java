@@ -85,12 +85,11 @@ public class MoveNodeSymbolHandler
                {
                   // If the parent is changed, remove reference from old parent
                   parentLane.getActivitySymbol().remove(nodeSymbol);
-                  ActivitySymbol activitySymbol = (ActivitySymbol) nodeSymbol;
-                  // Set the Performer for Activity
+                  ActivitySymbolType activitySymbol = (ActivitySymbolType) nodeSymbol;
+                  // Set the Performer for Activ
                   if (null != activitySymbol.getActivity().getPerformer())
                   {
-                     activitySymbol.getActivity().setPerformer(
-                           (IModelParticipant) newParentSymbol.getParticipant());
+                     activitySymbol.getActivity().setPerformer(newParentSymbol.getParticipant());
                   }
                   newParentSymbol.getActivitySymbol()
                         .add((ActivitySymbolType) nodeSymbol);
