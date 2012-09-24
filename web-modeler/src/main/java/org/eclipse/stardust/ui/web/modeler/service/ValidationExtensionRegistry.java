@@ -49,7 +49,22 @@ public class ValidationExtensionRegistry implements IValidationExtensionRegistry
       "org.eclipse.stardust.modeling.transformation.modelElementValidator",
       "MessageSerializationApplicationValidator",
       "org.eclipse.stardust.modeling.transformation.application.validation.MessageTransformationApplicationValidator",
-      "externalWebAppValidator"      
+      "externalWebAppValidator",      
+      "org.eclipse.stardust.modeling.validation.trigger",
+      "org.eclipse.stardust.modeling.validation.conditionalPerformer",
+      "org.eclipse.stardust.modeling.validation.dataMapping",
+      "org.eclipse.stardust.modeling.validation.excludeUserAction",
+      "org.eclipse.stardust.modeling.validation.setDataAction",
+      "org.eclipse.stardust.modeling.validation.timerEventCondition",
+      "org.eclipse.stardust.modeling.validation.entity20BeanData",
+      "org.eclipse.stardust.modeling.validation.entityBeanData",
+      "org.eclipse.stardust.modeling.validation.primitiveData",
+      "org.eclipse.stardust.modeling.validation.plainXmlData",
+      "dmsDocumentValidator",
+      "dmsDocumentListValidator",
+      "dmsFolderValidator",
+      "dmsFolderListValidator",
+      "org.eclipse.stardust.modeling.validation.entity30BeanData"
    };
       
    ValidationExtensionRegistry()
