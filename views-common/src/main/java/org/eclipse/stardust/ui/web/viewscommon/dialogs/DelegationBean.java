@@ -364,7 +364,7 @@ public class DelegationBean extends PopupUIComponentBean
                      return typeFilter;
                   }
                });
-         delegatesProvider = delegateCase ? CaseDelegateProvider.INSTANCE : delegatesProvider;
+         delegatesProvider = (delegateCase || selectedParticipantCase) ? CaseDelegateProvider.INSTANCE : delegatesProvider;
          delegatesDataProvider.setDelegatesProvider(delegatesProvider);
          delegatesDataProvider.setDepartmentProvider(deptProvider);
          autoCompleteSelector = new ParticipantAutocompleteSelector(delegatesDataProvider, null);
@@ -523,7 +523,8 @@ public class DelegationBean extends PopupUIComponentBean
     */
    private void retrieveDefaultParticipants()
    {
-      delegatesProvider = delegateCase ? CaseDelegateProvider.INSTANCE : delegatesProvider;
+      delegatesProvider = (delegateCase || selectedParticipantCase) ? CaseDelegateProvider.INSTANCE : delegatesProvider;
+      
       if (null == delegatesProvider)
       {
          delegatesProvider = DefaultDelegatesProvider.INSTANCE;
@@ -1278,7 +1279,10 @@ public class DelegationBean extends PopupUIComponentBean
 
                // TODO provide constant for this
                Set<Integer> result = CollectionUtils.newSet();
-               result.add(IDelegatesProvider.USER_TYPE);
+               if (!selectedParticipantCase)
+               {
+                  result.add(IDelegatesProvider.USER_TYPE);
+               }
                result.add(IDelegatesProvider.ROLE_TYPE);
                result.add(IDelegatesProvider.ORGANIZATION_TYPE);
 

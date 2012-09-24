@@ -74,9 +74,61 @@ public class DepartmentDelegatesProvider implements Serializable, IDepartmentPro
       return departmentInfos;
    }
 
-   public Map<String, Set<DepartmentInfo>> findDepartments(
-         List<ActivityInstance> activityInstances, Options options)
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.viewscommon.dialogs.IDepartmentProvider#findDepartments(java.util.List, org.eclipse.stardust.ui.web.viewscommon.dialogs.IDepartmentProvider.Options)
+    */
+   public Map<String, Set<DepartmentInfo>> findDepartments(List<ActivityInstance> activityInstances, Options options)
    {
+      if (CollectionUtils.isEmpty(activityInstances))
+      {
+         return findDepartments(options);
+      }
+      else
+      {
+         return findDepartments_(activityInstances, options);
+      }
+   }
+
+   /**
+    * @param options
+    * @return
+    */
+   private Map<String, Set<DepartmentInfo>> findDepartments(IDepartmentProvider.Options options)
+   {
+      Set<DepartmentInfo> departments = getAllDepartments();
+
+      // If it is an AutoComplete
+      String regex = !StringUtils.isEmpty(options.getNameFilter()) ? options.getNameFilter().replaceAll("\\*", ".*")
+            + ".*" : null;
+
+      Set<DepartmentInfo> matchingDepartment = new HashSet<DepartmentInfo>();
+
+      if (StringUtils.isNotEmpty(regex))
+      {
+         for (DepartmentInfo departmentInfo : departments)
+         {
+            if (StringUtils.isEmpty(regex) || departmentInfo.getName().matches(regex))
+            {
+               matchingDepartment.add(departmentInfo);
+            }
+         }
+         departments = matchingDepartment;
+      }
+
+      Map<String, Set<DepartmentInfo>> finalList = new HashMap<String, Set<DepartmentInfo>>();
+      finalList.put(DEPARTMENTS, departments);
+      return finalList;
+   }
+
+   /**
+    * @param activityInstances
+    * @param options
+    * @return
+    */
+   private Map<String, Set<DepartmentInfo>> findDepartments_(
+         List<ActivityInstance> activityInstances, Options options)
+     {
+      
       Map<String, Set<DepartmentInfo>> finalList = new HashMap<String, Set<DepartmentInfo>>();
       Set<DepartmentInfo> finalDeptList = null;
       for (int i = 0; i < activityInstances.size(); ++i)

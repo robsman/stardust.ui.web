@@ -23,9 +23,6 @@ import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.processportal.common.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.DelegationBean;
-import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDelegatesProvider;
-import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDepartmentProvider;
-import org.eclipse.stardust.ui.web.viewscommon.dialogs.WorklistParticipantsProvider;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
@@ -40,7 +37,6 @@ public class ParticipantWorklistColumnConfigurationBean extends WorklistColumnCo
    private static final String PARTICIPANT_EXIST_KEY = PARTICIPANT_KEY + "exist";
    private static final String SELECT_PARTICIPANT_KEY = PARTICIPANT_KEY + "select";
 
-   WorklistParticipantsProvider provider;
    List<QualifiedModelParticipantInfo> modelParticipants;
    UserGroups allUserGroups;
 
@@ -67,9 +63,6 @@ public class ParticipantWorklistColumnConfigurationBean extends WorklistColumnCo
       DelegationBean delegationBean = DelegationBean.getCurrent();
       delegationBean.setDelegateCase(false);
       delegationBean.setSelectedParticipantCase(true);
-      WorklistParticipantsProvider provider = getProvider();
-      delegationBean.setDelegatesProvider((IDelegatesProvider) provider);
-      delegationBean.setDepartmentDelegatesProvider((IDepartmentProvider) provider);
       delegationBean.setTitle(getMessage(SELECT_PARTICIPANT_KEY));
 
       delegationBean.setICallbackHandler(new ParametricCallbackHandler()
@@ -155,18 +148,6 @@ public class ParticipantWorklistColumnConfigurationBean extends WorklistColumnCo
    private QueryService getQryService()
    {
       return SessionContext.findSessionContext().getServiceFactory().getQueryService();
-   }
-
-   /**
-    * @return provider
-    */
-   private WorklistParticipantsProvider getProvider()
-   {
-      if (null == provider)
-      {
-         provider = new WorklistParticipantsProvider();
-      }
-      return provider;
    }
 
    /**
