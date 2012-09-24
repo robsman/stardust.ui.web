@@ -34,6 +34,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
 import org.eclipse.stardust.ui.web.modeler.edit.CommandHandlingMediator;
 import org.eclipse.stardust.ui.web.modeler.edit.model.element.ModelChangeCommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.postprocessing.ApplicationAccessPointChangeTracker;
 import org.eclipse.stardust.ui.web.modeler.edit.postprocessing.ChangesetMinifier;
 import org.eclipse.stardust.ui.web.modeler.edit.postprocessing.TouchReferrersUponIdentityChangePostprocessor;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
@@ -403,6 +404,7 @@ public class ModelerSessionRestController
       List<ChangePostprocessor> postprocessors = newArrayList();
       postprocessors.add(new ChangesetMinifier());
       postprocessors.add(new TouchReferrersUponIdentityChangePostprocessor());
+      postprocessors.add(new ApplicationAccessPointChangeTracker());
 
       for (ChangePostprocessor postprocessor : postprocessors)
       {
