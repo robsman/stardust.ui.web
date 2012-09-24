@@ -63,25 +63,29 @@ define(
 					}
 
 					this.dataTypeSelect.change({
-						"panel" : this
+						panel : this
 					}, function(event) {
 						event.data.panel.setDataType({
-							dataType : event.data.panel.dataTypeSelect.val()
-						});
+							dataType : event.data.panel.dataTypeSelect.val()});
+
+							event.data.panel.submitChanges();
 					});
 					this.primitiveDataTypeSelect.change({
-						"panel" : this
+						panel : this
 					}, function(event) {
+						event.data.panel.setPrimitiveDataType(event.data.panel.primitiveDataTypeSelect.val());
 						event.data.panel.submitChanges();
 					});
 					this.structuredDataTypeSelect.change({
-						"panel" : this
+						panel : this
 					}, function(event) {
+						event.data.panel.setStructuredDataType(event.data.panel.structuredDataTypeSelect.val());
 						event.data.panel.submitChanges();
 					});
 					this.documentTypeSelect.change({
-						"panel" : this
+						panel : this
 					}, function(event) {
+						event.data.panel.setDocumentDataType(event.data.panel.documentDataTypeSelect.val());
 						event.data.panel.submitChanges();
 					});
 				};
@@ -243,8 +247,6 @@ define(
 					if (this.otherTypeRow != null) {
 						m_dialog.makeInvisible(this.otherTypeRow);
 					}
-
-					this.submitChanges();
 				};
 
 				/**
@@ -261,8 +263,6 @@ define(
 					if (this.otherTypeRow != null) {
 						m_dialog.makeInvisible(this.otherTypeRow);
 					}
-
-					this.submitChanges();
 				};
 
 				/**
@@ -279,8 +279,6 @@ define(
 					if (this.otherTypeRow != null) {
 						m_dialog.makeInvisible(this.otherTypeRow);
 					}
-
-					this.submitChanges();
 				};
 
 				/**

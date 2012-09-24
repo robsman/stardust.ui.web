@@ -132,21 +132,47 @@ define(
 				 * 
 				 */
 				XsdStructuredDataTypeView.prototype.addElement = function() {
+					if (this.isSequence())
+						{
 					this.getBody().elements["New"
 							+ this.getElementCount()] = {
 						name : "New" + this.getElementCount(),
 						type : "xsd:string",
 						cardinality : "required"
 					};
+					this.submitChanges({
+						schema : this.typeDeclaration.schema
+					});
+
 					this.resumeTableForSequenceDefinition();
+						}
+					else
+						{
+						this.getFacets()["New"
+												+ this.getElementCount()] = {classifier: "enumeration",
+							name: "New" + this.getElementCount()};
+						this.submitChanges({
+							schema : this.typeDeclaration.schema
+						});
+										this.resumeTableForEnumerationDefinition();						
+						}
 				};
 
 				XsdStructuredDataTypeView.prototype.getElementCount = function() {
 					var n = 0;
 
+					if (this.isSequence())
+						{
 					for ( var element in this.getBody().elements) {
 						++n;
 					}
+						}
+					else
+						{
+						for ( var element in this.getFacets()) {
+							++n;
+						}						
+						}
 
 					return n;
 				};
@@ -167,8 +193,8 @@ define(
 						var content = "<tr id='" + path + "'>";
 
 						content += "<td>";
-						content += "<span class='data-element'>"
-								+ this.getBody().elements[element].name + "</span>";
+						content += "<input type='text' value='"
+								+ this.getBody().elements[element].name + "'/>";
 						content += "</td>";
 						content += "<td class='typeCell'>";
 
@@ -193,66 +219,6 @@ define(
 
 						this.tableBody.append(content);
 					}
-
-					// for (schemaElementName in
-					// this.structuredDataType.typeDeclaration.children) {
-					// var schemaElement =
-					// this.structuredDataType.typeDeclaration.children[schemaElementName];
-					//
-					// var content = "<tr id=\"schemaElementRow-" + n + "\">";
-					//
-					// content += "<td class='elementCell'>";
-					// content += "<input type=\"text\" value=\""
-					// + schemaElement.name
-					// + "\" class=\"nameInput\"></input>";
-					// content += "</td>";
-					// content += "<td class='typeCell'>";
-					//
-					// if (this.structuredDataType.typeDeclaration.type ==
-					// m_constants.STRUCTURE_TYPE) {
-					// content += this
-					// .getTypeSelectList(schemaElement.typeName);
-					// }
-					//
-					// content += "</td>"
-					// + "<td align=\"right\" class='cardinalityCell'>";
-					//
-					// if (this.structuredDataType.typeDeclaration.type ==
-					// m_constants.STRUCTURE_TYPE) {
-					// content += ("<select size=\"1\"
-					// class=\"cardinalitySelect\"><option value=\"1\""
-					// + (schemaElement.cardinality == "1" ? "selected"
-					// : "")
-					// + ">Required</option><option value=\"N\""
-					// + (schemaElement.cardinality == "N" ? "selected"
-					// : "") + ">Many</option></select>");
-					// }
-					//
-					// content += "</td></tr>";
-					//
-					// this.tableBody.append(content);
-					//
-					// jQuery(
-					// "table#typeDeclarationsTable #schemaElementRow-"
-					// + n).data({
-					// "schemaElement" : schemaElement
-					// });
-					//
-					// jQuery(
-					// "table#typeDeclarationsTable #schemaElementRow-"
-					// + n + " .deleteLink")
-					// .click(
-					// {
-					// "view" : this,
-					// "schemaElement" : schemaElement
-					// },
-					// function(event) {
-					// event.data.view
-					// .removeSchemaElement(event.data.schemaElement);
-					// });
-					//
-					// ++n;
-					// }
 
 					this.tableBody
 							.append("<tr id=\"newRow\"><td><input id=\"newLink\" type=\"image\" src=\"../../images/icons/add.png\"/></td><td></td><td></td>");
@@ -317,8 +283,8 @@ define(
 						var content = "<tr id='" + element + "'>";
 
 						content += "<td>";
-						content += "<span class='data-element'>"
-								+ this.getFacets()[element].name + "</span>";
+						content += "<input type='text' value='"
+								+ this.getFacets()[element].name + "'/>";
 						content += "</td>";
 						content += "<td>";
 						content += "</td>";
@@ -511,7 +477,7 @@ define(
 							&& null != object.changes
 							&& null != object.changes.modified
 							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].oid == this.typeDeclaration.oid) {
+							&& object.changes.modified[0].uuid == this.typeDeclaration.uuid) {
 						this.initialize(this.typeDeclaration);
 					}
 				};

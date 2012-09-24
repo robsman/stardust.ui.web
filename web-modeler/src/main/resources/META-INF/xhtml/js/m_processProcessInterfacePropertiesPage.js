@@ -20,6 +20,9 @@ define(
 				}
 			};
 
+			/**
+			 * 
+			 */
 			function ProcessProcessInterfacePropertiesPage(newPropertiesPanel,
 					newId, newTitle) {
 				var propertiesPage = m_propertiesPage.createPropertiesPage(

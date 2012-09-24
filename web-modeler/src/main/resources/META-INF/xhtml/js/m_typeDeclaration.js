@@ -62,6 +62,5 @@ define([ "m_utils", "m_modelElement" ], function(m_utils, m_modelElement) {
 			this.model = model;
 			this.model.typeDeclarations[this.id] = this;
 		};
-
 	}
 });
