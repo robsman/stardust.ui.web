@@ -635,11 +635,12 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             else if ((activity.eContainer() != null && (!(activity.eContainer() instanceof ChangeDescription)))
                   && activity.getApplication() != null)
             {
+               ApplicationType application = activity.getApplication();
                activityJson.addProperty(
                      ModelerConstants.APPLICATION_FULL_ID_PROPERTY,
                      getModelBuilderFacade().createFullId(
-                           ModelUtils.findContainingModel(activity),
-                           activity.getApplication()));
+                           ModelUtils.findContainingModel(application),
+                           application));
             }
 
             JsonObject accessPointsJson = new JsonObject();
@@ -1225,7 +1226,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       loadAttributes(application, applicationJson);
 
       applicationJson.addProperty(ModelerConstants.INTERACTIVE_PROPERTY, application.isInteractive());
-      
+
       if (application.getType() != null)
       {
          applicationJson.addProperty(ModelerConstants.APPLICATION_TYPE_PROPERTY,
