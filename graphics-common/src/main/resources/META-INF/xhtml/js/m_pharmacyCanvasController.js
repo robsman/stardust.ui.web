@@ -1408,7 +1408,7 @@ define([ "m_pharmacyToolbarController", "m_canvasManager", "m_communicationContr
 		
 		function getPageDimensions(docId, pgNo)
 		{
-			var pageDimURL = require('m_urlUtils').getContextName() + "/services/rest/documentRepoService/retrievePageDimensions/" + docId + "/" + pgNo + "/" + m_pageController.getURLPostFix();
+			var pageDimURL = require('m_urlUtils').getContextName() + "/services/rest/views-common/documentRepoService/retrievePageDimensions/" + docId + "/" + pgNo + "/" + m_pageController.getURLPostFix();
 			var dimensions;
 			m_communicationController.syncGetData({url : pageDimURL}, new function() {
 				return {
@@ -1429,7 +1429,7 @@ define([ "m_pharmacyToolbarController", "m_canvasManager", "m_communicationContr
 		
 		function getUserServicesURL()
 		{
-			return require('m_urlUtils').getContextName() + "/services/rest/documentRepoService"; 
+			return require('m_urlUtils').getContextName() + "/services/rest/views-common/documentRepoService"; 
 		}
 		
 		/* Creates a command object. This is used for persisting the data in case of creation, deletion, change 

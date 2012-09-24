@@ -54,7 +54,7 @@ define([ "m_commandsController", "m_urlUtils", "m_utils", "m_constants", "m_comm
 	
 	function update(){
 		console.log("fiep");
-		var url = m_urlUtils.getContextName()+ "/services/rest/modeler/" + new Date().getTime()+"/users/getOfflineInvites";
+		var url = m_urlUtils.getContextName()+ "/services/rest/bpm-modeler/modeler/" + new Date().getTime()+"/users/getOfflineInvites";
 		isInitial = false;
 		m_communicationController.getHead({
 			"url" : url

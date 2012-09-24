@@ -41,7 +41,7 @@ define( function() {
 		
 		getUserServicesURL : function()
 		{
-			"/services/rest/documentRepoService/getUser"
+			"/services/rest/views-common/documentRepoService/getUser"
 		},
 		
 		getStampsQueryURL : function()
@@ -58,7 +58,7 @@ define( function() {
 		
 		getModelerEndpointUrl : function()
 		{
-			return this.getContextName() + "/services/rest/modeler/" + new Date().getTime();
+			return this.getContextName() + "/services/rest/bpm-modeler/modeler/" + new Date().getTime();
 		}
 	};
 });

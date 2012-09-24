@@ -278,7 +278,7 @@ define(
 
 			function getEndpointUrl() {
 				return require('m_urlUtils').getContextName()
-						+ "/services/rest/modeler/" + new Date().getTime();
+						+ "/services/rest/bpm-modeler/modeler/" + new Date().getTime();
 			}
 			;
 

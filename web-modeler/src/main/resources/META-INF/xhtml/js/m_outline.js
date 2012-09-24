@@ -30,7 +30,7 @@ define(
 			var hasUnsavedModifications = false;
 			function getURL() {
 				return require('m_urlUtils').getContextName()
-						+ "/services/rest/modeler/" + new Date().getTime();
+						+ "/services/rest/bpm-modeler/modeler/" + new Date().getTime();
 			}
 
 			var readAllModels = function(force) {

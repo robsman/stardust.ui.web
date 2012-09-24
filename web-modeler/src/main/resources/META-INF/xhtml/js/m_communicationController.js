@@ -12,7 +12,7 @@
 define([ "m_utils", "m_constants", "m_urlUtils" ], function(m_utils, m_constants, m_urlUtils) {
 
 	var endPointUrl = m_urlUtils.getContextName()
-	+ "/services/rest/modeler/" + new Date().getTime();
+	+ "/services/rest/bpm-modeler/modeler/" + new Date().getTime();
 	
 	return {
 		getEndpointUrl : function() {

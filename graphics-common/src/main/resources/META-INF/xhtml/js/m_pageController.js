@@ -182,7 +182,7 @@ define(["m_constants"], function(m_constants) {
 	
 	function setPageSequence()
 	{
-		var pgSeqURL = require('m_urlUtils').getContextName() + "/services/rest/documentRepoService" + "/documentPageSequence/" + documentId + "/" + new Date().getTime();
+		var pgSeqURL = require('m_urlUtils').getContextName() + "/services/rest/views-common/documentRepoService" + "/documentPageSequence/" + documentId + "/" + new Date().getTime();
 		require("m_communicationController").syncGetData({url : pgSeqURL}, new function() {
 			return {
 				success : function(pageSequence) {

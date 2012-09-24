@@ -30,7 +30,7 @@ function configurei18n()
 	var lang;
 	
 	jQuery.ajax({ 
-	    url: require('m_urlUtils').getContextName() + "/services/rest/documents/DUMMU_DOC_ID/pages/0/" + getNextRandom() + "/language",		    
+	    url: require('m_urlUtils').getContextName() + "/services/rest/graphics-common/documents/DUMMU_DOC_ID/pages/0/" + getNextRandom() + "/language",		    
 		async: false,
 	    success: function(l) {	    	
 	        lang = l;
@@ -39,7 +39,7 @@ function configurei18n()
 	
   	InfinityBPMI18N.initPluginProps({
   		pluginName : "graphicscommon",
-  		singleEndPoint : require('m_urlUtils').getContextName() + "/services/rest/properties/graphics-common-client-messages/" + lang
+  		singleEndPoint : require('m_urlUtils').getContextName() + "/services/rest/common/properties/graphics-common-client-messages/" + lang
 	});
 }
 

@@ -51,7 +51,7 @@ define( function() {
 		
 		getUserServicesURL : function()
 		{
-			"/services/rest/documentRepoService/getUser"
+			"/services/rest/views-common/documentRepoService/getUser"
 		},
 		
 		getStampsQueryURL : function()

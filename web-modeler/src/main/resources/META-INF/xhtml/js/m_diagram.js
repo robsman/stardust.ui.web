@@ -522,7 +522,7 @@ define(
 				 */
 				Diagram.prototype.getEndpointUrl = function() {
 					return m_urlUtils.getContextName()
-							+ "/services/rest/modeler/" + new Date().getTime();
+							+ "/services/rest/bpm-modeler/modeler/" + new Date().getTime();
 				};
 
 				/**

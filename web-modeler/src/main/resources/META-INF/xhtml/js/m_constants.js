@@ -273,9 +273,9 @@ define(function() {
 		// Servlet related constants.
 
 		TIFF_RENDERER_SERVLET_PATH : "/IppTiffRenderer",
-		ANNOTATIONS_RESTLET_PATH : "/services/rest/documents/",
+		ANNOTATIONS_RESTLET_PATH : "/services/rest/graphics-common/documents/",
 		ANNOTATIONS_RESTLET_PATH_PAGE : "/pages/",
-		DMS_RESTLET_PATH : "/services/rest/documentRepoService",
+		DMS_RESTLET_PATH : "/services/rest/views-common/documentRepoService",
 		STAMPS_GET_REQUEST_URL : "/retrieveStamps",
 		DOCUMENT_DOWNLOAD_TOKEN_URL : "/documentDownloadURL",
 

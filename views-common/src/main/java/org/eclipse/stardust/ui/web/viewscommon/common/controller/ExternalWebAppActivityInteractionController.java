@@ -196,7 +196,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
             .append(uri.contains("?") ? "&" : "?") //
             .append(PARAM_INTERACTION_RESOURCE_URI).append("=") //
             .append(servicesBaseUri) //
-            .append("rest/interactions/").append(getInteractionId(ai));
+            .append("rest/engine/interactions/").append(getInteractionId(ai));
 
       uriBuilder.append("&") //
             .append(PARAM_PORTAL_BASE_URI).append("=").append(portalBaseUri);
