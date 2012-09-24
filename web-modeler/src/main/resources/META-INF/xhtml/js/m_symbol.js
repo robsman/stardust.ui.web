@@ -1017,7 +1017,8 @@ define(
 						// while in connection mode/or symbol is Pool/swimlane ,
 						// or in Drag and Drop mode flyout menu should disappear
 						if ((this.diagram.mode == this.diagram.CONNECTION_MODE
-								|| this.diagram.currentConnection != null || this.diagram.currentSelection.length > 0 || this.diagram.newSymbol)
+								|| this.diagram.currentConnection != null
+								|| this.diagram.currentSelection.length > 0 || this.diagram.newSymbol)
 								|| this.diagram.dragEnabled
 								|| this.type == null
 								|| (this.type && (this.type.toLowerCase()
@@ -1034,21 +1035,15 @@ define(
 						var yPos = event.pageY - this.diagram.Y_OFFSET
 								+ scrollPos.top;
 
-						var proximityMargin = m_constants.PROXIMITY_SENSOR_MARGIN;
-						// symbol x co-ord , width and proximity width will give
-						// the right proximity margin
-						var rightProximityMargin = this.x + this.width
-								+ proximityMargin + scrollPos.left;
-						// symbol x co-ord minus proximity width will give the
-						// left proximity margin
-						var leftProximityMargin = this.x - proximityMargin;
-						// symbol y co-ord minus proximity width will
-						// give the top proximity margin
-						var topProximityMargin = this.y - proximityMargin;
-						// symbol y co-ord , height,proximity width will give
-						// the bottom proximity margin
-						var bottomProximityMargin = this.y + this.height
-								+ proximityMargin;
+						var rightProximityMargin = this.proximitySensor
+								.attr('x')
+								+ this.proximitySensor.attr('width');
+						var leftProximityMargin = this.proximitySensor
+								.attr('x');
+						var topProximityMargin = this.proximitySensor.attr('y');
+						var bottomProximityMargin = this.proximitySensor
+								.attr('y')
+								+ this.proximitySensor.attr('height');
 
 						if ((xPos <= rightProximityMargin && xPos >= leftProximityMargin)
 								&& (yPos <= bottomProximityMargin && yPos >= topProximityMargin)) {
