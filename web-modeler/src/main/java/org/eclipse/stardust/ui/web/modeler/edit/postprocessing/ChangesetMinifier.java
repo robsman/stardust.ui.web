@@ -1,5 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.edit.postprocessing;
 
+import static org.eclipse.stardust.common.CollectionUtils.isEmpty;
+
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -7,7 +9,6 @@ import org.eclipse.emf.ecore.change.ChangeKind;
 import org.eclipse.emf.ecore.change.FeatureChange;
 import org.eclipse.emf.ecore.change.ListChange;
 
-import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
 
@@ -21,9 +22,16 @@ public class ChangesetMinifier implements ChangePostprocessor
          EList<FeatureChange> modifications = change.getChangeDescription()
                .getObjectChanges()
                .get(candidate);
+
+         if (isEmpty(modifications))
+         {
+            // nothing to inspect
+            continue;
+         }
+
          // count up to be sure not to miss any non-pure change
          int nPureContainerChanges = 0;
-         if (CollectionUtils.isNotEmpty(modifications))
+         try
          {
             for (FeatureChange modification : modifications)
             {
@@ -44,8 +52,10 @@ public class ChangesetMinifier implements ChangePostprocessor
                               continue;
                            }
                         }
-                        else
+                        else if (1 == modification.getListChanges().size())
                         {
+                           // only analyze simple add or remove, list indices of more
+                           // complex changes are too complex for traversal
                            for (ListChange listChange : modification.getListChanges())
                            {
                               if (ChangeKind.REMOVE_LITERAL == listChange.getKind())
@@ -71,6 +81,11 @@ public class ChangesetMinifier implements ChangePostprocessor
                               }
                            }
                         }
+                        else
+                        {
+                           // complex list change, back out
+                           break;
+                        }
                      }
                   }
                   else
@@ -86,8 +101,13 @@ public class ChangesetMinifier implements ChangePostprocessor
                }
             }
          }
+         catch (Exception e)
+         {
+            // failed analyzing, assume non-pure modification
+            continue;
+         }
 
-         if (CollectionUtils.isEmpty(modifications) || nPureContainerChanges == modifications.size())
+         if (isEmpty(modifications) || (modifications.size() == nPureContainerChanges))
          {
             change.markUnmodified(candidate);
          }
