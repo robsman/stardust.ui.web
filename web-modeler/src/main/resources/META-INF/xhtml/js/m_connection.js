@@ -163,6 +163,9 @@ define(
 						this.propertiesPanel = m_dataFlowPropertiesPanel
 								.getInstance();
 					} else {
+						if (!this.modelElement.prototype) {
+							this.modelElement.prototype = {};
+						}
 						m_utils.inheritMethods(this.modelElement.prototype,
 								m_controlFlow.prototype);
 						this.propertiesPanel = m_controlFlowPropertiesPanel

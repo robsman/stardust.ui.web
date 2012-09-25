@@ -640,37 +640,60 @@ define(
 						// TODO is lastSymbol still needed
 
 						for ( var i = 0; i < obj.changes.added.length; i++) {
-							if ((null != this.lastSymbol && null != obj.changes.added[i].type)
-									&& obj.changes.added[i].type
-											.match(this.lastSymbol.type)) {
-								this.lastSymbol
-										.applyChanges(obj.changes.added[i]);
-								this.lastSymbol.refresh();
-								this.lastSymbol = null;
-							}// For connections lastSymbol will be empty
-							else if (null != obj.changes.added[i].modelElement) {
-								// for connections , search by connectionId to
-								// set OID
-								var conn = this
-										.findConnection(obj.changes.added[i]);
+							if (obj.changes.added[i].type == m_constants.CONTROL_FLOW_CONNECTION
+									|| obj.changes.added[i].type == m_constants.DATA_FLOW_CONNECTION
+									|| obj.changes.added[i].type == m_constants.CONTROL_FLOW
+									|| obj.changes.added[i].type == m_constants.DATA_FLOW) {
+								var conn = this.findConnection(obj.changes.added[i]);
 								if (null != conn) {
 									conn.applyChanges(obj.changes.added[i]);
 									conn.refresh();
+								} else if (obj.changes.added[i].type == m_constants.CONTROL_FLOW_CONNECTION
+										|| obj.changes.added[i].type == m_constants.DATA_FLOW_CONNECTION) {
+									m_connection.createConnectionFromJson(this, obj.changes.added[i]);
 								}
-//								else {
-//									//Find swimlane from modified array
-//									var swimlane;
-//									for ( var j = 0; j < obj.changes.modified.length; j++) {
-//										if (obj.changes.modified[j].type == m_constants.SWIMLANE_SYMBOL) {
-//											swimlane = obj.changes.modified[j];
-//										}
-//									}
-//									if (swimlane) {
-//										if (obj.changes.added[i].type == m_constants.ACTIVITY_SYMBOL) {
-//											m_activitySymbol.createActivitySymbolFromJson(this, swimlane, obj.changes.added[i]);
-//										}
-//									}
-//								}
+							} else {
+								if ((null != this.lastSymbol && null != obj.changes.added[i].type)
+										&& obj.changes.added[i].type
+												.match(this.lastSymbol.type)) {
+									this.lastSymbol
+											.applyChanges(obj.changes.added[i]);
+									this.lastSymbol.refresh();
+									this.lastSymbol = null;
+								}// For connections lastSymbol will be empty
+								else {
+									if (obj.changes.added[i].type == m_constants.SWIMLANE_SYMBOL) {
+										m_swimlaneSymbol.createSwimlaneSymbolFromJson(this, this.poolSymbol, obj.changes.added[i]);
+									} else {
+										//Find swimlane from modified array
+										var swimlane;
+										for ( var j = 0; j < obj.changes.modified.length; j++) {
+											if (obj.changes.modified[j].type == m_constants.SWIMLANE_SYMBOL) {
+												swimlane = obj.changes.modified[j];
+												break;
+											}
+										}
+										for (var sym in this.symbols) {
+											if (this.symbols[sym]. oid == swimlane.oid) {
+												swimlane = this.symbols[sym];
+												break;
+											}
+										}
+										if (swimlane) {
+											//Attach prototype object
+											obj.changes.added[i].prototype = {};
+											if (obj.changes.added[i].type == m_constants.ACTIVITY_SYMBOL) {
+												m_activitySymbol.createActivitySymbolFromJson(this, swimlane, obj.changes.added[i]);
+											} else if (obj.changes.added[i].type == m_constants.GATEWAY_SYMBOL) {
+												m_gatewaySymbol.createGatewaySymbolFromJson(this, swimlane, obj.changes.added[i])
+											} else if (obj.changes.added[i].type == m_constants.EVENT_SYMBOL) {
+												m_eventSymbol.createEventSymbolFromJson(this, swimlane, obj.changes.added[i])
+											} else if (obj.changes.added[i].type == m_constants.DATA_SYMBOL) {
+												m_dataSymbol.createDataSymbolFromJson(this, swimlane, obj.changes.added[i]);
+											}
+										}
+									}
+								}
 							}
 						}
 
@@ -752,6 +775,7 @@ define(
 
 						}
 					}
+					this.lastSymbol = null;
 				};
 
 				/**

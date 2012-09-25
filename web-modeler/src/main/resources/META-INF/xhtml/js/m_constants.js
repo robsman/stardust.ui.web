@@ -225,7 +225,7 @@ define(function() {
 		DOCUMENT_DATA_TYPE : "dmsDocument",
 
 		// Type Declarations
-		
+
 		STRUCTURE_TYPE : "STRUCTURE_TYPE",
 		ENUMERATION_TYPE : "ENUMERATION_TYPE",
 
@@ -260,11 +260,11 @@ define(function() {
 		// Control Flow
 
 		CONTROL_FLOW : "controlFlow",
-
+		CONTROL_FLOW_CONNECTION : "controlFlowConnection",
 		// Data Flow
 
 		DATA_FLOW : "dataFlow",
-
+		DATA_FLOW_CONNECTION : "dataFlowConnection",
 		// Properties Panels
 
 		TO_BE_DEFINED : "TO_BE_DEFINED",

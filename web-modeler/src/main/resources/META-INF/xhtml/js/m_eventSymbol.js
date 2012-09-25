@@ -95,6 +95,9 @@ define(
 				 *
 				 */
 				EventSymbol.prototype.initializeFromJson = function(lane) {
+					if (!this.modelElement.prototype) {
+						this.modelElement.prototype = {};
+					}
 					m_utils.inheritMethods(this.modelElement.prototype,
 							m_event.prototype);
 

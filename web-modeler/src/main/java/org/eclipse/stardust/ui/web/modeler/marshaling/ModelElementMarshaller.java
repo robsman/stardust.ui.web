@@ -927,7 +927,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          loadDescription(dataJson, data);
          loadAttributes(data, dataJson);
 
-         if (data.getType().getId().equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
+         if (null != data.getType() && data.getType().getId().equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
          {
             dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                   ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
@@ -970,7 +970,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                }
             }
          }
-         else if (data.getType().getId().equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
+         else if (null != data.getType() && data.getType().getId().equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
          {
             dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                   ModelerConstants.DOCUMENT_DATA_TYPE_KEY);
@@ -996,14 +996,14 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                }
             }
          }
-         else if (data.getType().getId().equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
+         else if (null != data.getType() && data.getType().getId().equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
          {
             dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                   ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
             String type = AttributeUtil.getAttributeValue(data, CarnotConstants.TYPE_ATT);
             dataJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
          }
-         else
+         else if (null != data.getType())
          {
             dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY, data.getType()
                   .getId());
@@ -1308,13 +1308,15 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
             dataMappingConnection.getElementOid());
+      connectionJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+            ModelerConstants.DATA_FLOW_CONNECTION_LITERAL);
 
       connectionJson.addProperty(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY,
             mapAnchorOrientation(dataMappingConnection.getSourceAnchor()));
       connectionJson.addProperty(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
             mapAnchorOrientation(dataMappingConnection.getTargetAnchor()));
 
-      DataType data = dataMappingConnection.getDataSymbol().getData();
+      DataType data = null != dataMappingConnection.getDataSymbol() ? dataMappingConnection.getDataSymbol().getData() : null;
       if (null != data)
       {
          ActivityType activity = dataMappingConnection.getActivitySymbol().getActivity();
@@ -1384,6 +1386,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             mapAnchorOrientation(transitionConnection.getTargetAnchor()));
       connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
             transitionConnection.getElementOid());
+      connectionJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+            ModelerConstants.CONTROL_FLOW_CONNECTION_LITERAL);
 
       if (transitionConnection.getTransition() != null)
       {
