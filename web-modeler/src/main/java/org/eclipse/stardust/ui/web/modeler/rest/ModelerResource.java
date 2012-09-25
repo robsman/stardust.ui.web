@@ -40,7 +40,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-@Path("/modeler/{randomPostFix}")
+@Path("/bpm-modeler/modeler/{randomPostFix}")
 public class ModelerResource
 {
 
