@@ -22,28 +22,34 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.emf.ecore.EObject;
+import org.springframework.beans.BeansException;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
-import org.eclipse.stardust.ui.web.modeler.edit.CommandHandlingMediator;
+import org.eclipse.stardust.ui.web.modeler.edit.SimpleCommandHandlingMediator;
 import org.eclipse.stardust.ui.web.modeler.edit.model.element.ModelChangeCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.postprocessing.ApplicationAccessPointChangeTracker;
 import org.eclipse.stardust.ui.web.modeler.edit.postprocessing.ChangesetMinifier;
 import org.eclipse.stardust.ui.web.modeler.edit.postprocessing.TouchReferrersUponIdentityChangePostprocessor;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandlingMediator;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 @Path("/modeler/{randomPostFix}/sessions")
 public class ModelerSessionRestController
 {
+   private static final Logger trace = LogManager.getLogger(ModelerSessionRestController.class);
+
    @Context
    private ServletContext servletContext;
 
@@ -148,7 +154,7 @@ public class ModelerSessionRestController
             jto.isUndo = true;
             result = toJson(jto);
 
-            commandHandlerRegistry().broadcastChange(undoneChange.getSession(), result);
+            commandHandlingMediator().broadcastChange(undoneChange.getSession(), result);
 
             return Response.ok(jsonIo().writeJsonObject(result), MediaType.APPLICATION_JSON_TYPE).build();
          }
@@ -183,7 +189,7 @@ public class ModelerSessionRestController
             jto.isRedo = true;
             result = toJson(toJto(redoneChange));
 
-            commandHandlerRegistry().broadcastChange(redoneChange.getSession(), result);
+            commandHandlingMediator().broadcastChange(redoneChange.getSession(), result);
 
             return Response.ok(jsonIo().writeJsonObject(result), MediaType.APPLICATION_JSON_TYPE).build();
          }
@@ -302,7 +308,7 @@ public class ModelerSessionRestController
 
       // dispatch to actual command handler
       EditingSession editingSession = modelService().currentSession().getSession(model);
-      Modification change = commandHandlerRegistry().handleCommand(editingSession,
+      Modification change = commandHandlingMediator().handleCommand(editingSession,
             commandId, changeDescriptors);
       if (null != change)
       {
@@ -320,7 +326,7 @@ public class ModelerSessionRestController
 
          JsonObject changeJto = toJson(toJto(change));
 
-         commandHandlerRegistry().broadcastChange(change.getSession(), changeJto);
+         commandHandlingMediator().broadcastChange(change.getSession(), changeJto);
 
          return Response.created(URI.create(toChangeUri(change))) //
                .entity(jsonIo().writeJsonObject(changeJto))
@@ -422,9 +428,38 @@ public class ModelerSessionRestController
       return resolveSpringBean(JsonMarshaller.class, servletContext);
    }
 
-   private CommandHandlingMediator commandHandlerRegistry()
+   private CommandHandlingMediator commandHandlingMediator()
    {
-      return resolveSpringBean(CommandHandlingMediator.class, servletContext);
+      try
+      {
+         CommandHandlingMediator twophaseMediator = resolveSpringBean(CommandHandlingMediator.class, servletContext);
+         if (null != twophaseMediator)
+         {
+            trace.info("Using two-phase command handling.");
+            return twophaseMediator;
+         }
+      }
+      catch (BeansException be)
+      {
+         // failed resolving twophase mediator, fall back to simple mediator
+      }
+
+      final SimpleCommandHandlingMediator mediator = resolveSpringBean(SimpleCommandHandlingMediator.class, servletContext);
+      return new CommandHandlingMediator()
+      {
+         @Override
+         public void broadcastChange(EditingSession session, JsonObject commndJson)
+         {
+            mediator.broadcastChange(session, commndJson);
+         }
+
+         @Override
+         public Modification handleCommand(EditingSession editingSession,
+               String commandId, List<ChangeRequest> changes)
+         {
+            return mediator.handleCommand(editingSession, commandId, changes);
+         }
+      };
    }
 
    public static class ChangeJto

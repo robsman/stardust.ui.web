@@ -8,7 +8,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import org.eclipse.emf.ecore.EObject;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -20,12 +20,13 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.ui.web.modeler.edit.CommandHandlerRegistry.ICommandHandlerInvoker;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandlingMediator;
 
 @Component
 @Scope("session")
-public class CommandHandlingMediator
+public class SimpleCommandHandlingMediator
 {
-   private static final Logger trace = LogManager.getLogger(CommandHandlingMediator.class);
+   private static final Logger trace = LogManager.getLogger(SimpleCommandHandlingMediator.class);
 
    @Resource
    private CommandHandlerRegistry commandHandlerRegistry;
@@ -34,6 +35,11 @@ public class CommandHandlingMediator
    private ApplicationContext springContext;
 
    private List<IChangeListener> changeListeners = newArrayList();
+
+   public boolean isTwophase()
+   {
+      return false;
+   }
 
    public void broadcastChange(EditingSession session, JsonObject commndJson)
    {
@@ -64,7 +70,7 @@ public class CommandHandlingMediator
    }
 
    public Modification handleCommand(EditingSession editingSession, String commandId,
-         List<ChangeRequest> changes)
+         List<CommandHandlingMediator.ChangeRequest> changes)
    {
       Modification change = null;
       try
@@ -76,7 +82,7 @@ public class CommandHandlingMediator
             editingSession.beginEdit();
          }
 
-         for (ChangeRequest modification : changes)
+         for (CommandHandlingMediator.ChangeRequest modification : changes)
          {
             ICommandHandlerInvoker invoker = null;
             if (null != commandHandlerRegistry)
@@ -111,38 +117,5 @@ public class CommandHandlingMediator
       }
 
       return change;
-   }
-
-   public static class ChangeRequest
-   {
-      private final EObject model;
-
-      private final EObject contextElement;
-
-      private final JsonObject changeDescriptor;
-
-      public ChangeRequest(EObject model, EObject contextElement,
-            JsonObject changeDescriptor)
-      {
-         this.model = model;
-         this.contextElement = contextElement;
-         this.changeDescriptor = changeDescriptor;
-      }
-
-      public EObject getModel()
-      {
-         return model;
-      }
-
-      public EObject getContextElement()
-      {
-         return contextElement;
-      }
-
-      public JsonObject getChangeDescriptor()
-      {
-         return changeDescriptor;
-      }
-
    }
 }
