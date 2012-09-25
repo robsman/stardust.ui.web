@@ -13,7 +13,7 @@ define(
 			"m_communicationController", "m_commandsController",
 			"m_command", "m_session", "m_canvasManager", "m_messageDisplay", "m_symbol",
 			"m_poolSymbol", "m_activitySymbol", "m_dataSymbol",
-			"m_eventSymbol", "m_gatewaySymbol", "m_connection",
+			"m_eventSymbol", "m_gatewaySymbol", "m_swimlaneSymbol", "m_connection",
 			"m_propertiesPanel", "m_processPropertiesPanel",
 			"m_activityPropertiesPanel", "m_dataPropertiesPanel",
 			"m_eventPropertiesPanel", "m_gatewayPropertiesPanel",
@@ -23,7 +23,7 @@ define(
 	function(m_utils, m_constants, m_extensionManager, m_urlUtils,
 			m_communicationController, m_commandsController, m_command,
 			m_session, m_canvasManager, m_messageDisplay, m_symbol, m_poolSymbol,
-			m_activitySymbol, m_dataSymbol, m_eventSymbol, m_gatewaySymbol,
+			m_activitySymbol, m_dataSymbol, m_eventSymbol, m_gatewaySymbol, m_swimlaneSymbol,
 			m_connection, m_propertiesPanel, m_processPropertiesPanel,
 			m_activityPropertiesPanel, m_dataPropertiesPanel,
 			m_eventPropertiesPanel, m_gatewayPropertiesPanel,
@@ -663,7 +663,8 @@ define(
 								}// For connections lastSymbol will be empty
 								else {
 									if (obj.changes.added[i].type == m_constants.SWIMLANE_SYMBOL) {
-										m_swimlaneSymbol.createSwimlaneSymbolFromJson(this, this.poolSymbol, obj.changes.added[i]);
+										this.poolSymbol.laneSymbols.push(m_swimlaneSymbol.createSwimlaneSymbolFromJson(this, this.poolSymbol, obj.changes.added[i]));
+										this.poolSymbol.adjustChildSymbols();
 									} else {
 										//Find swimlane from modified array
 										var swimlane;
