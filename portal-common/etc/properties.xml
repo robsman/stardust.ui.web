@@ -19,41 +19,41 @@
       <server-archive name="jsp-api" type="jar" appservers="was5, wls8"
          sourceFile="../../../lib/jsp-api.jar" />
       <server-archive name="servlet-api" type="jar"
-         appservers="was5, wls8" sourceFile="../../../lib/servlet-api.jar" />       <server-archive name="stardust-engine-ws-cxf" type="jar"         sourceFile="../../../lib/stardust-engine-ws-cxf.jar"         setups="production-withLiberation, development-withLiberation, build" />           
-      <server-archive name="jsr311-api" type="jar"
-         sourceFile="../../../lib/engine-ws-cxf/jsr311-api.jar"
-         setups="production-withLiberation, development-withLiberation, build" />          <server-archive name="cxf-api" type="jar"
+         appservers="was5, wls8" sourceFile="../../../lib/servlet-api.jar" />       <!-- jaxrs + jaxws CXF common dependencies -->      <server-archive name="stardust-engine-ws-cxf" type="jar"         sourceFile="../../../lib/stardust-engine-ws-cxf.jar"         setups="production-withLiberation, development-withLiberation, build" />      <server-archive name="cxf-api" type="jar"
          sourceFile="../../../lib/engine-ws-cxf/cxf-api.jar"
-         setups="production-withLiberation, development-withLiberation, build" />      <server-archive name="cxf-rt-bindings-xml" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-bindings-xml.jar"         setups="production-withLiberation, development-withLiberation, build" />      <server-archive name="cxf-rt-core" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-core.jar"         setups="production-withLiberation, development-withLiberation, build" />      <server-archive name="cxf-rt-frontend-jaxrs" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-frontend-jaxrs.jar"         setups="production-withLiberation, development-withLiberation, build" />      <server-archive name="cxf-rt-transports-http" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-transports-http.jar"         setups="production-withLiberation, development-withLiberation, build" />      <server-archive name="jaxb-impl" type="jar"         sourceFile="../../../lib/engine-ws-cxf/jaxb-impl.jar"         setups="production-withLiberation, development-withLiberation, build" />      <server-archive name="wsdl4j" type="jar"         sourceFile="../../../lib/engine-ws-cxf/wsdl4j.jar"         setups="production-withLiberation, development-withLiberation, build" />      <server-archive name="xmlschema-core" type="jar"         sourceFile="../../../lib/engine-ws-cxf/xmlschema-core.jar"         setups="production-withLiberation, development-withLiberation, build" />      
-      <server-archive name="jsr250-api" type="jar"         sourceFile="../../../lib/engine-ws-metro/jsr250-api.jar"         setups="production-withLiberation, development-withLiberation, build" />        <server-archive name="asm" type="jar"
-         sourceFile="../../../lib/engine-ws-metro/asm.jar"
+         setups="production-withLiberation, development-withLiberation, build" />      <server-archive name="cxf-rt-core" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-core.jar"         setups="production-withLiberation, development-withLiberation, build" />
+      <server-archive name="cxf-rt-bindings-xml" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-bindings-xml.jar"         setups="production-withLiberation, development-withLiberation, build" />
+      <server-archive name="cxf-rt-transports-http" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-transports-http.jar"         setups="production-withLiberation, development-withLiberation, build" />
+      <server-archive name="jaxb-impl" type="jar"         sourceFile="../../../lib/engine-ws-cxf/jaxb-impl.jar"         setups="production-withLiberation, development-withLiberation, build" />      <server-archive name="wsdl4j" type="jar"         sourceFile="../../../lib/engine-ws-cxf/wsdl4j.jar"         setups="production-withLiberation, development-withLiberation, build" />      <server-archive name="xmlschema-core" type="jar"         sourceFile="../../../lib/engine-ws-cxf/xmlschema-core.jar"         setups="production-withLiberation, development-withLiberation, build" />                        <!-- jaxrs CXF -->      <server-archive name="jsr311-api" type="jar"         sourceFile="../../../lib/engine-ws-cxf/jsr311-api.jar"         setups="production-withLiberation, development-withLiberation, build" />          <server-archive name="cxf-rt-frontend-jaxrs" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-frontend-jaxrs.jar"         setups="production-withLiberation, development-withLiberation, build" />            <!-- jaxws CXF -->
+      <server-archive name="asm" type="jar"
+         sourceFile="../../../lib/engine-ws-cxf/asm.jar"
+         setups="production-withLiberation, development-withLiberation, build" />
+      <server-archive name="cxf-rt-bindings-soap" type="jar"
+         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-bindings-soap.jar"         setups="production-withLiberation, development-withLiberation, build" />
+      <server-archive name="cxf-rt-databinding-jaxb" type="jar"
+         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-databinding-jaxb.jar"
+         setups="production-withLiberation, development-withLiberation, build" />
+      <server-archive name="cxf-rt-frontend-jaxws" type="jar"
+         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-frontend-jaxws.jar"
+         setups="production-withLiberation, development-withLiberation, build" />
+      <server-archive name="cxf-rt-frontend-simple" type="jar"
+         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-frontend-simple.jar"
+         setups="production-withLiberation, development-withLiberation, build" />
+      <server-archive name="cxf-rt-ws-addr" type="jar"
+         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-ws-addr.jar"
+         setups="production-withLiberation, development-withLiberation, build" />
+      <server-archive name="cxf-rt-ws-policy" type="jar"
+         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-ws-policy.jar"
+         setups="production-withLiberation, development-withLiberation, build" />
+      <server-archive name="cxf-rt-ws-security" type="jar"
+         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-ws-security.jar"
+         setups="production-withLiberation, development-withLiberation, build" />
+      <server-archive name="ehcache-core" type="jar"
+         sourceFile="../../../lib/engine-ws-cxf/ehcache-core.jar"
          setups="production-withLiberation, development-withLiberation, build" />
       <server-archive name="gson" type="jar"
-         sourceFile="../../../lib/engine-ws-metro/gson.jar"/>
-      <server-archive name="ipp-engine-ws-metro" type="jar"
-         sourceFile="../../../lib/ipp-engine-ws-metro.jar"
-         setups="production-withLiberation, development-withLiberation, build" />
-      <server-archive name="xom" type="jar"
-         sourceFile="../../../lib/engine-ws-metro/xom.jar"
-         setups="production-withLiberation, development-withLiberation, build" />
-      <server-archive name="webservices-rt" type="jar"
-         sourceFile="../../../lib/engine-ws-metro/webservices-rt.jar"
-         setups="production-withLiberation, development-withLiberation, build" />
-      <server-archive name="webservices-api" type="jar"
-         sourceFile="../../../lib/engine-ws-metro/webservices-api.jar"
-         setups="production-withLiberation, development-withLiberation, build" />
-      <server-archive name="webservices-extra" type="jar"
-         sourceFile="../../../lib/engine-ws-metro/webservices-extra.jar"
-         setups="production-withLiberation, development-withLiberation, build" />
-      <server-archive name="webservices-extra-api" type="jar"
-         sourceFile="../../../lib/engine-ws-metro/webservices-extra-api.jar"
-         setups="production-withLiberation, development-withLiberation, build" />
-      <server-archive name="webservices-tools" type="jar"
-         sourceFile="../../../lib/engine-ws-metro/webservices-tools.jar"
-         setups="production-withLiberation, development-withLiberation, build" />
-      <server-archive name="jaxws-spring" type="jar"
-         sourceFile="../../../lib/engine-ws-metro/jaxws-spring.jar"
-         setups="production-withLiberation, development-withLiberation, build" />
+         sourceFile="../../../lib/engine-ws-cxf/gson.jar"
+         setups="production-withLiberation, development-withLiberation, build" />      <server-archive name="jaxb-xjc" type="jar"         sourceFile="../../../lib/engine-ws-cxf/jaxb-xjc.jar"         setups="production-withLiberation, development-withLiberation, build" />      <server-archive name="neethi" type="jar"         sourceFile="../../../lib/engine-ws-cxf/neethi.jar"         setups="production-withLiberation, development-withLiberation, build" />      <server-archive name="wss4j" type="jar"         sourceFile="../../../lib/engine-ws-cxf/wss4j.jar"         setups="production-withLiberation, development-withLiberation, build" />      <server-archive name="xml-resolver" type="jar"         sourceFile="../../../lib/engine-ws-cxf/xml-resolver.jar"         setups="production-withLiberation, development-withLiberation, build" />      <server-archive name="xmlsec" type="jar"         sourceFile="../../../lib/engine-ws-cxf/xmlsec.jar"         setups="production-withLiberation, development-withLiberation, build" />         
       <server-archive name="jackrabbit-api" type="jar"
          appservers="wls" sourceFile="../../../lib/dms/jackrabbit-api.jar"
          setups="production-withJcr, development-withJcr, build" />
@@ -279,36 +279,7 @@
       <server-archive name="xbean-spring" type="jar"
          appservers="tomcat" sourceFile="../../../lib/jms/xbean-spring.jar"
          destDir="WEB-INF/lib/" />
-                  <server-archive name="stardust-engine-ws-cxf" type="jar"         sourceFile="../../../lib/stardust-engine-ws-cxf.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />         <server-archive name="jsr311-api" type="jar"         sourceFile="../../../lib/engine-ws-cxf/jsr311-api.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />        <server-archive name="cxf-api" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-api.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="cxf-rt-bindings-xml" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-bindings-xml.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="cxf-rt-core" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-core.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="cxf-rt-frontend-jaxrs" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-frontend-jaxrs.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="cxf-rt-transports-http" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-transports-http.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="jaxb-impl" type="jar"         sourceFile="../../../lib/engine-ws-cxf/jaxb-impl.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="wsdl4j" type="jar"         sourceFile="../../../lib/engine-ws-cxf/wsdl4j.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="xmlschema-core" type="jar"         sourceFile="../../../lib/engine-ws-cxf/xmlschema-core.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />            <server-archive name="jsr250-api" type="jar"         sourceFile="../../../lib/engine-ws-metro/jsr250-api.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />   
-      <server-archive name="jaxws-spring" type="jar"
-         sourceFile="../../../lib/engine-ws-metro/jaxws-spring.jar" destDir="WEB-INF/lib/"
-         setups="production-withLiberation, development-withLiberation, build" />
-      <server-archive name="asm" type="jar"
-         sourceFile="../../../lib/engine-ws-metro/asm.jar" destDir="WEB-INF/lib/"
-         setups="production-withLiberation, development-withLiberation, build" />
-      <server-archive name="gson" type="jar"
-         sourceFile="../../../lib/engine-ws-metro/gson.jar" destDir="WEB-INF/lib/"/>
-      <server-archive name="ipp-engine-ws-metro" type="jar"
-         sourceFile="../../../lib/ipp-engine-ws-metro.jar" destDir="WEB-INF/lib/"
-         setups="production-withLiberation, development-withLiberation, build" />
-      <server-archive name="xom" type="jar"
-         sourceFile="../../../lib/engine-ws-metro/xom.jar" destDir="WEB-INF/lib/"
-         setups="production-withLiberation, development-withLiberation, build" />
-      <server-archive name="webservices-rt" type="jar"
-         sourceFile="../../../lib/engine-ws-metro/webservices-rt.jar" destDir="WEB-INF/lib/"
-         setups="production-withLiberation, development-withLiberation, build" />
-      <server-archive name="webservices-api" type="jar"
-         sourceFile="../../../lib/engine-ws-metro/webservices-api.jar" destDir="WEB-INF/lib/"
-         setups="production-withLiberation, development-withLiberation, build" />
-      <server-archive name="webservices-extra" type="jar"
-         sourceFile="../../../lib/engine-ws-metro/webservices-extra.jar" destDir="WEB-INF/lib/"
-         setups="production-withLiberation, development-withLiberation, build" />
-      <server-archive name="webservices-extra-api" type="jar"
-         sourceFile="../../../lib/engine-ws-metro/webservices-extra-api.jar" destDir="WEB-INF/lib/"
-         setups="production-withLiberation, development-withLiberation, build" />
-      <server-archive name="webservices-tools" type="jar"
-         sourceFile="../../../lib/engine-ws-metro/webservices-tools.jar" destDir="WEB-INF/lib/"
-         setups="production-withLiberation, development-withLiberation, build" />
+            <!-- jaxrs + jaxws CXF common dependencies -->      <server-archive name="stardust-engine-ws-cxf" type="jar"         sourceFile="../../../lib/stardust-engine-ws-cxf.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="cxf-api" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-api.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="cxf-rt-core" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-core.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="cxf-rt-bindings-xml" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-bindings-xml.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="cxf-rt-transports-http" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-transports-http.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="jaxb-impl" type="jar"         sourceFile="../../../lib/engine-ws-cxf/jaxb-impl.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="wsdl4j" type="jar"         sourceFile="../../../lib/engine-ws-cxf/wsdl4j.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="xmlschema-core" type="jar"         sourceFile="../../../lib/engine-ws-cxf/xmlschema-core.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />                        <!-- jaxrs CXF -->      <server-archive name="jsr311-api" type="jar"         sourceFile="../../../lib/engine-ws-cxf/jsr311-api.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />          <server-archive name="cxf-rt-frontend-jaxrs" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-frontend-jaxrs.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />            <!-- jaxws CXF -->      <server-archive name="asm" type="jar"         sourceFile="../../../lib/engine-ws-cxf/asm.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="cxf-rt-bindings-soap" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-bindings-soap.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="cxf-rt-databinding-jaxb" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-databinding-jaxb.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="cxf-rt-frontend-jaxws" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-frontend-jaxws.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="cxf-rt-frontend-simple" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-frontend-simple.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="cxf-rt-ws-addr" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-ws-addr.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="cxf-rt-ws-policy" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-ws-policy.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="cxf-rt-ws-security" type="jar"         sourceFile="../../../lib/engine-ws-cxf/cxf-rt-ws-security.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="ehcache-core" type="jar"         sourceFile="../../../lib/engine-ws-cxf/ehcache-core.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="gson" type="jar"         sourceFile="../../../lib/engine-ws-cxf/gson.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="jaxb-xjc" type="jar"         sourceFile="../../../lib/engine-ws-cxf/jaxb-xjc.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="neethi" type="jar"         sourceFile="../../../lib/engine-ws-cxf/neethi.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="wss4j" type="jar"         sourceFile="../../../lib/engine-ws-cxf/wss4j.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="xml-resolver" type="jar"         sourceFile="../../../lib/engine-ws-cxf/xml-resolver.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />      <server-archive name="xmlsec" type="jar"         sourceFile="../../../lib/engine-ws-cxf/xmlsec.jar"         setups="production-withLiberation, development-withLiberation, build" destDir="WEB-INF/lib/" />         
       <server-archive name="jsr107cache" type="jar"
          sourceFile="../../../lib/jsr107cache.jar"
          destDir="WEB-INF/lib/" setups="withCache"/>
@@ -1096,11 +1067,11 @@
          <property name="servlet[IFACE_UPLOAD_SERVLET].load-on-startup"
             value="1" />
 
-         <property name="servlet[WS_METRO].servlet-name" value="metro-jaxws-servlet"
+         <property name="servlet[WS_CXF].servlet-name" value="cxf-jaxws-servlet"
             setups="production-withLiberation, development-withLiberation, build" />
-         <property name="servlet[WS_METRO].servlet-class"
-            value="com.infinity.bpm.rt.impl.api.ws.servlet.IppWsServlet"
-            setups="production-withLiberation, development-withLiberation, build" />
+         <property name="servlet[WS_CXF].servlet-class"
+            value="org.eclipse.stardust.engine.ws.servlet.DynamicCXFServlet"
+            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[WS_CXF].init-param[CXF_WS_CONFIG_CLASS].param-name"            value="config-location"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[WS_CXF].init-param[CXF_WS_CONFIG_CLASS].param-value"            value="classpath*:META-INF/spring/cxf/*ws-cxf-context.xml,classpath:WEB-INF/jax-ws-cxf-context.xml"            setups="production-withLiberation, development-withLiberation, build" />
 
          <property name="servlet[REST].servlet-name" value="cxf-jaxrs-servlet"
             setups="production-withLiberation, development-withLiberation, build" />
@@ -1113,7 +1084,7 @@
             setups="production-withLiberation, development-withLiberation, build" />
          <property
             name="servlet[REST].init-param[CXF_RES_CONFIG_CLASS].param-value"
-            value="classpath*:/META-INF/spring/cxf/*-context.xml"
+            value="classpath*:META-INF/spring/cxf/*rs-cxf-context.xml"
             setups="production-withLiberation, development-withLiberation, build" />
 
          <property name="servlet[SPRING_REMOTING].servlet-name"
@@ -1406,10 +1377,10 @@
             value="/jackrabbit/server/*" setups="production-withJcr, development-withJcr, build"
             appservers="tomcat" />
 
-         <property name="servlet-mapping[WS_METRO].servlet-name"
-            value="metro-jaxws-servlet"
+         <property name="servlet-mapping[WS_CXF].servlet-name"
+            value="cxf-jaxws-servlet"
             setups="production-withLiberation, development-withLiberation, build" />
-         <property name="servlet-mapping[WS_METRO].url-pattern"
+         <property name="servlet-mapping[WS_CXF].url-pattern"
             value="/services/soap/*"
             setups="production-withLiberation, development-withLiberation, build" />
 
@@ -1838,30 +1809,21 @@
 
       <property-file name="ippBasePortal-ejb.manifest"
          filetype="silent" destinations="ippBasePortal-ejb:manifest">
-         <!-- don't include jaxb-api.jar as its content is included with webservices-api.jar (which sometimes comes from the server classpath) -->
-         <!-- don't include stax-api.jar as its content is included with webservices-api.jar (which sometimes comes from the server classpath) -->
-         <!-- don't include wstx-asl.jar as its content is included with webservices-rt.jar (which sometimes comes from the server classpath) -->
          <property name="Class-Path"
             value="engine-ejb.ejb carnot-base.jar ipp-engine-core.jar ipp-product-nls.jar mail.jar commons-jxpath.jar
                 jcr-vfs.jar asm.jar gson.jar aopalliance.jar                spring-beans.jar spring-core.jar spring-tx.jar spring-jms.jar spring-jdbc.jar spring-expression.jar spring-context-support.jar spring-context.jar spring-asm.jar spring-aop.jar spring-orm.jar 
-                jsr250-api.jar jsr311-api.jar ipp-engine-ws-metro.jar stardust-engine-ws-cxf.jar xom.jar webservices-rt.jar webservices-api.jar webservices-extra.jar
-                webservices-extra-api.jar webservices-tools.jar jaxws-spring.jar cglib-nodep.jar
-                jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar                cxf-api.jar cxf-rt-bindings-xml.jar cxf-rt-core.jar cxf-rt-frontend-jaxrs.jar cxf-rt-transports-http.jar jaxb-impl.jar wsdl4j.jar xmlschema-core.jar">
+                jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar cglib-nodep.jar                jsr311-api.jar stardust-engine-ws-cxf.jar                cxf-api.jar cxf-rt-bindings-xml.jar cxf-rt-core.jar cxf-rt-frontend-jaxrs.jar cxf-rt-transports-http.jar jaxb-impl.jar wsdl4j.jar xmlschema-core.jar                cxf-rt-bindings-soap.jar cxf-rt-databinding-jaxb.jar cxf-rt-frontend-jaxws.jar cxf-rt-frontend-simple.jar cxf-rt-ws-addr.jar cxf-rt-ws-policy.jar cxf-rt-ws-security.jar ehcache-core.jar jaxb-xjc.jar neethi.jar wss4j.jar xml-resolver.jar xmlsec.jar">
             <appserver-value appserver="jboss5" 
                value="ipp-engine-core.jar ipp-product-nls.jar mail.jar activation.jar commons-jxpath.jar
                 jcr-vfs.jar asm.jar gson.jar aopalliance.jar                spring-beans.jar spring-core.jar spring-tx.jar spring-jms.jar spring-jdbc.jar spring-expression.jar spring-context-support.jar spring-context.jar spring-asm.jar spring-aop.jar spring-orm.jar 
-                jsr250-api.jar jsr311-api.jar ipp-engine-ws-metro.jar stardust-engine-ws-cxf.jar xom.jar webservices-rt.jar webservices-api.jar webservices-extra.jar                webservices-extra-api.jar webservices-tools.jar jaxws-spring.jar cglib-nodep.jar
-                jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar                cxf-api.jar cxf-rt-bindings-xml.jar cxf-rt-core.jar cxf-rt-frontend-jaxrs.jar cxf-rt-transports-http.jar jaxb-impl.jar wsdl4j.jar xmlschema-core.jar"/>
+                jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar cglib-nodep.jar                jsr311-api.jar stardust-engine-ws-cxf.jar                 cxf-api.jar cxf-rt-bindings-xml.jar cxf-rt-core.jar cxf-rt-frontend-jaxrs.jar cxf-rt-transports-http.jar jaxb-impl.jar wsdl4j.jar xmlschema-core.jar                cxf-rt-bindings-soap.jar cxf-rt-databinding-jaxb.jar cxf-rt-frontend-jaxws.jar cxf-rt-frontend-simple.jar cxf-rt-ws-addr.jar cxf-rt-ws-policy.jar cxf-rt-ws-security.jar ehcache-core.jar jaxb-xjc.jar neethi.jar wss4j.jar xml-resolver.jar xmlsec.jar"/>
             <appserver-value appserver="wls"               value="ipp-engine-core.jar ipp-product-nls.jar mail.jar commons-jxpath.jar
                 jcr-vfs.jar asm.jar gson.jar aopalliance.jar                spring-beans.jar spring-core.jar spring-tx.jar spring-jms.jar spring-jdbc.jar spring-expression.jar spring-context-support.jar spring-context.jar spring-asm.jar spring-aop.jar spring-orm.jar 
-                jsr250-api.jar jsr311-api.jar jaxws-spring.jar cglib-nodep.jar
-                jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar                cxf-api.jar cxf-rt-bindings-xml.jar cxf-rt-core.jar cxf-rt-frontend-jaxrs.jar cxf-rt-transports-http.jar jaxb-impl.jar wsdl4j.jar xmlschema-core.jar"/>
+                jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar cglib-nodep.jar                jsr311-api.jar stardust-engine-ws-cxf.jar                 cxf-api.jar cxf-rt-bindings-xml.jar cxf-rt-core.jar cxf-rt-frontend-jaxrs.jar cxf-rt-transports-http.jar jaxb-impl.jar wsdl4j.jar xmlschema-core.jar                cxf-rt-bindings-soap.jar cxf-rt-databinding-jaxb.jar cxf-rt-frontend-jaxws.jar cxf-rt-frontend-simple.jar cxf-rt-ws-addr.jar cxf-rt-ws-policy.jar cxf-rt-ws-security.jar ehcache-core.jar jaxb-xjc.jar neethi.jar wss4j.jar xml-resolver.jar xmlsec.jar"/>
             <appserver-value appserver="was"
                value="engine-ejb.ejb carnot-base.jar ipp-engine-core.jar ipp-product-nls.jar mail.jar commons-jxpath.jar
                 jcr-vfs.jar jsp-api.jar asm.jar gson.jar aopalliance.jar                spring-beans.jar spring-core.jar spring-tx.jar spring-jms.jar spring-jdbc.jar spring-expression.jar spring-context-support.jar spring-context.jar spring-asm.jar spring-aop.jar spring-orm.jar 
-                jsr250-api.jar jsr311-api.jar ipp-engine-ws-metro.jar stardust-engine-ws-cxf.jar xom.jar webservices-rt.jar webservices-api.jar webservices-extra.jar
-                webservices-extra-api.jar webservices-tools.jar jaxws-spring.jar cglib-nodep.jar
-                jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar                cxf-api.jar cxf-rt-bindings-xml.jar cxf-rt-core.jar cxf-rt-frontend-jaxrs.jar cxf-rt-transports-http.jar jaxb-impl.jar wsdl4j.jar xmlschema-core.jar"/>
+                jackrabbit-webdav.jar jackrabbit-webapp.jar jackrabbit-jcr-server.jar jackrabbit-jcr-servlet.jar cglib-nodep.jar                jsr311-api.jar stardust-engine-ws-cxf.jar                cxf-api.jar cxf-rt-bindings-xml.jar cxf-rt-core.jar cxf-rt-frontend-jaxrs.jar cxf-rt-transports-http.jar jaxb-impl.jar wsdl4j.jar xmlschema-core.jar                cxf-rt-bindings-soap.jar cxf-rt-databinding-jaxb.jar cxf-rt-frontend-jaxws.jar cxf-rt-frontend-simple.jar cxf-rt-ws-addr.jar cxf-rt-ws-policy.jar cxf-rt-ws-security.jar ehcache-core.jar jaxb-xjc.jar neethi.jar wss4j.jar xml-resolver.jar xmlsec.jar"/>
          </property>
       </property-file>
 
@@ -2212,13 +2174,9 @@
          <property name="servlet[SIMPLE_WEBDAV].load-on-startup"
             value="4" setups="production-withJcr, development-withJcr, build"/>
 
-         <property name="servlet[WS_METRO].servlet-name" value="metro-jaxws-servlet"
-            setups="production-withLiberation, development-withLiberation, build" />
-         <property name="servlet[WS_METRO].servlet-class"
-            value="com.infinity.bpm.rt.impl.api.ws.servlet.IppWsServlet"
-            setups="production-withLiberation, development-withLiberation, build" />
+         <property name="servlet[WS_CXF].servlet-name" value="cxf-jaxws-servlet"            setups="production-withLiberation, development-withLiberation, build" />         <property name="servlet[WS_CXF].servlet-class"            value="org.eclipse.stardust.engine.ws.servlet.DynamicCXFServlet"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[WS_CXF].init-param[CXF_WS_CONFIG_CLASS].param-name"            value="config-location"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[WS_CXF].init-param[CXF_WS_CONFIG_CLASS].param-value"            value="classpath*:META-INF/spring/cxf/*ws-cxf-context.xml,classpath:WEB-INF/jax-ws-cxf-context.xml"            setups="production-withLiberation, development-withLiberation, build" />
 
-         <property name="servlet[REST].servlet-name" value="cxf-jaxrs-servlet"            setups="production-withLiberation, development-withLiberation, build" />         <property name="servlet[REST].servlet-class"            value="org.apache.cxf.transport.servlet.CXFServlet"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[REST].init-param[CXF_RES_CONFIG_CLASS].param-name"            value="config-location"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[REST].init-param[CXF_RES_CONFIG_CLASS].param-value"            value="classpath*:/META-INF/spring/cxf/*-context.xml"            setups="production-withLiberation, development-withLiberation, build" />
+         <property name="servlet[REST].servlet-name" value="cxf-jaxrs-servlet"            setups="production-withLiberation, development-withLiberation, build" />         <property name="servlet[REST].servlet-class"            value="org.apache.cxf.transport.servlet.CXFServlet"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[REST].init-param[CXF_RES_CONFIG_CLASS].param-name"            value="config-location"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[REST].init-param[CXF_RES_CONFIG_CLASS].param-value"            value="classpath*:META-INF/spring/cxf/*rs-cxf-context.xml"            setups="production-withLiberation, development-withLiberation, build" />
          <property
             name="servlet[IPP_LANDING_PAGE].servlet-name" value="ippLandingPage"
             appservers="was6, was7"/>
@@ -2308,10 +2266,10 @@
          <property name="servlet-mapping[SIMPLE_WEBDAV].url-pattern"
             value="/jackrabbit/repository/*" setups="production-withJcr, development-withJcr, build" />
             
-         <property name="servlet-mapping[WS_METRO].servlet-name"
-            value="metro-jaxws-servlet"
+         <property name="servlet-mapping[WS_CXF].servlet-name"
+            value="cxf-jaxws-servlet"
             setups="production-withLiberation, development-withLiberation, build" />
-         <property name="servlet-mapping[WS_METRO].url-pattern"
+         <property name="servlet-mapping[WS_CXF].url-pattern"
             value="/services/soap/*"
             setups="production-withLiberation, development-withLiberation, build" />
 
