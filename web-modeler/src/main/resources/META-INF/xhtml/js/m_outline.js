@@ -2219,11 +2219,9 @@ define(
 								var textElem = jQuery(link.childNodes[1])[0];
 
 								textElem.nodeValue = modelElement.name;
-								if (m_constants.ROLE_PARTICIPANT_TYPE == modelElement.type) {
-									node
-											.attr(
-													m_constants.TEAM_LEADER_KEY,
-													obj.changes.modified[i].isTeamLeader);
+								if (m_constants.ROLE_PARTICIPANT_TYPE == obj.changes.modified[i].type
+										|| m_constants.TEAM_LEADER_TYPE == obj.changes.modified[i].type) {
+									node.attr("rel", obj.changes.modified[i].type);
 								}
 								renameElementViewLabel(node.attr("rel"), node
 										.attr("id"), node.attr("name"));
