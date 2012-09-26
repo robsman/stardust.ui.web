@@ -435,7 +435,7 @@ define(
 					var model = m_model.findModelByUuid(data.rslt.obj
 							.attr("id"));
 
-					if (model.name != data.rslt.name) {
+					if (model && (model.name != data.rslt.name)) {
 						m_commandsController.submitCommand(m_command
 								.createUpdateModelCommand(model.uuid, {
 									"name" : data.rslt.name,
@@ -449,16 +449,18 @@ define(
 					var modelElement = model
 							.findModelElementByUuid(data.rslt.obj.attr("id"));
 
-					m_commandsController
-							.submitCommand(m_command
-									.createUpdateModelElementWithUUIDCommand(
-											model.id,
-											modelElement.uuid,
-											{
-												"name" : data.rslt.name,
-												"id" : m_utils
-														.generateIDFromName(data.rslt.name)
-											}));
+					if (modelElement && (modelElement.name != data.rslt.name)) {
+						m_commandsController
+						.submitCommand(m_command
+								.createUpdateModelElementWithUUIDCommand(
+										model.id,
+										modelElement.uuid,
+										{
+											"name" : data.rslt.name,
+											"id" : m_utils
+													.generateIDFromName(data.rslt.name)
+										}));
+					}
 				}
 			};
 

@@ -26,20 +26,20 @@ define([ "m_utils", "m_modelElement" ], function(m_utils, m_modelElement) {
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	function TypeDeclaration() {
 		m_utils.inheritMethods(TypeDeclaration.prototype, m_modelElement.create());
 
 		/**
-		 * 
+		 *
 		 */
 		TypeDeclaration.prototype.toString = function() {
 			return "Lightdust.TypeDeclaration";
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		TypeDeclaration.prototype.initialize = function(name, type) {
 			this.name = name;
@@ -56,10 +56,23 @@ define([ "m_utils", "m_modelElement" ], function(m_utils, m_modelElement) {
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		TypeDeclaration.prototype.initializeFromJson = function(model) {
 			this.model = model;
+			this.model.typeDeclarations[this.id] = this;
+		};
+
+		/**
+		 *
+		 */
+		TypeDeclaration.prototype.rename = function(id, name)
+		{
+			delete this.model.typeDeclarations[this.id];
+
+			this.id = id;
+			this.name = name;
+
 			this.model.typeDeclarations[this.id] = this;
 		};
 	}
