@@ -1016,9 +1016,6 @@
          <property
             name="listener[IFACE_CTX_EVENT_REPEATER_LISTENER].listener-class"
             value="com.icesoft.faces.util.event.servlet.ContextEventRepeater" />
-         <property name="listener[WS_LISTENER].listener-class"
-            value="com.sun.xml.ws.transport.http.servlet.WSServletContextListener"
-            setups="production-withLiberation, development-withLiberation, build" />
 
          <!-- ******** SERVLET SECTION ******** -->
          <property name="servlet[FACES_SERVLET].servlet-name"
@@ -2070,9 +2067,6 @@
          <property
             name="listener[IFACE_CTX_EVENT_REPEATER_LISTENER].listener-class"
             value="com.icesoft.faces.util.event.servlet.ContextEventRepeater" />
-         <property name="listener[WS_LISTENER].listener-class"
-            value="com.sun.xml.ws.transport.http.servlet.WSServletContextListener"
-            setups="production-withLiberation, development-withLiberation, build" />
 
          <!-- ******** SERVLET SECTION ******** -->
          <property name="servlet[FACES_SERVLET].servlet-name"
