@@ -703,25 +703,25 @@
          modules="ippBasePortal-pojo">
       </property-file>
 
-      <property-file name="InfinityBpmQueryTypes.xsd"
-         sourceFile="../../webapps/ws-api/WEB-INF/wsdl/InfinityBpmQueryTypes.xsd"
-         filetype="binary" filename="InfinityBpmQueryTypes.xsd"
+      <property-file name="StardustBpmQueryTypes.xsd"
+         sourceFile="../../webapps/ws-api/WEB-INF/wsdl/StardustBpmQueryTypes.xsd"
+         filetype="binary" filename="StardustBpmQueryTypes.xsd"
+         destinations="ippBasePortal-pojo:WEB-INF/wsdl"
+         setups="production-withLiberation, development-withLiberation, build"
+         modules="ippBasePortal-pojo">
+      </property-file>            <property-file name="StardustBpmTypes.xsd"         sourceFile="../../webapps/ws-api/WEB-INF/wsdl/StardustBpmTypes.xsd"         filetype="binary" filename="StardustBpmTypes.xsd"         destinations="ippBasePortal-pojo:WEB-INF/wsdl"         setups="production-withLiberation, development-withLiberation, build"         modules="ippBasePortal-pojo">      </property-file>
+
+      <property-file name="StardustBpmService.wsdl"
+         sourceFile="../../webapps/ws-api/WEB-INF/wsdl/StardustBpmService.wsdl"
+         filetype="binary" filename="StardustBpmService.wsdl"
          destinations="ippBasePortal-pojo:WEB-INF/wsdl"
          setups="production-withLiberation, development-withLiberation, build"
          modules="ippBasePortal-pojo">
       </property-file>
 
-      <property-file name="InfinityBpmService.wsdl"
-         sourceFile="../../webapps/ws-api/WEB-INF/wsdl/InfinityBpmService.wsdl"
-         filetype="binary" filename="InfinityBpmService.wsdl"
-         destinations="ippBasePortal-pojo:WEB-INF/wsdl"
-         setups="production-withLiberation, development-withLiberation, build"
-         modules="ippBasePortal-pojo">
-      </property-file>
-
-      <property-file name="InfinityBpmService.xsd"
-         sourceFile="../../webapps/ws-api/WEB-INF/wsdl/InfinityBpmService.xsd"
-         filetype="binary" filename="InfinityBpmService.xsd"
+      <property-file name="StardustBpmService.xsd"
+         sourceFile="../../webapps/ws-api/WEB-INF/wsdl/StardustBpmService.xsd"
+         filetype="binary" filename="StardustBpmService.xsd"
          destinations="ippBasePortal-pojo:WEB-INF/wsdl"
          setups="production-withLiberation, development-withLiberation, build"
          modules="ippBasePortal-pojo">
@@ -2777,25 +2777,25 @@
          modules="ippBasePortal-ejb">
       </property-file>
       
-      <property-file name="InfinityBpmQueryTypes.xsd"
-         sourceFile="../../webapps/ws-api/WEB-INF/wsdl/InfinityBpmQueryTypes.xsd"
-         filetype="binary" filename="InfinityBpmQueryTypes.xsd"
+      <property-file name="StardustBpmQueryTypes.xsd"
+         sourceFile="../../webapps/ws-api/WEB-INF/wsdl/StardustBpmQueryTypes.xsd"
+         filetype="binary" filename="StardustBpmQueryTypes.xsd"
+         destinations="ippBasePortal-ejb:WEB-INF/wsdl"
+         setups="production-withLiberation, development-withLiberation, build"
+         modules="ippBasePortal-ejb">
+      </property-file>            <property-file name="StardustBpmTypes.xsd"         sourceFile="../../webapps/ws-api/WEB-INF/wsdl/StardustBpmTypes.xsd"         filetype="binary" filename="StardustBpmTypes.xsd"         destinations="ippBasePortal-ejb:WEB-INF/wsdl"         setups="production-withLiberation, development-withLiberation, build"         modules="ippBasePortal-ejb">      </property-file>
+
+      <property-file name="StardustBpmService.wsdl"
+         sourceFile="../../webapps/ws-api/WEB-INF/wsdl/StardustBpmService.wsdl"
+         filetype="binary" filename="StardustBpmService.wsdl"
          destinations="ippBasePortal-ejb:WEB-INF/wsdl"
          setups="production-withLiberation, development-withLiberation, build"
          modules="ippBasePortal-ejb">
       </property-file>
 
-      <property-file name="InfinityBpmService.wsdl"
-         sourceFile="../../webapps/ws-api/WEB-INF/wsdl/InfinityBpmService.wsdl"
-         filetype="binary" filename="InfinityBpmService.wsdl"
-         destinations="ippBasePortal-ejb:WEB-INF/wsdl"
-         setups="production-withLiberation, development-withLiberation, build"
-         modules="ippBasePortal-ejb">
-      </property-file>
-
-      <property-file name="InfinityBpmService.xsd"
-         sourceFile="../../webapps/ws-api/WEB-INF/wsdl/InfinityBpmService.xsd"
-         filetype="binary" filename="InfinityBpmService.xsd"
+      <property-file name="StardustBpmService.xsd"
+         sourceFile="../../webapps/ws-api/WEB-INF/wsdl/StardustBpmService.xsd"
+         filetype="binary" filename="StardustBpmService.xsd"
          destinations="ippBasePortal-ejb:WEB-INF/wsdl"
          setups="production-withLiberation, development-withLiberation, build"
          modules="ippBasePortal-ejb">
