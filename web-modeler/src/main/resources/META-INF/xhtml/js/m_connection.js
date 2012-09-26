@@ -189,6 +189,9 @@ define(
 					this.reroute();
 				};
 
+				/*
+				 *
+				 */
 				Connection.prototype.initializeAnchorPoints = function() {
 					if (this.toModelElementType == m_constants.ACTIVITY) {
 						this.toAnchorPoint = this.diagram.activitySymbols[this.toModelElementOid].anchorPoints[this.toAnchorPointOrientation];
