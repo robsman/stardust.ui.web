@@ -13,7 +13,10 @@ require.config({
 		'jquery.impromptu': 'libs/jquery/plugins/jquery-impromptu.3.1.min',
 		'jquery.simplemodal': 'libs/jquery/plugins/jquery.simplemodal.1.4.1.min',
 		'jquery.url': 'libs/jquery/plugins/jquery.url',
-		'mustache': 'libs/mustache/mustache'
+
+		'mustache': 'libs/mustache/mustache',
+
+		'extensions': '../../../services/rest/bpm-modeler/config/ui/extensions.js?p=extensions',
 	},
 	shim: {
 		'jquery-ui': ['jquery'],

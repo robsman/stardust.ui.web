@@ -18,6 +18,8 @@ require.config({
 		'jquery.tablescroll': 'libs/jquery/plugins/jquery.tablescroll',
 		'jquery.treeTable': 'libs/jquery/plugins/jquery.treeTable',
 		'jquery.url': 'libs/jquery/plugins/jquery.url',
+
+		'extensions': '../../../services/rest/bpm-modeler/config/ui/extensions.js?p=extensions',
 	},
 	shim: {
 		'json': {
@@ -65,8 +67,8 @@ require(["require",
 	 "extensions",
 	 "m_extensionManager",
 	 "m_modelerViewLayoutManager",
-	 "m_dataTypeSelector", 
-	 "m_parameterDefinitionsPanel",	 
+	 "m_dataTypeSelector",
+	 "m_parameterDefinitionsPanel",
 	 "m_testPaletteHandler",
 	], function (require) {
 

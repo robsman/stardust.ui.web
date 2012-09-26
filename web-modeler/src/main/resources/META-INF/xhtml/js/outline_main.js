@@ -13,6 +13,8 @@ require.config({
 		'jquery.jstree': 'libs/jquery/plugins/jquery.jstree',
 		'jquery.simplemodal': 'libs/jquery/plugins/jquery.simplemodal.1.4.1.min',
 		'jquery.url': 'libs/jquery/plugins/jquery.url',
+
+		'extensions': '../../../services/rest/bpm-modeler/config/ui/extensions.js?p=extensions',
 	},
 	shim: {
 		'raphael': {
