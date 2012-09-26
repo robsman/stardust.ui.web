@@ -1423,6 +1423,13 @@ define(
 				};
 
 				/**
+				 * Nothing required here
+				 */
+				Connection.prototype.validateProximity = function(event) {
+					return false;
+				}
+
+				/**
 				 *
 				 */
 				Connection.prototype.hide = function() {
