@@ -14,7 +14,9 @@ import static org.eclipse.stardust.ui.web.common.PerspectiveUtils.mergeExtension
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -341,5 +343,13 @@ public class PerspectiveDefinition implements IPerspectiveDefinition, Serializab
       }
 
       return null;
+   }
+
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.common.IPerspectiveDefinition#getExtensions()
+    */
+   public Map<String, PerspectiveExtension> getExtensions()
+   {
+      return Collections.unmodifiableMap(extensions);
    }
 }

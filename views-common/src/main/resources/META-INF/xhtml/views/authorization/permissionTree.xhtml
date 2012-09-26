@@ -77,6 +77,21 @@
 			<!-- Tree node content -->
 			<f:facet name="content">
 				<ice:panelGroup style="display: inline;">
+	
+					<!-- Absolute Node -->
+					<ice:panelGroup style="display: inline;"
+						rendered="#{item.userObject.nodeType eq 'ABSOLUTE'}">
+						<ice:commandLink
+							style="text-decoration: none">
+							<pc:automationTag value="auto-COM-PermsTree-absolute"
+								standAlone="false" />
+							<f:attribute name="node" value="#{item.userObject}" />
+							<h:graphicImage value="#{item.userObject.icon}"
+								style="margin-right: 5px;" />
+							<ice:outputText value="#{item.userObject.text}"
+								/>
+						</ice:commandLink>
+					</ice:panelGroup>
 
 					<!-- Permission Node -->
 					<ice:panelGroup style="display: inline;"

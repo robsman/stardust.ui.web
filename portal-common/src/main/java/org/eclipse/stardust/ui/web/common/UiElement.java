@@ -23,6 +23,10 @@ import javax.faces.context.FacesContext;
  */
 public abstract class UiElement implements MessageSource, Serializable
 {
+   public static final String PRE_LABEL = "label";
+   public static final String PRE_LABEL_TITLE = "labelTitle";
+   public static final String PRE_TITLE = "title";
+   
    private static final long serialVersionUID = 1L;
 
    public static final String COMMON_MSG_CODE_PREFIX = "common";
@@ -91,7 +95,7 @@ public abstract class UiElement implements MessageSource, Serializable
     * @param useDefaultMsg
     * @return
     */
-   private String getMessage(String code, String defaultMessage, Locale locale, boolean useDefaultMsg)
+   public String getMessage(String code, String defaultMessage, Locale locale, boolean useDefaultMsg)
    {
       // If locale is null then get the default locale from browser session
       if(locale == null)

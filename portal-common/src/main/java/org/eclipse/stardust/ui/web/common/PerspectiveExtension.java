@@ -25,6 +25,9 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
 public class PerspectiveExtension implements Serializable, MessageSourceProvider
 {
    private static final long serialVersionUID = 1L;
+   
+   private static final String EXT = "extensions.";
+   private static final String LABEL = ".label";
 
    private String name;
 
@@ -80,6 +83,12 @@ public class PerspectiveExtension implements Serializable, MessageSourceProvider
       return targetPerspectiveSet;
    }
 
+   public String getLabel()
+   {
+      String key = EXT + getName() + LABEL;
+      return (getMessages() != null) ? getMessages().getMessage(key, null) : getName();
+   }
+   
    public MessageSource getMessages()
    {
       return messages;

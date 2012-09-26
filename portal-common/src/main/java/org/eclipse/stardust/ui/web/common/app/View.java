@@ -33,8 +33,6 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
  */
 public class View extends AbstractUiElement implements TabScopeManager
 {
-   public static final String PRE_LABEL = "label";
-   public static final String PRE_LABEL_TITLE = "labelTitle";
    public static final String PRE_DESCRIPTION = "description";
    
    private ViewState viewState;

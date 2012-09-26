@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.common;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -79,4 +80,6 @@ public interface IPerspectiveDefinition extends Serializable
    public String getController();
    
    public void setController(String controller);
+   
+   public Map<String, PerspectiveExtension> getExtensions();
 }

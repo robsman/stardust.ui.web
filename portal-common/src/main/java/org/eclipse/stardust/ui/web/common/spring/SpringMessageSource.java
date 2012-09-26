@@ -73,7 +73,7 @@ public class SpringMessageSource implements HierarchicalMessageSource
     * @param replaceWithDefault
     * @return
     */
-   private String getMessage(String code, String defaultMessage, Locale locale, boolean replaceWithDefault)
+   public String getMessage(String code, String defaultMessage, Locale locale, boolean replaceWithDefault)
    {
       String message = null;
       if (null != springMsgSource)
@@ -94,7 +94,7 @@ public class SpringMessageSource implements HierarchicalMessageSource
 
       if ((null == message) && (null != parent))
       {
-         message = parent.getMessage(code, locale);
+         message = parent.getMessage(code, null, locale, replaceWithDefault);
       }
 
       if (null == message && replaceWithDefault)

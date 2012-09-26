@@ -11,20 +11,22 @@
 package org.eclipse.stardust.ui.web.viewscommon.views.authorization;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
+import org.eclipse.stardust.engine.api.dto.RuntimePermissionsDetails;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
-import org.eclipse.stardust.engine.api.runtime.RuntimePermissions;
 import org.eclipse.stardust.ui.web.common.autocomplete.IAutocompleteDataProvider;
 import org.eclipse.stardust.ui.web.common.autocomplete.IAutocompleteSelector.IAutocompleteSelectorListener;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
@@ -35,7 +37,6 @@ import org.eclipse.stardust.ui.web.viewscommon.user.ParticipantWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
-
 
 import com.icesoft.faces.component.selectinputtext.SelectInputText;
 
@@ -53,10 +54,11 @@ public class PermissionPickList
    private MessagesViewsCommonBean viewsCommonBean;
    private final ParticipantAutocompleteSelector participantSelector;
    private ParticipantWrapper selectedParticipant;
-   private RuntimePermissions runtimePermissions;
+   private PermissionsDetails permissions;
    private SelectInputText autoCompleteText;
    private boolean dirty;
    private boolean show;
+   private Map<String, String> labels = new HashMap<String, String>();
 
    /**
     * Constructor
@@ -135,7 +137,8 @@ public class PermissionPickList
    public void initialize()
    {
       show = false;
-      runtimePermissions = administrationService.getGlobalPermissions();
+      resetPermissions();
+
       participantSelector.setSearchValue(EMPTY_STRING);
 
       if (autoCompleteText != null)
@@ -157,10 +160,22 @@ public class PermissionPickList
       return show;
    }
 
+   private void resetPermissions()
+   {
+      // UI permissions
+      permissions = new PermissionsDetails(UiPermissionUtils.getAllPermissions(administrationService, true));
+
+      // general Permissions
+      RuntimePermissionsDetails runtimePermissionsDetails = (RuntimePermissionsDetails) administrationService
+            .getGlobalPermissions();
+      permissions.setGeneralPermission(runtimePermissionsDetails);
+   }
+
+   
    public void refresh()
    {
-      runtimePermissions = administrationService.getGlobalPermissions();
-
+      resetPermissions();
+      
       if (selectedParticipant != null)
       {
          initializeModel(selectedParticipant);
@@ -240,9 +255,9 @@ public class PermissionPickList
                   if (!hasParticipant)
                   {
                      Set<ModelParticipantInfo> participants = new HashSet<ModelParticipantInfo>(
-                           runtimePermissions.getGrants(permissionId));
+                           permissions.getGrants(permissionId));
                      participants.add((ModelParticipantInfo) selectedParticipant.getParticipantInfo());
-                     runtimePermissions.setGrants(permissionId, participants);
+                     permissions.setGrants(permissionId, participants);
                   }
                }
             }
@@ -259,7 +274,7 @@ public class PermissionPickList
             {
 
                String permissionId = (String) item.getValue();
-               Set<ModelParticipantInfo> participants = runtimePermissions.getGrants(permissionId);
+               Set<ModelParticipantInfo> participants = permissions.getGrants(permissionId);
 
                for (Iterator<ModelParticipantInfo> itr = participants.iterator(); itr.hasNext();)
                {
@@ -284,14 +299,16 @@ public class PermissionPickList
 
                   }
                }
-               runtimePermissions.setGrants(permissionId, participants);
+               permissions.setGrants(permissionId, participants);
 
             }
          }
 
          try
          {
-            administrationService.setGlobalPermissions(runtimePermissions);
+            administrationService.setGlobalPermissions(permissions.getGeneralPermission());
+            UiPermissionUtils.savePreferences(administrationService, permissions.getUIPermissionMap());   
+            
             dirty = false;
          }
          catch (Exception e)
@@ -323,7 +340,7 @@ public class PermissionPickList
     */
    private boolean hasParticipant(String permissionId, ParticipantWrapper participantWrapper)
    {
-      Set<ModelParticipantInfo> participants = runtimePermissions.getGrants(permissionId);
+      Set<ModelParticipantInfo> participants = permissions.getGrants(permissionId);
 
       for (ModelParticipantInfo participant : participants)
       {
@@ -356,22 +373,20 @@ public class PermissionPickList
       dualListModel.getSource().clear();
       dualListModel.getTarget().clear();
 
-      List<String> tempList = new ArrayList<String>(runtimePermissions.getAllPermissionIds());
+      List<String> tempList = new ArrayList<String>(permissions.getAllPermissionIds());
 
-      for (String permissionId : runtimePermissions.getAllPermissionIds())
+      for (String permissionId : permissions.getAllPermissionIds())
       {
-         boolean hasAllGrant = runtimePermissions.hasAllGrant(permissionId);
+         boolean hasAllGrant = permissions.hasAllGrant(permissionId);
          if (hasAllGrant)
          {
-            dualListModel.getTarget().add(
-                  new SelectItemModel(viewsCommonBean.getString(PERMISSION_KEY_PREFIX + permissionId), permissionId,
-                        true));
+            dualListModel.getTarget().add(new SelectItemModel(getLabel(permissionId), permissionId, true));
             tempList.remove(permissionId);
          }
          else
          {
 
-            Set<ModelParticipantInfo> participants = runtimePermissions.getGrants(permissionId);
+            Set<ModelParticipantInfo> participants = permissions.getGrants(permissionId);
 
             for (ModelParticipantInfo participant : participants)
             {
@@ -380,9 +395,7 @@ public class PermissionPickList
                {
                   if (compareFQID(participant, participantWrapper))
                   {
-                     dualListModel.getTarget().add(
-                           new SelectItemModel(viewsCommonBean.getString(PERMISSION_KEY_PREFIX + permissionId),
-                                 permissionId, false));
+                     dualListModel.getTarget().add(new SelectItemModel(getLabel(permissionId), permissionId, false));
                      tempList.remove(permissionId);
                      break;
                   }
@@ -390,9 +403,7 @@ public class PermissionPickList
                }
                else if (participant.getName().equals(participantWrapper.getID()))
                {
-                  dualListModel.getTarget().add(
-                        new SelectItemModel(viewsCommonBean.getString(PERMISSION_KEY_PREFIX + permissionId),
-                              permissionId, false));
+                  dualListModel.getTarget().add(new SelectItemModel(getLabel(permissionId), permissionId, false));
                   tempList.remove(permissionId);
                   break;
                }
@@ -402,12 +413,26 @@ public class PermissionPickList
 
       for (String permissionId : tempList)
       {
-         dualListModel.getSource()
-               .add(new SelectItemModel(viewsCommonBean.getString(PERMISSION_KEY_PREFIX + permissionId), permissionId,
-                     false));
+         dualListModel.getSource().add(new SelectItemModel(getLabel(permissionId), permissionId, false));
       }
    }
 
+   /**
+    * @param permissionId
+    * @return
+    */
+   private String getLabel(String permissionId)
+   {
+      if (UiPermissionUtils.isGeneralPermissionId(permissionId))
+      {
+         return viewsCommonBean.getString(PERMISSION_KEY_PREFIX + permissionId);
+      }
+      else if (!labels.containsKey(permissionId))
+      {
+         labels.put(permissionId, UiPermissionUtils.getPermisionLabel(permissionId));
+      }
+      return labels.get(permissionId);
+   }
    /**
     * 
     * @author Vikas.Mishra

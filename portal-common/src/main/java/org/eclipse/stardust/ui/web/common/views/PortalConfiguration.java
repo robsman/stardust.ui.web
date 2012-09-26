@@ -23,10 +23,10 @@ import org.eclipse.stardust.ui.web.common.PreferencePage;
 import org.eclipse.stardust.ui.web.common.PreferencesDefinition;
 import org.eclipse.stardust.ui.web.common.ResourcePaths;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
+import org.eclipse.stardust.ui.web.common.UiElement;
 import org.eclipse.stardust.ui.web.common.ViewDefinition;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.PortalUiController;
-import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.categorytree.GenericCategory;
 import org.eclipse.stardust.ui.web.common.categorytree.GenericCategoryTree;
 import org.eclipse.stardust.ui.web.common.categorytree.GenericCategoryTreeUserObject;
@@ -193,13 +193,13 @@ public class PortalConfiguration extends UIComponentBean
    {
       String title;
 
-      if (vd.hasMessage(View.PRE_LABEL_TITLE, null))
+      if (vd.hasMessage(UiElement.PRE_LABEL_TITLE, null))
       {
-         title = vd.getMessage(View.PRE_LABEL_TITLE, null);
+         title = vd.getMessage(UiElement.PRE_LABEL_TITLE, null);
       }
       else
       {
-         title = vd.getMessage(View.PRE_LABEL, null);
+         title = vd.getMessage(UiElement.PRE_LABEL, null);
       }
 
       return title;

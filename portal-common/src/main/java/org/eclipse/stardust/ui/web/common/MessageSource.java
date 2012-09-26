@@ -21,5 +21,6 @@ public interface MessageSource extends Serializable
 {
    String getMessage(String code, Locale locale);
    String getMessage(String code, String defaultMessage, Locale locale);
+   String getMessage(String code, String defaultMessage, Locale locale, boolean replaceWithDefault);
    boolean hasMessage(String code, Locale locale);
 }
