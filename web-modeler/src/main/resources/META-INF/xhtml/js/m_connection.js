@@ -1370,9 +1370,9 @@ define(
 								.attr({
 									'x' : x
 											+ n
-											* (m_constants.FLY_OUT_MENU_CONTENT_MARGIN) + 5,
-									'y' : y
-											+ m_constants.FLY_OUT_MENU_EMPTY_MARGIN
+											* (m_constants.FLY_OUT_MENU_CONTENT_MARGIN) + 10,
+									'y' : y + 2
+
 								});
 						++n;
 					}
