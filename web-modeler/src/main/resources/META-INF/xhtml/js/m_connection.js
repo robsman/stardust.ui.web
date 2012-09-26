@@ -1022,26 +1022,176 @@ define(
 						if (currentSegment.isHorizontal()) {
 							if ((currentSegment.fromX < currentSegment.toX && currentSegment.toX < targetX)
 									|| (currentSegment.fromX > currentSegment.toX && currentSegment.toX > targetX)) {
+								if (this.toAnchorPoint.symbol != null
+										&& this.toAnchorPoint.symbol.type != m_constants.SWIMLANE_SYMBOL) {
+									if(n==0){
+										if(currentSegment.toX < targetX){
+											var anchorPointMargin =(this.toAnchorPoint.symbol.x - currentSegment.toX) / 2;
+											currentSegment.toX = currentSegment.toX + anchorPointMargin;
+										}
+										else{
+											var anchorPointMargin = (currentSegment.toX - (this.toAnchorPoint.symbol.x + this.toAnchorPoint.symbol.width))/2
+											currentSegment.toX = currentSegment.toX - anchorPointMargin;
+										}
+									}else if (currentSegment.toY < targetY
+											&& targetY + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH != this.toAnchorPoint.y) {
+										this.segments
+												.push(currentSegment = new Segment(
+														currentSegment.toX,
+														currentSegment.toY,
+														currentSegment.toX,
+														targetY, currentSegment));
+									}else if (currentSegment.toY > targetY
+											&& targetY != this.toAnchorPoint.y) {
+										// Horizontal segment from 3 o'clk to 3'
+										// o'clk
+										this.segments
+												.push(currentSegment = new Segment(
+														currentSegment.toX,
+														currentSegment.toY,
+														currentSegment.toX,
+														targetY
+																- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+														currentSegment));
+									}else if ((currentSegment.toX < targetX && targetX > this.toAnchorPoint.x)
+											&& (this.toAnchorPoint.symbol != null)) {
+										this.segments
+												.push(currentSegment = new Segment(
+														currentSegment.toX,
+														currentSegment.toY,
+														currentSegment.toX,
+														this.toAnchorPoint.symbol.y
+																- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+														currentSegment));
+									} else if ((currentSegment.toX > targetX && targetX < this.toAnchorPoint.x)
+											&& (this.toAnchorPoint.symbol != null)) {
+										this.segments
+												.push(currentSegment = new Segment(
+														currentSegment.toX,
+														currentSegment.toY,
+														currentSegment.toX,
+														this.toAnchorPoint.symbol.y
+																- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+														currentSegment));
+									}else{
+										currentSegment.toX = targetX;
+									}
+								}else
 								currentSegment.toX = targetX;
 							} else {
-								this.segments
-										.push(currentSegment = new Segment(
-												currentSegment.toX,
-												currentSegment.toY,
-												currentSegment.toX, targetY,
-												currentSegment));
+								// connect from 6 O'clk to 12 O'clk, when toX
+								// and TargetX match,
+								// the vertical segment needs modification
+								if (this.toAnchorPoint.symbol != null
+										&& (currentSegment.toY > targetY && this.toAnchorPoint.y > targetY)) {
+									if (currentSegment.fromX > currentSegment.toX) {
+										currentSegment.toX = this.toAnchorPoint.symbol.x
+												+ this.toAnchorPoint.symbol.width
+												+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH;
+									} else
+										currentSegment.toX = this.toAnchorPoint.symbol.x
+												- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH;
+									this.segments
+											.push(currentSegment = new Segment(
+													currentSegment.toX,
+													currentSegment.toY,
+													currentSegment.toX,
+													(this.toAnchorPoint.symbol.y - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH),
+													currentSegment));
+								}else{
+									this.segments
+									.push(currentSegment = new Segment(
+											currentSegment.toX,
+											currentSegment.toY,
+											currentSegment.toX, targetY,
+											currentSegment));
+								}
 							}
 						} else {
 							if ((currentSegment.fromY < currentSegment.toY && currentSegment.toY < targetY)
 									|| (currentSegment.fromY > currentSegment.toY && currentSegment.toY > targetY)) {
-								currentSegment.toY = targetY;
+								if (this.toAnchorPoint.symbol != null
+										&& this.toAnchorPoint.symbol.type != m_constants.SWIMLANE_SYMBOL) {
+									if (n == 0) {
+										if (currentSegment.toY < targetY) {
+											var anchorPointMargin = (this.toAnchorPoint.symbol.y - currentSegment.toY) / 2;
+											currentSegment.toY = currentSegment.toY
+													+ anchorPointMargin;
+										} else {
+											var anchorPointMargin = (currentSegment.toY - (this.toAnchorPoint.symbol.y + this.toAnchorPoint.symbol.height)) / 2
+											currentSegment.toY = currentSegment.toY
+													- anchorPointMargin;
+										}
+									} else if (currentSegment.toX > targetX
+											&& targetX != this.toAnchorPoint.x) {
+										// the bend location should be midway
+										// between symbols, update current
+										// segment
+										this.segments
+												.push(currentSegment = new Segment(
+														currentSegment.toX,
+														currentSegment.toY,
+														targetX,
+														currentSegment.toY,
+														currentSegment));
+									} else if (currentSegment.toX < targetX
+											&& targetX != this.toAnchorPoint.x) {
+										this.segments
+												.push(currentSegment = new Segment(
+														currentSegment.toX,
+														currentSegment.toY,
+														targetX,
+														currentSegment.toY,
+														currentSegment));
+									} else if (currentSegment.toY < targetY
+											&& targetY > this.toAnchorPoint.y) {
+										// Intermediate vertical lines,
+										// connecting to 9 O'clk segment
+										this.segments
+												.push(currentSegment = new Segment(
+														currentSegment.toX,
+														currentSegment.toY,
+														this.toAnchorPoint.symbol.x
+																- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+														currentSegment.toY,
+														currentSegment));
+									} else if ((currentSegment.toY > targetY && targetY < this.toAnchorPoint.y)
+											&& (this.toAnchorPoint.symbol != null)) {
+										// Intermediate vertical lines,
+										// connecting to 12 O'clk segment
+										this.segments
+												.push(currentSegment = new Segment(
+														currentSegment.toX,
+														currentSegment.toY,
+														this.toAnchorPoint.symbol.x
+																+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+														currentSegment.toY,
+														currentSegment));
+									} else {
+										currentSegment.toY = targetY;
+									}
+								} else
+									currentSegment.toY = targetY;
 							} else {
-								this.segments
-										.push(currentSegment = new Segment(
-												currentSegment.toX,
-												currentSegment.toY, targetX,
-												currentSegment.toY,
-												currentSegment));
+								if (this.toAnchorPoint.symbol != null
+										&& ((currentSegment.toX < this.fromAnchorPoint.symbol.x) && this.toAnchorPoint.symbol.x
+												+ this.toAnchorPoint.symbol.width < targetX)) {
+									this.segments
+											.push(currentSegment = new Segment(
+													currentSegment.toX,
+													currentSegment.toY,
+													this.toAnchorPoint.symbol.x
+															- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+													currentSegment.toY,
+													currentSegment));
+								}else{
+									this.segments
+									.push(currentSegment = new Segment(
+											currentSegment.toX,
+											currentSegment.toY, targetX,
+											currentSegment.toY,
+											currentSegment));
+								}
 							}
 						}
 

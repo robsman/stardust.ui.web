@@ -1371,6 +1371,7 @@ define(
 						this.currentConnection = null;
 						m_messageDisplay.clear();
 						this.mode = this.NORMAL_MODE;
+						$(".selected-tool").removeClass("selected-tool");
 					}
 				};
 
@@ -1536,7 +1537,11 @@ define(
 						if (this.currentConnection.validateCreateConnection(
 								this.currentConnection.fromAnchorPoint,
 								anchorPoint)) {
-							this.currentConnection.updateAnchorPointForSymbol();
+							// When connection created from toolbar, the anchor
+							// point should not change
+							if(!$(".selected-tool").is("#connectorButton")){
+								this.currentConnection.updateAnchorPointForSymbol();
+							}
 							this.currentConnection
 									.setSecondAnchorPoint(anchorPoint);
 							if (!this.currentConnection.isCompleted()) {
