@@ -845,6 +845,11 @@ define(
 					this.refreshFromModelElement();
 					this.recalculateBoundingBox();
 					this.adjustGeometry();
+					//Reroute connections in case the connection has moved
+					//in response to server data - UNDO / collaboration etc.
+					for(var n in this.connections) {
+						this.connections[n].reroute();
+					}
 				};
 
 				/**
