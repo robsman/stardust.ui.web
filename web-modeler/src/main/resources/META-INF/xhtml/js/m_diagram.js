@@ -780,6 +780,8 @@ define(
 
 							if (null != conn) {
 								conn.applyChanges(obj.changes.modified[i]);
+								conn.initializeAnchorPoints();
+								conn.reroute();
 								conn.refresh();
 							} else {
 								conn = this

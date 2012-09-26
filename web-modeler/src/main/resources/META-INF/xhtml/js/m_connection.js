@@ -189,6 +189,28 @@ define(
 					this.reroute();
 				};
 
+				Connection.prototype.initializeAnchorPoints = function() {
+					if (this.toModelElementType == m_constants.ACTIVITY) {
+						this.toAnchorPoint = this.diagram.activitySymbols[this.toModelElementOid].anchorPoints[this.toAnchorPointOrientation];
+					} else if (this.toModelElementType == m_constants.EVENT) {
+						this.toAnchorPoint = this.diagram.eventSymbols[this.toModelElementOid].anchorPoints[this.toAnchorPointOrientation];
+					} else if (this.toModelElementType == m_constants.DATA) {
+						this.toAnchorPoint = this.diagram.dataSymbols[this.toModelElementOid].anchorPoints[this.toAnchorPointOrientation];
+					} else if (this.toModelElementType == m_constants.GATEWAY) {
+						this.toAnchorPoint = this.diagram.gatewaySymbols[this.toModelElementOid].anchorPoints[this.toAnchorPointOrientation];
+					}
+
+					if (this.fromModelElementType == m_constants.ACTIVITY) {
+						this.fromAnchorPoint = this.diagram.activitySymbols[this.fromModelElementOid].anchorPoints[this.fromAnchorPointOrientation];
+					} else if (this.fromModelElementType == m_constants.EVENT) {
+						this.fromAnchorPoint = this.diagram.eventSymbols[this.fromModelElementOid].anchorPoints[this.fromAnchorPointOrientation];
+					} else if (this.fromModelElementType == m_constants.DATA) {
+						this.fromAnchorPoint = this.diagram.dataSymbols[this.fromModelElementOid].anchorPoints[this.fromAnchorPointOrientation];
+					} else if (this.fromModelElementType == m_constants.GATEWAY) {
+						this.fromAnchorPoint = this.diagram.gatewaySymbols[this.fromModelElementOid].anchorPoints[this.fromAnchorPointOrientation];
+					}
+				}
+
 				/* Determinies orientation of anchorpoints for connections with undefined orientation.
 				 * Orientation string returned follows syntax - FromAnchopointOrientation(N/E/W/S)
 				 * followed by ToAnchopointOrientation(N/E/W/S)
