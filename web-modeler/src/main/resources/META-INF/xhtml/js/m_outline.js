@@ -2193,18 +2193,10 @@ define(
 								modelElement.fileName = obj.changes.modified[i].fileName;
 								modelElement.filePath = obj.changes.modified[i].filePath;
 							} else {
-								if (undefined == obj.changes.modified[i].oid
-										|| 0 == obj.changes.modified[i].oid) {
-									var modelElement = m_model
-											.findElementInModelByUuid(
-													obj.changes.modified[i].modelId,
-													obj.changes.modified[i].uuid);
-								} else {
-									var modelElement = m_model
-											.findElementInModelByOid(
-													obj.changes.modified[i].modelId,
-													obj.changes.modified[i].oid);
-								}
+								var modelElement = m_model
+										.findElementInModelByUuid(
+												obj.changes.modified[i].modelId,
+												obj.changes.modified[i].uuid);
 							}
 							m_utils.debug("Models:");
 							m_utils.debug(m_model.getModels());
