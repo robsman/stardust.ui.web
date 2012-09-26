@@ -622,6 +622,12 @@ define(
 					return null;
 				};
 
+				Diagram.prototype.registerSymbol = function(symbol) {
+					if (symbol && symbol.register) {
+						symbol.register();
+					}
+				}
+
 				/**
 				 * The diagram serves as a dispatcher for all changes on model
 				 * elements underneath the diagram process.
@@ -639,6 +645,81 @@ define(
 
 						// TODO is lastSymbol still needed
 
+						//Run the added loop to add all data symbols except connections
+						//For which the loop is run again - to make sure all connected symbols are
+						//created already
+						for ( var i = 0; i < obj.changes.added.length; i++) {
+							if (!(obj.changes.added[i].type == m_constants.CONTROL_FLOW_CONNECTION
+									|| obj.changes.added[i].type == m_constants.DATA_FLOW_CONNECTION
+									|| obj.changes.added[i].type == m_constants.CONTROL_FLOW
+									|| obj.changes.added[i].type == m_constants.DATA_FLOW)) {
+								if ((null != this.lastSymbol && null != obj.changes.added[i].type)
+										&& obj.changes.added[i].type
+												.match(this.lastSymbol.type)) {
+									this.lastSymbol
+											.applyChanges(obj.changes.added[i]);
+									this.lastSymbol.refresh();
+									this.registerSymbol(this.lastSymbol);
+									this.lastSymbol = null;
+								}// For connections lastSymbol will be empty
+								else {
+									if (obj.changes.added[i].type == m_constants.SWIMLANE_SYMBOL) {
+										if (null == this.findSymbolByGuid(obj.changes.added[i].oid)) {
+											this.poolSymbol.laneSymbols.push(m_swimlaneSymbol.createSwimlaneSymbolFromJson(this, this.poolSymbol, obj.changes.added[i]));
+											this.poolSymbol.adjustChildSymbols();
+										}
+									} else {
+										//Find swimlane from modified array or added
+										var swimlane;
+										for ( var j = 0; j < obj.changes.modified.length; j++) {
+											if (obj.changes.modified[j].type == m_constants.SWIMLANE_SYMBOL) {
+												swimlane = obj.changes.modified[j];
+												break;
+											}
+										}
+										for ( var j = 0; j < obj.changes.added.length; j++) {
+											if (obj.changes.added[j].type == m_constants.SWIMLANE_SYMBOL) {
+												swimlane = obj.changes.added[j];
+												break;
+											}
+										}
+
+										if (swimlane) {
+											swimlane = this.findSymbolByGuid(swimlane.oid);
+										} else {
+											//Swimlane delete undo scenario
+											for ( var j = 0; j < obj.changes.added.length; j++) {
+												if (obj.changes.added[j].type == m_constants.SWIMLANE_SYMBOL) {
+													swimlane = m_swimlaneSymbol.createSwimlaneSymbolFromJson(this, this.poolSymbol, obj.changes.added[j]);
+													this.poolSymbol.laneSymbols.push(swimlane);
+													this.poolSymbol.adjustChildSymbols();
+												}
+											}
+										}
+
+										if (swimlane) {
+											//Attach prototype object
+											obj.changes.added[i].prototype = {};
+											if (obj.changes.added[i].type == m_constants.ACTIVITY_SYMBOL) {
+												m_activitySymbol.createActivitySymbolFromJson(this, swimlane, obj.changes.added[i]);
+												this.lastSymbol = null;
+											} else if (obj.changes.added[i].type == m_constants.GATEWAY_SYMBOL) {
+												m_gatewaySymbol.createGatewaySymbolFromJson(this, swimlane, obj.changes.added[i])
+												this.lastSymbol = null;
+											} else if (obj.changes.added[i].type == m_constants.EVENT_SYMBOL) {
+												m_eventSymbol.createEventSymbolFromJson(this, swimlane, obj.changes.added[i])
+												this.lastSymbol = null;
+											} else if (obj.changes.added[i].type == m_constants.DATA_SYMBOL) {
+												m_dataSymbol.createDataSymbolFromJson(this, swimlane, obj.changes.added[i]);
+												this.lastSymbol = null;
+											}
+										}
+									}
+								}
+							}
+						}
+
+						//Run the added loop again to add data connections
 						for ( var i = 0; i < obj.changes.added.length; i++) {
 							if (obj.changes.added[i].type == m_constants.CONTROL_FLOW_CONNECTION
 									|| obj.changes.added[i].type == m_constants.DATA_FLOW_CONNECTION
@@ -652,52 +733,8 @@ define(
 										|| obj.changes.added[i].type == m_constants.DATA_FLOW_CONNECTION) {
 									m_connection.createConnectionFromJson(this, obj.changes.added[i]);
 								}
-							} else {
-								if ((null != this.lastSymbol && null != obj.changes.added[i].type)
-										&& obj.changes.added[i].type
-												.match(this.lastSymbol.type)) {
-									this.lastSymbol
-											.applyChanges(obj.changes.added[i]);
-									this.lastSymbol.refresh();
-									this.lastSymbol = null;
-								}// For connections lastSymbol will be empty
-								else {
-									if (obj.changes.added[i].type == m_constants.SWIMLANE_SYMBOL) {
-										this.poolSymbol.laneSymbols.push(m_swimlaneSymbol.createSwimlaneSymbolFromJson(this, this.poolSymbol, obj.changes.added[i]));
-										this.poolSymbol.adjustChildSymbols();
-									} else {
-										//Find swimlane from modified array
-										var swimlane;
-										for ( var j = 0; j < obj.changes.modified.length; j++) {
-											if (obj.changes.modified[j].type == m_constants.SWIMLANE_SYMBOL) {
-												swimlane = obj.changes.modified[j];
-												break;
-											}
-										}
-										for (var sym in this.symbols) {
-											if (this.symbols[sym]. oid == swimlane.oid) {
-												swimlane = this.symbols[sym];
-												break;
-											}
-										}
-										if (swimlane) {
-											//Attach prototype object
-											obj.changes.added[i].prototype = {};
-											if (obj.changes.added[i].type == m_constants.ACTIVITY_SYMBOL) {
-												m_activitySymbol.createActivitySymbolFromJson(this, swimlane, obj.changes.added[i]);
-											} else if (obj.changes.added[i].type == m_constants.GATEWAY_SYMBOL) {
-												m_gatewaySymbol.createGatewaySymbolFromJson(this, swimlane, obj.changes.added[i])
-											} else if (obj.changes.added[i].type == m_constants.EVENT_SYMBOL) {
-												m_eventSymbol.createEventSymbolFromJson(this, swimlane, obj.changes.added[i])
-											} else if (obj.changes.added[i].type == m_constants.DATA_SYMBOL) {
-												m_dataSymbol.createDataSymbolFromJson(this, swimlane, obj.changes.added[i]);
-											}
-										}
-									}
-								}
 							}
 						}
-
 						// Apply changes
 
 						this.animationDelay = 1000;

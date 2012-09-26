@@ -236,15 +236,21 @@ public class ConnectionCommandHandler
          }
          catch (ObjectNotFoundException x)
          {
-            DataMappingConnectionType dataMappingConnection = getModelBuilderFacade().findDataMappingConnectionByModelOid(
-                  processDefinition, connectionOid);
-
-            processDefinition.getDiagram()
-                  .get(0)
-                  .getPoolSymbols()
-                  .get(0)
-                  .getDataMappingConnection()
-                  .remove(dataMappingConnection);
+            try
+            {
+               DataMappingConnectionType dataMappingConnection = getModelBuilderFacade().findDataMappingConnectionByModelOid(
+                     processDefinition, connectionOid);
+               processDefinition.getDiagram()
+                     .get(0)
+                     .getPoolSymbols()
+                     .get(0)
+                     .getDataMappingConnection()
+                     .remove(dataMappingConnection);
+            }
+            catch (Exception e)
+            {
+               // TODO: handle exception
+            }
          }
       }
    }

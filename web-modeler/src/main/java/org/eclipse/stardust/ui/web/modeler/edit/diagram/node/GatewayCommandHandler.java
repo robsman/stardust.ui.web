@@ -31,6 +31,7 @@ import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
@@ -99,6 +100,9 @@ public class GatewayCommandHandler
       ActivitySymbolType gatewaySymbol = gateway.getActivitySymbols().get(0);
       synchronized (model)
       {
+         ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition,
+               gatewaySymbol);
+
          processDefinition.getActivity().remove(gateway);
          processDefinition.getDiagram().get(0).getActivitySymbol().remove(gatewaySymbol);
 

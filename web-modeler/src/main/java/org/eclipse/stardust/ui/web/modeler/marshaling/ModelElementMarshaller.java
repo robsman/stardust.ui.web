@@ -1317,7 +1317,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             mapAnchorOrientation(dataMappingConnection.getTargetAnchor()));
 
       DataType data = null != dataMappingConnection.getDataSymbol() ? dataMappingConnection.getDataSymbol().getData() : null;
-      if (null != data)
+      if (null != data && null != dataMappingConnection.getActivitySymbol())
       {
          ActivityType activity = dataMappingConnection.getActivitySymbol().getActivity();
          for (DataMappingType dataMapping : activity.getDataMapping())
@@ -1455,7 +1455,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          }
 
       }
-      else if (transitionConnection.getSourceNode() instanceof StartEventSymbol)
+      else if (transitionConnection.getSourceNode() instanceof StartEventSymbol && null != transitionConnection.getTargetActivitySymbol())
       {
          modelElementJson = new JsonObject();
          String activityId = ((ActivitySymbolType) transitionConnection.getTargetActivitySymbol()).getActivity()
@@ -1486,7 +1486,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          }
 
       }
-      else if (transitionConnection.getTargetNode() instanceof EndEventSymbol)
+      else if (transitionConnection.getTargetNode() instanceof EndEventSymbol && null != transitionConnection.getSourceActivitySymbol())
       {
          modelElementJson = new JsonObject();
          String activityId = ((ActivitySymbolType) transitionConnection.getSourceActivitySymbol()).getActivity()

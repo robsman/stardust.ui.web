@@ -31,6 +31,7 @@ import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
@@ -110,6 +111,8 @@ public class DataCommandHandler
       DataSymbolType dataSymbol = getModelBuilderFacade().findDataSymbolRecursively(parentLaneSymbol, dataOID);
       synchronized (model)
       {
+         ModelElementEditingUtils.deleteDataMappingConnection(processDefinition,
+               dataSymbol.getDataMappings().iterator());
          data.getDataSymbols().remove(dataSymbol);
          processDefinition.getDiagram().get(0).getDataSymbol().remove(dataSymbol);
          parentLaneSymbol.getDataSymbol().remove(dataSymbol);

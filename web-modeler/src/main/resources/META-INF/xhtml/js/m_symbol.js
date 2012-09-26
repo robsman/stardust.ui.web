@@ -1297,7 +1297,6 @@ define(
 				 *
 				 */
 				Symbol.prototype.remove = function() {
-					this.removeConnections();
 					this.removePrimitives();
 					this.removeFlyOutMenu();
 					this.removeProximitySensor();

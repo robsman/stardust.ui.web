@@ -37,6 +37,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
@@ -117,6 +118,7 @@ public class EventCommandHandler
          {
             StartEventSymbol startEventSymbol = getModelBuilderFacade().findStartEventSymbol(
                   parentLaneSymbol, eventOId);
+            ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition, startEventSymbol);
             processDefinition.getDiagram()
                   .get(0)
                   .getStartEventSymbols()
@@ -127,6 +129,7 @@ public class EventCommandHandler
          {
             EndEventSymbol endEventSymbol = getModelBuilderFacade().findEndEventSymbol(parentLaneSymbol,
                   eventOId);
+            ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition, endEventSymbol);
             processDefinition.getDiagram()
                   .get(0)
                   .getEndEventSymbols()

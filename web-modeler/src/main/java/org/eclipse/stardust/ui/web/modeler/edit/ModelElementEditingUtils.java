@@ -1,0 +1,111 @@
+/*******************************************************************************
+ * Copyright (c) 2011 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
+
+package org.eclipse.stardust.ui.web.modeler.edit;
+
+import java.util.Iterator;
+
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.IFlowObjectSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
+
+/**
+ * @author Shrikant.Gangal
+ *
+ */
+public class ModelElementEditingUtils
+{
+   /**
+    * @param processDefinition
+    * @param symbol
+    */
+   public static void deleteTransitionConnectionsForSymbol(
+         ProcessDefinitionType processDefinition, IFlowObjectSymbol symbol)
+   {
+      if (null != symbol.getInTransitions())
+      {
+         deleteTransitionConnection(processDefinition, symbol.getInTransitions()
+               .iterator());
+      }
+
+      if (null != symbol.getOutTransitions())
+      {
+         deleteTransitionConnection(processDefinition, symbol.getOutTransitions()
+               .iterator());
+      }
+   }
+
+   /**
+    * @param processDefinition
+    * @param connIter
+    */
+   public static void deleteTransitionConnection(ProcessDefinitionType processDefinition,
+         Iterator<TransitionConnectionType> connIter)
+   {
+      while (connIter.hasNext())
+      {
+         deleteTransitionConnection(processDefinition, connIter.next());
+         connIter.remove();
+      }
+   }
+
+   /**
+    * @param processDefinition
+    * @param transitionConnection
+    */
+   public static void deleteTransitionConnection(ProcessDefinitionType processDefinition,
+         TransitionConnectionType transitionConnection)
+   {
+      processDefinition.getDiagram()
+            .get(0)
+            .getPoolSymbols()
+            .get(0)
+            .getTransitionConnection()
+            .remove(transitionConnection);
+
+      if (transitionConnection.getTransition() != null)
+      {
+         processDefinition.getTransition().remove(transitionConnection.getTransition());
+      }
+   }
+
+   /**
+    * @param processDefinition
+    * @param dataConnIter
+    */
+   public static void deleteDataMappingConnection(
+         ProcessDefinitionType processDefinition,
+         Iterator<DataMappingConnectionType> dataConnIter)
+   {
+      while (dataConnIter.hasNext())
+      {
+         deleteDataMappingConnection(processDefinition, dataConnIter.next());
+         dataConnIter.remove();
+      }
+   }
+
+   /**
+    * @param processDefinition
+    * @param dataMappingConnection
+    */
+   public static void deleteDataMappingConnection(
+         ProcessDefinitionType processDefinition,
+         DataMappingConnectionType dataMappingConnection)
+   {
+      processDefinition.getDiagram()
+            .get(0)
+            .getPoolSymbols()
+            .get(0)
+            .getDataMappingConnection()
+            .remove(dataMappingConnection);
+   }
+}

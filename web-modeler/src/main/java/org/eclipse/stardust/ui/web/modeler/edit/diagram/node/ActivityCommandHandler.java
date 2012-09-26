@@ -20,6 +20,10 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERT
 
 import javax.annotation.Resource;
 
+import org.springframework.context.ApplicationContext;
+
+import com.google.gson.JsonObject;
+
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
@@ -28,12 +32,10 @@ import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
-import org.springframework.context.ApplicationContext;
-
-import com.google.gson.JsonObject;
 
 /**
  *
@@ -105,6 +107,10 @@ public class ActivityCommandHandler
 
       synchronized (model)
       {
+         ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition,
+               activitySymbol);
+         ModelElementEditingUtils.deleteDataMappingConnection(processDefinition,
+               activitySymbol.getDataMappings().iterator());
 
          processDefinition.getActivity().remove(activity);
          processDefinition.getDiagram().get(0).getActivitySymbol().remove(activitySymbol);
@@ -120,6 +126,5 @@ public class ActivityCommandHandler
       return new ModelBuilderFacade(springContext.getBean(ModelService.class)
             .getModelManagementStrategy());
    }
-
 
 }
