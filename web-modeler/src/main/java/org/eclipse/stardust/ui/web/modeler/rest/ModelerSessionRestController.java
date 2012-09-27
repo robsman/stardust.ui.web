@@ -187,7 +187,7 @@ public class ModelerSessionRestController
             }
 
             jto.isRedo = true;
-            result = toJson(toJto(redoneChange));
+            result = toJson(jto);
 
             commandHandlingMediator().broadcastChange(redoneChange.getSession(), result);
 

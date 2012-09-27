@@ -565,6 +565,58 @@ define(
 				}
 			}
 
+			var undoMostCurrent = function() {
+				m_communicationController.postData({
+					url : m_communicationController.getEndpointUrl()
+							+ "/sessions/changes/mostCurrent/navigation"
+				}, "undoMostCurrent", {
+					success : function(data) {
+						m_utils.debug("Undo");
+						m_utils.debug(data);
+
+						m_commandsController.broadcastCommandUndo(data);
+
+						if (null != data.pendingUndo) {
+							jQuery("#undoChange").removeClass("toolDisabled");
+						} else {
+							jQuery("#undoChange").addClass("toolDisabled");
+						}
+
+						if (null != data.pendingRedo) {
+							jQuery("#redoChange").removeClass("toolDisabled");
+						} else {
+							jQuery("#redoChange").addClass("toolDisabled");
+						}
+					}
+				});
+			}
+
+			var redoLastUndo = function() {
+				m_communicationController.postData({
+					url : m_communicationController.getEndpointUrl()
+							+ "/sessions/changes/mostCurrent/navigation"
+				}, "redoLastUndo", {
+					success : function(data) {
+						m_utils.debug("Redo");
+						m_utils.debug(data);
+
+						m_commandsController.broadcastCommand(data);
+
+						if (null != data.pendingUndo) {
+							jQuery("#undoChange").removeClass("toolDisabled");
+						} else {
+							jQuery("#undoChange").addClass("toolDisabled");
+						}
+
+						if (null != data.pendingRedo) {
+							jQuery("#redoChange").removeClass("toolDisabled");
+						} else {
+							jQuery("#redoChange").addClass("toolDisabled");
+						}
+					}
+				});
+			}
+
 			function saveAllModels() {
 				m_communicationController
 						.syncGetData(
@@ -1607,6 +1659,10 @@ define(
 						createModel();
 					} else if ("importModel" == data.id) {
 						importModel();
+					} else if ("undoChange" == data.id) {
+						undoMostCurrent();
+					} else if ("redoChange" == data.id) {
+						redoLastUndo();
 					} else if ("saveAllModels" == data.id) {
 						saveAllModels();
 					} else if ("refreshModels" == data.id) {

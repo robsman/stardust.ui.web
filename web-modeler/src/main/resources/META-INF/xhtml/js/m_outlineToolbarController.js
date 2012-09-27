@@ -11,6 +11,12 @@ define([ "m_toolbarManager", "m_constants" ], function(m_toolbarManager,
 		importModelToolSelected : function(data) {
 			fireToolSelectedEvent(data);
 		},
+		undoChangeToolSelected : function(data) {
+			fireToolSelectedEvent(data);
+		},
+		redoChangeToolSelected : function(data) {
+			fireToolSelectedEvent(data);
+		},
 		saveModelToolSelected : function(data) {
 			fireToolSelectedEvent(data);
 		},

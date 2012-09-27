@@ -70,6 +70,11 @@ div.toolDiv:hover {
 		repeat-x #ffd700;
 }
 
+.toolDisabled {
+	opacity : 0.5;
+	cursor: default;
+}
+
 td#toolbar div.toolSeparator {
 	float: left;
 	margin-top: 4px;
@@ -110,6 +115,22 @@ td#toolbar div.toolSeparator {
 						<img id="importModel"
 							src="../../views-common/images/icons/page_white_get.png"
 							title="Import Model" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="undoChange"
+							src="../images/icons/undo.png"
+							title="Undo" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="redoChange"
+							src="../images/icons/redo.png"
+							title="Redo" />
 					</div>
 					<div class="toolSeparator">
 						<img src="../../common/images/icons/toolbar-separator.png" />
