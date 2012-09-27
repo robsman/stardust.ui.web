@@ -368,11 +368,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                String applicationFullId = extractString(activityJson,
                      ModelerConstants.APPLICATION_FULL_ID_PROPERTY);
 
-               ApplicationType application = getModelBuilderFacade().getApplication(
-                     getModelBuilderFacade().getModelId(applicationFullId),
-                     getModelBuilderFacade().stripFullId(applicationFullId));
-
-               activity.setApplication(application);
+               getModelBuilderFacade().setApplication(activity, applicationFullId);
             }
          }
       }
@@ -968,18 +964,18 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    private void updateXSDSchemaType(SchemaTypeType schemaType, JsonObject schemaJson)
    {
       XSDSchema schema = schemaType.getSchema();
-      
+
       if (schemaJson.has("targetNamespace"))
       {
          schema.setTargetNamespace(schemaJson.getAsJsonPrimitive("targetNamespace")
                .getAsString());
       }
-      
+
       if (schemaJson.has("types"))
       {
          updateXSDTypeDefinitions(schema, schemaJson.getAsJsonObject("types"));
       }
-      
+
       if (schemaJson.has("elements"))
       {
          updateElementDeclarations(schema, schemaJson.getAsJsonObject("elements"));
@@ -990,12 +986,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       Map<String, XSDTypeDefinition> existing = CollectionUtils.newMap();
       List<XSDTypeDefinition> list = schema.getTypeDefinitions();
-      
+
       for (XSDTypeDefinition def : list)
       {
          existing.put(def.getName(), def);
       }
-      
+
       list.clear();
 
       for (Map.Entry<String, JsonElement> entry : json.entrySet())
@@ -1003,16 +999,16 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          XSDTypeDefinition def = existing.get(entry.getKey());
          JsonObject defJson = (JsonObject) entry.getValue();
          boolean isComplexType = defJson.has("body");
-         
+
          if (def == null)
          {
             def = isComplexType
                   ? XSDFactory.eINSTANCE.createXSDComplexTypeDefinition()
                   : XSDFactory.eINSTANCE.createXSDSimpleTypeDefinition();
          }
-      
+
          def.setName(defJson.getAsJsonPrimitive("name").getAsString());
-         
+
          if (isComplexType)
          {
             updateXSDComplexTypeDefinition((XSDComplexTypeDefinition) def, defJson);
@@ -1021,13 +1017,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          {
             updateXSDSimpleTypeDefinition((XSDSimpleTypeDefinition) def, defJson);
          }
-         
+
          list.add(def);
       }
    }
 
    /**
-    * 
+    *
     * @param def
     * @param simpleTypeJson
     */
@@ -1053,8 +1049,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
-    * 
+    *
+    *
     *
     */
    private static enum SupportedXSDConstrainingFacets
@@ -1080,7 +1076,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param def
     * @param json
     */
@@ -1089,12 +1085,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       JsonObject bodyJson = json.getAsJsonObject("body");
       XSDComplexTypeContent content = def.getContent();
-      
+
       if (content instanceof XSDParticle)
       {
          XSDParticle particle = (XSDParticle) content;
          XSDTerm term = particle.getTerm();
-         
+
          if (term instanceof XSDModelGroup)
          {
             XSDModelGroup group = (XSDModelGroup) term;
@@ -1102,7 +1098,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             group.setCompositor(XSDCompositor.get(classifier));
             List<XSDParticle> particles = group.getContents();
             particles.clear();
-      
+
             if (bodyJson.has("elements"))
             {
                JsonObject elements = bodyJson.getAsJsonObject("elements");
@@ -1140,7 +1136,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     */
    private static enum ParticleCardinality
    {
@@ -1180,7 +1176,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param schema
     * @param json
     */
