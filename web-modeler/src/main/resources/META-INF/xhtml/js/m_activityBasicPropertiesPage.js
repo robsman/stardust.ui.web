@@ -347,6 +347,8 @@ define(
 
 					if (applicationFullId != null) {
 						this.applicationList.val(applicationFullId);
+					} else {
+						this.applicationList.val(m_constants.TO_BE_DEFINED);
 					}
 
 					this.userTaskInput.attr("checked", false);
@@ -413,12 +415,9 @@ define(
 						this
 								.submitChanges({
 									modelElement : {
-										activityType : this.applicationList
-												.val() == m_constants.AUTO_GENERATED_UI ? m_constants.MANUAL_ACTIVITY_TYPE
-												: m_constants.APPLICATION_ACTIVITY_TYPE,
-										applicationFullId : (this.applicationList
-												.val() == m_constants.TO_BE_DEFINED || this.applicationList
-												.val() == m_constants.AUTO_GENERATED_UI) ? null
+										activityType : m_constants.APPLICATION_ACTIVITY_TYPE,
+										applicationFullId : this.applicationList
+												.val() == m_constants.TO_BE_DEFINED ? null
 												: this.applicationList.val()
 									}
 								});
@@ -505,8 +504,6 @@ define(
 					if (this.getModelElement().activityType == m_constants.MANUAL_ACTIVITY_TYPE) {
 						this.setUserTaskType(m_constants.AUTO_GENERATED_UI);
 					} else if (this.getModelElement().activityType == m_constants.APPLICATION_ACTIVITY_TYPE) {
-						m_utils.debug("Application Full Id: "
-								+ this.getModelElement().applicationFullId);
 						if (this.getModelElement().applicationFullId == null
 								|| m_model.findApplication(this
 										.getModelElement().applicationFullId).interactive) {

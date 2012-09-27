@@ -53,7 +53,7 @@ define(
 					this.parametersTable = this.mapInputId("parametersTable");
 					this.parametersTableBody = this
 							.mapInputId("parametersTableBody");
-					
+
 					this.parametersTable.tableScroll({
 						height : 200
 					});
@@ -63,10 +63,11 @@ define(
 				 * 
 				 */
 				ActivityServiceParametersPropertiesPage.prototype.setElement = function() {
-					m_utils.debug("activity ===>");
+					m_utils.debug("Activity for Service Parameters ===>");
 					m_utils.debug(this.propertiesPanel.element.modelElement);
 
-					if (this.getModelElement().activityType == m_constants.APPLICATION_ACTIVITY_TYPE) {
+					if (this.getModelElement().activityType == m_constants.APPLICATION_ACTIVITY_TYPE
+							&& this.getModelElement().applicationFullId != null) {
 						m_dialog.makeInvisible(this.noParametersPanel);
 						m_dialog.makeVisible(this.parametersPanel);
 
@@ -77,6 +78,9 @@ define(
 						this.parametersTableLabel
 								.append("Parameters for application "
 										+ application.name);
+
+						m_utils.debug("Application Attributes:");
+						m_utils.debug(application.attributes);
 
 						this.populateParametersTable();
 					} else {
