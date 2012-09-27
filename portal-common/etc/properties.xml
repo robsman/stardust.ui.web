@@ -696,8 +696,8 @@
          setups="production-withJcr, development-withJcr, build">
       </property-file>
 
-      <property-file name="sun-jaxws" sourceFile="../../webapps/ws-api/WEB-INF/sun-jaxws.xml"
-         filetype="binary" filename="sun-jaxws.xml"
+      <property-file name="jax-ws-cxf-context" sourceFile="../../webapps/ws-api/WEB-INF/jax-ws-cxf-context.xml"
+         filetype="binary" filename="jax-ws-cxf-context.xml"
          destinations="ippBasePortal-pojo:WEB-INF"
          setups="production-withLiberation, development-withLiberation, build"
          modules="ippBasePortal-pojo">
@@ -2757,8 +2757,8 @@
          destinations="ippBasePortal-ejb:WEB-INF/lib"
          modules="ippWorkflowPerspective-ejb"/>
 
-      <property-file name="sun-jaxws" sourceFile="../../webapps/ws-api/WEB-INF/sun-jaxws.xml"
-         filetype="binary" filename="sun-jaxws.xml"
+      <property-file name="jax-ws-cxf-context" sourceFile="../../webapps/ws-api/WEB-INF/jax-ws-cxf-context.xml"
+         filetype="binary" filename="jax-ws-cxf-context.xml"
          destinations="ippBasePortal-ejb:WEB-INF"
          setups="production-withLiberation, development-withLiberation, build"
          modules="ippBasePortal-ejb">
