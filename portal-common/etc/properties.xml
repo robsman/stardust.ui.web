@@ -890,11 +890,7 @@
 
          <!-- Spring section -->
          <property name="context-param[SPRING_CONFIG_LOCATION].param-name"
-            value="contextConfigLocation" />
-         <property name="context-param[SPRING_CONFIG_LOCATION].param-value"
-            setups="production-withJcr, development-withJcr,build"
-            value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml" />
-         <property name="context-param[SPRING_CONFIG_LOCATION].param-value"
+            value="contextConfigLocation" />         <property name="context-param[SPRING_CONFIG_LOCATION].param-value"                        setups="production-withJcr, development-withJcr, production-withLiberation, development-withLiberation"             value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml,WEB-INF/jax-ws-cxf-context.xml" />         <property name="context-param[SPRING_CONFIG_LOCATION].param-value"            setups="!production-withJcr, !development-withJcr, production-withLiberation, development-withLiberation"            value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml,WEB-INF/jax-ws-cxf-context.xml" />         <property name="context-param[SPRING_CONFIG_LOCATION].param-value"            setups="!production-withLiberation, !development-withLiberation ,  production-withJcr, development-withJcr"            value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml" />         <property name="context-param[SPRING_CONFIG_LOCATION].param-value"
             value="classpath*:META-INF/spring/*-context.xml" />
 
        <!-- Myfaces section -->
@@ -1068,7 +1064,7 @@
             setups="production-withLiberation, development-withLiberation, build" />
          <property name="servlet[WS_CXF].servlet-class"
             value="org.eclipse.stardust.engine.ws.servlet.DynamicCXFServlet"
-            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[WS_CXF].init-param[CXF_WS_CONFIG_CLASS].param-name"            value="config-location"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[WS_CXF].init-param[CXF_WS_CONFIG_CLASS].param-value"            value="classpath*:META-INF/spring/cxf/*ws-cxf-context.xml,classpath:WEB-INF/jax-ws-cxf-context.xml"            setups="production-withLiberation, development-withLiberation, build" />
+            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[WS_CXF].init-param[CXF_WS_CONFIG_CLASS].param-name"            value="config-location"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[WS_CXF].init-param[CXF_WS_CONFIG_CLASS].param-value"            value="classpath*:META-INF/spring/cxf/*ws-cxf-context.xml,WEB-INF/jax-ws-cxf-context.xml"            setups="production-withLiberation, development-withLiberation, build" />
 
          <property name="servlet[REST].servlet-name" value="cxf-jaxrs-servlet"
             setups="production-withLiberation, development-withLiberation, build" />
@@ -1941,9 +1937,9 @@
 
          <!-- Spring section -->
          <property name="context-param[SPRING_CONFIG_LOCATION].param-name"
-            value="contextConfigLocation" />
+            value="contextConfigLocation" />         <property name="context-param[SPRING_CONFIG_LOCATION].param-value"                        setups="production-withJcr, development-withJcr, production-withLiberation, development-withLiberation"             modules="spring-remoting-server-ipp-portal"            value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml,WEB-INF/jax-ws-cxf-context.xml" />         <property name="context-param[SPRING_CONFIG_LOCATION].param-value"            setups="!production-withJcr, !development-withJcr, production-withLiberation, development-withLiberation"            modules="spring-remoting-server-ipp-portal"            value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml,WEB-INF/jax-ws-cxf-context.xml" />
          <property name="context-param[SPRING_CONFIG_LOCATION].param-value"
-            setups="production-withJcr, development-withJcr"
+            setups="!production-withLiberation, !development-withLiberation ,  production-withJcr, development-withJcr"
             modules="spring-remoting-server-ipp-portal"
             value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml" />
          <property name="context-param[SPRING_CONFIG_LOCATION].param-value"
@@ -2168,7 +2164,7 @@
          <property name="servlet[SIMPLE_WEBDAV].load-on-startup"
             value="4" setups="production-withJcr, development-withJcr, build"/>
 
-         <property name="servlet[WS_CXF].servlet-name" value="cxf-jaxws-servlet"            setups="production-withLiberation, development-withLiberation, build" />         <property name="servlet[WS_CXF].servlet-class"            value="org.eclipse.stardust.engine.ws.servlet.DynamicCXFServlet"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[WS_CXF].init-param[CXF_WS_CONFIG_CLASS].param-name"            value="config-location"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[WS_CXF].init-param[CXF_WS_CONFIG_CLASS].param-value"            value="classpath*:META-INF/spring/cxf/*ws-cxf-context.xml,classpath:WEB-INF/jax-ws-cxf-context.xml"            setups="production-withLiberation, development-withLiberation, build" />
+         <property name="servlet[WS_CXF].servlet-name" value="cxf-jaxws-servlet"            setups="production-withLiberation, development-withLiberation, build" />         <property name="servlet[WS_CXF].servlet-class"            value="org.eclipse.stardust.engine.ws.servlet.DynamicCXFServlet"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[WS_CXF].init-param[CXF_WS_CONFIG_CLASS].param-name"            value="config-location"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[WS_CXF].init-param[CXF_WS_CONFIG_CLASS].param-value"            value="classpath*:META-INF/spring/cxf/*ws-cxf-context.xml,WEB-INF/jax-ws-cxf-context.xml"            setups="production-withLiberation, development-withLiberation, build" />
 
          <property name="servlet[REST].servlet-name" value="cxf-jaxrs-servlet"            setups="production-withLiberation, development-withLiberation, build" />         <property name="servlet[REST].servlet-class"            value="org.apache.cxf.transport.servlet.CXFServlet"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[REST].init-param[CXF_RES_CONFIG_CLASS].param-name"            value="config-location"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[REST].init-param[CXF_RES_CONFIG_CLASS].param-value"            value="classpath*:META-INF/spring/cxf/*rs-cxf-context.xml"            setups="production-withLiberation, development-withLiberation, build" />
          <property
