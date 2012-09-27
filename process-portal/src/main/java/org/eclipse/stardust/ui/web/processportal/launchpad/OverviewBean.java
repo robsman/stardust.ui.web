@@ -68,7 +68,7 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
 
    public OverviewBean()
    {
-      super("overview");
+      super("workflowOverview");
    }
 
    /*

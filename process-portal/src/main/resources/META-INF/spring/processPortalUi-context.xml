@@ -26,7 +26,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<!-- <ippui:menuSection name="workflowExecutionMenuItem"
 			include="/plugins/processportal/menu/workflowExecution.xhtml" /> -->
 
-		<ippui:launchPanel name="overview"
+		<ippui:launchPanel name="workflowOverview"
 			include="/plugins/processportal/launchpad/overview.xhtml" />
 		<ippui:launchPanel name="processes"
 			include="/plugins/processportal/launchpad/processes.xhtml" />
