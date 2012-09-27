@@ -42,7 +42,6 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 
 		<ippui:launchPanel name="activitySearch"
 			include="/plugins/processportal/launchpad/activitySearch.xhtml" />
-		<ippui:launchPanel name="extensions" />
 
 		<ippui:toolbarSection name="workflowActions"
 			include="/plugins/processportal/toolbar/workflowActions.xhtml"
