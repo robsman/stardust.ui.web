@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils;
 
 /**
@@ -71,9 +70,6 @@ public class ParticipantLabel
     */
    private void initialize()
    {
-      // get configured value if available
-      int length = Parameters.instance().getInteger("Portal.WorklistPermissibleLength", TOTAL_PERMISSIBLE_LENGTH);
-
       if (null == type)
       {
          type = TYPE.PARTICIPANT;
@@ -88,10 +84,7 @@ public class ParticipantLabel
             label += POSTFIX_OPEN + organizationName + DEFAULT_DEPARTMENT_IND + POSTFIX_CLOSE;
             if (label.length() > TOTAL_PERMISSIBLE_LENGTH)
             {
-               length = length / 2;
-               wrappedLabel = StringUtils.wrapString(roleName, length);
-               wrappedLabel += POSTFIX_OPEN + StringUtils.wrapString(organizationName, length) + DEFAULT_DEPARTMENT_IND
-                     + POSTFIX_CLOSE;
+               wrappedLabel = StringUtils.wrapString(label, TOTAL_PERMISSIBLE_LENGTH);
             }
             else
             {
@@ -111,9 +104,7 @@ public class ParticipantLabel
 
             if (label.length() > TOTAL_PERMISSIBLE_LENGTH)
             {
-               length = length / (departments.size() + 1);
-               wrappedLabel = StringUtils.wrapString(roleName, length);
-               appendDepartments(length);
+               wrappedLabel = StringUtils.wrapString(label, TOTAL_PERMISSIBLE_LENGTH);
             }
             else
             {
@@ -129,8 +120,7 @@ public class ParticipantLabel
             label += POSTFIX_OPEN + DEFAULT_DEPARTMENT_IND + POSTFIX_CLOSE;
             if (label.length() > TOTAL_PERMISSIBLE_LENGTH)
             {
-               wrappedLabel = StringUtils.wrapString(organizationName, length) + POSTFIX_OPEN + DEFAULT_DEPARTMENT_IND
-                     + POSTFIX_CLOSE;
+               wrappedLabel = StringUtils.wrapString(label, TOTAL_PERMISSIBLE_LENGTH);
             }
             else
             {
@@ -149,9 +139,7 @@ public class ParticipantLabel
 
             if (label.length() > TOTAL_PERMISSIBLE_LENGTH)
             {
-               length = length / (departments.size() + 1);
-               wrappedLabel = StringUtils.wrapString(organizationName, length);
-               appendDepartments(length);
+               wrappedLabel = StringUtils.wrapString(label, TOTAL_PERMISSIBLE_LENGTH);
             }
             else
             {
@@ -162,26 +150,12 @@ public class ParticipantLabel
 
       case PARTICIPANT:
          label = participantName;
-         wrappedLabel = StringUtils.wrapString(participantName, length);
+         wrappedLabel = StringUtils.wrapString(label, TOTAL_PERMISSIBLE_LENGTH);
          break;
 
       default:
          break;
       }
-   }
-
-   /**
-    * @param length
-    */
-   private void appendDepartments(int length)
-   {
-      wrappedLabel += POSTFIX_OPEN;
-      for (String dept : departments)
-      {
-         wrappedLabel += StringUtils.wrapString(dept, length) + SEPARATOR;
-      }
-      wrappedLabel = wrappedLabel.substring(0, wrappedLabel.length() - 1);
-      wrappedLabel += POSTFIX_CLOSE;
    }
 
    public void addDepartment(String department)
