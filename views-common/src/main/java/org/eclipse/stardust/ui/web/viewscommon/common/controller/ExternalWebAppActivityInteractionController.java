@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 SunGard CSA LLC and others.
+ * Copyright (c) 2011, 2012 SunGard CSA LLC and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,11 +26,13 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.stardust.common.error.InvalidArgumentException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.BpmRuntimeError;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
@@ -110,6 +112,12 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
    @SuppressWarnings("unchecked")
    public void initializePanel(ActivityInstance ai, Map inData)
    {
+      if (ai == null)
+      {
+         throw new InvalidArgumentException(
+               BpmRuntimeError.BPMRT_NULL_ARGUMENT.raise("ActivityInstance ai"));
+      }
+
       InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(InteractionRegistry.BEAN_ID);
       if (null != registry)
       {
