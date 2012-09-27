@@ -1184,7 +1184,19 @@ define(
 															- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
 													currentSegment.toY,
 													currentSegment));
-								}else{
+								}else if (this.toAnchorPoint.symbol != null
+										&& ((currentSegment.toX > (this.fromAnchorPoint.symbol.x + this.fromAnchorPoint.symbol.width)) && this.toAnchorPoint.symbol.x
+												> targetX)) {
+									this.segments
+											.push(currentSegment = new Segment(
+													currentSegment.toX,
+													currentSegment.toY,
+													(this.toAnchorPoint.symbol.x+ this.toAnchorPoint.symbol.width)
+															+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+													currentSegment.toY,
+													currentSegment));
+								}
+								else{
 									this.segments
 									.push(currentSegment = new Segment(
 											currentSegment.toX,
