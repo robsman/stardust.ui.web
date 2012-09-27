@@ -1950,6 +1950,18 @@ define(
 									this.x, this.y);
 
 					if (symbol != null) {
+						// when more than one connection from same anchorPoint,
+						// prevent modification of other connection
+						for ( var n in this.symbol.connections) {
+							if (this.dragConnection.oid != this.symbol.connections[n].oid) {
+								if (this.symbol.connections[n].fromAnchorPoint == this) {
+									this.symbol.connections[n].fromAnchorPoint = this.originalAnchorPoint
+								} else if (this.symbol.connections[n].toAnchorPoint == this) {
+									this.symbol.connections[n].toAnchorPoint = this.originalAnchorPoint
+								}
+							}
+						}
+
 						var anchorPoint = symbol.getClosestAnchorPoint(this.x,
 								this.y, true);
 						var updateConnection = true;
@@ -2001,14 +2013,14 @@ define(
 								// Reset the original Anchor Point in
 								// dragConnection to revert
 								if (this.dragConnection.originalFromAnchorPoint) {
-									this.dragConnection.fromAnchorPoint = this.dragConnection.originalFromAnchorPoint;
+									this.dragConnection.fromAnchorPoint = this.originalAnchorPoint;
+									this.dragConnection.fromAnchorPointOrientation = this.originalAnchorPoint.orientation;
 									this.dragConnection.originalFromAnchorPoint = null;
 								} else if (this.dragConnection.originalToAnchorPoint) {
-									this.dragConnection.toAnchorPoint = this.dragConnection.originalToAnchorPoint;
+									this.dragConnection.toAnchorPoint = this.originalAnchorPoint;
+									this.dragConnection.toAnchorPointOrientation = this.originalAnchorPoint.orientation;
 									this.dragConnection.originalToAnchorPoint = null;
 								}
-								this.dragConnection.toAnchorPointOrientation = this.dragConnection.toAnchorPoint.orientation;
-								this.dragConnection.fromAnchorPointOrientation = this.dragConnection.fromAnchorPoint.orientation;
 								this.moveTo(this.dragStartX,this.dragStartY);
 								updateConnection = false;
 							}
