@@ -75,6 +75,7 @@ define(
 				this.mode = this.NORMAL_MODE;
 				this.symbols = [];
 				this.dragEnabled = null;
+				this.anchorDragEnabled = null;
 
 				// Activity symbols by OIDs
 

@@ -1026,6 +1026,7 @@ define(
 								|| this.diagram.currentConnection != null
 								|| this.diagram.currentSelection.length > 0 || this.diagram.newSymbol)
 								|| this.diagram.dragEnabled
+								|| this.diagram.anchorDragEnabled
 								|| this.type == null
 								|| (this.type && (this.type.toLowerCase()
 										.indexOf(
@@ -1055,6 +1056,7 @@ define(
 								&& (yPos <= bottomProximityMargin && yPos >= topProximityMargin)) {
 							return true;
 						}
+
 
 					} catch (e) {
 						return false;
@@ -1913,7 +1915,7 @@ define(
 					this.dragStartX = this.x;
 					this.dragStartY = this.y;
 					// Flag required to hide flyout menu's in Drag and Drop
-					this.symbol.diagram.dragEnabled = true;
+					this.symbol.diagram.anchorDragEnabled = true;
 
 					// Replace and anchor point and keep reference
 
@@ -1937,7 +1939,8 @@ define(
 					if (this.dragConnection == null) {
 						return;
 					}
-
+					// dragEnabled flag is used to hide flyout menu in Drag mode
+					this.symbol.diagram.anchorDragEnabled = false;
 					if (this.lastDragOverSymbol != null) {
 						this.lastDragOverSymbol.hideAnchorPoints();
 					}
@@ -2028,8 +2031,6 @@ define(
 
 					this.dragConnection.select();
 					this.dragConnection.toAnchorPoint.deselect();
-					// dragEnabled flag is used to hide flyout menu in Drag mode
-					this.symbol.diagram.dragEnabled = false;
 				}
 
 				/**
@@ -2051,14 +2052,17 @@ define(
 			}
 
 			function AnchorPoint_clickClosure() {
+				if(this.auxiliaryProperties)
 				this.auxiliaryProperties.anchorPoint.select();
 			}
 
 			function AnchorPoint_hoverInClosure() {
+				if(this.auxiliaryProperties)
 				this.auxiliaryProperties.anchorPoint.hoverIn();
 			}
 
 			function AnchorPoint_hoverOutClosure() {
+				if(this.auxiliaryProperties)
 				this.auxiliaryProperties.anchorPoint.hoverOut();
 			}
 

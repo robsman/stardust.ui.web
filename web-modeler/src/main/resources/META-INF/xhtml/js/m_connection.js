@@ -1024,7 +1024,7 @@ define(
 									|| (currentSegment.fromX > currentSegment.toX && currentSegment.toX > targetX)) {
 
 								if (this.toAnchorPoint.symbol != null
-										&& this.toAnchorPoint.symbol.type != m_constants.SWIMLANE_SYMBOL) {
+										&& this.toAnchorPoint.symbol.type != m_constants.SWIMLANE_SYMBOL && !this.diagram.anchorDragEnabled) {
 									// the Anchor point bend location should be midway
 									// between symbol's
 									if(n==0){
@@ -1076,10 +1076,11 @@ define(
 																- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
 														currentSegment));
 									}
-									// Intermediate Horizontal segment from 9 o'clk to 9
+									// Intermediate Horizontal segment from 9
+									// o'clk to 9
 									// o'clk towards right
-									else if ((currentSegment.toX < targetX && targetX > this.toAnchorPoint.x)
-											&& (this.toAnchorPoint.symbol != null)) {
+									else if (currentSegment.toX < targetX
+											&& targetX > this.toAnchorPoint.x) {
 										this.segments
 												.push(currentSegment = new Segment(
 														currentSegment.toX,
@@ -1091,8 +1092,8 @@ define(
 									}
 									// Horizontal segment from 9 o'clk to 9
 									// o'clk towards left
-									else if ((currentSegment.toX > targetX && targetX < this.toAnchorPoint.x)
-											&& (this.toAnchorPoint.symbol != null)) {
+									else if (currentSegment.toX > targetX
+											&& targetX < this.toAnchorPoint.x) {
 										this.segments
 												.push(currentSegment = new Segment(
 														currentSegment.toX,
@@ -1110,7 +1111,7 @@ define(
 								// connect from 6 O'clk to 12 O'clk, when toX
 								// and TargetX match,
 								// the vertical segment needs modification
-								if (this.toAnchorPoint.symbol != null
+								if (this.toAnchorPoint.symbol != null && !this.diagram.anchorDragEnabled
 										&& (currentSegment.toY > targetY && this.toAnchorPoint.y > targetY)) {
 									if (currentSegment.fromX > currentSegment.toX) {
 										currentSegment.toX = this.toAnchorPoint.symbol.x
@@ -1139,7 +1140,7 @@ define(
 							if ((currentSegment.fromY < currentSegment.toY && currentSegment.toY < targetY)
 									|| (currentSegment.fromY > currentSegment.toY && currentSegment.toY > targetY)) {
 								if (this.toAnchorPoint.symbol != null
-										&& this.toAnchorPoint.symbol.type != m_constants.SWIMLANE_SYMBOL) {
+										&& this.toAnchorPoint.symbol.type != m_constants.SWIMLANE_SYMBOL && !this.diagram.anchorDragEnabled) {
 
 									if (n == 0) {
 										// the bend location should be midway between symbols, update current
@@ -1200,8 +1201,7 @@ define(
 																- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
 														currentSegment.toY,
 														currentSegment));
-									} else if ((currentSegment.toY > targetY && targetY < this.toAnchorPoint.y)
-											&& (this.toAnchorPoint.symbol != null)) {
+									} else if (currentSegment.toY > targetY && targetY < this.toAnchorPoint.y) {
 										// Intermediate vertical lines,
 										// connecting to 12 O'clk segment
 										this.segments
@@ -1218,7 +1218,7 @@ define(
 								} else
 									currentSegment.toY = targetY;
 							} else {
-								if (this.toAnchorPoint.symbol != null
+								if (this.toAnchorPoint.symbol != null && !this.diagram.anchorDragEnabled
 										&& ((currentSegment.toX < this.fromAnchorPoint.symbol.x) && this.toAnchorPoint.symbol.x
 												+ this.toAnchorPoint.symbol.width < targetX)) {
 									this.segments
@@ -1229,7 +1229,7 @@ define(
 															- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
 													currentSegment.toY,
 													currentSegment));
-								}else if (this.toAnchorPoint.symbol != null
+								}else if (this.toAnchorPoint.symbol != null && !this.diagram.anchorDragEnabled
 										&& ((currentSegment.toX >= (this.fromAnchorPoint.symbol.x + this.fromAnchorPoint.symbol.width)) && this.toAnchorPoint.symbol.x
 												> targetX)) {
 									this.segments
