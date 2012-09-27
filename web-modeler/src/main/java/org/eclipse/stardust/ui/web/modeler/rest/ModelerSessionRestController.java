@@ -45,7 +45,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandlingMediator;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
-@Path("/bpm-modeler/modeler/{randomPostFix}/sessions")
+@Path("/modeler/{randomPostFix}/sessions")
 public class ModelerSessionRestController
 {
    private static final Logger trace = LogManager.getLogger(ModelerSessionRestController.class);
