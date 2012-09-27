@@ -12,17 +12,21 @@ package org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.CompareHelper;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.Grant;
+import org.eclipse.stardust.engine.core.runtime.utils.Authorization2;
 import org.eclipse.stardust.engine.core.runtime.utils.ExecutionPermission;
 import org.eclipse.stardust.engine.core.runtime.utils.PermissionHelper;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
@@ -32,6 +36,7 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
+import org.eclipse.stardust.ui.web.viewscommon.views.authorization.UiPermissionUtils;
 
 
 /**
@@ -52,7 +57,9 @@ public class IppUser implements User
    private String displayName = null;
    
    private Map<String, Boolean> permissionsCache;
-
+   
+   private Map<String, Boolean> uiPermissionsCache;
+   
    /**
     * Gets the logged in user
     */
@@ -153,11 +160,13 @@ public class IppUser implements User
       }
       return displayName;
    }
-   
+
    /**
     * @param permissionId
     * @return
-    * @author Yogesh.Manware
+    * @author Yogesh.Manware 
+    * TODO approach to evaluate general permissions can be improved
+    *         similar to hasUiPermission()
     */
    public boolean hasPermission(ExecutionPermission.Id exePermissionId)
    {
@@ -192,7 +201,7 @@ public class IppUser implements User
          {
             hasPermission = true;
          }
-         
+
          if (!hasPermission)
          {
             Set<ModelParticipantInfo> grants = adminService.getGlobalPermissions().getGrants(permissionId);
@@ -222,5 +231,68 @@ public class IppUser implements User
       }
 
       return hasPermission;
+   }
+
+   
+   /**
+    * @author Yogesh.Manware
+    * @param permissionId
+    * @return
+    */
+   public Boolean hasUiPermission(String permissionId)
+   {
+      if (null == uiPermissionsCache)
+      {
+         uiPermissionsCache = new HashMap<String, Boolean>();
+         Map<String, List<String>> allUiPermissionsCache = UiPermissionUtils.getAllPermissions(
+               ServiceFactoryUtils.getAdministrationService(), false);
+
+         for (Entry<String, List<String>> permission : allUiPermissionsCache.entrySet())
+         {
+            Set<ModelParticipantInfo> grants = UiPermissionUtils.externalize(permission.getValue());
+            uiPermissionsCache.put(UiPermissionUtils.getPortalPermissionId(permission.getKey()), isInRoles(grants));
+         }
+      }
+ 
+      return uiPermissionsCache.get(permissionId);
+   }
+   
+   /**
+    * @author Yogesh.Manware
+    * @param grants
+    * @return
+    */
+   private Boolean isInRoles(Set<ModelParticipantInfo> grants)
+   {
+      if (CollectionUtils.isNotEmpty(grants))
+      {
+         if (grants.contains(Authorization2.ALL))
+         {
+            return true;
+         }
+      }
+      else
+      {
+         // permission is not defined
+         return null;
+      }
+      
+      for (ModelParticipantInfo grant : grants)
+      {
+         if (grant instanceof QualifiedModelParticipantInfo)
+         {
+            QualifiedModelParticipantInfo qualifiedParticipantInfo = (QualifiedModelParticipantInfo) grant;
+            if (this.isInRole(qualifiedParticipantInfo.getQualifiedId()))
+            {
+               return true;
+            }
+         }
+         // For Admin Role
+         else if (this.isInRole(grant.getId()))
+         {
+            return true;
+         }
+      }
+      return false;
    }
 }

@@ -239,7 +239,7 @@ public class PortalUiController
       for (String key : systemPerspectives.keySet())
       {
          pd = systemPerspectives.get(key);
-         if (UserUtils.isAuthorized(userProvider.getUser(), pd.getRequiredRolesSet(), pd.getExcludeRolesSet()))
+         if (UserUtils.isAuthorized(userProvider.getUser(), pd))
          {
             perspectives.put(key, PerspectiveAuthorizationProxy.newInstance(pd));
          }
@@ -305,8 +305,7 @@ public class PortalUiController
 
          for (PerspectiveExtension extension : extensions.values())
          {
-            if (UserUtils.isAuthorized(userProvider.getUser(), extension.getRequiredRolesSet(),
-                  extension.getExcludeRolesSet()))
+            if (UserUtils.isAuthorized(userProvider.getUser(), extension))
             {
                perspective.addExtension(extension);
             }

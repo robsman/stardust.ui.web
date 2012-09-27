@@ -12,17 +12,25 @@ package org.eclipse.stardust.ui.web.viewscommon.views.authorization;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
+import javax.xml.namespace.QName;
+
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
+import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
 import org.eclipse.stardust.engine.core.runtime.utils.Authorization2;
+import org.eclipse.stardust.engine.core.runtime.utils.ParticipantInfoUtil;
 import org.eclipse.stardust.ui.web.common.IPerspectiveDefinition;
 import org.eclipse.stardust.ui.web.common.LaunchPanel;
 import org.eclipse.stardust.ui.web.common.PerspectiveExtension;
@@ -256,6 +264,55 @@ public class UiPermissionUtils
       }
    }
 
+   /**
+    * @param grants
+    * @return
+    */
+   public static Set<ModelParticipantInfo> externalize(List<String> grants)
+   {
+      HashSet<ModelParticipantInfo> externalGrants = new HashSet<ModelParticipantInfo>();
+      if (grants != null && !grants.contains(Authorization2.ALL))
+      {
+         for (String grant : grants)
+         {
+            QName qualifier = QName.valueOf(grant);
+            externalGrants.add(ParticipantInfoUtil.newModelParticipantInfo(qualifier.getNamespaceURI(),
+                  qualifier.getLocalPart()));
+         }
+      }
+      return externalGrants;
+   }
+
+   /**
+    * @param grants
+    * @return
+    */
+   public static List<String> internalize(Set<ModelParticipantInfo> grants)
+   {
+      if (grants != null && grants.size() > 0)
+      {
+         List<String> grantIds = new LinkedList<String>();
+
+         for (ModelParticipantInfo modelParticipantInfo : grants)
+         {
+            if (modelParticipantInfo.getDepartment() != null)
+            {
+               throw new IllegalArgumentException(Department.class.getName());
+            }
+            if (modelParticipantInfo instanceof QualifiedModelParticipantInfo)
+            {
+               grantIds.add(((QualifiedModelParticipantInfo) modelParticipantInfo).getQualifiedId());
+            }
+            else
+            {
+               grantIds.add(modelParticipantInfo.getId());
+            }
+         }
+         return grantIds;
+      }
+      return null;
+   }
+   
    /**
     * @param permissions
     */
