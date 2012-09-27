@@ -1022,8 +1022,11 @@ define(
 						if (currentSegment.isHorizontal()) {
 							if ((currentSegment.fromX < currentSegment.toX && currentSegment.toX < targetX)
 									|| (currentSegment.fromX > currentSegment.toX && currentSegment.toX > targetX)) {
+
 								if (this.toAnchorPoint.symbol != null
 										&& this.toAnchorPoint.symbol.type != m_constants.SWIMLANE_SYMBOL) {
+									// the Anchor point bend location should be midway
+									// between symbol's
 									if(n==0){
 										if(currentSegment.toX < targetX){
 											var anchorPointMargin =(this.toAnchorPoint.symbol.x - currentSegment.toX) / 2;
@@ -1033,16 +1036,35 @@ define(
 											var anchorPointMargin = (currentSegment.toX - (this.toAnchorPoint.symbol.x + this.toAnchorPoint.symbol.width))/2
 											currentSegment.toX = currentSegment.toX - anchorPointMargin;
 										}
-									}else if (currentSegment.toY < targetY
+									}
+									// Horizontal segment moving down from 3 o'clk
+									else if (currentSegment.toY < targetY
 											&& targetY != this.toAnchorPoint.y) {
-										this.segments
-												.push(currentSegment = new Segment(
-														currentSegment.toX,
-														currentSegment.toY,
-														currentSegment.toX,
-														targetY, currentSegment));
-									}else if (currentSegment.toY > targetY
+										// following scenario bend not required
+										if ((this.fromAnchorPointOrientation == 3
+												&& this.toAnchorPointOrientation == 0 && currentSegment.toX > targetX)
+												|| (this.fromAnchorPointOrientation == 1
+														&& this.toAnchorPointOrientation == 0 && currentSegment.toX < targetX)) {
+											currentSegment.toX = targetX;
+										}else
+											this.segments
+											.push(currentSegment = new Segment(
+													currentSegment.toX,
+													currentSegment.toY,
+													currentSegment.toX,
+													targetY, currentSegment));
+
+									}
+									//Horizontal segment moving Upward from 3 o'clk
+									else if (currentSegment.toY > targetY
 											&& targetY != this.toAnchorPoint.y) {
+										// following scenario bend not required
+										if ((this.fromAnchorPointOrientation == 3
+												&& this.toAnchorPointOrientation == 2 && currentSegment.toX > targetX)
+												|| (this.fromAnchorPointOrientation == 1
+														&& this.toAnchorPointOrientation == 2 && currentSegment.toX < targetX)) {
+											currentSegment.toX = targetX;
+										}else
 										// Horizontal segment from 3 o'clk to 3'
 										// o'clk
 										this.segments
@@ -1053,7 +1075,10 @@ define(
 														targetY
 																- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
 														currentSegment));
-									}else if ((currentSegment.toX < targetX && targetX > this.toAnchorPoint.x)
+									}
+									// Intermediate Horizontal segment from 9 o'clk to 9
+									// o'clk towards right
+									else if ((currentSegment.toX < targetX && targetX > this.toAnchorPoint.x)
 											&& (this.toAnchorPoint.symbol != null)) {
 										this.segments
 												.push(currentSegment = new Segment(
@@ -1063,7 +1088,10 @@ define(
 														this.toAnchorPoint.symbol.y
 																- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
 														currentSegment));
-									} else if ((currentSegment.toX > targetX && targetX < this.toAnchorPoint.x)
+									}
+									// Horizontal segment from 9 o'clk to 9
+									// o'clk towards left
+									else if ((currentSegment.toX > targetX && targetX < this.toAnchorPoint.x)
 											&& (this.toAnchorPoint.symbol != null)) {
 										this.segments
 												.push(currentSegment = new Segment(
@@ -1112,7 +1140,10 @@ define(
 									|| (currentSegment.fromY > currentSegment.toY && currentSegment.toY > targetY)) {
 								if (this.toAnchorPoint.symbol != null
 										&& this.toAnchorPoint.symbol.type != m_constants.SWIMLANE_SYMBOL) {
+
 									if (n == 0) {
+										// the bend location should be midway between symbols, update current
+										// segment
 										if (currentSegment.toY < targetY) {
 											var anchorPointMargin = (this.toAnchorPoint.symbol.y - currentSegment.toY) / 2;
 											currentSegment.toY = currentSegment.toY
@@ -1122,27 +1153,41 @@ define(
 											currentSegment.toY = currentSegment.toY
 													- anchorPointMargin;
 										}
-									} else if (currentSegment.toX > targetX
+									}
+									// Vertical segment from 6'clk moving downwards
+									else if (currentSegment.toX > targetX
 											&& targetX != this.toAnchorPoint.x) {
-										// the bend location should be midway
-										// between symbols, update current
-										// segment
-										this.segments
-												.push(currentSegment = new Segment(
-														currentSegment.toX,
-														currentSegment.toY,
-														targetX,
-														currentSegment.toY,
-														currentSegment));
-									} else if (currentSegment.toX < targetX
+										if ((this.fromAnchorPointOrientation == 2
+												&& this.toAnchorPointOrientation == 1 && currentSegment.toY < targetY)) {
+											currentSegment.toY = targetY;
+										} else
+											this.segments
+													.push(currentSegment = new Segment(
+															currentSegment.toX,
+															currentSegment.toY,
+															targetX,
+															currentSegment.toY,
+															currentSegment));
+									}
+									// Vertical segment from 6'clk moving upwards
+									else if (currentSegment.toX < targetX
 											&& targetX != this.toAnchorPoint.x) {
-										this.segments
-												.push(currentSegment = new Segment(
-														currentSegment.toX,
-														currentSegment.toY,
-														targetX,
-														currentSegment.toY,
-														currentSegment));
+										if ((this.fromAnchorPointOrientation == 2
+												&& this.toAnchorPointOrientation == 3 && currentSegment.toY < targetY)
+												|| (this.fromAnchorPointOrientation == 0
+														&& this.toAnchorPointOrientation == 3 && currentSegment.toY > targetY)) {
+											currentSegment.toY = targetY;
+										} else
+											// Vertical - From 6 o'clk to 9 o'clk
+											// ,left to right, no bend required
+											this.segments
+													.push(currentSegment = new Segment(
+															currentSegment.toX,
+															currentSegment.toY,
+															targetX,
+															currentSegment.toY,
+															currentSegment));
+
 									} else if (currentSegment.toY < targetY
 											&& targetY > this.toAnchorPoint.y) {
 										// Intermediate vertical lines,
@@ -1185,7 +1230,7 @@ define(
 													currentSegment.toY,
 													currentSegment));
 								}else if (this.toAnchorPoint.symbol != null
-										&& ((currentSegment.toX > (this.fromAnchorPoint.symbol.x + this.fromAnchorPoint.symbol.width)) && this.toAnchorPoint.symbol.x
+										&& ((currentSegment.toX >= (this.fromAnchorPoint.symbol.x + this.fromAnchorPoint.symbol.width)) && this.toAnchorPoint.symbol.x
 												> targetX)) {
 									this.segments
 											.push(currentSegment = new Segment(
