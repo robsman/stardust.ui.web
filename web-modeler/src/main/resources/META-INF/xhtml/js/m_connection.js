@@ -1034,7 +1034,7 @@ define(
 											currentSegment.toX = currentSegment.toX - anchorPointMargin;
 										}
 									}else if (currentSegment.toY < targetY
-											&& targetY + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH != this.toAnchorPoint.y) {
+											&& targetY != this.toAnchorPoint.y) {
 										this.segments
 												.push(currentSegment = new Segment(
 														currentSegment.toX,
