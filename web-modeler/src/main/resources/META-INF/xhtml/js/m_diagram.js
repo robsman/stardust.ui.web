@@ -644,7 +644,23 @@ define(
 
 					if (null != obj && null != obj.changes) {
 
-						// TODO is lastSymbol still needed
+						// Delete removed elements
+						for ( var i = 0; i < obj.changes.removed.length; i++) {
+							var symbol = this
+									.findSymbolByGuid(obj.changes.removed[i].oid);
+							if (null == symbol) {
+								symbol = this
+										.findSymbolByModelElementGuid(obj.changes.removed[i].oid);
+							}
+							if (null == symbol) {
+								symbol = this
+										.findConnectionByGuid(obj.changes.removed[i].oid);
+							}
+							if (null != symbol) {
+								symbol.remove();
+							}
+
+						}
 
 						//Run the added loop to add all data symbols except connections
 						//For which the loop is run again - to make sure all connected symbols are
@@ -797,24 +813,6 @@ define(
 
 						this.animationDelay = 0;
 						this.animationEasing = null;
-
-						// Delete removed elements
-						for ( var i = 0; i < obj.changes.removed.length; i++) {
-							var symbol = this
-									.findSymbolByGuid(obj.changes.removed[i].oid);
-							if (null == symbol) {
-								symbol = this
-										.findSymbolByModelElementGuid(obj.changes.removed[i].oid);
-							}
-							if (null == symbol) {
-								symbol = this
-										.findConnectionByGuid(obj.changes.removed[i].oid);
-							}
-							if (null != symbol) {
-								symbol.remove();
-							}
-
-						}
 					}
 					this.lastSymbol = null;
 				};
