@@ -139,8 +139,7 @@ define(
 										.createSwimlaneSymbolFromParticipant(participant);
 							} else if ('structuredDataType' == parent.iDnD
 									.getTransferObject().elementType) {
-								var dataStructure = m_model
-										.findDataStructure(parent.iDnD
+								var dataStructure = m_model.findTypeDeclaration(parent.iDnD
 												.getTransferObject().attr.fullId);
 								var data = m_data.createDataFromDataStructure(
 										diagram.model, dataStructure);
