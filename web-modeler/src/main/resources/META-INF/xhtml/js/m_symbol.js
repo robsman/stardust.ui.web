@@ -988,8 +988,16 @@ define(
 				/**
 				 *
 				 */
-				Symbol.prototype.proximityHoverIn = function() {
+				Symbol.prototype.proximityHoverIn = function(event) {
 					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
+						// If this symbol hoverIn is called before other symbol
+						// hoverOut, manual HoverOut is required.
+						if (this.diagram.currentFlyOutSymbol
+								&& this.diagram.currentFlyOutSymbol.oid != this.oid) {
+							if(!this.diagram.currentFlyOutSymbol.validateProximity(event)){
+								this.diagram.currentFlyOutSymbol.hideFlyOutMenu();
+							}
+						}
 						if (!this.selected) {
 							this.showFlyOutMenu();
 						}

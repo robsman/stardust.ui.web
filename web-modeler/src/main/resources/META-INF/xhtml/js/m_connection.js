@@ -1508,6 +1508,16 @@ define(
 								event.pageY - this.diagram.Y_OFFSET -FLYOUT_MENU_LOC_OFFSET
 										+ scrollPos.top
 										, 60, 30);
+						// If connection hoverIn is called before other symbol
+						// hoverOut, manual HoverOut is required.
+						if (this.diagram.currentFlyOutSymbol
+								&& this.diagram.currentFlyOutSymbol.oid != this.oid) {
+							if (!this.diagram.currentFlyOutSymbol
+									.validateProximity(event)) {
+								this.diagram.currentFlyOutSymbol
+										.hideFlyOutMenu();
+							}
+						}
 						this.showFlyOutMenu();
 					}
 				};
