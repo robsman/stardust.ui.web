@@ -11,7 +11,6 @@
 package org.eclipse.stardust.ui.web.processportal.view;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -52,7 +51,6 @@ import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
-import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.event.ActivityEventObserver;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
@@ -92,6 +90,7 @@ import org.eclipse.stardust.ui.web.processportal.common.Constants;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
 import org.eclipse.stardust.ui.web.processportal.common.Resources;
 import org.eclipse.stardust.ui.web.processportal.common.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.WorklistColumnPreferenceHandler;
 import org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.WorklistConfigurationUtil;
 import org.eclipse.stardust.ui.web.viewscommon.common.ProcessActivityDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutoCompleteItem;
@@ -599,33 +598,12 @@ public class WorklistTableBean extends UIComponentBean
             fixedColumns2, UserPreferencesEntries.M_WORKFLOW, worklistId, new ColumnModelListener());
       DescriptorColumnUtils.setDescriptorColumnFilters(worklistColumnModel, allDescriptors);
       
-      setConfiguration(worklistColumnModel);   
+      worklistColumnModel
+            .setColumnPreferenceHandler(new WorklistColumnPreferenceHandler(getIdentityKey(), preferenceId));
  
       worklistColSelecpopup = new TableColumnSelectorPopup(worklistColumnModel);
-      worklistColSelecpopup.setUpdatePreferences(false);
-      worklistColSelecpopup.setCallbackHandler(new org.eclipse.stardust.ui.web.common.ICallbackHandler()
-      {
-         public void handleEvent(EventType eventType)
-         {
-            if (EventType.APPLY == eventType)
-            {
-               saveColumnPreferences();
-            }
-         }
-      });
 
       initWorklistTable(); 
-   }
-
-   private void saveColumnPreferences()
-   {
-      Map<String, Object> worklistConfiguration = WorklistConfigurationUtil.getWorklistConfigurationMap(
-            PreferenceScope.USER, preferenceId);
-      ArrayList<String> savedCols = ((DefaultColumnModel) worklistColSelecpopup.getColumnModel()).getColsToBeSaved();
-      WorklistConfigurationUtil.updateValues(getIdentityKey(), savedCols, false, worklistConfiguration);
-      WorklistConfigurationUtil.savePreferences(PreferenceScope.USER, preferenceId, worklistConfiguration);
-      worklistColSelecpopup.getColumnModel().setStoredList(savedCols);
-      worklistColSelecpopup.getColumnModel().initialize();
    }
 
    private String getIdentityKey()
@@ -642,26 +620,6 @@ public class WorklistTableBean extends UIComponentBean
       return identityKey;
    }
 
-   @SuppressWarnings("unchecked")
-   private void setConfiguration(IColumnModel worklistColumnModel)
-   {
-      Map<String, Object> configuration = WorklistConfigurationUtil.getStoredValues(getIdentityKey(), preferenceId);
-
-      if (null != configuration)
-      {
-         ArrayList<String> storedList = (ArrayList<String>) configuration.get(WorklistConfigurationUtil.SELECTED_COLS);
-         String lockStr = (String) configuration.get(WorklistConfigurationUtil.LOCK);
-         boolean lock = false;
-         if (Boolean.valueOf(lockStr))
-         {
-            lock = true;
-         }
-
-         worklistColumnModel.setStoredList(storedList);
-         worklistColumnModel.setLock(lock);
-      }
-   }
-   
    /**
     * @return
     */

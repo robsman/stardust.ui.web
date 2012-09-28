@@ -17,8 +17,6 @@ import java.util.Set;
 
 import javax.faces.event.ValueChangeEvent;
 
-import org.eclipse.stardust.ui.web.common.ICallbackHandler;
-import org.eclipse.stardust.ui.web.common.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.configuration.PreferencesScopesHelper;
@@ -44,8 +42,7 @@ public class TableColumnSelectorPopup extends PopupDialog
    private PreferenceScope selectedPreferenceScope;
    private Set<String> columnsPreviouslyVisible;
 
-   private boolean updatePreferences = true;
-   private ICallbackHandler callbackHandler;
+   private boolean lock = false;
    
    /**
     * @param treeTable
@@ -56,9 +53,17 @@ public class TableColumnSelectorPopup extends PopupDialog
    {
       super(title);
       this.columnModel = columnModel;
+      this.lock = columnModel.isLock();
+      
       setFireViewEvents(false);
 
       prefScopesHelper = new PreferencesScopesHelper();
+      
+      if (lock)
+      {
+         prefScopesHelper.setSelectedPreferenceScope(PreferenceScope.PARTITION);
+      }
+ 
       selectedPreferenceScope = prefScopesHelper.getSelectedPreferenceScope();
 
       buildData(columnModel.getSelectableColumns());
@@ -100,18 +105,12 @@ public class TableColumnSelectorPopup extends PopupDialog
          finalCols.add(columnPreference);
       }
       columnModel.setSelectableColumns(finalCols);
+      columnModel.setLock(lock);
 
       setVisible(false);
 
-      if (updatePreferences)
-      {
-         prefScopesHelper.setSelectedPreferenceScope(selectedPreferenceScope);
-         columnModel.saveSelectableColumns(prefScopesHelper.getSelectedPreferenceScope());
-      }
-      if (null != callbackHandler)
-      {
-         callbackHandler.handleEvent(EventType.APPLY);
-      }
+      prefScopesHelper.setSelectedPreferenceScope(selectedPreferenceScope);
+      columnModel.saveSelectableColumns(prefScopesHelper.getSelectedPreferenceScope());
    }
 
    @Override
@@ -208,13 +207,26 @@ public class TableColumnSelectorPopup extends PopupDialog
       return (cp.getVisible() && !columnsPreviouslyVisible.contains(cp.getColumnName()));
    }
 
-   public void setUpdatePreferences(boolean updatePreferences)
+   public boolean isLockDisabled()
    {
-      this.updatePreferences = updatePreferences;
+      if (PreferenceScope.PARTITION != selectedPreferenceScope)
+      {
+         return true;
+      }
+      return false;
    }
 
-   public void setCallbackHandler(ICallbackHandler callbackHandler)
+   public void lockValueChanged()
    {
-      this.callbackHandler = callbackHandler;
+      lock = !lock;
+      if (lock)
+      {
+         selectedPreferenceScope = PreferenceScope.PARTITION;
+      }
+   }
+   
+   public boolean isLock()
+   {
+      return lock;
    }
 }

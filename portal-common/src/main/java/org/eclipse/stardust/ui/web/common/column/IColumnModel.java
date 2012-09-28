@@ -68,7 +68,7 @@ public interface IColumnModel extends Serializable
    void initialize();
    void notifyListeners();
    
-   void setStoredList(List<String> storedList);
+   void setColumnPreferenceHandler(IColumnPreferenceHandler columnPreferenceHandler);
    void setLock(boolean lock);
    boolean isLock();
    

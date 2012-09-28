@@ -67,6 +67,9 @@ public class WorklistConfigurationUtil
    }
 
    /**
+    * This method first checks PARTITION level configuration and if required and
+    * permissible, USER level.
+    * 
     * @param id
     * @param preferenceId
     * @return
@@ -118,6 +121,21 @@ public class WorklistConfigurationUtil
       return configuration;
    }
 
+   /**
+    * @param prefScope
+    * @param id
+    * @param preferenceId
+    * @return
+    */
+   public static Map<String, Object> getStoredValuesPartitionDefault(String preferenceId)
+   {
+      // Check at partition level
+      Map<String, Object> worklistConf;
+      worklistConf = getWorklistConfigurationMap(PreferenceScope.PARTITION, preferenceId);
+      return getStoredValues(DEFAULT, worklistConf);
+   }
+   
+   
    /**
     * @param id
     * @param worklistConf

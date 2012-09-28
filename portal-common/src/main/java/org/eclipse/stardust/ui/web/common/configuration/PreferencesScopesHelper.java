@@ -58,6 +58,28 @@ public class PreferencesScopesHelper implements Converter, Serializable
       return null;
    }
 
+   /**
+    * @param scope
+    * @return
+    */
+   public static org.eclipse.stardust.engine.core.preferences.PreferenceScope wrapScope(PreferenceScope scope)
+   {
+      org.eclipse.stardust.engine.core.preferences.PreferenceScope ippPrefScope;
+      switch (scope)
+      {
+      case PARTITION:
+         ippPrefScope = org.eclipse.stardust.engine.core.preferences.PreferenceScope.PARTITION;
+         break;
+
+      case USER:
+      default:
+         ippPrefScope = org.eclipse.stardust.engine.core.preferences.PreferenceScope.USER;
+         break;
+      }
+
+      return ippPrefScope;
+   }
+
    public SelectItem[] getAllPreferenceScopes()
    {
       return allPreferenceScopes;

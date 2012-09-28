@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.viewscommon.common.spi.preference.impl;
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.engine.core.preferences.IPreferenceStorageManager;
 import org.eclipse.stardust.engine.core.preferences.manager.IPreferencesManager;
+import org.eclipse.stardust.ui.web.common.configuration.PreferencesScopesHelper;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceEditor;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceProvider;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
@@ -49,7 +50,7 @@ public class IppPreferenceProvider implements PreferenceProvider
          String preferencesId)
    {
       IPreferencesManager pm = SessionContext.findSessionContext().getPreferencesManager();
-      return new IppPreferenceStore(pm.getPreferences(wrapScope(scope), moduleId, preferencesId));
+      return new IppPreferenceStore(pm.getPreferences(PreferencesScopesHelper.wrapScope(scope), moduleId, preferencesId));
    }
 
    public PreferenceStore getPreferenceStore(String moduleId, String preferencesId)
@@ -61,28 +62,6 @@ public class IppPreferenceProvider implements PreferenceProvider
          String preferencesId)
    {
       IPreferencesManager pm = SessionContext.findSessionContext().getPreferencesManager();
-      return new IppPreferenceEditor(pm.getPreferencesEditor(wrapScope(scope), moduleId, preferencesId));
-   }
-   
-   /**
-    * @param scope
-    * @return
-    */
-   private org.eclipse.stardust.engine.core.preferences.PreferenceScope wrapScope(PreferenceScope scope)
-   {
-      org.eclipse.stardust.engine.core.preferences.PreferenceScope ippPrefScope;
-      switch(scope)
-      {
-      case PARTITION:
-         ippPrefScope = org.eclipse.stardust.engine.core.preferences.PreferenceScope.PARTITION;
-         break;
-         
-      case USER:
-      default:
-         ippPrefScope = org.eclipse.stardust.engine.core.preferences.PreferenceScope.USER;
-         break;
-      }
-      
-      return ippPrefScope;
+      return new IppPreferenceEditor(pm.getPreferencesEditor(PreferencesScopesHelper.wrapScope(scope), moduleId, preferencesId));
    }
 }

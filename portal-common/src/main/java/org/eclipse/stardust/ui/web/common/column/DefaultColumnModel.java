@@ -45,7 +45,7 @@ public class DefaultColumnModel extends ColumnModel
    
    private PreferenceScope preferenceScope = PreferenceScope.USER;
    
-   private List<String> storedList;
+   private IColumnPreferenceHandler columnPreferenceHandler;
    private boolean lock;
 
    /**
@@ -187,8 +187,16 @@ public class DefaultColumnModel extends ColumnModel
    {
       ArrayList<String> colsToBeSaved = getColsToBeSaved();
       this.preferenceScope = prefScope;
-      UserPreferencesHelper userPreferences = UserPreferencesHelper.getInstance(moduleId, prefScope);
-      userPreferences.setSelectedColumns(viewId, colsToBeSaved);
+      if (null == columnPreferenceHandler)
+      {
+         UserPreferencesHelper userPreferences = UserPreferencesHelper.getInstance(moduleId, prefScope);
+         userPreferences.setSelectedColumns(viewId, colsToBeSaved);
+      }
+      else
+      {
+         columnPreferenceHandler.savePreferences(prefScope, colsToBeSaved, lock);
+      }
+      
       log("[saveSelectableColumns]-> Plattenbau Storing List for '" + prefScope + "' = " + colsToBeSaved);
       
       this.initialize();
@@ -218,9 +226,17 @@ public class DefaultColumnModel extends ColumnModel
    public void resetSelectableColumns(PreferenceScope prefScope)
    {
       this.preferenceScope = prefScope;
-
-      UserPreferencesHelper userPreferences = UserPreferencesHelper.getInstance(moduleId, prefScope);
-      userPreferences.resetSelectedColumns(viewId);
+      
+      if (null == columnPreferenceHandler)
+      {
+         UserPreferencesHelper userPreferences = UserPreferencesHelper.getInstance(moduleId, prefScope);
+         userPreferences.resetSelectedColumns(viewId);
+      }
+      else
+      {
+         columnPreferenceHandler.resetPreferences(prefScope);
+      }
+      
       log("[resetSelectableColumns]-> Plattenbau resetted Columns for '" + prefScope);
       
       setSelectableColumns(getClone(orgColumns));
@@ -273,10 +289,17 @@ public class DefaultColumnModel extends ColumnModel
     */
    private List<ColumnPreference> orderAndSelectAsPerSavedState(List<ColumnPreference> cols, PreferenceScope pScope)
    {
-      if (null == storedList)
+      List<String> storedList = null;
+      if (null == columnPreferenceHandler)
       {
          UserPreferencesHelper userPreferences = UserPreferencesHelper.getInstance(moduleId, pScope);
          storedList = userPreferences.getSelectedColumns(viewId);
+      }
+      else
+      {
+         columnPreferenceHandler.fetchPreferences(pScope);
+         storedList = columnPreferenceHandler.getPreferences();
+         this.lock = columnPreferenceHandler.isLock();
       }
       
       log("[DefaultColumnModel]-> For '" + pScope + "' Got Plattenbau Stored List = " + storedList);
@@ -354,11 +377,6 @@ public class DefaultColumnModel extends ColumnModel
          trace.debug("DefaultColumnModel: Listener is NULL can not notify columnsRearranged");
    }
 
-   public void setStoredList(List<String> storedList)
-   {
-      this.storedList = storedList;
-   }
-
    public boolean isLock()
    {
       return lock;
@@ -367,5 +385,10 @@ public class DefaultColumnModel extends ColumnModel
    public void setLock(boolean lock)
    {
       this.lock = lock;
+   }
+
+   public void setColumnPreferenceHandler(IColumnPreferenceHandler columnPreferenceHandler)
+   {
+      this.columnPreferenceHandler = columnPreferenceHandler;
    }
 }

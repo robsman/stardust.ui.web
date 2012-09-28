@@ -31,12 +31,14 @@
 
 		<!-- Anchor to Launch Filter -->
 		<ice:panelGroup>
-			<ice:commandLink action="#{filterPopup.openPopup}" disabled="#{disabled || filterPopup.columnModel.lock}">
+			<ice:commandLink action="#{filterPopup.openPopup}"
+				disabled="#{disabled || (!ippPortalApp.loggedInUser.administrator and filterPopup.columnModel.lock)}">
 				<pc:automationTag value="auto-DT-ColSelector" standAlone="false" />
-				<ice:graphicImage value="/plugins/common/images/icons/adjust-columns.png"
-						style="vertical-align:top; border:none;"
-						styleClass="#{(disabled || filterPopup.columnModel.lock) ? 'iceCmdBtn-dis' : ''}"
-						title="#{filterPopup.title}" />
+				<ice:graphicImage
+					value="/plugins/common/images/icons/adjust-columns.png"
+					style="vertical-align:top; border:none;"
+					styleClass="#{(disabled || (!ippPortalApp.loggedInUser.administrator and filterPopup.columnModel.lock)) ? 'iceCmdBtn-dis' : ''}"
+					title="#{filterPopup.title}" />
 			</ice:commandLink>
 		</ice:panelGroup>
 
@@ -73,25 +75,46 @@
 					renderNorth="false" renderEast="false" renderSouth="true" renderWest="false" renderCenter="true">
 					<f:facet name="center">
 						<ice:panelGroup>
-							<ice:panelGrid columns="2" cellpadding="0" cellspacing="0">
+							<ice:panelGrid columns="3" cellpadding="0" cellspacing="0">
 								<ice:panelGrid columns="2" rendered="#{ippPortalApp.loggedInUser.administrator}"
 									styleClass="toolbarGroupLeft" style="padding-left: 0px;"
 									cellpadding="0" cellspacing="0">
 									<ice:outputLabel value="#{common_msgPropsBean['common.preferenceScope.label']}#{common_msgPropsBean['common.colon']}" 
 										styleClass="label-form" />
 									<ice:selectOneMenu partialSubmit="true" converter="#{filterPopup.prefScopesHelper}" 
-										value="#{filterPopup.selectedPreferenceScope}"
+										value="#{filterPopup.selectedPreferenceScope}" disabled="#{filterPopup.lock}"
 										valueChangeListener="#{filterPopup.preferenceScopeValueChanged}">
 										<pc:automationTag value="auto-DT-ColSelector-ApplyTo" standAlone="false"/>
 										<f:selectItems  value="#{filterPopup.prefScopesHelper.allPreferenceScopes}"/>
 									</ice:selectOneMenu>
 								</ice:panelGrid>
+								<ice:panelGrid columns="1" styleClass="toolbarGroupLeft"
+									style="#{ippPortalApp.loggedInUser.administrator ? '' : 'padding-left: 0px;'}">
+									<ice:commandLink action="#{filterPopup.lockValueChanged}"
+										rendered="#{ippPortalApp.loggedInUser.administrator}"
+										disabled="#{filterPopup.lockDisabled}"
+										onclick="Event.stop(event);">
+										<pc:automationTag value="auto-DT-ColSelector-LockColumns"
+											standAlone="false" />
+										<ice:graphicImage rendered="#{filterPopup.lock}"
+											style="border: none;"
+											value="/plugins/common/images/icons/lock.png"
+											title="#{common_msgPropsBean['common.filterPopup.unlock']}" 
+											styleClass="#{filterPopup.lockDisabled ? 'iceCmdBtn-dis' : ''}"/>
+										<ice:graphicImage rendered="#{!filterPopup.lock}"
+											value="/plugins/common/images/icons/lock_open.png"
+											style="border: none;"
+											title="#{common_msgPropsBean['common.filterPopup.lock']}" 
+											styleClass="#{filterPopup.lockDisabled ? 'iceCmdBtn-dis' : ''}"/>
+									</ice:commandLink>
+								</ice:panelGrid>
 								<ice:panelGrid columns="1" styleClass="toolbarGroupLeft" 
 									style="#{ippPortalApp.loggedInUser.administrator ? '' : 'padding-left: 0px;'}">
-									<ice:commandLink action="#{filterPopup.reset}" panelConfirmation="resetConfirm#{filterPopup.id}">
+									<ice:commandLink action="#{filterPopup.reset}" panelConfirmation="resetConfirm#{filterPopup.id}"
+									disabled="#{!filterPopup.lockDisabled}">
 										<pc:automationTag value="auto-DT-ColSelector-Reset" standAlone="false"/>
 										<ice:graphicImage value="/plugins/common/images/icons/arrow_rotate_anticlockwise.png"
-											style="border: none;" 
+											style="border: none;"  styleClass="#{!filterPopup.lockDisabled ? 'iceCmdBtn-dis' : ''}"
 											title="#{common_msgPropsBean['common.reset']}"/>
 									</ice:commandLink>
 								</ice:panelGrid>
