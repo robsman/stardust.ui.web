@@ -403,6 +403,7 @@ public class ConnectionCommandHandler
       dataMapping.setElementOid(++maxOid);
       dataMapping.setId(data.getId());
       dataMapping.setName(data.getName());
+      dataMappingConnection.setElementOid(++maxOid);
 
       if (inDataMapping)
       {
@@ -438,7 +439,6 @@ public class ConnectionCommandHandler
             .getDataMappingConnection()
             .add(dataMappingConnection);
 
-      dataMappingConnection.setElementOid(++maxOid);
       dataMappingConnection.setActivitySymbol(activitySymbol);
       dataMappingConnection.setDataSymbol(dataSymbol);
       activitySymbol.getDataMappings().add(dataMappingConnection);
