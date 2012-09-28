@@ -64,7 +64,10 @@ public class ValidationExtensionRegistry implements IValidationExtensionRegistry
       "dmsDocumentListValidator",
       "dmsFolderValidator",
       "dmsFolderListValidator",
-      "org.eclipse.stardust.modeling.validation.entity30BeanData"
+      "org.eclipse.stardust.modeling.validation.entity30BeanData",
+      "org.eclipse.stardust.modeling.validation.jmsApplication",
+      "org.eclipse.stardust.modeling.validation.plainJavaApplication",
+      "org.eclipse.stardust.modeling.validation.jfcContext"
    };
       
    ValidationExtensionRegistry()
