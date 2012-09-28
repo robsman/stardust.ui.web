@@ -305,6 +305,8 @@ define(
 											"#" + model.uuid);
 								});
 				hasUnsavedModifications = false;
+				jQuery("#undoChange").addClass("toolDisabled");
+				jQuery("#redoChange").addClass("toolDisabled");
 			};
 
 			var loadChildParticipants = function(model, parentParticipant) {
@@ -2232,8 +2234,8 @@ define(
 				/**
 				 *
 				 */
-				Outline.prototype.openElementView = function(element) {
-					if (isElementCreatedViaOutline) {
+				Outline.prototype.openElementView = function(element, openView) {
+					if (isElementCreatedViaOutline || openView) {
 						jQuery("#outline").jstree("select_node",
 								"#" + element.uuid);
 						jQuery("#outline").jstree("deselect_all");
@@ -2241,10 +2243,12 @@ define(
 						// getting out or rename mode if the view takes
 						// a little longer to open - observed specifically on
 						// first node creation after login,
-						window.setTimeout(function() {
-							jQuery("#outline").jstree("rename",
-									"#" + element.uuid)
-						}, 1000);
+						if (!openView) {
+							window.setTimeout(function() {
+								jQuery("#outline").jstree("rename",
+										"#" + element.uuid)
+							}, 1000);
+						}
 					}
 					isElementCreatedViaOutline = false;
 				}
@@ -2273,7 +2277,7 @@ define(
 							if (m_constants.PROCESS == command.changes.added[i].type) {
 								this
 										.openElementView(this
-												.createProcess(command.changes.added[i]));
+												.createProcess(command.changes.added[i]), (command.isRedo || command.isUndo));
 							} else if (m_constants.MODEL == command.changes.added[i].type) {
 								this.openElementView(this
 										.createModel(command.changes.added[i]));
@@ -2360,6 +2364,10 @@ define(
 							if (command.changes.removed[i].uuid) {
 								this.fireCloseViewCommand(command.changes.removed[i].uuid)
 							}
+						}
+
+						if (!command.isRedo || !command.isUndo) {
+							jQuery("#undoChange").removeClass("toolDisabled");
 						}
 					} else if (command.scope == "all") {
 						// @deprecated
