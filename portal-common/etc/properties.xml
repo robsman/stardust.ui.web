@@ -890,8 +890,7 @@
 
          <!-- Spring section -->
          <property name="context-param[SPRING_CONFIG_LOCATION].param-name"
-            value="contextConfigLocation" />         <property name="context-param[SPRING_CONFIG_LOCATION].param-value"                        setups="production-withJcr, development-withJcr, production-withLiberation, development-withLiberation"             value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml,WEB-INF/jax-ws-cxf-context.xml" />         <property name="context-param[SPRING_CONFIG_LOCATION].param-value"            setups="!production-withJcr, !development-withJcr, production-withLiberation, development-withLiberation"            value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml,WEB-INF/jax-ws-cxf-context.xml" />         <property name="context-param[SPRING_CONFIG_LOCATION].param-value"            setups="!production-withLiberation, !development-withLiberation ,  production-withJcr, development-withJcr"            value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml" />         <property name="context-param[SPRING_CONFIG_LOCATION].param-value"
-            value="classpath*:META-INF/spring/*-context.xml" />
+            value="contextConfigLocation" />         <property name="context-param[SPRING_CONFIG_LOCATION].param-value"             value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml">            <setup-value setup="production-withLiberation"                value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml,WEB-INF/jax-ws-cxf-context.xml"/>            <setup-value setup="development-withLiberation"                value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml,WEB-INF/jax-ws-cxf-context.xml"/>         </property> 
 
        <!-- Myfaces section -->
          <property name="context-param[MYFACE_DISABLE_DIALOG_OUTCOMES].param-name"
@@ -1937,15 +1936,9 @@
 
          <!-- Spring section -->
          <property name="context-param[SPRING_CONFIG_LOCATION].param-name"
-            value="contextConfigLocation" />         <property name="context-param[SPRING_CONFIG_LOCATION].param-value"                        setups="production-withJcr, development-withJcr, production-withLiberation, development-withLiberation"             modules="spring-remoting-server-ipp-portal"            value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml,WEB-INF/jax-ws-cxf-context.xml" />         <property name="context-param[SPRING_CONFIG_LOCATION].param-value"            setups="!production-withJcr, !development-withJcr, production-withLiberation, development-withLiberation"            modules="spring-remoting-server-ipp-portal"            value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml,WEB-INF/jax-ws-cxf-context.xml" />
-         <property name="context-param[SPRING_CONFIG_LOCATION].param-value"
-            setups="!production-withLiberation, !development-withLiberation ,  production-withJcr, development-withJcr"
-            modules="spring-remoting-server-ipp-portal"
-            value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml" />
-         <property name="context-param[SPRING_CONFIG_LOCATION].param-value"
-            value="classpath*:META-INF/spring/*-context.xml" />
+            value="contextConfigLocation" />           <property name="context-param[SPRING_CONFIG_LOCATION].param-value"            value="WEB-INF/config/ipp/spring/*-context.xml,classpath*:META-INF/spring/*-context.xml">            <setup-value setup="production-withLiberation"                value="classpath*:META-INF/spring/*-context.xml,WEB-INF/jax-ws-cxf-context.xml"/>            <setup-value setup="development-withLiberation"                value="classpath*:META-INF/spring/*-context.xml,WEB-INF/jax-ws-cxf-context.xml"/>         </property>
 
-       <!-- Myfaces section -->
+         <!-- Myfaces section -->
          <property name="context-param[MYFACE_DISABLE_DIALOG_OUTCOMES].param-name"
             value="org.apache.myfaces.trinidad.DISABLE_DIALOG_OUTCOMES" />
          <property name="context-param[MYFACE_DISABLE_DIALOG_OUTCOMES].param-value"
