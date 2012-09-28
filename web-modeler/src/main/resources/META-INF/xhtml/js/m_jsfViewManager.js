@@ -61,5 +61,18 @@ define([ "m_utils" ], function(m_utils) {
 			window.parent.EventHub.events.publish("UPDATE_VIEW", linkId, formId,
 					viewId, queryString, objectId);
 		};
+
+		/**
+		 *
+		 */
+		JsfViewManager.prototype.closeViewsForElement = function(uuid) {
+			var link = jQuery("a[id $= 'views_close_link']",
+					window.parent.frames['ippPortalMain'].document);
+			var linkId = link.attr('id');
+			var form = link.parents('form:first');
+			var formId = form.attr('id');
+
+			window.parent.EventHub.events.publish("CLOSE_VIEWS", linkId, formId, uuid);
+		};
 	}
 });

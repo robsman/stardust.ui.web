@@ -704,7 +704,9 @@ define(
 										viewManager.openView("modelView",
 												"modelId=" + model.id
 														+ "&modelName="
-														+ model.name,
+														+ model.name
+														+ "&uuid="
+														+ model.uuid,
 												model.uuid);
 									} else if (data.rslt.obj.attr('rel') == "roleParticipant"
 										|| data.rslt.obj.attr('rel') == "teamLeader") {
@@ -722,7 +724,11 @@ define(
 														+ "&roleName="
 														+ role.name
 														+ "&fullId="
-														+ role.getFullId(),
+														+ role.getFullId()
+														+ "&uuid="
+														+ role.uuid
+														+ "&modelUUID="
+														+ model.uuid,
 												role.uuid);
 									} else if (data.rslt.obj.attr('rel') == 'organizationParticipant') {
 										var model = m_model
@@ -742,7 +748,11 @@ define(
 														+ organization.name
 														+ "&fullId="
 														+ organization
-																.getFullId(),
+																.getFullId()
+														+ "&uuid="
+														+ organization.uuid
+														+ "&modelUUID="
+														+ model.uuid,
 												organization.uuid);
 									} else if (m_elementConfiguration
 											.isValidDataType(data.rslt.obj
@@ -763,7 +773,11 @@ define(
 														+ "&dataName="
 														+ data.name
 														+ "&fullId="
-														+ data.getFullId(),
+														+ data.getFullId()
+														+ "&uuid="
+														+ data.uuid
+														+ "&modelUUID="
+														+ model.uuid,
 												data.uuid);
 									} else if (data.rslt.obj.attr('rel') == 'process') {
 										var model = m_model
@@ -781,7 +795,11 @@ define(
 														+ "&processName="
 														+ process.name
 														+ "&fullId="
-														+ process.getFullId(),
+														+ process.getFullId()
+														+ "&uuid="
+														+ process.uuid
+														+ "&modelUUID="
+														+ model.uuid,
 												process.uuid);
 									} else if (data.rslt.obj.attr('rel') == "webservice") {
 										var model = m_model
@@ -801,7 +819,11 @@ define(
 														+ application.name
 														+ "&fullId="
 														+ application
-																.getFullId(),
+																.getFullId()
+														+ "&uuid="
+														+ application.uuid
+														+ "&modelUUID="
+														+ model.uuid,
 												application.uuid);
 									} else if (data.rslt.obj.attr('rel') == "messageTransformationBean") {
 										var model = m_model
@@ -822,7 +844,11 @@ define(
 																+ application.name
 																+ "&fullId="
 																+ application
-																		.getFullId(),
+																		.getFullId()
+																+ "&uuid="
+																+ application.uuid
+																+ "&modelUUID="
+																+ model.uuid,
 														application.uuid);
 									} else if (data.rslt.obj.attr('rel') == "camelSpringProducerApplication") {
 										var model = m_model
@@ -842,7 +868,11 @@ define(
 														+ application.name
 														+ "&fullId="
 														+ application
-																.getFullId(),
+																.getFullId()
+														+ "&uuid="
+														+ application.uuid
+														+ "&modelUUID="
+														+ model.uuid,
 												application.uuid);
 									} else if (data.rslt.obj.attr('rel') == "interactive") {
 										var model = m_model
@@ -862,7 +892,11 @@ define(
 														+ application.name
 														+ "&fullId="
 														+ application
-																.getFullId(),
+																.getFullId()
+														+ "&uuid="
+														+ application.uuid
+														+ "&modelUUID="
+														+ model.uuid,
 												application.uuid);
 									} else if (m_elementConfiguration
 											.isUnSupportedAppType(data.rslt.obj
@@ -884,7 +918,11 @@ define(
 														+ application.name
 														+ "&fullId="
 														+ application
-																.getFullId(),
+																.getFullId()
+														+ "&uuid="
+														+ application.uuid
+														+ "&modelUUID="
+														+ model.uuid,
 												application.uuid);
 									} else if (data.rslt.obj.attr('rel') == "structuredDataType") {
 										var model = m_model
@@ -905,7 +943,11 @@ define(
 																+ structuredDataType.name
 																+ "&fullId="
 																+ structuredDataType
-																		.getFullId(),
+																		.getFullId()
+																+ "&uuid="
+																+ structuredDataType.uuid
+																+ "&modelUUID="
+																+ model.uuid,
 														structuredDataType.uuid);
 									} else if (data.rslt.obj.attr('rel') == "conditionalPerformerParticipant") {
 										var model = m_model
@@ -926,7 +968,11 @@ define(
 																+ conditionalPerformer.name
 																+ "&fullId="
 																+ conditionalPerformer
-																		.getFullId(),
+																		.getFullId()
+																+ "&uuid="
+																+ conditionalPerformer.uuid
+																+ "&modelUUID="
+																+ model.uuid,
 														conditionalPerformer.uuid);
 									}
 
@@ -2206,6 +2252,13 @@ define(
 				/**
 				 *
 				 */
+				Outline.prototype.fireCloseViewCommand = function(uuid) {
+					viewManager.closeViewsForElement(uuid);
+				}
+
+				/**
+				 *
+				 */
 				Outline.prototype.processCommand = function(command) {
 					m_utils.debug("===> Outline Process Event");
 
@@ -2303,6 +2356,9 @@ define(
 										.deleteTypeDeclaration(command.changes.removed[i]);
 							} else if (m_constants.DATA == command.changes.removed[i].type) {
 								this.deleteData(command.changes.removed[i]);
+							}
+							if (command.changes.removed[i].uuid) {
+								this.fireCloseViewCommand(command.changes.removed[i].uuid)
 							}
 						}
 					} else if (command.scope == "all") {
