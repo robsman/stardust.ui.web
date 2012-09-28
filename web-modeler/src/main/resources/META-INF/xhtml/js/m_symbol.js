@@ -873,6 +873,7 @@ define(
 				Symbol.prototype.dragStart = function() {
 					// TODO hide for all selected
 					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
+						this.diagram.mode = this.diagram.SYMBOL_MOVE_MODE;
 						this.hideProximitySensor();
 
 						if (!this.selected) {
@@ -894,7 +895,8 @@ define(
 				 *
 				 */
 				Symbol.prototype.dragStop = function() {
-					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
+					if (this.diagram.mode == this.diagram.SYMBOL_MOVE_MODE) {
+						this.diagram.mode = this.diagram.NORMAL_MODE
 						this.showProximitySensor();
 						// Only process if symbol has been moved at all
 						if (this.x != this.dragStartX
@@ -1900,6 +1902,7 @@ define(
 				 *
 				 */
 				AnchorPoint.prototype.dragStart = function() {
+					this.symbol.diagram.mode = this.symbol.diagram.SYMBOL_MOVE_MODE;
 					for ( var n in this.symbol.connections) {
 						if (this.symbol.connections[n].selected) {
 							this.dragConnection = this.symbol.connections[n];
@@ -1944,6 +1947,7 @@ define(
 				 *
 				 */
 				AnchorPoint.prototype.dragStop = function() {
+					this.symbol.diagram.mode = this.symbol.diagram.NORMAL_MODE;
 					if (this.dragConnection == null) {
 						return;
 					}

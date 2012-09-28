@@ -61,6 +61,7 @@ define(
 				this.NORMAL_MODE = "NORMAL_MODE";
 				this.RUBBERBAND_MODE = "RUBBERBAND_MODE";
 				this.CONNECTION_MODE = "CONNECTION_MODE";
+				this.SYMBOL_MOVE_MODE = "SYMBOL_MOVE_MODE";
 				this.SEPARATOR_MODE = "SEPARATOR_MODE";
 				this.X_OFFSET = X_OFFSET;
 				this.Y_OFFSET = Y_OFFSET;
@@ -480,7 +481,7 @@ define(
 							// For Default Pool drag and drop is not allowed.
 							inAutoScrollMode = false;
 						}else if (true == currentDiagram.isInConnectionMode()
-								|| currentDiagram.mode == currentDiagram.RUBBERBAND_MODE
+								|| currentDiagram.mode == currentDiagram.SYMBOL_MOVE_MODE
 								|| null != currentDiagram.newSymbol
 								|| true == currentDiagram.isDragAndDropMode()) {
 							inAutoScrollMode = true;
