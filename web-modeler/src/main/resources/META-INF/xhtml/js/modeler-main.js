@@ -18,6 +18,15 @@ require.config({
 		'jquery.tablescroll': 'libs/jquery/plugins/jquery.tablescroll',
 		'jquery.treeTable': 'libs/jquery/plugins/jquery.treeTable',
 		'jquery.url': 'libs/jquery/plugins/jquery.url',
+		
+		'codemirror': 'libs/codemirror/codemirror-2.34',
+		'codemirror.mode.javascript': 'libs/codemirror/mode/javascript/javascript',
+		'codemirror.util.dialog': 'libs/codemirror/util/dialog',
+		'codemirror.util.searchcursor': 'libs/codemirror/util/searchcursor',
+		'codemirror.util.search': 'libs/codemirror/util/search',
+		'codemirror.util.match-highlighter': 'libs/codemirror/util/match-highlighter',
+		'codemirror.util.simple-hint': 'libs/codemirror/util/simple-hint',
+		'codemirror.util.javascript-hint': 'libs/codemirror/util/javascript-hint',
 
 		'extensions': '../../../services/rest/bpm-modeler/config/ui/extensions.js?p=extensions',
 	},
@@ -41,7 +50,15 @@ require.config({
 		'jquery.simplemodal': ['jquery'],
 		'jquery.tablescroll': ['jquery'],
 		'jquery.treeTable': ['jquery'],
-		'jquery.url': ['jquery']
+		'jquery.url': ['jquery'],
+		
+		'codemirror.mode.javascript': ['codemirror'],
+		'codemirror.util.dialog': ['codemirror'],
+		'codemirror.util.searchcursor': ['codemirror'],
+		'codemirror.util.search': ['codemirror.util.searchcursor', 'codemirror.util.dialog'],
+		'codemirror.util.match-highlighter': ['codemirror.util.searchcursor'],
+		'codemirror.util.simple-hint': ['codemirror'],
+		'codemirror.util.javascript-hint': ['codemirror']
 	}
 });
 
@@ -63,6 +80,15 @@ require(["require",
 	 "jquery.treeTable",
 	 "jquery.url",
 
+	 "codemirror",
+	 "codemirror.mode.javascript",
+	 "codemirror.util.dialog",
+	 "codemirror.util.searchcursor",
+	 "codemirror.util.search",
+	 "codemirror.util.match-highlighter",
+	 "codemirror.util.simple-hint",
+	 "codemirror.util.javascript-hint",
+	 
 	 "modeler-plugins",
 	 "extensions",
 	 "m_extensionManager",

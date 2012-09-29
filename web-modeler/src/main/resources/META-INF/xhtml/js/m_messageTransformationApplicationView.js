@@ -65,6 +65,36 @@ define(
 				this.inputTableRows = [];
 				this.outputTableRows = [];
 
+				// Set up code editor for JS code expression
+				CodeMirror.commands.autocomplete = function(cm) {
+					CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
+				}
+				
+				var editor = CodeMirror.fromTextArea(jQuery("#expressionTextArea")[0], {
+					mode: "javascript",
+					theme: "eclipse",
+					lineNumbers: true,
+					lineWrapping: true,
+					indentUnit: 3,
+					matchBrackets: true,
+					extraKeys: {"Ctrl-Space": "autocomplete"},
+					onCursorActivity: function() {
+						// Highlight selected text 
+						editor.matchHighlight("CodeMirror-matchhighlight");
+						// Set active line 
+						editor.setLineClass(hlLine, null, null);
+						hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
+					},
+					onBlur: function() {
+						editor.save();
+						// Programmatically invoke the change handler on the hidden text area
+						// as it will not be invoked automatically
+						jQuery(editor.getTextArea()).change();
+					}
+				});
+				var hlLine = editor.setLineClass(0, "activeline");
+				this.expressionEditor = editor;
+					
 				this.sourceFilterInput.keypress({
 					"view" : this
 				}, function(event) {
@@ -120,6 +150,7 @@ define(
 					event.data.view.filterFieldsWithMapping();
 				});
 
+				// TODO: Review if this should be removed as expressionTextArea is hidden 
 				this.expressionTextArea
 						.droppable({
 							accept : ".data-element",
@@ -294,6 +325,7 @@ define(
 									jQuery("#outputDataDialog").dialog("open");
 								});
 
+				// TODO: Review if this should be removed as expressionTextArea is hidden 
 				this.expressionTextArea.autocomplete({
 					minLength : 0,
 					source : function(request, response) {
@@ -454,8 +486,8 @@ define(
 														view.selectedOutputTableRow.path
 																+ " = ");
 
-										view.expressionTextArea
-												.val(view.selectedOutputTableRow.mappingExpression);
+										view.expressionEditor.setValue(view.selectedOutputTableRow.mappingExpression);
+										view.expressionEditor.save();
 									});
 
 					jQuery("table#targetTable tbody tr span").mousedown(
@@ -692,8 +724,8 @@ define(
 											// area if needed
 
 											if (view.selectedOutputTableRow == outputTableRow) {
-												view.expressionTextArea
-														.val(outputTableRow.mappingExpression);
+												view.expressionEditor.setValue(outputTableRow.mappingExpression);
+												view.expressionEditor.save();
 											}
 
 											view

@@ -38,6 +38,14 @@ define(
 						propertiesPage);
 
 				/**
+				 * Override base class PropertiesPage#show() method so that codeEditor.refresh() can be called
+				 */ 
+				ControlFlowBasicPropertiesPage.prototype.show = function() { 
+					propertiesPage.show();
+					this.conditionExpressionInputEditor.refresh();
+				};
+				
+				/**
 				 * 
 				 */
 				ControlFlowBasicPropertiesPage.prototype.initialize = function() {
@@ -47,19 +55,50 @@ define(
 					this.descriptionInput = this.mapInputId("descriptionInput");
 					this.conditionPanel = this.mapInputId("conditionPanel");
 
+					// Set up code editor for JS code expression
+					CodeMirror.commands.autocomplete = function(cm) {
+						CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
+					}
+					var editor = CodeMirror.fromTextArea(this.conditionExpressionInput[0], {
+						mode: "javascript",
+						theme: "eclipse",
+						lineNumbers: true,
+						lineWrapping: true,
+						indentUnit: 3,
+						matchBrackets: true,
+						onCursorActivity: function() {
+							// Highlight selected text 
+							editor.matchHighlight("CodeMirror-matchhighlight");
+							// Set active line 
+							editor.setLineClass(hlLine, null, null);
+							hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
+						},
+						onBlur: function() {
+							editor.save();
+							// Programmatically invoke the change handler on the hidden text area
+							// as it will not be invoked automatically
+							jQuery(editor.getTextArea()).change();
+						}
+					});
+					var hlLine = editor.setLineClass(0, "activeline");
+					this.conditionExpressionInputEditor = editor;
+
 					this.otherwiseInput.click({
 						"page" : this
 					}, function(event) {
 						if (event.data.page.otherwiseInput.is(":checked")) {
-							event.data.page.conditionExpressionInput.attr(
-									"disabled", true);
-							event.data.page.conditionExpressionInput.val(null);
+							event.data.page.conditionExpressionInput.val("");
 						} else {
-							event.data.page.conditionExpressionInput
-									.removeAttr("disabled");
-							event.data.page.conditionExpressionInput
-									.val("true");
+							event.data.page.conditionExpressionInput.val("true");
 						}
+						// Programmatically invoke the change handler on the hidden text area
+						// as it will not be invoked automatically
+						event.data.page.conditionExpressionInput.change();
+						
+						// TODO: Review - below statements are probably not necessary 
+						// as the code editor will be refreshed in setElement()
+						// event.data.page.conditionExpressionInputEditor.setValue(event.data.page.conditionExpressionInput.val());
+						// event.data.page.conditionExpressionInputEditor.refresh();
 					});
 
 					this.registerInputForModelElementChangeSubmission(
@@ -79,18 +118,23 @@ define(
 							.val(this.propertiesPanel.element.modelElement.description);
 
 					if (this.propertiesPanel.element.allowsCondition()) {
+						var editor = this.conditionExpressionInputEditor;
+						
 						this.otherwiseInput
 								.attr(
 										"checked",
 										this.propertiesPanel.element.modelElement.otherwise);
 						this.conditionExpressionInput
 								.val(this.propertiesPanel.element.modelElement.conditionExpression);
+						editor.setValue(this.conditionExpressionInput.val());
 
+						var editorWrapperNode = editor.getWrapperElement();
 						if (this.propertiesPanel.element.modelElement.otherwise) {
-							this.conditionExpressionInput
-									.attr("disabled", true);
+							editor.setOption("readOnly", "nocursor");
+							jQuery(editorWrapperNode).addClass("CodeMirror-disabled");
 						} else {
-							this.conditionExpressionInput.removeAttr("disabled");
+							editor.setOption("readOnly", false);
+							jQuery(editorWrapperNode).removeClass("CodeMirror-disabled");
 						}
 
 						this.conditionPanel.removeAttr("class");
