@@ -103,14 +103,14 @@ define(
 				 * 
 				 */
 				XsdStructuredDataTypeView.prototype.getBody = function() {
-					return this.typeDeclaration.schema.types[this.typeDeclaration.id].body;
+					return this.typeDeclaration.typeDeclaration.schema.types[this.typeDeclaration.id].body;
 				};
 
 				/**
 				 * 
 				 */
 				XsdStructuredDataTypeView.prototype.getFacets = function() {
-					return this.typeDeclaration.schema.types[this.typeDeclaration.id].facets;
+					return this.typeDeclaration.typeDeclaration.schema.types[this.typeDeclaration.id].facets;
 				};
 
 				/**
@@ -141,7 +141,7 @@ define(
 						cardinality : "required"
 					};
 					this.submitChanges({
-						schema : this.typeDeclaration.schema
+						typeDeclaration : this.typeDeclaration.typeDeclaration
 					});
 
 					this.resumeTableForSequenceDefinition();
@@ -152,7 +152,7 @@ define(
 												+ this.getElementCount()] = {classifier: "enumeration",
 							name: "New" + this.getElementCount()};
 						this.submitChanges({
-							schema : this.typeDeclaration.schema
+							typeDeclaration : this.typeDeclaration.typeDeclaration
 						});
 										this.resumeTableForEnumerationDefinition();						
 						}
@@ -192,7 +192,7 @@ define(
 
 						var content = "<tr id='" + path + "'>";
 
-						content += "<td>";
+						content += "<td class='elementCell'>";
 						content += "<input type='text' value='"
 								+ this.getBody().elements[element].name + "'/>";
 						content += "</td>";
@@ -203,7 +203,7 @@ define(
 									.getTypeSelectList(this.getBody().elements[element].type);
 						}
 
-						content += "<td>";
+						content += "<td class='cardinalityCell'>";
 
 						if (this.getBody().classifier == "sequence") {
 							content += ("<select size=\"1\" class=\"cardinalitySelect\"><option value=\"1\""
@@ -390,14 +390,14 @@ define(
 					for ( var n in this.typeDeclaration.model.typeDeclarations) {
 						var typeDeclaration = this.typeDeclaration.model.typeDeclarations[n];
 
-						if (typeDeclaration.schema.elements[typeDeclaration.id] == null) {
+						if (typeDeclaration.typeDeclaration.schema.elements[typeDeclaration.id] == null) {
 							continue;
 						}
 
 						select += "<option value=\""
-								+ typeDeclaration.schema.elements[typeDeclaration.id].type
+								+ typeDeclaration.typeDeclaration.schema.elements[typeDeclaration.id].type
 								+ "\""
-								+ (type == typeDeclaration.schema.elements[typeDeclaration.id].type ? "selected"
+								+ (type == typeDeclaration.typeDeclaration.schema.elements[typeDeclaration.id].type ? "selected"
 										: "") + ">" + typeDeclaration.name
 								+ "</option>";
 					}

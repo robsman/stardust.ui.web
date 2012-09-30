@@ -76,11 +76,63 @@ define(
 
 						this.parametersTableLabel.empty();
 						this.parametersTableLabel
-								.append("Parameters for application "
+								.append("Query parameters for application "
 										+ application.name);
 
-						m_utils.debug("Application Attributes:");
-						m_utils.debug(application.attributes);
+						var routeEntries = application.attributes["carnot:engine:camel::routeEntries"];
+
+						if (routeEntries != null
+								&& routeEntries.indexOf("isb:")) // TODO
+						// Should be
+						// more
+						// elaborated
+						{
+							var additionalSpringBeanDefinitions = application.attributes["carnot:engine:camel::additionalSpringBeanDefinitions"];
+
+							m_utils.debug("Spring Bean Definition: "
+									+ additionalSpringBeanDefinitions);
+
+							var xmlDoc = jQuery
+									.parseXML(additionalSpringBeanDefinitions);
+
+							var xml = jQuery(xmlDoc);
+
+							var parameters = [];
+							
+							this.parameters = parameters;
+
+							jQuery(xml)
+									.find("bean")
+									.each(
+											function() {
+												m_utils.debug("Bean: "
+														+ jQuery(this));
+												jQuery(this)
+														.find("map")
+														.each(
+																function() {
+																	m_utils
+																			.debug("Map: "
+																					+ jQuery(this));
+																	jQuery(this)
+																			.find(
+																					"entry")
+																			.each(
+																					function() {
+																						if (jQuery(
+																								this)
+																								.attr(
+																										"key") == "name") {
+																							parameters
+																									.push(jQuery(
+																											this)
+																											.attr(
+																													"value"));
+																						}
+																					});
+																});
+											});
+						}
 
 						this.populateParametersTable();
 					} else {
@@ -95,8 +147,6 @@ define(
 				ActivityServiceParametersPropertiesPage.prototype.populateParametersTable = function() {
 
 					this.parametersTableBody.empty();
-
-					this.parameters = [ "L12", "L22", "L23" ];
 
 					for ( var n = 0; n < this.parameters.length; ++n) {
 						var parameter = this.parameters[n];

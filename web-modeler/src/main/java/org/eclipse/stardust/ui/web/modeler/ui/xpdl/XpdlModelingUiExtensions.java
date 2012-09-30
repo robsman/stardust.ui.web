@@ -81,7 +81,10 @@ public class XpdlModelingUiExtensions implements ModelerUiExtensionsProvider
             new PropertyPageConfiguration("dataFlowPropertiesPanel", "basicPropertiesPage",
                   "m_dataFlowBasicPropertiesPage", "always"),
             new PropertyPageConfiguration("dataFlowPropertiesPanel", "dataFlowgatewayAnnotationsPropertiesPage",
-                  "modelElementAnnotationsPropertiesPage.html", "m_modelElementAnnotationsPropertiesPage", "always")
+                  "modelElementAnnotationsPropertiesPage.html", "m_modelElementAnnotationsPropertiesPage", "always"),
+
+            new PropertyPageConfiguration("annotationPropertiesPanel", "basicPropertiesPage",
+                  "annotationBasicPropertiesPage.html", "m_annotationBasicPropertiesPage", "always")
       );
    }
 
@@ -95,6 +98,7 @@ public class XpdlModelingUiExtensions implements ModelerUiExtensionsProvider
             new ToolbarSectionConfiguration("dataPalette", "Data", null),
             new ToolbarSectionConfiguration("lanePalette", "Pools and Lanes", "always"),
             new ToolbarSectionConfiguration("connectorPalette", "Data and Sequence Flow", "always"),
+            new ToolbarSectionConfiguration("annotationPalette", "Annotations", "always"),
             new ToolbarSectionConfiguration("decorationPalette", "Decoration", "decorationPalette.html", "m_decorationPalette", "preview")
       );
    }
@@ -133,7 +137,10 @@ public class XpdlModelingUiExtensions implements ModelerUiExtensionsProvider
                   "../../images/icons/lane.png", "m_defaultPaletteHandler", "createSwimlane", "always"),
 
             new ToolbarEntryConfiguration("connectorButton", "connectorPalette", "Create Connector",
-                  "../../images/icons/connect.png", "m_defaultPaletteHandler", "createConnector", "always")
+                  "../../images/icons/connect.png", "m_defaultPaletteHandler", "createConnector", "always"),
+
+            new ToolbarEntryConfiguration("annotationButton", "annotationPalette", "Create Annotation",
+                  "../../images/icons/annotation.png", "m_defaultPaletteHandler", "createAnnotation", "always")
       );
    }
 

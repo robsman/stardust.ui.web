@@ -518,12 +518,9 @@ define(
 					// TODO Works only for references in the same model
 
 					var typeDeclaration = m_model
-							.findDataStructure(this.application.model.id
+							.findTypeDeclaration(this.application.model.id
 									+ ":"
-									+ accessPoint.attributes["carnot:engine:dataType"]).typeDeclaration;
-
-					typeDeclaration.resolveTypes(m_model
-							.getTypeDeclarations());
+									+ accessPoint.attributes["carnot:engine:dataType"]);
 
 					this.inputData[accessPoint.id] = typeDeclaration;
 					this.initializeInputTableRowsRecursively(accessPoint,
@@ -551,12 +548,9 @@ define(
 					// TODO Works only for references in the same model
 
 					var typeDeclaration = m_model
-							.findDataStructure(this.application.model.id
+							.findTypeDeclaration(this.application.model.id
 									+ ":"
-									+ accessPoint.attributes["carnot:engine:dataType"]).typeDeclaration;
-
-					typeDeclaration.resolveTypes(m_model
-							.getTypeDeclarations());
+									+ accessPoint.attributes["carnot:engine:dataType"]);
 
 					this.outputData[accessPoint.id] = typeDeclaration;
 					this.initializeOutputTableRowsRecursively(accessPoint,

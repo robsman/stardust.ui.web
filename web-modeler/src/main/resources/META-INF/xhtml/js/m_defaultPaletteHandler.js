@@ -15,12 +15,12 @@ define([ "m_utils", "m_constants", "m_messageDisplay",
 		"m_canvasManager",
 		"m_communicationController", "m_constants", "m_logger",
 		"m_commandsController", "m_diagram", "m_activitySymbol",
-		"m_eventSymbol", "m_gatewaySymbol", "m_dataSymbol", "m_model",
+		"m_eventSymbol", "m_gatewaySymbol", "m_dataSymbol", "m_annotationSymbol", "m_model",
 		"m_process", "m_activity", "m_data" ], function(m_utils, m_constants,
 		m_messageDisplay, m_canvasManager,
 		m_communicationController, m_constants, m_logger, m_commandsController,
 		m_diagram, m_activitySymbol, m_eventSymbol, m_gatewaySymbol,
-		m_dataSymbol, m_model, m_process, m_activity, m_data) {
+		m_dataSymbol, m_annotationSymbol, m_model, m_process, m_activity, m_data) {
 
 	function selectTool(toolButtonId) {
 		$(".selected-tool").removeClass("selected-tool");
@@ -79,6 +79,12 @@ define([ "m_utils", "m_constants", "m_messageDisplay",
 			diagram.mode = diagram.CONNECTION_MODE;
 			m_messageDisplay
 					.showMessage("Select first anchor point for connection.");
+		},
+
+		createAnnotation : function(diagram) {
+			diagram.clearCurrentToolSelection();
+			selectTool("annotationButton");
+			diagram.newSymbol = m_annotationSymbol.create(diagram);
 		},
 
 		zoomIn : function(diagram) {

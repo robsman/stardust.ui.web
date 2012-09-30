@@ -22,7 +22,7 @@ define([ "require", "m_extensionManager", "m_logger", "m_utils",
 		"m_activityControllingPropertiesPage",
 		"m_activityQualityControlPropertiesPage", "m_activityServiceParametersPropertiesPage", "m_eventBasicPropertiesPage",
 		"m_gatewayBasicPropertiesPage", "m_swimlaneBasicPropertiesPage",
-		"m_dataBasicPropertiesPage", "m_controlFlowBasicPropertiesPage",
+		"m_dataBasicPropertiesPage", , "m_annotationBasicPropertiesPage", "m_controlFlowBasicPropertiesPage",
 		"m_controlFlowTransactionPropertiesPage",
 		"m_dataFlowBasicPropertiesPage", "m_decorationPalette", "m_modelElementAnnotationsPropertiesPage" ], function(
 		require, m_extensionManager) {

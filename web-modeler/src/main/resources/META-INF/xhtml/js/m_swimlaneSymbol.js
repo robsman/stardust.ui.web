@@ -4,11 +4,11 @@
 define(
 		[ "m_utils", "m_constants", "m_commandsController", "m_command",
 				"m_canvasManager", "m_model", "m_symbol", "m_activitySymbol",
-				"m_gatewaySymbol", "m_eventSymbol", "m_dataSymbol",
+				"m_gatewaySymbol", "m_eventSymbol", "m_dataSymbol", "m_annotationSymbol",
 				"m_propertiesPanel", "m_swimlanePropertiesPanel","m_modelerUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
 				m_canvasManager, m_model, m_symbol, m_activitySymbol,
-				m_gatewaySymbol, m_eventSymbol, m_dataSymbol,
+				m_gatewaySymbol, m_eventSymbol, m_dataSymbol, m_annotationSymbol,
 				m_propertiesPanel, m_swimlanePropertiesPanel, m_modelerUtils) {
 
 			return {
@@ -148,7 +148,14 @@ define(
 						m_dataSymbol.createDataSymbolFromJson(this.diagram,
 								this, this.dataSymbols[n]);
 					}
+					// Create data symbols
+
+					for ( var n in this.annotationSymbols) {
+						m_annotationSymbol.createFromJson(this.diagram,
+								this, this.annotationSymbols[n]);
+					}
 				};
+
 				/**
 				 * Overridden as we do now want the create REST call to be made at this point but
 				 * after the swimlane is repositioned.
@@ -222,6 +229,13 @@ define(
 
 					for ( var dataSymbol in this.dataSymbols) {
 						transferObject.dataSymbols[dataSymbol] = this.dataSymbols[dataSymbol]
+								.createTransferObject();
+					}
+
+					transferObject.annotationSymbols = {};
+
+					for ( var annotationSymbol in this.annotationSymbols) {
+						transferObject.annotationSymbols[annotationSymbol] = this.annotationSymbols[annotationSymbol]
 								.createTransferObject();
 					}
 

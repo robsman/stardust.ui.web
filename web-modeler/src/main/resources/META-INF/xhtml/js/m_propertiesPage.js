@@ -38,6 +38,13 @@ define(
 				/**
 				 * 
 				 */
+				PropertiesPage.prototype.getElement = function() {
+					return this.propertiesPanel.element;
+				};
+
+				/**
+				 * 
+				 */
 				PropertiesPage.prototype.setElement = function() {
 				};
 
@@ -101,6 +108,34 @@ define(
 
 					return element;
 				};
+				
+				/**
+				 * 
+				 */
+				PropertiesPage.prototype.registerInputForElementChangeSubmission = function(
+						input, property) {
+					input.change({
+						page : this,
+						input : input
+					}, function(event) {
+						var page = event.data.page;
+						var input = event.data.input;
+
+						if (!page.validate()) {
+							return;
+						}
+
+						if (page.getElement()[property] != input.val()) {
+							
+							var change = {};
+							
+							change[property] = input.val();
+							
+							page.submitChanges(change);
+						}
+					});
+				};
+
 				/**
 				 * 
 				 */

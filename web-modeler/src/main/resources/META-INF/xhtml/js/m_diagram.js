@@ -16,7 +16,7 @@ define(
 			"m_eventSymbol", "m_gatewaySymbol", "m_swimlaneSymbol", "m_connection",
 			"m_propertiesPanel", "m_processPropertiesPanel",
 			"m_activityPropertiesPanel", "m_dataPropertiesPanel",
-			"m_eventPropertiesPanel", "m_gatewayPropertiesPanel",
+			"m_eventPropertiesPanel", "m_gatewayPropertiesPanel", "m_annotationPropertiesPanel",
 			"m_swimlanePropertiesPanel", "m_controlFlowPropertiesPanel",
 			"m_dataFlowPropertiesPanel", "m_model", "m_process", "m_data",
 			"m_modelerUtils", "m_autoScrollManager" ],
@@ -26,7 +26,7 @@ define(
 			m_activitySymbol, m_dataSymbol, m_eventSymbol, m_gatewaySymbol, m_swimlaneSymbol,
 			m_connection, m_propertiesPanel, m_processPropertiesPanel,
 			m_activityPropertiesPanel, m_dataPropertiesPanel,
-			m_eventPropertiesPanel, m_gatewayPropertiesPanel,
+			m_eventPropertiesPanel, m_gatewayPropertiesPanel, m_annotationPropertiesPanel,
 			m_swimlanePropertiesPanel, m_controlFlowPropertiesPanel,
 			m_dataFlowPropertiesPanel, m_model, m_process, m_data,
 			m_modelerUtils, m_autoScrollManager) {
@@ -93,6 +93,9 @@ define(
 				// Data symbols by OIDs
 
 				this.dataSymbols = {};
+				// Data symbols by OIDs
+
+				this.annotationSymbols = {};
 				this.connections = [];
 				this.currentSelection = [];
 				this.currentConnection = null;
@@ -465,11 +468,14 @@ define(
 
 					// Initialize Properties Panels
 
+					// TODO Should be done via extension mechanism
+					
 					m_processPropertiesPanel.initialize(this);
 					m_activityPropertiesPanel.initialize(this);
 					m_dataPropertiesPanel.initialize(this);
 					m_eventPropertiesPanel.initialize(this);
 					m_gatewayPropertiesPanel.initialize(this);
+					m_annotationPropertiesPanel.initialize(this);
 					m_swimlanePropertiesPanel.initialize(this);
 					m_controlFlowPropertiesPanel
 							.initialize(this);

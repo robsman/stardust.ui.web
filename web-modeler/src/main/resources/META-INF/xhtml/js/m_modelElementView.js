@@ -89,8 +89,8 @@ define(
 				ModelElementView.prototype.renameModelElement = function(
 						name) {
 					this.submitChanges({
-						name : view.nameInput.val(),
-						id : m_utils.generateIDFromName(view.nameInput.val())
+						name : this.nameInput.val(),
+						id : m_utils.generateIDFromName(this.nameInput.val())
 					});
 				};
 
