@@ -20,6 +20,7 @@ import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
+import org.eclipse.stardust.model.xpdl.carnot.AnnotationSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
@@ -177,6 +178,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       else if (modelElement instanceof OrganizationType)
       {
          jsResult = toOrganizationJson((OrganizationType) modelElement);
+      }
+      else if (modelElement instanceof AnnotationSymbolType)
+      {
+         jsResult = toAnnotationSymbolJson((AnnotationSymbolType) modelElement);
       }
       else if (modelElement instanceof AccessPointType)
       {
@@ -520,6 +525,18 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                // Multiple Data Symbols can have same ID
                dataSymbolsJson.add(String.valueOf(dataSymbol.getElementOid()),
                      toDataSymbolJson(dataSymbol));
+            }
+
+            // Annotations
+
+            JsonObject annotationSymbolsJson = new JsonObject();
+
+            laneSymbolJson.add(ModelerConstants.ANNOTATION_SYMBOLS, annotationSymbolsJson);
+
+            for (AnnotationSymbolType annotationSymbol : laneSymbol.getAnnotationSymbol())
+            {
+               annotationSymbolsJson.add(String.valueOf(annotationSymbol.getElementOid()),
+                     toAnnotationSymbolJson(annotationSymbol));
             }
          }
 
@@ -1296,6 +1313,55 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
+   *
+   * @param annotationSymbol
+   * @return
+   */
+  public JsonObject toAnnotationSymbolJson(AnnotationSymbolType annotationSymbol)
+  {
+     int laneOffsetX = 0;
+     int laneOffsetY = 0;
+     ISwimlaneSymbol container = (annotationSymbol.eContainer() instanceof ISwimlaneSymbol)
+           ? (ISwimlaneSymbol) annotationSymbol.eContainer()
+           : null;
+     while (null != container)
+     {
+        laneOffsetX += container.getXPos();
+        laneOffsetY += container.getYPos();
+
+        // recurse
+        container = (container.eContainer() instanceof ISwimlaneSymbol)
+              ? (ISwimlaneSymbol) container.eContainer()
+              : null;
+     }
+
+     JsonObject annotationSymbolJson = new JsonObject();
+
+     annotationSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
+           annotationSymbol.getElementOid());
+     annotationSymbolJson.addProperty(ModelerConstants.X_PROPERTY,
+           annotationSymbol.getXPos() + laneOffsetX);
+     annotationSymbolJson.addProperty(ModelerConstants.Y_PROPERTY,
+           annotationSymbol.getYPos() + laneOffsetY);
+     annotationSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY,
+           annotationSymbol.getWidth());
+     annotationSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
+           annotationSymbol.getHeight());
+     
+     if (null != annotationSymbol.getText())
+     {
+        annotationSymbolJson.addProperty(ModelerConstants.CONTENT_PROPERTY,
+              (String) annotationSymbol.getText().getMixed().get(0).getValue());
+     }
+     else
+     {
+        annotationSymbolJson.addProperty(ModelerConstants.CONTENT_PROPERTY, "");
+     }
+
+     return annotationSymbolJson;
+  }
+
+   /**
     *
     * @param dataMappingConnection
     * @return
@@ -1814,18 +1880,25 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             eObjectUUIDMapper().getUUID(structType));
       setContainingModelIdProperty(structJson, structType);
 
+      JsonObject typeDeclarationJson = new JsonObject();
+
+      structJson.add("typeDeclaration", typeDeclarationJson);
+      
       // TODO: external references
       XpdlTypeType type = structType.getDataType();
+      
       if (null != type)
       {
-         structJson.add("type", toXpdlTypeJson(type));
+         typeDeclarationJson.add("type", toXpdlTypeJson(type));
       }
+      
       if (null != structType.getSchema())
       {
          JsonObject schemaJson = new JsonObject();
          ModelService.loadSchemaInfo(schemaJson, structType.getSchema());
-         structJson.add("schema", schemaJson);
+         typeDeclarationJson.add("schema", schemaJson);
       }
+      
       structJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.TYPE_DECLARATION_PROPERTY);
 
       return structJson;

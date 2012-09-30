@@ -56,6 +56,7 @@ import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
+import org.eclipse.stardust.model.xpdl.carnot.AnnotationSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
 import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
@@ -79,6 +80,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.SubProcessModeType;
+import org.eclipse.stardust.model.xpdl.carnot.TextType;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
@@ -200,6 +202,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       else if (element instanceof EndEventSymbol)
       {
          updateEndEventSymbol((EndEventSymbol) element, json);
+      }
+      else if (element instanceof AnnotationSymbolType)
+      {
+         updateAnnotationSymbol((AnnotationSymbolType) element, json);
       }
       else if (element instanceof ApplicationType)
       {
@@ -869,6 +875,33 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       // storeAttributes(endEventSymbol.getModelElement(), endEventJson);
       // storeDescription(endEventSymbol.getModelElement(), endEventJson);
+   }
+
+   /**
+    * 
+    * @param annotationSymbol
+    * @param annotationSymbolJson
+    */
+   private void updateAnnotationSymbol(AnnotationSymbolType annotationSymbol,
+         JsonObject annotationSymbolJson)
+   {
+      updateNodeSymbol(annotationSymbol, annotationSymbolJson);
+
+      String content = null;
+
+      if (annotationSymbolJson.has(ModelerConstants.CONTENT_PROPERTY))
+      {
+         content = extractString(annotationSymbolJson,
+               ModelerConstants.CONTENT_PROPERTY);
+      }
+
+      if (StringUtils.isNotEmpty(content))
+      {
+         TextType text = AbstractElementBuilder.F_CWM.createTextType();
+        
+         text.getMixed().add(FeatureMapUtil.createRawTextEntry(content));
+         annotationSymbol.setText(text);
+      }
    }
 
    /**

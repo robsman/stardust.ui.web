@@ -24,10 +24,12 @@ import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
+import org.eclipse.stardust.model.xpdl.carnot.AnnotationSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
@@ -38,12 +40,12 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
- *
- * @author Sidharth.Singh
+ * 
+ * @author Marc.Gille
  *
  */
 @CommandHandler
-public class ActivityCommandHandler
+public class AnnotationCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
@@ -52,40 +54,21 @@ public class ActivityCommandHandler
     * @param parentLaneSymbol
     * @param request
     */
-   @OnCommand(commandId = "activitySymbol.create")
-   public void createActivity(LaneSymbol parentLaneSymbol, JsonObject request)
+   @OnCommand(commandId = "annotationSymbol.create")
+   public void createAnnotation(LaneSymbol parentLaneSymbol, JsonObject request)
    {
       ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
 
-      String activityType = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
-            ModelerConstants.ACTIVITY_TYPE);
-      String activityId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
-
-      String activityName = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
-            ModelerConstants.NAME_PROPERTY);
-      String participantFullID = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
-            ModelerConstants.PARTICIPANT_FULL_ID);
-      String applicationFullID = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
-            ModelerConstants.APPLICATION_FULL_ID_PROPERTY);
-      String subProcessID = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
-            ModelerConstants.SUBPROCESS_ID);
-      //TODO -Remove the adjustment and pass correct co-ordinates for symbols.
       int xProperty = extractInt(request, X_PROPERTY);
       int yProperty = extractInt(request, Y_PROPERTY);
       int widthProperty = extractInt(request, WIDTH_PROPERTY);
       int heightProperty = extractInt(request, HEIGHT_PROPERTY);
+
       synchronized (model)
       {
-         ActivityType activity = getModelBuilderFacade().createActivity(model, processDefinition,
-               activityType, activityId, activityName, participantFullID,
-               applicationFullID, subProcessID);
-
-         ModelService.setDescription(activity,
-               request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
-
-         ActivitySymbolType activitySymbol = getModelBuilderFacade().createActivitySymbol(model,
-               activity, processDefinition, parentLaneSymbol.getId(), xProperty,
+         AnnotationSymbolType annotationSymbol = getModelBuilderFacade().createAnnotationSymbol(model, 
+               processDefinition, parentLaneSymbol.getId(), xProperty,
                yProperty, widthProperty, heightProperty);
       }
    }
@@ -95,29 +78,11 @@ public class ActivityCommandHandler
     * @param parentLaneSymbol
     * @param request
     */
-   @OnCommand(commandId = "activitySymbol.delete")
-   public void deleteActivity(LaneSymbol parentLaneSymbol, JsonObject request)
+   @OnCommand(commandId = "annotationSymbol.delete")
+   public void deleteAnnotation(LaneSymbol parentLaneSymbol, JsonObject request)
    {
       ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
-
-      String activityId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
-      ActivityType activity = getModelBuilderFacade().findActivity(processDefinition, activityId);
-      ActivitySymbolType activitySymbol = activity.getActivitySymbols().get(0);
-
-      synchronized (model)
-      {
-         ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition,
-               activitySymbol);
-         ModelElementEditingUtils.deleteDataMappingConnection(processDefinition,
-               activitySymbol.getDataMappings().iterator());
-
-         processDefinition.getActivity().remove(activity);
-         processDefinition.getDiagram().get(0).getActivitySymbol().remove(activitySymbol);
-
-         parentLaneSymbol.getActivitySymbol().remove(activitySymbol);
-      }
-
    }
 
    private ModelBuilderFacade getModelBuilderFacade()
@@ -125,5 +90,4 @@ public class ActivityCommandHandler
       return new ModelBuilderFacade(springContext.getBean(ModelService.class)
             .getModelManagementStrategy());
    }
-
 }
