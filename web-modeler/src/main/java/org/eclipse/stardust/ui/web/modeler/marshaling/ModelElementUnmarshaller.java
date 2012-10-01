@@ -487,6 +487,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       updateIdentifiableElement(swimlaneSymbol, swimlaneSymbolJson);
 
+      updateNodeSymbol(swimlaneSymbol, swimlaneSymbolJson);
+
       mapDeclaredProperties(swimlaneSymbol, swimlaneSymbolJson,
             propertiesMap.get(LaneSymbol.class));
 
@@ -878,7 +880,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param annotationSymbol
     * @param annotationSymbolJson
     */
@@ -898,7 +900,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       if (StringUtils.isNotEmpty(content))
       {
          TextType text = AbstractElementBuilder.F_CWM.createTextType();
-        
+
          text.getMixed().add(FeatureMapUtil.createRawTextEntry(content));
          annotationSymbol.setText(text);
       }

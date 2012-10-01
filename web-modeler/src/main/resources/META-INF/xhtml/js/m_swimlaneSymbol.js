@@ -977,6 +977,19 @@ define(
 								this.containedSymbols[n].moveBy(moveX, moveY);
 						}
 					}
+					if(preAdjustmentPos.width != this.width || preAdjustmentPos.height != this.height){
+						var changes = {
+							x : this.x,
+							y : this.y,
+							width : this.width,
+							height : this.height
+						};
+						var command = m_command
+								.createUpdateModelElementCommand(
+										this.diagram.modelId, this.oid, changes);
+						command.sync = true;
+						m_commandsController.submitCommand(command);
+					}
 					this.parentSymbol.recalculateBoundingBox();
 					this.parentSymbol.adjustGeometry();
 				};

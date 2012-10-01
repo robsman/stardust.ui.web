@@ -469,7 +469,7 @@ define(
 					// Initialize Properties Panels
 
 					// TODO Should be done via extension mechanism
-					
+
 					m_processPropertiesPanel.initialize(this);
 					m_activityPropertiesPanel.initialize(this);
 					m_dataPropertiesPanel.initialize(this);
@@ -665,6 +665,7 @@ define(
 							}
 							if (null != symbol) {
 								symbol.remove();
+								this.resetLastSymbol(symbol.oid);
 							}
 
 						}
@@ -778,6 +779,7 @@ define(
 								m_utils.debug("Changed symbol to:");
 								m_utils.debug(symbol);
 								symbol.refresh();
+								this.resetLastSymbol(symbol.oid);
 							}
 
 							symbol = this
@@ -794,6 +796,7 @@ define(
 								m_utils.debug("Changed symbol to:");
 								m_utils.debug(symbol);
 								symbol.refresh();
+								this.resetLastSymbol(symbol.oid);
 								// TODO - update properties panel on
 								// modelElement change
 							}
@@ -821,7 +824,6 @@ define(
 						this.animationDelay = 0;
 						this.animationEasing = null;
 					}
-					this.lastSymbol = null;
 				};
 
 				/**
@@ -837,6 +839,16 @@ define(
 					}
 
 					return null;
+				};
+
+				/**
+				 *
+				 */
+				Diagram.prototype.resetLastSymbol = function(oid) {
+					if (oid && this.lastSymbol != null
+							&& this.lastSymbol.oid == oid) {
+						this.lastSymbol = null;
+					}
 				};
 
 				/**
