@@ -12,8 +12,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_propertiesPage" ],
-		function(m_utils, m_constants, m_propertiesPage) {
+		[ "m_utils", "m_constants", "m_propertiesPage", "m_dataTraversal" ],
+		function(m_utils, m_constants, m_propertiesPage, m_dataTraversal) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new ControlFlowBasicPropertiesPage(
@@ -43,6 +43,11 @@ define(
 				ControlFlowBasicPropertiesPage.prototype.show = function() { 
 					propertiesPage.show();
 					this.conditionExpressionInputEditor.refresh();
+					
+					var globalVariables = m_dataTraversal.getAllDataAsJavaScriptObjects(this.propertiesPanel.diagram.model);
+					for (var key in globalVariables) {
+						window[key] = globalVariables[key];
+					}
 				};
 				
 				/**
@@ -59,6 +64,7 @@ define(
 					CodeMirror.commands.autocomplete = function(cm) {
 						CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
 					}
+					
 					var editor = CodeMirror.fromTextArea(this.conditionExpressionInput[0], {
 						mode: "javascript",
 						theme: "eclipse",
@@ -66,6 +72,7 @@ define(
 						lineWrapping: true,
 						indentUnit: 3,
 						matchBrackets: true,
+						extraKeys: {"Ctrl-Space": "autocomplete"},
 						onCursorActivity: function() {
 							// Highlight selected text 
 							editor.matchHighlight("CodeMirror-matchhighlight");

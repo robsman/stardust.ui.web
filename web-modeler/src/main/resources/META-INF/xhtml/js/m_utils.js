@@ -16,6 +16,10 @@ define(
 					removeItemFromArray(array, item);
 				},
 
+				isItemInArray : function(array, item) {
+					return isItemInArray(array, item);
+				},
+
 				viewObject : function(obj) {
 					viewObject(obj);
 				},
@@ -91,6 +95,22 @@ define(
 				}
 			}
 			;
+			
+			
+			/**
+			 * 
+			 * @param array
+			 * @param item
+			 */
+			function isItemInArray(array, item) {
+				var i = array.length;
+				while (i--) {
+					if (array[i] === item) {
+						return true;
+					}
+				}
+				return false;
+			}
 
 			function debug(obj) {
 				if (typeof console == "object") {

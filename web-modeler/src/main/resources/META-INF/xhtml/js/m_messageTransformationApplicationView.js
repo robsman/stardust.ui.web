@@ -385,6 +385,11 @@ define(
 					this.populateTableRows(this.outputTableBody,
 							this.outputTableRows, false);
 					this.resume();
+
+					var globalVariables = m_dataTraversal.getAllDataAsJavaScriptObjects(application.model);
+					for (var key in globalVariables) {
+						window[key] = globalVariables[key];
+					}
 				};
 
 				/**
