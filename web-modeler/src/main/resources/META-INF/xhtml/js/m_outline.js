@@ -2366,7 +2366,14 @@ define(
 							}
 						}
 
-						if (!command.isRedo || !command.isUndo) {
+						if (command.isUndo) {
+							this.processPendingUndo(command.pendingUndoableChange);
+							this.processPendingRedo(command);
+						} else if (command.isRedo) {
+							this.processPendingUndo(command);
+							this.processPendingRedo(command.pendingRedoableChange);
+						} else {
+							this.processPendingUndo(command);
 							jQuery("#undoChange").removeClass("toolDisabled");
 						}
 					} else if (command.scope == "all") {
@@ -2374,6 +2381,65 @@ define(
 						refresh();
 					}
 				};
+
+				/**
+				 * TODO - temporary
+				 */
+				Outline.prototype.processPendingUndo = function(command) {
+					if (command) {
+						var action;
+						var element;
+						if (-1 != command.commandId.indexOf(".create")) {
+							action = "Delete";
+							element = this.generateUndoRedoToolTipTextForElement(command.changes.added[0]);
+						} else if (-1 != command.commandId.indexOf(".delete")) {
+							action = "Create";
+							element = this.generateUndoRedoToolTipTextForElement(command.changes.removed[0]);
+						} else {
+							action = "Modify";
+							element = this.generateUndoRedoToolTipTextForElement(command.changes.modified[0]);
+						}
+						jQuery("#undoChange").attr("title",  "Undo:\n\nAction: " + action + "\nElement: " + element);
+					} else {
+						jQuery("#undoChange").attr("title", "Undo");
+					}
+				}
+
+				/**
+				 * TODO - temporary
+				 */
+				Outline.prototype.processPendingRedo = function(command) {
+					if (command) {
+						var action;
+						var element;
+						if (-1 != command.commandId.indexOf(".create")) {
+							action = "Create";
+							element = this.generateUndoRedoToolTipTextForElement(command.changes.removed[0]);
+						} else if (-1 != command.commandId.indexOf(".delete")) {
+							action = "Delete";
+							element = this.generateUndoRedoToolTipTextForElement(command.changes.added[0]);
+						} else {
+							action = "Modify";
+							element = this.generateUndoRedoToolTipTextForElement(command.changes.modified[0]);
+						}
+						jQuery("#redoChange").attr("title",  "Redo:\n\nAction: " + action + "\nElement: " + element);
+					} else {
+						jQuery("#redoChange").attr("title", "Redo");
+					}
+				}
+
+				/**
+				 * TODO - temporary
+				 */
+				Outline.prototype.generateUndoRedoToolTipTextForElement = function(element) {
+					if (element) {
+						if (element.name) {
+							return element.name;
+						} else {
+							return element.type;
+						}
+					}
+				}
 
 				/**
 				 *

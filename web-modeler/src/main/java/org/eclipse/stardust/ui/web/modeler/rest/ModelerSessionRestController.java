@@ -159,11 +159,15 @@ public class ModelerSessionRestController
             if (editingSession.canUndo())
             {
                Modification pendingUndo = editingSession.getPendingUndo();
+               postprocessChange(pendingUndo);
+               jto.pendingUndoableChange = toJto(pendingUndo);
                jto.pendingUndo = toChangeUri(pendingUndo);
             }
             if (editingSession.canRedo())
             {
                Modification pendingRedo = editingSession.getPendingRedo();
+               postprocessChange(pendingRedo);
+               jto.pendingRedoableChange = toJto(pendingRedo);
                jto.pendingRedo = toChangeUri(pendingRedo);
             }
 
@@ -194,11 +198,15 @@ public class ModelerSessionRestController
             if (editingSession.canUndo())
             {
                Modification pendingUndo = editingSession.getPendingUndo();
+               postprocessChange(pendingUndo);
+               jto.pendingUndoableChange = toJto(pendingUndo);
                jto.pendingUndo = toChangeUri(pendingUndo);
             }
             if (editingSession.canRedo())
             {
                Modification pendingRedo = editingSession.getPendingRedo();
+               postprocessChange(pendingRedo);
+               jto.pendingRedoableChange = toJto(pendingRedo);
                jto.pendingRedo = toChangeUri(pendingRedo);
             }
 
@@ -519,6 +527,11 @@ public class ModelerSessionRestController
 
       public String pendingUndo;
       public String pendingRedo;
+
+      //TODO pendingUndoableChange / pendingRedoableChange is a temporary addition
+      //will be replaced with something concrete once requirement is clear
+      public ChangeJto pendingUndoableChange;
+      public ChangeJto pendingRedoableChange;
 
       public Boolean isUndo;
       public Boolean isRedo;

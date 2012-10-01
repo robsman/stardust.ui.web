@@ -688,6 +688,7 @@ define(
 									this.lastSymbol = null;
 								}// For connections lastSymbol will be empty
 								else {
+									// Else block is executed in case of undo / redo
 									if (obj.changes.added[i].type == m_constants.SWIMLANE_SYMBOL) {
 										if (null == this.findSymbolByGuid(obj.changes.added[i].oid)) {
 											this.poolSymbol.laneSymbols.push(m_swimlaneSymbol.createSwimlaneSymbolFromJson(this, this.poolSymbol, obj.changes.added[i]));
