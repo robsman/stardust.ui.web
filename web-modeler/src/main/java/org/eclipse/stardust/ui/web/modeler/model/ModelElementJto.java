@@ -12,6 +12,8 @@ public class ModelElementJto
    public String name;
    public String description;
 
+   public String modelId;
+
    public String type;
 
    public JsonObject attributes = new JsonObject();

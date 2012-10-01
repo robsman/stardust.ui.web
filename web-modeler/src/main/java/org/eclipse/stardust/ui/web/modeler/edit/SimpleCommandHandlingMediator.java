@@ -3,13 +3,9 @@ package org.eclipse.stardust.ui.web.modeler.edit;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 
 import java.util.List;
-import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -32,8 +28,6 @@ public class SimpleCommandHandlingMediator
    private CommandHandlerRegistry commandHandlerRegistry;
 
    @Resource
-   private ApplicationContext springContext;
-
    private List<IChangeListener> changeListeners = newArrayList();
 
    public boolean isTwophase()
@@ -52,19 +46,6 @@ public class SimpleCommandHandlingMediator
          catch (Exception e)
          {
             // TODO: handle exception
-         }
-      }
-   }
-
-   @PostConstruct
-   public void bindChangeListeners()
-   {
-      if (null != springContext)
-      {
-         Map<String, IChangeListener> commandListeners = springContext.getBeansOfType(IChangeListener.class);
-         if (null != commandListeners)
-         {
-            this.changeListeners.addAll(commandListeners.values());
          }
       }
    }

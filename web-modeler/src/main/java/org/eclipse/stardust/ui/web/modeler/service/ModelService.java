@@ -65,11 +65,9 @@ import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
-import org.eclipse.stardust.ui.web.modeler.edit.model.element.DataChangeCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.portal.JaxWSResource;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
-import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.xsd.*;
 import org.eclipse.xsd.impl.XSDImportImpl;
 import org.eclipse.xsd.util.XSDResourceFactoryImpl;
@@ -1673,12 +1671,7 @@ public class ModelService
       return getModelManagementStrategy().getModels().get(modelId);
    }
 
-   public ModelBinding findModelBinding(String modelId)
-   {
-      return findModelBinding(findModel(modelId));
-   }
-
-   public ModelBinding findModelBinding(EObject model)
+   public <M extends EObject> ModelBinding<M> findModelBinding(M model)
    {
       return currentSession().modelRepository().getModelBinding(model);
    }

@@ -68,7 +68,7 @@ public class GatewayCommandHandler
          processDefinition.getActivity().add(gateway);
 
          // apply any non-default settings
-         ModelBinding modelBinding = modelService().findModelBinding(model);
+         ModelBinding<ModelType> modelBinding = modelService().findModelBinding(model);
          modelBinding.updateModelElement(gateway, request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
 
          // create node symbol

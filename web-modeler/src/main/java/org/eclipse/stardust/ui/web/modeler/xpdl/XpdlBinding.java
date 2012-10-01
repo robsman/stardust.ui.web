@@ -17,14 +17,17 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
 import org.eclipse.stardust.ui.web.modeler.model.ModelElementJto;
-import org.eclipse.stardust.ui.web.modeler.model.di.NodeSymbolJto;
+import org.eclipse.stardust.ui.web.modeler.model.ModelJto;
+import org.eclipse.stardust.ui.web.modeler.model.di.ActivitySymbolJto;
+import org.eclipse.stardust.ui.web.modeler.model.di.ProcessDiagramJto;
+import org.eclipse.stardust.ui.web.modeler.model.di.ShapeJto;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 
-public class XpdlBinding extends ModelBinding
+public class XpdlBinding extends ModelBinding<ModelType>
 {
    public XpdlBinding(ModelElementMarshaller marshaller, ModelElementUnmarshaller unmarshaller)
    {
-      super(marshaller, unmarshaller);
+      super(new XpdlNavigator(), marshaller, unmarshaller);
    }
 
    @Override
@@ -33,10 +36,22 @@ public class XpdlBinding extends ModelBinding
       return model instanceof ModelType;
    }
 
-   public <T extends ModelElementJto> EObject createModelElement(EObject model, T jto)
+   @Override
+   public String getModelId(ModelType model)
    {
-      assert model instanceof ModelType;
+      return model.getId();
+   }
 
+   @Override
+   public ModelType createModel(ModelJto jto)
+   {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+   @Override
+   public <T extends ModelElementJto> EObject createModelElement(ModelType model, T jto)
+   {
       IModelElement element = null;
       if ("activity".equals(jto.type))
       {
@@ -83,13 +98,17 @@ public class XpdlBinding extends ModelBinding
       }
    }
 
-   public <T extends NodeSymbolJto<? extends ModelElementJto>> EObject createNodeSymbol(
-         EObject model, T jto, EObject modelElement)
+   @Override
+   public EObject createProcessDiagram(EObject processDefinition, ProcessDiagramJto jto)
    {
-      assert model instanceof ModelType;
+      throw new UnsupportedOperationException("Not yet implemented");
+   }
 
+   public <T extends ShapeJto> EObject createNodeSymbol(ModelType model, T jto,
+         EObject modelElement)
+   {
       INodeSymbol symbol = null;
-      if ("activity".equals(jto.modelElement.type))
+      if (jto instanceof ActivitySymbolJto)
       {
          symbol = CarnotWorkflowModelFactory.eINSTANCE.createActivitySymbolType();
          if (modelElement instanceof ActivityType)
@@ -99,7 +118,7 @@ public class XpdlBinding extends ModelBinding
       }
       else
       {
-         throw new IllegalArgumentException("Not yet implemented: " + jto.modelElement.type);
+         throw new IllegalArgumentException("Not yet implemented: " + jto.getClass());
       }
 
       // element OID will created upon attach

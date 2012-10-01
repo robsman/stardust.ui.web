@@ -37,13 +37,13 @@ import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
 import org.eclipse.stardust.ui.web.modeler.edit.SimpleCommandHandlingMediator;
 import org.eclipse.stardust.ui.web.modeler.edit.model.element.ModelChangeCommandHandler;
-import org.eclipse.stardust.ui.web.modeler.edit.postprocessing.ApplicationAccessPointChangeTracker;
-import org.eclipse.stardust.ui.web.modeler.edit.postprocessing.ChangesetMinifier;
-import org.eclipse.stardust.ui.web.modeler.edit.postprocessing.TouchReferrersUponIdentityChangePostprocessor;
-import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
+import org.eclipse.stardust.ui.web.modeler.edit.postprocessing.ChangesetPostprocessingService;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandlingMediator;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
+import org.eclipse.stardust.ui.web.modeler.marshaling.ModelMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
+import org.eclipse.stardust.ui.web.modeler.spi.ModelNavigator;
 
 @Path("/modeler/{randomPostFix}/sessions")
 public class ModelerSessionRestController
@@ -81,17 +81,33 @@ public class ModelerSessionRestController
           jto.account = change.getMetadata().get("account");
       }
 
+      ModelMarshaller marshaller;
+      if ( !isEmpty(jto.modelId))
+      {
+         EObject model = modelService().currentSession()
+               .modelRepository()
+               .findModel(jto.modelId);
+         marshaller = modelService().currentSession()
+               .modelRepository()
+               .getModelBinding(model)
+               .getMarshaller();
+      }
+      else
+      {
+         marshaller = modelService().modelElementMarshaller();
+      }
+
       for (EObject changedObject : change.getModifiedElements())
       {
-         jto.changes.modified.add(modelService().modelElementMarshaller().toJson(changedObject));
+         jto.changes.modified.add(marshaller.toJson(changedObject));
       }
       for (EObject addedObject : change.getAddedElements())
       {
-         jto.changes.added.add(modelService().modelElementMarshaller().toJson(addedObject));
+         jto.changes.added.add(marshaller.toJson(addedObject));
       }
       for (EObject removedObject : change.getRemovedElements())
       {
-         jto.changes.removed.add(modelService().modelElementMarshaller().toJson(removedObject));
+         jto.changes.removed.add(marshaller.toJson(removedObject));
       }
 
       return jto;
@@ -238,7 +254,7 @@ public class ModelerSessionRestController
       else
       {
          // change to be interpreted in context of a model
-         ModelType model = modelService().findModel(modelId);
+         EObject model = modelService().currentSession().modelRepository().findModel(commandJto.modelId);
          if (null == model)
          {
             return Response.status(Status.BAD_REQUEST) //
@@ -286,11 +302,12 @@ public class ModelerSessionRestController
    }
 
 
-   private Response applyModelElementChange(String commandId, ModelType model, CommandJto commandJto)
+   private Response applyModelElementChange(String commandId, EObject model, CommandJto commandJto)
    {
       List<CommandHandlingMediator.ChangeRequest> changeDescriptors = newArrayList();
 
       // pre-process change descriptions
+      ModelBinding<EObject> modelBinding = modelService().currentSession().modelRepository().getModelBinding(model);
       try
       {
          for (ChangeDescriptionJto changeDescrJto : commandJto.changeDescriptions)
@@ -315,14 +332,14 @@ public class ModelerSessionRestController
          postprocessChange(change);
 
          change.getMetadata().put("commandId", commandId);
-         change.getMetadata().put("modelId", model.getId());
+         change.getMetadata().put("modelId", modelBinding.getModelId(model));
          if (null != commandJto.account)
          {
             change.getMetadata().put("account", commandJto.account);
          }
 
          // Notify unsaved models tracker of the change to the model.
-         UnsavedModelsTracker.getInstance().notifyModelModfied(model.getId());
+         UnsavedModelsTracker.getInstance().notifyModelModfied(modelBinding.getModelId(model));
 
          JsonObject changeJto = toJson(toJto(change));
 
@@ -339,6 +356,40 @@ public class ModelerSessionRestController
                .entity("Unsupported change request: " + commandId //
                      + " [" + commandJto.changeDescriptions + "]")
                .build();
+      }
+   }
+
+   private EObject findTargetElement(EObject model, ChangeDescriptionJto changeDescrJto)
+         throws WebApplicationException
+   {
+      if (model instanceof ModelType)
+      {
+         return findTargetElement((ModelType) model, changeDescrJto);
+      }
+      else
+      {
+         ModelBinding<EObject> modelBinding = modelService().currentSession().modelRepository().getModelBinding(model);
+         ModelNavigator<EObject> modelNavigator = modelBinding.getNavigator();
+         if ( !isEmpty(changeDescrJto.uuid))
+         {
+            return modelNavigator.findElementByUuid(model, changeDescrJto.uuid);
+         }
+         else if ( !isEmpty(changeDescrJto.oid))
+         {
+            // HACK sometimes the modelId is passed in the oid field
+            if (modelBinding.getModelId(model).equals(changeDescrJto.oid))
+            {
+               return model;
+            }
+
+            return modelNavigator.findElementByOid(model, Long.valueOf(changeDescrJto.oid));
+         }
+         else
+         {
+            throw new WebApplicationException(Response.status(Status.BAD_REQUEST) //
+                  .entity("Missing context element identifier: " + changeDescrJto)
+                  .build());
+         }
       }
    }
 
@@ -406,16 +457,10 @@ public class ModelerSessionRestController
 
    private void postprocessChange(Modification change)
    {
-      // TODO discover from application context
-      List<ChangePostprocessor> postprocessors = newArrayList();
-      postprocessors.add(new ChangesetMinifier());
-      postprocessors.add(new TouchReferrersUponIdentityChangePostprocessor());
-      postprocessors.add(new ApplicationAccessPointChangeTracker());
+      ChangesetPostprocessingService postprocessingService = resolveSpringBean(
+            ChangesetPostprocessingService.class, servletContext);
 
-      for (ChangePostprocessor postprocessor : postprocessors)
-      {
-         postprocessor.inspectChange(change);
-      }
+      postprocessingService.postprocessChangeset(change);
    }
 
    private ModelService modelService()

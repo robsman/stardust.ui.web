@@ -12,6 +12,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.eclipse.emf.ecore.EObject;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,6 @@ import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
@@ -192,9 +192,9 @@ public class ModelingSession
      return color; 
    }
 
-   public synchronized EditingSession getSession(ModelType... models)
+   public synchronized EditingSession getSession(EObject... models)
    {
-      for (ModelType model : models)
+      for (EObject model : models)
       {
          if ( !editingSession.isTrackingModel(model))
          {

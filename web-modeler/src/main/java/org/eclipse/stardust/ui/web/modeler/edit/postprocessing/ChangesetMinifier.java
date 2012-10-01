@@ -8,12 +8,20 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.change.ChangeKind;
 import org.eclipse.emf.ecore.change.FeatureChange;
 import org.eclipse.emf.ecore.change.ListChange;
+import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
 
+@Component
 public class ChangesetMinifier implements ChangePostprocessor
 {
+   @Override
+   public int getInspectionPhase()
+   {
+      return 1;
+   }
+
    @Override
    public void inspectChange(Modification change)
    {

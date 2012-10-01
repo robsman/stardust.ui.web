@@ -24,7 +24,7 @@ public class ModelRepository
 
    private final ModelingSession session;
 
-   private final List<ModelBinding> modelBindings;
+   private final List<ModelBinding<? extends EObject>> modelBindings;
 
    public ModelRepository(ModelingSession session)
    {
@@ -40,10 +40,10 @@ public class ModelRepository
       {
          String fqcnBpmn2Binding = "org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Binding";
          @SuppressWarnings("unchecked")
-         Class<? extends ModelBinding> clsBpmn2Binding = Reflect.getClassFromClassName(fqcnBpmn2Binding, false);
+         Class<? extends ModelBinding<?>> clsBpmn2Binding = Reflect.getClassFromClassName(fqcnBpmn2Binding, false);
          if (null != clsBpmn2Binding)
          {
-            modelBindings.add((ModelBinding) Reflect.createInstance(clsBpmn2Binding, null, null));
+            modelBindings.add(clsBpmn2Binding.cast(Reflect.createInstance(clsBpmn2Binding, null, null)));
             trace.info("Registered BPMN2 model binding.");
          }
          else
@@ -88,13 +88,14 @@ public class ModelRepository
       };
    }
 
-   public ModelBinding getModelBinding(EObject model)
+   @SuppressWarnings("unchecked")
+   public <M extends EObject> ModelBinding<M> getModelBinding(M model)
    {
-      for (ModelBinding binding : modelBindings)
+      for (ModelBinding<? extends EObject> binding : modelBindings)
       {
          if (binding.isCompatible(model))
          {
-            return binding;
+            return (ModelBinding<M>) binding;
          }
       }
 
