@@ -1025,8 +1025,7 @@ define(
 
 								if (this.toAnchorPoint.symbol != null
 										&& this.toAnchorPoint.symbol.type != m_constants.SWIMLANE_SYMBOL && !this.diagram.anchorDragEnabled) {
-									// the Anchor point bend location should be midway
-									// between symbol's
+									// the Anchor point bend location should be midway between symbol's
 									if(n==0){
 										if(currentSegment.toX < targetX){
 											var anchorPointMargin =(this.toAnchorPoint.symbol.x - currentSegment.toX) / 2;
@@ -1037,48 +1036,68 @@ define(
 											currentSegment.toX = currentSegment.toX - anchorPointMargin;
 										}
 									}
-									// Horizontal segment moving down from 3 o'clk
-									else if (currentSegment.toY < targetY
-											&& targetY != this.toAnchorPoint.y) {
-										// following scenario bend not required
-										if ((this.fromAnchorPointOrientation == 3
-												&& this.toAnchorPointOrientation == 0 && currentSegment.toX > targetX)
-												|| (this.fromAnchorPointOrientation == 1
-														&& this.toAnchorPointOrientation == 0 && currentSegment.toX < targetX)) {
-											currentSegment.toX = targetX;
-										}else
+									// Horizontal segment moving down from 3 o'clk (Source Symbol)
+									else if (currentSegment.toY < targetY) {
+										if (targetY != this.toAnchorPoint.y) {
+											// following scenario bend not required
+											if ((this.fromAnchorPoint.orientation == 3
+													&& this.toAnchorPoint.orientation == 0 && currentSegment.toX > targetX)
+													|| (this.fromAnchorPoint.orientation == 1
+															&& this.toAnchorPoint.orientation == 0 && currentSegment.toX < targetX)) {
+												currentSegment.toX = targetX;
+											} else
+												this.segments
+														.push(currentSegment = new Segment(
+																currentSegment.toX,
+																currentSegment.toY,
+																currentSegment.toX,
+																targetY,
+																currentSegment));
+										} else {
+											// Symbol connects to 9'clk(move right) of
+											//	Symbol 2 or 3'clk (move left) of symbol2
 											this.segments
-											.push(currentSegment = new Segment(
-													currentSegment.toX,
-													currentSegment.toY,
-													currentSegment.toX,
-													targetY, currentSegment));
+													.push(currentSegment = new Segment(
+															currentSegment.toX,
+															currentSegment.toY,
+															currentSegment.toX,
+															targetY,
+															currentSegment));
+										}
 
 									}
-									//Horizontal segment moving Upward from 3 o'clk
-									else if (currentSegment.toY > targetY
-											&& targetY != this.toAnchorPoint.y) {
-										// following scenario bend not required
-										if ((this.fromAnchorPointOrientation == 3
-												&& this.toAnchorPointOrientation == 2 && currentSegment.toX > targetX)
-												|| (this.fromAnchorPointOrientation == 1
-														&& this.toAnchorPointOrientation == 2 && currentSegment.toX < targetX)) {
-											currentSegment.toX = targetX;
-										}else
-										// Horizontal segment from 3 o'clk to 3'
-										// o'clk
-										this.segments
-												.push(currentSegment = new Segment(
-														currentSegment.toX,
-														currentSegment.toY,
-														currentSegment.toX,
-														targetY
-																- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-														currentSegment));
+									// Horizontal segment moving Upward from 3 o'clk
+									else if (currentSegment.toY > targetY) {
+										if (targetY != this.toAnchorPoint.y) {
+											// following scenario bend not required
+											if ((this.fromAnchorPoint.orientation == 3
+													&& this.toAnchorPoint.orientation == 2 && currentSegment.toX > targetX)
+													|| (this.fromAnchorPoint.orientation == 1
+															&& this.toAnchorPoint.orientation == 2 && currentSegment.toX < targetX)) {
+												currentSegment.toX = targetX;
+											} else
+												// Horizontal segment from 3 o'clk to 3 o'clk
+												this.segments
+														.push(currentSegment = new Segment(
+																currentSegment.toX,
+																currentSegment.toY,
+																currentSegment.toX,
+																targetY
+																		- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+																currentSegment));
+										} else {
+											// Symbol connects to 9'clk(move right) of
+											//	Symbol 2 or 3'clk (move left) of symbol2
+											this.segments
+													.push(currentSegment = new Segment(
+															currentSegment.toX,
+															currentSegment.toY,
+															currentSegment.toX,
+															targetY,
+															currentSegment));
+										}
 									}
-									// Intermediate Horizontal segment from 9
-									// o'clk to 9
-									// o'clk towards right
+									// Intermediate Horizontal segment from 9 o'clk to 9 o'clk towards right
 									else if (currentSegment.toX < targetX
 											&& targetX > this.toAnchorPoint.x) {
 										this.segments
@@ -1090,8 +1109,7 @@ define(
 																- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
 														currentSegment));
 									}
-									// Horizontal segment from 9 o'clk to 9
-									// o'clk towards left
+									// Horizontal segment from 9 o'clk to 9 o'clk towards left
 									else if (currentSegment.toX > targetX
 											&& targetX < this.toAnchorPoint.x) {
 										this.segments
@@ -1102,16 +1120,16 @@ define(
 														this.toAnchorPoint.symbol.y
 																- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
 														currentSegment));
-									}else{
+									} else {
 										currentSegment.toX = targetX;
 									}
-								}else
-								currentSegment.toX = targetX;
+								} else
+									currentSegment.toX = targetX;
 							} else {
-								// connect from 6 O'clk to 12 O'clk, when toX
-								// and TargetX match,
+								// connect from 6 O'clk to 12 O'clk, when toX and TargetX match,
 								// the vertical segment needs modification
-								if (this.toAnchorPoint.symbol != null && !this.diagram.anchorDragEnabled
+								if (this.toAnchorPoint.symbol != null
+										&& !this.diagram.anchorDragEnabled
 										&& (currentSegment.toY > targetY && this.toAnchorPoint.y > targetY)) {
 									if (currentSegment.fromX > currentSegment.toX) {
 										currentSegment.toX = this.toAnchorPoint.symbol.x
@@ -1127,24 +1145,25 @@ define(
 													currentSegment.toX,
 													(this.toAnchorPoint.symbol.y - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH),
 													currentSegment));
-								}else{
+								} else {
 									this.segments
-									.push(currentSegment = new Segment(
-											currentSegment.toX,
-											currentSegment.toY,
-											currentSegment.toX, targetY,
-											currentSegment));
+											.push(currentSegment = new Segment(
+													currentSegment.toX,
+													currentSegment.toY,
+													currentSegment.toX,
+													targetY, currentSegment));
 								}
 							}
 						} else {
 							if ((currentSegment.fromY < currentSegment.toY && currentSegment.toY < targetY)
 									|| (currentSegment.fromY > currentSegment.toY && currentSegment.toY > targetY)) {
 								if (this.toAnchorPoint.symbol != null
-										&& this.toAnchorPoint.symbol.type != m_constants.SWIMLANE_SYMBOL && !this.diagram.anchorDragEnabled) {
+										&& this.toAnchorPoint.symbol.type != m_constants.SWIMLANE_SYMBOL
+										&& !this.diagram.anchorDragEnabled) {
 
 									if (n == 0) {
-										// the bend location should be midway between symbols, update current
-										// segment
+										// the bend location should be midway between symbols,
+										// update current segment
 										if (currentSegment.toY < targetY) {
 											var anchorPointMargin = (this.toAnchorPoint.symbol.y - currentSegment.toY) / 2;
 											currentSegment.toY = currentSegment.toY
@@ -1156,12 +1175,21 @@ define(
 										}
 									}
 									// Vertical segment from 6'clk moving downwards
-									else if (currentSegment.toX > targetX
-											&& targetX != this.toAnchorPoint.x) {
-										if ((this.fromAnchorPointOrientation == 2
-												&& this.toAnchorPointOrientation == 1 && currentSegment.toY < targetY)) {
-											currentSegment.toY = targetY;
-										} else
+									else if (currentSegment.toX > targetX) {
+										if (targetX != this.toAnchorPoint.x) {
+											if ((this.fromAnchorPoint.orientation == 2
+													&& this.toAnchorPoint.orientation == 1 && currentSegment.toY < targetY)) {
+												currentSegment.toY = targetY;
+											} else
+												this.segments
+														.push(currentSegment = new Segment(
+																currentSegment.toX,
+																currentSegment.toY,
+																targetX,
+																currentSegment.toY,
+																currentSegment));
+										} else {
+											// Vertical segment from 6'clk to 12'clk vice versa
 											this.segments
 													.push(currentSegment = new Segment(
 															currentSegment.toX,
@@ -1169,18 +1197,27 @@ define(
 															targetX,
 															currentSegment.toY,
 															currentSegment));
+										}
 									}
 									// Vertical segment from 6'clk moving upwards
-									else if (currentSegment.toX < targetX
-											&& targetX != this.toAnchorPoint.x) {
-										if ((this.fromAnchorPointOrientation == 2
-												&& this.toAnchorPointOrientation == 3 && currentSegment.toY < targetY)
-												|| (this.fromAnchorPointOrientation == 0
-														&& this.toAnchorPointOrientation == 3 && currentSegment.toY > targetY)) {
-											currentSegment.toY = targetY;
-										} else
-											// Vertical - From 6 o'clk to 9 o'clk
-											// ,left to right, no bend required
+									else if (currentSegment.toX < targetX) {
+										if (targetX != this.toAnchorPoint.x) {
+											if ((this.fromAnchorPoint.orientation == 2
+													&& this.toAnchorPoint.orientation == 3 && currentSegment.toY < targetY)
+													|| (this.fromAnchorPoint.orientation == 0
+															&& this.toAnchorPoint.orientation == 3 && currentSegment.toY > targetY)) {
+												currentSegment.toY = targetY;
+											} else
+												// Vertical - From 6 o'clk to 9 o'clk
+												// left to right, no bend required
+												this.segments
+														.push(currentSegment = new Segment(
+																currentSegment.toX,
+																currentSegment.toY,
+																targetX,
+																currentSegment.toY,
+																currentSegment));
+										} else {
 											this.segments
 													.push(currentSegment = new Segment(
 															currentSegment.toX,
@@ -1188,11 +1225,11 @@ define(
 															targetX,
 															currentSegment.toY,
 															currentSegment));
+										}
 
 									} else if (currentSegment.toY < targetY
 											&& targetY > this.toAnchorPoint.y) {
-										// Intermediate vertical lines,
-										// connecting to 9 O'clk segment
+										// Intermediate vertical lines, connecting to 9 O'clk segment
 										this.segments
 												.push(currentSegment = new Segment(
 														currentSegment.toX,
@@ -1201,9 +1238,9 @@ define(
 																- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
 														currentSegment.toY,
 														currentSegment));
-									} else if (currentSegment.toY > targetY && targetY < this.toAnchorPoint.y) {
-										// Intermediate vertical lines,
-										// connecting to 12 O'clk segment
+									} else if (currentSegment.toY > targetY
+											&& targetY < this.toAnchorPoint.y) {
+										// Intermediate vertical lines, connecting to 12 O'clk segment
 										this.segments
 												.push(currentSegment = new Segment(
 														currentSegment.toX,
@@ -1218,36 +1255,62 @@ define(
 								} else
 									currentSegment.toY = targetY;
 							} else {
-								if (this.toAnchorPoint.symbol != null && !this.diagram.anchorDragEnabled
+								if (this.toAnchorPoint.symbol != null
+										&& !this.diagram.anchorDragEnabled
 										&& ((currentSegment.toX < this.fromAnchorPoint.symbol.x) && this.toAnchorPoint.symbol.x
 												+ this.toAnchorPoint.symbol.width < targetX)) {
+									// For scenario connecting from 9 o'clk(Symbol 1) to 3 o'clk(symbol2)
+									if (this.fromAnchorPoint.orientation == 3
+											&& this.toAnchorPoint.orientation == 1
+											&& currentSegment.toX > targetX) {
+										this.segments
+												.push(currentSegment = new Segment(
+														currentSegment.toX,
+														currentSegment.toY,
+														targetX,
+														currentSegment.toY,
+														currentSegment));
+									} else
+										this.segments
+												.push(currentSegment = new Segment(
+														currentSegment.toX,
+														currentSegment.toY,
+														this.toAnchorPoint.symbol.x
+																- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+														currentSegment.toY,
+														currentSegment));
+								} else if (this.toAnchorPoint.symbol != null
+										&& !this.diagram.anchorDragEnabled
+										&& ((currentSegment.toX >= (this.fromAnchorPoint.symbol.x + this.fromAnchorPoint.symbol.width))
+												&& this.toAnchorPoint.symbol.x > targetX)) {
+									// For scenario connecting from 3 o'clk(Symbol 1) to 9 o'clk(symbol2)
+									if (this.fromAnchorPoint.orientation == 1
+											&& this.toAnchorPoint.orientation == 3
+											&& currentSegment.toX < targetX) {
+										this.segments
+												.push(currentSegment = new Segment(
+														currentSegment.toX,
+														currentSegment.toY,
+														targetX,
+														currentSegment.toY,
+														currentSegment));
+									} else
+										this.segments
+												.push(currentSegment = new Segment(
+														currentSegment.toX,
+														currentSegment.toY,
+														(this.toAnchorPoint.symbol.x + this.toAnchorPoint.symbol.width)
+																+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+														currentSegment.toY,
+														currentSegment));
+								} else {
 									this.segments
 											.push(currentSegment = new Segment(
 													currentSegment.toX,
 													currentSegment.toY,
-													this.toAnchorPoint.symbol.x
-															- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+													targetX,
 													currentSegment.toY,
 													currentSegment));
-								}else if (this.toAnchorPoint.symbol != null && !this.diagram.anchorDragEnabled
-										&& ((currentSegment.toX >= (this.fromAnchorPoint.symbol.x + this.fromAnchorPoint.symbol.width)) && this.toAnchorPoint.symbol.x
-												> targetX)) {
-									this.segments
-											.push(currentSegment = new Segment(
-													currentSegment.toX,
-													currentSegment.toY,
-													(this.toAnchorPoint.symbol.x+ this.toAnchorPoint.symbol.width)
-															+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-													currentSegment.toY,
-													currentSegment));
-								}
-								else{
-									this.segments
-									.push(currentSegment = new Segment(
-											currentSegment.toX,
-											currentSegment.toY, targetX,
-											currentSegment.toY,
-											currentSegment));
 								}
 							}
 						}
