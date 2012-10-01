@@ -9,13 +9,13 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_urlUtils", "m_constants", "m_extensionManager",
+		[ "m_utils", "m_urlUtils", "m_constants", "outline-plugins", "m_extensionManager",
 				"m_communicationController", "m_commandsController",
 				"m_command", "m_session", "m_user", "m_model", "m_process",
 				"m_application", "m_participant", "m_typeDeclaration",
 				"m_outlineToolbarController", "m_data",
 				"m_elementConfiguration", "m_messageDisplay" ],
-		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
+		function(m_utils, m_urlUtils, m_constants, outlinePlugins, m_extensionManager,
 				m_communicationController, m_commandsController, m_command,
 				m_session, m_user, m_model, m_process, m_application,
 				m_participant, m_typeDeclaration, m_outlineToolbarController,

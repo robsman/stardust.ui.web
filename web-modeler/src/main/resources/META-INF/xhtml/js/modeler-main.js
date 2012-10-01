@@ -28,6 +28,7 @@ require.config({
 		'codemirror.util.simple-hint': 'libs/codemirror/util/simple-hint',
 		'codemirror.util.javascript-hint': 'libs/codemirror/util/javascript-hint',
 
+		'modeler-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/modeler-plugins',
 		'extensions': '../../../services/rest/bpm-modeler/config/ui/extensions.js?p=extensions',
 	},
 	shim: {
@@ -95,8 +96,38 @@ require(["require",
 	 "m_modelerViewLayoutManager",
 	 "m_dataTypeSelector",
 	 "m_parameterDefinitionsPanel",
-	 "m_testPaletteHandler",
-	], function (require) {
+
+	 "m_logger",
+	 "m_utils",
+	 "m_communicationController",
+	 "m_canvasManager",
+	 "m_toolbarManager",
+	 "m_urlUtils",
+	 "m_constants",
+	 "m_user",
+	 "m_command",
+	 "m_commandsController",
+	 "m_accessPoint",
+	 "m_diagram",
+	 "m_modelerCanvasController",
+	 "m_propertiesPanel",
+	 "m_activityPropertiesPanel",
+	 "m_gatewayPropertiesPanel",
+	 "m_eventPropertiesPanel",
+	 "m_dataFlowPropertiesPanel",
+	 "m_controlFlowPropertiesPanel",
+	 "m_command",
+	 "m_drawable",
+	 "m_symbol",
+	 "m_poolSymbol",
+	 "m_swimlaneSymbol",
+	 "m_activitySymbol",
+	 "m_eventSymbol",
+	 "m_gatewaySymbol",
+	 "m_dataSymbol",
+	 "m_testSymbol",
+	 "m_connection",
+	 ], function (require) {
 
 		// after modeler-plugins are loaded the properly initialized module loader will be injected into m_extensionManager
 

@@ -1,9 +1,11 @@
 package org.eclipse.stardust.ui.web.modeler.rest;
 
+import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.rest.RestControllerUtils.resolveSpringBean;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
@@ -55,6 +57,68 @@ public class ModelingUiExtensionsController
       return response.toString();
    }
 
+   @GET
+   @Path("/plugins/modeler-plugins.js")
+   @Produces("application/x-javascript")
+   public String listModelerPluginIncludes()
+   {
+      UiExtensionsRegistry registry = resolveUiExtensionsRegistry();
+
+      StringBuilder buffer = new StringBuilder();
+      buffer.append("define([ 'require', 'm_extensionManager',\n");
+
+      listViewManagerImports(registry.getViewManagers(), buffer);
+      listPropertyPageImports(registry.getPropertyPages(), buffer);
+      listToolbarSectionImports(registry.getToolbarSections(), buffer);
+      listToolbarEntryImports(registry.getToolbarEntries(), buffer);
+
+      buffer.append("], function(require, m_extensionManager) {\n")
+            .append("    // inject plugins module loader to extensions manager\n")
+            .append("    m_extensionManager.initialize(require);\n")
+            .append("    return {};\n")
+            .append("});\n");
+
+      return buffer.toString();
+   }
+
+   @GET
+   @Path("/plugins/outline-plugins.js")
+   @Produces("application/x-javascript")
+   public String listOutlinePluginIncludes()
+   {
+      UiExtensionsRegistry registry = resolveUiExtensionsRegistry();
+
+      StringBuilder buffer = new StringBuilder();
+      buffer.append("define([ 'require', 'm_extensionManager',\n");
+
+      listViewManagerImports(registry.getViewManagers(), buffer);
+
+      buffer.append("], function(require, m_extensionManager) {\n")
+            .append("    // inject plugins module loader to extensions manager\n")
+            .append("    m_extensionManager.initialize(require);\n")
+            .append("    return {};\n")
+            .append("});\n");
+
+      return buffer.toString();
+   }
+
+   private void listViewManagerImports(
+         List<ModelerUiExtensionsProvider.ViewManagerConfiguration> extensions,
+         StringBuilder buffer)
+   {
+      buffer.append("    // view managers\n");
+
+      Set<String> imports = newHashSet();
+      for (ModelerUiExtensionsProvider.ViewManagerConfiguration config : extensions)
+      {
+         if ( !isEmpty(config.moduleUri) && !imports.contains(config.moduleUri))
+         {
+            buffer.append("    '").append(config.moduleUri).append("',\n");
+            imports.add(config.moduleUri);
+         }
+      }
+   }
+
    private void listViewManagers(
          List<ModelerUiExtensionsProvider.ViewManagerConfiguration> extensions,
          StringBuilder buffer)
@@ -65,6 +129,23 @@ public class ModelingUiExtensionsController
          buffer.append("    { moduleUrl: '").append(config.moduleUri).append("' },\n");
       }
       buffer.append("  ],\n");
+   }
+
+   private void listPropertyPageImports(
+         List<ModelerUiExtensionsProvider.PropertyPageConfiguration> extensions,
+         StringBuilder buffer)
+   {
+      buffer.append("    // property pages\n");
+
+      Set<String> imports = newHashSet();
+      for (ModelerUiExtensionsProvider.PropertyPageConfiguration config : extensions)
+      {
+         if ( !isEmpty(config.moduleUri) && !imports.contains(config.moduleUri))
+         {
+            buffer.append("    '").append(config.moduleUri).append("',\n");
+            imports.add(config.moduleUri);
+         }
+      }
    }
 
    private void listPropertyPages(
@@ -88,6 +169,23 @@ public class ModelingUiExtensionsController
                .append(" },\n");;
       }
       buffer.append("  ],\n");
+   }
+
+   private void listToolbarSectionImports(
+         List<ModelerUiExtensionsProvider.ToolbarSectionConfiguration> extensions,
+         StringBuilder buffer)
+   {
+      buffer.append("    // toolbar sections\n");
+
+      Set<String> imports = newHashSet();
+      for (ModelerUiExtensionsProvider.ToolbarSectionConfiguration config : extensions)
+      {
+         if ( !isEmpty(config.moduleUri) && !imports.contains(config.moduleUri))
+         {
+            buffer.append("    '").append(config.moduleUri).append("',\n");
+            imports.add(config.moduleUri);
+         }
+      }
    }
 
    private void listToolbarSections(
@@ -116,6 +214,23 @@ public class ModelingUiExtensionsController
          buffer.append(" },\n");;
       }
       buffer.append("  ],\n");
+   }
+
+   private void listToolbarEntryImports(
+         List<ModelerUiExtensionsProvider.ToolbarEntryConfiguration> extensions,
+         StringBuilder buffer)
+   {
+      buffer.append("    // toolbar entries\n");
+
+      Set<String> imports = newHashSet();
+      for (ModelerUiExtensionsProvider.ToolbarEntryConfiguration config : extensions)
+      {
+         if ( !isEmpty(config.moduleUri) && !imports.contains(config.moduleUri))
+         {
+            buffer.append("    '").append(config.moduleUri).append("',\n");
+            imports.add(config.moduleUri);
+         }
+      }
    }
 
    private void listToolbarEntries(

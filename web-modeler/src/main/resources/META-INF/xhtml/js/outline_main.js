@@ -14,6 +14,7 @@ require.config({
 		'jquery.simplemodal': 'libs/jquery/plugins/jquery.simplemodal.1.4.1.min',
 		'jquery.url': 'libs/jquery/plugins/jquery.url',
 
+		'outline-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/outline-plugins',
 		'extensions': '../../../services/rest/bpm-modeler/config/ui/extensions.js?p=extensions',
 	},
 	shim: {
@@ -42,8 +43,10 @@ define([
 		 "jquery.jstree",
 		 "m_utils",
 		 "m_communicationController",
+
+		 "outline-plugins",
 		 "extensions",
-		 "m_jsfViewManager",
+
 		 "m_urlUtils",
 		 "m_constants",
 		 "m_user",
