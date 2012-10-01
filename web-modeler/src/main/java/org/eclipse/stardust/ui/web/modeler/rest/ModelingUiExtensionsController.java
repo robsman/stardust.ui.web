@@ -18,7 +18,7 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelerUiExtensionsProvider;
 import org.eclipse.stardust.ui.web.modeler.ui.UiExtensionsRegistry;
 
-@Path("/bpm-modeler/config/ui")
+@Path("/config/ui")
 public class ModelingUiExtensionsController
 {
    private static final Logger trace = LogManager.getLogger(ModelingUiExtensionsController.class);
