@@ -15,6 +15,7 @@ import static org.eclipse.stardust.common.CollectionUtils.isEmpty;
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
+import static org.eclipse.stardust.ui.web.modeler.service.ModelService.HEIGHT_PROPERTY;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -76,6 +77,7 @@ import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
+import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
@@ -814,7 +816,17 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          if (nodeSymbolJto.has(ModelerConstants.HEIGHT_PROPERTY))
          {
             int height = extractInt(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY);
-            nodeSymbol.setHeight(height);
+            if (nodeSymbol instanceof LaneSymbol)
+            {
+               // For swimlane, all lanes height needs adjustment
+               PoolSymbol poolSymbol = (PoolSymbol) nodeSymbol.eContainer();
+               for (LaneSymbol lanes : poolSymbol.getLanes())
+               {
+                  lanes.setHeight(height);
+               }
+            }
+            else
+               nodeSymbol.setHeight(height);
          }
 
       }

@@ -851,9 +851,16 @@ define(
 						this.parentSymbol.recalculateBoundingBox();
 						this.parentSymbol.adjustGeometry();
 
-						var newGeometry = {"x": this.x, "y" : this.y, "parentSymbolId" : this.parentSymbol.id, "width" : this.width , "height" :this.height};
+						var changes = {
+							x : this.x,
+							y : this.y,
+							width : this.width,
+							height : this.height
+						};
+						var command = m_command
+									.createUpdateModelElementCommand(
+											this.diagram.modelId, this.oid, changes);
 
-						var command = m_command.createMoveNodeSymbolCommand(this.diagram.model.id, this.oid, newGeometry);
 						m_commandsController.submitCommand(command);
 					}
 				};
