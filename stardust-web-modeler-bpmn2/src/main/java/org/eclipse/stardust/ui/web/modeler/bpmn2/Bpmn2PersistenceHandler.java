@@ -2,6 +2,7 @@ package org.eclipse.stardust.ui.web.modeler.bpmn2;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,6 +64,38 @@ public class Bpmn2PersistenceHandler implements ModelPersistenceHandler
       return null;
    }
 
+   public void saveModel(Definitions model, OutputStream modelContent)
+   {
+      try
+      {
+         DirectStreamsURIHandler streamsUriHandler = new DirectStreamsURIHandler();
+         URI resourceStreamUri = streamsUriHandler.registerOutputStream(modelContent);
+
+         ResourceSet context = new ResourceSetImpl();
+         context.getResourceFactoryRegistry()
+               .getProtocolToFactoryMap()
+               .put(resourceStreamUri.scheme(), new Bpmn2ResourceFactoryImpl());
+
+         Bpmn2Resource bpmnModel;
+         if (null != model.eResource())
+         {
+            bpmnModel = (Bpmn2Resource) model.eResource();
+         }
+         else
+         {
+            bpmnModel = (Bpmn2Resource) context.createResource(resourceStreamUri);
+            bpmnModel.getContents().add(model);
+         }
+
+         // must pass stream directly as save(options) will close the stream internally
+         bpmnModel.save(modelContent, getDefaultXmlSaveOptions());
+      }
+      catch (IOException ioe)
+      {
+         trace.warn("Failed loading BPMN2 model.", ioe);
+      }
+   }
+
    private static Map<Object, Object> getDefaultXmlLoadOptions()
    {
       Map<Object, Object> options = new HashMap<Object, Object>();
@@ -72,4 +105,13 @@ public class Bpmn2PersistenceHandler implements ModelPersistenceHandler
       return options;
    }
 
+   private static Map<Object, Object> getDefaultXmlSaveOptions()
+   {
+      Map<Object, Object> options = new HashMap<Object, Object>();
+      options.put(XMLResource.OPTION_RECORD_ANY_TYPE_NAMESPACE_DECLARATIONS, Boolean.TRUE);
+      options.put(XMLResource.OPTION_RECORD_UNKNOWN_FEATURE, Boolean.TRUE);
+      options.put(XMLResource.OPTION_USE_DEPRECATED_METHODS, Boolean.FALSE);
+      options.put(XMLResource.OPTION_KEEP_DEFAULT_CONTENT, Boolean.TRUE);
+      return options;
+   }
 }

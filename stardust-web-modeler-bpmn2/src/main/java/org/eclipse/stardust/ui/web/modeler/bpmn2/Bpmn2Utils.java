@@ -1,0 +1,90 @@
+package org.eclipse.stardust.ui.web.modeler.bpmn2;
+
+import java.util.UUID;
+
+import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.Process;
+import org.eclipse.dd.di.Diagram;
+import org.eclipse.emf.ecore.EObject;
+
+public class Bpmn2Utils
+{
+   public static String deriveElementIdFromName(String name)
+   {
+      StringBuilder idBuilder = new StringBuilder(name.length());
+      boolean firstWord = true;
+      boolean newWord = true;
+      for (int i = 0; i < name.length(); ++i)
+      {
+         char nameChar = name.charAt(i);
+         if (Character.isLetterOrDigit(nameChar))
+         {
+            if (newWord && !firstWord)
+            {
+               // append underscore for each first illegal character
+               idBuilder.append('_');
+            }
+            idBuilder.append(Character.toUpperCase(nameChar));
+            firstWord &= false;
+            newWord = false;
+         }
+         else
+         {
+            newWord = true;
+         }
+      }
+
+      return idBuilder.toString();
+   }
+
+   public static String createInternalId()
+   {
+      return UUID.randomUUID().toString();
+   }
+
+   public static Definitions findContainingModel(EObject element)
+   {
+      EObject parent = element.eContainer();
+      while ((null != parent))
+      {
+         if (parent instanceof Definitions)
+         {
+            return (Definitions) parent;
+         }
+         else
+         {
+            parent = parent.eContainer();
+         }
+      }
+
+      return null;
+   }
+
+   public static Process findContainingProcess(EObject element)
+   {
+      return findContainer(element, Process.class);
+   }
+
+   public static Diagram findContainingDiagram(EObject element)
+   {
+      return findContainer(element, Diagram.class);
+   }
+
+   public static <T extends EObject> T findContainer(EObject element, Class<T> containerType)
+   {
+      EObject parent = element.eContainer();
+      while ((null != parent))
+      {
+         if (containerType.isInstance(parent))
+         {
+            return containerType.cast(parent);
+         }
+         else
+         {
+            parent = parent.eContainer();
+         }
+      }
+
+      return null;
+   }
+}
