@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -22,9 +22,9 @@ define(
 					return page;
 				}
 			};
-	
+
 			/**
-			 * 
+			 *
 			 */
 			function TestBasicPropertiesPage(propertiesPanel) {
 				var propertiesPage = m_basicPropertiesPage
@@ -35,21 +35,21 @@ define(
 						propertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				TestBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TestBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TestBasicPropertiesPage.prototype.validate = function() {
 					this.propertiesPanel.clearErrorMessages();
@@ -58,7 +58,7 @@ define(
 					if (this.nameInput.val() == null
 							|| this.nameInput.val() == "") {
 						this.propertiesPanel.errorMessages
-								.push("Test szmbol name must not be empty.");
+								.push("Test symbol name must not be empty.");
 						this.nameInput.addClass("error");
 
 						this.propertiesPanel.showErrorMessages();
