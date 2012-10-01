@@ -128,7 +128,7 @@ define(function() {
 		DATA_SYMBOL_DOG_EAR_OFFSET : 8,
 
 		// Annotation Symbol
-		
+
 		// Gateway Symbol
 
 		ANNOTATION_SYMBOL : "annotationSymbol",
@@ -137,7 +137,7 @@ define(function() {
 		ANNOTATION_SYMBOL_DEFAULT_HEIGHT : 30,
 		ANNOTATION_SYMBOL_DEFAULT_FILL_COLOR : 'white',
 		ANNOTATION_SYMBOL_DEFAULT_STROKE_WIDTH : 0.5,
-		
+
 		// Connection
 
 		UNKNOWN_FLOW_COLOR : "#aaaaaa",
@@ -165,8 +165,8 @@ define(function() {
 		POOL_SWIMLANE_SELECT_BOX_COLOR : "black",
 		POOL_COLOR : "#d5d5d2",
 		SWIMLANE_COLOR : "#c7d8db",
-		LANE_DEFAULT_WIDTH : 400,
-		LANE_DEFAULT_HEIGHT : 1000,
+		LANE_DEFAULT_WIDTH : 480,
+		LANE_DEFAULT_HEIGHT : 580,
 		LANE_MIN_WIDTH : 80,
 		// Adjustment required on Symbols
 		POOL_LANE_MARGIN : 5,
