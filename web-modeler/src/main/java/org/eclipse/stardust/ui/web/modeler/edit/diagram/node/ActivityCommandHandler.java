@@ -35,6 +35,7 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
+import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
@@ -53,9 +54,8 @@ public class ActivityCommandHandler
     * @param request
     */
    @OnCommand(commandId = "activitySymbol.create")
-   public void createActivity(LaneSymbol parentLaneSymbol, JsonObject request)
+   public void createActivity(ModelType model, LaneSymbol parentLaneSymbol, JsonObject request)
    {
-      ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
 
       String activityType = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
@@ -96,9 +96,8 @@ public class ActivityCommandHandler
     * @param request
     */
    @OnCommand(commandId = "activitySymbol.delete")
-   public void deleteActivity(LaneSymbol parentLaneSymbol, JsonObject request)
+   public void deleteActivity(ModelType model, LaneSymbol parentLaneSymbol, JsonObject request)
    {
-      ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
 
       String activityId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
@@ -122,8 +121,7 @@ public class ActivityCommandHandler
 
    private ModelBuilderFacade getModelBuilderFacade()
    {
-      return new ModelBuilderFacade(springContext.getBean(ModelService.class)
-            .getModelManagementStrategy());
+      return CommandHandlerUtils.getModelBuilderFacade(springContext);
    }
 
 }

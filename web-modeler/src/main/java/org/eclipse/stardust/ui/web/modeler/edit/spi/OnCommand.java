@@ -6,9 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import com.google.gson.JsonObject;
 
 /**
- * Declares a command handler method. Handler methods must accept two parameters
+ * Declares a command handler method. Handler methods must accept three parameters
  * <ol>
- * <li> the target element
+ * <li> the model
+ * <li> the context element
  * <li> the {@link JsonObject} representation of command arguments
  * </ol>
  * <p>
@@ -19,7 +20,7 @@ import com.google.gson.JsonObject;
  * public class MoveNodeSymbolHandler
  * {
  *    &#64;OnCommand(commandId = "nodeSymbol.move")
- *    public void handleMoveNode(INodeSymbol nodeSymbol, JsonObject request)
+ *    public void handleMoveNode(ModelType model, INodeSymbol nodeSymbol, JsonObject request)
  *    {
  *       ...
  *    }

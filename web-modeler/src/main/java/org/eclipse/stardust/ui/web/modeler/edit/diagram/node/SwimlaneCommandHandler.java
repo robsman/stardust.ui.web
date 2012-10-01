@@ -56,9 +56,8 @@ public class SwimlaneCommandHandler
     * @param request
     */
    @OnCommand(commandId = "swimlaneSymbol.create")
-   public void createSwimlane(PoolSymbol parentSymbol, JsonObject request)
+   public void createSwimlane(ModelType model, PoolSymbol parentSymbol, JsonObject request)
    {
-      ModelType model = ModelUtils.findContainingModel(parentSymbol);
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentSymbol);
 
       String laneId = extractString(request, ModelerConstants.ID_PROPERTY);
@@ -90,9 +89,8 @@ public class SwimlaneCommandHandler
     * @param request
     */
    @OnCommand(commandId = "swimlaneSymbol.delete")
-   public void deleteSwimlane(PoolSymbol parentSymbol, JsonObject request)
+   public void deleteSwimlane(ModelType model, PoolSymbol parentSymbol, JsonObject request)
    {
-      ModelType model = ModelUtils.findContainingModel(parentSymbol);
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentSymbol);
 
       String laneId = extractString(request, ModelerConstants.ID_PROPERTY);

@@ -13,8 +13,6 @@ import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
 
-import org.eclipse.stardust.engine.api.model.IModelParticipant;
-import org.eclipse.stardust.engine.core.model.gui.ActivitySymbol;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
@@ -22,6 +20,7 @@ import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
@@ -36,7 +35,7 @@ public class MoveNodeSymbolHandler
    private ApplicationContext springContext;
 
    @OnCommand(commandId = "nodeSymbol.move")
-   public void handleMoveNode(INodeSymbol nodeSymbol, JsonObject request)
+   public void handleMoveNode(ModelType model, INodeSymbol nodeSymbol, JsonObject request)
    {
       int laneOffsetX = 0;
       int laneOffsetY = 0;

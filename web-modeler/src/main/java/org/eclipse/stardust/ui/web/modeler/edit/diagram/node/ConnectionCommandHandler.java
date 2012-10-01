@@ -59,9 +59,9 @@ public class ConnectionCommandHandler
    private ApplicationContext springContext;
 
    @OnCommand(commandId = "connection.create")
-   public void createConnection(IIdentifiableElement targetElement, JsonObject request)
+   public void createConnection(ModelType model, IIdentifiableElement targetElement,
+         JsonObject request)
    {
-      ModelType model = ModelUtils.findContainingModel(targetElement);
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(targetElement);
 
       synchronized (model)
@@ -208,9 +208,8 @@ public class ConnectionCommandHandler
    }
 
    @OnCommand(commandId = "connection.delete")
-   public void deleteConnection(IIdentifiableElement targetElement, JsonObject request)
+   public void deleteConnection(ModelType model, IIdentifiableElement targetElement, JsonObject request)
    {
-      ModelType model = ModelUtils.findContainingModel(targetElement);
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(targetElement);
 
       Long connectionOid = extractLong(request, ModelerConstants.OID_PROPERTY);

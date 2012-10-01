@@ -121,12 +121,11 @@ public class ParticipantChangeCommandHandler
     * @param request
     */
    @OnCommand(commandId = "role.create")
-   public void addRole(OrganizationType org, JsonObject request)
+   public void addRole(ModelType model, OrganizationType org, JsonObject request)
    {
       String roleID = extractString(request, ModelerConstants.ID_PROPERTY);
       String roleName = extractString(request, ModelerConstants.NAME_PROPERTY);
       RoleType role = null;
-      ModelType model = ModelUtils.findContainingModel(org);
       synchronized (model)
       {
          role = getModelBuilderFacade().createRole(model, roleID, roleName);
@@ -145,12 +144,11 @@ public class ParticipantChangeCommandHandler
     * @param request
     */
    @OnCommand(commandId = "organization.create")
-   public void addOrganization(OrganizationType org, JsonObject request)
+   public void addOrganization(ModelType model, OrganizationType org, JsonObject request)
    {
       String orgID = extractString(request, ModelerConstants.ID_PROPERTY);
       String orgName = extractString(request, ModelerConstants.NAME_PROPERTY);
       OrganizationType newOrg = null;
-      ModelType model = ModelUtils.findContainingModel(org);
       synchronized (model)
       {
          newOrg = getModelBuilderFacade().createOrganization(model, orgID, orgName);
@@ -169,11 +167,10 @@ public class ParticipantChangeCommandHandler
     * @param request
     */
    @OnCommand(commandId = "organization.updateTeamLeader")
-   public void updateTeamLeader(OrganizationType org, JsonObject request)
+   public void updateTeamLeader(ModelType model, OrganizationType org, JsonObject request)
    {
       String teamLeaderUUID = extractString(request, ModelerConstants.UUID_PROPERTY);
       RoleType tealLeader = (RoleType) modelService().uuidMapper().getEObject(teamLeaderUUID);
-      ModelType model = ModelUtils.findContainingModel(org);
       synchronized (model)
       {
          getModelBuilderFacade().setTeamLeader(org, tealLeader);

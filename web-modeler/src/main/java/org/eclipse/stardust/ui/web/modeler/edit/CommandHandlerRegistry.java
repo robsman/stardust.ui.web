@@ -30,9 +30,16 @@ public class CommandHandlerRegistry
       // TODO only invoke most specific handler?
       for (final HandlerRegistration handler : handlers)
       {
-         if (handler.isCompatibleWith(model, contextElement))
+         try
          {
-            return handler;
+            if (handler.isCompatibleWith(model, contextElement))
+            {
+               return handler;
+            }
+         }
+         catch (Exception e)
+         {
+            // TODO: handle exception
          }
       }
 
@@ -83,9 +90,18 @@ public class CommandHandlerRegistry
             Class<T> contextElementType)
       {
          // TODO parameter annotations instead of positions?
-         return ((2 == handlerMethod.getParameterTypes().length) && handlerMethod.getParameterTypes()[0].isAssignableFrom(contextElementType))
-               || ((3 == handlerMethod.getParameterTypes().length)
-                     && handlerMethod.getParameterTypes()[0].isAssignableFrom(modelType) && handlerMethod.getParameterTypes()[1].isAssignableFrom(contextElementType));
+         if (3 == handlerMethod.getParameterTypes().length)
+         {
+            return (handlerMethod.getParameterTypes()[0].isAssignableFrom(modelType) && handlerMethod.getParameterTypes()[1].isAssignableFrom(contextElementType));
+         }
+         else if (2 == handlerMethod.getParameterTypes().length)
+         {
+            return (handlerMethod.getParameterTypes()[0].isAssignableFrom(modelType) && ((null == contextElementType) || modelType.equals(contextElementType)));
+         }
+         else
+         {
+            return false;
+         }
       }
 
       @Override
@@ -106,14 +122,14 @@ public class CommandHandlerRegistry
                // TODO parameter annotations instead of positions?
                handlerMethod.invoke(handlerBean, model, contextElement, request);
             }
-            else if (2 == handlerMethod.getParameterTypes().length)
+            else if ((2 == handlerMethod.getParameterTypes().length) && (model == contextElement))
             {
                // TODO parameter annotations instead of positions?
-               handlerMethod.invoke(handlerBean, contextElement, request);
+               handlerMethod.invoke(handlerBean, model, request);
             }
             else
             {
-               throw new IllegalArgumentException("Incompatible command handler emthod: "
+               throw new IllegalArgumentException("Incompatible command handler method: "
                      + handlerMethod);
             }
          }

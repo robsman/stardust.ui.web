@@ -8,18 +8,15 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractSt
 
 import javax.annotation.Resource;
 
-import org.eclipse.emf.ecore.EObject;
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
 
-import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
@@ -50,10 +47,8 @@ public class ApplicationTypeChangeCommandHandler
    }
 
    @OnCommand(commandId = "messageTransformationApplication.create")
-   public void createMessageTransformationApp(EObject targetElement, JsonObject request)
+   public void createMessageTransformationApp(ModelType model, JsonObject request)
    {
-      ModelType model = (ModelType) targetElement;
-
       String applicationID = extractString(request, ModelerConstants.ID_PROPERTY);
       String applicationName = extractString(request, ModelerConstants.NAME_PROPERTY);
 
@@ -83,10 +78,8 @@ public class ApplicationTypeChangeCommandHandler
    }
 
    @OnCommand(commandId = "uiMashupApplication.create")
-   public void createUiMashupApp(EObject targetElement, JsonObject request)
+   public void createUiMashupApp(ModelType model, JsonObject request)
    {
-      ModelType model = (ModelType) targetElement;
-
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
 
@@ -104,9 +97,8 @@ public class ApplicationTypeChangeCommandHandler
     * @param request
     */
    @OnCommand(commandId = "application.delete")
-   public void deleteApplication(EObject targetElement, JsonObject request)
+   public void deleteApplication(ModelType model, JsonObject request)
    {
-      ModelType model = (ModelType) targetElement;
       String appId = extractString(request, ModelerConstants.ID_PROPERTY);
       ApplicationType application = getModelBuilderFacade().findApplication(model, appId);
 

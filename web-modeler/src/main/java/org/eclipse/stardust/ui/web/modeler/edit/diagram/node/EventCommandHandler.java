@@ -52,9 +52,8 @@ public class EventCommandHandler
    private ApplicationContext springContext;
 
    @OnCommand(commandId = "eventSymbol.create")
-   public void createEvent(LaneSymbol parentLaneSymbol, JsonObject request)
+   public void createEvent(ModelType model, LaneSymbol parentLaneSymbol, JsonObject request)
    {
-      ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
 
       synchronized (model)
@@ -105,9 +104,8 @@ public class EventCommandHandler
    }
 
    @OnCommand(commandId = "eventSymbol.delete")
-   public void deleteEvent(LaneSymbol parentLaneSymbol, JsonObject request)
+   public void deleteEvent(ModelType model, LaneSymbol parentLaneSymbol, JsonObject request)
    {
-      ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
 
       Long eventOId = extractLong(request, ModelerConstants.OID_PROPERTY);

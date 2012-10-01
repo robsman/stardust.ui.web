@@ -57,9 +57,8 @@ public class DataCommandHandler
     * @param request
     */
    @OnCommand(commandId = "dataSymbol.create")
-   public void createData(LaneSymbol parentLaneSymbol, JsonObject request)
+   public void createData(ModelType model, LaneSymbol parentLaneSymbol, JsonObject request)
    {
-      ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
       String dataFullID = extractString(request, ModelerConstants.DATA_FULL_ID_PROPERTY);
       String dataID = extractString(request, ModelerConstants.DATA_ID_PROPERTY);
@@ -101,9 +100,8 @@ public class DataCommandHandler
     * @param request
     */
    @OnCommand(commandId = "dataSymbol.delete")
-   public void deleteData(LaneSymbol parentLaneSymbol, JsonObject request)
+   public void deleteData(ModelType model, LaneSymbol parentLaneSymbol, JsonObject request)
    {
-      ModelType model = ModelUtils.findContainingModel(parentLaneSymbol);
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
       Long dataOID = extractLong(request, ModelerConstants.OID_PROPERTY);
       String dataFullID = extractString(request, ModelerConstants.DATA_FULL_ID_PROPERTY);
