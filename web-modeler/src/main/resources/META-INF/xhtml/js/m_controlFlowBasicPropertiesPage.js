@@ -44,6 +44,7 @@ define(
 					propertiesPage.show();
 					this.conditionExpressionInputEditor.refresh();
 					
+					// Bind the Model Data as top "window" level objects to be used for Code Editor auto-complete  
 					var globalVariables = m_dataTraversal.getAllDataAsJavaScriptObjects(this.propertiesPanel.diagram.model);
 					for (var key in globalVariables) {
 						window[key] = globalVariables[key];

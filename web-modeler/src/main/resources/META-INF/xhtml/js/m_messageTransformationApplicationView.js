@@ -386,6 +386,7 @@ define(
 							this.outputTableRows, false);
 					this.resume();
 
+					// Bind the Model Data as top "window" level objects to be used for Code Editor auto-complete  
 					var globalVariables = m_dataTraversal.getAllDataAsJavaScriptObjects(application.model);
 					for (var key in globalVariables) {
 						window[key] = globalVariables[key];

@@ -69,7 +69,7 @@ define(
 				
 				var id = typeDeclaration.id;
 				
-				var body = typeDeclaration.schema.types[id].body;
+				var body = typeDeclaration.typeDeclaration.schema.types[id].body;
 				var elements, facets;
 				
 				var structureType = (body != null) ? "sequence" : "enumeration";
@@ -124,7 +124,7 @@ define(
 				case "enumeration":
 					/*obj = [];
 					
-					facets = typeDeclaration.schema.types[id].facets;
+					facets = typeDeclaration.typeDeclaration.schema.types[id].facets;
 					for (var element in facets) {
 						obj.push(facets[element].name);
 					}*/
@@ -143,11 +143,11 @@ define(
 				for (var n in model.typeDeclarations) {
 					var typeDeclaration = model.typeDeclarations[n];
 
-					if (typeDeclaration.schema.elements[typeDeclaration.id] == null) {
+					if (typeDeclaration.typeDeclaration.schema.elements[typeDeclaration.id] == null) {
 						continue;
 					}
 
-					var currentType = typeDeclaration.schema.elements[typeDeclaration.id].type;
+					var currentType = typeDeclaration.typeDeclaration.schema.elements[typeDeclaration.id].type;
 					if (type == currentType) {
 						return typeDeclaration;
 					}
