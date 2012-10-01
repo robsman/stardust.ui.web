@@ -18,3 +18,17 @@ span.CodeMirror-matchhighlight {
 .CodeMirror-disabled {
 	background: #f0f0f0;
 }
+
+/* Required here since the base "select" is overridden in lightdust.css */ 
+.CodeMirror-completions select {
+	min-width: 0px;
+	height: auto;
+	background-image: none;
+	border: none;
+	-webkit-border-radius: 0px;
+	-moz-border-radius: 0px;  
+	border-radius: 0px;
+
+	font-family: Courier New;
+	font-size: 14px;
+}
