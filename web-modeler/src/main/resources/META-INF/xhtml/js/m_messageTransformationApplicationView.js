@@ -3,18 +3,18 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
 
 define(
 		[ "m_utils", "m_constants", "m_command", "m_commandsController",
-				"m_model", "m_accessPoint",
-				"m_dataTraversal", "m_dialog", "m_modelElementView" ],
+				"m_model", "m_accessPoint", "m_dataTraversal", "m_dialog",
+				"m_modelElementView" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_model, m_accessPoint, m_dataTraversal,
-				m_dialog, m_modelElementView) {
+				m_model, m_accessPoint, m_dataTraversal, m_dialog,
+				m_modelElementView) {
 			return {
 				initialize : function(fullId) {
 					var view = new MessageTransformationApplicationView();
@@ -29,7 +29,7 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function MessageTransformationApplicationView() {
 				// Inheritance
@@ -69,32 +69,42 @@ define(
 				CodeMirror.commands.autocomplete = function(cm) {
 					CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
 				}
-				
-				var editor = CodeMirror.fromTextArea(jQuery("#expressionTextArea")[0], {
-					mode: "javascript",
-					theme: "eclipse",
-					lineNumbers: true,
-					lineWrapping: true,
-					indentUnit: 3,
-					matchBrackets: true,
-					extraKeys: {"Ctrl-Space": "autocomplete"},
-					onCursorActivity: function() {
-						// Highlight selected text 
-						editor.matchHighlight("CodeMirror-matchhighlight");
-						// Set active line 
-						editor.setLineClass(hlLine, null, null);
-						hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
-					},
-					onBlur: function() {
-						editor.save();
-						// Programmatically invoke the change handler on the hidden text area
-						// as it will not be invoked automatically
-						jQuery(editor.getTextArea()).change();
-					}
-				});
+
+				var editor = CodeMirror
+						.fromTextArea(
+								jQuery("#expressionTextArea")[0],
+								{
+									mode : "javascript",
+									theme : "eclipse",
+									lineNumbers : true,
+									lineWrapping : true,
+									indentUnit : 3,
+									matchBrackets : true,
+									extraKeys : {
+										"Ctrl-Space" : "autocomplete"
+									},
+									onCursorActivity : function() {
+										// Highlight selected text
+										editor
+												.matchHighlight("CodeMirror-matchhighlight");
+										// Set active line
+										editor.setLineClass(hlLine, null, null);
+										hlLine = editor.setLineClass(editor
+												.getCursor().line, null,
+												"activeline");
+									},
+									onBlur : function() {
+										editor.save();
+										// Programmatically invoke the change
+										// handler on the hidden text area
+										// as it will not be invoked
+										// automatically
+										jQuery(editor.getTextArea()).change();
+									}
+								});
 				var hlLine = editor.setLineClass(0, "activeline");
 				this.expressionEditor = editor;
-					
+
 				this.sourceFilterInput.keypress({
 					"view" : this
 				}, function(event) {
@@ -150,7 +160,8 @@ define(
 					event.data.view.filterFieldsWithMapping();
 				});
 
-				// TODO: Review if this should be removed as expressionTextArea is hidden 
+				// TODO: Review if this should be removed as expressionTextArea
+				// is hidden
 				this.expressionTextArea
 						.droppable({
 							accept : ".data-element",
@@ -192,21 +203,11 @@ define(
 									view.submitChanges(this
 											.determineTransformationChanges());
 								}
-
-								view.expressionTextArea.css({
-									"cursor" : "default"
-								});
 							},
 							hoverClass : "accept",
 							over : function(e, ui) {
 								var view = ui.draggable.data("view");
 								var outputTableRow = view.selectedOutputTableRow;
-
-								if (outputTableRow == null) {
-									view.expressionTextArea.css({
-										"cursor" : "wait"
-									});
-								}
 							}
 						});
 
@@ -231,7 +232,7 @@ define(
 															"#inputDataDialog #nameTextInput")
 															.val(),
 													m_model
-															.findDataStructure(jQuery(
+															.findTypeDeclaration(jQuery(
 																	"#inputDataDialog #typeSelectInput")
 																	.val()));
 									event.data.view.resume();
@@ -245,23 +246,22 @@ define(
 								},
 								function(event) {
 									var inputDataTypeSelectInput = jQuery("#inputDataDialog #typeSelectInput");
-//									var models = m_model.getModels();
-//
-//									for ( var m in models) {
-//										var model = models[m];
+									// var models = m_model.getModels();
+									//
+									// for ( var m in models) {
+									// var model = models[m];
 									var model = event.data.view.application.model;
-										for ( var n in model.structuredDataTypes) {
-											var dataStructure = model.structuredDataTypes[n];
-											inputDataTypeSelectInput
-													.append("<option value='"
-															+ dataStructure
-																	.getFullId()
-															+ "'>"
-															+ dataStructure
-																	.getFullId()
-															+ "</option>");
-										}
-//									}
+									for ( var n in model.typeDeclarations) {
+										var typeDeclaration = model.typeDeclarations[n];
+										inputDataTypeSelectInput
+												.append("<option value='"
+														+ typeDeclaration
+																.getFullId()
+														+ "'>"
+														+ typeDeclaration.name
+														+ "</option>");
+									}
+									// }
 
 									jQuery("#inputDataDialog").dialog("open");
 								});
@@ -287,7 +287,7 @@ define(
 															"#outputDataDialog #nameTextInput")
 															.val(),
 													m_model
-															.findDataStructure(jQuery(
+															.findTypeDeclaration(jQuery(
 																	"#outputDataDialog #typeSelectInput")
 																	.val()));
 									event.data.view.resume();
@@ -301,23 +301,20 @@ define(
 								},
 								function(event) {
 									var outputDataTypeSelectInput = jQuery("#outputDataDialog #typeSelectInput");
-									var typeDeclarations = m_model
-											.getTypeDeclarations();
 
 									// var models = m_model.getModels();
 									//
 									// for ( var m in models) {
 									// var model = models[m];
 									var model = event.data.view.application.model;
-									for ( var n in model.structuredDataTypes) {
-										var dataStructure = model.structuredDataTypes[n];
+									for ( var n in model.typeDeclarations) {
+										var typeDeclarations = model.typeDeclarations[n];
 										outputDataTypeSelectInput
 												.append("<option value='"
-														+ dataStructure
-																.getFullId()
+														+ typeDeclarations.getFullId()
 														+ "'>"
-														+ dataStructure
-																.getFullId()
+														+ typeDeclarations
+																.name
 														+ "</option>");
 									}
 									// }
@@ -325,7 +322,8 @@ define(
 									jQuery("#outputDataDialog").dialog("open");
 								});
 
-				// TODO: Review if this should be removed as expressionTextArea is hidden 
+				// TODO: Review if this should be removed as expressionTextArea
+				// is hidden
 				this.expressionTextArea.autocomplete({
 					minLength : 0,
 					source : function(request, response) {
@@ -352,7 +350,7 @@ define(
 				});
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.initialize = function(
 						application) {
@@ -369,6 +367,13 @@ define(
 
 					m_utils.debug("===> Mapping Expressions");
 					m_utils.debug(this.mappingExpressions);
+
+					this.inputData = {};
+					this.outputData = {};
+					this.inputTableBody.empty();
+					this.outputTableBody.empty();
+					this.inputTableRows = [];
+					this.outputTableRows = [];
 
 					for ( var m in this.application.accessPoints) {
 						var accessPoint = this.application.accessPoints[m];
@@ -394,12 +399,13 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.convertFromMappingsXml = function(
 						xml) {
 					// TODO Very rudimentary parsing - not robust against any
-					// changes in format
+					// changes in format - XML parsing should be very easy; see
+					// applicationQueryParametersPropertiesPage
 
 					var fieldMappings = xml
 							.substring(
@@ -429,7 +435,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.convertToMappingsXml = function() {
 					var xml = "&lt;?xml version=&quot;1.0&quot; encoding=&quot;ASCII&quot;?&gt;&#13;&#10;&lt;mapping:TransformationProperty xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:mapping=&quot;java://com.infinity.bpm.messaging.model&quot; xsi:schemaLocation=&quot;java://com.infinity.bpm.messaging.model java://com.infinity.bpm.messaging.model.mapping.MappingPackage&quot;&gt;&#13;&#10;";
@@ -449,7 +455,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.resume = function() {
 					this.inputTable.tableScroll({
@@ -492,7 +498,8 @@ define(
 														view.selectedOutputTableRow.path
 																+ " = ");
 
-										view.expressionEditor.setValue(view.selectedOutputTableRow.mappingExpression);
+										view.expressionEditor
+												.setValue(view.selectedOutputTableRow.mappingExpression);
 										view.expressionEditor.save();
 									});
 
@@ -504,7 +511,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.addInputAccessPoint = function(
 						dataName, dataStructure) {
@@ -512,29 +519,24 @@ define(
 							.createFromDataStructure(dataStructure, dataName,
 									dataName, m_constants.IN_ACCESS_POINT);
 
-					this.addInputData(this.application.accessPoints[dataName]);
-					this.submitChanges(this.application.accessPoints);
+					this.submitChanges({accessPoints: this.application.accessPoints});
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.addInputData = function(
 						accessPoint) {
-					// TODO Works only for references in the same model
-
-					var typeDeclaration = m_model
-							.findTypeDeclaration(this.application.model.id
-									+ ":"
-									+ accessPoint.attributes["carnot:engine:dataType"]);
+					var typeDeclaration = this.application.model.typeDeclarations[accessPoint.attributes["carnot:engine:dataType"]];
 
 					this.inputData[accessPoint.id] = typeDeclaration;
+
 					this.initializeInputTableRowsRecursively(accessPoint,
-							typeDeclaration, null, true);
+							typeDeclaration.getBody(), null, true);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.addOutputAccessPoint = function(
 						dataName, dataStructure) {
@@ -542,29 +544,24 @@ define(
 							.createFromDataStructure(dataStructure, dataName,
 									dataName, m_constants.OUT_ACCESS_POINT);
 
-					this.addOutputData(this.application.accessPoints[dataName]);
-					this.submitChanges(this.application.accessPoints);
+					this.submitChanges({accessPoints: this.application.accessPoints});
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.addOutputData = function(
 						accessPoint) {
-					// TODO Works only for references in the same model
-
-					var typeDeclaration = m_model
-							.findTypeDeclaration(this.application.model.id
-									+ ":"
-									+ accessPoint.attributes["carnot:engine:dataType"]);
+					var typeDeclaration = this.application.model.typeDeclarations[accessPoint.attributes["carnot:engine:dataType"]];
 
 					this.outputData[accessPoint.id] = typeDeclaration;
+
 					this.initializeOutputTableRowsRecursively(accessPoint,
-							typeDeclaration, null);
+							typeDeclaration.getBody(), null);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.initializeInputTableRowsRecursively = function(
 						accessPoint, element, parentPath) {
@@ -580,21 +577,35 @@ define(
 					tableRow.parentPath = parentPath;
 					tableRow.name = parentPath == null ? accessPoint.name
 							: element.name;
-					tableRow.typeName = parentPath == null ? ""
-							: element.typeName;
+					tableRow.typeName = parentPath == null ? this.application.model.typeDeclarations[accessPoint.attributes["carnot:engine:dataType"]].getSchemaName() : element.type;
 
-					if (element.children == null) {
+					// Embedded structure
+					
+					var childElements = element.elements; 
+					
+					// Recursive resolution
+
+					if (childElements == null && element.type != null) {
+						var typeDeclaration = this.application.model
+								.findTypeDeclarationBySchemaName(element.type);
+
+						if (typeDeclaration != null && typeDeclaration.isSequence()) {
+							childElements = typeDeclaration.getBody().elements;
+						}
+					}
+
+					if (childElements == null) {
 						return;
 					}
 
-					for ( var childElement in element.children) {
+					for ( var childElement in childElements) {
 						this.initializeInputTableRowsRecursively(accessPoint,
-								element.children[childElement], path);
+								childElements[childElement], path);
 					}
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.initializeOutputTableRowsRecursively = function(
 						accessPoint, element, parentPath) {
@@ -610,8 +621,7 @@ define(
 					tableRow.parentPath = parentPath;
 					tableRow.name = parentPath == null ? accessPoint.name
 							: element.name;
-					tableRow.typeName = parentPath == null ? ""
-							: element.typeName;
+					tableRow.typeName = parentPath == null ? this.application.model.typeDeclarations[accessPoint.attributes["carnot:engine:dataType"]].getSchemaName() : element.type;
 					m_utils.debug("===> Path: " + path);
 					m_utils.debug("===> Expression: "
 							+ this.mappingExpressions[path]);
@@ -619,21 +629,38 @@ define(
 							: this.mappingExpressions[path];
 					tableRow.problems = "";
 
-					if (element.children == null) {
+					// Embedded structure
+					
+					var childElements = element.elements; 
+					
+					// Recursive resolution
+
+					if (childElements == null && element.type != null) {
+						var typeDeclaration = this.application.model
+								.findTypeDeclarationBySchemaName(element.type);
+
+						if (typeDeclaration != null && typeDeclaration.isSequence()) {
+							childElements = typeDeclaration.getBody().elements;
+						}
+					}
+
+					if (childElements == null) {
 						return;
 					}
 
-					for ( var childElement in element.children) {
+					for ( var childElement in childElements) {
 						this.initializeOutputTableRowsRecursively(accessPoint,
-								element.children[childElement], path);
+								childElements[childElement], path);
 					}
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.populateTableRows = function(
 						tableBody, tableRows, source) {
+					tableBody.empty();
+					
 					for ( var tableRow in tableRows) {
 						var rowId = tableRows[tableRow].path
 								.replace(/\./g, "-");
@@ -724,7 +751,8 @@ define(
 											// area if needed
 
 											if (view.selectedOutputTableRow == outputTableRow) {
-												view.expressionEditor.setValue(outputTableRow.mappingExpression);
+												view.expressionEditor
+														.setValue(outputTableRow.mappingExpression);
 												view.expressionEditor.save();
 											}
 
@@ -750,7 +778,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.highlightSource = function(
 						tableRow) {
@@ -773,7 +801,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.highlightTarget = function(
 						tableRow) {
@@ -796,7 +824,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.filterSource = function(
 						filter) {
@@ -828,7 +856,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.filterTarget = function(
 						filter) {
@@ -846,7 +874,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.filterFieldsWithNoMapping = function() {
 					jQuery("table#targetTable tbody tr").addClass("invisible");
@@ -857,7 +885,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.filterFieldsWithMapping = function() {
 					jQuery("table#targetTable tbody tr").addClass("invisible");
@@ -868,7 +896,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.filterHighlightedSourceFields = function() {
 					m_dialog
@@ -881,7 +909,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.filterHighlightedTargetFields = function() {
 					m_dialog
@@ -894,7 +922,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.showAllSourceFields = function() {
 					m_dialog
@@ -905,7 +933,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.showAllTargetFields = function() {
 					m_dialog
@@ -916,7 +944,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.validate = function() {
 					this.clearErrorMessages();
@@ -940,7 +968,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.determineTransformationChanges = function() {
 					var transformationProperty = "&lt;?xml version=&quot;1.0&quot; encoding=&quot;ASCII&quot;?&gt;&#13;&#10;&lt;mapping:TransformationProperty xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:mapping=&quot;java://com.infinity.bpm.messaging.model&quot; xsi:schemaLocation=&quot;java://com.infinity.bpm.messaging.model java://com.infinity.bpm.messaging.model.mapping.MappingPackage&quot;&gt;&#13;&#10;";
@@ -966,7 +994,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.processCommand = function(
 						command) {

@@ -95,29 +95,8 @@ define(
 				/**
 				 * 
 				 */
-				XsdStructuredDataTypeView.prototype.isSequence = function() {
-					return this.getBody() != null;
-				};
-
-				/**
-				 * 
-				 */
-				XsdStructuredDataTypeView.prototype.getBody = function() {
-					return this.typeDeclaration.typeDeclaration.schema.types[this.typeDeclaration.id].body;
-				};
-
-				/**
-				 * 
-				 */
-				XsdStructuredDataTypeView.prototype.getFacets = function() {
-					return this.typeDeclaration.typeDeclaration.schema.types[this.typeDeclaration.id].facets;
-				};
-
-				/**
-				 * 
-				 */
 				XsdStructuredDataTypeView.prototype.initializeTypeDeclaration = function() {
-					if (this.isSequence()) {
+					if (this.typeDeclaration.isSequence()) {
 						this.structureRadioButton.attr("checked", true);
 						this.enumerationRadioButton.attr("checked", false);
 						this.resumeTableForSequenceDefinition();
@@ -132,9 +111,9 @@ define(
 				 * 
 				 */
 				XsdStructuredDataTypeView.prototype.addElement = function() {
-					if (this.isSequence())
+					if (this.typeDeclaration.isSequence())
 						{
-					this.getBody().elements["New"
+					this.typeDeclaration.getBody().elements["New"
 							+ this.getElementCount()] = {
 						name : "New" + this.getElementCount(),
 						type : "xsd:string",
@@ -161,9 +140,9 @@ define(
 				XsdStructuredDataTypeView.prototype.getElementCount = function() {
 					var n = 0;
 
-					if (this.isSequence())
+					if (this.typeDeclaration.isSequence())
 						{
-					for ( var element in this.getBody().elements) {
+					for ( var element in this.typeDeclaration.getBody().elements) {
 						++n;
 					}
 						}
@@ -187,30 +166,30 @@ define(
 
 					var n = 0;
 
-					for ( var element in this.getBody().elements) {
+					for ( var element in this.typeDeclaration.getBody().elements) {
 						var path = element.replace(/:/g, "-");
 
 						var content = "<tr id='" + path + "'>";
 
 						content += "<td class='elementCell'>";
 						content += "<input type='text' value='"
-								+ this.getBody().elements[element].name + "'/>";
+								+ this.typeDeclaration.getBody().elements[element].name + "'/>";
 						content += "</td>";
 						content += "<td class='typeCell'>";
 
-						if (this.getBody().classifier == "sequence") {
+						if (this.typeDeclaration.getBody().classifier == "sequence") {
 							content += this
-									.getTypeSelectList(this.getBody().elements[element].type);
+									.getTypeSelectList(this.typeDeclaration.getBody().elements[element].type);
 						}
 
 						content += "<td class='cardinalityCell'>";
 
-						if (this.getBody().classifier == "sequence") {
+						if (this.typeDeclaration.getBody().classifier == "sequence") {
 							content += ("<select size=\"1\" class=\"cardinalitySelect\"><option value=\"1\""
-									+ (this.getBody().elements[element].cardinality == "required" ? "selected"
+									+ (this.typeDeclaration.getBody().elements[element].cardinality == "required" ? "selected"
 											: "")
 									+ ">Required</option><option value=\"N\""
-									+ (this.getBody().elements[element].cardinality == "many" ? "selected"
+									+ (this.typeDeclaration.getBody().elements[element].cardinality == "many" ? "selected"
 											: "") + ">Many</option></select>");
 						}
 
@@ -279,12 +258,12 @@ define(
 
 					var n = 0;
 
-					for ( var element in this.getFacets()) {
+					for ( var element in this.typeDeclaration.getFacets()) {
 						var content = "<tr id='" + element + "'>";
 
 						content += "<td>";
 						content += "<input type='text' value='"
-								+ this.getFacets()[element].name + "'/>";
+								+ this.typeDeclaration.getFacets()[element].name + "'/>";
 						content += "</td>";
 						content += "<td>";
 						content += "</td>";

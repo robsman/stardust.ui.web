@@ -75,5 +75,55 @@ define([ "m_utils", "m_modelElement" ], function(m_utils, m_modelElement) {
 
 			this.model.typeDeclarations[this.id] = this;
 		};
+		
+		/**
+		 * 
+		 */
+		TypeDeclaration.prototype.isSequence = function() {
+			return this.getBody() != null;
+		};
+
+		/**
+		 * 
+		 */
+		TypeDeclaration.prototype.getBody = function() {
+			return this.typeDeclaration.schema.types[this.id].body;
+		};
+		
+		/**
+		 * 
+		 */
+		TypeDeclaration.prototype.getFacets = function() {
+			return this.typeDeclaration.typeDeclaration.schema.types[this.typeDeclaration.id].facets;
+		};
+
+		/**
+		 * 
+		 */
+		TypeDeclaration.prototype.getSchemaName = function() {
+			return this.typeDeclaration.schema.elements[this.id].type;			
+		};
+		
+		/**
+		 * 
+		 */
+		TypeDeclaration.prototype.getElementCount = function() {
+			var n = 0;
+
+			if (this.isSequence())
+				{
+			for ( var element in this.getBody().elements) {
+				++n;
+			}
+				}
+			else
+				{
+				for ( var element in this.getFacets()) {
+					++n;
+				}						
+				}
+
+			return n;
+		};
 	}
 });

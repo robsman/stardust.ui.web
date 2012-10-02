@@ -44,7 +44,6 @@ define([ "m_utils", "m_constants", "m_model" ], function(m_utils, m_constants, m
 	 * 
 	 */
 	function AccessPoint() {
-
 		/**
 		 * 
 		 */
@@ -63,7 +62,8 @@ define([ "m_utils", "m_constants", "m_model" ], function(m_utils, m_constants, m
 			this.id = id;
 			this.name = name;
 			this.accessPointType = m_constants.DATA_STRUCTURE_ACCESS_POINT;
-			this.datastructureFullId = dataStructure.getFullId();
+			this.dataType = m_constants.STRUCTURED_DATA_TYPE;
+			this.structuredDataTypeFullId = dataStructure.getFullId();
 			this.direction = direction;
 			this.attributes = {};
 			this.attributes["carnot:engine:dataType"] = dataStructure.id;

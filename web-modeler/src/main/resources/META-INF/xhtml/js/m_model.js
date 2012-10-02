@@ -3,11 +3,11 @@
  */
 define(
 		[ "m_utils", "m_constants", "m_urlUtils", "m_communicationController",
-				"m_application", "m_data", "m_process", 
-				"m_participant", "m_typeDeclaration" ],
+				"m_application", "m_data", "m_process", "m_participant",
+				"m_typeDeclaration" ],
 		function(m_utils, m_constants, m_urlUtils, m_communicationController,
-				m_application, m_data, m_process,
-				m_participant, m_typeDeclaration) {
+				m_application, m_data, m_process, m_participant,
+				m_typeDeclaration) {
 
 			return {
 				stripModelId : stripModelId,
@@ -71,6 +71,7 @@ define(
 				},
 				/**
 				 * TODO May not be safe as element OIDs are not unique.
+				 * 
 				 * @param guid
 				 * @returns
 				 */
@@ -102,7 +103,7 @@ define(
 
 				/**
 				 * Fetches the model for given element UUID.
-				 *
+				 * 
 				 * @param elementUUID
 				 * @returns model
 				 */
@@ -121,7 +122,7 @@ define(
 
 				/**
 				 * Fetches the element with given OID within the given modelId.
-				 *
+				 * 
 				 * @param guid
 				 * @returns
 				 */
@@ -142,7 +143,7 @@ define(
 
 				/**
 				 * Fetches the element with given UUID within the given modelId.
-				 *
+				 * 
 				 * @param guid
 				 * @returns
 				 */
@@ -153,7 +154,8 @@ define(
 					for ( var index in getModels()) {
 						model = getModels()[index];
 						if (model.id == modelId
-								&& (element = model.findModelElementByUuid(uuid)) != null) {
+								&& (element = model
+										.findModelElementByUuid(uuid)) != null) {
 							return element;
 						}
 					}
@@ -162,15 +164,15 @@ define(
 				},
 
 				/**
-				 *
+				 * 
 				 */
 				getFullId : function(model, symbolId) {
-					return model.id + ":" +symbolId;
+					return model.id + ":" + symbolId;
 				}
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function stripModelId(fullId) {
 				// TODO Change to format {modelId}/elementId once server has
@@ -181,7 +183,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function stripElementId(fullId) {
 				// TODO Change to format {modelId}/elementId once server has
@@ -192,7 +194,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function Model() {
 				this.type = m_constants.MODEL;
@@ -205,21 +207,21 @@ define(
 				this.participants = {};
 
 				/**
-				 *
+				 * 
 				 */
 				Model.prototype.toString = function() {
 					return "Lightdust.Model";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Model.prototype.getFullId = function() {
 					return this.id;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Model.prototype.rename = function(id, name) {
 					delete getModels()[this.id];
@@ -230,7 +232,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Model.prototype.getNewDataIndex = function() {
 					var index = 0;
@@ -245,14 +247,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Model.prototype.toJsonString = function() {
 					return JSON.stringify(this);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Model.prototype.getApplicationIndex = function() {
 					var index = 0;
@@ -302,6 +304,9 @@ define(
 					return null;
 				};
 
+				/**
+				 * 
+				 */
 				Model.prototype.findModelElementById = function(id) {
 					var n;
 
@@ -337,6 +342,22 @@ define(
 
 					return null;
 				};
+
+				/**
+				 * 
+				 */
+				Model.prototype.findTypeDeclarationBySchemaName = function(
+						schemaName) {
+					for ( var n in this.typeDeclarations) {
+						var typeDeclaration = this.typeDeclarations[n];
+
+						if (typeDeclaration.getSchemaName() == schemaName) {
+							return typeDeclaration;
+						}
+					}
+
+					return null;
+				};
 			}
 
 			/**
@@ -347,7 +368,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function loadModels(force) {
 				if (!force && getModels() != null) {
@@ -358,7 +379,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function refreshModels() {
 				m_communicationController.syncGetData({
@@ -377,7 +398,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function bindModels() {
 				for ( var model in getModels()) {
@@ -386,7 +407,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function bindModel(model) {
 				// TODO Ugly, user prototype
