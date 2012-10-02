@@ -79,8 +79,8 @@ public class ProcessChangeCommandHandler
       poolSymbol.setYPos(0);
       poolSymbol.setWidth(500);
       poolSymbol.setHeight(600);
-      poolSymbol.setName("DEFAULT_POOL");
-      poolSymbol.setId("DEFAULT_POOL");
+      poolSymbol.setName("DEFAULT POOL");
+      poolSymbol.setId("_default_pool__1");
       poolSymbol.setOrientation(OrientationType.VERTICAL_LITERAL);
 
       LaneSymbol laneSymbol = AbstractElementBuilder.F_CWM.createLaneSymbol();
@@ -98,8 +98,6 @@ public class ProcessChangeCommandHandler
       laneSymbol.setOrientation(OrientationType.VERTICAL_LITERAL);
 
       processDefinition.getDiagram().add(diagram);
-
-      newManualTrigger(processDefinition).accessibleTo(ADMINISTRATOR_ROLE).build();
 
       JsonObject processDefinitionJson = new JsonObject();
 
