@@ -311,10 +311,10 @@ define(
 										var typeDeclarations = model.typeDeclarations[n];
 										outputDataTypeSelectInput
 												.append("<option value='"
-														+ typeDeclarations.getFullId()
-														+ "'>"
 														+ typeDeclarations
-																.name
+																.getFullId()
+														+ "'>"
+														+ typeDeclarations.name
 														+ "</option>");
 									}
 									// }
@@ -348,6 +348,109 @@ define(
 						return false;
 					}
 				});
+
+				jQuery("#testDialog").dialog({
+					autoOpen : false,
+					draggable : true
+				});
+
+				jQuery("#testDialog #closeButton").click(function() {
+					jQuery("#testDialog").dialog("close");
+				});
+
+				jQuery("#testDialog #runButton")
+						.click(
+								{
+									view : this
+								},
+								function(event) {
+									var view = event.data.view;
+
+									var inputDataTextarea = jQuery("#testDialog #inputDataTextarea");
+									var outputDataTextarea = jQuery("#testDialog #outputDataTextarea");
+
+									outputDataTextarea.empty();
+
+									var outputData = "";
+
+									for ( var n = 0; n < view.outputTableRows.length; ++n) {
+										var tableRow = view.outputTableRows[n];
+
+										outputData += tableRow.path;
+
+										if (tableRow.mappingExpression != null && tableRow.mappingExpression.length != 0) {
+											try {
+												var functionBody = inputDataTextarea
+														.val()
+														+ " return "
+														+ tableRow.mappingExpression
+														+ ";";
+
+												var mappingFunction = new Function(
+														functionBody);
+
+												var result = mappingFunction();
+
+												outputData += " = ";
+												outputData += result;
+											} catch (exception) {
+												outputData += " ";
+												outputData += exception;
+											}
+										} else {
+											outputData += "(No Mapping)";
+										}
+
+										outputData += "\n";
+									}
+
+									outputDataTextarea.append(outputData);
+								});
+
+				jQuery("#testDialog #resetButton")
+						.click(
+								{
+									view : this
+								},
+								function(event) {
+									var view = event.data.view;
+
+									var outputDataTextarea = jQuery("#testDialog #outputDataTextarea");
+
+									outputDataTextarea.empty();
+								});
+
+				jQuery("#testButton")
+						.click(
+								{
+									view : this
+								},
+								function(event) {
+									var view = event.data.view;
+									var inputDataTextarea = jQuery("#testDialog #inputDataTextarea");
+									var outputDataTextarea = jQuery("#testDialog #outputDataTextarea");
+
+									outputDataTextarea.empty();
+
+									var inputData = "";
+
+									for ( var id in view.inputData) {
+										var typeDeclaration = view.inputData[id];
+
+										inputData += "var ";
+										inputData += id;
+										inputData += " = ";
+										inputData += JSON.stringify(
+												typeDeclaration
+														.createInstance(),
+												null, 3);
+										inputData += ";";
+									}
+
+									inputDataTextarea.append(inputData);
+
+									jQuery("#testDialog").dialog("open");
+								});
 
 				/**
 				 * 
@@ -391,9 +494,11 @@ define(
 							this.outputTableRows, false);
 					this.resume();
 
-					// Bind the Model Data as top "window" level objects to be used for Code Editor auto-complete  
-					var globalVariables = m_dataTraversal.getAllDataAsJavaScriptObjects(application.model);
-					for (var key in globalVariables) {
+					// Bind the Model Data as top "window" level objects to be
+					// used for Code Editor auto-complete
+					var globalVariables = m_dataTraversal
+							.getAllDataAsJavaScriptObjects(application.model);
+					for ( var key in globalVariables) {
 						window[key] = globalVariables[key];
 					}
 				};
@@ -519,7 +624,9 @@ define(
 							.createFromDataStructure(dataStructure, dataName,
 									dataName, m_constants.IN_ACCESS_POINT);
 
-					this.submitChanges({accessPoints: this.application.accessPoints});
+					this.submitChanges({
+						accessPoints : this.application.accessPoints
+					});
 				};
 
 				/**
@@ -544,7 +651,9 @@ define(
 							.createFromDataStructure(dataStructure, dataName,
 									dataName, m_constants.OUT_ACCESS_POINT);
 
-					this.submitChanges({accessPoints: this.application.accessPoints});
+					this.submitChanges({
+						accessPoints : this.application.accessPoints
+					});
 				};
 
 				/**
@@ -577,19 +686,22 @@ define(
 					tableRow.parentPath = parentPath;
 					tableRow.name = parentPath == null ? accessPoint.name
 							: element.name;
-					tableRow.typeName = parentPath == null ? this.application.model.typeDeclarations[accessPoint.attributes["carnot:engine:dataType"]].getSchemaName() : element.type;
+					tableRow.typeName = parentPath == null ? this.application.model.typeDeclarations[accessPoint.attributes["carnot:engine:dataType"]]
+							.getSchemaName()
+							: element.type;
 
 					// Embedded structure
-					
-					var childElements = element.elements; 
-					
+
+					var childElements = element.elements;
+
 					// Recursive resolution
 
 					if (childElements == null && element.type != null) {
 						var typeDeclaration = this.application.model
 								.findTypeDeclarationBySchemaName(element.type);
 
-						if (typeDeclaration != null && typeDeclaration.isSequence()) {
+						if (typeDeclaration != null
+								&& typeDeclaration.isSequence()) {
 							childElements = typeDeclaration.getBody().elements;
 						}
 					}
@@ -621,7 +733,9 @@ define(
 					tableRow.parentPath = parentPath;
 					tableRow.name = parentPath == null ? accessPoint.name
 							: element.name;
-					tableRow.typeName = parentPath == null ? this.application.model.typeDeclarations[accessPoint.attributes["carnot:engine:dataType"]].getSchemaName() : element.type;
+					tableRow.typeName = parentPath == null ? this.application.model.typeDeclarations[accessPoint.attributes["carnot:engine:dataType"]]
+							.getSchemaName()
+							: element.type;
 					m_utils.debug("===> Path: " + path);
 					m_utils.debug("===> Expression: "
 							+ this.mappingExpressions[path]);
@@ -630,16 +744,17 @@ define(
 					tableRow.problems = "";
 
 					// Embedded structure
-					
-					var childElements = element.elements; 
-					
+
+					var childElements = element.elements;
+
 					// Recursive resolution
 
 					if (childElements == null && element.type != null) {
 						var typeDeclaration = this.application.model
 								.findTypeDeclarationBySchemaName(element.type);
 
-						if (typeDeclaration != null && typeDeclaration.isSequence()) {
+						if (typeDeclaration != null
+								&& typeDeclaration.isSequence()) {
 							childElements = typeDeclaration.getBody().elements;
 						}
 					}
@@ -660,7 +775,7 @@ define(
 				MessageTransformationApplicationView.prototype.populateTableRows = function(
 						tableBody, tableRows, source) {
 					tableBody.empty();
-					
+
 					for ( var tableRow in tableRows) {
 						var rowId = tableRows[tableRow].path
 								.replace(/\./g, "-");
@@ -1015,5 +1130,32 @@ define(
 						this.initialize(this.application);
 					}
 				};
+			}
+
+			function syntaxHighlight(json) {
+				if (typeof json != 'string') {
+					json = JSON.stringify(json, undefined, 2);
+				}
+				json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+						.replace(/>/g, '&gt;');
+				return json
+						.replace(
+								/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+								function(match) {
+									var cls = 'number';
+									if (/^"/.test(match)) {
+										if (/:$/.test(match)) {
+											cls = 'keySpan';
+										} else {
+											cls = 'stringSpan';
+										}
+									} else if (/true|false/.test(match)) {
+										cls = 'booleanSpan';
+									} else if (/null/.test(match)) {
+										cls = 'nullSpan';
+									}
+									return '<span class="' + cls + '">' + match
+											+ '</span>';
+								});
 			}
 		});

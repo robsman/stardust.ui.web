@@ -11,14 +11,46 @@
 <link rel="stylesheet" type="text/css"
 	href="../../css/jquery-ui-1.8.20.custom.css"></link>
 <link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" type="text/css" href="../../css/codemirror/codemirror.css"></link>
-<link rel="stylesheet" type="text/css" href="../../css/codemirror/theme/eclipse.css"></link>
-<link rel="stylesheet" type="text/css" href="../../css/codemirror/dialog.css"></link>
-<link rel="stylesheet" type="text/css" href="../../css/codemirror/simple-hint.css"></link>
-<link rel="stylesheet" type="text/css" href="../../css/lightdust-codemirror.css"></link>
+<link rel="stylesheet" type="text/css"
+	href="../../css/codemirror/codemirror.css"></link>
+<link rel="stylesheet" type="text/css"
+	href="../../css/codemirror/theme/eclipse.css"></link>
+<link rel="stylesheet" type="text/css"
+	href="../../css/codemirror/dialog.css"></link>
+<link rel="stylesheet" type="text/css"
+	href="../../css/codemirror/simple-hint.css"></link>
+<link rel="stylesheet" type="text/css"
+	href="../../css/lightdust-codemirror.css"></link>
 <script type="text/javascript"
 	data-main="../../js/messageTransformationApplicationViewMain"
 	src="../../js/libs/require/2.0.5/require.js"></script>
+<style>
+#inputDataTextarea, #outputDataTextarea {
+	font-family: monospace;
+	font-size: 11px;
+	color: #333333;
+}
+
+.keySpan {
+	color: green;
+	font-weight: bold;
+}
+
+.stringSpan {
+	color: green;
+	font-weight: bold;
+}
+
+.booleanSpan {
+	color: green;
+	font-weight: bold;
+}
+
+.nullSpan {
+	color: green;
+	font-weight: bold;
+}
+</style>
 </head>
 <body>
 	<div class="panel">
@@ -63,7 +95,8 @@
 								<div class="heading" style="margin-bottom: 5px;">Source
 									Message</div>
 							</td>
-							<td><div class="heading" style="margin-bottom: 5px; margin-left: 10px;">Target
+							<td><div class="heading"
+									style="margin-bottom: 5px; margin-left: 10px;">Target
 									Message</div>
 							</td>
 						</tr>
@@ -99,8 +132,8 @@
 										<tr>
 											<td>
 												<div class="dataTable">
-													<table id="sourceTable" cellpadding="0" cellspacing="0" class="treeTable"
-														style="width: 500px;">
+													<table id="sourceTable" cellpadding="0" cellspacing="0"
+														class="treeTable" style="width: 500px;">
 														<thead>
 															<tr>
 																<th style="width: 400px;">Element</th>
@@ -159,11 +192,11 @@
 											<tr>
 												<td>
 													<div class="dataTable">
-														<table id="targetTable" cellpadding="0" cellspacing="0" class="treeTable"
-															style="width: 900px;">
+														<table id="targetTable" cellpadding="0" cellspacing="0"
+															class="treeTable" style="width: 900px;">
 															<thead>
 																<tr>
-																	<th style="width: $00px;">Element</th>
+																	<th style="width: $ 00px;">Element</th>
 																	<th style="width: 100px;">Type</th>
 																	<th style="width: 200px;">Mapping</th>
 																	<th style="width: 200px;">Problem</th>
@@ -177,6 +210,11 @@
 										</table>
 									</div>
 								</div>
+							</td>
+						</tr>
+						<tr>
+							<td><input id="testButton" type="button" value="Test"
+								style="margin-top: 10px;" />
 							</td>
 						</tr>
 						<tr>
@@ -240,6 +278,39 @@
 					<table>
 						<tr>
 							<td><input id="applyButton" type="button" value="Apply" />
+							</td>
+							<td><input id="closeButton" type="button" value="Close" />
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="testDialog" title="Test Transformation"
+		style="min-width: 700px; min-height: 600px;">
+		<table>
+			<tr>
+				<td><label for="inputDataTextArea">Input Data:</label></td>
+			</tr>
+			<tr>
+				<td><textarea id="inputDataTextarea" rows="10" cols="80" style="width: 680px;"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td><label for="outputDataTextarea">Output Data:</label></td>
+			</tr>
+			<tr>
+				<td><textarea id="outputDataTextarea" rows="10" cols="80" style="width: 680px;"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<table>
+						<tr>
+							<td><input id="runButton" type="button" value="Run" />
+							</td>
+							<td><input id="resetButton" type="button" value="Reset" />
 							</td>
 							<td><input id="closeButton" type="button" value="Close" />
 							</td>
