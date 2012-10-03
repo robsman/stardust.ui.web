@@ -25,10 +25,28 @@
 	data-main="../../js/messageTransformationApplicationViewMain"
 	src="../../js/libs/require/2.0.5/require.js"></script>
 <style>
-#inputDataTextarea, #outputDataTextarea {
+#inputDataTextarea {
 	font-family: monospace;
 	font-size: 11px;
 	color: #333333;
+}
+
+#outputDataTable td {
+	font-family: monospace;
+	font-size: 11px;
+	color: #333333;
+}
+
+#outputDataTable tr.errorRow td {
+	font-family: monospace;
+	font-size: 11px;
+	color: red;
+}
+
+#outputDataTable tr.emptyRow td {
+	font-family: monospace;
+	font-size: 11px;
+	color: #dddddd;
 }
 
 .keySpan {
@@ -288,7 +306,7 @@
 		</table>
 	</div>
 	<div id="testDialog" title="Test Transformation"
-		style="min-width: 700px; min-height: 600px;">
+		style="min-width: 700px; width: 700px; min-height: 600px;">
 		<table>
 			<tr>
 				<td><label for="inputDataTextArea">Input Data:</label></td>
@@ -298,10 +316,10 @@
 				</td>
 			</tr>
 			<tr>
-				<td><label for="outputDataTextarea">Output Data:</label></td>
+				<td><label for="outputDataTable">Output Data:</label></td>
 			</tr>
 			<tr>
-				<td><textarea id="outputDataTextarea" rows="10" cols="80" style="width: 680px;"></textarea>
+				<td><div style="width: 680px; height: 200px; border: 1px solid grey; overflow: auto;"><table id="outputDataTable" style="width: 680px;"></div></table>
 				</td>
 			</tr>
 			<tr>
