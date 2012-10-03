@@ -1787,6 +1787,7 @@ define(
 								&& (toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL)) {
 							m_messageDisplay
 									.showErrorMessage("Data symbols can connect to activity only.");
+							return false;
 						} else if (!fromAnchorPoint.symbol
 								.validateCreateConnection()) {
 							m_messageDisplay
@@ -1803,6 +1804,7 @@ define(
 									.validateCreateConnection()) {
 								m_messageDisplay
 										.showErrorMessage("No further OUT Connection allowed from this activity.");
+								return false;
 							}
 						} else if (!fromAnchorPoint.symbol
 								.validateCreateConnection(this)) {
