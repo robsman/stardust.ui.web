@@ -83,6 +83,8 @@ define(function() {
 		EAST : 1,
 		SOUTH : 2,
 		WEST : 3,
+		// Symbol should not be allowed to shrink below some size
+		SYMBOL_MIN_SIZE : 10,
 
 		// Activity Symbol
 
