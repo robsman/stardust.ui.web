@@ -1019,6 +1019,7 @@ define(
 
 					while ((currentSegment.toX != targetX || currentSegment.toY != targetY)
 							&& n < 6) {
+						// Horizontal segments
 						if (currentSegment.isHorizontal()) {
 							if ((currentSegment.fromX < currentSegment.toX && currentSegment.toX < targetX)
 									|| (currentSegment.fromX > currentSegment.toX && currentSegment.toX > targetX)) {
@@ -1131,13 +1132,7 @@ define(
 								if (this.toAnchorPoint.symbol != null
 										&& !this.diagram.anchorDragEnabled
 										&& (currentSegment.toY > targetY && this.toAnchorPoint.y > targetY)) {
-									if (currentSegment.fromX > currentSegment.toX) {
-										currentSegment.toX = this.toAnchorPoint.symbol.x
-												+ this.toAnchorPoint.symbol.width
-												+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH;
-									} else
-										currentSegment.toX = this.toAnchorPoint.symbol.x
-												- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH;
+
 									this.segments
 											.push(currentSegment = new Segment(
 													currentSegment.toX,
@@ -1155,6 +1150,7 @@ define(
 								}
 							}
 						} else {
+							// Vertical segments
 							if ((currentSegment.fromY < currentSegment.toY && currentSegment.toY < targetY)
 									|| (currentSegment.fromY > currentSegment.toY && currentSegment.toY > targetY)) {
 								if (this.toAnchorPoint.symbol != null
