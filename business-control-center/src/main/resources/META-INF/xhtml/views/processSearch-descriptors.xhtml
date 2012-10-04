@@ -19,9 +19,7 @@
 			<table style="vertical-align: top;">
 				<c:forEach var="descriptorItem" varStatus="iter"
 					items="#{descriptorItems}">
-					<ice:panelGroup columns="2"
-						rendered="#{!(descriptorItem.type eq 'TimeStamp' or descriptorItem.type eq 'date')}"
-						columnClasses="table-columnVertical">
+					<c:if test= "#{!(descriptorItem.type eq 'TimeStamp' or descriptorItem.type eq 'date')}">
 						<tr>
 							<td><ice:panelGroup>
 									<ice:outputText
@@ -119,12 +117,10 @@
 								</ice:panelGroup>
 							</td>
 						</tr>
-					</ice:panelGroup>
+					</c:if>
 					
-					<ice:panelGroup columns="2"
-						rendered="#{(descriptorItem.type eq 'TimeStamp' or descriptorItem.type eq 'date')}"
-						columnClasses="table-columnVertical">
-						<tr>
+					<c:if test="#{(descriptorItem.type eq 'TimeStamp' or descriptorItem.type eq 'date')}">
+							<tr>
 							<td><ice:outputText
 									value="#{descriptorItem.label} (#{views_common_msgPropsBean['common.from']})#{messages_bcc['common.colon']}"
 									styleClass="label-form" /></td>
@@ -184,7 +180,7 @@
 								</ice:panelGroup>
 							</td>
 						</tr>
-					</ice:panelGroup>
+					</c:if>
 				</c:forEach>
 			</table>
 		</ice:panelGroup>
