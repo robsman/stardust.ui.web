@@ -367,16 +367,19 @@ define(
 									var view = event.data.view;
 
 									var inputDataTextarea = jQuery("#testDialog #inputDataTextarea");
-									var outputDataTextarea = jQuery("#testDialog #outputDataTextarea");
+									var outputDataTable = jQuery("#testDialog #outputDataTable");
 
-									outputDataTextarea.empty();
-
-									var outputData = "";
+									outputDataTable.empty();
 
 									for ( var n = 0; n < view.outputTableRows.length; ++n) {
 										var tableRow = view.outputTableRows[n];
 
-										outputData += tableRow.path;
+										var outputRow = jQuery("<tr></tr>");
+										
+										outputDataTable.append(outputRow);										
+										outputRow.append("<td>" + tableRow.path + "</td>");
+
+										var outputData;
 
 										if (tableRow.mappingExpression != null && tableRow.mappingExpression.length != 0) {
 											try {
@@ -391,20 +394,19 @@ define(
 
 												var result = mappingFunction();
 
-												outputData += " = ";
-												outputData += result;
+												outputData = result;
 											} catch (exception) {
-												outputData += " ";
-												outputData += exception;
+												outputRow.addClass("errorRow");
+
+												outputData = exception;
 											}
 										} else {
-											outputData += "(No Mapping)";
+											outputRow.addClass("emptyRow");
+											outputData = "(No Mapping)";
 										}
 
-										outputData += "\n";
+										outputRow.append("<td>" + outputData + "</td>");
 									}
-
-									outputDataTextarea.append(outputData);
 								});
 
 				jQuery("#testDialog #resetButton")
@@ -415,9 +417,9 @@ define(
 								function(event) {
 									var view = event.data.view;
 
-									var outputDataTextarea = jQuery("#testDialog #outputDataTextarea");
+									var outputDataTable = jQuery("#testDialog #outputDataTable");
 
-									outputDataTextarea.empty();
+									outputDataTable.empty();
 								});
 
 				jQuery("#testButton")
@@ -428,9 +430,9 @@ define(
 								function(event) {
 									var view = event.data.view;
 									var inputDataTextarea = jQuery("#testDialog #inputDataTextarea");
-									var outputDataTextarea = jQuery("#testDialog #outputDataTextarea");
+									var outputDataTable = jQuery("#testDialog #outputDataTable");
 
-									outputDataTextarea.empty();
+									outputDataTable.empty();
 
 									var inputData = "";
 
