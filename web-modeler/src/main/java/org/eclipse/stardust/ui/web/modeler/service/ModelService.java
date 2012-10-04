@@ -62,17 +62,18 @@ import org.eclipse.stardust.modeling.validation.ValidationService;
 import org.eclipse.stardust.modeling.validation.ValidatorRegistry;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
+import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.portal.JaxWSResource;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
-import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 
 import org.eclipse.xsd.*;
 import org.eclipse.xsd.impl.XSDImportImpl;
 import org.eclipse.xsd.util.XSDResourceFactoryImpl;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.google.gson.JsonArray;
@@ -264,7 +265,8 @@ public class ModelService
    private UserIdProvider me;
 
    @Resource
-   private SessionContext sessionContext;
+   @Qualifier("default")
+   private ServiceFactoryLocator serviceFactoryLocator;
 
    private ServiceFactory serviceFactory;
 
@@ -289,7 +291,7 @@ public class ModelService
    {
       if (serviceFactory == null)
       {
-         serviceFactory = sessionContext.getServiceFactory();
+         serviceFactory = serviceFactoryLocator.get();
       }
 
       return serviceFactory;
