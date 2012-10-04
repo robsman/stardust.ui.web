@@ -2368,13 +2368,14 @@ define(
 
 						if (command.isUndo) {
 							this.processPendingUndo(command.pendingUndoableChange);
-							this.processPendingRedo(command);
+							this.processPendingRedo(command.pendingRedoableChange);
 						} else if (command.isRedo) {
-							this.processPendingUndo(command);
+							this.processPendingUndo(command.pendingUndoableChange);
 							this.processPendingRedo(command.pendingRedoableChange);
 						} else {
 							this.processPendingUndo(command);
 							jQuery("#undoChange").removeClass("toolDisabled");
+							jQuery("#redoChange").addClass("toolDisabled");
 						}
 					} else if (command.scope == "all") {
 						// @deprecated
@@ -2390,16 +2391,16 @@ define(
 						var action;
 						var element;
 						if (-1 != command.commandId.indexOf(".create")) {
-							action = "Delete";
-							element = this.generateUndoRedoToolTipTextForElement(command.changes.added[0]);
+							action = "created";
+							element = this.getChangedElementText(command.changes.added);
 						} else if (-1 != command.commandId.indexOf(".delete")) {
-							action = "Create";
-							element = this.generateUndoRedoToolTipTextForElement(command.changes.removed[0]);
+							action = "deleted";
+							element = this.getChangedElementText(command.changes.removed);
 						} else {
-							action = "Modify";
-							element = this.generateUndoRedoToolTipTextForElement(command.changes.modified[0]);
+							action = "modified";
+							element = this.getChangedElementText(command.changes.modified);
 						}
-						jQuery("#undoChange").attr("title",  "Undo:\n\nAction: " + action + "\nElement: " + element);
+						jQuery("#undoChange").attr("title",  "Undo: " + element + " " + action);
 					} else {
 						jQuery("#undoChange").attr("title", "Undo");
 					}
@@ -2413,16 +2414,16 @@ define(
 						var action;
 						var element;
 						if (-1 != command.commandId.indexOf(".create")) {
-							action = "Create";
-							element = this.generateUndoRedoToolTipTextForElement(command.changes.removed[0]);
+							action = "create";
+							element = this.getChangedElementText(command.changes.removed);
 						} else if (-1 != command.commandId.indexOf(".delete")) {
-							action = "Delete";
-							element = this.generateUndoRedoToolTipTextForElement(command.changes.added[0]);
+							action = "delete";
+							element = this.getChangedElementText(command.changes.added);
 						} else {
-							action = "Modify";
-							element = this.generateUndoRedoToolTipTextForElement(command.changes.modified[0]);
+							action = "modify";
+							element = this.getChangedElementText(command.changes.modified);
 						}
-						jQuery("#redoChange").attr("title",  "Redo:\n\nAction: " + action + "\nElement: " + element);
+						jQuery("#redoChange").attr("title",  "Redo: " + element + " " + action);
 					} else {
 						jQuery("#redoChange").attr("title", "Redo");
 					}
@@ -2431,13 +2432,18 @@ define(
 				/**
 				 * TODO - temporary
 				 */
-				Outline.prototype.generateUndoRedoToolTipTextForElement = function(element) {
-					if (element) {
-						if (element.name) {
-							return element.name;
-						} else {
-							return element.type;
-						}
+				Outline.prototype.getChangedElementText = function(elementArray) {
+					if (elementArray.length > 2) {
+						return "Multiple elements"
+					} else {
+						var element = elementArray[0];
+							if (element.name) {
+								return element.name;
+							} else if(element.id) {
+								return element.id;
+							} else {
+								return element.type;
+							}
 					}
 				}
 
