@@ -2109,7 +2109,13 @@ define(
 					this.dragConnection.reroute();
 					// if reroute validation fails no update is required
 					if (updateConnection) {
-						this.dragConnection.createUpdateCommand();
+						var changes = {
+							modelElement : {
+								toAnchorPointOrientation : this.dragConnection.toAnchorPoint.orientation,
+								fromAnchorPointOrientation : this.dragConnection.fromAnchorPoint.orientation
+							}
+						}
+						this.dragConnection.createUpdateCommand(changes);
 						m_messageDisplay.showMessage("Connection updated");
 						this.remove();
 					}

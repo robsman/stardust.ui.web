@@ -428,16 +428,16 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
 
       // While routing , anchor point orientation changes
-      if (controlFlowConnectionJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      if (controlFlowJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
          controlFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
-               controlFlowConnectionJson,
+               controlFlowJson,
                ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
-      if (controlFlowConnectionJson.has(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      if (controlFlowJson.has(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
          controlFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
-               controlFlowConnectionJson,
+               controlFlowJson,
                ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
    }
@@ -451,16 +451,16 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          JsonObject dataFlowConnectionJson)
    {
       JsonObject dataFlowJson = dataFlowConnectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-      if (dataFlowConnectionJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      if (dataFlowJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
          dataFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
-               dataFlowConnectionJson,
+               dataFlowJson,
                ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
-      if (dataFlowConnectionJson.has(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      if (dataFlowJson.has(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
          dataFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
-               dataFlowConnectionJson,
+               dataFlowJson,
                ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
 

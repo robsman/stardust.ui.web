@@ -445,7 +445,15 @@ define(
 											|| (updateConnection.modelElement.outDataMapping && this.modelElement.inDataMapping)) {
 										updateConnection.modelElement.inDataMapping = true;
 										updateConnection.modelElement.outDataMapping = true;
-										updateConnection.createUpdateCommand();
+										var changes = {
+											modelElement : {
+												toAnchorPointOrientation : this.toAnchorPoint.orientation,
+												fromAnchorPointOrientation : this.fromAnchorPoint.orientation,
+												inDataMapping : updateConnection.modelElement.inDataMapping,
+												outDataMapping : updateConnection.modelElement.inDataMapping
+											}
+										}
+										updateConnection.createUpdateCommand(changes);
 										m_messageDisplay
 												.showMessage("Connection updated");
 										break;
@@ -1716,10 +1724,9 @@ define(
 				/**
 				 *
 				 */
-				Connection.prototype.createUpdateCommand = function() {
+				Connection.prototype.createUpdateCommand = function(changes) {
 					var command = m_command.createUpdateModelElementCommand(
-							this.diagram.model.id, this.oid, this
-									.createTransferObject());
+							this.diagram.model.id, this.oid, changes);
 					m_commandsController.submitCommand(command);
 				};
 
