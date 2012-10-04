@@ -12,10 +12,11 @@ define(
 		[ "m_utils", "m_constants", "m_extensionManager", "m_command",
 				"m_canvasManager", "m_symbol", "m_gatewaySymbol", "m_session",
 				"m_eventSymbol", "m_activityPropertiesPanel", "m_model",
-				"m_activity" ],
+				"m_activity", "m_commandsController", "m_command" ],
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_canvasManager, m_symbol, m_gatewaySymbol, m_eventSymbol,
-				m_session, m_activityPropertiesPanel, m_model, m_activity) {
+				m_session, m_activityPropertiesPanel, m_model, m_activity,
+				m_commandsController, m_command) {
 
 			return {
 				createActivitySymbol : function(diagram, type) {
@@ -491,10 +492,13 @@ define(
 				ActivitySymbol.prototype.switchToSubprocessActivity = function() {
 					this.icon.hide();
 
+					this.modelElement.activityType = m_constants.SUBPROCESS_ACTIVITY_TYPE;
 					this.icon = this.subprocessIcon;
 
 					this.icon.show();
 					this.icon.toFront();
+
+					this.submitChanges();
 				};
 
 				/**
@@ -503,10 +507,13 @@ define(
 				ActivitySymbol.prototype.switchToApplicationActivity = function() {
 					this.icon.hide();
 
+					this.modelElement.activityType = m_constants.APPLICATION_ACTIVITY_TYPE;
 					this.icon = this.applicationIcon;
 
 					this.icon.show();
 					this.icon.toFront();
+
+					this.submitChanges();
 				};
 
 				/**
@@ -549,6 +556,18 @@ define(
 									.getFullId());
 				};
 
+				/**
+				 * Update the modelElement
+				 */
+				ActivitySymbol.prototype.submitChanges = function() {
+					var changes = {
+						activityType : this.modelElement.activityType
+					};
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementCommand(
+									this.diagram.modelId,
+									this.modelElement.oid, changes));
+				};
 				/**
 				 *
 				 */
