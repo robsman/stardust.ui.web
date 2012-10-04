@@ -11,6 +11,8 @@
 package org.eclipse.stardust.ui.web.bcc.views;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.swing.tree.DefaultTreeModel;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
@@ -74,6 +77,7 @@ import org.eclipse.stardust.ui.web.viewscommon.helper.activityTable.ActivityTabl
 import org.eclipse.stardust.ui.web.viewscommon.helper.processTable.ProcessInstanceTableEntry;
 import org.eclipse.stardust.ui.web.viewscommon.helper.processTable.ProcessTableHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultColumnModelEventHandler;
+import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
 
@@ -147,14 +151,24 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
       treeTable.setHideRootNode(true);
       rootModelNode.getUserObject().setTreeTable(treeTable);
 
-      List<DeployedModel> models = ModelCache.findModelCache().getActiveModels();
+      List<DeployedModel> models = new ArrayList<DeployedModel>(ModelCache.findModelCache().getActiveModels());
       boolean filterAuxiliaryProcesses = filterAuxiliaryProcesses();
       boolean filterAuxiliaryActivities = filterAuxiliaryActivities();
+      
+      //sort models 
+      Collections.sort(models, new ModelComparator());
+      
       for (DeployedModel activeModel : models)
       {
          List<ProcessDefinitionWithPrio> processDefList = processDefinitionSearchHandler
                .getProcessDefinitions(false, filterAuxiliaryActivities, activeModel);
 
+         // sort processes
+         if (CollectionUtils.isNotEmpty(processDefList))
+         {
+            Collections.sort(processDefList, new ProcessComparator());
+         }
+         
          PriorityOverviewEntry modelWithPrio = new ModelWithPrio(processDefList, processInstancePrioritySearchHandler,
                activeModel.getModelOID(), filterAuxiliaryProcesses);
 
@@ -619,8 +633,44 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
       }
    }
    
-   
+   /**
+    * @author Yogesh.Manware
+    * 
+    */
+   public static class ModelComparator implements Comparator<DeployedModel>
+   {
+      /*
+       * (non-Javadoc)
+       * 
+       * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+       */
+      public int compare(DeployedModel model1, DeployedModel model2)
+      {
+         String model1Name = I18nUtils.getModelName(model1);
+         String model2Name = I18nUtils.getModelName(model2);
+         return model1Name.compareTo(model2Name);
+      }
+   }
 
+   /**
+    * @author Yogesh.Manware
+    * 
+    */
+   public static class ProcessComparator implements Comparator<ProcessDefinitionWithPrio>
+   {
+      /*
+       * (non-Javadoc)
+       * 
+       * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+       */
+      public int compare(ProcessDefinitionWithPrio process1, ProcessDefinitionWithPrio process2)
+      {
+         String process1Name = I18nUtils.getProcessName(process1.getProcessDefinition());
+         String process2Name = I18nUtils.getProcessName(process2.getProcessDefinition());
+         return process1Name.compareTo(process2Name);
+      }
+   }
+   
    /**
     * @return
     */
