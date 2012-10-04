@@ -1017,6 +1017,13 @@ define(
 						if (this.newSymbol.isPrepared()) {
 							this.newSymbol.move(x * this.zoomFactor, y
 									* this.zoomFactor);
+							// When creating symbol from flyoutMenu,
+							// connection anchorPoint should be intellegently
+							// changed
+							if (this.currentConnection != null) {
+								this.currentConnection
+										.updateAnchorPointForSymbol();
+							}
 						} else {
 							this.newSymbol.prepare(x * this.zoomFactor, y
 									* this.zoomFactor);

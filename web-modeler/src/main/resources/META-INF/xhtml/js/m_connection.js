@@ -303,21 +303,29 @@ define(
 				 * needs to be moved to 6 O'clock or 3 O'clock
 				 */
 				Connection.prototype.updateAnchorPointForSymbol = function() {
-					var orientation = null;
+					var sourceOrientation = null;
+					var targetOrientation = 0;
 					if (this.fromAnchorPoint.symbol.type == m_constants.GATEWAY_SYMBOL || this.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
 						var startSymbol = this.fromAnchorPoint.symbol;
 						var targetSymbol = this.toAnchorPoint.symbol;
 						if (startSymbol.x > targetSymbol.x + targetSymbol.width) {
 							// Start Symbol is at right, show arrow at left
-							orientation = 3;
+							sourceOrientation = 3;
+							if(startSymbol.y > targetSymbol.y){
+								targetOrientation =1;
+							}
 						} else if (startSymbol.x + startSymbol.width < targetSymbol.x) {
 							// Start Symbol is at left, show arrow at right
-							orientation = 1;
+							sourceOrientation = 1;
+							if(startSymbol.y > targetSymbol.y){
+								targetOrientation =3;
+							}
 						} else {
 							// default orientation is SOUTH for gateway
-							orientation = 2;
+							sourceOrientation = 2;
 						}
-						this.fromAnchorPoint = startSymbol.anchorPoints[orientation];
+						this.fromAnchorPoint = startSymbol.anchorPoints[sourceOrientation];
+						this.toAnchorPoint = targetSymbol.anchorPoints[targetOrientation];
 					}
 				};
 
@@ -1265,8 +1273,7 @@ define(
 												+ this.toAnchorPoint.symbol.width < targetX)) {
 									// For scenario connecting from 9 o'clk(Symbol 1) to 3 o'clk(symbol2)
 									if (this.fromAnchorPoint.orientation == 3
-											&& this.toAnchorPoint.orientation == 1
-											&& currentSegment.toX > targetX) {
+											&& this.toAnchorPoint.orientation == 1) {
 										this.segments
 												.push(currentSegment = new Segment(
 														currentSegment.toX,
@@ -1289,8 +1296,7 @@ define(
 												&& this.toAnchorPoint.symbol.x > targetX)) {
 									// For scenario connecting from 3 o'clk(Symbol 1) to 9 o'clk(symbol2)
 									if (this.fromAnchorPoint.orientation == 1
-											&& this.toAnchorPoint.orientation == 3
-											&& currentSegment.toX < targetX) {
+											&& this.toAnchorPoint.orientation == 3) {
 										this.segments
 												.push(currentSegment = new Segment(
 														currentSegment.toX,
