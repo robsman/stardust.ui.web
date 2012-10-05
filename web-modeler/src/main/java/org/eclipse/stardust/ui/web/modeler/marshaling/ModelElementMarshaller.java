@@ -1347,7 +1347,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
            annotationSymbol.getWidth());
      annotationSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
            annotationSymbol.getHeight());
-     
+
      if (null != annotationSymbol.getText())
      {
         annotationSymbolJson.addProperty(ModelerConstants.CONTENT_PROPERTY,
@@ -1509,10 +1509,11 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          {
             connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
                   ModelerConstants.GATEWAY);
-            connectionJson.remove(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY);
+            // TODO - Is this code required. Causes issue while changing anchor Point
+            /*connectionJson.remove(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY);
             connectionJson.addProperty(
                   ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
-                  ModelerConstants.NORTH_KEY);
+                  ModelerConstants.NORTH_KEY);*/
          }
          else
          {
@@ -1883,22 +1884,22 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       JsonObject typeDeclarationJson = new JsonObject();
 
       structJson.add("typeDeclaration", typeDeclarationJson);
-      
+
       // TODO: external references
       XpdlTypeType type = structType.getDataType();
-      
+
       if (null != type)
       {
          typeDeclarationJson.add("type", toXpdlTypeJson(type));
       }
-      
+
       if (null != structType.getSchema())
       {
          JsonObject schemaJson = new JsonObject();
          ModelService.loadSchemaInfo(schemaJson, structType.getSchema());
          typeDeclarationJson.add("schema", schemaJson);
       }
-      
+
       structJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.TYPE_DECLARATION_PROPERTY);
 
       return structJson;
