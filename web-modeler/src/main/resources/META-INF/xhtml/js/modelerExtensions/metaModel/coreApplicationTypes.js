@@ -1,0 +1,75 @@
+define([], function() {
+	return {
+		applicationType : [ {
+			id : "interactive",
+			readableName: "UI Mashup",
+			iconPath: "../images/icons/application-c-ext-web.png",
+			viewId: "uiMashupApplicationView",
+		}, {
+			id : "webservice",
+			readableName: "Web Service",
+			iconPath: "../images/icons/application-web-service.png",
+			viewId: "webServiceApplicationView",
+		}, {
+			id : "messageTransformationBean",
+			readableName: "Message Transformation Application",
+			iconPath: "../images/icons/application-message-trans.png",
+			viewId: "messageTransformationApplicationView",
+		}, {
+			id : "camelSpringProducerApplication",
+			readableName: "Camel Application",
+			iconPath: "../images/icons/application-camel.png",
+			viewId: "camelApplicationView",
+		}, {
+			id : "plainJava",
+			readableName: "Plain Java Application",
+			iconPath: "../images/icons/application-plain-java.png",
+			viewId: "genericApplicationView",
+		}, {
+			id : "rulesEngineBean",
+			readableName: "Business Rules Application",
+			iconPath: "../images/icons/application-drools.png",
+			viewId: "genericApplicationView",
+		}, {
+			id : "dmsOperation",
+			readableName: "Document Management Application",
+			iconPath: "../images/icons/application-plain-java.png",
+			viewId: "genericApplicationView",
+		}, {
+			id : "jms",
+			readableName: "JMS Application",
+			iconPath: "../images/icons/application-plain-java.png",
+			viewId: "genericApplicationView",
+		}, {
+			id : "mailBean",
+			readableName: "Business Rules Application",
+			iconPath: "../images/icons/application-plain-java.png",
+			viewId: "genericApplicationView",
+		}, {
+			id : "messageParsingBean",
+			readableName: "Message Parsing Application",
+			iconPath: "../images/icons/application-plain-java.png",
+			viewId: "genericApplicationView",
+		}, {
+			id : "messageSerializationBean",
+			readableName: "Message Serialization Application",
+			iconPath: "../images/icons/application-plain-java.png",
+			viewId: "genericApplicationView",
+		}, {
+			id : "sessionBean",
+			readableName: "EJB Session Bean Application",
+			iconPath: "../images/icons/application-plain-java.png",
+			viewId: "genericApplicationView",
+		}, {
+			id : "springBean",
+			readableName: "Spring Bean Application",
+			iconPath: "../images/icons/application-drools.png",
+			viewId: "genericApplicationView",
+		}, {
+			id : "xslMessageTransformationBean",
+			readableName: "XSL Message Transformation Application",
+			iconPath: "../images/icons/application-drools.png",
+			viewId: "genericApplicationView"
+		}, ],
+	};
+});

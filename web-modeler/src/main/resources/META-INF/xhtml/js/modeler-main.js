@@ -32,7 +32,6 @@ require.config({
 		'codemirror.util.simple-hint': ['libs/codemirror/util/simple-hint', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/util/simple-hint'],
 
 		'modeler-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/modeler-plugins',
-		'extensions': '../../../services/rest/bpm-modeler/config/ui/extensions.js?p=extensions',
 	},
 	shim: {
 		'json': {
@@ -40,9 +39,6 @@ require.config({
 		},
 		'raphael': {
 			exports: 'Raphael'
-		},
-		'extensions': {
-			exports: "extensions"
 		},
 
 		'jquery-ui': ['jquery'],
@@ -92,8 +88,6 @@ require(["require",
 	 "codemirror.util.javascript-hint",
 
 	 "modeler-plugins",
-	 "extensions",
-	 "m_extensionManager",
 	 "m_modelerViewLayoutManager",
 	 "m_dataTypeSelector",
 	 "m_parameterDefinitionsPanel",

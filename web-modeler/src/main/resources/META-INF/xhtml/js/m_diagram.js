@@ -177,7 +177,7 @@ define(
 												m_utils
 														.debug("Palette loaded: "
 																+ extension.id);
-												extension.controller.create();
+												extension.provider.create();
 											}
 										});
 					} else {
@@ -208,7 +208,7 @@ define(
 									.click(
 											{
 												diagram : this,
-												handler : paletteEntries[m].handler,
+												handler : paletteEntries[m].id,
 												provider : paletteEntries[m].provider,
 												handlerMethod : paletteEntries[m].handlerMethod
 											},
