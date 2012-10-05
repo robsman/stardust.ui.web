@@ -321,7 +321,6 @@ define(
 				 */
 				ActivitySymbol.prototype.adjustPrimitives = function() {
 					this.hideGlow();
-
 					this.rectangle.animate({
 						"x" : this.x,
 						"y" : this.y,
@@ -372,6 +371,7 @@ define(
 					}, this.diagram.animationDelay,
 							this.diagram.animationEasing);
 
+					this.adjustPrimitivesOnShrink();
 					// this.rectangle.attr({
 					// "x" : this.x,
 					// "y" : this.y,
@@ -413,7 +413,24 @@ define(
 					// "x" : this.x + 0.5 * this.width - 4,
 					// "y" : this.y + this.height - 16
 					// });
+
 				};
+
+				/**
+				 * Hides the icon and shrinks the activity label when activity
+				 * size decreases
+				 */
+				ActivitySymbol.prototype.adjustPrimitivesOnShrink = function() {
+					if (this.text.getBBox().width > this.width) {
+						var words = this.text.attr("text");
+						m_utils.textWrap(this.text, this.width);
+					}
+
+					if (this.icon.getBBox().width > this.width) {
+						this.icon.hide();
+					} else
+						this.icon.show();
+				}
 
 				/**
 				 *

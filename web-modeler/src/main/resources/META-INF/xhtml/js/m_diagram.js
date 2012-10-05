@@ -1675,7 +1675,7 @@ define(
 							.valueOf()));
 					this.editableText
 							.css("visibility", "visible")
-							.html(textPrimitive.attr("text"))
+							.html(textPrimitive.auxiliaryProperties.callbackScope.modelElement.name)
 							.moveDiv(
 									{
 										"x" : textPrimitive.auxiliaryProperties.callbackScope.x
@@ -1711,6 +1711,8 @@ define(
 												this.currentTextPrimitive.auxiliaryProperties.callbackScope.oid,
 												changes));
 						this.currentTextPrimitive.show();
+						this.currentTextPrimitive.auxiliaryProperties.callbackScope
+								.adjustPrimitivesOnShrink();
 						this.symbolEditMode = false;
 						m_utils.debug("text primitive shown");
 					}

@@ -1,6 +1,6 @@
 /**
  * Helper functions for object inspection and object initialization.
- * 
+ *
  * @author Marc.Gille
  */
 define(
@@ -50,7 +50,9 @@ define(
 
 				prettyDateTime : prettyDateTime,
 
-				formatDate : formatDate
+				formatDate : formatDate,
+
+				textWrap : textWrap
 			};
 
 			function getLastIndexOf(str, searchStr) {
@@ -66,7 +68,7 @@ define(
 				return index;
 			}
 			/**
-			 * 
+			 *
 			 * @param from
 			 * @param to
 			 * @returns
@@ -79,7 +81,7 @@ define(
 			;
 
 			/**
-			 * 
+			 *
 			 * @param item
 			 */
 			function removeItemFromArray(array, item) {
@@ -95,10 +97,46 @@ define(
 				}
 			}
 			;
-			
-			
+
 			/**
-			 * 
+			 * Trim the text for TextNode element when symbol size is less than
+			 * textNode size
+			 *
+			 * @param t :
+			 *            textNode element for Symbol
+			 * @param width :
+			 *            actual width of Symbol
+			 */
+			function textWrap(t, width) {
+				var content = t.attr("text");
+				var abc = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+				t.attr({
+					"text" : abc
+				});
+				var letterWidth = t.getBBox().width / abc.length;
+				t.attr({
+					"text" : content
+				});
+
+				var x = 0;
+				var str = "";
+				for ( var i = 0; i < content.length; i++) {
+					// If textNode text width reaches symbol width append ".."
+					// and break
+					if (x + letterWidth > (width - letterWidth)) {
+						str += "..";
+						break;
+					}
+					x += letterWidth;
+					str += content.charAt(i);
+				}
+				t.attr({
+					"text" : str
+				});
+			}
+
+			/**
+			 *
 			 * @param array
 			 * @param item
 			 */
@@ -122,11 +160,11 @@ define(
 			 * Copies all data members of and object into another object
 			 * recursively. Members existing in the childObject and not existing
 			 * in the parentObject will not be overwritten.
-			 * 
+			 *
 			 * Arrays however will be overwritten.
-			 * 
+			 *
 			 * The function will not check for cyclic dependencies.
-			 * 
+			 *
 			 * Functions in parentObject will not be copied.
 			 */
 			function inheritFields(childObject, parentObject) {
@@ -159,7 +197,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function typeObject(object, prototype) {
 				inheritMethods(object, prototype);
@@ -245,7 +283,7 @@ define(
 			}
 
 			// TODO I18N
-			
+
 			var nameOfMonths = [ 'January', 'February', 'March', 'April',
 					'May', 'June', 'July', 'August', 'September', 'October',
 					'November', 'December' ];
@@ -253,11 +291,11 @@ define(
 					'Friday', 'Saturday', 'Sunday' ];
 
 			/**
-			 * 
+			 *
 			 */
 			function formatDate(date, s, utc) {
 				s = s.split('');
-				
+
 				var l = s.length;
 				var r = '';
 				var n = m = null;
@@ -310,10 +348,10 @@ define(
 						m = utc ? date.getUTCMonth() : date.getMonth();
 						for ( var i = 0; i < m; i++)
 							n += Date.daysInMonth[i]
-				
+
 						if (isLeapYear(date))
 							n++;
-						
+
 						n += utc ? date.getUTCDate() : date.getDate();
 						n--;
 						r += n;
@@ -512,7 +550,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function getDaySuffix(date, utc) {
 				var n = utc ? date.getUTCDate() : date.getDate();
@@ -543,7 +581,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function getISOWeek(date, utc) {
 				var y = utc ? date.getUTCFullYear() : date.getFullYear();
@@ -591,7 +629,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 * @param date
 			 * @param utc
 			 * @returns
@@ -603,19 +641,19 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 * @param date
 			 * @param utc
 			 * @returns
 			 */
 			function getNameOfMonth(date, utc) {
 				var m = utc ? date.getUTCMonth() : date.getMonth();
-				
+
 				return nameOfMonths[m];
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function getTimezoneOffset(date) {
 				return date.getTimezoneOffset() * -1;
@@ -626,7 +664,7 @@ define(
 			 */
 			function isLeapYear(date, utc) {
 				var y = utc ? date.getUTCFullYear() : date.getFullYear();
-				
+
 				return !(y % 4) && (y % 100) || !(y % 400) ? true : false;
 			}
 		});
