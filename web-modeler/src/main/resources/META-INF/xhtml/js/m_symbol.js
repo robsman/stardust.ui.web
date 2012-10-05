@@ -594,7 +594,7 @@ define(
 				Symbol.prototype.createSelectFrame = function() {
 					this.leftSelectFrame = m_canvasManager.drawPath(this
 							.getLeftSelectFramePath(), {
-						"stroke" : m_constants.SELECT_FRAME_STROKE,
+						"stroke" : m_constants.DATA_FLOW_COLOR,
 						"stroke-width" : m_constants.SELECT_FRAME_STROKE_WIDTH,
 						"stroke-dasharray" : m_constants.SELECT_FRAME_DASHARRAY
 					});
@@ -612,7 +612,7 @@ define(
 
 					this.topSelectFrame = m_canvasManager.drawPath(this
 							.getTopSelectFramePath(), {
-						"stroke" : m_constants.SELECT_FRAME_STROKE,
+						"stroke" : m_constants.DATA_FLOW_COLOR,
 						"stroke-width" : m_constants.SELECT_FRAME_STROKE_WIDTH,
 						"stroke-dasharray" : m_constants.SELECT_FRAME_DASHARRAY
 					});
@@ -630,7 +630,7 @@ define(
 
 					this.rightSelectFrame = m_canvasManager.drawPath(this
 							.getRightSelectFramePath(), {
-						"stroke" : m_constants.SELECT_FRAME_STROKE,
+						"stroke" : m_constants.DATA_FLOW_COLOR,
 						"stroke-width" : m_constants.SELECT_FRAME_STROKE_WIDTH,
 						"stroke-dasharray" : m_constants.SELECT_FRAME_DASHARRAY
 					});
@@ -648,7 +648,7 @@ define(
 
 					this.bottomSelectFrame = m_canvasManager.drawPath(this
 							.getBottomSelectFramePath(), {
-						"stroke" : m_constants.SELECT_FRAME_STROKE,
+						"stroke" : m_constants.DATA_FLOW_COLOR,
 						"stroke-width" : m_constants.SELECT_FRAME_STROKE_WIDTH,
 						"stroke-dasharray" : m_constants.SELECT_FRAME_DASHARRAY
 					});
