@@ -123,6 +123,8 @@ define(
 			 * recursively. Members existing in the childObject and not existing
 			 * in the parentObject will not be overwritten.
 			 * 
+			 * Arrays however will be overwritten.
+			 * 
 			 * The function will not check for cyclic dependencies.
 			 * 
 			 * Functions in parentObject will not be copied.
@@ -134,7 +136,8 @@ define(
 					}
 
 					if (typeof parentObject[member] == "object"
-							&& childObject[member] != null) {
+							&& childObject[member] != null
+							&& !parentObject[member] instanceof Array) {
 						// Copy recursively
 
 						inheritFields(childObject[member], parentObject[member]);

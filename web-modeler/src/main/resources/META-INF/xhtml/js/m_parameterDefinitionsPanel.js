@@ -82,13 +82,6 @@ define(
 					this.deleteParameterDefinitionButton = jQuery(this.options.scope
 							+ " #deleteParameterDefinitionButton");
 
-					if (this.options.listType == "array") {
-						this.moveParameterDefinitionUpButton = jQuery(this.options.scope
-								+ " #moveParameterDefinitionUpButton");
-						this.moveParameterDefinitionDownButton = jQuery(this.options.scope
-								+ " #moveParameterDefinitionDownButton");
-					}
-
 					if (this.options.supportsDataTypeSelection) {
 						this.dataTypeSelector = m_dataTypeSelector.create({
 							scope : "parameterDefinitionTypeSelector",
@@ -213,7 +206,8 @@ define(
 															.val();
 												}
 
-												event.data.panel.submitChanges();
+												event.data.panel
+														.submitChanges();
 											}
 										});
 
@@ -227,7 +221,8 @@ define(
 												if (event.data.panel.currentParameterDefinition != null) {
 													event.data.panel.currentParameterDefinition.dataPath = event.data.panel.parameterDefinitionPathInput
 															.val();
-													event.data.panel.submitChanges();
+													event.data.panel
+															.submitChanges();
 												}
 											});
 						}
@@ -363,8 +358,8 @@ define(
 				ParameterDefinitionsPanel.prototype.initializeParameterDefinitionsTable = function() {
 					this.parameterDefinitionsTableBody.empty();
 
-					m_utils.debug("Set Parameters: " + this
-							.parameterDefinitions);
+					m_utils.debug("Set Parameters: "
+							+ this.parameterDefinitions);
 
 					for ( var m in this.parameterDefinitions) {
 						var parameterDefinition = this.parameterDefinitions[m];
@@ -593,10 +588,41 @@ define(
 				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.deleteParameterDefinition = function() {
+					m_utils.debug("Deleting " + this.currentParameterDefinition.id);
+
 					var changedParameterDefinitions = [];
 
 					for ( var n = 0; n < this.parameterDefinitions.length; ++n) {
 						if (this.parameterDefinitions[n].id != this.currentParameterDefinition.id) {
+							changedParameterDefinitions
+									.push(this.parameterDefinitions[n]);
+						}
+					}
+
+					this.parameterDefinitions = changedParameterDefinitions;
+
+					m_utils.debug("Changed parameter definitions");
+					m_utils.debug(this.parameterDefinitions);
+
+					this.submitChanges();
+				};
+
+				/**
+				 * 
+				 */
+				ParameterDefinitionsPanel.prototype.moveParameterDefinitionUp = function() {
+					var changedParameterDefinitions = [];
+
+					for ( var n = 0; n < this.parameterDefinitions.length; ++n) {
+						if (n + 1 < this.parameterDefinitions.length
+								&& this.parameterDefinitions[n + 1].id == this.currentParameterDefinition.id) {
+							changedParameterDefinitions
+									.push(this.parameterDefinitions[n + 1]);
+							changedParameterDefinitions
+									.push(this.parameterDefinitions[n]);
+
+							++n;
+						} else {
 							changedParameterDefinitions
 									.push(this.parameterDefinitions[n]);
 						}
@@ -610,45 +636,30 @@ define(
 				/**
 				 * 
 				 */
-				ParameterDefinitionsPanel.prototype.moveParameterDefinitionUp = function(
-						dataPathId) {
+				ParameterDefinitionsPanel.prototype.moveParameterDefinitionDown = function() {
+					m_utils.debug("Moving down " + this.currentParameterDefinition.id);
+
 					var changedParameterDefinitions = [];
 
 					for ( var n = 0; n < this.parameterDefinitions.length; ++n) {
 						if (n + 1 < this.parameterDefinitions.length
-								&& this.parameterDefinitions[n + 1].id == dataPathId)
+								&& this.parameterDefinitions[n].id == this.currentParameterDefinition.id) {
 							changedParameterDefinitions
 									.push(this.parameterDefinitions[n + 1]);
-						changedParameterDefinitions
-								.push(this.parameterDefinitions[n]);
+							changedParameterDefinitions
+									.push(this.parameterDefinitions[n]);
 
-						++n;
+							++n;
+						} else {
+							changedParameterDefinitions
+									.push(this.parameterDefinitions[n]);
+						}
 					}
 
 					this.parameterDefinitions = changedParameterDefinitions;
 
-					this.submitChanges();
-				};
-
-				/**
-				 * 
-				 */
-				ParameterDefinitionsPanel.prototype.moveParameterDefinitionDown = function(
-						dataPathId) {
-					var changedParameterDefinitions = [];
-
-					for ( var n = 0; n < this.parameterDefinitions.length; ++n) {
-						if (n + 1 < this.parameterDefinitions.length
-								&& this.parameterDefinitions[n + 1].id == dataPathId)
-							changedParameterDefinitions
-									.push(this.parameterDefinitions[n + 1]);
-						changedParameterDefinitions
-								.push(this.parameterDefinitions[n]);
-
-						++n;
-					}
-
-					this.parameterDefinitions = changedParameterDefinitions;
+					m_utils.debug("Changed parameter definitions");
+					m_utils.debug(this.parameterDefinitions);
 
 					this.submitChanges();
 				};
