@@ -443,10 +443,10 @@ define(
 				Diagram.prototype.initialize = function() {
 					// Load all models to populate Properties Panels
 
-					m_model.loadModels();
-
-					m_utils.debug("===> Loaded Models");
-					m_utils.debug(m_model.getModels());
+//					m_model.loadModels();
+//
+//					m_utils.debug("===> Loaded Models");
+//					m_utils.debug(m_model.getModels());
 
 					// TODO Bind against loaded models
 
