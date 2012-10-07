@@ -73,7 +73,7 @@ import com.google.gson.JsonObject;
 
 /**
  * IPP XPDL marshaller.
- *
+ * 
  * @author Marc.Gille
  * @author Robert Sauer
  */
@@ -85,8 +85,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    private ModelBuilderFacade modelBuilderFacade;
 
+   private JsonMarshaller jsonIo = new JsonMarshaller();
+
    /**
-    *
+    * 
     * @param modelElement
     * @return
     */
@@ -252,22 +254,25 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
             if (formalParameter.getMode().equals(ModeType.IN))
             {
-               formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, ModelerConstants.IN_PARAMETER_KEY);
+               formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+                     ModelerConstants.IN_PARAMETER_KEY);
             }
             else if (formalParameter.getMode().equals(ModeType.INOUT))
             {
-               formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, ModelerConstants.INOUT_PARAMETER_KEY);
+               formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+                     ModelerConstants.INOUT_PARAMETER_KEY);
             }
             else
             {
-               formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, ModelerConstants.OUT_PARAMETER_KEY);
+               formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+                     ModelerConstants.OUT_PARAMETER_KEY);
             }
 
             DataTypeType dataType = formalParameter.getDataType();
             ModelType model = ModelUtils.findContainingModel(formalParameter);
 
-            if (dataType.getCarnotType().equals(
-                  ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
+            if (dataType.getCarnotType()
+                  .equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
             {
                formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                      ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
@@ -305,7 +310,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             {
                formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                      ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
-               String type = formalParameter.getDataType().getBasicType().getType()
+               String type = formalParameter.getDataType()
+                     .getBasicType()
+                     .getType()
                      .getLiteral();
                formalParameterJson.addProperty(
                      ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
@@ -371,7 +378,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param laneSymbol
     * @return
     */
@@ -535,7 +542,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
             for (AnnotationSymbolType annotationSymbol : laneSymbol.getAnnotationSymbol())
             {
-               annotationSymbolsJson.add(String.valueOf(annotationSymbol.getElementOid()),
+               annotationSymbolsJson.add(
+                     String.valueOf(annotationSymbol.getElementOid()),
                      toAnnotationSymbolJson(annotationSymbol));
             }
          }
@@ -578,7 +586,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param activity
     * @return
     */
@@ -636,28 +644,33 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                      getModelBuilderFacade().createFullId(
                            ModelUtils.findContainingModel(activity),
                            activity.getImplementationProcess()));
-               if (activity.getSubProcessMode().equals(SubProcessModeType.SYNC_SEPARATE_LITERAL))
+               if (activity.getSubProcessMode().equals(
+                     SubProcessModeType.SYNC_SEPARATE_LITERAL))
                {
-                  activityJson.addProperty(ModelerConstants.SUBPROCESS_MODE_PROPERTY, ModelerConstants.SYNC_SEPARATE_KEY);
+                  activityJson.addProperty(ModelerConstants.SUBPROCESS_MODE_PROPERTY,
+                        ModelerConstants.SYNC_SEPARATE_KEY);
                }
-               else if (activity.getSubProcessMode().equals(SubProcessModeType.SYNC_SHARED_LITERAL))
+               else if (activity.getSubProcessMode().equals(
+                     SubProcessModeType.SYNC_SHARED_LITERAL))
                {
-                  activityJson.addProperty(ModelerConstants.SUBPROCESS_MODE_PROPERTY, ModelerConstants.SYNC_SHARED_KEY);
+                  activityJson.addProperty(ModelerConstants.SUBPROCESS_MODE_PROPERTY,
+                        ModelerConstants.SYNC_SHARED_KEY);
                }
-               else if (activity.getSubProcessMode().equals(SubProcessModeType.ASYNC_SEPARATE_LITERAL))
+               else if (activity.getSubProcessMode().equals(
+                     SubProcessModeType.ASYNC_SEPARATE_LITERAL))
                {
-                  activityJson.addProperty(ModelerConstants.SUBPROCESS_MODE_PROPERTY, ModelerConstants.ASYNC_SEPARATE_KEY);
+                  activityJson.addProperty(ModelerConstants.SUBPROCESS_MODE_PROPERTY,
+                        ModelerConstants.ASYNC_SEPARATE_KEY);
                }
             }
-            else if ((activity.eContainer() != null && (!(activity.eContainer() instanceof ChangeDescription)))
+            else if ((activity.eContainer() != null && ( !(activity.eContainer() instanceof ChangeDescription)))
                   && activity.getApplication() != null)
             {
                ApplicationType application = activity.getApplication();
                activityJson.addProperty(
                      ModelerConstants.APPLICATION_FULL_ID_PROPERTY,
                      getModelBuilderFacade().createFullId(
-                           ModelUtils.findContainingModel(application),
-                           application));
+                           ModelUtils.findContainingModel(application), application));
             }
 
             JsonObject accessPointsJson = new JsonObject();
@@ -728,7 +741,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param activitySymbol
     * @return
     */
@@ -816,7 +829,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -868,7 +881,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -920,7 +933,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param data
     * @return
     */
@@ -944,7 +957,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          loadDescription(dataJson, data);
          loadAttributes(data, dataJson);
 
-         if (null != data.getType() && data.getType().getId().equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
+         if (null != data.getType()
+               && data.getType()
+                     .getId()
+                     .equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
          {
             dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                   ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
@@ -987,7 +1003,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                }
             }
          }
-         else if (null != data.getType() && data.getType().getId().equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
+         else if (null != data.getType()
+               && data.getType().getId().equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
          {
             dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                   ModelerConstants.DOCUMENT_DATA_TYPE_KEY);
@@ -1013,7 +1030,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                }
             }
          }
-         else if (null != data.getType() && data.getType().getId().equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
+         else if (null != data.getType()
+               && data.getType().getId().equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
          {
             dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                   ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
@@ -1031,7 +1049,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -1242,7 +1260,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       loadDescription(applicationJson, application);
       loadAttributes(application, applicationJson);
 
-      applicationJson.addProperty(ModelerConstants.INTERACTIVE_PROPERTY, application.isInteractive());
+      applicationJson.addProperty(ModelerConstants.INTERACTIVE_PROPERTY,
+            application.isInteractive());
 
       if (application.getType() != null)
       {
@@ -1313,56 +1332,56 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-   *
-   * @param annotationSymbol
-   * @return
-   */
-  public JsonObject toAnnotationSymbolJson(AnnotationSymbolType annotationSymbol)
-  {
-     int laneOffsetX = 0;
-     int laneOffsetY = 0;
-     ISwimlaneSymbol container = (annotationSymbol.eContainer() instanceof ISwimlaneSymbol)
-           ? (ISwimlaneSymbol) annotationSymbol.eContainer()
-           : null;
-     while (null != container)
-     {
-        laneOffsetX += container.getXPos();
-        laneOffsetY += container.getYPos();
+    * 
+    * @param annotationSymbol
+    * @return
+    */
+   public JsonObject toAnnotationSymbolJson(AnnotationSymbolType annotationSymbol)
+   {
+      int laneOffsetX = 0;
+      int laneOffsetY = 0;
+      ISwimlaneSymbol container = (annotationSymbol.eContainer() instanceof ISwimlaneSymbol)
+            ? (ISwimlaneSymbol) annotationSymbol.eContainer()
+            : null;
+      while (null != container)
+      {
+         laneOffsetX += container.getXPos();
+         laneOffsetY += container.getYPos();
 
-        // recurse
-        container = (container.eContainer() instanceof ISwimlaneSymbol)
-              ? (ISwimlaneSymbol) container.eContainer()
-              : null;
-     }
+         // recurse
+         container = (container.eContainer() instanceof ISwimlaneSymbol)
+               ? (ISwimlaneSymbol) container.eContainer()
+               : null;
+      }
 
-     JsonObject annotationSymbolJson = new JsonObject();
+      JsonObject annotationSymbolJson = new JsonObject();
 
-     annotationSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
-           annotationSymbol.getElementOid());
-     annotationSymbolJson.addProperty(ModelerConstants.X_PROPERTY,
-           annotationSymbol.getXPos() + laneOffsetX);
-     annotationSymbolJson.addProperty(ModelerConstants.Y_PROPERTY,
-           annotationSymbol.getYPos() + laneOffsetY);
-     annotationSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY,
-           annotationSymbol.getWidth());
-     annotationSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
-           annotationSymbol.getHeight());
+      annotationSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
+            annotationSymbol.getElementOid());
+      annotationSymbolJson.addProperty(ModelerConstants.X_PROPERTY,
+            annotationSymbol.getXPos() + laneOffsetX);
+      annotationSymbolJson.addProperty(ModelerConstants.Y_PROPERTY,
+            annotationSymbol.getYPos() + laneOffsetY);
+      annotationSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY,
+            annotationSymbol.getWidth());
+      annotationSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
+            annotationSymbol.getHeight());
 
-     if (null != annotationSymbol.getText())
-     {
-        annotationSymbolJson.addProperty(ModelerConstants.CONTENT_PROPERTY,
-              (String) annotationSymbol.getText().getMixed().get(0).getValue());
-     }
-     else
-     {
-        annotationSymbolJson.addProperty(ModelerConstants.CONTENT_PROPERTY, "");
-     }
+      if (null != annotationSymbol.getText())
+      {
+         annotationSymbolJson.addProperty(ModelerConstants.CONTENT_PROPERTY,
+               (String) annotationSymbol.getText().getMixed().get(0).getValue());
+      }
+      else
+      {
+         annotationSymbolJson.addProperty(ModelerConstants.CONTENT_PROPERTY, "");
+      }
 
-     return annotationSymbolJson;
-  }
+      return annotationSymbolJson;
+   }
 
    /**
-    *
+    * 
     * @param dataMappingConnection
     * @return
     */
@@ -1382,7 +1401,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       connectionJson.addProperty(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
             mapAnchorOrientation(dataMappingConnection.getTargetAnchor()));
 
-      DataType data = null != dataMappingConnection.getDataSymbol() ? dataMappingConnection.getDataSymbol().getData() : null;
+      DataType data = null != dataMappingConnection.getDataSymbol()
+            ? dataMappingConnection.getDataSymbol().getData()
+            : null;
       if (null != data && null != dataMappingConnection.getActivitySymbol())
       {
          ActivityType activity = dataMappingConnection.getActivitySymbol().getActivity();
@@ -1395,7 +1416,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                // TODO - Currently API always assumes connectionJson.getSourceNode will
                // be data, to set Activity in sourceNode for OUT Mapping for data below
                // code is added.
-               if (dataFlowJson.get(ModelerConstants.OUT_DATA_MAPPING_PROPERTY).getAsBoolean())
+               if (dataFlowJson.get(ModelerConstants.OUT_DATA_MAPPING_PROPERTY)
+                     .getAsBoolean())
                {
                   connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
                         dataMappingConnection.getActivitySymbol().getElementOid());
@@ -1434,7 +1456,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -1510,10 +1532,12 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
                   ModelerConstants.GATEWAY);
             // TODO - Is this code required. Causes issue while changing anchor Point
-            /*connectionJson.remove(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY);
-            connectionJson.addProperty(
-                  ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
-                  ModelerConstants.NORTH_KEY);*/
+            /*
+             * connectionJson.remove(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)
+             * ; connectionJson.addProperty(
+             * ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
+             * ModelerConstants.NORTH_KEY);
+             */
          }
          else
          {
@@ -1522,7 +1546,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          }
 
       }
-      else if (transitionConnection.getSourceNode() instanceof StartEventSymbol && null != transitionConnection.getTargetActivitySymbol())
+      else if (transitionConnection.getSourceNode() instanceof StartEventSymbol
+            && null != transitionConnection.getTargetActivitySymbol())
       {
          modelElementJson = new JsonObject();
          String activityId = ((ActivitySymbolType) transitionConnection.getTargetActivitySymbol()).getActivity()
@@ -1553,7 +1578,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          }
 
       }
-      else if (transitionConnection.getTargetNode() instanceof EndEventSymbol && null != transitionConnection.getSourceActivitySymbol())
+      else if (transitionConnection.getTargetNode() instanceof EndEventSymbol
+            && null != transitionConnection.getSourceActivitySymbol())
       {
          modelElementJson = new JsonObject();
          String activityId = ((ActivitySymbolType) transitionConnection.getSourceActivitySymbol()).getActivity()
@@ -1595,7 +1621,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -1644,7 +1670,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param dataMapping
     * @return
     */
@@ -1669,7 +1695,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, false);
             dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
          }
-         else if(dataMapping.getDirection().equals(DirectionType.INOUT_LITERAL))
+         else if (dataMapping.getDirection().equals(DirectionType.INOUT_LITERAL))
          {
             // IN_OUT Mapping scenario
             dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
@@ -1683,7 +1709,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       }
       return dataFlowJson;
    }
-
 
    /**
     * @param model
@@ -1779,7 +1804,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       modelJson.add("typeDeclarations", typeDeclarationsJson);
 
-      for (TypeDeclarationType typeDeclaration : model.getTypeDeclarations().getTypeDeclaration())
+      for (TypeDeclarationType typeDeclaration : model.getTypeDeclarations()
+            .getTypeDeclaration())
       {
          typeDeclarationsJson.add(typeDeclaration.getId(),
                toTypeDeclarationJson(typeDeclaration));
@@ -1900,7 +1926,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          typeDeclarationJson.add("schema", schemaJson);
       }
 
-      structJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.TYPE_DECLARATION_PROPERTY);
+      structJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+            ModelerConstants.TYPE_DECLARATION_PROPERTY);
 
       return structJson;
    }
@@ -1910,16 +1937,18 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       JsonObject typeJson = new JsonObject();
 
       String name = type.eClass().getName();
-      typeJson.addProperty("classifier", name.substring(0, name.length() - 4)); // exclude "Type" suffix
+      typeJson.addProperty("classifier", name.substring(0, name.length() - 4)); // exclude
+                                                                                // "Type"
+                                                                                // suffix
       if (type instanceof ExternalReferenceType)
       {
          ExternalReferenceType ref = (ExternalReferenceType) type;
          typeJson.addProperty("location", ref.getLocation());
-         if (!StringUtils.isEmpty(ref.getNamespace()))
+         if ( !StringUtils.isEmpty(ref.getNamespace()))
          {
             typeJson.addProperty("namespace", ref.getNamespace());
          }
-         if (!StringUtils.isEmpty(ref.getXref()))
+         if ( !StringUtils.isEmpty(ref.getXref()))
          {
             typeJson.addProperty("xref", ref.getXref());
          }
@@ -1929,7 +1958,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param orientation
     * @return
     */
@@ -1960,7 +1989,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param modelElementJson
     * @param element
     */
@@ -1979,12 +2008,12 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param element
     * @param json
     * @throws JSONException
     */
-   private static void loadAttributes(IIdentifiableModelElement element, JsonObject json)
+   private void loadAttributes(IIdentifiableModelElement element, JsonObject json)
    {
       JsonObject attributes;
 
@@ -1999,14 +2028,27 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       for (AttributeType attribute : element.getAttribute())
       {
-         attributes.addProperty(attribute.getName(), attribute.getValue());
+         if (attribute.getName().equals("documentation:comments"))
+         {
+            json.add(ModelerConstants.COMMENTS_PROPERTY, jsonIo.readJsonObject(attribute.getValue()).get(ModelerConstants.COMMENTS_PROPERTY)
+                  .getAsJsonArray());
+         }
+         else
+         {
+            attributes.addProperty(attribute.getName(), attribute.getValue());
+         }
+      }
+      
+      if (!json.has(ModelerConstants.COMMENTS_PROPERTY))
+      {
+         json.add(ModelerConstants.COMMENTS_PROPERTY, new JsonArray());
       }
    }
 
    /**
-    *
+    * 
     * TODO From DynamicConnectionCommand. Refactor?
-    *
+    * 
     * @param activity
     * @return
     */
