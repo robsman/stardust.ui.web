@@ -15,7 +15,7 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.modeler.ui.UiExtensionsRegistry;
 
-@Path("/config/ui")
+@Path("/bpm-modeler/config/ui")
 public class ModelingUiExtensionsController
 {
    private static final Logger trace = LogManager.getLogger(ModelingUiExtensionsController.class);
@@ -43,7 +43,7 @@ public class ModelingUiExtensionsController
       listExtensionDependencies(buffer, registry.getDiagramToolbarExtensions());
 
       buffer.append("    // property pages\n");
-      listExtensionDependencies(buffer, registry.getPropertyPageExtensions());
+      listExtensionDependencies(buffer, registry.getPropertiesPageExtensions());
 
       buffer.append("    // meta-types\n");
       listExtensionDependencies(buffer, registry.getMetaModelExtensions());
@@ -53,7 +53,7 @@ public class ModelingUiExtensionsController
 
       listExtensionInitialization(buffer, "registerViewManager", registry.getViewManagerExtensions());
       listExtensionInitialization(buffer, "registerToolbarExtensions", registry.getDiagramToolbarExtensions());
-      listExtensionInitialization(buffer, "registerPropertyPageExtensions", registry.getPropertyPageExtensions());
+      listExtensionInitialization(buffer, "registerPropertyPageExtensions", registry.getPropertiesPageExtensions());
       listExtensionInitialization(buffer, "registerMetaModelExtensions", registry.getMetaModelExtensions());
 
       buffer.append("\n")
