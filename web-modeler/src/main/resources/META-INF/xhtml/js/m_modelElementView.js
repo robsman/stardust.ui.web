@@ -245,7 +245,6 @@ define(
 						changes.attributes = {};
 					}
 
-					m_dialog.showWaitCursor();
 					m_commandsController.submitCommand(m_command
 							.createUpdateModelElementWithUUIDCommand(this
 									.getModelElement().model.id, this
