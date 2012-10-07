@@ -508,35 +508,22 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.convertFromMappingsXml = function(
 						xml) {
-					// TODO Very rudimentary parsing - not robust against any
-					// changes in format - XML parsing should be very easy; see
-					// applicationQueryParametersPropertiesPage
+					var xmlDoc = jQuery.parseXML(xml);
+					var xmlObject = jQuery(xmlDoc);
 
-					var fieldMappings = xml
-							.substring(
-									xml
-											.indexOf('<mapping:TransformationProperty') + 31,
-									xml
-											.indexOf('</mapping:TransformationProperty>'))
-							.split("<fieldMappings")
+					var view = this;
+					
+					jQuery(xmlObject).find("fieldMappings").each(function() {
+						m_utils.debug("****> Mapping: ");
+						m_utils.debug(jQuery(this).attr("fieldPath"));
+						m_utils.debug(jQuery(this).attr("mappingExpression"));
 
-					for ( var n = 1; n < fieldMappings.length; ++n) {
-						var fieldPath = fieldMappings[n]
-								.substr(
-										fieldMappings[n].indexOf('fieldPath="') + 11,
-										fieldMappings[n]
-												.indexOf('mappingExpression="') - 14);
-						var mappingExpression = fieldMappings[n]
-								.substr(fieldMappings[n]
-										.indexOf('mappingExpression="') + 19,
-										fieldMappings[n].indexOf('"/>') - 10);
-						mappingExpression = mappingExpression.substr(0,
-								mappingExpression.indexOf('"/>'));
-
+						var fieldPath = jQuery(this).attr("fieldPath")
+						
 						fieldPath = fieldPath.replace(/\//g, ".");
 
-						this.mappingExpressions[fieldPath] = mappingExpression;
-					}
+						view.mappingExpressions[fieldPath] = jQuery(this).attr("mappingExpression");
+					});
 				};
 
 				/**

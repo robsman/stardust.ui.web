@@ -93,9 +93,9 @@ define(
 					propertiesTabHeader += "<a href='";
 					propertiesTabHeader += "#" + extension.pageId;
 					propertiesTabHeader += "'><img src='";
-					propertiesTabHeader += extension.iconPath;
+					propertiesTabHeader += extension.pageIconUrl;
 					propertiesTabHeader += "'></img><span class='tabLabel'>";
-					propertiesTabHeader += extension.pageId; // extension.pageName;
+					propertiesTabHeader += extension.pageName;
 					propertiesTabHeader += "</span></a></li>";
 
 					this.propertiesTabsList.append(propertiesTabHeader);
