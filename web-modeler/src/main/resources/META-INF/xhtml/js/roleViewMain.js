@@ -60,7 +60,6 @@ require(["require", "m_extensionManager",
 		 "m_command",
 		 "m_commandsController",
 		 "m_view",
-		 "m_modelElementCommentsPropertiesPage",
 		 "m_roleView"],
 		 function(require) {
 	require("m_roleView").initialize(

@@ -32,7 +32,6 @@ require.config({
 		'codemirror.util.searchcursor': ['libs/codemirror/util/searchcursor', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/util/searchcursor'],
 		'codemirror.util.simple-hint': ['libs/codemirror/util/simple-hint', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/util/simple-hint'],
 
-		//'extensions': '../../../services/rest/bpm-modeler/config/ui/extensions.js?p=extensions'
 		'common-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/common-plugins'
 	},
 	shim: {

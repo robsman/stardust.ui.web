@@ -18,10 +18,10 @@ define([ 'm_processBasicPropertiesPage',
 			visibility: "always",
 		}, {
 			panelId: "processPropertiesPanel",
-			pageId: "processAnnotationsPropertiesPage",
+			pageId: "processCommentsPropertiesPage",
 			pageHtmlUrl: "modelElementCommentsPropertiesPage.html",
 			provider: m_modelElementCommentsPropertiesPage,
-			visibility: "always",
+			visibility: "always"
 		}, {
 			panelId: "processPropertiesPanel",
 			pageId: "processInterfacePropertiesPage",

@@ -31,8 +31,6 @@ define(
 			 * 
 			 */
 			function UiMashupApplicationView() {
-				// Inheritance
-
 				var view = m_modelElementView.create();
 
 				m_utils.inheritFields(this, view);

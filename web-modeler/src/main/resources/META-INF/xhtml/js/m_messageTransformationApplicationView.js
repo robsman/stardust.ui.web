@@ -364,16 +364,7 @@ define(
 						}
 					});
 
-					jQuery("#testDialog").dialog({
-						autoOpen : false,
-						draggable : true
-					});
-
-					jQuery("#testDialog #closeButton").click(function() {
-						jQuery("#testDialog").dialog("close");
-					});
-
-					jQuery("#testDialog #runButton")
+					jQuery("#runButton")
 							.click(
 									{
 										view : this
@@ -381,8 +372,8 @@ define(
 									function(event) {
 										var view = event.data.view;
 
-										var inputDataTextarea = jQuery("#testDialog #inputDataTextarea");
-										var outputDataTable = jQuery("#testDialog #outputDataTable");
+										var inputDataTextarea = jQuery("#inputDataTextarea");
+										var outputDataTable = jQuery("#outputDataTable");
 
 										outputDataTable.empty();
 
@@ -428,29 +419,17 @@ define(
 										}
 									});
 
-					jQuery("#testDialog #resetButton")
+					jQuery("#resetButton")
 							.click(
 									{
 										view : this
 									},
 									function(event) {
 										var view = event.data.view;
+										var inputDataTextarea = jQuery("#inputDataTextarea");
+										var outputDataTable = jQuery("#outputDataTable");
 
-										var outputDataTable = jQuery("#testDialog #outputDataTable");
-
-										outputDataTable.empty();
-									});
-
-					jQuery("#testButton")
-							.click(
-									{
-										view : this
-									},
-									function(event) {
-										var view = event.data.view;
-										var inputDataTextarea = jQuery("#testDialog #inputDataTextarea");
-										var outputDataTable = jQuery("#testDialog #outputDataTable");
-
+										inputDataTextarea.empty();
 										outputDataTable.empty();
 
 										var inputData = "";
@@ -469,8 +448,6 @@ define(
 										}
 
 										inputDataTextarea.append(inputData);
-
-										jQuery("#testDialog").dialog("open");
 									});
 
 					this.initializeModelElementView(application);

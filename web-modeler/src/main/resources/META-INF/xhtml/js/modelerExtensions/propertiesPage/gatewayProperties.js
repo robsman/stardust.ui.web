@@ -10,10 +10,10 @@ define([ 'm_gatewayBasicPropertiesPage',
 			visibility: "always",
 		}, {
 			panelId: "gatewayPropertiesPanel",
-			pageId: "gatewayAnnotationsPropertiesPage",
+			pageId: "gatewayCommentsPropertiesPage",
 			pageHtmlUrl: "modelElementCommentsPropertiesPage.html",
 			provider: m_modelElementCommentsPropertiesPage,
-			visibility: "always",
+			visibility: "always"
 		}, ],
 	};
 });

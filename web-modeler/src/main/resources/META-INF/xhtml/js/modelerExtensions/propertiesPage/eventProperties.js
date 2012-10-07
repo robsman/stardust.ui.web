@@ -10,10 +10,10 @@ define([ 'm_eventBasicPropertiesPage',
 			visibility: "always",
 		}, {
 			panelId: "eventPropertiesPanel",
-			pageId: "eventAnnotationsPropertiesPage",
+			pageId: "eventCommentsPropertiesPage",
 			pageHtmlUrl: "modelElementCommentsPropertiesPage.html",
 			provider: m_modelElementCommentsPropertiesPage,
-			visibility: "always",
+			visibility: "always"
 		}, ],
 	};
 });

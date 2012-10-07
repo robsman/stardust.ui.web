@@ -18,10 +18,10 @@ define([ 'm_controlFlowBasicPropertiesPage',
 			visibility: "always",
 		}, {
 			panelId: "controlFlowPropertiesPanel",
-			pageId: "controlFlowAnnotationsPropertiesPage",
+			pageId: "controlFlowCommentsPropertiesPage",
 			pageHtmlUrl: "modelElementCommentsPropertiesPage.html",
 			provider: m_modelElementCommentsPropertiesPage,
-			visibility: "always",
+			visibility: "always"
 		}, ],
 	};
 });

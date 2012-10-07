@@ -64,7 +64,7 @@ define(
 								.findExtensions("propertiesPage", "panelId",
 										this.id);
 
-						this.loadPropertiesPage(modelElement,
+						this.loadPropertiesPage(modelElement, extensions,
 								propertiesPagesExtensions, 0);
 					} else {
 						this.setModelElement(modelElement);
@@ -75,9 +75,7 @@ define(
 				 * 
 				 */
 				ModelElementView.prototype.loadPropertiesPage = function(
-						modelElement, propertiesPagesExtensions, n) {
-					m_utils.debug("Recursion on n = " + n);
-
+						modelElement, extensions, propertiesPagesExtensions, n) {
 					if (n == propertiesPagesExtensions.length) {
 						this.propertiesTabs.tabs();
 						this.setModelElement(modelElement);
@@ -86,9 +84,6 @@ define(
 					}
 
 					var extension = propertiesPagesExtensions[n];
-
-					m_utils.debug("Page Extension");
-					m_utils.debug(extension);
 
 					extensions[extension.pageId] = extension;
 
@@ -136,7 +131,7 @@ define(
 
 								m_utils.debug("Page loaded");
 								m_utils.debug(view.propertiesPages);
-								view.loadPropertiesPage(modelElement,
+								view.loadPropertiesPage(modelElement, extensions,
 										propertiesPagesExtensions, ++n);
 							}
 						});
@@ -145,7 +140,7 @@ define(
 
 						// this.propertiesPages.push(extension.provider
 						// .create(this));
-						view.loadPropertiesPage(modelElement,
+						view.loadPropertiesPage(modelElement, extensions,
 								propertiesPagesExtensions, ++n);
 					}
 				};

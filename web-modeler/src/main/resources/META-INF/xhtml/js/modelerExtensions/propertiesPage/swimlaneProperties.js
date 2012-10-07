@@ -10,10 +10,10 @@ define([ 'm_swimlaneBasicPropertiesPage',
 			visibility: "always",
 		}, {
 			panelId: "swimlanePropertiesPanel",
-			pageId: "swimlaneAnnotationsPropertiesPage",
+			pageId: "swimlaneCommentsPropertiesPage",
 			pageHtmlUrl: "modelElementCommentsPropertiesPage.html",
 			provider: m_modelElementCommentsPropertiesPage,
-			visibility: "always",
+			visibility: "always"
 		}, ],
 	};
 });

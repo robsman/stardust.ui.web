@@ -42,7 +42,7 @@ public class ModelingUiExtensionsController
       buffer.append("    // diagram toolbar\n");
       listExtensionDependencies(buffer, registry.getDiagramToolbarExtensions());
 
-      buffer.append("    // property pages\n");
+      buffer.append("    // properties pages\n");
       listExtensionDependencies(buffer, registry.getPropertiesPageExtensions());
 
       buffer.append("    // meta-types\n");
@@ -104,11 +104,15 @@ public class ModelingUiExtensionsController
       listExtensionDependencies(buffer, registry.getViewManagerExtensions());
       listExtensionDependencies(buffer, registry.getMetaModelExtensions());
 
+      buffer.append("    // properties pages\n");
+      listExtensionDependencies(buffer, registry.getPropertiesPageExtensions());
+
       buffer.append("], function(m_extensionManager) {\n")
             .append("\n");
 
       listExtensionInitialization(buffer, "registerViewManager", registry.getViewManagerExtensions());
       listExtensionInitialization(buffer, "registerMetaModelExtensions", registry.getMetaModelExtensions());
+      listExtensionInitialization(buffer, "registerPropertyPageExtensions", registry.getPropertiesPageExtensions());
 
       buffer.append("\n")
             .append("    return {};\n")
