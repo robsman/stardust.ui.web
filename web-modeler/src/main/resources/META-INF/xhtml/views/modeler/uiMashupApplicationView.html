@@ -24,31 +24,35 @@
 					<div class="errorMessagesPanel">
 						<ul id="errorMessagesList">
 						</ul>
-					</div>
-				</td>
+					</div></td>
 			</tr>
 			<tr>
 				<td>
 					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 						style="margin-bottom: 10px;">
 						<tr id="guidOutputRow">
-							<td><label for="guidOutput">UUID</label></td>
-							<td><div id="guidOutput" class="output">168999</div></td>
+							<td><label for="guidOutput">UUID</label>
+							</td>
+							<td><div id="guidOutput" class="output">168999</div>
+							</td>
 						</tr>
 						<tr id="idOutputRow">
-							<td><label for="idOutput">ID</label></td>
-							<td><div id="idOutput" class="output"></div></td>
+							<td><label for="idOutput">ID</label>
+							</td>
+							<td><div id="idOutput" class="output"></div>
+							</td>
 						</tr>
 						<tr>
-							<td><label for="nameInput">Application Name</label></td>
+							<td><label for="nameInput">Application Name</label>
+							</td>
 							<td><input id="nameInput" type="text" style="width: 200px;"></input>
 							</td>
 						</tr>
-					</table>
-				</td>
+					</table></td>
 			</tr>
 			<tr>
-				<td><label for="descriptionTextarea">Description</label></td>
+				<td><label for="descriptionTextarea">Description</label>
+				</td>
 			</tr>
 			<tr>
 				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
@@ -56,124 +60,141 @@
 			</tr>
 			<tr>
 				<td>
-					<div class="heading">Mashup Configuration</div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
-						style="margin-bottom: 10px;">
-						<tr>
-							<td><label for="urlInput">URL</label></td>
-							<td><table>
-									<tr>
-										<td><input id="wsdlUrlInput" type="text"
-											style="width: 300px;"></input></td>
-										<td><input id="browseButton" type="button"
-											value="Browse ..." /></td>
-									</tr>
-								</table></td>
-						</tr>
-					</table></td>
-			</tr>
-			<tr>
-				<td>
-					<div class="heading">Parameter Definitions</div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<div class="panelBorder" 
-							style="width: 400px;">
-						<table cellpadding="0" cellspacing="0" class="layoutTable">
-							<tr>
-								<td><div class="toolBar">
-										<table>
+					<div id="propertiesTabs">
+						<ul id="propertiesTabsList">
+							<li><a href="#configurationTab"><img
+									src="../../images/icons/basic-properties-page.png"></img><span
+									class="tabLabel">Configuration</span> </a></li>
+						</ul>
+						<div id="configurationTab">
+							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+								<tr>
+									<td>
+										<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+											style="margin-bottom: 10px;">
 											<tr>
-												<td><input id="deleteParameterDefinitionButton" type="image"
-													src="../../images/icons/delete.png" title="Delete"
-													alt="Delete" class="toolbarButton" /></td>
+												<td><label for="urlInput">URL</label>
+												</td>
+												<td><table>
+														<tr>
+															<td><input id="wsdlUrlInput" type="text"
+																style="width: 300px;"></input>
+															</td>
+															<td><input id="browseButton" type="button"
+																value="Browse ..." />
+															</td>
+														</tr>
+													</table>
+												</td>
 											</tr>
 										</table>
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<div class="dataTable">
-										<table id="parameterDefinitionsTable" cellpadding="0"
-											cellspacing="0">
-											<tbody />
-										</table>
-									</div></td>
-							</tr>
-						</table>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<table id="parameterDefinitionTypeSelector"
-						style="margin-top: 10px;">
-						<tr>
-							<td><input id="addParameterDefinitionButton" type="image"
-								src="../../images/icons/add.png" title="Add" alt="Add"
-								class="toolbarButton" /></td>
-							<td></td>
-						</tr>
-						<tr>
-							<td><label for="parameterDefinitionNameInput">Name</label>
-							</td>
-							<td><input id="parameterDefinitionNameInput" type="text" />
-							</td>
-						</tr>
-						<tr>
-							<td><label for="parameterDefinitionDirectionSelect">Direction</label>
-							</td>
-							<td><select id="parameterDefinitionDirectionSelect">
-									<option value="IN">In</option>
-									<option value="OUT">Out</option>
-									<option value="INOUT">In/Out</option>
-							</select></td>
-						</tr>
-						<tr>
-							<td><label for="dataTypeSelect">Data Type</label>
-							</td>
-							<td><select id="dataTypeSelect" size="1">
-									<option value="primitive">Primitive</option>
-									<option value="struct">Data Structure</option>
-									<option value="dmsDocument">Document</option>
-									<option value="other">Other</option>
-							</select></td>
-						</tr>
-						<tr id="primitiveDataTypeRow">
-							<td><label for="primitiveDataTypeSelect" />Primitive Type</label>
-							</td>
-							<td><select id="primitiveDataTypeSelect" size="1">
-									<option value="String">Text</option>
-									<option value="boolean">Boolean (True, False)</option>
-									<option value="int">Number (e.g. 18756)</option>
-									<option value="long">Long Number (e.g. 18756)</option>
-									<option value="double">Scientific (e.g. 3.1415)</option>
-									<option value="Decimal">Money Amount (e.g.
-										$4,500,600.42)</option>
-									<option value="Calendar">Date (e.g. 14/05/2011)</option>
-							</select>
-							</td>
-						</tr>
-						<tr id="structuredDataTypeRow">
-							<td><label for="structuredDataTypeSelect">Data
-									Structure</label></td>
-							<td><select id="structuredDataTypeSelect" size="1">
-							</select></td>
-						</tr>
-						<tr id="documentTypeRow">
-							<td><label for="documentTypeSelect">Document Type</label></td>
-							<td><select id="documentTypeSelect" size="1">
-							</select></td>
-						</tr>
-					</table>
-				</td>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<div class="heading">Parameter Definitions</div></td>
+								</tr>
+								<tr>
+									<td>
+										<div class="panelBorder" style="width: 400px;">
+											<table cellpadding="0" cellspacing="0" class="layoutTable">
+												<tr>
+													<td><div class="toolBar">
+															<table>
+																<tr>
+																	<td><input id="deleteParameterDefinitionButton"
+																		type="image" src="../../images/icons/delete.png"
+																		title="Delete" alt="Delete" class="toolbarButton" />
+																	</td>
+																</tr>
+															</table>
+														</div></td>
+												</tr>
+												<tr>
+													<td>
+														<div class="dataTable">
+															<table id="parameterDefinitionsTable" cellpadding="0"
+																cellspacing="0">
+																<tbody />
+															</table>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</div></td>
+								</tr>
+								<tr>
+									<td>
+										<table id="parameterDefinitionTypeSelector"
+											style="margin-top: 10px;">
+											<tr>
+												<td><input id="addParameterDefinitionButton"
+													type="image" src="../../images/icons/add.png" title="Add"
+													alt="Add" class="toolbarButton" />
+												</td>
+												<td></td>
+											</tr>
+											<tr>
+												<td><label for="parameterDefinitionNameInput">Name</label>
+												</td>
+												<td><input id="parameterDefinitionNameInput"
+													type="text" /></td>
+											</tr>
+											<tr>
+												<td><label for="parameterDefinitionDirectionSelect">Direction</label>
+												</td>
+												<td><select id="parameterDefinitionDirectionSelect">
+														<option value="IN">In</option>
+														<option value="OUT">Out</option>
+														<option value="INOUT">In/Out</option>
+												</select>
+												</td>
+											</tr>
+											<tr>
+												<td><label for="dataTypeSelect">Data Type</label></td>
+												<td><select id="dataTypeSelect" size="1">
+														<option value="primitive">Primitive</option>
+														<option value="struct">Data Structure</option>
+														<option value="dmsDocument">Document</option>
+														<option value="other">Other</option>
+												</select>
+												</td>
+											</tr>
+											<tr id="primitiveDataTypeRow">
+												<td><label for="primitiveDataTypeSelect" />Primitive
+													Type</label></td>
+												<td><select id="primitiveDataTypeSelect" size="1">
+														<option value="String">Text</option>
+														<option value="boolean">Boolean (True, False)</option>
+														<option value="int">Number (e.g. 18756)</option>
+														<option value="long">Long Number (e.g. 18756)</option>
+														<option value="double">Scientific (e.g. 3.1415)</option>
+														<option value="Decimal">Money Amount (e.g.
+															$4,500,600.42)</option>
+														<option value="Calendar">Date (e.g. 14/05/2011)</option>
+												</select></td>
+											</tr>
+											<tr id="structuredDataTypeRow">
+												<td><label for="structuredDataTypeSelect">Data
+														Structure</label>
+												</td>
+												<td><select id="structuredDataTypeSelect" size="1">
+												</select>
+												</td>
+											</tr>
+											<tr id="documentTypeRow">
+												<td><label for="documentTypeSelect">Document
+														Type</label>
+												</td>
+												<td><select id="documentTypeSelect" size="1">
+												</select>
+												</td>
+											</tr>
+										</table></td>
+								</tr>
+							</table>
+						</div>
+					</div></td>
 			</tr>
 		</table>
 	</div>

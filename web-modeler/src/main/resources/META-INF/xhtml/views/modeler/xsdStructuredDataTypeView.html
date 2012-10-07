@@ -41,143 +41,155 @@
 					<div style="margin-bottom: 10px;">
 						<table cellpadding="0" cellspacing="0" class="fieldSetTable">
 							<tr id="guidOutputRow">
-								<td><label for="guidOutput">UUID</label>
-								</td>
-								<td><div id="guidOutput" class="output">168999</div>
-								</td>
+								<td><label for="guidOutput">UUID</label></td>
+								<td><div id="guidOutput" class="output">168999</div></td>
 							</tr>
 							<tr id="idOutputRow">
-								<td><label for="idOutput">ID</label>
-								</td>
-								<td><div id="idOutput" class="output"></div>
-								</td>
+								<td><label for="idOutput">ID</label></td>
+								<td><div id="idOutput" class="output"></div></td>
 							</tr>
 							<tr>
-								<td><label for="nameInput">Data Structure Name</label>
-								</td>
+								<td><label for="nameInput">Data Structure Name</label></td>
 								<td><input id="nameInput" type="text" style="width: 200px;" />
-								</td>
-							</tr>
-						</table>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td><label for="descriptionTextarea">Description</label>
-				</td>
-			</tr>
-			<tr>
-				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
-				</td>
-			</tr>
-			<tr>
-				<td><div class="heading">Data Structure Elements</div></td>
-			</tr>
-			<tr>
-				<td>
-					<div
-						style="margin-bottom: 10px;">
-						<table cellpadding="0" cellspacing="0" class="layoutTable">
-							<tr>
-								<td colspan="2">Create and modify a Data Structure manually by adding
-									elements, specifying their names and cardinalities.</td>
-							</tr>
-							<tr>
-								<td>
-									<table cellpadding="0" cellspacing="0" class="layoutTable"
-										style="margin-top: 10px;">
-										<tr>
-											<td><input id="structureRadioButton" type="radio" />
-											</td>
-											<td>Structure</td>
-											<td><input id="enumerationRadioButton" type="radio" />
-											</td>
-											<td>Enumeration</td>
-										</tr>
-									</table>
 								</td>
 							</tr>
 						</table>
 					</div></td>
 			</tr>
 			<tr>
+				<td><label for="descriptionTextarea">Description</label></td>
+			</tr>
+			<tr>
+				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
+				</td>
+			</tr>
+
+			<tr>
 				<td>
-					<table cellpadding="0" cellspacing="0" class="layoutTable">
-						<tr>
-							<td>
-								<div class="panelBorder">
-									<table cellpadding="0" cellspacing="0" class="layoutTable">
-										<tr>
-											<td><div class="toolBar">
-													<table cellpadding="0" cellspacing="0" class="layoutTable">
-														<tr>
-															<td><input id="deleteElementButton" type="image"
-																src="../../images/icons/delete.png" title="Delete" alt="Delete"
-																class="toolbarButton" />
-															</td>
-															<td><img
-																src="../../images/icons/toolbar-separator.png"></img>
-															</td>
-															<td><input id="moveElementUpButton" type="image"
-																src="../../images/icons/arrow-up.png" title="Move Up"
-																alt="Move Up" class="toolbarButton" />
-															</td>
-															<td><img
-																src="../../images/icons/toolbar-separator.png"></img>
-															</td>
-															<td><input id="moveElementDownButton" type="image"
-																src="../../images/icons/arrow-down.png"
-																title="Move Down" alt="Move Down" class="toolbarButton" />
-															</td>
-														</tr>
-													</table>
-												</div></td>
-										</tr>
-										<tr>
-											<td>
-												<div class="dataTable">
-													<table id="typeDeclarationsTable" cellpadding="0"
-														cellspacing="0" class="treeTable">
-														<thead>
-															<tr>
-																<th id="elementColumn">Element</th>
-																<th id="typeColumn">Type</th>
-																<th id="cardinalityColumn" class="last">Cardinality</th>
-															</tr>
-														</thead>
-														<tbody />
-													</table>
-												</div></td>
-										</tr>
-									</table>
-								</div></td>
-						</tr>
-						<tr>
-							<td align="left"><div class="heading"
-									style="margin-top: 10px;">Field Properties</div>
-							</td>
-							<td></td>
-						</tr>
-						<tr>
-							<td align="left">
-								<div class="panelBorder">
-									<div class="dataTable">
-										<table id="fieldPropertiesTable" cellpadding="0"
-											cellspacing="0" class="treeTable"
-											style="width: 600px; text-align: left;">
-											<thead>
+					<div id="propertiesTabs">
+						<ul id="propertiesTabsList">
+							<li><a href="#configurationTab"><img
+									src="../../images/icons/basic-properties-page.png"></img><span
+									class="tabLabel">Configuration</span> </a></li>
+						</ul>
+						<div id="configurationTab">
+							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+
+								<tr>
+									<td>
+										<div style="margin-bottom: 10px;">
+											<table cellpadding="0" cellspacing="0" class="layoutTable">
 												<tr>
-													<th style="width: 400px;">Property</th>
-													<th class="last" style="width: 200px;">Value</th>
+													<td colspan="2">Create and modify a Data Structure
+														manually by adding elements, specifying their names and
+														cardinalities.</td>
 												</tr>
-											</thead>
-											<tbody />
+												<tr>
+													<td>
+														<table cellpadding="0" cellspacing="0" class="layoutTable"
+															style="margin-top: 10px;">
+															<tr>
+																<td><input id="structureRadioButton" type="radio" />
+																</td>
+																<td>Structure</td>
+																<td><input id="enumerationRadioButton" type="radio" />
+																</td>
+																<td>Enumeration</td>
+															</tr>
+														</table></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<table cellpadding="0" cellspacing="0" class="layoutTable">
+											<tr>
+												<td>
+													<div class="panelBorder">
+														<table cellpadding="0" cellspacing="0" class="layoutTable">
+															<tr>
+																<td><div class="toolBar">
+																		<table cellpadding="0" cellspacing="0"
+																			class="layoutTable">
+																			<tr>
+																				<td><input id="deleteElementButton"
+																					type="image" src="../../images/icons/delete.png"
+																					title="Delete" alt="Delete" class="toolbarButton" />
+																				</td>
+																				<td><img
+																					src="../../images/icons/toolbar-separator.png"></img>
+																				</td>
+																				<td><input id="moveElementUpButton"
+																					type="image" src="../../images/icons/arrow-up.png"
+																					title="Move Up" alt="Move Up" class="toolbarButton" />
+																				</td>
+																				<td><img
+																					src="../../images/icons/toolbar-separator.png"></img>
+																				</td>
+																				<td><input id="moveElementDownButton"
+																					type="image"
+																					src="../../images/icons/arrow-down.png"
+																					title="Move Down" alt="Move Down"
+																					class="toolbarButton" /></td>
+																			</tr>
+																		</table>
+																	</div>
+																</td>
+															</tr>
+															<tr>
+																<td>
+																	<div class="dataTable">
+																		<table id="typeDeclarationsTable" cellpadding="0"
+																			cellspacing="0" class="treeTable">
+																			<thead>
+																				<tr>
+																					<th id="elementColumn">Element</th>
+																					<th id="typeColumn">Type</th>
+																					<th id="cardinalityColumn" class="last">Cardinality</th>
+																				</tr>
+																			</thead>
+																			<tbody />
+																		</table>
+																	</div>
+																</td>
+															</tr>
+														</table>
+													</div>
+												</td>
+											</tr>
+											<tr>
+												<td align="left"><div class="heading"
+														style="margin-top: 10px;">Field Properties</div></td>
+												<td></td>
+											</tr>
+											<tr>
+												<td align="left">
+													<div class="panelBorder">
+														<div class="dataTable">
+															<table id="fieldPropertiesTable" cellpadding="0"
+																cellspacing="0" class="treeTable"
+																style="width: 600px; text-align: left;">
+																<thead>
+																	<tr>
+																		<th style="width: 400px;">Property</th>
+																		<th class="last" style="width: 200px;">Value</th>
+																	</tr>
+																</thead>
+																<tbody />
+															</table>
+														</div>
+													</div>
+												</td>
+												<td></td>
+											</tr>
 										</table>
-									</div>
-								</div></td>
-							<td></td>
-						</tr>
-					</table></td>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div></td>
 			</tr>
 		</table>
 	</div>

@@ -24,145 +24,180 @@
 					<div class="errorMessagesPanel">
 						<ul id="errorMessagesList">
 						</ul>
-					</div>
-				</td>
+					</div></td>
 			</tr>
 			<tr>
 				<td>
 					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 						style="margin-bottom: 10px;">
 						<tr id="guidOutputRow">
-							<td><label for="guidOutput">UUID</label></td>
-							<td><div id="guidOutput" class="output">168999</div></td>
+							<td><label for="guidOutput">UUID</label>
+							</td>
+							<td><div id="guidOutput" class="output">168999</div>
+							</td>
 						</tr>
 						<tr id="idOutputRow">
-							<td><label for="idOutput">ID</label></td>
-							<td><div id="idOutput" class="output"></div></td>
+							<td><label for="idOutput">ID</label>
+							</td>
+							<td><div id="idOutput" class="output"></div>
+							</td>
 						</tr>
 						<tr>
-							<td><label for="nameInput">Application Name</label></td>
-							<td><input id="nameInput" type="text"></input></td>
+							<td><label for="nameInput">Application Name</label>
+							</td>
+							<td><input id="nameInput" type="text"></input>
+							</td>
 						</tr>
-					</table>
-				</td>
+					</table></td>
 			</tr>
 			<tr>
-				<td><label for="descriptionTextarea">Description</label></td>
+				<td><label for="descriptionTextarea">Description</label>
+				</td>
 			</tr>
 			<tr>
 				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
 				</td>
 			</tr>
 			<tr>
-				<td><div class="heading">Web Service Configuration</div>
-					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
-						style="margin-bottom: 10px;">
-						<tr>
-							<td><label for="wsdlUrlInput">WSDL URL</label></td>
-							<td><table>
-									<tr>
-										<td><input id="wsdlUrlInput" type="text"
-											style="width: 300px;"></input></td>
-										<td><input id="browseButton" type="button"
-											value="Load ..." /></td>
-									</tr>
-								</table></td>
-						</tr>
-						<tr>
-							<td><label for="serviceSelect">Service</label></td>
-							<td><select id="serviceSelect"></select></td>
-						</tr>
-						<tr>
-							<td><label for="portSelect">Port</label></td>
-							<td><select id="portSelect"></select></td>
-						</tr>
-						<tr>
-							<td><label for="operationSelect">Operation</label></td>
-							<td><select id="operationSelect"></select></td>
-						</tr>
-						<tr>
-							<td><label for="styleOutput">Style</label></td>
-							<td><div id="styleOutput" class="output"></div></td>
-						</tr>
-						<tr>
-							<td><label for="protocolOutput">Protocol</label></td>
-							<td><div id="protocolOutput" class="output"></div></td>
-						</tr>
-						<tr>
-							<td><label for="useOutput">Use</label></td>
-							<td><div id="useOutput" class="output"></div></td>
-						</tr>
-					</table>
-					<table class="layoutTable">
-						<tr>
-							<td>
-								<div class="heading">Implementation</div>
-								<table style="margin-bottom: 10px;">
-									<tr>
-										<td>
-											<table cellpadding="0" cellspacing="0" class="fieldSetTable">
-												<tr>
-													<td><input id="addressingInput" type="checkbox"></input>
-													</td>
-													<td><label for="addressingInput">Include
-															WS-Addressing EPR</label></td>
-												</tr>
-											</table></td>
-									</tr>
-									<tr>
-										<td><table class="fieldSetTable">
-												<tr>
-													<td><label for="implementationSelect">Implementation</label>
-													</td>
-													<td><select id="implementationSelect"><option
-																value="generic">Generic Resource</option>
-															<option value="carnot">Infinity Specific</option>
-													</select>
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</table></td>
-							<td style="padding-left: 10px;">
-								<div class="heading">Security</div>
-								<table style="margin-bottom: 10px;">
-									<tr>
-										<td>
-											<table cellpadding="0" cellspacing="0" class="fieldSetTable">
-												<tr>
-													<td><input id="authenticationInput" type="checkbox"></input>
-													</td>
-													<td><label for="authenticationInput">Authentication
-															Required</label>
-													</td>
-												</tr>
-											</table></td>
-									</tr>
-									<tr>
-										<td><table class="fieldSetTable">
-												<tr>
-													<td><label for="mechanismSelect">Mechanism</label>
-													</td>
-													<td><select id="mechanismSelect"><option
-																value="basic">HTTP Basic Authorization</option>
-															<option value="ws-security">WS-Security</option>
-													</select>
-													</td>
-												</tr>
-												<tr>
-													<td><label for="variantSelect">Variant</label>
-													</td>
-													<td><select id="variantSelect"></select>
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-					</table></td>
+				<td>
+					<div id="propertiesTabs">
+						<ul id="propertiesTabsList">
+							<li><a href="#configurationTab"><img
+									src="../../images/icons/basic-properties-page.png"></img><span
+									class="tabLabel">Configuration</span> </a>
+							</li>
+						</ul>
+						<div id="configurationTab">
+							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+								<tr>
+									<td>
+										<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+											style="margin-bottom: 10px;">
+											<tr>
+												<td><label for="wsdlUrlInput">WSDL URL</label>
+												</td>
+												<td><table>
+														<tr>
+															<td><input id="wsdlUrlInput" type="text"
+																style="width: 300px;"></input>
+															</td>
+															<td><input id="browseButton" type="button"
+																value="Load ..." />
+															</td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+											<tr>
+												<td><label for="serviceSelect">Service</label>
+												</td>
+												<td><select id="serviceSelect"></select>
+												</td>
+											</tr>
+											<tr>
+												<td><label for="portSelect">Port</label>
+												</td>
+												<td><select id="portSelect"></select>
+												</td>
+											</tr>
+											<tr>
+												<td><label for="operationSelect">Operation</label>
+												</td>
+												<td><select id="operationSelect"></select>
+												</td>
+											</tr>
+											<tr>
+												<td><label for="styleOutput">Style</label>
+												</td>
+												<td><div id="styleOutput" class="output"></div>
+												</td>
+											</tr>
+											<tr>
+												<td><label for="protocolOutput">Protocol</label>
+												</td>
+												<td><div id="protocolOutput" class="output"></div>
+												</td>
+											</tr>
+											<tr>
+												<td><label for="useOutput">Use</label>
+												</td>
+												<td><div id="useOutput" class="output"></div>
+												</td>
+											</tr>
+										</table>
+										<table class="layoutTable">
+											<tr>
+												<td>
+													<div class="heading">Implementation</div>
+													<table style="margin-bottom: 10px;">
+														<tr>
+															<td>
+																<table cellpadding="0" cellspacing="0"
+																	class="fieldSetTable">
+																	<tr>
+																		<td><input id="addressingInput" type="checkbox"></input>
+																		</td>
+																		<td><label for="addressingInput">Include
+																				WS-Addressing EPR</label>
+																		</td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+														<tr>
+															<td><table class="fieldSetTable">
+																	<tr>
+																		<td><label for="implementationSelect">Implementation</label>
+																		</td>
+																		<td><select id="implementationSelect"><option
+																					value="generic">Generic Resource</option>
+																				<option value="carnot">Infinity Specific</option>
+																		</select></td>
+																	</tr>
+																</table></td>
+														</tr>
+													</table>
+												</td>
+												<td style="padding-left: 10px;">
+													<div class="heading">Security</div>
+													<table style="margin-bottom: 10px;">
+														<tr>
+															<td>
+																<table cellpadding="0" cellspacing="0"
+																	class="fieldSetTable">
+																	<tr>
+																		<td><input id="authenticationInput"
+																			type="checkbox"></input></td>
+																		<td><label for="authenticationInput">Authentication
+																				Required</label></td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+														<tr>
+															<td><table class="fieldSetTable">
+																	<tr>
+																		<td><label for="mechanismSelect">Mechanism</label>
+																		</td>
+																		<td><select id="mechanismSelect"><option
+																					value="basic">HTTP Basic Authorization</option>
+																				<option value="ws-security">WS-Security</option>
+																		</select></td>
+																	</tr>
+																	<tr>
+																		<td><label for="variantSelect">Variant</label></td>
+																		<td><select id="variantSelect"></select></td>
+																	</tr>
+																</table></td>
+														</tr>
+													</table></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div></td>
 			</tr>
 		</table>
 	</div>
