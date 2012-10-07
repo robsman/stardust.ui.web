@@ -34,6 +34,7 @@ require.config({
 
 require(["require",
          "jquery",
+         "jquery-ui",
          "jquery.tablescroll",
          "jquery.treeTable",
 		 "jquery.url",
@@ -45,6 +46,7 @@ require(["require",
 		 "m_command",
 		 "m_commandsController",
 		 "m_view",
+		 "m_modelElementCommentsPropertiesPage",
 		 "m_dataView"], function(require) {
 	require("m_dataView").initialize(
 			jQuery.url.setUrl(window.location.search).param("fullId"));

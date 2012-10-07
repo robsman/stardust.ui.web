@@ -11,7 +11,7 @@
 
 /**
  * Extension Management
- *
+ * 
  * @author Marc.Gille
  */
 define(
@@ -21,41 +21,58 @@ define(
 
 			return {
 
-				registerViewManager: function(extensionsConfig) {
-					loadExtensions({ viewManager: extensionsConfig.viewManager });
+				registerViewManager : function(extensionsConfig) {
+					loadExtensions({
+						viewManager : extensionsConfig.viewManager
+					});
 				},
 
-				registerToolbarExtensions: function(extensionsConfig) {
-					loadExtensions({ diagramToolbarPalette: extensionsConfig.diagramToolbarPalette });
-					loadExtensions({ diagramToolbarPaletteEntry: extensionsConfig.diagramToolbarPaletteEntry });
+				registerToolbarExtensions : function(extensionsConfig) {
+					loadExtensions({
+						diagramToolbarPalette : extensionsConfig.diagramToolbarPalette
+					});
+					loadExtensions({
+						diagramToolbarPaletteEntry : extensionsConfig.diagramToolbarPaletteEntry
+					});
 				},
 
-				registerPropertyPageExtensions: function(extensionsConfig) {
-					loadExtensions({ propertiesPage: extensionsConfig.propertiesPage });
+				registerPropertyPageExtensions : function(extensionsConfig) {
+					loadExtensions({
+						propertiesPage : extensionsConfig.propertiesPage
+					});
 				},
 
-				registerMetaModelExtensions: function(extensionsConfig) {
-					loadExtensions({ applicationType: extensionsConfig.applicationType });
-					loadExtensions({ dataType: extensionsConfig.dataType });
+				registerMetaModelExtensions : function(extensionsConfig) {
+					loadExtensions({
+						applicationType : extensionsConfig.applicationType
+					});
+					loadExtensions({
+						dataType : extensionsConfig.dataType
+					});
 				},
 
 				/**
-				 *
+				 * 
 				 * @param extensionPoint
 				 * @param property
 				 * @param value
 				 * @returns
 				 */
 				findExtensions : function(extensionPoint, property, value) {
+					m_utils.debug("Cumulated Extensions:");
+					m_utils.debug(getCumulatedExtensions());
+
 					var result = [];
 
-					for ( var n = 0; n < getCumulatedExtensions()[extensionPoint].length; ++n) {
+					if (getCumulatedExtensions()[extensionPoint] != null) {
+						for ( var n = 0; n < getCumulatedExtensions()[extensionPoint].length; ++n) {
 
-						if (property == null
-								|| getCumulatedExtensions()[extensionPoint][n][property] == value) {
-							var extension = getCumulatedExtensions()[extensionPoint][n];
+							if (property == null
+									|| getCumulatedExtensions()[extensionPoint][n][property] == value) {
+								var extension = getCumulatedExtensions()[extensionPoint][n];
 
-							result.push(new Extension(extension));
+								result.push(new Extension(extension));
+							}
 						}
 					}
 
@@ -63,7 +80,7 @@ define(
 				},
 
 				/**
-				 *
+				 * 
 				 * @param extensionPoint
 				 * @returns
 				 */
@@ -79,31 +96,31 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function getCumulatedExtensions() {
 				return cumulatedExtensions;
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function loadExtensions(extensions) {
 				for ( var m in extensions) {
-					if ( !extensions[m]) {
+					if (!extensions[m]) {
 						continue;
 					}
 					console.log("Adding Extensions of Extension Point: " + m);
 
 					var extensionsForExtensionPoint = extensions[m];
 
-					if ( !jQuery.isArray(extensionsForExtensionPoint)) {
+					if (!jQuery.isArray(extensionsForExtensionPoint)) {
 						extensionsForExtensionPoint = [ extensionsForExtensionPoint ];
 					}
 
 					for ( var n = 0; n < extensionsForExtensionPoint.length; ++n) {
-						console.log("Extension: "
-								+ extensionsForExtensionPoint[n]);
+						m_utils.debug("Extension:");
+						m_utils.debug(extensionsForExtensionPoint[n]);
 
 						if (getCumulatedExtensions()[m] == null) {
 							getCumulatedExtensions()[m] = [];
@@ -116,20 +133,20 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function Extension(data) {
 				m_utils.inheritFields(this, data);
 
 				/**
-				 *
+				 * 
 				 */
 				Extension.prototype.toString = function() {
 					return "Lightdust.Extension";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Extension.prototype.supportedInProfile = function(profile) {
 					m_utils.debug("===> Checking profile " + profile);

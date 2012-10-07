@@ -84,13 +84,7 @@ define(
 				 */
 				PropertiesPage.prototype.assembleChangedObjectFromProperty = function(
 						property, value) {
-					var element = {
-						modelElement : {}
-					};
-
-					element.modelElement[property] = value;
-
-					return element;
+					return this.propertiesPanel.assembleChangedObjectFromProperty(property, value);
 				};
 
 				/**
@@ -98,17 +92,9 @@ define(
 				 */
 				PropertiesPage.prototype.assembleChangedObjectFromAttribute = function(
 						attribute, value) {
-					var element = {
-						modelElement : {
-							attributes : {}
-						}
-					};
-
-					element.modelElement.attributes[attribute] = value;
-
-					return element;
+					return this.propertiesPanel.assembleChangedObjectFromAttribute(attribute, value);
 				};
-				
+
 				/**
 				 * 
 				 */
@@ -126,11 +112,11 @@ define(
 						}
 
 						if (page.getElement()[property] != input.val()) {
-							
+
 							var change = {};
-							
+
 							change[property] = input.val();
-							
+
 							page.submitChanges(change);
 						}
 					});
@@ -250,17 +236,14 @@ define(
 				 * 
 				 */
 				PropertiesPage.prototype.getModel = function() {
-					return this.propertiesPanel.diagram.model;
+					return this.propertiesPanel.getModel();
 				};
 
 				/**
 				 * 
 				 */
 				PropertiesPage.prototype.submitChanges = function(changes) {
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(
-									this.getModel().id, this.propertiesPanel
-											.getElementUuid(), changes));
+					this.propertiesPanel.submitChanges(changes);
 				};
 			}
 		});

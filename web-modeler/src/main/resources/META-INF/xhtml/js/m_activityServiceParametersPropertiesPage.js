@@ -79,6 +79,10 @@ define(
 								.append("Query parameters for application "
 										+ application.name);
 
+						var parameters = [];
+						
+						this.parameters = parameters;
+						
 						var routeEntries = application.attributes["carnot:engine:camel::routeEntries"];
 
 						if (routeEntries != null
@@ -97,9 +101,6 @@ define(
 
 							var xml = jQuery(xmlDoc);
 
-							var parameters = [];
-							
-							this.parameters = parameters;
 
 							jQuery(xml)
 									.find("bean")
@@ -145,7 +146,6 @@ define(
 				 * 
 				 */
 				ActivityServiceParametersPropertiesPage.prototype.populateParametersTable = function() {
-
 					this.parametersTableBody.empty();
 
 					for ( var n = 0; n < this.parameters.length; ++n) {

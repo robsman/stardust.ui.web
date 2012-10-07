@@ -357,6 +357,36 @@ define(
 				/**
 				 * 
 				 */
+				PropertiesPanel.prototype.assembleChangedObjectFromProperty = function(
+						property, value) {
+					var element = {
+						modelElement : {}
+					};
+
+					element.modelElement[property] = value;
+
+					return element;
+				};
+
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.assembleChangedObjectFromAttribute = function(
+						attribute, value) {
+					var element = {
+						modelElement : {
+							attributes : {}
+						}
+					};
+
+					element.modelElement.attributes[attribute] = value;
+
+					return element;
+				};
+
+				/**
+				 * 
+				 */
 				PropertiesPanel.prototype.submitChanges = function(changes) {
 					m_utils.debug("Changes to be submitted for UUID "
 							+ this.getElementUuid() + ":");

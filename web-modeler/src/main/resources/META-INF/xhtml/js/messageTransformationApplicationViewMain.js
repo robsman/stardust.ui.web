@@ -32,7 +32,8 @@ require.config({
 		'codemirror.util.searchcursor': ['libs/codemirror/util/searchcursor', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/util/searchcursor'],
 		'codemirror.util.simple-hint': ['libs/codemirror/util/simple-hint', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/util/simple-hint'],
 
-		'common-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/common-plugins',
+		//'extensions': '../../../services/rest/bpm-modeler/config/ui/extensions.js?p=extensions'
+		'common-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/common-plugins'
 	},
 	shim: {
 		'jquery-ui': ['jquery'],
@@ -50,7 +51,7 @@ require.config({
 		'codemirror.util.search': ['codemirror.util.searchcursor', 'codemirror.util.dialog'],
 		'codemirror.util.match-highlighter': ['codemirror.util.searchcursor'],
 		'codemirror.util.simple-hint': ['codemirror'],
-		'codemirror.util.javascript-hint': ['codemirror'],
+		'codemirror.util.javascript-hint': ['codemirror']
 	}
 });
 
@@ -83,7 +84,8 @@ require(["require",
 		 "m_commandsController",
 		 "m_view",
 		 "m_modelElementView",
-		 "m_messageTransformationApplicationView"],
+		 "m_modelElementCommentsPropertiesPage",         
+         "m_messageTransformationApplicationView"],
 		 function(require) {
 	require("m_messageTransformationApplicationView").initialize(
 			jQuery.url.setUrl(window.location.search).param("fullId"));

@@ -32,434 +32,455 @@ define(
 			 * 
 			 */
 			function MessageTransformationApplicationView() {
-				// Inheritance
-
 				var view = m_modelElementView.create();
 
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(
 						MessageTransformationApplicationView.prototype, view);
 
-				this.inputData = {};
-				this.outputData = {};
-				this.mappingExpressions = {};
-				this.inputTable = jQuery("#sourceTable");
-				this.inputTableBody = jQuery("table#sourceTable tbody");
-				this.sourceFilterInput = jQuery("#sourceFilterInput");
-				this.targetFilterInput = jQuery("#targetFilterInput");
-				this.outputTable = jQuery("#targetTable");
-				this.outputTableBody = jQuery("table#targetTable tbody");
-				this.expressionTextArea = jQuery("#expressionTextArea");
-				this.filterFieldsWithMappingInput = jQuery("#filterFieldsWithMappingInput");
-				this.filterFieldsWithNoMappingInput = jQuery("#filterFieldsWithNoMappingInput");
-				this.filterHighlightedSourceFieldsInput = jQuery("#filterHighlightedSourceFieldsInput");
-				this.filterHighlightedTargetFieldsInput = jQuery("#filterHighlightedTargetFieldsInput");
-				this.showAllSourceFieldsInput = jQuery("#showAllSourceFieldsInput");
-				this.showAllTargetFieldsInput = jQuery("#showAllTargetFieldsInput");
-
-				this.selectedOutputTableRow = null;
-
-				this.inputTableBody.empty();
-				this.outputTableBody.empty();
-
-				this.inputTableRows = [];
-				this.outputTableRows = [];
-
-				// Set up code editor for JS code expression
-				CodeMirror.commands.autocomplete = function(cm) {
-					CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
-				}
-
-				var editor = CodeMirror
-						.fromTextArea(
-								jQuery("#expressionTextArea")[0],
-								{
-									mode : "javascript",
-									theme : "eclipse",
-									lineNumbers : true,
-									lineWrapping : true,
-									indentUnit : 3,
-									matchBrackets : true,
-									extraKeys : {
-										"Ctrl-Space" : "autocomplete"
-									},
-									onCursorActivity : function() {
-										// Highlight selected text
-										editor
-												.matchHighlight("CodeMirror-matchhighlight");
-										// Set active line
-										editor.setLineClass(hlLine, null, null);
-										hlLine = editor.setLineClass(editor
-												.getCursor().line, null,
-												"activeline");
-									},
-									onBlur : function() {
-										editor.save();
-										// Programmatically invoke the change
-										// handler on the hidden text area
-										// as it will not be invoked
-										// automatically
-										jQuery(editor.getTextArea()).change();
-									}
-								});
-				var hlLine = editor.setLineClass(0, "activeline");
-				this.expressionEditor = editor;
-
-				this.sourceFilterInput.keypress({
-					"view" : this
-				}, function(event) {
-					event.data.view
-							.filterSource(event.data.view.sourceFilterInput
-									.val());
-				});
-
-				this.targetFilterInput.change({
-					"view" : this
-				}, function(event) {
-					event.data.view
-							.filterTarget(event.data.view.targetFilterInput
-									.val());
-				});
-
-				this.filterHighlightedSourceFieldsInput.click({
-					"view" : this
-				}, function(event) {
-					event.data.view.filterHighlightedSourceFields();
-				});
-
-				this.filterHighlightedTargetFieldsInput.click({
-					"view" : this
-				}, function(event) {
-					event.data.view.filterHighlightedTargetFields();
-				});
-
-				this.showAllSourceFieldsInput.click({
-					"view" : this
-				}, function(event) {
-					event.data.view.showAllSourceFields();
-				});
-
-				this.showAllTargetFieldsInput.click({
-					"view" : this
-				}, function(event) {
-					event.data.view.showAllTargetFields();
-				});
-
-				m_dialog.makeInvisible(this.showAllSourceFieldsInput);
-				m_dialog.makeInvisible(this.showAllTargetFieldsInput);
-
-				this.filterFieldsWithNoMappingInput.click({
-					"view" : this
-				}, function(event) {
-					event.data.view.filterFieldsWithNoMapping();
-				});
-
-				this.filterFieldsWithMappingInput.click({
-					"view" : this
-				}, function(event) {
-					event.data.view.filterFieldsWithMapping();
-				});
-
-				// TODO: Review if this should be removed as expressionTextArea
-				// is hidden
-				this.expressionTextArea
-						.droppable({
-							accept : ".data-element",
-							drop : function(e, ui) {
-								var view = ui.draggable.data("view");
-								var outputTableRow = view.selectedOutputTableRow;
-
-								if (outputTableRow != null) {
-									var mappingExpression = outputTableRow.mappingExpression;
-
-									if (mappingExpression != null
-											&& mappingExpression != "") {
-										mappingExpression += " + ";
-									} else {
-										mappingExpression = "";
-									}
-
-									var inputTableRow = ui.draggable
-											.data("tableRow")
-									mappingExpression += inputTableRow.path;
-
-									outputTableRow.mappingExpression = mappingExpression;
-
-									jQuery(this).val(
-											outputTableRow.mappingExpression);
-
-									var rowId = outputTableRow.path.replace(
-											/\./g, "-");
-
-									// Set mapping column content
-
-									var mappingCell = jQuery("#targetTable tr#"
-											+ rowId + " .mapping");
-
-									mappingCell.empty();
-									mappingCell
-											.append(outputTableRow.mappingExpression);
-
-									view.submitChanges(this
-											.determineTransformationChanges());
-								}
-							},
-							hoverClass : "accept",
-							over : function(e, ui) {
-								var view = ui.draggable.data("view");
-								var outputTableRow = view.selectedOutputTableRow;
-							}
-						});
-
-				jQuery("#inputDataDialog").dialog({
-					autoOpen : false,
-					draggable : true
-				});
-
-				jQuery("#inputDataDialog #closeButton").click(function() {
-					jQuery("#inputDataDialog").dialog("close");
-				});
-
-				jQuery("#inputDataDialog #applyButton")
-						.click(
-								{
-									"view" : this
-								},
-								function(event) {
-									event.data.view
-											.addInputAccessPoint(
-													jQuery(
-															"#inputDataDialog #nameTextInput")
-															.val(),
-													m_model
-															.findTypeDeclaration(jQuery(
-																	"#inputDataDialog #typeSelectInput")
-																	.val()));
-									event.data.view.resume();
-									jQuery("#inputDataDialog").dialog("close");
-								});
-
-				jQuery("#addInputDataButton")
-						.click(
-								{
-									"view" : this
-								},
-								function(event) {
-									var inputDataTypeSelectInput = jQuery("#inputDataDialog #typeSelectInput");
-									// var models = m_model.getModels();
-									//
-									// for ( var m in models) {
-									// var model = models[m];
-									var model = event.data.view.application.model;
-									for ( var n in model.typeDeclarations) {
-										var typeDeclaration = model.typeDeclarations[n];
-										inputDataTypeSelectInput
-												.append("<option value='"
-														+ typeDeclaration
-																.getFullId()
-														+ "'>"
-														+ typeDeclaration.name
-														+ "</option>");
-									}
-									// }
-
-									jQuery("#inputDataDialog").dialog("open");
-								});
-
-				jQuery("#outputDataDialog").dialog({
-					autoOpen : false,
-					draggable : true
-				});
-
-				jQuery("#outputDataDialog #closeButton").click(function() {
-					jQuery("#outputDataDialog").dialog("close");
-				});
-
-				jQuery("#outputDataDialog #applyButton")
-						.click(
-								{
-									"view" : this
-								},
-								function(event) {
-									event.data.view
-											.addOutputAccessPoint(
-													jQuery(
-															"#outputDataDialog #nameTextInput")
-															.val(),
-													m_model
-															.findTypeDeclaration(jQuery(
-																	"#outputDataDialog #typeSelectInput")
-																	.val()));
-									event.data.view.resume();
-									jQuery("#outputDataDialog").dialog("close");
-								});
-
-				jQuery("#addOutputDataButton")
-						.click(
-								{
-									view : this
-								},
-								function(event) {
-									var outputDataTypeSelectInput = jQuery("#outputDataDialog #typeSelectInput");
-
-									// var models = m_model.getModels();
-									//
-									// for ( var m in models) {
-									// var model = models[m];
-									var model = event.data.view.application.model;
-									for ( var n in model.typeDeclarations) {
-										var typeDeclarations = model.typeDeclarations[n];
-										outputDataTypeSelectInput
-												.append("<option value='"
-														+ typeDeclarations
-																.getFullId()
-														+ "'>"
-														+ typeDeclarations.name
-														+ "</option>");
-									}
-									// }
-
-									jQuery("#outputDataDialog").dialog("open");
-								});
-
-				// TODO: Review if this should be removed as expressionTextArea
-				// is hidden
-				this.expressionTextArea.autocomplete({
-					minLength : 0,
-					source : function(request, response) {
-						response(m_dataTraversal.getStepOptions(null,
-								request.term));
-					},
-					focus : function() {
-						return false;
-					},
-					select : function(event, ui) {
-						var steps = m_dataTraversal.split(this.value);
-
-						steps.pop();
-						steps.push(ui.item.value);
-
-						if (steps.length > 1) {
-							this.value = steps.join(".");
-						} else {
-							this.value = steps[0];
-						}
-
-						return false;
-					}
-				});
-
-				jQuery("#testDialog").dialog({
-					autoOpen : false,
-					draggable : true
-				});
-
-				jQuery("#testDialog #closeButton").click(function() {
-					jQuery("#testDialog").dialog("close");
-				});
-
-				jQuery("#testDialog #runButton")
-						.click(
-								{
-									view : this
-								},
-								function(event) {
-									var view = event.data.view;
-
-									var inputDataTextarea = jQuery("#testDialog #inputDataTextarea");
-									var outputDataTable = jQuery("#testDialog #outputDataTable");
-
-									outputDataTable.empty();
-
-									for ( var n = 0; n < view.outputTableRows.length; ++n) {
-										var tableRow = view.outputTableRows[n];
-
-										var outputRow = jQuery("<tr></tr>");
-										
-										outputDataTable.append(outputRow);										
-										outputRow.append("<td>" + tableRow.path + "</td>");
-
-										var outputData;
-
-										if (tableRow.mappingExpression != null && tableRow.mappingExpression.length != 0) {
-											try {
-												var functionBody = inputDataTextarea
-														.val()
-														+ " return "
-														+ tableRow.mappingExpression
-														+ ";";
-
-												var mappingFunction = new Function(
-														functionBody);
-
-												var result = mappingFunction();
-
-												outputData = result;
-											} catch (exception) {
-												outputRow.addClass("errorRow");
-
-												outputData = exception;
-											}
-										} else {
-											outputRow.addClass("emptyRow");
-											outputData = "(No Mapping)";
-										}
-
-										outputRow.append("<td>" + outputData + "</td>");
-									}
-								});
-
-				jQuery("#testDialog #resetButton")
-						.click(
-								{
-									view : this
-								},
-								function(event) {
-									var view = event.data.view;
-
-									var outputDataTable = jQuery("#testDialog #outputDataTable");
-
-									outputDataTable.empty();
-								});
-
-				jQuery("#testButton")
-						.click(
-								{
-									view : this
-								},
-								function(event) {
-									var view = event.data.view;
-									var inputDataTextarea = jQuery("#testDialog #inputDataTextarea");
-									var outputDataTable = jQuery("#testDialog #outputDataTable");
-
-									outputDataTable.empty();
-
-									var inputData = "";
-
-									for ( var id in view.inputData) {
-										var typeDeclaration = view.inputData[id];
-
-										inputData += "var ";
-										inputData += id;
-										inputData += " = ";
-										inputData += JSON.stringify(
-												typeDeclaration
-														.createInstance(),
-												null, 3);
-										inputData += ";";
-									}
-
-									inputDataTextarea.append(inputData);
-
-									jQuery("#testDialog").dialog("open");
-								});
-
 				/**
 				 * 
 				 */
 				MessageTransformationApplicationView.prototype.initialize = function(
 						application) {
-					this.initializeModelElementView();
+					this.id = "messageTransformationApplicationView";
+					this.inputData = {};
+					this.outputData = {};
+					this.mappingExpressions = {};
+					this.inputTable = jQuery("#sourceTable");
+					this.inputTableBody = jQuery("table#sourceTable tbody");
+					this.sourceFilterInput = jQuery("#sourceFilterInput");
+					this.targetFilterInput = jQuery("#targetFilterInput");
+					this.outputTable = jQuery("#targetTable");
+					this.outputTableBody = jQuery("table#targetTable tbody");
+					this.expressionTextArea = jQuery("#expressionTextArea");
+					this.filterFieldsWithMappingInput = jQuery("#filterFieldsWithMappingInput");
+					this.filterFieldsWithNoMappingInput = jQuery("#filterFieldsWithNoMappingInput");
+					this.filterHighlightedSourceFieldsInput = jQuery("#filterHighlightedSourceFieldsInput");
+					this.filterHighlightedTargetFieldsInput = jQuery("#filterHighlightedTargetFieldsInput");
+					this.showAllSourceFieldsInput = jQuery("#showAllSourceFieldsInput");
+					this.showAllTargetFieldsInput = jQuery("#showAllTargetFieldsInput");
+
+					this.selectedOutputTableRow = null;
+
+					this.inputTableBody.empty();
+					this.outputTableBody.empty();
+
+					this.inputTableRows = [];
+					this.outputTableRows = [];
+
+					// Set up code editor for JS code expression
+					CodeMirror.commands.autocomplete = function(cm) {
+						CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
+					}
+
+					var editor = CodeMirror
+							.fromTextArea(
+									jQuery("#expressionTextArea")[0],
+									{
+										mode : "javascript",
+										theme : "eclipse",
+										lineNumbers : true,
+										lineWrapping : true,
+										indentUnit : 3,
+										matchBrackets : true,
+										extraKeys : {
+											"Ctrl-Space" : "autocomplete"
+										},
+										onCursorActivity : function() {
+											// Highlight selected text
+											editor
+													.matchHighlight("CodeMirror-matchhighlight");
+											// Set active line
+											editor.setLineClass(hlLine, null,
+													null);
+											hlLine = editor.setLineClass(editor
+													.getCursor().line, null,
+													"activeline");
+										},
+										onBlur : function() {
+											editor.save();
+											// Programmatically invoke the
+											// change
+											// handler on the hidden text area
+											// as it will not be invoked
+											// automatically
+											jQuery(editor.getTextArea())
+													.change();
+										}
+									});
+					var hlLine = editor.setLineClass(0, "activeline");
+					this.expressionEditor = editor;
+
+					this.sourceFilterInput.keypress({
+						"view" : this
+					}, function(event) {
+						event.data.view
+								.filterSource(event.data.view.sourceFilterInput
+										.val());
+					});
+
+					this.targetFilterInput.change({
+						"view" : this
+					}, function(event) {
+						event.data.view
+								.filterTarget(event.data.view.targetFilterInput
+										.val());
+					});
+
+					this.filterHighlightedSourceFieldsInput.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.filterHighlightedSourceFields();
+					});
+
+					this.filterHighlightedTargetFieldsInput.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.filterHighlightedTargetFields();
+					});
+
+					this.showAllSourceFieldsInput.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.showAllSourceFields();
+					});
+
+					this.showAllTargetFieldsInput.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.showAllTargetFields();
+					});
+
+					m_dialog.makeInvisible(this.showAllSourceFieldsInput);
+					m_dialog.makeInvisible(this.showAllTargetFieldsInput);
+
+					this.filterFieldsWithNoMappingInput.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.filterFieldsWithNoMapping();
+					});
+
+					this.filterFieldsWithMappingInput.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.filterFieldsWithMapping();
+					});
+
+					// TODO: Review if this should be removed as
+					// expressionTextArea
+					// is hidden
+					this.expressionTextArea
+							.droppable({
+								accept : ".data-element",
+								drop : function(e, ui) {
+									var view = ui.draggable.data("view");
+									var outputTableRow = view.selectedOutputTableRow;
+
+									if (outputTableRow != null) {
+										var mappingExpression = outputTableRow.mappingExpression;
+
+										if (mappingExpression != null
+												&& mappingExpression != "") {
+											mappingExpression += " + ";
+										} else {
+											mappingExpression = "";
+										}
+
+										var inputTableRow = ui.draggable
+												.data("tableRow")
+										mappingExpression += inputTableRow.path;
+
+										outputTableRow.mappingExpression = mappingExpression;
+
+										jQuery(this)
+												.val(
+														outputTableRow.mappingExpression);
+
+										var rowId = outputTableRow.path
+												.replace(/\./g, "-");
+
+										// Set mapping column content
+
+										var mappingCell = jQuery("#targetTable tr#"
+												+ rowId + " .mapping");
+
+										mappingCell.empty();
+										mappingCell
+												.append(outputTableRow.mappingExpression);
+
+										view
+												.submitChanges(this
+														.determineTransformationChanges());
+									}
+								},
+								hoverClass : "accept",
+								over : function(e, ui) {
+									var view = ui.draggable.data("view");
+									var outputTableRow = view.selectedOutputTableRow;
+								}
+							});
+
+					jQuery("#inputDataDialog").dialog({
+						autoOpen : false,
+						draggable : true
+					});
+
+					jQuery("#inputDataDialog #closeButton").click(function() {
+						jQuery("#inputDataDialog").dialog("close");
+					});
+
+					jQuery("#inputDataDialog #applyButton")
+							.click(
+									{
+										"view" : this
+									},
+									function(event) {
+										event.data.view
+												.addInputAccessPoint(
+														jQuery(
+																"#inputDataDialog #nameTextInput")
+																.val(),
+														m_model
+																.findTypeDeclaration(jQuery(
+																		"#inputDataDialog #typeSelectInput")
+																		.val()));
+										event.data.view.resume();
+										jQuery("#inputDataDialog").dialog(
+												"close");
+									});
+
+					jQuery("#addInputDataButton")
+							.click(
+									{
+										"view" : this
+									},
+									function(event) {
+										var inputDataTypeSelectInput = jQuery("#inputDataDialog #typeSelectInput");
+										// var models = m_model.getModels();
+										//
+										// for ( var m in models) {
+										// var model = models[m];
+										var model = event.data.view.application.model;
+										for ( var n in model.typeDeclarations) {
+											var typeDeclaration = model.typeDeclarations[n];
+											inputDataTypeSelectInput
+													.append("<option value='"
+															+ typeDeclaration
+																	.getFullId()
+															+ "'>"
+															+ typeDeclaration.name
+															+ "</option>");
+										}
+										// }
+
+										jQuery("#inputDataDialog").dialog(
+												"open");
+									});
+
+					jQuery("#outputDataDialog").dialog({
+						autoOpen : false,
+						draggable : true
+					});
+
+					jQuery("#outputDataDialog #closeButton").click(function() {
+						jQuery("#outputDataDialog").dialog("close");
+					});
+
+					jQuery("#outputDataDialog #applyButton")
+							.click(
+									{
+										"view" : this
+									},
+									function(event) {
+										event.data.view
+												.addOutputAccessPoint(
+														jQuery(
+																"#outputDataDialog #nameTextInput")
+																.val(),
+														m_model
+																.findTypeDeclaration(jQuery(
+																		"#outputDataDialog #typeSelectInput")
+																		.val()));
+										event.data.view.resume();
+										jQuery("#outputDataDialog").dialog(
+												"close");
+									});
+
+					jQuery("#addOutputDataButton")
+							.click(
+									{
+										view : this
+									},
+									function(event) {
+										var outputDataTypeSelectInput = jQuery("#outputDataDialog #typeSelectInput");
+
+										// var models = m_model.getModels();
+										//
+										// for ( var m in models) {
+										// var model = models[m];
+										var model = event.data.view.application.model;
+										for ( var n in model.typeDeclarations) {
+											var typeDeclarations = model.typeDeclarations[n];
+											outputDataTypeSelectInput
+													.append("<option value='"
+															+ typeDeclarations
+																	.getFullId()
+															+ "'>"
+															+ typeDeclarations.name
+															+ "</option>");
+										}
+										// }
+
+										jQuery("#outputDataDialog").dialog(
+												"open");
+									});
+
+					// TODO: Review if this should be removed as
+					// expressionTextArea
+					// is hidden
+					this.expressionTextArea.autocomplete({
+						minLength : 0,
+						source : function(request, response) {
+							response(m_dataTraversal.getStepOptions(null,
+									request.term));
+						},
+						focus : function() {
+							return false;
+						},
+						select : function(event, ui) {
+							var steps = m_dataTraversal.split(this.value);
+
+							steps.pop();
+							steps.push(ui.item.value);
+
+							if (steps.length > 1) {
+								this.value = steps.join(".");
+							} else {
+								this.value = steps[0];
+							}
+
+							return false;
+						}
+					});
+
+					jQuery("#testDialog").dialog({
+						autoOpen : false,
+						draggable : true
+					});
+
+					jQuery("#testDialog #closeButton").click(function() {
+						jQuery("#testDialog").dialog("close");
+					});
+
+					jQuery("#testDialog #runButton")
+							.click(
+									{
+										view : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										var inputDataTextarea = jQuery("#testDialog #inputDataTextarea");
+										var outputDataTable = jQuery("#testDialog #outputDataTable");
+
+										outputDataTable.empty();
+
+										for ( var n = 0; n < view.outputTableRows.length; ++n) {
+											var tableRow = view.outputTableRows[n];
+
+											var outputRow = jQuery("<tr></tr>");
+
+											outputDataTable.append(outputRow);
+											outputRow.append("<td>"
+													+ tableRow.path + "</td>");
+
+											var outputData;
+
+											if (tableRow.mappingExpression != null
+													&& tableRow.mappingExpression.length != 0) {
+												try {
+													var functionBody = inputDataTextarea
+															.val()
+															+ " return "
+															+ tableRow.mappingExpression
+															+ ";";
+
+													var mappingFunction = new Function(
+															functionBody);
+
+													var result = mappingFunction();
+
+													outputData = result;
+												} catch (exception) {
+													outputRow
+															.addClass("errorRow");
+
+													outputData = exception;
+												}
+											} else {
+												outputRow.addClass("emptyRow");
+												outputData = "(No Mapping)";
+											}
+
+											outputRow.append("<td>"
+													+ outputData + "</td>");
+										}
+									});
+
+					jQuery("#testDialog #resetButton")
+							.click(
+									{
+										view : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										var outputDataTable = jQuery("#testDialog #outputDataTable");
+
+										outputDataTable.empty();
+									});
+
+					jQuery("#testButton")
+							.click(
+									{
+										view : this
+									},
+									function(event) {
+										var view = event.data.view;
+										var inputDataTextarea = jQuery("#testDialog #inputDataTextarea");
+										var outputDataTable = jQuery("#testDialog #outputDataTable");
+
+										outputDataTable.empty();
+
+										var inputData = "";
+
+										for ( var id in view.inputData) {
+											var typeDeclaration = view.inputData[id];
+
+											inputData += "var ";
+											inputData += id;
+											inputData += " = ";
+											inputData += JSON.stringify(
+													typeDeclaration
+															.createInstance(),
+													null, 3);
+											inputData += ";";
+										}
+
+										inputDataTextarea.append(inputData);
+
+										jQuery("#testDialog").dialog("open");
+									});
+
+					this.initializeModelElementView(application);
+				}
+
+				/**
+				 * 
+				 */
+				MessageTransformationApplicationView.prototype.setModelElement = function(
+						application) {
 					this.initializeModelElement(application);
 
 					this.application = application;
@@ -1108,29 +1129,6 @@ define(
 							"messageTransformation:TransformationProperty" : transformationProperty
 						}
 					};
-				};
-
-				/**
-				 * 
-				 */
-				MessageTransformationApplicationView.prototype.processCommand = function(
-						command) {
-					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
-						this.initialize(this.application);
-
-						return;
-					}
-
-					var object = ("string" == typeof (command)) ? jQuery
-							.parseJSON(command) : command;
-
-					if (null != object
-							&& null != object.changes
-							&& null != object.changes.modified
-							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].uuid == this.application.uuid) {
-						this.initialize(this.application);
-					}
 				};
 			}
 

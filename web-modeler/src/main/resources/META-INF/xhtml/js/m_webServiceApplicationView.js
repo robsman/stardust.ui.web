@@ -41,14 +41,7 @@ define(
 				 */
 				WebServiceApplicationView.prototype.initialize = function(
 						application) {
-					this.initializeModelElementView();
-					this.initializeModelElement(application);
-
-					this.application = application;
-
-					m_utils.debug("===> Application");
-					m_utils.debug(application);
-
+					this.id = "webServiceApplicationView";
 					this.webServiceStructure = {};
 					this.wsdlUrlInput = jQuery("#wsdlUrlInput");
 					this.browseButton = jQuery("#browseButton");
@@ -146,6 +139,20 @@ define(
 												.setVariant(event.data.view.variantSelect
 														.val());
 									});
+					this.initializeModelElementView(application);
+				};
+
+				/**
+				 *
+				 */
+				WebServiceApplicationView.prototype.setModelElement = function(
+						application) {
+					this.initializeModelElement(application);
+
+					this.application = application;
+
+					m_utils.debug("===> Application");
+					m_utils.debug(application);
 
 					// Build dummy Web Service structure - allows too initialize
 					// selects even without full WSDL information
@@ -515,29 +522,6 @@ define(
 												.val()
 									}
 								});
-					}
-				};
-
-				/**
-				 *
-				 */
-				WebServiceApplicationView.prototype.processCommand = function(
-						command) {
-					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
-						this.initialize(this.application);
-
-						return;
-					}
-
-					var object = ("string" == typeof (command)) ? jQuery
-							.parseJSON(command) : command;
-
-					if (null != object
-							&& null != object.changes
-							&& null != object.changes.modified
-							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].uuid == this.application.uuid) {
-						this.initialize(this.application);
 					}
 				};
 			}

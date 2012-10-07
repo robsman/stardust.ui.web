@@ -26,14 +26,16 @@ require.config({
 		'common-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/common-plugins',
 	},
 	shim: {
+		'jquery-ui': ['jquery'],
 		'jquery.tablescroll': ['jquery'],
 		'jquery.treeTable': ['jquery'],
-		'jquery.url': ['jquery'],
+		'jquery.url': ['jquery']
 	}
 });
 
 require(["require",
          "jquery",
+         "jquery-ui",
          "jquery.tablescroll",
          "jquery.treeTable",
 		 "jquery.url",
@@ -48,7 +50,8 @@ require(["require",
 		 "m_modelElementView",
 		 "m_dataTypeSelector",
 		 "m_parameterDefinitionsPanel",
-		 "m_uiMashupApplicationView"],
+		 "m_modelElementCommentsPropertiesPage",         
+         "m_uiMashupApplicationView"],
 		 function(require) {
 	require("m_uiMashupApplicationView").initialize(
 			jQuery.url.setUrl(window.location.search).param("fullId"));

@@ -9,21 +9,21 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_command", "m_commandsController", "m_dialog",
-				"m_modelElementView", "m_model" ],
-		function(m_utils, m_constants, m_command, m_commandsController, m_dialog,
-				m_modelElementView, m_model) {
+		[ "m_utils", "m_constants", "m_command", "m_commandsController",
+				"m_dialog", "m_modelElementView", "m_model" ],
+		function(m_utils, m_constants, m_command, m_commandsController,
+				m_dialog, m_modelElementView, m_model) {
 			return {
 				initialize : function(fullId) {
 					var role = m_model.findParticipant(fullId);
 
-					var view = new RoleView();
-					// TODO Unregister!
-					// In Initializer?
+					m_utils.debug("===> role");
+					m_utils.debug(role);
 
-					m_commandsController.registerCommandHandler(view);
+					var roleView = new RoleView();
 
-					view.initialize(role);
+					roleView.initialize(role);
+					m_commandsController.registerCommandHandler(roleView);
 				}
 			};
 
@@ -38,24 +38,15 @@ define(
 				m_utils.inheritFields(this, modelElementView);
 				m_utils.inheritMethods(RoleView.prototype, modelElementView);
 
-				jQuery("#roleTabs").tabs();
-
 				/**
 				 * 
 				 */
 				RoleView.prototype.initialize = function(role) {
-					this.initializeModelElementView();
-					this.initializeModelElement(role);
-
-					this.role = role;
-
-					m_utils.debug("===> role");
-					m_utils.debug(role);
+					this.id = "roleView";
 
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.chooseAssignmentRadio = jQuery("#chooseAssignmentRadio");
 					this.assignAutomaticallyRadio = jQuery("#assignAutomaticallyRadio");
-
 					this.workingWeeksPerYearInput = jQuery("workingWeeksPerYearInput");
 					this.targetWorktimePerDayInput = jQuery("targetWorktimePerDayInput");
 					this.targetWorktimePerWeekInput = jQuery("targetWorktimePerWeekInput");
@@ -138,16 +129,32 @@ define(
 										}
 									});
 
-                    this.registerInputForModelElementAttributeChangeSubmission(
-                    		this.workingWeeksPerYearInput, "carnot:pwh:workingWeeksPerYear");
-                    this.registerInputForModelElementAttributeChangeSubmission(
-                    		this.targetWorktimePerDayInput, "carnot:pwh:targetWorkTimePerDay");
-                    this.registerInputForModelElementAttributeChangeSubmission(
-                    		this.targetWorktimePerWeekInput, "carnot:pwh:targetWorkTimePerWeek");
-                    this.registerInputForModelElementAttributeChangeSubmission(
-                    		this.targetQueueDepthInput, "carnot:pwh:targetQueueDepth");
-                    this.registerInputForModelElementAttributeChangeSubmission(
-                    		this.actualCostPerMinuteInput, "carnot:pwh:actualCostPerMinute");
+					this.registerInputForModelElementAttributeChangeSubmission(
+							this.workingWeeksPerYearInput,
+							"carnot:pwh:workingWeeksPerYear");
+					this.registerInputForModelElementAttributeChangeSubmission(
+							this.targetWorktimePerDayInput,
+							"carnot:pwh:targetWorkTimePerDay");
+					this.registerInputForModelElementAttributeChangeSubmission(
+							this.targetWorktimePerWeekInput,
+							"carnot:pwh:targetWorkTimePerWeek");
+					this.registerInputForModelElementAttributeChangeSubmission(
+							this.targetQueueDepthInput,
+							"carnot:pwh:targetQueueDepth");
+					this.registerInputForModelElementAttributeChangeSubmission(
+							this.actualCostPerMinuteInput,
+							"carnot:pwh:actualCostPerMinute");
+
+					this.initializeModelElementView(role);
+				};
+
+				/**
+				 * 
+				 */
+				RoleView.prototype.setModelElement = function(role) {
+					this.role = role;
+
+					this.initializeModelElement(role);
 
 					// Set values
 
@@ -194,8 +201,7 @@ define(
 
 					if (this.nameInput.val() == null
 							|| this.nameInput.val() == "") {
-						this.errorMessages
-								.push("Role name must not be empty.");
+						this.errorMessages.push("Role name must not be empty.");
 						this.nameInput.addClass("error");
 					}
 
@@ -206,36 +212,6 @@ define(
 					}
 
 					return true;
-				};
-
-				/**
-				 * 
-				 */
-				RoleView.prototype.processCommand = function(command) {
-					m_utils.debug("===> Role View Process Command");
-					m_utils.debug(command);
-
-					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
-						this.initialize(this.role);
-						
-						return;
-					}
-
-					// Parse the response JSON from command pattern
-
-					var object = ("string" == typeof (command)) ? jQuery
-							.parseJSON(command) : command;
-
-					if (null != object && null != object.changes
-							&& null != object.changes.modified
-							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].oid == this.role.oid) {
-
-						m_utils.inheritFields(this.role,
-								object.changes.modified[0]);
-
-						this.initialize(this.role);
-					}
 				};
 			}
 		});

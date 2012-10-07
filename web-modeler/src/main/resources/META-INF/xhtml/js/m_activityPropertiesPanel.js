@@ -90,12 +90,6 @@ define(
 								.findParticipant(this.element.modelElement.participantFullId);
 					}
 
-					// TODO for testing
-
-					this.element.properties.cost = {
-						"targetCostPerExecution" : 2041.75
-					};
-
 					for ( var n in this.propertiesPages) {
 						this.propertiesPages[n].setElement();
 					}

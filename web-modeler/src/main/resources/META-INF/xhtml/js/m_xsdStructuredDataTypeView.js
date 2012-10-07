@@ -36,14 +36,7 @@ define(
 				 */
 				XsdStructuredDataTypeView.prototype.initialize = function(
 						typeDeclaration) {
-					this.initializeModelElementView();
-					this.initializeModelElement(typeDeclaration);
-
-					this.typeDeclaration = typeDeclaration;
-
-					m_utils.debug("===> Type Declaration");
-					m_utils.debug(this.typeDeclaration);
-
+					this.id = "xsdStructuredDataTypeView";
 					this.tree = jQuery("#typeDeclarationsTable");
 					this.tableBody = jQuery("table#typeDeclarationsTable tbody");
 					this.upButton = jQuery("#upButton");
@@ -81,6 +74,20 @@ define(
 										event.data.view
 												.resumeTableForSequenceDefinition();
 									});
+					this.initializeModelElementView(typeDeclaration);
+				};
+
+				/**
+				 * 
+				 */
+				XsdStructuredDataTypeView.prototype.setModelElement = function(
+						typeDeclaration) {
+					this.initializeModelElement(typeDeclaration);
+
+					this.typeDeclaration = typeDeclaration;
+
+					m_utils.debug("===> Type Declaration");
+					m_utils.debug(this.typeDeclaration);
 
 					this.initializeTypeDeclaration();
 				};
@@ -436,29 +443,6 @@ define(
 					}
 
 					return true;
-				};
-
-				/**
-				 * Only react to name changes and validation exceptions.
-				 */
-				XsdStructuredDataTypeView.prototype.processCommand = function(
-						command) {
-					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
-						this.initialize(this.structuredDataType);
-
-						return;
-					}
-
-					var object = ("string" == typeof (command)) ? jQuery
-							.parseJSON(command) : command;
-
-					if (null != object
-							&& null != object.changes
-							&& null != object.changes.modified
-							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].uuid == this.typeDeclaration.uuid) {
-						this.initialize(this.typeDeclaration);
-					}
 				};
 			}
 		});

@@ -94,7 +94,7 @@ define(
 						this.moveParameterDefinitionUpButton = jQuery(this.options.scope
 								+ " #moveParameterDefinitionUpButton");
 						this.moveParameterDefinitionDownButton = jQuery(this.options.scope
-								+ " #moveParameterDefinitionButton");
+								+ " #moveParameterDefinitionDownButton");
 					}
 
 					if (this.options.supportsDescriptors) {
@@ -588,18 +588,32 @@ define(
 				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.deleteParameterDefinition = function() {
-					m_utils.debug("Deleting " + this.currentParameterDefinition.id);
+					m_utils.debug("Deleting "
+							+ this.currentParameterDefinition.id);
 
-					var changedParameterDefinitions = [];
+					if (this.options.listType == "array") {
+						var changedParameterDefinitions = [];
 
-					for ( var n = 0; n < this.parameterDefinitions.length; ++n) {
-						if (this.parameterDefinitions[n].id != this.currentParameterDefinition.id) {
-							changedParameterDefinitions
-									.push(this.parameterDefinitions[n]);
+						for ( var n = 0; n < this.parameterDefinitions.length; ++n) {
+							if (this.parameterDefinitions[n].id != this.currentParameterDefinition.id) {
+								changedParameterDefinitions
+										.push(this.parameterDefinitions[n]);
+							}
 						}
-					}
 
-					this.parameterDefinitions = changedParameterDefinitions;
+						this.parameterDefinitions = changedParameterDefinitions;
+					} else {
+						var changedParameterDefinitions = {};
+
+						for ( var n in this.parameterDefinitions) {
+							if (this.parameterDefinitions[n].id != this.currentParameterDefinition.id) {
+								changedParameterDefinitions[n] = this.parameterDefinitions[n];
+							}
+						}
+
+						this.parameterDefinitions = changedParameterDefinitions;
+
+					}
 
 					m_utils.debug("Changed parameter definitions");
 					m_utils.debug(this.parameterDefinitions);
@@ -637,7 +651,8 @@ define(
 				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.moveParameterDefinitionDown = function() {
-					m_utils.debug("Moving down " + this.currentParameterDefinition.id);
+					m_utils.debug("Moving down "
+							+ this.currentParameterDefinition.id);
 
 					var changedParameterDefinitions = [];
 

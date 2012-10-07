@@ -60,6 +60,7 @@ require(["require",
          "m_command",
          "m_commandsController",
          "m_view",
+		 "m_modelElementCommentsPropertiesPage",         
          "m_organizationView"],
          function (require) {
 	require("m_organizationView").initialize(

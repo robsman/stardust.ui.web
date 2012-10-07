@@ -28,12 +28,13 @@ require.config({
 		'jquery-ui': ['jquery'],
 		'jquery.tablescroll': ['jquery'],
 		'jquery.treeTable': ['jquery'],
-		'jquery.url': ['jquery'],
+		'jquery.url': ['jquery']
 	}
 });
 
 require(["require",
          "jquery",
+         "jquery-ui",
          "jquery.tablescroll",
          "jquery.treeTable",
 		 "jquery.url",
@@ -45,6 +46,7 @@ require(["require",
 		 "m_command",
 		 "m_commandsController",
 		 "m_modelElementView",
+		 "m_modelElementCommentsPropertiesPage",
 		 "m_xsdStructuredDataTypeView"], function(require) {
 	require("m_xsdStructuredDataTypeView").initialize(
 			jQuery.url.setUrl(window.location.search).param("fullId"));

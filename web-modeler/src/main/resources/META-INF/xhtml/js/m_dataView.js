@@ -47,11 +47,7 @@ define(
 				 * 
 				 */
 				DataView.prototype.initialize = function(data) {
-					this.data = data;
-
-					this.initializeModelElementView();
-					this.initializeModelElement(data);
-
+					this.id = "dataView";
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.primitiveDefaultTextInputRow = jQuery("#primitiveDefaultTextInputRow");
 					this.primitiveDefaultTextInput = jQuery("#primitiveDefaultTextInput");
@@ -102,6 +98,17 @@ define(
 					this.registerInputForModelElementAttributeChangeSubmission(
 							this.primitiveDefaultCheckboxInput,
 							"carnot:engine:defaultValue");
+
+					this.initializeModelElementView(data);
+				};
+
+				/**
+				 * 
+				 */
+				DataView.prototype.setModelElement = function(data) {
+					this.data = data;
+
+					this.initializeModelElement(data);
 
 					this.dataTypeSelector.setScopeModel(this.data.model);
 					this.dataTypeSelector.setDataType(this.data);
@@ -190,31 +197,6 @@ define(
 				DataView.prototype.submitDataChanges = function(dataChanges) {
 					this.initializeDataType(dataChanges);
 					this.submitChanges(dataChanges);
-				};
-
-				/**
-				 * 
-				 */
-				DataView.prototype.processCommand = function(command) {
-					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
-						this.initialize(this.data);
-
-						return;
-					}
-
-					var object = ("string" == typeof (command)) ? jQuery
-							.parseJSON(command) : command;
-
-					if (null != object && null != object.changes
-							&& null != object.changes.modified
-							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].oid == this.data.oid) {
-
-						m_utils.inheritFields(this.data,
-								object.changes.modified[0]);
-
-						this.initialize(this.data);
-					}
 				};
 			}
 		});

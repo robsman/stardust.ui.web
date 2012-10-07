@@ -16,6 +16,10 @@ define(
 			return {
 				initialize : function(fullId) {
 					var organization = m_model.findParticipant(fullId);
+
+					m_utils.debug("===> Organization");
+					m_utils.debug(organization);
+
 					var view = new OrganizationView();
 					// TODO Unregister!
 					// In Initializer?
@@ -36,20 +40,11 @@ define(
 				m_utils.inheritMethods(OrganizationView.prototype,
 						modelElementView);
 
-				jQuery("#organizationTabs").tabs();
-
 				/**
 				 *
 				 */
 				OrganizationView.prototype.initialize = function(organization) {
-					this.initializeModelElementView();
-
-					this.organization = organization;
-
-					this.initializeModelElement(organization);
-
-					m_utils.debug("===> Organization");
-					m_utils.debug(organization);
+					this.id = "organizationView";
 
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.chooseAssignmentRadio = jQuery("#chooseAssignmentRadio");
@@ -240,6 +235,16 @@ define(
 						});
 					});
 
+					this.initializeModelElementView(organization);
+				};
+
+				/**
+				 *
+				 */
+				OrganizationView.prototype.setModelElement = function(organization) {
+					this.organization = organization;
+					
+					this.initializeModelElement(organization);
 					this.populateDepartmentDataSelectInput();
 					this.populateLeaderSelectInput();
 
@@ -282,13 +287,6 @@ define(
 									this.organization.attributes["carnot:engine:dataPath"]);
 					this.costCenterInput
 							.val(this.organization.attributes["carnot:pwh:costCenter"]);
-				};
-
-				/**
-				 *
-				 */
-				OrganizationView.prototype.getModelElement = function() {
-					return this.organization;
 				};
 
 				/**
@@ -436,32 +434,6 @@ define(
 					}
 
 					return true;
-				};
-
-				/**
-				 *
-				 */
-				OrganizationView.prototype.processCommand = function(command) {
-					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
-						this.initialize(this.organization);
-
-						return;
-					}
-
-					var object = ("string" == typeof (command)) ? jQuery
-							.parseJSON(command) : command;
-
-					if (null != object
-							&& null != object.changes
-							&& null != object.changes.modified
-							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].oid == this.organization.oid) {
-
-						m_utils.inheritFields(this.organization,
-								object.changes.modified[0]);
-
-						this.initialize(this.organization);
-					}
 				};
 			}
 		});

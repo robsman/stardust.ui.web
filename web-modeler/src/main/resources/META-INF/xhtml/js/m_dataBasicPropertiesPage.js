@@ -25,6 +25,9 @@ define(
 				}
 			};
 
+			/**
+			 * 
+			 */
 			function DataBasicPropertiesPage(propertiesPanel) {
 				var propertiesPage = m_basicPropertiesPage
 						.create(propertiesPanel);
@@ -94,46 +97,6 @@ define(
 					this.registerInputForModelElementAttributeChangeSubmission(
 							this.primitiveDefaultCheckboxInput,
 							"carnot:engine:defaultValue");
-				};
-
-				/**
-				 * 
-				 */
-				DataBasicPropertiesPage.prototype.getModelElement = function() {
-					return this.propertiesPanel.data;
-				};
-
-				/**
-				 * 
-				 */
-				DataBasicPropertiesPage.prototype.assembleChangedObjectFromProperty = function(
-						property, value) {
-					var element = {};
-
-					element[property] = value;
-
-					return element;
-				};
-
-				/**
-				 * 
-				 */
-				DataBasicPropertiesPage.prototype.assembleChangedObjectFromAttribute = function(
-						attribute, value) {
-					var element = {
-						attributes : {}
-					};
-
-					element.attributes[attribute] = value;
-
-					return element;
-				};
-
-				/**
-				 * 
-				 */
-				DataBasicPropertiesPage.prototype.getModelElement = function() {
-					return this.propertiesPanel.data;
 				};
 
 				/**

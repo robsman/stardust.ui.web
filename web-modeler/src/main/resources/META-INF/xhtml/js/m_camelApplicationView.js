@@ -33,26 +33,34 @@ define(
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(CamelApplicationView.prototype, view);
 
-				this.camelContextInput = jQuery("#camelContextInput");
-				this.routeTextarea = jQuery("#routeTextarea");
-				this.additionalBeanSpecificationTextarea = jQuery("#additionalBeanSpecificationTextarea");
-				this.requestDataInput = jQuery("#requestDataInput");
-				this.responseDataInput = jQuery("#responseDataInput");
-
-				this.registerInputForModelElementAttributeChangeSubmission(
-						this.camelContextInput, "carnot:engine:camel::camelContextId");
-				this.registerInputForModelElementAttributeChangeSubmission(
-						this.routeTextarea, "carnot:engine:camel::routeEntries");
-				this.registerInputForModelElementAttributeChangeSubmission(
-						this.additionalBeanSpecificationTextarea, "carnot:engine:camel::additionalSpringBeanDefinitions");
-
 				/**
 				 *
 				 */
 				CamelApplicationView.prototype.initialize = function(
 						application) {
-					this.initializeModelElementView();
+					this.id = "camelApplicationView";
 
+					this.camelContextInput = jQuery("#camelContextInput");
+					this.routeTextarea = jQuery("#routeTextarea");
+					this.additionalBeanSpecificationTextarea = jQuery("#additionalBeanSpecificationTextarea");
+					this.requestDataInput = jQuery("#requestDataInput");
+					this.responseDataInput = jQuery("#responseDataInput");
+
+					this.registerInputForModelElementAttributeChangeSubmission(
+							this.camelContextInput, "carnot:engine:camel::camelContextId");
+					this.registerInputForModelElementAttributeChangeSubmission(
+							this.routeTextarea, "carnot:engine:camel::routeEntries");
+					this.registerInputForModelElementAttributeChangeSubmission(
+							this.additionalBeanSpecificationTextarea, "carnot:engine:camel::additionalSpringBeanDefinitions");
+
+					this.initializeModelElementView(application);
+				};
+
+				/**
+				 *
+				 */
+				CamelApplicationView.prototype.setModelElement = function(
+						application) {
 					this.application = application;
 
 					this.initializeModelElement(application);
@@ -106,36 +114,6 @@ define(
 					}
 
 					return true;
-				};
-
-				/**
-				 *
-				 */
-				CamelApplicationView.prototype.processCommand = function(
-						command) {
-					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
-						this.initialize(this.application);
-
-						return;
-					}
-
-					m_utils.debug("===> Camel Process Command");
-					m_utils.debug(command);
-
-					// Parse the response JSON from command pattern
-
-					var object = ("string" == typeof (command)) ? jQuery
-							.parseJSON(command) : command;
-
-					if (null != object && null != object.changes
-							&& null != object.changes.modified
-							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].uuid == this.application.uuid) {
-
-						m_utils.inheritFields(this.application, object.changes.modified[0]);
-
-						this.initialize(this.application);
-					}
 				};
 			}
 		});
