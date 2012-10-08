@@ -23,6 +23,7 @@ define([ "m_utils", "m_constants" ], function(m_utils, m_constants) {
 	 * 
 	 */
 	function ModelElement() {
+		this.comments = [];
 
 		/**
 		 * 

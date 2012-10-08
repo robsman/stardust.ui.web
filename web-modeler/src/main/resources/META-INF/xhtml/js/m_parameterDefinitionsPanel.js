@@ -242,7 +242,8 @@ define(
 				};
 
 				/**
-				 * 
+				 * Binds the "old" currentParameterDefinition to the correct Parameter Definition after refresh from server and selects the corresponding
+				 * table row.
 				 */
 				ParameterDefinitionsPanel.prototype.selectCurrentParameterDefinition = function() {
 					if (this.currentParameterDefinition == null) {
@@ -250,17 +251,19 @@ define(
 					}
 
 					var id = 0;
-
+					
 					if (this.options.listType == "array") {
 						for ( var n = 0; n < this.parameterDefinitions.length; ++n) {
 							if (this.parameterDefinitions[n].id == this.currentParameterDefinition.id) {
 								id = n;
-
+								this.currentParameterDefinition = this.parameterDefinitions[n];
+								
 								break;
 							}
 						}
 					} else {
 						id = this.currentParameterDefinition.id;
+						this.currentParameterDefinition = this.parameterDefinitions[id];
 					}
 
 					jQuery("table#parameterDefinitionsTable tr#" + id)
@@ -557,7 +560,7 @@ define(
 					}
 
 					this.currentParameterDefinition = {
-						id : "New" + n,
+						id : "New_" + n, // TODO: Anticipates renaming of ID on server 
 						name : "New " + n,
 						direction : "IN",
 						dataFullId : null,

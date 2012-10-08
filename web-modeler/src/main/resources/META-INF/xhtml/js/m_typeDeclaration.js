@@ -177,5 +177,13 @@ define(
 					}
 					return instance;
 				};
+				
+				/**
+				 * 
+				 */
+				TypeDeclaration.prototype.switchToEnumeration = function()
+				{
+					
+				};
 			}
 		});
