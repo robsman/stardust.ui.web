@@ -73,7 +73,7 @@ define(
 				CommentsPanel.prototype.populateCommentsTable = function() {
 					this.commentsTableBody.empty();
 
-					for ( var n = 0; n < this.comments.length; ++n) {
+					for ( var n = 0; (this.comments && n < this.comments.length); ++n) {
 						var comment = this.comments[n];
 						m_utils.debug("n = " + n);
 						m_utils.debug(comment);
