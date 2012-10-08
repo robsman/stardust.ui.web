@@ -1,6 +1,6 @@
 /**
  * Utility functions for dialog programming.
- * 
+ *
  * @author Marc.Gille
  */
 define(
@@ -21,7 +21,7 @@ define(
 			 */
 			function CommentsPanel() {
 				/**
-				 * 
+				 *
 				 */
 				CommentsPanel.prototype.initialize = function(options) {
 					this.options = options;
@@ -42,7 +42,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommentsPanel.prototype.setComments = function(comments) {
 					this.comments = comments;
@@ -51,7 +51,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommentsPanel.prototype.addComment = function() {
 					this.comments
@@ -68,56 +68,58 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommentsPanel.prototype.populateCommentsTable = function() {
 					this.commentsTableBody.empty();
 
-					for ( var n = 0; n < this.comments.length; ++n) {
-						var comment = this.comments[n];
-						m_utils.debug("n = " + n);
-						m_utils.debug(comment);
+					if (this.comments) {
+						for ( var n = 0; n < this.comments.length; ++n) {
+							var comment = this.comments[n];
+							m_utils.debug("n = " + n);
+							m_utils.debug(comment);
 
-						var rowContent = "<tr id='comment-" + n + "'>";
+							var rowContent = "<tr id='comment-" + n + "'>";
 
-						rowContent += "<td style='padding-left: 0px;'>";
-						rowContent += "<table width='100%' cellspacing='0' cellpadding='0'>";
-						rowContent += "<tr>";
-						rowContent += "<td><span class='commentUserTimestampSpan'>";
-						rowContent += comment.userFirstName + " "
-								+ comment.userLastName;
-						rowContent += " &bull; ";
-						rowContent += m_utils.formatDate(new Date(
-								comment.timestamp), "n/j/Y  H:i:s");
-						rowContent += " (";
-						rowContent += m_utils.prettyDateTime(new Date(
-								comment.timestamp));
-						rowContent += ")";
-						rowContent += "</span></td>";
-						rowContent += "</tr>";
-						rowContent += "<tr>";
-						rowContent += "<td><span class='commentContentSpan'>";
-						rowContent += comment.content;
-						rowContent += "</span></td>";
-						rowContent += "</tr>";
-						rowContent += "</table>";
-						rowContent += "</td>";
-						rowContent += "</tr>";
+							rowContent += "<td style='padding-left: 0px;'>";
+							rowContent += "<table width='100%' cellspacing='0' cellpadding='0'>";
+							rowContent += "<tr>";
+							rowContent += "<td><span class='commentUserTimestampSpan'>";
+							rowContent += comment.userFirstName + " "
+									+ comment.userLastName;
+							rowContent += " &bull; ";
+							rowContent += m_utils.formatDate(new Date(
+									comment.timestamp), "n/j/Y  H:i:s");
+							rowContent += " (";
+							rowContent += m_utils.prettyDateTime(new Date(
+									comment.timestamp));
+							rowContent += ")";
+							rowContent += "</span></td>";
+							rowContent += "</tr>";
+							rowContent += "<tr>";
+							rowContent += "<td><span class='commentContentSpan'>";
+							rowContent += comment.content;
+							rowContent += "</span></td>";
+							rowContent += "</tr>";
+							rowContent += "</table>";
+							rowContent += "</td>";
+							rowContent += "</tr>";
 
-						var row = jQuery(rowContent);
+							var row = jQuery(rowContent);
 
-						row.mousedown({
-							page : this
-						}, function(event) {
-							jQuery(this).toggleClass("selected");
-						});
+							row.mousedown({
+								page : this
+							}, function(event) {
+								jQuery(this).toggleClass("selected");
+							});
 
-						this.commentsTableBody.append(rowContent);
+							this.commentsTableBody.append(rowContent);
+						}
 					}
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommentsPanel.prototype.submitChanges = function() {
 					if (this.options.submitHandler) {
