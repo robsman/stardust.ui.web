@@ -72,5 +72,31 @@ define([ "m_utils", "m_constants", "m_commandsController", "m_propertiesPanel",
 				this.propertiesPages[n].setElement();
 			}
 		};
+		
+		/**
+		 * 
+		 */
+		SwimlanePropertiesPanel.prototype.assembleChangedObjectFromProperty = function(
+				property, value) {
+			var element = {};
+
+			element[property] = value;
+
+			return element;
+		};
+
+		/**
+		 * 
+		 */
+		SwimlanePropertiesPanel.prototype.assembleChangedObjectFromAttribute = function(
+				attribute, value) {
+			var element = {
+				attributes : {}
+			};
+
+			element.attributes[attribute] = value;
+
+			return element;
+		};
 	}
 });

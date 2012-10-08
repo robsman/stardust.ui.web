@@ -24,7 +24,6 @@ require.config({
 		'jquery.url': ['libs/jquery/plugins/jquery.url', 'https://raw.github.com/allmarkedup/jQuery-URL-Parser/472315f02afbfd7193184300cc381163e19b4a16/jquery.url'],
 
 		'outline-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/outline-plugins',
-		'extensions': '../../../services/rest/bpm-modeler/config/ui/extensions.js?p=extensions',
 	},
 	shim: {
 		'raphael': {
@@ -54,7 +53,6 @@ define([
 		 "m_communicationController",
 
 		 "outline-plugins",
-		 "extensions",
 
 		 "m_urlUtils",
 		 "m_constants",

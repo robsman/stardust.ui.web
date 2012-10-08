@@ -69,8 +69,11 @@ define(
 			 *
 			 */
 			function Activity(id) {
-				m_utils.inheritMethods(Activity.prototype, m_modelElement
-						.create());
+				var modelElement = m_modelElement
+				.create();
+				
+				m_utils.inheritFields(this, modelElement);
+				m_utils.inheritMethods(Activity.prototype, modelElement);
 
 				this.type = m_constants.ACTIVITY;
 				this.id = id;

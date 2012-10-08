@@ -1,7 +1,9 @@
 package org.eclipse.stardust.ui.web.modeler.ui;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableList;
-import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
+import static java.util.Collections.unmodifiableMap;
 
 import java.util.List;
 import java.util.Map;
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.modeler.spi.ModelerUiExtensionsProvider;
+import org.eclipse.stardust.ui.web.modeler.ui.extension.ExtensionDiscoveryUtils;
 
 @Component
 @Scope("singleton")
@@ -26,63 +28,32 @@ public class UiExtensionsRegistry
    @Resource
    private ApplicationContext context;
 
-   private List<ModelerUiExtensionsProvider.ViewManagerConfiguration> viewManagers = newArrayList();
-
-   private List<ModelerUiExtensionsProvider.PropertyPageConfiguration> propertyPages = newArrayList();
-
-   private List<ModelerUiExtensionsProvider.ToolbarSectionConfiguration> toolbarSections = newArrayList();
-
-   private List<ModelerUiExtensionsProvider.ToolbarEntryConfiguration> toolbarEntries = newArrayList();
-
-   private List<ModelerUiExtensionsProvider.ApplicationTypeConfiguration> applicationTypes = newArrayList();
-
-   private List<ModelerUiExtensionsProvider.DataTypeConfiguration> dataTypes = newArrayList();
+   private Map<String, List<String>> extensionDescriptors = emptyMap();
 
    @PostConstruct
-   protected void loadExtensions()
+   public void discoverExtensionDescriptors()
    {
-      Map<String, ModelerUiExtensionsProvider> providers = context.getBeansOfType(ModelerUiExtensionsProvider.class);
-      for (Map.Entry<String, ModelerUiExtensionsProvider> provider : providers.entrySet())
-      {
-         trace.info("Registering UI extensions from provider " + provider.getKey());
-
-         viewManagers.addAll(provider.getValue().getViewManagerConfigs());
-         propertyPages.addAll(provider.getValue().getPropertyPageConfigs());
-         toolbarSections.addAll(provider.getValue().getToolbarSectionConfigs());
-         toolbarEntries.addAll(provider.getValue().getToolbarEntryConfigs());
-         applicationTypes.addAll(provider.getValue().getApplicationTypeConfigs());
-         dataTypes.addAll(provider.getValue().getDataTypeConfigs());
-      }
+      this.extensionDescriptors = unmodifiableMap(ExtensionDiscoveryUtils.findExtensions(
+            context, asList("viewManager", "diagramToolbar", "propertiesPage", "metaModel")));
    }
 
-   public List<ModelerUiExtensionsProvider.ViewManagerConfiguration> getViewManagers()
+   public List<String> getViewManagerExtensions()
    {
-      return unmodifiableList(viewManagers);
+      return unmodifiableList(extensionDescriptors.get("viewManager"));
    }
 
-   public List<ModelerUiExtensionsProvider.PropertyPageConfiguration> getPropertyPages()
+   public List<String> getDiagramToolbarExtensions()
    {
-      return unmodifiableList(propertyPages);
+      return unmodifiableList(extensionDescriptors.get("diagramToolbar"));
    }
 
-   public List<ModelerUiExtensionsProvider.ToolbarSectionConfiguration> getToolbarSections()
+   public List<String> getPropertiesPageExtensions()
    {
-      return unmodifiableList(toolbarSections);
+      return unmodifiableList(extensionDescriptors.get("propertiesPage"));
    }
 
-   public List<ModelerUiExtensionsProvider.ToolbarEntryConfiguration> getToolbarEntries()
+   public List<String> getMetaModelExtensions()
    {
-      return unmodifiableList(toolbarEntries);
+      return unmodifiableList(extensionDescriptors.get("metaModel"));
    }
-
-   public List<ModelerUiExtensionsProvider.ApplicationTypeConfiguration> getApplicationTypes()
-   {
-      return unmodifiableList(applicationTypes);
-   }
-
-   public List<ModelerUiExtensionsProvider.DataTypeConfiguration> getDataTypes()
-   {
-      return unmodifiableList(dataTypes);
-   }
-
 }

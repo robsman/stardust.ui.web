@@ -11,14 +11,64 @@
 <link rel="stylesheet" type="text/css"
 	href="../../css/jquery-ui-1.8.20.custom.css"></link>
 <link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" type="text/css" href="../../css/codemirror/codemirror.css"></link>
-<link rel="stylesheet" type="text/css" href="../../css/codemirror/theme/eclipse.css"></link>
-<link rel="stylesheet" type="text/css" href="../../css/codemirror/dialog.css"></link>
-<link rel="stylesheet" type="text/css" href="../../css/codemirror/simple-hint.css"></link>
-<link rel="stylesheet" type="text/css" href="../../css/lightdust-codemirror.css"></link>
+<link rel="stylesheet" type="text/css"
+	href="../../css/codemirror/codemirror.css"></link>
+<link rel="stylesheet" type="text/css"
+	href="../../css/codemirror/theme/eclipse.css"></link>
+<link rel="stylesheet" type="text/css"
+	href="../../css/codemirror/dialog.css"></link>
+<link rel="stylesheet" type="text/css"
+	href="../../css/codemirror/simple-hint.css"></link>
+<link rel="stylesheet" type="text/css"
+	href="../../css/lightdust-codemirror.css"></link>
 <script type="text/javascript"
 	data-main="../../js/messageTransformationApplicationViewMain"
 	src="../../js/libs/require/2.0.5/require.js"></script>
+<style>
+#inputDataTextarea {
+	font-family: monospace;
+	font-size: 11px;
+	color: #333333;
+}
+
+#outputDataTable td {
+	font-family: monospace;
+	font-size: 11px;
+	color: #333333;
+}
+
+#outputDataTable tr.errorRow td {
+	font-family: monospace;
+	font-size: 11px;
+	color: red;
+}
+
+#outputDataTable tr.emptyRow td {
+	font-family: monospace;
+	font-size: 11px;
+	color: #dddddd;
+}
+
+.keySpan {
+	color: green;
+	font-weight: bold;
+}
+
+.stringSpan {
+	color: green;
+	font-weight: bold;
+}
+
+.booleanSpan {
+	color: green;
+	font-weight: bold;
+}
+
+.nullSpan {
+	color: green;
+	font-weight: bold;
+}
+</style>
 </head>
 <body>
 	<div class="panel">
@@ -28,172 +78,217 @@
 					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 						style="margin-bottom: 10px;">
 						<tr id="guidOutputRow">
-							<td><label for="guidOutput">UUID</label>
-							</td>
-							<td><div id="guidOutput" class="output">168999</div>
-							</td>
+							<td><label for="guidOutput">UUID</label></td>
+							<td><div id="guidOutput" class="output">168999</div></td>
 						</tr>
 						<tr id="idOutputRow">
-							<td><label for="idOutput">ID</label>
-							</td>
-							<td><div id="idOutput" class="output"></div>
-							</td>
+							<td><label for="idOutput">ID</label></td>
+							<td><div id="idOutput" class="output"></div></td>
 						</tr>
 						<tr>
-							<td><label for="nameInput">Application Name</label>
-							</td>
+							<td><label for="nameInput">Application Name</label></td>
 							<td><input id="nameInput" type="text" style="width: 200px;"></input>
 							</td>
 						</tr>
-					</table></td>
+					</table>
+				</td>
 			</tr>
 			<tr>
-				<td><label for="descriptionTextarea">Description</label>
-				</td>
+				<td><label for="descriptionTextarea">Description</label></td>
 			</tr>
 			<tr>
 				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
 				</td>
 			</tr>
+
 			<tr>
 				<td>
-					<table cellpadding="0" cellspacing="0" class="layoutTable">
-						<tr valign="top">
-							<td>
-								<div class="heading" style="margin-bottom: 5px;">Source
-									Message</div>
-							</td>
-							<td><div class="heading" style="margin-bottom: 5px; margin-left: 10px;">Target
-									Message</div>
-							</td>
-						</tr>
-						<tr valign="top">
-							<td>
-								<div class="panelBorder">
-									<table cellpadding="0" cellspacing="0" class="layoutTable">
-										<tr>
-											<td>
-												<div class="toolBar">
-													<table cellpadding="0" cellspacing="5" class="layoutTable">
-														<tr>
-															<td><input id="addInputDataButton" type="button"
-																value="Add Input ..." />
-															</td>
-															<td><input id="filterHighlightedSourceFieldsInput"
-																type="image" height="16" width="16"
-																src="../../images/bulb-on.gif"
-																title="Display only highlighted fields" /></td>
-															<td><input id="showAllSourceFieldsInput"
-																type="image" height="16" width="16"
-																src="../../images/bulb-off.gif"
-																title="Display highlighted and non-highlighted fields" />
-															</td>
-															<td><input id="sourceFilterInput" type="text"
-																style="width: 100%;" />
-															</td>
-														</tr>
-													</table>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<div class="dataTable">
-													<table id="sourceTable" cellpadding="0" cellspacing="0" class="treeTable"
-														style="width: 500px;">
-														<thead>
-															<tr>
-																<th style="width: 400px;">Element</th>
-																<th style="width: 100px;">Type</th>
-															</tr>
-														</thead>
-														<tbody />
-													</table>
-												</div>
-											</td>
-										</tr>
-									</table>
-								</div></td>
-							<td>
-								<div style="margin-left: 10px;">
-									<div class="panelBorder">
+					<div id="propertiesTabs" style="margin-top: 10px;">
+						<ul id="propertiesTabsList">
+							<li><a href="#configurationTab"><img
+									src="../../images/icons/basic-properties-page.png"></img><span
+									class="tabLabel">Configuration</span> </a></li>
+							<li><a href="#testTab"><img
+									src="../../images/icons/basic-properties-page.png"></img><span
+									class="tabLabel">Test</span> </a></li>
+						</ul>
+						<div id="configurationTab">
+							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+								<tr>
+									<td>
 										<table cellpadding="0" cellspacing="0" class="layoutTable">
-											<tr>
+											<tr valign="top">
 												<td>
-													<div class="toolBar">
-														<table cellpadding="0" cellspacing="5" class="layoutTable">
+													<div class="heading" style="margin-bottom: 5px;">Source
+														Message</div></td>
+												<td><div class="heading"
+														style="margin-bottom: 5px; margin-left: 10px;">Target
+														Message</div></td>
+											</tr>
+											<tr valign="top">
+												<td>
+													<div class="panelBorder">
+														<table cellpadding="0" cellspacing="0" class="layoutTable">
 															<tr>
-																<td><input id="addOutputDataButton" type="button"
-																	value="Add Output ..." /></td>
-																<td><input id="filterFieldsWithMappingInput"
-																	type="image" height="16" width="16"
-																	src="../../images/mapping.gif"
-																	title="Display only fields with mapping expressions" />
-																</td>
-																<td><input id="filterFieldsWithNoMappingInput"
-																	type="image" height="16" width="16"
-																	src="../../images/no-mapping.gif"
-																	title="Display only fields with no mapping expression" />
-																</td>
-																<td><input id="filterHighlightedTargetFieldsInput"
-																	type="image" height="16" width="16"
-																	src="../../images/bulb-on.gif"
-																	title="Display only highlighted fields" /></td>
-																<td><input id="showAllTargetFieldsInput"
-																	type="image" height="16" width="16"
-																	src="../../images/bulb-off.gif"
-																	title="Display highlighted and non-highlighted fields" />
-																</td>
-																<td><input type="image" height="16" width="16"
-																	src="../../images/error.gif"
-																	title="Display only fields whose mapping expression is invalid" />
-																</td>
-																<td><input id="targetFilterInput" type="text"
-																	style="width: 100%;" title="Filter fields" />
-																</td>
+																<td>
+																	<div class="toolBar">
+																		<table cellpadding="0" cellspacing="5"
+																			class="layoutTable">
+																			<tr>
+																				<td><input id="addInputDataButton"
+																					type="button" value="Add Input ..." /></td>
+																				<td><input
+																					id="filterHighlightedSourceFieldsInput"
+																					type="image" src="../../images/bulb-on.gif"
+																					title="Display only highlighted fields" />
+																				</td>
+																				<td><input id="showAllSourceFieldsInput"
+																					type="image" src="../../images/bulb-off.gif"
+																					title="Display highlighted and non-highlighted fields" />
+																				</td>
+																				<td><input id="sourceFilterInput" type="text"
+																					style="width: 100%;" /></td>
+																			</tr>
+																		</table>
+																	</div></td>
+															</tr>
+															<tr>
+																<td>
+																	<div class="dataTable">
+																		<table id="sourceTable" cellpadding="0"
+																			cellspacing="0" class="treeTable"
+																			style="width: 500px;">
+																			<thead>
+																				<tr>
+																					<th style="width: 400px;">Element</th>
+																					<th style="width: 100px;">Type</th>
+																				</tr>
+																			</thead>
+																			<tbody />
+																		</table>
+																	</div></td>
 															</tr>
 														</table>
 													</div>
 												</td>
+												<td>
+													<div style="margin-left: 10px;">
+														<div class="panelBorder">
+															<table cellpadding="0" cellspacing="0"
+																class="layoutTable">
+																<tr>
+																	<td>
+																		<div class="toolBar">
+																			<table cellpadding="0" cellspacing="5"
+																				class="layoutTable">
+																				<tr>
+																					<td><input id="addOutputDataButton"
+																						type="button" value="Add Output ..." />
+																					</td>
+																					<td><input id="filterFieldsWithMappingInput"
+																						type="image" src="../../images/mapping.gif"
+																						title="Display only fields with mapping expressions" />
+																					</td>
+																					<td><input id="filterFieldsWithNoMappingInput"
+																						type="image" src="../../images/no-mapping.gif"
+																						title="Display only fields with no mapping expression" />
+																					</td>
+																					<td><input
+																						id="filterHighlightedTargetFieldsInput"
+																						type="image" src="../../images/bulb-on.gif"
+																						title="Display only highlighted fields" />
+																					</td>
+																					<td><input id="showAllTargetFieldsInput"
+																						type="image" src="../../images/bulb-off.gif"
+																						title="Display highlighted and non-highlighted fields" />
+																					</td>
+																					<td><input type="image"
+																						src="../../images/error.gif"
+																						title="Display only fields whose mapping expression is invalid" />
+																					</td>
+																					<td><input id="targetFilterInput" type="text"
+																						style="width: 100%;" title="Filter fields" /></td>
+																				</tr>
+																			</table>
+																		</div></td>
+																</tr>
+																<tr>
+																	<td>
+																		<div class="dataTable">
+																			<table id="targetTable" cellpadding="0"
+																				cellspacing="0" class="treeTable"
+																				style="width: 900px;">
+																				<thead>
+																					<tr>
+																						<th style="width: $ 00px;">Element</th>
+																						<th style="width: 100px;">Type</th>
+																						<th style="width: 200px;">Mapping</th>
+																						<th style="width: 200px;">Problem</th>
+																					</tr>
+																				</thead>
+																				<tbody />
+																			</table>
+																		</div></td>
+																</tr>
+															</table>
+														</div>
+													</div></td>
 											</tr>
 											<tr>
-												<td>
-													<div class="dataTable">
-														<table id="targetTable" cellpadding="0" cellspacing="0" class="treeTable"
-															style="width: 900px;">
-															<thead>
-																<tr>
-																	<th style="width: $00px;">Element</th>
-																	<th style="width: 100px;">Type</th>
-																	<th style="width: 200px;">Mapping</th>
-																	<th style="width: 200px;">Problem</th>
-																</tr>
-															</thead>
-															<tbody />
-														</table>
-													</div>
+												<td colspan="2"><div class="heading"
+														style="margin-top: 10px;">Advanced Mapping</div></td>
+											</tr>
+											<tr>
+												<td colspan="2"><div id="elementIndicatorText">&nbsp;</div>
 												</td>
 											</tr>
-										</table>
-									</div>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2"><div class="heading"
-									style="margin-top: 10px;">Advanced Mapping</div>
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2"><div id="elementIndicatorText">&nbsp;</div>
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2"><textarea id="expressionTextArea" cols="80"
-									rows="5"></textarea></td>
-						</tr>
-					</table>
-				</td>
+											<tr>
+												<td colspan="2"><textarea id="expressionTextArea"
+														cols="80" rows="5"></textarea>
+												</td>
+											</tr>
+										</table></td>
+								</tr>
+							</table>
+						</div>
+						<div id="testTab">
+							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+								<tr>
+									<td>
+										<table cellpadding="0" cellspacing="5" class="layoutTable">
+											<tr>
+												<td><input id="runButton" type="image"
+													src="../../images/icons/run.png"
+													title="Run Message Transformation" />
+												</td>
+												<td><input id="resetButton" type="image"
+													src="../../images/icons/clear.png"
+													title="Clear input data fields" /></td>
+											</tr>
+										</table></td>
+								</tr>
+								<tr>
+									<td><label for="inputDataTextArea">Input Data</label>
+									</td>
+								</tr>
+								<tr>
+									<td><textarea id="inputDataTextarea" rows="10" cols="80"
+											style="width: 680px;"></textarea></td>
+								</tr>
+								<tr>
+									<td><label for="outputDataTable">Output Data</label>
+									</td>
+								</tr>
+								<tr>
+									<td><div
+											style="width: 680px; height: 200px; border: 1px solid grey; overflow: auto;">
+											<table id="outputDataTable" style="width: 680px;">
+											</table>
+										</div></td>
+								</tr>
+							</table>
+						</div>
+					</div></td>
 			</tr>
 		</table>
 	</div>
@@ -201,13 +296,17 @@
 		style="min-width: 300px; min-height: 200px;">
 		<table>
 			<tr>
-				<td><label for="typeSelectInput">Type:</label></td>
+				<td><label for="typeSelectInput">Type:</label>
+				</td>
 				<td><select id="typeSelectInput">
-				</select></td>
+				</select>
+				</td>
 			</tr>
 			<tr>
-				<td><label for="nameTextInput">Name:</label></td>
-				<td><input id="nameTextInput" type="text" /></td>
+				<td><label for="nameTextInput">Name:</label>
+				</td>
+				<td><input id="nameTextInput" type="text" />
+				</td>
 			</tr>
 			<tr>
 				<td colspan="2">
@@ -218,8 +317,7 @@
 							<td><input id="closeButton" type="button" value="Close" />
 							</td>
 						</tr>
-					</table>
-				</td>
+					</table></td>
 			</tr>
 		</table>
 	</div>
@@ -227,13 +325,17 @@
 		style="min-width: 300px; min-height: 200px;">
 		<table>
 			<tr>
-				<td><label for="typeSelectInput">Type:</label></td>
+				<td><label for="typeSelectInput">Type:</label>
+				</td>
 				<td><select id="typeSelectInput">
-				</select></td>
+				</select>
+				</td>
 			</tr>
 			<tr>
-				<td><label for="nameTextInput">Name:</label></td>
-				<td><input id="nameTextInput" type="text" /></td>
+				<td><label for="nameTextInput">Name:</label>
+				</td>
+				<td><input id="nameTextInput" type="text" />
+				</td>
 			</tr>
 			<tr>
 				<td colspan="2">
@@ -244,8 +346,7 @@
 							<td><input id="closeButton" type="button" value="Close" />
 							</td>
 						</tr>
-					</table>
-				</td>
+					</table></td>
 			</tr>
 		</table>
 	</div>

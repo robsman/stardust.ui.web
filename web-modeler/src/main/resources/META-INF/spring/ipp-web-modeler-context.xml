@@ -28,6 +28,10 @@
 		<qualifier value="default" />
 	</bean>
 
+	<bean class="org.eclipse.stardust.ui.web.modeler.common.DefaultServiceFactoryLocator" scope="session">
+		<qualifier value="default" />
+	</bean>
+
 	<bean id="modelingConfigurationPanel" class="org.eclipse.stardust.ui.web.modeler.portal.ModelingConfigurationPanel"
 		scope="session">
 	</bean>

@@ -515,16 +515,27 @@ define(
 					this.modelElement.gatewayType = m_constants.AND_GATEWAY_TYPE;
 					this.xorPath.hide();
 					this.andPath.show();
-					m_commandsController.submitImmediately(m_command
-							.createUpdateCommand(this));
+					this.submitChanges();
 				};
 
 				GatewaySymbol.prototype.switchToXorGateway = function() {
 					this.modelElement.gatewayType = m_constants.XOR_GATEWAY_TYPE;
 					this.andPath.hide();
 					this.xorPath.show();
-					m_commandsController.submitImmediately(m_command
-							.createUpdateCommand(this));
+					this.submitChanges();
+				};
+
+				/**
+				 * Update the modelElement
+				 */
+				GatewaySymbol.prototype.submitChanges = function() {
+					var changes = {
+						gatewayType : this.modelElement.gatewayType
+					};
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementCommand(
+									this.diagram.modelId,
+									this.modelElement.oid, changes));
 				};
 			}
 

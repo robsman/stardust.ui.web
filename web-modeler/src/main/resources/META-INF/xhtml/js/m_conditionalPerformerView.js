@@ -41,14 +41,7 @@ define(
 				 */
 				ConditionalPerformerView.prototype.initialize = function(
 						conditionalPerformer) {
-					this.initializeModelElementView();
-					this.initializeModelElement(conditionalPerformer);
-
-					this.conditionalPerformer = conditionalPerformer;
-
-					m_utils.debug("===> Conditional Performer");
-					m_utils.debug(conditionalPerformer);
-
+					this.id = "conditionalPerformerView";
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.performerTypeSelect = jQuery("#performerTypeSelect");
 					this.bindingDataSelect = jQuery("#bindingDataSelect");
@@ -79,6 +72,20 @@ define(
 					this.registerInputForModelElementAttributeChangeSubmission(
 							this.performerTypeSelect,
 							"carnot:engine:conditionalPerformer:kind");
+					this.initializeModelElementView(conditionalPerformer);
+				};
+
+				/**
+				 * 
+				 */
+				ConditionalPerformerView.prototype.setModelElement = function(
+						conditionalPerformer) {
+					this.initializeModelElement(conditionalPerformer);
+
+					this.conditionalPerformer = conditionalPerformer;
+
+					m_utils.debug("===> Conditional Performer");
+					m_utils.debug(conditionalPerformer);
 
 					this.populateBindingDataSelect();
 
@@ -94,13 +101,6 @@ define(
 							.val(this.conditionalPerformer.dataFullId);
 					this.bindingDataPathInput
 							.val(this.conditionalPerformer.dataPath);
-				};
-
-				/**
-				 * 
-				 */
-				ConditionalPerformerView.prototype.getModelElement = function() {
-					return this.conditionalPerformer;
 				};
 
 				/**
@@ -170,29 +170,6 @@ define(
 					}
 
 					return true;
-				};
-
-				/**
-				 * 
-				 */
-				ConditionalPerformerView.prototype.processCommand = function(
-						command) {
-					// Parse the response JSON from command pattern
-
-					var object = ("string" == typeof (command)) ? jQuery
-							.parseJSON(command) : command;
-
-					if (null != object
-							&& null != object.changes
-							&& null != object.changes.modified
-							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].oid == this.conditionalPerformer.oid) {
-
-						m_utils.inheritFields(this.conditionalPerformer,
-								object.changes.modified[0]);
-
-						this.initialize(this.conditionalPerformer);
-					}
 				};
 			}
 		});

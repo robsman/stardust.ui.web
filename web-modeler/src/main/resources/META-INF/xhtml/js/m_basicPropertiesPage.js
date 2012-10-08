@@ -91,8 +91,9 @@ define(
 						this.openDocumentViewLink.click({
 							page : this
 						}, function(event) {
-							event.data.page.viewManager.openView("documentView", "documentOID="
-									+ event.data.page.documentUrl,
+							event.data.page.viewManager.openView(
+									"documentView", "documentOID="
+											+ event.data.page.documentUrl,
 									"documentOID="
 											+ event.data.page.documentUrl);
 						});
@@ -166,26 +167,33 @@ define(
 				 * 
 				 */
 				BasicPropertiesPage.prototype.loadDocumentUrl = function() {
-					if (this.propertiesPanel.getModelElement().attributes == null) {
-						return;
-					}
+					// if (this.propertiesPanel.getModelElement().attributes ==
+					// null) {
+					// return;
+					// }
+					//
+					// this.documentUrl =
+					// this.propertiesPanel.getModelElement().attributes["documentation:externalDocumentUrl"];
+					//
+					// if (this.documentationCreationLinkPanel != null
+					// && this.openDocumentViewLinkPanel != null) {
+					// if (this.documentUrl == null) {
+					// m_dialog
+					// .makeVisible(this.documentationCreationLinkPanel);
+					// m_dialog
+					// .makeInvisible(this.openDocumentViewLinkPanel);
+					// } else {
+					// m_dialog
+					// .makeInvisible(this.documentationCreationLinkPanel);
+					// m_dialog
+					// .makeVisible(this.openDocumentViewLinkPanel);
+					// }
+					// }
 
-					this.documentUrl = this.propertiesPanel.getModelElement().attributes["documentation:externalDocumentUrl"];
-
-					if (this.documentationCreationLinkPanel != null
-							&& this.openDocumentViewLinkPanel != null) {
-						if (this.documentUrl == null) {
-							m_dialog
-									.makeVisible(this.documentationCreationLinkPanel);
-							m_dialog
-									.makeInvisible(this.openDocumentViewLinkPanel);
-						} else {
-							m_dialog
-									.makeInvisible(this.documentationCreationLinkPanel);
-							m_dialog
-									.makeVisible(this.openDocumentViewLinkPanel);
-						}
-					}
+					// TODO Add above back if document generation is supported
+					
+					m_dialog.makeInvisible(this.documentationCreationLinkPanel);
+					m_dialog.makeInvisible(this.openDocumentViewLinkPanel);
 				};
 
 				/**

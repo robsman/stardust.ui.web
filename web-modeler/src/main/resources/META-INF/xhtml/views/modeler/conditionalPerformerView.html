@@ -24,35 +24,33 @@
 					<div class="errorMessagesPanel">
 						<ul id="errorMessagesList">
 						</ul>
-					</div></td>
+					</div>
+				</td>
 			</tr>
 			<tr>
 				<td>
 					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 						style="margin-bottom: 10px;">
 						<tr id="guidOutputRow">
-							<td><label for="guidOutput">UUID</label>
-							</td>
-							<td><div id="guidOutput" class="output"></div>
-							</td>
+							<td><label for="guidOutput">UUID</label></td>
+							<td><div id="guidOutput" class="output"></div></td>
 						</tr>
 						<tr id="idOutputRow">
-							<td><label for="idOutput">ID</label>
-							</td>
-							<td><div id="idOutput" class="output"></div>
-							</td>
+							<td><label for="idOutput">ID</label></td>
+							<td><div id="idOutput" class="output"></div></td>
 						</tr>
 						<tr>
 							<td><label for="nameInput">Conditional Performer
-									Name</label>
-							</td>
+									Name</label></td>
 							<td><input id="nameInput" type="text" style="width: 300px;"></input>
 							</td>
 						</tr>
-					</table></td>
+					</table>
+				</td>
 			</tr>
 			<tr>
-				<td><label for="descriptionTextarea">Description</label></td>
+				<td><label for="descriptionTextarea">Description</label>
+				</td>
 			</tr>
 			<tr>
 				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
@@ -66,40 +64,59 @@
 							<td><input id="publicVisibilityCheckbox" type="checkbox"></input>
 							</td>
 							<td><label for="publicVisibilityCheckbox">Public
-									Visibility</label>
-							</td>
+									Visibility</label></td>
 						</tr>
-					</table></td>
+					</table>
+				</td>
 			</tr>
-
 			<tr>
 				<td>
-					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
-						style="margin-top: 10px;">
-						<tr>
-							<td><label for="performerTypeSelect">Performer Type</label>
-							</td>
-							<td><select id="performerTypeSelect">
-									<option value="user">User</option>
-									<option value="userGroup">User Group</option>
-									<option value="modelParticipant">Organization/Role</option>
-									<option value="modelParticipantOrUserGroup">Organization/Role/User
-										Group</option>
-							</select></td>
-						</tr>
-						<tr>
-							<td><label for="bindingDataSelect">Binding Data</label></td>
-							<td><select id="bindingDataSelect"></select></td>
-						</tr>
-						<tr>
-							<td><label for="bindingDataPathInput">Binding Data
-									Path</label></td>
-							<td><input id="bindingDataPathInput" type="text"
-								style="width: 300px;"></input></td>
-						</tr>
-					</table></td>
+					<div id="propertiesTabs" style="margin-top: 10px;">
+						<ul id="propertiesTabsList">
+							<li><a href="#configurationTab"><img
+									src="../../images/icons/basic-properties-page.png"></img><span
+									class="tabLabel">Configuration</span> </a>
+							</li>
+						</ul>
+						<div id="configurationTab">
+							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+								<tr>
+									<td>
+										<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+											style="margin-top: 10px;">
+											<tr>
+												<td><label for="performerTypeSelect">Performer
+														Type</label></td>
+												<td><select id="performerTypeSelect">
+														<option value="user">User</option>
+														<option value="userGroup">User Group</option>
+														<option value="modelParticipant">Organization/Role</option>
+														<option value="modelParticipantOrUserGroup">Organization/Role/User
+															Group</option>
+												</select>
+												</td>
+											</tr>
+											<tr>
+												<td><label for="bindingDataSelect">Binding Data</label>
+												</td>
+												<td><select id="bindingDataSelect"></select>
+												</td>
+											</tr>
+											<tr>
+												<td><label for="bindingDataPathInput">Binding
+														Data Path</label>
+												</td>
+												<td><input id="bindingDataPathInput" type="text"
+													style="width: 300px;"></input>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div></td>
 			</tr>
-
 		</table>
 	</div>
 </body>

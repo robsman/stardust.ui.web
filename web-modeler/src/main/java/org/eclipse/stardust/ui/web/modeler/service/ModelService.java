@@ -62,15 +62,18 @@ import org.eclipse.stardust.modeling.validation.ValidationService;
 import org.eclipse.stardust.modeling.validation.ValidatorRegistry;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
+import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.portal.JaxWSResource;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
+
 import org.eclipse.xsd.*;
 import org.eclipse.xsd.impl.XSDImportImpl;
 import org.eclipse.xsd.util.XSDResourceFactoryImpl;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.google.gson.JsonArray;
@@ -261,6 +264,10 @@ public class ModelService
    @Resource
    private UserIdProvider me;
 
+   @Resource
+   @Qualifier("default")
+   private ServiceFactoryLocator serviceFactoryLocator;
+
    private ServiceFactory serviceFactory;
 
    private DocumentManagementService documentManagementService;
@@ -283,10 +290,8 @@ public class ModelService
    public ServiceFactory getServiceFactory()
    {
       if (serviceFactory == null)
-      { 
-         // TODO Bind against user!
-         
-         serviceFactory = ServiceFactoryLocator.get("motu", "motu");
+      {
+         serviceFactory = serviceFactoryLocator.get();
       }
 
       return serviceFactory;
@@ -607,9 +612,9 @@ public class ModelService
       currentUserJson.addProperty("account", currentUser.getLoginName());
       return currentUserJson.toString();
    }
-   
+
    public String getSessionOwner(String sessionId)
-   {  
+   {
       ModelingSession currentSession = sessionManager.findById(sessionId);
       User currentUser = getUserService().getUser(unwrapUsername(currentSession.getOwnerId()));
       JsonObject currentUserJson = new JsonObject();
@@ -2271,7 +2276,7 @@ public class ModelService
       JsonMarshaller m = new JsonMarshaller();
       //System.out.println(m.writeJsonObject(ms.getWebServiceStructure(postedData)));
       //System.out.println(m.writeJsonObject(ms.getXsdStructure(postedData)));
-      
+
       org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager wmm = new org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager();
       try
       {
@@ -2285,7 +2290,7 @@ public class ModelService
       ModelElementMarshaller mem = new ModelElementMarshaller()
       {
          EObjectUUIDMapper mapper = new EObjectUUIDMapper();
-         
+
          @Override
          protected EObjectUUIDMapper eObjectUUIDMapper()
          {
@@ -2301,18 +2306,18 @@ public class ModelService
       };
 
       System.out.println(m.writeJsonObject(mem.toJson(model.getTypeDeclarations().getTypeDeclaration("Pattern1"))));
-      
+
       TypeDeclarationType typeDeclaration = model.getTypeDeclarations().getTypeDeclaration("Composite1");
       JsonObject json = mem.toJson(typeDeclaration);
       System.out.println(m.writeJsonObject(json));
-      
+
       //typeDeclaration = model.getTypeDeclarations().getTypeDeclaration("Enumeration1");
       //json = mem.toJson(typeDeclaration);
       //System.out.println(m.writeJsonObject(json));
-      
-      modifyComplexType(json);     
-      //modifyEnumType(json);     
-      
+
+      modifyComplexType(json);
+      //modifyEnumType(json);
+
       ModelElementUnmarshaller um = new ModelElementUnmarshaller()
       {
          @Override
@@ -2333,7 +2338,7 @@ public class ModelService
       JsonObject ts = ss.getAsJsonObject("types");
       JsonObject cs = ts.getAsJsonObject("Enumeration1");
       JsonObject es = cs.getAsJsonObject("facets");
-      
+
       JsonObject d = new JsonObject();
       d.addProperty("name", "4");
       d.addProperty("icon", "XSDEnumerationFacet.gif");
@@ -2349,12 +2354,12 @@ public class ModelService
       JsonObject cs = ts.getAsJsonObject("Composite1");
       JsonObject bs = cs.getAsJsonObject("body");
       JsonObject es = bs.getAsJsonObject("elements");
-      
+
       es.remove("b");
-      
+
       JsonObject c = es.getAsJsonObject("c");
       c.addProperty("name", "NewC");
-      
+
       JsonObject d = new JsonObject();
       d.addProperty("name", "NewD");
       d.addProperty("icon", "XSDElementDeclaration.gif");
@@ -2362,12 +2367,12 @@ public class ModelService
       d.addProperty("cardinality", "required");
       es.add("NewD", d);
    }*/
-   
+
    /*
    public static void testTD()
    {
-      DataChangeCommandHandler handler = new DataChangeCommandHandler();      
-      
+      DataChangeCommandHandler handler = new DataChangeCommandHandler();
+
       org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager wmm = new org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager();
       try
       {
@@ -2377,16 +2382,16 @@ public class ModelService
       {
          e.printStackTrace();
       }
-      ModelType model = wmm.getModel();      
-      
-      String structId = "Composite3", structName = "Composite3";      
-      
+      ModelType model = wmm.getModel();
+
+      String structId = "Composite3", structName = "Composite3";
+
       JsonObject structJson = new JsonObject();
       structJson.addProperty(ModelerConstants.ID_PROPERTY, structId);
       structJson.addProperty(ModelerConstants.NAME_PROPERTY, structName);
       JsonObject typeDeclarationJson = new JsonObject();
       structJson.add(ModelerConstants.TYPE_DECLARATION_PROPERTY, typeDeclarationJson);
-      
+
       JsonObject type = new JsonObject();
       typeDeclarationJson.add("type", type);
       type.addProperty("classifier", "SchemaType");
@@ -2397,18 +2402,18 @@ public class ModelService
       JsonObject typesType = new JsonObject();
       types.add(structId, typesType);
       typesType.addProperty("name", structId);
-      
+
       JsonObject facets = new JsonObject();
       typesType.add("facets", facets);
       JsonObject facet = new JsonObject();
       facet.addProperty("name", "abceee");
-      facet.addProperty("classifier", "enumeration");      
+      facet.addProperty("classifier", "enumeration");
       facets.add("facet", facet);
 
       */
       /*
       JsonObject body = new JsonObject();
-      body.addProperty("classifier", "sequence");      
+      body.addProperty("classifier", "sequence");
       typesType.add("body", body);
       JsonObject elements = new JsonObject();
       body.add("elements", elements);
@@ -2423,9 +2428,9 @@ public class ModelService
       element.addProperty("cardinality", "at least one");
       */
       /*
-   
+
       handler.createTypeDeclaration(model, structJson);
-      
+
       try
       {
          wmm.save(URI.createFileURI(new java.io.File("C:\\development\\New_configuration_TRUNK\\portal5\\Test.xpdl").getAbsolutePath()));

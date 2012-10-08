@@ -177,7 +177,7 @@ define(
 												m_utils
 														.debug("Palette loaded: "
 																+ extension.id);
-												extension.controller.create();
+												extension.provider.create();
 											}
 										});
 					} else {
@@ -208,7 +208,7 @@ define(
 									.click(
 											{
 												diagram : this,
-												handler : paletteEntries[m].handler,
+												handler : paletteEntries[m].id,
 												provider : paletteEntries[m].provider,
 												handlerMethod : paletteEntries[m].handlerMethod
 											},
@@ -441,13 +441,6 @@ define(
 				 *
 				 */
 				Diagram.prototype.initialize = function() {
-					// Load all models to populate Properties Panels
-
-					m_model.loadModels();
-
-					m_utils.debug("===> Loaded Models");
-					m_utils.debug(m_model.getModels());
-
 					// TODO Bind against loaded models
 
 					this.modelId = jQuery.url.setUrl(window.location.search)
@@ -1017,6 +1010,13 @@ define(
 						if (this.newSymbol.isPrepared()) {
 							this.newSymbol.move(x * this.zoomFactor, y
 									* this.zoomFactor);
+							// When creating symbol from flyoutMenu,
+							// connection anchorPoint should be intellegently
+							// changed
+							if (this.currentConnection != null) {
+								this.currentConnection
+										.updateAnchorPointForSymbol();
+							}
 						} else {
 							this.newSymbol.prepare(x * this.zoomFactor, y
 									* this.zoomFactor);
@@ -1668,7 +1668,7 @@ define(
 							.valueOf()));
 					this.editableText
 							.css("visibility", "visible")
-							.html(textPrimitive.attr("text"))
+							.html(textPrimitive.auxiliaryProperties.callbackScope.modelElement.name)
 							.moveDiv(
 									{
 										"x" : textPrimitive.auxiliaryProperties.callbackScope.x
@@ -1704,6 +1704,8 @@ define(
 												this.currentTextPrimitive.auxiliaryProperties.callbackScope.oid,
 												changes));
 						this.currentTextPrimitive.show();
+						this.currentTextPrimitive.auxiliaryProperties.callbackScope
+								.adjustPrimitivesOnShrink();
 						this.symbolEditMode = false;
 						m_utils.debug("text primitive shown");
 					}

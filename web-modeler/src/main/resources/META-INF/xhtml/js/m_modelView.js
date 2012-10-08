@@ -11,9 +11,9 @@
 define(
 		[ "m_utils", "m_extensionManager", "m_communicationController",
 				"m_command", "m_commandsController", "m_dialog", "m_view",
-				"m_model" ],
+				"m_model", "m_modelElementView" ],
 		function(m_utils, m_extensionManager, m_communicationController,
-				m_command, m_commandsController, m_dialog, m_view, m_model) {
+				m_command, m_commandsController, m_dialog, m_view, m_model, m_modelElementView) {
 			return {
 				initialize : function(modelId) {
 					var model = m_model.findModel(modelId);
@@ -32,57 +32,49 @@ define(
 			 * 
 			 */
 			function ModelView() {
-				var view = m_view.create();
+				var modelElementView = m_modelElementView.create();
 
-				m_utils.inheritFields(this, view);
-				m_utils.inheritMethods(ModelView.prototype, view);
+				m_utils.inheritFields(this, modelElementView);
+				m_utils.inheritMethods(ModelView.prototype,
+						modelElementView);
 
-				this.idOutput = jQuery("#idOutput");
-				this.nameInput = jQuery("#nameInput");
-				this.versionTable = jQuery("#versionTable");
-				this.versionTableBody = jQuery("table#versionTable tbody");
-				this.problemsTable = jQuery("#problemsTable");
-				this.problemsTableBody = jQuery("table#problemsTable tbody");
-				this.refreshValidationButton = jQuery("#refreshValidationButton");
-
-				jQuery("#modelTabs").tabs();
-
-				this.versionTable.tableScroll({
-					height : 200
-				});
-
-				this.nameInput.change({
-					"view" : this
-				}, function(event) {
-					var view = event.data.view;
-
-					if (!view.validate()) {
-						return;
-					}
-
-					if (view.model.name != view.nameInput.val()) {
-						view.submitChanges({
-							name : view.nameInput.val()
-						});
-					}
-				});
-
-				this.refreshValidationButton.click({
-					"view" : this
-				}, function(event) {
-					event.data.view.refreshValidation();
-				});
 
 				/**
 				 * 
 				 */
 				ModelView.prototype.initialize = function(model) {
+					this.id = "modelView";
+					this.versionTable = jQuery("#versionTable");
+					this.versionTableBody = jQuery("table#versionTable tbody");
+					this.problemsTable = jQuery("#problemsTable");
+					this.problemsTableBody = jQuery("table#problemsTable tbody");
+					this.refreshValidationButton = jQuery("#refreshValidationButton");
+
+					jQuery("#modelTabs").tabs();
+
+					this.versionTable.tableScroll({
+						height : 200
+					});
+
+					this.refreshValidationButton.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.refreshValidation();
+					});					
+
+					this.initializeModelElementView(model);
+				};
+				
+				/**
+				 * 
+				 */
+				ModelView.prototype.setModelElement = function(model) {
 					this.model = model;
 
-					this.idOutput.empty();
-					this.idOutput.append(this.model.id);
-					this.nameInput.val(this.model.name);
+					this.initializeModelElement(model);
 
+					// TODO: Needed?
+					
 					if (this.model.attributes == null) {
 						this.model.attributes = {};
 					}
@@ -122,36 +114,15 @@ define(
 				/**
 				 * 
 				 */
-				ModelView.prototype.submitChanges = function(changes) {
-					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementCommand(
-									this.model.model.id, this.model.oid,
-									changes));
+				ModelView.prototype.getModelElement = function() {
+					return this.model;
 				};
 
 				/**
 				 * 
 				 */
-				ModelView.prototype.processCommand = function(command) {
-					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
-						this.initialize(this.model);
-						
-						return;
-					}
-
-					var object = ("string" == typeof (command)) ? jQuery
-							.parseJSON(command) : command;
-
-					if (null != object && null != object.changes
-							&& null != object.changes.modified
-							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].oid == this.model.oid) {
-
-						m_utils.inheritFields(this.model,
-								object.changes.modified[0]);
-
-						this.initialize(this.model);
-					}
+				ModelView.prototype.getModel = function() {
+					return this.model;
 				};
 
 				/**

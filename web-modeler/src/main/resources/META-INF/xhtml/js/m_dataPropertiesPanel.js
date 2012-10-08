@@ -107,6 +107,39 @@ define([ "m_utils", "m_constants", "m_commandsController", "m_command", "m_exten
 		};
 
 		/**
+		 * 
+		 */
+		DataPropertiesPanel.prototype.getModelElement = function() {
+			return this.data;
+		};
+
+		/**
+		 * 
+		 */
+		DataPropertiesPanel.prototype.assembleChangedObjectFromProperty = function(
+				property, value) {
+			var element = {};
+
+			element[property] = value;
+
+			return element;
+		};
+
+		/**
+		 * 
+		 */
+		DataPropertiesPanel.prototype.assembleChangedObjectFromAttribute = function(
+				attribute, value) {
+			var element = {
+				attributes : {}
+			};
+
+			element.attributes[attribute] = value;
+
+			return element;
+		};
+
+		/**
 		 *
 		 */
 		DataPropertiesPanel.prototype.submitChanges = function(changes) {

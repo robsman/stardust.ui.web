@@ -22,21 +22,23 @@ require.config({
 		'jquery.treeTable': ['libs/jquery/plugins/jquery.treeTable', 'https://raw.github.com/ludo/jquery-treetable/f98c6d07a02cb48052e9d4e033ce7dcdf64218e1/src/javascripts/jquery.treeTable'],
 		'jquery.url': ['libs/jquery/plugins/jquery.url', 'https://raw.github.com/allmarkedup/jQuery-URL-Parser/472315f02afbfd7193184300cc381163e19b4a16/jquery.url'],
 
-		'extensions': '../../../services/rest/bpm-modeler/config/ui/extensions.js?p=extensions',
+		'common-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/common-plugins',
 	},
 	shim: {
 		'jquery-ui': ['jquery'],
 		'jquery.tablescroll': ['jquery'],
 		'jquery.treeTable': ['jquery'],
-		'jquery.url': ['jquery'],
+		'jquery.url': ['jquery']
 	}
 });
 
 require(["require",
          "jquery",
+         "jquery-ui",
          "jquery.tablescroll",
          "jquery.treeTable",
 		 "jquery.url",
+		 "common-plugins",
 		 "m_utils",
 		 "m_communicationController",
 		 "m_urlUtils",
@@ -44,6 +46,7 @@ require(["require",
 		 "m_command",
 		 "m_commandsController",
 		 "m_modelElementView",
+		 "m_modelElementCommentsPropertiesPage",
 		 "m_xsdStructuredDataTypeView"], function(require) {
 	require("m_xsdStructuredDataTypeView").initialize(
 			jQuery.url.setUrl(window.location.search).param("fullId"));

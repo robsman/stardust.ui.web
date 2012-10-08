@@ -112,6 +112,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
    private ModelBuilderFacade modelBuilderFacade;
 
+   private JsonMarshaller jsonIo = new JsonMarshaller();
+
    public static String deriveElementIdFromName(String name)
    {
       StringBuilder idBuilder = new StringBuilder(name.length());
@@ -262,11 +264,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private void updateActivity(ActivityType activity, JsonObject activityJson)
    {
-      // detect gateways early to be able to fix accidental ID changes
+      // Detect gateways early to be able to fix accidental ID changes
       final boolean isGateway = activity.getId().toLowerCase().startsWith("gateway");
 
-      updateIdentifiableElement(activity, activityJson);
-
+      updateIdentifiableElement(activity, activityJson);      
       mapDeclaredProperties(activity, activityJson, propertiesMap.get(ActivityType.class));
       storeAttributes(activity, activityJson);
       storeDescription(activity, activityJson);
@@ -428,16 +429,16 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
 
       // While routing , anchor point orientation changes
-      if (controlFlowConnectionJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      if (controlFlowJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
          controlFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
-               controlFlowConnectionJson,
+               controlFlowJson,
                ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
-      if (controlFlowConnectionJson.has(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      if (controlFlowJson.has(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
          controlFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
-               controlFlowConnectionJson,
+               controlFlowJson,
                ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
    }
@@ -451,16 +452,16 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          JsonObject dataFlowConnectionJson)
    {
       JsonObject dataFlowJson = dataFlowConnectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-      if (dataFlowConnectionJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      if (dataFlowJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
          dataFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
-               dataFlowConnectionJson,
+               dataFlowJson,
                ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
-      if (dataFlowConnectionJson.has(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      if (dataFlowJson.has(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
          dataFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
-               dataFlowConnectionJson,
+               dataFlowJson,
                ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
 
@@ -1472,6 +1473,18 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private void storeAttributes(IIdentifiableModelElement element, JsonObject json)
    {
+      // Extract JSON elements which are stored in Extended Attributes
+
+      if (json.has(ModelerConstants.COMMENTS_PROPERTY))         
+      {
+         JsonArray commentsJson = json.getAsJsonArray(ModelerConstants.COMMENTS_PROPERTY);
+         JsonObject holderJson = new JsonObject();
+         
+         holderJson.add(ModelerConstants.COMMENTS_PROPERTY, commentsJson);
+         
+         AttributeUtil.setAttribute(element, "documentation:comments", jsonIo.writeJsonObject(holderJson));
+      }
+
       if ( !json.has(ModelerConstants.ATTRIBUTES_PROPERTY))
       {
          return;

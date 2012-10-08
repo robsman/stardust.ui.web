@@ -15,52 +15,40 @@
  * @author Marc.Gille
  */
 define(
-		[ "require", "m_utils" ],
-		function(require, m_utils) {
-			var mainRequire = require;
-			var cumulatedExtensions = null;
-
-			var additionalExtensions = {
-				propertiesPage : [ {
-					panelId : "testPropertiesPanel",
-					pageId : "basicPropertiesPage",
-					pageJavaScriptUrl : "m_testBasicPropertiesPage",
-					visibility : "always"
-				} ],
-				diagramToolbarPalette : [ {
-					id : "testPalette",
-					title : "Test",
-					visibility : "always"
-				} ],
-				diagramToolbarPaletteEntry : [ {
-					id : "testButton",
-					paletteId : "testPalette",
-					title : "Create Test Symbol",
-					iconUrl : "../../images/icons/camunda.gif",
-					handler : "m_testPaletteHandler",
-					handlerMethod : "createTestSymbol",
-					visibility : "always"
-				} ]
-			};
-
-			function loadExtension(extensionUri) {
-				var provider = mainRequire(extensionUri);
-
-				return provider;
-			}
+		[ "jquery", "m_utils" ],
+		function(jQuery, m_utils) {
+			var cumulatedExtensions = {};
 
 			return {
 
-				/**
-				 * Initializes the extension manager, binding the environment
-				 * used for resolving extensions.
-				 * 
-				 * @param require
-				 *            the requirejs context to be used to resolve
-				 *            extensions
-				 */
-				initialize : function(require) {
-					mainRequire = require;
+				registerViewManager : function(extensionsConfig) {
+					loadExtensions({
+						viewManager : extensionsConfig.viewManager
+					});
+				},
+
+				registerToolbarExtensions : function(extensionsConfig) {
+					loadExtensions({
+						diagramToolbarPalette : extensionsConfig.diagramToolbarPalette
+					});
+					loadExtensions({
+						diagramToolbarPaletteEntry : extensionsConfig.diagramToolbarPaletteEntry
+					});
+				},
+
+				registerPropertyPageExtensions : function(extensionsConfig) {
+					loadExtensions({
+						propertiesPage : extensionsConfig.propertiesPage
+					});
+				},
+
+				registerMetaModelExtensions : function(extensionsConfig) {
+					loadExtensions({
+						applicationType : extensionsConfig.applicationType
+					});
+					loadExtensions({
+						dataType : extensionsConfig.dataType
+					});
 				},
 
 				/**
@@ -71,25 +59,20 @@ define(
 				 * @returns
 				 */
 				findExtensions : function(extensionPoint, property, value) {
+					m_utils.debug("Cumulated Extensions:");
+					m_utils.debug(getCumulatedExtensions());
+
 					var result = [];
 
-					for ( var n = 0; n < getCumulatedExtensions()[extensionPoint].length; ++n) {
+					if (getCumulatedExtensions()[extensionPoint] != null) {
+						for ( var n = 0; n < getCumulatedExtensions()[extensionPoint].length; ++n) {
 
-						if (property == null
-								|| getCumulatedExtensions()[extensionPoint][n][property] == value) {
-							var extension = getCumulatedExtensions()[extensionPoint][n];
+							if (property == null
+									|| getCumulatedExtensions()[extensionPoint][n][property] == value) {
+								var extension = getCumulatedExtensions()[extensionPoint][n];
 
-							if (!extension.provider) {
-								if (extension.pageJavaScriptUrl) {
-									extension.provider = loadExtension(extension.pageJavaScriptUrl);
-								} else if (extension.handler) {
-									extension.provider = loadExtension(extension.handler);
-								} else if (extension.controllerJavaScriptUrl) {
-									extension.controller = loadExtension(extension.controllerJavaScriptUrl);
-								}
+								result.push(new Extension(extension));
 							}
-
-							result.push(new Extension(extension));
 						}
 					}
 
@@ -104,11 +87,6 @@ define(
 				findExtension : function(extensionPoint) {
 					if (getCumulatedExtensions()[extensionPoint].length == 1) {
 						var extension = getCumulatedExtensions()[extensionPoint][0];
-						if (!extension.provider) {
-							if (extension.moduleUrl) {
-								extension.provider = loadExtension(extension.moduleUrl);
-							}
-						}
 						return new Extension(extension);
 					}
 
@@ -121,13 +99,6 @@ define(
 			 * 
 			 */
 			function getCumulatedExtensions() {
-				if (cumulatedExtensions == null) {
-					cumulatedExtensions = {};
-
-					loadExtensions(extensions);
-					// loadExtensions(additionalExtensions);
-				}
-
 				return cumulatedExtensions;
 			}
 
@@ -136,13 +107,20 @@ define(
 			 */
 			function loadExtensions(extensions) {
 				for ( var m in extensions) {
+					if (!extensions[m]) {
+						continue;
+					}
 					console.log("Adding Extensions of Extension Point: " + m);
 
 					var extensionsForExtensionPoint = extensions[m];
 
+					if (!jQuery.isArray(extensionsForExtensionPoint)) {
+						extensionsForExtensionPoint = [ extensionsForExtensionPoint ];
+					}
+
 					for ( var n = 0; n < extensionsForExtensionPoint.length; ++n) {
-						console.log("Extension: "
-								+ extensionsForExtensionPoint[n]);
+						m_utils.debug("Extension:");
+						m_utils.debug(extensionsForExtensionPoint[n]);
 
 						if (getCumulatedExtensions()[m] == null) {
 							getCumulatedExtensions()[m] = [];

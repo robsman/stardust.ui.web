@@ -41,6 +41,10 @@ public interface ModelerUiExtensionsProvider
 
       public final String visibility;
 
+      public final String pageName;
+
+      public final String iconPath;
+
       public PropertyPageConfiguration(String panelId, String pageId, String moduleUri, String visibility)
       {
          this.pageId = pageId;
@@ -48,6 +52,8 @@ public interface ModelerUiExtensionsProvider
          this.pageUri = null;
          this.moduleUri = moduleUri;
          this.visibility = visibility;
+         this.pageName = null;
+         this.iconPath = null;
       }
 
       public PropertyPageConfiguration(String panelId, String pageId, String pageUri, String moduleUri, String visibility)
@@ -57,6 +63,19 @@ public interface ModelerUiExtensionsProvider
          this.pageUri = pageUri;
          this.moduleUri = moduleUri;
          this.visibility = visibility;
+         this.pageName = null;
+         this.iconPath = null;
+      }
+
+      public PropertyPageConfiguration(String panelId, String pageId, String pageUri, String moduleUri, String visibility, String pageName, String iconPath)
+      {
+         this.pageId = pageId;
+         this.panelId = panelId;
+         this.pageUri = pageUri;
+         this.moduleUri = moduleUri;
+         this.visibility = visibility;
+         this.pageName = pageName;
+         this.iconPath = iconPath;
       }
    }
 

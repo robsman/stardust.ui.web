@@ -303,21 +303,29 @@ define(
 				 * needs to be moved to 6 O'clock or 3 O'clock
 				 */
 				Connection.prototype.updateAnchorPointForSymbol = function() {
-					var orientation = null;
+					var sourceOrientation = null;
+					var targetOrientation = 0;
 					if (this.fromAnchorPoint.symbol.type == m_constants.GATEWAY_SYMBOL || this.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
 						var startSymbol = this.fromAnchorPoint.symbol;
 						var targetSymbol = this.toAnchorPoint.symbol;
 						if (startSymbol.x > targetSymbol.x + targetSymbol.width) {
 							// Start Symbol is at right, show arrow at left
-							orientation = 3;
+							sourceOrientation = 3;
+							if(startSymbol.y > targetSymbol.y){
+								targetOrientation =1;
+							}
 						} else if (startSymbol.x + startSymbol.width < targetSymbol.x) {
 							// Start Symbol is at left, show arrow at right
-							orientation = 1;
+							sourceOrientation = 1;
+							if(startSymbol.y > targetSymbol.y){
+								targetOrientation =3;
+							}
 						} else {
 							// default orientation is SOUTH for gateway
-							orientation = 2;
+							sourceOrientation = 2;
 						}
-						this.fromAnchorPoint = startSymbol.anchorPoints[orientation];
+						this.fromAnchorPoint = startSymbol.anchorPoints[sourceOrientation];
+						this.toAnchorPoint = targetSymbol.anchorPoints[targetOrientation];
 					}
 				};
 
@@ -445,7 +453,15 @@ define(
 											|| (updateConnection.modelElement.outDataMapping && this.modelElement.inDataMapping)) {
 										updateConnection.modelElement.inDataMapping = true;
 										updateConnection.modelElement.outDataMapping = true;
-										updateConnection.createUpdateCommand();
+										var changes = {
+											modelElement : {
+												toAnchorPointOrientation : this.toAnchorPoint.orientation,
+												fromAnchorPointOrientation : this.fromAnchorPoint.orientation,
+												inDataMapping : updateConnection.modelElement.inDataMapping,
+												outDataMapping : updateConnection.modelElement.inDataMapping
+											}
+										}
+										updateConnection.createUpdateCommand(changes);
 										m_messageDisplay
 												.showMessage("Connection updated");
 										break;
@@ -1019,6 +1035,7 @@ define(
 
 					while ((currentSegment.toX != targetX || currentSegment.toY != targetY)
 							&& n < 6) {
+						// Horizontal segments
 						if (currentSegment.isHorizontal()) {
 							if ((currentSegment.fromX < currentSegment.toX && currentSegment.toX < targetX)
 									|| (currentSegment.fromX > currentSegment.toX && currentSegment.toX > targetX)) {
@@ -1131,13 +1148,7 @@ define(
 								if (this.toAnchorPoint.symbol != null
 										&& !this.diagram.anchorDragEnabled
 										&& (currentSegment.toY > targetY && this.toAnchorPoint.y > targetY)) {
-									if (currentSegment.fromX > currentSegment.toX) {
-										currentSegment.toX = this.toAnchorPoint.symbol.x
-												+ this.toAnchorPoint.symbol.width
-												+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH;
-									} else
-										currentSegment.toX = this.toAnchorPoint.symbol.x
-												- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH;
+
 									this.segments
 											.push(currentSegment = new Segment(
 													currentSegment.toX,
@@ -1155,6 +1166,7 @@ define(
 								}
 							}
 						} else {
+							// Vertical segments
 							if ((currentSegment.fromY < currentSegment.toY && currentSegment.toY < targetY)
 									|| (currentSegment.fromY > currentSegment.toY && currentSegment.toY > targetY)) {
 								if (this.toAnchorPoint.symbol != null
@@ -1261,8 +1273,7 @@ define(
 												+ this.toAnchorPoint.symbol.width < targetX)) {
 									// For scenario connecting from 9 o'clk(Symbol 1) to 3 o'clk(symbol2)
 									if (this.fromAnchorPoint.orientation == 3
-											&& this.toAnchorPoint.orientation == 1
-											&& currentSegment.toX > targetX) {
+											&& this.toAnchorPoint.orientation == 1) {
 										this.segments
 												.push(currentSegment = new Segment(
 														currentSegment.toX,
@@ -1285,8 +1296,7 @@ define(
 												&& this.toAnchorPoint.symbol.x > targetX)) {
 									// For scenario connecting from 3 o'clk(Symbol 1) to 9 o'clk(symbol2)
 									if (this.fromAnchorPoint.orientation == 1
-											&& this.toAnchorPoint.orientation == 3
-											&& currentSegment.toX < targetX) {
+											&& this.toAnchorPoint.orientation == 3) {
 										this.segments
 												.push(currentSegment = new Segment(
 														currentSegment.toX,
@@ -1720,10 +1730,9 @@ define(
 				/**
 				 *
 				 */
-				Connection.prototype.createUpdateCommand = function() {
+				Connection.prototype.createUpdateCommand = function(changes) {
 					var command = m_command.createUpdateModelElementCommand(
-							this.diagram.model.id, this.oid, this
-									.createTransferObject());
+							this.diagram.model.id, this.oid, changes);
 					m_commandsController.submitCommand(command);
 				};
 
@@ -1791,6 +1800,7 @@ define(
 								&& (toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL)) {
 							m_messageDisplay
 									.showErrorMessage("Data symbols can connect to activity only.");
+							return false;
 						} else if (!fromAnchorPoint.symbol
 								.validateCreateConnection()) {
 							m_messageDisplay
@@ -1807,6 +1817,7 @@ define(
 									.validateCreateConnection()) {
 								m_messageDisplay
 										.showErrorMessage("No further OUT Connection allowed from this activity.");
+								return false;
 							}
 						} else if (!fromAnchorPoint.symbol
 								.validateCreateConnection(this)) {

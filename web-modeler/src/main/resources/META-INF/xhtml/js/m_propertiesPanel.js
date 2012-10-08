@@ -159,14 +159,15 @@ define(
 									+ extension.pageId
 									+ "\" class=\"propertiesPage\"></div>");
 
-							jQuery("#" + this.id + " #propertiesPagesCell").append(pageDiv);
+							jQuery("#" + this.id + " #propertiesPagesCell")
+									.append(pageDiv);
 
 							// TODO this variable may be overwritten in the
 							// loop, find mechanism to pass data to load
 							// callback
 
 							var panel = this;
-							
+
 							// jQuery("#" + this.id + " #" + extension.pageId)
 							pageDiv
 									.load(
@@ -193,9 +194,10 @@ define(
 													var page = extension.provider
 															.create(
 																	panel,
-																	extension.pageId, extension.title);
+																	extension.pageId,
+																	extension.title);
 
-													page.hide();											
+													page.hide();
 													panel.propertiesPages
 															.push(page);
 												}
@@ -338,21 +340,48 @@ define(
 					if (null != object && null != object.changes
 							&& null != object.changes.modified
 							&& 0 != object.changes.modified.length) {
-						if (object.changes.modified[0].oid == this.element.oid) {
 
+						if (object.changes.modified[0].oid == this.element.oid) {
 							m_utils.inheritFields(this.element,
 									object.changes.modified[0]);
-
 							this.setElement(this.element);
 						} else if (this.element.modelElement != null
 								&& object.changes.modified[0].oid == this.element.modelElement.oid) {
-
 							m_utils.inheritFields(this.element.modelElement,
 									object.changes.modified[0]);
-
 							this.setElement(this.element);
 						}
 					}
+				};
+
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.assembleChangedObjectFromProperty = function(
+						property, value) {
+					var element = {
+						modelElement : {}
+					};
+
+					element.modelElement[property] = value;
+
+					return element;
+				};
+
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.assembleChangedObjectFromAttribute = function(
+						attribute, value) {
+					var element = {
+						modelElement : {
+							attributes : {}
+						}
+					};
+
+					element.modelElement.attributes[attribute] = value;
+
+					return element;
 				};
 
 				/**

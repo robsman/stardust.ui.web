@@ -60,39 +60,6 @@ define(
 				/**
 				 * 
 				 */
-				SwimlaneBasicPropertiesPage.prototype.getModelElement = function() {
-					return this.propertiesPanel.element;
-				};
-
-				/**
-				 * 
-				 */
-				SwimlaneBasicPropertiesPage.prototype.assembleChangedObjectFromProperty = function(
-						property, value) {
-					var element = {};
-
-					element[property] = value;
-
-					return element;
-				};
-
-				/**
-				 * 
-				 */
-				SwimlaneBasicPropertiesPage.prototype.assembleChangedObjectFromAttribute = function(
-						attribute, value) {
-					var element = {
-						attributes : {}
-					};
-
-					element.attributes[attribute] = value;
-
-					return element;
-				};
-
-				/**
-				 * 
-				 */
 				SwimlaneBasicPropertiesPage.prototype.refreshParticipantList = function() {
 					this.participantList.empty();
 					this.participantList

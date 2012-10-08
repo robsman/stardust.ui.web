@@ -23,14 +23,11 @@ require.config({
 		'jquery.treeTable': ['libs/jquery/plugins/jquery.treeTable', 'https://raw.github.com/ludo/jquery-treetable/f98c6d07a02cb48052e9d4e033ce7dcdf64218e1/src/javascripts/jquery.treeTable'],
 		'jquery.url': ['libs/jquery/plugins/jquery.url', 'https://raw.github.com/allmarkedup/jQuery-URL-Parser/472315f02afbfd7193184300cc381163e19b4a16/jquery.url'],
 
-		'extensions': '../../../services/rest/bpm-modeler/config/ui/extensions.js?p=extensions',
+		'common-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/common-plugins'
 	},
 	shim: {
 		'json': {
 			exports: "JSON"
-		},
-		'extensions': {
-			exports: "extensions"
 		},
 
 		'jquery-ui': ['jquery'],
@@ -41,7 +38,7 @@ require.config({
 		'jquery.simplemodal': ['jquery'],
 		'jquery.tablescroll': ['jquery'],
 		'jquery.treeTable': ['jquery'],
-		'jquery.url': ['jquery'],
+		'jquery.url': ['jquery']
 	}
 // baseUrl: '../js',
 // urlArgs: 'v=1.0'
@@ -61,9 +58,7 @@ require(["require",
          "jquery.url",
          "extensions_jquery",
          "m_utils",
-         "m_extensionManager",
-		 "extensions",
-		 "m_jsfViewManager",
+		 "common-plugins",
 		 "m_communicationController",
 		 "m_urlUtils",
 		 "m_constants",

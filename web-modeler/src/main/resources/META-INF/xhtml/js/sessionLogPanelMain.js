@@ -22,7 +22,7 @@ require.config({
 		'jquery.treeTable': ['libs/jquery/plugins/jquery.treeTable', 'https://raw.github.com/ludo/jquery-treetable/f98c6d07a02cb48052e9d4e033ce7dcdf64218e1/src/javascripts/jquery.treeTable'],
 		'jquery.url': ['libs/jquery/plugins/jquery.url', 'https://raw.github.com/allmarkedup/jQuery-URL-Parser/472315f02afbfd7193184300cc381163e19b4a16/jquery.url'],
 
-		'extensions': '../../../services/rest/bpm-modeler/config/ui/extensions.js?p=extensions',
+		'common-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/common-plugins',
 	},
 	shim: {
 		'jquery-ui': ['jquery'],
@@ -44,6 +44,7 @@ require(["require",
 		 "jquery.impromptu",
 		 "jquery.simplemodal",
 		 "jquery.url",
+		 "common-plugins",
 		 "m_utils",
 		 "m_communicationController",
 		 "m_urlUtils",

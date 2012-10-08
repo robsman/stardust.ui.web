@@ -12,10 +12,11 @@ define(
 		[ "m_utils", "m_constants", "m_extensionManager", "m_command",
 				"m_canvasManager", "m_symbol", "m_gatewaySymbol", "m_session",
 				"m_eventSymbol", "m_activityPropertiesPanel", "m_model",
-				"m_activity" ],
+				"m_activity", "m_commandsController", "m_command" ],
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_canvasManager, m_symbol, m_gatewaySymbol, m_eventSymbol,
-				m_session, m_activityPropertiesPanel, m_model, m_activity) {
+				m_session, m_activityPropertiesPanel, m_model, m_activity,
+				m_commandsController, m_command) {
 
 			return {
 				createActivitySymbol : function(diagram, type) {
@@ -98,10 +99,12 @@ define(
 
 					this.rectangle = null;
 					this.text = null;
+					this.commentCountText = null;
 					this.icon = null;
 					this.parallelMultiProcessingMarkerIcon = null;
 					this.sequentialMultiProcessingMarkerIcon = null;
 					this.subprocessMarkerIcon = null;
+					this.commentCountIcon = null;
 
 					var viewManagerExtension = m_extensionManager
 							.findExtension("viewManager");
@@ -148,12 +151,14 @@ define(
 					transferObject.rectangle = null;
 					transferObject.text = null;
 					transferObject.icon = null;
-					transferObject.applicationIcon = null;
+					transferObject.text = null;
+					transferObject.commentCountText = null;
 					transferObject.manualActivityIcon = null;
 					transferObject.subprocessIcon = null;
 					transferObject.parallelMultiProcessingMarkerIcon = null;
 					transferObject.sequentialMultiProcessingMarkerIcon = null;
 					transferObject.subprocessMarkerIcon = null;
+					transferObject.commentCountIcon = null;
 
 					return transferObject;
 				};
@@ -250,6 +255,27 @@ define(
 							this.y + this.height - 16, 16, 16).hide();
 
 					this.addToPrimitives(this.subprocessMarkerIcon);
+
+					this.commentCountText = m_canvasManager
+							.drawTextNode(this.x + this.width - 20,
+									this.y, "")
+							.attr(
+									{
+										'fill' : m_constants.ACTIVITY_SYMBOL_DEFAULT_FILL_COLOR,
+										'stroke' : m_constants.DEFAULT_STROKE_COLOR,
+										"text-anchor" : "middle",
+										"font-family" : m_constants.DEFAULT_FONT_FAMILY,
+										"font-size" : m_constants.DEFAULT_FONT_SIZE
+									});
+
+					this.addToPrimitives(this.commentCountText);
+
+					this.commentCountIcon = m_canvasManager.drawImageAt(
+							"../../images/icons/comments-count.png",
+							this.x + this.width - 30,
+							this.y - 8, 16, 16).hide();
+
+					this.addToPrimitives(this.commentCountIcon);
 				};
 
 				/**
@@ -313,6 +339,16 @@ define(
 						this.parallelMultiProcessingMarkerIcon.hide();
 						this.sequentialMultiProcessingMarkerIcon.show();
 					}
+
+					if (this.modelElement.comments.length > 0) {
+						this.commentCountText.attr("text",
+								this.modelElement.comments.length);
+						this.commentCountText.show();
+						this.commentCountIcon.show();
+					} else {
+						this.commentCountText.hide();
+						this.commentCountIcon.hide();
+					}
 				};
 
 				/**
@@ -320,7 +356,6 @@ define(
 				 */
 				ActivitySymbol.prototype.adjustPrimitives = function() {
 					this.hideGlow();
-
 					this.rectangle.animate({
 						"x" : this.x,
 						"y" : this.y,
@@ -370,7 +405,18 @@ define(
 						"y" : this.y + this.height - 16
 					}, this.diagram.animationDelay,
 							this.diagram.animationEasing);
+					this.commentCountText.animate({
+						"x" : this.x + this.width - 20,
+						"y" : this.y
+					}, this.diagram.animationDelay,
+							this.diagram.animationEasing);
+					this.commentCountIcon.animate({
+						"x" : this.x + this.width - 30,
+						"y" : this.y - 8
+					}, this.diagram.animationDelay,
+							this.diagram.animationEasing);
 
+					this.adjustPrimitivesOnShrink();
 					// this.rectangle.attr({
 					// "x" : this.x,
 					// "y" : this.y,
@@ -412,7 +458,24 @@ define(
 					// "x" : this.x + 0.5 * this.width - 4,
 					// "y" : this.y + this.height - 16
 					// });
+
 				};
+
+				/**
+				 * Hides the icon and shrinks the activity label when activity
+				 * size decreases
+				 */
+				ActivitySymbol.prototype.adjustPrimitivesOnShrink = function() {
+					if (this.text.getBBox().width > this.width) {
+						var words = this.text.attr("text");
+						m_utils.textWrap(this.text, this.width);
+					}
+
+					if (this.icon.getBBox().width > this.width) {
+						this.icon.hide();
+					} else
+						this.icon.show();
+				}
 
 				/**
 				 *
@@ -491,10 +554,13 @@ define(
 				ActivitySymbol.prototype.switchToSubprocessActivity = function() {
 					this.icon.hide();
 
+					this.modelElement.activityType = m_constants.SUBPROCESS_ACTIVITY_TYPE;
 					this.icon = this.subprocessIcon;
 
 					this.icon.show();
 					this.icon.toFront();
+
+					this.submitChanges();
 				};
 
 				/**
@@ -503,10 +569,13 @@ define(
 				ActivitySymbol.prototype.switchToApplicationActivity = function() {
 					this.icon.hide();
 
+					this.modelElement.activityType = m_constants.APPLICATION_ACTIVITY_TYPE;
 					this.icon = this.applicationIcon;
 
 					this.icon.show();
 					this.icon.toFront();
+
+					this.submitChanges();
 				};
 
 				/**
@@ -550,6 +619,18 @@ define(
 				};
 
 				/**
+				 * Update the modelElement
+				 */
+				ActivitySymbol.prototype.submitChanges = function() {
+					var changes = {
+						activityType : this.modelElement.activityType
+					};
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementCommand(
+									this.diagram.modelId,
+									this.modelElement.oid, changes));
+				};
+				/**
 				 *
 				 */
 				ActivitySymbol.prototype.validateCreateConnection = function(
@@ -590,7 +671,8 @@ define(
 						}
 					}
 					// When rerouting happens, connection is not present in
-					// this.connections, check the validation rules with symbol connections list
+					// this.connections, check the validation rules with symbol
+					// connections list
 					if (conn != null && conn.oid > 0) {
 						if (-1 == jQuery.inArray(conn, this.connections)) {
 							if (conn.fromAnchorPoint

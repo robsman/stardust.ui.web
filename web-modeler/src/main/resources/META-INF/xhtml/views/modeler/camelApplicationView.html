@@ -7,12 +7,12 @@
 	xmlns:ice="http://www.icesoft.com/icefaces/component"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <head>
-<title>Modeler Canvas</title>
+<title>Camel Application Type</title>
 <link rel="stylesheet" type="text/css"
-	href="../../css/jquery-ui-1.8.20.custom.css">
-</link>
+	href="../../css/jquery-ui-1.8.20.custom.css"></link>
 <link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" data-main="../../js/camelApplicationViewMain"
+<script type="text/javascript"
+	data-main="../../js/camelApplicationViewMain"
 	src="../../js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
@@ -53,25 +53,34 @@
 				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
 				</td>
 			</tr>
+
 			<tr>
 				<td>
-					<div class="heading">Camel Configuration</div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
-						style="margin-bottom: 10px;">
-						<tr>
-							<td><label for="camelContextInput">Camel Context</label></td>
-							<td><input id="camelContextInput" type="text"></input></td>
-						</tr>
-						<tr>
-							<td><label for="endpointTypeSelectInput">Endpoint
-									Type</label></td>
-							<td><select id="endpointTypeSelectInput">
-									<option value="genericEndpoint">Generic</option>
-									<!-->option value="fileEndpoint">File Endpoint</option>
+					<div id="propertiesTabs">
+						<ul id="propertiesTabsList">
+							<li><a href="#configurationTab"><img
+									src="../../images/icons/basic-properties-page.png"></img><span
+									class="tabLabel">Camel Configuration</span> </a>
+							</li>
+						</ul>
+						<div id="configurationTab">
+							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+								<tr>
+									<td>
+										<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+											style="margin-bottom: 10px;">
+											<tr>
+												<td><label for="camelContextInput">Camel
+														Context</label></td>
+												<td><input id="camelContextInput" type="text"></input>
+												</td>
+											</tr>
+											<tr>
+												<td><label for="endpointTypeSelectInput">Endpoint
+														Type</label></td>
+												<td><select id="endpointTypeSelectInput">
+														<option value="genericEndpoint">Generic</option>
+														<!-->option value="fileEndpoint">File Endpoint</option>
 												<option value="ftpEndpoint">FTP Endpoint</option>
 												<option value="pop3Endpoint">Mail Endpoint (POP3)</option>
 												<option value="smtpEndpoint">Mail Endpoint (SMTP)</option>
@@ -86,47 +95,52 @@
 													(Hazelcast)</option>
 												<option value="quartzEndpoint">Timer Endpoint
 													(quartz)</option-->
-							</select></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td><div id="endpointUriPrefix" class="code">&lt;route&gt;</div>
-				</td>
-			</tr>
-			<tr>
-				<td><textarea id="routeTextarea" cols="50" rows="5"
-						class="code">
+												</select></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td><div id="endpointUriPrefix" class="code">&lt;route&gt;</div>
+									</td>
+								</tr>
+								<tr>
+									<td><textarea id="routeTextarea" cols="50" rows="5"
+											class="code">
 																</textarea>
-				</td>
-			</tr>
-			<tr>
-				<td><div class="code" style="margin-bottom: 10px;">&lt;/route&gt;</div>
-				</td>
-			</tr>
-			<tr>
-				<td><label for="additionalBeanSpecificationTextarea">Additional
-						Bean Specification</label>
-				</td>
-			</tr>
-			<tr>
-				<td><textarea id="additionalBeanSpecificationTextarea"
-						cols="50" rows="5" class="code">
+									</td>
+								</tr>
+								<tr>
+									<td><div class="code" style="margin-bottom: 10px;">&lt;/route&gt;</div>
+									</td>
+								</tr>
+								<tr>
+									<td><label for="additionalBeanSpecificationTextarea">Additional
+											Bean Specification</label>
+									</td>
+								</tr>
+								<tr>
+									<td><textarea id="additionalBeanSpecificationTextarea"
+											cols="50" rows="5" class="code">
 								</textarea>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<table>
-						<tr>
-							<td><label for="directionInput">Direction</label></td>
-							<td><select id="directionInput">
-									<option value="requestOnly">Request Only</option>
-									<option value="requestResponse">Request/Response</option>
-							</select></td>
-						</tr>
-					</table>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<table>
+											<tr>
+												<td><label for="directionInput">Direction</label></td>
+												<td><select id="directionInput">
+														<option value="requestOnly">Request Only</option>
+														<option value="requestResponse">Request/Response</option>
+												</select></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div>
 				</td>
 			</tr>
 		</table>
