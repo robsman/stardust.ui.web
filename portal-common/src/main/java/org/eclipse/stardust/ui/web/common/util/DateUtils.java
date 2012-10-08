@@ -148,12 +148,7 @@ public class DateUtils
     */
    public static Date parseDateTime(String date)
    {
-      UIViewRoot view = FacesContext.getCurrentInstance().getViewRoot();
-      Locale locale = Locale.getDefault();
-      if (view != null)
-      {
-         locale = view.getLocale();
-      }
+      Locale locale = FacesUtils.getLocaleFromRequest();
 
       return parseDateTime(date, getDateTimeFormat(), locale, PortalApplication.getInstance().getTimeZone());
    }
