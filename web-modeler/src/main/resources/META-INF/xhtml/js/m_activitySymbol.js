@@ -147,7 +147,7 @@ define(
 					m_utils.inheritFields(transferObject, this);
 
 					transferObject = this.prepareTransferObject(transferObject);
-
+					transferObject.applicationIcon = null;
 					transferObject.rectangle = null;
 					transferObject.text = null;
 					transferObject.icon = null;
