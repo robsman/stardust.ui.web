@@ -65,6 +65,7 @@ define(
 					}
 
 					this.currentParameterDefinition = null;
+					this.selectedRowIndex = 0;
 					this.parameterDefinitionsTable = jQuery(this.options.scope
 							+ " #parameterDefinitionsTable");
 
@@ -242,32 +243,18 @@ define(
 				};
 
 				/**
-				 * Binds the "old" currentParameterDefinition to the correct Parameter Definition after refresh from server and selects the corresponding
-				 * table row.
 				 */
 				ParameterDefinitionsPanel.prototype.selectCurrentParameterDefinition = function() {
-					if (this.currentParameterDefinition == null) {
-						return;
-					}
+					var tableRows = jQuery("table#parameterDefinitionsTable tr");
 
-					var id = 0;
-					
-					if (this.options.listType == "array") {
-						for ( var n = 0; n < this.parameterDefinitions.length; ++n) {
-							if (this.parameterDefinitions[n].id == this.currentParameterDefinition.id) {
-								id = n;
-								this.currentParameterDefinition = this.parameterDefinitions[n];
-								
-								break;
-							}
-						}
-					} else {
-						id = this.currentParameterDefinition.id;
-						this.currentParameterDefinition = this.parameterDefinitions[id];
+					if (tableRows.length > this.selectedRowIndex) {
+						var selectedRow = jQuery(tableRows[this.selectedRowIndex]);
+						
+						selectedRow.addClass("selected");
+						
+						m_utils.debug("Index = " + selectedRow.attr("id"));
+						this.currentParameterDefinition = this.parameterDefinitions[selectedRow.attr("id")];
 					}
-
-					jQuery("table#parameterDefinitionsTable tr#" + id)
-							.addClass("selected");
 				};
 
 				/**
@@ -560,7 +547,8 @@ define(
 					}
 
 					this.currentParameterDefinition = {
-						id : "New_" + n, // TODO: Anticipates renaming of ID on server 
+						id : "New_" + n, // TODO: Anticipates renaming of ID
+											// on server
 						name : "New " + n,
 						direction : "IN",
 						dataFullId : null,
@@ -583,6 +571,13 @@ define(
 					} else {
 						this.parameterDefinitions[this.currentParameterDefinition.id] = this.currentParameterDefinition;
 					}
+
+					// New parameter definitions are always appended
+					
+					this.selectedRowIndex = Math
+							.max(
+									jQuery("table#parameterDefinitionsTable tr").length,
+									0);
 
 					this.submitChanges();
 				};
@@ -615,11 +610,12 @@ define(
 						}
 
 						this.parameterDefinitions = changedParameterDefinitions;
-
 					}
 
-					m_utils.debug("Changed parameter definitions");
-					m_utils.debug(this.parameterDefinitions);
+					this.selectedRowIndex = Math
+							.max(
+									jQuery("table#parameterDefinitionsTable tr").length - 2,
+									0);
 
 					this.submitChanges();
 				};
@@ -637,6 +633,8 @@ define(
 									.push(this.parameterDefinitions[n + 1]);
 							changedParameterDefinitions
 									.push(this.parameterDefinitions[n]);
+
+							this.selectedRowIndex = n - 1;
 
 							++n;
 						} else {
@@ -666,6 +664,8 @@ define(
 									.push(this.parameterDefinitions[n + 1]);
 							changedParameterDefinitions
 									.push(this.parameterDefinitions[n]);
+
+							this.selectedRowIndex = n + 1;
 
 							++n;
 						} else {
