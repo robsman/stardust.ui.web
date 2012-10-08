@@ -12,16 +12,19 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_commandsController", "m_model", "m_propertiesPanel", "m_propertiesPage"],
-		function(m_utils, m_constants, m_commandsController, m_model, m_propertiesPanel, m_propertiesPage) {
+		[ "m_utils", "m_constants", "m_commandsController", "m_model",
+				"m_propertiesPanel", "m_propertiesPage" ],
+		function(m_utils, m_constants, m_commandsController, m_model,
+				m_propertiesPanel, m_propertiesPage) {
 
 			var processPropertiesPanel = null;
 
 			return {
 				initialize : function(diagram) {
 					processPropertiesPanel = new ProcessPropertiesPanel();
-					
-					m_commandsController.registerCommandHandler(processPropertiesPanel);
+
+					m_commandsController
+							.registerCommandHandler(processPropertiesPanel);
 
 					processPropertiesPanel.initialize(diagram);
 				},
@@ -53,8 +56,7 @@ define(
 				/**
 				 * 
 				 */
-				ProcessPropertiesPanel.prototype.setElement = function(
-						element) {
+				ProcessPropertiesPanel.prototype.setElement = function(element) {
 					this.clearErrorMessages();
 
 					this.element = element;
@@ -63,7 +65,7 @@ define(
 						this.propertiesPages[n].setElement();
 					}
 				};
-				
+
 				/**
 				 * 
 				 */
@@ -75,8 +77,35 @@ define(
 				/**
 				 * 
 				 */
-				ProcessPropertiesPanel.prototype.wrapModelElementProperties = function(modelElementProperties) {
+				ProcessPropertiesPanel.prototype.wrapModelElementProperties = function(
+						modelElementProperties) {
 					return modelElementProperties;
+				};
+
+				/**
+				 * 
+				 */
+				ProcessPropertiesPanel.prototype.assembleChangedObjectFromProperty = function(
+						property, value) {
+					var element = {};
+
+					element[property] = value;
+
+					return element;
+				};
+
+				/**
+				 * 
+				 */
+				ProcessPropertiesPanel.prototype.assembleChangedObjectFromAttribute = function(
+						attribute, value) {
+					var element = {
+						attributes : {}
+					};
+
+					element.attributes[attribute] = value;
+
+					return element;
 				};
 
 				/**
