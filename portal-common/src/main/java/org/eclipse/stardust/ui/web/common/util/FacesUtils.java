@@ -27,7 +27,6 @@ import javax.faces.FactoryFinder;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.FacesContextFactory;
@@ -248,20 +247,6 @@ public class FacesUtils
          exeception.printStackTrace(new PrintWriter(sw));
 
       return sw.toString();
-   }
-   
-   public static Locale getLocaleFromView()
-   {
-      FacesContext facesCtx = FacesContext.getCurrentInstance();
-      return getLocaleFromView(facesCtx);
-   }
-   
-   public static Locale getLocaleFromView(FacesContext facesContext)
-   {
-      FacesContext facesCtx = FacesContext.getCurrentInstance();
-      UIViewRoot view = facesCtx.getViewRoot(); 
-      return view != null ? view.getLocale() :
-         facesCtx.getExternalContext().getRequestLocale();
    }
    
    public static FacesContext getFacesContext(ServletContext servletContext,
@@ -607,5 +592,10 @@ public class FacesUtils
          trace.error("Received" + reqObject + ", Not supoprting environment other than HttpServletRequest");
       }
       return userAgent;
+   }
+   
+   public static Locale getLocaleFromRequest()
+   {
+      return FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
    }
 }

@@ -35,7 +35,6 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 
-
 /**
  * @author Subodh.Godbole
  * 
@@ -86,7 +85,7 @@ public class ExceptionHandler
     */
    public static void handleException(Exception exception, String customMsg)
    {
-      handleException(exception, customMsg, MessageDisplayMode.CUSTOM_MSG_OPTIONAL, FacesUtils.getLocaleFromView());
+      handleException(exception, customMsg, MessageDisplayMode.CUSTOM_MSG_OPTIONAL, getLocale());
    }
 
    /**
@@ -96,7 +95,7 @@ public class ExceptionHandler
     */
    public static void handleException(Exception exception, String customMsg, MessageDisplayMode displayMode)
    {
-      handleException(exception, customMsg, displayMode, FacesUtils.getLocaleFromView());
+      handleException(exception, customMsg, displayMode, getLocale());
    }
 
    /**
@@ -138,7 +137,7 @@ public class ExceptionHandler
    public static void handleException(String clientId, Exception exception, String customMsg,
          MessageDisplayMode displayMode)
    {
-      handleException(clientId, exception, customMsg, displayMode, FacesUtils.getLocaleFromView());
+      handleException(clientId, exception, customMsg, displayMode, getLocale());
    }
 
    /**
@@ -219,7 +218,7 @@ public class ExceptionHandler
     */
    public static String getExceptionMessage(Exception exception)
    {
-      FacesMessage facesMessage = getInstance().getFacesMessage(exception, null, null, FacesUtils.getLocaleFromView());
+      FacesMessage facesMessage = getInstance().getFacesMessage(exception, null, null, getLocale());
       String message = facesMessage.getSummary();
       if (StringUtils.isEmpty(message))
       {
@@ -235,7 +234,7 @@ public class ExceptionHandler
     */
    public static FacesMessage getFacesMessage(Exception exception)
    {
-      return getInstance().getFacesMessage(exception, null, null, FacesUtils.getLocaleFromView());
+      return getInstance().getFacesMessage(exception, null, null, getLocale());
    }
 
    /**
@@ -350,5 +349,13 @@ public class ExceptionHandler
          }
       }
       return null;
+   }
+
+   /**
+    * @return
+    */
+   private static Locale getLocale()
+   {
+      return org.eclipse.stardust.ui.web.common.util.FacesUtils.getLocaleFromRequest();
    }
 }

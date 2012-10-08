@@ -40,20 +40,22 @@ public final class LocalizerCache
 
    public static boolean contains(String id)
    {
-      return dataPathCache.containsKey(new LocalizerCacheModel(id, FacesUtils.getLocaleFromView()));
+      return dataPathCache.containsKey(new LocalizerCacheModel(id, org.eclipse.stardust.ui.web.common.util.FacesUtils
+            .getLocaleFromRequest()));
    }
 
    public static DataPath get(String id)
    {
-      return dataPathCache.get(new LocalizerCacheModel(id, FacesUtils.getLocaleFromView()));
+      return dataPathCache.get(new LocalizerCacheModel(id, org.eclipse.stardust.ui.web.common.util.FacesUtils
+            .getLocaleFromRequest()));
    }
 
    public static void put(String id, DataPath path)
    {
-      dataPathCache.put(new LocalizerCacheModel(id, FacesUtils.getLocaleFromView()), path);
-
+      dataPathCache.put(
+            new LocalizerCacheModel(id, org.eclipse.stardust.ui.web.common.util.FacesUtils.getLocaleFromRequest()),
+            path);
    }
-
 }
 /**
  * 

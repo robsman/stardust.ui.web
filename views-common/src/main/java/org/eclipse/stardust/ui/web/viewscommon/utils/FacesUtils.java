@@ -12,7 +12,6 @@ package org.eclipse.stardust.ui.web.viewscommon.utils;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import javax.faces.FactoryFinder;
 import javax.faces.application.FacesMessage;
@@ -57,20 +56,6 @@ public abstract class FacesUtils
    public static void showFacesMessage(String clientId, FacesMessage facesMsg)
    {
       showFacesMessage(FacesContext.getCurrentInstance(), clientId, facesMsg);
-   }
-   
-   public static Locale getLocaleFromView()
-   {
-      FacesContext facesCtx = FacesContext.getCurrentInstance();
-      return getLocaleFromView(facesCtx);
-   }
-   
-   public static Locale getLocaleFromView(FacesContext facesContext)
-   {
-      FacesContext facesCtx = FacesContext.getCurrentInstance();
-      UIViewRoot view = facesCtx.getViewRoot(); 
-      return view != null ? view.getLocale() :
-         facesCtx.getExternalContext().getRequestLocale();
    }
    
    public static FacesContext getFacesContext(ServletContext servletContext,

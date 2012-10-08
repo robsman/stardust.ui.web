@@ -15,7 +15,7 @@ import static org.eclipse.stardust.ui.web.common.util.StringUtils.isEmpty;
 import java.io.Serializable;
 import java.util.Locale;
 
-import javax.faces.context.FacesContext;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 
 /**
  * @author robert.sauer
@@ -65,7 +65,7 @@ public abstract class UiElement implements MessageSource, Serializable
    {
       // If locale is null then get the default locale from browser session
       if(locale == null)
-         locale  = FacesContext.getCurrentInstance().getViewRoot().getLocale();
+         locale  = FacesUtils.getLocaleFromRequest();
 
       // E.g. views.<viewName>.<code>
       String scopeKey = applyKeyScope(code, name, getMessageCodePrefix());
@@ -99,7 +99,7 @@ public abstract class UiElement implements MessageSource, Serializable
    {
       // If locale is null then get the default locale from browser session
       if(locale == null)
-         locale  = FacesContext.getCurrentInstance().getViewRoot().getLocale();
+         locale  = FacesUtils.getLocaleFromRequest();
 
       // Standard Key: E.g. views.<viewName>.<code>
       String scopeKey = applyKeyScope(code, name, getMessageCodePrefix());

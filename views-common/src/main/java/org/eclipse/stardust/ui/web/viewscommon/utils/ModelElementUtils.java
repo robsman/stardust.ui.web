@@ -140,7 +140,7 @@ public class ModelElementUtils
                baseName = DEFAULT_BUNDLE_PREFIX + model.getId();
                try
                {
-                  ResourceBundle.getBundle(baseName, FacesUtils.getLocaleFromView());
+                  ResourceBundle.getBundle(baseName, org.eclipse.stardust.ui.web.common.util.FacesUtils.getLocaleFromRequest());
                }
                catch(Exception e)
                {

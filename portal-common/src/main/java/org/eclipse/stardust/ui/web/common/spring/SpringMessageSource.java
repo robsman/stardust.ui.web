@@ -17,11 +17,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Locale;
 
-import javax.faces.context.FacesContext;
-
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.common.MessageSource;
 import org.eclipse.stardust.ui.web.common.impl.HierarchicalMessageSource;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
@@ -82,7 +81,7 @@ public class SpringMessageSource implements HierarchicalMessageSource
          {
             if (null == locale)
             {
-               locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
+               locale = FacesUtils.getLocaleFromRequest();
             }
             message = springMsgSource.getMessage(code, null, locale);
          }

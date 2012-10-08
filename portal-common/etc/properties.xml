@@ -15,7 +15,8 @@
 
    <module name="ippBasePortal-ejb" target="carnot.ear">
       <server-archive name="ippBasePortal-ejb"
-         type="war" sourceFile="../deploy/ipp-portal.war" />      <server-archive name="activation" type="jar"         sourceFile="../../../lib/ext/activation.jar"         appservers="tomcat, wls" />      <server-archive name="mail" type="jar"         sourceFile="../../../lib/ext/mail.jar"/>
+         type="war" sourceFile="../deploy/ipp-portal.war" />
+      <server-archive name="activation" type="jar"         sourceFile="../../../lib/ext/activation.jar"         appservers="tomcat, wls" />      <server-archive name="mail" type="jar"         sourceFile="../../../lib/ext/mail.jar"/>
       <server-archive name="jsp-api" type="jar" appservers="was5, wls8"
          sourceFile="../../../lib/jsp-api.jar" />
       <server-archive name="servlet-api" type="jar"
@@ -80,7 +81,8 @@
       <server-archive name="ippBasePortal-pojo"
          type="war" sourceFile="../deploy/ipp-portal.war" />         
       <server-archive name="engine-pojo" type="jar"
-         sourceFile="../../../lib/carnot-engine.jar" destDir="WEB-INF/lib/" />      <server-archive name="carnot-base" type="jar"         sourceFile="../../../lib/carnot-base.jar" destDir="WEB-INF/lib/" />                   <server-archive name="activation" type="jar"         sourceFile="../../../lib/ext/activation.jar" destDir="WEB-INF/lib/" />      <server-archive name="mail" type="jar"         sourceFile="../../../lib/ext/mail.jar" destDir="WEB-INF/lib/" />
+         sourceFile="../../../lib/carnot-engine.jar" destDir="WEB-INF/lib/" />      <server-archive name="carnot-base" type="jar"         sourceFile="../../../lib/carnot-base.jar" destDir="WEB-INF/lib/" />             
+      <server-archive name="activation" type="jar"         sourceFile="../../../lib/ext/activation.jar" destDir="WEB-INF/lib/" />      <server-archive name="mail" type="jar"         sourceFile="../../../lib/ext/mail.jar" destDir="WEB-INF/lib/" />
       <server-archive name="ipp-engine-core" type="jar"
          sourceFile="../../../lib/ipp-engine-core.jar" destDir="WEB-INF/lib/" />
       <server-archive name="ipp-product-nls" type="jar"
@@ -730,14 +732,14 @@
       <property-file name="ippBasePortal-pojo.web"
          filetype="silent">
          <property name="id" value="WebApp_ippPortal"
-            appservers="was6, was7" />
+            appservers="was" />
 
          <property name="display-name"
             value="SunGard CSA LLC - IPP Portal" />
 
          <!-- ******** RESOURCE SECTION ******** -->
          <property name="resource-ref[AuditTrail].id"
-            value="ResRef_AuditTrail" appservers="was6, was7" />
+            value="ResRef_AuditTrail" appservers="was" />
          <property name="resource-ref[AuditTrail].res-ref-name"
             value="jdbc/AuditTrail.DataSource" />
          <property name="resource-ref[AuditTrail].res-type"
@@ -749,7 +751,7 @@
 
          <property name="resource-env-ref[Jcr].id"
             value="ResEnvRef_Jcr" setups="production-withJcr, development-withJcr"
-            appservers="was6, was7" />
+            appservers="was" />
          <property name="resource-env-ref[Jcr].description"
             value="Content Repository" setups="production-withJcr, development-withJcr"
             appservers="wls, jboss, was" />
@@ -763,7 +765,7 @@
             value="Shareable" appservers="wls, jboss, was" />
 
          <property name="resource-ref[JMS].id" value="ResRef_JmsQueueFactory"
-            modules="engine-pojo-spring-jms" appservers="was6, was7"/>
+            modules="engine-pojo-spring-jms" appservers="was"/>
          <property name="resource-ref[JMS].res-auth" value="Container"
             modules="engine-pojo-spring-jms" appservers="wls,jboss,was"/>
          <property name="resource-ref[JMS].res-type" value="javax.jms.QueueConnectionFactory"
@@ -772,7 +774,7 @@
             modules="engine-pojo-spring-jms" appservers="wls,jboss,was"/>
 
          <property name="resource-env-ref[JMS_APP_QUEUE].id" value="ResEnvRef_JmsAppQueue"
-            modules="engine-pojo-spring-jms" appservers="was6, was7"/>
+            modules="engine-pojo-spring-jms" appservers="was"/>
          <property
             name="resource-env-ref[JMS_APP_QUEUE].resource-env-ref-name"
             value="jms/CarnotApplicationQueue" modules="engine-pojo-spring-jms"
@@ -783,7 +785,7 @@
             appservers="wls,jboss, was" />
 
          <property name="resource-env-ref[JMS_SYS_QUEUE].id" value="ResEnvRef_JmsSysQueue"
-            modules="engine-pojo-spring-jms" appservers="was6, was7"/>
+            modules="engine-pojo-spring-jms" appservers="was"/>
          <property
             name="resource-env-ref[JMS_SYS_QUEUE].resource-env-ref-name"
             value="jms/CarnotSystemQueue" modules="engine-pojo-spring-jms"
@@ -794,7 +796,7 @@
             appservers="wls,jboss, was" />
 
          <property name="resource-env-ref[JMS_DAE_QUEUE].id" value="ResEnvRef_JmsDaemonQueue"
-            modules="engine-pojo-spring-jms" appservers="was6, was7"/>
+            modules="engine-pojo-spring-jms" appservers="was"/>
          <property
             name="resource-env-ref[JMS_DAE_QUEUE].resource-env-ref-name"
             value="jms/CarnotDaemonQueue" modules="engine-pojo-spring-jms"
@@ -1282,12 +1284,12 @@
             
          <property
             name="servlet[IPP_LANDING_PAGE].servlet-name" value="ippLandingPage"
-            appservers="was6, was7"/>
+            appservers="was"/>
          <property
             name="servlet[IPP_LANDING_PAGE].servlet-class"
-            value="org.eclipse.stardust.ui.web.viewscommon.login.servlet.LandingPage" appservers="was6, was7"/>
+            value="org.eclipse.stardust.ui.web.viewscommon.login.servlet.LandingPage" appservers="was"/>
          <property name="servlet[IPP_LANDING_PAGE].load-on-startup"
-            value="1" appservers="was6, was7"/>
+            value="1" appservers="was"/>
 
          <!-- ******** SERVLET MAPPING SECTION ******** -->
          <property name="servlet-mapping[FACES_CONTEXT].servlet-name"
@@ -1384,13 +1386,13 @@
             setups="production-withLiberation, development-withLiberation, build" />
 
          <property name="servlet-mapping[INDEX_LANDING_PAGE].servlet-name"
-            value="ippLandingPage" appservers="was6, was7"/>
+            value="ippLandingPage" appservers="was"/>
          <property name="servlet-mapping[INDEX_LANDING_PAGE].url-pattern"
-            value="/index.jsp" appservers="was6, was7"/>
+            value="/index.jsp" appservers="was"/>
          <property name="servlet-mapping[LOGOUT_LANDING_PAGE].servlet-name"
-            value="ippLandingPage" appservers="was6, was7"/>
+            value="ippLandingPage" appservers="was"/>
          <property name="servlet-mapping[LOGOUT_LANDING_PAGE].url-pattern"
-            value="/ipp/common/ippPortalLogout.jsp" appservers="was6, was7"/>
+            value="/ipp/common/ippPortalLogout.jsp" appservers="was"/>
 
          <property name="servlet-mapping[DIAGRAMS].servlet-name"
             value="equinoxbridgeservlet" setups="withDiagrams"/>
@@ -1797,7 +1799,7 @@
             value="WEB-INF/web.xml#ResEnvRef_JmsDaemonQueue"
             modules="engine-pojo-spring-jms"/>
 
-      </property-file>
+      </property-file>            <property-file name="ippBasePortal-pojo.was8-web-app-bnd"         filetype="silent" appservers="was8">         <property name="virtualHostName" value="default_host" />         <property name="webapp.href"            value="WEB-INF/web.xml#WebApp_ippPortal" />         <property name="resRefBindings[AuditTrail].id"            value="ResRef_AuditTrail" />         <property name="resRefBindings[AuditTrail].jndiName"            value="${global:AuditTrail.DataSource}" />         <property name="resRefBindings[AuditTrail].bindingResourceRef.href"            value="WEB-INF/web.xml#ResRef_AuditTrail" />         <property name="resourceEnvRefBindings[JCR].id"            value="ResEnvRef_Jcr"            setups="production-withJcr, development-withJcr" />         <property name="resourceEnvRefBindings[JCR].jndiName"            value="${global:Jcr.ContentRepository}"            setups="production-withJcr, development-withJcr" />         <property name="resourceEnvRefBindings[JCR].bindingResourceEnvRef.href"            value="WEB-INF/web.xml#ResEnvRef_Jcr"            setups="production-withJcr, development-withJcr" />         <property name="resRefBindings[JMS].id"            value="ResRef_JmsQueueFactory"            modules="engine-pojo-spring-jms"/>         <property name="resRefBindings[JMS].jndiName"            value="${global:JMS.QueueConnectionFactory}"            modules="engine-pojo-spring-jms"/>         <property name="resRefBindings[JMS].bindingResourceRef.href"            value="WEB-INF/web.xml#ResRef_JmsQueueFactory"            modules="engine-pojo-spring-jms"/>         <property name="resourceEnvRefBindings[JMS_APP].id"            value="ResEnvRef_JmsAppQueue"            modules="engine-pojo-spring-jms"/>         <property name="resourceEnvRefBindings[JMS_APP].jndiName"            value="${global:JMS.ApplicationQueue}"            modules="engine-pojo-spring-jms"/>         <property name="resourceEnvRefBindings[JMS_APP].bindingResourceEnvRef.href"            value="WEB-INF/web.xml#ResEnvRef_JmsAppQueue"            modules="engine-pojo-spring-jms"/>         <property name="resourceEnvRefBindings[JMS_SYS].id"            value="ResEnvRef_JmsSysQueue"            modules="engine-pojo-spring-jms"/>         <property name="resourceEnvRefBindings[JMS_SYS].jndiName"            value="${global:JMS.SystemQueue}"            modules="engine-pojo-spring-jms"/>         <property name="resourceEnvRefBindings[JMS_SYS].bindingResourceEnvRef.href"            value="WEB-INF/web.xml#ResEnvRef_JmsSysQueue"            modules="engine-pojo-spring-jms"/>         <property name="resourceEnvRefBindings[JMS_DAE].id"            value="ResEnvRef_JmsDaemonQueue"            modules="engine-pojo-spring-jms"/>         <property name="resourceEnvRefBindings[JMS_DAE].jndiName"            value="${global:JMS.DaemonQueue}"            modules="engine-pojo-spring-jms"/>         <property name="resourceEnvRefBindings[JMS_DAE].bindingResourceEnvRef.href"            value="WEB-INF/web.xml#ResEnvRef_JmsDaemonQueue"            modules="engine-pojo-spring-jms"/>      </property-file>
 
       <property-file name="ippBasePortal-ejb.manifest"
          filetype="silent" destinations="ippBasePortal-ejb:manifest">
@@ -1836,7 +1838,7 @@
       <property-file name="ippBasePortal-ejb.web"
          filetype="silent">
          <property name="id" value="WebApp_ippPortal"
-            appservers="was6, was7" />
+            appservers="was" />
          <property name="display-name"
             value="SunGard CSA LLC - IPP Portal" />
 
@@ -2162,12 +2164,12 @@
          <property name="servlet[REST].servlet-name" value="cxf-jaxrs-servlet"            setups="production-withLiberation, development-withLiberation, build" />         <property name="servlet[REST].servlet-class"            value="org.apache.cxf.transport.servlet.CXFServlet"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[REST].init-param[CXF_RES_CONFIG_CLASS].param-name"            value="config-location"            setups="production-withLiberation, development-withLiberation, build" />         <property            name="servlet[REST].init-param[CXF_RES_CONFIG_CLASS].param-value"            value="classpath*:META-INF/spring/cxf/*rs-cxf-context.xml"            setups="production-withLiberation, development-withLiberation, build" />
          <property
             name="servlet[IPP_LANDING_PAGE].servlet-name" value="ippLandingPage"
-            appservers="was6, was7"/>
+            appservers="was"/>
          <property
             name="servlet[IPP_LANDING_PAGE].servlet-class"
-            value="org.eclipse.stardust.ui.web.viewscommon.login.servlet.LandingPage" appservers="was6, was7"/>
+            value="org.eclipse.stardust.ui.web.viewscommon.login.servlet.LandingPage" appservers="was"/>
          <property name="servlet[IPP_LANDING_PAGE].load-on-startup"
-            value="1" appservers="was6, was7"/>
+            value="1" appservers="was"/>
 
          <property name="servlet[EQUINOX_BRIDGE].display-name" value="Equinox Bridge Servlet"
             setups="withDiagrams"/>
@@ -2264,13 +2266,13 @@
             setups="production-withLiberation, development-withLiberation, build" />
 
          <property name="servlet-mapping[INDEX_LANDING_PAGE].servlet-name"
-            value="ippLandingPage" appservers="was6, was7"/>
+            value="ippLandingPage" appservers="was"/>
          <property name="servlet-mapping[INDEX_LANDING_PAGE].url-pattern"
-            value="/index.jsp" appservers="was6, was7"/>
+            value="/index.jsp" appservers="was"/>
          <property name="servlet-mapping[LOGOUT_LANDING_PAGE].servlet-name"
-            value="ippLandingPage" appservers="was6, was7"/>
+            value="ippLandingPage" appservers="was"/>
          <property name="servlet-mapping[LOGOUT_LANDING_PAGE].url-pattern"
-            value="/ipp/common/ippPortalLogout.jsp" appservers="was6, was7"/>
+            value="/ipp/common/ippPortalLogout.jsp" appservers="was"/>
 
          <property name="servlet-mapping[DIAGRAMS].servlet-name"
             value="equinoxbridgeservlet" setups="withDiagrams"/>
@@ -2284,7 +2286,7 @@
          <!-- ******** RES SECTION ******** -->
          <property name="resource-env-ref[Jcr].id"
             value="ResEnvRef_Jcr" setups="production-withJcr, development-withJcr, build"
-            appservers="was6, was7" />
+            appservers="was" />
          <property name="resource-env-ref[Jcr].description"
             value="Content Repository" setups="production-withJcr, development-withJcr, build"/>
          <property name="resource-env-ref[Jcr].resource-env-ref-name"
@@ -2295,7 +2297,7 @@
             
          <!-- ******** EJB REF SECTION ******** -->
          <property name="ejb-ref[WorkflowService].id" value="EjbRef_WorkflowService"
-            appservers="was6, was7" />
+            appservers="was" />
          <property name="ejb-ref[WorkflowService].ejb-ref-name"
             value="ejb/WorkflowService" />
          <property name="ejb-ref[WorkflowService].ejb-ref-type"
@@ -2305,7 +2307,7 @@
             value="${global:WorkflowService.Remote}" />
 
          <property name="ejb-ref[AdministrationService].id"
-            value="EjbRef_AdministrationService" appservers="was6, was7" />
+            value="EjbRef_AdministrationService" appservers="was" />
          <property name="ejb-ref[AdministrationService].ejb-ref-name"
             value="ejb/AdministrationService" />
          <property name="ejb-ref[AdministrationService].ejb-ref-type"
@@ -2316,7 +2318,7 @@
             value="${global:AdministrationService.Remote}" />
 
          <property name="ejb-ref[UserService].id" value="EjbRef_UserService"
-            appservers="was6, was7" />
+            appservers="was" />
          <property name="ejb-ref[UserService].ejb-ref-name"
             value="ejb/UserService" />
          <property name="ejb-ref[UserService].ejb-ref-type"
@@ -2325,7 +2327,7 @@
          <property name="ejb-ref[UserService].remote" value="${global:UserService.Remote}" />
 
          <property name="ejb-ref[QueryService].id" value="EjbRef_QueryService"
-            appservers="was6, was7" />
+            appservers="was" />
          <property name="ejb-ref[QueryService].ejb-ref-name"
             value="ejb/QueryService" />
          <property name="ejb-ref[QueryService].ejb-ref-type"
@@ -2334,7 +2336,7 @@
          <property name="ejb-ref[QueryService].remote" value="${global:QueryService.Remote}" />
 
          <property name="ejb-ref[DocumentMgmtService].id" value="EjbRef_DocumentManagementService"
-            appservers="was6, was7" setups="production-withJcr, development-withJcr, build" />
+            appservers="was" setups="production-withJcr, development-withJcr, build" />
          <property name="ejb-ref[DocumentMgmtService].ejb-ref-name"
             value="ejb/DocumentManagementService"
             setups="production-withJcr, development-withJcr, build" />
@@ -2347,7 +2349,7 @@
             value="${global:DocumentManagementService.Remote}"
             setups="production-withJcr, development-withJcr, build" />
 
-         <property name="ejb-local-ref[ForkingService].id" value="EjbRef_ForkingService"            appservers="was6, was7" setups="production-withJcr, development-withJcr, build" />         <property name="ejb-local-ref[ForkingService].ejb-ref-name"            value="ejb/ForkingService"            setups="production-withJcr, development-withJcr, build" />         <property name="ejb-local-ref[ForkingService].ejb-ref-type"            value="Session" setups="production-withJcr, development-withJcr, build" />         <property name="ejb-local-ref[ForkingService].local-home"            value="org.eclipse.stardust.engine.api.ejb2.beans.LocalForkingServiceHome"            setups="production-withJcr, development-withJcr, build" />         <property name="ejb-local-ref[ForkingService].local"            value="org.eclipse.stardust.engine.api.ejb2.beans.LocalForkingService"            setups="production-withJcr, development-withJcr, build" />      </property-file>
+         <property name="ejb-local-ref[ForkingService].id" value="EjbRef_ForkingService"            appservers="was" setups="production-withJcr, development-withJcr, build" />         <property name="ejb-local-ref[ForkingService].ejb-ref-name"            value="ejb/ForkingService"            setups="production-withJcr, development-withJcr, build" />         <property name="ejb-local-ref[ForkingService].ejb-ref-type"            value="Session" setups="production-withJcr, development-withJcr, build" />         <property name="ejb-local-ref[ForkingService].local-home"            value="org.eclipse.stardust.engine.api.ejb2.beans.LocalForkingServiceHome"            setups="production-withJcr, development-withJcr, build" />         <property name="ejb-local-ref[ForkingService].local"            value="org.eclipse.stardust.engine.api.ejb2.beans.LocalForkingService"            setups="production-withJcr, development-withJcr, build" />      </property-file>
 
       <property-file name="ippBasePortal-ejb.was6-web-app-bnd"
          filetype="silent" appservers="was6">
@@ -2441,8 +2443,7 @@
          <property name="resourceEnvRefBindings[JCR].bindingResourceEnvRef.href"
             value="WEB-INF/web.xml#ResEnvRef_Jcr"
             setups="production-withJcr, development-withJcr" />
-      </property-file>
-
+      </property-file>            <property-file name="ippBasePortal-ejb.was8-web-app-bnd"         filetype="silent" appservers="was8">         <property name="virtualHostName" value="default_host" />         <property name="webapp.href"            value="WEB-INF/web.xml#WebApp_ippPortal" />         <property name="ejbRefBindings[WorkflowService].jndiName"            value="${global:WorkflowService.JndiName}" />         <property name="ejbRefBindings[WorkflowService].bindingEjbRef.href"            value="WEB-INF/web.xml#EjbRef_WorkflowService" />         <property name="ejbRefBindings[AdministrationService].jndiName"            value="${global:AdministrationService.JndiName}" />         <property            name="ejbRefBindings[AdministrationService].bindingEjbRef.href"            value="WEB-INF/web.xml#EjbRef_AdministrationService" />         <property name="ejbRefBindings[UserService].jndiName"            value="${global:UserService.JndiName}" />         <property name="ejbRefBindings[UserService].bindingEjbRef.href"            value="WEB-INF/web.xml#EjbRef_UserService" />         <property name="ejbRefBindings[QueryService].jndiName"            value="${global:QueryService.JndiName}" />         <property name="ejbRefBindings[QueryService].bindingEjbRef.href"            value="WEB-INF/web.xml#EjbRef_QueryService" />         <property name="ejbRefBindings[DocumentMgmtService].jndiName"            value="${global:DocumentManagementService.JndiName}"            setups="production-withJcr, development-withJcr, build" />         <property name="ejbRefBindings[DocumentMgmtService].bindingEjbRef.href"            value="WEB-INF/web.xml#EjbRef_DocumentManagementService"            setups="production-withJcr, development-withJcr, build" />         <property name="resourceEnvRefBindings[JCR].id"            value="ResEnvRef_Jcr"            setups="production-withJcr, development-withJcr" />         <property name="resourceEnvRefBindings[JCR].jndiName"            value="${global:Jcr.ContentRepository}"            setups="production-withJcr, development-withJcr" />         <property name="resourceEnvRefBindings[JCR].bindingResourceEnvRef.href"            value="WEB-INF/web.xml#ResEnvRef_Jcr"            setups="production-withJcr, development-withJcr" />      </property-file>
       <property-file name="ippBasePortal-ejb.weblogic"
          filetype="silent" appservers="wls, cleanroom">
 

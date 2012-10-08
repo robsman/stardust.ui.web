@@ -16,8 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import javax.faces.component.UIViewRoot;
-import javax.faces.context.FacesContext;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 
 public class TimeUnit
 {
@@ -304,13 +303,6 @@ public class TimeUnit
 
    private static Locale getLocale()
    {
-      UIViewRoot view = FacesContext.getCurrentInstance().getViewRoot();
-      Locale locale = Locale.getDefault();
-      if (view != null)
-      {
-         locale = view.getLocale();
-      }
-      return locale;
+      return FacesUtils.getLocaleFromRequest();
    }
-
 }
