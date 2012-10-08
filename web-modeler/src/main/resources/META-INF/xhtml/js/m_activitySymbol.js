@@ -340,8 +340,7 @@ define(
 						this.sequentialMultiProcessingMarkerIcon.show();
 					}
 
-					if (this.modelElement.comments
-							&& this.modelElement.comments.length > 0) {
+					if (this.modelElement.comments.length > 0) {
 						this.commentCountText.attr("text",
 								this.modelElement.comments.length);
 						this.commentCountText.show();
