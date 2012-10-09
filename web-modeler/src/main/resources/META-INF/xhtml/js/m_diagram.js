@@ -663,14 +663,36 @@ define(
 
 						}
 
-						//Run the added loop to add all data symbols except connections
-						//For which the loop is run again - to make sure all connected symbols are
+						// Run the added loop and create any swimlanes before creating other elements
+						// particularly useful in case of UNDO of swimlane delete
+						for ( var i = 0; i < obj.changes.added.length; i++) {
+							if (obj.changes.added[i].type == m_constants.SWIMLANE_SYMBOL) {
+								if ((null != this.lastSymbol && null != obj.changes.added[i].type)
+										&& obj.changes.added[i].type
+												.match(this.lastSymbol.type)) {
+									this.lastSymbol
+											.applyChanges(obj.changes.added[i]);
+									this.lastSymbol.refresh();
+									this.registerSymbol(this.lastSymbol);
+									this.lastSymbol = null;
+								} else {
+									if (null == this.findSymbolByGuid(obj.changes.added[i].oid)) {
+										this.poolSymbol.laneSymbols.push(m_swimlaneSymbol.createSwimlaneSymbolFromJson(this, this.poolSymbol, obj.changes.added[i]));
+										this.poolSymbol.adjustChildSymbols();
+									}
+								}
+							}
+						}
+
+						//Run the added loop to add all data symbols except connections and swimlane
+						//For connections the loop is run again - to make sure all connected symbols are
 						//created already
 						for ( var i = 0; i < obj.changes.added.length; i++) {
 							if (!(obj.changes.added[i].type == m_constants.CONTROL_FLOW_CONNECTION
 									|| obj.changes.added[i].type == m_constants.DATA_FLOW_CONNECTION
 									|| obj.changes.added[i].type == m_constants.CONTROL_FLOW
-									|| obj.changes.added[i].type == m_constants.DATA_FLOW)) {
+									|| obj.changes.added[i].type == m_constants.DATA_FLOW
+									|| obj.changes.added[i].type == m_constants.SWIMLANE_SYMBOL)) {
 								if ((null != this.lastSymbol && null != obj.changes.added[i].type)
 										&& obj.changes.added[i].type
 												.match(this.lastSymbol.type)) {
@@ -682,56 +704,49 @@ define(
 								}// For connections lastSymbol will be empty
 								else {
 									// Else block is executed in case of undo / redo
-									if (obj.changes.added[i].type == m_constants.SWIMLANE_SYMBOL) {
-										if (null == this.findSymbolByGuid(obj.changes.added[i].oid)) {
-											this.poolSymbol.laneSymbols.push(m_swimlaneSymbol.createSwimlaneSymbolFromJson(this, this.poolSymbol, obj.changes.added[i]));
-											this.poolSymbol.adjustChildSymbols();
+									//Find swimlane from modified array or added
+									var swimlane;
+									for ( var j = 0; j < obj.changes.modified.length; j++) {
+										if (obj.changes.modified[j].type == m_constants.SWIMLANE_SYMBOL) {
+											swimlane = obj.changes.modified[j];
+											break;
 										}
+									}
+									for ( var j = 0; j < obj.changes.added.length; j++) {
+										if (obj.changes.added[j].type == m_constants.SWIMLANE_SYMBOL) {
+											swimlane = obj.changes.added[j];
+											break;
+										}
+									}
+
+									if (swimlane) {
+										swimlane = this.findSymbolByGuid(swimlane.oid);
 									} else {
-										//Find swimlane from modified array or added
-										var swimlane;
-										for ( var j = 0; j < obj.changes.modified.length; j++) {
-											if (obj.changes.modified[j].type == m_constants.SWIMLANE_SYMBOL) {
-												swimlane = obj.changes.modified[j];
-												break;
-											}
-										}
+										//Swimlane delete undo scenario
 										for ( var j = 0; j < obj.changes.added.length; j++) {
 											if (obj.changes.added[j].type == m_constants.SWIMLANE_SYMBOL) {
-												swimlane = obj.changes.added[j];
-												break;
+												swimlane = m_swimlaneSymbol.createSwimlaneSymbolFromJson(this, this.poolSymbol, obj.changes.added[j]);
+												this.poolSymbol.laneSymbols.push(swimlane);
+												this.poolSymbol.adjustChildSymbols();
 											}
 										}
+									}
 
-										if (swimlane) {
-											swimlane = this.findSymbolByGuid(swimlane.oid);
-										} else {
-											//Swimlane delete undo scenario
-											for ( var j = 0; j < obj.changes.added.length; j++) {
-												if (obj.changes.added[j].type == m_constants.SWIMLANE_SYMBOL) {
-													swimlane = m_swimlaneSymbol.createSwimlaneSymbolFromJson(this, this.poolSymbol, obj.changes.added[j]);
-													this.poolSymbol.laneSymbols.push(swimlane);
-													this.poolSymbol.adjustChildSymbols();
-												}
-											}
-										}
-
-										if (swimlane) {
-											//Attach prototype object
-											obj.changes.added[i].prototype = {};
-											if (obj.changes.added[i].type == m_constants.ACTIVITY_SYMBOL) {
-												m_activitySymbol.createActivitySymbolFromJson(this, swimlane, obj.changes.added[i]);
-												this.lastSymbol = null;
-											} else if (obj.changes.added[i].type == m_constants.GATEWAY_SYMBOL) {
-												m_gatewaySymbol.createGatewaySymbolFromJson(this, swimlane, obj.changes.added[i])
-												this.lastSymbol = null;
-											} else if (obj.changes.added[i].type == m_constants.EVENT_SYMBOL) {
-												m_eventSymbol.createEventSymbolFromJson(this, swimlane, obj.changes.added[i])
-												this.lastSymbol = null;
-											} else if (obj.changes.added[i].type == m_constants.DATA_SYMBOL) {
-												m_dataSymbol.createDataSymbolFromJson(this, swimlane, obj.changes.added[i]);
-												this.lastSymbol = null;
-											}
+									if (swimlane) {
+										//Attach prototype object
+										obj.changes.added[i].prototype = {};
+										if (obj.changes.added[i].type == m_constants.ACTIVITY_SYMBOL) {
+											m_activitySymbol.createActivitySymbolFromJson(this, swimlane, obj.changes.added[i]);
+											this.lastSymbol = null;
+										} else if (obj.changes.added[i].type == m_constants.GATEWAY_SYMBOL) {
+											m_gatewaySymbol.createGatewaySymbolFromJson(this, swimlane, obj.changes.added[i])
+											this.lastSymbol = null;
+										} else if (obj.changes.added[i].type == m_constants.EVENT_SYMBOL) {
+											m_eventSymbol.createEventSymbolFromJson(this, swimlane, obj.changes.added[i])
+											this.lastSymbol = null;
+										} else if (obj.changes.added[i].type == m_constants.DATA_SYMBOL) {
+											m_dataSymbol.createDataSymbolFromJson(this, swimlane, obj.changes.added[i]);
+											this.lastSymbol = null;
 										}
 									}
 								}
