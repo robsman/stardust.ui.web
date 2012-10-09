@@ -58,7 +58,7 @@
 												</ice:commandLink>
 											</ice:panelGroup>
 										</ice:panelGrid>
-										<ice:panelGroup rendered="#{delegationBean.limitedSearchEnabled and !delegationBean.delegateCase}">
+										<ice:panelGroup rendered="#{delegationBean.limitedSearchEnabled and !(delegationBean.delegateCase || delegationBean.selectedParticipantCase)}">
 											<ice:selectBooleanCheckbox partialSubmit="true"
 												value="#{delegationBean.allUserRoles}" tabindex="1"
 												accesskey="1"
@@ -67,7 +67,7 @@
 											</ice:selectBooleanCheckbox>
 											<ice:outputLabel
 												value="#{views_common_msgPropsBean['delegation.showAllUserRoles']}"
-												styleClass="label-form" rendered="#{!delegationBean.delegateCase}" />
+												styleClass="label-form" rendered="#{!(delegationBean.delegateCase || delegationBean.selectedParticipantCase)}" />
 										</ice:panelGroup>	
 									</ice:panelGroup>
 		
@@ -205,7 +205,7 @@
 											</ice:commandLink>
 											</ice:panelGroup>
 										</ice:panelGrid>
-										<ice:panelGroup rendered="#{delegationBean.limitedSearchEnabled and !delegationBean.delegateCase}">
+										<ice:panelGroup rendered="#{delegationBean.limitedSearchEnabled and !(delegationBean.delegateCase || delegationBean.selectedParticipantCase)}">
 											<ice:selectBooleanCheckbox partialSubmit="true"
 												value="#{delegationBean.allUserRoles}" tabindex="1"
 												accesskey="1"
@@ -214,7 +214,7 @@
 											</ice:selectBooleanCheckbox>
 											<ice:outputLabel
 												value="#{views_common_msgPropsBean['delegation.searchAllUserRoles']}"
-												styleClass="label-form" rendered="#{!delegationBean.delegateCase}" />
+												styleClass="label-form" rendered="#{!(delegationBean.delegateCase || delegationBean.selectedParticipantCase)}" />
 										</ice:panelGroup>	
 									</ice:panelGroup>
 									<ice:panelGroup styleClass="clearing" />
