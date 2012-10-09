@@ -58,9 +58,13 @@ public class SpecialWorklistCacheManager implements InitializingBean
       if (!cacheManager.initialized)
       {
          cacheManager.initialize();
-         cacheManager.initialized = true;
       }
       return cacheManager;
+   }
+   
+   public void reset()
+   {
+      initialize();
    }
 
    private void initialize()
@@ -72,6 +76,7 @@ public class SpecialWorklistCacheManager implements InitializingBean
             CriticalityConfigurationUtil.PORTAL_CRITICALITY_MAX);
       result = WorklistUtils.getCriticalActivities(definedHighCriticality);
       worklists.put(CRITICAL_ACTVITIES, new ProcessWorklistCacheEntry(result.getTotalCount(), result.getQuery()));
+      initialized = true;
    }
 
    /**

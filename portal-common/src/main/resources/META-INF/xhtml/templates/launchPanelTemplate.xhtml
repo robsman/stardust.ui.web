@@ -32,24 +32,27 @@
 			value="#{title}" rendered="#{!collapsible}"/>
 		</ice:panelGroup>
 		<ice:panelGrid columns="2" styleClass="panelHeader" width="100%" rendered="#{showRefreshLink}" cellpadding="0" cellspacing="0">
-			<ice:commandLink action="#{bean.toggle}">
-			<c:if test="${automationTag!=null}">
-				<pc:automationTag value="#{automationTag}" standAlone="false"/>
-			</c:if>
-				<ice:panelGrid columns="3">
-					<ice:graphicImage rendered="#{!bean.expanded}"
-					value="/plugins/common/images/panelHeader-triggerExpand.png"
-					style="border: none" />
-					  <ice:graphicImage rendered="#{bean.expanded}"
-					value="/plugins/common/images/panelHeader-triggerCollapse.png"
-					style="border: none" /> 
-					<ice:outputText styleClass="panelHeaderTitle" value="#{title}" />
-						</ice:panelGrid>
-			</ice:commandLink>
-			  <ice:commandLink title="#{messages_bcc['views.common.refresh']}" 
+			<ice:panelGroup>
+				<ice:commandLink action="#{bean.toggle}">
+				<c:if test="${automationTag!=null}">
+					<pc:automationTag value="#{automationTag}" standAlone="false"/>
+				</c:if>
+					<ice:panelGrid columns="3">
+						<ice:graphicImage rendered="#{!bean.expanded}"
+						value="/plugins/common/images/panelHeader-triggerExpand.png"
+						style="border: none" />
+						  <ice:graphicImage rendered="#{bean.expanded}"
+						value="/plugins/common/images/panelHeader-triggerCollapse.png"
+						style="border: none" /> 
+						<ice:outputText styleClass="panelHeaderTitle" value="#{title}" />
+							</ice:panelGrid>
+				</ice:commandLink>
+			</ice:panelGroup>
+			<ice:panelGroup style="text-align:right">
+			  <ice:commandLink title="#{messages_bcc['views.common.refresh']}"
 		            action="#{bean.update}" partialSubmit="true" rendered="#{bean.expanded}">
 				<ice:graphicImage value="/plugins/common/images/icons/arrow_refresh.png"/>
-			</ice:commandLink> 
+			  </ice:commandLink>
+			</ice:panelGroup> 
 		</ice:panelGrid>
-
 </f:view>
