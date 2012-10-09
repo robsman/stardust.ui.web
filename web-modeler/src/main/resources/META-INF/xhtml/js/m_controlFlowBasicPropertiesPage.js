@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -12,8 +12,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_propertiesPage", "m_dataTraversal" ],
-		function(m_utils, m_constants, m_propertiesPage, m_dataTraversal) {
+		[ "m_utils", "m_constants", "m_basicPropertiesPage", "m_dataTraversal" ],
+		function(m_utils, m_constants, m_basicPropertiesPage, m_dataTraversal) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new ControlFlowBasicPropertiesPage(
@@ -26,11 +26,10 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function ControlFlowBasicPropertiesPage(propertiesPanel) {
-				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						propertiesPanel, "basicPropertiesPage", "Basic");
+				var propertiesPage = m_basicPropertiesPage.create(propertiesPanel);
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
@@ -39,20 +38,20 @@ define(
 
 				/**
 				 * Override base class PropertiesPage#show() method so that codeEditor.refresh() can be called
-				 */ 
-				ControlFlowBasicPropertiesPage.prototype.show = function() { 
+				 */
+				ControlFlowBasicPropertiesPage.prototype.show = function() {
 					propertiesPage.show();
 					this.conditionExpressionInputEditor.refresh();
-					
-					// Bind the Model Data as top "window" level objects to be used for Code Editor auto-complete  
+
+					// Bind the Model Data as top "window" level objects to be used for Code Editor auto-complete
 					var globalVariables = m_dataTraversal.getAllDataAsJavaScriptObjects(this.propertiesPanel.diagram.model);
 					for (var key in globalVariables) {
 						window[key] = globalVariables[key];
 					}
 				};
-				
+
 				/**
-				 * 
+				 *
 				 */
 				ControlFlowBasicPropertiesPage.prototype.initialize = function() {
 					this.otherwiseInput = this.mapInputId("otherwiseInput");
@@ -65,7 +64,7 @@ define(
 					CodeMirror.commands.autocomplete = function(cm) {
 						CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
 					}
-					
+
 					var editor = CodeMirror.fromTextArea(this.conditionExpressionInput[0], {
 						mode: "javascript",
 						theme: "eclipse",
@@ -75,9 +74,9 @@ define(
 						matchBrackets: true,
 						extraKeys: {"Ctrl-Space": "autocomplete"},
 						onCursorActivity: function() {
-							// Highlight selected text 
+							// Highlight selected text
 							editor.matchHighlight("CodeMirror-matchhighlight");
-							// Set active line 
+							// Set active line
 							editor.setLineClass(hlLine, null, null);
 							hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
 						},
@@ -102,8 +101,8 @@ define(
 						// Programmatically invoke the change handler on the hidden text area
 						// as it will not be invoked automatically
 						event.data.page.conditionExpressionInput.change();
-						
-						// TODO: Review - below statements are probably not necessary 
+
+						// TODO: Review - below statements are probably not necessary
 						// as the code editor will be refreshed in setElement()
 						// event.data.page.conditionExpressionInputEditor.setValue(event.data.page.conditionExpressionInput.val());
 						// event.data.page.conditionExpressionInputEditor.refresh();
@@ -119,7 +118,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ControlFlowBasicPropertiesPage.prototype.setElement = function() {
 					this.descriptionInput
@@ -127,7 +126,7 @@ define(
 
 					if (this.propertiesPanel.element.allowsCondition()) {
 						var editor = this.conditionExpressionInputEditor;
-						
+
 						this.otherwiseInput
 								.attr(
 										"checked",
@@ -140,14 +139,26 @@ define(
 						if (this.propertiesPanel.element.modelElement.otherwise) {
 							editor.setOption("readOnly", "nocursor");
 							jQuery(editorWrapperNode).addClass("CodeMirror-disabled");
+							this.setTitle("Default Sequence Flow");
 						} else {
 							editor.setOption("readOnly", false);
 							jQuery(editorWrapperNode).removeClass("CodeMirror-disabled");
+							this.setTitle("Conditional Sequence Flow");
 						}
 
 						this.conditionPanel.removeAttr("class");
 					} else {
 						this.conditionPanel.attr("class", "invisible");
+						this.setTitle("Sequence Flow");
+					}
+				};
+
+				/**
+				 *
+				 */
+				ControlFlowBasicPropertiesPage.prototype.setTitle = function(title) {
+					if (title) {
+						jQuery("#controlFlowPropertiesPanel div.propertiesPanelTitle").text(title);
 					}
 				};
 			}
