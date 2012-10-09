@@ -175,7 +175,7 @@ define(
 
 					if (typeof parentObject[member] == "object"
 							&& childObject[member] != null
-							&& !parentObject[member] instanceof Array) {
+							&& !(parentObject[member] instanceof Array)) {
 						// Copy recursively
 
 						inheritFields(childObject[member], parentObject[member]);
