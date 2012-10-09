@@ -92,6 +92,7 @@ import org.eclipse.stardust.ui.web.processportal.common.Resources;
 import org.eclipse.stardust.ui.web.processportal.common.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.WorklistColumnPreferenceHandler;
 import org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.WorklistConfigurationUtil;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ProcessActivityDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutoCompleteItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutocompleteTableDataFilter;
@@ -616,6 +617,13 @@ public class WorklistTableBean extends UIComponentBean
       else if (null != processDefintion)
       {
          identityKey = String.valueOf(processDefintion.getQualifiedId());
+      }
+
+      //identity key should be valid
+      if (StringUtils.isEmpty(identityKey))
+      {
+         ParticipantInfo participantInfo = SessionContext.findSessionContext().getUser();
+         identityKey = WorklistConfigurationUtil.getParticipantKey(participantInfo);
       }
       return identityKey;
    }
