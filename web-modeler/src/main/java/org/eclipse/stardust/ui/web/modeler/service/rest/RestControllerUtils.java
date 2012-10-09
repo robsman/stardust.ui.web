@@ -1,4 +1,4 @@
-package org.eclipse.stardust.ui.web.modeler.rest;
+package org.eclipse.stardust.ui.web.modeler.service.rest;
 
 import javax.servlet.ServletContext;
 
