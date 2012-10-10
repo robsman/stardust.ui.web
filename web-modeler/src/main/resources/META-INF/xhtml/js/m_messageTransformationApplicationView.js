@@ -512,18 +512,17 @@ define(
 					var xmlObject = jQuery(xmlDoc);
 
 					var view = this;
-					
-					jQuery(xmlObject).find("fieldMappings").each(function() {
-						m_utils.debug("****> Mapping: ");
-						m_utils.debug(jQuery(this).attr("fieldPath"));
-						m_utils.debug(jQuery(this).attr("mappingExpression"));
 
-						var fieldPath = jQuery(this).attr("fieldPath")
-						
-						fieldPath = fieldPath.replace(/\//g, ".");
+					jQuery(xmlObject).find("fieldMappings").each(
+							function() {
 
-						view.mappingExpressions[fieldPath] = jQuery(this).attr("mappingExpression");
-					});
+								var fieldPath = jQuery(this).attr("fieldPath")
+
+								fieldPath = fieldPath.replace(/\//g, ".");
+
+								view.mappingExpressions[fieldPath] = jQuery(
+										this).attr("mappingExpression");
+							});
 				};
 
 				/**
@@ -621,13 +620,49 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.addInputData = function(
 						accessPoint) {
-					var typeDeclaration = this.application.model.typeDeclarations[accessPoint.attributes["carnot:engine:dataType"]];
+					m_utils.debug("Access Point:");
+					m_utils.debug(accessPoint);
+
+					var typeDeclaration = this
+							.getTypeDeclaration(accessPoint.attributes["carnot:engine:dataType"]);
+
+					if (typeDeclaration == null) {
+						this.errorMessages
+								.push("Unsupported Type for Source Message Element "
+										+ accessPoint.name + ".");
+						this.showErrorMessages();
+
+						return;
+					}
+
+					m_utils.debug("Type Declaration");
+					m_utils.debug(typeDeclaration);
 
 					this.inputData[accessPoint.id] = typeDeclaration;
 
 					this.initializeInputTableRowsRecursively(accessPoint,
 							typeDeclaration.getBody(), null, true);
 				};
+
+				/**
+				 * TODO: Very ugly conversion, because server stores data
+				 * reference in a server-specific string.
+				 */
+				MessageTransformationApplicationView.prototype.getTypeDeclaration = function(
+						encodedId) {
+					if (encodedId == null) {
+						return null;
+					}
+
+					if (encodedId.indexOf("typeDeclaration") == 0) {
+						var parts = encodedId.split("{")[1].split("}");
+
+						return m_model.findTypeDeclaration(parts[0] + ":"
+								+ parts[1]);
+					} else {
+						return this.application.model.typeDeclarations[encodedId];
+					}
+				}
 
 				/**
 				 * 
@@ -648,7 +683,17 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.addOutputData = function(
 						accessPoint) {
-					var typeDeclaration = this.application.model.typeDeclarations[accessPoint.attributes["carnot:engine:dataType"]];
+					var typeDeclaration = this
+							.getTypeDeclaration(accessPoint.attributes["carnot:engine:dataType"]);
+
+					if (typeDeclaration == null) {
+						this.errorMessages
+								.push("Unsupported Type for Target Message Element "
+										+ accessPoint.name + ".");
+						this.showErrorMessages();
+
+						return;
+					}
 
 					this.outputData[accessPoint.id] = typeDeclaration;
 
@@ -673,7 +718,9 @@ define(
 					tableRow.parentPath = parentPath;
 					tableRow.name = parentPath == null ? accessPoint.name
 							: element.name;
-					tableRow.typeName = parentPath == null ? this.application.model.typeDeclarations[accessPoint.attributes["carnot:engine:dataType"]]
+					tableRow.typeName = parentPath == null ? this
+							.getTypeDeclaration(
+									accessPoint.attributes["carnot:engine:dataType"])
 							.getSchemaName()
 							: element.type;
 
@@ -720,12 +767,11 @@ define(
 					tableRow.parentPath = parentPath;
 					tableRow.name = parentPath == null ? accessPoint.name
 							: element.name;
-					tableRow.typeName = parentPath == null ? this.application.model.typeDeclarations[accessPoint.attributes["carnot:engine:dataType"]]
+					tableRow.typeName = parentPath == null ? this
+							.getTypeDeclaration(
+									accessPoint.attributes["carnot:engine:dataType"])
 							.getSchemaName()
 							: element.type;
-					m_utils.debug("===> Path: " + path);
-					m_utils.debug("===> Expression: "
-							+ this.mappingExpressions[path]);
 					tableRow.mappingExpression = this.mappingExpressions[path] == null ? ""
 							: this.mappingExpressions[path];
 					tableRow.problems = "";
