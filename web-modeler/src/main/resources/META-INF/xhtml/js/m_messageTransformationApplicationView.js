@@ -635,9 +635,6 @@ define(
 						return;
 					}
 
-					m_utils.debug("Type Declaration");
-					m_utils.debug(typeDeclaration);
-
 					this.inputData[accessPoint.id] = typeDeclaration;
 
 					this.initializeInputTableRowsRecursively(accessPoint,
