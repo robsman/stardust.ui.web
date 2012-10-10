@@ -90,6 +90,18 @@ define(
 					var hlLine = editor.setLineClass(0, "activeline");
 					this.conditionExpressionInputEditor = editor;
 
+					this.registerInputForModelElementChangeSubmission(
+							this.descriptionInput, "description");
+					this.registerCheckboxInputForModelElementChangeSubmission(
+							this.otherwiseInput, "otherwise");
+					this.registerInputForModelElementChangeSubmission(
+							this.conditionExpressionInput,
+							"conditionExpression");
+
+					// This on-click handler needs to be after the
+					// registerCheckboxInputForModelElementChangeSubmission call above
+					// to avoid having to click the "Default" checkbox twice to take effect
+					//TODO - can probably be handled in a better way
 					this.otherwiseInput.click({
 						"page" : this
 					}, function(event) {
@@ -107,14 +119,6 @@ define(
 						// event.data.page.conditionExpressionInputEditor.setValue(event.data.page.conditionExpressionInput.val());
 						// event.data.page.conditionExpressionInputEditor.refresh();
 					});
-
-					this.registerInputForModelElementChangeSubmission(
-							this.descriptionInput, "description");
-					this.registerCheckboxInputForModelElementChangeSubmission(
-							this.otherwiseInput, "otherwise");
-					this.registerInputForModelElementChangeSubmission(
-							this.conditionExpressionInput,
-							"conditionExpression");
 				};
 
 				/**
