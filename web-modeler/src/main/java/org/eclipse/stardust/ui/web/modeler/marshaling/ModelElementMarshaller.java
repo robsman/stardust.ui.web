@@ -3,7 +3,6 @@ package org.eclipse.stardust.ui.web.modeler.marshaling;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
@@ -22,7 +21,6 @@ import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.AnnotationSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
-import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
 import org.eclipse.stardust.model.xpdl.carnot.ContextType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
@@ -60,12 +58,10 @@ import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
 import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.model.xpdl.xpdl2.XpdlTypeType;
 import org.eclipse.stardust.modeling.repository.common.descriptors.EObjectDescriptor;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
-import org.w3c.dom.Node;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -943,6 +939,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       if (null != data)
       {
+         if (data.getId().startsWith("Primit")) {
+            System.out.println();
+         }
          dataJson.addProperty(ModelerConstants.TYPE_PROPERTY, "data");
          dataJson.addProperty(ModelerConstants.ID_PROPERTY, data.getId());
          dataJson.addProperty(ModelerConstants.NAME_PROPERTY, data.getName());
@@ -2007,7 +2006,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
     * @param json
     * @throws JSONException
     */
-   private void loadAttributes(IIdentifiableModelElement element, JsonObject json)
+   private void loadAttributes(EObject element, JsonObject json)
    {
       JsonObject attributes;
 
@@ -2020,16 +2019,21 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          attributes = json.getAsJsonObject(ModelerConstants.ATTRIBUTES_PROPERTY);
       }
 
-      for (AttributeType attribute : element.getAttribute())
+      for (Object attribute : getModelBuilderFacade().getAttributes(element))
       {
-         if (attribute.getName().equals("documentation:comments"))
+         if (getModelBuilderFacade().getAttributeName(attribute).equals(
+               "documentation:comments"))
          {
-            json.add(ModelerConstants.COMMENTS_PROPERTY, jsonIo.readJsonObject(attribute.getValue()).get(ModelerConstants.COMMENTS_PROPERTY)
-                  .getAsJsonArray());
+            json.add(
+                  ModelerConstants.COMMENTS_PROPERTY,
+                  jsonIo.readJsonObject(
+                        getModelBuilderFacade().getAttributeValue(attribute))
+                        .get(ModelerConstants.COMMENTS_PROPERTY).getAsJsonArray());
          }
          else
          {
-            attributes.addProperty(attribute.getName(), attribute.getValue());
+            attributes.addProperty(getModelBuilderFacade().getAttributeName(attribute),
+                  getModelBuilderFacade().getAttributeValue(attribute));
          }
       }
 
@@ -2107,10 +2111,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    private ModelBuilderFacade getModelBuilderFacade()
    {
-      if (modelBuilderFacade == null)
-      {
-         modelBuilderFacade = new ModelBuilderFacade(modelManagementStrategy());
-      }
-      return modelBuilderFacade;
+      return new ModelBuilderFacade(modelManagementStrategy());
    }
 }
