@@ -54,6 +54,7 @@ define(
 				 *
 				 */
 				ControlFlowBasicPropertiesPage.prototype.initialize = function() {
+					this.initializeBasicPropertiesPage();
 					this.otherwiseInput = this.mapInputId("otherwiseInput");
 					this.conditionExpressionInput = this
 							.mapInputId("conditionExpressionInput");
@@ -125,6 +126,7 @@ define(
 				 *
 				 */
 				ControlFlowBasicPropertiesPage.prototype.setElement = function() {
+					this.setModelElement();
 					this.descriptionInput
 							.val(this.propertiesPanel.element.modelElement.description);
 
