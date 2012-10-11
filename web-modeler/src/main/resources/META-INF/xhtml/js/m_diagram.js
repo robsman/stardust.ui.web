@@ -476,7 +476,7 @@ define(
 					m_autoScrollManager.initScrollManager("scrollpane", function() {
 						var inAutoScrollMode = false;
 						if (null != currentDiagram.newSymbol
-						     		&& currentDiagram.newSymbol.type == m_constants.POOL_SYMBOL) {
+						     		&& currentDiagram.newSymbol.isPoolSymbol()) {
 							// For Default Pool drag and drop is not allowed.
 							inAutoScrollMode = false;
 						}else if (true == currentDiagram.isInConnectionMode()

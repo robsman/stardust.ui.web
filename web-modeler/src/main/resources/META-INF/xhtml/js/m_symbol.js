@@ -164,6 +164,18 @@ define(
 				};
 
 				/**
+				 * For PoolSymbol, there is no JSON response, so type changes to
+				 * modelElement.getClass() on server roundTrip, added manual
+				 * check for type containing text POOLSYMBOL
+				 */
+				Symbol.prototype.isPoolSymbol = function() {
+					if(this.type && (this.type.toLowerCase().indexOf(m_constants.POOL_SYMBOL.toLowerCase()) > -1)){
+						return true;
+					}
+					return false;
+				};
+
+				/**
 				 *
 				 */
 				Symbol.prototype.requiresParentSymbol = function() {
@@ -1279,13 +1291,16 @@ define(
 						}
 					} else {
 						if (this.diagram.isInConnectionMode()) {
-							this.diagram.setAnchorPoint(this
-									.getClosestAnchorPoint(x
-											* this.diagram.zoomFactor
-											- this.diagram.X_OFFSET, y
-											* this.diagram.zoomFactor
-											- this.diagram.Y_OFFSET));
-							this.hideAnchorPoints();
+
+							if (!this.isPoolSymbol()) {
+								this.diagram.setAnchorPoint(this
+										.getClosestAnchorPoint(x
+												* this.diagram.zoomFactor
+												- this.diagram.X_OFFSET, y
+												* this.diagram.zoomFactor
+												- this.diagram.Y_OFFSET));
+								this.hideAnchorPoints();
+							}
 						} else {
 							this.select();
 						}
