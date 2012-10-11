@@ -1721,7 +1721,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       modelJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.MODEL_KEY);
 
 //      loadDescription(modelJson, model);
-//      loadAttributes(model, modelJson);
+      loadAttributes(model, modelJson);
 
       if (model.getDescription() != null)
       {
@@ -1902,6 +1902,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             eObjectUUIDMapper().getUUID(structType));
       setContainingModelIdProperty(structJson, structType);
 
+      loadAttributes(structType, structJson);
+      
       JsonObject typeDeclarationJson = new JsonObject();
 
       structJson.add("typeDeclaration", typeDeclarationJson);

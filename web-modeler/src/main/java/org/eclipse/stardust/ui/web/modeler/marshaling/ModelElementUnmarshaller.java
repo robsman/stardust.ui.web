@@ -1012,6 +1012,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private void updateTypeDeclaration(TypeDeclarationType typeDeclaration, JsonObject json)
    {
+      storeAttributes(typeDeclaration, json);
+
       mapDeclaredProperties(typeDeclaration, json,
             propertiesMap.get(TypeDeclarationType.class));
       JsonObject declarationJson = json.getAsJsonObject("typeDeclaration");
@@ -1021,6 +1023,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          updateXSDSchemaType(typeDeclaration.getSchemaType(),
                declarationJson.getAsJsonObject("schema"));
       }
+      
+     
       // ExternalReference ?
    }
 
@@ -1388,7 +1392,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       updateIdentifiableElement(model, modelJson);
 
       mapDeclaredProperties(model, modelJson, propertiesMap.get(ModelType.class));
-      // storeAttributes(model, modelJson);
+      storeAttributes(model, modelJson);
       // storeDescription(model, modelJson);
    }
 
