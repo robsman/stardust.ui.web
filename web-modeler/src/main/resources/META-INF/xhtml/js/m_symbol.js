@@ -46,6 +46,7 @@ define(
 				this.dragStartX = 0;
 				this.dragStartY = 0;
 				this.visible = true;
+				this.serverSideCoordinates = null;
 
 				// Method initialization
 
@@ -145,6 +146,17 @@ define(
 				};
 
 				/**
+				 * Store the server side co-ordinates, required to move the
+				 * symbols from original point when some lane is minimized
+				 */
+				Symbol.prototype.updateServerSideCoordinates = function() {
+					this.serverSideCoordinates = {
+						x : this.x,
+						y : this.y
+					};
+				};
+
+				/**
 				 *
 				 */
 				Symbol.prototype.isContainerSymbol = function() {
@@ -171,7 +183,7 @@ define(
 						// If tried to add symbol outside Lane or when lane is
 						// minimized symbols cannot be added
 						if (this.parentSymbol == null
-								|| this.parentSymbol.laneMinimized) {
+								|| this.parentSymbol.minimized) {
 							// TODO May make exception
 							m_messageDisplay
 									.showErrorMessage("Symbol can only be dropped inside a expanded lane.");
@@ -225,6 +237,12 @@ define(
 				Symbol.prototype.complete = function(sync) {
 					this.completeNoTransfer(this);
 					if (this.isCompleted()) {
+						// If any lane is minimized, symbolXOffset is added to
+						// store correct co-ord,
+						// as of state when all lane will be maximized
+						if (this.parentSymbol.symbolXOffset) {
+							this.x += this.parentSymbol.symbolXOffset;
+						}
 						this.createAndSubmitCreateCommand(sync);
 					}
 
@@ -372,9 +390,9 @@ define(
 				 */
 				Symbol.prototype.show = function() {
 					this.visible = true;
-					this.showConnections();
-					this.showPrimitives();
 					this.refreshFromModelElement();
+					this.showPrimitives();
+					this.showConnections();
 					this.showProximitySensor();
 				};
 
@@ -395,6 +413,7 @@ define(
 							if (this.parentSymbol.id == connectionStartLane.id) {
 								// When connection is from left to right
 								if (conn.toAnchorPoint.x > conn.fromAnchorPoint.x) {
+									conn.fromAnchorPoint.cacheX = conn.fromAnchorPoint.x;
 									conn.fromAnchorPoint.x = this.parentSymbol.x
 											+ this.parentSymbol.width;
 
@@ -405,6 +424,7 @@ define(
 
 								} else {
 									// When connection is from right to left
+									conn.fromAnchorPoint.cacheX = conn.fromAnchorPoint.x;
 									conn.fromAnchorPoint.x = this.parentSymbol.x;
 									this.cacheAnchorPointAndAdjust(
 											conn.fromAnchorPoint,
@@ -417,6 +437,7 @@ define(
 							else {
 								// When connection is from right to left
 								if (conn.fromAnchorPoint.x > conn.toAnchorPoint.x) {
+									conn.toAnchorPoint.cacheX = conn.toAnchorPoint.x;
 									conn.toAnchorPoint.x = this.parentSymbol.x
 											+ this.parentSymbol.width;
 
@@ -426,6 +447,7 @@ define(
 									conn.toAnchorPoint.orientation = m_constants.EAST;
 
 								} else {
+									conn.toAnchorPoint.cacheX = conn.toAnchorPoint.x;
 									conn.toAnchorPoint.x = connectionToLane.x;
 
 									this.cacheAnchorPointAndAdjust(
@@ -450,19 +472,22 @@ define(
 						currentAnchorPt.cacheOrientation = currentAnchorPt.orientation;
 						if (!currentAnchorPt.symbol.visible
 								&& !targetAnchorPt.symbol.visible) {
+							currentAnchorPt.cacheY = currentAnchorPt.y;
 							currentAnchorPt.y = targetAnchorPt.y;
 						} else {
 							// When the to orientation is south, we need to
 							// move the connection down
 							if (targetAnchorPt.orientation == m_constants.SOUTH) {
+								currentAnchorPt.cacheY = currentAnchorPt.y;
 								currentAnchorPt.y = targetAnchorPt.y
 										+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH;
 							} else if (targetAnchorPt.orientation == m_constants.NORTH) {
+								currentAnchorPt.cacheY = currentAnchorPt.y;
 								currentAnchorPt.y = targetAnchorPt.y
 										- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH;
 							} else {
+								currentAnchorPt.cacheY = currentAnchorPt.y;
 								currentAnchorPt.y = targetAnchorPt.y;
-
 							}
 						}
 
@@ -475,17 +500,26 @@ define(
 				Symbol.prototype.showConnections = function() {
 					var n = 0;
 					for ( var n in this.connections) {
-						this.connections[n].show();
 						if (this.connections[n].fromAnchorPoint.cacheOrientation != null
 								&& this.connections[n].fromAnchorPoint.symbol.visible) {
 							this.connections[n].fromAnchorPoint.orientation = this.connections[n].fromAnchorPoint.cacheOrientation;
+							if (this.connections[n].fromAnchorPoint.cacheX)
+								this.connections[n].fromAnchorPoint.x = this.connections[n].fromAnchorPoint.cacheX;
+							if (this.connections[n].fromAnchorPoint.cacheY)
+								this.connections[n].fromAnchorPoint.y = this.connections[n].fromAnchorPoint.cacheY;
 							this.connections[n].fromAnchorPoint.cacheOrientation = null;
 						}
 						if (this.connections[n].toAnchorPoint.cacheOrientation != null
 								&& this.connections[n].toAnchorPoint.symbol.visible) {
 							this.connections[n].toAnchorPoint.orientation = this.connections[n].toAnchorPoint.cacheOrientation;
+							if (this.connections[n].toAnchorPoint.cacheX)
+								this.connections[n].toAnchorPoint.x = this.connections[n].toAnchorPoint.cacheX;
+							if (this.connections[n].toAnchorPoint.cacheY)
+								this.connections[n].toAnchorPoint.y = this.connections[n].toAnchorPoint.cacheY;
 							this.connections[n].toAnchorPoint.cacheOrientation = null;
 						}
+						this.connections[n].reroute();
+						this.connections[n].show();
 					}
 				};
 
@@ -781,6 +815,15 @@ define(
 				/**
 				 *
 				 */
+				Symbol.prototype.moveTo = function(x, y) {
+					this.x = x;
+					this.y = y;
+					this.moveBy(0, 0);
+				};
+
+				/**
+				 *
+				 */
 				Symbol.prototype.moveBy = function(dX, dY) {
 					this.x = this.x + dX;
 					this.y = this.y + dY;
@@ -806,7 +849,7 @@ define(
 						} else {
 							// If connection is visible and swimlane is minimize
 							if (this.connections[connection].visible
-									&& this.parentSymbol.laneMinimized) {
+									&& this.parentSymbol.minimized) {
 								var fromAnchorPt = this.connections[connection].fromAnchorPoint;
 								var toAnchorPt = this.connections[connection].toAnchorPoint;
 								var fromAnchorParentLaneX = fromAnchorPt.symbol.parentSymbol.x;
@@ -948,7 +991,7 @@ define(
 									"oid" : this.oid
 								};
 								var newGeometry = {
-									"x" : this.x,
+									"x" : this.x + this.parentSymbol.symbolXOffset,
 									"y" : this.y,
 									"parentSymbolId" : this.parentSymbol.id,
 									"type" : this.type
@@ -973,7 +1016,7 @@ define(
 										"oid" : this.oid
 									};
 									var newGeometry = {
-										"x" : this.x,
+										"x" : this.x + this.parentSymbol.symbolXOffset,
 										"y" : this.y,
 										"parentSymbolId" : this.parentSymbol.id
 									};
@@ -1749,6 +1792,8 @@ define(
 				this.x = 0;
 				this.y = 0;
 				this.cacheOrientation = null;
+				this.cacheX = null;
+				this.cacheY = null;
 
 				this.graphics = m_canvasManager
 						.drawRectangle(
@@ -1794,7 +1839,6 @@ define(
 				AnchorPoint.prototype.moveTo = function(x, y) {
 					this.x = x;
 					this.y = y;
-
 					this.graphics.attr({
 						'x' : this.x - 0.5 * m_constants.DEFAULT_ANCHOR_WIDTH,
 						'y' : this.y - 0.5 * m_constants.DEFAULT_ANCHOR_HEIGHT

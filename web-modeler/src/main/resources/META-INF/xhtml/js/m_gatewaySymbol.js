@@ -400,6 +400,14 @@ define(
 				/**
 				 *
 				 */
+				GatewaySymbol.prototype.showPrimitives = function() {
+					this.path.show();
+					this.refreshFromModelElement();
+				};
+
+				/**
+				 *
+				 */
 				GatewaySymbol.prototype.refreshFromModelElement = function() {
 					if (this.modelElement.gatewayType == m_constants.AND_GATEWAY_TYPE) {
 						this.andPath.show();
@@ -414,6 +422,10 @@ define(
 						this.xorPath.hide();
 						this.orCircle.show();
 					}
+
+					// Store the server side co-ord, required for moving symbol
+					// when other lane is minimized.
+					this.updateServerSideCoordinates();
 				};
 
 				GatewaySymbol.prototype.recalculateBoundingBox = function() {

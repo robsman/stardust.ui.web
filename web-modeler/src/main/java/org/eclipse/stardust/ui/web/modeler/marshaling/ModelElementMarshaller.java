@@ -386,6 +386,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             laneSymbol.getElementOid());
       laneSymbolJson.addProperty(ModelerConstants.ID_PROPERTY, laneSymbol.getId());
       laneSymbolJson.addProperty(ModelerConstants.NAME_PROPERTY, laneSymbol.getName());
+      laneSymbolJson.addProperty(ModelerConstants.X_PROPERTY, laneSymbol.getXPos());
+      laneSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, laneSymbol.getYPos());
       laneSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY, laneSymbol.getWidth());
       laneSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY, laneSymbol.getHeight());
       laneSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,

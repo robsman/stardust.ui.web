@@ -678,6 +678,7 @@ define(
 								} else {
 									if (null == this.findSymbolByGuid(obj.changes.added[i].oid)) {
 										this.poolSymbol.laneSymbols.push(m_swimlaneSymbol.createSwimlaneSymbolFromJson(this, this.poolSymbol, obj.changes.added[i]));
+										this.poolSymbol.sortLanes();
 										this.poolSymbol.adjustChildSymbols();
 									}
 								}
@@ -727,6 +728,7 @@ define(
 											if (obj.changes.added[j].type == m_constants.SWIMLANE_SYMBOL) {
 												swimlane = m_swimlaneSymbol.createSwimlaneSymbolFromJson(this, this.poolSymbol, obj.changes.added[j]);
 												this.poolSymbol.laneSymbols.push(swimlane);
+												this.poolSymbol.sortLanes();
 												this.poolSymbol.adjustChildSymbols();
 											}
 										}
@@ -830,6 +832,7 @@ define(
 							}
 						}
 
+						this.poolSymbol.refreshDiagram();
 						this.animationDelay = 0;
 						this.animationEasing = null;
 					}

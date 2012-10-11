@@ -349,6 +349,10 @@ define(
 						this.commentCountText.hide();
 						this.commentCountIcon.hide();
 					}
+
+					// Store the server side co-ord, required for moving symbol
+					// when other lane is minimized.
+					this.updateServerSideCoordinates();
 				};
 
 				/**
@@ -466,6 +470,9 @@ define(
 				 * size decreases
 				 */
 				ActivitySymbol.prototype.adjustPrimitivesOnShrink = function() {
+					if (this.parentSymbol && this.parentSymbol.minimized) {
+						return;
+					}
 					if (this.text.getBBox().width > this.width) {
 						var words = this.text.attr("text");
 						m_utils.textWrap(this.text, this.width);
@@ -473,8 +480,9 @@ define(
 
 					if (this.icon.getBBox().width > this.width) {
 						this.icon.hide();
-					} else
+					} else {
 						this.icon.show();
+					}
 				}
 
 				/**

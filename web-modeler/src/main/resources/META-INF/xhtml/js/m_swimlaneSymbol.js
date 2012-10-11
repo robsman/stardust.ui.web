@@ -68,7 +68,8 @@ define(
 				this.minimizeIcon = null;
 				this.cacheWidth = 0;
 				this.maximizeIcon = null;
-				this.laneMinimized = false;
+				this.minimized = false;
+				this.symbolXOffset = 0;
 
 				/**
 				 * Binds all client-side aspects to the object (graphics
@@ -106,6 +107,7 @@ define(
 					this.text = null;
 					this.minimizeIcon = null;
 					this.maximizeIcon = null;
+					this.symbolXOffset = 0;
 				};
 
 				/**
@@ -471,33 +473,39 @@ define(
 					this.width = m_constants.LANE_MIN_WIDTH;
 					this.minimizeIcon.hide();
 					this.maximizeIcon.show();
+					this.parentSymbol.recalculateBoundingBox();
+					this.parentSymbol.adjustPrimitives();
+					this.parentSymbol.adjustAuxiliaryElements();
 					for ( var n in this.containedSymbols) {
 						this.containedSymbols[n].hide();
 					}
-
+					this.parentSymbol.updateLanesOffsetAndAdjustChild(this, true);
 					var str = this.text.attr("text");
 					if (str.length > 8) {
 						this.text.attr("text", str.substring(0, 8) + " ...");
 					}
-					this.parentSymbol.recalculateBoundingBox();
-					this.parentSymbol.adjustGeometry();
-					this.laneMinimized = true;
+					this.minimized = true;
+					this.diagram.hideSnapLines();
 				};
 
 				/**
 				 *
 				 */
 				SwimlaneSymbol.prototype.onMaximizeIconClick = function() {
+					this.parentSymbol.updateLanesOffsetAndAdjustChild(this, false);
 					this.width = this.cacheWidth;
 					this.maximizeIcon.hide();
 					this.minimizeIcon.show();
-					this.laneMinimized = false;
+					this.minimized = false;
 					this.text.attr("text", this.name);
+					this.parentSymbol.recalculateBoundingBox();
+					this.parentSymbol.adjustPrimitives();
+					this.parentSymbol.adjustAuxiliaryElements();
 					for ( var n in this.containedSymbols) {
 						this.containedSymbols[n].show();
 					}
-					this.parentSymbol.recalculateBoundingBox();
-					this.parentSymbol.adjustGeometry();
+					this.refresh();
+					this.diagram.hideSnapLines();
 				};
 
 				/**
@@ -661,6 +669,9 @@ define(
 						this.text.attr("text", this.name);
 					}
 					this.participantName = this.text.attr("text");
+					// Store the server side co-ord, required for moving symbol
+					// when other lane is minimized.
+					this.updateServerSideCoordinates();
 				};
 
 				/**
@@ -927,23 +938,23 @@ define(
 				 */
 				SwimlaneSymbol.prototype.adjustToSymbolBoundaries = function(x,
 						y) {
-					var left = this.x;
-					var right = this.x + this.width;
+					var left = this.x + this.symbolXOffset;
+					var right = this.x + this.width + this.symbolXOffset;
 					var top = this.y;
 					var bottom = this.y + this.height;
 					var moveX=0;
 					var moveY=0;
 					var preAdjustmentPos = {
-						x : this.x,
+						x : this.x + this.symbolXOffset,
 						y : this.y,
 						width : this.width,
 						height : this.height
 					}
 
 					for ( var n in this.containedSymbols) {
-						left = Math.min(this.containedSymbols[n].x
+						left = Math.min(this.containedSymbols[n].x + this.symbolXOffset
 								- m_constants.POOL_SWIMLANE_MARGIN, left);
-						right = Math.max(this.containedSymbols[n].x
+						right = Math.max(this.containedSymbols[n].x + this.symbolXOffset
 								+ this.containedSymbols[n].width
 								+ m_constants.POOL_SWIMLANE_MARGIN, right);
 						top = Math.min(this.containedSymbols[n].y
@@ -997,6 +1008,7 @@ define(
 						command.sync = true;
 						m_commandsController.submitCommand(command);
 					}
+					this.x -= this.symbolXOffset;
 					this.parentSymbol.recalculateBoundingBox();
 					this.parentSymbol.adjustGeometry();
 				};

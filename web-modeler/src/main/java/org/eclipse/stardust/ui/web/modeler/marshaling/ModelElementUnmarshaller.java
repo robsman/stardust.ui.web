@@ -806,27 +806,45 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          nodeSymbol.setXPos(x - laneOffsetX);
          nodeSymbol.setYPos(y - laneOffsetY);
 
-         if (nodeSymbolJto.has(ModelerConstants.WIDTH_PROPERTY))
+         if (nodeSymbol instanceof LaneSymbol
+               && (nodeSymbolJto.has(ModelerConstants.WIDTH_PROPERTY) || nodeSymbolJto.has(ModelerConstants.HEIGHT_PROPERTY)))
          {
+            PoolSymbol poolSymbol = (PoolSymbol) nodeSymbol.eContainer();
             int width = extractInt(nodeSymbolJto, ModelerConstants.WIDTH_PROPERTY);
+            int widthOffset = width - nodeSymbol.getWidth();
             nodeSymbol.setWidth(width);
-         }
-         if (nodeSymbolJto.has(ModelerConstants.HEIGHT_PROPERTY))
-         {
-            int height = extractInt(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY);
-            if (nodeSymbol instanceof LaneSymbol)
+
+            int height = 0;
+            if (nodeSymbolJto.has(ModelerConstants.HEIGHT_PROPERTY))
             {
-               // For swimlane, all lanes height needs adjustment
-               PoolSymbol poolSymbol = (PoolSymbol) nodeSymbol.eContainer();
-               for (LaneSymbol lanes : poolSymbol.getLanes())
+               height = extractInt(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY);
+               nodeSymbol.setHeight(height);
+            }
+
+            for (LaneSymbol lane : poolSymbol.getLanes())
+            {
+               if (nodeSymbol.getElementOid() != lane.getElementOid()
+                     && (lane.getXPos() > nodeSymbol.getXPos()))
                {
-                  lanes.setHeight(height);
+                  lane.setXPos(lane.getXPos() + widthOffset);
+                  if (height > 0)
+                     lane.setHeight(height);
                }
             }
-            else
-               nodeSymbol.setHeight(height);
          }
-
+         else
+         {
+            if (nodeSymbolJto.has(ModelerConstants.WIDTH_PROPERTY))
+            {
+               int width = extractInt(nodeSymbolJto, ModelerConstants.WIDTH_PROPERTY);
+               nodeSymbol.setWidth(width);
+            }
+            if (nodeSymbolJto.has(ModelerConstants.HEIGHT_PROPERTY))
+            {
+               int height = extractInt(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY);
+               nodeSymbol.setHeight(height);
+            }
+         }
       }
    }
 
