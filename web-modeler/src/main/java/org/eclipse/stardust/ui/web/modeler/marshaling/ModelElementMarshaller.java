@@ -69,7 +69,7 @@ import com.google.gson.JsonObject;
 
 /**
  * IPP XPDL marshaller.
- *
+ * 
  * @author Marc.Gille
  * @author Robert Sauer
  */
@@ -84,7 +84,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
    /**
-    *
+    * 
     * @param modelElement
     * @return
     */
@@ -374,7 +374,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param laneSymbol
     * @return
     */
@@ -584,7 +584,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param activity
     * @return
     */
@@ -739,7 +739,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param activitySymbol
     * @return
     */
@@ -827,7 +827,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -870,16 +870,14 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             ModelerConstants.EVENT_SYMBOL);
       // eventJson.put(ID_PROPERTY,
       // String.valueOf(startEventSymbol.getModelElement().getId()));
-      // loadDescription(eventJson,
-      // startEventSymbol.getModelElement());
-      // loadAttributes(startEventSymbol.getModelElement(),
-      // eventJson);
+      //loadDescription(eventJson, startEventSymbol.getModelElement());
+      loadAttributes(startEventSymbol.getModelElement(), eventJson);
 
       return eventSymbolJson;
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -931,7 +929,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param data
     * @return
     */
@@ -941,7 +939,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       if (null != data)
       {
-         if (data.getId().startsWith("Primit")) {
+         if (data.getId().startsWith("Primit"))
+         {
             System.out.println();
          }
          dataJson.addProperty(ModelerConstants.TYPE_PROPERTY, "data");
@@ -1050,7 +1049,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -1333,7 +1332,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param annotationSymbol
     * @return
     */
@@ -1382,7 +1381,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param dataMappingConnection
     * @return
     */
@@ -1457,7 +1456,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -1599,7 +1598,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -1662,7 +1661,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param dataMapping
     * @return
     */
@@ -1720,7 +1719,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             modelManagementStrategy().getModelFilePath(model));
       modelJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.MODEL_KEY);
 
-//      loadDescription(modelJson, model);
+      // loadDescription(modelJson, model);
       loadAttributes(model, modelJson);
 
       if (model.getDescription() != null)
@@ -1903,7 +1902,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       setContainingModelIdProperty(structJson, structType);
 
       loadAttributes(structType, structJson);
-      
+
       JsonObject typeDeclarationJson = new JsonObject();
 
       structJson.add("typeDeclaration", typeDeclarationJson);
@@ -1955,7 +1954,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param orientation
     * @return
     */
@@ -1986,7 +1985,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param modelElementJson
     * @param element
     */
@@ -2005,7 +2004,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param element
     * @param json
     * @throws JSONException
@@ -2032,7 +2031,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   ModelerConstants.COMMENTS_PROPERTY,
                   jsonIo.readJsonObject(
                         getModelBuilderFacade().getAttributeValue(attribute))
-                        .get(ModelerConstants.COMMENTS_PROPERTY).getAsJsonArray());
+                        .get(ModelerConstants.COMMENTS_PROPERTY)
+                        .getAsJsonArray());
          }
          else
          {
@@ -2041,16 +2041,16 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          }
       }
 
-      if (!json.has(ModelerConstants.COMMENTS_PROPERTY))
+      if ( !json.has(ModelerConstants.COMMENTS_PROPERTY))
       {
          json.add(ModelerConstants.COMMENTS_PROPERTY, new JsonArray());
       }
    }
 
    /**
-    *
+    * 
     * TODO From DynamicConnectionCommand. Refactor?
-    *
+    * 
     * @param activity
     * @return
     */
