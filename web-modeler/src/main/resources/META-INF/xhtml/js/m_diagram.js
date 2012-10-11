@@ -1487,7 +1487,7 @@ define(
 				 */
 				Diagram.prototype.connectToActivity = function(symbol) {
 					this.addAndConnectSymbol(symbol, m_activitySymbol
-							.createActivitySymbol(this));
+							.createActivitySymbol(this, m_constants.MANUAL_ACTIVITY_TYPE));
 				};
 
 				/**
