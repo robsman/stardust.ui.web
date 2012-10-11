@@ -38,6 +38,8 @@ define(
 						this.options.scope = "#" + this.options.scope + " ";
 					}
 
+					// TODO: Change width via CSS and classes here
+					
 					if (this.options.tableWidth == null) {
 						this.options.tableWidth = "400px";
 					}
