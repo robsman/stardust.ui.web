@@ -26,6 +26,7 @@
 
   <properties>
     <maven.test.skip>true</maven.test.skip>
+    <copyright.message>2012 SunGard CSA LLC and others</copyright.message>
   </properties>
 
   <build>
@@ -68,6 +69,7 @@
                   <property name="SNAPSHOT_BUILD_ALIAS" value="${SNAPSHOT_BUILD_ALIAS}"/>
                   <property name="ipp.version.qualifier" value="${ipp.version.qualifier}"/>
                   <property name="ipp.version.full" value="${ipp.version}"/>
+                  <property name="copyright.message" value="${copyright.message}" />
                   <property name="buildenv.m2.localRepository" value="${settings.localRepository}"/>
                 </ant>
               </target>
@@ -89,6 +91,7 @@
                   <property name="SNAPSHOT_BUILD_ALIAS" value="${SNAPSHOT_BUILD_ALIAS}"/>
                   <property name="ipp.version.qualifier" value="${ipp.version.qualifier}"/>
                   <property name="ipp.version.full" value="${ipp.version}"/>
+                  <property name="copyright.message" value="${copyright.message}" />
                   <property name="maven.localRepository" value="${settings.localRepository}"/>
                   <property name="buildenv.m2.localRepository" value="${settings.localRepository}"/>
                 </ant>
