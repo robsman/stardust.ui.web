@@ -347,8 +347,12 @@ define(
 							this.setElement(this.element);
 						} else if (this.element.modelElement != null
 								&& object.changes.modified[0].oid == this.element.modelElement.oid) {
+							m_utils.debug("Changes to be applied to Model Element of Properties Page:");
+							m_utils.debug(this.element.modelElement);
+							m_utils.debug(object.changes.modified[0]);
 							m_utils.inheritFields(this.element.modelElement,
 									object.changes.modified[0]);
+							m_utils.debug(this.element.modelElement);
 							this.setElement(this.element);
 						}
 					}

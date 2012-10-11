@@ -1,12 +1,13 @@
 /**
  * Utility functions for dialog programming.
- *
+ * 
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_extensionManager", "m_session",
-				"m_dialog" ],
-		function(m_utils, m_constants, m_extensionManager, m_session, m_dialog) {
+		[ "m_utils", "m_constants", "m_extensionManager", "m_user",
+				"m_session", "m_dialog" ],
+		function(m_utils, m_constants, m_extensionManager, m_user, m_session,
+				m_dialog) {
 			return {
 				create : function(options) {
 					var panel = new CommentsPanel();
@@ -21,7 +22,7 @@ define(
 			 */
 			function CommentsPanel() {
 				/**
-				 *
+				 * 
 				 */
 				CommentsPanel.prototype.initialize = function(options) {
 					this.options = options;
@@ -33,25 +34,34 @@ define(
 							+ " #contentTextArea");
 					this.submitButton = jQuery("#" + this.scope
 							+ " #submitButton");
+					this.deleteButton = jQuery("#" + this.scope
+							+ " #deleteButton");
 
 					this.submitButton.click({
 						panel : this
 					}, function(event) {
 						event.data.panel.addComment();
 					});
+
+					this.deleteButton.click({
+						panel : this
+					}, function(event) {
+						event.data.panel.deleteSelectedComments();
+					});
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				CommentsPanel.prototype.setComments = function(comments) {
 					this.comments = comments;
 
 					this.populateCommentsTable();
+					this.deleteButton.attr("disabled", true);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				CommentsPanel.prototype.addComment = function() {
 					this.comments
@@ -68,17 +78,15 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				CommentsPanel.prototype.populateCommentsTable = function() {
 					this.commentsTableBody.empty();
 
 					for ( var n = 0; (this.comments && n < this.comments.length); ++n) {
 						var comment = this.comments[n];
-						m_utils.debug("n = " + n);
-						m_utils.debug(comment);
 
-						var rowContent = "<tr id='comment-" + n + "'>";
+						var rowContent = "<tr id='" + n + "' class='commentRow'>";
 
 						rowContent += "<td style='padding-left: 0px;'>";
 						rowContent += "<table width='100%' cellspacing='0' cellpadding='0'>";
@@ -106,18 +114,66 @@ define(
 
 						var row = jQuery(rowContent);
 
+						this.commentsTableBody.append(row);
+
 						row.mousedown({
 							page : this
 						}, function(event) {
 							jQuery(this).toggleClass("selected");
-						});
 
-						this.commentsTableBody.append(rowContent);
+							event.data.page.changeSelection();
+						});
 					}
 				};
 
 				/**
-				 *
+				 * 
+				 */
+				CommentsPanel.prototype.changeSelection = function() {
+					var selectedRows = jQuery("table#commentsTable tr.selected");
+
+					if (selectedRows.length == 0) {
+						this.deleteButton.attr("disabled", true);
+
+						return;
+					}
+
+					for ( var n = 0; n < selectedRows.length; ++n) {
+						var comment = this.comments[jQuery(selectedRows[n])
+								.attr("id")];
+
+						if (comment.userAccount != m_user.getCurrentUser().account) {
+							this.deleteButton.attr("disabled", true);
+
+							return;
+						}
+					}
+
+					this.deleteButton.removeAttr("disabled");
+				};
+
+				/**
+				 * 
+				 */
+				CommentsPanel.prototype.deleteSelectedComments = function() {
+					var remainingComments = [];
+					var rows = jQuery("table#commentsTable tr.commentRow");
+
+					for ( var n = 0; n < rows.length; ++n) {
+						if (!jQuery(rows[n]).is(".selected")) {
+							remainingComments
+									.push(this.comments[jQuery(rows[n]).attr(
+											"id")]);
+						}
+					}
+					
+					this.comments = remainingComments;
+
+					this.submitChanges();
+				};
+
+				/**
+				 * 
 				 */
 				CommentsPanel.prototype.submitChanges = function() {
 					if (this.options.submitHandler) {
