@@ -57,6 +57,8 @@ define(
 							.mapInputId("endpointUriPrefix");
 					this.endpointUriTextarea = this
 							.mapInputId("endpointUriTextarea");
+					this.additionalRouteTextarea = this
+							.mapInputId("routeTextarea");
 					this.dataPathTextInput = this
 							.mapInputId("dataPathTextInput");
 					this.endpointAccessPointsSelectInput = this
@@ -98,12 +100,7 @@ define(
 											m_dialog
 													.makeInvisible(event.data.callbackScope.camelTriggerPanel);
 										} else if (jQuery(this).val() == "camelTrigger") {
-											m_dialog
-													.makeInvisible(event.data.callbackScope.manualTriggerPanel);
-											m_dialog
-													.makeInvisible(event.data.callbackScope.scanTriggerPanel);
-											m_dialog
-													.makeVisible(event.data.callbackScope.camelTriggerPanel);
+											this.setCamelStartEvent();
 										}
 									});
 
@@ -451,9 +448,49 @@ define(
 							this.documentDataList
 									.val(m_constants.TO_BE_DEFINED);
 						}
+
+						if (this.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelContextId"] != null) {
+							this.setCamelStartEvent();
+						}
 					} else {
 						this.startEventPanel.attr("class", "invisible");
 					}
+				};
+
+				/**
+				 * 
+				 */
+				EventBasicPropertiesPage.prototype.setCamelStartEvent = function() {
+					this.eventTypeSelectInput.val("camelTrigger");
+					m_dialog.makeInvisible(this.manualTriggerPanel);
+					m_dialog.makeInvisible(this.scanTriggerPanel);
+					m_dialog.makeVisible(this.camelTriggerPanel);
+
+					var xmlDoc = jQuery
+							.parseXML("<route>"
+									+ this.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"]
+									+ "</route>");
+					var xmlObject = jQuery(xmlDoc);
+
+					m_utils.debug("XML:");
+					m_utils.debug(xmlDoc);
+
+					var fromUri = "Nase";
+					var additionalRoutes = "";
+
+					jQuery(xmlObject).find("from").each(function() {
+						fromUri = jQuery(this).attr("uri")
+					});
+					jQuery(xmlObject).find("to").each(function() {
+						var toUri = jQuery(this).attr("uri");
+
+						if (toUri.indexOf("ipp") < 0) {
+							additionalRoutes += jQuery(this);
+						}
+					});
+
+					this.endpointUriTextarea.val(fromUri);
+					//this.additionalRouteTextarea.val(additionalRoutes);
 				};
 
 				/**
