@@ -480,8 +480,10 @@ define(
 				 *
 				 */
 				PoolSymbol.prototype.refreshDiagram = function() {
+					var laneMinimized = false;
 					for ( var n in this.laneSymbols) {
 						if (this.laneSymbols[n].symbolXOffset) {
+							laneMinimized = true;
 							this.laneSymbols[n].x = this.laneSymbols[n].serverSideCoordinates.x;
 							for ( var m in this.laneSymbols[n].containedSymbols) {
 								this.laneSymbols[n].containedSymbols[m].x = this.laneSymbols[n].containedSymbols[m].serverSideCoordinates.x;
@@ -489,7 +491,9 @@ define(
 							}
 						}
 					}
-					this.adjustChildSymbols();
+					if(laneMinimized){
+						this.adjustChildSymbols();
+					}
 				};
 
 				/**
