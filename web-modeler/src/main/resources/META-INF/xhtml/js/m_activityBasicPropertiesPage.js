@@ -61,13 +61,11 @@ define(
 					this.isRelocationTargetInput = this
 							.mapInputId("isRelocationTargetInput");
 
-					this
-							.registerCheckboxInputForModelElementAttributeChangeSubmission(
-									this.allowAbortByParticipantInput,
-									"@TOADD@");
-					this
-							.registerCheckboxInputForModelElementAttributeChangeSubmission(
-									this.hibernateInitiallyInput, "@TOADD@");
+					this.registerCheckboxInputForModelElementChangeSubmission(
+							this.allowAbortByParticipantInput,
+							"isAbortableByPerformer");
+					this.registerCheckboxInputForModelElementChangeSubmission(
+							this.hibernateInitiallyInput, "isHibernatedOnCreation");
 					this
 							.registerCheckboxInputForModelElementAttributeChangeSubmission(
 									this.supportsRelocationInput,
@@ -490,17 +488,17 @@ define(
 					}
 
 					this.allowAbortByParticipantInput.attr("checked", this
-							.getModelElement().attributes["@TOADD@"] == true);
+							.getModelElement().isAbortableByPerformer == true);
 					this.hibernateInitiallyInput.attr("checked", this
-							.getModelElement().attributes["@TOADD@"] == true);
+							.getModelElement().isHibernatedOnCreation == true);
 					this.supportsRelocationInput
 							.attr(
 									"checked",
-									this.getModelElement().attributes["carnot:engine:relocate:source"] == true);
+									this.getModelElement().attributes["carnot:engine:relocate:source"] == "true");
 					this.isRelocationTargetInput
 							.attr(
 									"checked",
-									this.getModelElement().attributes["carnot:engine:relocate:target"] == true);
+									this.getModelElement().attributes["carnot:engine:relocate:target"] == "true");
 
 					if (this.getModelElement().activityType == m_constants.MANUAL_ACTIVITY_TYPE) {
 						this.setUserTaskType(m_constants.AUTO_GENERATED_UI);

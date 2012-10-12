@@ -306,6 +306,15 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
       else
       {
+         if (activityJson.has("isAbortableByPerformer"))
+         {
+            activity.setAllowsAbortByPerformer(activityJson.get("isAbortableByPerformer").getAsBoolean());
+         }
+         if (activityJson.has("isHibernatedOnCreation"))
+         {
+            activity.setHibernateOnCreation(activityJson.get("isHibernatedOnCreation").getAsBoolean());
+         }
+
          if (ModelerConstants.MANUAL_ACTIVITY.equals(extractString(activityJson,
                ModelerConstants.ACTIVITY_TYPE)))
          {
@@ -1023,8 +1032,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          updateXSDSchemaType(typeDeclaration.getSchemaType(),
                declarationJson.getAsJsonObject("schema"));
       }
-      
-     
+
+
       // ExternalReference ?
    }
 
