@@ -251,7 +251,7 @@ define(
 
 					this.subprocessMarkerIcon = m_canvasManager.drawImageAt(
 							"../../images/icons/subprocess-marker.gif",
-							this.x + 0.5 * this.width - 4,
+							this.x + 0.5 * this.width - 8,
 							this.y + this.height - 16, 16, 16).hide();
 
 					this.addToPrimitives(this.subprocessMarkerIcon);
@@ -405,7 +405,7 @@ define(
 					}, this.diagram.animationDelay,
 							this.diagram.animationEasing);
 					this.subprocessMarkerIcon.animate({
-						"x" : this.x + 0.5 * this.width - 4,
+						"x" : this.x + 0.5 * this.width - 8,
 						"y" : this.y + this.height - 16
 					}, this.diagram.animationDelay,
 							this.diagram.animationEasing);
