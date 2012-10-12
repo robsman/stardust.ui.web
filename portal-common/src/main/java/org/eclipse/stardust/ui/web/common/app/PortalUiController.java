@@ -1056,11 +1056,6 @@ public class PortalUiController
 
    public boolean closeView(View view, boolean force)
    {
-      return closeView(view, force, true);
-   }
-   
-   public boolean closeView(View view, boolean force, boolean refresh)
-   {
       if ( !broadcastVetoableViewEvent(view, ViewEventType.TO_BE_CLOSED))
       {
          if ( !force)
@@ -1093,11 +1088,6 @@ public class PortalUiController
          }
       }
       
-      if (refresh)
-      {
-         FacesUtils.refreshPage();
-      }
-
       return true;
    }
 

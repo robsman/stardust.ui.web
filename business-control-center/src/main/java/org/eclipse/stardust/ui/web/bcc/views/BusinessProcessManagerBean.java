@@ -343,12 +343,10 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
       activityTableHelper = new ActivityTableHelper();
       if (activityTableHelper != null)
       {
-         activityTableHelper.getColumnModelListener().setNeedRefresh(false);
          activityTableHelper.initActivityTable();
          activityTableHelper.setCallbackHandler(this);
          activityTableHelper.setStrandedActivityView(false);
          activityTableHelper.getActivityTable().initialize();
-         activityTableHelper.getColumnModelListener().setNeedRefresh(true);
       }
    }
 
@@ -361,11 +359,9 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
       processHelper = new ProcessTableHelper();
       if (null != processHelper)
       {
-         processHelper.getColumnModelListener().setNeedRefresh(false);
          processHelper.setCallbackHandler(this);
          processHelper.initializeProcessTable();
          processHelper.getProcessTable().initialize();
-         processHelper.getColumnModelListener().setNeedRefresh(true);
       }
    }
 

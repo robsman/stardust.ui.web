@@ -129,7 +129,6 @@ public class PortalApplication
 
    private String logoutUri;
 
-   private boolean pageRefreshOn = false;
    /**
     *
     */
@@ -857,18 +856,6 @@ public class PortalApplication
       }
    }
 
-   /**
-    * @param view
-    * @param force
-    */
-   public void closeView(View view, boolean force, boolean refresh)
-   {
-      View focusView = getFocusView();
-      if (getPortalUiController().closeView(view, force, refresh))
-      {
-         handleViewClose(view, focusView, force);
-      }
-   }
    
    /**
     * 
@@ -1364,7 +1351,6 @@ public class PortalApplication
          {
             boolean recursive = ViewDefinition.CLOSING_POLICY_RECURSIVE.equalsIgnoreCase(closingPolicy) ? true : false;
             List<View> childViews = getPortalUiController().getChildViews(view, recursive);
-            boolean childViewClosed = false;
             for (View childView : childViews)
             {
                if (ViewState.CLOSED != childView.getViewState()) // Safety Check
@@ -1374,13 +1360,7 @@ public class PortalApplication
                      trace.debug("Cascade Closing Child View -> " + childView);
                   }
                   closeView(childView, forceClose);
-                  childViewClosed = true;
                }
-            }
-            
-            if(childViewClosed)
-            {
-               FacesUtils.refreshPage(); // Looks like there is a need to refresh entire page when multiple views gets closed!
             }
          }
       }
@@ -1784,15 +1764,5 @@ public class PortalApplication
    public String getLocaleString()
    {
       return getLocaleObject().toString();
-   }
-   
-   public void setPageRefreshOn(boolean pageRefreshOn)
-   {
-      this.pageRefreshOn = pageRefreshOn;
-   }
-
-   public boolean isPageRefreshOn()
-   {
-      return pageRefreshOn;
    }
 }

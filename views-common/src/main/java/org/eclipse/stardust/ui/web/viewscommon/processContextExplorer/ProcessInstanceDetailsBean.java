@@ -568,7 +568,6 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       trace.debug("-----------> Linked Process Table Initialize");
 
       processHelper = new ProcessTableHelper();
-      processHelper.getColumnModelListener().setNeedRefresh(false);
       processHelper.setCallbackHandler(this);
       processHelper.setDisplayLinkInfo(true);
       processHelper.setProcessInstance(processInstance);
@@ -576,7 +575,6 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       processHelper.getProcessTable().initialize();
       processHelper.getProcessTable().setISearchHandler(new ProcessTableSearchHandler());
       linkedProcessPanelInitialized = true;
-      processHelper.getColumnModelListener().setNeedRefresh(true);
 
       trace.debug("<----------- Linked Process Table Initialized");
    }

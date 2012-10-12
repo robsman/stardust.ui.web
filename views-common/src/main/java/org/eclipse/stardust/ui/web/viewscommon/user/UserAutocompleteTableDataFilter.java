@@ -18,7 +18,6 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.common.autocomplete.IAutocompleteMultiSelector.IAutocompleteMultiSelectorListener;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterCustom;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 
 
@@ -141,10 +140,6 @@ public class UserAutocompleteTableDataFilter extends TableDataFilterCustom
     */
    public void resetFilter()
    {
-      if (isFilterSet())
-      {
-         FacesUtils.refreshPage(); // This is needed for UI to show new values
-      }
       userSelector.setSelectedValues(new ArrayList<UserWrapper>());
    }
 

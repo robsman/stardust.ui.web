@@ -1080,12 +1080,10 @@ public void init()
       if (!passedActivityTableInitialized)
       {
          passedActivityHelper = new ActivityTableHelper();
-         passedActivityHelper.getColumnModelListener().setNeedRefresh(false);
          passedActivityHelper.setCallbackHandler(this);
          passedActivityHelper.initActivityTable();
          passedActivityHelper.getActivityTable().initialize();
          passedActivityTableInitialized = true;
-         passedActivityHelper.getColumnModelListener().setNeedRefresh(true);
       }
       TrafficLightActivitySearchHandler trafficLightActivitySearchHandler = new TrafficLightActivitySearchHandler(
             processActivityId, processesPassedAI, state);
@@ -1099,12 +1097,10 @@ public void init()
       if (!notPassedActivityTableInitialized)
       {
          notPassedActivityHelper = new ActivityTableHelper();
-         notPassedActivityHelper.getColumnModelListener().setNeedRefresh(false);
          notPassedActivityHelper.setCallbackHandler(this);
          notPassedActivityHelper.initActivityTable();
          notPassedActivityHelper.getActivityTable().initialize();
          notPassedActivityTableInitialized = true;
-         notPassedActivityHelper.getColumnModelListener().setNeedRefresh(true);
       }
       TrafficLightActivitySearchHandler trafficLightActivitySearchHandler = new TrafficLightActivitySearchHandler(
             processActivityId, processesNotPassedAI, state);

@@ -283,12 +283,10 @@ public class RoleManagerDetailBean extends UIComponentBean
       if (null == activityHelper)
       {
          activityHelper = new ActivityTableHelper();
-         activityHelper.getColumnModelListener().setNeedRefresh(false);
          activityHelper.setCallbackHandler(this);
          activityHelper.initActivityTable();
          activityHelper.setStrandedActivityView(false);
          activityHelper.getActivityTable().initialize();
-         activityHelper.getColumnModelListener().setNeedRefresh(true);
          
          ParticipantActivitySearchHandler participantActivitySearchHandler = new ParticipantActivitySearchHandler();
          activityHelper.getActivityTable().setISearchHandler(participantActivitySearchHandler);

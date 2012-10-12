@@ -22,7 +22,6 @@ import java.util.Map;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
-import javax.servlet.http.HttpSession;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
@@ -88,7 +87,6 @@ import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityForm;
 import org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityAssuranceActivityBean;
 import org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityAssuranceActivityBean.QAAction;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
-import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.NoteTip;
 import org.eclipse.stardust.ui.web.viewscommon.common.activity.QualityAssuranceCodesBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
@@ -1101,7 +1099,7 @@ public class ActivityDetailsBean extends UIComponentBean
             {
                ActivityDetailsBean.this.interaction = null;
                skipViewEvents = true;
-               PortalApplication.getInstance().closeView(thisView, false, false);
+               PortalApplication.getInstance().closeView(thisView, false);
                skipViewEvents = false;
             }
             else if (eventType.equals(EventType.CANCEL))
@@ -1140,7 +1138,7 @@ public class ActivityDetailsBean extends UIComponentBean
                if (eventType.equals(EventType.APPLY))
                {
                   skipViewEvents = true;
-                  PortalApplication.getInstance().closeView(thisView, true, false);
+                  PortalApplication.getInstance().closeView(thisView, true);
                   skipViewEvents = false;
                }
             }
@@ -1173,7 +1171,7 @@ public class ActivityDetailsBean extends UIComponentBean
                if (eventType == EventType.APPLY)
                {
                   skipViewEvents = true;
-                  PortalApplication.getInstance().closeView(thisView, true, false);
+                  PortalApplication.getInstance().closeView(thisView, true);
                   skipViewEvents = false;
                }
             }
@@ -1251,7 +1249,7 @@ public class ActivityDetailsBean extends UIComponentBean
                {
                   skipViewEvents = true;
                   // TODO move to controller?
-                  PortalApplication.getInstance().closeView(thisView, true, false);
+                  PortalApplication.getInstance().closeView(thisView, true);
                   skipViewEvents = false;
                }
             }
@@ -1340,7 +1338,7 @@ public class ActivityDetailsBean extends UIComponentBean
       {
          skipViewEvents = true;
          // TODO move to controller?
-         PortalApplication.getInstance().closeView(thisView, true, false);
+         PortalApplication.getInstance().closeView(thisView, true);
          skipViewEvents = false;
       }
    }
@@ -1509,7 +1507,7 @@ public class ActivityDetailsBean extends UIComponentBean
          
          skipViewEvents = true;
          int viewIndex = PortalApplication.getInstance().getViewIndex(getThisView());
-         PortalApplication.getInstance().closeView(thisView, true, false);
+         PortalApplication.getInstance().closeView(thisView, true);
 
          if (completionLog.isSuccess())
          {
@@ -1864,7 +1862,7 @@ public class ActivityDetailsBean extends UIComponentBean
                         IDocumentContentInfo docInfo = docHandlerBean.getDocumentContentInfo();
                         if (docInfo.getId().equals(documentContentInfo.getId()))
                         {
-                           PortalApplication.getInstance().closeView(openView, true, false);
+                           PortalApplication.getInstance().closeView(openView, true);
                            MessageDialog.addInfoMessage(getMessages().getString("message.documentViewClosed"));
                            break;
                         }
@@ -2688,7 +2686,7 @@ public class ActivityDetailsBean extends UIComponentBean
             if (eventType.equals(EventType.APPLY))
             {
                skipViewEvents = true;
-               PortalApplication.getInstance().closeView(thisView, true, false);
+               PortalApplication.getInstance().closeView(thisView, true);
                skipViewEvents = false;
             }
          }
@@ -2714,7 +2712,7 @@ public class ActivityDetailsBean extends UIComponentBean
             if (eventType.equals(EventType.APPLY))
             {
                skipViewEvents = true;
-               PortalApplication.getInstance().closeView(thisView, true, false);
+               PortalApplication.getInstance().closeView(thisView, true);
                skipViewEvents = false;
             }
          }

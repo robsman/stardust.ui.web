@@ -1055,23 +1055,12 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
     */
    public class ColumnModelListener implements IColumnModelListener
    {
-      private boolean needRefresh;
       /* (non-Javadoc)
        * @see org.eclipse.stardust.ui.web.common.column.IColumnModelListener#columnsRearranged(org.eclipse.stardust.ui.web.common.column.IColumnModel)
        */
       public void columnsRearranged(IColumnModel columnModel)
       {
          handleNewlyAddedDescriptorColumns(columnModel);
-
-         if (needRefresh)
-         {
-            FacesUtils.refreshPage();
-         }
-      }
-      
-      public void setNeedRefresh(boolean needRefresh)
-      {
-         this.needRefresh = needRefresh;
       }
       
       /**

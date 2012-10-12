@@ -45,7 +45,6 @@ import org.eclipse.stardust.engine.api.runtime.PerformerType;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
@@ -664,9 +663,6 @@ public class DelegationBean extends PopupUIComponentBean
       
       if (iCH != null && fireClose)
          iCH.handleEvent(EventType.CANCEL);
-      
-      //For IE - In IE the delegation didn't work the second time
-      FacesUtils.refreshPage();
    }
 
    /**
