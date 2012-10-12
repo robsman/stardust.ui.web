@@ -634,9 +634,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   ModelerConstants.ACTIVITY_KEY);
             activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
                   activity.getImplementation().getLiteral());
-            activityJson.addProperty("isAbortableByPerformer",
+            activityJson.addProperty(ModelerConstants.ACTIVITY_IS_ABORTABLE_BY_PERFORMER,
                   activity.isAllowsAbortByPerformer());
-            activityJson.addProperty("isHibernatedOnCreation",
+            activityJson.addProperty(ModelerConstants.ACTIVITY_IS_HIBERNATED_ON_CREATION,
                   activity.isHibernateOnCreation());
             if (activity.getImplementationProcess() != null)
             {

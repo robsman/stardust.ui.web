@@ -306,13 +306,15 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
       else
       {
-         if (activityJson.has("isAbortableByPerformer"))
+         if (activityJson.has(ModelerConstants.ACTIVITY_IS_ABORTABLE_BY_PERFORMER))
          {
-            activity.setAllowsAbortByPerformer(activityJson.get("isAbortableByPerformer").getAsBoolean());
+            activity.setAllowsAbortByPerformer(activityJson.get(
+                  ModelerConstants.ACTIVITY_IS_ABORTABLE_BY_PERFORMER).getAsBoolean());
          }
-         if (activityJson.has("isHibernatedOnCreation"))
+         if (activityJson.has(ModelerConstants.ACTIVITY_IS_HIBERNATED_ON_CREATION))
          {
-            activity.setHibernateOnCreation(activityJson.get("isHibernatedOnCreation").getAsBoolean());
+            activity.setHibernateOnCreation(activityJson.get(
+                  ModelerConstants.ACTIVITY_IS_HIBERNATED_ON_CREATION).getAsBoolean());
          }
 
          if (ModelerConstants.MANUAL_ACTIVITY.equals(extractString(activityJson,
