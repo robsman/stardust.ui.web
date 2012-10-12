@@ -552,6 +552,13 @@ define(
 				/**
 				 *
 				 */
+				Connection.prototype.isPoolSymbol = function() {
+					return false;
+				};
+
+				/**
+				 *
+				 */
 				Connection.prototype.isDataFlow = function() {
 					// TODO Need better type indication
 					return this.getFromSymbol().dataFullId != null
