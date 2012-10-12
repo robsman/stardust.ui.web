@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -27,7 +27,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function ConditionalPerformerView() {
 				var modelElementView = m_modelElementView.create();
@@ -37,7 +37,7 @@ define(
 						modelElementView);
 
 				/**
-				 * 
+				 *
 				 */
 				ConditionalPerformerView.prototype.initialize = function(
 						conditionalPerformer) {
@@ -72,11 +72,15 @@ define(
 					this.registerInputForModelElementAttributeChangeSubmission(
 							this.performerTypeSelect,
 							"carnot:engine:conditionalPerformer:kind");
+					this.registerInputForModelElementChangeSubmission(this.bindingDataSelect,
+							"dataFullId");
+					this.registerInputForModelElementChangeSubmission(this.bindingDataPathInput,
+							"dataPath");
 					this.initializeModelElementView(conditionalPerformer);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ConditionalPerformerView.prototype.setModelElement = function(
 						conditionalPerformer) {
@@ -104,7 +108,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ConditionalPerformerView.prototype.populateBindingDataSelect = function() {
 					this.bindingDataSelect.empty();
@@ -142,14 +146,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ConditionalPerformerView.prototype.toString = function() {
 					return "Lightdust.ConditionalPerformerView";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ConditionalPerformerView.prototype.validate = function() {
 					this.clearErrorMessages();
