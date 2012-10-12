@@ -503,8 +503,8 @@ define(
 					if (this.getModelElement().activityType == m_constants.MANUAL_ACTIVITY_TYPE) {
 						this.setUserTaskType(m_constants.AUTO_GENERATED_UI);
 					} else if (this.getModelElement().activityType == m_constants.APPLICATION_ACTIVITY_TYPE) {
-						if (this.getModelElement().applicationFullId == null
-								|| m_model.findApplication(this
+						if (this.getModelElement().applicationFullId != null
+								&& m_model.findApplication(this
 										.getModelElement().applicationFullId).interactive) {
 							this
 									.setUserTaskType(this.getModelElement().applicationFullId);
