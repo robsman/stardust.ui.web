@@ -21,6 +21,7 @@ public class ApplicationAccessPointChangeTracker implements ChangePostprocessor
    }
 
    @Override
+
    public void inspectChange(Modification change)
    {
       for (EObject candidate : change.getAddedElements())
