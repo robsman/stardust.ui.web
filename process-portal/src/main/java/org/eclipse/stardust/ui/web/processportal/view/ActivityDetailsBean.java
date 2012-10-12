@@ -1522,12 +1522,12 @@ public class ActivityDetailsBean extends UIComponentBean
                   params.put("worklistsBean", worklistsBean);
                }
                ActivityInstanceUtils.openActivity(nextActivityObject, params);
-               FacesUtils.refreshPage(true);
+               FacesUtils.refreshPage();
             }
             else if(assemblyLineActivity && assemblyLinePushService)
             {
                worklistsBean.openNextAssemblyLineActivity(params);
-               FacesUtils.refreshPage(true);
+               FacesUtils.refreshPage();
             }
          }
          skipViewEvents = false;

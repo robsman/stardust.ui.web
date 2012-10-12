@@ -289,7 +289,7 @@ public class PortalApplication
                   ViewEventType.FULL_SCREENED);
       
             // Required to refresh page
-            FacesUtils.refreshPage(true);
+            FacesUtils.refreshPage();
          }
       }
    }
@@ -328,7 +328,7 @@ public class PortalApplication
          getPortalUiController().broadcastNonVetoableViewEvent(getFocusView(),
                ViewEventType.RESTORED_TO_NORMAL);
          getPortalUiController().broadcastNonVetoablePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
-         FacesUtils.refreshPage(true);
+         FacesUtils.refreshPage();
       }
    }
 

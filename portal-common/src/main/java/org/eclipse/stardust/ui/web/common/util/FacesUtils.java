@@ -422,13 +422,14 @@ public class FacesUtils
       response.sendRedirect(response.encodeRedirectURL(toUrl));
    }
 
-   public static void refreshPage(boolean refresh)
+   /**
+    * @deprecated 
+    */
+   public static void refreshPage()
    {
-      if (refresh)
-      {
-         handleNavigation("pageRefresh");
-      }
+      handleNavigation("pageRefresh");
    }
+
    /**
     * 
     */
