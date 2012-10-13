@@ -107,12 +107,16 @@ public class ModelingUiExtensionsController
       buffer.append("    // properties pages\n");
       listExtensionDependencies(buffer, registry.getPropertiesPageExtensions());
 
+      buffer.append("    // Integration Overlays\n");
+      listExtensionDependencies(buffer, registry.getIntegrationOverlayExtensions());
+
       buffer.append("], function(m_extensionManager) {\n")
             .append("\n");
 
       listExtensionInitialization(buffer, "registerViewManager", registry.getViewManagerExtensions());
       listExtensionInitialization(buffer, "registerMetaModelExtensions", registry.getMetaModelExtensions());
       listExtensionInitialization(buffer, "registerPropertyPageExtensions", registry.getPropertiesPageExtensions());
+      listExtensionInitialization(buffer, "registerIntegrationOverlayExtensions", registry.getIntegrationOverlayExtensions());
 
       buffer.append("\n")
             .append("    return {};\n")

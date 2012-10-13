@@ -20,7 +20,6 @@ define(
 			var cumulatedExtensions = {};
 
 			return {
-
 				registerViewManager : function(extensionsConfig) {
 					loadExtensions({
 						viewManager : extensionsConfig.viewManager
@@ -51,6 +50,15 @@ define(
 					});
 				},
 
+				registerIntegrationOverlayExtensions : function(extensionsConfig) {
+					loadExtensions({
+						applicationIntegrationOverlay : extensionsConfig.applicationIntegrationOverlay
+					});
+					loadExtensions({
+						eventIntegrationOverlay : extensionsConfig.eventIntegrationOverlay
+					});
+				},
+
 				/**
 				 * 
 				 * @param extensionPoint
@@ -59,9 +67,6 @@ define(
 				 * @returns
 				 */
 				findExtensions : function(extensionPoint, property, value) {
-					m_utils.debug("Cumulated Extensions:");
-					m_utils.debug(getCumulatedExtensions());
-
 					var result = [];
 
 					if (getCumulatedExtensions()[extensionPoint] != null) {

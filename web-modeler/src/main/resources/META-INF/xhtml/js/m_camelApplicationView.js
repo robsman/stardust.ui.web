@@ -3,15 +3,17 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_commandsController", "m_dialog", "m_modelElementView",
-				"m_model"],
-		function(m_utils, m_constants, m_commandsController, m_dialog, m_modelElementView, m_model) {
+		[ "m_utils", "m_constants", "m_extensionManager", "m_session",
+				"m_commandsController", "m_dialog", "m_modelElementView",
+				"m_model" ],
+		function(m_utils, m_constants, m_extensionManager, m_session,
+				m_commandsController, m_dialog, m_modelElementView, m_model) {
 			return {
 				initialize : function(fullId) {
 					var view = new CamelApplicationView();
@@ -25,46 +27,142 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function CamelApplicationView() {
-				var view = m_modelElementView.create();
+				var modelElementView = m_modelElementView.create();
 
-				m_utils.inheritFields(this, view);
-				m_utils.inheritMethods(CamelApplicationView.prototype, view);
+				m_utils.inheritFields(this, modelElementView);
+				m_utils.inheritMethods(CamelApplicationView.prototype,
+						modelElementView);
 
 				/**
-				 *
+				 * 
 				 */
 				CamelApplicationView.prototype.initialize = function(
 						application) {
 					this.id = "camelApplicationView";
 
+					this.overlayTableCell = jQuery("#overlayTableCell");
+					this.genericEndpointOverlay = jQuery("#overlayTableCell #genericEndpoint");
 					this.camelContextInput = jQuery("#camelContextInput");
 					this.routeTextarea = jQuery("#routeTextarea");
+					this.endpointTypeSelectInput = jQuery("#endpointTypeSelectInput");
 					this.additionalBeanSpecificationTextarea = jQuery("#additionalBeanSpecificationTextarea");
 					this.requestDataInput = jQuery("#requestDataInput");
 					this.responseDataInput = jQuery("#responseDataInput");
 
+					this.overlays = {};
+					this.overlayControllers = {};
+
+					this.overlays["genericEndpoint"] = this.genericEndpointOverlay;
+					this.overlayControllers["genericEndpoint"] = this;
+
 					this.registerInputForModelElementAttributeChangeSubmission(
-							this.camelContextInput, "carnot:engine:camel::camelContextId");
+							this.camelContextInput,
+							"carnot:engine:camel::camelContextId");
 					this.registerInputForModelElementAttributeChangeSubmission(
-							this.routeTextarea, "carnot:engine:camel::routeEntries");
-					this.registerInputForModelElementAttributeChangeSubmission(
-							this.additionalBeanSpecificationTextarea, "carnot:engine:camel::additionalSpringBeanDefinitions");
+							this.routeTextarea,
+							"carnot:engine:camel::routeEntries");
+					this
+							.registerInputForModelElementAttributeChangeSubmission(
+									this.additionalBeanSpecificationTextarea,
+									"carnot:engine:camel::additionalSpringBeanDefinitions");
+
+					var integrationApplicationOverlays = m_extensionManager
+							.findExtensions("applicationIntegrationOverlay");
+
+					var extensions = {};
+
+					for ( var n = 0; n < integrationApplicationOverlays.length; n++) {
+						var extension = integrationApplicationOverlays[n];
+
+						extensions[extension.id] = extension;
+
+						if (!m_session.initialize().technologyPreview
+								&& extension.visibility == "preview") {
+							continue;
+						}
+
+						m_utils.debug("Load Overlay " + extension.id);
+						m_utils.debug(extension);
+
+						this.endpointTypeSelectInput.append("<option value='"
+								+ extension.id + "'>" + extension.name
+								+ "</option>");
+
+						var pageDiv = jQuery("<div id=\"" + extension.id
+								+ "\"></div>");
+
+						this.overlays[extension.id] = pageDiv;
+
+						this.overlayTableCell.append(pageDiv);
+
+						// TODO this variable may be overwritten in the
+						// loop, find mechanism to pass data to load
+						// callback
+
+						var view = this;
+
+						pageDiv
+								.load(
+										extension.pageHtmlUrl,
+										function(response, status, xhr) {
+											if (status == "error") {
+												var msg = "Properties Page Load Error: "
+														+ xhr.status
+														+ " "
+														+ xhr.statusText;
+
+												jQuery(this).append(msg);
+												m_utils.debug(msg);
+											} else {
+												m_utils.debug("Page loaded: "
+														+ jQuery(this).attr(
+																"id"));
+
+												var extension = extensions[jQuery(
+														this).attr("id")];
+												view.overlayControllers[jQuery(
+														this).attr("id")] = extension.provider
+														.create(view);
+											}
+										});
+					}
+
+					this.endpointTypeSelectInput
+							.change(
+									{
+										view : this
+									},
+									function(event) {
+										event.data.view
+												.setOverlay(event.data.view.endpointTypeSelectInput
+														.val());
+
+									});
 
 					this.initializeModelElementView(application);
 				};
 
 				/**
-				 *
+				 * 
 				 */
-				CamelApplicationView.prototype.setModelElement = function(
-						application) {
-					this.application = application;
+				CamelApplicationView.prototype.setOverlay = function(overlay) {
+					this.endpointTypeSelectInput.val(overlay);
 
-					this.initializeModelElement(application);
+					for ( var id in this.overlays) {
+						m_dialog.makeInvisible(this.overlays[id]);
+					}
 
+					m_dialog.makeVisible(this.overlays[overlay]);
+					this.overlayControllers[overlay].activateOverlay();
+				};
+
+				/**
+				 * 
+				 */
+				CamelApplicationView.prototype.activateOverlay = function() {
 					if (this.application.attributes["carnot:engine:camel::camelContextId"] == null) {
 						this.application.attributes["carnot:engine:camel::camelContextId"] = "Default";
 					}
@@ -78,14 +176,31 @@ define(
 				};
 
 				/**
-				 *
+				 * 
+				 */
+				CamelApplicationView.prototype.setModelElement = function(
+						application) {
+					this.application = application;
+
+					this.initializeModelElement(application);
+
+					if (this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"] == null) {
+						this.setOverlay("genericEndpoint");
+					} else {
+						this
+								.setOverlay(this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"]);
+					}
+				};
+
+				/**
+				 * 
 				 */
 				CamelApplicationView.prototype.toString = function() {
 					return "Lightdust.CamelApplicationView";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				CamelApplicationView.prototype.validate = function() {
 					this.clearErrorMessages();

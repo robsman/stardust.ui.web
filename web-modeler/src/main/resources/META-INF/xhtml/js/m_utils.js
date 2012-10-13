@@ -178,10 +178,8 @@ define(
 							&& !isArray(parentObject[member])) {
 						// Copy recursively
 
-						debug("Deep copying member " + member);
 						inheritFields(childObject[member], parentObject[member]);
 					} else {
-						debug("Overwriting member " + member);
 						childObject[member] = parentObject[member];
 					}
 				}
