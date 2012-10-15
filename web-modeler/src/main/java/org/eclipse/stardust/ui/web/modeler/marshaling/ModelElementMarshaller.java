@@ -942,10 +942,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       if (null != data)
       {
-         if (data.getId().startsWith("Primit"))
-         {
-            System.out.println();
-         }
          dataJson.addProperty(ModelerConstants.TYPE_PROPERTY, "data");
          dataJson.addProperty(ModelerConstants.ID_PROPERTY, data.getId());
          dataJson.addProperty(ModelerConstants.NAME_PROPERTY, data.getName());
@@ -959,6 +955,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
          loadDescription(dataJson, data);
          loadAttributes(data, dataJson);
+
+         dataJson.addProperty(ModelerConstants.EXTERNAL_REFERENCE_PROPERTY, this
+               .getModelBuilderFacade().isExternalReference(data));
 
          if (null != data.getType()
                && data.getType()
@@ -1137,6 +1136,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          roleJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
       }
 
+      roleJson.addProperty(ModelerConstants.EXTERNAL_REFERENCE_PROPERTY, this
+            .getModelBuilderFacade().isExternalReference(role));
+
       loadDescription(roleJson, role);
       loadAttributes(role, roleJson);
 
@@ -1189,6 +1191,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                model.getId());
       }
 
+      conditionalPerformerJson.addProperty(ModelerConstants.EXTERNAL_REFERENCE_PROPERTY,
+            this.getModelBuilderFacade().isExternalReference(conditionalPerformer));
+
       loadDescription(conditionalPerformerJson, conditionalPerformer);
       loadAttributes(conditionalPerformer, conditionalPerformerJson);
 
@@ -1236,6 +1241,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       {
          orgJson.addProperty(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY, (String) null);
       }
+
+      orgJson.addProperty(ModelerConstants.EXTERNAL_REFERENCE_PROPERTY, this
+            .getModelBuilderFacade().isExternalReference(org));
 
       loadDescription(orgJson, org);
       loadAttributes(org, orgJson);
