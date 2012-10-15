@@ -2392,13 +2392,13 @@ define(
 						var element;
 						if (-1 != command.commandId.indexOf(".create")) {
 							action = "created";
-							element = this.getChangedElementText(command.changes.added);
+							element = this.getChangedElementsText(command.changes.added);
 						} else if (-1 != command.commandId.indexOf(".delete")) {
 							action = "deleted";
-							element = this.getChangedElementText(command.changes.removed);
+							element = this.getChangedElementsText(command.changes.removed);
 						} else {
 							action = "modified";
-							element = this.getChangedElementText(command.changes.modified);
+							element = this.getChangedElementsText(command.changes.modified);
 						}
 						jQuery("#undoChange").attr("title",  "Undo: " + element + " " + action);
 					} else {
@@ -2415,13 +2415,13 @@ define(
 						var element;
 						if (-1 != command.commandId.indexOf(".create")) {
 							action = "create";
-							element = this.getChangedElementText(command.changes.removed);
+							element = this.getChangedElementsText(command.changes.removed);
 						} else if (-1 != command.commandId.indexOf(".delete")) {
 							action = "delete";
-							element = this.getChangedElementText(command.changes.added);
+							element = this.getChangedElementsText(command.changes.added);
 						} else {
 							action = "modify";
-							element = this.getChangedElementText(command.changes.modified);
+							element = this.getChangedElementsText(command.changes.modified);
 						}
 						jQuery("#redoChange").attr("title",  "Redo: " + element + " " + action);
 					} else {
@@ -2432,18 +2432,34 @@ define(
 				/**
 				 * TODO - temporary
 				 */
-				Outline.prototype.getChangedElementText = function(elementArray) {
+				Outline.prototype.getChangedElementsText = function(elementArray) {
 					if (elementArray.length > 2) {
 						return "Multiple elements"
+					} else if (elementArray.length == 2) {
+						for (var i = 0; i < elementArray.length; i++) {
+							var txt = this.getChangedElementText(elementArray[i]);
+							if (txt) {
+								return txt;
+							}
+						}
+
+						return elementArray[0].type;
 					} else {
-						var element = elementArray[0];
-							if (element.name) {
-								return element.name;
-							} else if(element.id) {
-								return element.id;
-							} else {
+						return this.getChangedElementText(elementArray[0]);
+					}
+				}
+
+				Outline.prototype.getChangedElementText = function(element) {
+					if (element) {
+						if (element.name) {
+							return element.name;
+						} else if(element.id) {
+							return element.id;
+						} else {
+							if (-1 == element.type.indexOf(".")) {
 								return element.type;
 							}
+						}
 					}
 				}
 
