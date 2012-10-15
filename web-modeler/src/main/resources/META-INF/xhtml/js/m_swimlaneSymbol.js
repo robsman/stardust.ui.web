@@ -979,23 +979,36 @@ define(
 								+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
 								- parseInt(preAdjustmentPos.height);
 
+					}else if (this.y < preAdjustmentPos.y
+							&& this.height > preAdjustmentPos.height) {
+						this.y = preAdjustmentPos.y;
+						moveY = this.width - parseInt(preAdjustmentPos.height);
 					}
+
 					// If Symbol is moved beyond the starting X margin and
-					// Height has increased, calculate the height change to move
+					// Height has increased, calculate the width change to move
 					// Symbol
-					if (parseInt(preAdjustmentPos.x)> (parseInt(x))
+					if (parseInt(preAdjustmentPos.x) > (parseInt(x))
 							&& parseInt(this.width) > parseInt(preAdjustmentPos.width
 									.valueOf())) {
 						moveX = this.width + m_constants.POOL_SWIMLANE_MARGIN
 								- parseInt(preAdjustmentPos.width);
 
-					}
+					}else if (this.x < preAdjustmentPos.x
+								&& this.width > preAdjustmentPos.width) {
+							this.x = preAdjustmentPos.x;
+							moveX = this.width - parseInt(preAdjustmentPos.width);
+						}
+
 					if (moveX > 0 || moveY > 0) {
 						for ( var n in this.containedSymbols) {
 								this.containedSymbols[n].moveBy(moveX, moveY);
 						}
 					}
-					if(preAdjustmentPos.width != this.width || preAdjustmentPos.height != this.height){
+
+					if (preAdjustmentPos.width != this.width
+							|| preAdjustmentPos.height != this.height) {
+
 						var changes = {
 							x : this.x,
 							y : this.y,
