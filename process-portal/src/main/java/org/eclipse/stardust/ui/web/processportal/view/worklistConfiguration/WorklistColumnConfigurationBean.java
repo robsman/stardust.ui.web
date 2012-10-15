@@ -111,6 +111,7 @@ public abstract class WorklistColumnConfigurationBean
                confTableEntry.isLock(), columnConfiguration);
       }
       WorklistConfigurationUtil.savePreferences(PreferenceScope.PARTITION, preferenceId, columnConfiguration);
+      initializeFileResource();
    }
 
    public void reset()
