@@ -11,6 +11,7 @@
 
 package org.eclipse.stardust.ui.web.modeler.edit.diagram.node;
 
+import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newManualTrigger;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLong;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
@@ -80,6 +81,9 @@ public class EventCommandHandler
                   .getStartEventSymbols()
                   .add(startEventSymbol);
             parentLaneSymbol.getStartEventSymbols().add(startEventSymbol);
+
+            //Add a manual trigger by default
+            newManualTrigger(processDefinition).accessibleTo(parentLaneSymbol.getParticipant()).build();
          }
          else
          {
