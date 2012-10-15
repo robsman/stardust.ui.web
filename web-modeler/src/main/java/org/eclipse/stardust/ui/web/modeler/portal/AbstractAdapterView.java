@@ -11,11 +11,7 @@
 
 package org.eclipse.stardust.ui.web.modeler.portal;
 
-import java.util.Arrays;
-
 import javax.faces.context.FacesContext;
-
-import com.icesoft.faces.context.effects.JavascriptContext;
 
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
@@ -73,16 +69,7 @@ public class AbstractAdapterView implements ViewEventHandler {
 		switch (event.getType())
 		{
 		case TO_BE_ACTIVATED:
-			FacesContext facesContext = FacesContext.getCurrentInstance();
-
-			if (!Arrays.asList(JavascriptContext.getIncludedLibs(facesContext)).contains(
-					"/plugins/processportal/IppProcessPortal.js")) {
-				JavascriptContext.includeLib("/plugins/processportal/IppProcessPortal.js",
-						facesContext);
-			}
-
 			PortalApplication.getInstance().addEventScript("InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + iframeId + "', '" + pagePath + event.getView().getParams() + "', {anchorId:'" + anchorId + "', anchorYAdjustment:10, zIndex:200});");
-
 			break;
 
 		case TO_BE_DEACTIVATED:
