@@ -84,9 +84,6 @@ define(
 							continue;
 						}
 
-						m_utils.debug("Load Overlay " + extension.id);
-						m_utils.debug(extension);
-
 						this.endpointTypeSelectInput.append("<option value='"
 								+ extension.id + "'>" + extension.name
 								+ "</option>");
@@ -115,12 +112,7 @@ define(
 														+ xhr.statusText;
 
 												jQuery(this).append(msg);
-												m_utils.debug(msg);
 											} else {
-												m_utils.debug("Page loaded: "
-														+ jQuery(this).attr(
-																"id"));
-
 												var extension = extensions[jQuery(
 														this).attr("id")];
 												view.overlayControllers[jQuery(
@@ -130,17 +122,16 @@ define(
 										});
 					}
 
-					this.endpointTypeSelectInput
-							.change(
-									{
-										view : this
-									},
-									function(event) {
-										event.data.view
-												.setOverlay(event.data.view.endpointTypeSelectInput
-														.val());
+					this.endpointTypeSelectInput.change({
+						view : this
+					}, function(event) {
+						var view = event.data.view;
 
-									});
+						view.overlayControllers[view.endpointTypeSelectInput
+								.val()].activate();
+						view.setOverlay(view.endpointTypeSelectInput.val());
+
+					});
 
 					this.initializeModelElementView(application);
 				};
@@ -156,17 +147,22 @@ define(
 					}
 
 					m_dialog.makeVisible(this.overlays[overlay]);
-					this.overlayControllers[overlay].activateOverlay();
+					this.overlayControllers[overlay].update();
 				};
 
 				/**
-				 * 
+				 * Overlay protocol
 				 */
-				CamelApplicationView.prototype.activateOverlay = function() {
+				CamelApplicationView.prototype.activate = function() {
 					if (this.application.attributes["carnot:engine:camel::camelContextId"] == null) {
-						this.application.attributes["carnot:engine:camel::camelContextId"] = "Default";
+						this.submitChanges({attributes: {"carnot:engine:camel::camelContextId": "Default"}});
 					}
+				};
 
+				/**
+				 * Overlay protocol
+				 */
+				CamelApplicationView.prototype.update = function() {
 					this.camelContextInput
 							.val(this.application.attributes["carnot:engine:camel::camelContextId"]);
 					this.routeTextarea
@@ -182,6 +178,9 @@ define(
 						application) {
 					this.application = application;
 
+					m_utils.debug("===> Application");
+					m_utils.debug(application);
+					
 					this.initializeModelElement(application);
 
 					if (this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"] == null) {

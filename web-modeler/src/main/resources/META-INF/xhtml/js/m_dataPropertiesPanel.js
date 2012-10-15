@@ -138,19 +138,5 @@ define([ "m_utils", "m_constants", "m_commandsController", "m_command", "m_exten
 
 			return element;
 		};
-
-		/**
-		 *
-		 */
-		DataPropertiesPanel.prototype.submitChanges = function(changes) {
-			m_utils.debug("Changes to be submitted for UUID " + this.getElementUuid() + ":");
-			m_utils.debug(changes);
-			m_commandsController.submitCommand(m_command
-					.createUpdateModelElementWithUUIDCommand(
-							this.getDiagram().modelId,
-							this.getElementUuid(),
-							changes));
-		};
-
 	}
 });

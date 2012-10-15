@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * Copyright (c) 2012 SunGard CSA LLC and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -53,11 +53,8 @@ define(
 								overlay : this
 							},
 							function(event) {
-								attributes = {};
-								attributes["carnot:engine:camel:serviceConnectorApplicationIntegrationOverlay::serviceType"] = event.data.overlay.serviceTypeSelectInput.val();
-
 								event.data.overlay.view.submitChanges({
-									attributes : attributes
+									attributes : {"carnot:engine:camel:serviceConnectorApplicationIntegrationOverlay::serviceType" : event.data.overlay.serviceTypeSelectInput.val()}
 								});
 							});
 
@@ -114,7 +111,16 @@ define(
 				/**
 				 * 
 				 */
-				ServiceConnectorApplicationIntegrationOverlay.prototype.activateOverlay = function() {
+				ServiceConnectorApplicationIntegrationOverlay.prototype.activate = function() {
+					this.view.submitChanges({
+						attributes : {"carnot:engine:camel::applicationIntegrationOverlay" : "serviceConnectorApplicationIntegrationOverlay"}
+					});
+				};
+
+				/**
+				 * 
+				 */
+				ServiceConnectorApplicationIntegrationOverlay.prototype.update = function() {
 					this.setServiceType(this.getModelElement().attributes["carnot:engine:camel:serviceConnectorApplicationIntegrationOverlay::serviceType"]);
 					
 					var xml = jQuery(jQuery
@@ -123,7 +129,6 @@ define(
 					var overlay = this;
 					
 					jQuery(xml).find("to").each(function() {
-						m_utils.debug("URI: " + jQuery(this).attr("uri"));
 						var uriFragments = jQuery(this).attr("uri").split("/");
 
 						if (uriFragments[0] == "isb:") {
@@ -142,13 +147,6 @@ define(
 							.getModelElement().model);
 					this.parameterDefinitionsPanel.setParameterDefinitions(this
 							.getModelElement().accessPoints);
-
-					attributes = {};
-					attributes["carnot:engine:camel::applicationIntegrationOverlay"] = "serviceConnectorApplicationIntegrationOverlay";
-
-					this.view.submitChanges({
-						attributes : attributes
-					});
 				};
 
 				/**
@@ -160,6 +158,5 @@ define(
 						"accessPoints" : accessPoints
 					});
 				};
-
 			}
 		});

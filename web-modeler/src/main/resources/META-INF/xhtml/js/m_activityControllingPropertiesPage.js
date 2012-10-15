@@ -49,8 +49,8 @@ define(
 				this.targetCostPerExecutionInput = this.mapInputId("targetCostPerExecutionInput");
 				this.resourcePerformanceCalculationSelect = this.mapInputId("resourcePerformanceCalculationSelect");
 
-				m_dialog.registerForIntegerFormatValidation(targetCostPerExecutionInput);
-				m_dialog.registerForIntegerFormatValidation(targetQueueDepthInput);
+				m_dialog.registerForNumericFormatValidation(targetCostPerExecutionInput);
+				m_dialog.registerForNumericFormatValidation(targetQueueDepthInput);
 				
 				// Change handling
 

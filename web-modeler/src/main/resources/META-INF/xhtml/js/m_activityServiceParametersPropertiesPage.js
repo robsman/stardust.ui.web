@@ -57,15 +57,14 @@ define(
 					this.parametersTable.tableScroll({
 						height : 200
 					});
+
+					this.tableRows = [];
 				};
 
 				/**
 				 * 
 				 */
 				ActivityServiceParametersPropertiesPage.prototype.setElement = function() {
-					m_utils.debug("Activity for Service Parameters ===>");
-					m_utils.debug(this.propertiesPanel.element.modelElement);
-
 					if (this.getModelElement().activityType != m_constants.APPLICATION_ACTIVITY_TYPE
 							|| this.getModelElement().applicationFullId == null) {
 						m_dialog.makeVisible(this.noParametersPanel);
@@ -77,9 +76,13 @@ define(
 					var application = m_model.findApplication(this
 							.getModelElement().applicationFullId);
 
+					m_utils.debug("Application for Service Parameters ===>");
+					m_utils.debug(application);
+
 					if (application.attributes["carnot:engine:camel::routeEntries"] == null
 							|| application.attributes["carnot:engine:camel::routeEntries"]
-									.indexOf("isb:") <= 0) {
+									.indexOf("isb:") <= 0
+							|| application.attributes["carnot:engine:camel:serviceConnectorApplicationIntegrationOverlay::serviceType"] != "query") {
 						m_dialog.makeVisible(this.noParametersPanel);
 						m_dialog.makeInvisible(this.parametersPanel);
 
@@ -94,34 +97,145 @@ define(
 							.append("Query parameters for application "
 									+ application.name);
 
-					var parameters = [];
+					this.tableRows = [];
 
-					this.parameters = parameters;
+					for ( var m in application.accessPoints) {
+						var accessPoint = application.accessPoints[m];
 
-					this.populateParametersTable();
+						if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
+							// TODO Move to m_accessPoint
+							var typeDeclaration = this
+									.getTypeDeclaration(accessPoint);
+
+							this.initializeTableRowsRecursively(accessPoint,
+									typeDeclaration.getBody(), null,
+									typeDeclaration.model);
+						}
+					}
+
+					this.populateTableRows();
+					this.parametersTable.tableScroll({
+						height : 200
+					});
+					this.parametersTable.treeTable();
+				};
+
+				/**
+				 * TODO: Very ugly conversion, because server stores data
+				 * reference in a server-specific string.
+				 */
+				ActivityServiceParametersPropertiesPage.prototype.getTypeDeclaration = function(
+						accessPoint) {
+					// TODO Workaround for client site programming, this is not
+					// what the server returns
+					if (accessPoint.structuredDataTypeFullId != null) {
+						return m_model
+								.findTypeDeclaration(accessPoint.structuredDataTypeFullId);
+					}
+
+					var encodedId = accessPoint.attributes["carnot:engine:dataType"];
+
+					if (encodedId == null) {
+						return null;
+					}
+
+					if (encodedId.indexOf("typeDeclaration") == 0) {
+						var parts = encodedId.split("{")[1].split("}");
+
+						return m_model.findTypeDeclaration(parts[0] + ":"
+								+ parts[1]);
+					} else {
+						return this.getModel().typeDeclarations[encodedId];
+					}
 				};
 
 				/**
 				 * 
 				 */
-				ActivityServiceParametersPropertiesPage.prototype.populateParametersTable = function() {
+				ActivityServiceParametersPropertiesPage.prototype.initializeTableRowsRecursively = function(
+						accessPoint, element, parentPath, scopeModel) {
+					var path = parentPath == null ? accessPoint.id
+							: (parentPath + "." + element.name);
+					var tableRow = {};
+
+					this.tableRows.push(tableRow);
+
+					tableRow.accessPoint = accessPoint;
+					tableRow.element = element;
+					tableRow.path = path;
+					tableRow.parentPath = parentPath;
+					tableRow.name = parentPath == null ? accessPoint.name
+							: element.name;
+					tableRow.typeName = parentPath == null ? this
+							.getTypeDeclaration(accessPoint).getSchemaName()
+							: element.type;
+
+					// Embedded structure
+
+					var childElements = element.elements;
+
+					// Recursive resolution
+
+					if (childElements == null && element.type != null) {
+						var typeDeclaration = scopeModel
+								.findTypeDeclarationBySchemaName(element.type);
+
+						if (typeDeclaration != null
+								&& typeDeclaration.isSequence()) {
+							childElements = typeDeclaration.getBody().elements;
+						}
+					}
+
+					if (childElements == null) {
+						return;
+					}
+
+					for ( var childElement in childElements) {
+						this.initializeTableRowsRecursively(accessPoint,
+								childElements[childElement], path, scopeModel);
+					}
+				};
+
+				/**
+				 * 
+				 */
+				ActivityServiceParametersPropertiesPage.prototype.populateTableRows = function() {
 					this.parametersTableBody.empty();
 
-					for ( var n = 0; n < this.parameters.length; ++n) {
-						var parameter = this.parameters[n];
-						var rowContent = "<tr id='parameter-" + n + "'>";
+					for ( var tableRow in this.tableRows) {
+						var rowId = this.tableRows[tableRow].path.replace(
+								/\./g, "-");
 
-						rowContent += "<td>";
-						rowContent += "<input type='checkbox'></input>";
-						rowContent += "</td>";
-						rowContent += "<td>";
-						rowContent += parameter;
-						rowContent += "</td>";
-						rowContent += "</tr>";
+						var content = "<tr id=\""
+								+ rowId
+								+ "\" "
+								+ (this.tableRows[tableRow].parentPath != null ? ("class=\"child-of-"
+										+ this.tableRows[tableRow].parentPath
+												.replace(/\./g, "-") + "\"")
+										: "") + ">";
 
-						var row = jQuery(rowContent);
+						content += "<td>";
+						content += "<span class=\"data-element\">"
+								+ this.tableRows[tableRow].name + "</span>";
+						content += "</td>";
+						content += "<td>" + this.tableRows[tableRow].typeName;
+						+"</td>";
 
-						this.parametersTableBody.append(rowContent);
+						content += "</tr>";
+
+						var row = jQuery(content);
+
+						this.parametersTableBody.append(row);
+
+						row.mousedown({
+							panel : this
+						}, function(event) {
+							jQuery(this).addClass("selected");
+
+							m_utils.debug(jQuery(this));
+							
+							// TODO Add all selected to property
+						});
 					}
 				};
 			}

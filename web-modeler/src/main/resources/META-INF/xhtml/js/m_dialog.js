@@ -14,21 +14,20 @@ define([ "m_utils", "m_constants" ], function(m_utils, m_constants) {
 		showWaitCursor : function(element) {
 			jQuery("body").css("cursor", "wait");
 		},
-		showAutoCursor: function(element)
-		{
-			jQuery("body").css("cursor", "auto");		
+		showAutoCursor : function(element) {
+			jQuery("body").css("cursor", "auto");
 		},
-		registerForIntegerFormatValidation: function(input)
-		{
-//			input.keypress({input: input}, function(event){
-//				if(event.data.input.val() != "") {
-//				    var value = event.data.input.val().replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-//				    var intRegex = /^\d+$/;
-//				    
-//				    if (!intRegex.test(value)) {
-//				    	event.preventDefault();
-//				    }
+		registerForNumericFormatValidation : function(input) {
+//			input = jQuery(input);
+//
+//			input.keyup(function() {
+//				var val = jQuery(this).val();
+//				if (isNaN(val)) {
+//					val = val.replace(/[^0-9\.]/g, '');
+//					if (val.split('.').length > 2)
+//						val = val.replace(/\.+$/, "");
 //				}
+//				jQuery(this).val(val);
 //			});
 		}
 	};

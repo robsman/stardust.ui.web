@@ -261,18 +261,17 @@ define(
 									this.y, "")
 							.attr(
 									{
-										'fill' : m_constants.ACTIVITY_SYMBOL_DEFAULT_FILL_COLOR,
-										'stroke' : m_constants.DEFAULT_STROKE_COLOR,
-										"text-anchor" : "middle",
+										"text-anchor" : "start",
 										"font-family" : m_constants.DEFAULT_FONT_FAMILY,
-										"font-size" : m_constants.DEFAULT_FONT_SIZE
+										"font-weight" : m_constants.COMMENT_COUNT_FONT_WEIGHT,
+										"font-size" : m_constants.COMMENT_COUNT_FONT_SIZE
 									});
 
 					this.addToPrimitives(this.commentCountText);
 
 					this.commentCountIcon = m_canvasManager.drawImageAt(
 							"../../images/icons/comments-count.png",
-							this.x + this.width - 30,
+							this.x + this.width - 40,
 							this.y - 8, 16, 16).hide();
 
 					this.addToPrimitives(this.commentCountIcon);
@@ -415,7 +414,7 @@ define(
 					}, this.diagram.animationDelay,
 							this.diagram.animationEasing);
 					this.commentCountIcon.animate({
-						"x" : this.x + this.width - 30,
+						"x" : this.x + this.width - 40,
 						"y" : this.y - 8
 					}, this.diagram.animationDelay,
 							this.diagram.animationEasing);

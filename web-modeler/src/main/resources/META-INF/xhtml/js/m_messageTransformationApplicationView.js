@@ -623,8 +623,9 @@ define(
 					m_utils.debug("Access Point:");
 					m_utils.debug(accessPoint);
 
+					// TODO Move to m_accessPoint
 					var typeDeclaration = this
-							.getTypeDeclaration(accessPoint.attributes["carnot:engine:dataType"]);
+							.getTypeDeclaration(accessPoint);
 
 					if (typeDeclaration == null) {
 						this.errorMessages
@@ -638,15 +639,23 @@ define(
 					this.inputData[accessPoint.id] = typeDeclaration;
 
 					this.initializeInputTableRowsRecursively(accessPoint,
-							typeDeclaration.getBody(), null, true);
+							typeDeclaration.getBody(), null, typeDeclaration.model);
 				};
 
 				/**
-				 * TODO: Very ugly conversion, because server stores data
+				 * TODO Very ugly conversion, because server stores data
 				 * reference in a server-specific string.
 				 */
 				MessageTransformationApplicationView.prototype.getTypeDeclaration = function(
-						encodedId) {
+						accessPoint) {
+					// TODO Workaround for client site programming, this is not what the server returns
+					if (accessPoint.structuredDataTypeFullId != null) {
+						return m_model
+								.findTypeDeclaration(accessPoint.structuredDataTypeFullId);
+					}
+
+					var encodedId = accessPoint.attributes["carnot:engine:dataType"];
+
 					if (encodedId == null) {
 						return null;
 					}
@@ -659,7 +668,7 @@ define(
 					} else {
 						return this.application.model.typeDeclarations[encodedId];
 					}
-				}
+				};
 
 				/**
 				 * 
@@ -680,8 +689,9 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.addOutputData = function(
 						accessPoint) {
+					// TODO Move to m_accessPoint
 					var typeDeclaration = this
-							.getTypeDeclaration(accessPoint.attributes["carnot:engine:dataType"]);
+							.getTypeDeclaration(accessPoint);
 
 					if (typeDeclaration == null) {
 						this.errorMessages
@@ -695,14 +705,14 @@ define(
 					this.outputData[accessPoint.id] = typeDeclaration;
 
 					this.initializeOutputTableRowsRecursively(accessPoint,
-							typeDeclaration.getBody(), null);
+							typeDeclaration.getBody(), null, typeDeclaration.model);
 				};
 
 				/**
 				 * 
 				 */
 				MessageTransformationApplicationView.prototype.initializeInputTableRowsRecursively = function(
-						accessPoint, element, parentPath) {
+						accessPoint, element, parentPath, scopeModel) {
 					var path = parentPath == null ? accessPoint.id
 							: (parentPath + "." + element.name);
 					var tableRow = {};
@@ -717,7 +727,7 @@ define(
 							: element.name;
 					tableRow.typeName = parentPath == null ? this
 							.getTypeDeclaration(
-									accessPoint.attributes["carnot:engine:dataType"])
+									accessPoint)
 							.getSchemaName()
 							: element.type;
 
@@ -728,7 +738,7 @@ define(
 					// Recursive resolution
 
 					if (childElements == null && element.type != null) {
-						var typeDeclaration = this.application.model
+						var typeDeclaration = scopeModel
 								.findTypeDeclarationBySchemaName(element.type);
 
 						if (typeDeclaration != null
@@ -743,7 +753,7 @@ define(
 
 					for ( var childElement in childElements) {
 						this.initializeInputTableRowsRecursively(accessPoint,
-								childElements[childElement], path);
+								childElements[childElement], path, scopeModel);
 					}
 				};
 
@@ -751,7 +761,7 @@ define(
 				 * 
 				 */
 				MessageTransformationApplicationView.prototype.initializeOutputTableRowsRecursively = function(
-						accessPoint, element, parentPath) {
+						accessPoint, element, parentPath, scopeModel) {
 					var path = parentPath == null ? accessPoint.id
 							: (parentPath + "." + element.name);
 					var tableRow = {};
@@ -766,7 +776,7 @@ define(
 							: element.name;
 					tableRow.typeName = parentPath == null ? this
 							.getTypeDeclaration(
-									accessPoint.attributes["carnot:engine:dataType"])
+									accessPoint)
 							.getSchemaName()
 							: element.type;
 					tableRow.mappingExpression = this.mappingExpressions[path] == null ? ""
@@ -780,7 +790,7 @@ define(
 					// Recursive resolution
 
 					if (childElements == null && element.type != null) {
-						var typeDeclaration = this.application.model
+						var typeDeclaration = scopeModel
 								.findTypeDeclarationBySchemaName(element.type);
 
 						if (typeDeclaration != null
@@ -795,7 +805,7 @@ define(
 
 					for ( var childElement in childElements) {
 						this.initializeOutputTableRowsRecursively(accessPoint,
-								childElements[childElement], path);
+								childElements[childElement], path, scopeModel);
 					}
 				};
 

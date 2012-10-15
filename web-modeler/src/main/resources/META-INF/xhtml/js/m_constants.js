@@ -131,8 +131,6 @@ define(function() {
 
 		// Annotation Symbol
 
-		// Gateway Symbol
-
 		ANNOTATION_SYMBOL : "annotationSymbol",
 
 		ANNOTATION_SYMBOL_DEFAULT_WIDTH : 80,
@@ -172,6 +170,12 @@ define(function() {
 		LANE_MIN_WIDTH : 80,
 		// Adjustment required on Symbols
 		POOL_LANE_MARGIN : 5,
+
+		// Comments
+		
+		COMMENT_COUNT_COLOR : "black",
+		COMMENT_COUNT_FONT_WEIGHT : "bold",
+		COMMENT_COUNT_FONT_SIZE : 14,
 
 		// Other graphics
 
