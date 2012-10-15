@@ -1665,9 +1665,9 @@ define(
 				/**
 				 *
 				 */
-				Diagram.prototype.moveSelectedSymbolsBy = function(dX, dY) {
+				Diagram.prototype.moveSelectedSymbolsTo = function(dX, dY) {
 					for ( var n in this.currentSelection) {
-						this.currentSelection[n].moveBy(dX, dY);
+						this.currentSelection[n].moveTo(dX, dY);
 					}
 				};
 

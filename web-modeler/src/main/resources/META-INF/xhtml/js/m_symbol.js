@@ -1680,19 +1680,19 @@ define(
 			 */
 			function Symbol_dragClosure(dX, dY, x, y, event) {
 				this.auxiliaryProperties.callbackScope.diagram
-						.moveSelectedSymbolsBy(
+						.moveSelectedSymbolsTo(
 								x
 										* this.auxiliaryProperties.callbackScope.diagram.zoomFactor
 										- this.auxiliaryProperties.callbackScope.diagram.X_OFFSET
 										+ this.auxiliaryProperties.callbackScope.diagram.scrollPane
 												.scrollLeft()
-										- (this.auxiliaryProperties.callbackScope.x + (this.auxiliaryProperties.callbackScope.width / 2)),
+										- (this.auxiliaryProperties.callbackScope.width / 2),
 								y
 										* this.auxiliaryProperties.callbackScope.diagram.zoomFactor
 										- this.auxiliaryProperties.callbackScope.diagram.Y_OFFSET
 										+ this.auxiliaryProperties.callbackScope.diagram.scrollPane
 												.scrollTop()
-										- (this.auxiliaryProperties.callbackScope.y + (this.auxiliaryProperties.callbackScope.height / 2)));
+										- (this.auxiliaryProperties.callbackScope.height / 2));
 			}
 
 			/**
