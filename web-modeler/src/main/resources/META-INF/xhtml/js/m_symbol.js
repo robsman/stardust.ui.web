@@ -2176,9 +2176,8 @@ define(
 						}
 						this.dragConnection.createUpdateCommand(changes);
 						m_messageDisplay.showMessage("Connection updated");
-						this.remove();
 					}
-
+					this.remove();
 					this.dragConnection.select();
 					this.dragConnection.toAnchorPoint.deselect();
 				}
