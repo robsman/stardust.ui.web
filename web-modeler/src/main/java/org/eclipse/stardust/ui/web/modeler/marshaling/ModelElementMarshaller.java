@@ -638,6 +638,13 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   activity.isAllowsAbortByPerformer());
             activityJson.addProperty(ModelerConstants.ACTIVITY_IS_HIBERNATED_ON_CREATION,
                   activity.isHibernateOnCreation());
+
+            activityJson.addProperty(
+                  ModelerConstants.PARTICIPANT_FULL_ID,
+                  getModelBuilderFacade()
+                        .createFullId(ModelUtils.findContainingModel(activity),
+                              activity.getPerformer()));
+
             if (activity.getImplementationProcess() != null)
             {
                activityJson.addProperty(
