@@ -982,7 +982,7 @@ define(
 					}else if (this.y < preAdjustmentPos.y
 							&& this.height > preAdjustmentPos.height) {
 						this.y = preAdjustmentPos.y;
-						moveY = this.width - parseInt(preAdjustmentPos.height);
+						moveY = this.heigth - parseInt(preAdjustmentPos.height);
 					}
 
 					// If Symbol is moved beyond the starting X margin and
