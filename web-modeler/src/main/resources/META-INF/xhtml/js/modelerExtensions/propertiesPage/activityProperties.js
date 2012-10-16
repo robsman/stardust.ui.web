@@ -18,7 +18,7 @@ define([ 'm_activityBasicPropertiesPage',
 			visibility: "always"
 		}, {
 			panelId: "activityPropertiesPanel",
-			pageId: "activityCommentsPropertiesPage",
+			pageId: "commentsPropertiesPage",
 			pageHtmlUrl: "modelElementCommentsPropertiesPage.html",
 			provider: m_modelElementCommentsPropertiesPage,
 			visibility: "always"
