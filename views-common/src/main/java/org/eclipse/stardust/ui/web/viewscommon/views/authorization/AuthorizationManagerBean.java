@@ -69,16 +69,12 @@ public class AuthorizationManagerBean extends PopupUIComponentBean
 
    private static final long serialVersionUID = 1L;
 
-   private static final String ICON_GENERAL_PERM = "/plugins/views-common/images/icons/server_key.png";
-   private static final String ICON_UI_PERM = "/plugins/views-common/images/icons/computer_key.png";
-   private static final String ICON_GLOBAL_EXT = "/plugins/views-common/images/icons/puzzle.png";
-   private static final String ICON_LAUNCH_PANEL = "/plugins/views-common/images/icons/application_key.png";
-   private static final String ICON_VIEW = "/plugins/views-common/images/icons/page_white_key.png";
-   private static final String LAUNCH_PANEL = "launchPanel";
-   private static final String VIEW = "view";
-
    private static final String PERMISSION_KEY = "permission.model.";
    private static final String ALL_PARTICIPANT = "All";
+   private static final String L_PANELS = "launchPanels";
+   private static final String VIEWS = "views";
+   private static final String GLOBAL_EXTNS = "globalExtensions";
+   
    private static final ModelParticipantComparator MODEL_PARTICIPANT_COMPARATOR = new ModelParticipantComparator();
    private final AdministrationService administrationService;
    private DefaultTreeModel permissionTreeModel;
@@ -770,7 +766,7 @@ public class AuthorizationManagerBean extends PopupUIComponentBean
    private DefaultMutableTreeNode buildUiPermissionTree(DefaultMutableTreeNode rootTreeNode)
    {
       DefaultMutableTreeNode uiTreeNode = addAbsoluteNode(rootTreeNode, getMessages().getString("uiParticipant"),
-            ICON_UI_PERM);
+            UiPermissionUtils.ICON_UI_PERM);
 
       Map<String, IPerspectiveDefinition> perspectives = PortalUiController.getInstance().getPerspectives();
 
@@ -791,15 +787,15 @@ public class AuthorizationManagerBean extends PopupUIComponentBean
          updateParticipantNodes(perspAccessNode);
 
          // add launch panels
-         DefaultMutableTreeNode launchPanelsNode = addAbsoluteNode(perspNode, getMessages().getString("launchPanel"),
-               ICON_LAUNCH_PANEL);
+         DefaultMutableTreeNode launchPanelsNode = addAbsoluteNode(perspNode, getMessages().getString(L_PANELS),
+               UiPermissionUtils.ICON_LAUNCH_PANEL);
 
          List<LaunchPanel> launchPanels = perspective.getLaunchPanels();
          for (LaunchPanel launchPanel : launchPanels)
          {
             if (launchPanel.isGlobal())
             {
-               addGlobalElement(globalElements, launchPanel, LAUNCH_PANEL);
+               addGlobalElement(globalElements, launchPanel, UiPermissionUtils.LAUNCH_PANEL);
             }
             else
             {
@@ -815,14 +811,15 @@ public class AuthorizationManagerBean extends PopupUIComponentBean
          }
 
          // add view definitions
-         DefaultMutableTreeNode viewsNode = addAbsoluteNode(perspNode, getMessages().getString("views"), ICON_VIEW);
+         DefaultMutableTreeNode viewsNode = addAbsoluteNode(perspNode, getMessages().getString(VIEWS),
+               UiPermissionUtils.ICON_VIEW);
 
          List<ViewDefinition> viewDefinitions = perspective.getViews();
          for (ViewDefinition viewDefinition : viewDefinitions)
          {
             if (viewDefinition.isGlobal())
             {
-               addGlobalElement(globalElements, viewDefinition, VIEW);
+               addGlobalElement(globalElements, viewDefinition, UiPermissionUtils.VIEW);
             }
             else
             {
@@ -838,14 +835,14 @@ public class AuthorizationManagerBean extends PopupUIComponentBean
       }
 
       // add global views
-      DefaultMutableTreeNode globalExtNode = addAbsoluteNode(uiTreeNode, getMessages().getString("globalExtension"),
-            ICON_GLOBAL_EXT);
+      DefaultMutableTreeNode globalExtNode = addAbsoluteNode(uiTreeNode, getMessages().getString(GLOBAL_EXTNS),
+            UiPermissionUtils.ICON_GLOBAL_EXT);
 
       for (Entry<String, Map<String, Set<UiElement>>> entry : globalElements.entrySet())
       {
          // add extension node
          DefaultMutableTreeNode extensionNode = addAbsoluteNode(globalExtNode,
-               UiPermissionUtils.getPermisionLabel(entry.getKey()), ICON_GLOBAL_EXT);
+               UiPermissionUtils.getPermisionLabel(entry.getKey()), UiPermissionUtils.ICON_GLOBAL_EXT);
 
          Map<String, Set<UiElement>> elementPermissions = entry.getValue();
 
@@ -856,15 +853,15 @@ public class AuthorizationManagerBean extends PopupUIComponentBean
             String icon = null;
             String label = elementsEntry.getKey();
 
-            if (elementsEntry.getKey().equals(LAUNCH_PANEL))
+            if (elementsEntry.getKey().equals(UiPermissionUtils.LAUNCH_PANEL))
             {
-               icon = ICON_LAUNCH_PANEL;
-               label = getMessages().getString("launchPanel");
+               icon = UiPermissionUtils.ICON_LAUNCH_PANEL;
+               label = getMessages().getString(L_PANELS);
             }
             else
             {
-               icon = ICON_VIEW;
-               label = getMessages().getString("views");
+               icon = UiPermissionUtils.ICON_VIEW;
+               label = getMessages().getString(VIEWS);
             }
 
             DefaultMutableTreeNode elementTypeNode = addAbsoluteNode(extensionNode, label, icon);
@@ -928,7 +925,7 @@ public class AuthorizationManagerBean extends PopupUIComponentBean
    {
       // Create root node
       DefaultMutableTreeNode generalPermTreeNode = addAbsoluteNode(rootTreeNode, "General Permissions",
-            ICON_GENERAL_PERM);
+            UiPermissionUtils.ICON_GENERAL_PERM);
 
       try
       {
@@ -964,7 +961,16 @@ public class AuthorizationManagerBean extends PopupUIComponentBean
 
       Set<ModelParticipantInfo> grants = permissions.getGrants(permissionObject.getPermissionId());
       permissionNode.removeAllChildren();
-
+      
+      if (permissions.hasAllGrant(permissionId))
+      {
+         permissionObject.setContainsAllParticipants(true);
+      }
+      else
+      {
+         permissionObject.setContainsAllParticipants(false);
+      }
+      
       // check is contains default participants
       if (permissions.isDefaultGrant(permissionId))
       {
@@ -1122,7 +1128,7 @@ public class AuthorizationManagerBean extends PopupUIComponentBean
 
       if (ALL_PARTICIPANT.equals(participantId))
       {
-         permissions.setGrants(permissionId, null);
+         permissions.setGrants(permissionId, new HashSet<ModelParticipantInfo>());
          removeSuccess = true;
       }
       else

@@ -16,8 +16,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -37,6 +37,7 @@ import org.eclipse.stardust.ui.web.common.PerspectiveExtension;
 import org.eclipse.stardust.ui.web.common.UiElement;
 import org.eclipse.stardust.ui.web.common.ViewDefinition;
 import org.eclipse.stardust.ui.web.common.app.PortalUiController;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 /**
  * Client side utility class which can be used to store UI permissions as preferences at
@@ -49,6 +50,18 @@ import org.eclipse.stardust.ui.web.common.app.PortalUiController;
  */
 public class UiPermissionUtils
 {
+   public static final String LAUNCH_PANEL = "launchPanel";
+   public static final String ICON_GENERAL_PERM = "/plugins/views-common/images/icons/server_key.png";
+   public static final String ICON_UI_PERM = "/plugins/views-common/images/icons/computer_key.png";
+   public static final String ICON_GLOBAL_EXT = "/plugins/views-common/images/icons/puzzle.png";
+   public static final String ICON_LAUNCH_PANEL = "/plugins/views-common/images/icons/application_key.png";
+   public static final String ICON_VIEW = "/plugins/views-common/images/icons/page_white_key.png";
+   public static final String VIEW = "view";
+   public static final String GLOBAL_EXTNS = "globalExtensions";
+   public static final String PERSPECTIVE = "perspective";
+   
+   public static final String PROPERTY_C_KEY = "views.authorizationManagerView.";
+
    /**
     * The moduleId of preferences which are used to store permissions.
     */
@@ -59,12 +72,6 @@ public class UiPermissionUtils
     */
    private static final String UI = "ui";
 
-   /**
-    * Static default permissions <br>
-    * 
-    * TODO The absence of the preference can be interpreted as allow=all, only preferences
-    * not obeying the default should be defined.
-    */
    private final static Map<String, String> defaultPermissions;
 
    /**
@@ -72,23 +79,17 @@ public class UiPermissionUtils
     * portal related constant.
     */
    private final static String ADMINISTRATOR = PredefinedConstants.ADMINISTRATOR_ROLE;
-
-   /**
-    * Constant for ALL participants as used by engine permissions. Can be changed to a
-    * portal related constant.
-    */
-   private final static String ALL = Authorization2.ALL;
-
    private static final String PREFIX = "portal.ui.";
    private static final String POSTFIX_ALLOW = ".allow";
    private static final String POSTFIX_DENY = ".deny";
+   private static final String PERIOD = ".";
+   private static final String SPACE = " ";
 
    static
    {
       defaultPermissions = new HashMap<String, String>();
       // Set Administrator default
       defaultPermissions.put("portal.ui.ippAdminPerspective.allow", ADMINISTRATOR);
-
    }
 
    /**
@@ -289,7 +290,7 @@ public class UiPermissionUtils
     */
    public static List<String> internalize(Set<ModelParticipantInfo> grants)
    {
-      if (grants != null && grants.size() > 0)
+      if (grants != null)
       {
          List<String> grantIds = new LinkedList<String>();
 
@@ -312,10 +313,136 @@ public class UiPermissionUtils
       }
       return null;
    }
-   
+
+   /**
+    * @return ui permissions
+    */
+   public static Map<String, UiPermission> getUiPermssions()
+   {
+      Map<String, UiPermission> uiPermissions = new HashMap<String, UiPermission>();
+
+      Map<String, IPerspectiveDefinition> perspectives = PortalUiController.getInstance().getPerspectives();
+
+      // global elements
+      Map<String, Map<String, Set<UiElement>>> globalElements = new HashMap<String, Map<String, Set<UiElement>>>();
+
+      for (Entry<String, IPerspectiveDefinition> perspEntry : perspectives.entrySet())
+      {
+         IPerspectiveDefinition perspective = perspEntry.getValue();
+
+         // add perspective
+         UiPermission persp = new UiPermission(perspective.getName(), perspective.getLabel() + SPACE
+               + getMessage(PERSPECTIVE), PermissionUserObject.ICON_PERMISSION, null);
+         uiPermissions.put(persp.getPermissionId(), persp);
+
+         // add launch panels
+         List<LaunchPanel> launchPanels = perspective.getLaunchPanels();
+
+         for (LaunchPanel launchPanel : launchPanels)
+         {
+            if (launchPanel.isGlobal())
+            {
+               addGlobalElement(globalElements, launchPanel, LAUNCH_PANEL);
+            }
+            else
+            {
+               UiPermission launchPanelP = new UiPermission(launchPanel.getName(), perspective.getLabel() + PERIOD
+                     + getUiElementLabel(launchPanel) + SPACE + getMessage(LAUNCH_PANEL), ICON_LAUNCH_PANEL, persp);
+
+               uiPermissions.put(launchPanelP.getPermissionId(), launchPanelP);
+            }
+         }
+
+         // add view definitions
+         List<ViewDefinition> viewDefinitions = perspective.getViews();
+         for (ViewDefinition viewDefinition : viewDefinitions)
+         {
+            if (viewDefinition.isGlobal())
+            {
+               addGlobalElement(globalElements, viewDefinition, VIEW);
+            }
+            else
+            {
+               // add view
+               UiPermission viewP = new UiPermission(viewDefinition.getName(), perspective.getLabel() + PERIOD
+                     + getUiElementLabel(viewDefinition) + SPACE + getMessage(VIEW), ICON_VIEW, persp);
+
+               uiPermissions.put(viewP.getPermissionId(), viewP);
+            }
+         }
+      }
+
+      // add global views
+      String globalExtLabel = getMessage(GLOBAL_EXTNS);
+
+      for (Entry<String, Map<String, Set<UiElement>>> entry : globalElements.entrySet())
+      {
+
+         Map<String, Set<UiElement>> elementPermissions = entry.getValue();
+
+         // add launch panels and views if available
+         for (Entry<String, Set<UiElement>> elementsEntry : elementPermissions.entrySet())
+         {
+            // add Launch Panel / View
+            String label = getMessage(elementsEntry.getKey());
+
+            // add views
+            Set<UiElement> elements = elementsEntry.getValue();
+            for (UiElement uiElement : elements)
+            {
+               UiPermission globalP = new UiPermission(uiElement.getName(), globalExtLabel + PERIOD
+                     + UiPermissionUtils.getPermisionLabel(entry.getKey()) + PERIOD + getUiElementLabel(uiElement)
+                     + SPACE + label, ICON_GLOBAL_EXT, null);
+
+               uiPermissions.put(globalP.getPermissionId(), globalP);
+            }
+         }
+      }
+      return uiPermissions;
+   }
+
+   /**
+    * @param key
+    * @return
+    */
+   private static String getMessage(String key)
+   {
+      return MessagesViewsCommonBean.getInstance().getString(PROPERTY_C_KEY + key);
+   }
+
+   /**
+    * @param uiElementDefs
+    * @param uiElement
+    * @param elementType
+    */
+   private static void addGlobalElement(Map<String, Map<String, Set<UiElement>>> uiElementDefs, UiElement uiElement,
+         String elementType)
+   {
+      // global launch panels and views
+      String extension = uiElement.getDefinedIn();
+
+      // add extension
+      if (!uiElementDefs.containsKey(extension))
+      {
+         uiElementDefs.put(extension, new HashMap<String, Set<UiElement>>());
+      }
+
+      Map<String, Set<UiElement>> extensionMap = uiElementDefs.get(extension);
+
+      // add Launch panel or views map
+      if (!extensionMap.containsKey(elementType))
+      {
+         extensionMap.put(elementType, new HashSet<UiElement>());
+      }
+
+      // add actual view definition or launch panel definition
+      extensionMap.get(elementType).add(uiElement);
+   }
+
    /**
     * @param permissions
     */
+   @SuppressWarnings({"rawtypes", "unchecked"})
    private static void addDefaultPermissions(Map<String, List<String>> permissions)
    {
       for (Entry<String, String> entry : defaultPermissions.entrySet())
@@ -349,6 +476,7 @@ public class UiPermissionUtils
     * @param includeDefaultPermissions
     * @return
     */
+   @SuppressWarnings("unchecked")
    private static Map<String, List<String>> filterPermissions(Map<String, Serializable> preferencesMap,
          boolean includeDefaultPermissions)
    {

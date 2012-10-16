@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +32,7 @@ import org.eclipse.stardust.ui.web.common.autocomplete.IAutocompleteDataProvider
 import org.eclipse.stardust.ui.web.common.autocomplete.IAutocompleteSelector.IAutocompleteSelectorListener;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
-import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.common.FilterToolbarItem;
 import org.eclipse.stardust.ui.web.viewscommon.user.ParticipantAutocompleteSelector;
 import org.eclipse.stardust.ui.web.viewscommon.user.ParticipantWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
@@ -47,11 +48,11 @@ import com.icesoft.faces.component.selectinputtext.SelectInputText;
  */
 public class PermissionPickList
 {
-   private static final String PERMISSION_KEY_PREFIX = "views.authorizationManagerView.permission.model.";
    private static final String EMPTY_STRING = "";
+   private static final String GENERAL_PERMISSION = "generalPermissions";
+   private static final String UI_PERMISSION = "uiPermissions";
    private final AdministrationService administrationService;
    private final DualListModel dualListModel;
-   private MessagesViewsCommonBean viewsCommonBean;
    private final ParticipantAutocompleteSelector participantSelector;
    private ParticipantWrapper selectedParticipant;
    private PermissionsDetails permissions;
@@ -59,13 +60,14 @@ public class PermissionPickList
    private boolean dirty;
    private boolean show;
    private Map<String, String> labels = new HashMap<String, String>();
+   private Map<String, UiPermission> uiPermissionDefs;
+   private List<FilterToolbarItem> filterToolbarItems;
 
    /**
     * Constructor
     */
    public PermissionPickList()
    {
-      viewsCommonBean = MessagesViewsCommonBean.getInstance();
       dualListModel = new DualListModel();
 
       SessionContext sessionContext = SessionContext.findSessionContext();
@@ -85,6 +87,7 @@ public class PermissionPickList
                initializeModel(selectedParticipant);
                autoCompleteText = autoComplete;
                show = true;
+               applyFilters();
             }
             else
             {
@@ -136,6 +139,8 @@ public class PermissionPickList
     */
    public void initialize()
    {
+      initializeFilters();
+      
       show = false;
       resetPermissions();
 
@@ -146,8 +151,7 @@ public class PermissionPickList
          autoCompleteText.setValue(EMPTY_STRING);
       }
 
-      dualListModel.getSource().clear();
-      dualListModel.getTarget().clear();
+      dualListModel.clear();
    }
 
    public boolean isDirty()
@@ -179,6 +183,7 @@ public class PermissionPickList
       if (selectedParticipant != null)
       {
          initializeModel(selectedParticipant);
+         applyFilters();
       }
    }
 
@@ -318,6 +323,15 @@ public class PermissionPickList
       }
    }
 
+   /**
+    * @param ae
+    */
+   public void togglePermissions(ActionEvent ae)
+   {
+     FilterToolbarItem.togglePermissions(filterToolbarItems, ae);
+     applyFilters();
+   }
+   
    public void setDirty(boolean dirty)
    {
       this.dirty = dirty;
@@ -364,68 +378,109 @@ public class PermissionPickList
       return false;
    }
 
+  
    /**
-    * 
-    * @param participantId
+    * @author Yogesh.Manware
+    * @param participantWrapper
     */
    private void initializeModel(ParticipantWrapper participantWrapper)
    {
-      dualListModel.getSource().clear();
-      dualListModel.getTarget().clear();
-
-      List<String> tempList = new ArrayList<String>(permissions.getAllPermissionIds());
-
-      for (String permissionId : permissions.getAllPermissionIds())
+      if (null == participantWrapper)
       {
+         return;
+      }
+      
+      uiPermissionDefs = UiPermissionUtils.getUiPermssions();
+ 
+      dualListModel.clear();
+      
+      List<String> allPermissionIds = new ArrayList<String>();
+      allPermissionIds.addAll(permissions.getGeneralPermission().getAllPermissionIds());
+      allPermissionIds.addAll(uiPermissionDefs.keySet());
+
+      for (String permissionId : allPermissionIds)
+      {
+         String label = getLabel(permissionId);
+         boolean addToSource = true;
          boolean hasAllGrant = permissions.hasAllGrant(permissionId);
+         
          if (hasAllGrant)
          {
-            dualListModel.getTarget().add(new SelectItemModel(getLabel(permissionId), permissionId, true));
-            tempList.remove(permissionId);
+            dualListModel.getTarget().add(new SelectItemModel(label, permissionId, true));
+            addToSource = false;
          }
          else
          {
-
             Set<ModelParticipantInfo> participants = permissions.getGrants(permissionId);
-
             for (ModelParticipantInfo participant : participants)
             {
-
                if (participant instanceof QualifiedModelParticipantInfo)
                {
                   if (compareFQID(participant, participantWrapper))
                   {
-                     dualListModel.getTarget().add(new SelectItemModel(getLabel(permissionId), permissionId, false));
-                     tempList.remove(permissionId);
+                     dualListModel.getTarget().add(new SelectItemModel(label, permissionId, false));
+                     addToSource = false;
                      break;
                   }
-
                }
                else if (participant.getName().equals(participantWrapper.getID()))
                {
-                  dualListModel.getTarget().add(new SelectItemModel(getLabel(permissionId), permissionId, false));
-                  tempList.remove(permissionId);
+                  dualListModel.getTarget().add(new SelectItemModel(label, permissionId, false));
+                  addToSource = false;
                   break;
                }
             }
          }
-      }
-
-      for (String permissionId : tempList)
-      {
-         dualListModel.getSource().add(new SelectItemModel(getLabel(permissionId), permissionId, false));
+         if (addToSource)
+         {
+            dualListModel.getSource().add(new SelectItemModel(label, permissionId, false));
+         }
       }
    }
 
+   private void applyFilters()
+   {
+      dualListModel.setFilteredSource(filterItems(dualListModel.getSource()));
+      dualListModel.setFilteredTarget(filterItems(dualListModel.getTarget()));
+   }
+
+   /**
+    * @param list
+    * @return
+    */
+   private List<SelectItemModel> filterItems(List<SelectItemModel> list)
+   {
+      List<SelectItemModel> filteredList = new LinkedList<SelectItemModel>();
+      for (SelectItemModel item : list)
+      {
+         String permissionId = (String) item.getValue();
+         if (UiPermissionUtils.isGeneralPermissionId(permissionId))
+         {
+            if (isGeneralPermissionSwitchOn())
+            {
+               filteredList.add(item);
+            }
+         }
+         else
+         {
+            if (isUiPermissionSwitchOn())
+            {
+               filteredList.add(item);
+            }
+         }
+      }
+      return filteredList;
+   }
+   
    /**
     * @param permissionId
     * @return
     */
    private String getLabel(String permissionId)
    {
-      if (UiPermissionUtils.isGeneralPermissionId(permissionId))
+      if (!UiPermissionUtils.isGeneralPermissionId(permissionId))
       {
-         return viewsCommonBean.getString(PERMISSION_KEY_PREFIX + permissionId);
+         return uiPermissionDefs.get(permissionId).getLabel();
       }
       else if (!labels.containsKey(permissionId))
       {
@@ -433,6 +488,38 @@ public class PermissionPickList
       }
       return labels.get(permissionId);
    }
+   
+   /**
+    * @author Yogesh.Manware
+    */
+   private void initializeFilters()
+   {
+      filterToolbarItems = new ArrayList<FilterToolbarItem>();
+      FilterToolbarItem genPermissionFilter = new FilterToolbarItem("0", GENERAL_PERMISSION,
+            "views.authorizationManagerView.participantDualList.generalPermissions.show",
+            "views.authorizationManagerView.participantDualList.generalPermissions.hide",
+            "/plugins/views-common/images/icons/server_key.png");
+      genPermissionFilter.setActive(true);
+      filterToolbarItems.add(genPermissionFilter);
+
+      FilterToolbarItem uiPermissionFilter = new FilterToolbarItem("0", UI_PERMISSION,
+            "views.authorizationManagerView.participantDualList.uiPermissions.show",
+            "views.authorizationManagerView.participantDualList.uiPermissions.hide",
+            "/plugins/views-common/images/icons/computer_key.png");
+      uiPermissionFilter.setActive(true);
+      filterToolbarItems.add(uiPermissionFilter);
+   }
+
+   private boolean isGeneralPermissionSwitchOn()
+   {
+      return FilterToolbarItem.isSwitchOn(filterToolbarItems, GENERAL_PERMISSION);
+   }
+   
+   private boolean isUiPermissionSwitchOn()
+   {
+      return FilterToolbarItem.isSwitchOn(filterToolbarItems, UI_PERMISSION);
+   }
+   
    /**
     * 
     * @author Vikas.Mishra
@@ -473,5 +560,9 @@ public class PermissionPickList
 
          return selectItems;
       }
+   }
+   public List<FilterToolbarItem> getFilterToolbarItems()
+   {
+      return filterToolbarItems;
    }
 }

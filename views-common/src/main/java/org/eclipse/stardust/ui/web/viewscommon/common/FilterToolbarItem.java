@@ -10,6 +10,11 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.common;
 
+import java.util.List;
+
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
+
 import org.eclipse.stardust.common.StringUtils;
 
 
@@ -169,5 +174,45 @@ public class FilterToolbarItem
       return msgKeyInactive;
    }
    
+   /**
+    * @author Yogesh.Manware
+    * @param filterToolbarItems
+    * @param ae
+    */
+   public static void togglePermissions(List<FilterToolbarItem> filterToolbarItems, ActionEvent ae)
+   {
+      FacesContext context = FacesContext.getCurrentInstance();
+      String name = (String) context.getExternalContext().getRequestParameterMap().get("name");
+
+      if (StringUtils.isEmpty(name))
+      {
+         name = (String) ae.getComponent().getAttributes().get("name");
+      }
+      for (FilterToolbarItem fTI : filterToolbarItems)
+      {
+         if (fTI.getName().equals(name))
+         {
+            fTI.setActive(fTI.isActive() ? false : true);
+         }
+      }
+   }
+
+   /**
+    * @author Yogesh.Manware
+    * @param filterToolbarItems
+    * @param switchName
+    * @return
+    */
+   public static boolean isSwitchOn(List<FilterToolbarItem> filterToolbarItems, String switchName)
+   {
+      for (FilterToolbarItem filterItem : filterToolbarItems)
+      {
+         if (filterItem.getName().equals(switchName))
+         {
+            return filterItem.isActive();
+         }
+      }
+      return false;
+   }
    
 }

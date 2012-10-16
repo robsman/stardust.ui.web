@@ -19,10 +19,11 @@ import java.util.List;
 
 import org.eclipse.stardust.common.CollectionUtils;
 
-
 /**
  * 
  * @author Vikas.Mishra
+ * @author Yogesh.Manware
+ * 
  * @version $Revision: $
  */
 public class DualListModel implements Serializable
@@ -34,6 +35,9 @@ public class DualListModel implements Serializable
    private List<SelectItemModel> target;
    private List<Object> targetSelected = new LinkedList<Object>();
 
+   private List<SelectItemModel> filteredSource = new LinkedList<SelectItemModel>();
+   private List<SelectItemModel> filteredTarget = new LinkedList<SelectItemModel>();
+
    // Constructor
    public DualListModel()
    {
@@ -41,10 +45,14 @@ public class DualListModel implements Serializable
       target = new LinkedList<SelectItemModel>();
    }
 
-   public DualListModel(List<SelectItemModel> source, List<SelectItemModel> target)
+   public void clear()
    {
-      this.source = source;
-      this.target = target;
+      source.clear();
+      target.clear();
+      filteredSource.clear();
+      filteredTarget.clear();
+      sourceSelected.clear();
+      targetSelected.clear();
    }
 
    /**
@@ -53,10 +61,12 @@ public class DualListModel implements Serializable
    public void add()
    {
       List<SelectItemModel> items = getItemsByValue(getSourceSelected(), source);
-      getTarget().addAll(items);
-      getSource().removeAll(items);
-      getSourceSelected().clear();
-      getTargetSelected().clear();
+      target.addAll(items);
+      source.removeAll(items);
+      filteredTarget.addAll(items);
+      filteredSource.removeAll(items);
+      sourceSelected.clear();
+      targetSelected.clear();
    }
 
    /**
@@ -65,10 +75,12 @@ public class DualListModel implements Serializable
    public void addAll()
    {
       List<SelectItemModel> removableObjects = getRemovableObjects(getSource());
-      getTarget().addAll(removableObjects);
-      getSource().removeAll(removableObjects);
-      getSourceSelected().clear();
-      getTargetSelected().clear();
+      target.addAll(removableObjects);
+      source.removeAll(removableObjects);
+      filteredTarget.addAll(removableObjects);
+      filteredSource.removeAll(removableObjects);
+      sourceSelected.clear();
+      targetSelected.clear();
    }
 
    /**
@@ -77,8 +89,6 @@ public class DualListModel implements Serializable
     */
    public List<SelectItemModel> getSource()
    {
-      Collections.sort(source, SELECT_ITEM_COMPARATOR);
-
       return source;
    }
 
@@ -97,7 +107,6 @@ public class DualListModel implements Serializable
     */
    public List<SelectItemModel> getTarget()
    {
-      Collections.sort(target, SELECT_ITEM_COMPARATOR);
       return target;
    }
 
@@ -116,10 +125,12 @@ public class DualListModel implements Serializable
    public void remove()
    {
       List<SelectItemModel> items = getItemsByValue(getTargetSelected(), target);
-      getSource().addAll(items);
-      getTarget().removeAll(items);
-      getSourceSelected().clear();
-      getTargetSelected().clear();
+      source.addAll(items);
+      target.removeAll(items);
+      filteredSource.addAll(items);
+      filteredTarget.removeAll(items);
+      sourceSelected.clear();
+      targetSelected.clear();
    }
 
    /**
@@ -128,10 +139,12 @@ public class DualListModel implements Serializable
    public void removeAll()
    {
       List<SelectItemModel> removableObjects = getRemovableObjects(getTarget());
-      getSource().addAll(removableObjects);
-      getTarget().removeAll(removableObjects);
-      getSourceSelected().clear();
-      getTargetSelected().clear();
+      source.addAll(removableObjects);
+      target.removeAll(removableObjects);
+      filteredSource.addAll(removableObjects);
+      filteredTarget.removeAll(removableObjects);
+      sourceSelected.clear();
+      targetSelected.clear();
    }
 
    /**
@@ -153,19 +166,9 @@ public class DualListModel implements Serializable
       return removableObjects;
    }
 
-   public void setSource(List<SelectItemModel> source)
-   {
-      this.source = source;
-   }
-
    public void setSourceSelected(List<Object> sourceSelected)
    {
       this.sourceSelected = sourceSelected;
-   }
-
-   public void setTarget(List<SelectItemModel> target)
-   {
-      this.target = target;
    }
 
    public void setTargetSelected(List<Object> targetSelected)
@@ -198,6 +201,28 @@ public class DualListModel implements Serializable
 
       return items;
    }
+
+   public List<SelectItemModel> getFilteredSource()
+   {
+      Collections.sort(filteredSource, SELECT_ITEM_COMPARATOR);
+      return filteredSource;
+   }
+
+   public List<SelectItemModel> getFilteredTarget()
+   {
+      Collections.sort(filteredTarget, SELECT_ITEM_COMPARATOR);
+      return filteredTarget;
+   }
+
+   public void setFilteredSource(List<SelectItemModel> filteredSource)
+   {
+      this.filteredSource = filteredSource;
+   }
+
+   public void setFilteredTarget(List<SelectItemModel> filteredTarget)
+   {
+      this.filteredTarget = filteredTarget;
+   }
 }
 
 /**
@@ -207,11 +232,37 @@ public class DualListModel implements Serializable
  */
 class SelectItemComparator implements Comparator<SelectItemModel>
 {
+   private static final String GE = "GE-";
+   private static final String UI = "UI-";
+
    public int compare(SelectItemModel arg0, SelectItemModel arg1)
    {
-      if (arg0.getValue() instanceof String && arg1.getValue() instanceof String)
+      if (arg0.getLabel() instanceof String && arg1.getLabel() instanceof String)
       {
-         return ((String) arg0.getValue()).compareTo((String) arg1.getValue());
+         String permissionId0 = (String) arg0.getValue();
+         String permissionId1 = (String) arg1.getValue();
+         String label0 = arg0.getLabel();
+         String label1 = arg1.getLabel();
+
+         if (UiPermissionUtils.isGeneralPermissionId(permissionId0))
+         {
+            label0 = GE + label0;
+         }
+         else
+         {
+            label0 = UI + label0;
+         }
+
+         if (UiPermissionUtils.isGeneralPermissionId(permissionId1))
+         {
+            label1 = GE + label1;
+         }
+         else
+         {
+            label1 = UI + label1;
+         }
+
+         return label0.compareTo(label1);
       }
       else
       {
@@ -219,4 +270,3 @@ class SelectItemComparator implements Comparator<SelectItemModel>
       }
    }
 }
-

@@ -8,6 +8,24 @@
 	<ice:panelGroup>
 		<ice:panelGroup styleClass="clearing" />
 
+		<ice:panelGroup>
+			<pc:automationTag value="auto-COM-PartPerms-filters"
+				standAlone="false" />
+			<ui:repeat
+				value="#{authorizationManagerBean.permissionPickList.filterToolbarItems}"
+				var="filterItem">
+				<h:commandLink name="#{filterItem.name}"
+					actionListener="#{authorizationManagerBean.permissionPickList.togglePermissions}"
+					style="vertical-align: middle;">
+					<h:graphicImage value="#{filterItem.image}"
+						style="border: none; padding-right: 5px;margin-left:3px;"
+						styleClass="#{filterItem.styleClass}"
+						title="#{views_common_msgPropsBean[filterItem.messsageKey]}" />
+					<f:param value="#{filterItem.name}" name="name" />
+				</h:commandLink>
+			</ui:repeat>
+		</ice:panelGroup>
+
 		<ice:panelGrid columns="3"
 			style="vertical-align: top; white-space: nowrap; text-align:center;">
 			<ice:outputLabel
@@ -22,7 +40,7 @@
 					disabled="#{false}">
 					<pc:automationTag value="auto-COM-PartPerms-ParticipantSrc" standAlone="false"/>
 					<c:forEach
-						items="#{authorizationManagerBean.permissionPickList.dualListModel.source}"
+						items="#{authorizationManagerBean.permissionPickList.dualListModel.filteredSource}"
 						var="source">
 						<f:selectItem itemLabel="#{source.label}"
 							itemValue="#{source.value}" itemDisabled="#{source.disable}" />
@@ -91,7 +109,7 @@
 					disabled="#{false}">
 					<pc:automationTag value="auto-COM-PartPerms-ParticipantTarget" standAlone="false"/>
 					<c:forEach
-						items="#{authorizationManagerBean.permissionPickList.dualListModel.target}"
+						items="#{authorizationManagerBean.permissionPickList.dualListModel.filteredTarget}"
 						var="target">
 						<f:selectItem itemLabel="#{target.label}"
 							itemValue="#{target.value}" itemDisabled="#{target.disable}" />

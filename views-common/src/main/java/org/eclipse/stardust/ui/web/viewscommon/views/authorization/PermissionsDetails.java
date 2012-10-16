@@ -13,7 +13,6 @@ package org.eclipse.stardust.ui.web.viewscommon.views.authorization;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,16 +43,6 @@ public class PermissionsDetails
    public PermissionsDetails(Map<String, List<String>> permissions)
    {
       this.uiPermissions = permissions;
-   }
-
-   /**
-    * @return
-    */
-   public Set<String> getAllPermissionIds()
-   {
-      Set<String> permissionIds = new HashSet<String>(uiPermissions.keySet());
-      permissionIds.addAll(generalPermission.getAllPermissionIds());
-      return Collections.unmodifiableSet(permissionIds);
    }
 
    /**
@@ -127,6 +116,10 @@ public class PermissionsDetails
             {
                return true;
             }
+         }
+         else
+         {
+            return true;
          }
       }
       return false;
