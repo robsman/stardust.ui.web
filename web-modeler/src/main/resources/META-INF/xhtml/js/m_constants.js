@@ -175,7 +175,7 @@ define(function() {
 		
 		COMMENT_COUNT_COLOR : "black",
 		COMMENT_COUNT_FONT_WEIGHT : "bold",
-		COMMENT_COUNT_FONT_SIZE : 14,
+		COMMENT_COUNT_FONT_SIZE : 11,
 
 		// Other graphics
 

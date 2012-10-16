@@ -7,10 +7,10 @@ define([ 'm_dataBasicPropertiesPage',
 			panelId: "dataPropertiesPanel",
 			pageId: "basicPropertiesPage",
 			provider: m_dataBasicPropertiesPage,
-			visibility: "always",
+			visibility: "always"
 		}, {
 			panelId: "dataPropertiesPanel",
-			pageId: "dataCommentsPropertiesPage",
+			pageId: "commentsPropertiesPage",
 			pageHtmlUrl: "modelElementCommentsPropertiesPage.html",
 			provider: m_modelElementCommentsPropertiesPage,
 			visibility: "always"

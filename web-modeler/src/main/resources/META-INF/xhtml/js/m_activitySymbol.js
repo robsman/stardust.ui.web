@@ -255,26 +255,6 @@ define(
 							this.y + this.height - 16, 16, 16).hide();
 
 					this.addToPrimitives(this.subprocessMarkerIcon);
-
-					this.commentCountText = m_canvasManager
-							.drawTextNode(this.x + this.width - 20,
-									this.y, "")
-							.attr(
-									{
-										"text-anchor" : "start",
-										"font-family" : m_constants.DEFAULT_FONT_FAMILY,
-										"font-weight" : m_constants.COMMENT_COUNT_FONT_WEIGHT,
-										"font-size" : m_constants.COMMENT_COUNT_FONT_SIZE
-									});
-
-					this.addToPrimitives(this.commentCountText);
-
-					this.commentCountIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/comments-count.png",
-							this.x + this.width - 40,
-							this.y - 8, 16, 16).hide();
-
-					this.addToPrimitives(this.commentCountIcon);
 				};
 
 				/**
@@ -339,16 +319,6 @@ define(
 						this.sequentialMultiProcessingMarkerIcon.show();
 					}
 
-					if (this.modelElement.comments.length > 0) {
-						this.commentCountText.attr("text",
-								this.modelElement.comments.length);
-						this.commentCountText.show();
-						this.commentCountIcon.show();
-					} else {
-						this.commentCountText.hide();
-						this.commentCountIcon.hide();
-					}
-
 					// Store the server side co-ord, required for moving symbol
 					// when other lane is minimized.
 					this.updateServerSideCoordinates();
@@ -406,16 +376,6 @@ define(
 					this.subprocessMarkerIcon.animate({
 						"x" : this.x + 0.5 * this.width - 8,
 						"y" : this.y + this.height - 16
-					}, this.diagram.animationDelay,
-							this.diagram.animationEasing);
-					this.commentCountText.animate({
-						"x" : this.x + this.width - 20,
-						"y" : this.y
-					}, this.diagram.animationDelay,
-							this.diagram.animationEasing);
-					this.commentCountIcon.animate({
-						"x" : this.x + this.width - 40,
-						"y" : this.y - 8
 					}, this.diagram.animationDelay,
 							this.diagram.animationEasing);
 

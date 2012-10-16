@@ -7,13 +7,13 @@ define([ 'm_eventBasicPropertiesPage',
 			panelId: "eventPropertiesPanel",
 			pageId: "basicPropertiesPage",
 			provider: m_eventBasicPropertiesPage,
-			visibility: "always",
+			visibility: "always"
 		}, {
 			panelId: "eventPropertiesPanel",
-			pageId: "eventCommentsPropertiesPage",
+			pageId: "commentsPropertiesPage",
 			pageHtmlUrl: "modelElementCommentsPropertiesPage.html",
 			provider: m_modelElementCommentsPropertiesPage,
 			visibility: "always"
-		}, ],
+		}, ]
 	};
 });

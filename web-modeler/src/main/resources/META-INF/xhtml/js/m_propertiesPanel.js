@@ -10,7 +10,7 @@ define(
 			var currentPropertiesPanel = null;
 
 			return {
-				initializePropertiesPanel : function(element) {
+				initializePropertiesPanel : function(element, page) {
 
 					if (currentPropertiesPanel != null) {
 						currentPropertiesPanel.hide();
@@ -20,7 +20,7 @@ define(
 
 					if (currentPropertiesPanel != null) {
 						currentPropertiesPanel.setElement(element);
-						currentPropertiesPanel.show();
+						currentPropertiesPanel.show(page);
 					}
 				},
 
@@ -60,6 +60,7 @@ define(
 				this.propertiesPages = [];
 				this.errorMessages = [];
 				this.helpPanel = jQuery("#" + this.id + " #helpPanel");
+				this.lastSelectedPageIndex = 0;
 
 				/**
 				 * 
@@ -135,9 +136,6 @@ define(
 							continue;
 						}
 
-						m_utils.debug("===> Before checking profile "
-								+ m_user.getCurrentRole());
-
 						if (!extension.supportedInProfile(m_user
 								.getCurrentRole())) {
 							if (extension.pageHtmlUrl == null) {
@@ -147,9 +145,6 @@ define(
 
 							continue;
 						}
-
-						m_utils.debug("===> After checking profile "
-								+ m_user.getCurrentRole());
 
 						m_utils.debug("Load Properties Page "
 								+ extension.pageId);
@@ -239,11 +234,13 @@ define(
 								"#propertiesPageList #"
 										+ this.propertiesPages[n].id
 										+ "ListItem").click({
-							"callbackScope" : this,
-							"propertiesPage" : this.propertiesPages[n]
+							callbackScope : this,
+							propertiesPage : this.propertiesPages[n],
+							pageIndex: n
 						}, function(event) {
 							event.data.callbackScope.hidePropertiesPages();
 							event.data.propertiesPage.show();
+							event.data.callbackScope.lastSelectedPageIndex = event.data.pageIndex;
 						});
 					}
 				};
@@ -280,13 +277,21 @@ define(
 				/**
 				 * 
 				 */
-				PropertiesPanel.prototype.show = function() {
+				PropertiesPanel.prototype.show = function(page) {
 					m_dialog.makeVisible(this.panel);
 					this.showPropertiesPageList();
 					this.hidePropertiesPages();
 
 					if (this.propertiesPages.length >= 1) {
-						this.propertiesPages[0].show();
+						if (page != null) {
+							for ( var n = 0; n < this.propertiesPages.length; ++n) {
+								if (this.propertiesPages[n].id == page) {
+									this.propertiesPages[n].show();
+								}
+							}
+						} else {
+							this.propertiesPages[this.lastSelectedPageIndex].show();
+						}
 					}
 
 					this.clearErrorMessages();
@@ -347,7 +352,8 @@ define(
 							this.setElement(this.element);
 						} else if (this.element.modelElement != null
 								&& object.changes.modified[0].oid == this.element.modelElement.oid) {
-							m_utils.debug("Changes to be applied to Model Element of Properties Page:");
+							m_utils
+									.debug("Changes to be applied to Model Element of Properties Page:");
 							m_utils.debug(this.element.modelElement);
 							m_utils.debug(object.changes.modified[0]);
 							m_utils.inheritFields(this.element.modelElement,

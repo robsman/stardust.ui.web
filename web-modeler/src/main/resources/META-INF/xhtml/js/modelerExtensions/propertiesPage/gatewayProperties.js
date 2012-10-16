@@ -7,10 +7,10 @@ define([ 'm_gatewayBasicPropertiesPage',
 			panelId: "gatewayPropertiesPanel",
 			pageId: "basicPropertiesPage",
 			provider: m_gatewayBasicPropertiesPage,
-			visibility: "always",
+			visibility: "always"
 		}, {
 			panelId: "gatewayPropertiesPanel",
-			pageId: "gatewayCommentsPropertiesPage",
+			pageId: "commentsPropertiesPage",
 			pageHtmlUrl: "modelElementCommentsPropertiesPage.html",
 			provider: m_modelElementCommentsPropertiesPage,
 			visibility: "always"
