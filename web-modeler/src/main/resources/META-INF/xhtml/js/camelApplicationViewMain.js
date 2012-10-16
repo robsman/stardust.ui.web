@@ -57,8 +57,6 @@ require(["require",
 		 "m_commandsController",
 		 "m_view",
 		 "m_modelElementView",
-		 "m_modelElementCommentsPropertiesPage",         
-		 "m_serviceConnectorApplicationIntegrationOverlay",         
          "m_camelApplicationView"],
 		 function(require) {
 	require("m_camelApplicationView").initialize(

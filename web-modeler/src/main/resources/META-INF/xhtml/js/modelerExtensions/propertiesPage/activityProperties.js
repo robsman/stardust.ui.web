@@ -2,14 +2,12 @@ define([ 'm_activityBasicPropertiesPage',
          'm_modelElementCommentsPropertiesPage',
          'm_activityProcessingPropertiesPage',
          'm_activityControllingPropertiesPage',
-         'm_activityQualityControlPropertiesPage',
-         'm_activityServiceParametersPropertiesPage'], function(
+         'm_activityQualityControlPropertiesPage'], function(
         		 m_activityBasicPropertiesPage,
         		 m_modelElementCommentsPropertiesPage,
         		 m_activityProcessingPropertiesPage,
         		 m_activityControllingPropertiesPage,
-        		 m_activityQualityControlPropertiesPage,
-        		 m_activityServiceParametersPropertiesPage) {
+        		 m_activityQualityControlPropertiesPage) {
 	return {
 		propertiesPage : [ {
 			panelId: "activityPropertiesPanel",
@@ -38,12 +36,6 @@ define([ 'm_activityBasicPropertiesPage',
 			pageId: "qualityControlPropertiesPage",
 			provider: m_activityQualityControlPropertiesPage,
 			visibility: "preview"
-		}, {
-			panelId: "activityPropertiesPanel",
-			pageId: "serviceParametersPropertiesPage",
-			pageHtmlUrl: "activityServiceParametersPropertiesPage.html",
-			provider: m_activityServiceParametersPropertiesPage,
-			visibility: "always"
 		}, ]
 	};
 });
