@@ -69,7 +69,7 @@ import com.google.gson.JsonObject;
 
 /**
  * IPP XPDL marshaller.
- *
+ * 
  * @author Marc.Gille
  * @author Robert Sauer
  */
@@ -84,7 +84,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
    /**
-    *
+    * 
     * @param modelElement
     * @return
     */
@@ -374,7 +374,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param laneSymbol
     * @return
     */
@@ -584,7 +584,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param activity
     * @return
     */
@@ -641,9 +641,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
             activityJson.addProperty(
                   ModelerConstants.PARTICIPANT_FULL_ID,
-                  getModelBuilderFacade()
-                        .createFullId(ModelUtils.findContainingModel(activity),
-                              activity.getPerformer()));
+                  getModelBuilderFacade().createFullId(
+                        ModelUtils.findContainingModel(activity), activity.getPerformer()));
 
             if (activity.getImplementationProcess() != null)
             {
@@ -749,7 +748,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param activitySymbol
     * @return
     */
@@ -837,7 +836,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -880,14 +879,14 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             ModelerConstants.EVENT_SYMBOL);
       // eventJson.put(ID_PROPERTY,
       // String.valueOf(startEventSymbol.getModelElement().getId()));
-      //loadDescription(eventJson, startEventSymbol.getModelElement());
+      // loadDescription(eventJson, startEventSymbol.getModelElement());
       loadAttributes(startEventSymbol.getModelElement(), eventJson);
 
       return eventSymbolJson;
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -939,7 +938,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param data
     * @return
     */
@@ -963,8 +962,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          loadDescription(dataJson, data);
          loadAttributes(data, dataJson);
 
-         dataJson.addProperty(ModelerConstants.EXTERNAL_REFERENCE_PROPERTY, this
-               .getModelBuilderFacade().isExternalReference(data));
+         dataJson.addProperty(ModelerConstants.EXTERNAL_REFERENCE_PROPERTY,
+               this.getModelBuilderFacade().isExternalReference(data));
 
          if (null != data.getType()
                && data.getType()
@@ -1058,7 +1057,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -1143,8 +1142,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          roleJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
       }
 
-      roleJson.addProperty(ModelerConstants.EXTERNAL_REFERENCE_PROPERTY, this
-            .getModelBuilderFacade().isExternalReference(role));
+      roleJson.addProperty(ModelerConstants.EXTERNAL_REFERENCE_PROPERTY,
+            this.getModelBuilderFacade().isExternalReference(role));
 
       loadDescription(roleJson, role);
       loadAttributes(role, roleJson);
@@ -1249,8 +1248,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          orgJson.addProperty(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY, (String) null);
       }
 
-      orgJson.addProperty(ModelerConstants.EXTERNAL_REFERENCE_PROPERTY, this
-            .getModelBuilderFacade().isExternalReference(org));
+      orgJson.addProperty(ModelerConstants.EXTERNAL_REFERENCE_PROPERTY,
+            this.getModelBuilderFacade().isExternalReference(org));
 
       loadDescription(orgJson, org);
       loadAttributes(org, orgJson);
@@ -1350,7 +1349,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param annotationSymbol
     * @return
     */
@@ -1399,7 +1398,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param dataMappingConnection
     * @return
     */
@@ -1407,7 +1406,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          DataMappingConnectionType dataMappingConnection)
    {
       JsonObject connectionJson = new JsonObject();
-      JsonObject dataFlowJson = new JsonObject();
+      JsonObject dataFlowJson = null;
 
       connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
             dataMappingConnection.getElementOid());
@@ -1422,59 +1421,89 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       DataType data = null != dataMappingConnection.getDataSymbol()
             ? dataMappingConnection.getDataSymbol().getData()
             : null;
+
       if (null != data && null != dataMappingConnection.getActivitySymbol())
       {
          ActivityType activity = dataMappingConnection.getActivitySymbol().getActivity();
+
+         // Find all data mappings between the data and the activity connected by the
+         // connection
+
          for (DataMappingType dataMapping : activity.getDataMapping())
          {
-            // Update the dataFlowJson for currentData symbol
             if (dataMapping.getData().getId().equals(data.getId()))
             {
-               dataFlowJson = toDataMappingJson(dataMapping);
-               // TODO - Currently API always assumes connectionJson.getSourceNode will
-               // be data, to set Activity in sourceNode for OUT Mapping for data below
-               // code is added.
-               if (dataFlowJson.get(ModelerConstants.OUT_DATA_MAPPING_PROPERTY)
-                     .getAsBoolean())
+               System.out.println("Data Mapping: " + dataMapping.getId());
+               System.out.println("   Data: " + dataMapping.getData().getName());
+               System.out.println("   Activity: " + activity.getName());
+               System.out.println("   Direction: " + dataMapping.getDirection());
+               System.out.println("   Access Point: "
+                     + dataMapping.getApplicationAccessPoint());
+
+               if (dataFlowJson == null)
                {
-                  connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
-                        dataMappingConnection.getActivitySymbol().getElementOid());
-                  connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
-                        ModelerConstants.ACTIVITY_KEY);
-                  connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
-                        dataMappingConnection.getDataSymbol().getElementOid());
-                  connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
-                        ModelerConstants.DATA);
+                  dataFlowJson = toDataMappingJson(dataMapping);
+               }
+               else if (dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString().equals(dataMapping.getId()))
+               {
+                  // Add other direction
                }
                else
-               // If user unchecks IN,OUT mapping from properties page, following will be
-               // considered
                {
-                  connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
-                        dataMappingConnection.getDataSymbol().getElementOid());
-                  connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
-                        ModelerConstants.DATA);
-                  connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
-                        dataMappingConnection.getActivitySymbol().getElementOid());
-                  connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
-                        ModelerConstants.ACTIVITY_KEY);
+                  // TODO We are only supporting one input/output pair per activity/data at
+                  // the moment                  
                }
             }
          }
 
-         dataFlowJson.addProperty(
-               ModelerConstants.DATA_FULL_ID_PROPERTY,
-               getModelBuilderFacade().createFullId(ModelUtils.findContainingModel(data),
-                     data));
-         dataFlowJson.addProperty(ModelerConstants.ACTIVITY_ID_PROPERTY, activity.getId());
-         connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, dataFlowJson);
+         // TODO Can it be null?
+
+         if (dataFlowJson != null)
+         {
+            // TODO - Currently API always assumes connectionJson.getSourceNode will
+            // be data, to set Activity in sourceNode for OUT Mapping for data below
+            // code is added.
+            if (dataFlowJson.get(ModelerConstants.OUT_DATA_MAPPING_PROPERTY)
+                  .getAsBoolean())
+            {
+               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
+                     dataMappingConnection.getActivitySymbol().getElementOid());
+               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
+                     ModelerConstants.ACTIVITY_KEY);
+               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
+                     dataMappingConnection.getDataSymbol().getElementOid());
+               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
+                     ModelerConstants.DATA);
+            }
+            else
+            // If user unchecks IN,OUT mapping from properties page, following will be
+            // considered
+            {
+               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
+                     dataMappingConnection.getDataSymbol().getElementOid());
+               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
+                     ModelerConstants.DATA);
+               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
+                     dataMappingConnection.getActivitySymbol().getElementOid());
+               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
+                     ModelerConstants.ACTIVITY_KEY);
+            }
+
+            dataFlowJson.addProperty(
+                  ModelerConstants.DATA_FULL_ID_PROPERTY,
+                  getModelBuilderFacade().createFullId(
+                        ModelUtils.findContainingModel(data), data));
+            dataFlowJson.addProperty(ModelerConstants.ACTIVITY_ID_PROPERTY,
+                  activity.getId());
+            connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, dataFlowJson);
+         }
       }
 
       return connectionJson;
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -1616,7 +1645,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -1668,7 +1697,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param dataMapping
     * @return
     */
@@ -1688,23 +1717,13 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
             dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, false);
          }
-         else if (dataMapping.getDirection().equals(DirectionType.OUT_LITERAL))
+         else 
          {
             dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, false);
             dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
-         }
-         else if (dataMapping.getDirection().equals(DirectionType.INOUT_LITERAL))
-         {
-            // IN_OUT Mapping scenario
-            dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
-            dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
-         }
-         else
-         {
-            dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, false);
-            dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, false);
          }
       }
+      
       return dataFlowJson;
    }
 
@@ -1961,7 +1980,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param orientation
     * @return
     */
@@ -1992,7 +2011,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param modelElementJson
     * @param element
     */
@@ -2011,7 +2030,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param element
     * @param json
     * @throws JSONException
@@ -2055,9 +2074,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * TODO From DynamicConnectionCommand. Refactor?
-    *
+    * 
     * @param activity
     * @return
     */
