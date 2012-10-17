@@ -394,7 +394,7 @@ public class ConnectionCommandHandler
       ActivityType activity = activitySymbol.getActivity();
       boolean inDataMapping = extractBoolean(
             connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
-            ModelerConstants.IN_DATA_MAPPING_PROPERTY);
+            ModelerConstants.INPUT_DATA_MAPPING_PROPERTY);
 
       DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
       DataMappingConnectionType dataMappingConnection = AbstractElementBuilder.F_CWM.createDataMappingConnectionType();

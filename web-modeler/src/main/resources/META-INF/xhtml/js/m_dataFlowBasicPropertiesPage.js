@@ -229,6 +229,9 @@ define(
 				 * 
 				 */
 				DataFlowBasicPropertiesPage.prototype.setElement = function() {
+					m_utils.debug("===> Data Flow");
+					m_utils.debug(this.propertiesPanel.element.modelElement);
+					
 					this
 							.populateInputAccessPointSelectInput(this.propertiesPanel.element.modelElement);
 					this

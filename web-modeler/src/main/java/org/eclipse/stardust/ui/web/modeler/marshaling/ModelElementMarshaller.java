@@ -1444,26 +1444,38 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                {
                   dataFlowJson = toDataMappingJson(dataMapping);
                }
-               else if (dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString().equals(dataMapping.getId()))
+               else if (dataFlowJson.get(ModelerConstants.ID_PROPERTY)
+                     .getAsString()
+                     .equals(dataMapping.getId()))
                {
                   // Add other direction
+
+                  if (dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
+                        .getAsBoolean())
+                  {
+                     dataFlowJson.addProperty(
+                           ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY, true);
+                  }
+                  else
+                  {
+                     dataFlowJson.addProperty(
+                           ModelerConstants.INPUT_DATA_MAPPING_PROPERTY, true);
+                  }
                }
                else
                {
-                  // TODO We are only supporting one input/output pair per activity/data at
-                  // the moment                  
+                  // TODO We are only supporting one input/output pair per activity/data
+                  // at
+                  // the moment
                }
             }
          }
 
-         // TODO Can it be null?
+         // TODO Review
 
          if (dataFlowJson != null)
          {
-            // TODO - Currently API always assumes connectionJson.getSourceNode will
-            // be data, to set Activity in sourceNode for OUT Mapping for data below
-            // code is added.
-            if (dataFlowJson.get(ModelerConstants.OUT_DATA_MAPPING_PROPERTY)
+            if (dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
                   .getAsBoolean())
             {
                connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
@@ -1475,9 +1487,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
                      ModelerConstants.DATA);
             }
-            else
-            // If user unchecks IN,OUT mapping from properties page, following will be
-            // considered
+
+            if (dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
+                  .getAsBoolean())
             {
                connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
                      dataMappingConnection.getDataSymbol().getElementOid());
@@ -1714,16 +1726,40 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       {
          if (dataMapping.getDirection().equals(DirectionType.IN_LITERAL))
          {
-            dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, true);
-            dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, false);
+            dataFlowJson.addProperty(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY, true);
+            dataFlowJson.addProperty(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY, false);
+
+            if (dataMapping.getApplicationAccessPoint() != null)
+            {
+               dataFlowJson.addProperty(ModelerConstants.INPUT_ACCESS_POINT_ID_PROPERTY,
+                     dataMapping.getApplicationAccessPoint());
+               dataFlowJson.addProperty(
+                     ModelerConstants.INPUT_ACCESS_POINT_CONTEXT_PROPERTY,
+                     dataMapping.getContext());
+            }
+
+            dataFlowJson.addProperty(ModelerConstants.INPUT_DATA_PATH_PROPERTY,
+                  dataMapping.getDataPath());
          }
-         else 
+         else
          {
-            dataFlowJson.addProperty(ModelerConstants.IN_DATA_MAPPING_PROPERTY, false);
-            dataFlowJson.addProperty(ModelerConstants.OUT_DATA_MAPPING_PROPERTY, true);
+            dataFlowJson.addProperty(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY, false);
+            dataFlowJson.addProperty(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY, true);
+
+            if (dataMapping.getApplicationAccessPoint() != null)
+            {
+               dataFlowJson.addProperty(ModelerConstants.OUTPUT_ACCESS_POINT_ID_PROPERTY,
+                     dataMapping.getApplicationAccessPoint());
+               dataFlowJson.addProperty(
+                     ModelerConstants.OUTPUT_ACCESS_POINT_CONTEXT_PROPERTY,
+                     dataMapping.getContext());
+            }
+
+            dataFlowJson.addProperty(ModelerConstants.OUTPUT_DATA_PATH_PROPERTY,
+                  dataMapping.getDataPath());
          }
       }
-      
+
       return dataFlowJson;
    }
 

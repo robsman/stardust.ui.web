@@ -473,8 +473,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
 
-      if (dataFlowJson.has(ModelerConstants.IN_DATA_MAPPING_PROPERTY)
-            || dataFlowJson.has(ModelerConstants.OUT_DATA_MAPPING_PROPERTY))
+      if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
+            || dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
       {
          for (DataMappingType dataMapping : dataFlowConnection.getActivitySymbol()
                .getActivity()
@@ -1642,20 +1642,20 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    private void updateDataMapping(JsonObject dataFlowJson, DataMappingType dataMapping)
    {
       // If both IN-OUT mapping is present
-      if (dataFlowJson.has(ModelerConstants.IN_DATA_MAPPING_PROPERTY)
-            && dataFlowJson.has(ModelerConstants.OUT_DATA_MAPPING_PROPERTY))
+      if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
+            && dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
       {
-         if (dataFlowJson.get(ModelerConstants.IN_DATA_MAPPING_PROPERTY).getAsBoolean()
-               && dataFlowJson.get(ModelerConstants.OUT_DATA_MAPPING_PROPERTY)
+         if (dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY).getAsBoolean()
+               && dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
                      .getAsBoolean())
          {
             dataMapping.setDirection(DirectionType.INOUT_LITERAL);
          }
       }
       // IN data mapping is updates
-      else if (dataFlowJson.has(ModelerConstants.IN_DATA_MAPPING_PROPERTY))
+      else if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
       {
-         if (dataFlowJson.get(ModelerConstants.IN_DATA_MAPPING_PROPERTY).getAsBoolean())
+         if (dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY).getAsBoolean())
          {
             // If OUT mapping was already set , update to IN-OUT mapping
             if (dataMapping.getDirection().equals(DirectionType.OUT_LITERAL))
@@ -1676,9 +1676,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
       // OUT data mapping is updates
-      else if (dataFlowJson.has(ModelerConstants.OUT_DATA_MAPPING_PROPERTY))
+      else if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
       {
-         if (dataFlowJson.get(ModelerConstants.OUT_DATA_MAPPING_PROPERTY).getAsBoolean())
+         if (dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY).getAsBoolean())
          {
             // If IN mapping was already set , update to IN-OUT mapping
             if (dataMapping.getDirection().equals(DirectionType.IN_LITERAL))
