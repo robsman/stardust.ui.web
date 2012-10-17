@@ -77,7 +77,6 @@ import org.eclipse.stardust.ui.web.viewscommon.helper.activityTable.ActivityTabl
 import org.eclipse.stardust.ui.web.viewscommon.helper.processTable.ProcessInstanceTableEntry;
 import org.eclipse.stardust.ui.web.viewscommon.helper.processTable.ProcessTableHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultColumnModelEventHandler;
-import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
 
@@ -344,12 +343,10 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
       activityTableHelper = new ActivityTableHelper();
       if (activityTableHelper != null)
       {
-         activityTableHelper.getColumnModelListener().setNeedRefresh(false);
          activityTableHelper.initActivityTable();
          activityTableHelper.setCallbackHandler(this);
          activityTableHelper.setStrandedActivityView(false);
          activityTableHelper.getActivityTable().initialize();
-         activityTableHelper.getColumnModelListener().setNeedRefresh(true);
       }
    }
 
@@ -362,11 +359,9 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
       processHelper = new ProcessTableHelper();
       if (null != processHelper)
       {
-         processHelper.getColumnModelListener().setNeedRefresh(false);
          processHelper.setCallbackHandler(this);
          processHelper.initializeProcessTable();
          processHelper.getProcessTable().initialize();
-         processHelper.getColumnModelListener().setNeedRefresh(true);
       }
    }
 
@@ -646,9 +641,7 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
        */
       public int compare(DeployedModel model1, DeployedModel model2)
       {
-         String model1Name = I18nUtils.getModelName(model1);
-         String model2Name = I18nUtils.getModelName(model2);
-         return model1Name.compareTo(model2Name);
+         return model1.getId().compareTo(model2.getId());
       }
    }
 
@@ -665,9 +658,7 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
        */
       public int compare(ProcessDefinitionWithPrio process1, ProcessDefinitionWithPrio process2)
       {
-         String process1Name = I18nUtils.getProcessName(process1.getProcessDefinition());
-         String process2Name = I18nUtils.getProcessName(process2.getProcessDefinition());
-         return process1Name.compareTo(process2Name);
+         return process1.getProcessDefinition().getId().compareTo(process2.getProcessDefinition().getId());
       }
    }
    

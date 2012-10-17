@@ -388,9 +388,23 @@ if ( !InfinityBpm.Core) {
         }	
     }
 
+    function findIppWindowBottomUp(win){
+        if (!isThisIppWindow(win)) {
+        	if (win.parent != null && win.parent != win) {
+        		return findIppWindowBottomUp(win.parent);
+        	}
+    	}
+        else{
+        	return win;
+        }	
+    }
+
     function getIppWindow() {
     	try {
-    		var ippWindow = findIppWindow(top);
+    		var ippWindow = findIppWindowBottomUp(window);
+    		if (ippWindow == null && window.opener != null) {
+    			ippWindow = findIppWindowBottomUp(window.opener);
+    		}
     		return ippWindow;
     	} catch (x) {
     		alert(getMessage("portal.common.js.ippMainWindow.notFound", "Error getting IPP Main Window. Portal will not properly work.") + "\n" + x);
@@ -460,7 +474,7 @@ if ( !InfinityBpm.Core) {
     function getBrowserDimensions() {
     	var winW = screen.availWidth ? screen.availWidth : screen.width;
 	  	var winH = screen.availWidth ? screen.availHeight : screen.height;
-	  	var mainWin = mainIppFrame.parent;
+	  	var mainWin = mainIppFrame;
 	  	var mainDoc = mainWin.document;
 	  	if (mainDoc.body && mainDoc.body.offsetWidth) {
 	  		winW = mainDoc.body.offsetWidth;

@@ -66,80 +66,39 @@ define(
 					m_utils.debug("Activity for Service Parameters ===>");
 					m_utils.debug(this.propertiesPanel.element.modelElement);
 
-					if (this.getModelElement().activityType == m_constants.APPLICATION_ACTIVITY_TYPE
-							&& this.getModelElement().applicationFullId != null) {
-						m_dialog.makeInvisible(this.noParametersPanel);
-						m_dialog.makeVisible(this.parametersPanel);
-
-						var application = m_model.findApplication(this
-								.getModelElement().applicationFullId);
-
-						this.parametersTableLabel.empty();
-						this.parametersTableLabel
-								.append("Query parameters for application "
-										+ application.name);
-
-						var parameters = [];
-						
-						this.parameters = parameters;
-						
-						var routeEntries = application.attributes["carnot:engine:camel::routeEntries"];
-
-						if (routeEntries != null
-								&& routeEntries.indexOf("isb:")) // TODO
-						// Should be
-						// more
-						// elaborated
-						{
-							var additionalSpringBeanDefinitions = application.attributes["carnot:engine:camel::additionalSpringBeanDefinitions"];
-
-							m_utils.debug("Spring Bean Definition: "
-									+ additionalSpringBeanDefinitions);
-
-							var xmlDoc = jQuery
-									.parseXML(additionalSpringBeanDefinitions);
-
-							var xml = jQuery(xmlDoc);
-
-
-							jQuery(xml)
-									.find("bean")
-									.each(
-											function() {
-												m_utils.debug("Bean: "
-														+ jQuery(this));
-												jQuery(this)
-														.find("map")
-														.each(
-																function() {
-																	m_utils
-																			.debug("Map: "
-																					+ jQuery(this));
-																	jQuery(this)
-																			.find(
-																					"entry")
-																			.each(
-																					function() {
-																						if (jQuery(
-																								this)
-																								.attr(
-																										"key") == "name") {
-																							parameters
-																									.push(jQuery(
-																											this)
-																											.attr(
-																													"value"));
-																						}
-																					});
-																});
-											});
-						}
-
-						this.populateParametersTable();
-					} else {
+					if (this.getModelElement().activityType != m_constants.APPLICATION_ACTIVITY_TYPE
+							|| this.getModelElement().applicationFullId == null) {
 						m_dialog.makeVisible(this.noParametersPanel);
 						m_dialog.makeInvisible(this.parametersPanel);
+
+						return;
 					}
+
+					var application = m_model.findApplication(this
+							.getModelElement().applicationFullId);
+
+					if (application.attributes["carnot:engine:camel::routeEntries"] == null
+							|| application.attributes["carnot:engine:camel::routeEntries"]
+									.indexOf("isb:") <= 0) {
+						m_dialog.makeVisible(this.noParametersPanel);
+						m_dialog.makeInvisible(this.parametersPanel);
+
+						return;
+					}
+
+					m_dialog.makeInvisible(this.noParametersPanel);
+					m_dialog.makeVisible(this.parametersPanel);
+
+					this.parametersTableLabel.empty();
+					this.parametersTableLabel
+							.append("Query parameters for application "
+									+ application.name);
+
+					var parameters = [];
+
+					this.parameters = parameters;
+
+					this.populateParametersTable();
 				};
 
 				/**

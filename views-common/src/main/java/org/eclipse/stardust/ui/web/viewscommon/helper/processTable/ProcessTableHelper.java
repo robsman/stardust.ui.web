@@ -64,7 +64,6 @@ import org.eclipse.stardust.ui.web.common.table.PaginatorDataTable;
 import org.eclipse.stardust.ui.web.common.table.SortCriterion;
 import org.eclipse.stardust.ui.web.common.table.export.DataTableExportHandler;
 import org.eclipse.stardust.ui.web.common.table.export.ExportType;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutoCompleteItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutocompleteTableDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.common.ProcessActivityDataFilter;
@@ -1025,23 +1024,12 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
     */
    public class ColumnModelListener implements IColumnModelListener
    {
-      private boolean needRefresh;
       /* (non-Javadoc)
        * @see org.eclipse.stardust.ui.web.common.column.IColumnModelListener#columnsRearranged(org.eclipse.stardust.ui.web.common.column.IColumnModel)
        */
       public void columnsRearranged(IColumnModel columnModel)
       {
          handleNewlyAddedDescriptorColumns(columnModel);
-        
-         if (needRefresh)
-         {
-            FacesUtils.refreshPage();// this is required where we have multiple tables on same page.
-         }
-      }
-      
-      public void setNeedRefresh(boolean needRefresh)
-      {
-         this.needRefresh = needRefresh;
       }
       
       /**

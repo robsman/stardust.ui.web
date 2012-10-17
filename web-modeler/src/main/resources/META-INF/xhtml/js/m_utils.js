@@ -175,7 +175,7 @@ define(
 
 					if (typeof parentObject[member] == "object"
 							&& childObject[member] != null
-							&& !parentObject[member] instanceof Array) {
+							&& !isArray(parentObject[member])) {
 						// Copy recursively
 
 						inheritFields(childObject[member], parentObject[member]);
@@ -185,6 +185,13 @@ define(
 				}
 			}
 
+			/**
+			 * See http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
+			 */
+			function isArray(o) {
+				  return Object.prototype.toString.call(o) === '[object Array]';
+				}
+			
 			/**
 			 * Copies all methods of and object into another object.
 			 */

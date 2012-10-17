@@ -62,7 +62,7 @@ public class ResetPasswordDialog extends PopupDialog
       setDomain(loginDlg.getDomain());
       setPartition(loginDlg.getPartition());
       setRealm(loginDlg.getRealm());
-
+      super.setPopupAutoCenter(false);
       super.openPopup();
    }
 

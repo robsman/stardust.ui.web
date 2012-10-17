@@ -3,8 +3,8 @@
  */
 
 define(
-		[ "m_utils", "m_constants", "m_user", "m_dialog", "m_propertiesPage" ],
-		function(m_utils, m_constants, m_user, m_dialog, m_propertiesPage) {
+		[ "m_utils", "m_constants", "m_user", "m_dialog", "m_basicPropertiesPage" ],
+		function(m_utils, m_constants, m_user, m_dialog, m_basicPropertiesPage) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new DataFlowBasicPropertiesPage(propertiesPanel);
@@ -19,15 +19,14 @@ define(
 
 				// Inheritance
 
-				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						propertiesPanel, "basicPropertiesPage", "Basic");
+				var propertiesPage = m_basicPropertiesPage.create(propertiesPanel);
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(DataFlowBasicPropertiesPage.prototype,
 						propertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.initialize = function() {
 					this.inInput = this.mapInputId("inInput");
@@ -99,7 +98,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.populateAccessPointSelectInput = function(
 						dataFlow) {
@@ -128,7 +127,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.setElement = function() {
 					this

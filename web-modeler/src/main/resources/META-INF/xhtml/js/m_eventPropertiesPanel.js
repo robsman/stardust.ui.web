@@ -57,8 +57,11 @@ define(
 				EventPropertiesPanel.prototype.setElement = function(
 						element) {
 					this.clearErrorMessages();
-
+					
 					this.element = element;
+					
+					m_utils.debug("Event");
+					m_utils.debug(element);
 
 					if (this.element.modelElement.participantFullId != null) {
 						this.participant = m_model

@@ -33,7 +33,11 @@ function openWindow(contextPath)
 	popupWindow = window.open(completeUrl, 'ippExternalDocumentWindow',
 			parameters);
 	//parent.popupWindow = popupWindow;
-	top.popupWindow = popupWindow;
+	
+	var ippWindow = InfinityBpm.Core.getIppWindow();
+	if (ippWindow != null) {
+		ippWindow.popupWindow = popupWindow;
+	}
 }
 
 //called from outside popup
@@ -41,9 +45,10 @@ function closeWindow()
 {
 	if(!popupWindow)
 	{
-		if(top && top.popupWindow)
+		var ippWindow = InfinityBpm.Core.getIppWindow();
+		if(ippWindow && ippWindow.popupWindow)
 		{
-			top.popupWindow.close();	
+			ippWindow.popupWindow.close();
 		}
 	}else{
 		if (false == popupWindow.closed) 

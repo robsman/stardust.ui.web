@@ -18,9 +18,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import javax.faces.component.UIViewRoot;
-import javax.faces.context.FacesContext;
-
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -121,12 +118,7 @@ public class DateUtils
     */
    public static String format(Date date, String format, TimeZone timeZone)
    {
-      UIViewRoot view = FacesContext.getCurrentInstance().getViewRoot();
-      Locale locale = Locale.getDefault();
-      if (view != null)
-      {
-         locale = view.getLocale();
-      }
+      Locale locale = FacesUtils.getLocaleFromRequest();
       SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, locale);
 
       if (timeZone != null)
@@ -156,12 +148,7 @@ public class DateUtils
     */
    public static Date parseDateTime(String date)
    {
-      UIViewRoot view = FacesContext.getCurrentInstance().getViewRoot();
-      Locale locale = Locale.getDefault();
-      if (view != null)
-      {
-         locale = view.getLocale();
-      }
+      Locale locale = FacesUtils.getLocaleFromRequest();
 
       return parseDateTime(date, getDateTimeFormat(), locale, PortalApplication.getInstance().getTimeZone());
    }

@@ -147,7 +147,7 @@ define(
 					m_utils.inheritFields(transferObject, this);
 
 					transferObject = this.prepareTransferObject(transferObject);
-
+					transferObject.applicationIcon = null;
 					transferObject.rectangle = null;
 					transferObject.text = null;
 					transferObject.icon = null;
@@ -251,7 +251,7 @@ define(
 
 					this.subprocessMarkerIcon = m_canvasManager.drawImageAt(
 							"../../images/icons/subprocess-marker.gif",
-							this.x + 0.5 * this.width - 4,
+							this.x + 0.5 * this.width - 8,
 							this.y + this.height - 16, 16, 16).hide();
 
 					this.addToPrimitives(this.subprocessMarkerIcon);
@@ -349,6 +349,10 @@ define(
 						this.commentCountText.hide();
 						this.commentCountIcon.hide();
 					}
+
+					// Store the server side co-ord, required for moving symbol
+					// when other lane is minimized.
+					this.updateServerSideCoordinates();
 				};
 
 				/**
@@ -401,7 +405,7 @@ define(
 					}, this.diagram.animationDelay,
 							this.diagram.animationEasing);
 					this.subprocessMarkerIcon.animate({
-						"x" : this.x + 0.5 * this.width - 4,
+						"x" : this.x + 0.5 * this.width - 8,
 						"y" : this.y + this.height - 16
 					}, this.diagram.animationDelay,
 							this.diagram.animationEasing);
@@ -466,6 +470,9 @@ define(
 				 * size decreases
 				 */
 				ActivitySymbol.prototype.adjustPrimitivesOnShrink = function() {
+					if (this.parentSymbol && this.parentSymbol.minimized) {
+						return;
+					}
 					if (this.text.getBBox().width > this.width) {
 						var words = this.text.attr("text");
 						m_utils.textWrap(this.text, this.width);
@@ -473,8 +480,9 @@ define(
 
 					if (this.icon.getBBox().width > this.width) {
 						this.icon.hide();
-					} else
+					} else {
 						this.icon.show();
+					}
 				}
 
 				/**

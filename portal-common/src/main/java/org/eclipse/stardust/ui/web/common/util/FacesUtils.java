@@ -27,7 +27,6 @@ import javax.faces.FactoryFinder;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.FacesContextFactory;
@@ -39,7 +38,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.stardust.ui.web.common.ToolbarSection;
-import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -250,20 +248,6 @@ public class FacesUtils
       return sw.toString();
    }
    
-   public static Locale getLocaleFromView()
-   {
-      FacesContext facesCtx = FacesContext.getCurrentInstance();
-      return getLocaleFromView(facesCtx);
-   }
-   
-   public static Locale getLocaleFromView(FacesContext facesContext)
-   {
-      FacesContext facesCtx = FacesContext.getCurrentInstance();
-      UIViewRoot view = facesCtx.getViewRoot(); 
-      return view != null ? view.getLocale() :
-         facesCtx.getExternalContext().getRequestLocale();
-   }
-   
    public static FacesContext getFacesContext(ServletContext servletContext,
          HttpServletRequest request, HttpServletResponse response)
    {
@@ -439,20 +423,13 @@ public class FacesUtils
    }
 
    /**
-    * @deprecated
+    * @deprecated 
     */
    public static void refreshPage()
    {
-      refreshPage(PortalApplication.getInstance().isPageRefreshOn());
+      handleNavigation("pageRefresh");
    }
 
-   public static void refreshPage(boolean refresh)
-   {
-      if (refresh)
-      {
-         handleNavigation("pageRefresh");
-      }
-   }
    /**
     * 
     */
@@ -607,5 +584,10 @@ public class FacesUtils
          trace.error("Received" + reqObject + ", Not supoprting environment other than HttpServletRequest");
       }
       return userAgent;
+   }
+   
+   public static Locale getLocaleFromRequest()
+   {
+      return FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
    }
 }

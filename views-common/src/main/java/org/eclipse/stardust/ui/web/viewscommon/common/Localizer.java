@@ -16,8 +16,6 @@ import java.util.ResourceBundle;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.viewscommon.utils.FacesUtils;
-
 
 public class Localizer
 {
@@ -25,7 +23,7 @@ public class Localizer
    
    public static String getString(LocalizerKey key)
    {
-      return getString(FacesUtils.getLocaleFromView(), key);
+      return getString(org.eclipse.stardust.ui.web.common.util.FacesUtils.getLocaleFromRequest(), key);
    }
    
    public static String getString(Locale locale, LocalizerKey key)
@@ -89,7 +87,8 @@ public class Localizer
    
    public static String getString(LocalizerKey key, String replacePattern, String replaceBy)
    {
-      return getString(FacesUtils.getLocaleFromView(), key, replacePattern, replaceBy);
+      return getString(org.eclipse.stardust.ui.web.common.util.FacesUtils.getLocaleFromRequest(), key, replacePattern,
+            replaceBy);
    }
    
    public static String getString(Locale locale, LocalizerKey key, String replacePattern, String replaceBy)

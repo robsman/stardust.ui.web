@@ -581,9 +581,17 @@ public class ActivityInstanceUtils
       ActivityInstance activatedAi = null;
       try
       {
-         activatedAi = ServiceFactoryUtils.getWorkflowService().activate(ai.getOID());
+         if (ActivityInstanceState.Application != ai.getState())
+         {
+            activatedAi = ServiceFactoryUtils.getWorkflowService().activate(ai.getOID());
+         }
+         else
+         {
+            activatedAi = ai;
+         }
 
          sendActivityEvent(ai, ActivityEvent.activated(activatedAi));
+
       }
       catch (ConcurrencyException ce)
       {

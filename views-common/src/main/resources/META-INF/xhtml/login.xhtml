@@ -9,11 +9,10 @@
     xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <ui:composition>
     <f:view>
-        <ice:loadBundle basename="portal-common-messages" var="localeBundle" />
-        <html xmlns="http://www.w3.org/1999/xhtml">
+       <html xmlns="http://www.w3.org/1999/xhtml">
         <head>
 	        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	        <title>#{localeBundle['portalFramework.title']}</title>
+	        <title>#{common_msgPropsBean['portalFramework.title']}</title>
 	        <link rel="shortcut icon"
 				href="#{facesContext.externalContext.requestContextPath}/plugins/views-common/images/icons/favicon.ico"></link>
 			<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/plugins/common/InfinityBpm_Core.js" />
@@ -31,7 +30,7 @@
               <div class="loginContent">
               	<div class="portalTitle">#{ippLoginDialog.loginHeader}</div>
                 <ice:panelGrid columns="2" style="width: 100%" cellspacing="0" cellpadding="0" columnClasses="label, data">
-                  <ice:outputLabel for="j_username" value="#{localeBundle['loginDialog.account']}:" 
+                  <ice:outputLabel for="j_username" value="#{common_msgPropsBean['loginDialog.account']}:" 
                      styleClass="label-form"/>
                   <ice:panelGroup>
                   	<h:inputText id="j_username" value="#{ippLoginDialog.account}"
@@ -39,7 +38,7 @@
                     	<pc:automationTag value="auto-Login-AcctField" standAlone="false"/>
                     </h:inputText>
                   </ice:panelGroup>
-                  <ice:outputLabel for="j_password" value="#{localeBundle['loginDialog.password']}:" 
+                  <ice:outputLabel for="j_password" value="#{common_msgPropsBean['loginDialog.password']}:" 
                      styleClass="label-form"/>
                   <ice:panelGroup>
                   	<h:inputSecret id="j_password" value="#{ippLoginDialog.password}"
@@ -47,19 +46,19 @@
                     	 <pc:automationTag value="auto-Login-PwdField" standAlone="false"/>
                     </h:inputSecret>
                   </ice:panelGroup>
-                  <ice:outputLabel for="realm" value="#{localeBundle['loginDialog.realm']}:" 
+                  <ice:outputLabel for="realm" value="#{common_msgPropsBean['loginDialog.realm']}:" 
                      styleClass="label-form" rendered="#{ippLoginDialog.promptForRealm}"/>
                   <h:inputText id="realm" value="#{ippLoginDialog.realm}" 
                       rendered="#{ippLoginDialog.promptForRealm}">
                       <pc:automationTag value="auto-Login-RealmField" standAlone="false"/>
                   </h:inputText>
-                  <ice:outputLabel for="domain" value="#{localeBundle['loginDialog.domain']}:" 
+                  <ice:outputLabel for="domain" value="#{common_msgPropsBean['loginDialog.domain']}:" 
                      styleClass="label-form" rendered="#{ippLoginDialog.promptForDomain}"/>
                   <h:inputText id="domain" value="#{ippLoginDialog.domain}" 
                       rendered="#{ippLoginDialog.promptForDomain}">
                       <pc:automationTag value="auto-Login-DomainField" standAlone="false"/>
                   </h:inputText>   
-                  <ice:outputLabel for="partition" value="#{localeBundle['loginDialog.partition']}:" 
+                  <ice:outputLabel for="partition" value="#{common_msgPropsBean['loginDialog.partition']}:" 
                      styleClass="label-form" rendered="#{ippLoginDialog.promptForPartition}"/>
                   <h:inputText id="partition" value="#{ippLoginDialog.partition}" 
                      rendered="#{ippLoginDialog.promptForPartition}">
@@ -71,7 +70,7 @@
 					<ice:message for="commonMessage" styleClass="loginMsg" />
 					
 					<ice:panelGroup rendered="#{param['failed']}" >
-						<ice:outputText styleClass="iceMsgError loginMsgError" value="#{localeBundle['loginDialog.error.principalAuthFailed']}" />
+						<ice:outputText styleClass="iceMsgError loginMsgError" value="#{common_msgPropsBean['loginDialog.error.principalAuthFailed']}" />
 					</ice:panelGroup>
 				</ice:panelGroup>
               </div>
@@ -80,14 +79,14 @@
               		<tr>
               			<td>
 	                		<h:commandButton id="loginBtn"
-	                    		value="#{localeBundle['loginDialog.buttonLabel']}"
+	                    		value="#{common_msgPropsBean['loginDialog.buttonLabel']}"
 	                    		action="#{ippLoginDialog.login}">
 	                    		<pc:automationTag value="auto-Login-LoginBtn" standAlone="false"/>
 	                    	</h:commandButton>
 	                    </td>
 	                    <td style="text-align: right">
 			                <ice:commandLink id="resetPwd" style="margin: 5px;" styleClass="action-link"
-			                    value="#{localeBundle['loginDialog.action.resetPassword']}"
+			                    value="#{common_msgPropsBean['loginDialog.action.resetPassword']}"
 			                    action="#{ippLoginDialog.resetPwdDialog.openPopup}"
 			                    rendered="#{not ippLoginDialog.principalLogin}"/>
 	                    </td>

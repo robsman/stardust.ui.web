@@ -9,7 +9,7 @@
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 
-package org.eclipse.stardust.ui.web.modeler.rest;
+package org.eclipse.stardust.ui.web.modeler.service.rest;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
@@ -40,7 +40,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-@Path("/bpm-modeler/modeler/{randomPostFix}")
+@Path("/modeler/{randomPostFix}")
 public class ModelerResource
 {
 

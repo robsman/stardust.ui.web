@@ -376,6 +376,76 @@ define(
 				};
 
 				/**
+				 * Sort the lanes based on oid, required on Undo of delete lanes
+				 */
+				PoolSymbol.prototype.sortLanes = function() {
+					this.laneSymbols.sort(function(a, b) {
+						return $(a)[0].oid > $(b)[0].oid;
+					});
+				};
+
+				/**
+				 * Calculate Lane Offset and adjust symbols for all lanes
+				 */
+				PoolSymbol.prototype.updateLanesOffsetAndAdjustChild = function(
+						currentLane, minimize) {
+					for ( var n in this.laneSymbols) {
+						// For all lanes right to current lane, set the XOffset
+						// for width adjustment
+						if (this.laneSymbols[n] != currentLane
+								&& this.laneSymbols[n].x > currentLane.x) {
+							if (minimize) {
+								this.laneSymbols[n].symbolXOffset += currentLane.cacheWidth
+										- currentLane.width;
+								// Move the lane to left when adjacent lane is
+								// minimized
+								this.laneSymbols[n].moveBy(
+										-this.laneSymbols[n].symbolXOffset, 0);
+								// Move the contained symbols
+								for ( var c in this.laneSymbols[n].containedSymbols) {
+									this.laneSymbols[n].containedSymbols[c]
+											.moveBy(
+													-this.laneSymbols[n].symbolXOffset,
+													0);
+								}
+							} else {
+								if (this.laneSymbols[n].symbolXOffset > 0 ) {
+									// Reset the offset, when adjacant lane is
+									// maximized
+									this.laneSymbols[n].symbolXOffset -= (currentLane.cacheWidth - currentLane.width);
+									//Move the lane to right
+									this.laneSymbols[n].moveBy(
+											currentLane.cacheWidth
+													- currentLane.width, 0);
+									// Move the contained symbols to saved
+									// location
+									for ( var c in this.laneSymbols[n].containedSymbols) {
+										this.laneSymbols[n].containedSymbols[c]
+												.moveTo(
+														this.laneSymbols[n].containedSymbols[c].serverSideCoordinates.x
+																- this.laneSymbols[n].symbolXOffset,
+														this.laneSymbols[n].containedSymbols[c].serverSideCoordinates.y);
+
+										// TODO - Cache Anchor Points stored when lane is minimized, needs to be
+										// moved when adj lane is maximized and current lane is in minimized state
+										/*	for(var m in this.laneSymbols[n].containedSymbols[c].anchorPoints){
+											if(this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheX){
+												this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheX += this.laneSymbols[n].symbolXOffset;
+											}
+											if(this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheY){
+												this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheY += this.laneSymbols[n].symbolXOffset;
+											}
+										}*/
+									}
+								}
+							}
+						}
+						this.laneSymbols[n].adjustGeometry();
+					}
+				};
+
+
+				/**
 				 *
 				 */
 				PoolSymbol.prototype.adjustPrimitives = function(dX, dY) {
@@ -409,6 +479,26 @@ define(
 				/**
 				 *
 				 */
+				PoolSymbol.prototype.refreshDiagram = function() {
+					var laneMinimized = false;
+					for ( var n in this.laneSymbols) {
+						if (this.laneSymbols[n].symbolXOffset) {
+							laneMinimized = true;
+							this.laneSymbols[n].x = this.laneSymbols[n].serverSideCoordinates.x;
+							for ( var m in this.laneSymbols[n].containedSymbols) {
+								this.laneSymbols[n].containedSymbols[m].x = this.laneSymbols[n].containedSymbols[m].serverSideCoordinates.x;
+								this.laneSymbols[n].containedSymbols[m].adjustGeometry();
+							}
+						}
+					}
+					if(laneMinimized){
+						this.adjustChildSymbols();
+					}
+				};
+
+				/**
+				 *
+				 */
 				PoolSymbol.prototype.adjustChildSymbols = function() {
 					if (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
 						var currentX = this.x
@@ -434,7 +524,9 @@ define(
 
 						for ( var n in this.laneSymbols) {
 							var dX = currentX - this.laneSymbols[n].x;
-							this.laneSymbols[n].x = currentX;
+							if (dX != 0) {
+								this.laneSymbols[n].moveBy(dX, 0);
+							}
 							this.laneSymbols[n].y = this.y
 									+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
 									+ m_constants.POOL_SWIMLANE_MARGIN;
@@ -457,7 +549,9 @@ define(
 							this.laneSymbols[n].x = this.x
 									+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
 									+ m_constants.POOL_SWIMLANE_MARGIN;
-							this.laneSymbols[n].y = currentY;
+							if (dY != 0) {
+								this.laneSymbols[n].moveBy(0, dY);
+							}
 							currentY += this.laneSymbols[n].height;
 							currentY += m_constants.POOL_SWIMLANE_MARGIN;
 

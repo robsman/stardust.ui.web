@@ -15,7 +15,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function ModelElementView() {
 				// Inheritance
@@ -26,7 +26,7 @@ define(
 				m_utils.inheritMethods(ModelElementView.prototype, view);
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.initializeModelElementView = function(
 						modelElement) {
@@ -72,7 +72,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.loadPropertiesPage = function(
 						modelElement, extensions, propertiesPagesExtensions, n) {
@@ -146,7 +146,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.initializeModelElement = function(
 						modelElement) {
@@ -177,14 +177,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.getModelElement = function() {
 					return this.modelElement;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.getModel = function() {
 					return this.getModelElement().model;
@@ -198,7 +198,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.assembleChangedObjectFromProperty = function(
 						property, value) {
@@ -211,7 +211,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.assembleChangedObjectFromAttribute = function(
 						attribute, value) {
@@ -225,7 +225,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.renameModelElement = function(name) {
 					this.submitChanges({
@@ -235,7 +235,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.submitChanges = function(changes) {
 					// Generic attributes
@@ -252,7 +252,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.registerInputForModelElementChangeSubmission = function(
 						input, property) {
@@ -277,7 +277,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.registerInputForModelElementAttributeChangeSubmission = function(
 						input, attribute) {
@@ -309,7 +309,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.registerCheckboxInputForModelElementAttributeChangeSubmission = function(
 						input, attribute) {
@@ -339,9 +339,9 @@ define(
 										}
 									});
 				};
-				
+
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.processCommand = function(command) {
 					m_utils.debug("===> Process Command for "+ this.id);
@@ -358,15 +358,15 @@ define(
 					var object = ("string" == typeof (command)) ? jQuery
 							.parseJSON(command) : command;
 
-					if (null != object && null != object.changes
-							&& null != object.changes.modified
-							&& 0 != object.changes.modified.length
-							&& object.changes.modified[0].oid == this.getModelElement().oid) {
+					if (object && object.changes && object.changes.modified) {
+						for (var i = 0; i < object.changes.modified.length; i++) {
+							if (this.getModelElement().oid == object.changes.modified[i].oid) {
+								m_utils.inheritFields(this.getModelElement(),
+										object.changes.modified[i]);
 
-						m_utils.inheritFields(this.getModelElement(),
-								object.changes.modified[0]);
-
-						this.setModelElement(this.getModelElement());
+								this.setModelElement(this.getModelElement());
+							}
+						}
 					}
 				};
 			}

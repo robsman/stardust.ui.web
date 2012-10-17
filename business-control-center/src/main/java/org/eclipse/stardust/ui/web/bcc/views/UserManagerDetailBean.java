@@ -254,9 +254,7 @@ public class UserManagerDetailBean extends UIComponentBean
          activityHelper.setStrandedActivityView(false);
          activityHelper.setCallbackHandler(this);
          activityHelper.initActivityTable();
-         activityHelper.getColumnModelListener().setNeedRefresh(false);     
          activityHelper.getActivityTable().initialize();
-         activityHelper.getColumnModelListener().setNeedRefresh(true);
          
          UserActivitySearchHandler userActivitySearchHandler = new UserActivitySearchHandler(userOid);
          activityHelper.getActivityTable().setISearchHandler(userActivitySearchHandler);

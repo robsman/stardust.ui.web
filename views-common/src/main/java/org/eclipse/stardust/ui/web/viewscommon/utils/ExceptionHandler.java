@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,17 +38,19 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 
-
 /**
  * @author Subodh.Godbole
  * 
  */
-public class ExceptionHandler
+public class ExceptionHandler implements Serializable
 {
+   private static final long serialVersionUID = -1670212917051643350L;
    public static final String BEAN_NAME = "ippExceptionHandler";
    public static final String CLIENT_ID_NONE = "ClientIdNone";
    private static final Logger trace = LogManager.getLogger(ExceptionHandler.class);
-
+   private static final Object SUMMARY_CONTEXT[] = {null, PortalErrorMessageProvider.SUMMARY_CONTEXT};
+   private static final Object DETAIL_CONTEXT[] = {null, PortalErrorMessageProvider.DETAIL_CONTEXT};
+   
    public static enum MessageDisplayMode
    {
       CUSTOM_AND_EXCEPTION_MSG, // Localized custom message and exception message to be displayed along with stack trace 
@@ -53,11 +58,8 @@ public class ExceptionHandler
       CUSTOM_MSG_OPTIONAL // Localized custom message to be displayed if standard message provider is not available along with stack trace
    }
 
-   private final List<IErrorMessageProvider.Factory> translators;
-
-   private Object SUMMARY_CONTEXT[] = {null, PortalErrorMessageProvider.SUMMARY_CONTEXT};
-   private Object DETAIL_CONTEXT[] = {null, PortalErrorMessageProvider.DETAIL_CONTEXT};
-
+   private transient List<IErrorMessageProvider.Factory> translators;
+   
    /**
     * 
     */
@@ -86,7 +88,7 @@ public class ExceptionHandler
     */
    public static void handleException(Exception exception, String customMsg)
    {
-      handleException(exception, customMsg, MessageDisplayMode.CUSTOM_MSG_OPTIONAL, FacesUtils.getLocaleFromView());
+      handleException(exception, customMsg, MessageDisplayMode.CUSTOM_MSG_OPTIONAL, getLocale());
    }
 
    /**
@@ -96,7 +98,7 @@ public class ExceptionHandler
     */
    public static void handleException(Exception exception, String customMsg, MessageDisplayMode displayMode)
    {
-      handleException(exception, customMsg, displayMode, FacesUtils.getLocaleFromView());
+      handleException(exception, customMsg, displayMode, getLocale());
    }
 
    /**
@@ -138,7 +140,7 @@ public class ExceptionHandler
    public static void handleException(String clientId, Exception exception, String customMsg,
          MessageDisplayMode displayMode)
    {
-      handleException(clientId, exception, customMsg, displayMode, FacesUtils.getLocaleFromView());
+      handleException(clientId, exception, customMsg, displayMode, getLocale());
    }
 
    /**
@@ -219,7 +221,7 @@ public class ExceptionHandler
     */
    public static String getExceptionMessage(Exception exception)
    {
-      FacesMessage facesMessage = getInstance().getFacesMessage(exception, null, null, FacesUtils.getLocaleFromView());
+      FacesMessage facesMessage = getInstance().getFacesMessage(exception, null, null, getLocale());
       String message = facesMessage.getSummary();
       if (StringUtils.isEmpty(message))
       {
@@ -235,7 +237,7 @@ public class ExceptionHandler
     */
    public static FacesMessage getFacesMessage(Exception exception)
    {
-      return getInstance().getFacesMessage(exception, null, null, FacesUtils.getLocaleFromView());
+      return getInstance().getFacesMessage(exception, null, null, getLocale());
    }
 
    /**
@@ -350,5 +352,27 @@ public class ExceptionHandler
          }
       }
       return null;
+   }
+
+   /**
+    * @return
+    */
+   private static Locale getLocale()
+   {
+      return org.eclipse.stardust.ui.web.common.util.FacesUtils.getLocaleFromRequest();
+   }
+
+   /**
+    * @param in
+    * @throws IOException
+    * @throws ClassNotFoundException
+    */
+   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+   {
+      in.defaultReadObject();
+      // handle transient variables
+      translators = new ArrayList<IErrorMessageProvider.Factory>(
+            ExtensionProviderUtils.getExtensionProviders(IErrorMessageProvider.Factory.class));
+
    }
 }

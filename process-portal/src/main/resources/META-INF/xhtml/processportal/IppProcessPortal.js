@@ -27,6 +27,8 @@ InfinityBpm.ProcessPortal = new function() {
 	// Contains custom object like {id:'frmId1', posX: 20, posY: 30}
 	var iFrames = new Array();
 
+	var mainIppWindow = null;
+
 	// define module private functions
 	
 	function debug(msg) {
@@ -214,9 +216,23 @@ InfinityBpm.ProcessPortal = new function() {
         }	
     }
 
+    function findIppWindowBottomUp(win){
+        if (!isThisIppWindow(win)) {
+        	if (win.parent != null && win.parent != win) {
+        		return findIppWindowBottomUp(win.parent);
+        	}
+    	}
+        else{
+        	return win;
+        }	
+    }
+
     function getIppWindow() {
     	try {
-    		var ippWindow = findIppWindow(top);
+    		var ippWindow = findIppWindowBottomUp(window);
+    		if (ippWindow == null && window.opener != null) {
+    			ippWindow = findIppWindowBottomUp(window.opener);
+    		}
     		return ippWindow;
     	} catch (x) {
     		alert(getMessage("portal.common.js.ippMainWindow.notFound", "Error getting IPP Main Window. Portal will not properly work.") + "\n" + x);
@@ -226,12 +242,17 @@ InfinityBpm.ProcessPortal = new function() {
     // >>> Copied from InfinityBpm_Core - END
     
     function ippMainWindow() {
+      if (null != mainIppWindow) {
+      	return mainIppWindow;  
+      }
+
       var ippWindow;
-      if (InfinityBpm.Core) {
+      if (InfinityBpm && InfinityBpm.Core) {
     	ippWindow = InfinityBpm.Core.getIppWindow();
       } else {
     	ippWindow = getIppWindow();
       }
+      mainIppWindow = ippWindow;
       return ippWindow;
     }
 

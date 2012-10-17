@@ -4,37 +4,37 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 		diagramToolbarPalette : [ {
 			id : "drawingPalette",
 			title : "Drawing",
-			visibility : "always",
+			visibility : "always"
 		}, {
 			id : "activityPalette",
 			title : "Activities and Gateways",
-			visibilty : "always",
+			visibilty : "always"
 		}, {
 			id : "eventPalette",
 			title : "Events",
-			visibility : "always",
+			visibility : "always"
 		}, {
 			id : "dataPalette",
 			title : "Data",
-			visibility : null,
+			visibility : "always"
 		}, {
 			id : "lanePalette",
 			title : "Pools and Lanes",
-			visibility : "always",
+			visibility : "always"
 		}, {
 			id : "connectorPalette",
 			title : "Data and Sequence Flow",
-			visibility : "always",
+			visibility : "always"
 		}, {
 			id : "annotationPalette",
 			title : "Annotations",
-			visibility : "always",
+			visibility : "always"
 		}, {
 			id : "decorationPalette",
 			title : "Decoration",
 			contentHtmlUrl : "decorationPalette.html",
 			provider: m_decorationPalette,
-			visibility : "preview",
+			visibility : "preview"
 		}, ],
 		// entries
 		diagramToolbarPaletteEntry : [ {
@@ -44,7 +44,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 			iconUrl : "../../images/icons/select.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "setSelectMode",
-			visibility : "always",
+			visibility : "always"
 		}, {
 			id : "separatorModeButton",
 			paletteId : "drawingPalette",
@@ -52,7 +52,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 			iconUrl : "../../images/icons/separator.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "setSeparatorMode",
-			visibility : "always",
+			visibility : "always"
 		}, {
 			id : "zoomInButton",
 			paletteId : "drawingPalette",
@@ -60,7 +60,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 			iconUrl : "../../images/icons/zoom-in.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "zoomIn",
-			visibility : "always",
+			visibility : "always"
 		}, {
 			id : "zoomOutButton",
 			paletteId : "drawingPalette",
@@ -68,7 +68,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 			iconUrl : "../../images/icons/zoom-out.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "zoomOut",
-			visibility : "always",
+			visibility : "always"
 		}, {
 			id : "flipOrientationButton",
 			paletteId : "drawingPalette",
@@ -76,7 +76,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 			iconUrl : "../../images/icons/horizontal-flip.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "flipOrientation",
-			visibility : "always",
+			visibility : "always"
 		}, {
 			id : "printButton",
 			paletteId : "drawingPalette",
@@ -84,7 +84,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 			iconUrl : "../../images/icons/print.gif",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "print",
-			visibility : "always",
+			visibility : "always"
 		}, {
 			id : "activityButton",
 			paletteId : "activityPalette",
@@ -92,7 +92,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 			iconUrl : "../../images/icons/activity.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createActivity",
-			visibility : "always",
+			visibility : "always"
 		}, {
 			id : "gatewayButton",
 			paletteId : "activityPalette",
@@ -100,7 +100,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 			iconUrl : "../../images/icons/gateway.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createGateway",
-			visibility : "always",
+			visibility : "always"
 		}, {
 			id : "startEventButton",
 			paletteId : "eventPalette",
@@ -108,7 +108,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 			iconUrl : "../../images/icons/start_event_with_border.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createStartEvent",
-			visibility : "always",
+			visibility : "always"
 		}, {
 			id : "endEventButton",
 			paletteId : "eventPalette",
@@ -116,7 +116,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 			iconUrl : "../../images/icons/end_event_with_border.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createEndEvent",
-			visibility : "always",
+			visibility : "always"
 		}, {
 			id : "dataButton",
 			paletteId : "dataPalette",
@@ -124,7 +124,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 			iconUrl : "../../images/icons/data.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createData",
-			visibility : "always",
+			visibility : "always"
 		}, {
 			id : "swimlaneButton",
 			paletteId : "lanePalette",
@@ -132,7 +132,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 			iconUrl : "../../images/icons/lane.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createSwimlane",
-			visibility : "always",
+			visibility : "always"
 		}, {
 			id : "connectorButton",
 			paletteId : "connectorPalette",
@@ -140,7 +140,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 			iconUrl : "../../images/icons/connect.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createConnector",
-			visibility : "always",
+			visibility : "always"
 		}, {
 			id : "annotationButton",
 			paletteId : "annotationPalette",
@@ -148,7 +148,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 			iconUrl : "../../images/icons/annotation.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createAnnotation",
-			visibility : "always",
-		}, ],
+			visibility : "always"
+		}, ]
 	};
 });

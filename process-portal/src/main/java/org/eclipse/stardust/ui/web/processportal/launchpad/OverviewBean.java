@@ -78,6 +78,7 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
     */
    public void afterPropertiesSet() throws Exception
    {
+      setExpanded(true);
    }
 
    public void lastNSelectListener(ValueChangeEvent event)
@@ -230,6 +231,12 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
             .getWorklistQuery(SpecialWorklistCacheManager.CRITICAL_ACTVITIES));
    }
 
+   public void update()
+   {
+      ParticipantWorklistCacheManager.getInstance().reset();
+      SpecialWorklistCacheManager.getInstance().reset();
+   }
+   
    public long getAllAssignedActivitiesCount()
    {
       return SpecialWorklistCacheManager.getInstance().getWorklistCount(SpecialWorklistCacheManager.ALL_ACTVITIES);
@@ -403,8 +410,4 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
          return dateId;
       }
    }
-
-   @Override
-   public void update()
-   {}
 }

@@ -91,10 +91,12 @@ public class ProcessChangeCommandHandler
       laneSymbol.setElementOid(++maxOid);
       laneSymbol.setId(ModelerConstants.DEF_LANE_ID);
       laneSymbol.setName(ModelerConstants.DEF_LANE_NAME);
-      laneSymbol.setXPos(10);
-      laneSymbol.setYPos(10);
-      laneSymbol.setWidth(480);
-      laneSymbol.setHeight(580);
+      // Setting the x,y for default swimlane
+      //TODO - Move this code to javascript
+      laneSymbol.setXPos(12);
+      laneSymbol.setYPos(32);
+      laneSymbol.setWidth(poolSymbol.getWidth() - 20);
+      laneSymbol.setHeight(poolSymbol.getHeight() - 20);
       laneSymbol.setOrientation(OrientationType.VERTICAL_LITERAL);
 
       processDefinition.getDiagram().add(diagram);

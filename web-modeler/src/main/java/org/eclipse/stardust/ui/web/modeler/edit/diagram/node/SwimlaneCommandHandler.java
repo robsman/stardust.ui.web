@@ -125,6 +125,8 @@ public class SwimlaneCommandHandler
       {
          ActivitySymbolType activitySymbol = actIter.next();
          ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition, activitySymbol);
+         ModelElementEditingUtils.deleteDataMappingConnection(processDefinition,
+               activitySymbol.getDataMappings().iterator());
          processDefinition.getActivity().remove(activitySymbol.getModelElement());
          processDefinition.getDiagram().get(0).getActivitySymbol().remove(activitySymbol);
          actIter.remove();

@@ -15,6 +15,12 @@ import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.List;
 
+import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -41,7 +47,10 @@ import org.eclipse.stardust.vfs.IDocumentRepositoryService;
 import org.eclipse.stardust.vfs.IFile;
 import org.eclipse.stardust.vfs.IFolder;
 import org.eclipse.stardust.vfs.RepositoryOperationFailedException;
+import org.eclipse.stardust.vfs.impl.jcr.JcrDocumentRepositoryService;
 import org.eclipse.stardust.vfs.impl.jcr.web.AbstractVfsContentServlet;
+import org.eclipse.stardust.vfs.jcr.ISessionFactory;
+import org.eclipse.stardust.vfs.jcr.spring.JcrSpringSessionFactory;
 
 
 /**
@@ -108,23 +117,47 @@ public class SkinContentServlet extends AbstractVfsContentServlet
 
                      String skinFolder = getDefaultSkinId(rtEnv);
                      
-                     if (!ejbEnvironment && StringUtils.isNotEmpty(skinFolder))
+                     if (StringUtils.isNotEmpty(skinFolder))
                      {
-                        IDocumentRepositoryService vfs = rtEnv.getDocumentRepositoryService();
-                        if (vfs == null)
-                        {
-                           throw new PublicException(
-                                 "No JCR document repository service is set. Check the configuration.");
-                        }
-
                         try
                         {
-                           IFolder folder = vfs.getFolder(skinFolder);
+                           Repository repository = null;
+
+                           if (ejbEnvironment)
+                           {
+                              Context context = new InitialContext();
+                              String path = parameters.getString("ejb.contentRepository.path",
+                                    "java:comp/env/jcr/ContentRepository");
+                              repository = (javax.jcr.Repository) context.lookup(path);
+                           }
+                           else
+                           {
+                              IDocumentRepositoryService drs = rtEnv.getDocumentRepositoryService();
+                              if (null != drs && drs instanceof JcrDocumentRepositoryService)
+                              {
+                                 JcrDocumentRepositoryService jcrDocumentRepositoryService = (JcrDocumentRepositoryService) drs;
+                                 ISessionFactory sessionFactory = jcrDocumentRepositoryService.getSessionFactory();
+                                 if (sessionFactory instanceof JcrSpringSessionFactory)
+                                 {
+                                    repository = ((JcrSpringSessionFactory) sessionFactory).getRepository();
+                                 }
+                              }
+                           }
+
+                           if (null == repository)
+                           {
+                              throw new PublicException("No JCR document repository is set. Check the configuration.");
+                           }
+
+                           JcrDocumentRepositoryService jcrDocumentRepService = new JcrDocumentRepositoryService();
+                           jcrDocumentRepService.setSessionFactory(new IppSkinJcrSessionFactory(repository));
+
+                           IFolder folder = jcrDocumentRepService.getFolder(skinFolder);
                            String skinId = folder.getName();
 
                            request.resourceFullPath = request.resourceFullPath.replaceFirst(DEFAULT_SKIN_URI, skinId);
 
-                           IFile file = vfs.getFile(request.resourceFullPath);
+                           IFile file = jcrDocumentRepService.getFile(request.resourceFullPath);
                            if (null != file)
                            {
                               downloadManager.setContentLength((int) file.getSize());
@@ -136,7 +169,7 @@ public class SkinContentServlet extends AbstractVfsContentServlet
                               }
                               downloadManager.setFilename(file.getName());
 
-                              vfs.retrieveFileContent(request.resourceFullPath,
+                              jcrDocumentRepService.retrieveFileContent(request.resourceFullPath,
                                     downloadManager.getContentOutputStream());
 
                               result = HttpServletResponse.SC_OK;
@@ -305,5 +338,41 @@ public class SkinContentServlet extends AbstractVfsContentServlet
       public String partitionId;
       public String resource;
       public String resourceFullPath;
-   }  
+   }
+
+   private String getJcrUserProperty()
+   {
+      final Parameters params = Parameters.instance();
+      return params.getString("ContentRepository.User", "jcr-user");
+   }
+
+   private String getJcrPasswordProperty()
+   {
+      final Parameters params = Parameters.instance();
+      return params.getString("ContentRepository.Password", "jcrPassword");
+   }
+  
+   /**
+    * @author Yogesh.Manware
+    * 
+    */
+   private class IppSkinJcrSessionFactory implements ISessionFactory
+   {
+      Repository repository;
+
+      private IppSkinJcrSessionFactory(final Repository repository)
+      {
+         this.repository = repository;
+      }
+
+      public Session getSession() throws RepositoryException
+      {
+         SimpleCredentials credentials = new SimpleCredentials(getJcrUserProperty(), getJcrPasswordProperty()
+               .toCharArray());
+         return this.repository.login(credentials);
+      }
+
+      public void releaseSession(Session session)
+      {}
+   }
 }

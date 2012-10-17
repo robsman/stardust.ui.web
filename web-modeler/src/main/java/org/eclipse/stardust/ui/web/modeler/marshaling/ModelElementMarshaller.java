@@ -3,7 +3,6 @@ package org.eclipse.stardust.ui.web.modeler.marshaling;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
@@ -22,7 +21,6 @@ import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.AnnotationSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
-import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
 import org.eclipse.stardust.model.xpdl.carnot.ContextType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
@@ -60,12 +58,10 @@ import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
 import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.model.xpdl.xpdl2.XpdlTypeType;
 import org.eclipse.stardust.modeling.repository.common.descriptors.EObjectDescriptor;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
-import org.w3c.dom.Node;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -73,7 +69,7 @@ import com.google.gson.JsonObject;
 
 /**
  * IPP XPDL marshaller.
- * 
+ *
  * @author Marc.Gille
  * @author Robert Sauer
  */
@@ -88,7 +84,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
    /**
-    * 
+    *
     * @param modelElement
     * @return
     */
@@ -378,7 +374,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param laneSymbol
     * @return
     */
@@ -390,6 +386,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             laneSymbol.getElementOid());
       laneSymbolJson.addProperty(ModelerConstants.ID_PROPERTY, laneSymbol.getId());
       laneSymbolJson.addProperty(ModelerConstants.NAME_PROPERTY, laneSymbol.getName());
+      laneSymbolJson.addProperty(ModelerConstants.X_PROPERTY, laneSymbol.getXPos());
+      laneSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, laneSymbol.getYPos());
       laneSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY, laneSymbol.getWidth());
       laneSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY, laneSymbol.getHeight());
       laneSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
@@ -586,7 +584,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @return
     */
@@ -636,7 +634,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   ModelerConstants.ACTIVITY_KEY);
             activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
                   activity.getImplementation().getLiteral());
-
+            activityJson.addProperty(ModelerConstants.ACTIVITY_IS_ABORTABLE_BY_PERFORMER,
+                  activity.isAllowsAbortByPerformer());
+            activityJson.addProperty(ModelerConstants.ACTIVITY_IS_HIBERNATED_ON_CREATION,
+                  activity.isHibernateOnCreation());
             if (activity.getImplementationProcess() != null)
             {
                activityJson.addProperty(
@@ -741,7 +742,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @return
     */
@@ -829,7 +830,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -872,16 +873,14 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             ModelerConstants.EVENT_SYMBOL);
       // eventJson.put(ID_PROPERTY,
       // String.valueOf(startEventSymbol.getModelElement().getId()));
-      // loadDescription(eventJson,
-      // startEventSymbol.getModelElement());
-      // loadAttributes(startEventSymbol.getModelElement(),
-      // eventJson);
+      //loadDescription(eventJson, startEventSymbol.getModelElement());
+      loadAttributes(startEventSymbol.getModelElement(), eventJson);
 
       return eventSymbolJson;
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -933,7 +932,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param data
     * @return
     */
@@ -943,6 +942,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       if (null != data)
       {
+         if (data.getId().startsWith("Primit"))
+         {
+            System.out.println();
+         }
          dataJson.addProperty(ModelerConstants.TYPE_PROPERTY, "data");
          dataJson.addProperty(ModelerConstants.ID_PROPERTY, data.getId());
          dataJson.addProperty(ModelerConstants.NAME_PROPERTY, data.getName());
@@ -1049,7 +1052,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1332,7 +1335,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param annotationSymbol
     * @return
     */
@@ -1381,7 +1384,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param dataMappingConnection
     * @return
     */
@@ -1456,7 +1459,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -1484,29 +1487,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          modelElementJson = toTransitionJson(transition);
 
          connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, modelElementJson);
-
-         modelElementJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-               ModelerConstants.CONTROL_FLOW_LITERAL);
-         modelElementJson.addProperty(ModelerConstants.ID_PROPERTY, transition.getId());
-         modelElementJson.addProperty(ModelerConstants.OID_PROPERTY,
-               transition.getElementOid());
-
-         modelElementJson.addProperty(ModelerConstants.FORK_ON_TRAVERSAL_PROPERTY,
-               transition.isForkOnTraversal());
-
-         if (transition.getCondition().equals("CONDITION"))
-         {
-            modelElementJson.addProperty(ModelerConstants.CONDITION_EXPRESSION_PROPERTY,
-                  (String) transition.getExpression().getMixed().getValue(0));
-            modelElementJson.addProperty(ModelerConstants.OTHERWISE_PROPERTY, false);
-         }
-         else
-         {
-            modelElementJson.addProperty(ModelerConstants.OTHERWISE_PROPERTY, true);
-         }
-
-         loadDescription(modelElementJson, transition);
-         loadAttributes(transition, modelElementJson);
 
          connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
                transition.getFrom().getActivitySymbols().get(0).getElementOid());
@@ -1621,7 +1601,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -1650,6 +1630,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          controlFlowJson.addProperty(ModelerConstants.OTHERWISE_PROPERTY, true);
       }
 
+      controlFlowJson.addProperty(ModelerConstants.FORK_ON_TRAVERSAL_PROPERTY,
+            transition.isForkOnTraversal());
+
       loadDescription(controlFlowJson, transition);
       loadAttributes(transition, controlFlowJson);
 
@@ -1670,7 +1653,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param dataMapping
     * @return
     */
@@ -1728,8 +1711,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             modelManagementStrategy().getModelFilePath(model));
       modelJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.MODEL_KEY);
 
-//      loadDescription(modelJson, model);
-//      loadAttributes(model, modelJson);
+      // loadDescription(modelJson, model);
+      loadAttributes(model, modelJson);
 
       if (model.getDescription() != null)
       {
@@ -1910,6 +1893,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             eObjectUUIDMapper().getUUID(structType));
       setContainingModelIdProperty(structJson, structType);
 
+      loadAttributes(structType, structJson);
+
       JsonObject typeDeclarationJson = new JsonObject();
 
       structJson.add("typeDeclaration", typeDeclarationJson);
@@ -1961,7 +1946,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -1992,7 +1977,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -2011,12 +1996,12 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     * @throws JSONException
     */
-   private void loadAttributes(IIdentifiableModelElement element, JsonObject json)
+   private void loadAttributes(EObject element, JsonObject json)
    {
       JsonObject attributes;
 
@@ -2029,29 +2014,35 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          attributes = json.getAsJsonObject(ModelerConstants.ATTRIBUTES_PROPERTY);
       }
 
-      for (AttributeType attribute : element.getAttribute())
+      for (Object attribute : getModelBuilderFacade().getAttributes(element))
       {
-         if (attribute.getName().equals("documentation:comments"))
+         if (getModelBuilderFacade().getAttributeName(attribute).equals(
+               "documentation:comments"))
          {
-            json.add(ModelerConstants.COMMENTS_PROPERTY, jsonIo.readJsonObject(attribute.getValue()).get(ModelerConstants.COMMENTS_PROPERTY)
-                  .getAsJsonArray());
+            json.add(
+                  ModelerConstants.COMMENTS_PROPERTY,
+                  jsonIo.readJsonObject(
+                        getModelBuilderFacade().getAttributeValue(attribute))
+                        .get(ModelerConstants.COMMENTS_PROPERTY)
+                        .getAsJsonArray());
          }
          else
          {
-            attributes.addProperty(attribute.getName(), attribute.getValue());
+            attributes.addProperty(getModelBuilderFacade().getAttributeName(attribute),
+                  getModelBuilderFacade().getAttributeValue(attribute));
          }
       }
-      
-      if (!json.has(ModelerConstants.COMMENTS_PROPERTY))
+
+      if ( !json.has(ModelerConstants.COMMENTS_PROPERTY))
       {
          json.add(ModelerConstants.COMMENTS_PROPERTY, new JsonArray());
       }
    }
 
    /**
-    * 
+    *
     * TODO From DynamicConnectionCommand. Refactor?
-    * 
+    *
     * @param activity
     * @return
     */
@@ -2116,10 +2107,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    private ModelBuilderFacade getModelBuilderFacade()
    {
-      if (modelBuilderFacade == null)
-      {
-         modelBuilderFacade = new ModelBuilderFacade(modelManagementStrategy());
-      }
-      return modelBuilderFacade;
+      return new ModelBuilderFacade(modelManagementStrategy());
    }
 }

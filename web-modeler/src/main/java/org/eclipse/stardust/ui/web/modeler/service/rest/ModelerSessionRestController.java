@@ -1,9 +1,9 @@
-package org.eclipse.stardust.ui.web.modeler.rest;
+package org.eclipse.stardust.ui.web.modeler.service.rest;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
-import static org.eclipse.stardust.ui.web.modeler.rest.RestControllerUtils.resolveSpringBean;
+import static org.eclipse.stardust.ui.web.modeler.service.rest.RestControllerUtils.resolveSpringBean;
 
 import java.net.URI;
 import java.util.Iterator;
@@ -45,7 +45,7 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelNavigator;
 
-@Path("/bpm-modeler/modeler/{randomPostFix}/sessions")
+@Path("/modeler/{randomPostFix}/sessions")
 public class ModelerSessionRestController
 {
    private static final Logger trace = LogManager.getLogger(ModelerSessionRestController.class);

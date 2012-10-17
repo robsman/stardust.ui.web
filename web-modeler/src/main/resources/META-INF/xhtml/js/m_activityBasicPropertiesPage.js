@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -33,7 +33,7 @@ define(
 						basicPropertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
@@ -61,13 +61,11 @@ define(
 					this.isRelocationTargetInput = this
 							.mapInputId("isRelocationTargetInput");
 
-					this
-							.registerCheckboxInputForModelElementAttributeChangeSubmission(
-									this.allowAbortByParticipantInput,
-									"@TOADD@");
-					this
-							.registerCheckboxInputForModelElementAttributeChangeSubmission(
-									this.hibernateInitiallyInput, "@TOADD@");
+					this.registerCheckboxInputForModelElementChangeSubmission(
+							this.allowAbortByParticipantInput,
+							"isAbortableByPerformer");
+					this.registerCheckboxInputForModelElementChangeSubmission(
+							this.hibernateInitiallyInput, "isHibernatedOnCreation");
 					this
 							.registerCheckboxInputForModelElementAttributeChangeSubmission(
 									this.supportsRelocationInput,
@@ -153,7 +151,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.populateUserApplicationSelect = function() {
 					this.userApplicationList.empty();
@@ -208,7 +206,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.populateApplicationSelect = function() {
 					this.applicationList.empty();
@@ -260,7 +258,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.populateSubprocessSelect = function() {
 					this.subprocessList.empty();
@@ -302,7 +300,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.setUserTaskType = function(
 						applicationFullId) {
@@ -338,7 +336,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.setApplicationType = function(
 						applicationFullId) {
@@ -363,12 +361,13 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.setSubprocessType = function(
 						subprocessFullId, executionType, copyData) {
 					this.subprocessInput.attr("checked", true);
 					this.subprocessList.removeAttr("disabled");
+					this.subprocessModeSelect.removeAttr("disabled");
 
 					if (subprocessFullId != null) {
 						this.subprocessList.val(subprocessFullId);
@@ -385,7 +384,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.submitUserTaskChanges = function() {
 					if (this.propertiesPanel.element.modelElement.applicationFullId != this.userApplicationList
@@ -407,7 +406,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.submitApplicationChanges = function() {
 					if (this.propertiesPanel.element.modelElement.applicationFullId != this.applicationList
@@ -425,7 +424,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.setSubprocessMode = function(
 						executionType, copyData) {
@@ -445,7 +444,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.submitSubprocessChanges = function(
 						subprocessFullId) {
@@ -469,7 +468,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();
@@ -489,23 +488,23 @@ define(
 					}
 
 					this.allowAbortByParticipantInput.attr("checked", this
-							.getModelElement().attributes["@TOADD@"] == true);
+							.getModelElement().isAbortableByPerformer == true);
 					this.hibernateInitiallyInput.attr("checked", this
-							.getModelElement().attributes["@TOADD@"] == true);
+							.getModelElement().isHibernatedOnCreation == true);
 					this.supportsRelocationInput
 							.attr(
 									"checked",
-									this.getModelElement().attributes["carnot:engine:relocate:source"] == true);
+									this.getModelElement().attributes["carnot:engine:relocate:source"] == "true");
 					this.isRelocationTargetInput
 							.attr(
 									"checked",
-									this.getModelElement().attributes["carnot:engine:relocate:target"] == true);
+									this.getModelElement().attributes["carnot:engine:relocate:target"] == "true");
 
 					if (this.getModelElement().activityType == m_constants.MANUAL_ACTIVITY_TYPE) {
 						this.setUserTaskType(m_constants.AUTO_GENERATED_UI);
 					} else if (this.getModelElement().activityType == m_constants.APPLICATION_ACTIVITY_TYPE) {
-						if (this.getModelElement().applicationFullId == null
-								|| m_model.findApplication(this
+						if (this.getModelElement().applicationFullId != null
+								&& m_model.findApplication(this
 										.getModelElement().applicationFullId).interactive) {
 							this
 									.setUserTaskType(this.getModelElement().applicationFullId);
@@ -523,7 +522,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.validate = function() {
 					if (this.validateModelElement()) {

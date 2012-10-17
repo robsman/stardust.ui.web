@@ -20,10 +20,10 @@
 	</jaxrs:server>
 
 	<bean id="webModelerResourceBean"
-		class="org.eclipse.stardust.ui.web.modeler.rest.ModelerResource" />
+		class="org.eclipse.stardust.ui.web.modeler.service.rest.ModelerResource" />
 	<bean id="webModelerSessionRestControllerBean"
-		class="org.eclipse.stardust.ui.web.modeler.rest.ModelerSessionRestController" />
+		class="org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController" />
 	<bean id="webModelingUiExtensionsControllerBean"
-		class="org.eclipse.stardust.ui.web.modeler.rest.ModelingUiExtensionsController" />
+		class="org.eclipse.stardust.ui.web.modeler.service.rest.ModelingUiExtensionsController" />
 
 </beans>

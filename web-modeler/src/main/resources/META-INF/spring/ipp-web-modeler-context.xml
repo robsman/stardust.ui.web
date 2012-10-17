@@ -56,7 +56,7 @@
 		<property name="modelService" ref="modelService" />
 	</bean>
 
-	<bean id="modelerResource" class="org.eclipse.stardust.ui.web.modeler.rest.ModelerResource">
+	<bean id="modelerResource" class="org.eclipse.stardust.ui.web.modeler.service.rest.ModelerResource">
 		<property name="modelService" ref="modelService" />
 	</bean>
 

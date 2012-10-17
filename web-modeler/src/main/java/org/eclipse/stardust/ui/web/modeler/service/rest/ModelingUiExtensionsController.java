@@ -1,6 +1,6 @@
-package org.eclipse.stardust.ui.web.modeler.rest;
+package org.eclipse.stardust.ui.web.modeler.service.rest;
 
-import static org.eclipse.stardust.ui.web.modeler.rest.RestControllerUtils.resolveSpringBean;
+import static org.eclipse.stardust.ui.web.modeler.service.rest.RestControllerUtils.resolveSpringBean;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.modeler.ui.UiExtensionsRegistry;
 
-@Path("/bpm-modeler/config/ui")
+@Path("/config/ui")
 public class ModelingUiExtensionsController
 {
    private static final Logger trace = LogManager.getLogger(ModelingUiExtensionsController.class);
@@ -107,12 +107,16 @@ public class ModelingUiExtensionsController
       buffer.append("    // properties pages\n");
       listExtensionDependencies(buffer, registry.getPropertiesPageExtensions());
 
+      buffer.append("    // Integration Overlays\n");
+      listExtensionDependencies(buffer, registry.getIntegrationOverlayExtensions());
+
       buffer.append("], function(m_extensionManager) {\n")
             .append("\n");
 
       listExtensionInitialization(buffer, "registerViewManager", registry.getViewManagerExtensions());
       listExtensionInitialization(buffer, "registerMetaModelExtensions", registry.getMetaModelExtensions());
       listExtensionInitialization(buffer, "registerPropertyPageExtensions", registry.getPropertiesPageExtensions());
+      listExtensionInitialization(buffer, "registerIntegrationOverlayExtensions", registry.getIntegrationOverlayExtensions());
 
       buffer.append("\n")
             .append("    return {};\n")

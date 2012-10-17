@@ -34,7 +34,7 @@ public class UiExtensionsRegistry
    public void discoverExtensionDescriptors()
    {
       this.extensionDescriptors = unmodifiableMap(ExtensionDiscoveryUtils.findExtensions(
-            context, asList("viewManager", "diagramToolbar", "propertiesPage", "metaModel")));
+            context, asList("viewManager", "diagramToolbar", "propertiesPage", "metaModel", "integrationOverlay")));
    }
 
    public List<String> getViewManagerExtensions()
@@ -50,6 +50,11 @@ public class UiExtensionsRegistry
    public List<String> getPropertiesPageExtensions()
    {
       return unmodifiableList(extensionDescriptors.get("propertiesPage"));
+   }
+
+   public List<String> getIntegrationOverlayExtensions()
+   {
+      return unmodifiableList(extensionDescriptors.get("integrationOverlay"));
    }
 
    public List<String> getMetaModelExtensions()

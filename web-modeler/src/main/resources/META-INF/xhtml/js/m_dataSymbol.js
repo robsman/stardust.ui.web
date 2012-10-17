@@ -269,6 +269,9 @@ define(
 						this.text.attr("text", data.name);
 						this.modelElement = data;
 					}
+					// Store the server side co-ord, required for moving symbol
+					// when other lane is minimized.
+					this.updateServerSideCoordinates();
 				};
 
 				/**

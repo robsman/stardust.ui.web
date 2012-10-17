@@ -616,12 +616,10 @@ public class ActivityCriticalityManagerBean extends UIViewComponentBean
       activityTableHelper = new ActivityTableHelper();
       if (activityTableHelper != null)
       {
-         activityTableHelper.getColumnModelListener().setNeedRefresh(false);
          activityTableHelper.initActivityTable();
          activityTableHelper.setCallbackHandler(this);
          activityTableHelper.setStrandedActivityView(false);
          activityTableHelper.getActivityTable().initialize();
-         activityTableHelper.getColumnModelListener().setNeedRefresh(true);
       }
    }
 

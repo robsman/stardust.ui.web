@@ -27,6 +27,10 @@ require.config({
 	},
 	shim: {
 		'jquery-ui': ['jquery'],
+		'jquery.form': ['jquery'],
+		'jquery.impromptu': ['jquery'],
+		'jquery.jeditable': ['jquery'],
+		'jquery.simplemodal': ['jquery'],
 		'jquery.tablescroll': ['jquery'],
 		'jquery.treeTable': ['jquery'],
 		'jquery.url': ['jquery']
@@ -36,9 +40,14 @@ require.config({
 require(["require",
          "jquery",
          "jquery-ui",
-         "jquery.tablescroll",
-         "jquery.treeTable",
+         "jquery.form",
+         "jquery.impromptu",
+		 "jquery.jeditable",
+		 "jquery.simplemodal",
+		 "jquery.tablescroll",
+		 "jquery.treeTable",
 		 "jquery.url",
+
 		 "common-plugins",
 		 "m_utils",
 		 "m_communicationController",
@@ -47,8 +56,11 @@ require(["require",
 		 "m_command",
 		 "m_commandsController",
 		 "m_view",
+		 "m_modelElementView",
 		 "m_modelElementCommentsPropertiesPage",         
-         "m_camelApplicationView"], function(require) {
+		 "m_serviceConnectorApplicationIntegrationOverlay",         
+         "m_camelApplicationView"],
+		 function(require) {
 	require("m_camelApplicationView").initialize(
 			jQuery.url.setUrl(window.location.search).param("fullId"));
 });

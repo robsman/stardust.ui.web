@@ -11,11 +11,14 @@
 package org.eclipse.stardust.ui.web.viewscommon.user;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.faces.model.SelectItem;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.Organization;
 import org.eclipse.stardust.engine.api.model.Participant;
@@ -23,9 +26,9 @@ import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.query.Users;
 import org.eclipse.stardust.engine.api.runtime.Department;
+import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.ui.web.common.autocomplete.IAutocompleteDataProvider;
-import org.eclipse.stardust.ui.web.viewscommon.dialogs.ParticipantFilterCriteria;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
 
@@ -47,8 +50,6 @@ public class ParticipantsDataProvider implements IAutocompleteDataProvider
     */
    public List<SelectItem> getMatchingData(String searchValue, int maxMatches)
    {
-      List<SelectItem> participants = new LinkedList<SelectItem>();
-
       QueryService service = ServiceFactoryUtils.getQueryService();
 
       UserQuery userQuery = UserQuery.findActive();
@@ -73,7 +74,7 @@ public class ParticipantsDataProvider implements IAutocompleteDataProvider
       List<Participant> rolesAndOrgs = service.getAllParticipants();
       selectedParticipants.addAll(copyToParticipantWrapperList(rolesAndOrgs, searchValue));      
       
-      List<Department> departments = getAllDepartments(rolesAndOrgs);
+      Set<DepartmentInfo> departments = getAllDepartments(rolesAndOrgs);
       selectedParticipants.addAll(copyToParticipantWrapperList(departments, searchValue));
       
       
@@ -84,23 +85,49 @@ public class ParticipantsDataProvider implements IAutocompleteDataProvider
       
       return selectItems;
    }
-   
+
    /**
     * @param rolesAndOrgs
     * @return
     */
-   private List<Department> getAllDepartments(List<Participant> rolesAndOrgs) {
+   private Set<DepartmentInfo> getAllDepartments(List<Participant> rolesAndOrgs) {
       QueryService service = ServiceFactoryUtils.getQueryService();
-      List<Department> departments = new LinkedList<Department>();
-      for (Participant p : rolesAndOrgs) {
-         if (p instanceof Organization) {
-            departments.addAll(service.findAllDepartments(null, (Organization) p));
+      Set<DepartmentInfo> departmentInfos = CollectionUtils.newHashSet();
+      for (Participant p : rolesAndOrgs)
+      {
+         if (p instanceof Organization)
+         {
+            departmentInfos.addAll(service.findAllDepartments(null, (Organization) p));
          }
       }
       
-      return departments;
+      return departmentInfos;
    }
 
+   /**
+    * @param departments
+    * @param searchValue
+    * @return
+    */
+   private Collection< ? extends ParticipantWrapper> copyToParticipantWrapperList(Set<DepartmentInfo> departments,
+         String searchValue)
+   {
+      List<ParticipantWrapper> selectParticipants = new ArrayList<ParticipantWrapper>();
+      String regex = !StringUtils.isEmpty(searchValue) ? searchValue.replaceAll("\\*", ".*") + ".*" : null;
+      if (CollectionUtils.isNotEmpty(departments))
+      {
+         for (DepartmentInfo deptInfo : departments)
+         {
+            if (deptInfo.getName().matches(regex))
+            {
+               selectParticipants.add(new ParticipantWrapper((Department) deptInfo));
+            }
+         }
+      }
+
+      return selectParticipants;
+   }
+   
    /**
     * @param allParticipants
     * @return
@@ -112,7 +139,6 @@ public class ParticipantsDataProvider implements IAutocompleteDataProvider
       {
          for (Participant participant : allParticipants)
          {
-
             selectParticipants.add(new ParticipantWrapper(participant));
          }
       }
@@ -123,19 +149,17 @@ public class ParticipantsDataProvider implements IAutocompleteDataProvider
     * @param allParticipants
     * @return
     */
-   private List<ParticipantWrapper> copyToParticipantWrapperList(List allParticipants, String searchValue)
+   private List<ParticipantWrapper> copyToParticipantWrapperList(List<Participant> allParticipants, String searchValue)
    {
       List<ParticipantWrapper> selectParticipants = new ArrayList<ParticipantWrapper>();
       String regex = !StringUtils.isEmpty(searchValue) ? searchValue.replaceAll("\\*", ".*") + ".*" : null;
       if (allParticipants != null)
       {
-         for (int i = 0; i < allParticipants.size(); i++)
+         for (Participant participant : allParticipants)
          {
-            Object participant = allParticipants.get(i);
-            if (participant instanceof Participant && ((Participant) participant).getName().matches(regex)) {
-               selectParticipants.add(new ParticipantWrapper((Participant) participant));
-            } else if (participant instanceof Department && ((Department) participant).getName().matches(regex)) {
-               selectParticipants.add(new ParticipantWrapper((Department) participant));
+            if (participant.getName().matches(regex))
+            {
+               selectParticipants.add(new ParticipantWrapper(participant));
             }
          }
       }

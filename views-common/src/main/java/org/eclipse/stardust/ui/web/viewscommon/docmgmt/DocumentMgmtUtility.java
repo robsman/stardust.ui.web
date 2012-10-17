@@ -30,8 +30,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import javax.faces.component.UIViewRoot;
-import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.stardust.common.CollectionUtils;
@@ -63,6 +61,7 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
@@ -1039,13 +1038,7 @@ public class DocumentMgmtUtility
    
    private static Locale getLocale()
    {
-      UIViewRoot view = FacesContext.getCurrentInstance().getViewRoot();
-      Locale locale = Locale.getDefault();
-      if (view != null)
-      {
-         locale = view.getLocale();
-      }
-      return locale;
+      return FacesUtils.getLocaleFromRequest();
    }
    
    /**
