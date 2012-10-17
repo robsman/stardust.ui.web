@@ -31,11 +31,13 @@ define(
 				 * 
 				 */
 				DataFlowBasicPropertiesPage.prototype.initialize = function() {
-					this.inInput = this.mapInputId("inInput");
-					this.outInput = this.mapInputId("outInput");
+					this.inputInput = this.mapInputId("inputInput");
+					this.outputInput = this.mapInputId("outputInput");
 					this.descriptionInput = this.mapInputId("descriptionInput");
-					this.dataPathInput = this.mapInputId("dataPathInput");
-					this.dataPathOutput = this.mapInputId("dataPathOutput");
+					this.inputDataPathInput = this
+							.mapInputId("inputDataPathInput");
+					this.outputDataPathInput = this
+							.mapInputId("outputDataPathInput");
 					this.inputAccessPointPanel = this
 							.mapInputId("inputAccessPointPanel");
 					this.outputAccessPointPanel = this
@@ -44,33 +46,43 @@ define(
 							.mapInputId("inputAccessPointSelectInput");
 					this.outputAccessPointSelectInput = this
 							.mapInputId("outputAccessPointSelectInput");
+					this.inputAccessPointSelectInputPanel = this
+							.mapInputId("inputAccessPointSelectInputPanel");
+					this.outputAccessPointSelectInputPanel = this
+							.mapInputId("outputAccessPointSelectInputPanel");
 
-					this.inInput.click({
-						"callbackScope" : this
+					this.inputInput.click({
+						page : this
 					}, function(event) {
-						event.data.callbackScope
-								.setDirection(event.data.callbackScope.inInput
-										.is(":checked"),
-										event.data.callbackScope.outInput
-												.is(":checked"));
+						var page = event.data.page;
+
+						page.setDirection(page.inputInput.is(":checked"),
+								page.outputInput.is(":checked"));
+						page.submitChanges({
+							modelElement : {
+								inputDataMapping : page.inputInput
+										.is(":checked")
+							}
+						});
 					});
 
-					this.outInput.click({
-						"callbackScope" : this
+					this.outputInput.click({
+						page : this
 					}, function(event) {
-						event.data.callbackScope
-								.setDirection(event.data.callbackScope.inInput
-										.is(":checked"),
-										event.data.callbackScope.outInput
-												.is(":checked"));
+						var page = event.data.page;
+
+						page.setDirection(page.inputInput.is(":checked"),
+								page.outputInput.is(":checked"));
+						page.submitChanges({
+							modelElement : {
+								outputDataMapping : page.outputInput
+										.is(":checked")
+							}
+						});
 					});
 
 					this.registerInputForModelElementChangeSubmission(
 							this.descriptionInput, "description");
-					this.registerCheckboxInputForModelElementChangeSubmission(
-							this.inInput, "inDataMapping");
-					this.registerCheckboxInputForModelElementChangeSubmission(
-							this.outInput, "outDataMapping");
 
 					this.inputAccessPointSelectInput
 							.change(
@@ -79,16 +91,14 @@ define(
 									},
 									function(event) {
 										var page = event.data.page;
-										var dataFlow = page.propertiesPanel.element.modelElement;
 
-										// TODO Adjust flow direction based on
-										// access point direction?
 										page
-												.submitChange({
-													accessPointId : dataFlow.activity.accessPoints[page.inputAccessPointSelectInput
-															.val()].id,
-													accessPointContext : dataFlow.activity.accessPoints[page.inputAccessPointSelectInput
-															.val()].context
+												.submitChanges({
+													modelElement : {
+														inputAccessPointId : page.inputAccessPointSelectInput
+																.val(),
+														inputAccessPointContext : "TBD"
+													}
 												});
 									});
 					this.outputAccessPointSelectInput
@@ -98,16 +108,14 @@ define(
 									},
 									function(event) {
 										var page = event.data.page;
-										var dataFlow = page.propertiesPanel.element.modelElement;
 
-										// TODO Adjust flow direction based on
-										// access point direction?
 										page
-												.submitChange({
-													accessPointId : dataFlow.activity.accessPoints[page.outputAccessPointSelectInput
-															.val()].id,
-													accessPointContext : dataFlow.activity.accessPoints[page.outputAccessPointSelectInput
-															.val()].context
+												.submitChanges({
+													modelElement : {
+														outputAccessPointId : page.outputAccessPointSelectInput
+																.val(),
+														outputAccessPointContext : "TBD"
+													}
 												});
 									});
 				};
@@ -116,25 +124,21 @@ define(
 				 * 
 				 */
 				DataFlowBasicPropertiesPage.prototype.setDirection = function(
-						inMapping, outMapping) {
-					if (inMapping) {
-						m_dialog
-								.makeVisible(this.inputAccessPointPanel);
+						inputMapping, outputMapping) {
+					if (inputMapping) {
+						m_dialog.makeVisible(this.inputAccessPointPanel);
 					} else {
-						m_dialog
-								.makeInvisible(this.inputAccessPointPanel);
+						m_dialog.makeInvisible(this.inputAccessPointPanel);
 					}
 
-					if (outMapping) {
-						m_dialog
-								.makeVisible(this.outputAccessPointPanel);
+					if (outputMapping) {
+						m_dialog.makeVisible(this.outputAccessPointPanel);
 					} else {
-						m_dialog
-								.makeInvisible(this.outputAccessPointPanel);
+						m_dialog.makeInvisible(this.outputAccessPointPanel);
 					}
 
-					this.inInput.attr("checked", inMapping);
-					this.outInput.attr("checked", outMapping);
+					this.inputInput.attr("checked", inputMapping);
+					this.outputInput.attr("checked", outputMapping);
 				};
 
 				/**
@@ -233,10 +237,12 @@ define(
 							.val(this.propertiesPanel.element.modelElement.description);
 					this
 							.setDirection(
-									this.propertiesPanel.element.modelElement.inDataMapping,
-									this.propertiesPanel.element.modelElement.outDataMapping);
-					// this.dataPathInput
-					// .val(this.propertiesPanel.element.modelElement.dataPath);
+									this.propertiesPanel.element.modelElement.inputDataMapping,
+									this.propertiesPanel.element.modelElement.outputDataMapping);
+					this.inputDataPathInput
+							.val(this.propertiesPanel.element.modelElement.inputDataPath);
+					this.outputDataPathInput
+							.val(this.propertiesPanel.element.modelElement.outputDataPath);
 				};
 			}
 		});

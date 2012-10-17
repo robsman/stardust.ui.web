@@ -480,6 +480,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                .getActivity()
                .getDataMapping())
          {
+            System.out.println("Data Mapping: " + dataMapping.getId());
+            System.out.println(" Direction: " + dataMapping.getDirection());
+            
             if (dataMapping.getData().getId().equals(
                   dataFlowConnection.getDataSymbol().getData().getId()))
             {

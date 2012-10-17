@@ -31,14 +31,14 @@ define([ "m_utils", "m_constants", "m_model" ],
 				this.type = m_constants.DATA_FLOW;
 				this.id = id;
 				this.description = null;
-				this.inDataMapping = true;
-				this.outDataMapping = true;
-				this.dataPath = null;
-				this.applicationPath = null;
-				this.inAccessPointId = null;
-				this.inContext = null;
-				this.outAccessPointId = null;
-				this.outContext = null;
+				this.inputDataMapping = true;
+				this.outputDataMapping = true;
+				this.inputDataPath = null;
+				this.outputDataPath = null;
+				this.inputAccessPointId = null;
+				this.inputAccessPointContext = null;
+				this.outputAccessPointId = null;
+				this.outputAccessPointContext = null;
 
 				/**
 				 * 
