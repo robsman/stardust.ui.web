@@ -1670,6 +1670,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       controlFlowJson.addProperty(ModelerConstants.ID_PROPERTY, transition.getId());
       controlFlowJson.addProperty(ModelerConstants.OID_PROPERTY,
             transition.getElementOid());
+      controlFlowJson.addProperty(ModelerConstants.NAME_PROPERTY,
+            transition.getName());
 
       if (null != transition.getCondition()
             && transition.getCondition().equals("CONDITION"))
@@ -2054,7 +2056,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private static void loadDescription(JsonObject modelElementJson,
          IIdentifiableModelElement element)
    {
-      if (null != element.getDescription())
+      if (null != element.getDescription()
+            && element.getDescription().getMixed().size() > 0)
       {
          modelElementJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
                (String) element.getDescription().getMixed().get(0).getValue());

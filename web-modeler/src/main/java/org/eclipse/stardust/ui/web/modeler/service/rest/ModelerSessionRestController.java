@@ -236,6 +236,7 @@ public class ModelerSessionRestController
    @Path("/changes")
    public Response applyChange(String postedData)
    {
+      System.out.println("postedData ==============> " + postedData);
       try
       {
          CommandJto commandJto = jsonIo().gson().fromJson(postedData, CommandJto.class);

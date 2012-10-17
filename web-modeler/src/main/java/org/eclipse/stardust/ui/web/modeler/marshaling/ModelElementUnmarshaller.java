@@ -163,6 +163,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       propertiesMap.put(OrganizationType.class, new String[] {});
       propertiesMap.put(ConditionalPerformerType.class, new String[] {
             ModelerConstants.BINDING_DATA_PATH_PROPERTY});
+      propertiesMap.put(TransitionType.class,
+            new String[] {ModelerConstants.NAME_PROPERTY});
    }
 
    /**
@@ -403,6 +405,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       TransitionType transition = controlFlowConnection.getTransition();
       JsonObject controlFlowJson = controlFlowConnectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
 
+      mapDeclaredProperties(transition, controlFlowJson,
+            propertiesMap.get(TransitionType.class));
       storeDescription(transition, controlFlowJson);
       storeAttributes(transition, controlFlowJson);
 
@@ -482,7 +486,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          {
             System.out.println("Data Mapping: " + dataMapping.getId());
             System.out.println(" Direction: " + dataMapping.getDirection());
-            
+
             if (dataMapping.getData().getId().equals(
                   dataFlowConnection.getDataSymbol().getData().getId()))
             {
@@ -1574,7 +1578,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                ModelerConstants.DESCRIPTION_PROPERTY);
       }
 
-      if (StringUtils.isNotEmpty(description))
+      if (null != description)
       {
          DescriptionType dt = AbstractElementBuilder.F_CWM.createDescriptionType();
          dt.getMixed().add(FeatureMapUtil.createRawTextEntry(description));
