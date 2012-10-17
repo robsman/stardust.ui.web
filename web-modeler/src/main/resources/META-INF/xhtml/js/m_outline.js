@@ -1106,7 +1106,7 @@ define(
 														}
 													},
 													"deploy" : {
-														"label" : "Deploy",
+														"label" : m_i18nUtils.getProperty("modeler.outline.model.contextMenu.deploy"),
 														"action" : function(obj) {
 															deployModel(obj
 																	.attr("id"));
@@ -2195,6 +2195,12 @@ define(
 				readAllModels();
 			};
 
+
+			var i18nStaticLabels = function() {
+				jQuery("#createModel").attr("title", m_i18nUtils.getProperty("modeler.outline.toolbar.tooltip.createModel"));
+				//TODO add other outline tooltip labels here.
+			};
+
 			var outline;
 
 			return {
@@ -2205,6 +2211,7 @@ define(
 
 					outline.initialize();
 					m_outlineToolbarController.init("outlineToolbar");
+					i18nStaticLabels();
 				},
 				refresh : function() {
 					refresh();
