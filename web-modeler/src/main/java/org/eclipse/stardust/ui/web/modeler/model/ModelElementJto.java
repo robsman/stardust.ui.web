@@ -1,5 +1,6 @@
 package org.eclipse.stardust.ui.web.modeler.model;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public class ModelElementJto
@@ -17,4 +18,6 @@ public class ModelElementJto
    public String type;
 
    public JsonObject attributes = new JsonObject();
+
+   public JsonArray comments = new JsonArray();
 }
