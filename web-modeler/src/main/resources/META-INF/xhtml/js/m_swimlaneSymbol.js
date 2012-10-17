@@ -853,11 +853,21 @@ define(
 						} else {
 							this.text.attr("text", this.name);
 						}
-						if (parseInt(this.height) != parseInt(this.preDragState.height)) {
-							for (var i = 0; i < this.parentSymbol.laneSymbols.length; i++) {
-								this.parentSymbol.laneSymbols[i].height = this.height;
-								this.parentSymbol.laneSymbols[i].adjustGeometry();
-							}
+
+						var moveX, moveY = 0;
+						if (this.preDragState.x < this.x) {
+							moveX = this.preDragState.x - this.x;
+							this.x = this.preDragState.x;
+						} else if (this.preDragState.x > this.x) {
+							moveX = this.preDragState.x - this.x;
+							this.x = this.preDragState.x;
+						}
+						if (this.preDragState.y < this.y) {
+							moveY = this.preDragState.y - this.y;
+							this.y = this.preDragState.y;
+						} else if (this.preDragState.y > this.y) {
+							moveY = this.preDragState.y - this.y;
+							this.y = this.preDragState.y;
 						}
 						this.parentSymbol.recalculateBoundingBox();
 						this.parentSymbol.adjustGeometry();
@@ -866,8 +876,11 @@ define(
 							x : this.x,
 							y : this.y,
 							width : this.width,
-							height : this.height
+							height : this.height,
+							xOffset : moveX,
+							yOffset : moveY
 						};
+
 						var command = m_command
 									.createUpdateModelElementCommand(
 											this.diagram.modelId, this.oid, changes);
@@ -975,9 +988,7 @@ define(
 					if (parseInt(preAdjustmentPos.y) > (parseInt(y))
 							&& parseInt(this.height) > parseInt(preAdjustmentPos.height
 									.valueOf())) {
-						moveY = this.height
-								+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
-								- parseInt(preAdjustmentPos.height);
+						moveY = this.height - parseInt(preAdjustmentPos.height);
 
 					}else if (this.y < preAdjustmentPos.y
 							&& this.height > preAdjustmentPos.height) {
@@ -991,8 +1002,7 @@ define(
 					if (parseInt(preAdjustmentPos.x) > (parseInt(x))
 							&& parseInt(this.width) > parseInt(preAdjustmentPos.width
 									.valueOf())) {
-						moveX = this.width + m_constants.POOL_SWIMLANE_MARGIN
-								- parseInt(preAdjustmentPos.width);
+						moveX = this.width - parseInt(preAdjustmentPos.width);
 
 					}else if (this.x < preAdjustmentPos.x
 								&& this.width > preAdjustmentPos.width) {
@@ -1008,13 +1018,16 @@ define(
 
 					if (preAdjustmentPos.width != this.width
 							|| preAdjustmentPos.height != this.height) {
-
 						var changes = {
 							x : this.x,
 							y : this.y,
 							width : this.width,
-							height : this.height
+							height : this.height,
+							xOffset : moveX,
+							yOffset : moveY
 						};
+
+						this.parentSymbol.adjustGeometry();
 						var command = m_command
 								.createUpdateModelElementCommand(
 										this.diagram.modelId, this.oid, changes);

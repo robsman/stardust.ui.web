@@ -46,6 +46,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
+import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
@@ -827,26 +828,55 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          if (nodeSymbol instanceof LaneSymbol
                && (nodeSymbolJto.has(ModelerConstants.WIDTH_PROPERTY) || nodeSymbolJto.has(ModelerConstants.HEIGHT_PROPERTY)))
          {
+            int xOffset = 0, yOffset = 0;
+            int height = 0;
+            int heightOffset = 0;
             PoolSymbol poolSymbol = (PoolSymbol) nodeSymbol.eContainer();
+            // Update the width of current Lane.
             int width = extractInt(nodeSymbolJto, ModelerConstants.WIDTH_PROPERTY);
+            // Calculate widthOffset required to adjust other swimlanes
             int widthOffset = width - nodeSymbol.getWidth();
             nodeSymbol.setWidth(width);
 
-            int height = 0;
+            // Update the height of current Lane.
             if (nodeSymbolJto.has(ModelerConstants.HEIGHT_PROPERTY))
             {
                height = extractInt(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY);
+               heightOffset = height - nodeSymbol.getHeight();
                nodeSymbol.setHeight(height);
             }
 
+            // Update the child symbol co-ordinates wrt parent(lane)
+            if (nodeSymbolJto.has(ModelerConstants.X_OFFSET))
+               xOffset = nodeSymbolJto.get(ModelerConstants.X_OFFSET).getAsInt();
+            if (nodeSymbolJto.has(ModelerConstants.Y_OFFSET))
+               yOffset = nodeSymbolJto.get(ModelerConstants.Y_OFFSET).getAsInt();
+
+            if (xOffset != 0)
+            {
+               updateChildSymbolCoordinates((LaneSymbol) nodeSymbol, xOffset, 0);
+            }
+            if (yOffset != 0)
+            {
+               updateChildSymbolCoordinates((LaneSymbol) nodeSymbol, 0, yOffset);
+            }
+
+            // Update other swimlane width/height
             for (LaneSymbol lane : poolSymbol.getLanes())
             {
-               if (nodeSymbol.getElementOid() != lane.getElementOid()
-                     && (lane.getXPos() > nodeSymbol.getXPos()))
+               if (nodeSymbol.getElementOid() != lane.getElementOid())
                {
-                  lane.setXPos(lane.getXPos() + widthOffset);
-                  if (height > 0)
+                  if ((lane.getXPos() > nodeSymbol.getXPos() && widthOffset != 0))
+                  {
+                     lane.setXPos(lane.getXPos() + widthOffset);
+                  }
+                  if (heightOffset != 0)
+                  {
                      lane.setHeight(height);
+                     // if symbol on currentLane(nodeSymbol) is moved , adjustment on
+                     // other lane symbol is required
+                     updateChildSymbolCoordinates(lane, 0, yOffset);
+                  }
                }
             }
          }
@@ -863,6 +893,37 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                nodeSymbol.setHeight(height);
             }
          }
+      }
+   }
+
+   /**
+    * Update the x,y co-ordinates of symbols contained in the lane
+    *
+    * @param laneSymbol
+    * @param xOffset
+    * @param yOffset
+    */
+   private void updateChildSymbolCoordinates(LaneSymbol laneSymbol, int xOffset, int yOffset)
+   {
+      for (ActivitySymbolType activitySymbol : laneSymbol.getActivitySymbol())
+      {
+         activitySymbol.setXPos(activitySymbol.getXPos() + xOffset);
+         activitySymbol.setYPos(activitySymbol.getYPos() + yOffset);
+      }
+      for (StartEventSymbol startSymbol : laneSymbol.getStartEventSymbols())
+      {
+         startSymbol.setXPos(startSymbol.getXPos() + xOffset);
+         startSymbol.setYPos(startSymbol.getYPos() + yOffset);
+      }
+      for (EndEventSymbol endSymbol : laneSymbol.getEndEventSymbols())
+      {
+         endSymbol.setXPos(endSymbol.getXPos() + xOffset);
+         endSymbol.setYPos(endSymbol.getYPos() + yOffset);
+      }
+      for (DataSymbolType dataSymbol : laneSymbol.getDataSymbol())
+      {
+         dataSymbol.setXPos(dataSymbol.getXPos() + xOffset);
+         dataSymbol.setYPos(dataSymbol.getYPos() + yOffset);
       }
    }
 
