@@ -14,12 +14,12 @@ define(
 				"m_command", "m_session", "m_user", "m_model", "m_process",
 				"m_application", "m_participant", "m_typeDeclaration",
 				"m_outlineToolbarController", "m_data",
-				"m_elementConfiguration", "m_messageDisplay" ],
+				"m_elementConfiguration", "m_messageDisplay", "m_i18nUtils" ],
 		function(m_utils, m_urlUtils, m_constants, outlinePlugins, m_extensionManager,
 				m_communicationController, m_commandsController, m_command,
 				m_session, m_user, m_model, m_process, m_application,
 				m_participant, m_typeDeclaration, m_outlineToolbarController,
-				m_data, m_elementConfiguration, m_messageDisplay) {
+				m_data, m_elementConfiguration, m_messageDisplay, m_i18nUtils) {
 
 			// TODO Find better location
 			var viewManagerExtension = m_extensionManager
@@ -1077,7 +1077,7 @@ define(
 													"ccp" : false,
 													"create" : false,
 													"rename" : {
-														"label" : "Rename",
+														"label" : m_i18nUtils.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
 															jQuery("#outline")
 																	.jstree(
@@ -1088,7 +1088,7 @@ define(
 														}
 													},
 													"deleteModel" : {
-														"label" : "Delete",
+														"label" : m_i18nUtils.getProperty("modeler.outline.contextMenu.delete"),
 														"action" : function(obj) {
 															deleteElementAction(
 																	obj.context.lastChild.data,
@@ -1099,7 +1099,7 @@ define(
 														}
 													},
 													"createProcess" : {
-														"label" : "Create Process",
+														"label" : m_i18nUtils.getProperty("modeler.outline.model.contextMenu.createProcess"),
 														"action" : function(obj) {
 															createProcess(obj
 																	.attr("elementId"));
