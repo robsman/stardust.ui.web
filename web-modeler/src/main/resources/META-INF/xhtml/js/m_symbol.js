@@ -1254,7 +1254,8 @@ define(
 						this.primitives[element].hover(Symbol_hoverInClosure,
 								Symbol_hoverOutClosure);
 						// Drag and Drop not allowed for Pools
-						if (this.type != m_constants.POOL_SYMBOL) {
+						if (this.type != m_constants.POOL_SYMBOL
+								&& this.type != m_constants.SWIMLANE_SYMBOL) {
 							this.primitives[element].drag(Symbol_dragClosure,
 									Symbol_dragStartClosure,
 									Symbol_dragStopClosure);
