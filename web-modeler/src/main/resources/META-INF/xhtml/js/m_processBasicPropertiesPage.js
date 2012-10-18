@@ -3,13 +3,13 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", 
+		[ "m_utils", "m_constants",
 			"m_commandsController", "m_command", "m_basicPropertiesPage" ],
 		function(m_utils, m_constants,
 				m_commandsController, m_command, m_basicPropertiesPage) {
@@ -37,7 +37,7 @@ define(
 				// Field initialization
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessBasicPropertiesPage.prototype.getDocumentationCreationUrl = function() {
 					var url = "/models/" + this.getModelElement().modelId
@@ -47,7 +47,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
@@ -61,52 +61,52 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessBasicPropertiesPage.prototype.getModelElement = function() {
 					return this.propertiesPanel.element;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessBasicPropertiesPage.prototype.assembleChangedObjectFromProperty = function(property, value) {
 					var element = {};
-					
+
 					element[property] = value;
-					
+
 					return element;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessBasicPropertiesPage.prototype.assembleChangedObjectFromAttribute = function(attribute, value) {
 					var element = { attributes: {}};
-					
+
 					element.attributes[attribute] = value;
-					
+
 					return element;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();
-					
+
 					this.defaultPriorityInput.val(this.getModelElement().defaultPriority);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessBasicPropertiesPage.prototype.validate = function() {
 					if (this.validateModelElement()) {
 						return true;
 					}
 
-					return true;
+					return false;
 				};
 			}
 		});
