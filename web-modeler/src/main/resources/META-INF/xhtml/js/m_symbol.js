@@ -96,6 +96,8 @@ define(
 					transferObject.editableTextPrimitives = null;
 					transferObject.proximitySensor = null;
 					transferObject.propertiesPanel = null;
+					transferObject.commentCountIcon = null;
+					transferObject.commentCountText = null;
 
 					return transferObject;
 				}

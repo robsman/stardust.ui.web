@@ -152,13 +152,11 @@ define(
 					transferObject.text = null;
 					transferObject.icon = null;
 					transferObject.text = null;
-					transferObject.commentCountText = null;
 					transferObject.manualActivityIcon = null;
 					transferObject.subprocessIcon = null;
 					transferObject.parallelMultiProcessingMarkerIcon = null;
 					transferObject.sequentialMultiProcessingMarkerIcon = null;
 					transferObject.subprocessMarkerIcon = null;
-					transferObject.commentCountIcon = null;
 
 					return transferObject;
 				};
