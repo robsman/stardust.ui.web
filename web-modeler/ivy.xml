@@ -33,8 +33,6 @@
    </publications>
 
    <dependencies>
-      <!-- override org="org.slf4" module="slf4j-api" rev="1.6.1" / -->
-
       <!-- compile -->
       <dependency org="com.infinity.bpm" name="infinity-process-engine" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->carnot-engine-compile" />
       <!-- TODO: change to ipp-engine-ws-cxf! -->
@@ -64,10 +62,10 @@
       <dependency org="org.apache.myfaces.core" name="myfaces-api" rev="1.2.9" conf="stardust-web-modeler-compile->default"/>
       <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="stardust-web-modeler-compile->default"/>
       <dependency org="com.google.code.gson" name="gson" rev="1.6" conf="stardust-web-modeler-compile->default"/>
-      <dependency org="org.atmosphere" name="atmosphere-runtime" rev="0.9.7" conf="stardust-web-modeler-compile->default" />
+      <dependency org="org.atmosphere" name="atmosphere-runtime" rev="0.9.7" conf="stardust-web-modeler-compile->default">
+         <exclude org="org.slf4j" module="slf4j-api"/>
+      </dependency>
 
       <dependency org="junit" name="junit" rev="4.10" conf="test->default"/>
-
-      <override org="org.slf4j" module="slf4j-api" rev="1.6.1" />
    </dependencies>
 </ivy-module>

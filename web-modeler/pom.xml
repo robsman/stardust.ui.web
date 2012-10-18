@@ -174,8 +174,12 @@
          <groupId>org.atmosphere</groupId>
          <artifactId>atmosphere-runtime</artifactId>
          <version>${atmosphere.version}</version>
-<!--
          <exclusions>
+            <exclusion>
+               <groupId>org.slf4j</groupId>
+               <artifactId>slf4j-api</artifactId>
+            </exclusion>
+<!--
             <exclusion>
                <groupId>org.atmosphere</groupId>
                <artifactId>atmosphere-compat-tomcat7</artifactId>
@@ -188,8 +192,8 @@
                <groupId>org.atmosphere</groupId>
                <artifactId>atmosphere-compat-jbossweb</artifactId>
             </exclusion>
-         </exclusions>
  -->
+         </exclusions>
       </dependency>
 <!--
       <dependency>
