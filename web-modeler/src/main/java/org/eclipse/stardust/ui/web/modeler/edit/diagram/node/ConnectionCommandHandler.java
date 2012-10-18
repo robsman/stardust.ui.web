@@ -239,6 +239,22 @@ public class ConnectionCommandHandler
             {
                DataMappingConnectionType dataMappingConnection = getModelBuilderFacade().findDataMappingConnectionByModelOid(
                      processDefinition, connectionOid);
+               DataMappingType dataMapping = null;
+               for (DataMappingType dataMappingType : dataMappingConnection.getActivitySymbol()
+                     .getActivity()
+                     .getDataMapping())
+               {
+                  if (dataMappingType.getData()
+                        .getId()
+                        .equals(dataMappingConnection.getDataSymbol().getData().getId()))
+                  {
+                     dataMapping = dataMappingType;
+                  }
+               }
+               dataMappingConnection.getActivitySymbol()
+                     .getActivity()
+                     .getDataMapping()
+                     .remove(dataMapping);
                processDefinition.getDiagram()
                      .get(0)
                      .getPoolSymbols()
