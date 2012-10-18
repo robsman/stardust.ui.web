@@ -5,7 +5,6 @@ import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -65,7 +64,8 @@ public class ExtensionDiscoveryUtils
                      extensionResources = discoverModelerExtensions(resolver,
                            modelerExtensionsBaseUri, category);
                   }
-                  catch (FileNotFoundException fnfe)
+                  // JBoss is throwing an IOException instead of FileNotFoundException if a file cannot be found
+                  catch (IOException ioe)
                   {
                      // failed discovering, skip category for this plugin
                      extensionResources = emptyList();
