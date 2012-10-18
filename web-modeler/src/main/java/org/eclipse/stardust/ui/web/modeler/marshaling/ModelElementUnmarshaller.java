@@ -35,6 +35,7 @@ import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
@@ -491,19 +492,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
             || dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
       {
-         for (DataMappingType dataMapping : dataFlowConnection.getActivitySymbol()
-               .getActivity()
-               .getDataMapping())
-         {
-            System.out.println("Data Mapping: " + dataMapping.getId());
-            System.out.println(" Direction: " + dataMapping.getDirection());
-
-            if (dataMapping.getData().getId().equals(
-                  dataFlowConnection.getDataSymbol().getData().getId()))
-            {
-               updateDataMapping(dataFlowJson, dataMapping);
-            }
-         }
+         updateDataMapping(dataFlowConnection, dataFlowJson);
       }
    }
 
@@ -1710,77 +1699,137 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
+    * Create new dataMapping when 1 dataMapping(IN) exist and user creates new(OUT)
+    * between same 2 symbols
+    *
+    * @param activity
+    * @param model
+    * @param data
+    * @return
+    */
+   private DataMappingType createDataMapping(ActivityType activity, ModelType model,
+         DataType data)
+   {
+      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
+      DataMappingType newDataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
+      newDataMapping.setElementOid(++maxOid);
+      newDataMapping.setId(data.getId());
+      newDataMapping.setName(data.getName());
+      newDataMapping.setData(data);
+      return newDataMapping;
+   }
+
+   /**
     *
     * @param dataFlowJson
     * @param dataMapping
     */
-   private void updateDataMapping(JsonObject dataFlowJson, DataMappingType dataMapping)
+   private void updateDataMapping(DataMappingConnectionType dataFlowConnection,
+         JsonObject dataFlowJson)
    {
-      // If both IN-OUT mapping is present
-      if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
-            && dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
+      DataMappingType newDataMapping = null;
+      DataMappingType currentDataMapping = null;
+      boolean removeCurrentMapping = false;
+      ActivitySymbolType activitySymbol = dataFlowConnection.getActivitySymbol();
+      DataSymbolType dataSymbol = dataFlowConnection.getDataSymbol();
+      ModelType model = ModelUtils.findContainingModel(dataFlowConnection.getDataSymbol());
+      List<DataMappingType> activityMapping = activitySymbol.getActivity()
+            .getDataMapping();
+      for (DataMappingType dataMapping : activityMapping)
       {
-         if (dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY).getAsBoolean()
-               && dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
+         if (dataMapping.getData()
+               .getId()
+               .equals(dataFlowConnection.getDataSymbol().getData().getId()))
+         {
+
+            // In-Out mapping creation from canvas
+            if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
+                  && dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
+            {
+               if (dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
+                     .getAsBoolean()
+                     && dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
+                           .getAsBoolean())
+               {
+                  newDataMapping = createDataMapping(activitySymbol.getActivity(), model,
+                        dataFlowConnection.getDataSymbol().getData());
+                  if (dataMapping.getDirection().equals(DirectionType.OUT_LITERAL))
+                     newDataMapping.setDirection(DirectionType.IN_LITERAL);
+                  else
+                     newDataMapping.setDirection(DirectionType.OUT_LITERAL);
+               }
+            }
+
+            // In Data Mapping update from properties panel
+            else if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
+            {
+               if (dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
                      .getAsBoolean())
-         {
-            dataMapping.setDirection(DirectionType.INOUT_LITERAL);
-         }
-      }
-      // IN data mapping is updates
-      else if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
-      {
-         if (dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY).getAsBoolean())
-         {
-            // If OUT mapping was already set , update to IN-OUT mapping
-            if (dataMapping.getDirection().equals(DirectionType.OUT_LITERAL))
-            {
-               dataMapping.setDirection(DirectionType.INOUT_LITERAL);
+               {
+                  // Create new mapping
+                  if (dataMapping.getDirection().equals(DirectionType.OUT_LITERAL))
+                  {
+                     newDataMapping = createDataMapping(activitySymbol.getActivity(),
+                           model, dataFlowConnection.getDataSymbol().getData());
+                     newDataMapping.setDirection(DirectionType.IN_LITERAL);
+                  }
+               }
+               else
+               {
+                  // flag to remove exisiting IN mapping element
+                  if (dataMapping.getDirection().equals(DirectionType.IN_LITERAL))
+                  {
+                     removeCurrentMapping = true;
+                     currentDataMapping = dataMapping;
+                  }
+               }
             }
-            else
+
+            // Out Data Mapping update from properties panel.
+            else if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
             {
-               dataMapping.setDirection(DirectionType.IN_LITERAL);
+               if (dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
+                     .getAsBoolean())
+               {
+                  // Create new mapping
+                  if (dataMapping.getDirection().equals(DirectionType.IN_LITERAL))
+                  {
+                     newDataMapping = createDataMapping(activitySymbol.getActivity(),
+                           model, dataFlowConnection.getDataSymbol().getData());
+                     newDataMapping.setDirection(DirectionType.OUT_LITERAL);
+                  }
+               }
+               else
+               {
+                  // flag to remove exisiting IN mapping element
+                  if (dataMapping.getDirection().equals(DirectionType.OUT_LITERAL))
+                  {
+                     removeCurrentMapping = true;
+                     currentDataMapping = dataMapping;
+                  }
+               }
             }
-         }
-         else
-         {
-            if (dataMapping.getDirection().equals(DirectionType.INOUT_LITERAL))
+
+            if (dataFlowJson.has(ModelerConstants.ACCESS_POINT_ID_PROPERTY))
             {
-               dataMapping.setDirection(DirectionType.OUT_LITERAL);
-            }
-         }
-      }
-      // OUT data mapping is updates
-      else if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
-      {
-         if (dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY).getAsBoolean())
-         {
-            // If IN mapping was already set , update to IN-OUT mapping
-            if (dataMapping.getDirection().equals(DirectionType.IN_LITERAL))
-            {
-               dataMapping.setDirection(DirectionType.INOUT_LITERAL);
-            }
-            else
-            {
-               dataMapping.setDirection(DirectionType.OUT_LITERAL);
-            }
-         }
-         else
-         {
-            if (dataMapping.getDirection().equals(DirectionType.INOUT_LITERAL))
-            {
-               dataMapping.setDirection(DirectionType.IN_LITERAL);
+               dataMapping.setApplicationAccessPoint(dataFlowJson.get(
+                     ModelerConstants.ACCESS_POINT_ID_PROPERTY).getAsString());
+               dataMapping.setContext(dataFlowJson.get(
+                     ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY).getAsString());
             }
          }
       }
 
-      if (dataFlowJson.has(ModelerConstants.ACCESS_POINT_ID_PROPERTY))
+      if (removeCurrentMapping && activityMapping.size() > 1)
       {
-         dataMapping.setApplicationAccessPoint(dataFlowJson.get(
-               ModelerConstants.ACCESS_POINT_ID_PROPERTY).getAsString());
-         dataMapping.setContext(dataFlowJson.get(
-               ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY).getAsString());
+         dataSymbol.getData().getDataMappings().remove(currentDataMapping);
+         activityMapping.remove(currentDataMapping);
       }
+      if (newDataMapping != null)
+      {
+         activitySymbol.getActivity().getDataMapping().add(newDataMapping);
+      }
+
    }
 
    /**

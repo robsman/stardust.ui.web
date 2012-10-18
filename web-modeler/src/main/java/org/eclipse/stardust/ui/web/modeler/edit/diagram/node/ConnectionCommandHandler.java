@@ -16,12 +16,15 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractIn
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLong;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
@@ -239,7 +242,7 @@ public class ConnectionCommandHandler
             {
                DataMappingConnectionType dataMappingConnection = getModelBuilderFacade().findDataMappingConnectionByModelOid(
                      processDefinition, connectionOid);
-               DataMappingType dataMapping = null;
+               List<DataMappingType> dataMapping = CollectionUtils.newArrayList();
                for (DataMappingType dataMappingType : dataMappingConnection.getActivitySymbol()
                      .getActivity()
                      .getDataMapping())
@@ -248,13 +251,17 @@ public class ConnectionCommandHandler
                         .getId()
                         .equals(dataMappingConnection.getDataSymbol().getData().getId()))
                   {
-                     dataMapping = dataMappingType;
+                     dataMapping.add(dataMappingType);
                   }
                }
                dataMappingConnection.getActivitySymbol()
                      .getActivity()
                      .getDataMapping()
-                     .remove(dataMapping);
+                     .removeAll(dataMapping);
+               dataMappingConnection.getDataSymbol()
+                     .getData()
+                     .getDataMappings()
+                     .removeAll(dataMapping);
                processDefinition.getDiagram()
                      .get(0)
                      .getPoolSymbols()
