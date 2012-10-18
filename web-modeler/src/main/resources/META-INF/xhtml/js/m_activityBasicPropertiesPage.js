@@ -487,10 +487,12 @@ define(
 						m_dialog.makeVisible(this.subprocessExecutionRow);
 					}
 
+					this.allowAbortByParticipantInput.removeAttr("disabled");
 					this.allowAbortByParticipantInput.attr("checked", this
 							.getModelElement().isAbortableByPerformer == true);
 					this.hibernateInitiallyInput.attr("checked", this
 							.getModelElement().isHibernatedOnCreation == true);
+					this.supportsRelocationInput.removeAttr("disabled");
 					this.supportsRelocationInput
 							.attr(
 									"checked",
@@ -518,6 +520,11 @@ define(
 										this.getModelElement().subprocessFullId,
 										this.getModelElement().subprocessMode,
 										this.getModelElement().attributes["carnot:engine:subprocess:copyAllData"]);
+
+						this.allowAbortByParticipantInput.attr("checked", false);
+						this.allowAbortByParticipantInput.attr("disabled", true);
+						this.supportsRelocationInput.attr("checked", false);
+						this.supportsRelocationInput.attr("disabled", true);
 					}
 				};
 
