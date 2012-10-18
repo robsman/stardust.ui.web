@@ -422,10 +422,20 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          if (controlFlowJson.get(ModelerConstants.OTHERWISE_PROPERTY).getAsBoolean())
          {
             transition.setCondition(ModelerConstants.OTHERWISE_KEY);
+
+            // Sets condition expression to empty for default flow
+            XmlTextNode expression = CarnotWorkflowModelFactory.eINSTANCE.createXmlTextNode();
+            ModelUtils.setCDataString(expression.getMixed(), "", true);
+            transition.setExpression(expression);
          }
          else
          {
             transition.setCondition(ModelerConstants.CONDITION_KEY);
+
+            // Sets condition expression to true when default flow is unchecked
+            XmlTextNode expression = CarnotWorkflowModelFactory.eINSTANCE.createXmlTextNode();
+            ModelUtils.setCDataString(expression.getMixed(), "true", true);
+            transition.setExpression(expression);
          }
       }
 

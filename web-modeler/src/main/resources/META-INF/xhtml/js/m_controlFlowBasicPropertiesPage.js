@@ -98,28 +98,6 @@ define(
 					this.registerInputForModelElementChangeSubmission(
 							this.conditionExpressionInput,
 							"conditionExpression");
-
-					// This on-click handler needs to be after the
-					// registerCheckboxInputForModelElementChangeSubmission call above
-					// to avoid having to click the "Default" checkbox twice to take effect
-					//TODO - can probably be handled in a better way
-					this.otherwiseInput.click({
-						"page" : this
-					}, function(event) {
-						if (event.data.page.otherwiseInput.is(":checked")) {
-							event.data.page.conditionExpressionInput.val("");
-						} else {
-							event.data.page.conditionExpressionInput.val("true");
-						}
-						// Programmatically invoke the change handler on the hidden text area
-						// as it will not be invoked automatically
-						event.data.page.conditionExpressionInput.change();
-
-						// TODO: Review - below statements are probably not necessary
-						// as the code editor will be refreshed in setElement()
-						// event.data.page.conditionExpressionInputEditor.setValue(event.data.page.conditionExpressionInput.val());
-						// event.data.page.conditionExpressionInputEditor.refresh();
-					});
 				};
 
 				/**
