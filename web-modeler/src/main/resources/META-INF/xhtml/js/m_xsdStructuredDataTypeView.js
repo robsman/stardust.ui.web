@@ -2,10 +2,10 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_communicationController", "m_command",
+		[ "jquery", "m_utils", "m_constants", "m_communicationController", "m_command",
 				"m_commandsController", "m_dialog", "m_modelElementView",
 				"m_model", "m_propertiesTree" ],
-		function(m_utils, m_constants, m_communicationController, m_command,
+		function(jQuery, m_utils, m_constants, m_communicationController, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
 				m_propertiesTree) {
 			return {
@@ -22,7 +22,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function XsdStructuredDataTypeView() {
 				var view = m_modelElementView.create();
@@ -32,56 +32,46 @@ define(
 						view);
 
 				/**
-				 * 
+				 *
 				 */
-				XsdStructuredDataTypeView.prototype.initialize = function(
-						typeDeclaration) {
+				XsdStructuredDataTypeView.prototype.initialize = function(typeDeclaration) {
+
 					this.id = "xsdStructuredDataTypeView";
-					this.tree = jQuery("#typeDeclarationsTable");
+					this.tree = jQuery("table#typeDeclarationsTable");
 					this.tableBody = jQuery("table#typeDeclarationsTable tbody");
-					this.upButton = jQuery("#upButton");
-					this.downButton = jQuery("#downButton");
+					this.deleteButton = jQuery("#deleteElementButton");
+					this.upButton = jQuery("#moveElementUpButton");
+					this.downButton = jQuery("#moveElementDownButton");
 					this.structureDefinitionHintPanel = jQuery("#structureDefinitionHintPanel");
 					this.structureRadioButton = jQuery("#structureRadioButton");
 					this.enumerationRadioButton = jQuery("#enumerationRadioButton");
-					this.propertiesTree = m_propertiesTree
-							.create("fieldPropertiesTable");
 
-					this.structureRadioButton
-							.click(
-									{
-										"view" : this
-									},
-									function(event) {
-										event.data.view.typeDeclaration.schema.types[this.typeDeclaration.id].body = "sequence";
+					this.propertiesTree = m_propertiesTree.create("fieldPropertiesTable");
 
-										event.data.view.enumerationRadioButton
-												.attr("checked", false);
+					var view = this;
+					this.structureRadioButton.click(
+						function(event) {
+							view.typeDeclaration.schema.types[view.typeDeclaration.id].body = "sequence";
 
-										event.data.view
-												.resumeTableForSequenceDefinition();
-									});
-					this.enumerationRadioButton
-							.click(
-									{
-										"view" : this
-									},
-									function(event) {
-										event.data.view.this.typeDeclaration.schema.types[this.typeDeclaration.id].body = "enumeration";
-										event.data.view.structureRadioButton
-												.attr("checked", false);
+							view.enumerationRadioButton.attr("checked", false);
 
-										event.data.view
-												.resumeTableForSequenceDefinition();
-									});
+							view.refreshElementsTable();
+						});
+					this.enumerationRadioButton.click(
+						function(event) {
+							view.typeDeclaration.schema.types[view.typeDeclaration.id].body = "enumeration";
+
+							view.structureRadioButton.attr("checked", false);
+
+							view.refreshElementsTable();
+						});
 					this.initializeModelElementView(typeDeclaration);
 				};
 
 				/**
-				 * 
+				 *
 				 */
-				XsdStructuredDataTypeView.prototype.setModelElement = function(
-						typeDeclaration) {
+				XsdStructuredDataTypeView.prototype.setModelElement = function(typeDeclaration) {
 					this.initializeModelElement(typeDeclaration);
 
 					this.typeDeclaration = typeDeclaration;
@@ -93,251 +83,196 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				XsdStructuredDataTypeView.prototype.toString = function() {
 					return "Lightdust.XsdStructuredDataTypeView";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				XsdStructuredDataTypeView.prototype.initializeTypeDeclaration = function() {
-					if (this.typeDeclaration.isSequence()) {
-						this.structureRadioButton.attr("checked", true);
-						this.enumerationRadioButton.attr("checked", false);
-						this.resumeTableForSequenceDefinition();
-					} else {
-						this.structureRadioButton.attr("checked", false);
-						this.enumerationRadioButton.attr("checked", true);
-						this.resumeTableForEnumerationDefinition();
-					}
+					this.structureRadioButton.attr("checked", this.typeDeclaration.isSequence());
+					this.enumerationRadioButton.attr("checked", !this.typeDeclaration.isSequence());
+
+					this.refreshElementsTable();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				XsdStructuredDataTypeView.prototype.addElement = function() {
-					if (this.typeDeclaration.isSequence())
-						{
-					this.typeDeclaration.getBody().elements["New"
-							+ this.getElementCount()] = {
-						name : "New" + this.getElementCount(),
-						type : "xsd:string",
-						cardinality : "required"
-					};
+					var newElement = this.typeDeclaration.addElement(/* generate default name */);
+
 					this.submitChanges({
 						typeDeclaration : this.typeDeclaration.typeDeclaration
 					});
 
-					this.resumeTableForSequenceDefinition();
-						}
-					else
-						{
-						this.getFacets()["New"
-												+ this.getElementCount()] = {classifier: "enumeration",
-							name: "New" + this.getElementCount()};
-						this.submitChanges({
-							typeDeclaration : this.typeDeclaration.typeDeclaration
-						});
-										this.resumeTableForEnumerationDefinition();						
-						}
-				};
-
-				XsdStructuredDataTypeView.prototype.getElementCount = function() {
-					var n = 0;
-
-					if (this.typeDeclaration.isSequence())
-						{
-					for ( var element in this.typeDeclaration.getBody().elements) {
-						++n;
-					}
-						}
-					else
-						{
-						for ( var element in this.getFacets()) {
-							++n;
-						}						
-						}
-
-					return n;
+					this.refreshElementsTable();
 				};
 
 				/**
-				 * 
+				 *
 				 */
-				XsdStructuredDataTypeView.prototype.resumeTableForSequenceDefinition = function() {
+				XsdStructuredDataTypeView.prototype.renameElement = function(tableRows, newName) {
+					var view = this;
+
+					jQuery(tableRows).each(function(i, tableRow) {
+						var typeDeclaration = jQuery(tableRow).data("typeDeclaration");
+						typeDeclaration.renameElement(jQuery(tableRow).data("elementName"), newName);
+
+						view.submitChanges({
+							typeDeclaration : typeDeclaration.typeDeclaration
+						});
+
+						view.refreshElementsTable();
+					});
+				};
+
+				/**
+				 *
+				 */
+				XsdStructuredDataTypeView.prototype.setElementType = function(tableRows, typeName) {
+					var view = this;
+
+					jQuery(tableRows).each(function(i, tableRow) {
+						var typeDeclaration = jQuery(tableRow).data("typeDeclaration");
+						typeDeclaration.setElementType(jQuery(tableRow).data("elementName"), typeName);
+
+						view.submitChanges({
+							typeDeclaration : typeDeclaration.typeDeclaration
+						});
+
+						view.refreshElementsTable();
+					});
+				};
+
+				/**
+				 *
+				 */
+				XsdStructuredDataTypeView.prototype.setElementCardinality = function(tableRows, cardinality) {
+					var view = this;
+
+					jQuery(tableRows).each(function(i, tableRow) {
+						var typeDeclaration = jQuery(tableRow).data("typeDeclaration");
+						typeDeclaration.setElementCardinality(jQuery(tableRow).data("elementName"), cardinality);
+
+						view.submitChanges({
+							typeDeclaration : typeDeclaration.typeDeclaration
+						});
+
+						view.refreshElementsTable();
+					});
+				};
+
+				/**
+				 *
+				 */
+				XsdStructuredDataTypeView.prototype.removeElement = function(tableRows) {
+					var view = this;
+
+					jQuery(tableRows).each(function(i, tableRow) {
+						var typeDeclaration = jQuery(tableRow).data("typeDeclaration");
+						typeDeclaration.removeElement(jQuery(tableRow).data("elementName"));
+
+						view.submitChanges({
+							typeDeclaration : typeDeclaration.typeDeclaration
+						});
+
+						view.refreshElementsTable();
+					});
+				};
+
+				XsdStructuredDataTypeView.prototype.refreshElementsTable = function() {
+					// TODO merge instead of fully rebuild table
 					this.tableBody.empty();
 
 					// Find root schema
 
 					var n = 0;
 
-					for ( var element in this.typeDeclaration.getBody().elements) {
-						var path = element.replace(/:/g, "-");
+					var view = this;
+					jQuery.each(this.typeDeclaration.getElements(), function(i, element) {
+						var path = element.name.replace(/:/g, "-");
 
-						var content = "<tr id='" + path + "'>";
+						var newRow = jQuery("<tr id='" + path + "'></tr>");
 
-						content += "<td class='elementCell'>";
-						content += "<input type='text' value='"
-								+ this.typeDeclaration.getBody().elements[element].name + "'/>";
-						content += "</td>";
-						content += "<td class='typeCell'>";
+						var nameColumn = jQuery("<td></td>").appendTo(newRow);
+						nameColumn.append("<input class='nameInput' type='text' value='" + element.name + "'/>");
 
-						if (this.typeDeclaration.getBody().classifier == "sequence") {
-							content += this
-									.getTypeSelectList(this.typeDeclaration.getBody().elements[element].type);
+						var typeColumn = jQuery("<td></td>").appendTo(newRow);
+						if (view.typeDeclaration.isSequence()) {
+							typeColumn.append(view.getTypeSelectList(element.type));
 						}
 
-						content += "<td class='cardinalityCell'>";
-
-						if (this.typeDeclaration.getBody().classifier == "sequence") {
-							content += ("<select size=\"1\" class=\"cardinalitySelect\"><option value=\"1\""
-									+ (this.typeDeclaration.getBody().elements[element].cardinality == "required" ? "selected"
-											: "")
-									+ ">Required</option><option value=\"N\""
-									+ (this.typeDeclaration.getBody().elements[element].cardinality == "many" ? "selected"
-											: "") + ">Many</option></select>");
+						var cardinalityColumn = jQuery("<td></td>").appendTo(newRow);
+						if (view.typeDeclaration.isSequence()) {
+							cardinalityColumn.append("<select size='1' class='cardinalitySelect'>"
+								+ "  <option value='required'" + (element.cardinality == "required" ? "selected" : "") + ">Required</option>"
+								+ "  <option value='many'" + (element.cardinality == "many" ? "selected" : "") + ">Many</option>"
+								+ "</select>");
 						}
 
-						content += "</td>";
-						content += "</tr>";
+						newRow.appendTo(view.tableBody);
+						newRow.data("typeDeclaration", view.typeDeclaration);
+						newRow.data("elementName", element.name);
+					});
 
-						this.tableBody.append(content);
-					}
+					this.tableBody.append("<tr id='newRow'>"
+						+ "  <td><input id='newLink' type='image' src='../../images/icons/add.png'/></td>"
+						+ "  </td><td>"
+						+ "  </td><td>"
+						+ "</tr>");
 
-					this.tableBody
-							.append("<tr id=\"newRow\"><td><input id=\"newLink\" type=\"image\" src=\"../../images/icons/add.png\"/></td><td></td><td></td>");
-
-					// Initialize event handling
-
-					jQuery("table#typeDeclarationsTable tbody tr").mousedown(
-							function() {
-								jQuery("tr.selected").removeClass("selected");
-								jQuery(this).addClass("selected");
-							});
-					jQuery("table#typeDeclarationsTable #newRow #newLink")
-							.click({
-								"view" : this
-							}, function(event) {
-								m_utils.debug("Clicked");
-								event.data.view.addElement();
-							});
-					jQuery("table#typeDeclarationsTable .nameInput")
-							.change(
-									{
-										"view" : this
-									},
-									function(event) {
-										jQuery(this).parent().parent().data().schemaElement.name = jQuery(
-												this).val();
-									});
-					jQuery("table#typeDeclarationsTable .typeSelect")
-							.change(
-									{
-										"view" : this
-									},
-									function(event) {
-										jQuery(this).parent().parent().data().schemaElement.typeName = jQuery(
-												this).val();
-									});
-					jQuery("table#typeDeclarationsTable .cardinalitySelect")
-							.change(
-									{
-										"view" : this
-									},
-									function(event) {
-										jQuery(this).parent().parent().data().schemaElement.cardinality = jQuery(
-												this).val();
-									});
+					this.bindTableEventHandlers();
 
 					this.tree.tableScroll({
 						height : 150
 					});
+
 					this.tree.treeTable();
 				};
 
 				/**
-				 * 
+				 * Initialize event handling
 				 */
-				XsdStructuredDataTypeView.prototype.resumeTableForEnumerationDefinition = function() {
-					this.tableBody.empty();
+				XsdStructuredDataTypeView.prototype.bindTableEventHandlers = function() {
+					var view = this;
 
-					var n = 0;
+					jQuery("tr", this.tableBody).mousedown(
+						function() {
+							jQuery("tr.selected", view.tableBody).removeClass("selected");
+							jQuery(this).addClass("selected");
+						});
 
-					for ( var element in this.typeDeclaration.getFacets()) {
-						var content = "<tr id='" + element + "'>";
+					jQuery("#newRow #newLink", this.tree).click(
+						function(event) {
+							view.addElement();
+						});
+					jQuery(this.deleteButton).click(
+						function(event) {
+							view.removeElement(jQuery("tr.selected", view.tableBody));
+						});
 
-						content += "<td>";
-						content += "<input type='text' value='"
-								+ this.typeDeclaration.getFacets()[element].name + "'/>";
-						content += "</td>";
-						content += "<td>";
-						content += "</td>";
-						content += "<td>";
-						content += "</td>";
-						content += "</tr>";
-
-						this.tableBody.append(content);
-					}
-
-
-					this.tableBody
-							.append("<tr id=\"newRow\"><td><input id=\"newLink\" type=\"image\" src=\"../../images/icons/add.png\"/></td><td></td><td></td>");
-
-					// Initialize event handling
-
-					jQuery("table#typeDeclarationsTable tbody tr").mousedown(
-							function() {
-								jQuery("tr.selected").removeClass("selected");
-								jQuery(this).addClass("selected");
-							});
-					jQuery("table#typeDeclarationsTable #newRow #newLink")
-							.click({
-								"view" : this
-							}, function(event) {
-								m_utils.debug("Clicked");
-								event.data.view.addElement();
-							});
-					jQuery("table#typeDeclarationsTable .nameInput")
-							.change(
-									{
-										"view" : this
-									},
-									function(event) {
-										jQuery(this).parent().parent().data().schemaElement.name = jQuery(
-												this).val();
-									});
-					jQuery("table#typeDeclarationsTable .typeSelect")
-							.change(
-									{
-										"view" : this
-									},
-									function(event) {
-										jQuery(this).parent().parent().data().schemaElement.typeName = jQuery(
-												this).val();
-									});
-					jQuery("table#typeDeclarationsTable .cardinalitySelect")
-							.change(
-									{
-										"view" : this
-									},
-									function(event) {
-										jQuery(this).parent().parent().data().schemaElement.cardinality = jQuery(
-												this).val();
-									});
-
-					this.tree.tableScroll({
-						height : 150
-					});
-					this.tree.treeTable();
+					jQuery(".nameInput", this.tree).change(
+						function(event) {
+							view.renameElement(jQuery(event.target).closest("tr"), jQuery(event.target).val());
+						});
+					jQuery(".typeSelect", this.tree).change(
+						function(event) {
+							view.setElementType(jQuery(event.target).closest("tr"), jQuery(event.target).val());
+						});
+					jQuery(".cardinalitySelect", this.tree).change(
+						function(event) {
+							view.setElementCardinality(jQuery(event.target).closest("tr"), jQuery(event.target).val());
+						});
 				};
 
 				/**
-				 * 
+				 *
 				 */
-				XsdStructuredDataTypeView.prototype.removeSchemaElement = function(
-						schemaElement) {
+				XsdStructuredDataTypeView.prototype.removeSchemaElement = function(schemaElement) {
 					m_utils.debug("Removing " + schemaElement.name);
 					delete this.structuredDataType.typeDeclaration.children[schemaElement.name];
 
@@ -347,10 +282,9 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
-				XsdStructuredDataTypeView.prototype.getTypeSelectList = function(
-						type) {
+				XsdStructuredDataTypeView.prototype.getTypeSelectList = function(type) {
 					var select = "<select size=\"1\" class=\"typeSelect\">";
 
 					select += "<optgroup label=\"Primitive Data\">";
@@ -422,7 +356,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				XsdStructuredDataTypeView.prototype.validate = function() {
 					this.clearErrorMessages();

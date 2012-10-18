@@ -2,8 +2,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_modelElement" ],
-		function(m_utils, m_modelElement) {
+		[ "jquery", "m_utils", "m_modelElement" ],
+		function(jQuery, m_utils, m_modelElement) {
 			var STRUCTURE_TYPE = "STRUCTURE_TYPE";
 			var ENUMERATION_TYPE = "ENUMERATION_TYPE";
 
@@ -23,26 +23,27 @@ define(
 
 					return json;
 				},
+
 				STRUCTURE_TYPE : STRUCTURE_TYPE,
 				ENUMERATION_TYPE : ENUMERATION_TYPE
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function TypeDeclaration() {
 				m_utils.inheritMethods(TypeDeclaration.prototype,
 						m_modelElement.create());
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.toString = function() {
 					return "Lightdust.TypeDeclaration";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.initialize = function(name, type) {
 					this.name = name;
@@ -59,7 +60,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.initializeFromJson = function(model) {
 					this.model = model;
@@ -67,7 +68,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.rename = function(id, name) {
 					delete this.model.typeDeclarations[this.id];
@@ -79,54 +80,50 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.isSequence = function() {
 					return this.getBody() != null;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.getBody = function() {
 					return this.typeDeclaration.schema.types[this.id].body;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.getFacets = function() {
 					return this.typeDeclaration.schema.types[this.id].facets;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.getSchemaName = function() {
 					return this.typeDeclaration.schema.elements[this.id].type;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.getElementCount = function() {
 					var n = 0;
 
-					if (this.isSequence()) {
-						for ( var element in this.getBody().elements) {
+					jQuery.each(
+						this.getElements(),
+						function(i, element) {
 							++n;
-						}
-					} else {
-						for ( var element in this.getFacets()) {
-							++n;
-						}
-					}
+						});
 
 					return n;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.createInstance = function() {
 					if (this.isSequence()) {
@@ -143,7 +140,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.populateSequenceInstanceRecursively = function(
 						typeDeclaration, instance) {
@@ -177,13 +174,74 @@ define(
 					}
 					return instance;
 				};
-				
+
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.switchToEnumeration = function()
 				{
-					
+
+				};
+
+				TypeDeclaration.prototype.getElements = function() {
+					return this.isSequence()
+						? this.getBody().elements
+						: this.getFacets();
+				};
+
+				TypeDeclaration.prototype.getElement = function(name) {
+					return this.getElements()[name];
+				};
+
+				TypeDeclaration.prototype.addElement = function(name) {
+					// TODO detect if name is already present
+					var newName = name || "New" + (this.getElementCount() + 1);
+
+					var newElement;
+					if (this.isSequence()) {
+						newElement = {
+							name : newName,
+							type : "xsd:string",
+							cardinality : "required"
+						};
+					} else {
+						newElement = {
+							name: newName,
+							classifier: "enumeration"
+						};
+					}
+					this.getElements()[newElement.name] = newElement;
+
+					return newElement;
+				};
+
+				TypeDeclaration.prototype.renameElement = function(oldName, newName) {
+					var elementContainer = this.getElements();
+
+					var element = elementContainer[oldName];
+					if (element) {
+						delete elementContainer[oldName];
+						element.name = newName;
+						elementContainer[element.name] = element;
+					}
+				};
+
+				TypeDeclaration.prototype.setElementType = function(name, typeName) {
+					var element = this.getElement(name);
+					if (element) {
+						element.type = typeName;
+					}
+				};
+
+				TypeDeclaration.prototype.setElementCardinality = function(name, cardinality) {
+					var element = this.getElement(name);
+					if (element) {
+						element.cardinality = cardinality;
+					}
+				};
+
+				TypeDeclaration.prototype.removeElement = function(name) {
+					delete this.getElements()[name];
 				};
 			}
 		});
