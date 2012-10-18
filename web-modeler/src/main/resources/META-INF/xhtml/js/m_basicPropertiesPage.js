@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -21,7 +21,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function BasicPropertiesPage(propertiesPanel) {
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
@@ -34,7 +34,7 @@ define(
 						propertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				BasicPropertiesPage.prototype.initializeBasicPropertiesPage = function() {
 					this.guidOutputRow = this.mapInputId("guidOutputRow");
@@ -65,7 +65,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				BasicPropertiesPage.prototype.initializeDocumentationHandling = function() {
 					if (this.documentationCreationLink != null) {
@@ -101,7 +101,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				BasicPropertiesPage.prototype.setModelElement = function() {
 					if (m_user.getCurrentRole() != m_constants.INTEGRATOR_ROLE) {
@@ -127,14 +127,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				BasicPropertiesPage.prototype.getModelElement = function() {
 					return this.propertiesPanel.element.modelElement;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				BasicPropertiesPage.prototype.getModelElementUuid = function() {
 					// TODO Replace with uuid
@@ -143,7 +143,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				BasicPropertiesPage.prototype.validateModelElement = function() {
 					this.propertiesPanel.clearErrorMessages();
@@ -164,7 +164,25 @@ define(
 				};
 
 				/**
-				 * 
+				 *
+				 */
+				BasicPropertiesPage.prototype.validateIntegerInput = function(
+						input, message) {
+					this.propertiesPanel.clearErrorMessages();
+					input.removeClass("error");
+					if (isNaN(input.val()) || (-1 != input.val().indexOf("."))) {
+						this.propertiesPanel.errorMessages.push(message);
+						input.addClass("error");
+						input.focus();
+						this.propertiesPanel.showErrorMessages();
+						return false;
+					}
+
+					return true;
+				};
+
+				/**
+				 *
 				 */
 				BasicPropertiesPage.prototype.loadDocumentUrl = function() {
 					// if (this.propertiesPanel.getModelElement().attributes ==
@@ -191,7 +209,7 @@ define(
 					// }
 
 					// TODO Add above back if document generation is supported
-					
+
 					m_dialog.makeInvisible(this.documentationCreationLinkPanel);
 					m_dialog.makeInvisible(this.openDocumentViewLinkPanel);
 				};

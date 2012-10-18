@@ -771,6 +771,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             processDefinition.getDataPath().add(dataPath);
          }
       }
+
+      if (processDefinitionJson.has(ModelerConstants.DEFAULT_PRIORITY_PROPERTY))
+      {
+         processDefinition.setDefaultPriority(processDefinitionJson.get(
+               ModelerConstants.DEFAULT_PRIORITY_PROPERTY).getAsInt());
+      }
    }
 
    /**

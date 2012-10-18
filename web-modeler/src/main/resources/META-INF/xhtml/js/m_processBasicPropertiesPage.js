@@ -102,7 +102,11 @@ define(
 				 *
 				 */
 				ProcessBasicPropertiesPage.prototype.validate = function() {
-					if (this.validateModelElement()) {
+					if (this.validateModelElement()
+							&& this.validateIntegerInput(
+									this.defaultPriorityInput,
+									"Default priority should be an integer.")) {
+
 						return true;
 					}
 
