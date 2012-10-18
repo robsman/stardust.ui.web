@@ -649,7 +649,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                activityJson.addProperty(
                      ModelerConstants.SUBPROCESS_ID,
                      getModelBuilderFacade().createFullId(
-                           ModelUtils.findContainingModel(activity),
+                           ModelUtils.findContainingModel(activity.getImplementationProcess()),
                            activity.getImplementationProcess()));
                if (activity.getSubProcessMode().equals(
                      SubProcessModeType.SYNC_SEPARATE_LITERAL))
