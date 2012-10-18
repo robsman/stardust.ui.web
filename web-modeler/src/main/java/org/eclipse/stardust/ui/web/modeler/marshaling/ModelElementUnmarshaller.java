@@ -25,6 +25,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
@@ -1716,6 +1717,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       newDataMapping.setId(data.getId());
       newDataMapping.setName(data.getName());
       newDataMapping.setData(data);
+      newDataMapping.setContext(PredefinedConstants.DEFAULT_CONTEXT);
       return newDataMapping;
    }
 
