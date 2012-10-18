@@ -51,19 +51,23 @@ define(
 					var view = this;
 					this.structureRadioButton.click(
 						function(event) {
-							view.typeDeclaration.schema.types[view.typeDeclaration.id].body = "sequence";
+							view.typeDeclaration.switchToComplexType();
 
-							view.enumerationRadioButton.attr("checked", false);
+							view.submitChanges({
+								typeDeclaration : view.typeDeclaration.typeDeclaration
+							});
 
-							view.refreshElementsTable();
+							view.initializeTypeDeclaration();
 						});
 					this.enumerationRadioButton.click(
 						function(event) {
-							view.typeDeclaration.schema.types[view.typeDeclaration.id].body = "enumeration";
+							view.typeDeclaration.switchToEnumeration();
 
-							view.structureRadioButton.attr("checked", false);
+							view.submitChanges({
+								typeDeclaration : view.typeDeclaration.typeDeclaration
+							});
 
-							view.refreshElementsTable();
+							view.initializeTypeDeclaration();
 						});
 					this.initializeModelElementView(typeDeclaration);
 				};

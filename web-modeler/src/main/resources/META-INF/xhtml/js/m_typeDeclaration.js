@@ -79,32 +79,35 @@ define(
 					this.model.typeDeclarations[this.id] = this;
 				};
 
+				TypeDeclaration.prototype.getTypeDeclaration = function() {
+					return this.typeDeclaration.schema.types[this.id];
+				};
 				/**
 				 *
 				 */
 				TypeDeclaration.prototype.isSequence = function() {
-					return this.getBody() != null;
+					return (null != this.getBody()) && (this.getBody().classifier === 'sequence');
 				};
 
 				/**
 				 *
 				 */
 				TypeDeclaration.prototype.getBody = function() {
-					return this.typeDeclaration.schema.types[this.id].body;
+					return this.getTypeDeclaration().body;
 				};
 
 				/**
 				 *
 				 */
 				TypeDeclaration.prototype.getFacets = function() {
-					return this.typeDeclaration.schema.types[this.id].facets;
+					return this.getTypeDeclaration().facets;
 				};
 
 				/**
 				 *
 				 */
 				TypeDeclaration.prototype.getSchemaName = function() {
-					return this.typeDeclaration.schema.elements[this.id].type;
+					return this.getTypeDeclaration().type;
 				};
 
 				/**
@@ -129,9 +132,7 @@ define(
 					if (this.isSequence()) {
 						var instance = {};
 
-						this
-								.populateSequenceInstanceRecursively(this,
-										instance);
+						this.populateSequenceInstanceRecursively(this, instance);
 
 						return instance;
 					} else {
@@ -178,9 +179,36 @@ define(
 				/**
 				 *
 				 */
+				TypeDeclaration.prototype.switchToComplexType = function()
+				{
+					if ( !this.isSequence()) {
+						var td = this.getTypeDeclaration();
+						delete td.type;
+						delete td.facets;
+
+						td.body = {
+							name: "<sequence>",
+							icon: "XSDModelGroupSequence.gif",
+							classifier: "sequence",
+							elements: {}
+						};
+						td.icon = "XSDComplexTypeDefinition.gif";
+					}
+				};
+
+				/**
+				 *
+				 */
 				TypeDeclaration.prototype.switchToEnumeration = function()
 				{
+					if (this.isSequence()) {
+						var td = this.getTypeDeclaration();
+						delete td.body;
 
+						td.type = "string";
+						td.facets = {};
+						td.icon = "XSDSimpleTypeDefinition.gif";
+					}
 				};
 
 				TypeDeclaration.prototype.getElements = function() {
