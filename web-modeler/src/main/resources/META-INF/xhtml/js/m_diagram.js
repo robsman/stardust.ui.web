@@ -550,7 +550,7 @@ define(
 
 					if (null != guid) {
 						for ( var i = 0; i < this.symbols.length; i++) {
-							if (this.symbols[i].oid == guid) {
+							if (this.symbols[i].oid == guid && (this.symbols[i].diagram.modelId == this.modelId)) {
 								return this.symbols[i];
 							}
 						}
@@ -567,7 +567,7 @@ define(
 					if (null != guid) {
 						for ( var i = 0; i < this.symbols.length; i++) {
 							if (this.symbols[i].modelElement != null
-									&& this.symbols[i].modelElement.oid == guid) {
+									&& this.symbols[i].modelElement.oid == guid && (this.symbols[i].diagram.modelId == this.modelId)) {
 								return this.symbols[i];
 							}
 						}
@@ -600,7 +600,8 @@ define(
 
 					if (null != guid) {
 						for ( var i = 0; i < this.connections.length; i++) {
-							if (this.connections[i].oid == guid) {
+							if (this.connections[i].oid == guid
+									&& (this.connections[i].diagram.modelId == this.modelId)) {
 								return this.connections[i];
 							}
 						}
@@ -616,7 +617,8 @@ define(
 
 					if (null != guid) {
 						for ( var i = 0; i < this.connections.length; i++) {
-							if (this.connections[i].modelElement.oid == guid) {
+							if (this.connections[i].modelElement.oid == guid
+									&& (this.connections[i].diagram.modelId == this.modelId)) {
 								return this.connections[i];
 							}
 						}
