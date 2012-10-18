@@ -24,7 +24,7 @@ define([ "m_urlUtils" ], function(m_urlUtils) {
 		//graphics-common. Will need to move to some generic service.
 		jQuery.ajax({
 			url : require('m_urlUtils').getContextName()
-					+ "/services/rest/documents/DUMMU_DOC_ID/pages/0/"
+					+ "/services/rest/graphics-common/documents/DUMMU_DOC_ID/pages/0/"
 					+ new Date().getTime() + "/language",
 			async : false,
 			success : function(l) {
