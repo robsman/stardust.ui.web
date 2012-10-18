@@ -34,7 +34,7 @@ define([ "m_urlUtils" ], function(m_urlUtils) {
 		InfinityBPMI18N.initPluginProps({
 			pluginName : "modeler",
 			singleEndPoint : require('m_urlUtils').getContextName()
-					+ "/services/rest/properties/bpm-modeler-client-messages/"
+					+ "/services/rest/common/properties/bpm-modeler-client-messages/"
 					+ lang
 		});
 
