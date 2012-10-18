@@ -45,7 +45,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function PropertiesPanel(id) {
 				this.id = id;
@@ -63,7 +63,7 @@ define(
 				this.lastSelectedPageIndex = 0;
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.initialize = function(diagram) {
 					this.diagram = diagram;
@@ -73,21 +73,21 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.getModel = function() {
 					return this.diagram.model;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.getModelElement = function() {
 					return this.element.modelElement;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.wrapModelElementProperties = function(
 						modelElementProperties) {
@@ -97,21 +97,21 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.mapInputId = function(inputId) {
 					return jQuery("#" + this.id + " #" + inputId);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.getElementUuid = function() {
 					return this.element.oid;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.initializePropertiesPages = function() {
 					this.propertiesPages = [];
@@ -207,7 +207,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.showPropertiesPageList = function() {
 					if (this.propertiesPages.length == 1) {
@@ -246,7 +246,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.hidePropertiesPages = function() {
 					for ( var n in this.propertiesPages) {
@@ -261,7 +261,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.showErrorMessages = function() {
 					if (this.errorMessages.length != 0) {
@@ -275,7 +275,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.show = function(page) {
 					m_dialog.makeVisible(this.panel);
@@ -300,7 +300,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.hide = function() {
 					m_dialog.makeInvisible(this.panel);
@@ -308,28 +308,28 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.reset = function() {
 					this.resetPropertiesPages();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.showHelpPanel = function() {
 					m_dialog.makeVisible(this.helpPanel);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.hideHelpPanel = function() {
 					m_dialog.makeInvisible(this.helpPanel);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.processCommand = function(command) {
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
@@ -346,26 +346,28 @@ define(
 							&& null != object.changes.modified
 							&& 0 != object.changes.modified.length) {
 
-						if (object.changes.modified[0].oid == this.element.oid) {
-							m_utils.inheritFields(this.element,
-									object.changes.modified[0]);
-							this.setElement(this.element);
-						} else if (this.element.modelElement != null
-								&& object.changes.modified[0].oid == this.element.modelElement.oid) {
-							m_utils
-									.debug("Changes to be applied to Model Element of Properties Page:");
-							m_utils.debug(this.element.modelElement);
-							m_utils.debug(object.changes.modified[0]);
-							m_utils.inheritFields(this.element.modelElement,
-									object.changes.modified[0]);
-							m_utils.debug(this.element.modelElement);
-							this.setElement(this.element);
+						for (var i = 0; i < object.changes.modified.length; i++) {
+							if (object.changes.modified[i].oid == this.element.oid) {
+								m_utils.inheritFields(this.element,
+										object.changes.modified[i]);
+								this.setElement(this.element);
+							} else if (this.element.modelElement != null
+									&& object.changes.modified[i].oid == this.element.modelElement.oid) {
+								m_utils
+										.debug("Changes to be applied to Model Element of Properties Page:");
+								m_utils.debug(this.element.modelElement);
+								m_utils.debug(object.changes.modified[i]);
+								m_utils.inheritFields(this.element.modelElement,
+										object.changes.modified[i]);
+								m_utils.debug(this.element.modelElement);
+								this.setElement(this.element);
+							}
 						}
 					}
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.assembleChangedObjectFromProperty = function(
 						property, value) {
@@ -379,7 +381,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.assembleChangedObjectFromAttribute = function(
 						attribute, value) {
@@ -395,7 +397,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.submitChanges = function(changes) {
 					m_utils.debug("Changes to be submitted for UUID "

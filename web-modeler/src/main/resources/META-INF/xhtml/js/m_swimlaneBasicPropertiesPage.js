@@ -47,8 +47,7 @@ define(
 				SwimlaneBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
 
-					this.title = this
-							.mapInputId("swimlanePropertiesPanelTitle");
+					this.propertiesPanelTitle = jQuery("#swimlanePropertiesPanelTitle");
 					this.newParticipantName = this
 							.mapInputId("newParticipantName");
 					this.participantList = this.mapInputId("participantList");
@@ -110,23 +109,32 @@ define(
 
 					this.refreshParticipantList();
 
-					this.title.empty();
-
 					if (this.getModelElement().participantFullId != null) {
 						this.participantList
 								.val(this.getModelElement().participantFullId);
-						this.title
+					} else {
+						this.participantList.val("NONE");
+					}
+					this.updatePropertiesPanelTitle();
+				};
+
+				/**
+				 *
+				 */
+				SwimlaneBasicPropertiesPage.prototype.updatePropertiesPanelTitle = function() {
+					this.propertiesPanelTitle.empty();
+					if (this.getModelElement().participantFullId != null) {
+						this.propertiesPanelTitle
 								.append(this.getModelElement().name
-										+ "("
+										+ " ("
 										+ m_model
 												.findParticipant(this
 														.getModelElement().participantFullId).name
 										+ ")");
 					} else {
-						this.participantList.val("NONE");
-						this.title.append(this.getModelElement().name);
+						this.propertiesPanelTitle.append(this.getModelElement().name);
 					}
-				};
+				}
 
 				/**
 				 *
