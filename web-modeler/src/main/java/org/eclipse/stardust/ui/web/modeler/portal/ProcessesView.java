@@ -52,6 +52,11 @@ public class ProcessesView extends AbstractLaunchPanel implements
 				.getCurrent();
 		sessionMap.setObject("SESSION_CONTEXT",
 				SessionContext.findSessionContext());
+
+		// My processes panel should be expanded by default
+		// Set it to expanded and activate outline IFRAME
+		setExpanded(true);
+		activateIframe();
 	}
 
 	/* (non-Javadoc)
