@@ -28,17 +28,10 @@ public class ParticipantLabel
    private static final String POSTFIX_OPEN = "(";
    private static final String POSTFIX_CLOSE = ")";
 
-   public TYPE type = TYPE.PARTICIPANT;
-   private List<String> departments = new ArrayList<String>();
-   private String organizationName = null;
+   private List<String> hierarchyDetails = new ArrayList<String>();
    private String participantName = null;
-   private String roleName = null;
    private String wrappedLabel = null;
    private String label = null;
-
-   enum TYPE {
-      ROLE, ORGANIZATION, PARTICIPANT
-   }
 
    /**
     * @return
@@ -70,91 +63,27 @@ public class ParticipantLabel
     */
    private void initialize()
    {
-      if (null == type)
-      {
-         type = TYPE.PARTICIPANT;
-      }
+      label = participantName;
 
-      switch (type)
+      if (CollectionUtils.isNotEmpty(hierarchyDetails))
       {
-      case ROLE:
-         label = roleName;
-         if (CollectionUtils.isEmpty(departments)) // default department
+         label += POSTFIX_OPEN;
+         for (String dept : hierarchyDetails)
          {
-            label += POSTFIX_OPEN + organizationName + DEFAULT_DEPARTMENT_IND + POSTFIX_CLOSE;
-            if (label.length() > TOTAL_PERMISSIBLE_LENGTH)
-            {
-               wrappedLabel = StringUtils.wrapString(label, TOTAL_PERMISSIBLE_LENGTH);
-            }
-            else
-            {
-               wrappedLabel = label;
-            }
+            label += dept + SEPARATOR;
+         }
+         label = label.substring(0, label.length() - 1);
+
+         label += POSTFIX_CLOSE;
+
+         if (label.length() > TOTAL_PERMISSIBLE_LENGTH)
+         {
+            wrappedLabel = StringUtils.wrapString(label, TOTAL_PERMISSIBLE_LENGTH);
          }
          else
          {
-            label += POSTFIX_OPEN;
-
-            for (String dept : departments)
-            {
-               label += dept + SEPARATOR;
-            }
-            label = label.substring(0, label.length() - 1);
-            label += POSTFIX_CLOSE;
-
-            if (label.length() > TOTAL_PERMISSIBLE_LENGTH)
-            {
-               wrappedLabel = StringUtils.wrapString(label, TOTAL_PERMISSIBLE_LENGTH);
-            }
-            else
-            {
-               wrappedLabel = label;
-            }
+            wrappedLabel = label;
          }
-         break;
-
-      case ORGANIZATION:
-         label = organizationName;
-         if (CollectionUtils.isEmpty(departments)) // default department
-         {
-            label += POSTFIX_OPEN + DEFAULT_DEPARTMENT_IND + POSTFIX_CLOSE;
-            if (label.length() > TOTAL_PERMISSIBLE_LENGTH)
-            {
-               wrappedLabel = StringUtils.wrapString(label, TOTAL_PERMISSIBLE_LENGTH);
-            }
-            else
-            {
-               wrappedLabel = label;
-            }
-         }
-         else
-         {
-            label += POSTFIX_OPEN;
-            for (String dept : departments)
-            {
-               label += dept + SEPARATOR;
-            }
-            label = label.substring(0, label.length() - 1);
-            label += POSTFIX_CLOSE;
-
-            if (label.length() > TOTAL_PERMISSIBLE_LENGTH)
-            {
-               wrappedLabel = StringUtils.wrapString(label, TOTAL_PERMISSIBLE_LENGTH);
-            }
-            else
-            {
-               wrappedLabel = label;
-            }
-         }
-         break;
-
-      case PARTICIPANT:
-         label = participantName;
-         wrappedLabel = StringUtils.wrapString(label, TOTAL_PERMISSIBLE_LENGTH);
-         break;
-
-      default:
-         break;
       }
    }
 
@@ -162,23 +91,19 @@ public class ParticipantLabel
    {
       if (null != department)
       {
-         this.departments.add(department);
+         this.hierarchyDetails.add(department);
       }
    }
 
-   public void setOrganizationName(String organizationName)
+   public void addOrganization(String organization, boolean scoped)
    {
-      this.organizationName = organizationName;
-   }
-
-   public void setRoleName(String roleName)
-   {
-      this.roleName = roleName;
-   }
-
-   public void setType(TYPE type)
-   {
-      this.type = type;
+      if (null != organization)
+      {
+         if (scoped || CollectionUtils.isNotEmpty(hierarchyDetails))
+         {
+            this.hierarchyDetails.add(organization + (scoped ? DEFAULT_DEPARTMENT_IND : ""));
+         }
+      }
    }
 
    public void setParticipantName(String participantName)

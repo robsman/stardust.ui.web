@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.common;
 
-import org.eclipse.stardust.engine.api.dto.DepartmentDetails;
+import java.util.List;
+
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.DynamicParticipantInfo;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Organization;
@@ -24,11 +26,10 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 
-
-
 /**
  * @author Subodh.Godbole
- *
+ * @author Yogesh.Manware
+ * 
  */
 public class ModelHelper
 {
@@ -36,9 +37,9 @@ public class ModelHelper
    {
       return getParticipantLabel(participantInfo).getLabel();
    }
-   
+
    // TODO: This method probably needs to move to the I18Utils class
-   
+
    /**
     * @param participantInfo
     * @return ParticipantLabel
@@ -50,19 +51,19 @@ public class ModelHelper
       if (participantInfo instanceof ModelParticipantInfo)
       {
          ModelParticipantInfo modelParticipantInfo = (ModelParticipantInfo) participantInfo;
+
          if (modelParticipantInfo.isDepartmentScoped())
          {
             DepartmentInfo departmentInfo = modelParticipantInfo.getDepartment();
+
             if (modelParticipantInfo instanceof OrganizationInfo)
             {
                OrganizationInfo organizationInfo = (OrganizationInfo) modelParticipantInfo;
 
                // Format: OrgName (? or period separated DeptNames)
                Organization organization = (Organization) ParticipantUtils.getParticipant(organizationInfo);
-               participantlabel.setType(ParticipantLabel.TYPE.ORGANIZATION);
-               participantlabel.setOrganizationName(I18nUtils.getParticipantName(organization)); 
-               
-               setDepartments(participantlabel, departmentInfo);
+               participantlabel.setParticipantName(I18nUtils.getParticipantName(organization));
+               setHierarchyDetails(participantlabel, organization, departmentInfo);
             }
             else if (modelParticipantInfo instanceof RoleInfo)
             {
@@ -70,14 +71,8 @@ public class ModelHelper
                Role role = (Role) ModelUtils.getModelCache().getParticipant(roleInfo.getId(), Role.class);
 
                // Format: RoleName (OrgName? or period separated DeptNames)
-               participantlabel.setType(ParticipantLabel.TYPE.ROLE);
-               participantlabel.setRoleName(I18nUtils.getParticipantName(role));
-               participantlabel.setOrganizationName(I18nUtils
-                     .getParticipantName(role.getAllSuperOrganizations().get(0)));
-               if (departmentInfo != null && !Department.DEFAULT.equals(departmentInfo))
-               {
-                  setDepartments(participantlabel, departmentInfo);
-               }
+               participantlabel.setParticipantName(I18nUtils.getParticipantName(role));
+               setHierarchyDetails(participantlabel, role.getAllSuperOrganizations().get(0), departmentInfo);
             }
          }
          else
@@ -94,24 +89,49 @@ public class ModelHelper
 
       return participantlabel;
    }
-   
+
    /**
     * @param participantLabel
+    * @param organization
     * @param deptInfo
     */
-   private static void setDepartments(ParticipantLabel participantLabel, DepartmentInfo deptInfo)
+   private static void setHierarchyDetails(ParticipantLabel participantLabel, Organization organization,
+         DepartmentInfo deptInfo)
    {
-      if (null != deptInfo && (deptInfo instanceof Department))
+      Department dept = (Department) deptInfo;
+      while (null != organization)
       {
-         Department dept = (Department) deptInfo;
-         while (null != dept)
+         String orgId = "";
+         if (null != deptInfo && (deptInfo instanceof Department))
+         {
+            orgId = dept.getOrganization().getQualifiedId();
+         }
+
+         if (!orgId.equals(organization.getQualifiedId()))
+         {
+            // add Organization
+            participantLabel.addOrganization(I18nUtils.getParticipantName(organization),
+                  organization.definesDepartmentScope());
+         }
+         else
          {
             participantLabel.addDepartment(dept.getName());
             dept = dept.getParentDepartment();
          }
+
+         List<Organization> allSuperOrganizations = organization.getAllSuperOrganizations();
+         if (CollectionUtils.isNotEmpty(allSuperOrganizations))
+         {
+            organization = allSuperOrganizations.get(0);
+         }
+         else
+         {
+            organization = null;
+            break;
+         }
       }
-   }   
-   
+   }
+
    /**
     * @param departmentInfo
     * @return
@@ -119,23 +139,20 @@ public class ModelHelper
    public static ParticipantLabel getDepartmentLabel(DepartmentInfo department)
    {
       ParticipantLabel participantlabel = new ParticipantLabel();
-      participantlabel.setType(ParticipantLabel.TYPE.ORGANIZATION);
-      
       if (department instanceof Department)
       {
-         DepartmentDetails deptDetail = (DepartmentDetails) department;
+         Department deptDetail = (Department) department;
          if (null != deptDetail.getOrganization() && deptDetail.getOrganization().isDepartmentScoped())
          {
             String organizationName = I18nUtils.getParticipantName(deptDetail.getOrganization());
-            participantlabel.setOrganizationName(organizationName);
-            setDepartments(participantlabel, deptDetail);
+            participantlabel.setParticipantName(organizationName);
+            setHierarchyDetails(participantlabel, deptDetail.getOrganization(), deptDetail);
          }
       }
       else
       {
          participantlabel.setParticipantName(department.getName());
       }
-      
       return participantlabel;
    }
 }
