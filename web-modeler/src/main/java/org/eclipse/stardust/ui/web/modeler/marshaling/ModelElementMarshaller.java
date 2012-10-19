@@ -863,6 +863,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             startEventSymbol.getElementOid());
 
+      eventSymbolJson.addProperty(ModelerConstants.NAME_PROPERTY,
+            startEventSymbol.getLabel());
+
       // TODO check this math
       eventSymbolJson.addProperty(ModelerConstants.X_PROPERTY, startEventSymbol.getXPos()
             + laneOffsetX);

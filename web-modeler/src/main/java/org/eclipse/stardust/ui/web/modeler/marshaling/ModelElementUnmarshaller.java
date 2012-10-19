@@ -973,9 +973,11 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       JsonObject startEventJson = startEventSymbolJson.getAsJsonObject("modelElement");
 
       updateNodeSymbol(startEventSymbol, startEventJson);
-
-      mapDeclaredProperties(startEventSymbol.getModelElement(), startEventJson,
-            propertiesMap.get(StartEventSymbol.class));
+      if (startEventJson.has(ModelerConstants.NAME_PROPERTY))
+      {
+         startEventSymbol.setLabel(startEventJson.get(ModelerConstants.NAME_PROPERTY)
+               .getAsString());
+      }
       storeAttributes(startEventSymbol.getModelElement(), startEventJson);
       storeDescription(startEventSymbol.getModelElement(), startEventJson);
    }
