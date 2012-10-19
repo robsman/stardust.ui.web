@@ -82,6 +82,11 @@ define(
 				TypeDeclaration.prototype.getTypeDeclaration = function() {
 					return this.typeDeclaration.schema.types[this.id];
 				};
+
+				TypeDeclaration.prototype.isReadOnly = function() {
+					return (null != this.typeDeclaration.type) && (this.typeDeclaration.type.classifier === 'ExternalReference');
+				};
+
 				/**
 				 *
 				 */
@@ -205,7 +210,7 @@ define(
 						var td = this.getTypeDeclaration();
 						delete td.body;
 
-						td.type = "string";
+						td.type = "xsd:string";
 						td.facets = {};
 						td.icon = "XSDSimpleTypeDefinition.gif";
 					}
@@ -261,6 +266,13 @@ define(
 					}
 				};
 
+				TypeDeclaration.prototype.getEffectiveElementType = function(name) {
+					var element = this.getElement(name);
+					if (element) {
+						;
+					}
+				};
+
 				TypeDeclaration.prototype.setElementCardinality = function(name, cardinality) {
 					var element = this.getElement(name);
 					if (element) {
@@ -270,6 +282,47 @@ define(
 
 				TypeDeclaration.prototype.removeElement = function(name) {
 					delete this.getElements()[name];
+				};
+
+				TypeDeclaration.prototype.resolveElementType = function(name) {
+					var element = this.getElement(name);
+					if (element) {
+						var typeName;
+						var schema;
+
+						var typeQName = element.type.split(":");
+						if (1 == typeQName.length) {
+							// no ns prefix, resolve to containing schema
+							typeName = typeQName[0];
+							schema = this.typeDeclaration.schema;
+						} else if (2 == typeQName.length) {
+							// resolve ns prefix to schema
+							typeName = typeQName[1];
+
+							var schemaNsUri = this.typeDeclaration.schema.nsMappings[typeQName[0]];
+							if (schemaNsUri == "http://www.w3.org/2001/XMLSchema") {
+								return { name: "xsd:" + typeName };
+							}
+
+							jQuery.each(this.model.typeDeclarations, function(i, declaration) {
+								if ((declaration.typeDeclaration != null)
+									&& (declaration.typeDeclaration.schema != null)
+									&& (declaration.typeDeclaration.schema.targetNamespace == schemaNsUri)) {
+									schema = declaration.typeDeclaration.schema;
+									return false;
+								}
+							});
+						}
+
+						var type = schema.types[typeName];
+						return {
+							name: typeName,
+							type: type,
+							schema: schema
+						};
+					} else {
+						return undefiend;
+					}
 				};
 			}
 		});

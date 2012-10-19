@@ -11,6 +11,7 @@
 
 package org.eclipse.stardust.ui.web.modeler.service;
 
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newApplicationActivity;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newStructVariable;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBoolean;
@@ -2068,6 +2069,15 @@ public class ModelService
 
       json.addProperty("targetNamespace", schema.getTargetNamespace());
       json.addProperty("icon", ip.doSwitch(schema).getSimpleName());
+      JsonObject nsMappings = new JsonObject();
+      for (Map.Entry<String, String> mapping : schema.getQNamePrefixToNamespaceMap().entrySet())
+      {
+         if ( !isEmpty(mapping.getKey()))
+         {
+            nsMappings.addProperty(mapping.getKey(), mapping.getValue());
+         }
+      }
+      json.add("nsMappings", nsMappings);
 
       JsonObject elements = new JsonObject();
       addChildren(elements, schema, cp, lp, ip, new Predicate<EObject>()

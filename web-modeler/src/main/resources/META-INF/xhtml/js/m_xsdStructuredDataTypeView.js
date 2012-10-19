@@ -201,26 +201,59 @@ define(
 						var path = element.name.replace(/:/g, "-");
 
 						var newRow = jQuery("<tr id='" + path + "'></tr>");
+						var childRows = [];
 
 						var nameColumn = jQuery("<td></td>").appendTo(newRow);
 						nameColumn.append("<input class='nameInput' type='text' value='" + element.name + "'/>");
 
 						var typeColumn = jQuery("<td></td>").appendTo(newRow);
 						if (view.typeDeclaration.isSequence()) {
-							typeColumn.append(view.getTypeSelectList(element.type));
+
+							var elementType = view.typeDeclaration.resolveElementType(element.name);
+
+							if ( !view.typeDeclaration.isReadOnly()) {
+								typeColumn.append(view.getTypeSelectList(element.type));
+							} else {
+								typeColumn.append(element.type);
+							}
+
+							if ((element.type != null)
+									&& (element.type.body != null)
+									&& (element.type.body.classifier == "sequence")) {
+								// TODO append child rows
+								jQuery.each(elementType.type.body.elements, function() {
+									var childRow = jQuery("<tr id='' class='child-of-" + path + "'></tr>");
+
+									jQuery("<td>" + this.name + "</td>").appendTo(childRow);
+									jQuery("<td>" + this.type + "</td>").appendTo(childRow);
+									jQuery("<td>" + this.cardinality + "</td>").appendTo(childRow);
+
+									childRows.push(childRow);
+
+									// TODO recurse
+								});
+							}
 						}
 
 						var cardinalityColumn = jQuery("<td></td>").appendTo(newRow);
 						if (view.typeDeclaration.isSequence()) {
-							cardinalityColumn.append("<select size='1' class='cardinalitySelect'>"
-								+ "  <option value='required'" + (element.cardinality == "required" ? "selected" : "") + ">Required</option>"
-								+ "  <option value='many'" + (element.cardinality == "many" ? "selected" : "") + ">Many</option>"
-								+ "</select>");
+							if ( !view.typeDeclaration.isReadOnly()) {
+								cardinalityColumn.append("<select size='1' class='cardinalitySelect'>"
+										+ "  <option value='required'" + (element.cardinality == "required" ? "selected" : "") + ">Required</option>"
+										+ "  <option value='many'" + (element.cardinality == "many" ? "selected" : "") + ">Many</option>"
+										+ "</select>");
+							} else {
+								cardinalityColumn.append(element.cardinality);
+							}
 						}
 
 						newRow.appendTo(view.tableBody);
 						newRow.data("typeDeclaration", view.typeDeclaration);
 						newRow.data("elementName", element.name);
+
+						jQuery.each(childRows, function(i, childRow) {
+							view.tableBody.append(childRow);
+						});
 					});
 
 					this.tableBody.append("<tr id='newRow'>"
@@ -235,7 +268,9 @@ define(
 						height : 150
 					});
 
-					this.tree.treeTable();
+					this.tree.treeTable({
+						indent: 20,
+					});
 				};
 
 				/**

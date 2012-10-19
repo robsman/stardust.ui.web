@@ -24,9 +24,9 @@ public class XsdTextProvider extends XSDSwitch<String>
       "many",//Structured_Messages.CardinalityManyLabel,
       "at least one"//Structured_Messages.CardinalityAtLeastOneLabel
    };
-   
+
    private int column;
-   
+
    public String[] CARDINALITY_LABELS = DEFAULT_CARDINALITY_LABELS;
 
    public void setColumn(int column)
@@ -95,7 +95,7 @@ public class XsdTextProvider extends XSDSwitch<String>
       switch (column)
       {
       case 0: return simpleType.getName();
-      case 1: return simpleType.getBaseTypeDefinition().getName();
+      case 1: return simpleType.getBaseTypeDefinition().getQName(simpleType);
       }
       return ""; //$NON-NLS-1$
    }
@@ -112,7 +112,7 @@ public class XsdTextProvider extends XSDSwitch<String>
             // TODO:
             return ""; //$NON-NLS-1$
          }
-         return complexType.getBaseTypeDefinition().getName();
+         return complexType.getBaseTypeDefinition().getQName(complexType);
       }
       return ""; //$NON-NLS-1$
    }
@@ -172,7 +172,7 @@ public class XsdTextProvider extends XSDSwitch<String>
       }
       return ""; //$NON-NLS-1$
    }
-   
+
    public String defaultCase(EObject object)
    {
       return column == 0 ? object.toString() : ""; //$NON-NLS-1$
