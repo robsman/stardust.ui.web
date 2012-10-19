@@ -8,7 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.eclipse.emf.ecore.EObject;
+import org.springframework.context.ApplicationContext;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -19,7 +22,6 @@ import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
 import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.AbstractModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelIoUtils;
@@ -51,6 +53,9 @@ public class DefaultModelManagementStrategy extends
 	private Map<String, String> modelFileNameMap = new HashMap<String, String>();
 
    private final List<ModelPersistenceHandler> persistenceHandlers;
+
+   @Resource
+   private ApplicationContext context;
 
 	public DefaultModelManagementStrategy()
    {
@@ -309,7 +314,7 @@ public class DefaultModelManagementStrategy extends
 		// TODO Replace
 
 		if (serviceFactory == null) {
-			serviceFactory = ServiceFactoryLocator.get("motu", "motu");
+         serviceFactory = getModelService().getServiceFactory();
 		}
 
 		return serviceFactory;
@@ -350,5 +355,13 @@ public class DefaultModelManagementStrategy extends
    {
       String modelUUID = uuidMapper().getUUID(model);
       modelFileNameMap.remove(modelUUID);
+   }
+
+   /**
+    * @return
+    */
+   private ModelService getModelService()
+   {
+      return (ModelService) context.getBean("modelService");
    }
 }
