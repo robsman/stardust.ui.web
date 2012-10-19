@@ -23,9 +23,9 @@ define([ "m_urlUtils" ], function(m_urlUtils) {
 		//TODO - Currently using service written for TIFF viewer in
 		//graphics-common. Will need to move to some generic service.
 		jQuery.ajax({
-			url : require('m_urlUtils').getContextName()
-					+ "/services/rest/graphics-common/documents/DUMMU_DOC_ID/pages/0/"
-					+ new Date().getTime() + "/language",
+					url : require('m_urlUtils').getContextName()
+							+ "/services/rest/bpm-modeler/modeler/"
+							+ new Date().getTime() + "/language",
 			async : false,
 			success : function(l) {
 				lang = l;
@@ -34,7 +34,7 @@ define([ "m_urlUtils" ], function(m_urlUtils) {
 		InfinityBPMI18N.initPluginProps({
 			pluginName : "modeler",
 			singleEndPoint : require('m_urlUtils').getContextName()
-					+ "/services/rest/common/properties/bpm-modeler-client-messages/"
+					+ "/services/rest/bpm-modeler/modeler/" + new Date().getTime() + "/bpm-modeler-client-messages/"
 					+ lang
 		});
 
