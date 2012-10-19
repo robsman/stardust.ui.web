@@ -27,7 +27,7 @@ public class DMSUtils
    public static final String DOCUMENT_ICON_BASE_PATH = "/plugins/views-common/images/icons/mime-types/";
    public static final String I_FOLDER_MY_DOCS = "/plugins/views-common/images/icons/folder_user.png";
    public static final String I_FOLDER_CORRESPONDENCE = "/plugins/views-common/images/icons/folder_page.png";
-   public static final String I_FOLDER_PROCESS_ATTACH = "/plugins/views-common/images/icons/process-attachment.png";
+   public static final String I_FOLDER_PROCESS_ATTACH = "/plugins/views-common/images/icons/page_white_stack.png";
    public static final String F_CORRESPONDENCE_FOLDER = "/documents/correspondence-templates";
    private static final char SPECIAL_CHARS[] = {'<', '>', '/', '\\', '*', '?', ':', '|', '\"'};
    
