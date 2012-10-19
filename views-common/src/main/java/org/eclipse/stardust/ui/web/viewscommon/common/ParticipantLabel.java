@@ -25,7 +25,7 @@ public class ParticipantLabel
    public static final int TOTAL_PERMISSIBLE_LENGTH = 30;
    private static final String DEFAULT_DEPARTMENT_IND = "?";
    private static final String SEPARATOR = ".";
-   private static final String POSTFIX_OPEN = "(";
+   private static final String POSTFIX_OPEN = " (";
    private static final String POSTFIX_CLOSE = ")";
 
    private List<String> hierarchyDetails = new ArrayList<String>();
@@ -75,16 +75,9 @@ public class ParticipantLabel
          label = label.substring(0, label.length() - 1);
 
          label += POSTFIX_CLOSE;
-
-         if (label.length() > TOTAL_PERMISSIBLE_LENGTH)
-         {
-            wrappedLabel = StringUtils.wrapString(label, TOTAL_PERMISSIBLE_LENGTH);
-         }
-         else
-         {
-            wrappedLabel = label;
-         }
       }
+
+      wrappedLabel = StringUtils.wrapString(label, TOTAL_PERMISSIBLE_LENGTH);
    }
 
    public void addDepartment(String department)
