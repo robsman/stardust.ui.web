@@ -319,8 +319,8 @@ define(
 					for ( var n in this.connections) {
 						var connection = this.connections[n];
 						if (null != connection.modelElement
-								&& connection.modelElement.inputDataMapping
-								&& connection.modelElement.outputDataMapping) {
+								&& connection.modelElement.inDataMapping
+								&& connection.modelElement.outDataMapping) {
 							if (connection.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
 								outMapping
 										.push(connection.fromAnchorPoint.symbol.oid);
