@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -25,13 +25,13 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function ProcessProcessAttachmentsPropertiesPage(propertiesPanel) {
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "processAttachmentsPropertiesPage",
 						"Process Attachments",
-						"../../images/icons/generic-properties-page.png");
+						"../../images/icons/process-attachment.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
@@ -39,7 +39,7 @@ define(
 						propertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessAttachmentsPropertiesPage.prototype.initialize = function() {
 					this.supportsAttachmentsInput = this
@@ -58,18 +58,18 @@ define(
 										if (page.supportsAttachmentsInput
 												.is(":checked")) {
 											if (!page.hasProcessAttachmentsDataPathes()) {
-												page.addProcessAttachmentsDataPathes(); 
+												page.addProcessAttachmentsDataPathes();
 											}
 										} else {
 											if (page.hasProcessAttachmentsDataPathes()) {
-												page.removeProcessAttachmentsDataPathes(); 
+												page.removeProcessAttachmentsDataPathes();
 											}
 										}
 									});
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessAttachmentsPropertiesPage.prototype.hasProcessAttachmentsDataPathes = function() {
 					for ( var n = 0; n < this.propertiesPanel.element.dataPathes.length; ++n) {
@@ -82,7 +82,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessAttachmentsPropertiesPage.prototype.addProcessAttachmentsDataPathes = function() {
 					this.propertiesPanel.element.dataPathes.push({
@@ -115,7 +115,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessAttachmentsPropertiesPage.prototype.removeProcessAttachmentsDataPathes = function() {
 					var changedPathes = [];
@@ -135,7 +135,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessAttachmentsPropertiesPage.prototype.setElement = function() {
 					this.supportsAttachmentsInput.attr("checked", this
@@ -143,7 +143,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessAttachmentsPropertiesPage.prototype.validate = function() {
 					this.propertiesPanel.clearErrorMessages();

@@ -21,13 +21,14 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function ProcessProcessInterfacePropertiesPage(newPropertiesPanel,
 					newId, newTitle) {
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						newPropertiesPanel, "processInterfacePropertiesPage",
-						"Process Interface");
+						"Process Interface",
+						"../../images/icons/process-interface.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
@@ -35,7 +36,7 @@ define(
 						propertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.initialize = function() {
 					this.processInterfaceTypeSelectInput = this
@@ -188,7 +189,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.populateProcessDataTable = function() {
 					this.processDataTableBody.empty();
@@ -222,7 +223,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setNoInterface = function() {
 					this.processInterfaceTypeSelectInput.val("noInterface");
@@ -233,7 +234,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setProvidesProcessInterface = function() {
 					this.processInterfaceTypeSelectInput
@@ -249,7 +250,7 @@ define(
 
 					m_utils.debug("Set Parameters: " + this
 							.getModelElement().formalParameters);
-					
+
 					this.parameterDefinitionsPanel.setScopeModel(this
 							.getModelElement().model);
 					this.parameterDefinitionsPanel.setParameterDefinitions(this
@@ -257,7 +258,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setImplementsProcessInterface = function() {
 					this.processInterfaceTypeSelectInput
@@ -268,7 +269,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.populateParameterDefinitionFields = function() {
 					this.parameterDefinitionNameInput
@@ -284,14 +285,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.getModelElement = function() {
 					return this.propertiesPanel.element;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setElement = function() {
 					this.parameterDefinitionsPanel.setScopeModel(this
@@ -307,13 +308,13 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.validate = function() {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.submitProtocol = function() {
 					var attributes = {};
