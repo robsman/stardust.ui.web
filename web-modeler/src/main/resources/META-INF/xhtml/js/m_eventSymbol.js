@@ -128,7 +128,6 @@ define(
 					transferObject.image = null;
 					transferObject.startImageUrl = null;
 					transferObject.stopImageUrl = null;
-
 					return transferObject;
 				};
 
@@ -201,9 +200,6 @@ define(
 								m_constants.EVENT_STOP_STROKE_WIDTH);
 						this.image.attr("src", this.stopImageUrl);
 					}
-					// Store the server side co-ord, required for moving symbol
-					// when other lane is minimized.
-					this.updateServerSideCoordinates();
 				};
 
 				/**

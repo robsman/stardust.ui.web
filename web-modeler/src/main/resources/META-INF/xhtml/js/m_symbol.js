@@ -155,7 +155,9 @@ define(
 				Symbol.prototype.updateServerSideCoordinates = function() {
 					this.serverSideCoordinates = {
 						x : this.x,
-						y : this.y
+						y : this.y,
+						width : this.width,
+						height :this.height
 					};
 				};
 
@@ -947,6 +949,9 @@ define(
 				Symbol.prototype.refresh = function() {
 					this.refreshFromModelElement();
 					this.refreshCommentPrimitives();
+					// Store the server side co-ord, required for moving symbol
+					// when other lane is minimized.
+					this.updateServerSideCoordinates();
 					this.recalculateBoundingBox();
 					this.adjustGeometry();
 					// Reroute connections in case the connection has moved

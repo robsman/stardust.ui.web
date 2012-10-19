@@ -123,11 +123,13 @@ define(
 				SwimlaneSymbol.prototype.initializeFromJson = function() {
 					this.prepareNoPosition();
 					this.completeNoTransfer();
+					this.updateServerSideCoordinates();
 
 					for ( var n in this.activitySymbols) {
 						var activitySymbol = m_activitySymbol
 								.createActivitySymbolFromJson(this.diagram,
 										this, this.activitySymbols[n]);
+						this.activitySymbols[n].updateServerSideCoordinates();
 					}
 
 					// Create gateways
@@ -135,6 +137,7 @@ define(
 					for ( var n in this.gatewaySymbols) {
 						m_gatewaySymbol.createGatewaySymbolFromJson(
 								this.diagram, this, this.gatewaySymbols[n]);
+						this.gatewaySymbols[n].updateServerSideCoordinates();
 					}
 
 					// Create event symbols
@@ -142,6 +145,7 @@ define(
 					for ( var n in this.eventSymbols) {
 						m_eventSymbol.createEventSymbolFromJson(this.diagram,
 								this, this.eventSymbols[n]);
+						this.eventSymbols[n].updateServerSideCoordinates();
 					}
 
 					// Create data symbols
@@ -149,12 +153,14 @@ define(
 					for ( var n in this.dataSymbols) {
 						m_dataSymbol.createDataSymbolFromJson(this.diagram,
 								this, this.dataSymbols[n]);
+						this.dataSymbols[n].updateServerSideCoordinates();
 					}
 					// Create data symbols
 
 					for ( var n in this.annotationSymbols) {
 						m_annotationSymbol.createFromJson(this.diagram,
 								this, this.annotationSymbols[n]);
+						this.annotationSymbols[n].updateServerSideCoordinates();
 					}
 				};
 
@@ -669,9 +675,6 @@ define(
 						this.text.attr("text", this.name);
 					}
 					this.participantName = this.text.attr("text");
-					// Store the server side co-ord, required for moving symbol
-					// when other lane is minimized.
-					this.updateServerSideCoordinates();
 				};
 
 				/**

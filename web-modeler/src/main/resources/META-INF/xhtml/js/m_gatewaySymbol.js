@@ -423,9 +423,6 @@ define(
 						this.orCircle.show();
 					}
 
-					// Store the server side co-ord, required for moving symbol
-					// when other lane is minimized.
-					this.updateServerSideCoordinates();
 				};
 
 				GatewaySymbol.prototype.recalculateBoundingBox = function() {

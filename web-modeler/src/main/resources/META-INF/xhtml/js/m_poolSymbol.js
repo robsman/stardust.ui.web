@@ -304,11 +304,30 @@ define(
 
 						this.recalculateBoundingBox();
 						this.adjustGeometry();
-
+						// If any lane is minimized , x co-ord needs to be
+						// adjusted
+						this.adjustCurrentLaneCoordinates(swimlaneSymbol);
 						//The create REST call for swimlanes is made after the swimlabe is created and re-positioned.
 						swimlaneSymbol.createAndSubmitCreateCommand();
 					} else {
 						m_messageDisplay.showMessage("Swimlane for participant (" + participant.name + ") exists already");
+					}
+				};
+
+				/**
+				 * Adjust the co-ordinates for current swimalane, and set offset
+				 * required for calcualating x/y for symbols contained in lane
+				 */
+				PoolSymbol.prototype.adjustCurrentLaneCoordinates = function(
+						swimlaneSymbol) {
+					var xOffset = 0;
+					for ( var n in this.laneSymbols) {
+						if (this.laneSymbols[n].minimized) {
+							xOffset = this.laneSymbols[n].cacheWidth - this.laneSymbols[n].width;
+							swimlaneSymbol.x += xOffset;
+							swimlaneSymbol.symbolXOffset = xOffset;
+							break;
+						}
 					}
 				};
 
@@ -409,11 +428,11 @@ define(
 													0);
 								}
 							} else {
-								if (this.laneSymbols[n].symbolXOffset > 0 ) {
+								if (this.laneSymbols[n].symbolXOffset > 0) {
 									// Reset the offset, when adjacant lane is
 									// maximized
 									this.laneSymbols[n].symbolXOffset -= (currentLane.cacheWidth - currentLane.width);
-									//Move the lane to right
+									// Move the lane to right
 									this.laneSymbols[n].moveBy(
 											currentLane.cacheWidth
 													- currentLane.width, 0);
@@ -426,16 +445,21 @@ define(
 																- this.laneSymbols[n].symbolXOffset,
 														this.laneSymbols[n].containedSymbols[c].serverSideCoordinates.y);
 
-										// TODO - Cache Anchor Points stored when lane is minimized, needs to be
+										// Cache Anchor Points stored when lane is minimized, needs to be
 										// moved when adj lane is maximized and current lane is in minimized state
-										/*	for(var m in this.laneSymbols[n].containedSymbols[c].anchorPoints){
-											if(this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheX){
-												this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheX += this.laneSymbols[n].symbolXOffset;
+										for ( var m in this.laneSymbols[n].containedSymbols[c].anchorPoints) {
+											if (this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheX) {
+												var symbolNewAnchorPointLocation = this.laneSymbols[n].containedSymbols[c].x
+														+ this.laneSymbols[n].containedSymbols[c].width
+														/ 2;
+												this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheX += (symbolNewAnchorPointLocation - this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheX);
+											}else if (this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheY) {
+												var symbolNewAnchorPointLocation = this.laneSymbols[n].containedSymbols[c].y
+														+ this.laneSymbols[n].containedSymbols[c].height
+														/ 2;
+												this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheY += (symbolNewAnchorPointLocation - this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheY);
 											}
-											if(this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheY){
-												this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheY += this.laneSymbols[n].symbolXOffset;
-											}
-										}*/
+										}
 									}
 								}
 							}
