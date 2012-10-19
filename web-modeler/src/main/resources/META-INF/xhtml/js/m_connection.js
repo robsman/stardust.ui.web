@@ -1873,7 +1873,8 @@ define(
 							}
 						}
 						// If Start and End symbol are same, show error
-						if (fromAnchorPoint.symbol.oid == toAnchorPoint.symbol.oid) {
+						if (fromAnchorPoint.symbol.oid != null
+								&& fromAnchorPoint.symbol.oid == toAnchorPoint.symbol.oid) {
 							m_messageDisplay
 									.showErrorMessage("A connection must connect two different symbols.");
 							return false;

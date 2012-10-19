@@ -544,13 +544,14 @@ define(
 				};
 
 				/**
-				 *
+				 * Find symbol in current model by OID
 				 */
-				Diagram.prototype.findSymbolByGuid = function(guid) {
+				Diagram.prototype.findSymbolByGuid = function(guid, modelId) {
 
 					if (null != guid) {
 						for ( var i = 0; i < this.symbols.length; i++) {
-							if (this.symbols[i].oid == guid && (this.symbols[i].diagram.modelId == this.modelId)) {
+							if (this.symbols[i].diagram.modelId == modelId
+									&& (this.symbols[i].oid == guid)) {
 								return this.symbols[i];
 							}
 						}
@@ -560,14 +561,15 @@ define(
 				};
 
 				/**
-				 *
+				 * Find symbol in current model by ModelElement OID
 				 */
-				Diagram.prototype.findSymbolByModelElementGuid = function(guid) {
+				Diagram.prototype.findSymbolByModelElementGuid = function(guid, modelId) {
 
 					if (null != guid) {
 						for ( var i = 0; i < this.symbols.length; i++) {
-							if (this.symbols[i].modelElement != null
-									&& this.symbols[i].modelElement.oid == guid && (this.symbols[i].diagram.modelId == this.modelId)) {
+							if (this.symbols[i].diagram.modelId == modelId
+									&& (this.symbols[i].modelElement != null &&
+											this.symbols[i].modelElement.oid == guid)) {
 								return this.symbols[i];
 							}
 						}
@@ -577,13 +579,15 @@ define(
 				};
 
 				/**
-				 *
+				 * Find connection in current model by fromSymbolOID and
+				 * toSymbolOID
 				 */
-				Diagram.prototype.findConnection = function(conn) {
+				Diagram.prototype.findConnection = function(conn, modelId) {
 
 					for ( var i = 0; i < this.connections.length; i++) {
-						if (this.connections[i].fromModelElementOid == conn.fromModelElementOid
-								&& this.connections[i].toModelElementOid == conn.toModelElementOid) {
+						if (this.connections[i].diagram.modelId == modelId
+								&& (this.connections[i].fromModelElementOid == conn.fromModelElementOid &&
+										this.connections[i].toModelElementOid == conn.toModelElementOid)) {
 							// while adding a connection, to update connection
 							// connection is searched using modelELementOid
 							return this.connections[i];
@@ -594,14 +598,14 @@ define(
 				};
 
 				/**
-				 *
+				 * Find connection in current model by OID
 				 */
-				Diagram.prototype.findConnectionByGuid = function(guid) {
+				Diagram.prototype.findConnectionByGuid = function(guid, modelId) {
 
 					if (null != guid) {
 						for ( var i = 0; i < this.connections.length; i++) {
-							if (this.connections[i].oid == guid
-									&& (this.connections[i].diagram.modelId == this.modelId)) {
+							if ((this.connections[i].diagram.modelId == modelId)
+									&& this.connections[i].oid == guid) {
 								return this.connections[i];
 							}
 						}
@@ -610,15 +614,16 @@ define(
 				};
 
 				/**
-				 *
+				 * Find connection in current model by
+				 * ModelElement(controlFlow/DataFlow) OID
 				 */
 				Diagram.prototype.findConnectionByModelElementGuid = function(
-						guid) {
+						guid, modelId) {
 
 					if (null != guid) {
 						for ( var i = 0; i < this.connections.length; i++) {
-							if (this.connections[i].modelElement.oid == guid
-									&& (this.connections[i].diagram.modelId == this.modelId)) {
+							if ((this.connections[i].diagram.modelId == modelId)
+									&& this.connections[i].modelElement.oid == guid) {
 								return this.connections[i];
 							}
 						}
@@ -650,14 +655,14 @@ define(
 						// Delete removed elements
 						for ( var i = 0; i < obj.changes.removed.length; i++) {
 							var symbol = this
-									.findSymbolByGuid(obj.changes.removed[i].oid);
+									.findSymbolByGuid(obj.changes.removed[i].oid, command.modelId);
 							if (null == symbol) {
 								symbol = this
-										.findSymbolByModelElementGuid(obj.changes.removed[i].oid);
+										.findSymbolByModelElementGuid(obj.changes.removed[i].oid, command.modelId);
 							}
 							if (null == symbol) {
 								symbol = this
-										.findConnectionByGuid(obj.changes.removed[i].oid);
+										.findConnectionByGuid(obj.changes.removed[i].oid, command.modelId);
 							}
 							if (null != symbol) {
 								symbol.remove();
@@ -679,7 +684,7 @@ define(
 									this.registerSymbol(this.lastSymbol);
 									this.lastSymbol = null;
 								} else {
-									if (null == this.findSymbolByGuid(obj.changes.added[i].oid)) {
+									if (null == this.findSymbolByGuid(obj.changes.added[i].oid, command.modelId)) {
 										this.poolSymbol.laneSymbols.push(m_swimlaneSymbol.createSwimlaneSymbolFromJson(this, this.poolSymbol, obj.changes.added[i]));
 										this.poolSymbol.sortLanes();
 										this.poolSymbol.adjustChildSymbols();
@@ -706,7 +711,7 @@ define(
 									this.registerSymbol(this.lastSymbol);
 									this.lastSymbol = null;
 								}// For connections lastSymbol will be empty
-								else {
+								else if (command.isUndo || command.isRedo) {
 									// Else block is executed in case of undo / redo
 									//Find swimlane from modified array or added
 									var swimlane;
@@ -724,7 +729,7 @@ define(
 									}
 
 									if (swimlane) {
-										swimlane = this.findSymbolByGuid(swimlane.oid);
+										swimlane = this.findSymbolByGuid(swimlane.oid, command.modelId);
 									} else {
 										//Swimlane delete undo scenario
 										for ( var j = 0; j < obj.changes.added.length; j++) {
@@ -768,9 +773,10 @@ define(
 								if (null != conn) {
 									conn.applyChanges(obj.changes.added[i]);
 									conn.refresh();
-								} else if (obj.changes.added[i].type == m_constants.CONTROL_FLOW_CONNECTION
-										|| obj.changes.added[i].type == m_constants.DATA_FLOW_CONNECTION) {
-									m_connection.createConnectionFromJson(this, obj.changes.added[i]);
+								} else if ((command.isUndo || command.isRedo)
+										&& (obj.changes.added[i].type == m_constants.CONTROL_FLOW_CONNECTION || obj.changes.added[i].type == m_constants.DATA_FLOW_CONNECTION)) {
+									m_connection.createConnectionFromJson(this,
+											obj.changes.added[i]);
 								}
 							}
 						}
@@ -781,7 +787,7 @@ define(
 
 						for ( var i = 0; i < obj.changes.modified.length; i++) {
 							var symbol = this
-									.findSymbolByGuid(obj.changes.modified[i].oid);
+									.findSymbolByGuid(obj.changes.modified[i].oid, command.modelId);
 
 							if (symbol != null) {
 								m_utils.debug("Up to changed symbol:");
@@ -797,7 +803,7 @@ define(
 							}
 
 							symbol = this
-									.findSymbolByModelElementGuid(obj.changes.modified[i].oid);
+									.findSymbolByModelElementGuid(obj.changes.modified[i].oid, command.modelId);
 
 							if (symbol != null) {
 								m_utils.debug("Up to changed symbol:");
@@ -817,7 +823,7 @@ define(
 
 							// Check if connection is modified
 							var conn = this
-									.findConnectionByGuid(obj.changes.modified[i].oid);
+									.findConnectionByGuid(obj.changes.modified[i].oid, command.modelId);
 
 							if (null != conn) {
 								conn.applyChanges(obj.changes.modified[i]);
@@ -826,7 +832,7 @@ define(
 								conn.refresh();
 							} else {
 								conn = this
-										.findConnectionByModelElementGuid(obj.changes.modified[i].oid);
+										.findConnectionByModelElementGuid(obj.changes.modified[i].oid, command.modelId);
 								if (null != conn) {
 									m_utils.inheritFields(conn.modelElement,
 											obj.changes.modified[i]);
