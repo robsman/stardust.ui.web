@@ -92,9 +92,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- *
+ * 
  * @author Marc.Gille
- *
+ * 
  */
 public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 {
@@ -104,8 +104,11 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
    // TODO For documentation creation
    private static final String MODEL_DOCUMENTATION_TEMPLATES_FOLDER = "/documents/templates/modeling/";
+
    private static final String MODELING_DOCUMENTS_DIR = "/process-modeling-documents/";
+
    private ServiceFactory serviceFactory;
+
    private DocumentManagementService documentManagementService;
 
    private ModelBuilderFacade modelBuilderFacade;
@@ -147,8 +150,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       propertiesMap = newHashMap();
 
-      propertiesMap.put(ProcessDefinitionType.class, new String[] {
-            ModelerConstants.DEFAULT_PRIORITY_PROPERTY});
+      propertiesMap.put(ProcessDefinitionType.class,
+            new String[] {ModelerConstants.DEFAULT_PRIORITY_PROPERTY});
       propertiesMap.put(ActivityType.class, new String[] {});
       // propertiesMap.put(EventSymbol.class,
       // new String[] {ModelerConstants.NAME_PROPERTY});
@@ -162,14 +165,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       propertiesMap.put(DataType.class, new String[] {});
       propertiesMap.put(RoleType.class, new String[] {});
       propertiesMap.put(OrganizationType.class, new String[] {});
-      propertiesMap.put(ConditionalPerformerType.class, new String[] {
-            ModelerConstants.BINDING_DATA_PATH_PROPERTY});
+      propertiesMap.put(ConditionalPerformerType.class,
+            new String[] {ModelerConstants.BINDING_DATA_PATH_PROPERTY});
       propertiesMap.put(TransitionType.class,
             new String[] {ModelerConstants.NAME_PROPERTY});
    }
 
    /**
-    *
+    * 
     * @param element
     * @param json
     */
@@ -258,7 +261,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param element
     * @param json
     */
@@ -395,7 +398,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param element
     * @param controlFlowJson
     */
@@ -455,19 +458,17 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       if (controlFlowJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
          controlFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
-               controlFlowJson,
-               ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+               controlFlowJson, ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
       if (controlFlowJson.has(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
          controlFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
-               controlFlowJson,
-               ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+               controlFlowJson, ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
    }
 
    /**
-    *
+    * 
     * @param dataFlowConnection
     * @param dataFlowConnectionJson
     */
@@ -475,40 +476,89 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          JsonObject dataFlowConnectionJson)
    {
       JsonObject dataFlowJson = dataFlowConnectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+
       if (dataFlowJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
-         dataFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
-               dataFlowJson,
+         dataFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(dataFlowJson,
                ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
+
       if (dataFlowJson.has(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
-         dataFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
-               dataFlowJson,
+         dataFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(dataFlowJson,
                ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
 
-      if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
-            || dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
-      {
-         for (DataMappingType dataMapping : dataFlowConnection.getActivitySymbol()
-               .getActivity()
-               .getDataMapping())
-         {
-            System.out.println("Data Mapping: " + dataMapping.getId());
-            System.out.println(" Direction: " + dataMapping.getDirection());
+      // Find the data mappings (in, out or pair)
 
-            if (dataMapping.getData().getId().equals(
-                  dataFlowConnection.getDataSymbol().getData().getId()))
+      DataMappingType inputDataMapping = null;
+      DataMappingType outputDataMapping = null;
+
+      for (DataMappingType dataMapping : dataFlowConnection.getActivitySymbol()
+            .getActivity()
+            .getDataMapping())
+      {
+         System.out.println("Data Mapping: " + dataMapping.getId());
+         System.out.println(" Direction: " + dataMapping.getDirection());
+
+         // TODO Use Data Mapping Id
+
+         if (dataMapping.getData()
+               .getId()
+               .equals(dataFlowConnection.getDataSymbol().getData().getId()))
+         {
+            if (dataMapping.getDirection().equals(DirectionType.IN_LITERAL))
             {
-               updateDataMapping(dataFlowJson, dataMapping);
+               inputDataMapping = dataMapping;
+            }
+            else
+            {
+               outputDataMapping = dataMapping;
             }
          }
+      }
+
+      // Decide whether a data mapping needs to be created or deleted
+
+      if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
+      {
+         if (inputDataMapping == null)
+         {
+            // Create data mapping
+
+            // inDataMapping = ...
+         }
+
+         updateDataMapping(
+               dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY).getAsJsonObject(),
+               inputDataMapping);
+      }
+      else
+      {
+         // Delete data mapping
+      }
+
+      if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
+      {
+         if (outputDataMapping == null)
+         {
+            // Create data mapping
+
+            // outDataMapping = ...
+         }
+
+         updateDataMapping(
+               dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY).getAsJsonObject(),
+               outputDataMapping);
+      }
+      else
+      {
+         // Delete data mapping
       }
    }
 
    /**
-    *
+    * 
     * @param element
     * @param json
     */
@@ -534,7 +584,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param element
     * @param elementJson
     */
@@ -597,14 +647,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
 
-      if (!isEmpty(newId) && !element.getId().equals(newId))
+      if ( !isEmpty(newId) && !element.getId().equals(newId))
       {
          element.setId(newId);
       }
    }
 
    /**
-    *
+    * 
     * @param processDefinition
     * @param processDefinitionJson
     */
@@ -790,7 +840,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param activitySymbol
     * @param activitySymbolJson
     */
@@ -809,7 +859,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param activitySymbol
     * @param activitySymbolJson
     */
@@ -914,12 +964,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
    /**
     * Update the x,y co-ordinates of symbols contained in the lane
-    *
+    * 
     * @param laneSymbol
     * @param xOffset
     * @param yOffset
     */
-   private void updateChildSymbolCoordinates(LaneSymbol laneSymbol, int xOffset, int yOffset)
+   private void updateChildSymbolCoordinates(LaneSymbol laneSymbol, int xOffset,
+         int yOffset)
    {
       for (ActivitySymbolType activitySymbol : laneSymbol.getActivitySymbol())
       {
@@ -944,7 +995,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param activitySymbol
     * @param gatewaySymbolJson
     */
@@ -963,7 +1014,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @param startEventSymbolJson
     */
@@ -975,15 +1026,17 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       updateNodeSymbol(startEventSymbol, startEventJson);
       if (startEventJson.has(ModelerConstants.NAME_PROPERTY))
       {
-         startEventSymbol.setLabel(startEventJson.get(ModelerConstants.NAME_PROPERTY)
-               .getAsString());
+         // TODO Compatibility with 7.0 broken?
+
+         // startEventSymbol.setLabel(startEventJson.get(ModelerConstants.NAME_PROPERTY)
+         // .getAsString());
       }
       storeAttributes(startEventSymbol.getModelElement(), startEventJson);
       storeDescription(startEventSymbol.getModelElement(), startEventJson);
    }
 
    /**
-    *
+    * 
     * @param endEventSymbol
     * @param endEventSymbolJson
     */
@@ -1005,7 +1058,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param annotationSymbol
     * @param annotationSymbolJson
     */
@@ -1018,8 +1071,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (annotationSymbolJson.has(ModelerConstants.CONTENT_PROPERTY))
       {
-         content = extractString(annotationSymbolJson,
-               ModelerConstants.CONTENT_PROPERTY);
+         content = extractString(annotationSymbolJson, ModelerConstants.CONTENT_PROPERTY);
       }
 
       if (StringUtils.isNotEmpty(content))
@@ -1121,7 +1173,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                declarationJson.getAsJsonObject("schema"));
       }
 
-
       // ExternalReference ?
    }
 
@@ -1187,7 +1238,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param def
     * @param simpleTypeJson
     */
@@ -1240,7 +1291,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param def
     * @param json
     */
@@ -1340,7 +1391,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param schema
     * @param json
     */
@@ -1494,7 +1545,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param element
     * @param elementJson
     * @param elementProperties
@@ -1512,7 +1563,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param targetElement
     * @param request
     * @param property
@@ -1582,7 +1633,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param json
     * @param element
     * @throws JSONException
@@ -1598,7 +1649,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
          holderJson.add(ModelerConstants.COMMENTS_PROPERTY, commentsJson);
 
-         getModelBuilderFacade().setAttribute(element, "documentation:comments", jsonIo.writeJsonObject(holderJson));
+         getModelBuilderFacade().setAttribute(element, "documentation:comments",
+               jsonIo.writeJsonObject(holderJson));
       }
 
       if ( !json.has(ModelerConstants.ATTRIBUTES_PROPERTY))
@@ -1623,8 +1675,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             {
                // TODO Trick to create document
 
-               if (key.equals("documentation:externalDocumentUrl") &&
-                     attributes.get(key).getAsString().equals("@CREATE"))
+               if (key.equals("documentation:externalDocumentUrl")
+                     && attributes.get(key).getAsString().equals("@CREATE"))
                {
                   getModelBuilderFacade().setAttribute(element, key,
                         createModelElementDocumentation(json));
@@ -1642,7 +1694,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param modelElementJson
     * @param element
     */
@@ -1666,7 +1718,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param orientation
     * @return
     */
@@ -1693,7 +1745,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @return
     */
    private ModelBuilderFacade getModelBuilderFacade()
@@ -1702,7 +1754,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param json
     * @param memberName
     * @return
@@ -1718,76 +1770,31 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
-    * @param dataFlowJson
+    * 
+    * @param dataMappingJson
     * @param dataMapping
     */
-   private void updateDataMapping(JsonObject dataFlowJson, DataMappingType dataMapping)
+   private void updateDataMapping(JsonObject dataMappingJson, DataMappingType dataMapping)
    {
-      // If both IN-OUT mapping is present
-      if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
-            && dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
+      if (dataMappingJson.has(ModelerConstants.ACCESS_POINT_ID_PROPERTY) &&
+            !dataMappingJson.get(ModelerConstants.ACCESS_POINT_ID_PROPERTY).isJsonNull())
       {
-         if (dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY).getAsBoolean()
-               && dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
-                     .getAsBoolean())
-         {
-            dataMapping.setDirection(DirectionType.INOUT_LITERAL);
-         }
+         dataMapping.setApplicationAccessPoint(dataMappingJson.get(
+               ModelerConstants.ACCESS_POINT_ID_PROPERTY).getAsString());
+         dataMapping.setContext(dataMappingJson.get(
+               ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY).getAsString());
       }
-      // IN data mapping is updates
-      else if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
+      else
       {
-         if (dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY).getAsBoolean())
-         {
-            // If OUT mapping was already set , update to IN-OUT mapping
-            if (dataMapping.getDirection().equals(DirectionType.OUT_LITERAL))
-            {
-               dataMapping.setDirection(DirectionType.INOUT_LITERAL);
-            }
-            else
-            {
-               dataMapping.setDirection(DirectionType.IN_LITERAL);
-            }
-         }
-         else
-         {
-            if (dataMapping.getDirection().equals(DirectionType.INOUT_LITERAL))
-            {
-               dataMapping.setDirection(DirectionType.OUT_LITERAL);
-            }
-         }
-      }
-      // OUT data mapping is updates
-      else if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
-      {
-         if (dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY).getAsBoolean())
-         {
-            // If IN mapping was already set , update to IN-OUT mapping
-            if (dataMapping.getDirection().equals(DirectionType.IN_LITERAL))
-            {
-               dataMapping.setDirection(DirectionType.INOUT_LITERAL);
-            }
-            else
-            {
-               dataMapping.setDirection(DirectionType.OUT_LITERAL);
-            }
-         }
-         else
-         {
-            if (dataMapping.getDirection().equals(DirectionType.INOUT_LITERAL))
-            {
-               dataMapping.setDirection(DirectionType.IN_LITERAL);
-            }
-         }
+         dataMapping.setApplicationAccessPoint(null);
+         dataMapping.setContext(null);
       }
 
-      if (dataFlowJson.has(ModelerConstants.ACCESS_POINT_ID_PROPERTY))
+      if (dataMappingJson.has(ModelerConstants.DATA_PATH_PROPERTY) &&
+            !dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY).isJsonNull())
       {
-         dataMapping.setApplicationAccessPoint(dataFlowJson.get(
-               ModelerConstants.ACCESS_POINT_ID_PROPERTY).getAsString());
-         dataMapping.setContext(dataFlowJson.get(
-               ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY).getAsString());
+         dataMapping.setDataPath(dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
+               .getAsString());
       }
    }
 
@@ -1798,7 +1805,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       // TODO Make folder structure
 
-      String fileName = extractString(json, ModelerConstants.TYPE_PROPERTY) + "-" + extractString(json, ModelerConstants.ID_PROPERTY) + ".html";
+      String fileName = extractString(json, ModelerConstants.TYPE_PROPERTY) + "-"
+            + extractString(json, ModelerConstants.ID_PROPERTY) + ".html";
 
       DocumentInfo documentInfo = DmsUtils.createDocumentInfo(fileName);
       documentInfo.setOwner(getServiceFactory().getWorkflowService()
@@ -1854,35 +1862,34 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-   *
-   * @param elementType
-   * @return
-   */
-  private String getTemplateContent(String elementType)
-  {
-     Document document = getDocumentManagementService().getDocument(
-           MODEL_DOCUMENTATION_TEMPLATES_FOLDER + elementType + "-template.html");
+    * 
+    * @param elementType
+    * @return
+    */
+   private String getTemplateContent(String elementType)
+   {
+      Document document = getDocumentManagementService().getDocument(
+            MODEL_DOCUMENTATION_TEMPLATES_FOLDER + elementType + "-template.html");
 
-     // Try extension ".htm"
+      // Try extension ".htm"
 
-     if (document == null)
-     {
-        getDocumentManagementService().getDocument(
-              MODEL_DOCUMENTATION_TEMPLATES_FOLDER + elementType + "-template.html");
-     }
+      if (document == null)
+      {
+         getDocumentManagementService().getDocument(
+               MODEL_DOCUMENTATION_TEMPLATES_FOLDER + elementType + "-template.html");
+      }
 
-     if (document != null)
-     {
-        return new String(getDocumentManagementService().retrieveDocumentContent(
-              document.getId()));
-     }
+      if (document != null)
+      {
+         return new String(getDocumentManagementService().retrieveDocumentContent(
+               document.getId()));
+      }
 
-     return "";
-  }
-
+      return "";
+   }
 
    /**
-    *
+    * 
     * @return
     */
    private DocumentManagementService getDocumentManagementService()
@@ -1896,7 +1903,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @return
     */
    private ServiceFactory getServiceFactory()

@@ -69,7 +69,7 @@ import com.google.gson.JsonObject;
 
 /**
  * IPP XPDL marshaller.
- *
+ * 
  * @author Marc.Gille
  * @author Robert Sauer
  */
@@ -84,7 +84,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
    /**
-    *
+    * 
     * @param modelElement
     * @return
     */
@@ -155,7 +155,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       }
       else if (modelElement instanceof DataMappingType)
       {
-         jsResult = toDataMappingJson((DataMappingType) modelElement);
+         // Do nothing - handled via DataMappingConnectionType
       }
       else if (modelElement instanceof DataType)
       {
@@ -374,7 +374,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param laneSymbol
     * @return
     */
@@ -584,7 +584,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param activity
     * @return
     */
@@ -748,7 +748,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param activitySymbol
     * @return
     */
@@ -836,7 +836,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -864,7 +864,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             startEventSymbol.getElementOid());
 
       eventSymbolJson.addProperty(ModelerConstants.NAME_PROPERTY,
-            startEventSymbol.getLabel());
+      // startEventSymbol.getLabel()); TODO: Breaks compatibility to 7.0?
+            "NOT SUPPORTED");
 
       // TODO check this math
       eventSymbolJson.addProperty(ModelerConstants.X_PROPERTY, startEventSymbol.getXPos()
@@ -889,7 +890,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -941,7 +942,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param data
     * @return
     */
@@ -1060,7 +1061,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -1352,7 +1353,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param annotationSymbol
     * @return
     */
@@ -1401,7 +1402,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param dataMappingConnection
     * @return
     */
@@ -1409,7 +1410,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          DataMappingConnectionType dataMappingConnection)
    {
       JsonObject connectionJson = new JsonObject();
-      JsonObject dataFlowJson = null;
 
       connectionJson.addProperty(ModelerConstants.OID_PROPERTY,
             dataMappingConnection.getElementOid());
@@ -1420,6 +1420,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             mapAnchorOrientation(dataMappingConnection.getSourceAnchor()));
       connectionJson.addProperty(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
             mapAnchorOrientation(dataMappingConnection.getTargetAnchor()));
+
+      JsonObject dataFlowJson = new JsonObject();
+
+      connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, dataFlowJson);
 
       DataType data = null != dataMappingConnection.getDataSymbol()
             ? dataMappingConnection.getDataSymbol().getData()
@@ -1442,34 +1446,41 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                System.out.println("   Direction: " + dataMapping.getDirection());
                System.out.println("   Access Point: "
                      + dataMapping.getApplicationAccessPoint());
+               System.out.println("   Context: " + dataMapping.getContext());
 
-               if (dataFlowJson == null)
+               if (dataFlowJson.has(ModelerConstants.ID_PROPERTY))
                {
-                  dataFlowJson = toDataMappingJson(dataMapping);
-               }
-               else if (dataFlowJson.get(ModelerConstants.ID_PROPERTY)
-                     .getAsString()
-                     .equals(dataMapping.getId()))
-               {
-                  // Add other direction
-
-                  if (dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
-                        .getAsBoolean())
+                  if (!dataFlowJson.get(ModelerConstants.ID_PROPERTY)
+                        .getAsString()
+                        .equals(dataMapping.getId()))
                   {
-                     dataFlowJson.addProperty(
-                           ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY, true);
-                  }
-                  else
-                  {
-                     dataFlowJson.addProperty(
-                           ModelerConstants.INPUT_DATA_MAPPING_PROPERTY, true);
+                     // TODO Other data mapping
+                     continue;
                   }
                }
                else
                {
-                  // TODO We are only supporting one input/output pair per activity/data
-                  // at
-                  // the moment
+                  // Set ID etc. for first data mapping between activity and data found
+
+                  dataFlowJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                        ModelerConstants.DATA_FLOW_LITERAL);
+                  dataFlowJson.addProperty(ModelerConstants.ID_PROPERTY,
+                        dataMapping.getId());
+                  dataFlowJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                        dataMapping.getName());
+                  dataFlowJson.addProperty(ModelerConstants.OID_PROPERTY,
+                        dataMapping.getElementOid());
+               }
+
+               if (dataMapping.getDirection().equals(DirectionType.IN_LITERAL))
+               {
+                  dataFlowJson.add(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY,
+                        toDataMappingJson(dataMapping));
+               }
+               else 
+               {
+                  dataFlowJson.add(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY,
+                        toDataMappingJson(dataMapping));
                }
             }
          }
@@ -1478,8 +1489,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
          if (dataFlowJson != null)
          {
-            if (dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
-                  .getAsBoolean())
+            if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
             {
                connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
                      dataMappingConnection.getActivitySymbol().getElementOid());
@@ -1491,8 +1501,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                      ModelerConstants.DATA);
             }
 
-            if (dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
-                  .getAsBoolean())
+            if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
             {
                connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
                      dataMappingConnection.getDataSymbol().getElementOid());
@@ -1518,7 +1527,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -1660,7 +1669,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -1673,8 +1682,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       controlFlowJson.addProperty(ModelerConstants.ID_PROPERTY, transition.getId());
       controlFlowJson.addProperty(ModelerConstants.OID_PROPERTY,
             transition.getElementOid());
-      controlFlowJson.addProperty(ModelerConstants.NAME_PROPERTY,
-            transition.getName());
+      controlFlowJson.addProperty(ModelerConstants.NAME_PROPERTY, transition.getName());
 
       if (null != transition.getCondition()
             && transition.getCondition().equals("CONDITION"))
@@ -1715,58 +1723,25 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
     * @param dataMapping
     * @return
     */
    public JsonObject toDataMappingJson(DataMappingType dataMapping)
    {
-      JsonObject dataFlowJson = new JsonObject();
+      JsonObject dataMappingJson = new JsonObject();
 
-      dataFlowJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-            ModelerConstants.DATA_FLOW_LITERAL);
-      dataFlowJson.addProperty(ModelerConstants.ID_PROPERTY, dataMapping.getId());
-      dataFlowJson.addProperty(ModelerConstants.OID_PROPERTY, dataMapping.getElementOid());
-
-      if (null != dataMapping.getDirection())
+      if (dataMapping.getApplicationAccessPoint() != null)
       {
-         if (dataMapping.getDirection().equals(DirectionType.IN_LITERAL))
-         {
-            dataFlowJson.addProperty(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY, true);
-            dataFlowJson.addProperty(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY, false);
-
-            if (dataMapping.getApplicationAccessPoint() != null)
-            {
-               dataFlowJson.addProperty(ModelerConstants.INPUT_ACCESS_POINT_ID_PROPERTY,
-                     dataMapping.getApplicationAccessPoint());
-               dataFlowJson.addProperty(
-                     ModelerConstants.INPUT_ACCESS_POINT_CONTEXT_PROPERTY,
-                     dataMapping.getContext());
-            }
-
-            dataFlowJson.addProperty(ModelerConstants.INPUT_DATA_PATH_PROPERTY,
-                  dataMapping.getDataPath());
-         }
-         else
-         {
-            dataFlowJson.addProperty(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY, false);
-            dataFlowJson.addProperty(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY, true);
-
-            if (dataMapping.getApplicationAccessPoint() != null)
-            {
-               dataFlowJson.addProperty(ModelerConstants.OUTPUT_ACCESS_POINT_ID_PROPERTY,
-                     dataMapping.getApplicationAccessPoint());
-               dataFlowJson.addProperty(
-                     ModelerConstants.OUTPUT_ACCESS_POINT_CONTEXT_PROPERTY,
-                     dataMapping.getContext());
-            }
-
-            dataFlowJson.addProperty(ModelerConstants.OUTPUT_DATA_PATH_PROPERTY,
-                  dataMapping.getDataPath());
-         }
+         dataMappingJson.addProperty(ModelerConstants.ACCESS_POINT_ID_PROPERTY,
+               dataMapping.getApplicationAccessPoint());
+         dataMappingJson.addProperty(ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY,
+               dataMapping.getContext());
       }
 
-      return dataFlowJson;
+      dataMappingJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY,
+            dataMapping.getDataPath());
+
+      return dataMappingJson;
    }
 
    /**
@@ -2022,7 +1997,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param orientation
     * @return
     */
@@ -2053,7 +2028,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param modelElementJson
     * @param element
     */
@@ -2073,7 +2048,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param element
     * @param json
     * @throws JSONException
@@ -2117,9 +2092,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * TODO From DynamicConnectionCommand. Refactor?
-    *
+    * 
     * @param activity
     * @return
     */

@@ -385,11 +385,11 @@ define(
 									this.diagram.process, data, activity);
 
 							if (this.fromModelElementType == m_constants.DATA) {
-								this.modelElement.inDataMapping = true;
-								this.modelElement.outDataMapping = false;
+								this.modelElement.inputDataMapping = {};
+								this.modelElement.outputDataMapping = null;
 							} else {
-								this.modelElement.inDataMapping = false;
-								this.modelElement.outDataMapping = true;
+								this.modelElement.inputDataMapping = null;
+								this.modelElement.outputDataMapping = {};
 							}
 
 							this.propertiesPanel = m_dataFlowPropertiesPanel
@@ -449,15 +449,14 @@ define(
 									updateConnection = dataSymbol.connections[n];
 									// This will be the case always, just cross
 									// verification for IN-OUT mapping
-									if ((updateConnection.modelElement.inDataMapping && this.modelElement.outDataMapping)
-											|| (updateConnection.modelElement.outDataMapping && this.modelElement.inDataMapping)) {
-										updateConnection.modelElement.inDataMapping = true;
-										updateConnection.modelElement.outDataMapping = true;
+									if (updateConnection.modelElement.inputDataMapping != null && this.modelElement.outputDataMapping) {
+										updateConnection.modelElement.inputDataMapping = {};
+										updateConnection.modelElement.outputDataMapping = {};
 										// While update only mapping change are required
 										var changes = {
 											modelElement : {
-												inDataMapping : updateConnection.modelElement.inDataMapping,
-												outDataMapping : updateConnection.modelElement.outDataMapping
+												inputDataMapping : updateConnection.modelElement.inputDataMapping,
+												outputDataMapping : updateConnection.modelElement.outputDataMapping
 											}
 										}
 										updateConnection.createUpdateCommand(changes);
@@ -817,13 +816,13 @@ define(
 								var connTemp = this.diagram.connections[n];
 								// For In-Mapping path will be from Data to Activity
 								// vice-versa for Out mapping
-								if (connTemp.modelElement.inDataMapping
-										&& connTemp.modelElement.outDataMapping) {
+								if (connTemp.modelElement.inputDataMapping != null
+										&& connTemp.modelElement.outputDataMapping != null) {
 									connTemp.path.attr("arrow-start",
 											"block-wide-long");
 									connTemp.path.attr("arrow-end",
 											"block-wide-long");
-								} else if (connTemp.modelElement.inDataMapping) {
+								} else if (connTemp.modelElement.inputDataMapping != null) {
 									// When dataFlow modified from properties panel
 									// the From,To anchor point symbols to not change
 									if (connTemp.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
@@ -836,7 +835,7 @@ define(
 										connTemp.path.attr("arrow-end",
 												"block-wide-long");
 									}
-								} else if (connTemp.modelElement.outDataMapping) {
+								} else if (connTemp.modelElement.outputDataMapping != null) {
 									if (connTemp.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
 										connTemp.path.attr("arrow-start",
 												"block-wide-long");
