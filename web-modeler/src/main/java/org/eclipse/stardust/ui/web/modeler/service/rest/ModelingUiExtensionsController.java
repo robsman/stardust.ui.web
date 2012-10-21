@@ -48,6 +48,9 @@ public class ModelingUiExtensionsController
       buffer.append("    // meta-types\n");
       listExtensionDependencies(buffer, registry.getMetaModelExtensions());
 
+      buffer.append("    // decorations\n");
+      listExtensionDependencies(buffer, registry.getModelDecorations());
+
       buffer.append("], function(m_extensionManager) {\n")
             .append("\n");
 
@@ -55,6 +58,7 @@ public class ModelingUiExtensionsController
       listExtensionInitialization(buffer, "registerToolbarExtensions", registry.getDiagramToolbarExtensions());
       listExtensionInitialization(buffer, "registerPropertyPageExtensions", registry.getPropertiesPageExtensions());
       listExtensionInitialization(buffer, "registerMetaModelExtensions", registry.getMetaModelExtensions());
+      listExtensionInitialization(buffer, "registerModelDecorationExtensions", registry.getModelDecorations());
 
       buffer.append("\n")
             .append("    return {};\n")

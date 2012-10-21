@@ -15,7 +15,7 @@ define([ 'm_processBasicPropertiesPage',
 			panelId: "processPropertiesPanel",
 			pageId: "basicPropertiesPage",
 			provider: m_processBasicPropertiesPage,
-			visibility: "always",
+			visibility: "always"
 		}, {
 			panelId: "processPropertiesPanel",
 			pageId: "processCommentsPropertiesPage",
@@ -26,23 +26,23 @@ define([ 'm_processBasicPropertiesPage',
 			panelId: "processPropertiesPanel",
 			pageId: "processInterfacePropertiesPage",
 			provider: m_processProcessInterfacePropertiesPage,
-			visibility: "always",
+			visibility: "always"
 		}, {
 			panelId: "processPropertiesPanel",
 			pageId: "dataPathPropertiesPage",
 			provider: m_processDataPathPropertiesPage,
-			visibility: "always",
+			visibility: "always"
 		}, {
 			panelId: "processPropertiesPanel",
 			pageId: "displayPropertiesPage",
 			provider: m_processDisplayPropertiesPage,
-			visibility: "always",
+			visibility: "always"
 		}, {
 			panelId: "processPropertiesPanel",
 			pageId: "processAttachmentsPropertiesPage",
 			pageHtmlUrl: "processDefinitionProcessAttachmentsPropertiesPage.html",
 			provider: m_processProcessAttachmentsPropertiesPage,
-			visibility: "always",
-	}, ],
+			visibility: "always"
+	}, ]
 	};
 });

@@ -153,7 +153,8 @@ define(
 
 					if (toolbarPalettes[n].contentHtmlUrl != null) {
 						var extension = toolbarPalettes[n];
-
+						var dummy = this;
+						
 						jQuery(
 								"#diagramToolbarTable #paletteRow #"
 										+ toolbarPalettes[n].id + "EntryRow")
@@ -174,10 +175,7 @@ define(
 														.append(msg);
 												m_utils.debug(msg);
 											} else {
-												m_utils
-														.debug("Palette loaded: "
-																+ extension.id);
-												extension.provider.create();
+												extension.provider.create(dummy);
 											}
 										});
 					} else {

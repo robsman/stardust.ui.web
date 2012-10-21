@@ -493,25 +493,6 @@ public class ModelerResource
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/processes/{processId}/decorations")
-   public Response getDecorations(@PathParam("modelId") String modelId,
-         @PathParam("processId") String processId, String postedData)
-   {
-      try
-      {
-         return Response.ok("{}", APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-         throw new RuntimeException(e);
-      }
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
    @Path("models/{modelId}/processes/{processId}/decorations/{decorationId}")
    public Response getDecoration(@PathParam("modelId") String modelId,
          @PathParam("processId") String processId,
@@ -523,14 +504,14 @@ public class ModelerResource
 
          JsonObject decorations = new JsonObject();
 
-         final JsonObject decDefault = new JsonObject();
-         decorations.add("default", decDefault);
+         final JsonObject defaultDecoration = new JsonObject();
+         decorations.add("default", defaultDecoration);
 
-         JsonObject decProgrss = new JsonObject();
-         decorations.add("progress", decProgrss);
+         JsonObject processInstanceProgressDecoration = new JsonObject();
+         decorations.add("processInstanceProgress", processInstanceProgressDecoration);
 
          JsonArray elements = new JsonArray();
-         decProgrss.add("elements", elements);
+         processInstanceProgressDecoration.add("elements", elements);
 
          // Event
 
@@ -615,11 +596,11 @@ public class ModelerResource
 
          // Decoration KPI
 
-         JsonObject decKpi = new JsonObject();
-         decorations.add("kpi", decKpi);
+         JsonObject dashboardDecoration = new JsonObject();
+         decorations.add("processInstanceDashboard", dashboardDecoration);
 
          elements = new JsonArray();
-         decKpi.add("elements", elements);
+         dashboardDecoration.add("elements", elements);
 
          // Activity 1
 

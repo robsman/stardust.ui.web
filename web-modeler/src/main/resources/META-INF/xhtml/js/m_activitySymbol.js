@@ -277,11 +277,11 @@ define(
 				/**
 				 *
 				 */
-				ActivitySymbol.prototype.showPrimitives = function() {
-					this.rectangle.show();
-					this.text.show();
-					this.refreshFromModelElement();
-				};
+//				ActivitySymbol.prototype.showPrimitives = function() {
+//					this.rectangle.show();
+//					this.text.show();
+//					this.refreshFromModelElement();
+//				};
 
 				/**
 				 *
@@ -316,7 +316,6 @@ define(
 						this.parallelMultiProcessingMarkerIcon.hide();
 						this.sequentialMultiProcessingMarkerIcon.show();
 					}
-
 				};
 
 				/**

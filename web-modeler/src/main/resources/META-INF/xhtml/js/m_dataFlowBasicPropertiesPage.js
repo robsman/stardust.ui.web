@@ -64,6 +64,14 @@ define(
 										if (page.inputInput.is(":checked")
 												&& page.propertiesPanel.element.modelElement.inputDataMapping == null) {
 											page.propertiesPanel.element.modelElement.inputDataMapping = {};
+										} else if (!page.outputInput
+												.is(":checked")) {
+											// At least one checkbox has to be
+											// checked
+											page.inputInput.attr("checked",
+													true);
+
+											return;
 										}
 
 										page
@@ -92,6 +100,14 @@ define(
 										if (page.inputInput.is(":checked")
 												&& page.propertiesPanel.element.modelElement.outputDataMapping == null) {
 											page.propertiesPanel.element.modelElement.outputDataMapping = {};
+										} else if (!page.inputInput
+												.is(":checked")) {
+											// At least one checkbox has to be
+											// checked
+											page.outputInput.attr("checked",
+													true);
+
+											return;
 										}
 
 										page
@@ -225,8 +241,15 @@ define(
 								.makeVisible(this.inputAccessPointSelectInputPanel);
 					}
 
-					this.inputAccessPointSelectInput
-							.append("<option value='DEFAULT'>Default</option>");
+					// TODO Use method of m_activity; proper type binding
+					// required
+					if (dataFlow.activity.activityType != m_constants.APPLICATION_ACTIVITY_TYPE) {
+						this.inputAccessPointSelectInput
+								.append("<option value='DEFAULT'>Default</option>"); // I18N
+					} else {
+						this.inputAccessPointSelectInput
+								.append("<option value='DEFAULT'>(To be defined)</option>"); // I18N
+					}
 
 					for ( var i in contexts) {
 						var group = jQuery("<optgroup label='" + i + "'/>"); // I18N
@@ -284,8 +307,15 @@ define(
 								.makeVisible(this.outputAccessPointSelectInputPanel);
 					}
 
-					this.outputAccessPointSelectInput
-							.append("<option value='DEFAULT'>Default</option>");
+					// TODO Use method of m_activity; proper type binding
+					// required
+					if (dataFlow.activity.activityType != m_constants.APPLICATION_ACTIVITY_TYPE) {
+						this.outputAccessPointSelectInput
+								.append("<option value='DEFAULT'>Default</option>");
+					} else {
+						this.outputAccessPointSelectInput
+								.append("<option value='DEFAULT'>(To be defined)</option>"); // I18N
+					}
 
 					for ( var i in contexts) {
 						var group = jQuery("<optgroup label='" + i + "'/>"); // I18N

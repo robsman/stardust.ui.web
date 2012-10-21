@@ -25,6 +25,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
@@ -35,6 +36,7 @@ import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
@@ -498,10 +500,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             .getActivity()
             .getDataMapping())
       {
-         System.out.println("Data Mapping: " + dataMapping.getId());
-         System.out.println(" Direction: " + dataMapping.getDirection());
-
-         // TODO Use Data Mapping Id
+         // TODO Use Data Mapping Id/filter by ID in JSON
 
          if (dataMapping.getData()
                .getId()
@@ -524,37 +523,77 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          if (inputDataMapping == null)
          {
-            // Create data mapping
-
-            // inDataMapping = ...
+            inputDataMapping = createDataMapping(dataFlowConnection.getActivitySymbol()
+                  .getActivity(), dataFlowConnection.getDataSymbol().getData(),
+                  DirectionType.IN_LITERAL,
+                  dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString(),
+                  dataFlowJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
          }
 
-         updateDataMapping(
-               dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY).getAsJsonObject(),
-               inputDataMapping);
+         updateDataMapping(dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
+               .getAsJsonObject(), inputDataMapping);
       }
       else
       {
-         // Delete data mapping
+         if (inputDataMapping != null)
+         {
+            dataFlowConnection.getActivitySymbol()
+                  .getActivity()
+                  .getDataMapping()
+                  .remove(inputDataMapping);
+         }
       }
 
       if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
       {
          if (outputDataMapping == null)
          {
-            // Create data mapping
-
-            // outDataMapping = ...
+            outputDataMapping = createDataMapping(dataFlowConnection.getActivitySymbol()
+                  .getActivity(), dataFlowConnection.getDataSymbol().getData(),
+                  DirectionType.OUT_LITERAL,
+                  dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString(),
+                  dataFlowJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
          }
 
-         updateDataMapping(
-               dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY).getAsJsonObject(),
-               outputDataMapping);
+         updateDataMapping(dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
+               .getAsJsonObject(), outputDataMapping);
       }
       else
       {
-         // Delete data mapping
+         if (outputDataMapping != null)
+         {
+            dataFlowConnection.getActivitySymbol()
+                  .getActivity()
+                  .getDataMapping()
+                  .remove(outputDataMapping);
+         }
       }
+   }
+
+   /**
+    * 
+    * @param activity
+    * @param data
+    * @param direction
+    * @param id
+    * @param name
+    * @return
+    */
+   private DataMappingType createDataMapping(ActivityType activity, DataType data,
+         DirectionType direction, String id, String name)
+   {
+      DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
+
+      long maxOid = XpdlModelUtils.getMaxUsedOid(ModelUtils.findContainingModel(activity));
+
+      dataMapping.setElementOid(++maxOid);
+      dataMapping.setId(id);
+      dataMapping.setName(name);
+      dataMapping.setDirection(direction);
+      dataMapping.setData(data);
+      activity.getDataMapping().add(dataMapping);
+
+      return dataMapping;
    }
 
    /**
@@ -1776,8 +1815,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private void updateDataMapping(JsonObject dataMappingJson, DataMappingType dataMapping)
    {
-      if (dataMappingJson.has(ModelerConstants.ACCESS_POINT_ID_PROPERTY) &&
-            !dataMappingJson.get(ModelerConstants.ACCESS_POINT_ID_PROPERTY).isJsonNull())
+      if (dataMappingJson.has(ModelerConstants.ACCESS_POINT_ID_PROPERTY)
+            && !dataMappingJson.get(ModelerConstants.ACCESS_POINT_ID_PROPERTY)
+                  .isJsonNull())
       {
          dataMapping.setApplicationAccessPoint(dataMappingJson.get(
                ModelerConstants.ACCESS_POINT_ID_PROPERTY).getAsString());
@@ -1790,8 +1830,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          dataMapping.setContext(null);
       }
 
-      if (dataMappingJson.has(ModelerConstants.DATA_PATH_PROPERTY) &&
-            !dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY).isJsonNull())
+      if (dataMappingJson.has(ModelerConstants.DATA_PATH_PROPERTY)
+            && !dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY).isJsonNull())
       {
          dataMapping.setDataPath(dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
                .getAsString());

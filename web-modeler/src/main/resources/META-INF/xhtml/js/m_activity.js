@@ -105,5 +105,12 @@ define(
 					this.applicationFullId = null;
 					this.participantFullId = null;
 				};
+
+				/**
+				 *
+				 */
+				Activity.prototype.hasDefaultContext = function() {
+					return this.activityType == m_constants.APPLICATION_ACTIVITY_TYPE;
+				};
 			}
 		});

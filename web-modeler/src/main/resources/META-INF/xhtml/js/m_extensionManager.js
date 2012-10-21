@@ -59,6 +59,12 @@ define(
 					});
 				},
 
+				registerModelDecorationExtensions : function(extensionsConfig) {
+					loadExtensions({
+						modelDecoration : extensionsConfig.modelDecoration
+					});
+				},
+
 				/**
 				 * 
 				 * @param extensionPoint

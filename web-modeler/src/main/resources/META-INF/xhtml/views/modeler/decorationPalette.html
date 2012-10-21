@@ -13,47 +13,26 @@
 <link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-	<table>
-		<tr>
-			<td><select id="decorationList" size="1">
-					<option value="default">None</option>
-					<option value="progress">Progress</option>
-					<option value="kpi">KPI</option>
-			</select></td>
-			<td><input id="decorationConfigurationButton" type="image"
-				src="../../images/icons/decoration-configuration.png"
-				title="Decoration Configuration" alt="Decoration Configuration"
-				class="toolbarButton" /></td>
-			<td><input id="decorationRefreshButton" type="image"
-				src="../../images/icons/refresh.png" title="Decoration Refresh"
-				alt="Decoration Refresh" class="toolbarButton" />
-			</td>
-		</tr>
-	</table>
-	<!--div id="dialog" title="Decoration" class="invisible">
+	<div>
 		<table>
 			<tr>
-				<td>Start Date:</td>
-				<td><input type="text" />
+				<td><select id="decorationList" size="1">
+						<option value="default">None</option>
+				</select>
 				</td>
-			</tr>
-			<tr>
-				<td>End Date:</td>
-				<td><input type="text" />
+				<td><input id="decorationConfigurationButton" type="image"
+					src="../../images/icons/decoration-configuration.png"
+					title="Decoration Configuration" alt="Decoration Configuration"
+					class="toolbarButton" />
 				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					<table>
-						<tr>
-							<td><input id="applyButton" type="button" value="Apply" />
-							</td>
-							<td><input id="closeButton" type="button" value="Close" />
-							</td>
-						</tr>
-					</table></td>
+				<td><input id="decorationRefreshButton" type="image"
+					src="../../images/icons/refresh.png" title="Decoration Refresh"
+					alt="Decoration Refresh" class="toolbarButton" /></td>
 			</tr>
 		</table>
-	</div-->
+	</div>
+	<div id="decorationConfigurationDialog" title="Decoration"
+		style="min-width: 300px; min-height: 200px;">
+	</div>
 </body>
 </html>

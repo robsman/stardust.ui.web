@@ -86,7 +86,8 @@ define(
 					for ( var n = 0; (this.comments && n < this.comments.length); ++n) {
 						var comment = this.comments[n];
 
-						var rowContent = "<tr id='" + n + "' class='commentRow'>";
+						var rowContent = "<tr id='" + n
+								+ "' class='commentRow'>";
 
 						rowContent += "<td style='padding-left: 0px;'>";
 						rowContent += "<table width='100%' cellspacing='0' cellpadding='0'>";
@@ -166,7 +167,7 @@ define(
 											"id")]);
 						}
 					}
-					
+
 					this.comments = remainingComments;
 
 					this.submitChanges();

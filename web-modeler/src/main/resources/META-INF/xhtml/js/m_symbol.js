@@ -239,6 +239,7 @@ define(
 					this.hideAnchorPoints();
 					this.hideFlyOutMenu();
 					this.deselect();
+					this.refresh();
 
 					this.onComplete();
 				};
@@ -433,6 +434,7 @@ define(
 				Symbol.prototype.show = function() {
 					this.visible = true;
 					this.refreshFromModelElement();
+					this.refreshCommentPrimitives();
 					this.showPrimitives();
 					this.showConnections();
 					this.showProximitySensor();
@@ -966,6 +968,7 @@ define(
 				 */
 				Symbol.prototype.refreshCommentPrimitives = function() {
 					if (this.modelElement != null
+							&& this.modelElement.comments != null
 							&& this.modelElement.comments.length > 0) {
 						this.commentCountText.attr("text",
 								this.modelElement.comments.length);
@@ -1704,8 +1707,6 @@ define(
 				 *
 				 */
 				Symbol.prototype.clickCommentPrimitive = function() {
-					m_utils.debug("Comment Primitives clicked");
-
 					this.showPropertiesPanel("commentsPropertiesPage");
 				};
 			}
