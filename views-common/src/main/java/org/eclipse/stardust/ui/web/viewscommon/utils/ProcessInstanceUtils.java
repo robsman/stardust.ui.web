@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
+import org.eclipse.stardust.engine.api.dto.AuditTrailPersistence;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
@@ -1163,4 +1164,31 @@ public class ProcessInstanceUtils
       return PRIORITY_COLOR_MAP;
    }
    
+   /**
+    * @param pi
+    * @return
+    */
+   public static boolean isTransientProcess(ProcessInstance pi)
+   {
+      AuditTrailPersistence auditTrailPersistence = (AuditTrailPersistence) pi.getRuntimeAttributes().get(
+            AuditTrailPersistence.class.getName());
+      if (AuditTrailPersistence.isTransientExecution(auditTrailPersistence))
+      {
+         return true;
+      }
+      return false;
+   }
+
+   /**
+    * @param pi
+    * @return
+    */
+   public static boolean isCompletedProcess(ProcessInstance pi)
+   {
+      if (ProcessInstanceState.COMPLETED == pi.getState().getValue())
+      {
+         return true;
+      }
+      return false;
+   }
 }

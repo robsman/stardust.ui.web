@@ -24,6 +24,7 @@ import org.eclipse.stardust.engine.api.model.Organization;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.Department;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.processportal.common.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
@@ -31,6 +32,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 
 
 
@@ -100,26 +102,29 @@ public class StartableProcessModel implements Serializable
       else if (model == null)
       {
          // TODO support asynchronous/synchronous start selection?
-         ActivityInstance nextActivityInstance = PPUtils.activateNextActivityInstance(PPUtils.startProcess(
-               processDefinition, true));
-         if (nextActivityInstance != null)
+         ActivityInstance nextActivityInstance = null;
+         ProcessInstance processInstance = PPUtils.startProcess(processDefinition, true);
+         if (!(ProcessInstanceUtils.isTransientProcess(processInstance) || ProcessInstanceUtils
+               .isCompletedProcess(processInstance)))
          {
-
-            Map<String, Object> params = CollectionUtils.newTreeMap();
-            if (WorklistsBean.getInstance().isAssemblyLineActivity(nextActivityInstance.getActivity()))
+            nextActivityInstance = PPUtils.activateNextActivityInstance(processInstance);
+            if (nextActivityInstance != null)
             {
-               params.put("assemblyLineActivity", true);
-               params.put("worklistsBean", WorklistsBean.getInstance());
-            }         
-            ActivityInstanceUtils.openActivity(nextActivityInstance, params);
+               Map<String, Object> params = CollectionUtils.newTreeMap();
+               if (WorklistsBean.getInstance().isAssemblyLineActivity(nextActivityInstance.getActivity()))
+               {
+                  params.put("assemblyLineActivity", true);
+                  params.put("worklistsBean", WorklistsBean.getInstance());
+               }
+               ActivityInstanceUtils.openActivity(nextActivityInstance, params);
+            }
          }
-         else
+         if (nextActivityInstance == null)
          {
-            MessageDialog.addInfoMessage(MessagePropertiesBean
-                        .getInstance().getParamString("common.processStarted.message", new String[] {getName()}));
+            MessageDialog.addInfoMessage(MessagePropertiesBean.getInstance().getParamString(
+                  "common.processStarted.message", new String[] {getName()}));
          }
       }
-      
    }
 
    private void addDepartmentData(Department department)
