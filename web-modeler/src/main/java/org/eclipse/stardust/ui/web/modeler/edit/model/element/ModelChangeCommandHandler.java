@@ -30,6 +30,7 @@ import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
+import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
@@ -81,6 +82,14 @@ public class ModelChangeCommandHandler
             request.get(ModelerConstants.NAME_PROPERTY).getAsString()).build();
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(model);
+
+      //Assign UUID to default data
+      if (null != model.getData()) {
+         for (DataType data : model.getData())
+         {
+            mapper.map(data);
+         }
+      }
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       AttributeUtil.setAttribute(model, PredefinedConstants.VERSION_ATT, "1");
 
@@ -91,6 +100,7 @@ public class ModelChangeCommandHandler
       admin.setElementOid(adminOid);
 
       model.getRole().add(admin);
+      mapper.map(admin);
 
       modelService().getModelManagementStrategy()
             .getModels()
