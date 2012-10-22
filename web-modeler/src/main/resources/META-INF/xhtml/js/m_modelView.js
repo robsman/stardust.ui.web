@@ -24,7 +24,6 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(model);
-					view.refreshValidation();
 				}
 			};
 
@@ -37,7 +36,6 @@ define(
 				m_utils.inheritFields(this, modelElementView);
 				m_utils.inheritMethods(ModelView.prototype,
 						modelElementView);
-
 
 				/**
 				 * 
@@ -78,6 +76,8 @@ define(
 					if (this.model.attributes == null) {
 						this.model.attributes = {};
 					}
+
+					this.refreshValidation();
 				};
 
 				/**
@@ -137,7 +137,7 @@ define(
 										url : m_communicationController
 												.getEndpointUrl()
 												+ "/models/"
-												+ this.model.id
+												+ this.getModel().id
 												+ "/problems"
 									},
 									{

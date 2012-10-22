@@ -51,6 +51,7 @@ require(["require", "m_extensionManager",
          "jquery.treeTable",
          "jquery.url",
 
+         "common-plugins",
          "m_utils",
          "m_communicationController",
          "m_urlUtils",
@@ -58,7 +59,6 @@ require(["require", "m_extensionManager",
          "m_command",
          "m_commandsController",
          "m_view",
-		 "m_modelElementCommentsPropertiesPage",
          "m_conditionalPerformerView"],
          function (require) {
 	require("m_conditionalPerformerView").initialize(

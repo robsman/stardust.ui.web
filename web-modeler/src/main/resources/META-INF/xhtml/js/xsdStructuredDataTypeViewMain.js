@@ -46,7 +46,6 @@ require(["require",
 		 "m_command",
 		 "m_commandsController",
 		 "m_modelElementView",
-		 "m_modelElementCommentsPropertiesPage",
 		 "m_xsdStructuredDataTypeView"], function(require) {
 	require("m_xsdStructuredDataTypeView").initialize(
 			jQuery.url.setUrl(window.location.search).param("fullId"));

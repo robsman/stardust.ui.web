@@ -2,7 +2,7 @@ define([ 'm_modelElementCommentsPropertiesPage'], function(
         		 m_modelElementCommentsPropertiesPage) {
 	return {
 		propertiesPage : [ {
-			panelId: "conditionalPerformerView",
+			panelId: "xsdStructuredDataTypeView",
 			pageId: "commentsPropertiesPage",
 			pageHtmlUrl: "modelElementCommentsPropertiesPage.html",
 			provider: m_modelElementCommentsPropertiesPage,

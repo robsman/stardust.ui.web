@@ -247,7 +247,7 @@ define(
 
 					m_commandsController.submitCommand(m_command
 							.createUpdateModelElementWithUUIDCommand(this
-									.getModelElement().model.id, this
+									.getModel().id, this
 									.getModelElement().uuid, changes));
 				};
 
