@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -18,7 +18,7 @@ define(
 				initialize : function(modelId) {
 					var model = m_model.findModel(modelId);
 					var view = new ModelView();
-					
+
 					// TODO Make View singleton
 
 					m_commandsController.registerCommandHandler(view);
@@ -28,7 +28,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function ModelView() {
 				var modelElementView = m_modelElementView.create();
@@ -38,7 +38,7 @@ define(
 						modelElementView);
 
 				/**
-				 * 
+				 *
 				 */
 				ModelView.prototype.initialize = function(model) {
 					this.id = "modelView";
@@ -58,13 +58,13 @@ define(
 						"view" : this
 					}, function(event) {
 						event.data.view.refreshValidation();
-					});					
+					});
 
 					this.initializeModelElementView(model);
 				};
-				
+
 				/**
-				 * 
+				 *
 				 */
 				ModelView.prototype.setModelElement = function(model) {
 					this.model = model;
@@ -72,7 +72,7 @@ define(
 					this.initializeModelElement(model);
 
 					// TODO: Needed?
-					
+
 					if (this.model.attributes == null) {
 						this.model.attributes = {};
 					}
@@ -81,14 +81,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelView.prototype.toString = function() {
 					return "Lightdust.ModelView";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelView.prototype.validate = function() {
 					this.clearErrorMessages();
@@ -112,21 +112,36 @@ define(
 				};
 
 				/**
-				 * 
+				 * Overridden
+				 */
+				ModelView.prototype.submitChanges = function(changes) {
+					// Generic attributes
+					// TODO Is this really needed?
+
+					if (changes.attributes == null) {
+						changes.attributes = {};
+					}
+
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelCommand(this.getModelElement().uuid, changes));
+				};
+
+				/**
+				 *
 				 */
 				ModelView.prototype.getModelElement = function() {
 					return this.model;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelView.prototype.getModel = function() {
 					return this.model;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelView.prototype.refreshValidation = function() {
 					this.problemsTableBody.empty();
@@ -179,7 +194,7 @@ define(
 														.findModel(segments[0]);
 
 												m_utils.debug("Path: " + json[n].modelElement);
-												
+
 												if (model.applications[segments[1]] != null) {
 													var application = model.applications[segments[1]];
 													jQuery(
