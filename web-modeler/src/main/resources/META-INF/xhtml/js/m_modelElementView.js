@@ -246,9 +246,7 @@ define(
 					}
 
 					m_commandsController.submitCommand(m_command
-							.createUpdateModelElementWithUUIDCommand(this
-									.getModel().id, this
-									.getModelElement().uuid, changes));
+							.createUpdateModelCommand(this.getModelElement().uuid, changes));
 				};
 
 				/**
@@ -360,7 +358,7 @@ define(
 
 					if (object && object.changes && object.changes.modified) {
 						for (var i = 0; i < object.changes.modified.length; i++) {
-							if (this.getModelElement().oid == object.changes.modified[i].oid) {
+							if (this.getModelElement().uuid == object.changes.modified[i].uuid) {
 								m_utils.inheritFields(this.getModelElement(),
 										object.changes.modified[i]);
 
