@@ -172,7 +172,7 @@ define(function() {
 		POOL_LANE_MARGIN : 5,
 
 		// Comments
-		
+
 		COMMENT_COUNT_COLOR : "black",
 		COMMENT_COUNT_FONT_WEIGHT : "bold",
 		COMMENT_COUNT_FONT_SIZE : 11,
@@ -194,6 +194,8 @@ define(function() {
 		// Model
 
 		MODEL : "model",
+		DATE_OF_CREATION : "dateOfCreation",
+		LAST_MODIFIED_DATE : "lastModifiedDate",
 
 		// Process Definition
 

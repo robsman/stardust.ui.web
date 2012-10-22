@@ -38,6 +38,8 @@ define(
 					this.descriptionTextarea = jQuery("#descriptionTextarea");
 					this.propertiesTabs = jQuery("#propertiesTabs");
 					this.propertiesTabsList = jQuery("#propertiesTabsList");
+					this.creationDateOutput = jQuery("#creationDateOutput");
+					this.lastModificationDateOutput = jQuery("#lastModificationDateOutput");
 
 					this.nameInput.change({
 						"view" : this
@@ -166,6 +168,26 @@ define(
 
 					this.nameInput.val(this.modelElement.name);
 					this.descriptionTextarea.val(this.modelElement.description);
+					if (this.modelElement[m_constants.DATE_OF_CREATION]) {
+						this.creationDateOutput.empty();
+						this.creationDateOutput.append(this.modelElement[m_constants.DATE_OF_CREATION]);
+					} else {
+						this.creationDateOutput.empty();
+						// TODO I18N
+						this.creationDateOutput.append("UNKNOWN");
+					}
+
+					// TODO - check if lastModificationDate will be stored in the XPDL
+					// or needs to be managed on the UI side
+					this.lastModificationDateOutput.append("UNKNOWN");
+//					if (this.modelElement[m_constants.LAST_MODIFIED_DATE]) {
+//						this.lastModificationDateOutput.empty();
+//						this.lastModificationDateOutput.append(this.modelElement[m_constants.LAST_MODIFIED_DATE]);
+//					} else {
+//						this.lastModificationDateOutput.empty();
+//						// TODO I18N
+//						this.lastModificationDateOutput.append("UNKNOWN");
+//					}
 
 					if (this.modelElement.attributes == null) {
 						this.modelElement.attributes = {};
