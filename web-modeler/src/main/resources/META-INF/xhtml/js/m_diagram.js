@@ -154,7 +154,7 @@ define(
 					if (toolbarPalettes[n].contentHtmlUrl != null) {
 						var extension = toolbarPalettes[n];
 						var dummy = this;
-						
+
 						jQuery(
 								"#diagramToolbarTable #paletteRow #"
 										+ toolbarPalettes[n].id + "EntryRow")
@@ -767,7 +767,7 @@ define(
 									|| obj.changes.added[i].type == m_constants.DATA_FLOW_CONNECTION
 									|| obj.changes.added[i].type == m_constants.CONTROL_FLOW
 									|| obj.changes.added[i].type == m_constants.DATA_FLOW) {
-								var conn = this.findConnection(obj.changes.added[i]);
+								var conn = this.findConnection(obj.changes.added[i], command.modelId);
 								if (null != conn) {
 									conn.applyChanges(obj.changes.added[i]);
 									conn.refresh();

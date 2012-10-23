@@ -415,9 +415,6 @@ public class ConnectionCommandHandler
 
       DataType data = dataSymbol.getData();
       ActivityType activity = activitySymbol.getActivity();
-      boolean inDataMapping = extractBoolean(
-            connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
-            ModelerConstants.INPUT_DATA_MAPPING_PROPERTY);
 
       DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
       DataMappingConnectionType dataMappingConnection = AbstractElementBuilder.F_CWM.createDataMappingConnectionType();
@@ -427,7 +424,8 @@ public class ConnectionCommandHandler
       dataMapping.setName(data.getName());
       dataMappingConnection.setElementOid(++maxOid);
 
-      if (inDataMapping)
+      if (connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY).has(
+            ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
       {
          dataMapping.setDirection(DirectionType.get(DirectionType.IN));
       }
