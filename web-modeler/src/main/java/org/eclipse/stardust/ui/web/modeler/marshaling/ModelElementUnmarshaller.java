@@ -838,7 +838,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                String dataFullId = dataPathJson.get(
                      ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
 
-               DataType data = getModelBuilderFacade().findData(dataFullId);
+               ModelType model = ModelUtils.findContainingModel(processDefinition);
+               DataType data = getModelBuilderFacade().importData(
+                     model,
+                     dataFullId);
 
                dataPath.setData(data);
             }
