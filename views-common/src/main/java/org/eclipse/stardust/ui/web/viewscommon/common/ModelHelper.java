@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.viewscommon.common;
 import java.util.List;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.engine.api.dto.DepartmentInfoDetails;
 import org.eclipse.stardust.engine.api.model.DynamicParticipantInfo;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Organization;
@@ -25,6 +26,7 @@ import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
 /**
  * @author Subodh.Godbole
@@ -98,11 +100,21 @@ public class ModelHelper
    private static void setHierarchyDetails(ParticipantLabel participantLabel, Organization organization,
          DepartmentInfo deptInfo)
    {
-      Department dept = (Department) deptInfo;
+      Department dept = null;
+
+      if (deptInfo instanceof Department)
+      {
+         dept = (Department) deptInfo;
+      }
+      else if (deptInfo instanceof DepartmentInfoDetails)
+      {
+         dept = ServiceFactoryUtils.getAdministrationService().getDepartment(deptInfo.getOID());
+      }
+
       while (null != organization)
       {
          String orgId = "";
-         if (null != deptInfo && (deptInfo instanceof Department))
+         if (null != dept && (dept instanceof Department))
          {
             orgId = dept.getOrganization().getQualifiedId();
          }
