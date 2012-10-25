@@ -28,6 +28,7 @@ import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
@@ -77,9 +78,11 @@ public class ModelChangeCommandHandler
     */
    private JsonObject createModel(String commandId, JsonObject request)
    {
-      ModelType model = newBpmModel().withIdAndName(
-            request.get(ModelerConstants.ID_PROPERTY).getAsString(),
-            request.get(ModelerConstants.NAME_PROPERTY).getAsString()).build();
+      ModelBuilderFacade facade = new ModelBuilderFacade(modelService().getModelManagementStrategy());
+      String modelID = request.get(ModelerConstants.ID_PROPERTY).getAsString();
+      String modelName = request.get(ModelerConstants.NAME_PROPERTY).getAsString();
+      ModelType model = facade.createModel(modelID, modelName);
+
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(model);
 

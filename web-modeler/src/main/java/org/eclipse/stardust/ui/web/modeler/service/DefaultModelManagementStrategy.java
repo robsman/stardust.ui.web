@@ -97,8 +97,6 @@ public class DefaultModelManagementStrategy extends
       List<Document> candidateModelDocuments = getDocumentManagementService().getFolder(
             MODELS_DIR).getDocuments();
 
-      XpdlModelIoUtils.clearModelsMap();
-
       for (Document modelDocument : candidateModelDocuments)
       {
          ModelType xpdlModel = null;
