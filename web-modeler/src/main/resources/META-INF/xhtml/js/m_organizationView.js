@@ -367,44 +367,17 @@ define(
 					this.leaderSelect.append("<option value='"
 							+ m_constants.TO_BE_DEFINED + "'>(None)</option>");
 
-					this.leaderSelect.append("<optgroup label=\"This Model\">");
-
-					var participant = null;
-
 					for ( var i in this.getModelElement().model.participants) {
-						participant = this.getModelElement().model.participants[i];
+						var participant = this.getModelElement().model.participants[i];
 
-						if (participant.type == m_constants.ROLE_PARTICIPANT_TYPE
-								|| participant.type == m_constants.TEAM_LEADER_TYPE) {
+						if (participant.parentUUID == this.getModelElement().uuid
+								&& (participant.type == m_constants.ROLE_PARTICIPANT_TYPE
+								|| participant.type == m_constants.TEAM_LEADER_TYPE)) {
 							this.leaderSelect.append("<option value='"
 									+ participant.getFullId() + "'>"
 									+ participant.name + "</option>");
 						}
 					}
-
-					this.leaderSelect
-							.append("</optgroup><optgroup label=\"Other Models\">");
-
-					for ( var n in m_model.getModels()) {
-						if (m_model.getModels()[n] == this.getModelElement().model) {
-							continue;
-						}
-
-						for ( var m in m_model.getModels()[n].participants) {
-							participant = m_model.getModels()[n].participants[m];
-
-							if (participant.type == m_constants.ROLE_PARTICIPANT_TYPE
-									|| participant.type == m_constants.TEAM_LEADER_TYPE) {
-								this.leaderSelect.append("<option value='"
-										+ participant.getFullId() + "'>"
-										+ m_model.getModels()[n].name + "/"
-										+ participant.name + "</option>");
-							}
-						}
-					}
-
-					this.leaderSelect.append("</optgroup>");
-
 				};
 
 				/**

@@ -1249,7 +1249,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       }
       else
       {
-         orgJson.addProperty(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY, (String) null);
+         orgJson.addProperty(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY, ModelerConstants.TO_BE_DEFINED);
       }
 
       orgJson.addProperty(ModelerConstants.EXTERNAL_REFERENCE_PROPERTY,
