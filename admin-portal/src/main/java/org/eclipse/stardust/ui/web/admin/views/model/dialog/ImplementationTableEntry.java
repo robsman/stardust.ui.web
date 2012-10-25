@@ -22,7 +22,7 @@ public class ImplementationTableEntry extends DefaultRowModel
    private int modelOID;
    private String process;
    private boolean checkSelection;
-   private String ModelId;
+   private String implementationId;
    private RowDeselectionListener rowDeselectionListener;
 
    public String getModelName()
@@ -96,17 +96,17 @@ public class ImplementationTableEntry extends DefaultRowModel
    /**
     * @return the modelId
     */
-   public String getModelId()
+   public String getImplementationId()
    {
-      return ModelId;
+      return implementationId;
    }
 
    /**
-    * @param modelId the modelId to set
+    * @param implId the modelId to set
     */
-   public void setModelId(String modelId)
+   public void setImplementationId(String implId)
    {
-      ModelId = modelId;
+      implementationId = implId;
    }
 
    public void setRowDeselectionListener(RowDeselectionListener rowDeselectionListener)
