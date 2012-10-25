@@ -47,11 +47,11 @@ define(
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.chooseAssignmentRadio = jQuery("#chooseAssignmentRadio");
 					this.assignAutomaticallyRadio = jQuery("#assignAutomaticallyRadio");
-					this.workingWeeksPerYearInput = jQuery("workingWeeksPerYearInput");
-					this.targetWorktimePerDayInput = jQuery("targetWorktimePerDayInput");
-					this.targetWorktimePerWeekInput = jQuery("targetWorktimePerWeekInput");
-					this.targetQueueDepthInput = jQuery("targetQueueDepthInput");
-					this.actualCostPerMinuteInput = jQuery("actualCostPerMinuteInput");
+					this.workingWeeksPerYearInput = jQuery("#workingWeeksPerYearInput");
+					this.targetWorktimePerDayInput = jQuery("#targetWorktimePerDayInput");
+					this.targetWorktimePerWeekInput = jQuery("#targetWorktimePerWeekInput");
+					this.targetQueueDepthInput = jQuery("#targetQueueDepthInput");
+					this.actualCostPerMinuteInput = jQuery("#actualCostPerMinuteInput");
 
 					this.publicVisibilityCheckbox
 							.change(
