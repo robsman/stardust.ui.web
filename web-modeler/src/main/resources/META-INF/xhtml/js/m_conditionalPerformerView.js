@@ -163,7 +163,7 @@ define(
 					if (this.nameInput.val() == null
 							|| this.nameInput.val() == "") {
 						this.errorMessages
-								.push("Application name must not be empty.");
+								.push("Conditional performer name must not be empty.");
 						this.nameInput.addClass("error");
 					}
 
