@@ -174,56 +174,58 @@ define(
 													});
 										}
 									});
-					this.supportsDepartmentsCheckbox
-							.change(
-									{
-										view : this
-									},
-									function(event) {
-										var view = event.data.view;
 
-										view
-												.setSupportDepartments(view.supportsDepartmentsCheckbox
-														.is(":checked"));
-
-										// Submit changes
-									});
-					this.departmentDataSelect
-							.change(
-									{
-										view : this
-									},
-									function(event) {
-										var view = event.data.view;
-
-										view.departmentDataPathInput.val(null);
-										view
-												.submitChanges({
-													attributes : {
-														"carnot:engine:dataId" : view.departmentDataSelect
-																.val() == m_constants.TO_BE_DEFINED ? null
-																: view.departmentDataSelect
-																		.val(),
-														"carnot:engine:dataId" : null
-													}
-												});
-									});
-					this.departmentDataPathInput
-							.change(
-									{
-										view : this
-									},
-									function(event) {
-										var view = event.data.view;
-
-										view
-												.submitChanges({
-													attributes : {
-														"carnot:engine:dataId" : view.departmentDataPathInput
-																.val()
-													}
-												});
-									});
+					//TODO - check if needed, else delete
+//					this.supportsDepartmentsCheckbox
+//							.change(
+//									{
+//										view : this
+//									},
+//									function(event) {
+//										var view = event.data.view;
+//
+//										view
+//												.setSupportDepartments(view.supportsDepartmentsCheckbox
+//														.is(":checked"));
+//
+//										// Submit changes
+//									});
+//					this.departmentDataSelect
+//							.change(
+//									{
+//										view : this
+//									},
+//									function(event) {
+//										var view = event.data.view;
+//
+//										view.departmentDataPathInput.val(null);
+//										view
+//												.submitChanges({
+//													attributes : {
+//														"carnot:engine:dataId" : view.departmentDataSelect
+//																.val() == m_constants.TO_BE_DEFINED ? null
+//																: view.departmentDataSelect
+//																		.val(),
+//														"carnot:engine:dataId" : null
+//													}
+//												});
+//									});
+//					this.departmentDataPathInput
+//							.change(
+//									{
+//										view : this
+//									},
+//									function(event) {
+//										var view = event.data.view;
+//
+//										view
+//												.submitChanges({
+//													attributes : {
+//														"carnot:engine:dataId" : view.departmentDataPathInput
+//																.val()
+//													}
+//												});
+//									});
 
 					this.leaderSelect.change({
 						view : this
@@ -243,7 +245,7 @@ define(
 				 */
 				OrganizationView.prototype.setModelElement = function(organization) {
 					this.organization = organization;
-					
+
 					this.initializeModelElement(organization);
 					this.populateDepartmentDataSelectInput();
 					this.populateLeaderSelectInput();
@@ -335,7 +337,7 @@ define(
 				OrganizationView.prototype.setSupportDepartments = function(
 						supportDepartments, departmentDataId,
 						departmentDataPath) {
-					if (supportDepartments) {
+					if ("true" == supportDepartments) {
 						this.departmentDataSelect.removeAttr("disabled");
 						this.departmentDataPathInput.removeAttr("disabled");
 						this.supportsDepartmentsCheckbox.attr("checked", true);
