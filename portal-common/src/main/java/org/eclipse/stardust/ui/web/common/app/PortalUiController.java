@@ -574,8 +574,8 @@ public class PortalUiController
       ViewDefinition viewDefinition = lookupViewID(viewId);
       if (null == viewDefinition)
       {
-         MessageDialog.addErrorMessage(MessagePropertiesBean.getInstance().getParamString(
-               "portalFramework.error.viewNotAvailable", viewId));
+         MessageDialog.addErrorMessage(MessagePropertiesBean.getInstance().getString(
+               "portalFramework.error.viewNotAvailable"));
          return null;
       }
 
@@ -605,8 +605,8 @@ public class PortalUiController
 
       if (null == viewDefinition)
       {
-         MessageDialog.addErrorMessage(MessagePropertiesBean.getInstance().getParamString(
-               "portalFramework.error.viewNotAvailable", viewId));
+         MessageDialog.addErrorMessage(MessagePropertiesBean.getInstance().getString(
+         "portalFramework.error.viewNotAvailable"));
          return null;
       }
 
@@ -724,8 +724,8 @@ public class PortalUiController
 
             if (null == viewDefinition)
             {
-               MessageDialog.addErrorMessage(MessagePropertiesBean.getInstance().getParamString(
-                     "portalFramework.error.viewNotAvailable", viewId));
+               MessageDialog.addErrorMessage(MessagePropertiesBean.getInstance().getString(
+               "portalFramework.error.viewNotAvailable"));
                return null;
             }
 
