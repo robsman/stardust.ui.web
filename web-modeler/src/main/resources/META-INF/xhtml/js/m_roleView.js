@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -28,7 +28,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function RoleView() {
 				// Inheritance
@@ -39,7 +39,7 @@ define(
 				m_utils.inheritMethods(RoleView.prototype, modelElementView);
 
 				/**
-				 * 
+				 *
 				 */
 				RoleView.prototype.initialize = function(role) {
 					this.id = "roleView";
@@ -65,11 +65,19 @@ define(
 											return;
 										}
 
-										if (view.modelElement.attributes["carnot:engine:visibility"] != "Public") {
+										if (view.modelElement.attributes["carnot:engine:visibility"]
+											&& view.modelElement.attributes["carnot:engine:visibility"] != "Public") {
 											view
 													.submitChanges({
 														attributes : {
 															"carnot:engine:visibility" : "Public"
+														}
+													});
+										} else {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:engine:visibility" : "Private"
 														}
 													});
 										}
@@ -91,11 +99,11 @@ define(
 											view.assignAutomaticallyRadio.attr(
 													"checked", false);
 
-											if (view.modelElement.attributes["carnot:engine:tasks:assignment:mode"] != "assemblyLine") {
+											if (view.modelElement.attributes["carnot:engine:tasks:assignment:mode"] == "assemblyLine") {
 												view
 														.submitChanges({
 															attributes : {
-																"carnot:engine:tasks:assignment:mode" : "assemblyLine"
+																"carnot:engine:tasks:assignment:mode" : ""
 															}
 														});
 											}
@@ -149,7 +157,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				RoleView.prototype.setModelElement = function(role) {
 					this.role = role;
@@ -158,7 +166,8 @@ define(
 
 					// Set values
 
-					if (this.role.attributes["carnot:engine:visibility"] == "Public") {
+					if (!this.role.attributes["carnot:engine:visibility"] ||
+							this.role.attributes["carnot:engine:visibility"] == "Public") {
 						this.publicVisibilityCheckbox.attr("checked", true);
 					} else {
 						this.publicVisibilityCheckbox.attr("checked", false);
@@ -185,14 +194,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				RoleView.prototype.toString = function() {
 					return "Lightdust.RoleView";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				RoleView.prototype.validate = function() {
 					this.clearErrorMessages();

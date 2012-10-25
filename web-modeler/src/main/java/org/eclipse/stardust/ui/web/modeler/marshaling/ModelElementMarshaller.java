@@ -1926,6 +1926,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                         ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY);
                }
+
+               loadDescription(childJson, childParticipant);
+               loadAttributes(childParticipant, childJson);
             }
          }
       }
