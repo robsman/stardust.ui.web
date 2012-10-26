@@ -33,6 +33,7 @@ import org.eclipse.stardust.ui.web.common.autocomplete.IAutocompleteSelector.IAu
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.FilterToolbarItem;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.user.ParticipantAutocompleteSelector;
 import org.eclipse.stardust.ui.web.viewscommon.user.ParticipantWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
@@ -48,6 +49,7 @@ import com.icesoft.faces.component.selectinputtext.SelectInputText;
  */
 public class PermissionPickList
 {
+   private static final String PERMISSION_KEY_PREFIX = "views.authorizationManagerView.permission.model.";
    private static final String EMPTY_STRING = "";
    private static final String GENERAL_PERMISSION = "generalPermissions";
    private static final String UI_PERMISSION = "uiPermissions";
@@ -480,11 +482,13 @@ public class PermissionPickList
    {
       if (!UiPermissionUtils.isGeneralPermissionId(permissionId))
       {
+         // UI Permissions
          return uiPermissionDefs.get(permissionId).getLabel();
       }
       else if (!labels.containsKey(permissionId))
       {
-         labels.put(permissionId, UiPermissionUtils.getPermisionLabel(permissionId));
+         // General Permissions
+         labels.put(permissionId, MessagesViewsCommonBean.getInstance().getString(PERMISSION_KEY_PREFIX + permissionId));
       }
       return labels.get(permissionId);
    }
