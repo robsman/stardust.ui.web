@@ -12,7 +12,8 @@
 package org.eclipse.stardust.ui.web.modeler.edit.model.element;
 
 import static org.eclipse.stardust.engine.api.model.PredefinedConstants.ADMINISTRATOR_ROLE;
-import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newBpmModel;
+
+import java.util.Date;
 
 import javax.annotation.Resource;
 
@@ -82,7 +83,7 @@ public class ModelChangeCommandHandler
       String modelID = request.get(ModelerConstants.ID_PROPERTY).getAsString();
       String modelName = request.get(ModelerConstants.NAME_PROPERTY).getAsString();
       ModelType model = facade.createModel(modelID, modelName);
-
+      modelService().getModelBuilderFacade().setModified(model, model.getCreated());
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(model);
 
@@ -155,6 +156,7 @@ public class ModelChangeCommandHandler
          modelService().currentSession().modelElementUnmarshaller().populateFromJson(model, request);
 
          modelMgtStrategy.getModels().put(model.getId(), model);
+         modelService().getModelBuilderFacade().setModified(model, new Date());
          modelMgtStrategy.saveModel(model);
 
          JsonArray modified = new JsonArray();

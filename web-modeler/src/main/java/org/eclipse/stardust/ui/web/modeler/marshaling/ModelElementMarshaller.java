@@ -1762,6 +1762,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             modelManagementStrategy().getModelFilePath(model));
       modelJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.MODEL_KEY);
       modelJson.addProperty(ModelerConstants.DATE_OF_CREATION, model.getCreated());
+      modelJson.addProperty(ModelerConstants.DATE_OF_MODIFICATION, getModelBuilderFacade().getModified(model));
 
       // loadDescription(modelJson, model);
       loadAttributes(model, modelJson);

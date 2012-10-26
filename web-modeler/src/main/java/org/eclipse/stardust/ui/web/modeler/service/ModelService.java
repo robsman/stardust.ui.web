@@ -2255,7 +2255,7 @@ public class ModelService
       }
    }
 
-   private ModelBuilderFacade getModelBuilderFacade()
+   public ModelBuilderFacade getModelBuilderFacade()
    {
       return new ModelBuilderFacade(getModelManagementStrategy());
    }

@@ -195,7 +195,7 @@ define(function() {
 
 		MODEL : "model",
 		DATE_OF_CREATION : "dateOfCreation",
-		LAST_MODIFIED_DATE : "lastModifiedDate",
+		DATE_OF_MODIFICATION : "dateOfModification",
 
 		// Process Definition
 

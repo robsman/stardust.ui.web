@@ -177,17 +177,14 @@ define(
 						this.creationDateOutput.append("UNKNOWN");
 					}
 
-					// TODO - check if lastModificationDate will be stored in the XPDL
-					// or needs to be managed on the UI side
-					this.lastModificationDateOutput.append("UNKNOWN");
-//					if (this.modelElement[m_constants.LAST_MODIFIED_DATE]) {
-//						this.lastModificationDateOutput.empty();
-//						this.lastModificationDateOutput.append(this.modelElement[m_constants.LAST_MODIFIED_DATE]);
-//					} else {
-//						this.lastModificationDateOutput.empty();
-//						// TODO I18N
-//						this.lastModificationDateOutput.append("UNKNOWN");
-//					}
+					if (this.modelElement[m_constants.DATE_OF_MODIFICATION]) {
+						this.lastModificationDateOutput.empty();
+						this.lastModificationDateOutput.append(this.modelElement[m_constants.DATE_OF_MODIFICATION]);
+					} else {
+						this.lastModificationDateOutput.empty();
+						// TODO I18N
+						this.lastModificationDateOutput.append("UNKNOWN");
+					}
 
 					if (this.modelElement.attributes == null) {
 						this.modelElement.attributes = {};
