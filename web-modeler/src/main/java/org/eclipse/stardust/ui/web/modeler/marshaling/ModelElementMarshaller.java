@@ -1125,6 +1125,15 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             eObjectUUIDMapper().getUUID(role));
       ModelType model = ModelUtils.findContainingModel(role);
 
+      if (role.getCardinality() > 0)
+      {
+         roleJson.addProperty(ModelerConstants.CARDINALITY, role.getCardinality());
+      }
+      else
+      {
+         roleJson.addProperty(ModelerConstants.CARDINALITY, "");
+      }
+
       if (null != model)
       {
          List<OrganizationType> parentOrgs = getModelBuilderFacade().getParentOrganizations(

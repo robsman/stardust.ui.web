@@ -44,6 +44,7 @@ define(
 				RoleView.prototype.initialize = function(role) {
 					this.id = "roleView";
 
+					this.cardinalityInput = jQuery("#cardinalityInput");
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.chooseAssignmentRadio = jQuery("#chooseAssignmentRadio");
 					this.assignAutomaticallyRadio = jQuery("#assignAutomaticallyRadio");
@@ -137,6 +138,8 @@ define(
 										}
 									});
 
+					this.registerInputForModelElementChangeSubmission(
+							this.cardinalityInput, m_constants.CARDINALITY);
 					this.registerInputForModelElementAttributeChangeSubmission(
 							this.workingWeeksPerYearInput,
 							"carnot:pwh:workingWeeksPerYear");
@@ -181,6 +184,9 @@ define(
 						this.chooseAssignmentRadio.attr("checked", true);
 					}
 
+					if (this.role[m_constants.CARDINALITY]) {
+						this.cardinalityInput.val(this.role[m_constants.CARDINALITY]);
+					}
 					this.workingWeeksPerYearInput
 							.val(this.role.attributes["carnot:pwh:workingWeeksPerYear"]);
 					this.targetWorktimePerDayInput
@@ -207,11 +213,21 @@ define(
 					this.clearErrorMessages();
 
 					this.nameInput.removeClass("error");
+					this.cardinalityInput.removeClass("error");
 
 					if (this.nameInput.val() == null
 							|| this.nameInput.val() == "") {
 						this.errorMessages.push("Role name must not be empty.");
 						this.nameInput.addClass("error");
+					}
+
+					if (this.cardinalityInput.val()
+							&& this.cardinalityInput.val() != ""
+							&& (isNaN(this.cardinalityInput.val()) || parseInt(this.cardinalityInput
+									.val()) <= 0)) {
+						this.errorMessages
+								.push("Cardinality should be a number greater than 0.");
+						this.cardinalityInput.addClass("error");
 					}
 
 					if (this.errorMessages.length > 0) {

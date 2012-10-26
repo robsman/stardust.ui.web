@@ -217,6 +217,7 @@ define(function() {
 		ORGANIZATION_PARTICIPANT_TYPE : "organizationParticipant",
 		CONDITIONAL_PERFORMER_PARTICIPANT_TYPE : "conditionalPerformerParticipant",
 		TEAM_LEADER_KEY : "isTeamLeader",
+		CARDINALITY : "cardinality",
 
 		// Activity
 

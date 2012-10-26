@@ -1447,6 +1447,31 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private void updateRole(RoleType role, JsonObject roleJson)
    {
+
+      if (roleJson.has(ModelerConstants.CARDINALITY))
+      {
+         int cardinality = 0;
+         try
+         {
+            if (StringUtils.isEmpty(roleJson.get(ModelerConstants.CARDINALITY)
+                  .getAsString())
+                  || (Integer.parseInt(roleJson.get(ModelerConstants.CARDINALITY)
+                        .getAsString()) <= 0))
+            {
+               cardinality = 0;
+            }
+            else
+            {
+               cardinality = roleJson.get(ModelerConstants.CARDINALITY).getAsInt();
+            }
+         }
+         catch (NumberFormatException e)
+         {
+            // Do nothing
+         }
+         role.setCardinality(cardinality);
+      }
+
       updateIdentifiableElement(role, roleJson);
 
       mapDeclaredProperties(role, roleJson, propertiesMap.get(RoleType.class));
