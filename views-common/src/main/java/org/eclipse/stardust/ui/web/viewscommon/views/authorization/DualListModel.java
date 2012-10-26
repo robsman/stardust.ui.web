@@ -74,7 +74,7 @@ public class DualListModel implements Serializable
      */
    public void addAll()
    {
-      List<SelectItemModel> removableObjects = getRemovableObjects(getSource());
+      List<SelectItemModel> removableObjects = getRemovableObjects(getFilteredSource());
       target.addAll(removableObjects);
       source.removeAll(removableObjects);
       filteredTarget.addAll(removableObjects);
@@ -138,7 +138,7 @@ public class DualListModel implements Serializable
       */
    public void removeAll()
    {
-      List<SelectItemModel> removableObjects = getRemovableObjects(getTarget());
+      List<SelectItemModel> removableObjects = getRemovableObjects(getFilteredTarget());
       source.addAll(removableObjects);
       target.removeAll(removableObjects);
       filteredSource.addAll(removableObjects);
