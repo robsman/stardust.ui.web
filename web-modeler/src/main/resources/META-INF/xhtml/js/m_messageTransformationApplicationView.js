@@ -624,8 +624,7 @@ define(
 					m_utils.debug(accessPoint);
 
 					// TODO Move to m_accessPoint
-					var typeDeclaration = this
-							.getTypeDeclaration(accessPoint);
+					var typeDeclaration = m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel());
 
 					if (typeDeclaration == null) {
 						this.errorMessages
@@ -640,34 +639,6 @@ define(
 
 					this.initializeInputTableRowsRecursively(accessPoint,
 							typeDeclaration.getBody(), null, typeDeclaration.model);
-				};
-
-				/**
-				 * TODO Very ugly conversion, because server stores data
-				 * reference in a server-specific string.
-				 */
-				MessageTransformationApplicationView.prototype.getTypeDeclaration = function(
-						accessPoint) {
-					// TODO Workaround for client site programming, this is not what the server returns
-					if (accessPoint.structuredDataTypeFullId != null) {
-						return m_model
-								.findTypeDeclaration(accessPoint.structuredDataTypeFullId);
-					}
-
-					var encodedId = accessPoint.attributes["carnot:engine:dataType"];
-
-					if (encodedId == null) {
-						return null;
-					}
-
-					if (encodedId.indexOf("typeDeclaration") == 0) {
-						var parts = encodedId.split("{")[1].split("}");
-
-						return m_model.findTypeDeclaration(parts[0] + ":"
-								+ parts[1]);
-					} else {
-						return this.application.model.typeDeclarations[encodedId];
-					}
 				};
 
 				/**
@@ -690,8 +661,7 @@ define(
 				MessageTransformationApplicationView.prototype.addOutputData = function(
 						accessPoint) {
 					// TODO Move to m_accessPoint
-					var typeDeclaration = this
-							.getTypeDeclaration(accessPoint);
+					var typeDeclaration = m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel());
 
 					if (typeDeclaration == null) {
 						this.errorMessages
@@ -725,9 +695,8 @@ define(
 					tableRow.parentPath = parentPath;
 					tableRow.name = parentPath == null ? accessPoint.name
 							: element.name;
-					tableRow.typeName = parentPath == null ? this
-							.getTypeDeclaration(
-									accessPoint)
+					tableRow.typeName = parentPath == null ? m_accessPoint.retrieveTypeDeclaration(
+									accessPoint, this.getModel())
 							.getSchemaName()
 							: element.type;
 
@@ -774,9 +743,8 @@ define(
 					tableRow.parentPath = parentPath;
 					tableRow.name = parentPath == null ? accessPoint.name
 							: element.name;
-					tableRow.typeName = parentPath == null ? this
-							.getTypeDeclaration(
-									accessPoint)
+					tableRow.typeName = parentPath == null ? m_accessPoint.retrieveTypeDeclaration(
+									accessPoint, this.getModel())
 							.getSchemaName()
 							: element.type;
 					tableRow.mappingExpression = this.mappingExpressions[path] == null ? ""

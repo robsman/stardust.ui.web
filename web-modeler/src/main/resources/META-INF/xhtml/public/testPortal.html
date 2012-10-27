@@ -84,68 +84,88 @@ td#toolbar div.toolSeparator {
 	<table width="100%">
 		<tr>
 			<td valign="top">
-				<table>
-					<tr>
-						<td>
-							<div id="lastSaveStatusPanel">
-								<table cellpadding="0" cellspacing="0">
-									<tr>
-										<td><span class="label-form">Last Save:</span></td>
-										<td style="text-align: left;">
-											<div id="lastSaveDateDisplay"></div>
-										</td>
-									</tr>
-								</table>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td id="toolbar">
-							<div id="outlineToolbar">
-								<div class="toolDiv">
-									<img id="createModel"
-										src="../../views-common/images/icons/add.png"
-										title="Create Model" />
+	<table style="width: 100%;">
+		<tr>
+			<td>
+				<div id="lastSaveStatusPanel">
+					<table cellpadding="0" cellspacing="0">
+						<tr>
+							<td><span class="label-form">Last Save:</span></td>
+							<td style="text-align: left;">
+								<div id="lastSaveDateDisplay">
 								</div>
-								<div class="toolSeparator">
-									<img src="../../common/images/icons/toolbar-separator.png" />
-								</div>
-								<div class="toolDiv">
-									<img id="importModel"
-										src="../../views-common/images/icons/page_white_get.png"
-										title="Import Model" />
-								</div>
-								<div class="toolSeparator">
-									<img src="../../common/images/icons/toolbar-separator.png" />
-								</div>
-								<div class="toolDiv">
-									<img id="saveAllModels"
-										src="../../views-common/images/icons/disk_multiple.png"
-										title="Save All Models" />
-								</div>
-								<div class="toolSeparator">
-									<img src="../../common/images/icons/toolbar-separator.png" />
-								</div>
-								<div class="toolDiv">
-									<img id="refreshModels" src="../images/icons/refresh.png"
-										title="Refresh models" />
-								</div>
-							</div></td>
-					</tr>
-					<tr>
-						<td>
-							<div id="outline"
-								style="text-align: left; list-style-type: none; background-color: white;">
-							</div>
-							<div id="canvas" />
-						</td>
-					</tr>
-				</table>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td id="toolbar">
+				<div id="outlineToolbar">
+					<div class="toolDiv">
+						<img id="createModel"
+							src="../../views-common/images/icons/add.png"
+							title="Create Model" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="importModel"
+							src="../../views-common/images/icons/page_white_get.png"
+							title="Import Model" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="undoChange"
+							src="../images/icons/undo.png"
+							title="Undo" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="redoChange"
+							src="../images/icons/redo.png"
+							title="Redo" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="saveAllModels"
+							src="../../views-common/images/icons/disk_multiple.png"
+							title="Save All Models" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="refreshModels" src="../images/icons/refresh.png"
+							title="Refresh models" />
+					</div>
+				</div></td>
+		</tr>
+		<tr>
+			<td>
+				<div id="outline"
+					style="text-align: left; list-style-type: none; background-color: white;">
+				</div>
+			</td>
+		</tr>
+	</table>
 			</td>
 			<td valign="top"><iframe id="viewAnchor" width="1600"
 					height="800" style="border: none;"></iframe>
 			</td>
 		</tr>
 	</table>
+									<div id="scrollpane">
+									<div id="canvas" />
+								</div>
+	
 </body>
 </html>

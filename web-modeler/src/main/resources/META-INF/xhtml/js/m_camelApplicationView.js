@@ -118,6 +118,8 @@ define(
 												view.overlayControllers[jQuery(
 														this).attr("id")] = extension.provider
 														.create(view);
+												m_utils.debug("Overlay loaded: " + jQuery(
+														this).attr("id"));
 											}
 										});
 					}

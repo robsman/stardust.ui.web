@@ -1197,11 +1197,24 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                }
                else if (dataType.equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
                {
-                  String structTypeFullID = accessPointJson.get(
-                        ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
+                  JsonObject attributesJson = accessPointJson.get(ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject();
+                  
+                  // TODO Ugly storage
+                  
+                  String encodedId = attributesJson.get(
+                        "carnot:engine:dataType")
                         .getAsString();
+                  String structuredDataFullId = null;
+                  
+                  if (encodedId.indexOf("typeDeclaration") == 0) {
+                     String parts[] = encodedId.split("\\{")[1].split("\\}");
+
+                     structuredDataFullId = parts[0] + ":"
+                     + parts[1];
+                  }
+                  
                   accessPoint = getModelBuilderFacade().createStructuredAccessPoint(
-                        application, id, name, structTypeFullID, direction);
+                        application, id, name, structuredDataFullId, direction);
                }
                else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
                {

@@ -39,7 +39,7 @@ require.config({
 		'jquery.impromptu': ['jquery'],
 		'jquery.jstree': ['jquery'],
 		'jquery.simplemodal': ['jquery'],
-		'jquery.url': ['jquery'],
+		'jquery.url': ['jquery']
 	}
 });
 

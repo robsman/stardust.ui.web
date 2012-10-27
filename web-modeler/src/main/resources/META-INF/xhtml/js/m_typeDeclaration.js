@@ -29,21 +29,21 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function TypeDeclaration() {
 				m_utils.inheritMethods(TypeDeclaration.prototype,
 						m_modelElement.create());
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.toString = function() {
 					return "Lightdust.TypeDeclaration";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.initialize = function(name, type) {
 					this.name = name;
@@ -60,7 +60,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.initializeFromJson = function(model) {
 					this.model = model;
@@ -68,7 +68,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.rename = function(id, name) {
 					delete this.model.typeDeclarations[this.id];
@@ -84,60 +84,69 @@ define(
 				};
 
 				TypeDeclaration.prototype.isReadOnly = function() {
-					return (null != this.typeDeclaration.type) && (this.typeDeclaration.type.classifier === 'ExternalReference');
+					return (null != this.typeDeclaration.type)
+							&& (this.typeDeclaration.type.classifier === 'ExternalReference');
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.isSequence = function() {
-					return (null != this.getBody()) && (this.getBody().classifier === 'sequence');
+					return (null != this.getBody())
+							&& (this.getBody().classifier === 'sequence');
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.getBody = function() {
 					return this.getTypeDeclaration().body;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.getFacets = function() {
 					return this.getTypeDeclaration().facets;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.getSchemaName = function() {
-					return this.getTypeDeclaration().type;
+					// TODO@Robert Review
+					if (this.typeDeclaration && this.typeDeclaration.schema
+							&& this.typeDeclaration.schema.elements
+							&& this.typeDeclaration.schema.elements[this.id]) {
+						return this.typeDeclaration.schema.elements[this.id].type;
+					}
+
+					return null;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.getElementCount = function() {
 					var n = 0;
 
-					jQuery.each(
-						this.getElements(),
-						function(i, element) {
-							++n;
-						});
+					jQuery.each(this.getElements(), function(i, element) {
+						++n;
+					});
 
 					return n;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.createInstance = function() {
 					if (this.isSequence()) {
 						var instance = {};
 
-						this.populateSequenceInstanceRecursively(this, instance);
+						this
+								.populateSequenceInstanceRecursively(this,
+										instance);
 
 						return instance;
 					} else {
@@ -146,7 +155,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.populateSequenceInstanceRecursively = function(
 						typeDeclaration, instance) {
@@ -168,7 +177,8 @@ define(
 								m_utils.debug("===> Facets");
 								m_utils.debug(childTypeDeclaration.getFacets());
 
-								for ( var enumerator in childTypeDeclaration.getFacets()) {
+								for ( var enumerator in childTypeDeclaration
+										.getFacets()) {
 									instance[id] = enumerator;
 
 									break;
@@ -182,30 +192,28 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
-				TypeDeclaration.prototype.switchToComplexType = function()
-				{
-					if ( !this.isSequence()) {
+				TypeDeclaration.prototype.switchToComplexType = function() {
+					if (!this.isSequence()) {
 						var td = this.getTypeDeclaration();
 						delete td.type;
 						delete td.facets;
 
 						td.body = {
-							name: "<sequence>",
-							icon: "XSDModelGroupSequence.gif",
-							classifier: "sequence",
-							elements: {}
+							name : "<sequence>",
+							icon : "XSDModelGroupSequence.gif",
+							classifier : "sequence",
+							elements : {}
 						};
 						td.icon = "XSDComplexTypeDefinition.gif";
 					}
 				};
 
 				/**
-				 *
+				 * 
 				 */
-				TypeDeclaration.prototype.switchToEnumeration = function()
-				{
+				TypeDeclaration.prototype.switchToEnumeration = function() {
 					if (this.isSequence()) {
 						var td = this.getTypeDeclaration();
 						delete td.body;
@@ -217,9 +225,8 @@ define(
 				};
 
 				TypeDeclaration.prototype.getElements = function() {
-					return this.isSequence()
-						? this.getBody().elements
-						: this.getFacets();
+					return this.isSequence() ? this.getBody().elements : this
+							.getFacets();
 				};
 
 				TypeDeclaration.prototype.getElement = function(name) {
@@ -239,8 +246,8 @@ define(
 						};
 					} else {
 						newElement = {
-							name: newName,
-							classifier: "enumeration"
+							name : newName,
+							classifier : "enumeration"
 						};
 					}
 					this.getElements()[newElement.name] = newElement;
@@ -248,7 +255,8 @@ define(
 					return newElement;
 				};
 
-				TypeDeclaration.prototype.renameElement = function(oldName, newName) {
+				TypeDeclaration.prototype.renameElement = function(oldName,
+						newName) {
 					var elementContainer = this.getElements();
 
 					var element = elementContainer[oldName];
@@ -259,21 +267,24 @@ define(
 					}
 				};
 
-				TypeDeclaration.prototype.setElementType = function(name, typeName) {
+				TypeDeclaration.prototype.setElementType = function(name,
+						typeName) {
 					var element = this.getElement(name);
 					if (element) {
 						element.type = typeName;
 					}
 				};
 
-				TypeDeclaration.prototype.getEffectiveElementType = function(name) {
+				TypeDeclaration.prototype.getEffectiveElementType = function(
+						name) {
 					var element = this.getElement(name);
 					if (element) {
 						;
 					}
 				};
 
-				TypeDeclaration.prototype.setElementCardinality = function(name, cardinality) {
+				TypeDeclaration.prototype.setElementCardinality = function(
+						name, cardinality) {
 					var element = this.getElement(name);
 					if (element) {
 						element.cardinality = cardinality;
@@ -301,24 +312,29 @@ define(
 
 							var schemaNsUri = this.typeDeclaration.schema.nsMappings[typeQName[0]];
 							if (schemaNsUri == "http://www.w3.org/2001/XMLSchema") {
-								return { name: "xsd:" + typeName };
+								return {
+									name : "xsd:" + typeName
+								};
 							}
 
-							jQuery.each(this.model.typeDeclarations, function(i, declaration) {
-								if ((declaration.typeDeclaration != null)
-									&& (declaration.typeDeclaration.schema != null)
-									&& (declaration.typeDeclaration.schema.targetNamespace == schemaNsUri)) {
-									schema = declaration.typeDeclaration.schema;
-									return false;
-								}
-							});
+							jQuery
+									.each(
+											this.model.typeDeclarations,
+											function(i, declaration) {
+												if ((declaration.typeDeclaration != null)
+														&& (declaration.typeDeclaration.schema != null)
+														&& (declaration.typeDeclaration.schema.targetNamespace == schemaNsUri)) {
+													schema = declaration.typeDeclaration.schema;
+													return false;
+												}
+											});
 						}
 
 						var type = schema.types[typeName];
 						return {
-							name: typeName,
-							type: type,
-							schema: schema
+							name : typeName,
+							type : type,
+							schema : schema
 						};
 					} else {
 						return undefiend;

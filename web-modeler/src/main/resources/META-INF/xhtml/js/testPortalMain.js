@@ -23,6 +23,8 @@ require.config({
 		'jquery.url': ['libs/jquery/plugins/jquery.url', 'https://raw.github.com/allmarkedup/jQuery-URL-Parser/472315f02afbfd7193184300cc381163e19b4a16/jquery.url'],
 
 		'common-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/common-plugins',
+		'outline-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/outline-plugins',
+		'i18n' : '../../common/InfinityBPMI18N'
 	},
 	shim: {
 		'json': {
@@ -30,6 +32,9 @@ require.config({
 		},
 		'raphael': {
 			exports: "Raphael"
+		},
+		'i18n': {
+			exports: "InfinityBPMI18N"
 		},
 
 		'jquery-ui': ['jquery'],
@@ -60,6 +65,8 @@ require(["require",
 		 "json",
 		 "raphael",
 
+		 "outline-plugins",
+		 "i18n",
 		 "common-plugins",
 		 "m_utils",
 		 "m_communicationController",
