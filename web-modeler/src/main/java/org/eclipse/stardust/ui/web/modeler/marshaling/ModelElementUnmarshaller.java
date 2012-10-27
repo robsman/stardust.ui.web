@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
@@ -43,6 +44,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.AnnotationSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
+import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelPackage;
 import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
@@ -74,6 +76,7 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
+import org.eclipse.stardust.model.xpdl.xpdl2.XpdlPackage;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.xsd.XSDComplexTypeContent;
 import org.eclipse.xsd.XSDComplexTypeDefinition;
@@ -160,8 +163,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       // propertiesMap.put(EndEventSymbol.class,
       // new String[] {ModelerConstants.NAME_PROPERTY});
       propertiesMap.put(ApplicationType.class, new String[] {});
-      propertiesMap.put(TypeDeclarationType.class, new String[] {
-            ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY});
+      // propertiesMap.put(TypeDeclarationType.class, new String[] {
+      // ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY});
       propertiesMap.put(ModelType.class, new String[] {});
       propertiesMap.put(DataType.class, new String[] {});
       propertiesMap.put(RoleType.class, new String[] {});
@@ -622,13 +625,27 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+   *
+   * @param element
+   * @param elementJson
+   */
+  private void updateIdentifiableElement(IIdentifiableElement element,
+        JsonObject elementJson)
+  {
+      updateElementNameAndId(element,
+            CarnotWorkflowModelPackage.eINSTANCE.getIIdentifiableElement_Id(),
+            CarnotWorkflowModelPackage.eINSTANCE.getIIdentifiableElement_Name(),
+            elementJson);
+  }
+
+  /**
     * @param element
     * @param elementJson
     */
-   private void updateIdentifiableElement(IIdentifiableElement element,
-         JsonObject elementJson)
+   private boolean updateElementNameAndId(EObject element, EStructuralFeature eFtrId,
+         EStructuralFeature eFtrName, JsonObject elementJson)
    {
+      boolean wasModified = false;
       String newId = null;
 
       if (elementJson.has(ModelerConstants.ID_PROPERTY))
@@ -640,9 +657,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       if (elementJson.has(ModelerConstants.NAME_PROPERTY))
       {
          String newName = extractString(elementJson, ModelerConstants.NAME_PROPERTY);
-         if ( !element.getName().equals(newName))
+         if ( !element.eGet(eFtrName).equals(newName))
          {
-            element.setName(newName);
+            wasModified = true;
+            element.eSet(eFtrName, newName);
 
             if (isEmpty(newId))
             {
@@ -685,10 +703,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
 
-      if ( !isEmpty(newId) && !element.getId().equals(newId))
+      if ( !isEmpty(newId) && !element.eGet(eFtrId).equals(newId))
       {
-         element.setId(newId);
+         wasModified = true;
+         element.eSet(eFtrId, newId);
       }
+
+      return wasModified;
    }
 
    /**
@@ -1204,11 +1225,43 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       storeAttributes(typeDeclaration, json);
 
-      mapDeclaredProperties(typeDeclaration, json,
-            propertiesMap.get(TypeDeclarationType.class));
+      String oldId = typeDeclaration.getId();
+      if (updateElementNameAndId(typeDeclaration,
+            XpdlPackage.eINSTANCE.getTypeDeclarationType_Id(),
+            XpdlPackage.eINSTANCE.getTypeDeclarationType_Name(), json))
+      {
+         // propagate ID change
+         if (null != typeDeclaration.getSchemaType())
+         {
+            for (XSDElementDeclaration elementDeclaration : typeDeclaration.getSchemaType().getSchema().getElementDeclarations())
+            {
+               if (elementDeclaration.getName().equals(oldId))
+               {
+                  if ((null != elementDeclaration.getType())
+                        && elementDeclaration.getTypeDefinition().getName().equals(oldId))
+                  {
+                     elementDeclaration.getTypeDefinition().setName(typeDeclaration.getId());
+                  }
+
+                  elementDeclaration.setName(typeDeclaration.getId());
+               }
+            }
+            for (XSDTypeDefinition typeDefinition : typeDeclaration.getSchemaType().getSchema().getTypeDefinitions())
+            {
+               if (typeDefinition.getName().equals(oldId))
+               {
+                  typeDefinition.setName(typeDeclaration.getId());
+               }
+            }
+
+            // TODO target namespace
+         }
+
+      }
+
       JsonObject declarationJson = json.getAsJsonObject("typeDeclaration");
-      JsonObject typeJson = declarationJson.getAsJsonObject("type");
-      if ("SchemaType".equals(typeJson.getAsJsonPrimitive("classifier").getAsString()))
+      JsonObject typeJson = (null != declarationJson) ? declarationJson.getAsJsonObject("type") : null;
+      if ((null != typeJson) && "SchemaType".equals(typeJson.getAsJsonPrimitive("classifier").getAsString()))
       {
          updateXSDSchemaType(typeDeclaration.getSchemaType(),
                declarationJson.getAsJsonObject("schema"));
