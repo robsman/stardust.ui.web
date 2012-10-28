@@ -351,9 +351,6 @@ define(
 					for ( var n in this.typeDeclarations) {
 						var typeDeclaration = this.typeDeclarations[n];
 
-						m_utils.debug("Checking type declaration " + typeDeclaration.getSchemaName() + " against " + schemaName);
-						m_utils.debug(typeDeclaration);
-						
 						if (typeDeclaration.getSchemaName() == schemaName) {
 							return typeDeclaration;
 						}

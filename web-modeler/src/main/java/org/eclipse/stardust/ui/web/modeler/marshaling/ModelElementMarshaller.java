@@ -232,7 +232,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          processJson.addProperty(ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY,
                ModelerConstants.PROVIDES_PROCESS_INTERFACE_KEY);
 
-         JsonObject formalParametersJson = new JsonObject();
+         JsonArray formalParametersJson = new JsonArray();
 
          processJson.add(ModelerConstants.FORMAL_PARAMETERS_PROPERTY,
                formalParametersJson);
@@ -242,7 +242,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          {
             JsonObject formalParameterJson = new JsonObject();
 
-            formalParametersJson.add(formalParameter.getId(), formalParameterJson);
+            formalParametersJson.add(formalParameterJson);
             formalParameterJson.addProperty(ModelerConstants.ID_PROPERTY,
                   formalParameter.getId());
             formalParameterJson.addProperty(ModelerConstants.NAME_PROPERTY,
@@ -599,6 +599,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          activityJson.addProperty(ModelerConstants.NAME_PROPERTY, activity.getName());
          loadDescription(activityJson, activity);
          loadAttributes(activity, activityJson);
+         
          if (activity.getId().toLowerCase().startsWith("gateway"))
          {
             activityJson.addProperty(ModelerConstants.TYPE_PROPERTY,
@@ -680,7 +681,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                            ModelUtils.findContainingModel(application), application));
             }
 
-            JsonObject accessPointsJson = new JsonObject();
+            JsonArray accessPointsJson = new JsonArray();
 
             activityJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);
 
@@ -704,7 +705,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
                      JsonObject accessPointJson = new JsonObject();
 
-                     accessPointsJson.add(accessPoint.getId(), accessPointJson);
+                     accessPointsJson.add(accessPointJson);
                      accessPointJson.addProperty(ModelerConstants.ID_PROPERTY,
                            accessPoint.getId());
                      accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
@@ -723,7 +724,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
                      JsonObject accessPointJson = new JsonObject();
 
-                     accessPointsJson.add(accessPoint.getId(), accessPointJson);
+                     accessPointsJson.add(accessPointJson);
                      accessPointJson.addProperty(ModelerConstants.ID_PROPERTY,
                            accessPoint.getId());
                      accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
@@ -1328,17 +1329,15 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          }
       }
 
-      JsonObject accessPointsJson = new JsonObject();
+      JsonArray accessPointsJson = new JsonArray();
 
       applicationJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);
 
       for (AccessPointType accessPoint : application.getAccessPoint())
       {
-         System.out.println("Access Model: " + accessPoint.getId());
-
          JsonObject accessPointJson = new JsonObject();
 
-         accessPointsJson.add(accessPoint.getId(), accessPointJson);
+         accessPointsJson.add(accessPointJson);
          accessPointJson.addProperty(ModelerConstants.ID_PROPERTY, accessPoint.getId());
          accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
                accessPoint.getName());

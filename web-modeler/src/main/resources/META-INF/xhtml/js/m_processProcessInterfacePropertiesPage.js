@@ -244,8 +244,10 @@ define(
 					m_dialog
 							.makeInvisible(this.implementsProcessInterfacePanel);
 
+					// TODO Guard needed?
+					
 					if (this.getModelElement().formalParameters == null) {
-						this.getModelElement().formalParameters = {};
+						this.getModelElement().formalParameters = [];
 					}
 
 					m_utils.debug("Set Parameters: " + this

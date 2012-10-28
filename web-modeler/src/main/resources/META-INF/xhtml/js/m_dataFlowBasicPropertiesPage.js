@@ -216,7 +216,7 @@ define(
 					var contexts = {};
 					var count = 0;
 
-					for ( var n in dataFlow.activity.accessPoints) {
+					for ( var n = 0; n < dataFlow.activity.accessPoints.length; ++n) {
 						var accessPoint = dataFlow.activity.accessPoints[n];
 
 						if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
@@ -282,7 +282,7 @@ define(
 					var contexts = {};
 					var count = 0;
 
-					for ( var n in dataFlow.activity.accessPoints) {
+					for ( var n = 0; n < dataFlow.activity.accessPoints.length; ++n) {
 						var accessPoint = dataFlow.activity.accessPoints[n];
 
 						if (accessPoint.direction == m_constants.IN_ACCESS_POINT) {

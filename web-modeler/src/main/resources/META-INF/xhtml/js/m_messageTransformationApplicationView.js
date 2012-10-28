@@ -478,7 +478,7 @@ define(
 					this.inputTableRows = [];
 					this.outputTableRows = [];
 
-					for ( var m in this.application.accessPoints) {
+					for ( var m = 0; m < this.application.accessPoints.length; ++m) {
 						var accessPoint = this.application.accessPoints[m];
 
 						if (accessPoint.direction == "IN") {
@@ -606,9 +606,9 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.addInputAccessPoint = function(
 						dataName, dataStructure) {
-					this.application.accessPoints[dataName] = m_accessPoint
+					this.application.accessPoints.push(m_accessPoint
 							.createFromDataStructure(dataStructure, dataName,
-									dataName, m_constants.IN_ACCESS_POINT);
+									dataName, m_constants.IN_ACCESS_POINT));
 
 					this.submitChanges({
 						accessPoints : this.application.accessPoints
@@ -646,9 +646,9 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.addOutputAccessPoint = function(
 						dataName, dataStructure) {
-					this.application.accessPoints[dataName] = m_accessPoint
+					this.application.accessPoints.push(m_accessPoint
 							.createFromDataStructure(dataStructure, dataName,
-									dataName, m_constants.OUT_ACCESS_POINT);
+									dataName, m_constants.OUT_ACCESS_POINT));
 
 					this.submitChanges({
 						accessPoints : this.application.accessPoints

@@ -60,12 +60,7 @@ define(
 						this.options.mappingColumnWidth = "200px";
 					}
 
-					if (this.options.listType == "array") {
-						this.parameterDefinitionsTable = [];
-					} else {
-						this.parameterDefinitionsTable = {};
-					}
-
+					this.parameterDefinitions = [];
 					this.currentParameterDefinition = null;
 					this.selectedRowIndex = 0;
 					this.parameterDefinitionsTable = jQuery(this.options.scope
@@ -353,7 +348,7 @@ define(
 					m_utils.debug("Set Parameters: "
 							+ this.parameterDefinitions);
 
-					for ( var m in this.parameterDefinitions) {
+					for (var m = 0; m < this.parameterDefinitions.length; ++m) {
 						var parameterDefinition = this.parameterDefinitions[m];
 
 						var content = "<tr id=\"" + m + "\">";
@@ -427,7 +422,8 @@ define(
 										+ "table#parameterDefinitionsTable tr")
 								.mousedown(
 										{
-											panel : this
+											panel : this,
+											index : m
 										},
 										function(event) {
 											event.data.panel
@@ -437,6 +433,7 @@ define(
 											id = jQuery(this).attr("id");
 
 											event.data.panel.currentParameterDefinition = event.data.panel.parameterDefinitions[id];
+											event.data.panel.selectedRowIndex = m;
 											event.data.panel
 													.populateParameterDefinitionFields();
 										});
@@ -538,15 +535,7 @@ define(
 				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.addParameterDefinition = function() {
-					var n = 1;
-
-					if (this.parameterDefinitions == null) {
-						this.parameters = {};
-					} else {
-						for ( var m in this.parameterDefinitions) {
-							++n;
-						}
-					}
+					var n = this.parameterDefinitions.length;
 
 					this.currentParameterDefinition = {
 						id : "New_" + n, // TODO: Anticipates renaming of ID
@@ -567,19 +556,12 @@ define(
 								.getDataType(this.currentParameterDefinition);
 					}
 
-					if (this.options.listType == "array") {
 						this.parameterDefinitions
 								.push(this.currentParameterDefinition);
-					} else {
-						this.parameterDefinitions[this.currentParameterDefinition.id] = this.currentParameterDefinition;
-					}
 
 					// New parameter definitions are always appended
 					
-					this.selectedRowIndex = Math
-							.max(
-									jQuery("table#parameterDefinitionsTable tr").length,
-									0);
+					this.selectedRowIndex = this.parameterDefinitions.length - 1;
 
 					this.submitChanges();
 				};
@@ -614,10 +596,7 @@ define(
 						this.parameterDefinitions = changedParameterDefinitions;
 					}
 
-					this.selectedRowIndex = Math
-							.max(
-									jQuery("table#parameterDefinitionsTable tr").length - 2,
-									0);
+					this.selectedRowIndex = this.parameterDefinitions.length - 2,
 
 					this.submitChanges();
 				};
