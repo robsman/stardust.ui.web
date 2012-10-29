@@ -250,7 +250,8 @@ define(
 						this.getModelElement().formalParameters = [];
 					}
 
-					m_utils.debug("Set Parameters: " + this
+					m_utils.debug("Set Parameters:");
+					m_utils.debug(this
 							.getModelElement().formalParameters);
 
 					this.parameterDefinitionsPanel.setScopeModel(this

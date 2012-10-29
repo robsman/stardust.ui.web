@@ -251,17 +251,12 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             if (formalParameter.getMode().equals(ModeType.IN))
             {
                formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
-                     ModelerConstants.IN_PARAMETER_KEY);
-            }
-            else if (formalParameter.getMode().equals(ModeType.INOUT))
-            {
-               formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
-                     ModelerConstants.INOUT_PARAMETER_KEY);
+                     DirectionType.IN_LITERAL.getLiteral());
             }
             else
             {
                formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
-                     ModelerConstants.OUT_PARAMETER_KEY);
+                     DirectionType.OUT_LITERAL.getLiteral());
             }
 
             DataTypeType dataType = formalParameter.getDataType();
@@ -1320,17 +1315,49 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          }
 
          JsonObject contextsJson = new JsonObject();
+
          applicationJson.add(ModelerConstants.CONTEXTS_PROPERTY, contextsJson);
 
          for (ContextType context : application.getContext())
          {
             JsonObject contextJson = new JsonObject();
-            applicationJson.add(context.getType().getId(), contextJson);
+
+            contextsJson.add(context.getType().getId(), contextJson);
+
+            JsonArray accessPointsJson = new JsonArray();
+
+            contextJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);
+            
+            for (AccessPointType accessPoint : context.getAccessPoint())
+            {
+               JsonObject accessPointJson = new JsonObject();
+
+               accessPointsJson.add(accessPointJson);
+               accessPointJson.addProperty(ModelerConstants.ID_PROPERTY, accessPoint.getId());
+               accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                     accessPoint.getName());
+
+               if (accessPoint.getType() != null)
+               {
+                  accessPointJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                        accessPoint.getType().getName());
+               }
+
+               if (accessPoint.getDirection() != null)
+               {
+                  accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+                        accessPoint.getDirection().getLiteral());
+               }
+
+               loadAttributes(accessPoint, accessPointJson);
+            }
          }
       }
 
       JsonArray accessPointsJson = new JsonArray();
 
+      // Top level access points
+      
       applicationJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);
 
       for (AccessPointType accessPoint : application.getAccessPoint())

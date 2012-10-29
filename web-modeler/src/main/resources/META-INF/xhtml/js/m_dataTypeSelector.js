@@ -23,7 +23,7 @@ define(
 				/**
 				 * Options are
 				 * 
-				 * scope submitHandler supportsOtherData
+				 * scope submitHandler supportsOtherData supportDocumentTypes
 				 */
 				DataTypeSelector.prototype.initialize = function(options) {
 					this.scope = options.scope;
@@ -54,8 +54,11 @@ define(
 							.append("<option value='primitive'>Primitive</option>");
 					this.dataTypeSelect
 							.append("<option value='struct'>Data Structure</option>");
-					this.dataTypeSelect
-							.append("<option value='dmsDocument'>Document</option>");
+
+					if (options.supportDocumentTypes) {
+						this.dataTypeSelect
+								.append("<option value='dmsDocument'>Document</option>");
+					}
 
 					if (this.supportsOtherData) {
 						this.dataTypeSelect
@@ -66,28 +69,44 @@ define(
 						panel : this
 					}, function(event) {
 						event.data.panel.setDataType({
-							dataType : event.data.panel.dataTypeSelect.val()});
+							dataType : event.data.panel.dataTypeSelect.val()
+						});
 
-							event.data.panel.submitChanges();
-					});
-					this.primitiveDataTypeSelect.change({
-						panel : this
-					}, function(event) {
-						event.data.panel.setPrimitiveDataType(event.data.panel.primitiveDataTypeSelect.val());
 						event.data.panel.submitChanges();
 					});
-					this.structuredDataTypeSelect.change({
-						panel : this
-					}, function(event) {
-						event.data.panel.setStructuredDataType(event.data.panel.structuredDataTypeSelect.val());
-						event.data.panel.submitChanges();
-					});
-					this.documentTypeSelect.change({
-						panel : this
-					}, function(event) {
-						event.data.panel.setDocumentDataType(event.data.panel.documentDataTypeSelect.val());
-						event.data.panel.submitChanges();
-					});
+					this.primitiveDataTypeSelect
+							.change(
+									{
+										panel : this
+									},
+									function(event) {
+										event.data.panel
+												.setPrimitiveDataType(event.data.panel.primitiveDataTypeSelect
+														.val());
+										event.data.panel.submitChanges();
+									});
+					this.structuredDataTypeSelect
+							.change(
+									{
+										panel : this
+									},
+									function(event) {
+										event.data.panel
+												.setStructuredDataType(event.data.panel.structuredDataTypeSelect
+														.val());
+										event.data.panel.submitChanges();
+									});
+					this.documentTypeSelect
+							.change(
+									{
+										panel : this
+									},
+									function(event) {
+										event.data.panel
+												.setDocumentDataType(event.data.panel.documentDataTypeSelect
+														.val());
+										event.data.panel.submitChanges();
+									});
 				};
 
 				/**

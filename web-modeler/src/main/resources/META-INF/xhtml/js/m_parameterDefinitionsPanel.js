@@ -164,6 +164,11 @@ define(
 										if (event.data.panel.currentParameterDefinition != null) {
 											event.data.panel.currentParameterDefinition.direction = event.data.panel.parameterDefinitionDirectionSelect
 													.val();
+											
+											// Switch back to standard focus handling
+											
+											event.data.panel.currentFocusInput = null;
+											
 											event.data.panel.submitChanges();
 										}
 									});
@@ -182,6 +187,12 @@ define(
 													.prop("checked")) {
 												event.data.panel.currentFocusInput = event.data.panel.keyDescriptorInput;
 											}
+											else
+												{
+												// Switch back to standard focus handling
+												
+												event.data.panel.currentFocusInput = null;
+												}
 
 											event.data.panel.submitChanges();
 										});
@@ -193,6 +204,10 @@ define(
 										function(event) {
 											event.data.panel.currentParameterDefinition.keyDescriptor = event.data.panel.keyDescriptorInput
 													.prop("checked");
+
+											// Switch back to standard focus handling
+											
+											event.data.panel.currentFocusInput = null;
 
 											event.data.panel.submitChanges();
 										});
@@ -214,6 +229,10 @@ define(
 															.val();
 												}
 
+												// Switch back to standard focus handling
+												
+												event.data.panel.currentFocusInput = null;
+												
 												event.data.panel
 														.submitChanges();
 											}
@@ -229,6 +248,11 @@ define(
 												if (event.data.panel.currentParameterDefinition != null) {
 													event.data.panel.currentParameterDefinition.dataPath = event.data.panel.parameterDefinitionPathInput
 															.val();
+
+													// Switch back to standard focus handling
+													
+													event.data.panel.currentFocusInput = null;
+
 													event.data.panel
 															.submitChanges();
 												}
@@ -366,9 +390,6 @@ define(
 				 */
 				ParameterDefinitionsPanel.prototype.initializeParameterDefinitionsTable = function() {
 					this.parameterDefinitionsTableBody.empty();
-
-					m_utils.debug("Set Parameters: "
-							+ this.parameterDefinitions);
 
 					for ( var m = 0; m < this.parameterDefinitions.length; ++m) {
 						var parameterDefinition = this.parameterDefinitions[m];

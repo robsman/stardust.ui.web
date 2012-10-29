@@ -25,6 +25,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
@@ -750,15 +751,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
             if (formalParameterJson.get(ModelerConstants.DIRECTION_PROPERTY)
                   .getAsString()
-                  .equals(ModelerConstants.IN_PARAMETER_KEY))
+                  .equals(DirectionType.IN_LITERAL.getLiteral()))
             {
                mode = ModeType.IN;
-            }
-            else if (formalParameterJson.get(ModelerConstants.DIRECTION_PROPERTY)
-                  .getAsString()
-                  .equals(ModelerConstants.INOUT_PARAMETER_KEY))
-            {
-               mode = ModeType.INOUT;
             }
             else
             {
