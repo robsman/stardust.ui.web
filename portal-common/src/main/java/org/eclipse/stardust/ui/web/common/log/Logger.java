@@ -16,21 +16,31 @@ package org.eclipse.stardust.ui.web.common.log;
  */
 public interface Logger
 {
+   public void debug(Throwable throwable);
+   
    public void debug(Object o);
 
    public void debug(Object o, Throwable throwable);
 
+   public void error(Throwable throwable);
+   
    public void error(Object o);
 
    public void error(Object o, Throwable throwable);
 
+   public void fatal(Throwable throwable);
+   
    public void fatal(Object o);
 
    public void fatal(Object o, Throwable throwable);
 
+   public void info(Throwable throwable);
+   
    public void info(Object o);
 
    public void info(Object o, Throwable throwable);
+   
+   public void warn(Throwable throwable);
 
    public void warn(Object o);
 

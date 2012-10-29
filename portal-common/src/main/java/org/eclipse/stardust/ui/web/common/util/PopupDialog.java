@@ -14,7 +14,6 @@ import java.io.Serializable;
 
 import javax.faces.context.FacesContext;
 
-import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript;
 import org.eclipse.stardust.ui.web.common.app.PortalUiController;
 import org.eclipse.stardust.ui.web.common.app.View;
@@ -146,7 +145,7 @@ public abstract class PopupDialog implements Serializable
    {
       if (firePerspectiveEvents)
       {         
-         PortalApplication.getInstance().getPortalUiController().broadcastNonVetoablePerspectiveEvent(event);
+         getPortalUiController().broadcastNonVetoablePerspectiveEvent(event);
       }
    }
 
