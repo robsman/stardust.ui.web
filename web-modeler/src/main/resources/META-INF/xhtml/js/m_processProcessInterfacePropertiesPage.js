@@ -61,7 +61,7 @@ define(
 							.create({
 								scope : "processInterfacePropertiesPage",
 								submitHandler : this,
-								listType : "object",
+								supportsOrdering : false,
 								supportsDataMappings : true,
 								supportsDescriptors : false,
 								supportsDataTypeSelection : true

@@ -37,7 +37,7 @@ define(
 				.create({
 					scope : "dataPathPropertiesPage",
 					submitHandler : this,
-					listType : "array",
+					supportsOrdering : true,
 					supportsDataMappings : true,
 					supportsDataPathes : true,
 					supportsDescriptors : true,

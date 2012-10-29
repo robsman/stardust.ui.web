@@ -47,7 +47,7 @@ define(
 							.create({
 								scope : "uiMashupApplicationView",
 								submitHandler : this,
-								listType : "object",
+								supportsOrdering : false,
 								supportsDataMappings : false,
 								supportsDescriptors : false,
 								supportsDataTypeSelection : true
