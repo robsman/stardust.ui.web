@@ -68,7 +68,7 @@ define(
 
 					this.inputTableRows = [];
 					this.outputTableRows = [];
-
+				
 					this.expressionEditor = m_codeEditor
 							.getCodeEditor(jQuery("#expressionTextArea")[0]);
 
@@ -127,10 +127,7 @@ define(
 						event.data.view.filterFieldsWithMapping();
 					});
 
-					// TODO: Review if this should be removed as
-					// expressionTextArea
-					// is hidden
-					this.expressionTextArea
+					jQuery(this.expressionEditor.getWrapper())
 							.droppable({
 								accept : ".data-element",
 								drop : function(e, ui) {
@@ -153,9 +150,8 @@ define(
 
 										outputTableRow.mappingExpression = mappingExpression;
 
-										jQuery(this)
-												.val(
-														outputTableRow.mappingExpression);
+										view.expressionEditor.setValue(outputTableRow.mappingExpression);
+										view.expressionEditor.save();
 
 										var rowId = outputTableRow.path
 												.replace(/\./g, "-");
@@ -168,9 +164,12 @@ define(
 										mappingCell.empty();
 										mappingCell
 												.append(outputTableRow.mappingExpression);
+										
+										// Remove the drag helper
+										ui.helper.remove();
 
 										view
-												.submitChanges(this
+												.submitChanges(view
 														.determineTransformationChanges());
 									}
 								},
@@ -222,6 +221,7 @@ define(
 										// for ( var m in models) {
 										// var model = models[m];
 										var model = event.data.view.application.model;
+										// TODO: Do not show Enumerations
 										for ( var n in model.typeDeclarations) {
 											var typeDeclaration = model.typeDeclarations[n];
 											inputDataTypeSelectInput
@@ -295,34 +295,6 @@ define(
 										jQuery("#outputDataDialog").dialog(
 												"open");
 									});
-
-					// TODO: Review if this should be removed as
-					// expressionTextArea
-					// is hidden
-					this.expressionTextArea.autocomplete({
-						minLength : 0,
-						source : function(request, response) {
-							response(m_dataTraversal.getStepOptions(null,
-									request.term));
-						},
-						focus : function() {
-							return false;
-						},
-						select : function(event, ui) {
-							var steps = m_dataTraversal.split(this.value);
-
-							steps.pop();
-							steps.push(ui.item.value);
-
-							if (steps.length > 1) {
-								this.value = steps.join(".");
-							} else {
-								this.value = steps[0];
-							}
-
-							return false;
-						}
-					});
 
 					jQuery("#runButton")
 							.click(
@@ -515,16 +487,21 @@ define(
 					this.inputTable.tableScroll({
 						height : 200
 					});
-					this.inputTable.treeTable();
+					this.inputTable.treeTable({
+						indent: 14
+					});
+					
 					this.outputTable.tableScroll({
 						height : 200
 					});
-					this.outputTable.treeTable();
+					this.outputTable.treeTable({
+						indent: 14
+					});
 
 					jQuery("table#sourceTable tbody tr").mousedown({
 						"view" : this
 					}, function() {
-						jQuery("tr.selected").removeClass("selected");
+						jQuery("table#sourceTable tr.selected").removeClass("selected");
 						jQuery(this).addClass("selected");
 					});
 
@@ -539,7 +516,7 @@ define(
 									function() {
 										var view = jQuery(this).data("view");
 
-										jQuery("tr.selected").removeClass(
+										jQuery("table#targetTable tr.selected").removeClass(
 												"selected");
 										jQuery(this).addClass("selected");
 
@@ -686,7 +663,7 @@ define(
 					tableRow.element = element;
 					tableRow.path = path;
 					tableRow.parentPath = parentPath;
-					tableRow.name = parentPath == null ? accessPoint.name
+					tableRow.name = parentPath == null ? accessPoint.id
 							: element.name;
 					tableRow.typeName = parentPath == null ? m_accessPoint
 							.retrieveTypeDeclaration(accessPoint,
@@ -734,7 +711,7 @@ define(
 					tableRow.element = element;
 					tableRow.path = path;
 					tableRow.parentPath = parentPath;
-					tableRow.name = parentPath == null ? accessPoint.name
+					tableRow.name = parentPath == null ? accessPoint.id
 							: element.name;
 					tableRow.typeName = parentPath == null ? m_accessPoint
 							.retrieveTypeDeclaration(accessPoint,
@@ -872,8 +849,11 @@ define(
 												view.expressionEditor.save();
 											}
 
+											// Remove the drag helper
+											ui.helper.remove();
+
 											view
-													.submitChanges(this
+													.submitChanges(view
 															.determineTransformationChanges());
 
 										},
@@ -948,26 +928,13 @@ define(
 						jQuery("table#sourceTable tbody tr").removeClass(
 								"invisible");
 					} else {
-						// // NEW selector
-						// jQuery.expr[':'].Contains = function(a, i, m) {
-						// return jQuery(a).text().toUpperCase()
-						// .indexOf(m[3].toUpperCase()) >= 0;
-						// };
-						//
-						// // OVERWRITES old selecor
-						// jQuery.expr[':'].contains = function(a, i, m) {
-						// return jQuery(a).text().toUpperCase()
-						// .indexOf(m[3].toUpperCase()) >= 0;
-						// };
-
-						// Low-level filtering for maximum performance
-
 						jQuery("table#sourceTable tbody tr").addClass(
 								"invisible");
-						jQuery(
-								"table#sourceTable tbody tr:contains('"
-										+ filter + "')").removeClass(
-								"invisible");
+						
+						jQuery("table#sourceTable tbody tr:contains('" + filter + "')").each(function() {
+							jQuery(this).removeClass("invisible");
+							jQuery(ancestorsOf(jQuery(this))).removeClass("invisible");
+						});
 					}
 				};
 
@@ -982,10 +949,12 @@ define(
 					} else {
 						jQuery("table#targetTable tbody tr").addClass(
 								"invisible");
-						jQuery(
-								"table#targetTable tbody tr:contains('"
-										+ filter + "')").removeClass(
-								"invisible");
+						
+						jQuery("table#targetTable tbody tr:contains('" + filter + "')").each(function() {
+							jQuery(this).removeClass("invisible");
+							jQuery(ancestorsOf(jQuery(this))).removeClass("invisible");
+						});
+						
 					}
 				};
 
@@ -1101,39 +1070,35 @@ define(
 					}
 
 					transformationProperty += ";&lt;/mapping:TransformationProperty&gt;&#13;&#10;";
-
+					
 					return {
 						attributes : {
 							"messageTransformation:TransformationProperty" : transformationProperty
 						}
 					};
 				};
-			}
 
-			function syntaxHighlight(json) {
-				if (typeof json != 'string') {
-					json = JSON.stringify(json, undefined, 2);
-				}
-				json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;')
-						.replace(/>/g, '&gt;');
-				return json
-						.replace(
-								/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
-								function(match) {
-									var cls = 'number';
-									if (/^"/.test(match)) {
-										if (/:$/.test(match)) {
-											cls = 'keySpan';
-										} else {
-											cls = 'stringSpan';
-										}
-									} else if (/true|false/.test(match)) {
-										cls = 'booleanSpan';
-									} else if (/null/.test(match)) {
-										cls = 'nullSpan';
-									}
-									return '<span class="' + cls + '">' + match
-											+ '</span>';
-								});
+				// TODO: Helper methods - review code location?
+				function ancestorsOf(node) {
+					var ancestors = [];
+					while(node = parentOf(node)) {
+						ancestors[ancestors.length] = node[0];
+					}
+					return ancestors;
+				};
+
+				function parentOf(node) {
+					var classNames = node[0].className.split(' ');
+
+					var childPrefix = "child-of-";
+
+					for(var key=0; key<classNames.length; key++) {
+						if(classNames[key].match(childPrefix)) {
+							return $(node).siblings("#" + classNames[key].substring(childPrefix.length));
+						}
+					}
+
+					return null;
+				};
 			}
 		});

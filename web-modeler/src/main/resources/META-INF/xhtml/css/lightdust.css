@@ -280,7 +280,7 @@ div.toolBar {
 	zoom: 1; /* IE7 Hack */
 }
 
-.treeTable tr td a.expander {
+.treeTable tr td {
 	background-position: left center;
 	background-repeat: no-repeat;
 	color: #000;
