@@ -69,7 +69,8 @@ define(
 					this.inputTableRows = [];
 					this.outputTableRows = [];
 
-					this.expressionEditor = m_codeEditor.getCodeEditor(jQuery("#expressionTextArea")[0]);
+					this.expressionEditor = m_codeEditor
+							.getCodeEditor(jQuery("#expressionTextArea")[0]);
 
 					this.sourceFilterInput.keypress({
 						"view" : this
@@ -437,13 +438,16 @@ define(
 					this.inputTableRows = [];
 					this.outputTableRows = [];
 
-					for ( var m = 0; m < this.application.accessPoints.length; ++m) {
-						var accessPoint = this.application.accessPoints[m];
+					for ( var key in this.application.contexts) {
+						var context = this.application.contexts[key];
+						for ( var m = 0; m < context.accessPoints.length; ++m) {
+							var accessPoint = context.accessPoints[m];
 
-						if (accessPoint.direction == "IN") {
-							this.addInputData(accessPoint);
-						} else {
-							this.addOutputData(accessPoint);
+							if (accessPoint.direction == "IN") {
+								this.addInputData(accessPoint);
+							} else {
+								this.addOutputData(accessPoint);
+							}
 						}
 					}
 
@@ -565,7 +569,19 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.addInputAccessPoint = function(
 						dataName, dataStructure) {
-					this.application.accessPoints.push(m_accessPoint
+					// TODO Are these guards needed?
+					
+					if (this.application.contexts == null) {
+						this.application.contexts = {};
+					}
+
+					if (this.application.contexts.application == null) {
+						this.application.contexts.application = {
+							accessPoints : []
+						};
+					}
+
+					this.application.contexts.application.accessPoints.push(m_accessPoint
 							.createFromDataStructure(dataStructure, dataName,
 									dataName, m_constants.IN_ACCESS_POINT));
 
@@ -583,7 +599,9 @@ define(
 					m_utils.debug(accessPoint);
 
 					// TODO Move to m_accessPoint
-					var typeDeclaration = m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel());
+					var typeDeclaration = m_accessPoint
+							.retrieveTypeDeclaration(accessPoint, this
+									.getModel());
 
 					if (typeDeclaration == null) {
 						this.errorMessages
@@ -597,7 +615,8 @@ define(
 					this.inputData[accessPoint.id] = typeDeclaration;
 
 					this.initializeInputTableRowsRecursively(accessPoint,
-							typeDeclaration.getBody(), null, typeDeclaration.model);
+							typeDeclaration.getBody(), null,
+							typeDeclaration.model);
 				};
 
 				/**
@@ -605,7 +624,19 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.addOutputAccessPoint = function(
 						dataName, dataStructure) {
-					this.application.accessPoints.push(m_accessPoint
+					// TODO Are these guards needed?
+					
+					if (this.application.contexts == null) {
+						this.application.contexts = {};
+					}
+
+					if (this.application.contexts.application == null) {
+						this.application.contexts.application = {
+							accessPoints : []
+						};
+					}
+
+					this.application.contexts.application.accessPoints.push(m_accessPoint
 							.createFromDataStructure(dataStructure, dataName,
 									dataName, m_constants.OUT_ACCESS_POINT));
 
@@ -620,7 +651,9 @@ define(
 				MessageTransformationApplicationView.prototype.addOutputData = function(
 						accessPoint) {
 					// TODO Move to m_accessPoint
-					var typeDeclaration = m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel());
+					var typeDeclaration = m_accessPoint
+							.retrieveTypeDeclaration(accessPoint, this
+									.getModel());
 
 					if (typeDeclaration == null) {
 						this.errorMessages
@@ -634,7 +667,8 @@ define(
 					this.outputData[accessPoint.id] = typeDeclaration;
 
 					this.initializeOutputTableRowsRecursively(accessPoint,
-							typeDeclaration.getBody(), null, typeDeclaration.model);
+							typeDeclaration.getBody(), null,
+							typeDeclaration.model);
 				};
 
 				/**
@@ -654,9 +688,9 @@ define(
 					tableRow.parentPath = parentPath;
 					tableRow.name = parentPath == null ? accessPoint.name
 							: element.name;
-					tableRow.typeName = parentPath == null ? m_accessPoint.retrieveTypeDeclaration(
-									accessPoint, this.getModel())
-							.getSchemaName()
+					tableRow.typeName = parentPath == null ? m_accessPoint
+							.retrieveTypeDeclaration(accessPoint,
+									this.getModel()).getSchemaName()
 							: element.type;
 
 					// Embedded structure
@@ -702,9 +736,9 @@ define(
 					tableRow.parentPath = parentPath;
 					tableRow.name = parentPath == null ? accessPoint.name
 							: element.name;
-					tableRow.typeName = parentPath == null ? m_accessPoint.retrieveTypeDeclaration(
-									accessPoint, this.getModel())
-							.getSchemaName()
+					tableRow.typeName = parentPath == null ? m_accessPoint
+							.retrieveTypeDeclaration(accessPoint,
+									this.getModel()).getSchemaName()
 							: element.type;
 					tableRow.mappingExpression = this.mappingExpressions[path] == null ? ""
 							: this.mappingExpressions[path];

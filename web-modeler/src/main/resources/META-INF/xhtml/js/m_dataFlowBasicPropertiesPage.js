@@ -213,32 +213,12 @@ define(
 						dataFlow) {
 					this.inputAccessPointSelectInput.empty();
 
-					var contexts = {};
-					var count = 0;
-
-					for ( var n = 0; n < dataFlow.activity.getAccessPoints().length; ++n) {
-						var accessPoint = dataFlow.activity.getAccessPoints()[n];
-
-						if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
-							continue;
-						}
-
-						if (contexts[accessPoint.context] == null) {
-							contexts[accessPoint.context] = {};
-						}
-
-						contexts[accessPoint.context][accessPoint.id] = accessPoint;
-						count++;
-					}
-
-					if (count == 0) {
-						m_dialog
-								.makeInvisible(this.inputAccessPointSelectInputPanel);
-
-						return;
-					} else {
+					if (dataFlow.activity.hasInputAccessPoints()) {
 						m_dialog
 								.makeVisible(this.inputAccessPointSelectInputPanel);
+					} else {
+						m_dialog
+								.makeInvisible(this.inputAccessPointSelectInputPanel);
 					}
 
 					// TODO Use method of m_activity; proper type binding
@@ -251,13 +231,42 @@ define(
 								.append("<option value='DEFAULT'>(To be defined)</option>"); // I18N
 					}
 
-					for ( var i in contexts) {
+					m_utils.debug("Contexts");
+					m_utils.debug(dataFlow.activity.getContexts());
+
+					for ( var i in dataFlow.activity.getContexts()) {
+						var context = dataFlow.activity.getContexts()[i];
+						var count = 0;
+
+						m_utils.debug("i = " + i);
+						m_utils.debug(context);
+
+						for ( var m = 0; m < context.accessPoints.length; ++m) {
+							var accessPoint = context.accessPoints[m];
+							
+							m_utils.debug("m = " + m);
+							m_utils.debug(accessPoint);
+
+							if (accessPoint.direction == m_constants.IN_ACCESS_POINT) {
+								count++;
+							}
+						}
+
+						if (count == 0) {
+							continue;
+						}
+
 						var group = jQuery("<optgroup label='" + i + "'/>"); // I18N
 
 						this.inputAccessPointSelectInput.append(group);
 
-						for ( var m in contexts[i]) {
-							var accessPoint = contexts[i][m];
+						for ( var m = 0; m < context.accessPoints.length; ++m) {
+							var accessPoint = context.accessPoints[m];
+
+							if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
+								continue;
+							}
+
 							var option = "<option value='";
 
 							option += i;
@@ -279,33 +288,15 @@ define(
 						dataFlow) {
 					this.outputAccessPointSelectInput.empty();
 
-					var contexts = {};
-					var count = 0;
-
-					for ( var n = 0; n < dataFlow.activity.getAccessPoints().length; ++n) {
-						var accessPoint = dataFlow.activity.getAccessPoints()[n];
-
-						if (accessPoint.direction == m_constants.IN_ACCESS_POINT) {
-							continue;
-						}
-
-						if (contexts[accessPoint.context] == null) {
-							contexts[accessPoint.context] = {};
-						}
-
-						contexts[accessPoint.context][accessPoint.id] = accessPoint;
-						count++;
-					}
-
-					if (count == 0) {
-						m_dialog
-								.makeInvisible(this.outputAccessPointSelectInputPanel);
-
-						return;
-					} else {
+					if (dataFlow.activity.hasOutputAccessPoints()) {
 						m_dialog
 								.makeVisible(this.outputAccessPointSelectInputPanel);
+					} else {
+						m_dialog
+								.makeInvisible(this.outputAccessPointSelectInputPanel);
 					}
+
+					m_utils.debug("Before default");
 
 					// TODO Use method of m_activity; proper type binding
 					// required
@@ -317,13 +308,42 @@ define(
 								.append("<option value='DEFAULT'>(To be defined)</option>"); // I18N
 					}
 
-					for ( var i in contexts) {
+					m_utils.debug("Contexts");
+					m_utils.debug(dataFlow.activity.getContexts());
+
+					for ( var i in dataFlow.activity.getContexts()) {
+						var context = dataFlow.activity.getContexts()[i];
+						var count = 0;
+
+						m_utils.debug("i = " + i);
+						m_utils.debug(context);
+
+						for ( var m = 0; m < context.accessPoints.length; ++m) {
+							var accessPoint = context.accessPoints[m];
+
+							m_utils.debug("m = " + m);
+							m_utils.debug(accessPoint);
+
+							if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
+								count++;
+							}
+						}
+
+						if (count == 0) {
+							continue;
+						}
+
 						var group = jQuery("<optgroup label='" + i + "'/>"); // I18N
 
 						this.outputAccessPointSelectInput.append(group);
 
-						for ( var m in contexts[i]) {
-							var accessPoint = contexts[i][m];
+						for ( var m = 0; m < context.accessPoints.length; ++m) {
+							var accessPoint = context.accessPoints[m];
+
+							if (accessPoint.direction == m_constants.IN_ACCESS_POINT) {
+								continue;
+							}
+
 							var option = "<option value='";
 
 							option += i;

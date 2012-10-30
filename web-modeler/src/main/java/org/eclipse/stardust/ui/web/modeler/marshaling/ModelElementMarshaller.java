@@ -676,28 +676,32 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                            ModelUtils.findContainingModel(application), application));
             }
 
-            JsonArray accessPointsJson = new JsonArray();
-
-            activityJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);
-
             String[] contexts = new String[] {
                   PredefinedConstants.DEFAULT_CONTEXT,
                   PredefinedConstants.APPLICATION_CONTEXT,
                   PredefinedConstants.PROCESSINTERFACE_CONTEXT,
                   PredefinedConstants.ENGINE_CONTEXT};
 
-            System.out.println("Access Points: ");
+            JsonObject contextsJson = new JsonObject();
 
+            activityJson.add(ModelerConstants.CONTEXTS_PROPERTY, contextsJson);
+            
             for (String context : contexts)
             {
+               JsonObject contextJson = new JsonObject();
+
+               contextsJson.add(context, contextJson);
+
+               JsonArray accessPointsJson = new JsonArray();
+
+               contextJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);
+
                // Activity has no model as parent --> it has been deleted from the model
                if ( !(activity.eContainer() instanceof ChangeDescription))
                {
                   for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(
                         activity, true, context))
                   {
-                     System.out.println(accessPoint);
-
                      JsonObject accessPointJson = new JsonObject();
 
                      accessPointsJson.add(accessPointJson);
@@ -707,16 +711,13 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                            accessPoint.getName());
                      accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
                            accessPoint.getDirection().getLiteral());
-                     accessPointJson.addProperty(ModelerConstants.CONTEXT_PROPERTY,
-                           context);
+
                      loadDescription(accessPointJson, accessPoint);
                   }
 
                   for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(
                         activity, false, context))
                   {
-                     System.out.println(accessPoint);
-
                      JsonObject accessPointJson = new JsonObject();
 
                      accessPointsJson.add(accessPointJson);
@@ -726,8 +727,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                            accessPoint.getName());
                      accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
                            accessPoint.getDirection().getLiteral());
-                     accessPointJson.addProperty(ModelerConstants.CONTEXT_PROPERTY,
-                           context);
+
                      loadDescription(accessPointJson, accessPoint);
                   }
                }
@@ -1289,6 +1289,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       applicationJson.addProperty(ModelerConstants.INTERACTIVE_PROPERTY,
             application.isInteractive());
 
+      JsonObject contextsJson = new JsonObject();
+
+      applicationJson.add(ModelerConstants.CONTEXTS_PROPERTY, contextsJson);
+
       if (application.getType() != null)
       {
          applicationJson.addProperty(ModelerConstants.APPLICATION_TYPE_PROPERTY,
@@ -1303,6 +1307,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          // applications.
          String applicationType = AttributeUtil.getAttributeValue(application,
                ModelerConstants.APPLICATION_TYPE_PROPERTY);
+
          if (StringUtils.isNotEmpty(applicationType))
          {
             applicationJson.addProperty(ModelerConstants.APPLICATION_TYPE_PROPERTY,
@@ -1313,10 +1318,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             applicationJson.addProperty(ModelerConstants.APPLICATION_TYPE_PROPERTY,
                   ModelerConstants.INTERACTIVE_APPLICATION_TYPE_KEY);
          }
-
-         JsonObject contextsJson = new JsonObject();
-
-         applicationJson.add(ModelerConstants.CONTEXTS_PROPERTY, contextsJson);
 
          for (ContextType context : application.getContext())
          {
@@ -1354,11 +1355,25 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          }
       }
 
-      JsonArray accessPointsJson = new JsonArray();
-
-      // Top level access points
+      // Add top level access points to context "application"
       
-      applicationJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);
+      JsonObject applicationContextJson = null; 
+      JsonArray accessPointsJson = null;
+      
+      if (contextsJson.has(ModelerConstants.APPLICATION_CONTEXT_KEY))
+      {
+         applicationContextJson = contextsJson.get(ModelerConstants.APPLICATION_CONTEXT_KEY).getAsJsonObject();
+      }
+      else
+      {
+         applicationContextJson = new JsonObject();
+         
+         contextsJson.add(ModelerConstants.APPLICATION_CONTEXT_KEY, applicationContextJson);
+         
+         accessPointsJson = new JsonArray();
+
+         applicationContextJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);
+      }
 
       for (AccessPointType accessPoint : application.getAccessPoint())
       {

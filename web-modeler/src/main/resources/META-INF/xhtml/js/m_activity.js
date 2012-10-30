@@ -106,7 +106,7 @@ define(
 				};
 
 				/**
-				 * 
+				 * TODO Needed?
 				 */
 				Activity.prototype.hasDefaultContext = function() {
 					return this.activityType == m_constants.APPLICATION_ACTIVITY_TYPE;
@@ -115,20 +115,50 @@ define(
 				/**
 				 * 
 				 */
-				Activity.prototype.getAccessPoints = function() {
+				Activity.prototype.getContexts = function() {
 					// TODO Should/might be evaluated on the server
 					if (this.activityType == m_constants.APPLICATION_ACTIVITY_TYPE) {
 						var application = m_model
 								.findApplication(this.applicationFullId);
 
-						if (application.interactive) {
-							for ( var id in application.contexts) {
-								return application.contexts[id].accessPoints;
+						return application.contexts;
+					}
+
+					return this.contexts;
+				};
+
+				/**
+				 * 
+				 */
+				Activity.prototype.hasInputAccessPoints = function() {
+					var contexts = this.getContexts();
+					
+					for ( var key in contexts) {
+						for ( var n = 0; n < contexts[key].accessPoints.length; ++n) {
+							if (contexts[key].accessPoints[n].direction == m_constants.IN_ACCESS_POINT) {
+								return true;
 							}
 						}
 					}
 
-					return this.accessPoints;
+					return false;
+				};
+
+				/**
+				 * 
+				 */
+				Activity.prototype.hasOutputAccessPoints = function() {
+					var contexts = this.getContexts();
+
+					for ( var key in contexts) {
+						for ( var n = 0; n < contexts[key].accessPoints.length; ++n) {
+							if (contexts[key].accessPoints[n].direction == m_constants.OUT_ACCESS_POINT) {
+								return true;
+							}
+						}
+					}
+
+					return false;
 				};
 			}
 		});
