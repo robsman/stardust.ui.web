@@ -108,6 +108,10 @@ define(
 					this.minimizeIcon = null;
 					this.maximizeIcon = null;
 					this.symbolXOffset = 0;
+
+					if (!this.comments) {
+						this.comments = [];
+					}
 				};
 
 				/**
