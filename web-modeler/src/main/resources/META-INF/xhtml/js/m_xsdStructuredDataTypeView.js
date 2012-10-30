@@ -201,6 +201,7 @@ define(
 						var path = element.name.replace(/:/g, "-");
 
 						var newRow = jQuery("<tr id='" + path + "'></tr>");
+
 						var childRows = [];
 
 						var nameColumn = jQuery("<td></td>").appendTo(newRow);
@@ -209,24 +210,34 @@ define(
 						var typeColumn = jQuery("<td></td>").appendTo(newRow);
 						if (view.typeDeclaration.isSequence()) {
 
-							var elementType = view.typeDeclaration.resolveElementType(element.name);
+							var schemaType = view.typeDeclaration.resolveElementType(element.name);
 
 							if ( !view.typeDeclaration.isReadOnly()) {
-								typeColumn.append(view.getTypeSelectList(element.type));
+								typeColumn.append(view.getTypeSelectList(schemaType));
 							} else {
-								typeColumn.append(element.type);
+								typeColumn.append(schemaType.name);
 							}
 
-							if ((element.type != null)
-									&& (element.type.body != null)
-									&& (element.type.body.classifier == "sequence")) {
+							if ((schemaType != null)
+									&& (schemaType.isStructure())) {
 								// TODO append child rows
-								jQuery.each(elementType.type.body.elements, function() {
-									var childRow = jQuery("<tr id='' class='child-of-" + path + "'></tr>");
+								jQuery.each(schemaType.getElements(), function(i, element) {
+									var childPath = path + "-" + element.name;
+									var childRow = jQuery("<tr id='" + childPath + "' class='child-of-" + path + "'></tr>");
+
+									var childSchemaType = schemaType.resolveElementType(element.name);
 
 									jQuery("<td>" + this.name + "</td>").appendTo(childRow);
 									jQuery("<td>" + this.type + "</td>").appendTo(childRow);
 									jQuery("<td>" + this.cardinality + "</td>").appendTo(childRow);
+
+									if (childSchemaType.isStructure()) {
+										childRow.addClass("parent");
+										childRow.addClass("expanded");
+									}
+
+									childRow.data("parentId", path);
+									childRow.data("schemaType", childSchemaType);
 
 									childRows.push(childRow);
 
@@ -270,6 +281,39 @@ define(
 
 					this.tree.treeTable({
 						indent: 20,
+						onNodeShow: function() {
+							var row = jQuery(this);
+							if ( !row.data("initialized")) {
+								var parentPath = this.id;
+								var schemaType = row.data("schemaType");
+
+								var childRows = [];
+								jQuery.each(schemaType.getElements(), function(i, element) {
+									var childPath = parentPath + "-" + element.name;
+									var childRow = jQuery("<tr id='" + childPath + "'></tr>");
+
+									var childSchemaType = schemaType.resolveElementType(element.name);
+
+									jQuery("<td>" + this.name + "</td>").appendTo(childRow);
+									jQuery("<td>" + this.type + "</td>").appendTo(childRow);
+									jQuery("<td>" + this.cardinality + "</td>").appendTo(childRow);
+
+									if (childSchemaType.isStructure()) {
+										childRow.addClass("parent");
+										childRow.addClass("expanded");
+									}
+
+									childRow.data("parentId", parentPath);
+									childRow.data("schemaType", childSchemaType);
+
+									row.append(childRow);
+									childRow.appendBranchTo(row[0]);
+								});
+								row.collapse();
+
+								row.data("initialized", true);
+							}
+						}
 					});
 				};
 
@@ -323,43 +367,42 @@ define(
 				/**
 				 *
 				 */
-				XsdStructuredDataTypeView.prototype.getTypeSelectList = function(type) {
-					var select = "<select size=\"1\" class=\"typeSelect\">";
+				XsdStructuredDataTypeView.prototype.getTypeSelectList = function(schemaType) {
+					var select = "<select size='1' class='typeSelect'>";
 
-					select += "<optgroup label=\"Primitive Data\">";
+					var xsdTypes = [
+		                { id: "xsd:string", label: "String" },
+	                    { id: "xsd:int", label: "Integer" },
+		                { id: "xsd:double", label: "Float" },
+		                { id: "xsd:decimal", label: "Decimal" },
+		                { id: "xsd:date", label: "Date" }
+	                ];
 
-					select += "<option value=\"xsd:string\""
-							+ (type == "xsd:string" ? "selected" : "")
-							+ ">String</option>";
-					select += "<option value=\"xsd:int\""
-							+ (type == "xsd:int" ? "selected" : "")
-							+ ">Integer</option>";
-					select += "<option value=\"xsd:double\""
-							+ (type == "xsd:double" ? "selected" : "")
-							+ ">Float</option>";
-					select += "<option value=\"xsd:decimal\""
-							+ (type == "xsd:decimal" ? "selected" : "")
-							+ ">Decimal</option>";
-					select += "<option value=\"xsd:date\""
-							+ (type == "xsd:date" ? "selected" : "")
-							+ ">Date</option>";
+					select += "<optgroup label='Primitive Data'>";
 
-					select += "</optgroup><optgroup label=\"This Model\">";
-
-					for ( var n in this.typeDeclaration.model.typeDeclarations) {
-						var typeDeclaration = this.typeDeclaration.model.typeDeclarations[n];
-
-						if (typeDeclaration.typeDeclaration.schema.elements[typeDeclaration.id] == null) {
-							continue;
+					jQuery.each(xsdTypes, function() {
+						select += "<option value='" + this.id + "' ";
+						if (schemaType.isBuiltinType() && (this.id == schemaType.name)) {
+							select += "selected ";
 						}
+						select += ">" + this.label + "</option>";
+					});
 
-						select += "<option value=\""
-								+ typeDeclaration.typeDeclaration.schema.elements[typeDeclaration.id].type
-								+ "\""
-								+ (type == typeDeclaration.typeDeclaration.schema.elements[typeDeclaration.id].type ? "selected"
-										: "") + ">" + typeDeclaration.name
-								+ "</option>";
-					}
+					select += "</optgroup>";
+					select += "<optgroup label='This Model'>";
+					jQuery.each(this.typeDeclaration.model.typeDeclarations, function() {
+						var typeDeclaration = this;
+
+						var mainElement = typeDeclaration.typeDeclaration.schema.elements[typeDeclaration.id];
+						if (mainElement) {
+							// consumable type, as there is an equivalent global element
+
+							select += "<option value='" + mainElement.type + "' "
+									+ (schemaType.name == mainElement.type ? "selected " : "") + ">"
+									+ typeDeclaration.name
+									+ "</option>";
+						}
+					});
 
 					// select += "</optgroup><optgroup label=\"Other Models\">";
 					//

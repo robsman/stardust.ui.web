@@ -7,43 +7,22 @@ define(
 			var STRUCTURE_TYPE = "STRUCTURE_TYPE";
 			var ENUMERATION_TYPE = "ENUMERATION_TYPE";
 
-			return {
-				createTypeDeclaration : function(name) {
-					var typeDeclaration = new TypeDeclaration();
-
-					typeDeclaration.initialize(name, STRUCTURE_TYPE);
-
-					return typeDeclaration;
-				},
-				initializeFromJson : function(model, json) {
-					// TODO Ugly, use prototype
-					m_utils.inheritMethods(json, new TypeDeclaration());
-
-					json.initializeFromJson(model);
-
-					return json;
-				},
-
-				STRUCTURE_TYPE : STRUCTURE_TYPE,
-				ENUMERATION_TYPE : ENUMERATION_TYPE
-			};
-
 			/**
-			 * 
+			 *
 			 */
 			function TypeDeclaration() {
 				m_utils.inheritMethods(TypeDeclaration.prototype,
 						m_modelElement.create());
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.toString = function() {
 					return "Lightdust.TypeDeclaration";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.initialize = function(name, type) {
 					this.name = name;
@@ -60,7 +39,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.initializeFromJson = function(model) {
 					this.model = model;
@@ -68,7 +47,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.rename = function(id, name) {
 					delete this.model.typeDeclarations[this.id];
@@ -89,7 +68,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.isSequence = function() {
 					return (null != this.getBody())
@@ -97,25 +76,26 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.getBody = function() {
 					return this.getTypeDeclaration().body;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.getFacets = function() {
 					return this.getTypeDeclaration().facets;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.getSchemaName = function() {
 					// TODO@Robert Review
-					if (this.typeDeclaration && this.typeDeclaration.schema
+					if ((null != this.typeDeclaration)
+							&& this.typeDeclaration.schema
 							&& this.typeDeclaration.schema.elements
 							&& this.typeDeclaration.schema.elements[this.id]) {
 						return this.typeDeclaration.schema.elements[this.id].type;
@@ -125,7 +105,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.getElementCount = function() {
 					var n = 0;
@@ -138,7 +118,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.createInstance = function() {
 					if (this.isSequence()) {
@@ -155,7 +135,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.populateSequenceInstanceRecursively = function(
 						typeDeclaration, instance) {
@@ -192,7 +172,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.switchToComplexType = function() {
 					if (!this.isSequence()) {
@@ -211,7 +191,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.switchToEnumeration = function() {
 					if (this.isSequence()) {
@@ -312,9 +292,7 @@ define(
 
 							var schemaNsUri = this.typeDeclaration.schema.nsMappings[typeQName[0]];
 							if (schemaNsUri == "http://www.w3.org/2001/XMLSchema") {
-								return {
-									name : "xsd:" + typeName
-								};
+								return new SchemaType("xsd:" + typeName);
 							}
 
 							jQuery
@@ -331,14 +309,109 @@ define(
 						}
 
 						var type = schema.types[typeName];
-						return {
-							name : typeName,
-							type : type,
-							schema : schema
-						};
+						return new SchemaType(typeName, type, schema, this.model);
 					} else {
-						return undefiend;
+						return undefined;
 					}
 				};
-			}
+			};
+
+			function SchemaType(name, type, schema, scope) {
+				this.name = name;
+				this.type = type;
+				this.schema = schema;
+				// scope is effectively the model with its type declarations
+				this.scope = scope;
+			};
+
+			SchemaType.prototype.toString = function() {
+				return "Lightdust.SchemaType";
+			};
+
+			SchemaType.prototype.isBuiltinType = function() {
+				return (null == this.type) && (null == this.schema);
+			};
+
+			SchemaType.prototype.isStructure = function() {
+				return (null != this.type)
+						&& (null != this.type.body)
+						&& ((this.type.body.classifier === 'sequence') || (this.type.body.classifier === 'choice'));
+			};
+
+			SchemaType.prototype.getElements = function() {
+				if (this.isStructure()) {
+					return this.type.body.elements;
+				} else {
+					return this.type.facets | [];
+				}
+			};
+
+			SchemaType.prototype.getElement = function(name) {
+				return this.getElements()[name];
+			};
+
+			SchemaType.prototype.resolveElementType = function(elementName) {
+				var element = this.getElement(elementName);
+				if (element) {
+					var typeName;
+					var schema;
+
+					var typeQName = element.type.split(":");
+					if (1 == typeQName.length) {
+						// no ns prefix, resolve to containing schema
+						typeName = typeQName[0];
+						schema = this.schema;
+					} else if (2 == typeQName.length) {
+						// resolve ns prefix to schema
+						typeName = typeQName[1];
+
+						var schemaNsUri = this.schema.nsMappings[typeQName[0]];
+						if (schemaNsUri == "http://www.w3.org/2001/XMLSchema") {
+							// built-in XML type
+							return new SchemaType("xsd:" + typeName);
+						}
+
+						jQuery
+								.each(
+										this.scope.typeDeclarations,
+										function(i, declaration) {
+											if ((declaration.typeDeclaration != null)
+													&& (declaration.typeDeclaration.schema != null)
+													&& (declaration.typeDeclaration.schema.targetNamespace == schemaNsUri)) {
+												schema = declaration.typeDeclaration.schema;
+												return false;
+											}
+										});
+					}
+
+					var type = schema.types[typeName];
+
+					return new SchemaType(typeName, type, schema);
+				} else {
+					return undefined;
+				}
+			};
+
+			// module interface
+			return {
+				createTypeDeclaration : function(name) {
+					var typeDeclaration = new TypeDeclaration();
+
+					typeDeclaration.initialize(name, STRUCTURE_TYPE);
+
+					return typeDeclaration;
+				},
+				initializeFromJson : function(model, json) {
+					// TODO Ugly, use prototype
+					m_utils.inheritMethods(json, new TypeDeclaration());
+
+					json.initializeFromJson(model);
+
+					return json;
+				},
+
+				STRUCTURE_TYPE : STRUCTURE_TYPE,
+				ENUMERATION_TYPE : ENUMERATION_TYPE
+			};
+
 		});
