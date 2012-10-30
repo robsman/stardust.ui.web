@@ -36,6 +36,7 @@ import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
+import org.eclipse.stardust.engine.api.query.ExcludeUserPolicy;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.HistoricalStatesPolicy;
 import org.eclipse.stardust.engine.api.query.PerformingParticipantFilter;
@@ -427,6 +428,7 @@ public class WorklistUtils
       FilterOrTerm or = allAssignedActivitiesQuery.getFilter().addOrTerm();
       or.add(PerformingParticipantFilter.ANY_FOR_USER).add(PerformingUserFilter.CURRENT_USER);
       allAssignedActivitiesQuery.setPolicy(new SubsetPolicy(0, true));
+      allAssignedActivitiesQuery.setPolicy(ExcludeUserPolicy.EXCLUDE_USER);
       allAssignedActivitiesQuery.orderBy(ActivityInstanceQuery.START_TIME);
 
       applyFilterProviders(allAssignedActivitiesQuery);
@@ -448,6 +450,7 @@ public class WorklistUtils
       FilterOrTerm or = criticalActivitiesQuery.getFilter().addOrTerm();
       or.add(PerformingParticipantFilter.ANY_FOR_USER).add(PerformingUserFilter.CURRENT_USER);
       criticalActivitiesQuery.setPolicy(new SubsetPolicy(0, true));
+      criticalActivitiesQuery.setPolicy(ExcludeUserPolicy.EXCLUDE_USER);
       criticalActivitiesQuery.orderBy(ActivityInstanceQuery.START_TIME);
 
       criticalActivitiesQuery.where(ActivityInstanceQuery.CRITICALITY.between(
