@@ -267,6 +267,9 @@ define(
 				ParameterDefinitionsPanel.prototype.setParameterDefinitions = function(
 						parameterDefinitions) {
 					this.parameterDefinitions = parameterDefinitions;
+					
+					m_utils.debug("===> Parameter Definitions:")
+					m_utils.debug(parameterDefinitions)
 
 					this.initializeParameterDefinitionsTable();
 					this.selectCurrentParameterDefinition();

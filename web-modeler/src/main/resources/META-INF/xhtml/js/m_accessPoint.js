@@ -9,8 +9,8 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_model" ],
-		function(m_utils, m_constants, m_model) {
+		[ "m_utils", "m_constants", "m_model", "m_parameter" ],
+		function(m_utils, m_constants, m_model, m_parameter) {
 
 			return {
 				createDefault : function(id, name, direction) {
@@ -71,6 +71,11 @@ define(
 			 * 
 			 */
 			function AccessPoint() {
+				var parameter = m_parameter.create();
+
+				m_utils.inheritFields(this, parameter);
+				m_utils.inheritMethods(AccessPoint.prototype, parameter);
+
 				/**
 				 * 
 				 */
@@ -79,6 +84,7 @@ define(
 					this.id = id;
 					this.name = name;
 					this.accessPointType = m_constants.ANY_ACCESS_POINT;
+					this.structuredDataTypeFullId = null;
 					this.direction = direction;
 					this.attributes = {};
 				};
@@ -93,6 +99,10 @@ define(
 					this.accessPointType = m_constants.DATA_STRUCTURE_ACCESS_POINT;
 					this.dataType = m_constants.STRUCTURED_DATA_TYPE;
 					this.direction = direction;
+					this.structuredDataTypeFullId = dataStructure.getFullId();
+					
+					// Remove/move to server
+					
 					this.attributes = {
 						"carnot:engine:dataType" : "typeDeclaration:{"
 								+ dataStructure.model.id + "}"

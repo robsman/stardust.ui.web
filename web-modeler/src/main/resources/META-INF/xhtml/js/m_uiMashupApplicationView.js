@@ -66,12 +66,20 @@ define(
 					m_utils.debug("===> Application");
 					m_utils.debug(this.application);
 
+					// TODO Guard needed?
+
+					if (this.application.contexts["externalWebApp"] == null) {
+						this.application.contexts["externalWebApp"] = {
+							accessPoints : []
+						};
+					}
+
 					this.initializeModelElement(application);
 
 					this.parameterDefinitionsPanel
 							.setScopeModel(this.application.model);
 					this.parameterDefinitionsPanel
-							.setParameterDefinitions(this.application.accessPoints);
+							.setParameterDefinitions(this.application.contexts["externalWebApp"].accessPoints);
 				};
 
 				/**
@@ -110,7 +118,11 @@ define(
 				UiMashupApplicationView.prototype.submitParameterDefinitionsChanges = function(
 						parameterDefinitionsChanges) {
 					this.submitChanges({
-						accessPoints : parameterDefinitionsChanges
+						contexts : {
+							"externalWebApp" : {
+								accessPoints : parameterDefinitionsChanges
+							}
+						}
 					});
 				};
 			}

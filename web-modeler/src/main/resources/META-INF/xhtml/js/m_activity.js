@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -19,7 +19,7 @@ define(
 					var activity = new Activity("Activity" + index);
 
 					activity.initialize("Activity " + index, type);
-					
+
 					activity.activityType == m_constants.MANUAL_ACTIVITY_TYPE
 
 					return activity;
@@ -66,12 +66,11 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function Activity(id) {
-				var modelElement = m_modelElement
-				.create();
-				
+				var modelElement = m_modelElement.create();
+
 				m_utils.inheritFields(this, modelElement);
 				m_utils.inheritMethods(Activity.prototype, modelElement);
 
@@ -87,14 +86,14 @@ define(
 				this.processingType = m_constants.SINGLE_PROCESSING_TYPE;
 
 				/**
-				 *
+				 * 
 				 */
 				Activity.prototype.toString = function() {
 					return "Lightdust.Activity";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Activity.prototype.initialize = function(name, activityType) {
 					this.name = name;
@@ -107,10 +106,29 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Activity.prototype.hasDefaultContext = function() {
 					return this.activityType == m_constants.APPLICATION_ACTIVITY_TYPE;
+				};
+
+				/**
+				 * 
+				 */
+				Activity.prototype.getAccessPoints = function() {
+					// TODO Should/might be evaluated on the server
+					if (this.activityType == m_constants.APPLICATION_ACTIVITY_TYPE) {
+						var application = m_model
+								.findApplication(this.applicationFullId);
+
+						if (application.interactive) {
+							for ( var id in application.contexts) {
+								return application.contexts[id].accessPoints;
+							}
+						}
+					}
+
+					return this.accessPoints;
 				};
 			}
 		});
