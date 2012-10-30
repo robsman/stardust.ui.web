@@ -32,3 +32,40 @@ span.CodeMirror-matchhighlight {
 	font-family: Courier New;
 	font-size: 14px;
 }
+
+.CodeMirror-gutter {
+	width: 3em;
+	background: white;
+}
+
+.CodeMirror-gutter .gutter-warning {
+	background: url("../images/icons/bullet_error.png") no-repeat;
+	display: block;
+}
+
+.tooltip {
+	display: none;
+	position: absolute;
+	
+	background: #ffffe1;
+	border: 1px solid #666666;
+	border-radius: 4px;
+	color: #555555;
+	opacity:0.9;
+	filter:alpha(opacity=90); /* For IE8 and earlier */
+	
+	font-family: Arial;
+	font-size: 12px;
+	text-align: left;
+	white-space: nowrap;
+	word-wrap: normal;
+
+	-webkit-box-shadow:  5px 5px 3px 0px #bbbbbb;
+	box-shadow:  5px 5px 3px 0px #bbbbbb;
+}
+
+.tooltip ul {
+	list-style-type: none;
+	padding: 5px;
+	margin: 5px;
+}

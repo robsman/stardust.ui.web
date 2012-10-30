@@ -11,10 +11,10 @@
 define(
 		[ "m_utils", "m_constants", "m_command", "m_commandsController",
 				"m_model", "m_accessPoint", "m_dataTraversal", "m_dialog",
-				"m_modelElementView" ],
+				"m_modelElementView", "m_codeEditor" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
 				m_model, m_accessPoint, m_dataTraversal, m_dialog,
-				m_modelElementView) {
+				m_modelElementView, m_codeEditor) {
 			return {
 				initialize : function(fullId) {
 					var view = new MessageTransformationApplicationView();
@@ -69,48 +69,7 @@ define(
 					this.inputTableRows = [];
 					this.outputTableRows = [];
 
-					// Set up code editor for JS code expression
-					CodeMirror.commands.autocomplete = function(cm) {
-						CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
-					}
-
-					var editor = CodeMirror
-							.fromTextArea(
-									jQuery("#expressionTextArea")[0],
-									{
-										mode : "javascript",
-										theme : "eclipse",
-										lineNumbers : true,
-										lineWrapping : true,
-										indentUnit : 3,
-										matchBrackets : true,
-										extraKeys : {
-											"Ctrl-Space" : "autocomplete"
-										},
-										onCursorActivity : function() {
-											// Highlight selected text
-											editor
-													.matchHighlight("CodeMirror-matchhighlight");
-											// Set active line
-											editor.setLineClass(hlLine, null,
-													null);
-											hlLine = editor.setLineClass(editor
-													.getCursor().line, null,
-													"activeline");
-										},
-										onBlur : function() {
-											editor.save();
-											// Programmatically invoke the
-											// change
-											// handler on the hidden text area
-											// as it will not be invoked
-											// automatically
-											jQuery(editor.getTextArea())
-													.change();
-										}
-									});
-					var hlLine = editor.setLineClass(0, "activeline");
-					this.expressionEditor = editor;
+					this.expressionEditor = m_codeEditor.getCodeEditor(jQuery("#expressionTextArea")[0]);
 
 					this.sourceFilterInput.keypress({
 						"view" : this
