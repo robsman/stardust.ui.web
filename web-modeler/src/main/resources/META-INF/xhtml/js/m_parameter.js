@@ -11,12 +11,11 @@
 define(
 		[ "m_utils", "m_constants", "m_model" ],
 		function(m_utils, m_constants, m_model) {
-
 			return {
 				create : function() {
-					var Parameter = new Parameter();
+					var parameter = new Parameter();
 
-					return Parameter;
+					return parameter;
 				}
 			};
 

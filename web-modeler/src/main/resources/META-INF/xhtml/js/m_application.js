@@ -8,67 +8,71 @@
  * documentation
  ******************************************************************************/
 
-define([ "m_utils", "m_constants", "m_modelElement" ], function(m_utils,
-		m_constants, m_modelElement) {
-	return {
-		initializeFromJson : function(model, json) {
-			// TODO Ugly, use prototype
-			m_utils.typeObject(json, new Application());
+define(
+		[ "m_utils", "m_constants", "m_modelElement" ],
+		function(m_utils, m_constants, m_modelElement) {
+			return {
+				initializeFromJson : function(model, json) {
+					// TODO Ugly, use prototype
+					m_utils.typeObject(json, new Application());
 
-			json.initializeFromJson(model);
+					json.initializeFromJson(model);
 
-			return json;
-		},
-		deleteApplication : function(id, model) {
-			delete model.applications[id];
-		}
-	};
-
-	/**
-	 * 
-	 */
-	function Application() {
-		m_utils.inheritMethods(Application.prototype, m_modelElement.create());
-
-		/**
-		 * 
-		 */
-		Application.prototype.toString = function() {
-			return "Lightdust.Application";
-		};
-
-		/**
-		 * 
-		 */
-		Application.prototype.initializeFromJson = function(model) {
-			this.model = model;
-
-			this.model.applications[this.id] = this;
-		};
-
-		/**
-		 * 
-		 */
-		Application.prototype.rename = function(id, name) {
-			delete this.model.applications[this.id];
-
-			this.id = id;
-			this.name = name;
-
-			this.model.applications[this.id] = this;
-		};
-
-		/**
-		 * 
-		 */
-		Application.prototype.getAccessPointById = function(id) {
-			for ( var n = 0; n < this.accessPoints.length; ++n) {
-				if (this.accessPoints[n].id == id) {
-					return this.accessPoints[n];
+					return json;
+				},
+				deleteApplication : function(id, model) {
+					delete model.applications[id];
 				}
-			}
+			};
 
-			return null;
-		};
-	}
-});
+			/**
+			 * 
+			 */
+			function Application() {
+				m_utils.inheritMethods(Application.prototype, m_modelElement
+						.create());
+
+				/**
+				 * 
+				 */
+				Application.prototype.toString = function() {
+					return "Lightdust.Application";
+				};
+
+				/**
+				 * 
+				 */
+				Application.prototype.initializeFromJson = function(model) {
+					this.model = model;
+
+					this.model.applications[this.id] = this;
+				};
+
+				/**
+				 * 
+				 */
+				Application.prototype.rename = function(id, name) {
+					delete this.model.applications[this.id];
+
+					this.id = id;
+					this.name = name;
+
+					this.model.applications[this.id] = this;
+				};
+
+				/**
+				 * 
+				 */
+				Application.prototype.getAccessPointById = function(id) {
+					for ( var m in this.contexts) {
+						for ( var n = 0; n < this.contexts[m].accessPoints.length; ++n) {
+							if (this.contexts[m].accessPoints[n].id == id) {
+								return this.contexts[m].accessPoints[n];
+							}
+						}
+					}
+
+					return null;
+				};
+			}
+		});

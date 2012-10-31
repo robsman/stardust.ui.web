@@ -1148,67 +1148,84 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       storeAttributes(application, applicationJson);
       storeDescription(application, applicationJson);
 
-      if (applicationJson.has(ModelerConstants.ACCESS_POINTS_PROPERTY))
+      if (applicationJson.has(ModelerConstants.CONTEXTS_PROPERTY))
       {
+         application.getContext().clear();
          application.getAccessPoint().clear();
 
-         JsonArray accessPointsJson = applicationJson.get(
-               ModelerConstants.ACCESS_POINTS_PROPERTY).getAsJsonArray();
+         JsonObject contextsJson = applicationJson.get(ModelerConstants.CONTEXTS_PROPERTY)
+               .getAsJsonObject();
 
-         for (int n = 0; n < accessPointsJson.size(); ++n)
+         for (Map.Entry<String, ? > entry : contextsJson.entrySet())
          {
-            JsonObject accessPointJson = accessPointsJson.get(n).getAsJsonObject();
+            String contextId = entry.getKey();
 
-            String id = accessPointJson.get(ModelerConstants.ID_PROPERTY).getAsString();
-            String name = accessPointJson.get(ModelerConstants.NAME_PROPERTY)
-                  .getAsString();
-            String direction = accessPointJson.get(ModelerConstants.DIRECTION_PROPERTY)
-                  .getAsString();
-
-            AccessPointType accessPoint = null;
-
-            if (accessPointJson.has(ModelerConstants.DATA_TYPE_PROPERTY))
+            System.out.println("Context: " + contextId);
+            
+            // TODO Facade methods do not support interactive contexts yet
+            if ( !contextId.equals(ModelerConstants.APPLICATION_CONTEXT_KEY))
             {
-               String dataType = accessPointJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
-                     .getAsString();
-               if (dataType.equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
-               {
-                  String primitiveDataType = accessPointJson.get(
-                        ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY).getAsString();
-                  accessPoint = getModelBuilderFacade().createPrimitiveAccessPoint(
-                        application, id, name, primitiveDataType, direction);
-               }
-               else if (dataType.equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
-               {
-                  JsonObject attributesJson = accessPointJson.get(
-                        ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject();
-
-                  // TODO Ugly storage
-
-                  String encodedId = attributesJson.get("carnot:engine:dataType")
-                        .getAsString();
-                  String structuredDataFullId = null;
-
-                  if (encodedId.indexOf("typeDeclaration") == 0)
-                  {
-                     String parts[] = encodedId.split("\\{")[1].split("\\}");
-
-                     structuredDataFullId = parts[0] + ":" + parts[1];
-                  }
-
-                  accessPoint = getModelBuilderFacade().createStructuredAccessPoint(
-                        application, id, name, structuredDataFullId, direction);
-               }
-               else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
-               {
-                  // accessPoint.setType(getModelBuilderFacade().findDataType(accessPointJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID).getAsString()));
-               }
-               else
-               {
-               }
+               continue;
             }
 
-            storeDescription(accessPoint, accessPointJson);
+            JsonObject contextJson = contextsJson.get(contextId).getAsJsonObject();
+            JsonArray accessPointsJson = contextJson.get(ModelerConstants.ACCESS_POINTS_PROPERTY).getAsJsonArray();
+
+            for (int n = 0; n < accessPointsJson.size(); ++n)
+            {
+               JsonObject accessPointJson = accessPointsJson.get(n).getAsJsonObject();
+               String id = accessPointJson.get(ModelerConstants.ID_PROPERTY)
+                     .getAsString();
+
+               System.out.println("Access Point: " + id);
+
+               String name = accessPointJson.get(ModelerConstants.NAME_PROPERTY)
+                     .getAsString();
+               String direction = accessPointJson.get(ModelerConstants.DIRECTION_PROPERTY)
+                     .getAsString();
+
+               AccessPointType accessPoint = null;
+
+               if (accessPointJson.has(ModelerConstants.DATA_TYPE_PROPERTY))
+               {
+                  String dataType = accessPointJson.get(
+                        ModelerConstants.DATA_TYPE_PROPERTY).getAsString();
+                  if (dataType.equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
+                  {
+                     String primitiveDataType = accessPointJson.get(
+                           ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY).getAsString();
+                     accessPoint = getModelBuilderFacade().createPrimitiveAccessPoint(
+                           application, id, name, primitiveDataType, direction);
+                  }
+                  else if (dataType.equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
+                  {
+                     JsonObject attributesJson = accessPointJson.get(
+                           ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject();
+
+                     // TODO Ugly storage
+
+                     String encodedId = attributesJson.get("carnot:engine:dataType")
+                           .getAsString();
+                     String structuredDataFullId = null;
+
+                     if (encodedId.indexOf("typeDeclaration") == 0)
+                     {
+                        String parts[] = encodedId.split("\\{")[1].split("\\}");
+
+                        structuredDataFullId = parts[0] + ":" + parts[1];
+                     }
+
+                     accessPoint = getModelBuilderFacade().createStructuredAccessPoint(
+                           application, id, name, structuredDataFullId, direction);
+                  }
+                  else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
+                  {
+                     // accessPoint.setType(getModelBuilderFacade().findDataType(accessPointJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID).getAsString()));
+                  }
+               }
+
+               storeDescription(accessPoint, accessPointJson);
+            }
          }
       }
    }
