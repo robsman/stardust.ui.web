@@ -118,8 +118,11 @@ define(
 												view.overlayControllers[jQuery(
 														this).attr("id")] = extension.provider
 														.create(view);
-												m_utils.debug("Overlay loaded: " + jQuery(
-														this).attr("id"));
+												m_utils
+														.debug("Overlay loaded: "
+																+ jQuery(this)
+																		.attr(
+																				"id"));
 											}
 										});
 					}
@@ -156,21 +159,28 @@ define(
 				 * Overlay protocol
 				 */
 				CamelApplicationView.prototype.activate = function() {
-					if (this.application.attributes["carnot:engine:camel::camelContextId"] == null) {
-						this.submitChanges({attributes: {"carnot:engine:camel::camelContextId": "Default"}});
-					}
 				};
 
 				/**
 				 * Overlay protocol
 				 */
 				CamelApplicationView.prototype.update = function() {
-					this.camelContextInput
-							.val(this.application.attributes["carnot:engine:camel::camelContextId"]);
-					this.routeTextarea
-							.val(this.application.attributes["carnot:engine:camel::routeEntries"]);
-					this.additionalBeanSpecificationTextarea
-							.val(this.application.attributes["carnot:engine:camel::additionalSpringBeanDefinitions"]);
+					if (this.application.attributes["carnot:engine:camel::camelContextId"] == null) {
+						this
+								.submitChanges({
+									attributes : {
+										"carnot:engine:camel::camelContextId" : "Default"
+									}
+								});
+					} else {
+						this.camelContextInput
+								.val(this.application.attributes["carnot:engine:camel::camelContextId"]);
+
+						this.routeTextarea
+								.val(this.application.attributes["carnot:engine:camel::routeEntries"]);
+						this.additionalBeanSpecificationTextarea
+								.val(this.application.attributes["carnot:engine:camel::additionalSpringBeanDefinitions"]);
+					}
 				};
 
 				/**
@@ -182,7 +192,7 @@ define(
 
 					m_utils.debug("===> Application");
 					m_utils.debug(application);
-					
+
 					this.initializeModelElement(application);
 
 					if (this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"] == null) {

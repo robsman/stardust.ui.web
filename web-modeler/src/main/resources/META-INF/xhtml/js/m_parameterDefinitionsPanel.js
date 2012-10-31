@@ -293,8 +293,14 @@ define(
 						this.selectedRowIndex = 0;
 					}
 
-					this.currentParameterDefinition = this.parameterDefinitions[this.selectedRowIndex];
+					// Select last parameter if previous index exceeds length
+					
+					if (this.selectedRowIndex >= this.parameterDefinitions.length ) {
+						this.selectedRowIndex = this.parameterDefinitions.length - 1;
+					}
 
+					this.currentParameterDefinition = this.parameterDefinitions[this.selectedRowIndex];
+					
 					// Select row
 
 					var tableRows = jQuery("table#parameterDefinitionsTable tr");
@@ -469,17 +475,17 @@ define(
 								.mousedown(
 										{
 											panel : this,
-											index : m
 										},
 										function(event) {
 											event.data.panel
 													.deselectParameterDefinitions();
 											jQuery(this).addClass("selected");
 
-											id = jQuery(this).attr("id");
+											var index = jQuery(this).attr("id");
 
-											event.data.panel.currentParameterDefinition = event.data.panel.parameterDefinitions[id];
-											event.data.panel.selectedRowIndex = m;
+											event.data.panel.currentParameterDefinition = event.data.panel.parameterDefinitions[index];
+											event.data.panel.selectedRowIndex = index;
+
 											event.data.panel
 													.populateParameterDefinitionFields();
 										});
