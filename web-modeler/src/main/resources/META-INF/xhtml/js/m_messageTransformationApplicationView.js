@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -29,7 +29,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function MessageTransformationApplicationView() {
 				var view = m_modelElementView.create();
@@ -39,7 +39,7 @@ define(
 						MessageTransformationApplicationView.prototype, view);
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.initialize = function(
 						application) {
@@ -68,7 +68,7 @@ define(
 
 					this.inputTableRows = [];
 					this.outputTableRows = [];
-				
+
 					this.expressionEditor = m_codeEditor.getCodeEditor(jQuery("#expressionTextArea")[0]);
 					this.expressionEditor.disable();
 
@@ -164,7 +164,7 @@ define(
 										mappingCell.empty();
 										mappingCell
 												.append(outputTableRow.mappingExpression);
-										
+
 										// Remove the drag helper
 										ui.helper.remove();
 
@@ -386,7 +386,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.setModelElement = function(
 						application) {
@@ -436,17 +436,17 @@ define(
 						typeDeclaration = this.inputData[id];
 						globalVariables[id] = typeDeclaration.createInstance();
 					}
-					
+
 					for (var id in this.outputData) {
 						typeDeclaration = this.outputData[id];
 						globalVariables[id] = typeDeclaration.createInstance();
 					}
-					
+
 					this.expressionEditor.setGlobalVariables(globalVariables);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.convertFromMappingsXml = function(
 						xml) {
@@ -468,7 +468,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.convertToMappingsXml = function() {
 					var xml = "&lt;?xml version=&quot;1.0&quot; encoding=&quot;ASCII&quot;?&gt;&#13;&#10;&lt;mapping:TransformationProperty xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:mapping=&quot;java://com.infinity.bpm.messaging.model&quot; xsi:schemaLocation=&quot;java://com.infinity.bpm.messaging.model java://com.infinity.bpm.messaging.model.mapping.MappingPackage&quot;&gt;&#13;&#10;";
@@ -488,7 +488,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.resume = function() {
 					this.inputTable.tableScroll({
@@ -497,7 +497,7 @@ define(
 					this.inputTable.treeTable({
 						indent: 14
 					});
-					
+
 					this.outputTable.tableScroll({
 						height : 200
 					});
@@ -551,7 +551,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.addInputAccessPoint = function(
 						dataName, dataStructure) {
@@ -560,12 +560,16 @@ define(
 									dataName, m_constants.IN_ACCESS_POINT));
 
 					this.submitChanges({
-						accessPoints : this.application.accessPoints
+							contexts : {
+								application : {
+									accessPoints : this.application.contexts.application.accessPoints
+								}
+							}
 					});
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.addInputData = function(
 						accessPoint) {
@@ -594,7 +598,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.addOutputAccessPoint = function(
 						dataName, dataStructure) {
@@ -603,12 +607,16 @@ define(
 									dataName, m_constants.OUT_ACCESS_POINT));
 
 					this.submitChanges({
-						accessPoints : this.application.accessPoints
+						contexts : {
+							application : {
+								accessPoints : this.application.contexts.application.accessPoints
+							}
+						}
 					});
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.addOutputData = function(
 						accessPoint) {
@@ -634,7 +642,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.initializeInputTableRowsRecursively = function(
 						accessPoint, element, parentPath, scopeModel) {
@@ -682,7 +690,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.initializeOutputTableRowsRecursively = function(
 						accessPoint, element, parentPath, scopeModel) {
@@ -733,7 +741,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.populateTableRows = function(
 						tableBody, tableRows, source) {
@@ -859,7 +867,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.highlightSource = function(
 						tableRow) {
@@ -882,7 +890,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.highlightTarget = function(
 						tableRow) {
@@ -905,7 +913,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.filterSource = function(
 						filter) {
@@ -915,7 +923,7 @@ define(
 					} else {
 						jQuery("table#sourceTable tbody tr").addClass(
 								"invisible");
-						
+
 						jQuery("table#sourceTable tbody tr:contains('" + filter + "')").each(function() {
 							jQuery(this).removeClass("invisible");
 							jQuery(ancestorsOf(jQuery(this))).removeClass("invisible");
@@ -924,7 +932,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.filterTarget = function(
 						filter) {
@@ -934,17 +942,17 @@ define(
 					} else {
 						jQuery("table#targetTable tbody tr").addClass(
 								"invisible");
-						
+
 						jQuery("table#targetTable tbody tr:contains('" + filter + "')").each(function() {
 							jQuery(this).removeClass("invisible");
 							jQuery(ancestorsOf(jQuery(this))).removeClass("invisible");
 						});
-						
+
 					}
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.filterFieldsWithNoMapping = function() {
 					jQuery("table#targetTable tbody tr").addClass("invisible");
@@ -955,7 +963,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.filterFieldsWithMapping = function() {
 					jQuery("table#targetTable tbody tr").addClass("invisible");
@@ -966,7 +974,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.filterHighlightedSourceFields = function() {
 					m_dialog
@@ -979,7 +987,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.filterHighlightedTargetFields = function() {
 					m_dialog
@@ -992,7 +1000,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.showAllSourceFields = function() {
 					m_dialog
@@ -1003,7 +1011,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.showAllTargetFields = function() {
 					m_dialog
@@ -1014,7 +1022,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.validate = function() {
 					this.clearErrorMessages();
@@ -1038,7 +1046,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.determineTransformationChanges = function() {
 					var transformationProperty = "&lt;?xml version=&quot;1.0&quot; encoding=&quot;ASCII&quot;?&gt;&#13;&#10;&lt;mapping:TransformationProperty xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:mapping=&quot;java://com.infinity.bpm.messaging.model&quot; xsi:schemaLocation=&quot;java://com.infinity.bpm.messaging.model java://com.infinity.bpm.messaging.model.mapping.MappingPackage&quot;&gt;&#13;&#10;";
@@ -1055,7 +1063,7 @@ define(
 					}
 
 					transformationProperty += ";&lt;/mapping:TransformationProperty&gt;&#13;&#10;";
-					
+
 					return {
 						attributes : {
 							"messageTransformation:TransformationProperty" : transformationProperty
