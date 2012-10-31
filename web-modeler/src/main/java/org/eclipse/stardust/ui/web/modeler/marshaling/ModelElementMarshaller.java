@@ -1435,8 +1435,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
          if (accessPoint.getType() != null)
          {
-            accessPointJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                  accessPoint.getType().getName());
+            accessPointJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                  accessPoint.getType().getId());
          }
 
          if (accessPoint.getDirection() != null)
