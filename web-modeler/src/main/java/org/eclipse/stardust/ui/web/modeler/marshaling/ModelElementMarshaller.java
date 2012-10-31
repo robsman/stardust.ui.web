@@ -392,6 +392,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             getModelBuilderFacade().createFullId(
                   ModelUtils.findContainingModel(laneSymbol.getParticipant()),
                   laneSymbol.getParticipant()));
+      loadAttributes(laneSymbol, laneSymbolJson);
 
       return laneSymbolJson;
    }
@@ -454,6 +455,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   laneSymbol.getWidth());
             laneSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
                   laneSymbol.getHeight());
+            loadAttributes(laneSymbol, laneSymbolJson);
 
             if (laneSymbol.getParticipant() != null)
             {
@@ -594,7 +596,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          activityJson.addProperty(ModelerConstants.NAME_PROPERTY, activity.getName());
          loadDescription(activityJson, activity);
          loadAttributes(activity, activityJson);
-         
+
          if (activity.getId().toLowerCase().startsWith("gateway"))
          {
             activityJson.addProperty(ModelerConstants.TYPE_PROPERTY,
@@ -685,7 +687,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             JsonObject contextsJson = new JsonObject();
 
             activityJson.add(ModelerConstants.CONTEXTS_PROPERTY, contextsJson);
-            
+
             for (String context : contexts)
             {
                JsonObject contextJson = new JsonObject();
@@ -1328,7 +1330,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             JsonArray accessPointsJson = new JsonArray();
 
             contextJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);
-            
+
             for (AccessPointType accessPoint : context.getAccessPoint())
             {
                JsonObject accessPointJson = new JsonObject();
@@ -1356,10 +1358,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       }
 
       // Add top level access points to context "application"
-      
-      JsonObject applicationContextJson = null; 
+
+      JsonObject applicationContextJson = null;
       JsonArray accessPointsJson = null;
-      
+
       if (contextsJson.has(ModelerConstants.APPLICATION_CONTEXT_KEY))
       {
          applicationContextJson = contextsJson.get(ModelerConstants.APPLICATION_CONTEXT_KEY).getAsJsonObject();
@@ -1367,9 +1369,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       else
       {
          applicationContextJson = new JsonObject();
-         
+
          contextsJson.add(ModelerConstants.APPLICATION_CONTEXT_KEY, applicationContextJson);
-         
+
          accessPointsJson = new JsonArray();
 
          applicationContextJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);
