@@ -793,6 +793,16 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   .getAsString()
                   .equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
             {
+               String structuredDataTypeFullId = null;
+               
+               if (formalParameterJson.has(
+                           ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+               {
+                  structuredDataTypeFullId = formalParameterJson.get(
+                        ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
+                        .getAsString();
+               }
+               
                getModelBuilderFacade().createStructuredParameter(
                      processDefinition,
                      data,
@@ -801,9 +811,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                                  .getAsString()),
                      formalParameterJson.get(ModelerConstants.NAME_PROPERTY)
                            .getAsString(),
-                     formalParameterJson.get(
-                           ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
-                           .getAsString(), mode);
+                     structuredDataTypeFullId, mode);
             }
          }
       }
