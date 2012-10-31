@@ -26,6 +26,8 @@ define(
 				
 				var globalVariables = null;
 				var hlLine = null;
+				var jsValidationPrefix = "";
+				var errorLineNumbers = [];
 				
 				var EDITOR_STYLECLASS_ENABLED = "CodeMirror-enabled";
 				var EDITOR_STYLECLASS_DISABLED = "CodeMirror-disabled";
@@ -77,7 +79,7 @@ define(
 					var errors = {};
 					var err, lineNumber;
 					
-					var options = {undef: true, smarttabs: true};
+					var options = {undef: true, smarttabs: false};
 					var globals = {};
 					for (var variable in globalVariables) {
 						globals[variable] = true;
@@ -95,14 +97,13 @@ define(
 				}
 
 				function showErrors() {
-					var errorLineNumbers = [];
 					editor.operation(function(){
 						for (var i = 0; i < errorLineNumbers.length; ++i)
 							editor.clearMarker(errorLineNumbers[i]);
 						errorLineNumbers.length = 0;
 					
 						var html;
-						var errors = getErrors(editor.getValue());
+						var errors = getErrors(jsValidationPrefix + editor.getValue());
 						for (var lineNumber in errors) {
 							html = '<div class="gutter-warning"><div class="tooltip"><ul>';
 							for (var i = 0; i < errors[lineNumber].length; i++)
@@ -164,6 +165,10 @@ define(
 					}
 				};
 		
+				CodeEditor.prototype.setJSValidationPrefix = function(prefix) {
+					jsValidationPrefix = prefix;
+				};
+
 				CodeEditor.prototype.save = function() {
 					editor.save();
 				};

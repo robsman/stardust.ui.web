@@ -539,6 +539,7 @@ define(
 										view.expressionEditor
 												.setValue(view.selectedOutputTableRow.mappingExpression);
 										view.expressionEditor.save();
+										view.expressionEditor.setJSValidationPrefix(view.selectedOutputTableRow.path + " = ");
 									});
 
 					jQuery("table#targetTable tbody tr span").mousedown(
