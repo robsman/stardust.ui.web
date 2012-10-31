@@ -894,7 +894,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param activitySymbol
     * @param activitySymbolJson
     */
@@ -1018,7 +1018,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
    /**
     * Update the x,y co-ordinates of symbols contained in the lane
-    *
+    * 
     * @param laneSymbol
     * @param xOffset
     * @param yOffset
@@ -1049,7 +1049,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param activitySymbol
     * @param gatewaySymbolJson
     */
@@ -1068,7 +1068,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @param startEventSymbolJson
     */
@@ -1090,7 +1090,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param endEventSymbol
     * @param endEventSymbolJson
     */
@@ -1112,7 +1112,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param annotationSymbol
     * @param annotationSymbolJson
     */
@@ -1163,7 +1163,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             String contextId = entry.getKey();
 
             System.out.println("Context: " + contextId);
-            
+
             // TODO Facade methods do not support interactive contexts yet
             if ( !contextId.equals(ModelerConstants.APPLICATION_CONTEXT_KEY))
             {
@@ -1171,7 +1171,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             }
 
             JsonObject contextJson = contextsJson.get(contextId).getAsJsonObject();
-            JsonArray accessPointsJson = contextJson.get(ModelerConstants.ACCESS_POINTS_PROPERTY).getAsJsonArray();
+            JsonArray accessPointsJson = contextJson.get(
+                  ModelerConstants.ACCESS_POINTS_PROPERTY).getAsJsonArray();
 
             for (int n = 0; n < accessPointsJson.size(); ++n)
             {
@@ -1201,20 +1202,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   }
                   else if (dataType.equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
                   {
-                     JsonObject attributesJson = accessPointJson.get(
-                           ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject();
-
-                     // TODO Ugly storage
-
-                     String encodedId = attributesJson.get("carnot:engine:dataType")
-                           .getAsString();
                      String structuredDataFullId = null;
 
-                     if (encodedId.indexOf("typeDeclaration") == 0)
+                     if (accessPointJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
                      {
-                        String parts[] = encodedId.split("\\{")[1].split("\\}");
-
-                        structuredDataFullId = parts[0] + ":" + parts[1];
+                        structuredDataFullId = accessPointJson.get(
+                              ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
+                              .getAsString();
                      }
 
                      accessPoint = getModelBuilderFacade().createStructuredAccessPoint(
@@ -1356,7 +1350,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param def
     * @param simpleTypeJson
     */
@@ -1409,7 +1403,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param def
     * @param json
     */
@@ -1509,7 +1503,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param schema
     * @param json
     */
@@ -1692,7 +1686,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param element
     * @param elementJson
     * @param elementProperties
@@ -1710,7 +1704,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param targetElement
     * @param request
     * @param property
@@ -1780,7 +1774,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param json
     * @param element
     * @throws JSONException
@@ -1841,7 +1835,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param modelElementJson
     * @param element
     */
@@ -1865,7 +1859,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param orientation
     * @return
     */
@@ -1892,7 +1886,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @return
     */
    private ModelBuilderFacade getModelBuilderFacade()
@@ -1901,7 +1895,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param json
     * @param memberName
     * @return
@@ -1917,7 +1911,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param dataMappingJson
     * @param dataMapping
     */
@@ -2010,7 +2004,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param elementType
     * @return
     */
@@ -2037,7 +2031,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @return
     */
    private DocumentManagementService getDocumentManagementService()
@@ -2051,7 +2045,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @return
     */
    private ServiceFactory getServiceFactory()

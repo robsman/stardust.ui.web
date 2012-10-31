@@ -37,32 +37,13 @@ define(
 
 					return json;
 				},
-				/**
-				 * TODO Very ugly conversion, because server stores data
-				 * reference in a server-specific string.
-				 */
 				retrieveTypeDeclaration : function(accessPoint, scopeModel) {
-					// TODO Workaround for client site programming, this is not
-					// what the server returns
 					if (accessPoint.structuredDataTypeFullId != null) {
 						return m_model
 								.findTypeDeclaration(accessPoint.structuredDataTypeFullId);
 					}
 
-					var encodedId = accessPoint.attributes["carnot:engine:dataType"];
-
-					if (encodedId == null) {
-						return null;
-					}
-
-					if (encodedId.indexOf("typeDeclaration") == 0) {
-						var parts = encodedId.split("{")[1].split("}");
-
-						return m_model.findTypeDeclaration(parts[0] + ":"
-								+ parts[1]);
-					} else {
-						return scopeModel.typeDeclarations[encodedId];
-					}
+					return null;
 				},
 				prototype : AccessPoint.prototype
 			};
@@ -100,14 +81,6 @@ define(
 					this.dataType = m_constants.STRUCTURED_DATA_TYPE;
 					this.direction = direction;
 					this.structuredDataTypeFullId = dataStructure.getFullId();
-					
-					// Remove/move to server
-					
-					this.attributes = {
-						"carnot:engine:dataType" : "typeDeclaration:{"
-								+ dataStructure.model.id + "}"
-								+ dataStructure.id
-					};
 				};
 
 				/**

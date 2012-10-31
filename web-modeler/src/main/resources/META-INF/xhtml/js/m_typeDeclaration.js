@@ -152,11 +152,6 @@ define(
 								this.populateSequenceInstanceRecursively(
 										childTypeDeclaration, instance[id]);
 							} else {
-								m_utils.debug("===> Type Declaration");
-								m_utils.debug(childTypeDeclaration);
-								m_utils.debug("===> Facets");
-								m_utils.debug(childTypeDeclaration.getFacets());
-
 								for ( var enumerator in childTypeDeclaration
 										.getFacets()) {
 									instance[id] = enumerator;
@@ -408,6 +403,22 @@ define(
 					json.initializeFromJson(model);
 
 					return json;
+				},
+				getPrimitiveTypeLabel : function(type) {
+					if (type == null) {
+						return "None"; // I18N
+					}
+					else if (type == "int") {
+						return "Integer"; // I18N
+					}
+					else if (type == "string") {
+						return "String"; // I18N
+					}
+					else if (type == "boolean") {
+						return "Boolean"; // I18N
+					}
+
+					return type;
 				},
 
 				STRUCTURE_TYPE : STRUCTURE_TYPE,

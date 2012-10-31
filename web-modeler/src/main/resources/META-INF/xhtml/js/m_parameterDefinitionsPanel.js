@@ -4,9 +4,9 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_extensionManager", "m_model",
+		[ "m_utils", "m_constants", "m_extensionManager", "m_model", "m_typeDeclaration",
 				"m_dialog", "m_dataTypeSelector" ],
-		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog,
+		function(m_utils, m_constants, m_extensionManager, m_model, m_typeDeclaration, m_dialog,
 				m_dataTypeSelector) {
 			return {
 				create : function(options) {
@@ -430,7 +430,7 @@ define(
 							content += "<td style=\"width: "
 									+ this.options.typeColumnWidth + "\">";
 							if (parameterDefinition.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
-								content += parameterDefinition.primitiveDataType; // TODO
+								content += m_typeDeclaration.getPrimitiveTypeLabel(parameterDefinition.primitiveDataType); // TODO
 								// Convert
 							} else {
 								content += parameterDefinition.structuredDataTypeFullId; // TODO
