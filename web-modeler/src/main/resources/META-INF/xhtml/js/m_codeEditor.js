@@ -10,8 +10,8 @@
  ******************************************************************************/
 
 define(
-		[ "jquery", "jshint" ],
-		function(jquery, jshint) {
+		[ "jquery" ],
+		function(jquery) {
 			// Interface
 			return {
 				getCodeEditor : function(textArea) {
