@@ -28,6 +28,7 @@ define(
 				var hlLine = null;
 				var jsValidationPrefix = "";
 				var errorLineNumbers = [];
+				var disabled = false;
 				
 				var EDITOR_STYLECLASS_ENABLED = "CodeMirror-enabled";
 				var EDITOR_STYLECLASS_DISABLED = "CodeMirror-disabled";
@@ -143,13 +144,19 @@ define(
 				};
 		
 				CodeEditor.prototype.disable = function() {
-					editor.setOption(EDITOR_READONLY, EDITOR_NOCURSOR);
-					jQuery(wrapper).addClass(EDITOR_STYLECLASS_ENABLED);
+					if (!disabled) {
+						editor.setOption(EDITOR_READONLY, EDITOR_NOCURSOR);
+						jQuery(wrapper).addClass(EDITOR_STYLECLASS_ENABLED);
+						disabled = true;
+					}
 				};
 
 				CodeEditor.prototype.enable = function() {
-					editor.setOption(EDITOR_READONLY, false);
-					jQuery(wrapper).removeClass(EDITOR_STYLECLASS_DISABLED);
+					if (disabled) {
+						editor.setOption(EDITOR_READONLY, false);
+						jQuery(wrapper).removeClass(EDITOR_STYLECLASS_DISABLED);
+						disabled = false;
+					}
 				};
 		
 				CodeEditor.prototype.getWrapper = function() {

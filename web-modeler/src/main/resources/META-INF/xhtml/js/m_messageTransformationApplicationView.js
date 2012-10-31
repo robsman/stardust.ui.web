@@ -69,8 +69,8 @@ define(
 					this.inputTableRows = [];
 					this.outputTableRows = [];
 				
-					this.expressionEditor = m_codeEditor
-							.getCodeEditor(jQuery("#expressionTextArea")[0]);
+					this.expressionEditor = m_codeEditor.getCodeEditor(jQuery("#expressionTextArea")[0]);
+					this.expressionEditor.disable();
 
 					this.sourceFilterInput.keypress({
 						"view" : this
@@ -80,7 +80,7 @@ define(
 										.val());
 					});
 
-					this.targetFilterInput.change({
+					this.targetFilterInput.keypress({
 						"view" : this
 					}, function(event) {
 						event.data.view
@@ -429,7 +429,7 @@ define(
 							this.outputTableRows, false);
 					this.resume();
 
-					// Global variables for the Code Editor
+					// Global variables for Code Editor auto-complete / validation
 					var globalVariables = {};
 					var typeDeclaration;
 					for (var id in this.inputData) {
@@ -536,6 +536,7 @@ define(
 														view.selectedOutputTableRow.path
 																+ " = ");
 
+										view.expressionEditor.enable();
 										view.expressionEditor
 												.setValue(view.selectedOutputTableRow.mappingExpression);
 										view.expressionEditor.save();
