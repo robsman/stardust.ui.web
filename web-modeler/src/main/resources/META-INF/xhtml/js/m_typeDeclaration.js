@@ -273,46 +273,52 @@ define(
 				TypeDeclaration.prototype.resolveElementType = function(name) {
 					var element = this.getElement(name);
 					if (element) {
-						var typeName;
-						var schema;
+						return this.resolveSchemaType(element.type);
+					}
+				};
 
-						var typeQName = element.type.split(":");
-						if (1 == typeQName.length) {
-							// no ns prefix, resolve to containing schema
-							typeName = typeQName[0];
-							schema = this.typeDeclaration.schema;
-						} else if (2 == typeQName.length) {
-							// resolve ns prefix to schema
-							typeName = typeQName[1];
+				TypeDeclaration.prototype.resolveSchemaType = function(name) {
+					var typeName;
+					var schemaNsUri;
+					var schema;
 
-							var schemaNsUri = this.typeDeclaration.schema.nsMappings[typeQName[0]];
-							if (schemaNsUri == "http://www.w3.org/2001/XMLSchema") {
-								return new SchemaType("xsd:" + typeName);
-							}
+					var typeQName = name.split(":");
+					if (1 == typeQName.length) {
+						// no ns prefix, resolve to containing schema
+						typeName = typeQName[0];
+						schema = this.typeDeclaration.schema;
+						schemaNsUri = schema.targetNamespace;
 
-							jQuery
-									.each(
-											this.model.typeDeclarations,
-											function(i, declaration) {
-												if ((declaration.typeDeclaration != null)
-														&& (declaration.typeDeclaration.schema != null)
-														&& (declaration.typeDeclaration.schema.targetNamespace == schemaNsUri)) {
-													schema = declaration.typeDeclaration.schema;
-													return false;
-												}
-											});
+					} else if (2 == typeQName.length) {
+						// resolve ns prefix to schema
+						typeName = typeQName[1];
+
+						schemaNsUri = this.typeDeclaration.schema.nsMappings[typeQName[0]];
+						if (schemaNsUri == "http://www.w3.org/2001/XMLSchema") {
+							return new SchemaType("xsd:" + typeName, schemaNsUri);
 						}
 
-						var type = schema.types[typeName];
-						return new SchemaType(typeName, type, schema, this.model);
-					} else {
-						return undefined;
+						jQuery
+								.each(
+										this.model.typeDeclarations,
+										function(i, declaration) {
+											if ((declaration.typeDeclaration != null)
+													&& (declaration.typeDeclaration.schema != null)
+													&& (declaration.typeDeclaration.schema.targetNamespace == schemaNsUri)) {
+												schema = declaration.typeDeclaration.schema;
+												return false;
+											}
+										});
 					}
+
+					var type = schema.types[typeName];
+					return new SchemaType(typeName, schemaNsUri, type, schema, this.model);
 				};
 			};
 
-			function SchemaType(name, type, schema, scope) {
+			function SchemaType(name, nsUri, type, schema, scope) {
 				this.name = name;
+				this.nsUri = nsUri;
 				this.type = type;
 				this.schema = schema;
 				// scope is effectively the model with its type declarations
@@ -349,6 +355,7 @@ define(
 				var element = this.getElement(elementName);
 				if (element) {
 					var typeName;
+					var schemaNsUri;
 					var schema;
 
 					var typeQName = element.type.split(":");
@@ -356,14 +363,15 @@ define(
 						// no ns prefix, resolve to containing schema
 						typeName = typeQName[0];
 						schema = this.schema;
+						schemaNsUri = schema.targetNamespace;
 					} else if (2 == typeQName.length) {
 						// resolve ns prefix to schema
 						typeName = typeQName[1];
 
-						var schemaNsUri = this.schema.nsMappings[typeQName[0]];
+						schemaNsUri = this.schema.nsMappings[typeQName[0]];
 						if (schemaNsUri == "http://www.w3.org/2001/XMLSchema") {
 							// built-in XML type
-							return new SchemaType("xsd:" + typeName);
+							return new SchemaType("xsd:" + typeName, schemaNsUri);
 						}
 
 						jQuery
@@ -381,7 +389,7 @@ define(
 
 					var type = schema.types[typeName];
 
-					return new SchemaType(typeName, type, schema);
+					return new SchemaType(typeName, schemaNsUri, type, schema);
 				} else {
 					return undefined;
 				}

@@ -218,32 +218,7 @@ define(
 								typeColumn.append(schemaType.name);
 							}
 
-							if ((schemaType != null)
-									&& (schemaType.isStructure())) {
-								// TODO append child rows
-								jQuery.each(schemaType.getElements(), function(i, element) {
-									var childPath = path + "-" + element.name;
-									var childRow = jQuery("<tr id='" + childPath + "' class='child-of-" + path + "'></tr>");
-
-									var childSchemaType = schemaType.resolveElementType(element.name);
-
-									jQuery("<td>" + this.name + "</td>").appendTo(childRow);
-									jQuery("<td>" + this.type + "</td>").appendTo(childRow);
-									jQuery("<td>" + this.cardinality + "</td>").appendTo(childRow);
-
-									if (childSchemaType.isStructure()) {
-										childRow.addClass("parent");
-										childRow.addClass("expanded");
-									}
-
-									childRow.data("parentId", path);
-									childRow.data("schemaType", childSchemaType);
-
-									childRows.push(childRow);
-
-									// TODO recurse
-								});
-							}
+							childRows = view.generateChildElementRows(path, schemaType);
 						}
 
 						var cardinalityColumn = jQuery("<td></td>").appendTo(newRow);
@@ -268,7 +243,7 @@ define(
 					});
 
 					this.tableBody.append("<tr id='newRow'>"
-						+ "  <td><input id='newLink' type='image' src='../../images/icons/add.png'/></td>"
+						+ "  <td><span class='data-element'><input id='newLink' type='image' src='../../images/icons/add.png'/></span></td>"
 						+ "  </td><td>"
 						+ "  </td><td>"
 						+ "</tr>");
@@ -280,41 +255,62 @@ define(
 					});
 
 					this.tree.treeTable({
-						indent: 20,
+						indent: 14,
 						onNodeShow: function() {
-							var row = jQuery(this);
-							if ( !row.data("initialized")) {
+							var parentRow = jQuery(this);
+							if ( !parentRow.data("elements-initialized")) {
 								var parentPath = this.id;
-								var schemaType = row.data("schemaType");
+								var schemaType = parentRow.data("schemaType");
 
-								var childRows = [];
-								jQuery.each(schemaType.getElements(), function(i, element) {
-									var childPath = parentPath + "-" + element.name;
-									var childRow = jQuery("<tr id='" + childPath + "'></tr>");
-
-									var childSchemaType = schemaType.resolveElementType(element.name);
-
-									jQuery("<td>" + this.name + "</td>").appendTo(childRow);
-									jQuery("<td>" + this.type + "</td>").appendTo(childRow);
-									jQuery("<td>" + this.cardinality + "</td>").appendTo(childRow);
-
-									if (childSchemaType.isStructure()) {
-										childRow.addClass("parent");
-										childRow.addClass("expanded");
-									}
-
-									childRow.data("parentId", parentPath);
-									childRow.data("schemaType", childSchemaType);
-
-									row.append(childRow);
-									childRow.appendBranchTo(row[0]);
+								// trick to trigger initialization of child rows
+								// first append at root ...
+								var childRows = view.generateChildElementRows(null, schemaType);
+								jQuery.each(childRows, function(i, childRow) {
+									// ... then move to the proper location
+									parentRow.after(childRow);
+									childRow.appendBranchTo(parentRow[0]);
 								});
-								row.collapse();
+								parentRow.collapse();
 
-								row.data("initialized", true);
+								parentRow.data("elements-initialized", true);
 							}
 						}
 					});
+				};
+
+				XsdStructuredDataTypeView.prototype.generateChildElementRows = function(parentPath, schemaType) {
+					var childRows = [];
+
+					if ((schemaType != null)
+							&& (schemaType.isStructure())) {
+						// append child rows
+						jQuery.each(schemaType.getElements(), function(i, element) {
+							var childPath = parentPath + "-" + element.name;
+							var childRow = jQuery("<tr id='" + childPath + "'></tr>");
+							if (null != parentPath) {
+								childRow.addClass("child-of-" + parentPath);
+							}
+
+							var childSchemaType = schemaType.resolveElementType(element.name);
+
+							jQuery("<td><span class='data-element'>" + this.name + "</span></td>").appendTo(childRow);
+							jQuery("<td>" + this.type + "</td>").appendTo(childRow);
+							jQuery("<td>" + this.cardinality + "</td>").appendTo(childRow);
+
+							if (childSchemaType.isStructure()) {
+								// add styles in preparation of lazily appending child rows
+								childRow.addClass("parent");
+								childRow.addClass("expanded");
+							}
+
+							childRow.data("parentId", parentPath);
+							childRow.data("schemaType", childSchemaType);
+
+							childRows.push(childRow);
+						});
+					}
+
+					return childRows;
 				};
 
 				/**
@@ -396,11 +392,13 @@ define(
 						var mainElement = typeDeclaration.typeDeclaration.schema.elements[typeDeclaration.id];
 						if (mainElement) {
 							// consumable type, as there is an equivalent global element
+							var elementType = typeDeclaration.resolveSchemaType(mainElement.type);
 
-							select += "<option value='" + mainElement.type + "' "
-									+ (schemaType.name == mainElement.type ? "selected " : "") + ">"
-									+ typeDeclaration.name
-									+ "</option>";
+							select += "<option value='" + mainElement.type + "' ";
+							if ( !schemaType.isBuiltinType() && (null != elementType)) {
+								select += ((schemaType.name == elementType.name) && (schemaType.nsUri == elementType.nsUri) ? "selected " : "");
+							}
+							select += ">" + typeDeclaration.name + "</option>";
 						}
 					});
 
