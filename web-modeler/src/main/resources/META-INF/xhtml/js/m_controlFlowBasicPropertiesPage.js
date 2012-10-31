@@ -43,9 +43,9 @@ define(
 					propertiesPage.show();
 					this.conditionExpressionInputEditor.refresh();
 
-					// Bind the Model Data as top "window" level objects to be used for Code Editor auto-complete
+					// Global variables for Code Editor auto-complete / validation
 					var globalVariables = m_dataTraversal.getAllDataAsJavaScriptObjects(this.propertiesPanel.diagram.model);
-					this.conditionExpressionInputEditor.setGlobalData(globalVariables);
+					this.conditionExpressionInputEditor.setGlobalVariables(globalVariables);
 				};
 
 				/**
