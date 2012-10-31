@@ -14,6 +14,9 @@ define(
 		function(m_utils, m_constants, m_modelElement, m_model, m_accessPoint) {
 
 			return {
+				create : function() {
+					return new Activity();
+				},
 				createActivity : function(process, type) {
 					var index = process.getNewActivityIndex();
 					var activity = new Activity("Activity" + index);
@@ -60,6 +63,11 @@ define(
 					activity.gatewayType = m_constants.XOR_GATEWAY_TYPE;
 
 					return activity;
+				},
+				typeObject : function(json) {
+					m_utils.inheritMethods(json, new Activity());
+
+					return json;
 				},
 
 				prototype : Activity.prototype

@@ -24,6 +24,8 @@ define(
 					viewObject(obj);
 				},
 
+				typeObject : typeObject,
+
 				inheritFields : function(childObject, parentObject) {
 					inheritFields(childObject, parentObject);
 				},
@@ -156,6 +158,19 @@ define(
 				}
 			}
 
+			/**
+			 * 
+			 */
+			function typeObject(proto, untypedObject) {
+				var typedObject = Object.create(proto);
+			    for(prop in untypedObject) { 
+			        if(untypedObject.hasOwnProperty(prop)) { 
+			            typedObject[prop] = untypedObject[prop]; 
+			        } 
+			    }
+			    return typedObject; 
+			}
+			
 			/**
 			 * Copies all data members of and object into another object
 			 * recursively. Members existing in the childObject and not existing

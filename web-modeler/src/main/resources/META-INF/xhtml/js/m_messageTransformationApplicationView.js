@@ -555,18 +555,6 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.addInputAccessPoint = function(
 						dataName, dataStructure) {
-					// TODO Are these guards needed?
-					
-					if (this.application.contexts == null) {
-						this.application.contexts = {};
-					}
-
-					if (this.application.contexts.application == null) {
-						this.application.contexts.application = {
-							accessPoints : []
-						};
-					}
-
 					this.application.contexts.application.accessPoints.push(m_accessPoint
 							.createFromDataStructure(dataStructure, dataName,
 									dataName, m_constants.IN_ACCESS_POINT));
@@ -610,18 +598,6 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.addOutputAccessPoint = function(
 						dataName, dataStructure) {
-					// TODO Are these guards needed?
-					
-					if (this.application.contexts == null) {
-						this.application.contexts = {};
-					}
-
-					if (this.application.contexts.application == null) {
-						this.application.contexts.application = {
-							accessPoints : []
-						};
-					}
-
 					this.application.contexts.application.accessPoints.push(m_accessPoint
 							.createFromDataStructure(dataStructure, dataName,
 									dataName, m_constants.OUT_ACCESS_POINT));
