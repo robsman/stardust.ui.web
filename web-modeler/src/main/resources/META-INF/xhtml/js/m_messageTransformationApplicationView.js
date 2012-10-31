@@ -429,13 +429,20 @@ define(
 							this.outputTableRows, false);
 					this.resume();
 
-					// Bind the Model Data as top "window" level objects to be
-					// used for Code Editor auto-complete
-					var globalVariables = m_dataTraversal
-							.getAllDataAsJavaScriptObjects(application.model);
-					for ( var key in globalVariables) {
-						window[key] = globalVariables[key];
+					// Global variables for the Code Editor
+					var globalVariables = {};
+					var typeDeclaration;
+					for (var id in this.inputData) {
+						typeDeclaration = this.inputData[id];
+						globalVariables[id] = typeDeclaration.createInstance();
 					}
+					
+					for (var id in this.outputData) {
+						typeDeclaration = this.outputData[id];
+						globalVariables[id] = typeDeclaration.createInstance();
+					}
+					
+					this.expressionEditor.setGlobalVariables(globalVariables);
 				};
 
 				/**

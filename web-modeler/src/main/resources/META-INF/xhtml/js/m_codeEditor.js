@@ -24,7 +24,7 @@ define(
 				var editor = null;
 				var wrapper = null;
 				
-				var globalData = null;
+				var globalVariables = null;
 				var hlLine = null;
 				
 				var EDITOR_STYLECLASS_ENABLED = "CodeMirror-enabled";
@@ -79,7 +79,7 @@ define(
 					
 					var options = {undef: true, smarttabs: true};
 					var globals = {};
-					for (var variable in globalData) {
+					for (var variable in globalVariables) {
 						globals[variable] = true;
 					}
 					JSHINT(source, options, globals);
@@ -155,8 +155,13 @@ define(
 					return wrapper;
 				};
 		
-				CodeEditor.prototype.setGlobalData = function(globalVariables) {
-					globalData = globalVariables;
+				CodeEditor.prototype.setGlobalVariables = function(data) {
+					globalVariables = data;
+					
+					// Bind the Model Data as top "window" level objects to be used for Code Editor auto-complete
+					for (var key in globalVariables) {
+						window[key] = globalVariables[key];
+					}
 				};
 		
 				CodeEditor.prototype.save = function() {
