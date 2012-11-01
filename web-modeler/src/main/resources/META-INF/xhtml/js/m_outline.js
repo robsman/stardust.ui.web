@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -443,14 +443,11 @@ define(
 							.findModelElementByUuid(data.rslt.obj.attr("id"));
 
 					if (modelElement && (modelElement.name != data.rslt.name)) {
-						m_commandsController
-								.submitCommand(m_command
-										.createUpdateModelElementWithUUIDCommand(
-												model.id,
-												modelElement.uuid,
-												{
-													"name" : data.rslt.name
-												}));
+						m_commandsController.submitCommand(m_command
+								.createUpdateModelElementWithUUIDCommand(
+										model.id, modelElement.uuid, {
+											"name" : data.rslt.name
+										}));
 					}
 				}
 			};
@@ -1291,20 +1288,23 @@ define(
 																							.attr("id"));
 														}
 													},
-//													"createWrapperProcess" : {
-//														"label" : "Create Wrapper Process",
-//														"action" : function(obj) {
-//															var application = m_model
-//																	.findApplication(obj
-//																			.attr("fullId"));
-//															m_utils
-//																	.debug("Application");
-//															m_utils
-//																	.debug(application);
-//
-//															createWrapperProcess(application);
-//														}
-//													},
+													// "createWrapperProcess" :
+													// {
+													// "label" : "Create Wrapper
+													// Process",
+													// "action" : function(obj)
+													// {
+													// var application = m_model
+													// .findApplication(obj
+													// .attr("fullId"));
+													// m_utils
+													// .debug("Application");
+													// m_utils
+													// .debug(application);
+													//
+													// createWrapperProcess(application);
+													// }
+													// },
 													"deleteApplication" : {
 														"label" : "Delete",
 														"action" : function(obj) {
@@ -1714,7 +1714,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				function prepareInfoDialogPoupupData(msg, okText) {
 					return {
@@ -1732,7 +1732,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function prepareErrorDialogPoupupData(msg, okText) {
 					return {
@@ -1750,7 +1750,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createModel() {
 					var count = 0;
@@ -1770,7 +1770,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteModel(modelId) {
 					var model = m_model.findModel(modelId);
@@ -1779,7 +1779,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function getUniqueNameForElement(modelId, namePrefix) {
 					var suffix = 0;
@@ -1797,7 +1797,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createProcess(modelId) {
 					var name = getUniqueNameForElement(modelId, "Process ");
@@ -1812,7 +1812,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteProcess(processId, modelUUID) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1834,7 +1834,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteParticipant(modelUUID, id) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1846,7 +1846,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteApplication(modelUUID, appId) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1858,7 +1858,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteData(modelUUID, id) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1899,7 +1899,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createPrimitiveData(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1921,7 +1921,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createDocumentData(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1939,7 +1939,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createStructuredData(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1959,7 +1959,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createRole(modelUUId, targetUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1978,7 +1978,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createConditionalPerformer(modelUUId, targetUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -1999,7 +1999,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function setAsManager(modelUUId, orgUUID, roleUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2015,7 +2015,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createOrganization(modelUUId, targetUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2036,7 +2036,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createWebServiceApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2053,7 +2053,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createMessageTransformationApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2071,7 +2071,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createCamelApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2087,7 +2087,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createUiMashupApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2104,7 +2104,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 * @param modelId
 				 * @returns
 				 */
@@ -2124,7 +2124,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 * @param modelId
 				 * @param id
 				 * @returns
@@ -2154,7 +2154,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 * @param modelId
 				 * @param id
 				 * @returns
@@ -2202,7 +2202,12 @@ define(
 			var outline;
 
 			return {
-				init : function() {
+				init : function(newViewManager) {
+
+					if (newViewManager != null) {
+						viewManager = newViewManager;
+					}
+					
 					setupEventHandling();
 
 					outline = new Outline();
@@ -2217,18 +2222,18 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function Outline() {
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.toString = function() {
 					return "Lightdust.Outline";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.initialize = function() {
 					// Register with Event Bus
@@ -2237,7 +2242,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.openElementView = function(element, openView) {
 					if (isElementCreatedViaOutline || openView) {
@@ -2259,14 +2264,14 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.fireCloseViewCommand = function(uuid) {
 					viewManager.closeViewsForElement(uuid);
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.processCommand = function(command) {
 					m_utils.debug("===> Outline Process Event");
@@ -2487,7 +2492,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createModel = function(data) {
 					var outlineObj = this;
@@ -2558,7 +2563,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteModel = function(transferObject) {
 					m_model.deleteModel(transferObject.id);
@@ -2567,7 +2572,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteProcess = function(transferObject) {
 					jQuery("#outline").jstree("remove",
@@ -2578,7 +2583,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteApplication = function(transferObject) {
 					jQuery("#outline").jstree("remove",
@@ -2589,7 +2594,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteParticipant = function(transferObject) {
 					jQuery("#outline").jstree("remove",
@@ -2601,7 +2606,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteTypeDeclaration = function(
 						transferObject) {
@@ -2615,7 +2620,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteData = function(transferObject) {
 					jQuery("#outline").jstree("remove",
@@ -2626,7 +2631,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createProcess = function(transferObject) {
 					var model = m_model.findModel(transferObject.modelId);
@@ -2653,7 +2658,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createApplication = function(transferObject) {
 					var model = m_model.findModel(transferObject.modelId);
@@ -2679,7 +2684,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createData = function(transferObject) {
 					var model = m_model
@@ -2705,7 +2710,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createStructuredDataType = function(
 						transferObject) {
@@ -2732,7 +2737,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createParticipant = function(transferObject) {
 					var model = m_model
