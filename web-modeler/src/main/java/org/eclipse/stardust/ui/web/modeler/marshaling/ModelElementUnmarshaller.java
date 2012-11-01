@@ -13,19 +13,42 @@ package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import static org.eclipse.stardust.common.CollectionUtils.isEmpty;
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
+import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
-import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.common.Direction;
+import org.eclipse.xsd.XSDComplexTypeContent;
+import org.eclipse.xsd.XSDComplexTypeDefinition;
+import org.eclipse.xsd.XSDCompositor;
+import org.eclipse.xsd.XSDConstrainingFacet;
+import org.eclipse.xsd.XSDElementDeclaration;
+import org.eclipse.xsd.XSDFactory;
+import org.eclipse.xsd.XSDImport;
+import org.eclipse.xsd.XSDModelGroup;
+import org.eclipse.xsd.XSDParticle;
+import org.eclipse.xsd.XSDSchema;
+import org.eclipse.xsd.XSDSimpleTypeDefinition;
+import org.eclipse.xsd.XSDTerm;
+import org.eclipse.xsd.XSDTypeDefinition;
+import org.eclipse.xsd.impl.XSDSchemaImpl;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
@@ -33,6 +56,7 @@ import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
+import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
@@ -74,27 +98,13 @@ import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.model.xpdl.xpdl2.XpdlPackage;
+import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
-import org.eclipse.xsd.XSDComplexTypeContent;
-import org.eclipse.xsd.XSDComplexTypeDefinition;
-import org.eclipse.xsd.XSDCompositor;
-import org.eclipse.xsd.XSDConstrainingFacet;
-import org.eclipse.xsd.XSDElementDeclaration;
-import org.eclipse.xsd.XSDFactory;
-import org.eclipse.xsd.XSDModelGroup;
-import org.eclipse.xsd.XSDParticle;
-import org.eclipse.xsd.XSDSchema;
-import org.eclipse.xsd.XSDSimpleTypeDefinition;
-import org.eclipse.xsd.XSDTerm;
-import org.eclipse.xsd.XSDTypeDefinition;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  *
@@ -678,13 +688,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   while (true)
                   {
                      @SuppressWarnings("unchecked")
-                     List<? extends IIdentifiableElement> domain = (List<? extends IIdentifiableElement>) element.eContainer()
+                     List<? extends EObject> domain = (List<? extends EObject>) element.eContainer()
                            .eGet(element.eContainingFeature());
 
                      boolean isConflict = false;
-                     for (IIdentifiableElement peer : domain)
+                     for (EObject peer : domain)
                      {
-                        if ((peer != element) && (newId.equals(peer.getId())))
+                        if ((peer != element) && (newId.equals(peer.eGet(eFtrId))))
                         {
                            isConflict = true;
                            break;
@@ -1250,9 +1260,49 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          // propagate ID change
          if (null != typeDeclaration.getSchemaType())
          {
-            for (XSDElementDeclaration elementDeclaration : typeDeclaration.getSchemaType()
-                  .getSchema()
-                  .getElementDeclarations())
+            XSDSchema schema = typeDeclaration.getSchemaType().getSchema();
+
+            // update target namespace
+            String oldTargetNs = TypeDeclarationUtils.computeTargetNamespace(
+                  ModelUtils.findContainingModel(typeDeclaration), oldId);
+            String newTargetNs = TypeDeclarationUtils.computeTargetNamespace(
+                  ModelUtils.findContainingModel(typeDeclaration),
+                  typeDeclaration.getId());
+
+            if (schema.getTargetNamespace().equals(oldTargetNs))
+            {
+               schema.setTargetNamespace(newTargetNs);
+
+               while (schema.getQNamePrefixToNamespaceMap().containsValue(oldTargetNs))
+               {
+                  for (String nsPrefix : schema.getQNamePrefixToNamespaceMap().keySet())
+                  {
+                     if (schema.getQNamePrefixToNamespaceMap().get(nsPrefix).equals(oldTargetNs))
+                     {
+                        schema.getQNamePrefixToNamespaceMap().remove(nsPrefix);
+                        // restart iteration after edit
+                        break;
+                     }
+                  }
+               }
+               String newNsPrefix = TypeDeclarationUtils.computePrefix(typeDeclaration.getId().toLowerCase(),
+                     schema.getQNamePrefixToNamespaceMap().keySet());
+               schema.getQNamePrefixToNamespaceMap().put(newNsPrefix, newTargetNs);
+            }
+
+            // update location, if internal
+            if (TypeDeclarationUtils.isInternalSchema(typeDeclaration))
+            {
+               schema.setSchemaLocation(StructuredDataConstants.URN_INTERNAL_PREFIX + typeDeclaration.getId());
+               if (null != typeDeclaration.getExternalReference())
+               {
+                  ExternalReferenceType schemaRef = typeDeclaration.getExternalReference();
+                  schemaRef.setLocation(schema.getSchemaLocation());
+               }
+            }
+
+            // update "main" element end type
+            for (XSDElementDeclaration elementDeclaration : schema.getElementDeclarations())
             {
                if (elementDeclaration.getName().equals(oldId))
                {
@@ -1266,9 +1316,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   elementDeclaration.setName(typeDeclaration.getId());
                }
             }
-            for (XSDTypeDefinition typeDefinition : typeDeclaration.getSchemaType()
-                  .getSchema()
-                  .getTypeDefinitions())
+            for (XSDTypeDefinition typeDefinition : schema.getTypeDefinitions())
             {
                if (typeDefinition.getName().equals(oldId))
                {
@@ -1276,9 +1324,11 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                }
             }
 
-            // TODO target namespace
-         }
+            // TODO adjust cross references
 
+            // adjust underlying DOM
+            schema.updateElement(true);
+         }
       }
 
       JsonObject declarationJson = json.getAsJsonObject("typeDeclaration");
@@ -1319,19 +1369,17 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
    private void updateXSDTypeDefinitions(XSDSchema schema, JsonObject json)
    {
-      Map<String, XSDTypeDefinition> existing = CollectionUtils.newMap();
-      List<XSDTypeDefinition> list = schema.getTypeDefinitions();
+      Map<String, XSDTypeDefinition> typesIndex = newHashMap();
+      Set<XSDTypeDefinition> updatedTypes = newHashSet();
 
-      for (XSDTypeDefinition def : list)
+      for (XSDTypeDefinition def : schema.getTypeDefinitions())
       {
-         existing.put(def.getName(), def);
+         typesIndex.put(def.getName(), def);
       }
-
-      list.clear();
 
       for (Map.Entry<String, JsonElement> entry : json.entrySet())
       {
-         XSDTypeDefinition def = existing.get(entry.getKey());
+         XSDTypeDefinition def = typesIndex.get(entry.getKey());
          JsonObject defJson = (JsonObject) entry.getValue();
          boolean isComplexType = defJson.has("body");
 
@@ -1340,6 +1388,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             def = isComplexType
                   ? XSDFactory.eINSTANCE.createXSDComplexTypeDefinition()
                   : XSDFactory.eINSTANCE.createXSDSimpleTypeDefinition();
+            schema.getTypeDefinitions().add(def);
          }
 
          def.setName(defJson.getAsJsonPrimitive("name").getAsString());
@@ -1353,7 +1402,17 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             updateXSDSimpleTypeDefinition((XSDSimpleTypeDefinition) def, defJson);
          }
 
-         list.add(def);
+         updatedTypes.add(def);
+      }
+
+      // remove types not present in JSON anymore
+      for (Iterator<XSDTypeDefinition> i = schema.getTypeDefinitions().iterator(); i.hasNext(); )
+      {
+         XSDTypeDefinition typeDefinition = i.next();
+         if ( !updatedTypes.contains(typeDefinition))
+         {
+            i.remove();
+         }
       }
    }
 
@@ -1448,18 +1507,73 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   p.setContent(decl);
                   decl.setName(elementJson.getAsJsonPrimitive("name").getAsString());
                   String type = elementJson.getAsJsonPrimitive("type").getAsString();
-                  String prefix = null;
-                  int ix = type.indexOf(':');
-                  if (ix > 0)
+
+                  String namespace = null;
+                  String nsPrefix = null;
+                  if (type.startsWith("{"))
                   {
-                     prefix = type.substring(0, ix);
-                     type = type.substring(ix + 1);
+                     // a type QName
+                     QName typeQName = QName.valueOf(type);
+                     type = typeQName.getLocalPart();
+                     namespace = typeQName.getNamespaceURI();
+                     if ( !def.getSchema().getQNamePrefixToNamespaceMap().containsValue(typeQName.getNamespaceURI()))
+                     {
+                        nsPrefix = typeQName.getPrefix();
+                        if (isEmpty(nsPrefix))
+                        {
+                           nsPrefix = TypeDeclarationUtils.computePrefix(
+                                 typeQName.getLocalPart().toLowerCase(), def.getSchema()
+                                       .getQNamePrefixToNamespaceMap()
+                                       .keySet());
+                        }
+                        def.getSchema()
+                              .getQNamePrefixToNamespaceMap()
+                              .put(nsPrefix, namespace);
+                        // propagate ns-prefix mappings to DOM
+                        def.getSchema().updateElement(true);
+                     }
+
+                     Collection<XSDSchema> targetSchemas = ((XSDSchemaImpl) def.getSchema()).resolveSchema(namespace);
+                     if (targetSchemas.isEmpty())
+                     {
+                        // find target schema
+                        ModelType scopeModel = ModelUtils.findContainingModel(def);
+                        for (TypeDeclarationType typeDeclaration : scopeModel.getTypeDeclarations().getTypeDeclaration())
+                        {
+                           if (null != typeDeclaration.getSchema())
+                           {
+                              XSDTypeDefinition targetType = typeDeclaration.getSchema().resolveTypeDefinition(namespace, type);
+                              if ((null != targetType) && (null != targetType.eContainer()))
+                              {
+                                 XSDImport schemaImport = XSDFactory.eINSTANCE.createXSDImport();
+                                 schemaImport.setNamespace(namespace);
+                                 schemaImport.setSchemaLocation(typeDeclaration.getSchema().getSchemaLocation());
+                                 schemaImport.setResolvedSchema(typeDeclaration.getSchema());
+                                 def.getSchema().getContents().add(0, schemaImport);
+                                 break;
+                              }
+                           }
+                        }
+                     }
                   }
-                  String namespace = def.getSchema()
-                        .getQNamePrefixToNamespaceMap()
-                        .get(prefix);
+                  else
+                  {
+                     int ix = type.indexOf(':');
+                     if (ix > 0)
+                     {
+                        nsPrefix = type.substring(0, ix);
+                        type = type.substring(ix + 1);
+                     }
+                     namespace = def.getSchema()
+                           .getQNamePrefixToNamespaceMap()
+                           .get(nsPrefix);
+                  }
                   XSDTypeDefinition typeDefinition = def.resolveTypeDefinition(namespace,
                         type);
+                  if ((null == typeDefinition) || (null == typeDefinition.eContainer()))
+                  {
+                     typeDefinition = def.resolveComplexTypeDefinition(namespace, type);
+                  }
                   decl.setTypeDefinition(typeDefinition);
                   particles.add(p);
                }

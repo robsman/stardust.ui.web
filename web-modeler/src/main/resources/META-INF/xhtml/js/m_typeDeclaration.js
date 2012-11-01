@@ -389,7 +389,7 @@ define(
 
 					var type = schema.types[typeName];
 
-					return new SchemaType(typeName, schemaNsUri, type, schema);
+					return new SchemaType(typeName, schemaNsUri, type, schema, this.scope);
 				} else {
 					return undefined;
 				}

@@ -205,7 +205,7 @@ define(
 						var childRows = [];
 
 						var nameColumn = jQuery("<td></td>").appendTo(newRow);
-						nameColumn.append("<input class='nameInput' type='text' value='" + element.name + "'/>");
+						nameColumn.append("<span class='data-element'><input class='nameInput' type='text' value='" + element.name + "'/></span>");
 
 						var typeColumn = jQuery("<td></td>").appendTo(newRow);
 						if (view.typeDeclaration.isSequence()) {
@@ -238,6 +238,7 @@ define(
 						newRow.data("elementName", element.name);
 
 						jQuery.each(childRows, function(i, childRow) {
+							childRow.addClass("child-of-" + path);
 							view.tableBody.append(childRow);
 						});
 					});
@@ -247,8 +248,6 @@ define(
 						+ "  </td><td>"
 						+ "  </td><td>"
 						+ "</tr>");
-
-					this.bindTableEventHandlers();
 
 					this.tree.tableScroll({
 						height : 150
@@ -264,7 +263,7 @@ define(
 
 								// trick to trigger initialization of child rows
 								// first append at root ...
-								var childRows = view.generateChildElementRows(null, schemaType);
+								var childRows = view.generateChildElementRows(parentPath, schemaType);
 								jQuery.each(childRows, function(i, childRow) {
 									// ... then move to the proper location
 									parentRow.after(childRow);
@@ -276,6 +275,10 @@ define(
 							}
 						}
 					});
+
+					// bind events after tree got initialized, otherwise renames
+					// in parent rows don't get triggered
+					this.bindTableEventHandlers();
 				};
 
 				XsdStructuredDataTypeView.prototype.generateChildElementRows = function(parentPath, schemaType) {
@@ -287,9 +290,6 @@ define(
 						jQuery.each(schemaType.getElements(), function(i, element) {
 							var childPath = parentPath + "-" + element.name;
 							var childRow = jQuery("<tr id='" + childPath + "'></tr>");
-							if (null != parentPath) {
-								childRow.addClass("child-of-" + parentPath);
-							}
 
 							var childSchemaType = schemaType.resolveElementType(element.name);
 
@@ -334,16 +334,13 @@ define(
 							view.removeElement(jQuery("tr.selected", view.tableBody));
 						});
 
-					jQuery(".nameInput", this.tree).change(
-						function(event) {
+					jQuery(".nameInput", this.tree).on("change", function(event) {
 							view.renameElement(jQuery(event.target).closest("tr"), jQuery(event.target).val());
 						});
-					jQuery(".typeSelect", this.tree).change(
-						function(event) {
+					jQuery(".typeSelect", this.tree).on("change", function(event) {
 							view.setElementType(jQuery(event.target).closest("tr"), jQuery(event.target).val());
 						});
-					jQuery(".cardinalitySelect", this.tree).change(
-						function(event) {
+					jQuery(".cardinalitySelect", this.tree).on("change", function(event) {
 							view.setElementCardinality(jQuery(event.target).closest("tr"), jQuery(event.target).val());
 						});
 				};
@@ -394,7 +391,7 @@ define(
 							// consumable type, as there is an equivalent global element
 							var elementType = typeDeclaration.resolveSchemaType(mainElement.type);
 
-							select += "<option value='" + mainElement.type + "' ";
+							select += "<option value='{" + elementType.nsUri +"}" + elementType.name + "' ";
 							if ( !schemaType.isBuiltinType() && (null != elementType)) {
 								select += ((schemaType.name == elementType.name) && (schemaType.nsUri == elementType.nsUri) ? "selected " : "");
 							}
