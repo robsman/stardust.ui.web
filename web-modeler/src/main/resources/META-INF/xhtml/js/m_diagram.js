@@ -797,6 +797,14 @@ define(
 								m_utils.debug("Changed symbol to:");
 								m_utils.debug(symbol);
 								symbol.refresh();
+								if ((command.isUndo || command.isRedo)
+										&& symbol.type == m_constants.SWIMLANE_SYMBOL) {
+									// When swimlane co-ordinates change,
+									// PoolSymbol needs adjustment.
+									symbol.parentSymbol
+											.recalculateBoundingBox();
+									symbol.parentSymbol.adjustPrimitives();
+								}
 								this.resetLastSymbol(symbol.oid);
 							}
 
