@@ -22,70 +22,51 @@ require.config({
 		'jquery.treeTable': ['libs/jquery/plugins/jquery.treeTable', 'https://raw.github.com/ludo/jquery-treetable/f98c6d07a02cb48052e9d4e033ce7dcdf64218e1/src/javascripts/jquery.treeTable'],
 		'jquery.url': ['libs/jquery/plugins/jquery.url', 'https://raw.github.com/allmarkedup/jQuery-URL-Parser/472315f02afbfd7193184300cc381163e19b4a16/jquery.url'],
 
-		'common-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/common-plugins',
 		'outline-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/outline-plugins',
 		'i18n' : '../../common/InfinityBPMI18N'
 	},
 	shim: {
-		'json': {
-			exports: "JSON"
-		},
 		'raphael': {
 			exports: "Raphael"
 		},
 		'i18n': {
 			exports: "InfinityBPMI18N"
 		},
-
 		'jquery-ui': ['jquery'],
 		'jquery.download': ['jquery'],
 		'jquery.form': ['jquery'],
 		'jquery.impromptu': ['jquery'],
 		'jquery.jstree': ['jquery'],
 		'jquery.simplemodal': ['jquery'],
-		'jquery.tablescroll': ['jquery'],
-		'jquery.treeTable': ['jquery'],
-		'jquery.url': ['jquery'],
+		'jquery.url': ['jquery']
 	}
 });
 
-require(["require",
+define([
          "jquery",
 		 "extensions_jquery",
 		 "jquery-ui",
+		 "jquery.impromptu",
 		 "jquery.download",
 		 "jquery.form",
-		 "jquery.impromptu",
-		 "jquery.jstree",
 		 "jquery.simplemodal",
-		 "jquery.tablescroll",
-		 "jquery.treeTable",
 		 "jquery.url",
-
-		 "json",
-		 "raphael",
+		 "jquery.jstree",
+		 "m_utils",
+		 "m_communicationController",
 
 		 "outline-plugins",
 		 "i18n",
-		 "common-plugins",
-		 "m_utils",
-		 "m_communicationController",
-		 "testExtensions",
 
-		 // TODO Remove dependency
-		 "m_testViewManager",
-		 "m_roleView",
-		 "m_organizationView",
-		 "m_dataView",
-		 "m_messageTransformationApplicationView",
-		 "m_camelApplicationView",
-		 "m_xsdStructuredDataTypeView",
-		 "m_modelerViewLayoutManager",
 		 "m_urlUtils",
 		 "m_constants",
 		 "m_user",
-		 "m_outline"
-], function(require) {
-	require('m_outline').init();
+		 "m_outline",
+		 "m_htmlViewManager",
+		 "m_standaloneModelingPortal"
+], function() {
+	var portal = require("m_standaloneModelingPortal");
+	
+	portal.initialize(jQuery.url.setUrl(window.location.search).param("modelFile"));
 });
 
