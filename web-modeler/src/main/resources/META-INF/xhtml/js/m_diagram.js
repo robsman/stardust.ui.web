@@ -681,7 +681,7 @@ define(
 									this.lastSymbol.refresh();
 									this.registerSymbol(this.lastSymbol);
 									this.lastSymbol = null;
-								} else {
+								} else if (command.isUndo || command.isRedo) {
 									if (null == this.findSymbolByGuid(obj.changes.added[i].oid, command.modelId)) {
 										this.poolSymbol.laneSymbols.push(m_swimlaneSymbol.createSwimlaneSymbolFromJson(this, this.poolSymbol, obj.changes.added[i]));
 										this.poolSymbol.sortLanes();
