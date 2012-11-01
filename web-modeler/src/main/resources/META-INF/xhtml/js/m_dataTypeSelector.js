@@ -1,6 +1,6 @@
 /**
  * Utility functions for dialog programming.
- * 
+ *
  * @author Marc.Gille
  */
 define(
@@ -17,18 +17,23 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function DataTypeSelector() {
 				/**
 				 * Options are
-				 * 
+				 *
 				 * scope submitHandler supportsOtherData supportDocumentTypes
 				 */
 				DataTypeSelector.prototype.initialize = function(options) {
 					this.scope = options.scope;
 					this.submitHandler = options.submitHandler;
 					this.supportsOtherData = options.supportsOtherData;
+
+					// TODO - not sure what the purpose of this flag is
+					// setting it to true by default to make things work as before
+					// needs to be set appropriately where required.
+					this.supportDocumentTypes = true;
 
 					this.dataTypeSelect = jQuery("#" + this.scope
 							+ " #dataTypeSelect");
@@ -49,26 +54,12 @@ define(
 					this.otherTypeName = jQuery("#" + this.scope
 							+ " #otherTypeName");
 
-					this.dataTypeSelect.empty();
-					this.dataTypeSelect
-							.append("<option value='primitive'>Primitive</option>");
-					this.dataTypeSelect
-							.append("<option value='struct'>Data Structure</option>");
-
-					if (options.supportDocumentTypes) {
-						this.dataTypeSelect
-								.append("<option value='dmsDocument'>Document</option>");
-					}
-
-					if (this.supportsOtherData) {
-						this.dataTypeSelect
-								.append("<option value='other'>Other</option>");
-					}
+					this.initializeDataTypeOptions();
 
 					this.dataTypeSelect.change({
 						panel : this
 					}, function(event) {
-						event.data.panel.setDataType({
+						event.data.panel.setDataTypeSelectVal({
 							dataType : event.data.panel.dataTypeSelect.val()
 						});
 
@@ -110,7 +101,28 @@ define(
 				};
 
 				/**
-				 * 
+				 *
+				 */
+				DataTypeSelector.prototype.initializeDataTypeOptions = function() {
+					this.dataTypeSelect.empty();
+					this.dataTypeSelect
+							.append("<option value='primitive'>Primitive</option>");
+					this.dataTypeSelect
+							.append("<option value='struct'>Data Structure</option>");
+
+					if (this.supportDocumentTypes) {
+						this.dataTypeSelect
+								.append("<option value='dmsDocument'>Document</option>");
+					}
+
+					if (this.supportsOtherData) {
+						this.dataTypeSelect
+								.append("<option value='other'>Other</option>");
+					}
+				}
+
+				/**
+				 *
 				 */
 				DataTypeSelector.prototype.setScopeModel = function(scopeModel) {
 					this.scopeModel = scopeModel;
@@ -119,7 +131,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.populateDataStructuresSelectInput = function() {
 					this.structuredDataTypeSelect.empty();
@@ -163,7 +175,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.populateDocumentTypesSelectInput = function() {
 					this.documentTypeSelect.empty();
@@ -209,9 +221,19 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.setDataType = function(data) {
+					this.supportsOtherData = !data.isSupportedDataType();
+					this.initializeDataTypeOptions();
+
+					this.setDataTypeSelectVal(data);
+				};
+
+				/**
+				 *
+				 */
+				DataTypeSelector.prototype.setDataTypeSelectVal = function(data) {
 					this.dataTypeSelect.val(data.dataType);
 
 					if (data.dataType == null
@@ -229,7 +251,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.getDataType = function(data) {
 					data.dataType = this.dataTypeSelect.val();
@@ -249,7 +271,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.setPrimitiveDataType = function(
 						primitiveDataType) {
@@ -269,7 +291,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.setStructuredDataType = function(
 						structuredDataTypeFullId) {
@@ -285,7 +307,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.setDocumentDataType = function(
 						documentDataTypeFullId) {
@@ -301,7 +323,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.setOtherDataType = function(dataType) {
 					if (this.otherTypeRow == null || this.otherTypeName == null) {
@@ -325,7 +347,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.enable = function() {
 					this.dataTypeSelect.removeAttr("disabled");
@@ -339,7 +361,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.disable = function() {
 					this.dataTypeSelect.attr("disabled", true);
@@ -353,7 +375,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.submitChanges = function() {
 					if (this.submitHandler) {

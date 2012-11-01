@@ -71,6 +71,10 @@ define([ "m_utils" ], function(m_utils) {
 			return unSupportedParticipants;
 		},
 
+		isSupportedDataType : function(dataType) {
+			return (-1 != jQuery.inArray(dataType, supportedDataTypes));
+		},
+
 		isValidDataType : function(dataType) {
 			return (-1 != jQuery.inArray(dataType, validDataTypes));
 		},
