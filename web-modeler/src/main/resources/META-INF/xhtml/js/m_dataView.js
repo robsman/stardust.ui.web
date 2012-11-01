@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -35,7 +35,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function DataView() {
 				var view = m_modelElementView.create();
@@ -44,7 +44,7 @@ define(
 				m_utils.inheritMethods(DataView.prototype, view);
 
 				/**
-				 * 
+				 *
 				 */
 				DataView.prototype.initialize = function(data) {
 					this.id = "dataView";
@@ -95,7 +95,7 @@ define(
 					this.registerInputForModelElementAttributeChangeSubmission(
 							this.primitiveDefaultTextInput,
 							"carnot:engine:defaultValue");
-					this.registerInputForModelElementAttributeChangeSubmission(
+					this.registerCheckboxInputForModelElementAttributeChangeSubmission(
 							this.primitiveDefaultCheckboxInput,
 							"carnot:engine:defaultValue");
 
@@ -103,7 +103,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataView.prototype.setModelElement = function(data) {
 					this.data = data;
@@ -123,14 +123,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataView.prototype.toString = function() {
 					return "Lightdust.DataView";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataView.prototype.validate = function() {
 					this.clearErrorMessages();
@@ -153,7 +153,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataView.prototype.initializeDataType = function(data,
 						defaultValue) {
@@ -163,13 +163,8 @@ define(
 									.makeInvisible(this.primitiveDefaultTextInputRow);
 							m_dialog
 									.makeVisible(this.primitiveDefaultCheckboxInputRow);
-
-							if (defaultValue != null) {
-								this.primitiveDefaultCheckboxInput
-										.val(defaultValue);
-							} else {
-								this.primitiveDefaultCheckboxInput.val(null);
-							}
+							this.primitiveDefaultCheckboxInput.attr("checked",
+									(defaultValue == "true"));
 						} else {
 							m_dialog
 									.makeVisible(this.primitiveDefaultTextInputRow);
@@ -192,7 +187,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataView.prototype.submitDataChanges = function(dataChanges) {
 					this.initializeDataType(dataChanges);
