@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Reverse Plugin</title>
+<script src="plugin.js"></script>
+<script>
+	window.onload = function() {
+		var headers = {
+			name : "Lightdust Plugin",
+			version : "1.0",
+			description : "Lightdust BPMN plugin."
+		};
+		var provider = new orion.PluginProvider(headers);
+
+		// Declare an editor
+
+		provider.registerServiceProvider("orion.edit.editor", {}, {
+			id : "lightdust.editor",
+			name : "Lightdust BPMN Editor",
+			uriTemplate : "http://localhost:8080/pepper-test/plugins/bpm-modeler/public/testPortal.html?modelFile={Location}"
+		});
+
+		// Declare content types
+		provider.registerServiceProvider("orion.core.contenttype", {}, {
+			contentTypes : [ {
+				id : "text/xpdl",
+				name : "XPDL",
+				extension : [ "xpdl" ]
+			}, {
+				id : "text/bpmn",
+				name : "BPMN",
+				extension : [ "bpmn" ]
+			} ]
+		});
+
+		// Associate editor with content types
+		provider.registerServiceProvider("orion.navigate.openWith", {}, {
+			editor : "lightdust.editor",
+			contentType : [ "text/xpdl", "text/bpmn" ]
+		});
+
+		provider.connect();
+	};
+</script>
+</head>
+<body></body>
+</html>
