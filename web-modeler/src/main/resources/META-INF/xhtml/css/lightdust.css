@@ -61,6 +61,8 @@ input {
 }
 
 input[type="text"] {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 11px;
 	height: 18px;
 	padding-left: 5px;
 	min-width: 100px;
@@ -110,6 +112,7 @@ input[type=image] {
 }
 
 input[type=image]:focus {
+	
 }
 
 input[type=text].rightAligned {
@@ -175,8 +178,6 @@ a:hover {
 
 /* Layout Table */
 table.layoutTable {
-	margin: 0px;
-	padding: 0px;
 	border: 0px;
 }
 
@@ -192,7 +193,13 @@ table.layoutTable td {
 }
 
 /* Field Set Table */
+.fieldSetTable {
+	font-family: Helvetica, Arial, sans-serif;
+}
+
 table.fieldSetTable {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 11px;
 	margin: 0px;
 	padding: 0px;
 	border: 0px;
@@ -210,7 +217,6 @@ table.fieldSetTable td {
 }
 
 /* Data Table */
-/*	border-collapse: collapse; */
 div.panelBorder {
 	border: 4px solid #e8e8e8;
 }
@@ -602,4 +608,10 @@ td.errorSeverityIssueItem {
 /* Message Transformation Application */
 td.mapping {
 	font-style: italic;
+}
+
+/* Overwrites for jQuery UI */
+.ui-widget input,.ui-widget select,.ui-widget textarea,.ui-widget button {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 11px;
 }

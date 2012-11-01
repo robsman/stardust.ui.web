@@ -299,11 +299,15 @@ define(
 						this.selectedRowIndex = this.parameterDefinitions.length - 1;
 					}
 
+					m_utils.debug("Row Index: " + this.selectedRowIndex);
+					
 					this.currentParameterDefinition = this.parameterDefinitions[this.selectedRowIndex];
 					
 					// Select row
 
-					var tableRows = jQuery("table#parameterDefinitionsTable tr");
+					var tableRows = jQuery(this.options.scope + " #parameterDefinitionsTable tr");
+
+					m_utils.debug("Table Rows: " + tableRows);
 
 					jQuery(tableRows[this.selectedRowIndex]).addClass(
 							"selected");
@@ -474,7 +478,7 @@ define(
 										+ "table#parameterDefinitionsTable tr")
 								.mousedown(
 										{
-											panel : this,
+											panel : this
 										},
 										function(event) {
 											event.data.panel
