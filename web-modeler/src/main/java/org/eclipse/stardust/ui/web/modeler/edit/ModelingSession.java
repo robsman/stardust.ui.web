@@ -100,7 +100,11 @@ public class ModelingSession
       return modelManagementStrategy;
    }
 
-   @Deprecated
+   /**
+    * Currently only used for ORION integration.
+    * 
+    * @param strategy
+    */
    public void setModelManagementStrategy(ModelManagementStrategy strategy)
    {
       this.modelManagementStrategy = strategy;

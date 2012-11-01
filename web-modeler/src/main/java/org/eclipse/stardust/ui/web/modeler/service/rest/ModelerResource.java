@@ -35,6 +35,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.modeler.common.LanguageUtil;
@@ -51,7 +52,6 @@ import com.google.gson.JsonPrimitive;
 @Path("/modeler/{randomPostFix}")
 public class ModelerResource
 {
-
    private final JsonMarshaller jsonIo = new JsonMarshaller();
 
    private ModelService modelService;
@@ -71,6 +71,7 @@ public class ModelerResource
    public ModelService getModelService()
    {
       ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(servletContext);
+ 
       return (ModelService) context.getBean("modelService");
    }
 
@@ -741,5 +742,35 @@ public class ModelerResource
       {
          return Response.status(Status.FORBIDDEN).build();
       }
+   }
+
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("model/management/strategy")
+   public Response setModelManagementStrategy(String postedData)
+   {
+      try
+      {
+         getModelService().setModelManagementStrategy(getUriModelManagementStrategy());
+         return Response.ok(getModelService().getWebServiceStructure(jsonIo.readJsonObject(postedData)).toString(),
+               APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+   
+   /**
+    * @return
+    */
+   private ModelManagementStrategy getUriModelManagementStrategy()
+   {
+      ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(servletContext);
+
+      return (ModelManagementStrategy) context.getBean("uriModelManagementStrategy");
    }
 }
