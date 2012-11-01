@@ -108,7 +108,7 @@ define(
 					this.dataTypeSelect
 							.append("<option value='primitive'>Primitive</option>");
 					this.dataTypeSelect
-							.append("<option value='struct'>Data Structure</option>");
+							.append("<option value='struct'>Structured Data</option>");
 
 					if (this.supportDocumentTypes) {
 						this.dataTypeSelect
