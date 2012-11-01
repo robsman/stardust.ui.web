@@ -57,10 +57,10 @@ public class GatewayCommandHandler
          long maxOid = XpdlModelUtils.getMaxUsedOid(model);
 
          // encode Gateway as Route Activity (default configuration)
+         String name = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.NAME_PROPERTY);
+         String id = getModelBuilderFacade().createIdFromName(name);
          ActivityType gateway = newRouteActivity(processDefinition) //
-               .withIdAndName(
-                     extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY),
-                     extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.NAME_PROPERTY))
+               .withIdAndName(id, name)
                .usingControlFlow(JoinSplitType.XOR_LITERAL, JoinSplitType.XOR_LITERAL).build();
          gateway.setElementOid(++maxOid);
 

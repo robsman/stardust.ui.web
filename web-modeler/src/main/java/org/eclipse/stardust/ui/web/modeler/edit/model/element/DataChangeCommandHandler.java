@@ -68,8 +68,8 @@ public class DataChangeCommandHandler
    @OnCommand(commandId = "primitiveData.create")
    public void createPrimitiveData(ModelType model, JsonObject request)
    {
-      String id = extractString(request, ModelerConstants.ID_PROPERTY);
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
+      String id = getModelBuilderFacade().createIdFromName(name);
       String primitiveType = extractString(request, ModelerConstants.PRIMITIVE_TYPE);
       DataType data = getModelBuilderFacade().createPrimitiveData(model, id, name, primitiveType);
 
@@ -88,8 +88,9 @@ public class DataChangeCommandHandler
    @OnCommand(commandId = "typeDeclaration.create")
    public void createTypeDeclaration(ModelType model, JsonObject request)
    {
-      String id = extractString(request, ModelerConstants.ID_PROPERTY);
-      
+      String name = extractString(request, ModelerConstants.NAME_PROPERTY);
+      String id = getModelBuilderFacade().createIdFromName(name);
+
       TypeDeclarationsType declarations = model.getTypeDeclarations();
       if (declarations != null && declarations.getTypeDeclaration(id) != null)
       {
@@ -98,25 +99,23 @@ public class DataChangeCommandHandler
       }
 
       System.out.println("Creating Type Declaration " + request);
-      
+
       if (declarations == null)
       {
          declarations = XpdlFactory.eINSTANCE.createTypeDeclarationsType();
          model.setTypeDeclarations(declarations);
       }
-      
+
       TypeDeclarationType declaration = XpdlFactory.eINSTANCE.createTypeDeclarationType();
       declarations.getTypeDeclaration().add(declaration);
-      
-      String name = extractString(request, ModelerConstants.NAME_PROPERTY);
-      
+
       declaration.setId(id);
       declaration.setName(name);
 
       // TODO: pass that value ?
       ExtendedAttributeUtil.createAttribute(declaration,
             PredefinedConstants.MODELELEMENT_VISIBILITY).setValue("Public"); //$NON-NLS-1$
-      
+
       JsonObject td = request.getAsJsonObject("typeDeclaration");
       JsonObject type = td.getAsJsonObject("type");
       // TODO: support external references
@@ -126,12 +125,12 @@ public class DataChangeCommandHandler
          // TODO: change to error case ?
          throw new PublicException("Only Schema types are supported: '" + classifier + "'.");
       }
-      
+
       JsonObject jsSschema = td.getAsJsonObject("schema");
       String targetNamespace = jsSschema.has("targetNamespace")
          ? jsSschema.getAsJsonPrimitive("targetNamespace").getAsString()
          : TypeDeclarationUtils.computeTargetNamespace(model, declaration.getId());
-         
+
       SchemaTypeType schema = XpdlFactory.eINSTANCE.createSchemaTypeType();
       declaration.setSchemaType(schema);
 
@@ -155,7 +154,7 @@ public class DataChangeCommandHandler
       xsdElementDeclaration.setName(declaration.getId());
       xsdElementDeclaration.setTypeDefinition(xsdTypeDefinition);
       xsdSchema.getContents().add(xsdElementDeclaration);
-      
+
       new ModelElementUnmarshaller()
       {
          @Override
@@ -182,7 +181,7 @@ public class DataChangeCommandHandler
       xsdComplexTypeDefinition.setContent(particle);
       return xsdComplexTypeDefinition;
    }
-   
+
    private XSDSimpleTypeDefinition createSimpleType(XSDSchema xsdSchema, String id)
    {
       XSDSimpleTypeDefinition xsdSimpleTypeDefinition = XSDFactory.eINSTANCE.createXSDSimpleTypeDefinition();
@@ -191,7 +190,7 @@ public class DataChangeCommandHandler
       xsdSimpleTypeDefinition.setBaseTypeDefinition(baseType);
       return xsdSimpleTypeDefinition;
    }
-   
+
    /**
     * @param model
     * @param request
@@ -199,12 +198,12 @@ public class DataChangeCommandHandler
    @OnCommand(commandId = "structuredData.create")
    public void createStructuredData(ModelType model, JsonObject request)
    {
-      String id = extractString(request, ModelerConstants.ID_PROPERTY);
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
+      String id = getModelBuilderFacade().createIdFromName(name);
       String dataFullID = extractString(request, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY);
       String stripFullId_ = getModelBuilderFacade().getModelId(extractString(request,
             ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY));
-      
+
       if (StringUtils.isEmpty(stripFullId_))
       {
          stripFullId_ = model.getId();
@@ -228,8 +227,8 @@ public class DataChangeCommandHandler
    @OnCommand(commandId = "documentData.create")
    public void createDocumentData(ModelType model, JsonObject request)
    {
-      String id = extractString(request, ModelerConstants.ID_PROPERTY);
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
+      String id = getModelBuilderFacade().createIdFromName(name);
 
       DataType data = getModelBuilderFacade().createDocumentData(model, id, name, null);
 

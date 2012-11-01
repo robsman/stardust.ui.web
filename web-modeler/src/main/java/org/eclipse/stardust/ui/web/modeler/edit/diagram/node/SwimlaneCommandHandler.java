@@ -60,8 +60,8 @@ public class SwimlaneCommandHandler
    {
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentSymbol);
 
-      String laneId = extractString(request, ModelerConstants.ID_PROPERTY);
       String laneName = extractString(request, ModelerConstants.NAME_PROPERTY);
+      String laneId = getModelBuilderFacade().createIdFromName(laneName);
       int xPos = extractInt(request, X_PROPERTY);
       int yPos = extractInt(request, Y_PROPERTY);
       int width = extractInt(request, WIDTH_PROPERTY);

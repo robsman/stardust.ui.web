@@ -40,8 +40,8 @@ public class StructuredTypeChangeCommandHandler
 	 */
 	@OnCommand(commandId = "structuredDataType.create")
 	public void createStructuredDataType(ModelType model, JsonObject request) {
-		String typeId = extractString(request, ModelerConstants.ID_PROPERTY);
 		String typeName = extractString(request, ModelerConstants.NAME_PROPERTY);
+      String typeId = getModelBuilderFacade().createIdFromName(typeName);
 
       synchronized (model)
       {

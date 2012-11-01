@@ -60,10 +60,9 @@ public class ActivityCommandHandler
 
       String activityType = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
             ModelerConstants.ACTIVITY_TYPE);
-      String activityId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
-
       String activityName = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
             ModelerConstants.NAME_PROPERTY);
+      String activityId = getModelBuilderFacade().createIdFromName(activityName);
       String participantFullID = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
             ModelerConstants.PARTICIPANT_FULL_ID);
       String applicationFullID = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,

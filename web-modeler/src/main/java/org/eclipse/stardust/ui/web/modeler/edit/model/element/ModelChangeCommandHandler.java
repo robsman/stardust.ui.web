@@ -80,8 +80,8 @@ public class ModelChangeCommandHandler
    private JsonObject createModel(String commandId, JsonObject request)
    {
       ModelBuilderFacade facade = new ModelBuilderFacade(modelService().getModelManagementStrategy());
-      String modelID = request.get(ModelerConstants.ID_PROPERTY).getAsString();
       String modelName = request.get(ModelerConstants.NAME_PROPERTY).getAsString();
+      String modelID = modelService().getModelBuilderFacade().createIdFromName(modelName);
       ModelType model = facade.createModel(modelID, modelName);
       modelService().getModelBuilderFacade().setModified(model, model.getCreated());
       EObjectUUIDMapper mapper = modelService().uuidMapper();
@@ -155,6 +155,7 @@ public class ModelChangeCommandHandler
 
          modelService().currentSession().modelElementUnmarshaller().populateFromJson(model, request);
 
+         model.setId(modelService().getModelBuilderFacade().createIdFromName(model.getName()));
          modelMgtStrategy.getModels().put(model.getId(), model);
          modelService().getModelBuilderFacade().setModified(model, new Date());
          modelMgtStrategy.saveModel(model);
