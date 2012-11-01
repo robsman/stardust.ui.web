@@ -207,6 +207,7 @@ define(
 							m_messageDisplay
 									.showErrorMessage("Symbol can only be dropped inside a expanded lane.");
 							this.diagram.hideSnapLines(this);
+							this.remove();
 							return;
 						} else {
 							this.parentSymbol.containedSymbols.push(this);
@@ -1025,6 +1026,7 @@ define(
 				Symbol.prototype.dragStop = function() {
 					if (this.diagram.mode == this.diagram.SYMBOL_MOVE_MODE) {
 						this.diagram.mode = this.diagram.NORMAL_MODE
+						this.diagram.dragEnabled = false;
 						this.showProximitySensor();
 						// Only process if symbol has been moved at all
 						if (this.x != this.dragStartX
@@ -1036,7 +1038,7 @@ define(
 
 								if (newParentSymbol == null) {
 									this.move(this.dragStartX, this.dragStartY);
-
+									this.diagram.hideSnapLines(this);
 									m_messageDisplay
 											.showErrorMessage("Symbol is not contained in Swimlane. Reverting drag.");
 
@@ -1367,10 +1369,6 @@ define(
 							var status = this.diagram.placeNewSymbol(x
 									- this.diagram.X_OFFSET, y
 									- this.diagram.Y_OFFSET);
-						}
-						// If symbol is outside the swimlane, remove it
-						if (!status) {
-							this.remove();
 						}
 					} else {
 						if (this.diagram.isInConnectionMode()) {
@@ -1733,8 +1731,9 @@ define(
 			function Symbol_clickClosure(event, x, y) {
 				this.auxiliaryProperties.callbackScope.click(x, y);
 				// Reset tool selection
-				if (this.auxiliaryProperties.callbackScope.diagram
-						.isInNormalMode()) {
+				if (this.auxiliaryProperties
+						&& this.auxiliaryProperties.callbackScope.diagram
+								.isInNormalMode()) {
 					$(".selected-tool").removeClass("selected-tool");
 				}
 			}

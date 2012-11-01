@@ -945,7 +945,9 @@ define(
 				SwimlaneSymbol.prototype.containsPosition = function(x, y) {
 					// TODO Add recursion for nested swimlanes
 
-					if (x > this.x && x < this.x + this.width && y > this.y
+					if (x > this.x
+							&& x < this.x + this.width
+							&& y > (this.y + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
 							&& y < this.y + this.height) {
 						return true;
 					}
