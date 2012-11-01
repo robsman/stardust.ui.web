@@ -159,24 +159,31 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function typeObject(proto, untypedObject) {
 				var typedObject = Object.create(proto);
-			    for(prop in untypedObject) { 
-			        if(untypedObject.hasOwnProperty(prop)) { 
-			            typedObject[prop] = untypedObject[prop]; 
-			        } 
+			    for(prop in untypedObject) {
+			        if(untypedObject.hasOwnProperty(prop)) {
+			            typedObject[prop] = untypedObject[prop];
+			        }
 			    }
-			    return typedObject; 
+			    return typedObject;
 			}
-			
+
 			/**
 			 * Copies all data members of and object into another object
 			 * recursively. Members existing in the childObject and not existing
 			 * in the parentObject will not be overwritten.
 			 *
 			 * Arrays however will be overwritten.
+			 *
+			 * TODO - review behaviour for attributes:
+			 * Attributes also will be over written, like arrays, as in some cases attributes don't
+			 * switch between different values (like true and false), but they
+			 * either exist or they don't. In such cases it is necessary to
+			 * remove the attributes from child if they don't exist in the
+			 * parent.
 			 *
 			 * The function will not check for cyclic dependencies.
 			 *
@@ -190,7 +197,8 @@ define(
 
 					if (typeof parentObject[member] == "object"
 							&& childObject[member] != null
-							&& !isArray(parentObject[member])) {
+							&& !isArray(parentObject[member])
+							&& !isAttribute(member)) {
 						// Copy recursively
 
 						inheritFields(childObject[member], parentObject[member]);
@@ -201,12 +209,23 @@ define(
 			}
 
 			/**
+			 *
+			 */
+			function isAttribute(member) {
+				if (member == "attributes") {
+					return true;
+				}
+
+				return false;
+			}
+
+			/**
 			 * See http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
 			 */
 			function isArray(o) {
 				  return Object.prototype.toString.call(o) === '[object Array]';
 				}
-			
+
 			/**
 			 * Copies all methods of and object into another object.
 			 */
