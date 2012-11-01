@@ -81,7 +81,7 @@ public class ModelChangeCommandHandler
    {
       ModelBuilderFacade facade = new ModelBuilderFacade(modelService().getModelManagementStrategy());
       String modelName = request.get(ModelerConstants.NAME_PROPERTY).getAsString();
-      String modelID = modelService().getModelBuilderFacade().createIdFromName(modelName);
+      String modelID = generateId(modelName);
       ModelType model = facade.createModel(modelID, modelName);
       modelService().getModelBuilderFacade().setModified(model, model.getCreated());
       EObjectUUIDMapper mapper = modelService().uuidMapper();
@@ -155,7 +155,7 @@ public class ModelChangeCommandHandler
 
          modelService().currentSession().modelElementUnmarshaller().populateFromJson(model, request);
 
-         model.setId(modelService().getModelBuilderFacade().createIdFromName(model.getName()));
+         model.setId(generateId(model.getName()));
          modelMgtStrategy.getModels().put(model.getId(), model);
          modelService().getModelBuilderFacade().setModified(model, new Date());
          modelMgtStrategy.saveModel(model);
@@ -213,9 +213,29 @@ public class ModelChangeCommandHandler
       return response;
    }
 
+   /**
+    * @return
+    */
    private ModelService modelService()
    {
       return springContext.getBean(ModelService.class);
+   }
+
+   /**
+    * @param modelName
+    * @return
+    */
+   private String generateId(String modelName)
+   {
+      String id = modelService().getModelBuilderFacade().createIdFromName(modelName);
+      String newId = id;
+      int postFix = 1;
+      while (null != modelService().getModelBuilderFacade().findModel(newId))
+      {
+         newId = id + "_" + postFix++ ;
+      }
+
+      return newId;
    }
 }
 
