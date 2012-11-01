@@ -12,12 +12,10 @@ package org.eclipse.stardust.ui.web.admin.views;
 
 import java.util.Date;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
-import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.engine.api.runtime.UserGroup;
 import org.eclipse.stardust.engine.api.runtime.UserGroupExistsException;
 import org.eclipse.stardust.engine.api.runtime.UserService;
@@ -25,11 +23,7 @@ import org.eclipse.stardust.ui.web.admin.AdminportalConstants;
 import org.eclipse.stardust.ui.web.admin.WorkflowFacade;
 import org.eclipse.stardust.ui.web.admin.messages.AdminMessagesPropertiesBean;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
-import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
-import org.eclipse.stardust.ui.web.viewscommon.common.GlobalPageMessage;
-import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
-import org.eclipse.stardust.ui.web.viewscommon.common.LocalizerKey;
 import org.eclipse.stardust.ui.web.viewscommon.common.validator.DateValidator;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
@@ -110,17 +104,6 @@ public class CreateOrModifyUserGroupBean extends PopupUIComponentBean
                service.modifyUserGroup(selectedUserGroup);
             }
          }
-      }
-      catch (AccessForbiddenException e)
-      {  FacesMessage fs = new javax.faces.application.FacesMessage(
-            javax.faces.application.FacesMessage.SEVERITY_WARN, Localizer
-            .getString(LocalizerKey.ACCESS_FORBIDDEN), null);
-         GlobalPageMessage.storeMessage(FacesContext.getCurrentInstance(),
-               new javax.faces.application.FacesMessage(
-                     javax.faces.application.FacesMessage.SEVERITY_WARN, Localizer
-                           .getString(LocalizerKey.ACCESS_FORBIDDEN), null), 1);
-         
-         MessageDialog.addErrorMessage(fs.getDetail());
       }
       catch (UserGroupExistsException e)
       {

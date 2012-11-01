@@ -27,7 +27,6 @@ import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.ExceptionFilter;
-import org.eclipse.stardust.ui.web.viewscommon.common.GlobalPageMessage;
 import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.FacesUtils;
 
@@ -141,14 +140,6 @@ public class InfinityStartup
 
          httpSession.invalidate();
          request.getSession(true);
-
-         if ( !msgs.isEmpty())
-         {
-            for(FacesMessage msg : msgs)
-            {
-               GlobalPageMessage.storeMessage(facesContext, msg, 2);
-            }
-         }
       }
    }
    

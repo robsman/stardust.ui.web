@@ -20,7 +20,6 @@ import javax.faces.event.ActionEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
-import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.Department;
@@ -33,10 +32,7 @@ import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ContextMenuItem;
-import org.eclipse.stardust.ui.web.viewscommon.common.GlobalPageMessage;
 import org.eclipse.stardust.ui.web.viewscommon.common.IContextMenuActionHandler;
-import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
-import org.eclipse.stardust.ui.web.viewscommon.common.LocalizerKey;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.participantManagement.ParticipantUserObject;
 import org.eclipse.stardust.ui.web.viewscommon.participantManagement.ParticipantUserObject.NODE_TYPE;
@@ -138,12 +134,6 @@ public class CreateOrModifyDepartmentBean extends PopupUIComponentBean
                      .getDescription());
             }
          }
-      }
-      catch (AccessForbiddenException e)
-      {
-         GlobalPageMessage.storeMessage(FacesContext.getCurrentInstance(), new javax.faces.application.FacesMessage(
-               javax.faces.application.FacesMessage.SEVERITY_WARN, Localizer.getString(LocalizerKey.ACCESS_FORBIDDEN),
-               null), 1);
       }
       catch (Exception e)
       {

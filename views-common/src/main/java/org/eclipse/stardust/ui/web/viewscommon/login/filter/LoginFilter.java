@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.application.NavigationHandler;
 import javax.faces.application.ViewHandler;
 import javax.faces.component.UIViewRoot;
@@ -44,13 +43,9 @@ import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
-import org.eclipse.stardust.ui.web.viewscommon.common.GlobalPageMessage;
-import org.eclipse.stardust.ui.web.viewscommon.common.PortalErrorClass;
-import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.login.dialogs.LoginDialogBean;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.PluginResourceUtils;
 
 import com.icesoft.faces.context.effects.JavascriptContext;
@@ -100,22 +95,6 @@ public class LoginFilter implements Filter
       this.principalUserRoles = null;
    }
    
-   private void storeFacesMessages(FacesContext facesContext, FacesMessage message)
-   {
-      if(null != facesContext)
-      {
-         for(Iterator<FacesMessage> msgIter = facesContext.getMessages(); msgIter.hasNext();)
-         {
-            FacesMessage msg = msgIter.next();
-            GlobalPageMessage.storeMessage(facesContext, msg, 2);             
-         }
-         if(message != null)
-         {
-            facesContext.addMessage(null, message);
-         }
-      }
-   }
-   
    private void forwardToPage(HttpServletRequest request, HttpServletResponse response,
          String page, boolean forwardFacesMessages)
    {
@@ -141,19 +120,15 @@ public class LoginFilter implements Filter
       }
       catch(Exception e)
       {
+         trace.error("Error occurred durin login", e);
+         
          HttpSession httpSession = request.getSession(false);
          if(httpSession != null)
          {
             httpSession.invalidate();
          }
-         httpSession = request.getSession(true);
-
-         PortalException pe = e instanceof PortalException ? (PortalException) e : new PortalException(
-               PortalErrorClass.UNABLE_TO_INITIALIZE_SESSION, e);
-
-         FacesMessage facesMsg = ExceptionHandler.getFacesMessage(pe);
-         storeFacesMessages(facesContext, facesMsg);
-         trace.error("Error occurred durin login", e);
+         request.getSession(true);
+         
          forwardToPage(request, response, logoutPage, false);
          return false;
       }
@@ -200,7 +175,6 @@ public class LoginFilter implements Filter
                   // TODO: If you try to forward to the proxy page on JBOSS
                   //       an error 400 is thrown with the message:
                   //       "Invalid direct reference to form login page"
-                  storeFacesMessages(facesContext, null);
                   forwardToPage(request, response, logoutPage, false);
                }
                else
@@ -211,14 +185,6 @@ public class LoginFilter implements Filter
             catch(LoginFailedException e)
             {
                
-            }
-            finally
-            {
-               for(Iterator<FacesMessage> msgIter = facesContext.getMessages(); msgIter.hasNext();)
-               {
-                  FacesMessage msg = msgIter.next();
-                  GlobalPageMessage.storeMessage(facesContext, msg, 2);             
-               }
             }
          }
       }
@@ -317,7 +283,6 @@ public class LoginFilter implements Filter
                      url.deleteCharAt(url.length() - 1);
                   }
 
-                  storeFacesMessages(facesContext, null);
                   response.sendRedirect(response.encodeRedirectURL(url.toString()));
                   return;
                }

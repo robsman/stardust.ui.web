@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +41,7 @@ import org.eclipse.stardust.ui.web.common.PerspectiveExtension;
 import org.eclipse.stardust.ui.web.common.PreferencePage;
 import org.eclipse.stardust.ui.web.common.PreferencesDefinition;
 import org.eclipse.stardust.ui.web.common.ToolbarSection;
+import org.eclipse.stardust.ui.web.common.UiElementWithPermissions;
 import org.eclipse.stardust.ui.web.common.ViewDefinition;
 import org.eclipse.stardust.ui.web.common.app.View.ViewState;
 import org.eclipse.stardust.ui.web.common.event.PerspectiveEvent;
@@ -55,6 +57,7 @@ import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.spi.menu.CommonMenuItem;
 import org.eclipse.stardust.ui.web.common.spi.menu.CommonMenuProvider;
+import org.eclipse.stardust.ui.web.common.spi.user.IAuthorizationProvider;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.common.spring.scope.TabScopeManager;
 import org.eclipse.stardust.ui.web.common.spring.scope.TabScopeUtils;
@@ -64,6 +67,7 @@ import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.common.util.UserUtils;
+import org.eclipse.stardust.ui.web.plugin.support.ServiceLoaderUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -115,6 +119,9 @@ public class PortalUiController
    private transient Map<View, List<ViewDataEventHandler>> viewDataEventHandlers;
    
    private List<IPerspectiveDefinition> allPerspectives;
+   
+   private IAuthorizationProvider authorizationProvider; 
+   private boolean authorizationProviderInitialized = false;
    
    public PortalUiController()
    {
@@ -239,7 +246,7 @@ public class PortalUiController
       for (String key : systemPerspectives.keySet())
       {
          pd = systemPerspectives.get(key);
-         if (UserUtils.isAuthorized(userProvider.getUser(), pd))
+         if (isAuthorized(pd))
          {
             perspectives.put(key, PerspectiveAuthorizationProxy.newInstance(pd));
          }
@@ -305,7 +312,7 @@ public class PortalUiController
 
          for (PerspectiveExtension extension : extensions.values())
          {
-            if (UserUtils.isAuthorized(userProvider.getUser(), extension))
+            if (isAuthorized(extension))
             {
                perspective.addExtension(extension);
             }
@@ -1417,5 +1424,120 @@ public class PortalUiController
    public void setCommonMenuProvider(CommonMenuProvider commonMenuProvider)
    {
       this.commonMenuProvider = commonMenuProvider;
+   }
+   
+   
+   /**
+    * @param perspectiveDef
+    * @return
+    * 
+    */
+   private boolean isAuthorized(PerspectiveDefinition perspectiveDef)
+   {
+      Boolean isAuthorized = isAuthorized_(perspectiveDef.getName());
+
+      if (null != isAuthorized)
+      {
+         return isAuthorized;
+      }
+      else
+      {
+         return UserUtils.isAuthorized(userProvider.getUser(), perspectiveDef.getRequiredRolesSet(),
+               perspectiveDef.getExcludeRolesSet());
+      }
+   }
+
+   /**
+    * @param perspectiveExt
+    * @return
+    */
+   private boolean isAuthorized(PerspectiveExtension perspectiveExt)
+   {
+      Boolean isAuthorized = isAuthorized_(perspectiveExt.getName());
+
+      if (null != isAuthorized)
+      {
+         return isAuthorized;
+      }
+      else
+      {
+         return UserUtils.isAuthorized(userProvider.getUser(), perspectiveExt.getRequiredRolesSet(),
+               perspectiveExt.getExcludeRolesSet());
+      }
+   }
+
+   /**
+    * 
+    * @param uiElement
+    * @return
+    */
+   public boolean isAuthorized(UiElementWithPermissions uiElement)
+   {
+      Boolean isAuthorized = isAuthorized_(uiElement.getName());
+
+      if (null != isAuthorized)
+      {
+         return isAuthorized;
+      }
+      else
+      {
+         return UserUtils.isAuthorized(userProvider.getUser(), uiElement.getRequiredRolesSet(),
+               uiElement.getExcludeRolesSet());
+      }
+   }
+
+   /**
+    * (Portal UI Authorization)
+    * @param elementName
+    * @return
+    */
+   private Boolean isAuthorized_(String elementName)
+   {
+      IAuthorizationProvider authorizationProvider = getAuthorizationProvider();
+      Boolean isAuthorized = null;
+
+      if (null != authorizationProvider)
+      {
+         isAuthorized = authorizationProvider.isAuthorized(userProvider.getUser(), elementName);
+      }
+
+      return isAuthorized;
+   }
+
+   private IAuthorizationProvider getAuthorizationProvider()
+   {
+      if (!authorizationProviderInitialized)
+      {
+         authorizationProviderInitialized = true;
+         authorizationProvider = getAuthorizationProvider_();
+      }
+      return authorizationProvider;
+   }
+
+   /**
+    * NOTE: Do not use this method directly, use the instance from PortalApplication
+    * 
+    * @return AuthorizationProvider
+    * @author Yogesh.Manware
+    */
+   private static IAuthorizationProvider getAuthorizationProvider_()
+   {
+      Iterator<IAuthorizationProvider.Factory> serviceProviders = ServiceLoaderUtils
+            .searchProviders(IAuthorizationProvider.Factory.class);
+
+      IAuthorizationProvider.Factory factory = null;
+
+      if (null != serviceProviders)
+      {
+         while (serviceProviders.hasNext())
+         {
+            factory = serviceProviders.next();
+            if (null != factory)
+            {
+               return factory.getAuthorizationProvider();
+            }
+         }
+      }
+      return null;
    }
 }

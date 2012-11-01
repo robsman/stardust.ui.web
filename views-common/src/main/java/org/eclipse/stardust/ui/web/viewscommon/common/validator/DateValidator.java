@@ -10,13 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.common.validator;
 
-import java.text.MessageFormat;
 import java.util.Date;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-
-import org.eclipse.stardust.ui.web.viewscommon.common.GlobalPageMessage;
 import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
 import org.eclipse.stardust.ui.web.viewscommon.common.LocalizerKey;
 
@@ -73,10 +68,6 @@ public class DateValidator
          if (from.after(to))
          {
             isValid = false;
-            GlobalPageMessage.storeMessage(FacesContext.getCurrentInstance(),
-                  new FacesMessage(FacesMessage.SEVERITY_ERROR, MessageFormat.format(
-                        Localizer.getString(LocalizerKey.INVALID_DATE), new String[] {
-                              "'" + fromLabel + "'", "'" + toLabel + "'"}), null), 1);
          }
       }
       return isValid;

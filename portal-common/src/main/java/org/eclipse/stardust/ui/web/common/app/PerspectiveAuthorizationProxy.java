@@ -23,7 +23,6 @@ import org.eclipse.stardust.ui.web.common.ToolbarSection;
 import org.eclipse.stardust.ui.web.common.UiElement;
 import org.eclipse.stardust.ui.web.common.UiElementWithPermissions;
 import org.eclipse.stardust.ui.web.common.ViewDefinition;
-import org.eclipse.stardust.ui.web.common.util.UserUtils;
 
 
 /**
@@ -218,8 +217,8 @@ public class PerspectiveAuthorizationProxy implements java.lang.reflect.Invocati
    {
       if (uiElement instanceof UiElementWithPermissions)
       {
-         return UserUtils.isAuthorized(PortalApplication.getInstance().getLoggedInUser(),
-               ((UiElementWithPermissions) uiElement));
+         return PortalApplication.getInstance().getPortalUiController()
+               .isAuthorized(((UiElementWithPermissions) uiElement));
       }
       else
       {
