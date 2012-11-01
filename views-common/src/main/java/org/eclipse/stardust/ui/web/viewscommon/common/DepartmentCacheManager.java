@@ -58,8 +58,7 @@ public class DepartmentCacheManager implements Serializable
       {
          if (!dcm.departmentCache.containsKey(deptOId))
          {
-            dcm.departmentCache.put(deptOId, ServiceFactoryUtils.getAdministrationService().getDepartment(1234));
-            System.out.println("Engine Call for : " + deptOId);
+            dcm.departmentCache.put(deptOId, ServiceFactoryUtils.getAdministrationService().getDepartment(deptOId));
          }
       }
       catch (Exception e)
