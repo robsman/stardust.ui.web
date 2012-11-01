@@ -54,7 +54,7 @@
    </bean>
 
    <bean name="ippPortalParameters" class="org.eclipse.stardust.ui.web.common.app.PortalParameters"
-      scope="session">
+      scope="singleton">
    </bean>
 
    <bean name="ippPortalConfig" class="org.eclipse.stardust.ui.web.common.views.PortalConfiguration"
