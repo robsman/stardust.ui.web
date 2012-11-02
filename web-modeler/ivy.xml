@@ -62,7 +62,7 @@
       <dependency org="org.apache.myfaces.core" name="myfaces-api" rev="1.2.9" conf="stardust-web-modeler-compile->default"/>
       <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="stardust-web-modeler-compile->default"/>
       <dependency org="com.google.code.gson" name="gson" rev="1.6" conf="stardust-web-modeler-compile->default"/>
-      <dependency org="org.apache.httpcomponents" name="httpclient" rev="4.2.1" conf="stardust-web-modeler-compile->default"/>
+      <!-->dependency org="org.apache.httpcomponents" name="httpclient" rev="4.2.1" conf="stardust-web-modeler-compile->default"/-->
       <dependency org="org.atmosphere" name="atmosphere-runtime" rev="0.9.7" conf="stardust-web-modeler-compile->default">
          <exclude org="org.slf4j" module="slf4j-api"/>
       </dependency>
