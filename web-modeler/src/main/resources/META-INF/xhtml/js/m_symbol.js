@@ -434,9 +434,9 @@ define(
 				 */
 				Symbol.prototype.show = function() {
 					this.visible = true;
+					this.showPrimitives();
 					this.refreshFromModelElement();
 					this.refreshCommentPrimitives();
-					this.showPrimitives();
 					this.showConnections();
 					this.showProximitySensor();
 				};
@@ -452,6 +452,12 @@ define(
 						var connectionToLane = conn.toAnchorPoint.symbol.parentSymbol;
 						// connections resides in current lane
 						if (connectionStartLane.id == connectionToLane.id) {
+							if (connectionStartLane.symbolXOffset > 0) {
+								conn.fromAnchorPoint.cacheX = conn.fromAnchorPoint.x;
+								conn.toAnchorPoint.cacheX = conn.toAnchorPoint.x;
+								this.connections[n].fromAnchorPoint.cacheOrientation = conn.fromAnchorPoint.orientation;
+								this.connections[n].toAnchorPoint.cacheOrientation = conn.toAnchorPoint.orientation;
+							}
 							this.connections[n].hide();
 						} else {
 							// from-anchor point adjustment

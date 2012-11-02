@@ -419,12 +419,12 @@ define(
 								// Move the lane to left when adjacent lane is
 								// minimized
 								this.laneSymbols[n].moveBy(
-										-this.laneSymbols[n].symbolXOffset, 0);
+										-(currentLane.cacheWidth - currentLane.width), 0);
 								// Move the contained symbols
 								for ( var c in this.laneSymbols[n].containedSymbols) {
 									this.laneSymbols[n].containedSymbols[c]
 											.moveBy(
-													-this.laneSymbols[n].symbolXOffset,
+													-(currentLane.cacheWidth - currentLane.width),
 													0);
 								}
 							} else {
