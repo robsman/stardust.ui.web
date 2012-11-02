@@ -799,11 +799,12 @@ define(
 								symbol.refresh();
 								if ((command.isUndo || command.isRedo)
 										&& symbol.type == m_constants.SWIMLANE_SYMBOL) {
-									// When swimlane co-ordinates change,
+									// When swimlane co-ordinates change in Undo/Redo,
 									// PoolSymbol needs adjustment.
 									symbol.parentSymbol
 											.recalculateBoundingBox();
 									symbol.parentSymbol.adjustPrimitives();
+									this.poolSymbol.adjustChildSymbols();
 								}
 								this.resetLastSymbol(symbol.oid);
 							}

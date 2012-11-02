@@ -188,13 +188,15 @@ public class SwimlaneCommandHandler
     */
    private void updateAdjacentLanes(LaneSymbol currentLane, PoolSymbol poolSymbol)
    {
+      long xOffset = 0;
       for (LaneSymbol laneSymbol : poolSymbol.getLanes())
       {
          // For all lanes to the right of current lane, adjust 'X'
          if (laneSymbol.getElementOid() != currentLane.getElementOid()
                && (laneSymbol.getXPos() > currentLane.getXPos()))
          {
-            long xOffset = laneSymbol.getXPos() - currentLane.getXPos();
+            if (xOffset == 0)
+               xOffset = laneSymbol.getXPos() - currentLane.getXPos();
             laneSymbol.setXPos(laneSymbol.getXPos() - xOffset);
             // TODO - Implement for horizontal orientation
          }
