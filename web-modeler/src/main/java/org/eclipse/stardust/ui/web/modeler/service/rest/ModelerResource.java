@@ -42,6 +42,8 @@ import org.eclipse.stardust.ui.web.modeler.common.LanguageUtil;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.portal.ViewUtils;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.eclipse.stardust.ui.web.modeler.service.orion.UriModelManagementStrategy;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -71,7 +73,7 @@ public class ModelerResource
    public ModelService getModelService()
    {
       ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(servletContext);
- 
+
       return (ModelService) context.getBean("modelService");
    }
 
@@ -152,7 +154,8 @@ public class ModelerResource
    {
       try
       {
-         return Response.ok(getModelService().getPreferences().toString(), MediaType.APPLICATION_JSON_TYPE).build();
+         return Response.ok(getModelService().getPreferences().toString(),
+               MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
       {
@@ -170,8 +173,8 @@ public class ModelerResource
    {
       try
       {
-         //TODO - currently always forces a reload - getAllModels(true)
-         //we may need to make it conditional
+         // TODO - currently always forces a reload - getAllModels(true)
+         // we may need to make it conditional
          String result = getModelService().getAllModels(true);
          return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
       }
@@ -287,7 +290,7 @@ public class ModelerResource
    }
 
    @GET
-   @Produces (MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
    @Path("/whoAmI")
    public Response whoAmI()
    {
@@ -309,7 +312,8 @@ public class ModelerResource
    {
       try
       {
-         PortalApplication app = WebApplicationContextUtils.getWebApplicationContext(servletContext).getBean(PortalApplication.class);
+         PortalApplication app = WebApplicationContextUtils.getWebApplicationContext(
+               servletContext).getBean(PortalApplication.class);
          org.eclipse.stardust.ui.web.common.spi.user.User currentUser = app.getLoggedInUser();
          getModelService().getOfflineInvites(currentUser.getLoginName());
          return Response.ok().build();
@@ -322,15 +326,17 @@ public class ModelerResource
    }
 
    @POST
-   @Consumes (MediaType.APPLICATION_JSON)
-   @Produces (MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
    @Path("users/updateOwner")
    public Response updateOwner(String postedData)
    {
       try
       {
          JsonObject userJson = jsonIo.readJsonObject(postedData);
-         String sessionID = userJson.getAsJsonObject("oldObject").get("sessionId").getAsString();
+         String sessionID = userJson.getAsJsonObject("oldObject")
+               .get("sessionId")
+               .getAsString();
          String result = getModelService().getSessionOwner(sessionID);
          return Response.ok(result, APPLICATION_JSON_TYPE).build();
       }
@@ -342,15 +348,16 @@ public class ModelerResource
    }
 
    @POST
-   @Consumes (MediaType.APPLICATION_JSON)
-   @Produces (MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
    @Path("users/getAllProspects")
    public Response getAllProspects(String postedData)
    {
       try
       {
          JsonObject userJson = jsonIo.readJsonObject(postedData);
-         String result = getModelService().getAllProspects(userJson.getAsJsonObject("oldObject").get("account").getAsString());
+         String result = getModelService().getAllProspects(
+               userJson.getAsJsonObject("oldObject").get("account").getAsString());
          return Response.ok(result, APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -361,16 +368,17 @@ public class ModelerResource
    }
 
    @POST
-   @Consumes (MediaType.APPLICATION_JSON)
-   @Produces (MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
    @Path("users/getAllCollaborators")
    public Response getAllCollaborators(String postedData)
    {
       try
       {
          JsonObject userJson = new JsonMarshaller().readJsonObject(postedData);
-         //utlity methode gson utils
-         String result = getModelService().getAllCollaborators(userJson.getAsJsonObject("oldObject").get("account").getAsString());
+         // utlity methode gson utils
+         String result = getModelService().getAllCollaborators(
+               userJson.getAsJsonObject("oldObject").get("account").getAsString());
 
          return Response.ok(result, APPLICATION_JSON_TYPE).build();
 
@@ -442,8 +450,9 @@ public class ModelerResource
    {
       try
       {
-         return Response.ok(getModelService().getXsdStructure(jsonIo.readJsonObject(postedData)).toString(),
-               APPLICATION_JSON_TYPE).build();
+         return Response.ok(
+               getModelService().getXsdStructure(jsonIo.readJsonObject(postedData))
+                     .toString(), APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
       {
@@ -677,8 +686,10 @@ public class ModelerResource
    {
       try
       {
-         return Response.ok(getModelService().getWebServiceStructure(jsonIo.readJsonObject(postedData)).toString(),
-               APPLICATION_JSON_TYPE).build();
+         return Response.ok(
+               getModelService().getWebServiceStructure(jsonIo.readJsonObject(postedData))
+                     .toString(), APPLICATION_JSON_TYPE)
+               .build();
       }
       catch (Exception e)
       {
@@ -690,13 +701,15 @@ public class ModelerResource
 
    @GET
    @Produces(MediaType.TEXT_PLAIN)
-   @Path ("/language")
+   @Path("/language")
    public Response getLanguage()
    {
-      StringTokenizer tok = new StringTokenizer(httpRequest.getHeader("Accept-language"), ",");
+      StringTokenizer tok = new StringTokenizer(httpRequest.getHeader("Accept-language"),
+            ",");
       if (tok.hasMoreTokens())
       {
-         return Response.ok(LanguageUtil.getLocale(tok.nextToken()), MediaType.TEXT_PLAIN_TYPE).build();
+         return Response.ok(LanguageUtil.getLocale(tok.nextToken()),
+               MediaType.TEXT_PLAIN_TYPE).build();
       }
       return Response.ok("en", MediaType.TEXT_PLAIN_TYPE).build();
    }
@@ -708,7 +721,8 @@ public class ModelerResource
     */
    @GET
    @Path("/{bundleName}/{locale}")
-   public Response getRetrieve(@PathParam("bundleName") String bundleName, @PathParam("locale") String locale)
+   public Response getRetrieve(@PathParam("bundleName") String bundleName,
+         @PathParam("locale") String locale)
    {
       final String POST_FIX = "client-messages";
 
@@ -717,14 +731,18 @@ public class ModelerResource
          try
          {
             StringBuffer bundleData = new StringBuffer();
-            ResourceBundle bundle = ResourceBundle.getBundle(bundleName, LanguageUtil.getLocaleObject(locale));
+            ResourceBundle bundle = ResourceBundle.getBundle(bundleName,
+                  LanguageUtil.getLocaleObject(locale));
 
             String key;
             Enumeration<String> keys = bundle.getKeys();
             while (keys.hasMoreElements())
             {
                key = keys.nextElement();
-               bundleData.append(key).append("=").append(bundle.getString(key)).append("\n");
+               bundleData.append(key)
+                     .append("=")
+                     .append(bundle.getString(key))
+                     .append("\n");
             }
 
             return Response.ok(bundleData.toString(), MediaType.TEXT_PLAIN_TYPE).build();
@@ -752,9 +770,14 @@ public class ModelerResource
    {
       try
       {
-         getModelService().setModelManagementStrategy(getUriModelManagementStrategy());
-         return Response.ok(getModelService().getWebServiceStructure(jsonIo.readJsonObject(postedData)).toString(),
-               APPLICATION_JSON_TYPE).build();
+         JsonObject json = jsonIo.readJsonObject(postedData);         
+         UriModelManagementStrategy modelManagementStrategy = getUriModelManagementStrategy();
+
+         modelManagementStrategy.setFileUri(json.get("fileUri").getAsString());
+
+         getModelService().setModelManagementStrategy(modelManagementStrategy);
+
+         return Response.ok(json.toString(), APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
       {
@@ -763,14 +786,14 @@ public class ModelerResource
          throw new RuntimeException(e);
       }
    }
-   
+
    /**
     * @return
     */
-   private ModelManagementStrategy getUriModelManagementStrategy()
+   private UriModelManagementStrategy getUriModelManagementStrategy()
    {
       ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(servletContext);
 
-      return (ModelManagementStrategy) context.getBean("uriModelManagementStrategy");
+      return (UriModelManagementStrategy) context.getBean("uriModelManagementStrategy");
    }
 }

@@ -13,15 +13,20 @@
 		};
 		var provider = new orion.PluginProvider(headers);
 
-		// Declare an editor
+		// Process modeling editor
 
-		provider.registerServiceProvider("orion.edit.editor", {}, {
-			id : "lightdust.editor",
-			name : "Lightdust BPMN Editor",
-			uriTemplate : "http://localhost:8080/pepper-test/plugins/bpm-modeler/public/testPortal.html?modelFile={Location}"
-		});
+		provider
+				.registerServiceProvider(
+						"orion.edit.editor",
+						{},
+						{
+							id : "lightdust.editor",
+							name : "Lightdust Process Model Editor",
+							uriTemplate : "http://localhost:8080/pepper-test/plugins/bpm-modeler/public/processEditor.html?modelFile={Location}"
+						});
 
-		// Declare content types
+		// Content types for process models
+		
 		provider.registerServiceProvider("orion.core.contenttype", {}, {
 			contentTypes : [ {
 				id : "text/xpdl",
@@ -34,12 +39,27 @@
 			} ]
 		});
 
-		// Associate editor with content types
+		// Connect file extensions to content types
+	
 		provider.registerServiceProvider("orion.navigate.openWith", {}, {
 			editor : "lightdust.editor",
 			contentType : [ "text/xpdl", "text/bpmn" ]
 		});
 
+		// Navigator entry to create an empty process model
+		
+		var temp = document.createElement('a');
+		temp.href = "empty-model.zip";
+
+		provider.registerService("orion.navigate.content", null, {
+			id: "lightdust.content.bpmn",
+			name: "Create Process Model",
+			description: "Create an empty BPMN Process Model.",
+			command: "orion.importZipURL",
+			parameters: [{name: "url", type: "url", label: "Extracted from:", defaultValue: temp.href},
+				{name: "unzip", type: "boolean", label: "Unzip:", defaultValue: true}]
+		});
+		
 		provider.connect();
 	};
 </script>

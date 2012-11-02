@@ -14,14 +14,16 @@
  * 
  * @author Marc.Gille
  */
-define([ "m_utils", "m_extensionManager", "m_outline", "m_htmlViewManager" ], function(m_utils,
-		m_extensionManager, m_outline, m_htmlViewManager) {
+define([ "m_utils", "m_extensionManager", "m_communicationController",
+		"m_outline", "m_htmlViewManager" ], function(m_utils,
+		m_extensionManager, m_communicationController, m_outline,
+		m_htmlViewManager) {
 	return {
 		initialize : function(file) {
 			var portal = new StandaloneModelingPortal();
-			
+
 			portal.initialize(file);
-			
+
 			return portal;
 		}
 	};
@@ -42,8 +44,21 @@ define([ "m_utils", "m_extensionManager", "m_outline", "m_htmlViewManager" ], fu
 		 */
 		StandaloneModelingPortal.prototype.initialize = function(file) {
 			m_utils.debug("====> Initializing with file: " + file);
-			
-			m_outline.init(m_htmlViewManager.create());
+
+			// Switch to URI Model Management Strategy
+
+			m_communicationController.postData({
+				url : m_communicationController.getEndpointUrl()
+						+ "/model/management/strategy"
+			}, JSON.stringify({
+				fileUri : file
+			}), {
+				success : function(data) {
+					m_utils.debug("URI Management Strategy set");
+
+					m_outline.init(m_htmlViewManager.create());
+				}
+			});
 		};
 	}
 });

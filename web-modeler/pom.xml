@@ -12,51 +12,47 @@
    <parent>
       <groupId>com.infinity.bpm.pepper</groupId>
       <artifactId>pepper-common</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+		<version>0.0.1-SNAPSHOT</version>
       <relativePath>../pepper-common/pom.xml</relativePath>
-   </parent>
- -->
+	</parent>
+-->
 
    <properties>
       <ipp.version>7.1.0-NIGHTLY-SNAPSHOT</ipp.version>
       <atmosphere.version>0.9.7</atmosphere.version>
-      <!--atmosphere.version>1.0.0.beta5</atmosphere.version-->
+      <!--atmosphere.version>1.0.0.beta5</atmosphere.version -->
    </properties>
 
    <dependencyManagement>
       <dependencies>
-<!--
-         <dependency>
+         <!-- <dependency>
             <groupId>com.infinity.bpm</groupId>
-            <artifactId>carnot-common</artifactId>
-            <version>${ipp.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
+            <artifactId>carnot-common</artifactId> 
+				<version>${ipp.version}</version>
+            <type>pom</type> <scope>import</scope> 
          </dependency>
          <dependency>
             <groupId>com.infinity.bpm.rtenv</groupId>
             <artifactId>rtenv-common</artifactId>
-            <version>${ipp.version}</version>
+				<version>${ipp.version}</version>
             <type>pom</type>
             <scope>import</scope>
          </dependency>
-
          <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-core</artifactId>
-            <version>1.10</version>
+				<version>1.10</version>
          </dependency>
          <dependency>
-            <groupId>com.sun.jersey</groupId>
+            <groupId>com.sun.jersey</groupId> 
             <artifactId>jersey-server</artifactId>
             <version>1.10</version>
-         </dependency>
+         </dependency> 
          <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-servlet</artifactId>
             <version>1.10</version>
-         </dependency>
- -->
+         </dependency> -->
       </dependencies>
    </dependencyManagement>
 
@@ -117,6 +113,15 @@
          <artifactId>gson</artifactId>
          <version>1.6</version>
       </dependency>
+
+		<!-->dependency> <groupId>commons-httpclient</groupId> <artifactId>commons-httpclient</artifactId> 
+			<version>3.1</version> </dependency-->
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.2.1</version>
+		</dependency>
 
       <!-- The following Eclipse dependencies are part of Eclipse 3.6.2 -->
       <dependency>
@@ -179,29 +184,14 @@
                <groupId>org.slf4j</groupId>
                <artifactId>slf4j-api</artifactId>
             </exclusion>
-<!--
-            <exclusion>
-               <groupId>org.atmosphere</groupId>
-               <artifactId>atmosphere-compat-tomcat7</artifactId>
-            </exclusion>
-            <exclusion>
-               <groupId>org.atmosphere</groupId>
-               <artifactId>atmosphere-compat-tomcat</artifactId>
-            </exclusion>
-            <exclusion>
-               <groupId>org.atmosphere</groupId>
-               <artifactId>atmosphere-compat-jbossweb</artifactId>
-            </exclusion>
- -->
+				<!-- <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-tomcat7</artifactId> 
+					</exclusion> <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-tomcat</artifactId> 
+					</exclusion> <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-jbossweb</artifactId> 
+					</exclusion> -->
          </exclusions>
       </dependency>
-<!--
-      <dependency>
-         <groupId>com.ning</groupId>
-         <artifactId>async-http-client</artifactId>
-         <version>1.7.4</version>
-      </dependency>
- -->
+		<!-- <dependency> <groupId>com.ning</groupId> <artifactId>async-http-client</artifactId> 
+			<version>1.7.4</version> </dependency> -->
 
    </dependencies>
 
