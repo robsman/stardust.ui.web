@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -13,7 +13,7 @@ define(
 				"m_commandsController", "m_model",
 				"m_accessPoint", "m_dataTraversal", "m_dialog" ],
 		function(m_utils, m_constants, m_communicationController, m_command,
-				m_commandsController, m_model, 
+				m_commandsController, m_model,
 				m_accessPoint, m_dataTraversal, m_dialog) {
 			return {
 				initialize : function() {
@@ -24,7 +24,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function ImportTypeDeclarationsWizard() {
 				this.tree = jQuery("#typeDeclarationsTable");
@@ -34,27 +34,22 @@ define(
 				this.importButton = jQuery("#importButton");
 				this.cancelButton = jQuery("#cancelButton");
 
-				this.loadFromUrlButton.click({
-					"view" : this
-				}, function(event) {
-					event.data.view.loadFromUrl();
+				var view = this;
+				this.loadFromUrlButton.click(function(event) {
+					view.loadFromUrl();
 				});
 
-				this.importButton.click({
-					wizard : this
-				}, function(event) {
-					event.data.wizard.import();
+				this.importButton.click(function(event) {
+					view.import();
 					closePopup();
 				});
 
-				this.cancelButton.click({
-					wizard : this
-				}, function(event) {
+				this.cancelButton.click(function(event) {
 					closePopup();
 				});
 
 				/**
-				 * 
+				 *
 				 */
 				ImportTypeDeclarationsWizard.prototype.initialize = function(
 						model) {
@@ -72,10 +67,11 @@ define(
 				 */
 				ImportTypeDeclarationsWizard.prototype.loadFromUrl = function(
 						structure) {
-					var successCallback = {
-						callbackScope : this,
-						callbackMethod : "setTypeDeclarations"
-					};
+
+					if ( !this.urlTextInput.val()) {
+						this.urlTextInput.addClass("error");
+						return;
+					}
 
 					jQuery("body").css("cursor", "progress");
 					// this.clearErrorMessages();
@@ -95,14 +91,11 @@ define(
 									}),
 									{
 										"success" : function(serverData) {
-											successCallback.callbackScope[successCallback.callbackMethod]
-													(serverData);
-											jQuery("body")
-													.css("cursor", "auto");
+											jQuery.proxy(view.setTypeDeclarations, view)(serverData);
+											jQuery("body").css("cursor", "auto");
 										},
 										"error" : function() {
-											jQuery("body")
-													.css("cursor", "auto");
+											jQuery("body").css("cursor", "auto");
 											if (structure == null) {
 												view.errorMessages
 														.push("Could not load XSD from URL.");
@@ -113,15 +106,14 @@ define(
 												view.portSelect.empty();
 												view.operationSelect.empty();
 											} else {
-												successCallback.callbackScope[successCallback.callbackMethod]
-														(structure);
+												jQuery.proxy(view.setTypeDeclarations, view)(structure);
 											}
 										}
 									});
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ImportTypeDeclarationsWizard.prototype.setTypeDeclarations = function(
 						typeDeclarations) {
@@ -131,74 +123,62 @@ define(
 
 					this.tableBody.empty();
 
-					for ( var element in this.typeDeclarations.elements) {
-						var path = element.replace(/:/g, "-");
+					for ( var name in this.typeDeclarations.elements) {
+						var element = this.typeDeclarations.elements[name];
 
-						var content = "<tr id='" + path + "'>";
+						var path = "element-" + name.replace(/:/g, "-");
 
-						content += "<td>";
-						content += "<span class='data-element'>"
-								+ this.typeDeclarations.elements[element].name
-								+ "</span>";
-						content += "</td>";
-						content += "<td>";
-						content += this.typeDeclarations.elements[element].name;
-						content += "</td>";
-						content += "<td>";
-						content += "</td>";
-						content += "</tr>";
+						var row = jQuery("<tr id='" + path + "'></tr>");
 
-						this.tableBody.append(content);
+						jQuery("<td><span class='data-element'>" + element.name + "</span></td>").appendTo(row);
+						jQuery("<td>" + element.name + "</td>").appendTo(row);
+						jQuery("<td></td>").appendTo(row);
 
-						if (this.typeDeclarations.elements[element].body != null) {
-							this
-									.populateRecursively(
-											this.typeDeclarations.elements[element].body.elements,
-											path, true);
+						row.data("element", element);
+
+						this.tableBody.append(row);
+
+						if (element.body != null) {
+							this.populateRecursively(element.body.elements, path, true);
 						}
 					}
 
-					for ( var type in this.typeDeclarations.types) {
-						var path = type.replace(/:/g, "-");
+					for ( var name in this.typeDeclarations.types) {
+						var type = this.typeDeclarations.types[name];
 
-						var content = "<tr id='" + path + "'>";
+						var path = "type-" + name.replace(/:/g, "-");
 
-						content += "<td>";
-						content += "<span class='data-element'>"
-								+ this.typeDeclarations.types[type].name
-								+ "</span>";
-						content += "</td>";
-						content += "<td>";
-						content += this.typeDeclarations.types[type].name;
-						content += "</td>";
-						content += "<td>";
-						content += "</td>";
-						content += "</tr>";
+						var row = jQuery("<tr id='" + path + "'></tr>");
 
-						this.tableBody.append(content);
+						jQuery("<td><span class='data-element'>" + type.name + "</span></td>").appendTo(row);
+						jQuery("<td>" + type.name + "</td>").appendTo(row);
+						jQuery("<td></td>").appendTo(row);
 
-						if (this.typeDeclarations.types[type].body != null) {
-							this
-									.populateRecursively(
-											this.typeDeclarations.types[type].body.elements,
-											path, true);
+						row.data("typeDeclaration", type);
+
+						this.tableBody.append(row);
+
+						if (type.body != null) {
+							this.populateRecursively(type.body.elements, path, true);
 						}
 					}
 
 					this.tree.tableScroll({
 						height : 150
 					});
-					this.tree.treeTable();
+					this.tree.treeTable({
+						indent: 14
+					});
 
 					jQuery("table#typeDeclarationsTable tbody tr").mousedown(
 							function() {
-								jQuery("tr.selected").removeClass("selected");
-								jQuery(this).addClass("selected");
+								// allow multi-select
+								jQuery(this).toggleClass("selected");
 							});
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ImportTypeDeclarationsWizard.prototype.populateRecursively = function(
 						elements, parentPath, readonly) {
@@ -261,19 +241,38 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ImportTypeDeclarationsWizard.prototype.import = function() {
-					for ( var type in this.typeDeclarations.types) {
-						m_commandsController
-								.submitCommand(m_command
-										.createCreateTypeDeclarationCommand(
-												this.model.id,
-												this.model.id,
-												{
-													"typeDeclaration" : this.typeDeclarations.types[type]
-												}));
-					}
+
+					// collect selected types
+					var typeDeclarations = [];
+					jQuery("tr.selected", this.tableBody).each(function() {
+						var row = jQuery(this);
+						var typeDeclaration = row.data("typeDeclaration");
+						if (typeDeclaration) {
+							typeDeclarations.push(typeDeclaration);
+						} else if (row.data("element")) {
+							var element = row.data("element");
+						}
+					});
+
+					var view = this;
+					jQuery.each(typeDeclarations, function() {
+						m_commandsController.submitCommand(
+								m_command.createCreateTypeDeclarationCommand(
+										view.model.id,
+										view.model.id,
+										{
+											"name": this.name,
+											"typeDeclaration" : {
+												type: {
+													classifier: "SchemaType"
+												},
+												schema: view.typeDeclarations
+											}
+										}));
+					});
 				};
 			}
 			;

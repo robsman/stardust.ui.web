@@ -89,7 +89,8 @@ public class DataChangeCommandHandler
    public void createTypeDeclaration(ModelType model, JsonObject request)
    {
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String id = getModelBuilderFacade().createIdFromName(name);
+      // must keep the original name as ID as otherwise the type can't be reslved from the schema
+      String id = name;
 
       TypeDeclarationsType declarations = model.getTypeDeclarations();
       if (declarations != null && declarations.getTypeDeclaration(id) != null)
