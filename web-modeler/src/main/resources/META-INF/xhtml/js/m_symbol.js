@@ -1026,7 +1026,6 @@ define(
 				Symbol.prototype.dragStop = function() {
 					if (this.diagram.mode == this.diagram.SYMBOL_MOVE_MODE) {
 						this.diagram.mode = this.diagram.NORMAL_MODE
-						this.diagram.dragEnabled = false;
 						this.showProximitySensor();
 						// Only process if symbol has been moved at all
 						if (this.x != this.dragStartX
@@ -1039,6 +1038,8 @@ define(
 								if (newParentSymbol == null) {
 									this.move(this.dragStartX, this.dragStartY);
 									this.diagram.hideSnapLines(this);
+									m_utils.removeItemFromArray(this.diagram.currentSelection, this);
+									this.deselect();
 									m_messageDisplay
 											.showErrorMessage("Symbol is not contained in Swimlane. Reverting drag.");
 
@@ -1382,7 +1383,13 @@ define(
 												- this.diagram.Y_OFFSET));
 								this.hideAnchorPoints();
 							}
-						} else {
+						} else if (this.diagram.dragEnabled
+								&& -1 == jQuery.inArray(
+										this.diagram.currentSelection, this)) {
+							//When drag/drop fails
+							this.diagram.dragEnabled = false;
+							this.deselect();
+						}else {
 							this.select();
 						}
 					}
