@@ -224,7 +224,10 @@ define(
 				 *
 				 */
 				DataTypeSelector.prototype.setDataType = function(data) {
-					this.supportsOtherData = !data.isSupportedDataType();
+					// TODO: Commented out as it crashes; data possibly not properly typed?
+					
+					//this.supportsOtherData = !data.isSupportedDataType();
+					this.supportsOtherData = false;
 					this.initializeDataTypeOptions();
 
 					this.setDataTypeSelectVal(data);
