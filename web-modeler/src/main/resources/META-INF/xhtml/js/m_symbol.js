@@ -1042,7 +1042,7 @@ define(
 												this.getYCenter());
 
 								if (newParentSymbol == null) {
-									this.move(this.dragStartX, this.dragStartY);
+									this.moveTo(this.dragStartX, this.dragStartY);
 									this.diagram.hideSnapLines(this);
 									m_utils.removeItemFromArray(this.diagram.currentSelection, this);
 									this.deselect();
