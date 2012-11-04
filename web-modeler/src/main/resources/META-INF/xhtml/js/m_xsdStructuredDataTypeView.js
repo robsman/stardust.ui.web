@@ -4,10 +4,10 @@
 define(
 		[ "jquery", "m_utils", "m_constants", "m_communicationController", "m_command",
 				"m_commandsController", "m_dialog", "m_modelElementView",
-				"m_model", "m_propertiesTree" ],
+				"m_model", "m_propertiesTree", "m_structuredTypeBrowser" ],
 		function(jQuery, m_utils, m_constants, m_communicationController, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_propertiesTree) {
+				m_propertiesTree, m_structuredTypeBrowser) {
 			return {
 				initialize : function(fullId) {
 					var view = new XsdStructuredDataTypeView();
@@ -188,6 +188,37 @@ define(
 					});
 				};
 
+				XsdStructuredDataTypeView.prototype.initializeRow = function(row, element, schemaType) {
+
+					row.data("typeDeclaration", this.typeDeclaration);
+					row.data("elementName", element.name);
+
+					var nameColumn = jQuery("<td></td>").appendTo(row);
+					nameColumn.append("<span class='data-element'><input class='nameInput' type='text' value='" + element.name + "'/></span>");
+
+					var typeColumn = jQuery("<td></td>").appendTo(row);
+					if (this.typeDeclaration.isSequence()) {
+
+						if ( !this.typeDeclaration.isReadOnly()) {
+							typeColumn.append(this.getTypeSelectList(schemaType));
+						} else {
+							typeColumn.append(schemaType.name);
+						}
+					}
+
+					var cardinalityColumn = jQuery("<td></td>").appendTo(row);
+					if (this.typeDeclaration.isSequence()) {
+						if ( !this.typeDeclaration.isReadOnly()) {
+							cardinalityColumn.append("<select size='1' class='cardinalitySelect'>"
+									+ "  <option value='required'" + (element.cardinality == "required" ? "selected" : "") + ">Required</option>"
+									+ "  <option value='many'" + (element.cardinality == "many" ? "selected" : "") + ">Many</option>"
+									+ "</select>");
+						} else {
+							cardinalityColumn.append(element.cardinality);
+						}
+					}
+				};
+
 				XsdStructuredDataTypeView.prototype.refreshElementsTable = function() {
 					// TODO merge instead of fully rebuild table
 					this.tableBody.empty();
@@ -197,48 +228,18 @@ define(
 					var n = 0;
 
 					var view = this;
-					jQuery.each(this.typeDeclaration.getElements(), function(i, element) {
-						var path = element.name.replace(/:/g, "-");
+					var roots = m_structuredTypeBrowser.generateChildElementRows(null, this.typeDeclaration.asSchemaType(),
+							jQuery.proxy(this.initializeRow, view));
 
-						var newRow = jQuery("<tr id='" + path + "'></tr>");
+					jQuery.each(roots, function(i, parentRow) {
+						var parentPath = parentRow.data("path");
+						var schemaType = parentRow.data("schemaType");
+						var childRows = m_structuredTypeBrowser.generateChildElementRows(parentPath, schemaType);
 
-						var childRows = [];
-
-						var nameColumn = jQuery("<td></td>").appendTo(newRow);
-						nameColumn.append("<span class='data-element'><input class='nameInput' type='text' value='" + element.name + "'/></span>");
-
-						var typeColumn = jQuery("<td></td>").appendTo(newRow);
-						if (view.typeDeclaration.isSequence()) {
-
-							var schemaType = view.typeDeclaration.resolveElementType(element.name);
-
-							if ( !view.typeDeclaration.isReadOnly()) {
-								typeColumn.append(view.getTypeSelectList(schemaType));
-							} else {
-								typeColumn.append(schemaType.name);
-							}
-
-							childRows = view.generateChildElementRows(path, schemaType);
-						}
-
-						var cardinalityColumn = jQuery("<td></td>").appendTo(newRow);
-						if (view.typeDeclaration.isSequence()) {
-							if ( !view.typeDeclaration.isReadOnly()) {
-								cardinalityColumn.append("<select size='1' class='cardinalitySelect'>"
-										+ "  <option value='required'" + (element.cardinality == "required" ? "selected" : "") + ">Required</option>"
-										+ "  <option value='many'" + (element.cardinality == "many" ? "selected" : "") + ">Many</option>"
-										+ "</select>");
-							} else {
-								cardinalityColumn.append(element.cardinality);
-							}
-						}
-
-						newRow.appendTo(view.tableBody);
-						newRow.data("typeDeclaration", view.typeDeclaration);
-						newRow.data("elementName", element.name);
+						parentRow.appendTo(view.tableBody);
 
 						jQuery.each(childRows, function(i, childRow) {
-							childRow.addClass("child-of-" + path);
+							childRow.addClass("child-of-" + parentPath);
 							view.tableBody.append(childRow);
 						});
 					});
@@ -256,61 +257,13 @@ define(
 					this.tree.treeTable({
 						indent: 14,
 						onNodeShow: function() {
-							var parentRow = jQuery(this);
-							if ( !parentRow.data("elements-initialized")) {
-								var parentPath = this.id;
-								var schemaType = parentRow.data("schemaType");
-
-								// trick to trigger initialization of child rows
-								// first append at root ...
-								var childRows = view.generateChildElementRows(parentPath, schemaType);
-								jQuery.each(childRows, function(i, childRow) {
-									// ... then move to the proper location
-									parentRow.after(childRow);
-									childRow.appendBranchTo(parentRow[0]);
-								});
-								parentRow.collapse();
-
-								parentRow.data("elements-initialized", true);
-							}
+							m_structuredTypeBrowser.insertChildElementRowsLazily(jQuery(this));
 						}
 					});
 
 					// bind events after tree got initialized, otherwise renames
 					// in parent rows don't get triggered
 					this.bindTableEventHandlers();
-				};
-
-				XsdStructuredDataTypeView.prototype.generateChildElementRows = function(parentPath, schemaType) {
-					var childRows = [];
-
-					if ((schemaType != null)
-							&& (schemaType.isStructure())) {
-						// append child rows
-						jQuery.each(schemaType.getElements(), function(i, element) {
-							var childPath = parentPath + "-" + element.name;
-							var childRow = jQuery("<tr id='" + childPath + "'></tr>");
-
-							var childSchemaType = schemaType.resolveElementType(element.name);
-
-							jQuery("<td><span class='data-element'>" + this.name + "</span></td>").appendTo(childRow);
-							jQuery("<td>" + this.type + "</td>").appendTo(childRow);
-							jQuery("<td>" + this.cardinality + "</td>").appendTo(childRow);
-
-							if (childSchemaType.isStructure()) {
-								// add styles in preparation of lazily appending child rows
-								childRow.addClass("parent");
-								childRow.addClass("expanded");
-							}
-
-							childRow.data("parentId", parentPath);
-							childRow.data("schemaType", childSchemaType);
-
-							childRows.push(childRow);
-						});
-					}
-
-					return childRows;
 				};
 
 				/**
