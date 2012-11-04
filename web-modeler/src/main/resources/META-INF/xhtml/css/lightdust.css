@@ -179,6 +179,8 @@ a:hover {
 /* Layout Table */
 table.layoutTable {
 	border: 0px;
+	border-spacing: 0px;
+	border: none;
 }
 
 table.layoutTable tr {
@@ -418,9 +420,11 @@ div#toolbar {
 
 div#canvas {
 	z-index: 10;
+	background: white;
 }
 
 div#scrollpane {
+	background: white;
 	height: 550px;
 	overflow: auto;
 	border: none;
@@ -544,7 +548,7 @@ div#propertiesPageList {
 }
 
 div.panelWrapperBorder {
-	border: 1px solid #e8e8e8;
+	/*border: 1px solid #e8e8e8;*/
 }
 
 td.dataPathTableCell {
