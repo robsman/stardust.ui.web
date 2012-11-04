@@ -143,7 +143,7 @@ public class UriModelManagementStrategy extends AbstractModelManagementStrategy
 
          ByteArrayInputStream baos = new ByteArrayInputStream(modelContent);
          ModelPersistenceHandler.ModelDescriptor descriptor = persistenceHandler.loadModel(
-               modelName, baos);
+               fileUri, baos);
 
          if (null != descriptor)
          {
