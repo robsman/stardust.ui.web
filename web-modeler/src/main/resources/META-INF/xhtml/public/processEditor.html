@@ -6,6 +6,85 @@
 	href="../css/jstree/default/style.css"></link>
 <link href="../css/lightdust.css" rel="stylesheet" type="text/css" />
 <style>
+/* Some additions and overwrites of the lightdust style. */
+
+.upperTopBar {
+	width: 100%;
+	height: 4px;
+	background-image: -webkit-linear-gradient(top, #333333, #dddddd);
+	background-image: -moz-linear-gradient(top, #333333, #dddddd);
+	background-image: -ms-linear-gradient(top, #333333, #dddddd);
+	background-image: -o-linear-gradient(top, #333333, #dddddd);
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+}
+
+.lowerTopBar {
+	width: 100%;
+	height: 5px;
+	background: #dddddd;
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+}
+
+.content {
+	border-left: 1px solid black;
+	border-bottom: 1px solid black;
+	border-right: 1px solid black;
+	background-image: -webkit-linear-gradient(top, #dddddd, #aaaaaa);
+	background-image: -moz-linear-gradient(top, #dddddd, #aaaaaa);
+	background-image: -ms-linear-gradient(top, #dddddd, #aaaaaa);
+	background-image: -o-linear-gradient(top, #dddddd, #aaaaaa);
+	background-image: -webkit-linear-gradient(top, #dddddd, #aaaaaa);
+	background-image: -webkit-linear-gradient(top, #dddddd, #aaaaaa);
+}
+
+div.panelBorder {
+	border: none;
+}
+
+div.panelWrapperBorder {
+	border: none;
+}
+
+#outlineBorder {
+	border: 1px solid black;
+}
+
+#outline {
+	text-align: left;
+	list-style-type: none;
+	padding: 5px;
+}
+
+#viewHeaderBar {
+	width: 1650px;
+	border: 1px solid black;
+	background-image: -webkit-linear-gradient(top, #aaaaaa, #777777);
+	background-image: -moz-linear-gradient(top, #aaaaaa, #777777);
+	background-image: -ms-linear-gradient(top, #aaaaaa, #777777);
+	background-image: -o-linear-gradient(top, #aaaaaa, #777777);
+	background-image: -webkit-linear-gradient(top, #aaaaaa, #777777);
+}
+
+#viewHeader {
+	font-size: 12px;
+	font-weight: bold;
+	margin-top: 2px;
+	margin-left: 10px;
+	margin-bottom: 2px;
+	color: white;
+}
+
+#viewAnchor {
+	background: white;
+	border-top: none;
+	border-left: 1px solid black;
+	border-bottom: 1px solid black;
+	border-right: 1px solid black;
+}
+
+/* Tree settings - TODO Needed? */
 .jstree a,.modelLinks a {
 	color: #00629A !important;
 	font-family: Arial, Helvetica, sans-serif;
@@ -77,95 +156,121 @@ td#toolbar div.toolSeparator {
 	margin-top: 4px;
 }
 </style>
-<script type="text/javascript" data-main="../js/standaloneModelingPortalMain"
+<script type="text/javascript"
+	data-main="../js/standaloneModelingPortalMain"
 	src="../js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
-	<table width="100%">
+	<table width="100%" cellpadding="0" cellspacing="0" class="layoutTable" style="border-spacing: 0px;">
 		<tr>
-			<td valign="top">
-	<table style="width: 100%;">
+			<td valign="top"><img src="../images/editor-top.gif" />
+			</td>
+		</tr>
+		<tr>
+			<td valign="top"><div class="upperTopBar"></div></td>
+		</tr>
+		<tr>
+			<td valign="top"><div class="lowerTopBar"></div></td>
+		</tr>
 		<tr>
 			<td>
-				<div id="lastSaveStatusPanel">
-					<table cellpadding="0" cellspacing="0">
+				<div class="content">
+					<table width="100%" cellpadding="0" cellspacing="0"
+						class="layoutTable" style="border-spacing: 0px;">
 						<tr>
-							<td><span class="label-form">Last Save:</span></td>
-							<td style="text-align: left;">
-								<div id="lastSaveDateDisplay">
-								</div>
+							<td>
+							<td valign="top">
+								<div class="panelBorder" style="padding: 5px; height: 827px;">
+									<table style="width: 100%;">
+										<tr>
+											<td>
+												<div id="lastSaveStatusPanel">
+													<table cellpadding="0" cellspacing="0">
+														<tr>
+															<td><span class="label-form">Last Save:</span>
+															</td>
+															<td style="text-align: left;">
+																<div id="lastSaveDateDisplay"></div></td>
+														</tr>
+													</table>
+												</div></td>
+										</tr>
+										<tr>
+											<td id="toolbar">
+												<div id="outlineToolbar">
+													<div class="toolDiv">
+														<img id="createModel"
+															src="../../views-common/images/icons/add.png"
+															title="Create Model" />
+													</div>
+													<div class="toolSeparator">
+														<img src="../../common/images/icons/toolbar-separator.png" />
+													</div>
+													<div class="toolDiv">
+														<img id="importModel"
+															src="../../views-common/images/icons/page_white_get.png"
+															title="Import Model" />
+													</div>
+													<div class="toolSeparator">
+														<img src="../../common/images/icons/toolbar-separator.png" />
+													</div>
+													<div class="toolDiv">
+														<img id="undoChange" src="../images/icons/undo.png"
+															title="Undo" />
+													</div>
+													<div class="toolSeparator">
+														<img src="../../common/images/icons/toolbar-separator.png" />
+													</div>
+													<div class="toolDiv">
+														<img id="redoChange" src="../images/icons/redo.png"
+															title="Redo" />
+													</div>
+													<div class="toolSeparator">
+														<img src="../../common/images/icons/toolbar-separator.png" />
+													</div>
+													<div class="toolDiv">
+														<img id="saveAllModels"
+															src="../../views-common/images/icons/disk_multiple.png"
+															title="Save All Models" />
+													</div>
+													<div class="toolSeparator">
+														<img src="../../common/images/icons/toolbar-separator.png" />
+													</div>
+													<div class="toolDiv">
+														<img id="refreshModels" src="../images/icons/refresh.png"
+															title="Refresh models" />
+													</div>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<td><div id="outlineBorder">
+												<div id="outline"></div></div></td>
+										</tr>
+									</table>
+								</div></td>
+							<td valign="top">
+								<table width="100%" cellpadding="0" cellspacing="0"
+									class="layoutTable" style="border-spacing: 0px;">
+									<tr>
+										<td>
+											<div id="viewHeaderBar"><div id="viewHeader">&nbsp;</div></div></td>
+									</tr>
+									<tr>
+										<td><iframe id="viewAnchor" width="1650" height="800"></iframe>
+										</td>
+									</tr>
+								</table>
 							</td>
+							<td>
 						</tr>
 					</table>
 				</div>
 			</td>
 		</tr>
-		<tr>
-			<td id="toolbar">
-				<div id="outlineToolbar">
-					<div class="toolDiv">
-						<img id="createModel"
-							src="../../views-common/images/icons/add.png"
-							title="Create Model" />
-					</div>
-					<div class="toolSeparator">
-						<img src="../../common/images/icons/toolbar-separator.png" />
-					</div>
-					<div class="toolDiv">
-						<img id="importModel"
-							src="../../views-common/images/icons/page_white_get.png"
-							title="Import Model" />
-					</div>
-					<div class="toolSeparator">
-						<img src="../../common/images/icons/toolbar-separator.png" />
-					</div>
-					<div class="toolDiv">
-						<img id="undoChange"
-							src="../images/icons/undo.png"
-							title="Undo" />
-					</div>
-					<div class="toolSeparator">
-						<img src="../../common/images/icons/toolbar-separator.png" />
-					</div>
-					<div class="toolDiv">
-						<img id="redoChange"
-							src="../images/icons/redo.png"
-							title="Redo" />
-					</div>
-					<div class="toolSeparator">
-						<img src="../../common/images/icons/toolbar-separator.png" />
-					</div>
-					<div class="toolDiv">
-						<img id="saveAllModels"
-							src="../../views-common/images/icons/disk_multiple.png"
-							title="Save All Models" />
-					</div>
-					<div class="toolSeparator">
-						<img src="../../common/images/icons/toolbar-separator.png" />
-					</div>
-					<div class="toolDiv">
-						<img id="refreshModels" src="../images/icons/refresh.png"
-							title="Refresh models" />
-					</div>
-				</div></td>
-		</tr>
-		<tr>
-			<td>
-				<div id="outline"
-					style="text-align: left; list-style-type: none; background-color: white;">
-				</div>
-			</td>
-		</tr>
 	</table>
-			</td>
-			<td valign="top"><iframe id="viewAnchor" width="1600"
-					height="800" style="border: none;"></iframe>
-			</td>
-		</tr>
-	</table>
-									<div id="scrollpane">
-									<div id="canvas" />
-								</div>
-	
+	<!--div id="scrollpane">
+		<div id="canvas" />
+	</div-->
 </body>
 </html>

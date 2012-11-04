@@ -49,7 +49,7 @@
 						</tr>
 						<tr>
 							<td>
-								<div id="toolbar">
+								<div id="toolbar" style="margin-top: 2px;">
 									<table id="diagramToolbarTable">
 										<tr id="paletteRow">
 										</tr>
@@ -59,7 +59,7 @@
 						</tr>
 						<tr>
 							<td>
-								<div id="scrollpane">
+								<div id="scrollpane" style="margin-top: 2px;">
 									<div id="canvas" />
 								</div>
 							</td>
@@ -776,138 +776,17 @@
 																		</td>
 																	</tr>
 																</table>
-																<div id="startEventPanel">
+																<div id="startEventPanel" style="margin-top: 10px;">
 																	<table>
 																		<tr>
 																			<td><label for="eventTypeSelectInput">Event
 																					Type</label>
 																			</td>
-																			<td><select id="eventTypeSelectInput" />
+																			<td><select id="eventTypeSelectInput" style="margin-bottom: 10px;"/>
 																			</td>
-																			<td />
 																		</tr>
 																		<tr>
-																			<td colspan="2">
-																				<div id="camelTriggerPanel">
-																					<table>
-																						<tr>
-																							<td><label for="endpointTypeSelectInput">Endpoint
-																									Type</label></td>
-																							<td><select id="endpointTypeSelectInput">
-																									<option value="genericEndpoint">Generic</option>
-																									<option value="fileEndpoint">File
-																										Endpoint</option>
-																									<option value="ftpEndpoint">FTP
-																										Endpoint</option>
-																									<option value="pop3Endpoint">Mail
-																										Endpoint (POP3)</option>
-																									<option value="smtpEndpoint">Mail
-																										Endpoint (SMTP)</option>
-																									<option value="imapEndpoint">Mail
-																										Endpoint (IMAP)</option>
-																									<option value="jmsEndpoint">JMS
-																										Endpoint</option>
-																									<option value="webServiceEndpoint">Web
-																										Service Endpoint</option>
-																									<option value="restletEndpoint">REST
-																										Endpoint</option>
-																									<option value="quickfixEndpoint">FIX
-																										Endpoint (QuickFIX/J)</option>
-																									<option value="hazelcastEndpoint">Caching
-																										Endpoint (Hazelcast)</option>
-																									<option value="quartzEndpoint">Timer
-																										Endpoint (quartz)</option>
-																							</select></td>
-																						</tr>
-																					</table>
-																					<table>
-																						<tr>
-																							<td><div id="endpointUriPrefix" class="code">&lt;from
-																									uri="</div></td>
-																						</tr>
-																						<tr>
-																							<td><textarea id="endpointUriTextarea"
-																									cols="40" rows="2" class="code">
-																</textarea></td>
-																						</tr>
-																						<tr>
-																							<td><div class="code">"&gt;</div></td>
-																						</tr>
-																						<tr>
-																							<td><label for="routeTextarea">Additional
-																									Route Specification</label></td>
-																						</tr>
-																						<tr>
-																							<td><textarea id="routeTextarea" cols="40"
-																									rows="3" class="code"></textarea></td>
-																						</tr>
-																						<tr>
-																							<td><label for="beanTextarea">Additional
-																									Beans Specification</label></td>
-																						</tr>
-																						<tr>
-																							<td><textarea id="beanTextarea" cols="40"
-																									rows="3" class="code"></textarea></td>
-																						</tr>
-																						<tr>
-																							<td>
-																								<table>
-																									<tr valign="top">
-																										<td><select
-																											id="endpointAccessPointsSelectInput"
-																											multiple="multiple"
-																											style="min-height: 150px; min-width: 150px;">
-																										</select></td>
-																										<td>
-																											<table>
-																												<tr>
-																													<td><label>Parameter Access
-																															Path</label>
-																													</td>
-																												</tr>
-																												<tr>
-																													<td><input type="text" /></td>
-																												</tr>
-																												<tr>
-																													<td><label>Data</label>
-																													</td>
-																												</tr>
-																												<tr>
-																													<td><select
-																														id="camelEndpointDataMappingDataSelectInput">
-																													</select></td>
-																												</tr>
-																												<tr>
-																													<td><label>Data Access Path</label>
-																													</td>
-																												</tr>
-																												<tr>
-																													<td><input id="dataPathTextInput"
-																														type="text" /></td>
-																												</tr>
-																											</table>
-																										</td>
-																									</tr>
-																								</table>
-																							</td>
-																						</tr>
-																					</table>
-																				</div>
-																				<div id="scanTriggerPanel">
-																					<table>
-																						<tr>
-																							<td><label for="scanInput">Scanned
-																									Document</label>
-																							</td>
-																							<td><select id="documentDataList" size="1">
-																							</select></td>
-																						</tr>
-																					</table>
-																				</div>
-																				<div id="manualTriggerPanel">
-																					<div id="participantOutput"
-																						style="margin-top: 10px;" />
-																				</div>
+																			<td id="overlayTableCell" colspan="2" >
 																			</td>
 																		</tr>
 																	</table>

@@ -135,7 +135,6 @@ define(
 						view.overlayControllers[view.endpointTypeSelectInput
 								.val()].activate();
 						view.setOverlay(view.endpointTypeSelectInput.val());
-
 					});
 
 					this.initializeModelElementView(application);

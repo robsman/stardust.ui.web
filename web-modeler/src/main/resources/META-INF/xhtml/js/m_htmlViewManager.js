@@ -44,6 +44,8 @@ define([ "m_utils", "m_extensionManager" ], function(m_utils,
 			m_utils.debug("Extension: " + extension.viewHtmlUrl + " "
 					+ extension.viewJavaScriptUrl);
 
+			jQuery("#viewHeader").empty();
+			jQuery("#viewHeader").append(extension.viewLabel);
 			jQuery("#viewAnchor").attr("src", extension.viewHtmlUrl + "?" + queryString);
 		};
 	}

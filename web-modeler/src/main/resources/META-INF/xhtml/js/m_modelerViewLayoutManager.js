@@ -25,7 +25,7 @@ define(
 						(innerWidth - HORIZONTAL_SCROLL_OFFSET) + "px").css(
 						"overflow", "auto");
 				$("#modelerPropertiesPanelWrapper").css("width", "0px").css(
-						"overflow", "hidden").removeClass("panelBorder");
+						"overflow", "hidden");
 
 				setDrawingPaneDivWidths((parseInt($("#modelerDiagramPanelWrapper").css("width")) - 10));
 
@@ -40,8 +40,7 @@ define(
 				if (true == propertiesPaneVisible) {
 					propertiesPaneVisible = false;
 					$("#modelerPropertiesPanelWrapper").css("width", "0px")
-							.css("overflow", "hidden").removeClass(
-									"panelBorder");
+							.css("overflow", "hidden");
 					$("#modelerDiagramPanelWrapper").css("width",
 							(innerWidth - HORIZONTAL_SCROLL_OFFSET) + "px");
 				}
@@ -67,7 +66,7 @@ define(
 
 					// Expand properties panel using new values
 					$("#modelerPropertiesPanelWrapper").css("width", "auto")
-							.css("overflow", "auto").addClass("panelBorder");
+							.css("overflow", "auto");
 
 					var diagWidth = innerWidth - $("#modelerPropertiesPanelWrapper")[0].offsetWidth - HORIZONTAL_SCROLL_OFFSET;
 					

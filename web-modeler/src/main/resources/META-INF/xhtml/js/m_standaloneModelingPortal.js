@@ -47,18 +47,22 @@ define([ "m_utils", "m_extensionManager", "m_communicationController",
 
 			// Switch to URI Model Management Strategy
 
-			m_communicationController.postData({
-				url : m_communicationController.getEndpointUrl()
-						+ "/model/management/strategy"
-			}, JSON.stringify({
-				fileUri : file
-			}), {
-				success : function(data) {
-					m_utils.debug("URI Management Strategy set");
+			if (file != null) {
+				m_communicationController.postData({
+					url : m_communicationController.getEndpointUrl()
+							+ "/model/management/strategy"
+				}, JSON.stringify({
+					fileUri : file
+				}), {
+					success : function(data) {
+						m_utils.debug("URI Management Strategy set");
 
-					m_outline.init(m_htmlViewManager.create());
-				}
-			});
+						m_outline.init(m_htmlViewManager.create());
+					}
+				});
+			} else {
+				m_outline.init(m_htmlViewManager.create());
+			}
 		};
 	}
 });
