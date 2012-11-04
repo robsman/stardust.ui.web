@@ -264,12 +264,15 @@ define(
 										view.model.id,
 										view.model.id,
 										{
+										    // must keep the original name as ID as otherwise the type can't be resolved eventually
+											"id": this.name,
 											"name": this.name,
 											"typeDeclaration" : {
 												type: {
-													classifier: "SchemaType"
-												},
-												schema: view.typeDeclarations
+													classifier: "ExternalReference",
+													location: view.urlTextInput.val(),
+													xref: "{" + view.typeDeclarations.targetNamespace + "}" + this.name
+												}
 											}
 										}));
 					});
