@@ -6,7 +6,6 @@ import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.service.rest.RestControllerUtils.resolveSpringBean;
 
 import java.net.URI;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -339,7 +338,6 @@ public class ModelerSessionRestController
             commandId, changeDescriptors);
       if (null != change)
       {
-         modelService().getModelBuilderFacade().setModified((ModelType) model, new Date());
          postprocessChange(change);
 
          change.getMetadata().put("commandId", commandId);
