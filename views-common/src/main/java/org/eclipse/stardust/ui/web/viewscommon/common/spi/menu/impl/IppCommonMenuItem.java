@@ -27,6 +27,7 @@ public class IppCommonMenuItem implements CommonMenuItem
    private String URL;
    private String iconPath;
    private boolean changed;
+   private String titleCache;
    
    public IppCommonMenuItem()
    {
@@ -59,16 +60,34 @@ public class IppCommonMenuItem implements CommonMenuItem
     */
    public String getTitle()
    {
-      if (title.contains("#"))
+      if (null == titleCache)
       {
-         String[] parts = title.split("#");
-         if (null != parts)
+         try
          {
-            MessagesViewsCommonBean messBean = (MessagesViewsCommonBean) FacesUtils.getBeanFromContext(parts[0]);
-            return messBean.getString(parts[1]);
+            if (title.contains("#"))
+            {
+               String[] parts = title.split("#");
+               if (null != parts)
+               {
+                  MessagesViewsCommonBean messBean = (MessagesViewsCommonBean) FacesUtils.getBeanFromContext(parts[0]);
+                  String titleStr = messBean.getString(parts[1]);
+                  titleCache = titleStr;
+               }
+            }
          }
+         catch (Exception e)
+         {
+         }
+         finally
+         {
+            if (null == titleCache)
+            {
+               titleCache = title;
+            }
+         }
+
       }
-      return title;
+      return titleCache;
    }
 
    public String getURL()
