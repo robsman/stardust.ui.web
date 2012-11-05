@@ -11,6 +11,8 @@
 package org.eclipse.stardust.ui.web.viewscommon.common.spi.menu.impl;
 
 import org.eclipse.stardust.ui.web.common.spi.menu.CommonMenuItem;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 /**
  * @author Anoop.Nair
@@ -51,8 +53,21 @@ public class IppCommonMenuItem implements CommonMenuItem
       return id;
    }
 
+   /**
+    * If title is I18N, title will be of format 'messageBean#message' split and return the
+    * message
+    */
    public String getTitle()
    {
+      if (title.contains("#"))
+      {
+         String[] parts = title.split("#");
+         if (null != parts)
+         {
+            MessagesViewsCommonBean messBean = (MessagesViewsCommonBean) FacesUtils.getBeanFromContext(parts[0]);
+            return messBean.getString(parts[1]);
+         }
+      }
       return title;
    }
 
