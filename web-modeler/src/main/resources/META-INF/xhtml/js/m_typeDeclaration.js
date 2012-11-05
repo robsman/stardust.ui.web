@@ -383,6 +383,13 @@ define(
 				return undefined;
 			};
 
+			function resolveSchemaTypeFromSchema(typeName, schema) {
+				var type = schema.types[typeName];
+				if (type) {
+					return new SchemaType(typeName, schema.targetNamespace, type, schema);
+				}
+			};
+
 			// module interface
 			return {
 				createTypeDeclaration : function(name) {
@@ -402,7 +409,10 @@ define(
 				},
 
 				resolveSchemaTypeFromModel: function(sqName, model) {
-					resolveSchemaTypeFromModel(sqName, model);
+					return resolveSchemaTypeFromModel(sqName, model);
+				},
+				resolveSchemaTypeFromSchema: function(typeName, schema) {
+					return resolveSchemaTypeFromSchema(typeName, schema);
 				},
 
 				getPrimitiveTypeLabel : function(type) {

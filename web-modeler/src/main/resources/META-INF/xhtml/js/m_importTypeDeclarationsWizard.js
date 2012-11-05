@@ -11,10 +11,10 @@
 define(
 		[ "m_utils", "m_constants", "m_communicationController", "m_command",
 				"m_commandsController", "m_model",
-				"m_accessPoint", "m_dataTraversal", "m_dialog" ],
+				"m_dialog", "m_typeDeclaration", "m_structuredTypeBrowser" ],
 		function(m_utils, m_constants, m_communicationController, m_command,
 				m_commandsController, m_model,
-				m_accessPoint, m_dataTraversal, m_dialog) {
+				m_dialog, m_typeDeclaration, m_structuredTypeBrowser) {
 			return {
 				initialize : function() {
 					var wizard = new ImportTypeDeclarationsWizard();
@@ -28,7 +28,7 @@ define(
 			 */
 			function ImportTypeDeclarationsWizard() {
 				this.tree = jQuery("#typeDeclarationsTable");
-				this.tableBody = jQuery("table#typeDeclarationsTable tbody");
+				this.tableBody = jQuery("tbody", this.tree);
 				this.urlTextInput = jQuery("#urlTextInput");
 				this.loadFromUrlButton = jQuery("#loadFromUrlButton");
 				this.importButton = jQuery("#importButton");
@@ -40,7 +40,7 @@ define(
 				});
 
 				this.importButton.click(function(event) {
-					view.import();
+					view.performImport();
 					closePopup();
 				});
 
@@ -51,8 +51,7 @@ define(
 				/**
 				 *
 				 */
-				ImportTypeDeclarationsWizard.prototype.initialize = function(
-						model) {
+				ImportTypeDeclarationsWizard.prototype.initialize = function(model) {
 					this.model = model;
 
 					this.tree.tableScroll({
@@ -65,8 +64,7 @@ define(
 				 * <code>structure</code> allows to pass a structure if no
 				 * structure cannot be retrieved from the server.
 				 */
-				ImportTypeDeclarationsWizard.prototype.loadFromUrl = function(
-						structure) {
+				ImportTypeDeclarationsWizard.prototype.loadFromUrl = function(structure) {
 
 					if ( !this.urlTextInput.val()) {
 						this.urlTextInput.addClass("error");
@@ -91,7 +89,7 @@ define(
 									}),
 									{
 										"success" : function(serverData) {
-											jQuery.proxy(view.setTypeDeclarations, view)(serverData);
+											jQuery.proxy(view.setSchema, view)(serverData);
 											jQuery("body").css("cursor", "auto");
 										},
 										"error" : function() {
@@ -106,7 +104,7 @@ define(
 												view.portSelect.empty();
 												view.operationSelect.empty();
 											} else {
-												jQuery.proxy(view.setTypeDeclarations, view)(structure);
+												jQuery.proxy(view.setSchema, view)(structure);
 											}
 										}
 									});
@@ -115,135 +113,78 @@ define(
 				/**
 				 *
 				 */
-				ImportTypeDeclarationsWizard.prototype.setTypeDeclarations = function(
-						typeDeclarations) {
-					this.typeDeclarations = typeDeclarations;
+				ImportTypeDeclarationsWizard.prototype.setSchema = function(schema) {
+					this.schema = schema;
 					m_utils.debug("===> Type Declarations");
-					m_utils.debug(typeDeclarations);
+					m_utils.debug(schema);
 
 					this.tableBody.empty();
 
-					for ( var name in this.typeDeclarations.elements) {
-						var element = this.typeDeclarations.elements[name];
+					for ( var name in this.schema.elements) {
+						var element = this.schema.elements[name];
 
 						var path = "element-" + name.replace(/:/g, "-");
 
-						var row = jQuery("<tr id='" + path + "'></tr>");
-
-						jQuery("<td><span class='data-element'>" + element.name + "</span></td>").appendTo(row);
-						jQuery("<td>" + element.name + "</td>").appendTo(row);
-						jQuery("<td></td>").appendTo(row);
+						// TODO element's schema type
+						var row = m_structuredTypeBrowser.generateChildElementRow("element-", element, undefined,
+								function(row, element, schemaType) {
+							jQuery("<td><span class='data-element'>" + element.name + "</span></td>").appendTo(row);
+							jQuery("<td>" + element.type + "</td>").appendTo(row);
+							jQuery("<td></td>").appendTo(row);
+						});
 
 						row.data("element", element);
 
+						row.addClass("top-level");
 						this.tableBody.append(row);
 
-						if (element.body != null) {
-							this.populateRecursively(element.body.elements, path, true);
-						}
+						// TODO drill into elements, too (requires element's schemaType, see above)
+//						m_structuredTypeBrowser.insertChildElementRowsEagerly(row);
 					}
 
-					for ( var name in this.typeDeclarations.types) {
-						var type = this.typeDeclarations.types[name];
+					var view = this;
+					for ( var name in this.schema.types) {
+						var type = this.schema.types[name];
+
+						var schemaType = m_typeDeclaration.resolveSchemaTypeFromSchema(name, this.schema);
 
 						var path = "type-" + name.replace(/:/g, "-");
 
-						var row = jQuery("<tr id='" + path + "'></tr>");
+						var row = m_structuredTypeBrowser.generateChildElementRow("type-", type, schemaType,
+								function(row, element, schemaType) {
 
-						jQuery("<td><span class='data-element'>" + type.name + "</span></td>").appendTo(row);
-						jQuery("<td>" + type.name + "</td>").appendTo(row);
-						jQuery("<td></td>").appendTo(row);
+							jQuery("<td><span class='data-element'>" + type.name + "</span></td>").appendTo(row);
+							jQuery("<td>" + type.name + "</td>").appendTo(row);
+							jQuery("<td></td>").appendTo(row);
 
-						row.data("typeDeclaration", type);
+							row.data("typeDeclaration", type);
+						});
+						row.addClass("top-level");
+						view.tableBody.append(row);
 
-						this.tableBody.append(row);
-
-						if (type.body != null) {
-							this.populateRecursively(type.body.elements, path, true);
-						}
+						m_structuredTypeBrowser.insertChildElementRowsEagerly(row);
 					}
 
 					this.tree.tableScroll({
 						height : 150
 					});
 					this.tree.treeTable({
-						indent: 14
+						indent: 14,
+						onNodeShow: function() {
+							m_structuredTypeBrowser.insertChildElementRowsLazily(jQuery(this));
+						}
 					});
 
-					jQuery("table#typeDeclarationsTable tbody tr").mousedown(
-							function() {
-								// allow multi-select
-								jQuery(this).toggleClass("selected");
-							});
+					jQuery("table#typeDeclarationsTable tbody tr.top-level").mousedown(function() {
+						// allow multi-select, but restrict to top-level entries
+						jQuery(this).toggleClass("selected");
+					});
 				};
 
 				/**
 				 *
 				 */
-				ImportTypeDeclarationsWizard.prototype.populateRecursively = function(
-						elements, parentPath, readonly) {
-					if (elements == null) {
-						return;
-					}
-
-					for ( var childElement in elements) {
-						var path = parentPath + "."
-								+ elements[childElement].name;
-
-						var content = "<tr id='" + path + "' class='child-of-"
-								+ parentPath + "'>";
-
-						content += "<td class='elementCell'>";
-						content += "<span class='data-element'>"
-								+ elements[childElement].name + "</span>";
-						content += "</td>";
-						content += "<td class='typeCell'>";
-
-						if (readonly) {
-							content += elements[childElement].type;
-						} else {
-							content += this
-									.getTypeSelectList(elements[childElement].type);
-						}
-
-						content += "</td>"
-								+ "<td align='right' class='cardinalityCell'>";
-
-						// many, required, optional
-						if (readonly) {
-							if (elements[childElement].cardinality == "optional") {
-								content += "Optional";
-							} else if (elements[childElement].cardinality == "required") {
-								content += "Required";
-							} else if (elements[childElement].cardinality == "many") {
-								content += "Many";
-							}
-						} else {
-							content += ("<select size='1'><option value='1'"
-									+ (elements[childElement].cardinality == "1" ? "selected"
-											: "")
-									+ ">Required</option><option value='N'"
-									+ (elements[childElement].cardinality == "N" ? "selected"
-											: "") + ">Many</option></select>");
-						}
-
-						content += "</td></tr>";
-
-						this.tableBody.append(content);
-
-						if (elements[childElement].type != null) {
-							this
-									.populateRecursively(
-											elements[childElement].children,
-											path, true);
-						}
-					}
-				};
-
-				/**
-				 *
-				 */
-				ImportTypeDeclarationsWizard.prototype.import = function() {
+				ImportTypeDeclarationsWizard.prototype.performImport = function() {
 
 					// collect selected types
 					var typeDeclarations = [];
@@ -271,7 +212,7 @@ define(
 												type: {
 													classifier: "ExternalReference",
 													location: view.urlTextInput.val(),
-													xref: "{" + view.typeDeclarations.targetNamespace + "}" + this.name
+													xref: "{" + view.schema.targetNamespace + "}" + this.name
 												}
 											}
 										}));
