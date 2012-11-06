@@ -59,6 +59,7 @@ define([ "m_utils", "m_constants" ], function(m_utils, m_constants) {
 			this.id = id;
 			this.name = name;
 			this.eventType = eventType;
+			this.attributes = {};
 		};
 	}
 });
