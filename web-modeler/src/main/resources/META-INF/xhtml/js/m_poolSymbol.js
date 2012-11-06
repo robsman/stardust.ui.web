@@ -524,6 +524,8 @@ define(
 				 *
 				 */
 				PoolSymbol.prototype.adjustChildSymbols = function() {
+					var topMargin = m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
+							+ m_constants.POOL_SWIMLANE_MARGIN;
 					if (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
 						var currentX = this.x
 								+ m_constants.POOL_SWIMLANE_MARGIN;
@@ -548,17 +550,19 @@ define(
 
 						for ( var n in this.laneSymbols) {
 							var dX = currentX - this.laneSymbols[n].x;
+							var laneYMargin = topMargin - this.laneSymbols[n].y
 							if (dX != 0) {
 								this.laneSymbols[n].moveBy(dX, 0);
 							}
-							this.laneSymbols[n].y = this.y
-									+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
-									+ m_constants.POOL_SWIMLANE_MARGIN;
+							if (laneYMargin > 0) {
+								this.laneSymbols[n].moveBy(0, laneYMargin);
+							}
 							currentX += this.laneSymbols[n].width;
 							currentX += m_constants.POOL_SWIMLANE_MARGIN;
 
-							for (var c in this.laneSymbols[n].containedSymbols) {
-								this.laneSymbols[n].containedSymbols[c].moveBy(dX, dY);
+							for ( var c in this.laneSymbols[n].containedSymbols) {
+								this.laneSymbols[n].containedSymbols[c].moveBy(
+										dX, dY);
 							}
 
 							this.laneSymbols[n].adjustGeometry();
@@ -570,9 +574,7 @@ define(
 						for ( var n in this.laneSymbols) {
 							var dY = currentY - this.laneSymbols[n].y;
 
-							this.laneSymbols[n].x = this.x
-									+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
-									+ m_constants.POOL_SWIMLANE_MARGIN;
+							this.laneSymbols[n].x = this.x + topMargin;
 							if (dY != 0) {
 								this.laneSymbols[n].moveBy(0, dY);
 							}

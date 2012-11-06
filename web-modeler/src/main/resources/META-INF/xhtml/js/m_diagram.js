@@ -797,8 +797,7 @@ define(
 								m_utils.debug("Changed symbol to:");
 								m_utils.debug(symbol);
 								symbol.refresh();
-								if ((command.isUndo || command.isRedo)
-										&& symbol.type == m_constants.SWIMLANE_SYMBOL) {
+								if (symbol.type == m_constants.SWIMLANE_SYMBOL) {
 									// When swimlane co-ordinates change in Undo/Redo,
 									// PoolSymbol needs adjustment.
 									symbol.parentSymbol

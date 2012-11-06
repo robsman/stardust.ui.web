@@ -3,6 +3,7 @@ package org.eclipse.stardust.ui.web.modeler.marshaling;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
@@ -67,9 +68,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import static org.eclipse.emf.common.util.ECollections.sort;
+
 /**
  * IPP XPDL marshaller.
- * 
+ *
  * @author Marc.Gille
  * @author Robert Sauer
  */
@@ -84,7 +87,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
    /**
-    * 
+    *
     * @param modelElement
     * @return
     */
@@ -367,12 +370,12 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       return processJson;
    }
-   
+
    /**
     * To resolve inconsistency between Access Point and
-    * 
+    *
     *  TODO Review and move to Facade
-    *  
+    *
     * @param type
     * @return
     */
@@ -397,7 +400,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param laneSymbol
     * @return
     */
@@ -466,6 +469,16 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
          JsonArray laneSymbols = new JsonArray();
          poolSymbolJson.add(ModelerConstants.LANE_SYMBOLS, laneSymbols);
+
+         // Sort the lane Symbols based on 'X' co-ordinates
+         sort(poolSymbol.getChildLanes(), new Comparator<LaneSymbol>()
+         {
+            @Override
+            public int compare(LaneSymbol o1, LaneSymbol o2)
+            {
+               return (int) ((int) o1.getXPos() - (int) o2.getXPos());
+            }
+         });
 
          for (LaneSymbol laneSymbol : poolSymbol.getChildLanes())
          {
@@ -608,7 +621,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @return
     */
@@ -787,7 +800,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @return
     */
@@ -875,7 +888,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -929,7 +942,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -981,7 +994,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param data
     * @return
     */
@@ -1100,7 +1113,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1451,7 +1464,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param annotationSymbol
     * @return
     */
@@ -1500,7 +1513,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param dataMappingConnection
     * @return
     */
@@ -1625,7 +1638,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -1767,7 +1780,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -2101,7 +2114,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -2132,7 +2145,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -2152,7 +2165,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     * @throws JSONException
@@ -2186,7 +2199,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                "carnot:engine:type"))
          {
             // For Access Points
-            
+
             // TODO Very ugly storage
 
             json.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY,
@@ -2196,7 +2209,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                "carnot:engine:dataType"))
          {
             // For Access Points
-            
+
             // TODO Very ugly storage
 
             String encodedId = getModelBuilderFacade().getAttributeValue(attribute);
@@ -2232,9 +2245,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * TODO From DynamicConnectionCommand. Refactor?
-    * 
+    *
     * @param activity
     * @return
     */
