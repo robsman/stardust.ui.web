@@ -7,6 +7,7 @@ import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
+import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
 
 @Component
@@ -39,13 +40,20 @@ public class DataMappingTypeChangeTracker implements ChangePostprocessor
    {
       if (candidate instanceof DataMappingType)
       {
-         DataMappingType dataMapping = (DataMappingType)candidate;
+         DataMappingType dataMapping = (DataMappingType) candidate;
 
-         for (DataSymbolType dataSymbol : dataMapping.getData().getDataSymbols())
+         DataType data = dataMapping.getData();
+         if(data != null)
          {
-            for (DataMappingConnectionType dataMappingConnection : dataSymbol.getDataMappings())
+            for (DataSymbolType dataSymbol : data.getDataSymbols())
             {
-               change.markAlsoModified(dataMappingConnection);
+               for (DataMappingConnectionType dataMappingConnection : dataSymbol.getDataMappings())
+               {
+                  if ( !change.isChangedElement(dataMappingConnection))
+                  {
+                     change.markAlsoModified(dataMappingConnection);
+                  }               
+               }
             }
          }
          
