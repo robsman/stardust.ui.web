@@ -143,7 +143,11 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 		 *
 		 */
 		Data.prototype.isSupportedDataType = function() {
-			return m_elementConfiguration.isSupportedDataType(this.dataType);
+			if (this.dataType) {
+				return m_elementConfiguration.isSupportedDataType(this.dataType);
+			}
+
+			return false;
 		};
 	}
 });
