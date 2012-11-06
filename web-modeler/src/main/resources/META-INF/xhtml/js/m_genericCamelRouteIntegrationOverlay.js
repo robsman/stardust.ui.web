@@ -413,19 +413,19 @@ define(
 
 					jQuery(xmlObject).find("route").each(function() {
 					jQuery(this).children().each(function() {
-//						var toUri = jQuery(this).attr("uri");
-//
-//						if (toUri.indexOf("ipp") < 0) {
-//							additionalRoutes += jQuery(this).content();
-//						}
+						var toUri = jQuery(this).attr("uri");
 
-						m_utils.debug(jQuery(this));
-						additionalRoutes += jQuery(this).toString();
+						if (toUri == null || toUri.indexOf("ipp") < 0) {
+							m_utils.debug("Tag: " + jQuery(this).toString());
+							m_utils.debug(jQuery(this));
+							
+							additionalRoutes += jQuery(this).toString() + "\n";
+						}
 					});
 					});					
 
 					this.endpointUriTextarea.val(fromUri);
-					//this.additionalRouteTextarea.val(additionalRoutes);
+					this.additionalRouteTextarea.val(additionalRoutes);
 				};
 
 				/**

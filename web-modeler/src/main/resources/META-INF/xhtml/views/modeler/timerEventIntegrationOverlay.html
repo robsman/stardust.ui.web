@@ -7,12 +7,28 @@
 <body>
 	<table>
 		<tr>
-			<td><label for="targetProcessingTimeInput">Target
-					Processing Time</label></td>
-			<td><input id="targetProcessingTimeInput" type="text"
-				style="width: 50px;" />
+			<td><label for="repeatIntervalInput">Repeat Interval</label>
 			</td>
-			<td>h</td>
+			<td><input id="repeatIntervalInput" type="text"
+				style="width: 50px;" /></td>
+			<td><select id="repeatIntervalUnitSelect">
+			<option value="ms">Milliseconds</option>
+			<option value="s">Seconds</option>
+			<option value="m">Minutes</option>
+			<option value="h">Hours</option>
+			<option value="d">Days</option>
+			<option value="w">Weeks</option>
+			<option value="w">Months</option>
+			</select>
+			</td>
+		</tr>
+		<tr>
+			<td><label for="repeatCountInput">Repeat Count</label>
+			</td>
+			<td><input id="repeatCountInput" type="text"
+				style="width: 50px;" /></td>
+			<td>
+			</td>
 		</tr>
 	</table>
 </body>
