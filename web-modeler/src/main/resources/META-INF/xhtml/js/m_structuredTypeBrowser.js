@@ -7,14 +7,18 @@ define(
 
 			function generateChildElementRow(parentPath, element, schemaType, rowInitializer) {
 
-				var childPath = (parentPath || "") + "-" + element.name.replace(/:/g, "-");
+				var childPath = (parentPath || "") + "-" + element.name.replace(/[:<>]/g, "-");
 				var childRow = jQuery("<tr id='" + childPath + "'></tr>");
 
 				if (rowInitializer) {
 					rowInitializer(childRow, element, schemaType);
 				} else {
 
-					jQuery("<td><span class='data-element'>" + element.name + "</span></td>").appendTo(childRow);
+					var nameColumn = jQuery("<td><span class='data-element'></span></td>");
+					// set this way to ensure content is properly encoded
+					nameColumn.children("td span").text(element.name);
+					nameColumn.appendTo(childRow);
+
 					jQuery("<td>" + element.type + "</td>").appendTo(childRow);
 					jQuery("<td>" + element.cardinality + "</td>").appendTo(childRow);
 
@@ -34,13 +38,23 @@ define(
 				return childRow;
 			}
 
-			function generateChildElementRows(parentPath, schemaType, rowInitializer) {
+			function generateChildElementRows(parentPath, schemaTypeOrElements, rowInitializer) {
 				var childRows = [];
 
-				if ((schemaType != null) && (schemaType.isStructure())) {
+				var elements = {};
+				if (schemaTypeOrElements) {
+					if ((typeof schemaTypeOrElements.getElements === "function") && (typeof schemaTypeOrElements.isStructure === "function")) {
+						elements = schemaTypeOrElements.isStructure() ? schemaTypeOrElements.getElements() : {};
+					} else {
+						elements = schemaTypeOrElements;
+					}
+				}
+				if (elements) {
 					// append child rows
-					jQuery.each(schemaType.getElements(), function(i, element) {
-						var childSchemaType = schemaType.resolveElementType(element.name);
+					jQuery.each(elements, function(i, element) {
+						var childSchemaType = (schemaTypeOrElements.resolveElementType)
+							? schemaTypeOrElements.resolveElementType(element.name)
+							: undefined;
 						var childRow = generateChildElementRow(parentPath, element, childSchemaType, rowInitializer);
 
 						childRows.push(childRow);

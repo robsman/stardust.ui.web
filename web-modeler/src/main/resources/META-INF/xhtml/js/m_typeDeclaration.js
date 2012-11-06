@@ -321,11 +321,15 @@ define(
 						&& ((this.type.body.classifier === 'sequence') || (this.type.body.classifier === 'choice'));
 			};
 
+			SchemaType.prototype.isEnumeration = function() {
+				return (null != this.type) && (null != this.type.facets);
+			};
+
 			SchemaType.prototype.getElements = function() {
 				if (this.isStructure()) {
 					return this.type.body.elements;
 				} else {
-					return this.type.facets | [];
+					return this.type.facets || [];
 				}
 			};
 

@@ -228,7 +228,9 @@ define(
 					var n = 0;
 
 					var view = this;
-					var roots = m_structuredTypeBrowser.generateChildElementRows(null, this.typeDeclaration.asSchemaType(),
+					var rootSchemaType = this.typeDeclaration.asSchemaType();
+					var roots = m_structuredTypeBrowser.generateChildElementRows(null,
+							rootSchemaType.isStructure() ? rootSchemaType : rootSchemaType.getElements(),
 							jQuery.proxy(this.initializeRow, view));
 
 					jQuery.each(roots, function(i, parentRow) {
