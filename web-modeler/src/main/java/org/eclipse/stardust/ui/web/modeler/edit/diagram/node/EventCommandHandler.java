@@ -37,6 +37,7 @@ import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
@@ -83,7 +84,10 @@ public class EventCommandHandler
             parentLaneSymbol.getStartEventSymbols().add(startEventSymbol);
 
             //Add a manual trigger by default
-            newManualTrigger(processDefinition).accessibleTo(parentLaneSymbol.getParticipant()).build();
+            TriggerType manualTrigger = newManualTrigger(processDefinition) //
+                  .accessibleTo(parentLaneSymbol.getParticipant())
+                  .build();
+            startEventSymbol.setTrigger(manualTrigger);
          }
          else
          {
