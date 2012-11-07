@@ -264,7 +264,7 @@ define(function() {
 		STOP_EVENT_TYPE : "stopEvent",
 		GENERIC_CAMEL_ROUTE_EVENT_CLASS : "genericCamelRouteEvent",
 		TIMER_EVENT_CLASS : "timerEvent",
-		MAIL_EVENT_CLASS : "mailEvent",
+		EMAIL_EVENT_CLASS : "emailEvent",
 		MESSAGE_EVENT_CLASS : "messageEvent",
 		FILE_EVENT_CLASS : "fileEvent",
 		EVENT_DEFAULT_RADIUS : 12,
