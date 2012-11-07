@@ -1192,14 +1192,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
             System.out.println("Context: " + contextId);
 
-            // TODO Facade methods do not support interactive contexts yet
-            if ( !contextId.equals(ModelerConstants.APPLICATION_CONTEXT_KEY))
-            {
-               //As contexts are removed from the application they have to be re-created - maybe here?
-               ContextType contextType = getModelBuilderFacade().createApplicationContext(application, contextId);
-               continue;
-            }
-
+            ContextType context = getModelBuilderFacade().createApplicationContext(application, contextId);
             JsonObject contextJson = contextsJson.get(contextId).getAsJsonObject();
             JsonArray accessPointsJson = contextJson.get(
                   ModelerConstants.ACCESS_POINTS_PROPERTY).getAsJsonArray();
@@ -1229,6 +1222,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                            ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY).getAsString();
                      accessPoint = getModelBuilderFacade().createPrimitiveAccessPoint(
                            application, id, name, primitiveDataType, direction);
+                     
+                     context.getAccessPoint().add(accessPoint);
                   }
                   else if (dataType.equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
                   {
@@ -1243,6 +1238,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
                      accessPoint = getModelBuilderFacade().createStructuredAccessPoint(
                            application, id, name, structuredDataFullId, direction);
+                     
+                     context.getAccessPoint().add(accessPoint);
                   }
                   else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
                   {
