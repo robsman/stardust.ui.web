@@ -43,6 +43,7 @@ define(
 						application) {
 					this.id = "uiMashupApplicationView";
 					this.currentAccessPoint = null;
+					this.urlInput = jQuery("#urlInput");
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 							.create({
 								scope : "uiMashupApplicationView",
@@ -52,6 +53,10 @@ define(
 								supportsDescriptors : false,
 								supportsDataTypeSelection : true
 							});
+
+					this.registerInputForModelElementAttributeChangeSubmission(
+							this.urlInput,
+							"carnot:engine:ui:externalWebApp:uri");
 
 					this.initializeModelElementView(application);
 				};
@@ -76,6 +81,8 @@ define(
 
 					this.initializeModelElement(application);
 
+					this.urlInput
+					.val(this.application.attributes["carnot:engine:ui:externalWebApp:uri"]);
 					this.parameterDefinitionsPanel
 							.setScopeModel(this.application.model);
 					this.parameterDefinitionsPanel
