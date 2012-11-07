@@ -1221,9 +1221,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                      String primitiveDataType = accessPointJson.get(
                            ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY).getAsString();
                      accessPoint = getModelBuilderFacade().createPrimitiveAccessPoint(
-                           application, id, name, primitiveDataType, direction);
-                     
-                     context.getAccessPoint().add(accessPoint);
+                           context, id, name, primitiveDataType, direction);
                   }
                   else if (dataType.equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
                   {
@@ -1237,9 +1235,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                      }
 
                      accessPoint = getModelBuilderFacade().createStructuredAccessPoint(
-                           application, id, name, structuredDataFullId, direction);
-                     
-                     context.getAccessPoint().add(accessPoint);
+                           context, id, name, structuredDataFullId, direction);
                   }
                   else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
                   {
