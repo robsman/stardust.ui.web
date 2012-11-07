@@ -12,6 +12,7 @@
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import static org.eclipse.stardust.common.CollectionUtils.isEmpty;
+import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
@@ -1311,26 +1312,39 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             }
 
             // update "main" element end type
+            List<XSDElementDeclaration> changedElements = newArrayList();
             for (XSDElementDeclaration elementDeclaration : schema.getElementDeclarations())
             {
                if (elementDeclaration.getName().equals(oldId))
                {
-                  if ((null != elementDeclaration.getType())
-                        && elementDeclaration.getTypeDefinition().getName().equals(oldId))
-                  {
-                     elementDeclaration.getTypeDefinition().setName(
-                           typeDeclaration.getId());
-                  }
-
-                  elementDeclaration.setName(typeDeclaration.getId());
+                  // file for later change to avoid concurrent modification exceptions
+                  changedElements.add(elementDeclaration);
                }
             }
+            for (XSDElementDeclaration elementDeclaration : changedElements)
+            {
+               if ((null != elementDeclaration.getType())
+                     && elementDeclaration.getTypeDefinition().getName().equals(oldId))
+               {
+                  elementDeclaration.getTypeDefinition().setName(
+                        typeDeclaration.getId());
+               }
+
+               elementDeclaration.setName(typeDeclaration.getId());
+            }
+
+            List<XSDTypeDefinition> renamedTypes = newArrayList();
             for (XSDTypeDefinition typeDefinition : schema.getTypeDefinitions())
             {
                if (typeDefinition.getName().equals(oldId))
                {
-                  typeDefinition.setName(typeDeclaration.getId());
+                  // file for later change to avoid concurrent modification exceptions
+                  renamedTypes.add(typeDefinition);
                }
+            }
+            for (XSDTypeDefinition typeDefinition : renamedTypes)
+            {
+               typeDefinition.setName(typeDeclaration.getId());
             }
 
             // TODO adjust cross references
@@ -1392,12 +1406,28 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          JsonObject defJson = (JsonObject) entry.getValue();
          boolean isComplexType = defJson.has("body");
 
+         int contentsIdx = schema.getContents().size();
+         int typeIdx = schema.getTypeDefinitions().size();
+         if ((isComplexType && (def instanceof XSDSimpleTypeDefinition))
+               || ( !isComplexType && (def instanceof XSDComplexTypeDefinition)))
+         {
+            // coerce between complex/simple type (insert as same position as before)
+            contentsIdx = schema.getContents().indexOf(def);
+            typeIdx = schema.getTypeDefinitions().indexOf(def);
+            schema.getContents().remove(contentsIdx);
+            typesIndex.remove(entry.getKey());
+            def = null;
+         }
+
          if (def == null)
          {
             def = isComplexType
                   ? XSDFactory.eINSTANCE.createXSDComplexTypeDefinition()
                   : XSDFactory.eINSTANCE.createXSDSimpleTypeDefinition();
-            schema.getTypeDefinitions().add(def);
+            schema.getContents().add(contentsIdx, def);
+            schema.getTypeDefinitions().move(typeIdx, def);
+
+            typesIndex.put(entry.getKey(), def);
          }
 
          def.setName(defJson.getAsJsonPrimitive("name").getAsString());
@@ -1488,6 +1518,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       JsonObject bodyJson = json.getAsJsonObject("body");
       XSDComplexTypeContent content = def.getContent();
+
+      if (null == content)
+      {
+         content = XSDFactory.eINSTANCE.createXSDParticle();
+         ((XSDParticle) content).setContent(XSDFactory.eINSTANCE.createXSDModelGroup());
+         def.setContent(content);
+      }
 
       if (content instanceof XSDParticle)
       {
