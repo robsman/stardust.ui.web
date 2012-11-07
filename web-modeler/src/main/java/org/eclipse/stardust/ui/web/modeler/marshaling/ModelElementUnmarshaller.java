@@ -1103,6 +1103,15 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          // startEventSymbol.setLabel(startEventJson.get(ModelerConstants.NAME_PROPERTY)
          // .getAsString());
       }
+
+      if (startEventJson.has(ModelerConstants.EVENT_CLASS_PROPERTY))
+      {
+         System.out.println("Setting eventClass to " + startEventJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString());
+         
+         getModelBuilderFacade().setAttribute(startEventSymbol.getModelElement(), "stardust::engine:eventClass",
+               startEventJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString());
+      }
+
       storeAttributes(startEventSymbol.getModelElement(), startEventJson);
       storeDescription(startEventSymbol.getModelElement(), startEventJson);
    }

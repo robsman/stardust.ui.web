@@ -8,46 +8,51 @@
  * documentation
  ******************************************************************************/
 
-define(
-		[ "m_utils", "m_constants", "m_commandsController", "m_command",
-				"m_model", "m_accessPoint", "m_parameterDefinitionsPanel" ],
-		function(m_utils, m_constants, m_commandsController, m_command,
-				m_model, m_accessPoint, m_parameterDefinitionsPanel) {
+define([ "m_utils", "m_constants", "m_commandsController", "m_command",
+		"m_model", "m_accessPoint", "m_parameterDefinitionsPanel", "m_eventIntegrationOverlay"], function(
+		m_utils, m_constants, m_commandsController, m_command, m_model,
+		m_accessPoint, m_parameterDefinitionsPanel, m_eventIntegrationOverlay) {
 
-			return {
-				create : function(page, id) {
-					var overlay = new TimerEventIntegrationOverlay();
+	return {
+		create : function(page, id) {
+			var overlay = new TimerEventIntegrationOverlay();
 
-					overlay.initialize(page, id);
+			overlay.initialize(page, id);
 
-					return overlay;
-				}
-			};
+			return overlay;
+		}
+	};
 
-			/**
-			 * 
-			 */
-			function TimerEventIntegrationOverlay() {
+	/**
+	 * 
+	 */
+	function TimerEventIntegrationOverlay() {
+		var eventIntegrationOverlay = m_eventIntegrationOverlay.create();
 
-				/**
-				 * 
-				 */
-				TimerEventIntegrationOverlay.prototype.initialize = function(page,
-						id) {
-					this.page = page;
-					this.id = id;
-				};
+		m_utils.inheritFields(this, eventIntegrationOverlay);
+		m_utils.inheritMethods(TimerEventIntegrationOverlay.prototype,
+				eventIntegrationOverlay);
 
-				/**
-				 * 
-				 */
-				TimerEventIntegrationOverlay.prototype.activate = function() {
-				};
+		/**
+		 * 
+		 */
+		TimerEventIntegrationOverlay.prototype.initialize = function(page, id) {
+			this.page = page;
+			this.id = id;
+		};
 
-				/**
-				 * 
-				 */
-				TimerEventIntegrationOverlay.prototype.update = function() {
-				};
-			}
-		});
+		/**
+		 * 
+		 */
+		TimerEventIntegrationOverlay.prototype.activate = function() {
+			this.submitEventClassChanges();
+		};
+
+		/**
+		 * 
+		 */
+		TimerEventIntegrationOverlay.prototype.update = function() {
+			this.submitEventClassChanges();
+		};
+	}
+});

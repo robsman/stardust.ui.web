@@ -8,11 +8,10 @@
  * documentation
  ******************************************************************************/
 
-define(
-		[ "m_utils", "m_constants", "m_commandsController", "m_command",
-				"m_model", "m_accessPoint", "m_parameterDefinitionsPanel" ],
+define([ "m_utils", "m_constants", "m_commandsController", "m_command",
+		"m_model", "m_accessPoint", "m_parameterDefinitionsPanel", "m_eventIntegrationOverlay" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
-				m_model, m_accessPoint, m_parameterDefinitionsPanel) {
+				m_model, m_accessPoint, m_parameterDefinitionsPanel, m_eventIntegrationOverlay) {
 
 			return {
 				create : function(page, id) {
@@ -28,12 +27,18 @@ define(
 			 * 
 			 */
 			function MessageEventIntegrationOverlay() {
+				var eventIntegrationOverlay = m_eventIntegrationOverlay
+						.create();
+
+				m_utils.inheritFields(this, eventIntegrationOverlay);
+				m_utils.inheritMethods(MessageEventIntegrationOverlay.prototype,
+						eventIntegrationOverlay);
 
 				/**
 				 * 
 				 */
-				MessageEventIntegrationOverlay.prototype.initialize = function(page,
-						id) {
+				MessageEventIntegrationOverlay.prototype.initialize = function(
+						page, id) {
 					this.page = page;
 					this.id = id;
 				};
@@ -42,12 +47,14 @@ define(
 				 * 
 				 */
 				MessageEventIntegrationOverlay.prototype.activate = function() {
+					this.submitEventClassChanges();
 				};
 
 				/**
 				 * 
 				 */
 				MessageEventIntegrationOverlay.prototype.update = function() {
+					this.submitEventClassChanges();
 				};
 			}
 		});

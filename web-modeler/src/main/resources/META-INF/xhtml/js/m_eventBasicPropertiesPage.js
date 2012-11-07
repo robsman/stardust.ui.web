@@ -95,7 +95,8 @@ define(
 														this).attr("id")];
 												page.overlayControllers[jQuery(
 														this).attr("id")] = extension.provider
-														.create(page, jQuery(this)
+														.create(page, jQuery(
+																this)
 																.attr("id"));
 												m_utils
 														.debug("Overlay loaded: "
@@ -147,15 +148,15 @@ define(
 					if (this.propertiesPanel.element.modelElement.eventType == m_constants.START_EVENT_TYPE) {
 						this.startEventPanel.removeAttr("class");
 
-						// TODO Make more generic
-
-						if (this.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelContextId"] != null) {
+						if (this.propertiesPanel.element.modelElement.eventClass != null) {
 							this
-									.setOverlay("genericCamelRouteIntegrationOverlay");
+									.setOverlay(this.propertiesPanel.element.modelElement.eventClass);
+						} else if (this.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelContextId"] != null) {
+							this.setOverlay("genericCamelRoute");
 						} else if (this.propertiesPanel.element.modelElement.documentDataId != null) {
-							this.setOverlay("scanEventIntegrationOverlay");
+							this.setOverlay("scanEvent");
 						} else {
-							this.setOverlay("manualTriggerIntegrationOverlay");
+							this.setOverlay("manualTrigger");
 						}
 					} else {
 						this.startEventPanel.attr("class", "invisible");

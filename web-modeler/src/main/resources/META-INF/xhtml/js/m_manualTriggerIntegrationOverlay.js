@@ -10,9 +10,9 @@
 
 define(
 		[ "m_utils", "m_constants", "m_commandsController", "m_command",
-				"m_model", "m_accessPoint", "m_parameterDefinitionsPanel" ],
+				"m_model", "m_accessPoint", "m_parameterDefinitionsPanel","m_eventIntegrationOverlay"],
 		function(m_utils, m_constants, m_commandsController, m_command,
-				m_model, m_accessPoint, m_parameterDefinitionsPanel) {
+				m_model, m_accessPoint, m_parameterDefinitionsPanel, m_eventIntegrationOverlay) {
 
 			return {
 				create : function(page, id) {
@@ -28,6 +28,13 @@ define(
 			 * 
 			 */
 			function ManualTriggerIntegrationOverlay() {
+				var eventIntegrationOverlay = m_eventIntegrationOverlay
+						.create();
+
+				m_utils.inheritFields(this, eventIntegrationOverlay);
+				m_utils.inheritMethods(ManualTriggerIntegrationOverlay.prototype,
+						eventIntegrationOverlay);
+
 				/**
 				 * 
 				 */
@@ -51,6 +58,7 @@ define(
 				 * 
 				 */
 				ManualTriggerIntegrationOverlay.prototype.activate = function() {
+					this.submitEventClassChanges();
 				};
 
 				/**
@@ -67,6 +75,8 @@ define(
 						this.participantOutput
 								.append("Starting participant to be defined.</b>");
 					}
+
+					this.submitEventClassChanges();
 				};
 			}
 		});

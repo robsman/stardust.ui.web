@@ -3,43 +3,43 @@ define(["m_manualTriggerIntegrationOverlay", "m_timerEventIntegrationOverlay", "
 	return {
 		applicationIntegrationOverlay: [],
 		eventIntegrationOverlay: [{
-			id : "manualTriggerIntegrationOverlay",
+			id : "manualTrigger",
 			name : "Manual Start by User",
 			pageHtmlUrl: "manualTriggerIntegrationOverlay.html",
 			provider : m_manualTriggerIntegrationOverlay
 		},
 		{
-			id : "timerEventIntegrationOverlay",
+			id : "timerEvent",
 			name : "Timer Event",
 			pageHtmlUrl: "timerEventIntegrationOverlay.html",
 			provider : m_timerEventIntegrationOverlay
 		},
 		{
-			id : "fileEventIntegrationOverlay",
+			id : "fileEvent",
 			name : "File Event",
 			pageHtmlUrl: "fileEventIntegrationOverlay.html",
 			provider : m_fileEventIntegrationOverlay
 		},
 		{
-			id : "emailEventIntegrationOverlay",
+			id : "emailEvent",
 			name : "EMail Event",
 			pageHtmlUrl: "emailEventIntegrationOverlay.html",
 			provider : m_emailEventIntegrationOverlay
 		},
 		{
-			id : "messageEventIntegrationOverlay",
+			id : "messageEvent",
 			name : "Message Event",
 			pageHtmlUrl: "messageEventIntegrationOverlay.html",
 			provider : m_messageEventIntegrationOverlay
 		},
 		{
-			id : "scanEventIntegrationOverlay",
+			id : "scanEvent",
 			name : "Scan Event",
 			pageHtmlUrl: "scanEventIntegrationOverlay.html",
 			provider : m_scanEventIntegrationOverlay
 		},
 		{
-			id : "genericCamelRouteIntegrationOverlay",
+			id : "genericCamelRoute",
 			name : "Generic Camel Route Event",
 			pageHtmlUrl: "genericCamelRouteIntegrationOverlay.html",
 			provider : m_genericCamelRouteIntegrationOverlay

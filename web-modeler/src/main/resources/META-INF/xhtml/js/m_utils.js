@@ -54,7 +54,9 @@ define(
 
 				formatDate : formatDate,
 
-				textWrap : textWrap
+				textWrap : textWrap,
+				
+				xmlToString: xmlToString
 			};
 
 			function getLastIndexOf(str, searchStr) {
@@ -708,4 +710,23 @@ define(
 
 				return !(y % 4) && (y % 100) || !(y % 400) ? true : false;
 			}
+
+			/**
+			 * Stringifies the content of an entire XML tag.
+			 */
+			function xmlToString(xmlData) 
+			{
+			    var xmlString;
+
+			    // IE
+			    if (window.ActiveXObject){
+			        xmlString = xmlData.xml;
+			    }
+			    // Code for Mozilla, Firefox, Opera, etc.
+			    else{
+			        xmlString = (new XMLSerializer()).serializeToString(xmlData[0]);
+			    }
+			    
+			    return xmlString;
+			}   
 		});

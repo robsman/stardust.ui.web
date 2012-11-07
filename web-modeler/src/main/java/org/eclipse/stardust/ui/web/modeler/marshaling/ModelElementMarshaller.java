@@ -72,7 +72,7 @@ import static org.eclipse.emf.common.util.ECollections.sort;
 
 /**
  * IPP XPDL marshaller.
- *
+ * 
  * @author Marc.Gille
  * @author Robert Sauer
  */
@@ -87,7 +87,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
    /**
-    *
+    * 
     * @param modelElement
     * @return
     */
@@ -373,9 +373,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * To resolve inconsistency between Access Point and
-    *
-    *  TODO Review and move to Facade
-    *
+    * 
+    * TODO Review and move to Facade
+    * 
     * @param type
     * @return
     */
@@ -400,7 +400,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param laneSymbol
     * @return
     */
@@ -621,7 +621,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param activity
     * @return
     */
@@ -800,7 +800,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param activitySymbol
     * @return
     */
@@ -888,7 +888,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -933,6 +933,18 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             ModelerConstants.START_EVENT);
       eventSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
             ModelerConstants.EVENT_SYMBOL);
+
+      Object attribute = getModelBuilderFacade().getAttribute(
+            startEventSymbol.getModelElement(), "stardust::engine:eventClass");
+
+      System.out.println("eventClass attribute " + attribute);
+
+      if (attribute != null)
+      {
+         eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY,
+               getModelBuilderFacade().getAttributeValue(attribute));
+      }
+
       // eventJson.put(ID_PROPERTY,
       // String.valueOf(startEventSymbol.getModelElement().getId()));
       // loadDescription(eventJson, startEventSymbol.getModelElement());
@@ -942,7 +954,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -994,7 +1006,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param data
     * @return
     */
@@ -1113,7 +1125,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -1464,7 +1476,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param annotationSymbol
     * @return
     */
@@ -1513,7 +1525,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param dataMappingConnection
     * @return
     */
@@ -1638,7 +1650,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -1780,7 +1792,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -2114,7 +2126,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param orientation
     * @return
     */
@@ -2145,7 +2157,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param modelElementJson
     * @param element
     */
@@ -2165,7 +2177,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param element
     * @param json
     * @throws JSONException
@@ -2245,9 +2257,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * TODO From DynamicConnectionCommand. Refactor?
-    *
+    * 
     * @param activity
     * @return
     */

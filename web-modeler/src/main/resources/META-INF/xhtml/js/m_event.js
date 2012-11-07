@@ -42,6 +42,7 @@ define([ "m_utils", "m_constants" ], function(m_utils, m_constants) {
 		this.name = null;
 		this.description = null;
 		this.eventType = null;
+		this.eventClass = null;
 		this.participantId = null;
 		this.documentDataId = null;
 

@@ -413,13 +413,8 @@ define(
 
 					jQuery(xmlObject).find("route").each(function() {
 					jQuery(this).children().each(function() {
-						var toUri = jQuery(this).attr("uri");
-
-						if (toUri == null || toUri.indexOf("ipp") < 0) {
-							m_utils.debug("Tag: " + jQuery(this).toString());
-							m_utils.debug(jQuery(this));
-							
-							additionalRoutes += jQuery(this).toString() + "\n";
+						if (m_utils.xmlToString(jQuery(this)).indexOf("<from") < 0) {
+							additionalRoutes += m_utils.xmlToString(jQuery(this)) + "\n";
 						}
 					});
 					});					
