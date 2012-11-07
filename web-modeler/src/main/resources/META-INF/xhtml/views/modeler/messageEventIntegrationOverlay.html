@@ -2,15 +2,36 @@
           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>E-Mail Event</title>
+<title>Message Event</title>
 </head>
 <body>
 	<table>
 		<tr>
-			<td><label for="messageQueueNameInput">Message Queue Name</label>
+			<td><select id="typeSelect">
+					<option value="queue">Queue</option>
+					<option value="topic">Topic</option>
+			</select></td>
+			<td><input id="nameInput" type="text" style="width: 200px;" />
 			</td>
-			<td><input id="messageQueueNameInput" type="text"
-				style="width: 200px;" /></td>
+		</tr>
+	</table>
+	<table style="margin-top: 10px;">
+		<tr>
+			<td><label for="clientIdInput">Client ID</label></td>
+			<td><input id="clientIdInput" type="text" style="width: 200px;" />
+			</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><label for="selectorInput">Selector</label></td>
+			<td><input id="selectorInput" type="text" style="width: 200px;" />
+			</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><label for="recursiveInput">Recursive</label></td>
+			<td><input id="recursiveInput" type="checkbox" /></td>
+			<td></td>
 		</tr>
 	</table>
 </body>

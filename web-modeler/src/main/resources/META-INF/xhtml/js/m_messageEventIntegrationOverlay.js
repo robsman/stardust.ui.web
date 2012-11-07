@@ -39,8 +39,28 @@ define([ "m_utils", "m_constants", "m_commandsController", "m_command",
 				 */
 				MessageEventIntegrationOverlay.prototype.initialize = function(
 						page, id) {
-					this.page = page;
-					this.id = id;
+					this.initializeEventIntegrationOverlay(page, id);
+
+					this.typeSelect = this
+							.mapInputId("typeSelect");
+					this.nameInput = this
+					.mapInputId("nameInput");
+					
+					this.registerForRouteChanges(this.typeSelect);					
+					this.registerForRouteChanges(this.nameInput);					
+				};
+
+				/**
+				 * 
+				 */
+				MessageEventIntegrationOverlay.prototype.getEndpointUri = function() {
+					var uri = "jms:";
+
+					uri += this.typeSelect.val();
+					uri += ":";
+					uri += this.nameInput.val();
+
+					return uri;
 				};
 
 				/**

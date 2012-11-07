@@ -8,46 +8,66 @@
  * documentation
  ******************************************************************************/
 
-define(
-		[ "m_utils", "m_constants", "m_commandsController", "m_command",
-				"m_model", "m_accessPoint", "m_parameterDefinitionsPanel" ],
-		function(m_utils, m_constants, m_commandsController, m_command,
-				m_model, m_accessPoint, m_parameterDefinitionsPanel) {
+define([ "m_utils", "m_constants", "m_commandsController", "m_command",
+		"m_model", "m_accessPoint", "m_parameterDefinitionsPanel", "m_eventIntegrationOverlay" ], function(
+		m_utils, m_constants, m_commandsController, m_command, m_model,
+		m_accessPoint, m_parameterDefinitionsPanel, m_eventIntegrationOverlay) {
 
-			return {
-				create : function(page, id) {
-					var overlay = new EmailEventIntegrationOverlay();
+	return {
+		create : function(page, id) {
+			var overlay = new EmailEventIntegrationOverlay();
 
-					overlay.initialize(page, id);
+			overlay.initialize(page, id);
 
-					return overlay;
-				}
-			};
+			return overlay;
+		}
+	};
 
-			/**
-			 * 
-			 */
-			function EmailEventIntegrationOverlay() {
+	/**
+	 * 
+	 */
+	function EmailEventIntegrationOverlay() {
+		var eventIntegrationOverlay = m_eventIntegrationOverlay.create();
 
-				/**
-				 * 
-				 */
-				EmailEventIntegrationOverlay.prototype.initialize = function(page,
-						id) {
-					this.page = page;
-					this.id = id;					
-				};
+		m_utils.inheritFields(this, eventIntegrationOverlay);
+		m_utils.inheritMethods(EmailEventIntegrationOverlay.prototype,
+				eventIntegrationOverlay);
 
-				/**
-				 * 
-				 */
-				EmailEventIntegrationOverlay.prototype.activate = function() {
-				};
+		/**
+		 * 
+		 */
+		EmailEventIntegrationOverlay.prototype.initialize = function(page, id) {
+			this.initializeEventIntegrationOverlay(page, id);
 
-				/**
-				 * 
-				 */
-				EmailEventIntegrationOverlay.prototype.update = function() {
-				};
-			}
-		});
+			this.protocolSelect = this.mapInputId("protocolSelect");
+
+			this.registerForRouteChanges(this.protocolSelect);
+		};
+
+		/**
+		 * 
+		 */
+		EmailEventIntegrationOverlay.prototype.getEndpointUri = function() {
+			var uri = "";
+
+			uri += this.protocolSelect.val();
+			uri += ":";
+
+			return uri;
+		};
+
+		/**
+		 * 
+		 */
+		EmailEventIntegrationOverlay.prototype.activate = function() {
+			this.submitEventClassChanges();
+		};
+
+		/**
+		 * 
+		 */
+		EmailEventIntegrationOverlay.prototype.update = function() {
+			this.submitEventClassChanges();
+		};
+	}
+});
