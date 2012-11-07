@@ -306,7 +306,7 @@ define(
 						var dataItem = this.getModelElement().model.dataItems[i];
 
 						this.departmentDataSelect.append("<option value='"
-								+ dataItem.getFullId() + "'>" + dataItem.name
+								+ dataItem.id + "'>" + dataItem.name
 								+ "</option>");
 					}
 
