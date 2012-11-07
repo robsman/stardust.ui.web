@@ -72,7 +72,7 @@ import static org.eclipse.emf.common.util.ECollections.sort;
 
 /**
  * IPP XPDL marshaller.
- * 
+ *
  * @author Marc.Gille
  * @author Robert Sauer
  */
@@ -87,7 +87,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
    /**
-    * 
+    *
     * @param modelElement
     * @return
     */
@@ -373,9 +373,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * To resolve inconsistency between Access Point and
-    * 
+    *
     * TODO Review and move to Facade
-    * 
+    *
     * @param type
     * @return
     */
@@ -400,7 +400,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param laneSymbol
     * @return
     */
@@ -621,7 +621,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @return
     */
@@ -800,7 +800,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @return
     */
@@ -888,7 +888,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -954,7 +954,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1006,7 +1006,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param data
     * @return
     */
@@ -1125,7 +1125,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1476,7 +1476,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param annotationSymbol
     * @return
     */
@@ -1525,7 +1525,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param dataMappingConnection
     * @return
     */
@@ -1650,7 +1650,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -1792,7 +1792,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -1916,7 +1916,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       for (RoleType role : model.getRole())
       {
-         if ( !hasParentParticipant(model, role))
+         if ( !hasParentParticipant(model, role)
+               && !isTeamLeader(role))
          {
             participantsJson.add(role.getId(), toRoleJson(role));
          }
@@ -1995,12 +1996,37 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
+    * TODO - is there a better way to do this?
+    *
+    * @param participant
+    * @return
+    */
+   private boolean isTeamLeader(IModelParticipant participant)
+   {
+      ModelType model = ModelUtils.findContainingModel(participant);
+      if (null != model)
+      {
+         EList<OrganizationType> orgs = model.getOrganization();
+         for (OrganizationType org : orgs)
+         {
+            if (null != org.getTeamLead() && org.getTeamLead().equals(participant))
+            {
+               return true;
+            }
+         }
+      }
+
+      return false;
+   }
+
+   /**
     * @param parentJson
     * @param parent
     */
    private void addChildParticipantsJson(JsonObject parentJson, OrganizationType parent)
    {
       EList<ParticipantType> children = parent.getParticipant();
+      boolean teamLeadAdded = false;
       if (children.size() > 0)
       {
          JsonArray childrenArray = new JsonArray();
@@ -2039,6 +2065,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   {
                      childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                            ModelerConstants.TEAM_LEADER_TYPE_KEY);
+                     teamLeadAdded = true;
                   }
                   else
                   {
@@ -2055,6 +2082,30 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                loadDescription(childJson, childParticipant);
                loadAttributes(childParticipant, childJson);
             }
+         }
+
+         // Add team leader if not already added.
+         // Team leader role is not contained in the list returned by org.getParticipant()
+         // for models created in eclipse
+         // hence a separate check
+         if (null != parent.getTeamLead() && !teamLeadAdded) {
+            JsonObject childJson = new JsonObject();
+            childrenArray.add(childJson);
+            IModelParticipant childParticipant = parent.getTeamLead();
+            childJson.addProperty(ModelerConstants.ID_PROPERTY,
+                  childParticipant.getId());
+            childJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                  childParticipant.getName());
+            childJson.addProperty(ModelerConstants.OID_PROPERTY,
+                  childParticipant.getElementOid());
+            childJson.addProperty(ModelerConstants.UUID_PROPERTY,
+                  eObjectUUIDMapper().getUUID(childParticipant));
+            childJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
+                  eObjectUUIDMapper().getUUID(parent));
+            childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                  ModelerConstants.TEAM_LEADER_TYPE_KEY);
+            loadDescription(childJson, childParticipant);
+            loadAttributes(childParticipant, childJson);
          }
       }
    }
@@ -2126,7 +2177,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -2157,7 +2208,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -2177,7 +2228,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     * @throws JSONException
@@ -2257,9 +2308,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * TODO From DynamicConnectionCommand. Refactor?
-    * 
+    *
     * @param activity
     * @return
     */
