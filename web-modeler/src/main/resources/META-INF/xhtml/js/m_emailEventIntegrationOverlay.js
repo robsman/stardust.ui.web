@@ -35,7 +35,7 @@ define(
 				EmailEventIntegrationOverlay.prototype.initialize = function(page,
 						id) {
 					this.page = page;
-					this.id = id;
+					this.id = id;					
 				};
 
 				/**
