@@ -28,7 +28,7 @@ define(
 						propertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
@@ -72,6 +72,8 @@ define(
 													true);
 
 											return;
+										} else {
+											page.propertiesPanel.element.modelElement.inputDataMapping = undefined;
 										}
 
 										page
@@ -108,6 +110,8 @@ define(
 													true);
 
 											return;
+										} else {
+											page.propertiesPanel.element.modelElement.outputDataMapping = undefined;
 										}
 
 										page
@@ -186,7 +190,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.setDirection = function(
 						hasInputMapping, hasOutputMapping) {
@@ -207,7 +211,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.populateInputAccessPointSelectInput = function(
 						dataFlow) {
@@ -243,7 +247,7 @@ define(
 
 						for ( var m = 0; m < context.accessPoints.length; ++m) {
 							var accessPoint = context.accessPoints[m];
-							
+
 							m_utils.debug("m = " + m);
 							m_utils.debug(accessPoint);
 
@@ -282,7 +286,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.populateOutputAccessPointSelectInput = function(
 						dataFlow) {
@@ -359,7 +363,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();

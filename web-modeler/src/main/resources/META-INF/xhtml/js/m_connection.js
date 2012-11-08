@@ -456,7 +456,9 @@ define(
 										var changes = {
 											modelElement : {
 												inputDataMapping : updateConnection.modelElement.inputDataMapping,
-												outputDataMapping : updateConnection.modelElement.outputDataMapping
+												outputDataMapping : updateConnection.modelElement.outputDataMapping,
+												id : updateConnection.modelElement.id,
+												name : updateConnection.modelElement.name
 											}
 										}
 										updateConnection.createUpdateCommand(changes);
