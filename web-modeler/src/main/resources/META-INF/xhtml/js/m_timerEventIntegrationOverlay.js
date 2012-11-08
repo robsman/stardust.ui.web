@@ -44,7 +44,7 @@ define([ "m_utils", "m_constants", "m_commandsController", "m_command",
 		/**
 		 * 
 		 */
-		FileEventIntegrationOverlay.prototype.getEndpointUri = function() {
+		TimerEventIntegrationOverlay.prototype.getEndpointUri = function() {
 			var uri = "timer://";
 
 			return uri;
