@@ -10,9 +10,11 @@
 
 define(
 		[ "m_utils", "m_constants", "m_commandsController", "m_command",
-				"m_model", "m_accessPoint", "m_parameterDefinitionsPanel" ],
+				"m_model", "m_accessPoint", "m_parameterDefinitionsPanel",
+				"m_eventIntegrationOverlay" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
-				m_model, m_accessPoint, m_parameterDefinitionsPanel) {
+				m_model, m_accessPoint, m_parameterDefinitionsPanel,
+				m_eventIntegrationOverlay) {
 
 			return {
 				create : function(page, id) {
@@ -28,6 +30,13 @@ define(
 			 * 
 			 */
 			function GenericCamelRouteIntegrationOverlay() {
+				var eventIntegrationOverlay = m_eventIntegrationOverlay
+						.create();
+
+				m_utils.inheritFields(this, eventIntegrationOverlay);
+				m_utils.inheritMethods(GenericCamelRouteIntegrationOverlay.prototype,
+						eventIntegrationOverlay);
+
 				/**
 				 * 
 				 */
@@ -391,12 +400,14 @@ define(
 				 * 
 				 */
 				GenericCamelRouteIntegrationOverlay.prototype.activate = function() {
+					this.submitEventClassChanges();
 				};
 
 				/**
 				 * 
 				 */
 				GenericCamelRouteIntegrationOverlay.prototype.update = function() {
+					this.submitEventClassChanges();
 					this.populateDataSelectInputs();
 					var xmlDoc = jQuery
 							.parseXML("<route>"
@@ -411,13 +422,25 @@ define(
 						fromUri = jQuery(this).attr("uri");
 					});
 
-					jQuery(xmlObject).find("route").each(function() {
-					jQuery(this).children().each(function() {
-						if (m_utils.xmlToString(jQuery(this)).indexOf("<from") < 0) {
-							additionalRoutes += m_utils.xmlToString(jQuery(this)) + "\n";
-						}
-					});
-					});					
+					jQuery(xmlObject)
+							.find("route")
+							.each(
+									function() {
+										jQuery(this)
+												.children()
+												.each(
+														function() {
+															if (m_utils
+																	.xmlToString(
+																			jQuery(this))
+																	.indexOf(
+																			"<from") < 0) {
+																additionalRoutes += m_utils
+																		.xmlToString(jQuery(this))
+																		+ "\n";
+															}
+														});
+									});
 
 					this.endpointUriTextarea.val(fromUri);
 					this.additionalRouteTextarea.val(additionalRoutes);

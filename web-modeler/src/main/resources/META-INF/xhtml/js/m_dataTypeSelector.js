@@ -126,6 +126,7 @@ define(
 				 */
 				DataTypeSelector.prototype.setScopeModel = function(scopeModel) {
 					this.scopeModel = scopeModel;
+					
 					this.populateDataStructuresSelectInput();
 					this.populateDocumentTypesSelectInput();
 				};
@@ -182,17 +183,15 @@ define(
 					this.documentTypeSelect.append("<option value='"
 							+ m_constants.TO_BE_DEFINED
 							+ "'>(To be defined)</option>");
-					this.documentTypeSelect
-							.append("<option value='GENERIC_DOCUMENT_TYPE'>(Generic Document)</option>");
 
 					this.documentTypeSelect
-							.append("<optgroup label=\"This Model\"></optgroup>");
+							.append("<optgroup label=\"This Model\">");
 
-					for ( var i in this.scopeModel.structuredDataTypes) {
+					for ( var i in this.scopeModel.typeDeclarations) {
 						this.documentTypeSelect.append("<option value='"
-								+ this.scopeModel.structuredDataTypes[i]
+								+ this.scopeModel.typeDeclarations[i]
 										.getFullId() + "'>"
-								+ this.scopeModel.structuredDataTypes[i].name
+								+ this.scopeModel.typeDeclarations[i].name
 								+ "</option>");
 					}
 
@@ -204,15 +203,15 @@ define(
 							continue;
 						}
 
-						for ( var m in m_model.getModels()[n].structuredDataTypes) {
+						for ( var m in m_model.getModels()[n].typeDeclarations) {
 							this.documentTypeSelect
 									.append("<option value='"
-											+ m_model.getModels()[n].structuredDataTypes[m]
+											+ m_model.getModels()[n].typeDeclarations[m]
 													.getFullId()
 											+ "'>"
 											+ m_model.getModels()[n].name
 											+ "/"
-											+ m_model.getModels()[n].structuredDataTypes[m].name
+											+ m_model.getModels()[n].typeDeclarations[m].name
 											+ "</option>");
 						}
 					}

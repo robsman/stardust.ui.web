@@ -52,7 +52,6 @@ define(
 					}, function(event) {
 						event.data.overlay.submitRouteChanges();
 					});
-
 				};
 
 				/**

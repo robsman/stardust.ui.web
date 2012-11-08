@@ -77,19 +77,20 @@ define(
 					uri += this.fileOrDirectoryNameInput.val();
 
 					uri += "?consumer.recursive="
-							+ this.recursiveInput.is("checked");
-					uri += "&consumer.initialDelay="
+							+ this.recursiveInput.is(":checked");
+					uri += "&amp;consumer.initialDelay="
 							+ (this.initialIntervalInput.val() == null ? 0
 									: this.initialIntervalInput.val())
 							* this.initialIntervalUnitSelect.val();
-					uri += "&consumer.=" + this.lockBehaviorSelect.val();
-					uri += "&consumer.alwaysConsume="
-							+ this.alwaysConsumeInput.is("checked");
+					uri += "&amp;consumer.alwaysConsume="
+							+ this.alwaysConsumeInput.is(":checked");
 
 					if (this.postprocessingSelect.val() == "noop") {
-						uri += "&consumer.noop=true";
+						uri += "&amp;consumer.noop=true";
+						uri += "&amp;consumer.delete=false";
 					} else if (this.postprocessingSelect.val() == "delete") {
-						uri += "&consumer.delete=true";
+						uri += "&amp;consumer.noop=false";
+						uri += "&amp;consumer.delete=true";
 					}
 
 					return uri;
@@ -107,6 +108,57 @@ define(
 				 */
 				FileEventIntegrationOverlay.prototype.update = function() {
 					this.submitEventClassChanges();
+
+					var route = this.page.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"];
+
+					if (route == null) {
+						return;
+					}
+
+					var xmlDoc = jQuery.parseXML(route);
+					var xmlObject = jQuery(xmlDoc);
+					var from = jQuery(xmlObject).find("from");
+					var uri = from.attr("uri");
+					var uri = uri.split("//");
+
+					if (uri[1] != null) {
+						uri = uri[1].split("?");
+						this.fileOrDirectoryNameInput.val(uri[0]);
+
+						if (uri[1] != null) {
+							var options = uri[1].split("&");
+
+							for ( var n = 0; n < options.length; ++n) {
+								var option = options[n];
+
+								m_utils.debug("Option");
+								m_utils.debug(option);
+
+								option = option.split("=");
+
+								var name = option[0];
+								var value = option[1];
+
+								if (name == "consumer.recursive") {
+									this.recursiveInput.prop("checked", value);
+								} else if (name == "consumer.initialDelay") {
+									this.initialIntervalInput.val(value);
+									// this.initialIntervalUnitSelect.val();
+								} else if (name == "consumer.alwaysConsume") {
+									this.alwaysConsumeInput.prop("checked",
+											value);
+								} else if (name == "consumer.noop") {
+									if (value == "true") {
+										this.postprocessingSelect.val("noop");
+									}
+								} else if (name == "consumer.delete") {
+									if (value == "true") {
+										this.postprocessingSelect.val("delete");
+									}
+								}
+							}
+						}
+					}
 				};
 			}
 		});
