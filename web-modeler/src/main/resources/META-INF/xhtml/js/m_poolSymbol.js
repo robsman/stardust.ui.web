@@ -23,10 +23,6 @@ define(
 
 					json.bind(diagram);
 
-					// TODO Hack; multiple pool Symbols
-
-					diagram.poolSymbol = json;
-
 					json.initializeFromJson();
 
 					return json;
