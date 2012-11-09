@@ -54,7 +54,9 @@ define(
 				PoolSymbol.prototype.bind = function(diagram) {
 					this.type = m_constants.POOL_SYMBOL;
 					this.diagram = diagram;
-					this.orientation = diagram.flowOrientation;
+					if ( !this.orientation) {
+						this.orientation = diagram.flowOrientation;
+					}
 					this.borderRectangle = null;
 					this.topRectangle = null;
 					this.text = null;
@@ -163,9 +165,9 @@ define(
 							.drawRectangle(
 									this.x,
 									this.y,
-									this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? this.width
+									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? this.width
 											: m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT,
-									this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
+											this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
 											: this.height,
 									{
 										"fill" : m_constants.POOL_COLOR,
@@ -177,9 +179,9 @@ define(
 
 					this.text = m_canvasManager
 							.drawTextNode(
-									this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x + 0.5 * this.width)
+									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x + 0.5 * this.width)
 											: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
-									this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.y + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
+									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.y + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
 											: (this.y + 0.5 * this.height),
 									this.name)
 							.attr(
@@ -192,7 +194,7 @@ define(
 									});
 
 					this.text
-							.rotate(this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? 0
+							.rotate(this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? 0
 									: -90);
 					this.addToPrimitives(this.text);
 				};
@@ -226,11 +228,11 @@ define(
 							.initialize(
 									this.x
 											+ m_constants.POOL_SWIMLANE_MARGIN
-											+ (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? 0
+											+ (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? 0
 													: m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
 									this.y
 											+ m_constants.POOL_SWIMLANE_MARGIN
-											+ (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
+											+ (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
 													: 0));
 				};
 
@@ -287,11 +289,11 @@ define(
 								.initialize(
 										this.x
 												+ m_constants.POOL_SWIMLANE_MARGIN
-												+ (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? 0
+												+ (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? 0
 														: m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
 										this.y
 												+ m_constants.POOL_SWIMLANE_MARGIN
-												+ (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
+												+ (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
 														: 0));
 
 						if (participant != null) {
@@ -343,7 +345,7 @@ define(
 				 *
 				 */
 				PoolSymbol.prototype.calculateWidth = function() {
-					if (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+					if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
 						var width = m_constants.POOL_SWIMLANE_MARGIN;
 
 						for ( var n in this.laneSymbols) {
@@ -368,7 +370,7 @@ define(
 				 *
 				 */
 				PoolSymbol.prototype.calculateHeight = function() {
-					if (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+					if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
 						var height = 0;
 
 						for ( var n in this.laneSymbols) {
@@ -469,7 +471,7 @@ define(
 				 *
 				 */
 				PoolSymbol.prototype.adjustPrimitives = function(dX, dY) {
-					if (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+					if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
 						this.borderRectangle.attr({
 							"width" : this.width,
 							"height" : this.height
@@ -522,7 +524,7 @@ define(
 				PoolSymbol.prototype.adjustChildSymbols = function() {
 					var topMargin = m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
 							+ m_constants.POOL_SWIMLANE_MARGIN;
-					if (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+					if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
 						var currentX = this.x
 								+ m_constants.POOL_SWIMLANE_MARGIN;
 

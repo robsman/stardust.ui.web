@@ -79,7 +79,9 @@ define(
 					this.type = m_constants.SWIMLANE_SYMBOL;
 
 					this.diagram = diagram;
-					this.orientation = diagram.flowOrientation;
+					if ( !this.orientation) {
+						this.orientation = parentSymbol.orientation;
+					}
 					this.parentSymbol = parentSymbol;
 
 					var laneHeight;
@@ -88,13 +90,13 @@ define(
 							&& parseInt(this.parentSymbol.laneSymbols.length) > 0) {
 						laneHeight = this.parentSymbol.laneSymbols[0].height;
 					} else {
-						laneHeight = diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? m_constants.LANE_DEFAULT_HEIGHT
+						laneHeight = this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? m_constants.LANE_DEFAULT_HEIGHT
 								: m_constants.LANE_DEFAULT_WIDTH;
 					}
 					// TODO Hack to only apply it to new symbols
 
 					if (this.width == 0) {
-						this.width = diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? m_constants.LANE_DEFAULT_WIDTH
+						this.width = this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? m_constants.LANE_DEFAULT_WIDTH
 								: m_constants.LANE_DEFAULT_HEIGHT;
 						this.height = laneHeight;
 					}
@@ -297,9 +299,9 @@ define(
 							.drawRectangle(
 									this.x,
 									this.y,
-									this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? this.width
+									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? this.width
 											: m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT,
-									this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
+											this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
 											: this.height,
 									{
 										"fill" : m_constants.SWIMLANE_COLOR,
@@ -311,14 +313,14 @@ define(
 
 					this.text = m_canvasManager
 							.drawTextNode(
-									this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x + 0.5 * this.width)
+									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x + 0.5 * this.width)
 											: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
-									this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.y + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
+											this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.y + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
 											: (this.y + 0.5 * this.height),
 									this.name)
 							.attr(
 									{
-										"transform" : this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? "R0"
+										"transform" : this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? "R0"
 												: "R90",
 										"text-anchor" : "middle",
 										"fill" : "white",
@@ -333,10 +335,10 @@ define(
 					this.minimizeIcon = m_canvasManager
 							.drawImageAt(
 									"../../images/icons/min.png",
-									this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x
+									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x
 											+ this.width - 20)
 											: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
-									this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.y + 1.2 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
+											this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.y + 1.2 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
 											: (this.y + 0.5 * this.height), 16,
 									16);
 
@@ -345,10 +347,10 @@ define(
 					this.maximizeIcon = m_canvasManager
 							.drawImageAt(
 									"../../images/icons/max.png",
-									this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x
+									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x
 											+ this.width - 20)
 											: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
-									this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.y + 1.2 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
+											this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.y + 1.2 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
 											: (this.y + .35 * this.height), 16,
 									16);
 					this.maximizeIcon.hide();
@@ -366,7 +368,7 @@ define(
 						"height" : this.height
 					});
 
-					if (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+					if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
 						this.topRectangle.attr({
 							"x" : this.x,
 							"y" : this.y,
