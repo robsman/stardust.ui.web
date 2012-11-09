@@ -9,22 +9,137 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_communicationController", "m_command",
+		[ "m_utils", "m_urlUtils" , "m_constants", "m_communicationController", "m_command",
 				"m_commandsController", "m_dialog", "m_modelElementView",
-				"m_model" ],
-		function(m_utils, m_constants, m_communicationController, m_command,
-				m_commandsController, m_dialog, m_modelElementView, m_model) {
+				"m_model" ,"m_i18nUtils"],	
+		function(m_utils, m_urlUtils, m_constants, m_communicationController,
+				m_command, m_commandsController, m_dialog, m_modelElementView,
+				m_model, m_i18nUtils) {
+
 			return {
 				initialize : function(fullId) {
 					var view = new WebServiceApplicationView();
 					// TODO Unregister!
 					// In Initializer?
-
+					i18webserviceproperties();
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(m_model.findApplication(fullId));
+
 				}
 			};
+
+			function i18webserviceproperties() {
+
+				$("label[for='guidOutput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.uuid"));
+								
+				$("label[for='idOutput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.id"));
+				
+				jQuery("#application")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.applicationName"));
+				jQuery("#description")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.description"));
+
+				jQuery("#configuration")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.configuration"));
+				jQuery("#wsdlurl")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.webService.wsdlURL"));
+
+				jQuery("#browseButton")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.webService.load"));
+				jQuery("#service")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.webService.service"));
+
+				jQuery("#port")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.webService.port"));
+				jQuery("#operation")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.webService.operation"));
+				jQuery("#style")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.webService.style"));
+				jQuery("#protocal")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.webService.protocal"));
+				jQuery("#use")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.webService.use"));
+
+				jQuery("#implementation")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.implementation"));
+				jQuery("#includedAddressing")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.webService.implementationProperties.includeAddressing"));
+				jQuery("#implementation1")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.implementation"));
+
+				jQuery("#security")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.security"));
+				jQuery("#authenticationReq")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.webService.securityProperties.authenticationRequired"));
+				jQuery("#mechanism")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.webService.securityProperties.mechanism"));
+				jQuery("#variant")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.webService.securityProperties.variant"));
+
+				/* Comments Tab Changes */
+				jQuery("#comments")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.comments"));
+				jQuery("#comments")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.propertyView.webservice.commentsProperties.comments"));
+				jQuery("#submitButton")
+						.attr(
+								"value",
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.submit"));
+				jQuery("#browseButton")
+						.attr(
+								"value",
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.browse"));
+
+			}
 
 			/**
 			 *
@@ -46,6 +161,8 @@ define(
 					this.wsdlUrlInput = jQuery("#wsdlUrlInput");
 					this.browseButton = jQuery("#browseButton");
 					this.serviceSelect = jQuery("#serviceSelect");
+					this.implementselect = jQuery("#implementationSelect");
+					this.mechanismselect = jQuery("#mechanismSelect");
 					this.portSelect = jQuery("#portSelect");
 					this.operationSelect = jQuery("#operationSelect");
 					this.styleOutput = jQuery("#styleOutput");
@@ -57,6 +174,28 @@ define(
 					this.mechanismSelect = jQuery("#mechanismSelect");
 					this.variantSelect = jQuery("#variantSelect");
 
+					// values for implentationselect
+					var selectdata = null;
+					selectdata = m_i18nUtils
+							.getProperty("modeler.model.propertyView.webService.implementationselect.option.genericRescource");
+					this.implementselect.append("<option value=\"generic\">"
+							+ selectdata + "</option>");
+					selectdata = m_i18nUtils
+							.getProperty("modeler.model.propertyView.webService.implementationSelect.option.infinitySpecific");
+					this.implementselect.append("<option value=\"carnot\">"
+							+ selectdata + "</option>");
+
+					// values for mechanism select
+					selectdata = m_i18nUtils
+							.getProperty("modeler.model.propertyView.webService.mechanismSelect.option.httpBasicAuthorization");
+					this.mechanismselect.append("<option value=\"basic\">"
+							+ selectdata + "</option>");
+					selectdata = m_i18nUtils
+							.getProperty("modeler.model.propertyView.webService.mechanismSelect.option.wsSecurity");
+					this.mechanismselect
+							.append("<option value=\"ws-security\">"
+									+ selectdata + "</option>");
+									
 					this.browseButton.click({
 						view : this
 					}, function(event) {
@@ -122,11 +261,30 @@ define(
 
 										if (event.data.view.mechanismSelect
 												.val() == "basic") {
+											
+											selectdata = m_i18nUtils.getProperty("modeler.model.propertyView.webService.variant.option.userNamePwd");
 											event.data.view.variantSelect
-													.append("<option value=\"passwordText\">User Name/Password</option>");
+											.append("<option value=\"passwordText\">"+selectdata+"</option>");
+													
 										} else {
+											selectdata = m_i18nUtils
+													.getProperty("modeler.model.propertyView.webService.variant.option.userNamePwd");
 											event.data.view.variantSelect
-													.append("<option value=\"passwordText\">User Name/Password</option><option value=\"passwordDigest\">User Name/Password Digest</option><option value=\"xwssConfiguration\">XWSS Configuration</option>");
+													.append("<option value=\"passwordText\">"
+															+ selectdata
+															+ "</option>");
+											selectdata = m_i18nUtils
+													.getProperty("modeler.model.propertyView.webService.variant.option.userNamePwdDigest");
+											event.data.view.variantSelect
+													.append("<option value=\"passwordDigest\">"
+															+ selectdata
+															+ "</option>");
+											selectdata = m_i18nUtils
+													.getProperty("modeler.model.propertyView.webService.variant.option.xwssConfiguration");
+											event.data.view.variantSelect
+													.append("<option value=\"xwssConfiguration\">"
+															+ selectdata
+															+ "</option>");
 										}
 									});
 					this.variantSelect
@@ -286,8 +444,9 @@ define(
 											jQuery("body")
 													.css("cursor", "auto");
 											if (structure == null) {
+												var errormessage = m_i18nUtils.getProperty("modeler.model.propertyView.webService.errorMessage")
 												view.errorMessages
-														.push("Could not load WSDL from URL.");
+														.push(errormessage);
 												view.showErrorMessages();
 												view.wsdlUrlInput
 														.addClass("error");
@@ -307,6 +466,7 @@ define(
 				 */
 				WebServiceApplicationView.prototype.setWebServiceStructure = function(
 						webServiceStructure) {
+					
 					m_utils.debug("===> Web Service Structure");
 					m_utils.debug(webServiceStructure);
 
@@ -315,7 +475,8 @@ define(
 					this.serviceSelect.empty();
 
 					var start = true;
-
+					
+					
 					for ( var m in webServiceStructure.services) {
 						var service = webServiceStructure.services[m];
 

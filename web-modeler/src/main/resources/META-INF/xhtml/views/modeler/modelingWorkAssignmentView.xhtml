@@ -9,23 +9,23 @@
 <body>
 	<ice:panelGroup style="margin: 10px;">
 		<ice:panelGroup styleClass="heading">
-			<ice:outputText value="Modeling Work Assignment" />
+			<ice:outputText value="#{bpmModelerMessages['modeling.workassignment.view.heading']}" />
 		</ice:panelGroup>
 		<ice:panelGrid columns="1" cellpadding="0" cellspacing="0"
 			style="margin-top: 10px; margin-bottom: 20px;">
 			<ice:outputText
-				value="You can use our &lt;b&gt;Consulting Network&lt;/b&gt; to get help with modeling work. Describe your request below and submit the request."
+				value="#{bpmModelerMessages['modeling.workassignment.view.informationMsg']}"
 				escape="false" />
 		</ice:panelGrid>
 		<ice:panelGrid columns="1" cellpadding="0" cellspacing="0">
 			<ice:inputRichText />
 		</ice:panelGrid>
 		<ice:panelGroup styleClass="heading">
-			<ice:outputText value="Consulting Fee Models" />
+			<ice:outputText value="#{bpmModelerMessages['modeling.workassignment.view.feeModel']}" />
 		</ice:panelGroup>
 		<ice:panelGroup>
 			<ice:outputText
-				value="The following consulting fee models apply to modeling support. Please select your preference" />
+				value="#{bpmModelerMessages['modeling.workassignment.view.feeModel.message']}" />
 		</ice:panelGroup>
 		<ice:panelGrid columns="1" cellpadding="0" cellspacing="0"
 			style="margin-top: 20px;">
@@ -39,13 +39,13 @@
 			</ice:selectOneRadio>
 		</ice:panelGrid>
 		<ice:panelGroup styleClass="heading">
-			<ice:outputText value="Terms and Conditions" />
+			<ice:outputText value="#{bpmModelerMessages['modeling.workassignment.view.termsAndConditions']}" />
 		</ice:panelGroup>
 		<ice:panelGrid columns="2" cellpadding="0" cellspacing="0"
 			style="margin-top: 20px;">
 			<ice:selectBooleanCheckbox id="acknowledgeTermsAndConditionsCheckbox" />
 			<ice:panelGroup>
-				<ice:outputText value="Confirm that you have read and accept the " />
+				<ice:outputText value="#{bpmModelerMessages['modeling.workassignment.view.acceptTerms']}" />
 				<ice:outputLink value="http://www.sungard.com">Terms and Conditions.</ice:outputLink>
 			</ice:panelGroup>
 		</ice:panelGrid>

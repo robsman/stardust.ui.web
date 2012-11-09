@@ -13,9 +13,9 @@
  */
 define(
 		[ "m_utils", "m_constants", "m_commandsController", "m_command",
-				"m_model", "m_basicPropertiesPage", "m_participant" ],
+				"m_model", "m_basicPropertiesPage", "m_participant","m_i18nUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
-				m_model, m_basicPropertiesPage, m_participant) {
+				m_model, m_basicPropertiesPage, m_participant,m_i18nUtils) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new SwimlaneBasicPropertiesPage(propertiesPanel);
@@ -63,9 +63,9 @@ define(
 					this.participantList.empty();
 					this.participantList
 							.append("<option value='NONE'>(None)</option>");
-
+					var modelname = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.thisModel");
 					this.participantList
-							.append("<optgroup label=\"This Model\">");
+							.append("<optgroup label=\""+modelname+"\">");
 
 					for ( var i in this.getModel().participants) {
 						this.participantList
@@ -76,9 +76,9 @@ define(
 										+ this.getModel().participants[i].name
 										+ "</option>");
 					}
-
+					var othermodel = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel");
 					this.participantList
-							.append("</optgroup><optgroup label=\"Other Models\">");
+							.append("</optgroup><optgroup label=\""+othermodel+"\">");
 
 					for ( var n in m_model.getModels()) {
 						if (m_model.getModels()[n] == this.getModel()) {

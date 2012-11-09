@@ -11,9 +11,9 @@
 define(
 		[ "m_utils", "m_constants", "m_extensionManager", "m_command",
 				"m_commandsController", "m_user", "m_dialog",
-				"m_propertiesPage" ],
+				"m_propertiesPage","m_i18nUtils"  ],
 		function(m_utils, m_constants, m_extensionManager, m_command,
-				m_commandsController, m_user, m_dialog, m_propertiesPage) {
+				m_commandsController, m_user, m_dialog, m_propertiesPage,m_i18nUtils) {
 			return {
 				create : function(propertiesPanel) {
 					return new BasicPropertiesPage(propertiesPanel);
@@ -24,9 +24,10 @@ define(
 			 *
 			 */
 			function BasicPropertiesPage(propertiesPanel) {
+				var generalProperties = m_i18nUtils.getProperty("modeler.processDefinition.propertyPages.general.heading");
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "basicPropertiesPage",
-						"General Properties",
+						generalProperties,
 						"../../images/icons/basic-properties-page.png");
 
 				m_utils.inheritFields(this, propertiesPage);

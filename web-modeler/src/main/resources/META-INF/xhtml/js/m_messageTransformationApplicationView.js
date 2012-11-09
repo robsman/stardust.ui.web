@@ -11,22 +11,148 @@
 define(
 		[ "m_utils", "m_constants", "m_command", "m_commandsController",
 				"m_model", "m_accessPoint", "m_dataTraversal", "m_dialog",
-				"m_modelElementView", "m_codeEditor" ],
+				"m_modelElementView", "m_codeEditor", "m_i18nUtils"],
 		function(m_utils, m_constants, m_command, m_commandsController,
 				m_model, m_accessPoint, m_dataTraversal, m_dialog,
-				m_modelElementView, m_codeEditor) {
+				m_modelElementView, m_codeEditor, m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
 					var view = new MessageTransformationApplicationView();
-
+					i18nmessageTransformationproperties();
 					// TODO Unregister!
 					// In Initializer?
 
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(m_model.findApplication(fullId));
-				}
-			};
+				   }
+				};
+							
+
+			function i18nmessageTransformationproperties() {
+                
+				$("label[for='guidOutput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.uuid"));
+								
+				$("label[for='idOutput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.id"));
+				jQuery("#application")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.applicationName"));
+				jQuery("#description")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.description"));
+				jQuery("#configuration")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.configuration"));
+				jQuery("#sourcemessage")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.heading.sourceMessage"));
+				jQuery("#addInputDataButton")
+						.attr(
+								"value",
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.sourceMessage.addInput"));
+				jQuery("#filterHighlightedSourceFieldsInput")
+						.attr(
+								"title",
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.toolTip.infoMsg"));
+				jQuery("#element")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.element"));
+				jQuery("#type")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.type"));
+				jQuery("#advancedMapping")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.sourceMessage.advancedMapping"));
+				jQuery("#targetmessage")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.heading.targetMessage"));
+				jQuery("#element1")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.targetMessage.element"));
+				jQuery("#type1")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.type"));
+				jQuery("#mapping")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.targetMessage.mapping"));
+				jQuery("#problem")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.problem"));
+				jQuery("#addOutputDataButton")
+						.attr(
+								"value",
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.targetMessage.addOutput"));
+				jQuery("#filterFieldsWithMappingInput")
+						.attr(
+								"title",
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.toolTip.mapping"));
+				jQuery("#filterFieldsWithNoMappingInput")
+						.attr(
+								"title",
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.toolTip.noMapping"));
+				jQuery("#filterHighlightedTargetFieldsInput")
+						.attr(
+								"title",
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.toolTip.infoMsg"));
+				jQuery("#filterFieldsWithMappingInvalid")
+						.attr(
+								"title",
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.toolTip.invalidMapping"));
+				jQuery("#showAllSourceFieldsInput")
+						.attr(
+								"title",
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.toolTip.highlighted"));
+				jQuery("#testdata")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.testProperties.tab"));
+				$("label[for='inputDataTextArea']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.testProperties.inputData"));
+				$("label[for='outputDataTable']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.testProperties.outputData"));
+				jQuery("#runButton")
+						.attr(
+								"title",
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.runButton"));
+				jQuery("#resetButton")
+						.attr(
+								"title",
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.resetButton"));
+
+			}
+	
 
 			/**
 			 *
@@ -182,13 +308,37 @@ define(
 
 					jQuery("#inputDataDialog").dialog({
 						autoOpen : false,
-						draggable : true
-					});
+						draggable : true,
+										title : m_i18nUtils
+												.getProperty("modeler.propertyView.messageTransformation.configurationProperties.addInput.popUp")
+									});
+					jQuery("#inputDataDialog #name")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.commonProperties.name"));
+					jQuery("#inputDataDialog #type")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.commonProperties.type"));
 
+					jQuery("#inputDataDialog #applyButton")
+							.attr(
+									"value",
+									m_i18nUtils
+											.getProperty("modeler.propertyView.messageTransformation.configurationProperties.apply"));
+					jQuery("#inputDataDialog #closeButton")
+							.attr(
+									"value",
+									m_i18nUtils
+											.getProperty("modeler.propertyView.messageTransformation.configurationProperties.close"))
+					  
+					  
+				      /*Comment*/
 					jQuery("#inputDataDialog #closeButton").click(function() {
 						jQuery("#inputDataDialog").dialog("close");
 					});
 
+					
 					jQuery("#inputDataDialog #applyButton")
 							.click(
 									{
@@ -240,8 +390,29 @@ define(
 
 					jQuery("#outputDataDialog").dialog({
 						autoOpen : false,
-						draggable : true
-					});
+						draggable : true,
+										title : m_i18nUtils
+												.getProperty("modeler.propertyView.messageTransformation.configurationProperties.addOutput.popUp")
+									});
+					jQuery("#outputDataDialog #name")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.commonProperties.name"));
+					jQuery("#outputDataDialog #type")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.commonProperties.type"));
+
+					jQuery("#outputDataDialog #applyButton")
+							.attr(
+									"value",
+									m_i18nUtils
+											.getProperty("modeler.propertyView.messageTransformation.configurationProperties.apply"));
+					jQuery("#outputDataDialog #closeButton")
+							.attr(
+									"value",
+									m_i18nUtils
+											.getProperty("modeler.propertyView.messageTransformation.configurationProperties.close"));
 
 					jQuery("#outputDataDialog #closeButton").click(function() {
 						jQuery("#outputDataDialog").dialog("close");

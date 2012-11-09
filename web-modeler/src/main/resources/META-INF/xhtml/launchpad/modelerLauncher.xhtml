@@ -123,16 +123,17 @@
 		</ui:include>
 	</ice:panelGroup>
 	<ice:panelGroup styleClass="panelHeader">
-		<ice:outputText styleClass="panelHeaderTitle" value="Profile" />
+		<ice:outputText styleClass="panelHeaderTitle"
+			value="#{bpmModelerMessages['launchpanels.panelHeader.title']}" />
 	</ice:panelGroup>
 
 	<ice:panelGrid columns="2">
-		<ice:outputText value="Select Your Profile" escape="false" />
+		<ice:outputText value="#{bpmModelerMessages['launchpanels.profileSelector.list.selectYourProfile']}" escape="false" />
 		<ice:selectOneMenu id="userProfileSelect"
 			onchange="changeUserProfile();">
-			<f:selectItem itemLabel="Business Analyst"
+			<f:selectItem itemLabel="#{bpmModelerMessages['launchpanels.profileSelector.list1.businessAnalyst']}"
 				itemValue="BusinessAnalyst" />
-			<f:selectItem itemLabel="Integrator" itemValue="Integrator" />
+			<f:selectItem itemLabel="#{bpmModelerMessages['launchpanels.profileSelector.list2.integrator']}" itemValue="Integrator" />
 		</ice:selectOneMenu>
 	</ice:panelGrid>
 
@@ -146,7 +147,7 @@
 					value="/plugins/common/images/panelHeader-triggerCollapse.png"
 					style="border: none" />
 				<ice:outputText styleClass="panelHeaderTitle"
-					value="My Process Models" />
+					value="#{bpmModelerMessages['launchpanels.myProcessModels.title']}" />
 			</ice:panelGrid>
 		</ice:commandLink>
 	</ice:panelGroup>
@@ -295,7 +296,7 @@
 					value="/plugins/common/images/panelHeader-triggerCollapse.png"
 					style="border: none" />
 				<ice:outputText styleClass="panelHeaderTitle"
-					value="My Modeling Session" />
+					value="#{bpmModelerMessages['launchpanels.panelHeader.title.myModelingSession']}" />
 			</ice:panelGrid>
 		</ice:commandLink>
 	</ice:panelGroup>
@@ -318,7 +319,7 @@
 		styleClass="dialog">
 		<f:facet name="header">
 			<ice:panelGroup styleClass="dialog-header">
-				<ice:outputText value="Invite Participants" />
+				<ice:outputText value="#{bpmModelerMessages['launchpanels.panelHeader.title.myModelingSession']}"/>
 			</ice:panelGroup>
 		</f:facet>
 		<f:facet name="body">
@@ -327,12 +328,12 @@
 					columnClasses="center-aligned-column">
 					<ice:panelGrid columns="1" cellpadding="0" cellspacing="0">
 						<ice:panelGrid columns="2" cellpadding="0" cellspacing="0">
-							<ice:outputLabel for="filterStringInput" value="Filter" />
+							<ice:outputLabel for="filterStringInput" value="#{bpmModelerMessages['launchpanels.panelHeader.myModelingSession.inviteParticipants.filter']}" />
 							<ice:inputText id="filterStringInput"
 								value="#{inviteParticipantsDialog.filterString}" />
 						</ice:panelGrid>
 						<ice:panelGrid columns="1" cellpadding="0" cellspacing="0">
-							<ice:outputLabel for="participantListbox" value="Participant" />
+							<ice:outputLabel for="participantListbox" value="#{bpmModelerMessages['launchpanels.panelHeader.myModelingSession.inviteParticipants.participant']}" />
 							<ice:selectManyListbox id="participantListbox"
 								valueChangeListener="#{inviteParticipantsDialog.userChanged}"
 								partialSubmit="true" size="5" style="margin-top: 5px;">
@@ -345,20 +346,20 @@
 							<ice:selectBooleanCheckbox id="notifyViaEmailCheckbox"
 								value="#{inviteParticipantsDialog.notifyViaEmail}" />
 							<ice:outputLabel for="notifyViaEmailCheckbox"
-								value="Notify via E-Mail" />
+								value="#{bpmModelerMessages['launchpanels.panelHeader.myModelingSession.inviteParticipants.notify']}" />
 							<ice:selectBooleanCheckbox id="notifyViaAlertCheckbox"
 								value="#{inviteParticipantsDialog.notifyViaAlert}" />
 							<ice:outputLabel for="notifyViaAlertCheckbox"
-								value="Notify via Portal Alert" />
+								value="#{bpmModelerMessages['launchpanels.panelHeader.myModelingSession.inviteParticipants.alert']}" />
 						</ice:panelGrid>
 					</ice:panelGrid>
 					<ice:panelGrid columns="2" cellpadding="0" cellspacing="0"
 						styleClass="button-grid" style="margin-top: 10px;">
 						<ice:commandButton type="submit"
 							action="#{inviteParticipantsDialog.inviteParticipants}"
-							value="Invite" style="margin-right: 10px;" />
+							value="#{bpmModelerMessages['launchpanels.panelHeader.myModelingSession.inviteParticipants.invite']}" style="margin-right: 10px;" />
 						<ice:commandButton type="submit"
-							action="#{inviteParticipantsDialog.closePopup}" value="Cancel" />
+							action="#{inviteParticipantsDialog.closePopup}" value="#{bpmModelerMessages['launchpanels.panelHeader.myModelingSession.inviteParticipants.cancel']}" />
 					</ice:panelGrid>
 				</ice:panelGrid>
 			</ice:panelGroup>

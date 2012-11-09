@@ -41,7 +41,7 @@
 										<td><div id="idOutput" class="output"></div></td>
 									</tr>
 									<tr>
-										<td><label for="nameInput">Name</label></td>
+										<td><label for="nameInput" id ="name">Name</label></td>
 										<td><input id="nameInput" type="text"
 											style="width: 200px;"></input></td>
 									</tr>
@@ -82,10 +82,10 @@
 									class="tabLabel">Versioning</span> </a></li> -->
 							<li><a href="#accessControlTab"><img
 									src="../../images/icons/basic-properties-page.png"></img><span
-									class="tabLabel">Access Control</span> </a></li>
+									class="tabLabel" id="accesscontrol">Access Control</span> </a></li>
 							<li><a href="#problemsTab"><img
 									src="../../images/icons/error.png"></img><span
-									class="tabLabel">Problems</span> </a></li>
+									class="tabLabel" id="problem">Problems</span> </a></li>
 						</ul>
 						<!-- <div id="versioningTab">
 							<div class="panelBorder" style="margin-bottom: 10px;">
@@ -141,15 +141,10 @@
 							<div id="markReadonlyPanel">
 								<table cellpadding="0" cellspacing="0" class="layoutTable">
 									<tr>
-										<td>You can mark a model as readonly to protect it
-											against changes if you have Administrator rights. This
-											operation is a shortcut to revoke all update and delete
-											permissions for users not being assigned to the Administrator
-											role.</td>
+										<td id="modeltext1"></td>
 									</tr>
 									<tr>
-										<td style="padding-top: 10px;"><a id="markReadonlyLink">Mark
-												readonly &raquo;</a>
+										<td style="padding-top: 10px;"><a id="markReadonlyLink"><span id="markreadonly"></span> &raquo;</a>
 										</td>
 									</tr>
 								</table>
@@ -157,14 +152,11 @@
 							<div id="markWritablePanel" class="invisible">
 								<table cellpadding="0" cellspacing="0" class="layoutTable">
 									<tr>
-										<td>This model is marked readonly. You can remove the
-											readonly state if you have Administrator rights. This
-											operation is a shortcut to grant all update and delete
-											permissions to all users.</td>
+										<td id="modeltext2"></td>
 									</tr>
 									<tr>
 										<td style="padding-top: 10px;"><a id="markWriteableLink"
-											style="margin-top: 10px;">Mark writeable &raquo;</a>
+											style="margin-top: 10px;"><span id="markwritable"></span> &raquo;</a>
 										</td>
 									</tr>
 								</table>
@@ -188,9 +180,9 @@
 													style="width: 1050px;">
 													<thead>
 														<tr>
-															<th style="width: 50px;">Severity</th>
-															<th style="width: 500px;">Element</th>
-															<th style="width: 500px;">Description</th>
+															<th style="width: 50px;" id="severity">Severity</th>
+															<th style="width: 500px;" id="element">Element</th>
+															<th style="width: 500px;" id="description">Description</th>
 														</tr>
 													</thead>
 													<tbody />

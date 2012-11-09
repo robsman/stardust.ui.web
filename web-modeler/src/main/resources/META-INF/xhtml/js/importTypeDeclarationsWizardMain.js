@@ -24,8 +24,12 @@ require.config({
 		'jquery.url': ['libs/jquery/plugins/jquery.url', 'https://raw.github.com/allmarkedup/jQuery-URL-Parser/472315f02afbfd7193184300cc381163e19b4a16/jquery.url'],
 
 		'common-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/common-plugins',
+		'i18n' : '../../common/InfinityBPMI18N'
 	},
 	shim: {
+		'i18n': {
+			exports: "InfinityBPMI18N"
+		},
 		'jquery.tablescroll': ['jquery'],
 		'jquery.treeTable': ['jquery'],
 		'jquery.url': ['jquery']
@@ -42,6 +46,7 @@ require(["require",
 		 "m_communicationController",
 		 "m_urlUtils",
 		 "m_constants",
+		 "i18n",
 		 "m_command",
 		 "m_commandsController",
 		 "m_importTypeDeclarationsWizard"], function(require) {

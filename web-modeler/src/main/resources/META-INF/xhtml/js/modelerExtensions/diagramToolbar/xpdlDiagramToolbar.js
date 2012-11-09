@@ -1,37 +1,39 @@
-define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultPaletteHandler, m_decorationPalette) {
+define([ 'm_defaultPaletteHandler', 'm_decorationPalette',"m_i18nUtils" ], 
+		
+		function(m_defaultPaletteHandler, m_decorationPalette, m_i18nUtils) {
 	return {
 		// sections
 		diagramToolbarPalette : [ {
 			id : "drawingPalette",
-			title : "Drawing",
+			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.panels.drawing.title"), 
 			visibility : "always"
 		}, {
 			id : "activityPalette",
-			title : "Activities and Gateways",
+			title :  m_i18nUtils.getProperty("modeler.diagram.toolbar.panels.activitiesGateway.title"), 
 			visibilty : "always"
 		}, {
 			id : "eventPalette",
-			title : "Events",
+			title :  m_i18nUtils.getProperty("modeler.diagram.toolbar.panels.events.title"), 
 			visibility : "always"
 		}, {
 			id : "dataPalette",
-			title : "Data",
+			title : m_i18nUtils.getProperty("modeler.element.properties.commonProperties.data"),
 			visibility : "always"
 		}, {
 			id : "lanePalette",
-			title : "Pools and Lanes",
+			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.panels.poolsAndLanes.title"), 
 			visibility : "always"
 		}, {
 			id : "connectorPalette",
-			title : "Data and Sequence Flow",
+			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.panels.dataSequence.title"), 
 			visibility : "always"
 		}, {
 			id : "annotationPalette",
-			title : "Annotations",
+			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.panels.annotations.title"), 
 			visibility : "always"
 		}, {
 			id : "decorationPalette",
-			title : "Decoration",
+			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.panels.decoration.title"), 
 			contentHtmlUrl : "decorationPalette.html",
 			provider: m_decorationPalette,
 			visibility : "preview"
@@ -40,7 +42,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 		diagramToolbarPaletteEntry : [ {
 			id : "selectModeButton",
 			paletteId : "drawingPalette",
-			title : "Select Mode",
+			title :  m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.selectMode.title"), 
 			iconUrl : "../../images/icons/select.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "setSelectMode",
@@ -48,7 +50,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 		}, {
 			id : "separatorModeButton",
 			paletteId : "drawingPalette",
-			title : "Separator Mode",
+			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.separateMode.title"), 
 			iconUrl : "../../images/icons/separator.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "setSeparatorMode",
@@ -56,7 +58,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 		}, {
 			id : "zoomInButton",
 			paletteId : "drawingPalette",
-			title : "Zoom In",
+			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.zoomIn.title"), 
 			iconUrl : "../../images/icons/zoom-in.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "zoomIn",
@@ -64,7 +66,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 		}, {
 			id : "zoomOutButton",
 			paletteId : "drawingPalette",
-			title : "Zoom Out",
+			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.zoomOut.title"), 
 			iconUrl : "../../images/icons/zoom-out.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "zoomOut",
@@ -72,7 +74,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 		}, {
 			id : "flipOrientationButton",
 			paletteId : "drawingPalette",
-			title : "Flip Orientation",
+			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.flipOrientation.title"), 
 			iconUrl : "../../images/icons/horizontal-flip.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "flipOrientation",
@@ -80,7 +82,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 		}, {
 			id : "printButton",
 			paletteId : "drawingPalette",
-			title : "Print",
+			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.print.title"), 
 			iconUrl : "../../images/icons/print.gif",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "print",
@@ -88,7 +90,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 		}, {
 			id : "activityButton",
 			paletteId : "activityPalette",
-			title : "Create Activity",
+			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createActivity.title"),
 			iconUrl : "../../images/icons/activity.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createActivity",
@@ -96,7 +98,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 		}, {
 			id : "gatewayButton",
 			paletteId : "activityPalette",
-			title : "Create Gateway",
+			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createGateway.title"),
 			iconUrl : "../../images/icons/gateway.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createGateway",
@@ -104,7 +106,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 		}, {
 			id : "startEventButton",
 			paletteId : "eventPalette",
-			title : "Create Start Event",
+			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createStartEvent.title"), 
 			iconUrl : "../../images/icons/start_event_with_border.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createStartEvent",
@@ -112,7 +114,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 		}, {
 			id : "endEventButton",
 			paletteId : "eventPalette",
-			title : "Create End Event",
+			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createEndEvent.title"), 
 			iconUrl : "../../images/icons/end_event_with_border.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createEndEvent",
@@ -120,7 +122,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 		}, {
 			id : "dataButton",
 			paletteId : "dataPalette",
-			title : "Create Primitive Data",
+			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createPrimitiveData.title"), 
 			iconUrl : "../../images/icons/data.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createData",
@@ -128,7 +130,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 		}, {
 			id : "swimlaneButton",
 			paletteId : "lanePalette",
-			title : "Create Swimlane",
+			title :m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createSwimlane.title"), 
 			iconUrl : "../../images/icons/lane.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createSwimlane",
@@ -136,7 +138,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 		}, {
 			id : "connectorButton",
 			paletteId : "connectorPalette",
-			title : "Create Connector",
+			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createConnector.title"), 
 			iconUrl : "../../images/icons/connect.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createConnector",
@@ -144,7 +146,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette' ], function(m_defaultP
 		}, {
 			id : "annotationButton",
 			paletteId : "annotationPalette",
-			title : "Create Annotation",
+			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createAnnotation.title"),
 			iconUrl : "../../images/icons/annotation.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createAnnotation",

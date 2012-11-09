@@ -2,8 +2,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "jquery", "m_utils", "m_constants" ],
-		function(jQuery, m_utils, m_constants) {
+		[ "jquery", "m_utils", "m_constants","m_i18nUtils"  ],
+		function(jQuery, m_utils, m_constants, m_i18nUtils){
 
 			var INFO_MESSAGE = 0;
 			var ERROR_MESSAGE = 1;
@@ -13,7 +13,8 @@ define(
 			var messageDisplay = jQuery("#messageDisplay");
 			var messageIcon = jQuery("#messageIcon");
 			var lastSaveDateDisplay = jQuery("#lastSaveDateDisplay");
-			updateLastSavedLabel("Not saved yet");
+			var selectdata = m_i18nUtils.getProperty("modeler.outline.unSavedMessage.title");
+			updateLastSavedLabel(selectdata);
 
 			var messages = [];
 
@@ -33,7 +34,8 @@ define(
 				if (lastSaveDate) {
 					updateLastSavedLabel(m_utils.prettyDateTime(lastSaveDate));
 				} else {
-					updateLastSavedLabel("Not saved yet");
+					var selectdata = m_i18nUtils.getProperty("modeler.element.properties.sessionProperties.notsavedata");
+					updateLastSavedLabel(selectdata);
 				}
 			}
 
@@ -48,8 +50,9 @@ define(
 			 *
 			 */
 			function markSaved() {
+				var selectdata = m_i18nUtils.getProperty("modeler.element.properties.sessionProperties.justNow");
 				lastSaveDate = new Date();
-				updateLastSavedLabel("Just Now");
+				updateLastSavedLabel(selectdata);
 			}
 
 			/**

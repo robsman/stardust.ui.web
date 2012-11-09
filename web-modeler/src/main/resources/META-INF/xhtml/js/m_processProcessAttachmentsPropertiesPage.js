@@ -10,11 +10,12 @@
 
 define(
 		[ "m_utils", "m_constants", "m_commandsController", "m_command",
-				"m_propertiesPage" ],
+				"m_propertiesPage","m_i18nUtils"],
 		function(m_utils, m_constants, m_commandsController, m_command,
-				m_propertiesPage) {
+				m_propertiesPage,m_i18nUtils) {
 			return {
 				create : function(propertiesPanel) {
+					i18nProcessStaticLabels();
 					var page = new ProcessProcessAttachmentsPropertiesPage(
 							propertiesPanel);
 
@@ -23,14 +24,35 @@ define(
 					return page;
 				}
 			};
+			
 
+			function i18nProcessStaticLabels() {
+				// headingdata
+				jQuery("#propertiesText")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.processDefinition.propertyPages.processAttachments.heading"));
+				// jQuery("#commentsHeading").html(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.comments"));
+				$("label[for='supportsAttachmentsInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.processDefinition.propertyPages.processAttachmentText.checkboxSupport"));
+				$("label[for='uniquePerRootProcessInstanceInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.processDefinition.propertyPages.processAttachmentText.checkboxInstanceSupport"));
+				jQuery("title").html("+testing");
+
+			}
 			/**
 			 *
 			 */
 			function ProcessProcessAttachmentsPropertiesPage(propertiesPanel) {
+
+                var processAttachText = m_i18nUtils.getProperty("modeler.processDefinition.propertyPages.processAttachments.heading");
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "processAttachmentsPropertiesPage",
-						"Process Attachments",
+						processAttachText,
 						"../../images/icons/process-attachment.png");
 
 				m_utils.inheritFields(this, propertiesPage);

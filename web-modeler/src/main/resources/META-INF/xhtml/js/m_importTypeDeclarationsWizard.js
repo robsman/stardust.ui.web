@@ -11,18 +11,77 @@
 define(
 		[ "m_utils", "m_constants", "m_communicationController", "m_command",
 				"m_commandsController", "m_model",
-				"m_dialog", "m_typeDeclaration", "m_structuredTypeBrowser" ],
+				"m_dialog", "m_typeDeclaration", "m_structuredTypeBrowser","m_i18nUtils" ],
 		function(m_utils, m_constants, m_communicationController, m_command,
 				m_commandsController, m_model,
-				m_dialog, m_typeDeclaration, m_structuredTypeBrowser) {
+				m_dialog, m_typeDeclaration, m_structuredTypeBrowser,m_i18nUtils) {
 			return {
 				initialize : function() {
 					var wizard = new ImportTypeDeclarationsWizard();
+					i18importtypeproperties();
 
 					wizard.initialize(payloadObj.model);
+					
 				}
 			};
+					
 
+			function i18importtypeproperties() {
+
+				jQuery("#titleText")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.panel"));
+				jQuery("#import")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.text"));
+				jQuery("#url")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.url"));
+				jQuery("#loadFromUrlButton")
+						.attr(
+								"value",
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.load"));
+
+				jQuery("#dataStructElement")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.heading.dataStructureElemnets"));
+				jQuery("#structureDefinitionHintPanel")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.definitionPanel"));
+				jQuery("#select")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.checkbox"));
+				jQuery("#elementColumn")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.element"));
+				jQuery("#typeColumn")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.type"));
+				jQuery("#cardinalityColumn")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.cardinality"));
+				jQuery("#importButton")
+						.attr(
+								"value",
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.import"));
+				jQuery("#cancelButton")
+						.attr(
+								"value",
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.cancel"));
+
+			}
 			/**
 			 *
 			 */

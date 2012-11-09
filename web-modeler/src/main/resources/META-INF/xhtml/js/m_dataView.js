@@ -11,10 +11,10 @@
 define(
 		[ "m_utils", "m_constants", "m_extensionManager", "m_command",
 				"m_commandsController", "m_dialog", "m_modelElementView",
-				"m_model", "m_dataTypeSelector" ],
+				"m_model", "m_dataTypeSelector","m_i18nUtils"],
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_dataTypeSelector) {
+				m_dataTypeSelector, m_i18nUtils) {
 			var view;
 
 			return {
@@ -27,12 +27,73 @@ define(
 					view = new DataView();
 					// TODO Unregister!
 					// In Initializer?
-
+					i18primitivedataproperties();
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(data);
+					
 				}
 			};
+					
+
+			function i18primitivedataproperties() {
+                
+				$("label[for='guidOutput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.uuid"));
+								
+				$("label[for='idOutput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.id"));
+
+				jQuery("#dataName")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.createPrimitiveData.dataName"));
+				jQuery("#description")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.description"));
+				jQuery("#publicVisibility")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
+				jQuery("#dataType")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.dataType "));
+				jQuery("#dataType1")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.dataType"));
+				jQuery("#dataType")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.dataType"));
+				jQuery("#primitiveType")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
+				jQuery("#dataStructure")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.dataStructure"));
+				jQuery("#documentType")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.createPrimitiveData.dataTypeProperties.documentType"));
+				jQuery("#defaultValue")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.createPrimitiveData.dataTypeProperties.defaultValue"));
+				jQuery("#defaultValue1")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.createPrimitiveData.dataTypeProperties.defaultValue"));
+
+			}
 
 			/**
 			 *
@@ -53,6 +114,44 @@ define(
 					this.primitiveDefaultTextInput = jQuery("#primitiveDefaultTextInput");
 					this.primitiveDefaultCheckboxInputRow = jQuery("#primitiveDefaultCheckboxInputRow ");
 					this.primitiveDefaultCheckboxInput = jQuery("#primitiveDefaultCheckboxInput");
+					this.primitiveDataTypeSelect = jQuery("#primitiveDataTypeSelect");
+					var selectdata = null;
+					selectdata = m_i18nUtils
+							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.string");
+					this.primitiveDataTypeSelect
+							.append("<option value=\"String\">" + selectdata
+									+ "</option>");
+					selectdata = m_i18nUtils
+							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.boolean");
+					this.primitiveDataTypeSelect
+							.append("<option value=\"boolean\">" + selectdata
+									+ "</option>");
+					selectdata = m_i18nUtils
+							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.int");
+					this.primitiveDataTypeSelect
+							.append("<option value=\"int\">" + selectdata
+									+ "</option>");
+					selectdata = m_i18nUtils
+							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.long");
+					this.primitiveDataTypeSelect
+							.append("<option value=\"long\">" + selectdata
+									+ "</option>");
+					selectdata = m_i18nUtils
+							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.double");
+					this.primitiveDataTypeSelect
+							.append("<option value=\"double\">" + selectdata
+									+ "</option>");
+					selectdata = m_i18nUtils
+							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.decimal");
+					this.primitiveDataTypeSelect
+							.append("<option value=\"Decimal\">" + selectdata
+									+ "</option>");
+					selectdata = m_i18nUtils
+							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.calender");
+					this.primitiveDataTypeSelect
+							.append("<option value=\"Calendar\">" + selectdata
+									+ "</option>");
+					
 
 					this.dataTypeSelector = m_dataTypeSelector.create({
 						scope : "dataView",

@@ -13,8 +13,8 @@
 
 		<f:facet name="header">
 			<ice:panelGroup style="min-width: 200px;">
-				<ice:outputText value="File Upload" styleClass="headerText" rendered="#{modelFileUploadDialog.uploadMode}" />
-				<ice:outputText value="Confirmation" styleClass="headerText" rendered="#{!modelFileUploadDialog.uploadMode}" />
+				<ice:outputText value="#{bpmModelerMessages['uploadmodelfile.headerText']}" styleClass="headerText" rendered="#{modelFileUploadDialog.uploadMode}" />
+				<ice:outputText value="#{bpmModelerMessages['uploadmodelfile.message.confirmation']}" styleClass="headerText" rendered="#{!modelFileUploadDialog.uploadMode}" />
 				<ice:commandButton title="#{common_msgPropsBean['common.close']}"
 					action="#{modelFileUploadDialog.closePopup}" immediate="true"
 					styleClass="windowClose" />
@@ -30,7 +30,7 @@
 					<ice:panelGroup style="width: 350px">
 						<ice:panelGroup rendered="#{modelFileUploadDialog.uploadMode}">
 							<ice:panelGroup styleClass="clearing" />
-							<ice:outputText value="Upload into My Process Models" styleClass="form-label" />
+							<ice:outputText value="#{bpmModelerMessages['uploadmodelfile.message.upload']}" styleClass="form-label" />
 							<ice:panelGroup styleClass="clearing" />
 							<h:outputText
 								value="#{views_common_msgPropsBean['common.selectFileForUpload']}"
@@ -68,17 +68,17 @@
 								</ice:panelGroup>
 								<ice:panelGroup>
 									<ice:outputText
-										value="Process model #{modelFileUploadDialog.uploadedFileName}" />
+										value="#{bpmModelerMessages['uploadmodelfile.message.uploadFileName']}" />
 									<ice:panelGroup />
 									<ice:outputText
-										value="already exists." />
+										value="#{bpmModelerMessages['uploadmodelfile.message.exists']}" />
 									<ice:panelGroup styleClass="clearing" />
 									<ice:panelGroup styleClass="clearing" />
 									<ice:outputText
-										value="Do you want to continue and create a new version of" />
+										value="#{bpmModelerMessages['uploadmodelfile.message.continue']}" />
 									<ice:panelGroup />
 									<ice:outputText
-										value="the existing process model?" />
+										value="#{bpmModelerMessages['uploadmodelfile.message.existingProcessModel']}" />
 									<ice:panelGroup styleClass="clearing" />
 									<ice:panelGroup styleClass="clearing" />
 								</ice:panelGroup>

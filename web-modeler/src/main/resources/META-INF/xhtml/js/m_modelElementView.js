@@ -3,16 +3,22 @@
  */
 define(
 		[ "m_utils", "m_constants", "m_extensionManager", "m_command",
-				"m_commandsController", "m_user", "m_dialog", "m_view" ],
+				"m_commandsController", "m_user", "m_dialog", "m_view", "m_i18nUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_command,
-				m_commandsController, m_user, m_dialog, m_view) {
+				m_commandsController, m_user, m_dialog, m_view, m_i18nUtils) {
 			return {
 				create : function(id) {
 					var view = new ModelElementView();
-
+					i18modelelement();
 					return view;
 				}
 			};
+			
+			function i18modelelement() {	
+			
+				jQuery("#name").text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.name"));
+				
+				}
 
 			/**
 			 *
@@ -38,8 +44,6 @@ define(
 					this.descriptionTextarea = jQuery("#descriptionTextarea");
 					this.propertiesTabs = jQuery("#propertiesTabs");
 					this.propertiesTabsList = jQuery("#propertiesTabsList");
-					this.creationDateOutput = jQuery("#creationDateOutput");
-					this.lastModificationDateOutput = jQuery("#lastModificationDateOutput");
 
 					this.nameInput.change({
 						"view" : this
@@ -168,23 +172,6 @@ define(
 
 					this.nameInput.val(this.modelElement.name);
 					this.descriptionTextarea.val(this.modelElement.description);
-					if (this.modelElement[m_constants.DATE_OF_CREATION]) {
-						this.creationDateOutput.empty();
-						this.creationDateOutput.append(this.modelElement[m_constants.DATE_OF_CREATION]);
-					} else {
-						this.creationDateOutput.empty();
-						// TODO I18N
-						this.creationDateOutput.append("UNKNOWN");
-					}
-
-					if (this.modelElement[m_constants.DATE_OF_MODIFICATION]) {
-						this.lastModificationDateOutput.empty();
-						this.lastModificationDateOutput.append(this.modelElement[m_constants.DATE_OF_MODIFICATION]);
-					} else {
-						this.lastModificationDateOutput.empty();
-						// TODO I18N
-						this.lastModificationDateOutput.append("UNKNOWN");
-					}
 
 					if (this.modelElement.attributes == null) {
 						this.modelElement.attributes = {};
@@ -265,7 +252,7 @@ define(
 
 					m_commandsController.submitCommand(m_command
 							.createUpdateModelElementWithUUIDCommand(this
-									.getModel().id, this
+									.getModelElement().model.id, this
 									.getModelElement().uuid, changes));
 				};
 
@@ -378,7 +365,7 @@ define(
 
 					if (object && object.changes && object.changes.modified) {
 						for (var i = 0; i < object.changes.modified.length; i++) {
-							if (this.getModelElement().uuid == object.changes.modified[i].uuid) {
+							if (this.getModelElement().oid == object.changes.modified[i].oid) {
 								m_utils.inheritFields(this.getModelElement(),
 										object.changes.modified[i]);
 

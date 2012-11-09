@@ -12,27 +12,115 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_dialog", "m_propertiesPage" ],
-		function(m_utils, m_constants, m_dialog, m_propertiesPage) {
+		[ "m_utils", "m_constants", "m_dialog", "m_propertiesPage", "m_i18nUtils" ],
+		function(m_utils, m_constants, m_dialog, m_propertiesPage, m_i18nUtils) {
+	
 			return {
 				create : function(propertiesPanel) {
 					return new ActivityControllingPropertiesPage(
 							propertiesPanel);
 				}
 			};
+						
+
+	    	function i18nactivity() {
+
+				$("label[for='targetProcessingTimeInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.controlling.targetprocessingtime")); 
+																														
+																														
+				$("label[for='targetExecutionTimeInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.controlling.targetexecutiontimeinput")); 																									// Execution
+																															
+				$("label[for='targetIdleTimeInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.controlling.targetIdleTimeInput")); 
+																														
+																														
+				$("label[for='targetWaitingTimeInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.controlling.targetWaitingTimeInput")); 
+																														
+																														
+				$("label[for='targetQueueDepthInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.controlling.targetQueueDepthInput")); 
+																														
+																														
+				$("label[for='targetCostPerExecutionInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.controlling.targetCostPerExecutionInput")); 
+																																
+																																
+																																
+				$("label[for='resourcePerformanceCalculationSelect']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.controlling.resourcePerformanceCalculationSelect")); 
+																																		
+																																		
+				jQuery("#activityhours")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.hours"));
+				jQuery("#activityhours2")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.hours"));
+				jQuery("#activityhours3")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.hours"));
+				jQuery("#activityhours4")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.hours"));
+				jQuery("#activitydollar")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.dollar"));
+				jQuery("#activityControling")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.controlling.header"));
+				
+				this.resourcePerformanceCalculationSelect = jQuery("#resourcePerformanceCalculationSelect");
+				
+				var selectdata = m_i18nUtils
+						.getProperty("modeler.activity.propertyPages.controlling.resourcePerformanceCalculationSelect.included");
+				resourcePerformanceCalculationSelect
+						.append("<option value=\"included\">" + selectdata
+								+ "</option>");
+				selectdata = m_i18nUtils
+						.getProperty("modeler.activity.propertyPages.controlling.resourcePerformanceCalculationSelect.notIncluded");
+				resourcePerformanceCalculationSelect
+						.append("<option value=\"notIncluded\">" + selectdata
+								+ "</option>");
+
+			}
 
 			/**
 			 * 
 			 */
 			function ActivityControllingPropertiesPage(propertiesPanel) {
-
+				var controlling = m_i18nUtils.getProperty("modeler.activity.propertyPages.controlling.heading");
+				i18nactivity();
 				// Inheritance
 
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "controllingPropertiesPage",
-						"Controlling",
+						controlling,
 						"../../images/icons/controlling-properties-page.png");
 
+				
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
 						ActivityControllingPropertiesPage.prototype,
@@ -91,8 +179,7 @@ define(
 							.val(this.propertiesPanel.element.modelElement.attributes["carnot:pwh:targetQueueDepth"]);
 					this.targetCostPerExecutionInput
 							.val(this.propertiesPanel.element.modelElement.attributes["carnot:pwh:targetCostPerExecution"]);
-					// this.resourcePerformanceCalculationSelect
-					// .val(this.propertiesPanel.element.modelElement.attributes["carnot:pwh:targetCostPerSecond"]);
+					
 				};
 			}
 		});

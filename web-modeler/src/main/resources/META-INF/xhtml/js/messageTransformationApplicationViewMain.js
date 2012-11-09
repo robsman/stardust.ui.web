@@ -34,9 +34,13 @@ require.config({
 		'codemirror.util.searchcursor': ['libs/codemirror/util/searchcursor', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/util/searchcursor'],
 		'codemirror.util.simple-hint': ['libs/codemirror/util/simple-hint', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/util/simple-hint'],
 
-		'common-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/common-plugins'
+		'common-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/common-plugins',
+		 'i18n' : '../../common/InfinityBPMI18N'
 	},
 	shim: {
+	    'i18n' : {
+			exports : "InfinityBPMI18N"
+		 },
 		'jquery-ui': ['jquery'],
 		'jquery.form': ['jquery'],
 		'jquery.impromptu': ['jquery'],
@@ -80,6 +84,7 @@ require(["require",
 
 		 "common-plugins",
 		 "m_utils",
+		 "i18n",
 		 "m_communicationController",
 		 "m_urlUtils",
 		 "m_constants",
@@ -87,7 +92,7 @@ require(["require",
 		 "m_commandsController",
 		 "m_view",
 		 "m_modelElementView",
-		 "m_modelElementCommentsPropertiesPage",         
+		 "m_modelElementCommentsPropertiesPage",        
          "m_messageTransformationApplicationView"],
 		 function(require) {
 	require("m_messageTransformationApplicationView").initialize(

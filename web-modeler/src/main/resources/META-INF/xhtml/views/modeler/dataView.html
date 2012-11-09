@@ -42,7 +42,7 @@
 										<td><div id="idOutput" class="output"></div></td>
 									</tr>
 									<tr>
-										<td><label for="nameInput">Data Name</label></td>
+										<td><label for="nameInput" id="dataName">Data Name</label></td>
 										<td><input id="nameInput" type="text"></input></td>
 									</tr>
 								</table>
@@ -52,7 +52,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td><label for="descriptionTextarea">Description</label>
+				<td><label for="descriptionTextarea" id="description">Description</label>
 				</td>
 			</tr>
 			<tr>
@@ -66,7 +66,7 @@
 						<tr>
 							<td><input id="publicVisibilityCheckbox" type="checkbox"></input>
 							</td>
-							<td><label for="publicVisibilityCheckbox">Public
+							<td><label for="publicVisibilityCheckbox" id="publicVisibility">Public
 									Visibility</label></td>
 						</tr>
 					</table>
@@ -76,7 +76,7 @@
 				<td>
 					<div id="propertiesTabs">
 						<ul id="propertiesTabsList">
-							<li><a href="#dataTypeTab"><img
+							<li><a href="#dataTypeTab" id="dataType"><img
 									src="../../images/icons/basic-properties-page.png"></img><span
 									class="tabLabel">Data Type</span> </a>
 							</li>
@@ -87,36 +87,33 @@
 									<td>
 										<table style="margin-top: 10px;">
 											<tr>
-												<td><label for="dataTypeSelect">Data Type</label>
+												<td><label for="dataTypeSelect" id="dataType1">Data Type</label>
 												</td>
 												<td><select id="dataTypeSelect" size="1">
 												</select></td>
 											</tr>
 											<tr id="primitiveDataTypeRow">
-												<td><label for="primitiveDataTypeSelect" />Primitive
+												<td><label for="primitiveDataTypeSelect" id="primitiveType"/>Primitive
 													Type</label>
 												</td>
 												<td><select id="primitiveDataTypeSelect" size="1">
-														<option value="String">Text</option>
+														<!-- <option value="String">Text</option>
 														<option value="boolean">Boolean (True, False)</option>
 														<option value="int">Number (e.g. 18756)</option>
 														<option value="long">Long Number (e.g. 18756)</option>
 														<option value="double">Scientific (e.g. 3.1415)</option>
 														<option value="Decimal">Money Amount (e.g.
 															$4,500,600.42)</option>
-														<option value="Calendar">Date (e.g. 14/05/2011)</option>
+														<option value="Calendar">Date (e.g. 14/05/2011)</option>  -->
 												</select>
 												</td>
 											</tr>
 											<tr id="structuredDataTypeRow">
-												<td><label for="structuredDataTypeSelect">Structured
-														Type</label>
-												</td>
-												<td><select id="structuredDataTypeSelect" size="1">
+											<td><select id="structuredDataTypeSelect" size="1">
 												</select></td>
 											</tr>
 											<tr id="documentTypeRow">
-												<td><label for="documentTypeSelect">Document
+												<td><label for="documentTypeSelect" id="documentType">Document
 														Type</label></td>
 												<td><select id="documentTypeSelect" size="1">
 												</select></td>
@@ -125,13 +122,13 @@
 												<td colspan="2"><div id="otherTypeName"></div></td>
 											</tr>
 											<tr id="primitiveDefaultTextInputRow">
-												<td><label for="primitiveDefaultTextInput">Default
+												<td><label for="primitiveDefaultTextInput" id="defaultValue">Default
 														Value</label></td>
 												<td><input id="primitiveDefaultTextInput" type="text" />
 												</td>
 											</tr>
 											<tr id="primitiveDefaultCheckboxInputRow">
-												<td><label for="primitiveDefaultCheckboxInput">Default
+												<td><label for="primitiveDefaultCheckboxInput" id="defaultValue1">Default
 														Value</label></td>
 												<td><input id="primitiveDefaultCheckboxInput"
 													type="checkbox" /></td>

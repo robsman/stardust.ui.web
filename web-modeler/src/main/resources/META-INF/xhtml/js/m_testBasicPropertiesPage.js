@@ -10,11 +10,13 @@
 
 define(
 		[ "m_utils", "m_constants", "m_commandsController", "m_command",
-				"m_dialog", "m_basicPropertiesPage", "m_dataTraversal" ],
+				"m_dialog", "m_basicPropertiesPage", "m_dataTraversal", "m_i18nUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
-				m_dialog, m_basicPropertiesPage, m_dataTraversal) {
+				m_dialog, m_basicPropertiesPage, m_dataTraversal, m_i18nUtils) {
 			return {
 				create : function(propertiesPanel) {
+					// I18N static labels on the page
+					i18nStaticLabels();
 					var page = new TestBasicPropertiesPage(propertiesPanel);
 
 					page.initialize();
@@ -69,4 +71,12 @@ define(
 					return true;
 				};
 			}
+			/**
+			 * 
+			 */
+			function i18nStaticLabels() {
+				jQuery("#inputData").html(m_i18nUtils.getProperty("modeller.element.properties.testProperties.inputData"));
+				jQuery("#outputData").html(m_i18nUtils.getProperty("modeller.element.properties.testProperties.outputData"));
+			}
+			;
 		});

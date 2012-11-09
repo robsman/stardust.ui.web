@@ -10,19 +10,30 @@
 
 define(
 		[ "m_utils", "m_constants", "m_commandsController", "m_command",
-				"m_dialog", "m_propertiesPage"],
+				"m_dialog", "m_propertiesPage","m_i18nUtils"],
 		function(m_utils, m_constants, m_commandsController, m_command,
-				m_dialog, m_propertiesPage) {
+				m_dialog, m_propertiesPage, m_i18nUtils) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new AnnotationBasicPropertiesPage(propertiesPanel);
-
+					i18nannotation();
 					page.initialize();
 
 					return page;
 				}
 			};
 	
+
+			function i18nannotation() {
+				jQuery("#annotationbasic")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.diagram.toolbar.tool.annotation.basic"));
+				$("label[for='contentTextarea']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.diagram.toolbar.tool.annotation.content"));
+			}
 			/**
 			 * 
 			 */

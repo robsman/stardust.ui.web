@@ -10,22 +10,106 @@
 
 define(
 		[ "m_utils", "m_constants", "m_command", "m_commandsController",
-				"m_dialog", "m_modelElementView", "m_model" ],
+				"m_dialog", "m_modelElementView", "m_model", "m_i18nUtils" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_dialog, m_modelElementView, m_model) {
+				m_dialog, m_modelElementView, m_model, m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
 					var role = m_model.findParticipant(fullId);
-
+					i18nRoleScreen();
 					m_utils.debug("===> role");
 					m_utils.debug(role);
-
 					var roleView = new RoleView();
-
 					roleView.initialize(role);
 					m_commandsController.registerCommandHandler(roleView);
+					//view.initialize(m_model.findApplication(fullId));
+
 				}
 			};
+			
+
+		function i18nRoleScreen() {
+                 
+			   $("label[for='guidOutput']")
+		        	.text(
+					m_i18nUtils
+							.getProperty("modeler.element.properties.commonProperties.uuid"));
+							
+		   	  $("label[for='idOutput']")
+			        .text(
+					m_i18nUtils
+							.getProperty("modeler.element.properties.commonProperties.id"));
+
+				$("label[for='nameInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.role.nameInput"));
+				$("label[for='cardinalityInput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.cardinality"));
+				$("label[for='descriptionTextarea']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.description"));
+				$("label[for='publicVisibilityCheckbox']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
+				$("label[for='chooseAssignmentRadio']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.role.controlling.activityAssignment.assignment"));
+				$("label[for='assignAutomaticallyRadio']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.assignAutomatically"));
+				$("label[for='workingWeeksPerYearInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.propertyView.role.controlling.workingWeeksPerYear"));
+				$("label[for='targetWorktimePerDayInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.role.controlling.targetWorkTime"));
+				$("label[for='targetWorktimePerWeekInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.role.controlling.targetWorkTimePerWeek"));
+				$("label[for='actualCostPerMinuteInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.role.controlling.actualCostPerMin"));
+				$("label[for='targetQueueDepthInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.role.controlling.targetQueueDepth"));
+				jQuery("#activityAssignment")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.role.activityAssignment"));
+				jQuery("#controlling")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.role.controlling"));
+				jQuery("#weekstext")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.role.controlling.week.name"));
+				jQuery("#hours")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.hours"));
+				jQuery("#hours2")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.hours"));
+				jQuery("#dollar")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.dollar"));
+
+			}
 
 			/**
 			 *

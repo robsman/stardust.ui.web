@@ -11,22 +11,146 @@
 define(
 		[ "m_utils", "m_constants", "m_command", "m_commandsController",
 				"m_dialog", "m_modelElementView", "m_model",
-				"m_dataTypeSelector", "m_parameterDefinitionsPanel" ],
+				"m_dataTypeSelector", "m_parameterDefinitionsPanel","m_i18nUtils"],
 		function(m_utils, m_constants, m_command, m_commandsController,
 				m_dialog, m_modelElementView, m_model, m_dataTypeSelector,
-				m_parameterDefinitionsPanel) {
+				m_parameterDefinitionsPanel,m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
 					var view = new UiMashupApplicationView();
+					i18uimashupproperties();
 					// TODO Unregister!
 					// In Initializer?
 
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(m_model.findApplication(fullId));
+					
+					
 				}
 			};
 
+								
+			function i18uimashupproperties() {
+               
+				$("label[for='guidOutput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.uuid"));
+								
+				$("label[for='idOutput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.id"));
+
+				jQuery("#applicationName")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.applicationName"));
+				jQuery("#description")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.description"));
+
+				jQuery("#configuration")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.configuration"));
+				jQuery("#url")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.url"));
+				jQuery("#browseButton")
+						.attr(
+								"value",
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.browse"));
+				jQuery("#paramDef")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.parameterDefinitions"));
+				jQuery("#name")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.name"));
+				jQuery("#direction")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.direction"));
+				jQuery("#dataType")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.datatType"));
+				jQuery("#primitiveType")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
+				jQuery("#deleteParameterDefinitionButton").attr(
+						"title",
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.delete"));
+				var primitiveDataTypeSelect = jQuery("#primitiveDataTypeSelect");
+				var selectdata = m_i18nUtils
+						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.string");
+				primitiveDataTypeSelect.append("<option value=\"String\">"
+						+ selectdata + "</option>");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.boolean");
+				primitiveDataTypeSelect.append("<option value=\"boolean\">"
+						+ selectdata + "</option>");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.int");
+				primitiveDataTypeSelect.append("<option value=\"int\">"
+						+ selectdata + "</option>");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.long");
+				primitiveDataTypeSelect.append("<option value=\"long\">"
+						+ selectdata + "</option>");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.double");
+				primitiveDataTypeSelect.append("<option value=\"double\">"
+						+ selectdata + "</option>");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.decimal");
+				primitiveDataTypeSelect.append("<option value=\"Decimal\">"
+						+ selectdata + "</option>");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.calender");
+				primitiveDataTypeSelect.append("<option value=\"Calendar\">"
+						+ selectdata + "</option>");
+
+				$("label[for='primitiveDataTypeSelect']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
+
+				var parameterDefinitionDirectionSelect = jQuery("#parameterDefinitionDirectionSelect");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.element.properties.commonProperties.in");
+				parameterDefinitionDirectionSelect
+						.append("<option value=\"IN\">" + selectdata
+								+ "</option>");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.element.properties.commonProperties.out");
+				parameterDefinitionDirectionSelect
+						.append("<option value=\"OUT\">" + selectdata
+								+ "</option>");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.direction.inOut");
+				parameterDefinitionDirectionSelect
+						.append("<option value=\"INOUT\">" + selectdata
+								+ "</option>");
+
+			}
 			/**
 			 * 
 			 */

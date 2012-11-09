@@ -5,11 +5,11 @@ define(
 		[ "m_utils", "m_constants", "m_commandsController", "m_command",
 				"m_canvasManager", "m_model", "m_symbol", "m_activitySymbol",
 				"m_gatewaySymbol", "m_eventSymbol", "m_dataSymbol", "m_annotationSymbol",
-				"m_propertiesPanel", "m_swimlanePropertiesPanel","m_modelerUtils" ],
+				"m_propertiesPanel", "m_swimlanePropertiesPanel","m_modelerUtils","m_i18nUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
 				m_canvasManager, m_model, m_symbol, m_activitySymbol,
 				m_gatewaySymbol, m_eventSymbol, m_dataSymbol, m_annotationSymbol,
-				m_propertiesPanel, m_swimlanePropertiesPanel, m_modelerUtils) {
+				m_propertiesPanel, m_swimlanePropertiesPanel, m_modelerUtils,m_i18nUtils) {
 
 			return {
 				createSwimlaneSymbol : function(diagram, parentSymbol) {
@@ -1123,11 +1123,11 @@ define(
 						},
 						payload : {
 							title : "Confirm",
-							message : "Are you sure you want to delete "
-									 + cbObj.auxiliaryProperties.callbackScope.text.attr("text")+ " and all <BR> "
-									 + "symbols in the lane?<BR><BR>",
+							message : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.confirmMsg.delete")
+									 + cbObj.auxiliaryProperties.callbackScope.text.attr("text")+  m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.confirmMsg.info"),
 							acceptButtonText : "Yes",
 							cancelButtonText : "Cancel",
+
 							acceptFunction : function() {
 								var thisLane = cbObj.auxiliaryProperties.callbackScope;
 								thisLane.createAndSubmitDeleteCommand();

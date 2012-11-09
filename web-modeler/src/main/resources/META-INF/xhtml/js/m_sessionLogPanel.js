@@ -13,12 +13,12 @@ define(
 				"m_commandsController", "m_model", 
 				"m_accessPoint", "m_dataTraversal", "m_dialog",
 				"m_communicationController", "m_websocketModel",
-				"m_websocketInvite", "mustache" ],
+				"m_websocketInvite", "mustache", "m_i18nUtils" ],
 		function(m_utils, m_constants, m_user, m_session, m_command,
 				m_commandsController, m_model, 
 				m_accessPoint, m_dataTraversal, m_dialog,
 				m_communicationController, m_websocketModel, m_websocketInvite,
-				mustache) {
+				mustache, m_i18nUtils) {
 			var invite = false;
 
 			return {
@@ -27,7 +27,7 @@ define(
 						invite = m_websocketInvite.init("/invite/"
 								+ m_user.getCurrentUser().account);
 						m_session.initialize();
-
+						i18nsessionpanel();
 						window.top.sessionLogPanel = new SessionLogPanel();
 
 						window.top.sessionLogPanel.initialize();
@@ -37,6 +37,23 @@ define(
 					}
 				}
 			};
+			
+			
+			function i18nsessionpanel() {
+				
+				$("label[for='sessionParticipantsPanel']").text(m_i18nUtils.getProperty("modeler.modelingSession.sessionParticipants.heading"));
+				$("label[for='sessionlog']").text(m_i18nUtils.getProperty("modeler.modelingSession.sessionLog.heading"));
+				$("label[for='chatTextArea']").text(m_i18nUtils.getProperty("modeler.modelingSession.chatMsg.heading"));
+				
+				var chatAddresseeList = jQuery("#chatAddresseeList");
+				
+				var selectdata = m_i18nUtils
+				.getProperty("modeler.modelingSession.chatMsg.allParticipants");
+				chatAddresseeList.append("<option value=\"all\">"
+				+ selectdata + "</option>");
+				
+				
+			}
 
 			/**
 			 * 
@@ -397,8 +414,9 @@ define(
 
 					if (m_session.getInstance().loggedInUser.account == m_session
 							.getInstance().owner.account) {
+						var closebuttondata = m_i18nUtils.getProperty("modeler.modelingSession.sessionProperties.teminateSession");
 						if (m_session.getInstance().loggedInUser.account == participant.account) {
-							image = jQuery("<a><img src='../images/icons/decline.png' title='Terminate Session'></a>"); // I18N
+							image = jQuery("<a><img src='../images/icons/decline.png' title='"+closebuttondata+"'></a>"); // I18N
 
 							image.click({
 								panel : this
@@ -406,7 +424,8 @@ define(
 								event.data.panel.terminateSession();
 							});
 						} else {
-							image = jQuery("<a><img src='../images/icons/decline.png' title='Dismiss Participant'></a>"); // I18N
+							closebuttondata = m_i18nUtils.getProperty("modeler.modelingSession.sessionProperties.dismissParticaipant");
+							image = jQuery("<a><img src='../images/icons/decline.png' title='"+closebuttondata+"'></a>"); // I18N
 
 							image.click({
 								panel : this,
@@ -419,7 +438,8 @@ define(
 
 						cell.append(image);
 					} else if (m_session.getInstance().loggedInUser.account == participant.account) {
-						image = jQuery("<a><img src='../images/icons/decline.png' title='Leave Session'></a>"); // I18N
+						closebuttondata = m_i18nUtils.getProperty("modeler.modelingSession.sessionProperties.leaveSession")
+						image = jQuery("<a><img src='../images/icons/decline.png' title='"+closebuttondata+"'></a>"); // I18N
 
 						image.click({
 							panel : this

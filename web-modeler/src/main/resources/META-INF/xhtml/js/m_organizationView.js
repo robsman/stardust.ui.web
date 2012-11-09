@@ -10,13 +10,13 @@
 
 define(
 		[ "m_utils", "m_constants", "m_command", "m_commandsController",
-				"m_dialog", "m_modelElementView", "m_model"],
+				"m_dialog", "m_modelElementView", "m_model","m_i18nUtils"],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_dialog, m_modelElementView, m_model) {
+				m_dialog, m_modelElementView, m_model,m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
 					var organization = m_model.findParticipant(fullId);
-
+					i18nOrganizationview();
 					m_utils.debug("===> Organization");
 					m_utils.debug(organization);
 
@@ -27,8 +27,85 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(organization);
+					
 				}
 			};
+
+						
+			function i18nOrganizationview() {
+				
+				$("label[for='guidOutput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.uuid"));
+								
+				$("label[for='idOutput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.id"));
+
+				
+				$("label[for='nameInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.organization.organizationName"));
+				$("label[for='descriptionTextarea']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.description"));
+				$("label[for='publicVisibilityCheckbox']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
+				$("label[for='supportsDepartmentsCheckbox']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.organization.supportDepartment"));
+				$("label[for='departmentDataSelect']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.data"));
+				$("label[for='departmentDataPathInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.dataPath"));
+				$("label[for='leaderSelect']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.organization.leader"));
+				$("label[for='chooseAssignmentRadio']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.organization.assignment"));
+				$("label[for='assignAutomaticallyRadio']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.assignAutomatically"));
+				$("label[for='costCenterInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.organization.costCenter"));
+				jQuery("#deptartment")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.organization.department"));
+				jQuery("#teamlead")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.organization.teamLead"));
+				jQuery("#activityassignment")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.role.activityAssignment"));
+				jQuery("#controlling")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.role.controlling"));
+				jQuery("#basicPropertiesPage div.heading")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.processDefinition.propertyPages.general.heading"));
+			}
 
 			/**
 			 *
@@ -299,8 +376,9 @@ define(
 					this.departmentDataSelect.append("<option value='"
 							+ m_constants.TO_BE_DEFINED
 							+ "'>(To be defined)</option>");
+				var	 modellabel =  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.thisModel");
 					this.departmentDataSelect
-							.append("<optgroup label=\"This Model\">");
+							.append("<optgroup label=\""+modellabel+"\">");
 
 					for ( var i in this.getModelElement().model.dataItems) {
 						var dataItem = this.getModelElement().model.dataItems[i];
@@ -310,8 +388,9 @@ define(
 								+ "</option>");
 					}
 
+					 modellabel =  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel");
 					this.departmentDataSelect
-							.append("</optgroup><optgroup label=\"Other Models\">");
+							.append("</optgroup><optgroup label=\""+modellabel+"\">");
 
 					for ( var n in m_model.getModels()) {
 						if (this.getModelElement().model == m_model.getModels()[n]) {
@@ -364,8 +443,11 @@ define(
 				 */
 				OrganizationView.prototype.populateLeaderSelectInput = function() {
 					this.leaderSelect.empty();
+				var dataNone =	m_i18nUtils
+					.getProperty("modeler.element.properties.commonProperties.none")
+					 ;
 					this.leaderSelect.append("<option value='"
-							+ m_constants.TO_BE_DEFINED + "'>(None)</option>");
+							+ m_constants.TO_BE_DEFINED + "'>("+dataNone+")</option>");
 
 					for ( var i in this.getModelElement().model.participants) {
 						var participant = this.getModelElement().model.participants[i];

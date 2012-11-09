@@ -10,12 +10,13 @@
 
 define(
 		[ "m_utils", "m_constants", "m_command", "m_commandsController",
-				"m_dialog", "m_modelElementView", "m_model"],
+				"m_dialog", "m_modelElementView", "m_model","m_i18nUtils"],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_dialog, m_modelElementView, m_model) {
+				m_dialog, m_modelElementView, m_model,m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
 					var conditionalPerformer = m_model.findParticipant(fullId);
+					i18nconditionalScreen();
 					var view = new ConditionalPerformerView();
 					// TODO Unregister!
 					// In Initializer?
@@ -25,6 +26,77 @@ define(
 					view.initialize(conditionalPerformer);
 				}
 			};
+			
+
+			function i18nconditionalScreen() {
+
+				$("label[for='guidOutput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.uuid"));
+								
+				$("label[for='idOutput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.id"));
+
+				$("label[for='bindingDataPathInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.participants.conditionalPerformer.name.bindingDataPath"));
+				$("label[for='bindingDataSelect']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.participants.conditionalPerformer.name.bindingDataSelect"));
+				$("label[for='performerTypeSelect']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.participants.conditionalPerformer.name.performerTypeSelect"));
+
+				$("label[for='publicVisibilityCheckbox']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
+				$("label[for='descriptionTextarea']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.description"));
+				$("label[for='nameInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.participants.conditionalPerformer.performerName"));
+
+				jQuery("#propertiesTabs span.tabLabel")
+						.text(
+								m_i18nUtils	
+										.getProperty("modeler.element.properties.commonProperties.configuration"));
+
+				this.performerTypeSelect1 = jQuery("#performerTypeSelect");
+
+				var dropDownData = m_i18nUtils
+						.getProperty("modeler.model.propertyView.participants.conditionalPerformer.performerTypeSelect.user");
+				performerTypeSelect1.append("<option value=\"user\">"
+						+ dropDownData + "</option>");
+
+				dropDownData = m_i18nUtils
+						.getProperty("modeler.model.propertyView.participants.conditionalPerformer.performerTypeSelect.userGroup");
+				performerTypeSelect1.append("<option value=\"userGroup\">"
+						+ dropDownData + "</option>");
+
+				dropDownData = m_i18nUtils
+						.getProperty("modeler.model.propertyView.participants.conditionalPerformer.performerTypeSelect.orgRole");
+				performerTypeSelect1
+						.append("<option value=\"modelParticipant\">"
+								+ dropDownData + "</option>");
+
+				dropDownData = m_i18nUtils
+						.getProperty("modeler.model.propertyView.participants.conditionalPerformer.performerTypeSelect.orgRoleUser");
+				performerTypeSelect1
+						.append("<option value=\"modelParticipantOrUserGroup\">"
+								+ dropDownData + "</option>");
+				
+				
+			}
 
 			/**
 			 *
@@ -112,9 +184,9 @@ define(
 				 */
 				ConditionalPerformerView.prototype.populateBindingDataSelect = function() {
 					this.bindingDataSelect.empty();
-
+					var modellabel = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.thisModel");
 					this.bindingDataSelect
-							.append("<optgroup label=\"This Model\">");
+							.append("<optgroup label=\""+modellabel+"\">");
 
 					for ( var i in this.getModelElement().model.dataItems) {
 						var dataItem = this.getModelElement().model.dataItems[i];
@@ -123,9 +195,9 @@ define(
 								+ dataItem.getFullId() + "'>" + dataItem.name
 								+ "</option>");
 					}
-
+					modellabel =  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel");
 					this.bindingDataSelect
-							.append("</optgroup><optgroup label=\"Other Models\">");
+							.append("</optgroup><optgroup label=\""+modellabel+"\">");
 
 					for ( var n in m_model.getModels()) {
 						if (m_model.getModels()[n] == this.getModelElement().model) {

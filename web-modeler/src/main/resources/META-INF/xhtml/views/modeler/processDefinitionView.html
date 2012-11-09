@@ -126,14 +126,13 @@
 																		</td>
 																	</tr>
 																	<tr>
-																		<td><label for="nameInput">Name</label></td>
-																		<td><input id="nameInput" type="text" />
-																		</td>
+																		<td id="nameInput"><label for="nameInput">Name</label></td>
+																		<td><input id="nameInput" type="text" /></td>
 																	</tr>
 																</table>
 																<table>
 																	<tr>
-																		<td><label for="descriptionInput">Description</label>
+																		<td id="description"><label for="descriptionInput">Description</label>
 																		</td>
 																	</tr>
 																	<tr>
@@ -174,7 +173,7 @@
 																				<table width="100%" cellpadding="0" cellspacing="0"
 																					class="layoutTable">
 																					<tr>
-																						<td><div class="toolBar">
+																						<td><div class="toolBar" >
 																								<table>
 																									<tr>
 																										<td><input
@@ -221,7 +220,7 @@
 																	</tr>
 																	<tr>
 																		<td>
-																			<table>
+																			<table id="directionlistTable">
 																				<tr>
 																					<td><input id="addParameterDefinitionButton"
 																						type="image" src="../../images/icons/add.png"
@@ -297,20 +296,23 @@
 																<table>
 																	<tr>
 																		<td>
-																			<table>
+																			<table id="processdefinationselect">
 																				<tr>
 																					<td><label
 																						for="processInterfaceTypeSelectInput">Type</label>
 																					</td>
 																					<td><select
-																						id="processInterfaceTypeSelectInput"><option
+																						id="processInterfaceTypeSelectInput">
+																						
+																						<!-- <option
 																								value="noProcessInterface">No Process
 																								Interfaces</option>
 																							<option value="providesProcessInterface">Provides
 																								Process Interface</option>
-																							<!-->option value="implementsProcessInterface">Implements
-																								Process Interface</option-->
-																					</select></td>
+																							<option value="implementsProcessInterface">Implements
+																								Process Interface</option>  -->
+																					</select>
+																					</td>
 																				</tr>
 																			</table></td>
 																	</tr>
@@ -489,7 +491,7 @@
 												<table id="activityPropertiesPanelTable">
 													<tr>
 														<td>
-															<div class="propertiesPanelTitle">Activity</div>
+															<div class="propertiesPanelTitle" id="activityheading">Activity</div>
 														</td>
 													</tr>
 													<tr id="errorMessagesRow">
@@ -516,14 +518,13 @@
 																		<td><div id="idOutput" class="output" /></td>
 																	</tr>
 																	<tr>
-																		<td><label for="nameInput">Name</label>
-																		</td>
+																		<td><label for="nameInput" id="name">Name</label></td>
 																		<td><input id="nameInput" type="text" /></td>
 																	</tr>
 																</table>
-																<table>
+																<table id="activitydescription">
 																	<tr>
-																		<td><label for="descriptionInput">Description</label>
+																		<td><label for="descriptionInput" id="description">Description</label>
 																		</td>
 																	</tr>
 																	<tr>
@@ -556,21 +557,21 @@
 																	<tr>
 																		<td><input id="hibernateInitiallyInput"
 																			type="checkbox" /></td>
-																		<td><label for="hibernateInitiallyInput">Hibernate
+																		<td><label for="hibernateInitiallyInput" id ="hibernate">Hibernate
 																				Initially</label>
 																		</td>
 																	</tr>
 																	<tr>
 																		<td><input id="supportsRelocationInput"
 																			type="checkbox" /></td>
-																		<td><label for="supportsRelocationInput">Supports
+																		<td><label for="supportsRelocationInput" id="supportsRelocation">Supports
 																				Relocation</label>
 																		</td>
 																	</tr>
 																	<tr>
 																		<td><input id="isRelocationTargetInput"
 																			type="checkbox" /></td>
-																		<td><label for="isRelocationTargetInput">Is
+																		<td><label for="isRelocationTargetInput" id ="isRelocationTarget">Is
 																				Relocation Target</label>
 																		</td>
 																	</tr>
@@ -579,7 +580,7 @@
 																	<tr>
 																		<td><input id="userTaskInput" type="radio" />
 																		</td>
-																		<td><label for="userTaskInput">User Task</label>
+																		<td><label for="userTaskInput" id="userTask">User Task</label>
 																		</td>
 																		<td><select id="userApplicationList" size="1">
 																		</select>
@@ -593,7 +594,7 @@
 																	<tr>
 																		<td><input id="applicationInput" type="radio" />
 																		</td>
-																		<td><label for="applicationInput">Script
+																		<td><label for="applicationInput" id="scriptTask">Script
 																				Task</label>
 																		</td>
 																		<td><select id="applicationList" size="1">
@@ -603,7 +604,7 @@
 																	<tr>
 																		<td><input id="subprocessInput" type="radio" />
 																		</td>
-																		<td><label for="subprocessInput">Subprocess</label>
+																		<td><label for="subprocessInput" id="subprocess">Subprocess</label>
 																		</td>
 																		<td><select id="subprocessList" size="1">
 																		</select>
@@ -735,7 +736,7 @@
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
 														<td>
-															<div class="propertiesPanelTitle">Event</div>
+															<div class="propertiesPanelTitle" id="event">Event</div>
 														</td>
 													</tr>
 													<tr>
@@ -750,7 +751,7 @@
 														<td id="propertiesPagesCell">
 															<div id="basicPropertiesPage" class="propertiesPage">
 																<div class="heading">General Properties</div>
-																<table>
+																<table id="annotationName">
 																	<tr id="guidOutputRow">
 																		<td><label for="guidOutput">UUID</label></td>
 																		<td><div id="guidOutput" class="output" /></td>
@@ -765,7 +766,7 @@
 																		<td><input type="text" id="nameInput" /></td>
 																	</tr>
 																</table>
-																<table>
+																<table id="annotationdesc">
 																	<tr>
 																		<td><label for="descriptionInput">Description:</label>
 																		</td>
@@ -779,7 +780,7 @@
 																<div id="startEventPanel" style="margin-top: 10px;">
 																	<table>
 																		<tr>
-																			<td><label for="eventTypeSelectInput">Event
+																			<td><label for="eventTypeSelectInput">Event 
 																					Type</label>
 																			</td>
 																			<td><select id="eventTypeSelectInput" style="margin-bottom: 10px;"/>
@@ -803,7 +804,7 @@
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
 														<td>
-															<div class="propertiesPanelTitle">Gateway</div>
+															<div class="propertiesPanelTitle" id="gatewayid" >Gateway</div>
 														</td>
 													</tr>
 													<tr>
@@ -818,7 +819,7 @@
 														<td id="propertiesPagesCell">
 															<div id="basicPropertiesPage" class="propertiesPage">
 																<div class="heading">General Properties</div>
-																<table>
+																<table id="gatewayName">
 																	<tr id="guidOutputRow">
 																		<td><label for="guidOutput">UUID</label>
 																		</td>
@@ -834,7 +835,7 @@
 																		<td><input type="text" id="nameInput" /></td>
 																	</tr>
 																</table>
-																<table>
+																<table id="gatewayDesc">
 																	<tr>
 																		<td><label for="descriptionInput">Description</label>
 																		</td>
@@ -858,14 +859,14 @@
 																		</td>
 																	</tr>
 																</table>
-																<table>
+																<table id=gatewaytypeinputselect>
 																	<tr>
 																		<td><label for="gatewayTypeInput">Gateway
 																				Type</label>
 																		</td>
 																		<td><select id="gatewayTypeInput" size="1">
-																				<option value="and">AND</option>
-																				<option value="xor">XOR</option>
+																				<!-- <option value="and">AND</option>
+																				<option value="xor">XOR</option> -->
 																				<!-->option value="or">OR</option-->
 																		</select></td>
 																	</tr>
@@ -879,10 +880,10 @@
 									<tr>
 										<td>
 											<div id="dataPropertiesPanel" class="propertiesPanel">
-												<table cellpadding="0" cellspacing="0" class="layoutTable">
+												<table cellpadding="0" id="dataopendataview" cellspacing="0" class="layoutTable">
 													<tr>
 														<td>
-															<div class="propertiesPanelTitle">Data</div>
+															<div class="propertiesPanelTitle" id="dataid">Data</div>
 														</td>
 													</tr>
 													<tr>
@@ -903,7 +904,7 @@
 														<td id="propertiesPagesCell">
 															<div id="basicPropertiesPage" class="propertiesPage">
 																<div class="heading">General Properties</div>
-																<table>
+																<table id="dataname">
 																	<tr>
 																		<tr id="guidOutputRow">
 																			<td><label for="guidOutput">UUID</label></td>
@@ -920,7 +921,7 @@
 																		</td>
 																	</tr>
 																</table>
-																<table>
+																<table id="datadescription">
 																	<tr>
 																		<td><label for="descriptionInput">Description</label>
 																		</td>
@@ -931,7 +932,7 @@
 																		</td>
 																	</tr>
 																</table>
-																<table cellpadding="0" cellspacing="0"
+																<table cellpadding="0" cellspacing="0" id="datapublicvisibility"
 																	class="fieldSetTable" style="margin-bottom: 10px;">
 																	<tr>
 																		<td><input id="publicVisibilityCheckbox"
@@ -953,8 +954,8 @@
 																		</td>
 																	</tr>
 																</table>
-																<table style="margin-top: 10px;">
-																	<tr>
+																<table id="datatableid" style="margin-top: 10px;">
+																	<tr id="datatypeid">
 																		<td><label for="dataTypeSelect">Data Type</label>
 																		</td>
 																		<td><select id="dataTypeSelect" size="1">
@@ -962,10 +963,10 @@
 																		</td>
 																	</tr>
 																	<tr id="primitiveDataTypeRow">
-																		<td><label for="primitiveDataTypeSelect" />Primitive
+																		<td><label for="primitiveDataTypeSelect" />Primitive 
 																			Type</label></td>
 																		<td><select id="primitiveDataTypeSelect" size="1">
-																				<option value="String">Text</option>
+																				<!-- <option value="String">Text</option>
 																				<option value="boolean">Boolean (True,
 																					False)</option>
 																				<option value="int">Number (e.g. 18756)</option>
@@ -976,7 +977,7 @@
 																				<option value="Decimal">Money Amount (e.g.
 																					$4,500,600.42)</option>
 																				<option value="Calendar">Date (e.g.
-																					14/05/2011)</option>
+																					14/05/2011)</option> -->
 																		</select></td>
 																	</tr>
 																	<tr id="structuredDataTypeRow">
@@ -1029,7 +1030,7 @@
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
 														<td>
-															<div class="propertiesPanelTitle">Annotation</div>
+															<div class="propertiesPanelTitle" id="annotationheading">Annotation</div>
 														</td>
 													</tr>
 													<tr>
@@ -1296,21 +1297,21 @@
 																		</td>
 																	</tr>
 																	<tr>
-																		<td><label for="nameInput">Name:</label></td>
+																		<td><label for="nameInput" id="dataname">Name:</label></td>
 																		<td><input type="text" id="nameInput"
 																			style="width: 218px;" /> <!-- Added width attr to make all textbox of lane properteies alligned -->
 																		</td>
 																	</tr>
 																	<!-- Hidden as currently we don't have description for swimlanes -->
 																	<tr style="display: none">
-																		<td><label for="descriptionInput">Description:</label>
+																		<td><label for="descriptionInput" id="datadesc">Description:</label>
 																		</td>
 																		<td><textarea id="descriptionInput" cols="29"
 																				rows="5" style="width: 218px;"></textarea> <!-- Added width attr to make all textbox of lane alligned -->
 																		</td>
 																	</tr>
 																	<tr>
-																		<td><label for="manualInput">Participant:</label>
+																		<td><label for="manualInput" id="participantdata">Participant:</label>
 																		</td>
 																		<td><select id="participantList" size="1"
 																			style="width: 224px;">

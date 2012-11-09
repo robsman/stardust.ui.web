@@ -5,9 +5,9 @@
  */
 define(
 		[ "m_utils", "m_constants", "m_extensionManager", "m_model", "m_typeDeclaration",
-				"m_dialog", "m_dataTypeSelector" ],
+				"m_dialog", "m_dataTypeSelector","m_i18nUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_model, m_typeDeclaration, m_dialog,
-				m_dataTypeSelector) {
+				m_dataTypeSelector,m_i18nUtils) {
 			return {
 				create : function(options) {
 					var panel = new ParameterDefinitionsPanel();
@@ -364,8 +364,9 @@ define(
 					this.parameterDefinitionDataSelect
 							.append("<option value=\"TO_BE_DEFINED\">(To be defined))</option>");
 
+					var modelname = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.thisModel");
 					this.parameterDefinitionDataSelect
-							.append("<optgroup label=\"This Model\">");
+							.append("<optgroup label=\""+modelname+"\">");
 
 					for ( var i in this.scopeModel.dataItems) {
 						var dataItem = this.scopeModel.dataItems[i];
@@ -376,8 +377,9 @@ define(
 										+ dataItem.name + "</option>");
 					}
 
+					var othermodel = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel")
 					this.parameterDefinitionDataSelect
-							.append("</optgroup><optgroup label=\"Other Models\">");
+							.append("</optgroup><optgroup label=\""+othermodel+"\">");
 
 					for ( var n in m_model.getModels()) {
 						if (m_model.getModels()[n] == this.scopeModel) {
@@ -446,10 +448,10 @@ define(
 								content += parameterDefinition.structuredDataTypeFullId; // TODO
 								// Format
 							}
-
+                          
 							content += "</td>";
 						}
-
+						 
 						if (this.options.supportsDataMappings) {
 							content += "<td style=\"width: "
 									+ this.options.mappingColumnWidth + "\">";
@@ -470,7 +472,12 @@ define(
 
 							content += "</td>";
 						}
-
+						
+						var newValue= m_i18nUtils.getProperty("modeler.element.properties.commonProperties.inputText.new");
+						content = content.replace(">New",">"+newValue);
+						newValue= m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectType.string");
+						content = content.replace("String",newValue);
+						
 						this.parameterDefinitionsTableBody.append(content);
 
 						jQuery(

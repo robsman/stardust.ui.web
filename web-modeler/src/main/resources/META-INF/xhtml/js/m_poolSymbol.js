@@ -3,9 +3,9 @@
  */
 define(
 		[ "m_utils", "m_constants", "m_commandsController", "m_command",
-				"m_canvasManager", "m_symbol", "m_swimlaneSymbol", "m_messageDisplay" ],
+				"m_canvasManager", "m_symbol", "m_swimlaneSymbol", "m_messageDisplay","m_i18nUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
-				m_canvasManager, m_symbol, m_swimlaneSymbol, m_messageDisplay) {
+				m_canvasManager, m_symbol, m_swimlaneSymbol, m_messageDisplay, m_i18nUtils) {
 
 			return {
 				createPoolSymbol : function(diagram) {

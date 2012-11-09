@@ -33,7 +33,8 @@ require.config({
 		'codemirror.util.searchcursor': ['libs/codemirror/util/searchcursor', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/util/searchcursor'],
 		'codemirror.util.simple-hint': ['libs/codemirror/util/simple-hint', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/util/simple-hint'],
 
-		'modeler-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/modeler-plugins'
+		'modeler-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/modeler-plugins',
+		'i18n' : '../../common/InfinityBPMI18N'
 	},
 	shim: {
 		'json': {
@@ -42,7 +43,9 @@ require.config({
 		'raphael': {
 			exports: 'Raphael'
 		},
-
+		'i18n': {
+			exports: "InfinityBPMI18N"
+		},
 		'jquery-ui': ['jquery'],
 		'jquery.download': ['jquery'],
 		'jquery.form': ['jquery'],
@@ -95,13 +98,14 @@ require(["require",
 	 "m_modelerViewLayoutManager",
 	 "m_dataTypeSelector",
 	 "m_parameterDefinitionsPanel",
-
+     "m_processProcessAttachmentsPropertiesPage",
 	 "m_logger",
 	 "m_utils",
 	 "m_communicationController",
 	 "m_canvasManager",
 	 "m_toolbarManager",
 	 "m_urlUtils",
+	 "i18n",
 	 "m_constants",
 	 "m_user",
 	 "m_command",

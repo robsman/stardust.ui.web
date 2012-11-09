@@ -10,11 +10,13 @@
 
 define(
 		[ "m_utils", "m_constants", "m_session", "m_commandsController",
-				"m_command", "m_propertiesPage", "m_commentsPanel" ],
+				"m_command", "m_propertiesPage", "m_commentsPanel", "m_i18nUtils"  ],
 		function(m_utils, m_constants, m_session, m_commandsController,
-				m_command, m_propertiesPage, m_commentsPanel) {
+				m_command, m_propertiesPage, m_commentsPanel, m_i18nUtils) {
 			return {
 				create : function(propertiesPanel, id) {
+					// I18N static labels on the page
+					i18nStaticLabels();
 					var page = new CommentsPropertiesPage(propertiesPanel,
 							id);
 
@@ -28,8 +30,10 @@ define(
 			 * 
 			 */
 			function CommentsPropertiesPage(propertiesPanel, id) {
+				
+				var commentsText = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.comments");
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						propertiesPanel, id, "Comments",
+						propertiesPanel, id, commentsText,
 						"../../images/icons/comments-properties-page.png");
 
 				m_utils.inheritFields(this, propertiesPage);
@@ -62,8 +66,30 @@ define(
 				/**
 				 * 
 				 */
-				CommentsPropertiesPage.prototype.submitCommentsChanges = function(comments) {
-					this.submitChanges(this.assembleChangedObjectFromProperty("comments", comments));
+				
+				CommentsPropertiesPage.prototype.submitCommentsChanges = function(comments) {					
+					this.submitChanges(this.assembleChangedObjectFromProperty(commentsText, comments));
 				};
 			}
+			/**
+			 * 
+			 */
+			function i18nStaticLabels() {
+				jQuery("#commentsHeading").html(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.comments"));		
+				
+				jQuery("#deleteButton")
+						.attr(
+								"title",
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.delete"));
+				jQuery("#submitButton")
+						.attr(
+								"value",
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.submit"));
+
+			}
+			;
 		});

@@ -11,10 +11,10 @@
 define(
 		[ "m_utils", "m_constants", "m_extensionManager", "m_session",
 				"m_commandsController", "m_command", "m_dialog",
-				"m_basicPropertiesPage", "m_dataTraversal" ],
+				"m_basicPropertiesPage", "m_dataTraversal", "m_i18nUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_session,
 				m_commandsController, m_command, m_dialog,
-				m_basicPropertiesPage, m_dataTraversal) {
+				m_basicPropertiesPage, m_dataTraversal, m_i18nUtils ) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new EventBasicPropertiesPage(propertiesPanel);
@@ -44,6 +44,22 @@ define(
 							.mapInputId("eventTypeSelectInput");
 					this.overlayTableCell = jQuery("#overlayTableCell");
 
+					
+					var selectdata = m_i18nUtils
+							.getProperty("modeler.diagram.toolbar.tool.startEvent.eventType.option.manualProcessStart");
+					this.eventTypeSelectInput
+							.append("<option value=\"manualTrigger\">"
+									+ selectdata + "</option>");
+					selectdata = m_i18nUtils
+							.getProperty("modeler.diagram.toolbar.tool.startEvent.eventType.option.processStartViaScan");
+					this.eventTypeSelectInput
+							.append("<option value=\"scanTrigger\">"
+									+ selectdata + "</option>");
+					selectdata = m_i18nUtils
+							.getProperty("modeler.diagram.toolbar.tool.startEvent.eventType.option.processStartViaCamel");
+					this.eventTypeSelectInput
+							.append("<option value=\"camelTrigger\">"
+									+ selectdata + "</option>");
 					var eventIntegrationOverlays = m_extensionManager
 							.findExtensions("eventIntegrationOverlay");
 
@@ -156,6 +172,10 @@ define(
 						} else if (this.propertiesPanel.element.modelElement.documentDataId != null) {
 							this.setOverlay("scanEvent");
 						} else {
+							var selectdata = m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.startEvent.notePoint");
+							this.participantOutput
+									.append(selectdata);
+
 							this.setOverlay("manualTrigger");
 						}
 					} else {

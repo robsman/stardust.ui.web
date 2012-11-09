@@ -11,9 +11,9 @@
 define(
 		[ "m_utils", "m_constants", "m_commandsController", "m_command",
 				"m_propertiesPage",
-				"m_parameterDefinitionsPanel" ],
+				"m_parameterDefinitionsPanel","m_i18nUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
-				m_propertiesPage, m_parameterDefinitionsPanel) {
+				m_propertiesPage, m_parameterDefinitionsPanel,m_i18nUtils) {
 			return {
 				create : function(propertiesPanel) {
 					return new ProcessDataPathPropertiesPage(propertiesPanel);
@@ -23,12 +23,12 @@ define(
 			function ProcessDataPathPropertiesPage(newPropertiesPanel, newId,
 					newTitle) {
 				// Inheritance
-
+				var datapathText = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.dataPath");
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						newPropertiesPanel, "dataPathPropertiesPage",
-						"DataPath",
+						datapathText,
 						"../../images/icons/data-path-properties-page.png");
-
+  
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(ProcessDataPathPropertiesPage.prototype,
 						propertiesPage);

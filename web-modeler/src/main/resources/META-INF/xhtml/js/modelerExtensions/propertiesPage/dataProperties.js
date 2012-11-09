@@ -1,6 +1,6 @@
 define(
-		[ 'm_modelElementCommentsPropertiesPage' ],
-		function(m_modelElementCommentsPropertiesPage) {
+		[ 'm_modelElementCommentsPropertiesPage',"m_i18nUtils"],
+		function(m_modelElementCommentsPropertiesPage, m_i18nUtils) {
 			return {
 				propertiesPage : [
 						{
@@ -9,7 +9,7 @@ define(
 							pageHtmlUrl : "modelElementCommentsPropertiesPage.html",
 							provider : m_modelElementCommentsPropertiesPage,
 							visibility : "always",
-							pageName : "Comments",
+							pageName :  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.comments"),
 							pageIconUrl : "../../images/icons/comments-properties-page.png"
 						}, ]
 			};
