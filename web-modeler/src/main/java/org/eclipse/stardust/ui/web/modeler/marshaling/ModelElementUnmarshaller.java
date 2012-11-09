@@ -2100,7 +2100,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       else
       {
          dataMapping.setApplicationAccessPoint(null);
-         dataMapping.setContext(null);
+         dataMapping.setContext(ModelerConstants.DEFAULT_LITERAL);
       }
 
       if (dataMappingJson.has(ModelerConstants.DATA_PATH_PROPERTY)
