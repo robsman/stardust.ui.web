@@ -87,7 +87,14 @@ define(
 													// TODO Usually, we are not
 													// submitting the object
 													// itself
-													modelElement : page.propertiesPanel.element.modelElement
+													//modelElement : page.propertiesPanel.element.modelElement
+													modelElement : {
+														id : page.propertiesPanel.element.modelElement.id,
+														name : page.propertiesPanel.element.modelElement.name,
+														updateDataMapping : true,
+														inputDataMapping : page.propertiesPanel.element.modelElement.inputDataMapping,
+														outputDataMapping : page.propertiesPanel.element.modelElement.outputDataMapping
+													}
 												});
 									});
 
@@ -124,7 +131,14 @@ define(
 													// TODO Usually, we are not
 													// submitting the object
 													// itself
-													modelElement : page.propertiesPanel.element.modelElement
+													//modelElement : page.propertiesPanel.element.modelElement
+													modelElement : {
+														id : page.propertiesPanel.element.modelElement.id,
+														name : page.propertiesPanel.element.modelElement.name,
+														updateDataMapping : true,
+														inputDataMapping : page.propertiesPanel.element.modelElement.inputDataMapping,
+														outputDataMapping : page.propertiesPanel.element.modelElement.outputDataMapping
+													}
 												});
 									});
 

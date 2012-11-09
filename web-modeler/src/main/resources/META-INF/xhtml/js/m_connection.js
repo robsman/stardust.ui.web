@@ -461,7 +461,8 @@ define(
 												inputDataMapping : updateConnection.modelElement.inputDataMapping,
 												outputDataMapping : updateConnection.modelElement.outputDataMapping,
 												id : updateConnection.modelElement.id,
-												name : updateConnection.modelElement.name
+												name : updateConnection.modelElement.name,
+												updateDataMapping : true
 											}
 										}
 										updateConnection.createUpdateCommand(changes);

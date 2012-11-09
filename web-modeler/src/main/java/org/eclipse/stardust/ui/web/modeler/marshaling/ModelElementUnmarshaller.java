@@ -532,55 +532,59 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
 
       // Decide whether a data mapping needs to be created or deleted
-
-      if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
+      if (dataFlowJson.has(ModelerConstants.UPDATE_DATA_MAPPING_LITERAL))
       {
-         if (inputDataMapping == null)
+         if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
          {
-            inputDataMapping = createDataMapping(dataFlowConnection.getActivitySymbol()
-                  .getActivity(), dataFlowConnection.getDataSymbol().getData(),
-                  DirectionType.IN_LITERAL,
-                  dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString(),
-                  dataFlowJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
+            if (inputDataMapping == null)
+            {
+               inputDataMapping = createDataMapping(
+                     dataFlowConnection.getActivitySymbol().getActivity(),
+                     dataFlowConnection.getDataSymbol().getData(),
+                     DirectionType.IN_LITERAL,
+                     dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString(),
+                     dataFlowJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
+            }
+
+            updateDataMapping(
+                  dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
+                        .getAsJsonObject(), inputDataMapping);
          }
-
-         updateDataMapping(dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
-               .getAsJsonObject(), inputDataMapping);
-      }
-      else
-      {
-         if (inputDataMapping != null)
+         else
          {
-            dataFlowConnection.getActivitySymbol()
-                  .getActivity()
-                  .getDataMapping()
-                  .remove(inputDataMapping);
+            if (inputDataMapping != null)
+            {
+               dataFlowConnection.getActivitySymbol()
+                     .getActivity()
+                     .getDataMapping()
+                     .remove(inputDataMapping);
+            }
          }
-      }
-
-      if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
-      {
-         if (outputDataMapping == null)
+         if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
          {
-            outputDataMapping = createDataMapping(dataFlowConnection.getActivitySymbol()
-                  .getActivity(), dataFlowConnection.getDataSymbol().getData(),
-                  DirectionType.OUT_LITERAL,
-                  dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString(),
-                  dataFlowJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
+            if (outputDataMapping == null)
+            {
+               outputDataMapping = createDataMapping(
+                     dataFlowConnection.getActivitySymbol().getActivity(),
+                     dataFlowConnection.getDataSymbol().getData(),
+                     DirectionType.OUT_LITERAL,
+                     dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString(),
+                     dataFlowJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
+            }
+
+            updateDataMapping(
+                  dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
+                        .getAsJsonObject(), outputDataMapping);
          }
-
-         updateDataMapping(
-               dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
-                     .getAsJsonObject(), outputDataMapping);
-      }
-      else
-      {
-         if (outputDataMapping != null)
+         else
          {
-            dataFlowConnection.getActivitySymbol()
-                  .getActivity()
-                  .getDataMapping()
-                  .remove(outputDataMapping);
+            if (outputDataMapping != null)
+            {
+               dataFlowConnection.getActivitySymbol()
+                     .getActivity()
+                     .getDataMapping()
+                     .remove(outputDataMapping);
+            }
          }
       }
    }
