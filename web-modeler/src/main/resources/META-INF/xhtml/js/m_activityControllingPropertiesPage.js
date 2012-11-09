@@ -28,13 +28,13 @@ define(
 				$("label[for='targetProcessingTimeInput']")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.activity.propertyPages.controlling.targetprocessingtime")); 
+										.getProperty("modeler.activity.propertyPages.controlling.targetProcessingTime")); 
 																														
 																														
 				$("label[for='targetExecutionTimeInput']")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.activity.propertyPages.controlling.targetexecutiontimeinput")); 																									// Execution
+										.getProperty("modeler.activity.propertyPages.controlling.targetExecutionTimeInput")); 																									// Execution
 																															
 				$("label[for='targetIdleTimeInput']")
 						.text(
