@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowNode;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNShape;
@@ -18,6 +19,8 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Binding;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2DiBuilder;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2SequenceFlowBuilder;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
@@ -38,7 +41,8 @@ public class SequenceFlowCommandsHandler
    private ModelService modelService;
 
    @OnCommand(commandId = "connection.create")
-   public void onCreateConnectionSymbol(Definitions model, EObject context, JsonObject details)
+   public void onCreateConnectionSymbol(Definitions model, Process context,
+         JsonObject details)
    {
       ConnectionSymbolJto jto = jsonIo.gson().fromJson(details, ConnectionSymbolJto.class);
 
@@ -47,14 +51,16 @@ public class SequenceFlowCommandsHandler
       if (ModelerConstants.CONTROL_FLOW_LITERAL.equals(jto.modelElement.type))
       {
          TransitionJto transitionJto = jsonIo.gson().fromJson(details.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY), TransitionJto.class);
-         SequenceFlow flow = modelBinding.createSequenceFlow(model, transitionJto);
+         Bpmn2SequenceFlowBuilder sequenceFlowBuilder = new Bpmn2SequenceFlowBuilder();
+         SequenceFlow flow = sequenceFlowBuilder.createSequenceFlow(model, transitionJto);
 
          flow.setSourceRef(resolveFlowNode(modelBinding, model, jto.fromModelElementOid));
          flow.setTargetRef(resolveFlowNode(modelBinding, model, jto.toModelElementOid));
 
-         modelBinding.attachModelElement(context, flow);
+         sequenceFlowBuilder.attachSequenceFlow(context, flow);
 
-         BPMNEdge flowSymbol = modelBinding.createConnectionSymbol(model, jto, flow);
+         Bpmn2DiBuilder diBuilder = new Bpmn2DiBuilder();
+         BPMNEdge flowSymbol = diBuilder.createConnectionSymbol(model, jto, flow);
          flowSymbol.setSourceElement(resolveFlowNodeSymbol(modelBinding, model, jto.fromModelElementOid));
          flowSymbol.setTargetElement(resolveFlowNodeSymbol(modelBinding, model, jto.toModelElementOid));
 
@@ -68,7 +74,7 @@ public class SequenceFlowCommandsHandler
             diagram = Bpmn2Utils.findContainingDiagram(flowSymbol.getTargetElement());
          }
 
-         modelBinding.attachDiagramElement(diagram, flowSymbol);
+         diBuilder.attachDiagramElement(diagram, flowSymbol);
       }
    }
 

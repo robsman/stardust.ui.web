@@ -1,16 +1,22 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2;
 
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2TestUtils.createModel;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2TestUtils.createTestProcess;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2TestUtils.createTestProcessDiagram;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.UUID;
 
 import org.eclipse.bpmn2.Collaboration;
+import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Gateway;
+import org.eclipse.bpmn2.ItemDefinition;
+import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.ProcessType;
 import org.eclipse.bpmn2.StartEvent;
@@ -20,23 +26,24 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2FlowNodeBuilder;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2ItemDefinitionBuilder;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2VariableBuilder;
+import org.eclipse.stardust.ui.web.modeler.integration.ExternalXmlSchemaManager;
 import org.eclipse.stardust.ui.web.modeler.model.ActivityJto;
+import org.eclipse.stardust.ui.web.modeler.model.DataJto;
 import org.eclipse.stardust.ui.web.modeler.model.EventJto;
 import org.eclipse.stardust.ui.web.modeler.model.GatewayJto;
-import org.eclipse.stardust.ui.web.modeler.model.ModelJto;
-import org.eclipse.stardust.ui.web.modeler.model.ProcessDefinitionJto;
-import org.eclipse.stardust.ui.web.modeler.model.di.ProcessDiagramJto;
+import org.eclipse.stardust.ui.web.modeler.model.TypeDeclarationJto;
+import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler.ModelDescriptor;
 
 public class SimpleBpmn2ModelCreation
 {
-   private static final String MODEL_NAME = "Simple BPMN2 Model";
-   private static final String PROCESS_NAME = "Test Process";
-
-   private static final String PROCESS_ID = UUID.randomUUID().toString();
-
-   private static final Bpmn2Binding binding = new Bpmn2Binding();
+   static final Bpmn2Binding binding = new Bpmn2Binding();
 
    private static final Bpmn2Navigator navigator = new Bpmn2Navigator(binding);
+
+   private final ExternalXmlSchemaManager externalXmlSchemaManager = new ExternalXmlSchemaManager();
 
    private Definitions model;
    private Process testProcess;
@@ -49,7 +56,7 @@ public class SimpleBpmn2ModelCreation
 
       assertThat(model, is(notNullValue()));
       assertThat(model.getId(), is(notNullValue()));
-      assertThat(model.getName(), is(MODEL_NAME));
+      assertThat(model.getName(), is(Bpmn2TestUtils.MODEL_NAME));
 
       assertThat(model.getTargetNamespace(), is(notNullValue()));
    }
@@ -58,24 +65,76 @@ public class SimpleBpmn2ModelCreation
    public void creatingAnEmptyProcessMustProperlyConfigureDefaultsAndAttachTheProcess()
    {
       this.model = createModel();
-      this.testProcess = createTestProcess();
+      this.testProcess = Bpmn2TestUtils.createTestProcess(model);
 
       assertThat(testProcess, is(notNullValue()));
       assertThat(testProcess.getId(), is(notNullValue()));
-      assertThat(testProcess.getName(), is(PROCESS_NAME));
+      assertThat(testProcess.getName(), is(Bpmn2TestUtils.PROCESS_NAME));
 
       assertThat(testProcess.getProcessType(), is(ProcessType.PRIVATE));
       assertThat(testProcess.isIsExecutable(), is(true));
 
-      assertThat(navigator.findProcess(model, PROCESS_ID), is(testProcess));
+      assertThat(navigator.findProcess(model, Bpmn2TestUtils.PROCESS_ID), is(testProcess));
+   }
+
+   @Test
+   public void creatingAnXsdTypeReferenceMustProperlyConfigureDefaultsAndAttachTheItemDefinition()
+   {
+      this.model = createModel();
+      TypeDeclarationJto jto = new TypeDeclarationJto();
+      jto.typeDeclaration.type.classifier = "ExternalReference";
+      jto.typeDeclaration.type.location = "file:///E:/work/ipp/src.svn/pepper/web-modeler-omni-extensions/src/main/resources/META-INF/webapp/public/swift-2012/fin.202.COV.2012.xsd";
+      jto.typeDeclaration.type.xref = "{urn:swift:xsd:fin.202.COV.2012}MT202_COV_Type";
+      Bpmn2ItemDefinitionBuilder itemDefinitionBuilder = new Bpmn2ItemDefinitionBuilder(externalXmlSchemaManager);
+      ItemDefinition tdMt202CovType = itemDefinitionBuilder.createXsdReference(model, jto);
+      itemDefinitionBuilder.attachItemDefinition(model, tdMt202CovType);
+
+      assertThat(tdMt202CovType, is(notNullValue()));
+      assertThat(tdMt202CovType.getId(), is(notNullValue()));
+
+      assertThat(tdMt202CovType.getItemKind(), is(ItemKind.INFORMATION));
+
+//      assertThat(navigator.findProcess(model, Bpmn2TestUtils.PROCESS_ID), is(testProcess));
+   }
+
+   @Test
+   public void creatingAnXsdTypedVariableMustProperlyConfigureDefaultsAndAttachTheDataObject()
+   {
+      this.model = createModel();
+      this.testProcess = createTestProcess(model);
+
+      TypeDeclarationJto jto = new TypeDeclarationJto();
+      jto.typeDeclaration.type.classifier = "ExternalReference";
+      jto.typeDeclaration.type.location = "file:///E:/work/ipp/src.svn/pepper/web-modeler-omni-extensions/src/main/resources/META-INF/webapp/public/swift-2012/fin.202.COV.2012.xsd";
+      jto.typeDeclaration.type.xref = "{urn:swift:xsd:fin.202.COV.2012}MT202_COV_Type";
+      Bpmn2ItemDefinitionBuilder itemDefinitionBuilder = new Bpmn2ItemDefinitionBuilder(externalXmlSchemaManager);
+      ItemDefinition tdMt202CovType = itemDefinitionBuilder.createXsdReference(model, jto);
+      itemDefinitionBuilder.attachItemDefinition(model, tdMt202CovType);
+
+      DataJto varJto = new DataJto();
+      varJto.name = "Swift - 202";
+      varJto.dataType = ModelerConstants.STRUCTURED_DATA_TYPE_KEY;
+      varJto.structuredDataTypeFullId = tdMt202CovType.getId();
+
+      Bpmn2VariableBuilder variableBuilder = new Bpmn2VariableBuilder();
+      DataObject xsdVariable = variableBuilder.createXsdVariable(model, varJto);
+      variableBuilder.attachVariable(testProcess, xsdVariable);
+
+
+      assertThat(xsdVariable, is(notNullValue()));
+      assertThat(xsdVariable.getId(), is(notNullValue()));
+
+      assertThat(xsdVariable.getItemSubjectRef(), is(tdMt202CovType));
+
+//      assertThat(navigator.findProcess(model, Bpmn2TestUtils.PROCESS_ID), is(testProcess));
    }
 
    @Test
    public void creatingAnEmptyProcessDiagramMustProperlyConfigureDefaultsAndAttachTheDiagram()
    {
       this.model = createModel();
-      this.testProcess = createTestProcess();
-      this.testProcessDiagram = createTestProcessDiagram();
+      this.testProcess = createTestProcess(model);
+      this.testProcessDiagram = createTestProcessDiagram(testProcess);
 
       assertThat(testProcessDiagram, is(notNullValue()));
       assertThat(testProcessDiagram.getName(), is("Default"));
@@ -88,8 +147,8 @@ public class SimpleBpmn2ModelCreation
    public void creatingASimpleProcessDiagramMustProperlyConfigureDefaultsAndAttachTheDiagram()
    {
       this.model = createModel();
-      this.testProcess = createTestProcess();
-      this.testProcessDiagram = createTestProcessDiagram();
+      this.testProcess = createTestProcess(model);
+      this.testProcessDiagram = createTestProcessDiagram(testProcess);
       createTestFlow();
 
       assertThat(testProcessDiagram, is(notNullValue()));
@@ -99,73 +158,41 @@ public class SimpleBpmn2ModelCreation
       assertThat(testProcessDiagram.getPlane().getBpmnElement(), is(instanceOf(Collaboration.class)));
    }
 
-   private Definitions createModel()
-   {
-      ModelJto jto = new ModelJto();
-      jto.name = MODEL_NAME;
-
-      return binding.createModel(jto);
-   }
-
-   private Process createTestProcess()
-   {
-      ProcessDefinitionJto jto = new ProcessDefinitionJto();
-      jto.uuid = PROCESS_ID;
-      jto.id = PROCESS_ID;
-      jto.name = PROCESS_NAME;
-
-      Process process = (Process) binding.createModelElement(model, jto);
-
-      binding.attachModelElement(model, process);
-
-      return process;
-   }
-
-   private BPMNDiagram createTestProcessDiagram()
-   {
-      ProcessDiagramJto jto = new ProcessDiagramJto();
-      jto.name = "Default";
-
-      BPMNDiagram diagram = (BPMNDiagram) binding.createProcessDiagram(testProcess, jto);
-
-      binding.attachModelElement(model, diagram);
-
-      return diagram;
-   }
-
    private void createTestFlow()
    {
+      Bpmn2FlowNodeBuilder flowNodeBuilder = new Bpmn2FlowNodeBuilder();
+
       EventJto jto = new EventJto();
       jto.eventType = ModelerConstants.START_EVENT;
       jto.name = "Start";
-      StartEvent startEvent = (StartEvent) binding.createModelElement(model, jto);
+      StartEvent startEvent = (StartEvent) flowNodeBuilder.createEvent(model, jto);
 
       ActivityJto step1Jto = new ActivityJto();
       step1Jto.name = "Step 1";
       step1Jto.activityType = ModelerConstants.MANUAL_ACTIVITY;
-      UserTask step1 = (UserTask) binding.createModelElement(model, step1Jto);
+      UserTask step1 = (UserTask) flowNodeBuilder.createActivity(model, step1Jto);
 
       GatewayJto splitJto = new GatewayJto();
       splitJto.name = "Gateway 1";
       splitJto.id = "gateway-" + Bpmn2Utils.createInternalId();
       splitJto.gatewayType = ModelerConstants.XOR_GATEWAY_TYPE;
-      Gateway split = (Gateway) binding.createModelElement(model, splitJto);
+      Gateway split = flowNodeBuilder.createGateway(model, splitJto);
 
       ActivityJto step2aJto = new ActivityJto();
       step2aJto.name = "Step 2 - a";
       step2aJto.activityType = ModelerConstants.MANUAL_ACTIVITY;
-      UserTask step2a = (UserTask) binding.createModelElement(model, step2aJto);
+      UserTask step2a = (UserTask) flowNodeBuilder.createActivity(model, step2aJto);
 
       ActivityJto step2bJto = new ActivityJto();
       step2bJto.name = "Step 2 - b";
       step2bJto.activityType = ModelerConstants.MANUAL_ACTIVITY;
-      UserTask step2b = (UserTask) binding.createModelElement(model, step2bJto);
+      UserTask step2b = (UserTask) flowNodeBuilder.createActivity(model, step2bJto);
 
-      binding.attachModelElement(testProcess, startEvent);
-      binding.attachModelElement(testProcess, step1);
-      binding.attachModelElement(testProcess, split);
-      binding.attachModelElement(testProcess, step2a);
-      binding.attachModelElement(testProcess, step2b);
+      flowNodeBuilder.attachFlowNode(testProcess, startEvent);
+      flowNodeBuilder.attachFlowNode(testProcess, step1);
+      flowNodeBuilder.attachFlowNode(testProcess, split);
+      flowNodeBuilder.attachFlowNode(testProcess, step2a);
+      flowNodeBuilder.attachFlowNode(testProcess, step2b);
    }
 
    @After
@@ -173,10 +200,15 @@ public class SimpleBpmn2ModelCreation
    {
       if (null != model)
       {
+         Bpmn2PersistenceHandler persistenceHandler = new Bpmn2PersistenceHandler();
+
          ByteArrayOutputStream baos = new ByteArrayOutputStream();
-         new Bpmn2PersistenceHandler().saveModel(model, baos);
+         persistenceHandler.saveModel(model, baos);
 
          System.out.println("Generated model:\n" + new String(baos.toByteArray()));
+
+         ModelDescriptor reloadedModel = persistenceHandler.loadModel("TestModel.bpmn", new ByteArrayInputStream(baos.toByteArray()));
+         System.out.println("Reloaded model: " + reloadedModel);
       }
    }
 }

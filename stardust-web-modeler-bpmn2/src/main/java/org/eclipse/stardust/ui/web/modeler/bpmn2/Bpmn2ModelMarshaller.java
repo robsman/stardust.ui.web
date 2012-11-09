@@ -11,16 +11,17 @@ import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.Collaboration;
+import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.Event;
-import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.Gateway;
+import org.eclipse.bpmn2.Import;
+import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Lane;
-import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
@@ -36,13 +37,18 @@ import org.eclipse.dd.di.Diagram;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.dd.di.Edge;
 import org.eclipse.dd.di.Shape;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.xml.type.AnyType;
+import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.xsd.XSDSchema;
+import org.eclipse.xsd.XSDTypeDefinition;
+import org.eclipse.xsd.util.XSDConstants;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.ui.web.modeler.integration.ExternalXmlSchemaManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelMarshaller;
 import org.eclipse.stardust.ui.web.modeler.model.ActivityJto;
@@ -54,20 +60,26 @@ import org.eclipse.stardust.ui.web.modeler.model.ModelParticipantJto;
 import org.eclipse.stardust.ui.web.modeler.model.PrimitiveDataJto;
 import org.eclipse.stardust.ui.web.modeler.model.ProcessDefinitionJto;
 import org.eclipse.stardust.ui.web.modeler.model.TransitionJto;
+import org.eclipse.stardust.ui.web.modeler.model.TypeDeclarationJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.ActivitySymbolJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.ConnectionSymbolJto;
+import org.eclipse.stardust.ui.web.modeler.model.di.DataSymbolJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.EventSymbolJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.GatewaySymbolJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.LaneSymbolJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.PoolSymbolJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.ProcessDiagramJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.ShapeJto;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 public class Bpmn2ModelMarshaller implements ModelMarshaller
 {
    private Bpmn2Binding bpmn2Binding;
 
    private final JsonMarshaller jsonIo = new JsonMarshaller();
+
+   // TODO wire to Spring bean
+   private final ExternalXmlSchemaManager externalXmlSchemaManager = new ExternalXmlSchemaManager();
 
    void setBinding(Bpmn2Binding bpmn2Binding)
    {
@@ -89,6 +101,10 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       {
          return jsonIo.gson().toJsonTree(toProcessDiagramJto((BPMNDiagram) element));
       }
+      else if (element instanceof DataObject)
+      {
+         return jsonIo.gson().toJsonTree(toJto((DataObject) element));
+      }
       else if (element instanceof Event)
       {
          return jsonIo.gson().toJsonTree(toJto((Event) element));
@@ -109,7 +125,14 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       {
          BPMNShape shape = (BPMNShape) element;
 
-         if (shape.getBpmnElement() instanceof Event)
+         if (shape.getBpmnElement() instanceof DataObject)
+         {
+            DataSymbolJto symbolJto = newShapeJto(shape, new DataSymbolJto());
+            symbolJto.modelElement = toJto((DataObject) shape.getBpmnElement());
+
+            return jsonIo.gson().toJsonTree(symbolJto);
+         }
+         else if (shape.getBpmnElement() instanceof Event)
          {
             EventSymbolJto symbolJto = newShapeJto(shape, new EventSymbolJto());
             symbolJto.modelElement = toJto((Event) shape.getBpmnElement());
@@ -165,7 +188,11 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       // TODO processes etc.
       for (RootElement root : bpmn2Model.getRootElements())
       {
-         if (root instanceof Participant)
+         if (root instanceof ItemDefinition)
+         {
+            modelJto.typeDeclarations.add(toJto((ItemDefinition) root));
+         }
+         else if (root instanceof Participant)
          {
             modelJto.participants.add(toJto((Participant) root));
          }
@@ -291,6 +318,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
       PoolSymbolJto poolJto;
       LaneSymbolJto defaultLane = null;
+      boolean horizontalLanes = false;
+      boolean verticalLanes = false;
       if (null != poolShape)
       {
          poolJto = newShapeJto(poolShape, new PoolSymbolJto());
@@ -302,6 +331,16 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
             {
                defaultLane = laneJto;
             }
+            if (laneShape.isIsHorizontal())
+            {
+               horizontalLanes = true;
+               laneJto.orientation = ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL;
+            }
+            else
+            {
+               verticalLanes = true;
+            }
+
             poolJto.laneSymbols.add(laneJto);
          }
       }
@@ -313,6 +352,24 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          poolJto.x = 0;
          poolJto.width = 1000;
          poolJto.height = 600;
+      }
+
+      // ensure pool shape fully encloses lanes and has proper orientation
+      int right = poolJto.x + poolJto.width;
+      int bottom = poolJto.y + poolJto.height;
+      for (LaneSymbolJto laneSymbol : poolJto.laneSymbols)
+      {
+         poolJto.x = Math.min(poolJto.x, laneSymbol.x);
+         poolJto.y = Math.min(poolJto.y, laneSymbol.y);
+         right = Math.max(right, laneSymbol.x + laneSymbol.width);
+         bottom = Math.max(bottom, laneSymbol.y + laneSymbol.height);
+      }
+      poolJto.width = right - poolJto.x;
+      poolJto.height = bottom - poolJto.y;
+
+      if (horizontalLanes && !verticalLanes)
+      {
+         poolJto.orientation = ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL;
       }
 
       if (null == defaultLane)
@@ -411,6 +468,59 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       return jto;
    }
 
+   public TypeDeclarationJto toJto(ItemDefinition itemDefinition)
+   {
+      TypeDeclarationJto jto = newModelElementJto(itemDefinition, new TypeDeclarationJto());
+
+      // TODO
+      String schemaLocation = null;
+      String typeId = null;
+      if (itemDefinition.getStructureRef() instanceof InternalEObject)
+      {
+         URI proxyURI = ((InternalEObject) itemDefinition.getStructureRef()).eProxyURI();
+         if (proxyURI.hasFragment())
+         {
+            schemaLocation = proxyURI.trimFragment().toString();
+            typeId = proxyURI.fragment();
+         }
+      }
+
+      Import importSpec = itemDefinition.getImport();
+      if ((null == importSpec) && !isEmpty(schemaLocation))
+      {
+         for (Import candidate : Bpmn2Utils.findContainingModel(itemDefinition).getImports())
+         {
+            if (schemaLocation.equals(candidate.getLocation()))
+            {
+               importSpec = candidate;
+               break;
+            }
+         }
+      }
+
+      if ((null != importSpec) && (XSDConstants.SCHEMA_FOR_SCHEMA_URI_2001.equals(importSpec.getImportType())))
+      {
+         XSDSchema importedSchema = externalXmlSchemaManager.resolveSchemaFromUri(importSpec
+               .getLocation());
+         if ((null != importedSchema) && !isEmpty(typeId))
+         {
+            for (XSDTypeDefinition typeDefinition : importedSchema.getTypeDefinitions())
+            {
+               if (typeId.equals(typeDefinition.getName()))
+               {
+                  ModelService.loadSchemaInfo(jto.typeDeclaration.schema, importedSchema);
+
+                  jto.typeDeclaration.type.classifier = "ExternalReference";
+                  jto.typeDeclaration.type.location = importSpec.getLocation();
+                  jto.typeDeclaration.type.xref = typeDefinition.getQName(importedSchema);
+               }
+            }
+         }
+      }
+
+      return jto;
+   }
+
    public ModelParticipantJto toJto(Participant participant)
    {
       ModelParticipantJto jto = newModelElementJto(participant, new ModelParticipantJto());
@@ -464,6 +574,19 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          }
       }
 
+      return jto;
+   }
+
+   public DataJto toJto(DataObject variable)
+   {
+      DataJto jto = newModelElementJto(variable, new DataJto());
+
+      if (null != variable.getItemSubjectRef())
+      {
+         // TODO
+         jto.dataType = ModelerConstants.STRUCTURED_DATA_TYPE_KEY;
+         jto.structuredDataTypeFullId = Bpmn2Utils.findContainingModel(variable).getId() + ":" + variable.getItemSubjectRef().getId();
+      }
       return jto;
    }
 
@@ -526,7 +649,11 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       jto.id = src.getId();
 
       String name;
-      if (src instanceof Participant)
+      if (src instanceof ItemDefinition)
+      {
+         name = ((ItemDefinition) src).getId();
+      }
+      else if (src instanceof Participant)
       {
          name = ((Participant) src).getName();
       }

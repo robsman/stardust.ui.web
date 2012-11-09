@@ -84,7 +84,7 @@ public class Bpmn2PersistenceHandler implements ModelPersistenceHandler
          else
          {
             bpmnModel = (Bpmn2Resource) context.createResource(resourceStreamUri);
-            bpmnModel.getContents().add(model);
+            bpmnModel.getContents().add((null == model.eContainer()) ? model : model.eContainer());
          }
 
          // must pass stream directly as save(options) will close the stream internally

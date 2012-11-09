@@ -8,6 +8,8 @@ import org.eclipse.bpmn2.di.BPMNDiagram;
 
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2CoreElementsBuilder;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2DiBuilder;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
@@ -33,16 +35,19 @@ public class ProcessCommandsHandler
 
       ModelBinding<Definitions> modelBinding = modelService.currentSession().modelRepository().getModelBinding(model);
 
-      Process processDefinition = (Process) modelBinding.createModelElement(model, jto);
+      Bpmn2CoreElementsBuilder coreElementsBuilder = new Bpmn2CoreElementsBuilder();
+      Process processDefinition = coreElementsBuilder.createProcess(model, jto);
       modelBinding.updateModelElement(processDefinition, details);
-      modelBinding.attachModelElement(model, processDefinition);
+      coreElementsBuilder.attachProcess(model, processDefinition);
 
       // create default diagram
       ProcessDiagramJto diagramJto = new ProcessDiagramJto();
       diagramJto.name = "Default";
 
-      BPMNDiagram diagram = (BPMNDiagram) modelBinding.createProcessDiagram(processDefinition, diagramJto);
+      Bpmn2DiBuilder diBuilder = new Bpmn2DiBuilder();
+      BPMNDiagram diagram = diBuilder.createDiagram(processDefinition, diagramJto);
 
-      modelBinding.attachModelElement(model, diagram);
+      diBuilder.attachDiagram(model, diagram);
    }
+
 }

@@ -3,8 +3,10 @@ package org.eclipse.stardust.ui.web.modeler.bpmn2.edit.command;
 import javax.annotation.Resource;
 
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Event;
+import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.Process;
@@ -15,17 +17,21 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2DiBuilder;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2FlowNodeBuilder;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
+import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.model.ActivityJto;
+import org.eclipse.stardust.ui.web.modeler.model.DataJto;
 import org.eclipse.stardust.ui.web.modeler.model.EventJto;
 import org.eclipse.stardust.ui.web.modeler.model.GatewayJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.ActivitySymbolJto;
+import org.eclipse.stardust.ui.web.modeler.model.di.DataSymbolJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.EventSymbolJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.GatewaySymbolJto;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
-import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 
 @CommandHandler
 public class FlowNodeCommandsHandler
@@ -36,15 +42,26 @@ public class FlowNodeCommandsHandler
    @Resource
    private ModelService modelService;
 
-   @OnCommand(commandId = "eventSymbol.create")
-   public void onCreateEventSymbol(Definitions model, EObject context, JsonObject details)
+   @OnCommand(commandId = "dataSymbol.create")
+   public void onCreateDataSymbol(Definitions model, EObject context, JsonObject details)
    {
       // create process definition
-      EventJto jto = jsonIo.gson().fromJson(
-            details.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
-            EventJto.class);
-
-      ModelBinding<Definitions> modelBinding = modelService.currentSession().modelRepository().getModelBinding(model);
+      String dataId;
+      if (details.has(ModelerConstants.DATA_FULL_ID_PROPERTY))
+      {
+         dataId = GsonUtils.extractString(details, ModelerConstants.DATA_FULL_ID_PROPERTY);
+         if (-1 != dataId.indexOf(":"))
+         {
+            dataId = dataId.substring(dataId.indexOf(":") + 1);
+         }
+      }
+      else
+      {
+         DataJto jto = jsonIo.gson().fromJson(
+               details.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
+               DataJto.class);
+         dataId = jto.id;
+      }
 
       // TODO find process
       Process process = null;
@@ -53,15 +70,54 @@ public class FlowNodeCommandsHandler
          process = Bpmn2Utils.findContainingProcess(((BPMNShape) context).getBpmnElement());
       }
 
-      Event event = (Event) modelBinding.createModelElement(model, jto);
-      modelBinding.attachModelElement(process, event);
+      DataObject variable = null;
+      for (FlowElement flowElement : process.getFlowElements())
+      {
+         if ((flowElement instanceof DataObject) && dataId.equals(((DataObject) flowElement).getId()))
+         {
+            variable = (DataObject) flowElement;
+            break;
+         }
+      }
+      if (null == variable)
+      {
+         // TODO create on the fly
+      }
+
+      // create event symbol
+      DataSymbolJto symbolJto = jsonIo.gson().fromJson(details, DataSymbolJto.class);
+
+      Bpmn2DiBuilder diBuilder = new Bpmn2DiBuilder();
+      BPMNShape symbol = diBuilder.createNodeSymbol(model, symbolJto, variable);
+      diBuilder.attachDiagramElement(context, symbol);
+   }
+
+   @OnCommand(commandId = "eventSymbol.create")
+   public void onCreateEventSymbol(Definitions model, EObject context, JsonObject details)
+   {
+      // create process definition
+      EventJto jto = jsonIo.gson().fromJson(
+            details.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
+            EventJto.class);
+
+      // TODO find process
+      Process process = null;
+      if ((context instanceof BPMNShape) && ((BPMNShape) context).getBpmnElement() instanceof Lane)
+      {
+         process = Bpmn2Utils.findContainingProcess(((BPMNShape) context).getBpmnElement());
+      }
+
+      Bpmn2FlowNodeBuilder flowNodeBuilder = new Bpmn2FlowNodeBuilder();
+      Event event = flowNodeBuilder.createEvent(model, jto);
+      flowNodeBuilder.attachFlowNode(process, event);
       // TODO modelBinding.updateModelElement(event, details);
 
       // create event symbol
       EventSymbolJto symbolJto = jsonIo.gson().fromJson(details, EventSymbolJto.class);
 
-      BPMNShape symbol = (BPMNShape) modelBinding.createNodeSymbol(model, symbolJto, event);
-      modelBinding.attachNodeSymbol(context, symbol);
+      Bpmn2DiBuilder diBuilder = new Bpmn2DiBuilder();
+      BPMNShape symbol = diBuilder.createNodeSymbol(model, symbolJto, event);
+      diBuilder.attachDiagramElement(context, symbol);
    }
 
    @OnCommand(commandId = "activitySymbol.create")
@@ -72,8 +128,6 @@ public class FlowNodeCommandsHandler
             details.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
             ActivityJto.class);
 
-      ModelBinding<Definitions> modelBinding = modelService.currentSession().modelRepository().getModelBinding(model);
-
       // TODO find process
       Process process = null;
       if ((context instanceof BPMNShape) && ((BPMNShape) context).getBpmnElement() instanceof Lane)
@@ -81,15 +135,17 @@ public class FlowNodeCommandsHandler
          process = Bpmn2Utils.findContainingProcess(((BPMNShape) context).getBpmnElement());
       }
 
-      Activity event = (Activity) modelBinding.createModelElement(model, jto);
-      modelBinding.attachModelElement(process, event);
+      Bpmn2FlowNodeBuilder flowNodeBuilder = new Bpmn2FlowNodeBuilder();
+      Activity event = flowNodeBuilder.createActivity(model, jto);
+      flowNodeBuilder.attachFlowNode(process, event);
       // TODO modelBinding.updateModelElement(event, details);
 
       // create event symbol
       ActivitySymbolJto symbolJto = jsonIo.gson().fromJson(details, ActivitySymbolJto.class);
 
-      BPMNShape symbol = (BPMNShape) modelBinding.createNodeSymbol(model, symbolJto, event);
-      modelBinding.attachNodeSymbol(context, symbol);
+      Bpmn2DiBuilder diBuilder = new Bpmn2DiBuilder();
+      BPMNShape symbol = diBuilder.createNodeSymbol(model, symbolJto, event);
+      diBuilder.attachDiagramElement(context, symbol);
    }
 
    @OnCommand(commandId = "gateSymbol.create")
@@ -100,8 +156,6 @@ public class FlowNodeCommandsHandler
             details.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
             GatewayJto.class);
 
-      ModelBinding<Definitions> modelBinding = modelService.currentSession().modelRepository().getModelBinding(model);
-
       // TODO find process
       Process process = null;
       if ((context instanceof BPMNShape) && ((BPMNShape) context).getBpmnElement() instanceof Lane)
@@ -109,14 +163,16 @@ public class FlowNodeCommandsHandler
          process = Bpmn2Utils.findContainingProcess(((BPMNShape) context).getBpmnElement());
       }
 
-      Gateway event = (Gateway) modelBinding.createModelElement(model, jto);
-      modelBinding.attachModelElement(process, event);
+      Bpmn2FlowNodeBuilder flowNodeBuilder = new Bpmn2FlowNodeBuilder();
+      Gateway event = flowNodeBuilder.createGateway(model, jto);
+      flowNodeBuilder.attachFlowNode(process, event);
       // TODO modelBinding.updateModelElement(event, details);
 
       // create event symbol
       GatewaySymbolJto symbolJto = jsonIo.gson().fromJson(details, GatewaySymbolJto.class);
 
-      BPMNShape symbol = (BPMNShape) modelBinding.createNodeSymbol(model, symbolJto, event);
-      modelBinding.attachNodeSymbol(context, symbol);
+      Bpmn2DiBuilder diBuilder = new Bpmn2DiBuilder();
+      BPMNShape symbol = diBuilder.createNodeSymbol(model, symbolJto, event);
+      diBuilder.attachDiagramElement(context, symbol);
    }
 }

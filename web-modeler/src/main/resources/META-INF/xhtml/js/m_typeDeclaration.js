@@ -59,7 +59,10 @@ define(
 				};
 
 				TypeDeclaration.prototype.getTypeDeclaration = function() {
-					return this.typeDeclaration.schema.types[this.id];
+					return this.typeDeclaration.schema.types[
+                            ("ExternalReference" === this.typeDeclaration.type.classifier)
+                                ? this.typeDeclaration.type.xref
+							    : this.id];
 				};
 
 				TypeDeclaration.prototype.isReadOnly = function() {
@@ -76,7 +79,10 @@ define(
 				};
 
 				TypeDeclaration.prototype.asSchemaType = function() {
-					return this.resolveSchemaType(this.id);
+					return this.resolveSchemaType(
+							("ExternalReference" === this.typeDeclaration.type.classifier)
+                            		? this.typeDeclaration.type.xref
+                            		: this.id);
 				};
 
 				/**

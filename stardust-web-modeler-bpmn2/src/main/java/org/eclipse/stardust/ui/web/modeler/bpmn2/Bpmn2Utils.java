@@ -2,13 +2,37 @@ package org.eclipse.stardust.ui.web.modeler.bpmn2;
 
 import java.util.UUID;
 
+import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.di.BpmnDiFactory;
+import org.eclipse.dd.dc.DcFactory;
 import org.eclipse.dd.di.Diagram;
 import org.eclipse.emf.ecore.EObject;
 
 public class Bpmn2Utils
 {
+   private static final Bpmn2Factory F_BPMN2 = Bpmn2Factory.eINSTANCE;
+
+   private static final BpmnDiFactory F_BPMN2DI = BpmnDiFactory.eINSTANCE;
+
+   private static final DcFactory F_BPMN2DC = DcFactory.eINSTANCE;
+
+   public static Bpmn2Factory bpmn2Factory()
+   {
+      return F_BPMN2;
+   }
+
+   public static BpmnDiFactory bpmn2DiFactory()
+   {
+      return F_BPMN2DI;
+   }
+
+   public static DcFactory bpmn2DcFactory()
+   {
+      return F_BPMN2DC;
+   }
+
    public static String deriveElementIdFromName(String name)
    {
       StringBuilder idBuilder = new StringBuilder(name.length());
