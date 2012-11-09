@@ -12,6 +12,7 @@
 package org.eclipse.stardust.ui.web.modeler.edit.diagram.node;
 
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.HEIGHT_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
@@ -19,11 +20,8 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERT
 
 import javax.annotation.Resource;
 
-import org.springframework.context.ApplicationContext;
-
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.AnnotationSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
@@ -32,6 +30,10 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
+import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
+import org.springframework.context.ApplicationContext;
+
+import com.google.gson.JsonObject;
 
 /**
  *
@@ -57,12 +59,18 @@ public class AnnotationCommandHandler
       int yProperty = extractInt(request, Y_PROPERTY);
       int widthProperty = extractInt(request, WIDTH_PROPERTY);
       int heightProperty = extractInt(request, HEIGHT_PROPERTY);
+      
+      String content = "";
+      if (request.has(ModelerConstants.CONTENT_PROPERTY))
+      {
+         content = extractString(request, ModelerConstants.CONTENT_PROPERTY);
+      }
 
       synchronized (model)
       {
-         AnnotationSymbolType annotationSymbol = getModelBuilderFacade().createAnnotationSymbol(model,
-               processDefinition, parentLaneSymbol.getId(), xProperty,
-               yProperty, widthProperty, heightProperty);
+         getModelBuilderFacade().createAnnotationSymbol(model, processDefinition,
+               parentLaneSymbol.getId(), xProperty, yProperty, widthProperty,
+               heightProperty, content);
       }
    }
 
@@ -75,8 +83,28 @@ public class AnnotationCommandHandler
    public void deleteAnnotation(ModelType model, LaneSymbol parentLaneSymbol, JsonObject request)
    {
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
+      Long annotationOId = GsonUtils.extractLong(request, ModelerConstants.OID_PROPERTY);
+      AnnotationSymbolType delAnnSymbol = getModelBuilderFacade().findAnnotationSymbol(
+            parentLaneSymbol, annotationOId);
+
+      if (null != delAnnSymbol)
+      {
+         synchronized (model)
+         {
+            // TODO : delete connection is not supported currently
+            // ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition,
+            // annSymbol);
+            parentLaneSymbol.getAnnotationSymbol().remove(delAnnSymbol);
+            processDefinition.getDiagram()
+                  .get(0)
+                  .getAnnotationSymbol()
+                  .remove(delAnnSymbol);
+         }
+      }
    }
 
+   
+   
    private ModelBuilderFacade getModelBuilderFacade()
    {
       return CommandHandlerUtils.getModelBuilderFacade(springContext);

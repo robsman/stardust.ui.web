@@ -396,8 +396,11 @@ define(
 									.getInstance();
 						} else {
 							this.fromModelElementOid = this.fromAnchorPoint.symbol.oid;
-							if(this.fromAnchorPoint.symbol.modelElement){
+							
+							if(null != this.fromAnchorPoint.symbol.modelElement){
 								this.fromModelElementType = this.fromAnchorPoint.symbol.modelElement.type;
+							}else{
+								this.fromModelElementType = this.fromAnchorPoint.symbol.type;;
 							}
 							this.toModelElementOid = this.toAnchorPoint.symbol.oid;
 							if (this.toAnchorPoint.symbol.modelElement) {

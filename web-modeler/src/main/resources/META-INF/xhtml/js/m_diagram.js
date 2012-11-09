@@ -598,6 +598,10 @@ define(
 							if (this.symbols[i].diagram.modelId == modelId
 									&& (this.symbols[i].modelElement != null && this.symbols[i].modelElement.oid == guid)) {
 								return this.symbols[i];
+							} else if (this.symbols[i].diagram.modelId == modelId
+									&& m_constants.ANNOTATION_SYMBOL == this.symbols[i].type
+									&& this.symbols[i].oid == guid) {
+								return this.symbols[i];
 							}
 						}
 					}
@@ -1777,15 +1781,21 @@ define(
 					var scrollPos = m_modelerUtils.getModelerScrollPosition();
 					// Use the Symbol's x co-ordinate to decide the width of
 					// textbox
-					var textboxWidth = textPrimitive.auxiliaryProperties.callbackScope.width
-							- WIDTH_ADJUSTMENT;
 					m_utils.debug("text primitive set");
-					this.editableText.css("width", parseInt(textboxWidth
-							.valueOf()));
+					var name = null;
+					if (m_constants.ANNOTATION_SYMBOL == textPrimitive.auxiliaryProperties.callbackScope.type) {
+						name = textPrimitive.auxiliaryProperties.callbackScope.content;
+					} else {
+						name = textPrimitive.auxiliaryProperties.callbackScope.modelElement.name;
+						var textboxWidth = textPrimitive.auxiliaryProperties.callbackScope.width
+								- WIDTH_ADJUSTMENT;
+						this.editableText.css("width", parseInt(textboxWidth
+								.valueOf()));
+					}
+					
 					this.editableText
 							.css("visibility", "visible")
-							.html(
-									textPrimitive.auxiliaryProperties.callbackScope.modelElement.name)
+							.html(name)
 							.moveDiv(
 									{
 										"x" : textPrimitive.auxiliaryProperties.callbackScope.x
@@ -1800,7 +1810,7 @@ define(
 					this.symbolEditMode = true;
 					m_utils.debug("editable activated");
 				};
-
+				
 				/**
 				 * 
 				 */
@@ -1812,11 +1822,20 @@ define(
 								.trigger("blur");
 						this.currentTextPrimitive.attr("text", content);
 						m_utils.debug("text set");
-						var changes = {
-							modelElement : {
-								name : this.currentTextPrimitive.attr("text")
+						var changes;
+						if (m_constants.ANNOTATION_SYMBOL == this.currentTextPrimitive.auxiliaryProperties.callbackScope.type) {
+							changes = {
+								content : this.currentTextPrimitive
+										.attr("text")
 							}
-						};
+						} else {
+							changes = {
+								modelElement : {
+									name : this.currentTextPrimitive
+											.attr("text")
+								}
+							}
+						}
 
 						m_commandsController
 								.submitCommand(m_command

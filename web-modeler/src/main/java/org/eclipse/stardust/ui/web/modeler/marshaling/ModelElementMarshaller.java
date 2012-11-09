@@ -1502,6 +1502,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       annotationSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             annotationSymbol.getElementOid());
+      annotationSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+            ModelerConstants.ANNOTATION_SYMBOL);
       annotationSymbolJson.addProperty(ModelerConstants.X_PROPERTY,
             annotationSymbol.getXPos() + laneOffsetX);
       annotationSymbolJson.addProperty(ModelerConstants.Y_PROPERTY,

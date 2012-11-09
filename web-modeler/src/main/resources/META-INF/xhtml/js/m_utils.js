@@ -56,7 +56,9 @@ define(
 
 				textWrap : textWrap,
 				
-				xmlToString: xmlToString
+				xmlToString: xmlToString,
+				
+				contentWrap : contentWrap
 			};
 
 			function getLastIndexOf(str, searchStr) {
@@ -728,5 +730,22 @@ define(
 			    }
 			    
 			    return xmlString;
-			}   
+			}
+			
+			/** wraps String 
+			 * @param content :
+			 *           	string to be wrapped
+			 * @param maxLength : 
+			 * 				max number of characters in one line
+			 * @param brk : 
+			 * 				The character(s) to be inserted at every break
+			 *  
+			 */
+			function contentWrap(content, maxLength, brk) {
+				if (!content) {
+					return content;
+				}
+				var regex = ".{1," + maxLength + "}(\\s|$)";
+				return content.match(RegExp(regex, "g")).join(brk);
+			}
 		});

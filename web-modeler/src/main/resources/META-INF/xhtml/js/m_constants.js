@@ -137,7 +137,10 @@ define(function() {
 		ANNOTATION_SYMBOL_DEFAULT_HEIGHT : 30,
 		ANNOTATION_SYMBOL_DEFAULT_FILL_COLOR : 'white',
 		ANNOTATION_SYMBOL_DEFAULT_STROKE_WIDTH : 0.5,
-
+		ANNOTATION_SYMBOL_TEXT_MAX : 14,
+		
+		ASSOCIATION : "association",
+		
 		// Connection
 
 		UNKNOWN_FLOW_COLOR : "#aaaaaa",
@@ -364,7 +367,10 @@ define(function() {
 		// User
 
 		BUSINESS_ANALYST_ROLE : "BusinessAnalyst",
-		INTEGRATOR_ROLE : "Integrator"
+		INTEGRATOR_ROLE : "Integrator",
+			
+		//General
+		NEW_LINE : 	"\n"
 
 
 	};
