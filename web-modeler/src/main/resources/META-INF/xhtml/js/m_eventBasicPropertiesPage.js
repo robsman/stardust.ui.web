@@ -44,22 +44,6 @@ define(
 							.mapInputId("eventTypeSelectInput");
 					this.overlayTableCell = jQuery("#overlayTableCell");
 
-					
-					var selectdata = m_i18nUtils
-							.getProperty("modeler.diagram.toolbar.tool.startEvent.eventType.option.manualProcessStart");
-					this.eventTypeSelectInput
-							.append("<option value=\"manualTrigger\">"
-									+ selectdata + "</option>");
-					selectdata = m_i18nUtils
-							.getProperty("modeler.diagram.toolbar.tool.startEvent.eventType.option.processStartViaScan");
-					this.eventTypeSelectInput
-							.append("<option value=\"scanTrigger\">"
-									+ selectdata + "</option>");
-					selectdata = m_i18nUtils
-							.getProperty("modeler.diagram.toolbar.tool.startEvent.eventType.option.processStartViaCamel");
-					this.eventTypeSelectInput
-							.append("<option value=\"camelTrigger\">"
-									+ selectdata + "</option>");
 					var eventIntegrationOverlays = m_extensionManager
 							.findExtensions("eventIntegrationOverlay");
 

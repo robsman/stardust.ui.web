@@ -34,7 +34,8 @@ define(
 						.create();
 
 				m_utils.inheritFields(this, eventIntegrationOverlay);
-				m_utils.inheritMethods(GenericCamelRouteIntegrationOverlay.prototype,
+				m_utils.inheritMethods(
+						GenericCamelRouteIntegrationOverlay.prototype,
 						eventIntegrationOverlay);
 
 				/**
@@ -56,6 +57,39 @@ define(
 							.mapInputId("endpointAccessPointsSelectInput");
 					this.camelEndpointDataMappingDataSelectInput = this
 							.mapInputId("camelEndpointDataMappingDataSelectInput");
+					this.propertiesTabs = this
+					.mapInputId("propertiesTabs");
+
+					this.parameterDefinitionsPanelAnchor = this
+							.mapInputId("parameterDefinitionsPanelAnchor");
+
+					var overlay = this;
+
+					this.parameterDefinitionsPanelAnchor
+							.load(
+									"parameterDefinitionsPanel.html",
+									function(response, status, xhr) {
+										if (status == "error") {
+											var msg = "Properties Page Load Error: "
+													+ xhr.status
+													+ " "
+													+ xhr.statusText;
+
+											jQuery(this).append(msg);
+										} else {
+											overlay.parameterDefinitionsPanel = m_parameterDefinitionsPanel
+											.create({
+												scope : overlay.id,
+												submitHandler : overlay,
+												supportsOrdering : false,
+												supportsDataMappings : true,
+												supportsDescriptors : false,
+												supportsDataTypeSelection : true
+											});
+										}
+									});
+
+					this.propertiesTabs.tabs();
 
 					// this.endpointTypeSelectInput
 					// .change(

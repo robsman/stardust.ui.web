@@ -5,84 +5,63 @@
 <title>Generic Camel Route</title>
 </head>
 <body>
-	<table>
-		<tr>
-			<td><div class="code">&lt;route&gt;</div>
-			</td>
-		</tr>
-		<tr>
-			<td><div id="endpointUriPrefix" class="code">&lt;from
-					uri="</div>
-			</td>
-		</tr>
-		<tr>
-			<td><textarea id="endpointUriTextarea" cols="40" rows="2"
-					class="code">
+	<div id="propertiesTabs" style="margin-top: 10px;">
+		<ul id="propertiesTabsList">
+			<li><a href="#configurationTab"><span class="tabLabel"
+					id="configuration">Configuration</span> </a>
+			</li>
+			<li><a href="#parametersTab"><span class="tabLabel"
+					id="parameters">Parameters</span> </a>
+			</li>
+		</ul>
+		<div id="configurationTab">
+			<table>
+				<tr>
+					<td><div class="code">&lt;route&gt;</div>
+					</td>
+				</tr>
+				<tr>
+					<td><div id="endpointUriPrefix" class="code">&lt;from
+							uri="</div>
+					</td>
+				</tr>
+				<tr>
+					<td><textarea id="endpointUriTextarea" cols="40" rows="2"
+							class="code">
 																</textarea>
-			</td>
-		</tr>
-		<tr>
-			<td><div class="code">"&gt;</div>
-			</td>
-		</tr>
-		<tr>
-			<td><label for="routeTextarea">Additional Route
-					Specification</label>
-			</td>
-		</tr>
-		<tr>
-			<td><textarea id="routeTextarea" cols="40" rows="3" class="code"></textarea>
-			</td>
-		</tr>
-		<tr>
-			<td><div class="code">&lt;/route&gt;</div>
-			</td>
-		</tr>
-		<tr>
-			<td><label for="beanTextarea">Additional Beans
-					Specification</label>
-			</td>
-		</tr>
-		<tr>
-			<td><textarea id="beanTextarea" cols="40" rows="3" class="code"></textarea>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<table>
-					<tr valign="top">
-						<td><select id="endpointAccessPointsSelectInput"
-							multiple="multiple" style="min-height: 150px; min-width: 150px;">
-						</select>
-						</td>
-						<td>
-							<table>
-								<tr>
-									<td><label>Parameter Access Path</label></td>
-								</tr>
-								<tr>
-									<td><input type="text" />
-									</td>
-								</tr>
-								<tr>
-									<td><label>Data</label></td>
-								</tr>
-								<tr>
-									<td><select id="camelEndpointDataMappingDataSelectInput">
-									</select>
-									</td>
-								</tr>
-								<tr>
-									<td><label>Data Access Path</label></td>
-								</tr>
-								<tr>
-									<td><input id="dataPathTextInput" type="text" />
-									</td>
-								</tr>
-							</table></td>
-					</tr>
-				</table></td>
-		</tr>
-	</table>
+					</td>
+				</tr>
+				<tr>
+					<td><div class="code">"&gt;</div>
+					</td>
+				</tr>
+				<tr>
+					<td><label for="routeTextarea">Additional Route
+							Specification</label>
+					</td>
+				</tr>
+				<tr>
+					<td><textarea id="routeTextarea" cols="40" rows="3"
+							class="code"></textarea></td>
+				</tr>
+				<tr>
+					<td><div class="code">&lt;/route&gt;</div>
+					</td>
+				</tr>
+				<tr>
+					<td><label for="beanTextarea">Additional Beans
+							Specification</label>
+					</td>
+				</tr>
+				<tr>
+					<td><textarea id="beanTextarea" cols="40" rows="3"
+							class="code"></textarea></td>
+				</tr>
+			</table>
+		</div>
+		<div id="parametersTab">
+			<div id="parameterDefinitionsPanelAnchor" />
+		</div>
+	</div>
 </body>
 </html>
