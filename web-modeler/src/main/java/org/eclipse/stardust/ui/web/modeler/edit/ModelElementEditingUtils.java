@@ -105,27 +105,31 @@ public class ModelElementEditingUtils
          DataMappingConnectionType dataMappingConnection)
    {
       List<DataMappingType> dataMapping = CollectionUtils.newArrayList();
-      for (DataMappingType dataMappingType : dataMappingConnection.getActivitySymbol()
-            .getActivity()
-            .getDataMapping())
-      {
-         if (dataMappingType.getData()
-               .getId()
-               .equals(dataMappingConnection.getDataSymbol().getData().getId()))
+      if (null != dataMappingConnection.getActivitySymbol()) {
+         for (DataMappingType dataMappingType : dataMappingConnection.getActivitySymbol()
+               .getActivity()
+               .getDataMapping())
          {
-            dataMapping.add(dataMappingType);
+            if (dataMappingType.getData()
+                  .getId()
+                  .equals(dataMappingConnection.getDataSymbol().getData().getId()))
+            {
+               dataMapping.add(dataMappingType);
+            }
          }
+         dataMappingConnection.getActivitySymbol()
+         .getActivity()
+         .getDataMapping()
+         .removeAll(dataMapping);
       }
-      dataMappingConnection.getActivitySymbol()
-            .getActivity()
-            .getDataMapping()
-            .removeAll(dataMapping);
-      dataMappingConnection.getDataSymbol()
-            .getData()
-            .getDataMappings()
-            .removeAll(dataMapping);
 
-      dataMappingConnection.getDataSymbol().getDataMappings();
+      if (null != dataMappingConnection.getDataSymbol()) {
+         dataMappingConnection.getDataSymbol()
+         .getData()
+         .getDataMappings()
+         .removeAll(dataMapping);
+      }
+
       processDefinition.getDiagram()
             .get(0)
             .getPoolSymbols()
