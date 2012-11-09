@@ -396,7 +396,7 @@ define(
 									.getInstance();
 						} else {
 							this.fromModelElementOid = this.fromAnchorPoint.symbol.oid;
-							
+
 							if(null != this.fromAnchorPoint.symbol.modelElement){
 								this.fromModelElementType = this.fromAnchorPoint.symbol.modelElement.type;
 							}else{
@@ -450,26 +450,23 @@ define(
 												|| dataSymbol.connections[n].toAnchorPoint.symbol.oid == activity.oid)) {
 									// Use the existing connection
 									updateConnection = dataSymbol.connections[n];
-									// This will be the case always, just cross
-									// verification for IN-OUT mapping
-									if (updateConnection.modelElement.inputDataMapping != null && this.modelElement.outputDataMapping) {
-										updateConnection.modelElement.inputDataMapping = {};
-										updateConnection.modelElement.outputDataMapping = {};
-										// While update only mapping change are required
-										var changes = {
-											modelElement : {
-												inputDataMapping : updateConnection.modelElement.inputDataMapping,
-												outputDataMapping : updateConnection.modelElement.outputDataMapping,
-												id : updateConnection.modelElement.id,
-												name : updateConnection.modelElement.name,
-												updateDataMapping : true
-											}
+
+									updateConnection.modelElement.inputDataMapping = {};
+									updateConnection.modelElement.outputDataMapping = {};
+									// While update only mapping change are required
+									var changes = {
+										modelElement : {
+											inputDataMapping : updateConnection.modelElement.inputDataMapping,
+											outputDataMapping : updateConnection.modelElement.outputDataMapping,
+											id : updateConnection.modelElement.id,
+											name : updateConnection.modelElement.name,
+											updateDataMapping : true
 										}
-										updateConnection.createUpdateCommand(changes);
-										m_messageDisplay
-												.showMessage("Connection updated");
-										break;
 									}
+									updateConnection.createUpdateCommand(changes);
+									m_messageDisplay
+											.showMessage("Connection updated");
+									break;
 								}
 							}
 						}
