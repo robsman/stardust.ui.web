@@ -40,8 +40,8 @@ define(
 				 */
 				ManualTriggerIntegrationOverlay.prototype.initialize = function(
 						page, id) {
-					this.page = page;
-					this.id = id;
+					this.initializeEventIntegrationOverlay(page, id);
+
 					this.participantOutput = this
 							.mapInputId("participantOutput");
 				};
@@ -49,9 +49,18 @@ define(
 				/**
 				 * 
 				 */
-				ManualTriggerIntegrationOverlay.prototype.mapInputId = function(
-						inputId) {
-					return jQuery("#" + this.id + " #" + inputId);
+				ManualTriggerIntegrationOverlay.prototype.submitEventClassChanges = function(
+						parameterMappings) {
+					if (parameterMappings == null) {
+						parameterMappings = [];
+					}
+
+					this.submitChanges({
+						modelElement : {
+							eventClass : this.id,
+							parameterMappings : parameterMappings
+						}
+					});
 				};
 
 				/**
@@ -67,6 +76,8 @@ define(
 				ManualTriggerIntegrationOverlay.prototype.update = function() {
 					this.participantOutput.empty();
 
+					// TODO I18N
+					
 					if (this.page.propertiesPanel.participant != null) {
 						this.participantOutput.append("Started by <b>"
 								+ this.page.propertiesPanel.participant.name
@@ -75,8 +86,6 @@ define(
 						this.participantOutput
 								.append("Starting participant to be defined.</b>");
 					}
-
-					this.submitEventClassChanges();
 				};
 			}
 		});
