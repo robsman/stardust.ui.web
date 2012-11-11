@@ -321,7 +321,7 @@ define(
 							.attr(
 									{
 										"transform" : this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? "R0"
-												: "R90",
+												: "R270",
 										"text-anchor" : "middle",
 										"fill" : "white",
 										"font-family" : m_constants.DEFAULT_FONT_FAMILY,
@@ -400,7 +400,7 @@ define(
 							"height" : this.height
 						});
 						this.text.attr({
-							"transform" : "R90",
+							"transform" : "R270",
 							"x" : this.x + 0.5
 									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT,
 							"y" : this.y + 0.5 * this.height

@@ -1,9 +1,14 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2;
 
+import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
+
+import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.bpmn2.Bpmn2Factory;
+import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.dd.dc.DcFactory;
@@ -110,5 +115,27 @@ public class Bpmn2Utils
       }
 
       return null;
+   }
+
+   public static List<Process> findParticipatingProcesses(Collaboration collaboration)
+   {
+      List<Process> processes = newArrayList();
+      for (Participant participant : collaboration.getParticipants())
+      {
+         Process referencedProcess = participant.getProcessRef();
+         if (null != referencedProcess)
+         {
+            // is it a reference to a real, existing process?
+            if (null != findContainingModel(referencedProcess))
+            {
+               if ( !processes.contains(referencedProcess))
+               {
+                  processes.add(referencedProcess);
+               }
+            }
+         }
+      }
+
+      return processes;
    }
 }
