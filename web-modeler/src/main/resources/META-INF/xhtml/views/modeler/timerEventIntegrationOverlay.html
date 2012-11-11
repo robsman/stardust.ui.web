@@ -5,31 +5,35 @@
 <title>Timer Event</title>
 </head>
 <body>
-	<table>
-		<tr>
-			<td><label for="repeatIntervalInput">Repeat Interval</label>
-			</td>
-			<td><input id="repeatIntervalInput" type="text"
-				style="width: 50px;" /></td>
-			<td><select id="repeatIntervalUnitSelect">
-			<option value="ms">Milliseconds</option>
-			<option value="s">Seconds</option>
-			<option value="m">Minutes</option>
-			<option value="h">Hours</option>
-			<option value="d">Days</option>
-			<option value="w">Weeks</option>
-			<option value="w">Months</option>
-			</select>
-			</td>
-		</tr>
-		<tr>
-			<td><label for="repeatCountInput">Repeat Count</label>
-			</td>
-			<td><input id="repeatCountInput" type="text"
-				style="width: 50px;" /></td>
-			<td>
-			</td>
-		</tr>
-	</table>
+	<div id="propertiesTabs" style="margin-top: 10px;">
+		<ul id="propertiesTabsList">
+			<li><a href="#configurationTab"><span class="tabLabel"
+					id="configuration">Configuration</span> </a></li>
+			<li><a href="#parametersTab"><span class="tabLabel"
+					id="parameters">Parameters</span> </a></li>
+		</ul>
+		<div id="configurationTab">
+			<table>
+				<tr>
+					<td><label for="repeatIntervalInput">Repeat Interval</label></td>
+					<td><input id="repeatIntervalInput" type="text"
+						style="width: 50px;" />
+					</td>
+					<td><select id="repeatIntervalUnitSelect">
+					</select></td>
+				</tr>
+				<tr>
+					<td><label for="repeatCountInput">Repeat Count</label></td>
+					<td><input id="repeatCountInput" type="text"
+						style="width: 50px;" />
+					</td>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+		<div id="parametersTab">
+			<div id="parameterMappingsPanelAnchor" />
+		</div>
+	</div>
 </body>
 </html>

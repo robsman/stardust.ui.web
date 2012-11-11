@@ -409,6 +409,7 @@ define(
 								{
 									type : "text",
 									event : "dblclick",
+									placeholder : "",
 									onblur : "submit",
 									onreset : function(settings, value) { // On
 										// Reset

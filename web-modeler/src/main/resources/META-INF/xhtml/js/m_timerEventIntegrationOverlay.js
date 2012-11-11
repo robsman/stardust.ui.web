@@ -8,93 +8,191 @@
  * documentation
  ******************************************************************************/
 
-define([ "m_utils", "m_constants", "m_commandsController", "m_command",
-		"m_model", "m_accessPoint", "m_parameterDefinitionsPanel", "m_eventIntegrationOverlay"], function(
-		m_utils, m_constants, m_commandsController, m_command, m_model,
-		m_accessPoint, m_parameterDefinitionsPanel, m_eventIntegrationOverlay) {
+define(
+		[ "m_utils", "m_constants", "m_commandsController", "m_command",
+				"m_model", "m_accessPoint", "m_parameterDefinitionsPanel",
+				"m_eventIntegrationOverlay", "m_i18nUtils" ],
+		function(m_utils, m_constants, m_commandsController, m_command,
+				m_model, m_accessPoint, m_parameterDefinitionsPanel,
+				m_eventIntegrationOverlay, m_i18nUtils) {
 
-	return {
-		create : function(page, id) {
-			var overlay = new TimerEventIntegrationOverlay();
+			return {
+				create : function(page, id) {
+					var overlay = new TimerEventIntegrationOverlay();
 
-			overlay.initialize(page, id);
+					overlay.initialize(page, id);
 
-			return overlay;
-		}
-	};
-
-	/**
-	 * 
-	 */
-	function TimerEventIntegrationOverlay() {
-		var eventIntegrationOverlay = m_eventIntegrationOverlay.create();
-
-		m_utils.inheritFields(this, eventIntegrationOverlay);
-		m_utils.inheritMethods(TimerEventIntegrationOverlay.prototype,
-				eventIntegrationOverlay);
-
-		/**
-		 * 
-		 */
-		TimerEventIntegrationOverlay.prototype.initialize = function(page, id) {
-			this.page = page;
-			this.id = id;
-		};
-
-		/**
-		 * 
-		 */
-		TimerEventIntegrationOverlay.prototype.getEndpointUri = function() {
-			var uri = "timer://";
-
-			return uri;
-		};
-
-		/**
-		 * 
-		 */
-		TimerEventIntegrationOverlay.prototype.activate = function() {
-			this.submitEventClassChanges();
-		};
-
-		/**
-		 * 
-		 */
-		TimerEventIntegrationOverlay.prototype.update = function() {
-			this.submitEventClassChanges();
-			
-			var route = this.page.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"];
-
-			if (route == null) {
-				return;
-			}
-
-			var xmlDoc = jQuery.parseXML(route);
-			var xmlObject = jQuery(xmlDoc);
-			var from = jQuery(xmlObject).find("from");
-			var uri = from.attr("uri");
-			var uri = uri.split("//");
-
-			if (uri[1] != null) {
-				uri = uri[1].split("?");
-				this.fileOrDirectoryNameInput.val(uri[0]);
-
-				if (uri[1] != null) {
-					var options = uri[1].split("&");
-
-					for ( var n = 0; n < options.length; ++n) {
-						var option = options[n];
-
-						option = option.split("=");
-
-						var name = option[0];
-						var value = option[1];
-
-						if (name == "") {
-						} 
-					}
+					return overlay;
 				}
+			};
+
+			/**
+			 * 
+			 */
+			function TimerEventIntegrationOverlay() {
+				var eventIntegrationOverlay = m_eventIntegrationOverlay
+						.create();
+
+				m_utils.inheritFields(this, eventIntegrationOverlay);
+				m_utils.inheritMethods(TimerEventIntegrationOverlay.prototype,
+						eventIntegrationOverlay);
+
+				/**
+				 * 
+				 */
+				TimerEventIntegrationOverlay.prototype.initialize = function(
+						page, id) {
+					this.initializeEventIntegrationOverlay(page, id);
+
+					jQuery("label[for='repeatIntervalInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.timerEvent.repeatInterval"));
+					jQuery("label[for='repeatCountInput']")
+					.text(
+							m_i18nUtils
+									.getProperty("modeler.element.properties.timerEvent.repeatCount"));
+					
+					this.configurationSpan = this.mapInputId("configuration");
+					
+					this.configurationSpan
+					.text(
+							m_i18nUtils
+									.getProperty("modeler.element.properties.event.configuration"));
+					this.parametersSpan = this.mapInputId("parameters");
+					
+					this.parametersSpan.text(
+							m_i18nUtils
+									.getProperty("modeler.element.properties.event.parameters"));
+					
+					this.repeatIntervalUnitSelect = this.mapInputId("repeatIntervalUnitSelect");
+
+					this.repeatIntervalUnitSelect.append("<option value='1'>"
+							+ m_i18nUtils
+							.getProperty("modeler.element.properties.event.milliseconds") + "</option>");
+					this.repeatIntervalUnitSelect.append("<option value='1000'>"
+							+ m_i18nUtils
+							.getProperty("modeler.element.properties.event.seconds") + "</option>");
+					this.repeatIntervalUnitSelect.append("<option value='60000'>"
+							+ m_i18nUtils
+							.getProperty("modeler.element.properties.event.minutes") + "</option>");
+					this.repeatIntervalUnitSelect.append("<option value='3600000'>"
+							+ m_i18nUtils
+							.getProperty("modeler.element.properties.event.hours") + "</option>");
+					this.repeatIntervalUnitSelect.append("<option value='3600000'>"
+							+ m_i18nUtils
+							.getProperty("modeler.element.properties.event.days") + "</option>");
+				};
+
+				/**
+				 * 
+				 */
+				TimerEventIntegrationOverlay.prototype.getEndpointUri = function() {
+					var uri = "timer://";
+
+					return uri;
+				};
+
+				/**
+				 * 
+				 */
+				TimerEventIntegrationOverlay.prototype.activate = function() {
+					var parameterMappings = [];
+
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping("Message",
+									"message", "String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping("Calendar",
+									"calendar", "String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping("Fire Time",
+									"fireTime", "String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping("Job Detail",
+									"jobDetail", "String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping("Job Instance",
+									"jobInstance", "String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping("Job Runtime",
+									"jobRuntTime", "String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping(
+									"Merged Job Data Map", "mergedJobDataMap",
+									"String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping("Next Fire Time",
+									"nextFireTime", "String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping(
+									"Previous Fire Time", "previousFireTime",
+									"String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping(
+									"Scheduled Fire Time", "scheduledFireTime",
+									"String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping("Refire Count",
+									"refireCount", "String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping("Trigger Name",
+									"triggerName", "String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping("Trigger Group",
+									"triggerGroup", "String"));
+
+					this.submitEventClassChanges(parameterMappings);
+				};
+
+				/**
+				 * 
+				 */
+				TimerEventIntegrationOverlay.prototype.update = function() {
+					var route = this.page.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"];
+
+					if (route == null) {
+						return;
+					}
+
+					var xmlDoc = jQuery.parseXML(route);
+					var xmlObject = jQuery(xmlDoc);
+					var from = jQuery(xmlObject).find("from");
+					var uri = from.attr("uri");
+					var uri = uri.split("//");
+
+					if (uri[1] != null) {
+						// uri = uri[1].split("?");
+						// this.fileOrDirectoryNameInput.val(uri[0]);
+						//
+						// if (uri[1] != null) {
+						// var options = uri[1].split("&");
+						//
+						// for ( var n = 0; n < options.length; ++n) {
+						// var option = options[n];
+						//
+						// option = option.split("=");
+						//
+						// var name = option[0];
+						// var value = option[1];
+						//
+						// if (name == "") {
+						// }
+						// }
+						// }
+					}
+
+					this.parameterMappingsPanel.setScopeModel(this.page
+							.getModel());
+					this.parameterMappingsPanel
+							.setParameterDefinitions(this.page.getEvent().parameterMappings);
+				};
+
+				/**
+				 * 
+				 */
+				TimerEventIntegrationOverlay.prototype.validate = function() {
+					return true;
+				};
 			}
-		};
-	}
-});
+		});

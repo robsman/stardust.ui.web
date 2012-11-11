@@ -40,17 +40,26 @@ define(
 				 */
 				ScanEventIntegrationOverlay.prototype.initialize = function(
 						page, id) {
-					this.page = page;
-					this.id = id;
+					this.initializeEventIntegrationOverlay(page, id);
+
 					this.documentDataList = this.mapInputId("documentDataList");
 				};
 
 				/**
 				 * 
 				 */
-				ScanEventIntegrationOverlay.prototype.mapInputId = function(
-						inputId) {
-					return jQuery("#" + this.id + " #" + inputId);
+				ScanEventIntegrationOverlay.prototype.submitEventClassChanges = function(
+						parameterMappings) {
+					if (parameterMappings == null) {
+						parameterMappings = [];
+					}
+
+					this.submitChanges({
+						modelElement : {
+							eventClass : this.id,
+							parameterMappings : parameterMappings
+						}
+					});
 				};
 
 				/**
@@ -70,7 +79,13 @@ define(
 					} else {
 						this.documentDataList.val(m_constants.TO_BE_DEFINED);
 					}
-					this.submitEventClassChanges();
+				};
+
+				/**
+				 * 
+				 */
+				ScanEventIntegrationOverlay.prototype.validate = function() {
+					return true;
 				};
 			}
 		});

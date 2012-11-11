@@ -1,5 +1,5 @@
-define(["m_manualTriggerIntegrationOverlay", "m_timerEventIntegrationOverlay", "m_fileEventIntegrationOverlay", "m_emailEventIntegrationOverlay", "m_messageEventIntegrationOverlay", "m_scanEventIntegrationOverlay", "m_genericCamelRouteIntegrationOverlay"], function(
-		m_manualTriggerIntegrationOverlay, m_timerEventIntegrationOverlay, m_fileEventIntegrationOverlay, m_emailEventIntegrationOverlay, m_messageEventIntegrationOverlay, m_scanEventIntegrationOverlay, m_genericCamelRouteIntegrationOverlay) {
+define(["m_manualTriggerIntegrationOverlay", "m_timerEventIntegrationOverlay", "m_fileEventIntegrationOverlay", "m_emailEventIntegrationOverlay", "m_messageEventIntegrationOverlay", "m_scanEventIntegrationOverlay", "m_genericCamelRouteEventIntegrationOverlay"], function(
+		m_manualTriggerIntegrationOverlay, m_timerEventIntegrationOverlay, m_fileEventIntegrationOverlay, m_emailEventIntegrationOverlay, m_messageEventIntegrationOverlay, m_scanEventIntegrationOverlay, m_genericCamelRouteEventIntegrationOverlay) {
 	return {
 		applicationIntegrationOverlay: [],
 		eventIntegrationOverlay: [{
@@ -39,10 +39,10 @@ define(["m_manualTriggerIntegrationOverlay", "m_timerEventIntegrationOverlay", "
 			provider : m_scanEventIntegrationOverlay
 		},
 		{
-			id : "genericCamelRoute",
+			id : "genericCamelRouteEvent",
 			name : "Generic Camel Route Event",
-			pageHtmlUrl: "genericCamelRouteIntegrationOverlay.html",
-			provider : m_genericCamelRouteIntegrationOverlay
+			pageHtmlUrl: "genericCamelRouteEventIntegrationOverlay.html",
+			provider : m_genericCamelRouteEventIntegrationOverlay
 		}]
 	};
 });

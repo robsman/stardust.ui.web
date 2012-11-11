@@ -24,8 +24,8 @@ define(
 					return page;
 				}
 			};
+			
 		  function i18nProcessActivityScreen() {
-
 				$("label[for='guidOutput']")
 				.text(
 						m_i18nUtils

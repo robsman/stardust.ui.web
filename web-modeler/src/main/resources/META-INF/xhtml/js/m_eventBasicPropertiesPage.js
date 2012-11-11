@@ -63,7 +63,8 @@ define(
 						}
 
 						this.eventTypeSelectInput.append("<option value='"
-								+ extension.id + "'>" + extension.name
+								+ extension.id + "'>" + m_i18nUtils
+								.getProperty("modeler.element.properties." + extension.id + ".title")
 								+ "</option>");
 
 						var pageDiv = jQuery("<div id=\"" + extension.id
@@ -152,15 +153,18 @@ define(
 							this
 									.setOverlay(this.propertiesPanel.element.modelElement.eventClass);
 						} else if (this.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelContextId"] != null) {
-							this.setOverlay("genericCamelRoute");
+							this.setOverlay("genericCamelRouteEvent");
+							this.overlayControllers[overlay].activate();
 						} else if (this.propertiesPanel.element.modelElement.documentDataId != null) {
 							this.setOverlay("scanEvent");
+							this.overlayControllers[overlay].activate();
 						} else {
 							var selectdata = m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.startEvent.notePoint");
 							this.participantOutput
 									.append(selectdata);
 
 							this.setOverlay("manualTrigger");
+							this.overlayControllers[overlay].activate();
 						}
 					} else {
 						this.startEventPanel.attr("class", "invisible");
@@ -168,10 +172,17 @@ define(
 				};
 
 				/**
-				 * 
+				 * TODO Review, symbol returned as model element, because that is where naem and description is bound
 				 */
 				EventBasicPropertiesPage.prototype.getModelElement = function() {
 					return this.propertiesPanel.element;
+				};
+
+				/**
+				 * 
+				 */
+				EventBasicPropertiesPage.prototype.getEvent = function() {
+					return this.propertiesPanel.element.modelElement;
 				};
 
 				/**

@@ -33,6 +33,44 @@ define(
 						page, id) {
 					this.page = page;
 					this.id = id;
+
+					this.parameterMappingsPanelAnchor = this
+							.mapInputId("parameterMappingsPanelAnchor");
+
+					if (this.parameterMappingsPanelAnchor != null) {
+						var overlay = this;
+
+						this.parameterMappingsPanelAnchor
+								.load(
+										"parameterDefinitionsPanel.html",
+										function(response, status, xhr) {
+											if (status == "error") {
+												var msg = "Properties Page Load Error: "
+														+ xhr.status
+														+ " "
+														+ xhr.statusText;
+
+												jQuery(this).append(msg);
+											} else {
+												overlay.parameterMappingsPanel = m_parameterDefinitionsPanel
+														.create({
+															scope : overlay.id,
+															submitHandler : overlay,
+															supportsOrdering : false,
+															supportsDataMappings : true,
+															supportsDescriptors : false,
+															supportsDataTypeSelection : true,
+															readOnlyParameterList : true
+														});
+											}
+										});
+
+						this.propertiesTabs = this.mapInputId("propertiesTabs");
+					}
+
+					if (this.propertiesTabs != null) {
+						this.propertiesTabs.tabs();
+					}
 				};
 
 				/**
@@ -50,8 +88,31 @@ define(
 					input.change({
 						overlay : this
 					}, function(event) {
-						event.data.overlay.submitRouteChanges();
+						if (event.data.overlay.validate()) {
+							event.data.overlay.submitRouteChanges();
+						} 
 					});
+				};
+
+				/**
+				 * 
+				 */
+				EventIntegrationOverlay.prototype.getEvent = function() {
+					this.page.getEvent();
+				};
+
+				/**
+				 * 
+				 */
+				EventIntegrationOverlay.prototype.createPrimitiveParameterMapping = function(
+						name, id, primitiveDataType) {
+					return {
+						name : name,
+						id : id,
+						direction : m_constants.OUT_ACCESS_POINT,
+						dataType : "primitive",
+						primitiveDataType : primitiveDataType
+					};
 				};
 
 				/**
@@ -65,10 +126,25 @@ define(
 				/**
 				 * 
 				 */
-				EventIntegrationOverlay.prototype.submitEventClassChanges = function() {
+				EventIntegrationOverlay.prototype.submitEventClassChanges = function(
+						parameterMappings) {
+					if (parameterMappings == null) {
+						parameterMappings = [];
+					}
+
+					var route = "<route>";
+
+					route += "<from uri=\"";
+					route += this.getEndpointUri();
+					route += "\"/></route>";
+
 					this.submitChanges({
 						modelElement : {
-							eventClass : this.id
+							eventClass : this.id,
+							parameterMappings : parameterMappings,
+							attributes : {
+								"carnot:engine:camel::camelRouteExt" : route
+							}
 						}
 					});
 				};
@@ -82,8 +158,6 @@ define(
 					route += "<from uri=\"";
 					route += this.getEndpointUri();
 					route += "\"/></route>";
-
-					m_utils.debug("Submitting Route: " + route);
 
 					this.submitChanges({
 						modelElement : {

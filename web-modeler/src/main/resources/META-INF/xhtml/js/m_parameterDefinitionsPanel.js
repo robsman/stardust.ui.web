@@ -4,10 +4,11 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_extensionManager", "m_model", "m_typeDeclaration",
-				"m_dialog", "m_dataTypeSelector","m_i18nUtils" ],
-		function(m_utils, m_constants, m_extensionManager, m_model, m_typeDeclaration, m_dialog,
-				m_dataTypeSelector,m_i18nUtils) {
+		[ "m_utils", "m_constants", "m_extensionManager", "m_model",
+				"m_typeDeclaration", "m_dialog", "m_dataTypeSelector",
+				"m_i18nUtils" ],
+		function(m_utils, m_constants, m_extensionManager, m_model,
+				m_typeDeclaration, m_dialog, m_dataTypeSelector, m_i18nUtils) {
 			return {
 				create : function(options) {
 					var panel = new ParameterDefinitionsPanel();
@@ -19,10 +20,10 @@ define(
 			};
 
 			/**
-			 * Options are scope submitHandler supportsOrdering supportsDataMappings
-			 * supportsDescriptors supportsDataTypeSelection supportsDataPathes
-			 * directionColumnWidth nameColumnWidth typeColumnWidth
-			 * mappingColumnWidth tableWidth
+			 * Options are scope submitHandler supportsOrdering
+			 * supportsDataMappings supportsDescriptors
+			 * supportsDataTypeSelection supportsDataPathes directionColumnWidth
+			 * nameColumnWidth typeColumnWidth mappingColumnWidth tableWidth
 			 */
 			function ParameterDefinitionsPanel() {
 				/**
@@ -41,7 +42,7 @@ define(
 					// TODO: Change width via CSS and classes here
 
 					if (this.options.tableWidth == null) {
-						this.options.tableWidth = "400px";
+						this.options.tableWidth = "350px";
 					}
 
 					if (this.options.directionColumnWidth == null) {
@@ -53,7 +54,7 @@ define(
 					}
 
 					if (this.options.typeColumnWidth == null) {
-						this.options.typeColumnWidth = "200px";
+						this.options.typeColumnWidth = "150px";
 					}
 
 					if (this.options.mappingColumnWidth == null) {
@@ -164,11 +165,12 @@ define(
 										if (event.data.panel.currentParameterDefinition != null) {
 											event.data.panel.currentParameterDefinition.direction = event.data.panel.parameterDefinitionDirectionSelect
 													.val();
-											
-											// Switch back to standard focus handling
-											
+
+											// Switch back to standard focus
+											// handling
+
 											event.data.panel.currentFocusInput = null;
-											
+
 											event.data.panel.submitChanges();
 										}
 									});
@@ -186,13 +188,12 @@ define(
 											if (event.data.panel.descriptorInput
 													.prop("checked")) {
 												event.data.panel.currentFocusInput = event.data.panel.keyDescriptorInput;
-											}
-											else
-												{
-												// Switch back to standard focus handling
-												
+											} else {
+												// Switch back to standard focus
+												// handling
+
 												event.data.panel.currentFocusInput = null;
-												}
+											}
 
 											event.data.panel.submitChanges();
 										});
@@ -205,8 +206,9 @@ define(
 											event.data.panel.currentParameterDefinition.keyDescriptor = event.data.panel.keyDescriptorInput
 													.prop("checked");
 
-											// Switch back to standard focus handling
-											
+											// Switch back to standard focus
+											// handling
+
 											event.data.panel.currentFocusInput = null;
 
 											event.data.panel.submitChanges();
@@ -229,10 +231,11 @@ define(
 															.val();
 												}
 
-												// Switch back to standard focus handling
-												
+												// Switch back to standard focus
+												// handling
+
 												event.data.panel.currentFocusInput = null;
-												
+
 												event.data.panel
 														.submitChanges();
 											}
@@ -249,8 +252,9 @@ define(
 													event.data.panel.currentParameterDefinition.dataPath = event.data.panel.parameterDefinitionPathInput
 															.val();
 
-													// Switch back to standard focus handling
-													
+													// Switch back to standard
+													// focus handling
+
 													event.data.panel.currentFocusInput = null;
 
 													event.data.panel
@@ -258,6 +262,13 @@ define(
 												}
 											});
 						}
+					}
+
+					if (this.options.readOnlyParameterList) {
+						m_dialog
+								.makeInvisible(this.deleteParameterDefinitionButton);
+						m_dialog
+								.makeInvisible(this.addParameterDefinitionButton);
 					}
 				};
 
@@ -267,7 +278,7 @@ define(
 				ParameterDefinitionsPanel.prototype.setParameterDefinitions = function(
 						parameterDefinitions) {
 					this.parameterDefinitions = parameterDefinitions;
-					
+
 					m_utils.debug("===> Parameter Definitions:")
 					m_utils.debug(parameterDefinitions)
 
@@ -294,18 +305,19 @@ define(
 					}
 
 					// Select last parameter if previous index exceeds length
-					
-					if (this.selectedRowIndex >= this.parameterDefinitions.length ) {
+
+					if (this.selectedRowIndex >= this.parameterDefinitions.length) {
 						this.selectedRowIndex = this.parameterDefinitions.length - 1;
 					}
 
 					m_utils.debug("Row Index: " + this.selectedRowIndex);
-					
+
 					this.currentParameterDefinition = this.parameterDefinitions[this.selectedRowIndex];
-					
+
 					// Select row
 
-					var tableRows = jQuery(this.options.scope + " #parameterDefinitionsTable tr");
+					var tableRows = jQuery(this.options.scope
+							+ " #parameterDefinitionsTable tr");
 
 					m_utils.debug("Table Rows: " + tableRows);
 
@@ -364,9 +376,10 @@ define(
 					this.parameterDefinitionDataSelect
 							.append("<option value=\"TO_BE_DEFINED\">(To be defined))</option>");
 
-					var modelname = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.thisModel");
+					var modelname = m_i18nUtils
+							.getProperty("modeler.element.properties.commonProperties.thisModel");
 					this.parameterDefinitionDataSelect
-							.append("<optgroup label=\""+modelname+"\">");
+							.append("<optgroup label=\"" + modelname + "\">");
 
 					for ( var i in this.scopeModel.dataItems) {
 						var dataItem = this.scopeModel.dataItems[i];
@@ -377,9 +390,11 @@ define(
 										+ dataItem.name + "</option>");
 					}
 
-					var othermodel = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel")
+					var othermodel = m_i18nUtils
+							.getProperty("modeler.element.properties.commonProperties.otherModel")
 					this.parameterDefinitionDataSelect
-							.append("</optgroup><optgroup label=\""+othermodel+"\">");
+							.append("</optgroup><optgroup label=\""
+									+ othermodel + "\">");
 
 					for ( var n in m_model.getModels()) {
 						if (m_model.getModels()[n] == this.scopeModel) {
@@ -442,16 +457,17 @@ define(
 							content += "<td style=\"width: "
 									+ this.options.typeColumnWidth + "\">";
 							if (parameterDefinition.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
-								content += m_typeDeclaration.getPrimitiveTypeLabel(parameterDefinition.primitiveDataType); // TODO
+								content += m_typeDeclaration
+										.getPrimitiveTypeLabel(parameterDefinition.primitiveDataType); // TODO
 								// Convert
 							} else {
 								content += parameterDefinition.structuredDataTypeFullId; // TODO
 								// Format
 							}
-                          
+
 							content += "</td>";
 						}
-						 
+
 						if (this.options.supportsDataMappings) {
 							content += "<td style=\"width: "
 									+ this.options.mappingColumnWidth + "\">";
@@ -472,12 +488,14 @@ define(
 
 							content += "</td>";
 						}
-						
-						var newValue= m_i18nUtils.getProperty("modeler.element.properties.commonProperties.inputText.new");
-						content = content.replace(">New",">"+newValue);
-						newValue= m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectType.string");
-						content = content.replace("String",newValue);
-						
+
+						var newValue = m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.inputText.new");
+						content = content.replace(">New", ">" + newValue);
+						newValue = m_i18nUtils
+								.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectType.string");
+						content = content.replace("String", newValue);
+
 						this.parameterDefinitionsTableBody.append(content);
 
 						jQuery(
@@ -548,25 +566,46 @@ define(
 							}
 						}
 					} else {
-						this.parameterDefinitionNameInput
-								.removeAttr("disabled");
-						this.parameterDefinitionDirectionSelect
-								.removeAttr("disabled");
+						if (this.options.readOnlyParameterList) {
+							this.parameterDefinitionNameInput.attr("disabled",
+									true);
+							this.parameterDefinitionDirectionSelect.attr(
+									"disabled", true);
+						} else {
+							this.parameterDefinitionNameInput
+									.removeAttr("disabled");
+							this.parameterDefinitionDirectionSelect
+									.removeAttr("disabled");
+						}
+
 						this.parameterDefinitionNameInput
 								.val(this.currentParameterDefinition.name);
 						this.parameterDefinitionDirectionSelect
 								.val(this.currentParameterDefinition.direction);
 
 						if (this.options.supportsDataTypeSelection) {
-							this.dataTypeSelector.enable();
+							if (this.options.readOnlyParameterList) {
+								this.dataTypeSelector.disable();
+							} else {
+								this.dataTypeSelector.enable();
+							}
+
 							this.dataTypeSelector
 									.setDataType(this.currentParameterDefinition);
 						}
 
 						if (this.options.supportsDescriptors) {
 							if (this.currentParameterDefinition.direction == "IN") {
-								this.descriptorInput.removeAttr("disabled");
-								this.keyDescriptorInput.removeAttr("disabled");
+								if (this.options.readOnlyParameterList) {
+									this.descriptorInput.removeAttr("disabled");
+									this.keyDescriptorInput
+											.removeAttr("disabled");
+								} else {
+									this.descriptorInput.attr("disabled", true);
+									this.keyDescriptorInput.attr("disabled",
+											true);
+								}
+
 								this.descriptorInput
 										.prop(
 												"checked",

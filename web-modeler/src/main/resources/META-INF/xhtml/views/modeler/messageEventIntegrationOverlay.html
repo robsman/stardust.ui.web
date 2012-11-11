@@ -5,34 +5,52 @@
 <title>Message Event</title>
 </head>
 <body>
-	<table>
-		<tr>
-			<td><select id="typeSelect">
-					<option value="queue">Queue</option>
-					<option value="topic">Topic</option>
-			</select></td>
-			<td><input id="nameInput" type="text" style="width: 200px;" />
-			</td>
-		</tr>
-	</table>
-	<table style="margin-top: 10px;">
-		<tr>
-			<td><label for="clientIdInput">Client ID</label></td>
-			<td><input id="clientIdInput" type="text" style="width: 200px;" />
-			</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td><label for="selectorInput">Selector</label></td>
-			<td><input id="selectorInput" type="text" style="width: 200px;" />
-			</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td><label for="recursiveInput">Recursive</label></td>
-			<td><input id="recursiveInput" type="checkbox" /></td>
-			<td></td>
-		</tr>
-	</table>
+	<div id="propertiesTabs" style="margin-top: 10px;">
+		<ul id="propertiesTabsList">
+			<li><a href="#configurationTab"><span class="tabLabel"
+					id="configuration">Configuration</span> </a></li>
+			<li><a href="#parametersTab"><span class="tabLabel"
+					id="parameters">Parameters</span> </a></li>
+		</ul>
+		<div id="configurationTab">
+			<table>
+				<tr>
+					<td><select id="typeSelect">
+							<option value="queue">Queue</option>
+							<option value="topic">Topic</option>
+					</select>
+					</td>
+					<td><input id="nameInput" type="text" style="width: 200px;" />
+					</td>
+				</tr>
+			</table>
+			<table style="margin-top: 10px;">
+				<tr>
+					<td><label for="clientIdInput">Client ID</label>
+					</td>
+					<td><input id="clientIdInput" type="text"
+						style="width: 200px;" /></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td><label for="selectorInput">Selector</label>
+					</td>
+					<td><input id="selectorInput" type="text"
+						style="width: 200px;" /></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td><label for="recursiveInput">Recursive</label>
+					</td>
+					<td><input id="recursiveInput" type="checkbox" />
+					</td>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+		<div id="parametersTab">
+			<div id="parameterMappingsPanelAnchor" />
+		</div>
+	</div>
 </body>
 </html>

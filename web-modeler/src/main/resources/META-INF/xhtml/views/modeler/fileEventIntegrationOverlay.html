@@ -5,84 +5,77 @@
 <title>Timer Event</title>
 </head>
 <body>
-	<table>
-		<tr>
-			<td><label for="fileOrDirectoryNameInput">File or
-					Directory Name</label>
-			</td>
-			<td><input id="fileOrDirectoryNameInput" type="text"
-				style="width: 200px;" /></td>
-			<td></td>
-		</tr>
-		<tr>
-			<td><label for="recursiveInput">Recursive</label>
-			</td>
-			<td><input id="recursiveInput" type="checkbox" />
-			</td>
-			<td></td>
-		</tr>
-	</table>
-	<table style="margin-top: 10px;">
-		<tr>
-			<td><label for="initialIntervalInput">Initial Interval</label></td>
-			<td><input id="initialIntervalInput" type="text"
-				style="width: 50px;" />
-			</td>
-			<td><select id="initialIntervalUnitSelect">
-					<option value="1">Milliseconds</option>
-					<option value="1000">Seconds</option>
-					<option value="60000">Minutes</option>
-					<option value="3600000">Hours</option>
-					<option value="d">Days</option>
-					<option value="w">Weeks</option>
-					<option value="w">Months</option>
-			</select></td>
-		</tr>
-		<tr>
-			<td><label for="repeatIntervalInput">Repeat Interval</label></td>
-			<td><input id="repeatIntervalInput" type="text"
-				style="width: 50px;" />
-			</td>
-			<td><select id="repeatIntervalUnitSelect">
-					<option value="1">Milliseconds</option>
-					<option value="1000">Seconds</option>
-					<option value="60000">Minutes</option>
-					<option value="3600000">Hours</option>
-					<option value="d">Days</option>
-					<option value="w">Weeks</option>
-					<option value="w">Months</option>
-			</select></td>
-		</tr>
-	</table>
-	<table style="margin-top: 10px;">
-		<tr>
-			<td><label for="lockBehaviorSelect">Lock Behavior</label>
-			</td>
-			<td><select id="lockBehaviorSelect">
-					<option value="exclusiveLock">Exclusive Lock</option>
-					<option value="exclusiveReadLock">Exclusive Read Lock</option>
-			</select>
-			</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td><label for="postprocessingSelect">Postprocessing</label>
-			</td>
-			<td><select id="postprocessingSelect">
-					<option value="noop">Leave</option>
-					<option value="delete">Delete</option>
-					<option value="move">Move</option>
-			</select>
-			</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td><label for="alwaysConsumeInput">Always consume</label>
-			</td>
-			<td><input id="alwaysConsumeInput" type="checkbox" />
-			</td>
-			<td></td>
-		</tr>
-	</table>
+	<div id="propertiesTabs" style="margin-top: 10px;">
+		<ul id="propertiesTabsList">
+			<li><a href="#configurationTab"><span class="tabLabel"
+					id="configuration">Configuration</span> </a></li>
+			<li><a href="#parametersTab"><span class="tabLabel"
+					id="parameters">Parameters</span> </a></li>
+		</ul>
+		<div id="configurationTab">
+			<table>
+				<tr>
+					<td><label for="fileOrDirectoryNameInput">File or
+							Directory Name</label></td>
+					<td><input id="fileOrDirectoryNameInput" type="text"
+						style="width: 200px;" />
+					</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td><label for="recursiveInput">Recursive</label></td>
+					<td><input id="recursiveInput" type="checkbox" /></td>
+					<td></td>
+				</tr>
+			</table>
+			<table style="margin-top: 10px;">
+				<tr>
+					<td><label for="initialIntervalInput">Initial Interval</label>
+					</td>
+					<td><input id="initialIntervalInput" type="text"
+						style="width: 50px;" /></td>
+					<td><select id="initialIntervalUnitSelect">
+					</select>
+					</td>
+				</tr>
+				<tr>
+					<td><label for="repeatIntervalInput">Repeat Interval</label>
+					</td>
+					<td><input id="repeatIntervalInput" type="text"
+						style="width: 50px;" /></td>
+					<td><select id="repeatIntervalUnitSelect">
+					</select>
+					</td>
+				</tr>
+			</table>
+			<table style="margin-top: 10px;">
+				<tr>
+					<td><label for="lockBehaviorSelect">Lock Behavior</label></td>
+					<td><select id="lockBehaviorSelect">
+							<option value="exclusiveLock">Exclusive Lock</option>
+							<option value="exclusiveReadLock">Exclusive Read Lock</option>
+					</select></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td><label for="postProcessingSelect">Post-Processing</label></td>
+					<td><select id="postProcessingSelect">
+							<option value="noop">Leave</option>
+							<option value="delete">Delete</option>
+							<option value="move">Move</option>
+					</select></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td><label for="alwaysConsumeInput">Always consume</label></td>
+					<td><input id="alwaysConsumeInput" type="checkbox" /></td>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+		<div id="parametersTab">
+			<div id="parameterMappingsPanelAnchor" />
+		</div>
+	</div>
 </body>
 </html>

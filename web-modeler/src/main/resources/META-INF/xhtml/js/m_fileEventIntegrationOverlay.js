@@ -11,10 +11,10 @@
 define(
 		[ "m_utils", "m_constants", "m_commandsController", "m_command",
 				"m_model", "m_accessPoint", "m_parameterDefinitionsPanel",
-				"m_eventIntegrationOverlay" ],
+				"m_eventIntegrationOverlay", "m_i18nUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
 				m_model, m_accessPoint, m_parameterDefinitionsPanel,
-				m_eventIntegrationOverlay) {
+				m_eventIntegrationOverlay, m_i18nUtils) {
 
 			return {
 				create : function(page, id) {
@@ -44,6 +44,35 @@ define(
 						page, id) {
 					this.initializeEventIntegrationOverlay(page, id);
 
+					jQuery("configuration")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.event.configuration"));
+					jQuery("parameters")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.event.parameters"));
+					jQuery("label[for='fileOrDirectoryNameInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.fileEvent.fileOrDirectoryName"));
+					jQuery("label[for='recursiveInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.fileEvent.recursive"));
+					jQuery("label[for='initialIntervalInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.fileEvent.initialInterval"));
+					jQuery("label[for='postProcessingSelect']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.fileEvent.postProcessing"));
+					jQuery("label[for='alwaysConsumeInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.fileEvent.alwaysConsume"));
+
 					this.fileOrDirectoryNameInput = this
 							.mapInputId("fileOrDirectoryNameInput");
 					this.recursiveInput = this.mapInputId("recursiveInput");
@@ -51,10 +80,64 @@ define(
 							.mapInputId("initialIntervalInput");
 					this.initialIntervalUnitSelect = this
 							.mapInputId("initialIntervalUnitSelect");
+
+					this.initialIntervalUnitSelect
+							.append("<option value='1'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.milliseconds")
+									+ "</option>");
+					this.initialIntervalUnitSelect
+							.append("<option value='1000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.seconds")
+									+ "</option>");
+					this.initialIntervalUnitSelect
+							.append("<option value='60000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.minutes")
+									+ "</option>");
+					this.initialIntervalUnitSelect
+							.append("<option value='3600000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.hours")
+									+ "</option>");
+					this.initialIntervalUnitSelect
+							.append("<option value='3600000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.days")
+									+ "</option>");
+					this.repeatIntervalUnitSelect = this
+							.mapInputId("repeatIntervalUnitSelect");
+					this.repeatIntervalUnitSelect
+							.append("<option value='1'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.milliseconds")
+									+ "</option>");
+					this.repeatIntervalUnitSelect
+							.append("<option value='1000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.seconds")
+									+ "</option>");
+					this.repeatIntervalUnitSelect
+							.append("<option value='60000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.minutes")
+									+ "</option>");
+					this.repeatIntervalUnitSelect
+							.append("<option value='3600000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.hours")
+									+ "</option>");
+					this.repeatIntervalUnitSelect
+							.append("<option value='3600000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.days")
+									+ "</option>");
+
 					this.lockBehaviorSelect = this
 							.mapInputId("lockBehaviorSelect");
-					this.postprocessingSelect = this
-							.mapInputId("postprocessingSelect");
+					this.postProcessingSelect = this
+							.mapInputId("postProcessingSelect");
 					this.alwaysConsumeInput = this
 							.mapInputId("alwaysConsumeInput");
 
@@ -64,7 +147,7 @@ define(
 					this
 							.registerForRouteChanges(this.initialIntervalUnitSelect);
 					this.registerForRouteChanges(this.lockBehaviorSelect);
-					this.registerForRouteChanges(this.postprocessingSelect);
+					this.registerForRouteChanges(this.postProcessingSelect);
 					this.registerForRouteChanges(this.alwaysConsumeInput);
 				};
 
@@ -85,10 +168,10 @@ define(
 					uri += "&amp;consumer.alwaysConsume="
 							+ this.alwaysConsumeInput.is(":checked");
 
-					if (this.postprocessingSelect.val() == "noop") {
+					if (this.postProcessingSelect.val() == "noop") {
 						uri += "&amp;consumer.noop=true";
 						uri += "&amp;consumer.delete=false";
-					} else if (this.postprocessingSelect.val() == "delete") {
+					} else if (this.postProcessingSelect.val() == "delete") {
 						uri += "&amp;consumer.noop=false";
 						uri += "&amp;consumer.delete=true";
 					}
@@ -100,15 +183,45 @@ define(
 				 * 
 				 */
 				FileEventIntegrationOverlay.prototype.activate = function() {
-					this.submitEventClassChanges();
+					this.fileOrDirectoryNameInput.val(m_i18nUtils
+					.getProperty("modeler.element.properties.event.toBeDefined"));
+					
+					var parameterMappings = [];
+
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping("Message",
+									"message", "String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping("File Name",
+									"CamelFileName", "String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping("File Name Only",
+									"CamelFileNameOnly", "String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping(
+									"Absolute File Path",
+									"CamelFileAbsolutePath", "String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping("File Path",
+									"CamelFileAbsolutePath", "String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping("Relative Path",
+									"CamelFileRelativePath", "String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping("File Parent",
+									"CamelFileParent", "String"));
+					parameterMappings.push(this
+							.createPrimitiveParameterMapping(
+									"Last Modified Date",
+									"CamelFileLastModified", "String"));
+
+					this.submitEventClassChanges(parameterMappings);
 				};
 
 				/**
 				 * 
 				 */
 				FileEventIntegrationOverlay.prototype.update = function() {
-					this.submitEventClassChanges();
-
 					var route = this.page.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"];
 
 					if (route == null) {
@@ -131,9 +244,6 @@ define(
 							for ( var n = 0; n < options.length; ++n) {
 								var option = options[n];
 
-								m_utils.debug("Option");
-								m_utils.debug(option);
-
 								option = option.split("=");
 
 								var name = option[0];
@@ -149,16 +259,41 @@ define(
 											value);
 								} else if (name == "consumer.noop") {
 									if (value == "true") {
-										this.postprocessingSelect.val("noop");
+										this.postProcessingSelect.val("noop");
 									}
 								} else if (name == "consumer.delete") {
 									if (value == "true") {
-										this.postprocessingSelect.val("delete");
+										this.postProcessingSelect.val("delete");
 									}
 								}
 							}
 						}
 					}
+
+					this.parameterMappingsPanel.setScopeModel(this.page
+							.getModel());
+					this.parameterMappingsPanel
+							.setParameterDefinitions(this.page.getEvent().parameterMappings);
+				};
+
+				/**
+				 * 
+				 */
+				FileEventIntegrationOverlay.prototype.validate = function() {
+					this.fileOrDirectoryNameInput.removeClass("error");
+
+					if (this.fileOrDirectoryNameInput.val() == null
+							|| this.fileOrDirectoryNameInput.val() == "") {
+						this.page.propertiesPanel.errorMessages
+								.push("File or directory name must not be empty.");
+						this.fileOrDirectoryNameInput.addClass("error");
+
+						this.page.propertiesPanel.showErrorMessages();
+
+						return false;
+					}
+
+					return true;
 				};
 			}
 		});

@@ -11,9 +11,9 @@
 define(
 		[ "m_utils", "m_constants", "m_extensionManager", "m_command",
 				"m_commandsController", "m_user", "m_dialog",
-				"m_propertiesPage","m_i18nUtils"  ],
+				"m_propertiesPage", "m_i18nUtils"  ],
 		function(m_utils, m_constants, m_extensionManager, m_command,
-				m_commandsController, m_user, m_dialog, m_propertiesPage,m_i18nUtils) {
+				m_commandsController, m_user, m_dialog, m_propertiesPage, m_i18nUtils) {
 			return {
 				create : function(propertiesPanel) {
 					return new BasicPropertiesPage(propertiesPanel);
