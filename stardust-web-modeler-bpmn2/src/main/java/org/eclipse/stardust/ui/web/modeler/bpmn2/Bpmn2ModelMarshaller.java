@@ -506,6 +506,33 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
             // TODO anything else?
          }
 
+         poolJto.orientation = mainPoolJto.orientation;
+         // grow pool to be at least as large as the main pool
+         if (ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL.equals(poolJto.orientation))
+         {
+            if (poolJto.x > mainPoolJto.x)
+            {
+               poolJto.width += (poolJto.x - mainPoolJto.x);
+               poolJto.x = mainPoolJto.x;
+            }
+            if ((poolJto.x + poolJto.width) < (mainPoolJto.x + mainPoolJto.width))
+            {
+               poolJto.width = (mainPoolJto.x + mainPoolJto.width) - poolJto.x;
+            }
+         }
+         else if (ModelerConstants.DIAGRAM_FLOW_ORIENTATION_VERTICAL.equals(poolJto.orientation))
+         {
+            if (poolJto.y > mainPoolJto.y)
+            {
+               poolJto.height += (poolJto.y - mainPoolJto.y);
+               poolJto.y = mainPoolJto.y;
+            }
+            if ((poolJto.y + poolJto.height) < (mainPoolJto.y + mainPoolJto.height))
+            {
+               poolJto.height = (mainPoolJto.y + mainPoolJto.height) - poolJto.y;
+            }
+         }
+
          jto.poolSymbols.add(poolJto);
       }
 
