@@ -3,6 +3,7 @@ package org.eclipse.stardust.ui.web.modeler.marshaling;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import java.io.ObjectInputStream.GetField;
 import java.util.Comparator;
 import java.util.List;
 
@@ -40,6 +41,7 @@ import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
 import org.eclipse.stardust.model.xpdl.carnot.OrientationType;
+import org.eclipse.stardust.model.xpdl.carnot.ParameterMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.ParticipantType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
@@ -72,7 +74,7 @@ import static org.eclipse.emf.common.util.ECollections.sort;
 
 /**
  * IPP XPDL marshaller.
- *
+ * 
  * @author Marc.Gille
  * @author Robert Sauer
  */
@@ -87,7 +89,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
    /**
-    *
+    * 
     * @param modelElement
     * @return
     */
@@ -373,9 +375,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * To resolve inconsistency between Access Point and
-    *
+    * 
     * TODO Review and move to Facade
-    *
+    * 
     * @param type
     * @return
     */
@@ -400,7 +402,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param laneSymbol
     * @return
     */
@@ -621,7 +623,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param activity
     * @return
     */
@@ -800,7 +802,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param activitySymbol
     * @return
     */
@@ -888,7 +890,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -934,27 +936,73 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       eventSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
             ModelerConstants.EVENT_SYMBOL);
 
-      Object attribute = getModelBuilderFacade().getAttribute(
-            startEventSymbol.getModelElement(), "stardust::engine:eventClass");
+      TriggerType trigger = (TriggerType) startEventSymbol.getModelElement();
 
-      System.out.println("eventClass attribute " + attribute);
-
-      if (attribute != null)
+      if (trigger != null)
       {
-         eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY,
-               getModelBuilderFacade().getAttributeValue(attribute));
-      }
+         Object attribute = getModelBuilderFacade().getAttribute(
+               startEventSymbol.getModelElement(), "stardust::engine:eventClass");
 
-      // eventJson.put(ID_PROPERTY,
-      // String.valueOf(startEventSymbol.getModelElement().getId()));
-      // loadDescription(eventJson, startEventSymbol.getModelElement());
-      loadAttributes(startEventSymbol.getModelElement(), eventJson);
+         if (attribute != null)
+         {
+            eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY,
+                  getModelBuilderFacade().getAttributeValue(attribute));
+         }
+
+         JsonArray parameterMappingsJson = new JsonArray();
+
+         eventJson.add(ModelerConstants.PARAMETER_MAPPINGS_PROPERTY, parameterMappingsJson);
+
+         for (AccessPointType accessPoint : trigger.getAccessPoint())
+         {
+            JsonObject parameterMappingJson = new JsonObject();
+
+            parameterMappingsJson.add(parameterMappingJson);
+            parameterMappingJson.addProperty(ModelerConstants.ID_PROPERTY,
+                  accessPoint.getId());
+            parameterMappingJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                  accessPoint.getName());
+
+            if (accessPoint.getType() != null)
+            {
+               parameterMappingJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                     accessPoint.getType().getId());
+            }
+
+            if (accessPoint.getDirection() != null)
+            {
+               parameterMappingJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+                     accessPoint.getDirection().getLiteral());
+            }
+
+            loadAttributes(accessPoint, parameterMappingJson);
+
+            for (ParameterMappingType 
+                  parameterMapping : trigger.getParameterMapping())
+            {
+               if (accessPoint.getId().equals(parameterMapping.getParameter()))
+               {
+                  parameterMappingJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
+                        getModelBuilderFacade().createFullId(ModelUtils.findContainingModel(parameterMapping.getData()), parameterMapping.getData()));
+                  parameterMappingJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY,
+                        parameterMapping.getDataPath());    
+
+                  break;
+               }
+            }
+         }
+
+         // eventJson.put(ID_PROPERTY,
+         // String.valueOf(startEventSymbol.getModelElement().getId()));
+         // loadDescription(eventJson, startEventSymbol.getModelElement());
+         loadAttributes(trigger, eventJson);
+      }
 
       return eventSymbolJson;
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -1006,7 +1054,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param data
     * @return
     */
@@ -1125,7 +1173,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -1476,7 +1524,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param annotationSymbol
     * @return
     */
@@ -1527,7 +1575,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param dataMappingConnection
     * @return
     */
@@ -1565,14 +1613,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          {
             if (dataMapping.getData().getId().equals(data.getId()))
             {
-               System.out.println("Data Mapping: " + dataMapping.getId());
-               System.out.println("   Data: " + dataMapping.getData().getName());
-               System.out.println("   Activity: " + activity.getName());
-               System.out.println("   Direction: " + dataMapping.getDirection());
-               System.out.println("   Access Point: "
-                     + dataMapping.getApplicationAccessPoint());
-               System.out.println("   Context: " + dataMapping.getContext());
-
                if (dataFlowJson.has(ModelerConstants.ID_PROPERTY))
                {
                   if ( !dataFlowJson.get(ModelerConstants.ID_PROPERTY)
@@ -1652,7 +1692,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -1794,7 +1834,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -1918,8 +1958,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       for (RoleType role : model.getRole())
       {
-         if ( !hasParentParticipant(model, role)
-               && !isTeamLeader(role))
+         if ( !hasParentParticipant(model, role) && !isTeamLeader(role))
          {
             participantsJson.add(role.getId(), toRoleJson(role));
          }
@@ -1999,7 +2038,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * TODO - is there a better way to do this?
-    *
+    * 
     * @param participant
     * @return
     */
@@ -2090,12 +2129,12 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          // Team leader role is not contained in the list returned by org.getParticipant()
          // for models created in eclipse
          // hence a separate check
-         if (null != parent.getTeamLead() && !teamLeadAdded) {
+         if (null != parent.getTeamLead() && !teamLeadAdded)
+         {
             JsonObject childJson = new JsonObject();
             childrenArray.add(childJson);
             IModelParticipant childParticipant = parent.getTeamLead();
-            childJson.addProperty(ModelerConstants.ID_PROPERTY,
-                  childParticipant.getId());
+            childJson.addProperty(ModelerConstants.ID_PROPERTY, childParticipant.getId());
             childJson.addProperty(ModelerConstants.NAME_PROPERTY,
                   childParticipant.getName());
             childJson.addProperty(ModelerConstants.OID_PROPERTY,
@@ -2179,7 +2218,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param orientation
     * @return
     */
@@ -2210,7 +2249,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param modelElementJson
     * @param element
     */
@@ -2230,7 +2269,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param element
     * @param json
     * @throws JSONException
@@ -2310,9 +2349,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * TODO From DynamicConnectionCommand. Refactor?
-    *
+    * 
     * @param activity
     * @return
     */
