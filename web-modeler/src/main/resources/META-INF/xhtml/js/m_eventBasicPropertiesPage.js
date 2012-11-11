@@ -154,17 +154,13 @@ define(
 									.setOverlay(this.propertiesPanel.element.modelElement.eventClass);
 						} else if (this.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelContextId"] != null) {
 							this.setOverlay("genericCamelRouteEvent");
-							this.overlayControllers[overlay].activate();
+							this.overlayControllers["genericCamelRouteEvent"].activate();
 						} else if (this.propertiesPanel.element.modelElement.documentDataId != null) {
 							this.setOverlay("scanEvent");
-							this.overlayControllers[overlay].activate();
+							this.overlayControllers["scanEvent"].activate();
 						} else {
-							var selectdata = m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.startEvent.notePoint");
-							this.participantOutput
-									.append(selectdata);
-
 							this.setOverlay("manualTrigger");
-							this.overlayControllers[overlay].activate();
+							this.overlayControllers["manualTrigger"].activate();
 						}
 					} else {
 						this.startEventPanel.attr("class", "invisible");
