@@ -14,7 +14,6 @@
     (e.g. antit.bat -Djava.home=C:/Programme/Java15) or create a private.properties file
     in the etc folder of the project and put the property in there)
   - you need an Infinity installation or you have to execute at least the latakia build file
-  - set the Java property latakia.home to the corresponding installation or build location
 -->
 
 <project name="nirvana archives" default="deploy" basedir=".">
@@ -42,17 +41,12 @@
 		<mkdir dir="${build.lib}"/>
 	</target>
 
-   <target name="initLatakiaHome" unless="latakia.home">
-		<property name="latakia.home" location="${project.dir}/../latakia/build"/>
-	</target>
-
    <!-- - - - - - - - - - -->
    <!-- Nirvana projects  -->
    <!-- - - - - - - - - - -->
 
    <target name="portal-common" depends="init">
       <ant dir="portal-common" antfile="build.xml" target="${subtarget}" inheritall="false">
-			<property name="latakia.home" value="${latakia.home}"/>
          <property name="build.config" value="${build.config}"/>
          <property name="build.lib" value="${build.lib}"/>
          <property name="build.deploy" value="${build.deploy}"/>
@@ -65,7 +59,6 @@
 
    <target name="portal-api" depends="init">
       <ant dir="portal-api" antfile="build.xml" target="${subtarget}" inheritall="false">
-			<property name="latakia.home" value="${latakia.home}"/>
 			<property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
 		</ant>
@@ -73,7 +66,6 @@
    
    <target name="graphics-common" depends="init">
       <ant dir="graphics-common" antfile="build.xml" target="${subtarget}" inheritall="false">
-         <property name="latakia.home" value="${latakia.home}"/>
          <property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
       </ant>
@@ -81,7 +73,6 @@
    
    <target name="views-common" depends="init">
       <ant dir="views-common" antfile="build.xml" target="${subtarget}" inheritall="false">
-         <property name="latakia.home" value="${latakia.home}"/>
          <property name="build.lib" value="${build.lib}"/>
          <property name="copyright.message" value="${copyright.message}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
@@ -90,7 +81,6 @@
 
    <target name="business-control-center" depends="init">
       <ant dir="business-control-center" antfile="build.xml" target="${subtarget}" inheritall="false">
-			<property name="latakia.home" value="${latakia.home}"/>
 			<property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
 		</ant>
@@ -98,7 +88,6 @@
 
    <target name="admin-portal" depends="init">
       <ant dir="admin-portal" antfile="build.xml" target="${subtarget}" inheritall="false">
-			<property name="latakia.home" value="${latakia.home}"/>
 			<property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
 		</ant>
@@ -106,7 +95,6 @@
 
    <target name="process-portal" depends="init">
       <ant dir="process-portal" antfile="build.xml" target="${subtarget}" inheritall="false">
-			<property name="latakia.home" value="${latakia.home}"/>
 			<property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
 		</ant>
@@ -118,7 +106,6 @@
    
    <target name="stardust-common-introspection" depends="init">
       <ant dir="${ui.common.home}/stardust-common-introspection" antfile="build.xml" target="${subtarget}" inheritall="false">
-			<property name="latakia.home" value="${latakia.home}"/>
 			<property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
 		</ant>
@@ -126,7 +113,6 @@
    
    <target name="stardust-common-introspection-xsd" depends="init">
       <ant dir="${ui.common.home}/stardust-common-introspection-xsd" antfile="build.xml" target="${subtarget}" inheritall="false">
-			<property name="latakia.home" value="${latakia.home}"/>
 			<property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
 		</ant>
@@ -134,7 +120,6 @@
    
    <target name="stardust-ui-form" depends="init">
       <ant dir="${ui.common.home}/stardust-ui-form" antfile="build.xml" target="${subtarget}" inheritall="false">
-			<property name="latakia.home" value="${latakia.home}"/>
 			<property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
 		</ant>
@@ -142,7 +127,6 @@
    
    <target name="stardust-ui-form-jsf" depends="init">
       <ant dir="${ui.common.home}/stardust-ui-form-jsf" antfile="build.xml" target="${subtarget}" inheritall="false">
-			<property name="latakia.home" value="${latakia.home}"/>
 			<property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
          <!-- given path is relativ to stardust/ui.common/stardust-ui-form-jsf -->
@@ -150,7 +134,7 @@
 		</ant>
    </target>
 
-	<target name="package" depends="init, initLatakiaHome, portal-common,portal-api, 
+	<target name="package" depends="init, portal-common,portal-api, 
 	   stardust-common-introspection, stardust-common-introspection-xsd, stardust-ui-form, stardust-ui-form-jsf,
 	   views-common, graphics-common, process-portal, business-control-center, admin-portal">
 	</target>
