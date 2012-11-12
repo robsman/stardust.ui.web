@@ -14,7 +14,6 @@
     (e.g. antit.bat -Djava.home=C:/Programme/Java15) or create a private.properties file
     in the etc folder of the project and put the property in there)
   - you need an Infinity installation or you have to execute at least the latakia build file
-  - set the Java property latakia.home to the corresponding installation or build location
 -->
 
 <project name="nirvana portal api" default="build" basedir="." xmlns:ipp="com.infinity.bpm.ant.macros">
@@ -23,9 +22,6 @@
 	<property name="project.src" value="${project.dir}/src/main/java" />
    <property name="project.etc" value="${project.dir}/etc" />
 	<property file="${project.etc}/private.properties"/>
-   
-   <!-- if moonglow.home was set via external property -->
-   <available file="${moonglow.home}" property="moonglow.home.present" type="dir"/>
    
    <property name="organizationId" value="com.infinity.bpm" />
    <property name="artifactId" value="ipp-portal-api" />
@@ -44,24 +40,15 @@
 		<property name="javac.debuglevel" value="lines,source" />
 	</target>
 
-	<target name="init" depends="initOnDevelopment, initOnProduction, initBuildDir, initLatakiaHome">
-		<property name="build.dir" value="${build.home}"/>
+	<target name="init" depends="initOnDevelopment, initOnProduction">
+		<property name="build.dir" value="${project.dir}/build"/>
 	</target>
 
 	<target name="clean" depends="init" description="removes all build results">
 		<delete dir="${build.dir}" />
 	</target>
 
-	<target name="initBuildDir" unless="build.home">
-		<property name="build.home" value="${project.dir}/build"/>
-	</target>
-
-	<target name="initLatakiaHome" unless="latakia.home">
-		<property name="latakia.home" value="${project.dir}/../../latakia/build"/>
-	</target>
-
-	<target name="initBuild" depends="init, initBuildDir">
-		<property name="build.dir" value="${build.home}" />
+	<target name="initBuild" depends="init">
 		<property name="build.classes" value="${build.dir}/classes" />
 		<property name="build.lib" value="${build.dir}/lib" />
 		<property name="build.src" value="${build.dir}/src" />
@@ -87,15 +74,12 @@
 		</copy>
 	</target>
 
-   <target name="initClasspath" depends="init, initClasspath.ivy" />
-   
-   <target name="init.ivy" if="dependencies.mode.ivy">
+   <target name="init.ivy">
       <echo message="Using Ivy for dependency management." />
       <init-ivy />
    </target>
 
-   <target name="initClasspath.ivy" if="dependencies.mode.ivy"
-      depends="init, init.ivy" >
+   <target name="initClasspath" depends="init.ivy" >
 
       <init-ivy-classpath />
 
@@ -115,7 +99,7 @@
 	</target>
 
 	<target name="compile" depends="prepareSources, initBuildDirectories, initClasspath, compile.jdk16" 
-	   description="compiles the portal API classes" />
+	   description="compiles the portal API classes" unless="skip.compile" />
 
 	<target name="jar" depends="compile">
 		<ipp:jar jarfile="${api.jar}" implementationTitle="Infinity Process Engine - Portal API">
@@ -141,14 +125,14 @@
       
       <ivy-publish-local artifactId="${artifactId}" artifactDir="${build.lib}" />
    </target>
-	
-	<target name="initMoonglowHome" unless="moonglow.home">
-		<property name="moonglow.home" value="${project.dir}/../../../moonglow"/>
-	   <available file="${moonglow.home}" property="moonglow.home.present" type="dir"/>
-	</target>	
-		
-	<target name="dist" depends="build, initMoonglowHome">
-		<property name="pa.lib.dir" value="${moonglow.home}/../stardust/ide.wst/org.eclipse.stardust.ide.wst.facet.portal/lib"/>
+
+   <target name="initPortalWstPluginDir" unless="portal.wst.plugin.dir">
+      <property name="portal.wst.plugin.dir" value="${project.dir}/../../ide.wst/org.eclipse.stardust.ide.wst.facet.portal"/>
+      <available file="${portal.wst.plugin.dir}" property="portal.wst.plugin.dir.present" type="dir"/>
+   </target>
+   
+	<target name="dist" depends="build, initPortalWstPluginDir" if="portal.wst.plugin.dir.present">
+		<property name="pa.lib.dir" value="${project.dir}/../../ide.wst/org.eclipse.stardust.ide.wst.facet.portal/lib"/>
         <mkdir dir="${pa.lib.dir}" />
 		<copy todir="${pa.lib.dir}">
 			<fileset dir="${build.lib}">
@@ -159,14 +143,18 @@
 
    <target name="deploy" depends="build"/>
    
-   <target name="install" depends="deploy" if="maven.localRepository"
+   <target name="install" if="maven.localRepository" depends="initBuild"
       description="installs the artifacts into a local Maven repository">
-      <ipp:init-mvn />
-      <exec dir="." executable="${m2.home}/bin/${mvn.exe}" failonerror="true">
-         <arg value="install:install-file"/>
-         <arg value="-Dfile=${api.jar}"/>
-         <arg value="-DpomFile=${build.lib}/ipp-portal-api.pom"/>
-         <arg value="-DlocalRepositoryPath=${maven.localRepository}"/>
-      </exec>
+
+      <ipp:init-mvn localMavenRepository="${maven.localRepository}" />
+      <ipp:mvn-install file="${api.jar}" pomFile="${build.lib}/ipp-portal-api.pom" />
    </target>
+   
+   <target name="publish" depends="initBuild"
+     description="publish artifacts into a remote Maven repository">
+
+      <ipp:init-mvn />
+      <ipp:mvn-deploy file="${api.jar}" pomFile="${build.lib}/ipp-portal-api.pom" />
+   </target>
+   
 </project>
