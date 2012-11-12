@@ -935,6 +935,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             ModelerConstants.START_EVENT);
       eventSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
             ModelerConstants.EVENT_SYMBOL);
+      eventJson.add(ModelerConstants.ATTRIBUTES_PROPERTY, new JsonObject());
 
       TriggerType trigger = (TriggerType) startEventSymbol.getModelElement();
 
