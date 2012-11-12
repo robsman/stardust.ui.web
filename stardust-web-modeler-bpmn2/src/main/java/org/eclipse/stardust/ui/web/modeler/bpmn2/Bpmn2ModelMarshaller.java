@@ -472,6 +472,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
                   continue;
                }
 
+               symbolJto.type = ModelerConstants.CONTROL_FLOW_CONNECTION_LITERAL;
                symbolJto.modelElement = toJto(sFlow);
 
                symbolJto.fromModelElementOid = bpmn2Binding.findOid((Definitions) model, sourceNode);
@@ -482,10 +483,11 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
                if ( !isEmpty(edge.getWaypoint()) && (2 <= edge.getWaypoint().size()))
                {
                   // use original coordinates to avoid having to adjust waypoints as well (see determineShapeBounds)
-                  symbolJto.fromAnchorPointOrientation = determineAnchorPoint(sourceNode.getBounds(),
+                  symbolJto.fromAnchorPointOrientation = determineAnchorPoint(sourceNode,
                         edge.getWaypoint().get(0), edge.getWaypoint().get(1));
-                  symbolJto.toAnchorPointOrientation = determineAnchorPoint(targetNode.getBounds(),
-                        edge.getWaypoint().get(edge.getWaypoint().size() - 2), edge.getWaypoint().get(edge.getWaypoint().size() - 1));
+                  symbolJto.toAnchorPointOrientation = determineAnchorPoint(targetNode,
+                        edge.getWaypoint().get(edge.getWaypoint().size() - 1),
+                        edge.getWaypoint().get(edge.getWaypoint().size() - 2));
                }
 
                jto.connections.add(symbolJto);
@@ -710,6 +712,10 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          // TODO otherwise
          jto.conditionExpression = ((FormalExpression) sFlow.getConditionExpression()).getBody();
       }
+      else if ( !isEmpty(sFlow.getName()))
+      {
+         jto.conditionExpression = sFlow.getName();
+      }
 
       return jto;
    }
@@ -807,10 +813,12 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       }
    }
 
-   private int determineAnchorPoint(Bounds bounds, Point point, Point point2)
+   private int determineAnchorPoint(BPMNShape fromShape, Point point, Point point2)
    {
-      double dx = point.getX() - (bounds.getX());// + bounds.getWidth() / 2.0);
-      double dy = point.getY() - (bounds.getY());// + bounds.getHeight() / 2.0);
+      Bounds fromBounds = fromShape.getBounds(); // determineShapeBounds(fromShape);
+
+      double dx = point.getX() - (fromBounds.getX()); // + fromBounds.getWidth() / 2.0);
+      double dy = point.getY() - (fromBounds.getY()); // + fromBounds.getHeight() / 2.0);
 
       if ((dx == 0.0) && (dy == 0.0))
       {
