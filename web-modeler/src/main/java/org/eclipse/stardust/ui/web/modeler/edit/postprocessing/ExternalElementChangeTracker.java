@@ -17,6 +17,7 @@ import java.util.Map;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.change.impl.ChangeDescriptionImpl;
 import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.common.StringUtils;
@@ -65,30 +66,39 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
 
    private void trackModification(EObject candidate, boolean removed, Modification change)
    {
-      if(candidate instanceof DataType && !removed)
+      ModelType model = ModelUtils.findContainingModel(candidate);      
+      if(removed)
       {
-         String id = checkIsExternalReference(candidate);         
-         if(!StringUtils.isEmpty(id))
+         if (candidate.eContainer() instanceof ChangeDescriptionImpl)
          {
-            ModelType model = ModelUtils.findContainingModel(candidate);
-            UnusedModelElementsSearcher searcher = new UnusedModelElementsSearcher();
-            Map matchedElements = searcher.search(model);
-            List children = (List) matchedElements.get(model);
-            if(children != null && children.contains(candidate))
-            {
-               EList<INodeSymbol> symbols = ((DataType) candidate).getSymbols();
-               if(symbols.size() == 0)
-               {
-                  model.getData().remove(candidate);          
-                  change.markAlsoModified(candidate);                                       
-               }                              
-            }
+            ChangeDescriptionImpl changeDescription = (ChangeDescriptionImpl) candidate.eContainer();
+            EObject container = changeDescription.getOldContainer(candidate);
+            model = ModelUtils.findContainingModel(container);            
          }         
       }
       
-      ModelType model = ModelUtils.findContainingModel(candidate);
       if(model != null)
       {
+         if(candidate instanceof DataType && !removed)
+         {
+            String id = checkIsExternalReference(candidate);         
+            if(!StringUtils.isEmpty(id))
+            {
+               UnusedModelElementsSearcher searcher = new UnusedModelElementsSearcher();
+               Map matchedElements = searcher.search(model);
+               List children = (List) matchedElements.get(model);
+               if(children != null && children.contains(candidate))
+               {
+                  EList<INodeSymbol> symbols = ((DataType) candidate).getSymbols();
+                  if(symbols.size() == 0)
+                  {
+                     model.getData().remove(candidate);          
+                     change.markAlsoModified(candidate);                                       
+                  }                              
+               }
+            }         
+         }
+         
          UnusedModelElementsSearcher searcher = new UnusedModelElementsSearcher();         
          Map matchedElements = searcher.search(model);
          List<EObject> children = (List) matchedElements.get(model);
