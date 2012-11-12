@@ -8,76 +8,91 @@
 	<div id="propertiesTabs" style="margin-top: 10px;">
 		<ul id="propertiesTabsList">
 			<li><a href="#configurationTab"><span class="tabLabel"
-					id="configuration">Configuration</span> </a></li>
+					id="configuration">Configuration</span> </a>
+			</li>
 			<li><a href="#parametersTab"><span class="tabLabel"
-					id="parameters">Parameters</span> </a></li>
+					id="parameters">Parameters</span> </a>
+			</li>
 		</ul>
 		<div id="configurationTab">
 			<table>
 				<tr>
-					<td><label for="protocolSelect">Protocol</label></td>
+					<td><label for="protocolSelect">Protocol</label>
+					</td>
 					<td><select id="protocolSelect">
 							<option value="pop3">POP3</option>
 							<option value="imap">IMAP</option>
-					</select></td>
-				</tr>
-				<tr>
-					<td><label for="mailServerInput">Mail Server</label></td>
-					<td><input id="mailServerInput" type="text"
-						style="width: 200px;" />
+					</select>
 					</td>
 				</tr>
 				<tr>
-					<td><label for="accountInput">Account</label></td>
+					<td><label for="mailServerInput">Mail Server</label>
+					</td>
+					<td><input id="mailServerInput" type="text"
+						style="width: 200px;" /></td>
+				</tr>
+				<tr>
+					<td><label for="accountInput">Account</label>
+					</td>
 					<td><input id="accountInput" type="text" style="width: 200px;" />
 					</td>
 				</tr>
 				<tr>
-					<td><label for="passwordInput">Password</label></td>
+					<td><label for="passwordInput">Password</label>
+					</td>
 					<td><input id="passwordInput" type="password"
-						style="width: 200px;" />
-					</td>
-				</tr>
-				<tr>
-					<td><label for="connectionTimeoutInput">Connection
-							Timeout</label></td>
-					<td><input id="connectionTimeoutInput" type="text"
-						style="width: 100px;" />
-					</td>
-				</tr>
-				<tr>
-					<td><label for="initialDelayInput">Initial Delay</label></td>
-					<td><input id="initialDelayInput" type="text"
-						style="width: 100px;" />
-					</td>
-				</tr>
-				<tr>
-					<td><label for="pollingDelayInput">Polling Interval</label></td>
-					<td><input id="pollingDelayInput" type="text"
-						style="width: 100px;" />
-					</td>
+						style="width: 200px;" /></td>
 				</tr>
 			</table>
 			<table style="margin-top: 10px;">
 				<tr>
-					<td><input id="unseenInput" type="checkbox" />
+					<td><label for="connectionTimeoutInput">Connection
+							Timeout</label>
 					</td>
-					<td><label for="unseenInput">Unseen Mails only</label></td>
+					<td><input id="connectionTimeoutInput" type="text"
+						style="width: 100px;" /></td>
+					<td><select id="connectionTimeoutUnitSelect">
+					</select></td>
 				</tr>
 				<tr>
-					<td><input id="deleteInput" type="checkbox" />
+					<td><label for="initialDelayInput">Initial Delay</label>
 					</td>
-					<td><label for="deleteInput">Delete after Processing</label></td>
+					<td><input id="initialDelayInput" type="text"
+						style="width: 100px;" /></td>
+					</td>
+					<td><select id="initialDelayUnitSelect">
+					</select></td>
+
+				</tr>
+				<tr>
+					<td><label for="pollingDelayInput">Polling Interval</label>
+					</td>
+					<td><input id="pollingDelayInput" type="text"
+						style="width: 100px;" /></td>
+					</td>
+					<td><select id="pollingDelayUnitSelect">
+					</select></td>
+				</tr>
+			</table>
+			<table style="margin-top: 10px;">
+				<tr>
+					<td><input id="unseenInput" type="checkbox" /></td>
+					<td><label for="unseenInput">Unseen Mails only</label>
+					</td>
+				</tr>
+				<tr>
+					<td><input id="deleteInput" type="checkbox" /></td>
+					<td><label for="deleteInput">Delete after Processing</label>
+					</td>
 				</tr>
 			</table>
 			<table>
 				<tr>
-					<td><input id="copyToInput" type="checkbox" />
-					</td>
+					<td><input id="copyToInput" type="checkbox" /></td>
 					<td><label for="copyToInput">After Processing copy to
-							Folder</label></td>
-					<td><input id="copyToFolderInput" type="text" />
+							Folder</label>
 					</td>
+					<td><input id="copyToFolderInput" type="text" /></td>
 				</tr>
 			</table>
 		</div>

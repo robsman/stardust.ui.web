@@ -54,6 +54,11 @@ define(
 							m_i18nUtils
 									.getProperty("modeler.element.properties.messageEvent.name"));
 
+					jQuery("label[for='preserveQoSInput']")
+					.text(
+							m_i18nUtils
+									.getProperty("modeler.element.properties.messageEvent.name.preserveQoS"));
+					
 					this.configurationSpan = this.mapInputId("configuration");
 					
 					this.configurationSpan

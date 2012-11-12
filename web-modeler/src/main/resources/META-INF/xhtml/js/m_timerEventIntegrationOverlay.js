@@ -65,6 +65,7 @@ define(
 							m_i18nUtils
 									.getProperty("modeler.element.properties.event.parameters"));
 					
+					this.repeatIntervalInput = this.mapInputId("repeatIntervalInput");
 					this.repeatIntervalUnitSelect = this.mapInputId("repeatIntervalUnitSelect");
 
 					this.repeatIntervalUnitSelect.append("<option value='1'>"
@@ -82,6 +83,8 @@ define(
 					this.repeatIntervalUnitSelect.append("<option value='3600000'>"
 							+ m_i18nUtils
 							.getProperty("modeler.element.properties.event.days") + "</option>");
+
+					this.repeatCountInput = this.mapInputId("repeatCountInput");
 				};
 
 				/**
@@ -97,6 +100,9 @@ define(
 				 * 
 				 */
 				TimerEventIntegrationOverlay.prototype.activate = function() {
+					this.repeatIntervalInput.val(5000);
+					this.repeatCountInput.val(1);
+
 					var parameterMappings = [];
 
 					parameterMappings.push(this

@@ -106,6 +106,8 @@ define(
 									+ m_i18nUtils
 											.getProperty("modeler.element.properties.event.days")
 									+ "</option>");
+					this.repeatIntervalInput = this
+							.mapInputId("repeatIntervalInput");
 					this.repeatIntervalUnitSelect = this
 							.mapInputId("repeatIntervalUnitSelect");
 					this.repeatIntervalUnitSelect
@@ -183,9 +185,12 @@ define(
 				 * 
 				 */
 				FileEventIntegrationOverlay.prototype.activate = function() {
-					this.fileOrDirectoryNameInput.val(m_i18nUtils
-					.getProperty("modeler.element.properties.event.toBeDefined"));
-					
+					this.fileOrDirectoryNameInput
+							.val(m_i18nUtils
+									.getProperty("modeler.element.properties.event.toBeDefined"));
+					this.initialIntervalInput.val(5000);
+					this.repeatIntervalInput.val(5000);
+
 					var parameterMappings = [];
 
 					parameterMappings.push(this
