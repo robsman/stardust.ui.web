@@ -3,6 +3,7 @@ package org.eclipse.stardust.ui.web.modeler.bpmn2;
 import static org.eclipse.stardust.common.CollectionUtils.isEmpty;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
+import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.bpmn2DcFactory;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findContainingModel;
@@ -10,15 +11,19 @@ import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findParticipa
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.CallableElement;
+import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.Event;
+import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.FormalExpression;
@@ -26,12 +31,14 @@ import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.StartEvent;
+import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNPlane;
@@ -446,13 +453,24 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
                   laneJto.gatewaySymbols.add(symbolJto);
                }
-               else if ((shape.getBpmnElement() instanceof StartEvent) || (shape.getBpmnElement() instanceof EndEvent))
+               else if (shape.getBpmnElement() instanceof Event)
                {
-                  EventSymbolJto symbolJto = newShapeJto(shape, new EventSymbolJto());
+                  if ((shape.getBpmnElement() instanceof StartEvent) || (shape.getBpmnElement() instanceof EndEvent))
+                  {
+                     EventSymbolJto symbolJto = newShapeJto(shape, new EventSymbolJto());
 
-                  symbolJto.modelElement = toJto((Event) shape.getBpmnElement());
+                     symbolJto.modelElement = toJto((Event) shape.getBpmnElement());
 
-                  laneJto.eventSymbols.add(symbolJto);
+                     laneJto.eventSymbols.add(symbolJto);
+                  }
+                  else if (shape.getBpmnElement() instanceof BoundaryEvent)
+                  {
+                     EventSymbolJto symbolJto = newShapeJto(shape, new EventSymbolJto());
+
+                     symbolJto.modelElement = toJto((Event) shape.getBpmnElement());
+
+                     laneJto.eventSymbols.add(symbolJto);
+                  }
                }
             }
          }
@@ -693,9 +711,18 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       {
          jto.eventType = ModelerConstants.START_EVENT;
       }
+      else if (event instanceof BoundaryEvent)
+      {
+         jto.eventType = ModelerConstants.START_EVENT;
+      }
       else if (event instanceof EndEvent)
       {
          jto.eventType = ModelerConstants.STOP_EVENT;
+      }
+
+      if ((null != jto) && (event instanceof CatchEvent))
+      {
+         jto.eventClass = encodeCatchEventType((CatchEvent) event);
       }
 
       // TODO
@@ -791,6 +818,27 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          jto.toModelElementOid = bpmn2Binding.findOid(edge.getTargetElement());
       }
       return jto;
+   }
+
+   public String encodeCatchEventType(CatchEvent event)
+   {
+      Set<String> eventClasses = newHashSet();
+      for (EventDefinition eventDefinition : event.getEventDefinitions())
+      {
+         if (eventDefinition instanceof TimerEventDefinition)
+         {
+            eventClasses.add("timerEvent");
+         }
+         else if (eventDefinition instanceof MessageEventDefinition)
+         {
+            eventClasses.add("messageEvent");
+         }
+         else
+         {
+            // TODO more event classes ...
+         }
+      }
+      return (1 == eventClasses.size()) ? eventClasses.iterator().next() : null; // TODO "complex" instead of null;
    }
 
    public static String encodeNodeKind(FlowNode node)
