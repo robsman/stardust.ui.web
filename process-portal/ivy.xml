@@ -14,7 +14,7 @@
    xmlns:m="http://ant.apache.org/ivy/maven"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-   <info organisation="com.infinity.bpm" module="ipp-process-portal"
+   <info organisation="org.eclipse.stardust.ui.web" module="ipp-process-portal"
       revision="${ipp.version.full}" />
 
    <configurations>
@@ -40,26 +40,26 @@
 
    <dependencies>
       <!-- ipp-workflow-perspective-compile -->
-      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->web-client-module-compile" />
-      <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->spring-module-compile" />
-      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->ipp-portal-common-compile" />
-      <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->ipp-views-common-compile" />
-      <dependency org="com.infinity.bpm" name="ipp-portal-api" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->ipp-portal-api-compile" />
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->web-client-module-compile" />
+      <dependency org="org.eclipse.stardust.engine" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->spring-module-compile" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->ipp-portal-common-compile" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->ipp-views-common-compile" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-api" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->ipp-portal-api-compile" />
       
-      <dependency org="com.infinity.bpm" name="stardust-common-introspection" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->stardust-common-introspection-compile" />
-      <dependency org="com.infinity.bpm" name="stardust-common-introspection-xsd" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->stardust-common-introspection-xsd-compile" />
-      <dependency org="com.infinity.bpm" name="stardust-ui-form" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->stardust-ui-form-compile" />
-      <dependency org="com.infinity.bpm" name="stardust-ui-form-jsf" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->stardust-ui-form-jsf-compile" />
+      <dependency org="org.eclipse.stardust.ui.common" name="stardust-common-introspection" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->stardust-common-introspection-compile" />
+      <dependency org="org.eclipse.stardust.ui.common" name="stardust-common-introspection-xsd" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->stardust-common-introspection-xsd-compile" />
+      <dependency org="org.eclipse.stardust.ui.common" name="stardust-ui-form" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->stardust-ui-form-compile" />
+      <dependency org="org.eclipse.stardust.ui.common" name="stardust-ui-form-jsf" rev="${ipp.version.full}" conf="ipp-workflow-perspective-compile->stardust-ui-form-jsf-compile" />
       
       <!-- ipp-workflow-perspective-runtime -->
-      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-workflow-perspective-runtime->web-client-module-runtime" />
-      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-runtime->ipp-portal-common-runtime" />
-      <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-runtime->ipp-views-common-runtime" />
-      <dependency org="com.infinity.bpm" name="ipp-portal-api" rev="${ipp.version.full}" conf="ipp-workflow-perspective-runtime->ipp-portal-api-runtime" />
-      <dependency org="com.infinity.bpm" name="ipp-graphics-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-runtime->ipp-graphics-common-runtime" />
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-workflow-perspective-runtime->web-client-module-runtime" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-runtime->ipp-portal-common-runtime" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-runtime->ipp-views-common-runtime" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-api" rev="${ipp.version.full}" conf="ipp-workflow-perspective-runtime->ipp-portal-api-runtime" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-graphics-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-runtime->ipp-graphics-common-runtime" />
    
       <!-- ipp-workflow-perspective-provided -->
-      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-provided->jsf-api-module-compile" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-provided->jsf-api-module-compile" />
       <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="ipp-workflow-perspective-provided, compile->default" />
       <dependency org="javax.el" name="el-api" rev="1.0" conf="ipp-workflow-perspective-provided, compile->default" />
    

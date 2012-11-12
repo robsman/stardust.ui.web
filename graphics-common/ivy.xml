@@ -14,7 +14,7 @@
    xmlns:m="http://ant.apache.org/ivy/maven"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-   <info organisation="com.infinity.bpm" module="ipp-graphics-common"
+   <info organisation="org.eclipse.stardust.ui.web" module="ipp-graphics-common"
       revision="${ipp.version.full}" />
 
    <configurations>
@@ -37,15 +37,15 @@
 
    <dependencies>
       <!-- ipp-graphics-common-compile -->
-      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-graphics-common-compile->web-client-module-compile" />
-      <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-graphics-common-compile->spring-module-compile" />
-      <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-graphics-common-compile->ipp-views-common-compile" />
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-graphics-common-compile->web-client-module-compile" />
+      <dependency org="org.eclipse.stardust.engine" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-graphics-common-compile->spring-module-compile" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-graphics-common-compile->ipp-views-common-compile" />
       <dependency org="com.google.code.gson" name="gson" rev="1.6" conf="ipp-graphics-common-compile->default" />
       <dependency org="javax.ws.rs" name="jsr311-api" rev="1.1.1" conf="ipp-graphics-common-compile->default" />
       
       <!-- ipp-graphics-common-runtime -->
-      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-graphics-common-runtime->web-client-module-runtime" />
-      <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-graphics-common-runtime->ipp-views-common-runtime" />
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-graphics-common-runtime->web-client-module-runtime" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-graphics-common-runtime->ipp-views-common-runtime" />
       
       <dependency org="org.apache.cxf" name="cxf-api" rev="2.6.1-stardust01" conf="ipp-graphics-common-runtime->default" >
 	       <exclude org="org.apache.geronimo.specs" module="geronimo-javamail_1.4_spec" />

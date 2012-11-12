@@ -14,7 +14,7 @@
    xmlns:m="http://ant.apache.org/ivy/maven"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-   <info organisation="com.infinity.bpm" module="icefaces-impl" revision="1.8.2"/>
+   <info organisation="org.eclipse.stardust.ui.web" module="icefaces-impl" revision="1.8.2"/>
 
    <configurations>
       <conf name="icefaces" description="Config for IceFaces Jars (Community Edition)"/>

@@ -14,7 +14,7 @@
    xmlns:m="http://ant.apache.org/ivy/maven"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-   <info organisation="com.infinity.bpm" module="ipp-business-control-center"
+   <info organisation="org.eclipse.stardust.ui.web" module="ipp-business-control-center"
       revision="${ipp.version.full}" />
 
    <configurations>
@@ -40,22 +40,22 @@
 
    <dependencies>
       <!-- ipp-business-control-center-compile -->
-      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-business-control-center-compile->web-client-module-compile" />
-      <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-business-control-center-compile->spring-module-compile" />
-      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-business-control-center-compile->ipp-portal-common-compile" />
-      <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-business-control-center-compile->ipp-views-common-compile" />
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-business-control-center-compile->web-client-module-compile" />
+      <dependency org="org.eclipse.stardust.engine" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-business-control-center-compile->spring-module-compile" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-business-control-center-compile->ipp-portal-common-compile" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-business-control-center-compile->ipp-views-common-compile" />
 
       <!-- ipp-business-control-center-runtime -->
-      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-business-control-center-runtime->web-client-module-runtime" />
-      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-business-control-center-runtime->ipp-portal-common-runtime" />
-      <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-business-control-center-runtime->ipp-views-common-runtime" />
-      <dependency org="com.infinity.bpm" name="ipp-graphics-common" rev="${ipp.version.full}" conf="ipp-business-control-center-runtime->ipp-graphics-common-runtime" />
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-business-control-center-runtime->web-client-module-runtime" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-business-control-center-runtime->ipp-portal-common-runtime" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-business-control-center-runtime->ipp-views-common-runtime" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-graphics-common" rev="${ipp.version.full}" conf="ipp-business-control-center-runtime->ipp-graphics-common-runtime" />
       <dependency org="net.sourceforge.jexcelapi" name="jxl" rev="2.6.10" conf="ipp-business-control-center-runtime->default">
          <exclude org="log4j" module="log4j"/>
       </dependency>
 
       <!-- ipp-business-control-center-provided -->
-      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-business-control-center-provided->jsf-api-module-compile" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-business-control-center-provided->jsf-api-module-compile" />
       <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="ipp-business-control-center-provided, compile->default" />
       <dependency org="javax.el" name="el-api" rev="1.0" conf="ipp-business-control-center-provided, compile->default" />
 

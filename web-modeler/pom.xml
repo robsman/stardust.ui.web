@@ -64,7 +64,7 @@
       <!-- IMPORTANT: these dependencies must be in sync with those of ivy.xml -->
 
       <dependency>
-         <groupId>com.infinity.bpm</groupId>
+         <groupId>org.eclipse.stardust.engine</groupId>
          <artifactId>carnot-engine</artifactId>
          <version>${ipp.version}</version>
       </dependency>
@@ -75,12 +75,12 @@
       </dependency>
 
       <dependency>
-         <groupId>com.infinity.bpm</groupId>
+         <groupId>org.eclipse.stardust.modeling.model</groupId>
          <artifactId>ipp-bpm-model</artifactId>
          <version>${ipp.version}</version>
       </dependency>
       <dependency>
-         <groupId>com.infinity.bpm</groupId>
+         <groupId>org.eclipse.stardust.modeling.core</groupId>
          <artifactId>ipp-bpm-model-validation</artifactId>
          <version>${ipp.version}</version>
       </dependency>
@@ -91,12 +91,12 @@
       </dependency>
 
       <dependency>
-         <groupId>com.infinity.bpm</groupId>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
          <artifactId>ipp-portal-common</artifactId>
          <version>${ipp.version}</version>
       </dependency>
       <dependency>
-         <groupId>com.infinity.bpm</groupId>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
          <artifactId>ipp-views-common</artifactId>
          <version>${ipp.version}</version>
       </dependency>

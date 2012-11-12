@@ -14,7 +14,7 @@
    xmlns:m="http://ant.apache.org/ivy/maven"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-   <info organisation="com.infinity.bpm" module="ipp-views-common"
+   <info organisation="org.eclipse.stardust.ui.web" module="ipp-views-common"
       revision="${ipp.version.full}" />
 
    <configurations>
@@ -40,15 +40,15 @@
 
    <dependencies>
       <!-- ipp-views-common-compile -->
-      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-views-common-compile->engine-module-compile" />
-      <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-views-common-compile->spring-module-compile" />
-      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-views-common-compile->ipp-portal-common-compile" />      
-      <dependency org="com.infinity.bpm" name="ipp-portal-api" rev="${ipp.version.full}" conf="ipp-views-common-compile->ipp-portal-api-compile" />
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-views-common-compile->engine-module-compile" />
+      <dependency org="org.eclipse.stardust.engine" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-views-common-compile->spring-module-compile" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-views-common-compile->ipp-portal-common-compile" />      
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-api" rev="${ipp.version.full}" conf="ipp-views-common-compile->ipp-portal-api-compile" />
 
-      <dependency org="com.infinity.bpm" name="stardust-common-introspection" rev="${ipp.version.full}" conf="ipp-views-common-compile->stardust-common-introspection-compile" />
-      <dependency org="com.infinity.bpm" name="stardust-common-introspection-xsd" rev="${ipp.version.full}" conf="ipp-views-common-compile->stardust-common-introspection-xsd-compile" />
-      <dependency org="com.infinity.bpm" name="stardust-ui-form" rev="${ipp.version.full}" conf="ipp-views-common-compile->stardust-ui-form-compile" />
-      <dependency org="com.infinity.bpm" name="stardust-ui-form-jsf" rev="${ipp.version.full}" conf="ipp-views-common-compile->stardust-ui-form-jsf-compile" />
+      <dependency org="org.eclipse.stardust.ui.common" name="stardust-common-introspection" rev="${ipp.version.full}" conf="ipp-views-common-compile->stardust-common-introspection-compile" />
+      <dependency org="org.eclipse.stardust.ui.common" name="stardust-common-introspection-xsd" rev="${ipp.version.full}" conf="ipp-views-common-compile->stardust-common-introspection-xsd-compile" />
+      <dependency org="org.eclipse.stardust.ui.common" name="stardust-ui-form" rev="${ipp.version.full}" conf="ipp-views-common-compile->stardust-ui-form-compile" />
+      <dependency org="org.eclipse.stardust.ui.common" name="stardust-ui-form-jsf" rev="${ipp.version.full}" conf="ipp-views-common-compile->stardust-ui-form-jsf-compile" />
 
       <dependency org="javax.mail" name="mail" rev="1.4" conf="ipp-views-common-compile->default" />
       <dependency org="commons-lang" name="commons-lang" rev="2.4" conf="ipp-views-common-compile->default" />
@@ -58,10 +58,10 @@
       <dependency org="javax.media" name="jai_imageio-infinity01" rev="1.1" conf="ipp-views-common-compile->default" />
 
       <!-- ipp-views-common-runtime -->
-      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-views-common-runtime->engine-module-runtime" />
-      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-views-common-runtime->ipp-portal-common-runtime" />
-      <dependency org="com.infinity.bpm" name="ipp-portal-api" rev="${ipp.version.full}" conf="ipp-views-common-runtime->ipp-portal-api-runtime" />
-      <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-views-common-runtime->spring-module-runtime" />
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-views-common-runtime->engine-module-runtime" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-views-common-runtime->ipp-portal-common-runtime" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-api" rev="${ipp.version.full}" conf="ipp-views-common-runtime->ipp-portal-api-runtime" />
+      <dependency org="org.eclipse.stardust.engine" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-views-common-runtime->spring-module-runtime" />
       
       <dependency org="org.apache.cxf" name="cxf-api" rev="2.6.1-stardust01" conf="ipp-views-common-runtime->default" >
 	       <exclude org="org.apache.geronimo.specs" module="geronimo-javamail_1.4_spec" />
@@ -73,7 +73,7 @@
       <dependency org="org.apache.cxf" name="cxf-rt-frontend-jaxrs" rev="2.6.1" conf="ipp-views-common-runtime->default" />
  
       <!-- ipp-views-common-provided -->
-      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-views-common-provided->jsf-api-module-compile" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-views-common-provided->jsf-api-module-compile" />
       <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="ipp-views-common-provided->default" />
       <dependency org="javax.el" name="el-api" rev="1.0" conf="ipp-views-common-provided->default" />
       <dependency org="javax.servlet" name="jsp-api" rev="2.0" conf="ipp-views-common-provided->default" />

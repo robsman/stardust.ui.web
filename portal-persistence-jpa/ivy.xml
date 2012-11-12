@@ -14,7 +14,7 @@
    xmlns:m="http://ant.apache.org/ivy/maven"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-   <info organisation="com.infinity.bpm" module="ipp-portal-persistence-jpa"
+   <info organisation="org.eclipse.stardust.ui.web" module="ipp-portal-persistence-jpa"
       revision="${ipp.version.full}" />
 
    <configurations>
@@ -40,7 +40,7 @@
 
    <dependencies>
       <!-- ipp-persistence-jpa-compile -->
-      <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-persistence-jpa-compile->spring-module-compile"/>
+      <dependency org="org.eclipse.stardust.engine" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-persistence-jpa-compile->spring-module-compile"/>
       <dependency org="org.springframework" name="spring-orm" rev="3.0.5.RELEASE" conf="ipp-persistence-jpa-compile->default" />
       <dependency org="org.eclipse.persistence" name="eclipselink" rev="2.0.0" conf="ipp-persistence-jpa-compile->default" />
       <dependency org="org.eclipse.persistence" name="javax.persistence" rev="2.0.0" conf="ipp-persistence-jpa-compile->default" />
@@ -49,7 +49,7 @@
       <!-- nothing to add -->
 
       <!-- ipp-persistence-jpa-provided -->
-      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-persistence-jpa-provided->jta-api-module-compile"/>
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-persistence-jpa-provided->jta-api-module-compile"/>
 
       <!-- test -->
       <dependency org="junit" name="junit" rev="4.10" conf="test->default" />

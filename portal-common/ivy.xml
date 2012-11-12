@@ -14,10 +14,10 @@
    xmlns:m="http://ant.apache.org/ivy/maven"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-   <info organisation="com.infinity.bpm" module="ipp-portal-common"
+   <info organisation="org.eclipse.stardust.ui.web" module="ipp-portal-common"
       revision="${ipp.version.full}">
       <!-- must define an icefaces config -->
-      <extends organisation="com.infinity.bpm" module="icefaces-impl" revision="latest.integration"
+      <extends organisation="org.eclipse.stardust.ui.web" module="icefaces-impl" revision="latest.integration"
          extendType="configurations,dependencies"/>
    </info>
 
@@ -62,16 +62,16 @@
 
    <dependencies>      
       <!-- ipp-portal-common-compile -->
-      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->engine-module-compile" />
-      <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->spring-module-compile" />
-      <dependency org="com.infinity.bpm" name="stardust-engine-base-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->logging-log4j-module-compile"/>
-      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->logging-slf4j-log4j-module-compile"/>
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->engine-module-compile" />
+      <dependency org="org.eclipse.stardust.engine" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->spring-module-compile" />
+      <dependency org="org.eclipse.stardust.engine" name="stardust-engine-base-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->logging-log4j-module-compile"/>
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->logging-slf4j-log4j-module-compile"/>
       <dependency org="javax.ws.rs" name="jsr311-api" rev="1.1.1" conf="ipp-portal-common-compile->default" />
       <dependency org="com.google.code.gson" name="gson" rev="1.6" conf="ipp-portal-common-compile->default" />
 
       <!-- ipp-portal-common-runtime -->
-      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-runtime->engine-module-runtime" />
-      <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-portal-common-runtime->spring-module-runtime" />
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-runtime->engine-module-runtime" />
+      <dependency org="org.eclipse.stardust.engine" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-portal-common-runtime->spring-module-runtime" />
       <dependency org="backport-util-concurrent" name="backport-util-concurrent" rev="3.1" conf="ipp-portal-common-runtime->default" />
       <dependency org="commons-beanutils" name="commons-beanutils" rev="1.8.0" conf="ipp-portal-common-runtime->default" />
       <dependency org="commons-collections" name="commons-collections" rev="3.2" conf="ipp-portal-common-runtime->default" />
@@ -120,7 +120,7 @@
       </dependency>      
       
       <dependency org="org.icepdf" name="icepdf-core" rev="4.3.2" transitive="false" conf="ipp-portal-base-lib-module-runtime->default"/>
-      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-base-lib-module-runtime->jcr-vfs-module-runtime">
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-base-lib-module-runtime->jcr-vfs-module-runtime">
          <exclude org="commons-fileupload" module="commons-fileupload"/>
          <exclude org="com.infinity.bpm" name="carnot-engine"/>
          <exclude org="javax.jcr" module="jcr"/>

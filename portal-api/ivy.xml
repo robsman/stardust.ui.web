@@ -14,7 +14,7 @@
    xmlns:m="http://ant.apache.org/ivy/maven"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-   <info organisation="com.infinity.bpm" module="ipp-portal-api"
+   <info organisation="org.eclipse.stardust.ui.web" module="ipp-portal-api"
       revision="${ipp.version.full}" />
 
    <configurations>
@@ -41,10 +41,10 @@
 
    <dependencies>
       <!-- ipp-portal-api-compile -->
-      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-api-compile->engine-module-compile" />
-      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-api-compile-optional->jcr-vfs-module-runtime" />
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-api-compile->engine-module-compile" />
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-api-compile-optional->jcr-vfs-module-runtime" />
       <!-- ipp-portal-api-runtime -->
-      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-api-runtime->engine-module-runtime" />
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-api-runtime->engine-module-runtime" />
  
       <!-- ipp-portal-api-provided -->
       <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="ipp-portal-api-provided, compile->default" />

@@ -14,7 +14,7 @@
    xmlns:m="http://ant.apache.org/ivy/maven"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-   <info organisation="com.infinity.bpm" module="stardust-web-modeler" revision="${ipp.version.full}"/>
+   <info organisation="org.eclipse.stardust.ui.web" module="stardust-web-modeler" revision="${ipp.version.full}"/>
 
    <configurations>
       <conf name="stardust-web-modeler-compile" description="Web Modeler - Compile Scope" />
@@ -34,14 +34,14 @@
 
    <dependencies>
       <!-- compile -->
-      <dependency org="com.infinity.bpm" name="infinity-process-engine" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->carnot-engine-compile" />
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->carnot-engine-compile" />
       <!-- TODO: change to ipp-engine-ws-cxf! -->
       <!-- dependency org="com.infinity.bpm" name="ipp-engine-ws-metro" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-engine-ws-metro-compile" / -->
       <dependency org="wsdl4j" name="wsdl4j" rev="1.6.2" conf="stardust-web-modeler-compile->default" />
 
-      <dependency org="com.infinity.bpm" name="ipp-bpm-model" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-bpm-model-runtime"/>
-      <dependency org="com.infinity.bpm" name="ipp-bpm-model-validation" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-bpm-model-validation-runtime"/>
-      <dependency org="com.infinity.bpm" name="ipp-bpm-model-builder" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-bpm-model-builder-compile"/>
+      <dependency org="org.eclipse.stardust.modeling.model" name="ipp-bpm-model" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-bpm-model-runtime"/>
+      <dependency org="org.eclipse.stardust.modeling.core" name="ipp-bpm-model-validation" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-bpm-model-validation-runtime"/>
+      <dependency org="org.eclipse.stardust.modeling.model" name="ipp-bpm-model-builder" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-bpm-model-builder-compile"/>
 
       <!-- The following Eclipse dependencies are part of Eclipse 3.6.2 -->
       <dependency org="org.eclipse.emf" name="org.eclipse.emf.common" rev="2.6.0.v20100914-1218" conf="stardust-web-modeler-compile->default"/>
@@ -56,8 +56,8 @@
       </dependency>
       <dependency org="org.eclipse.xsd" name="org.eclipse.xsd" rev="2.6.0.v20100914-1218" conf="stardust-web-modeler-compile->default"/>
 
-      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-portal-common-compile"/>
-      <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-views-common-compile"/>
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-portal-common-compile"/>
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-views-common" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-views-common-compile"/>
 
       <dependency org="org.apache.myfaces.core" name="myfaces-api" rev="1.2.9" conf="stardust-web-modeler-compile->default"/>
       <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="stardust-web-modeler-compile->default"/>
