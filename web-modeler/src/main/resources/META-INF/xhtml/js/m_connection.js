@@ -870,6 +870,19 @@ define(
 						// this.toAnchorPoint.y += 1;
 						// }
 
+						var sourceBox = {
+							left: this.fromAnchorPoint.symbol.x - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+							top: this.fromAnchorPoint.symbol.y - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+							right: this.fromAnchorPoint.symbol.x + this.fromAnchorPoint.symbol.width + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+							bottom: this.fromAnchorPoint.symbol.y + this.fromAnchorPoint.symbol.height + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+						};
+						var targetBox = {
+							left: this.toAnchorPoint.symbol.x - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+							top: this.toAnchorPoint.symbol.y - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+							right: this.toAnchorPoint.symbol.x + this.toAnchorPoint.symbol.width + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+							bottom: this.toAnchorPoint.symbol.y + this.toAnchorPoint.symbol.height + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+						};
+
 						var offset;
 						var sourceX;
 						var sourceY;
@@ -930,6 +943,16 @@ define(
 											sourceX,
 											sourceY - (offset.dy + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH),
 											currentSegment));
+
+							// avoid route crossing source element
+							if ((sourceY < targetY) && ((sourceBox.left < targetX) && (targetX < sourceBox.right))) {
+								this.segments.push(currentSegment = new Segment(
+										currentSegment.toX,
+										currentSegment.toY,
+										sourceBox.right,
+										currentSegment.toY,
+										currentSegment));
+							}
 						} else if (this.fromAnchorPoint.orientation == m_constants.EAST) {
 							this.segments
 									.push(currentSegment = new Segment(
@@ -946,6 +969,16 @@ define(
 											sourceX,
 											sourceY + (offset.dy + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH),
 											currentSegment));
+
+							// avoid route crossing source element
+							if ((sourceY > targetY) && ((sourceBox.left < targetX) && (targetX < sourceBox.right))) {
+								this.segments.push(currentSegment = new Segment(
+										currentSegment.toX,
+										currentSegment.toY,
+										sourceBox.right,
+										currentSegment.toY,
+										currentSegment));
+							}
 						} else if (this.fromAnchorPoint.orientation == m_constants.WEST) {
 							this.segments
 									.push(currentSegment = new Segment(
