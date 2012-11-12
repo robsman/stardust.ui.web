@@ -62,6 +62,7 @@ import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.IAccessPointOwner;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
@@ -1173,7 +1174,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                }
 
                // TODO Attributes storage missing?
-               
+
                storeDescription(accessPoint, parameterMappingJson);
 
                if (parameterMappingJson.has(ModelerConstants.DATA_FULL_ID_PROPERTY))
@@ -1265,8 +1266,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
             System.out.println("Context: " + contextId);
 
-            ContextType context = getModelBuilderFacade().createApplicationContext(
-                  application, contextId);
+            IAccessPointOwner context = application;
+
+            if (!ModelerConstants.APPLICATION_CONTEXT_TYPE_KEY.equals(contextId))
+            {
+               context = getModelBuilderFacade().createApplicationContext(application,
+                     contextId);
+            }
+
             JsonObject contextJson = contextsJson.get(contextId).getAsJsonObject();
             JsonArray accessPointsJson = contextJson.get(
                   ModelerConstants.ACCESS_POINTS_PROPERTY).getAsJsonArray();
@@ -1283,10 +1290,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
                AccessPointType accessPoint = null;
 
+               System.out.println("Access Point JSON: " + accessPointJson);
+
                if (accessPointJson.has(ModelerConstants.DATA_TYPE_PROPERTY))
                {
                   String dataType = accessPointJson.get(
                         ModelerConstants.DATA_TYPE_PROPERTY).getAsString();
+
                   if (dataType.equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
                   {
                      String primitiveDataType = accessPointJson.get(
@@ -1307,6 +1317,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
                      accessPoint = getModelBuilderFacade().createStructuredAccessPoint(
                            context, id, name, structuredDataFullId, direction);
+
+                     System.out.println("Created Access Point: " + accessPoint);
                   }
                   else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
                   {

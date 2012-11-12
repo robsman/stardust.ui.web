@@ -1479,16 +1479,16 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       JsonObject applicationContextJson = null;
       JsonArray accessPointsJson = null;
 
-      if (contextsJson.has(ModelerConstants.APPLICATION_CONTEXT_KEY))
+      if (contextsJson.has(ModelerConstants.APPLICATION_CONTEXT_TYPE_KEY))
       {
          applicationContextJson = contextsJson.get(
-               ModelerConstants.APPLICATION_CONTEXT_KEY).getAsJsonObject();
+               ModelerConstants.APPLICATION_CONTEXT_TYPE_KEY).getAsJsonObject();
       }
       else
       {
          applicationContextJson = new JsonObject();
 
-         contextsJson.add(ModelerConstants.APPLICATION_CONTEXT_KEY,
+         contextsJson.add(ModelerConstants.APPLICATION_CONTEXT_TYPE_KEY,
                applicationContextJson);
 
          accessPointsJson = new JsonArray();
