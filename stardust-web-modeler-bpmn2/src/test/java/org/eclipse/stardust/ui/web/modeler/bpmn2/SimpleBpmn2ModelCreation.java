@@ -1,8 +1,8 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2;
 
-import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2TestUtils.createModel;
-import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2TestUtils.createTestProcess;
-import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2TestUtils.createTestProcessDiagram;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.test.Bpmn2TestUtils.createModel;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.test.Bpmn2TestUtils.createTestProcess;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.test.Bpmn2TestUtils.createTestProcessDiagram;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -29,6 +29,7 @@ import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2FlowNodeBuilder;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2ItemDefinitionBuilder;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2VariableBuilder;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.test.Bpmn2TestUtils;
 import org.eclipse.stardust.ui.web.modeler.integration.ExternalXmlSchemaManager;
 import org.eclipse.stardust.ui.web.modeler.model.ActivityJto;
 import org.eclipse.stardust.ui.web.modeler.model.DataJto;

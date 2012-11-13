@@ -1,4 +1,4 @@
-package org.eclipse.stardust.ui.web.modeler.bpmn2;
+package org.eclipse.stardust.ui.web.modeler.bpmn2.utils.test;
 
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findContainingModel;
 
