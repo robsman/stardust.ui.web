@@ -52,6 +52,10 @@ define(
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.mailServer"));
+					jQuery("label[for='portInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.emailEvent.port"));
 					jQuery("label[for='accountInput']")
 							.text(
 									m_i18nUtils
@@ -98,11 +102,13 @@ define(
 
 					this.protocolSelect = this.mapInputId("protocolSelect");
 					this.mailServerInput = this.mapInputId("mailServerInput");
+					this.portInput = this.mapInputId("portInput");
 					this.accountInput = this.mapInputId("accountInput");
 					this.passwordInput = this.mapInputId("passwordInput");
 
 					this.registerForRouteChanges(this.protocolSelect);
 					this.registerForRouteChanges(this.mailServerInput);
+					this.registerForRouteChanges(this.portInput);
 					this.registerForRouteChanges(this.accountInput);
 					this.registerForRouteChanges(this.passwordInput);
 				};
@@ -114,7 +120,21 @@ define(
 					var uri = "";
 
 					uri += this.protocolSelect.val();
-					uri += ":";
+					uri += "://";
+
+					uri += this.mailServerInput.val();
+
+					if (this.portInput.val() != null) {
+						uri += ":" + this.portInput.val();
+					}
+
+					uri += "?username=" + this.accountInput.val();
+
+					if (this.passwordInput.val() != null) {
+						uri += "&amp;password=" + this.passwordInput.val();
+					}
+
+					// More data to be added
 
 					return uri;
 				};
@@ -129,6 +149,7 @@ define(
 					this.accountInput
 							.val(m_i18nUtils
 									.getProperty("modeler.element.properties.event.toBeDefined"));
+					this.portInput.val("30");
 
 					var parameterMappings = [];
 

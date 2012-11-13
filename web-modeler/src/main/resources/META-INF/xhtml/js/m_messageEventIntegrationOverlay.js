@@ -46,36 +46,49 @@ define(
 					this.initializeEventIntegrationOverlay(page, id);
 
 					jQuery("label[for='typeSelect']")
-					.text(
-							m_i18nUtils
-									.getProperty("modeler.element.properties.messageEvent.type"));
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.messageEvent.type"));
 					jQuery("label[for='nameInput']")
-					.text(
-							m_i18nUtils
-									.getProperty("modeler.element.properties.messageEvent.name"));
-
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.messageEvent.name"));
 					jQuery("label[for='preserveQoSInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.messageEvent.preserveQoS"));
+					jQuery("label[for='selector']")
 					.text(
 							m_i18nUtils
-									.getProperty("modeler.element.properties.messageEvent.name.preserveQoS"));
-					
+									.getProperty("modeler.element.properties.messageEvent.selector"));
+					jQuery("label[for='transacted']")
+					.text(
+							m_i18nUtils
+									.getProperty("modeler.element.properties.messageEvent.transacted"));
+
 					this.configurationSpan = this.mapInputId("configuration");
-					
+
 					this.configurationSpan
-					.text(
-							m_i18nUtils
+							.text(m_i18nUtils
 									.getProperty("modeler.element.properties.event.configuration"));
 					this.parametersSpan = this.mapInputId("parameters");
-					
-					this.parametersSpan.text(
-							m_i18nUtils
+
+					this.parametersSpan
+							.text(m_i18nUtils
 									.getProperty("modeler.element.properties.event.parameters"));
-					
+
 					this.typeSelect = this.mapInputId("typeSelect");
 					this.nameInput = this.mapInputId("nameInput");
+					this.clientIdInput = this.mapInputId("clientIdInput");
+					this.selectorInput = this.mapInputId("selectorInput");
+					this.transactedInput = this.mapInputId("transactedInput");
+					this.preserveQoSInput = this.mapInputId("preserveQoSInput");
 
 					this.registerForRouteChanges(this.typeSelect);
 					this.registerForRouteChanges(this.nameInput);
+					this.registerForRouteChanges(this.selectorInput);
+					this.registerForRouteChanges(this.transactedInput);
+					this.registerForRouteChanges(this.preserveQoSInput);
 				};
 
 				/**
@@ -88,6 +101,30 @@ define(
 					uri += ":";
 					uri += this.nameInput.val();
 
+					if (this.clientIdInput.val() != null) {
+						uri += "?clientId=" + this.clientIdInput.val();
+					} else {
+						uri += "?clientId=null";
+					}
+
+					if (this.selectorInput.val() != null) {
+						uri += "&amp;selector=" + this.selectorInput.val();
+					} else {
+						uri += "&amp;selector=null";
+					}
+
+					if (this.transactedInput.is(":checked") != null) {
+						uri += "&amp;transacted=true";
+					} else {
+						uri += "&amp;transacted=false";
+					}
+
+					if (this.preserveQoSInput.is(":checked") != null) {
+						uri += "&amp;preserveMessageQos=true";
+					} else {
+						uri += "&amp;preserveMessageQos=false";
+					}
+
 					return uri;
 				};
 
@@ -95,8 +132,9 @@ define(
 				 * 
 				 */
 				MessageEventIntegrationOverlay.prototype.activate = function() {
-					this.nameInput.val(m_i18nUtils
-							.getProperty("modeler.element.properties.event.toBeDefined"));
+					this.nameInput
+							.val(m_i18nUtils
+									.getProperty("modeler.element.properties.event.toBeDefined"));
 
 					var parameterMappings = [];
 
