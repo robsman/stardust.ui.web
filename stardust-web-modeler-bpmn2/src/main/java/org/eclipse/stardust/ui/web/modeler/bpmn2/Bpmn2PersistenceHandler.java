@@ -1,10 +1,13 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2;
 
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
@@ -15,20 +18,29 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.springframework.stereotype.Service;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.DirectStreamsURIHandler;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
 
-public class Bpmn2PersistenceHandler implements ModelPersistenceHandler
+@Service
+public class Bpmn2PersistenceHandler implements ModelPersistenceHandler<Definitions>
 {
    private static final Logger trace = LogManager.getLogger(Bpmn2PersistenceHandler.class);
 
    @Override
-   public ModelDescriptor loadModel(String contentName, InputStream modelContent)
+   public boolean canLoadModel(String contentName)
    {
-      if (contentName.endsWith(".bpmn"))
+      return contentName.endsWith(".bpmn");
+   }
+
+   @Override
+   public ModelDescriptor<Definitions> loadModel(String contentName,
+         InputStream modelContent)
+   {
+      if (canLoadModel(contentName))
       {
          try
          {
@@ -50,9 +62,25 @@ public class Bpmn2PersistenceHandler implements ModelPersistenceHandler
                if ((eObj instanceof DocumentRoot)
                      && (null != ((DocumentRoot) eObj).getDefinitions()))
                {
-                  Definitions definitions = ((DocumentRoot) eObj).getDefinitions();
-                  return new ModelDescriptor(definitions.getId(), definitions.getName(),
-                        definitions);
+                  DocumentRoot rootElement = (DocumentRoot) eObj;
+                  Definitions definitions = rootElement.getDefinitions();
+                  try
+                  {
+                     // test if current ID already is a UUID ...
+                     UUID.fromString(definitions.getId());
+                  }
+                  catch (IllegalArgumentException iae)
+                  {
+                     // ... nope
+                     if (isEmpty(definitions.getName()))
+                     {
+                        definitions.setName(definitions.getId());
+                     }
+                     definitions.setId(UUID.randomUUID().toString());
+                  }
+
+                  return new ModelDescriptor<Definitions>(definitions.getId(),
+                        definitions.getName(), definitions);
                }
             }
          }
@@ -62,6 +90,23 @@ public class Bpmn2PersistenceHandler implements ModelPersistenceHandler
          }
       }
       return null;
+   }
+
+   @Override
+   public String generateDefaultFileName(Definitions model)
+   {
+      if ( !isEmpty(model.getName()))
+      {
+         return model.getName() + ".bpmn";
+      }
+      else if ( !isEmpty(model.getId()))
+      {
+         return model.getId() + ".bpmn";
+      }
+      else
+      {
+         return Bpmn2Utils.createInternalId() + ".bpmn";
+      }
    }
 
    public void saveModel(Definitions model, OutputStream modelContent)
@@ -84,7 +129,8 @@ public class Bpmn2PersistenceHandler implements ModelPersistenceHandler
          else
          {
             bpmnModel = (Bpmn2Resource) context.createResource(resourceStreamUri);
-            bpmnModel.getContents().add((null == model.eContainer()) ? model : model.eContainer());
+            bpmnModel.getContents().add(
+                  (null == model.eContainer()) ? model : model.eContainer());
          }
 
          // must pass stream directly as save(options) will close the stream internally

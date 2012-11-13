@@ -3,26 +3,26 @@ package org.eclipse.stardust.ui.web.modeler.service.orion;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.zip.GZIPInputStream;
 
-import javax.annotation.Resource;
+import org.eclipse.emf.ecore.EObject;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
+import org.eclipse.stardust.model.xpdl.builder.strategy.AbstractModelManagementStrategy;
+import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.ui.web.modeler.common.ModelPersistenceService;
+import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
 //import org.apache.http.Consts;
 //import org.apache.http.HttpEntity;
 //import org.apache.http.HttpHost;
@@ -44,25 +44,11 @@ import javax.annotation.Resource;
 //import org.apache.http.protocol.BasicHttpContext;
 //import org.apache.http.util.EntityUtils;
 //import org.apache.http.cookie.Cookie;
-import org.eclipse.emf.ecore.EObject;
-import org.springframework.context.ApplicationContext;
-
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.common.reflect.Reflect;
-import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
-import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
-import org.eclipse.stardust.model.xpdl.builder.strategy.AbstractModelManagementStrategy;
-import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelIoUtils;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
-import org.eclipse.stardust.ui.web.modeler.xpdl.XpdlPersistenceHandler;
 
 /**
- * 
+ *
  * @author Marc.Gille
- * 
+ *
  */
 public class UriModelManagementStrategy extends AbstractModelManagementStrategy
 {
@@ -73,7 +59,7 @@ public class UriModelManagementStrategy extends AbstractModelManagementStrategy
 	 */
    private Map<String, String> modelFileNameMap = new HashMap<String, String>();
 
-   private final List<ModelPersistenceHandler> persistenceHandlers;
+   private final ModelPersistenceService persistenceService;
 
    private String fileUri;
 
@@ -82,35 +68,10 @@ public class UriModelManagementStrategy extends AbstractModelManagementStrategy
    /**
     * Manages remote model files.
     */
-   public UriModelManagementStrategy()
+   @Autowired
+   public UriModelManagementStrategy(ModelPersistenceService persistenceService)
    {
-      this.persistenceHandlers = newArrayList();
-      persistenceHandlers.add(new XpdlPersistenceHandler(this));
-
-      // TODO migrate to Spring based discovery?
-      // see also ModelRepository
-      try
-      {
-         String fqcnBpmn2Handler = "org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2PersistenceHandler";
-         @SuppressWarnings("unchecked")
-         Class<? extends ModelPersistenceHandler> clsBpmn2Handler = Reflect.getClassFromClassName(
-               fqcnBpmn2Handler, false);
-         if (null != clsBpmn2Handler)
-         {
-            ModelPersistenceHandler bpmn2Handler = (ModelPersistenceHandler) Reflect.createInstance(
-                  clsBpmn2Handler, null, null);
-            persistenceHandlers.add(bpmn2Handler);
-            trace.info("Registered BPMN2 persistence handler.");
-         }
-         else
-         {
-            trace.info("Could not load BPMN2 persistence handler, BPMN2 support will not be available.");
-         }
-      }
-      catch (Exception e)
-      {
-         trace.warn("Failed loading BPMN2 persistence handler.", e);
-      }
+      this.persistenceService = persistenceService;
    }
 
    /**
@@ -137,32 +98,27 @@ public class UriModelManagementStrategy extends AbstractModelManagementStrategy
       EObject model = null;
       byte[] modelContent = modelFileContent.getBytes();
 
-      for (ModelPersistenceHandler persistenceHandler : persistenceHandlers)
+      System.out.println("Load Model " + modelName);
+
+      ByteArrayInputStream baos = new ByteArrayInputStream(modelContent);
+      ModelPersistenceHandler.ModelDescriptor<?> descriptor = persistenceService.loadModel(
+            fileUri, baos);
+
+      if (null != descriptor)
       {
-         System.out.println("Load Model " + modelName);
-
-         ByteArrayInputStream baos = new ByteArrayInputStream(modelContent);
-         ModelPersistenceHandler.ModelDescriptor descriptor = persistenceHandler.loadModel(
-               fileUri, baos);
-
-         if (null != descriptor)
+         model = descriptor.model;
+         if (descriptor.model instanceof ModelType)
          {
-            model = descriptor.model;
-            if (descriptor.model instanceof ModelType)
-            {
-               xpdlModel = (ModelType) descriptor.model;
-            }
-            else
-            {
-               // use just the most basic XPDL representation, rest will be handled
-               // directly from native format (e.g. BPMN2)
-               xpdlModel = BpmModelBuilder.newBpmModel()
-                     .withIdAndName(descriptor.id,
-                           !isEmpty(descriptor.name) ? descriptor.name : descriptor.id)
-                     .build();
-
-               break;
-            }
+            xpdlModel = (ModelType) descriptor.model;
+         }
+         else
+         {
+            // use just the most basic XPDL representation, rest will be handled
+            // directly from native format (e.g. BPMN2)
+            xpdlModel = BpmModelBuilder.newBpmModel()
+                  .withIdAndName(descriptor.id,
+                        !isEmpty(descriptor.name) ? descriptor.name : descriptor.id)
+                  .build();
          }
       }
 
@@ -174,7 +130,7 @@ public class UriModelManagementStrategy extends AbstractModelManagementStrategy
          mapModelFileName(xpdlModel, modelName);
 
          System.out.println("Adding model " + xpdlModel.getId() + " " + modelName);
-         
+
          models.add(new ModelDescriptor(xpdlModel.getId(), modelName, model, xpdlModel));
       }
 
@@ -230,11 +186,18 @@ public class UriModelManagementStrategy extends AbstractModelManagementStrategy
 	 */
    public void saveModel(ModelType model)
    {
-      String modelContent = new String(XpdlModelIoUtils.saveModel(model));
+      EObject nativeModel = getNativeModel(model.getId());
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      if (persistenceService.saveMode(nativeModel, baos))
+      {
+         String modelContent = new String(baos.toByteArray());
+
+         // TODO and now?
+      }
    }
 
    /**
-    * 
+    *
     * @param model
     */
    public void deleteModel(ModelType model)
@@ -262,7 +225,7 @@ public class UriModelManagementStrategy extends AbstractModelManagementStrategy
    }
 
    /**
-    * 
+    *
     * @param model
     */
    public String getModelFileName(ModelType model)
@@ -272,7 +235,7 @@ public class UriModelManagementStrategy extends AbstractModelManagementStrategy
    }
 
    /**
-    * 
+    *
     * @param model
     */
    public String getModelFilePath(ModelType model)
@@ -310,7 +273,7 @@ public class UriModelManagementStrategy extends AbstractModelManagementStrategy
    }
 
    /**
-    * 
+    *
     * @param path
     * @return
     */
@@ -377,7 +340,7 @@ public class UriModelManagementStrategy extends AbstractModelManagementStrategy
    }
 
    /**
-    * 
+    *
     * @param path
     * @param content
     */

@@ -4,18 +4,16 @@ import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
 import org.eclipse.emf.ecore.EObject;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
@@ -26,8 +24,9 @@ import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.AbstractModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelIoUtils;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.ui.web.modeler.common.ModelPersistenceService;
+import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
-import org.eclipse.stardust.ui.web.modeler.xpdl.XpdlPersistenceHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
@@ -52,38 +51,15 @@ public class DefaultModelManagementStrategy extends
 	 */
 	private Map<String, String> modelFileNameMap = new HashMap<String, String>();
 
-   private final List<ModelPersistenceHandler> persistenceHandlers;
+   private final ModelPersistenceService persistenceService;
 
-   @Resource
-   private ApplicationContext context;
+   private final ServiceFactoryLocator serviceFactoryLocator;
 
-	public DefaultModelManagementStrategy()
+   @Autowired
+	public DefaultModelManagementStrategy(ModelPersistenceService persistenceService, ServiceFactoryLocator serviceFactoryLocator)
    {
-	   this.persistenceHandlers = newArrayList();
-	   persistenceHandlers.add(new XpdlPersistenceHandler(this));
-
-	   // TODO migrate to Spring based discovery?
-	   // see also ModelRepository
-	   try
-	   {
-	      String fqcnBpmn2Handler = "org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2PersistenceHandler";
-	      @SuppressWarnings("unchecked")
-         Class<? extends ModelPersistenceHandler> clsBpmn2Handler = Reflect.getClassFromClassName(fqcnBpmn2Handler, false);
-	      if (null != clsBpmn2Handler)
-         {
-	         ModelPersistenceHandler bpmn2Handler = (ModelPersistenceHandler) Reflect.createInstance(clsBpmn2Handler, null, null);
-	         persistenceHandlers.add(bpmn2Handler);
-	         trace.info("Registered BPMN2 persistence handler.");
-         }
-	      else
-	      {
-	         trace.info("Could not load BPMN2 persistence handler, BPMN2 support will not be available.");
-	      }
-	   }
-	   catch (Exception e)
-	   {
-	      trace.warn("Failed loading BPMN2 persistence handler.", e);
-	   }
+	   this.persistenceService = persistenceService;
+      this.serviceFactoryLocator = serviceFactoryLocator;
    }
 
    /**
@@ -103,29 +79,24 @@ public class DefaultModelManagementStrategy extends
          EObject model = null;
 
          byte[] modelContent = readModelContext(modelDocument);
-         for (ModelPersistenceHandler persistenceHandler : persistenceHandlers)
+         ByteArrayInputStream baos = new ByteArrayInputStream(modelContent);
+         ModelPersistenceHandler.ModelDescriptor<?> descriptor = persistenceService.loadModel(
+               modelDocument.getName(), baos);
+         if (null != descriptor)
          {
-            ByteArrayInputStream baos = new ByteArrayInputStream(modelContent);
-            ModelPersistenceHandler.ModelDescriptor descriptor = persistenceHandler.loadModel(
-                  modelDocument.getName(), baos);
-            if (null != descriptor)
+            model = descriptor.model;
+            if (descriptor.model instanceof ModelType)
             {
-               model = descriptor.model;
-               if (descriptor.model instanceof ModelType)
-               {
-                  xpdlModel = (ModelType) descriptor.model;
-               }
-               else
-               {
-                  // use just the most basic XPDL representation, rest will be handled
-                  // directly from native format (e.g. BPMN2)
-                  xpdlModel = BpmModelBuilder.newBpmModel()
-                        .withIdAndName(descriptor.id,
-                              !isEmpty(descriptor.name) ? descriptor.name : descriptor.id)
-                        .build();
-
-                  break;
-               }
+               xpdlModel = (ModelType) descriptor.model;
+            }
+            else
+            {
+               // use just the most basic XPDL representation, rest will be handled
+               // directly from native format (e.g. BPMN2)
+               xpdlModel = BpmModelBuilder.newBpmModel()
+                     .withIdAndName(descriptor.id,
+                           !isEmpty(descriptor.name) ? descriptor.name : descriptor.id)
+                     .build();
             }
          }
 
@@ -187,31 +158,39 @@ public class DefaultModelManagementStrategy extends
 	/**
 	 *
 	 */
-	public void saveModel(ModelType model) {
-			String modelContent = new String(XpdlModelIoUtils.saveModel(model));
-			Document modelDocument = getDocumentManagementService().getDocument(getModelFilePath(model));
+   public void saveModel(ModelType model)
+   {
+      EObject nativeModel = getNativeModel(model.getId());
 
-			if (null == modelDocument) {
-				DocumentInfo docInfo = DmsUtils.createDocumentInfo(model.getId()
-						+ ".xpdl");
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      if (persistenceService.saveMode(nativeModel, baos))
+      {
+         Document modelDocument = getDocumentManagementService().getDocument(
+               getModelFilePath(model));
 
-				docInfo.setOwner(getServiceFactory().getWorkflowService().getUser()
-						.getAccount());
-				docInfo.setContentType(MimeTypesHelper.XML.getType());
+         if (null == modelDocument)
+         {
+            DocumentInfo docInfo = DmsUtils.createDocumentInfo(persistenceService.generateDefaultFileName(nativeModel));
 
-				modelDocument = getDocumentManagementService().createDocument(
-						MODELS_DIR, docInfo, modelContent.getBytes(), null);
+            docInfo.setOwner(getServiceFactory().getWorkflowService()
+                  .getUser()
+                  .getAccount());
+            docInfo.setContentType(MimeTypesHelper.XML.getType());
 
-				// Create initial version
+            modelDocument = getDocumentManagementService().createDocument(MODELS_DIR,
+                  docInfo, baos.toByteArray(), null);
 
-				getDocumentManagementService().versionDocument(
-						modelDocument.getId(), null);
-				mapModelFileName(model);
-			} else {
-				getDocumentManagementService().updateDocument(modelDocument,
-						modelContent.getBytes(), null, false, null, false);
-			}
-	}
+            // create initial version
+            getDocumentManagementService().versionDocument(modelDocument.getId(), null);
+            mapModelFileName(model);
+         }
+         else
+         {
+            getDocumentManagementService().updateDocument(modelDocument,
+                  baos.toByteArray(), null, false, null, false);
+         }
+      }
+   }
 
 	/**
 	 *
@@ -312,7 +291,7 @@ public class DefaultModelManagementStrategy extends
 		// TODO Replace
 
 		if (serviceFactory == null) {
-         serviceFactory = getModelService().getServiceFactory();
+         serviceFactory = serviceFactoryLocator.get();
 		}
 
 		return serviceFactory;
@@ -353,13 +332,5 @@ public class DefaultModelManagementStrategy extends
    {
       String modelUUID = uuidMapper().getUUID(model);
       modelFileNameMap.remove(modelUUID);
-   }
-
-   /**
-    * @return
-    */
-   private ModelService getModelService()
-   {
-      return (ModelService) context.getBean("modelService");
    }
 }
