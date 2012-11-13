@@ -55,9 +55,9 @@ define(
 				formatDate : formatDate,
 
 				textWrap : textWrap,
-				
+
 				xmlToString: xmlToString,
-				
+
 				contentWrap : contentWrap
 			};
 
@@ -137,7 +137,8 @@ define(
 					str += content.charAt(i);
 				}
 				t.attr({
-					"text" : str
+					"text" : str,
+					"title" : content
 				});
 			}
 
@@ -716,7 +717,7 @@ define(
 			/**
 			 * Stringifies the content of an entire XML tag.
 			 */
-			function xmlToString(xmlData) 
+			function xmlToString(xmlData)
 			{
 			    var xmlString;
 
@@ -728,18 +729,18 @@ define(
 			    else{
 			        xmlString = (new XMLSerializer()).serializeToString(xmlData[0]);
 			    }
-			    
+
 			    return xmlString;
 			}
-			
-			/** wraps String 
+
+			/** wraps String
 			 * @param content :
 			 *           	string to be wrapped
-			 * @param maxLength : 
+			 * @param maxLength :
 			 * 				max number of characters in one line
-			 * @param brk : 
+			 * @param brk :
 			 * 				The character(s) to be inserted at every break
-			 *  
+			 *
 			 */
 			function contentWrap(content, maxLength, brk) {
 				if (!content) {
