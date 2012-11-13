@@ -24,14 +24,17 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
+import org.eclipse.bpmn2.ExclusiveGateway;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.Import;
+import org.eclipse.bpmn2.InclusiveGateway;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.MessageEventDefinition;
+import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
@@ -66,6 +69,7 @@ import org.eclipse.stardust.ui.web.modeler.marshaling.ModelMarshaller;
 import org.eclipse.stardust.ui.web.modeler.model.ActivityJto;
 import org.eclipse.stardust.ui.web.modeler.model.DataJto;
 import org.eclipse.stardust.ui.web.modeler.model.EventJto;
+import org.eclipse.stardust.ui.web.modeler.model.GatewayJto;
 import org.eclipse.stardust.ui.web.modeler.model.ModelElementJto;
 import org.eclipse.stardust.ui.web.modeler.model.ModelJto;
 import org.eclipse.stardust.ui.web.modeler.model.ModelParticipantJto;
@@ -430,6 +434,10 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
                   break;
                }
             }
+            if (null == laneJto)
+            {
+               continue;
+            }
 
             BPMNShape shape = (BPMNShape) symbol;
 
@@ -691,14 +699,22 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       return jto;
    }
 
-   public ActivityJto toJto(Gateway gateway)
+   public GatewayJto toJto(Gateway gateway)
    {
-      ActivityJto jto = newModelElementJto(gateway, new ActivityJto());
+      GatewayJto jto = newModelElementJto(gateway, new GatewayJto());
 
       // prefix name due to current gateway-workarounds
       jto.name = "gateway" + jto.name;
 
       // TODO
+      if (gateway instanceof ExclusiveGateway)
+      {
+         jto.gatewayType = ModelerConstants.XOR_GATEWAY_TYPE;
+      }
+      else if (gateway instanceof ParallelGateway)
+      {
+         jto.gatewayType = ModelerConstants.AND_GATEWAY_TYPE;
+      }
 
       return jto;
    }

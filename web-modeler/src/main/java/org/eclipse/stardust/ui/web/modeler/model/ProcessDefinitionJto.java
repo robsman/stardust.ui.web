@@ -16,7 +16,7 @@ public class ProcessDefinitionJto extends ModelElementJto
    }
 
    public List<ActivityJto> activities = newArrayList();
-   public List<ActivityJto> gateways = newArrayList();
+   public List<GatewayJto> gateways = newArrayList();
    public List<EventJto> events = newArrayList();
    public List<TransitionJto> controlFlows = newArrayList();
 
