@@ -24,9 +24,7 @@
 		scope="session">
 	</bean>
 
-	<bean class="org.eclipse.stardust.ui.web.modeler.service.DefaultModelManagementStrategy" scope="prototype">
-		<qualifier value="default" />
-	</bean>
+	<bean name="webModelerModelManagementStrategy" class="org.eclipse.stardust.ui.web.modeler.service.DefaultModelManagementStrategy" scope="prototype" />
 
 	<bean class="org.eclipse.stardust.ui.web.modeler.common.DefaultServiceFactoryLocator" scope="session">
 		<qualifier value="default" />

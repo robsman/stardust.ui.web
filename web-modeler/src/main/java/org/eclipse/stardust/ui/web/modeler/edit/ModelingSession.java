@@ -36,17 +36,16 @@ public class ModelingSession
    private Map<String, User> prospectUsers = newHashMap();
 
    private Map<String, User> collaborators = newHashMap();
-   
+
    private Map<User, Color> joinedUserColor = newHashMap();
-   
-   private Color ownerColor; 
+
+   private Color ownerColor;
 
    private final EditingSession editingSession = new EditingSession();
 
    private final List<SessionStateListener> stateListeners = newArrayList();
 
-   @Resource
-   @Qualifier("default")
+   @Resource(name="webModelerModelManagementStrategy")
    private ModelManagementStrategy modelManagementStrategy;
 
    private ModelRepository modelRepository;
@@ -102,7 +101,7 @@ public class ModelingSession
 
    /**
     * Currently only used for ORION integration.
-    * 
+    *
     * @param strategy
     */
    public void setModelManagementStrategy(ModelManagementStrategy strategy)
@@ -177,15 +176,15 @@ public class ModelingSession
 
    protected Color generateColor()
    {
-     
+
       float r = (float) (Math.random() * (1 - 0.5) + 0.5);
       float g = (float) (Math.random() * (1 - 0.5) + 0.5);
       float b = (float) (Math.random() * (1 - 0.5) + 0.5);
-      
+
       Color color = new Color(r, g, b);
       return color;
    }
-   
+
    public Color getColor(User user)
    {
       Color color = null;
@@ -193,7 +192,7 @@ public class ModelingSession
       {
          color = joinedUserColor.get(user);
       }
-     return color; 
+     return color;
    }
 
    public synchronized EditingSession getSession(EObject... models)
@@ -278,9 +277,9 @@ public class ModelingSession
    public void setOwnerColor(Color color)
    {
       this.ownerColor = color;
-      
+
    }
-   
+
    public Color getOwnerColor()
    {
       return ownerColor;
