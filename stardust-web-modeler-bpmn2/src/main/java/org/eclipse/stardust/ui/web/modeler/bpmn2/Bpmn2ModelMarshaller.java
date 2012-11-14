@@ -1,5 +1,6 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2;
 
+import static java.util.Collections.emptyMap;
 import static org.eclipse.stardust.common.CollectionUtils.isEmpty;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
@@ -62,7 +63,10 @@ import org.eclipse.xsd.util.XSDConstants;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils;
 import org.eclipse.stardust.ui.web.modeler.integration.ExternalXmlSchemaManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelMarshaller;
@@ -90,6 +94,8 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 public class Bpmn2ModelMarshaller implements ModelMarshaller
 {
+   private static final Logger trace = LogManager.getLogger(Bpmn2ModelMarshaller.class);
+
    private Bpmn2Binding bpmn2Binding;
 
    private final JsonMarshaller jsonIo = new JsonMarshaller();
@@ -105,6 +111,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    @Override
    public JsonElement toJson(EObject element)
    {
+      trace.info("Converting to JSON: " + element);
+      
       if (element instanceof Definitions)
       {
          return toModelJson(element);
@@ -656,6 +664,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    {
       ProcessDefinitionJto jto = newModelElementJto(process, new ProcessDefinitionJto());
 
+      loadAttributes(process, jto);
+      
       for (FlowElement flowElement : process.getFlowElements())
       {
          // TODO
@@ -680,6 +690,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    {
       DataJto jto = newModelElementJto(variable, new DataJto());
 
+      loadAttributes(variable, jto);
+
       if (null != variable.getItemSubjectRef())
       {
          // TODO
@@ -693,6 +705,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    {
       ActivityJto jto = newModelElementJto(activity, new ActivityJto());
 
+      loadAttributes(activity, jto);
+
       // TODO
       jto.activityType = "manual";
 
@@ -702,6 +716,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    public GatewayJto toJto(Gateway gateway)
    {
       GatewayJto jto = newModelElementJto(gateway, new GatewayJto());
+
+      loadAttributes(gateway, jto);
 
       // prefix name due to current gateway-workarounds
       jto.name = "gateway" + jto.name;
@@ -722,6 +738,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    public EventJto toJto(Event event)
    {
       EventJto jto = newModelElementJto(event, new EventJto());
+
+      loadAttributes(event, jto);
 
       if (event instanceof StartEvent)
       {
@@ -750,6 +768,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    {
       TransitionJto jto = newModelElementJto(sFlow, new TransitionJto());
 
+      loadAttributes(sFlow, jto);
+
       if (sFlow.getConditionExpression() instanceof FormalExpression)
       {
          // TODO otherwise
@@ -763,6 +783,14 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       return jto;
    }
 
+   /**
+    * 
+    * @param <T>
+    * @param <J>
+    * @param src
+    * @param jto
+    * @return
+    */
    public <T extends BaseElement, J extends ModelElementJto> J newModelElementJto(T src, J jto)
    {
       jto.uuid = bpmn2Binding.findUuid(src);
@@ -808,6 +836,14 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       return jto;
    }
 
+   /**
+    * 
+    * @param <T>
+    * @param <J>
+    * @param shape
+    * @param jto
+    * @return
+    */
    public <T extends Shape, J extends ShapeJto> J newShapeJto(BPMNShape shape, J jto)
    {
       jto.oid = bpmn2Binding.findOid(shape);
@@ -821,6 +857,14 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       return jto;
    }
 
+   /**
+    * 
+    * @param <T>
+    * @param <J>
+    * @param edge
+    * @param jto
+    * @return
+    */
    public <T extends Edge, J extends ConnectionSymbolJto> J newEdgeJto(BPMNEdge edge, J jto)
    {
       jto.oid = bpmn2Binding.findOid(edge);
@@ -836,6 +880,11 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       return jto;
    }
 
+   /**
+    * 
+    * @param event
+    * @return
+    */
    public String encodeCatchEventType(CatchEvent event)
    {
       Set<String> eventClasses = newHashSet();
@@ -857,6 +906,11 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       return (1 == eventClasses.size()) ? eventClasses.iterator().next() : null; // TODO "complex" instead of null;
    }
 
+   /**
+    * 
+    * @param node
+    * @return
+    */
    public static String encodeNodeKind(FlowNode node)
    {
       if (node instanceof Activity)
@@ -877,6 +931,13 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       }
    }
 
+   /**
+    * 
+    * @param fromShape
+    * @param point
+    * @param point2
+    * @return
+    */
    private int determineAnchorPoint(BPMNShape fromShape, Point point, Point point2)
    {
       Bounds fromBounds = fromShape.getBounds(); // determineShapeBounds(fromShape);
@@ -909,6 +970,11 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       }
    }
 
+   /**
+    * 
+    * @param shape
+    * @return
+    */
    private Bounds determineShapeBounds(BPMNShape shape)
    {
       Definitions model = Bpmn2Utils.findContainingModel(shape);
@@ -975,6 +1041,11 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       }
    }
 
+   /**
+    * 
+    * @param bounds
+    * @return
+    */
    private Bounds cloneBounds(Bounds bounds)
    {
       Bounds clonedBounds;
@@ -987,8 +1058,50 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       return clonedBounds;
    }
 
+   /**
+    * 
+    * @param name
+    * @param id
+    * @return
+    */
    private static String nameOrId(String name, String id)
    {
       return !isEmpty(name) ? name : id;
+   }
+
+   /**
+    * 
+    * @param element
+    * @param json
+    */
+   private void loadAttributes(BaseElement element, ModelElementJto json)
+   {
+      Map<String, Object> extensions = getExtensions(element);
+      
+      for (String key : extensions.keySet())
+      {
+         trace.info("Loading attribute " + key + " of value " + extensions.get(key).toString());
+         
+         json.attributes.addProperty(key, extensions.get(key).toString());
+      }
+   }
+
+   /**
+    * 
+    * @param element
+    * @return
+    */
+   private Map<String, Object> getExtensions(BaseElement element)
+   {
+      List<Map<String, Object>> extensionAttributes = Bpmn2ExtensionUtils.getExtensionAttributes(
+            element, "bpmn");
+      Map<String, Object> result = emptyMap();
+      
+      if ( !extensionAttributes.isEmpty())
+      {
+         result = extensionAttributes.get(0);
+      }
+      
+      return result;
    }
 }
