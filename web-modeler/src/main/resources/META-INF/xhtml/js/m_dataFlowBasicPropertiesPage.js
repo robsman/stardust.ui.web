@@ -170,7 +170,7 @@ define(
 													// TODO Usually, we are not
 													// submitting the object
 													// itself
-													modelElement : this.propertiesPanel.element.modelElement
+													modelElement : page.propertiesPanel.element.modelElement
 												});
 									});
 					this.outputAccessPointSelectInput
