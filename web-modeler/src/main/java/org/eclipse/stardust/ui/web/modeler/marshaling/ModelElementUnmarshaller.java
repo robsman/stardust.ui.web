@@ -494,8 +494,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    private void updateDataFlowConnection(DataMappingConnectionType dataFlowConnection,
          JsonObject dataFlowConnectionJson)
    {
-      System.out.println("Data Flow Connection: " + dataFlowConnectionJson);
-
       // dataFlowConnectionJson is the diagram element; dataFlowJson is the model element
       
       JsonObject dataFlowJson = dataFlowConnectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
