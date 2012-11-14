@@ -20,6 +20,7 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractIn
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -493,101 +494,72 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    private void updateDataFlowConnection(DataMappingConnectionType dataFlowConnection,
          JsonObject dataFlowConnectionJson)
    {
+      System.out.println("Data Flow Connection: " + dataFlowConnectionJson);
+
+      // dataFlowConnectionJson is the diagram element; dataFlowJson is the model element
+      
       JsonObject dataFlowJson = dataFlowConnectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
 
-      if (dataFlowJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      if (dataFlowConnectionJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
-         dataFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(dataFlowJson,
+         dataFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(dataFlowConnectionJson,
                ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
 
-      if (dataFlowJson.has(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      if (dataFlowConnectionJson.has(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
-         dataFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(dataFlowJson,
+         dataFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(dataFlowConnectionJson,
                ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
 
-      // Find the data mappings (in, out or pair)
+      // Collect all data mappings between the activity and the data
 
-      DataMappingType inputDataMapping = null;
-      DataMappingType outputDataMapping = null;
+      List<DataMappingType> dataMappings = new ArrayList<DataMappingType>();
 
       for (DataMappingType dataMapping : dataFlowConnection.getActivitySymbol()
             .getActivity()
             .getDataMapping())
       {
-         // TODO Use Data Mapping Id/filter by ID in JSON
-
          if (dataMapping.getData()
                .getId()
                .equals(dataFlowConnection.getDataSymbol().getData().getId()))
          {
-            if (dataMapping.getDirection().equals(DirectionType.IN_LITERAL))
-            {
-               inputDataMapping = dataMapping;
-            }
-            else
-            {
-               outputDataMapping = dataMapping;
-            }
+            dataMappings.add(dataMapping);
          }
       }
 
-      // Decide whether a data mapping needs to be created or deleted
-      if (dataFlowJson.has(ModelerConstants.UPDATE_DATA_MAPPING_LITERAL))
+      // Delete all data mappings between the activity and the data
+
+      for (DataMappingType dataMapping : dataMappings)
       {
-         if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
-         {
-            if (inputDataMapping == null)
-            {
-               inputDataMapping = createDataMapping(
-                     dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(),
-                     DirectionType.IN_LITERAL,
-                     dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString(),
-                     dataFlowJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
-            }
+         dataFlowConnection.getActivitySymbol()
+               .getActivity()
+               .getDataMapping()
+               .remove(dataMapping);
+         dataFlowConnection.getDataSymbol()
+               .getData()
+               .getDataMappings()
+               .remove(dataMapping);
+      }
 
-            updateDataMapping(
-                  dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
-                        .getAsJsonObject(), inputDataMapping);
-         }
-         else
-         {
-            if (inputDataMapping != null)
-            {
-               dataFlowConnection.getActivitySymbol()
-                     .getActivity()
-                     .getDataMapping()
-                     .remove(inputDataMapping);
-            }
-         }
-         if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
-         {
-            if (outputDataMapping == null)
-            {
-               outputDataMapping = createDataMapping(
-                     dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(),
-                     DirectionType.OUT_LITERAL,
-                     dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString(),
-                     dataFlowJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
-            }
+      // dataFlowJson holds an input and/or an output dataMappingJson; data mappings have to be created for both
+      
+      // Create input mapping
 
-            updateDataMapping(
-                  dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
-                        .getAsJsonObject(), outputDataMapping);
-         }
-         else
-         {
-            if (outputDataMapping != null)
-            {
-               dataFlowConnection.getActivitySymbol()
-                     .getActivity()
-                     .getDataMapping()
-                     .remove(outputDataMapping);
-            }
-         }
+      if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
+      {
+         createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
+               dataFlowConnection.getDataSymbol().getData(), dataFlowJson, DirectionType.IN_LITERAL,
+               dataFlowJson.getAsJsonObject(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY));
+      }
+
+      // Create output mapping
+
+      if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
+      {
+         createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
+               dataFlowConnection.getDataSymbol().getData(), dataFlowJson, DirectionType.OUT_LITERAL,
+               dataFlowJson.getAsJsonObject(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY));
       }
    }
 
@@ -600,19 +572,45 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     * @param name
     * @return
     */
-   private DataMappingType createDataMapping(ActivityType activity, DataType data,
-         DirectionType direction, String id, String name)
+   private DataMappingType createDataMapping(ActivityType activity, DataType data, JsonObject dataFlowJson, DirectionType direction,
+         JsonObject dataMappingJson)
    {
       DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
 
       long maxOid = XpdlModelUtils.getMaxUsedOid(ModelUtils.findContainingModel(activity));
-
+      
       dataMapping.setElementOid(++maxOid);
-      dataMapping.setId(id);
-      dataMapping.setName(name);
+      dataMapping.setId(dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString());
+      dataMapping.setName(dataFlowJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
       dataMapping.setDirection(direction);
+
+      if (dataMappingJson.has(ModelerConstants.ACCESS_POINT_ID_PROPERTY)
+            && !dataMappingJson.get(ModelerConstants.ACCESS_POINT_ID_PROPERTY)
+                  .isJsonNull())
+      {
+         dataMapping.setApplicationAccessPoint(dataMappingJson.get(
+               ModelerConstants.ACCESS_POINT_ID_PROPERTY).getAsString());
+         dataMapping.setContext(dataMappingJson.get(
+               ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY).getAsString());
+      }
+      else
+      {
+         // TODO Review
+         
+         dataMapping.setApplicationAccessPoint(null);
+         dataMapping.setContext(ModelerConstants.DEFAULT_LITERAL);
+      }
+
+      if (dataMappingJson.has(ModelerConstants.DATA_PATH_PROPERTY)
+            && !dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY).isJsonNull())
+      {
+         dataMapping.setDataPath(dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
+               .getAsString());
+      }
+
       dataMapping.setData(data);
       activity.getDataMapping().add(dataMapping);
+      data.getDataMappings().add(dataMapping);
 
       return dataMapping;
    }
@@ -1268,7 +1266,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
             IAccessPointOwner context = application;
 
-            if (!ModelerConstants.APPLICATION_CONTEXT_TYPE_KEY.equals(contextId))
+            if ( !ModelerConstants.APPLICATION_CONTEXT_TYPE_KEY.equals(contextId))
             {
                context = getModelBuilderFacade().createApplicationContext(application,
                      contextId);
@@ -2168,36 +2166,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             && member.getAsJsonPrimitive().isString()
             ? member.getAsString()
             : (String) null;
-   }
-
-   /**
-    * 
-    * @param dataMappingJson
-    * @param dataMapping
-    */
-   private void updateDataMapping(JsonObject dataMappingJson, DataMappingType dataMapping)
-   {
-      if (dataMappingJson.has(ModelerConstants.ACCESS_POINT_ID_PROPERTY)
-            && !dataMappingJson.get(ModelerConstants.ACCESS_POINT_ID_PROPERTY)
-                  .isJsonNull())
-      {
-         dataMapping.setApplicationAccessPoint(dataMappingJson.get(
-               ModelerConstants.ACCESS_POINT_ID_PROPERTY).getAsString());
-         dataMapping.setContext(dataMappingJson.get(
-               ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY).getAsString());
-      }
-      else
-      {
-         dataMapping.setApplicationAccessPoint(null);
-         dataMapping.setContext(ModelerConstants.DEFAULT_LITERAL);
-      }
-
-      if (dataMappingJson.has(ModelerConstants.DATA_PATH_PROPERTY)
-            && !dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY).isJsonNull())
-      {
-         dataMapping.setDataPath(dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
-               .getAsString());
-      }
    }
 
    /**
