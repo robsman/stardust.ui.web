@@ -1,9 +1,12 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2.utils;
 
+import static java.util.Collections.singleton;
 import static org.eclipse.stardust.common.CollectionUtils.isEmpty;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +30,14 @@ import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.xml.type.AnyType;
 import org.eclipse.emf.ecore.xml.type.XMLTypeFactory;
+import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.emf.ecore.xml.type.impl.AnyTypeImpl;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 
 /**
  * @author Robert Sauer
@@ -209,6 +219,173 @@ public class Bpmn2ExtensionUtils
       }
    }
 
+   public static String getExtensionClob(BaseElement object, String tag)
+   {
+      String clob = "";
+
+      ExtensionAttributeValue extensionAttributes = !object.getExtensionValues()
+            .isEmpty() //
+            ? object.getExtensionValues().get(0)
+            : null;
+      if (null != extensionAttributes)
+      {
+         for (FeatureMap.Entry extension : extensionAttributes.getValue())
+         {
+            if (isInFilter(extension.getEStructuralFeature(), tag))
+            {
+               Object extensionValue = extension.getValue();
+
+               if (extensionValue instanceof AnyType)
+               {
+                  AnyType anyType = (AnyType) extensionValue;
+                  clob = getCDataString(anyType.getMixed());
+                  break;
+               }
+               else
+               {
+                  throw new IllegalArgumentException("Fail to parse extension value "
+                        + extensionValue);
+               }
+            }
+         }
+      }
+
+      return clob;
+   }
+
+   public static void setExtensionClob(BaseElement object, String tag, String clob)
+   {
+      ExtendedMetaData metadata = XmlExtendedMetadata.INSTANCE;
+
+      ExtensionAttributeValue extensionAttributes = getOrCreate(
+            ExtensionAttributeValue.class, object.getExtensionValues());
+      FeatureMap extensions = extensionAttributes.getValue();
+
+      AnyType clobHolder = null;
+      for (FeatureMap.Entry extension : extensionAttributes.getValue())
+      {
+         if (isInFilter(extension.getEStructuralFeature(), tag))
+         {
+            Object extensionValue = extension.getValue();
+
+            if (extensionValue instanceof AnyType)
+            {
+               clobHolder = (AnyType) extensionValue;
+               break;
+            }
+         }
+      }
+
+      // create extension element type
+      EStructuralFeature extensionElementType = metadata.demandFeature(NS_URI_STARDUST,
+            tag, true, true);
+      extensionElementType.setChangeable(true);
+
+      if (isEmpty(clob))
+      {
+         if (null != clobHolder)
+         {
+            extensions.list(extensionElementType).remove(clobHolder);
+         }
+
+         if (extensions.isEmpty())
+         {
+            object.getExtensionValues().remove(extensionAttributes);
+         }
+      }
+      else
+      {
+         if (null == clobHolder)
+         {
+            clobHolder = (AnyTypeImpl) XMLTypeFactory.eINSTANCE.createAnyType();
+            extensions.add(extensionElementType, clobHolder);
+         }
+         setCDataString(clobHolder.getMixed(), clob);
+      }
+   }
+
+   public static JsonObject getExtensionAsJson(BaseElement object, String tag)
+   {
+      String clobValue = getExtensionClob(object, tag);
+
+      JsonObject payload = null;
+      if (null != clobValue)
+      {
+         JsonElement parsedClob = new JsonParser().parse(clobValue);
+         if (parsedClob.isJsonObject())
+         {
+            payload = parsedClob.getAsJsonObject();
+         }
+         else
+         {
+            // TODO coerce values somehow?
+         }
+      }
+
+      return (null != payload) ? payload : new JsonObject();
+   }
+
+   public static void setExtensionFromJson(BaseElement object, String tag, JsonObject payload)
+   {
+      String clobValue = null;
+      if ((null != payload) && !payload.entrySet().isEmpty())
+      {
+         clobValue = payload.toString();
+      }
+
+      setExtensionClob(object, tag, clobValue);
+   }
+
+   protected static String getCDataString(FeatureMap featureMap)
+   {
+      String result = null;
+
+      Collection<?> parts = (Collection<?>) featureMap.get(
+            XMLTypePackage.eINSTANCE.getXMLTypeDocumentRoot_CDATA(), false);
+      if (isEmpty(parts))
+      {
+         parts = (Collection<?>) featureMap.get(
+               XMLTypePackage.eINSTANCE.getXMLTypeDocumentRoot_Text(), false);
+      }
+      if ( !isEmpty(parts))
+      {
+         if (parts.size() == 1)
+         {
+            result = parts.iterator().next().toString();
+         }
+         else
+         {
+            StringBuilder sb = new StringBuilder();
+            for (Object o : parts)
+            {
+               sb.append(o.toString());
+            }
+            result = sb.toString();
+         }
+      }
+      return result;
+   }
+
+   protected static void setCDataString(FeatureMap mixed, String description)
+   {
+      setCDataString(mixed, description, false);
+   }
+
+   protected static void setCDataString(FeatureMap mixed, String text, boolean normalizeCrLf)
+   {
+      if (normalizeCrLf && !isEmpty(text))
+      {
+         text.replace("\r\n", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+      }
+
+      // clean up any pending previous non-CDATA content (i.e. from XPDL load)
+      if (mixed.isSet(XMLTypePackage.eINSTANCE.getXMLTypeDocumentRoot_Text()))
+      {
+         mixed.unset(XMLTypePackage.eINSTANCE.getXMLTypeDocumentRoot_Text());
+      }
+      mixed.set(XMLTypePackage.eINSTANCE.getXMLTypeDocumentRoot_CDATA(), singleton(text));
+   }
+
    private static Map<String, Object> findExtensionAttributes(FeatureMap featureMap,
          String tag)
    {
@@ -281,15 +458,12 @@ public class Bpmn2ExtensionUtils
 
    private static EClass scanForEClass(Class<?> cls, List<EClassifier> classifiers)
    {
-
       String clsName = cls.getSimpleName();
-
       for (EClassifier classifier : classifiers)
       {
          if (cls.getName().equals(classifier.getInstanceClassName())
                || clsName.equals(classifier.getName()) && (classifier instanceof EClass))
          {
-
             return (EClass) classifier;
          }
       }
