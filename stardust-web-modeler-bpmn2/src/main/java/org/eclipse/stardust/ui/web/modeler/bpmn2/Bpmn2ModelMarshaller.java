@@ -5,7 +5,6 @@ import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
-import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.bpmn2DcFactory;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findContainingModel;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findParticipatingProcesses;
 
@@ -439,6 +438,9 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
       // required to properly connect connections to node symbols
       Map<FlowNode, BPMNShape> nodeSymbolPerElement = newHashMap();
+
+      // process edges in pass after modes
+      List<BPMNEdge> edges = newArrayList();
       for (DiagramElement symbol : plane.getPlaneElement())
       {
          if (symbol instanceof BPMNShape)
@@ -509,7 +511,11 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          }
          else if (symbol instanceof BPMNEdge)
          {
-            BPMNEdge edge = (BPMNEdge) symbol;
+            edges.add((BPMNEdge) symbol);
+         }
+
+         for (BPMNEdge edge : edges)
+         {
             if (edge.getBpmnElement() instanceof SequenceFlow)
             {
                ConnectionSymbolJto symbolJto = new ConnectionSymbolJto();
@@ -687,7 +693,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       ProcessDefinitionJto jto = newModelElementJto(process, new ProcessDefinitionJto());
 
       loadExtensions(process, jto);
-      
+
       for (FlowElement flowElement : process.getFlowElements())
       {
          // TODO
@@ -713,7 +719,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       DataJto jto = newModelElementJto(variable, new DataJto());
 
       loadExtensions(variable, jto);
-      
+
       if (null != variable.getItemSubjectRef())
       {
          // TODO
@@ -729,7 +735,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       ActivityJto jto = newModelElementJto(activity, new ActivityJto());
 
       loadExtensions(activity, jto);
-      
+
       if (activity instanceof ServiceTask)
       {
          jto.activityType = ModelerConstants.APPLICATION_ACTIVITY;
@@ -750,7 +756,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       }
 
       loadExtensions(activity, jto);
-      
+
       return jto;
    }
 
@@ -759,7 +765,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       GatewayJto jto = newModelElementJto(gateway, new GatewayJto());
 
       loadExtensions(gateway, jto);
-      
+
       // prefix name due to current gateway-workarounds
       jto.name = "gateway" + jto.name;
 
@@ -781,7 +787,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       EventJto jto = newModelElementJto(event, new EventJto());
 
       loadExtensions(event, jto);
-      
+
       if (event instanceof StartEvent)
       {
          jto.eventType = ModelerConstants.START_EVENT;
@@ -810,7 +816,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       TransitionJto jto = newModelElementJto(sFlow, new TransitionJto());
 
       loadExtensions(sFlow, jto);
-      
+
       if (sFlow.getConditionExpression() instanceof FormalExpression)
       {
          // TODO otherwise
@@ -890,7 +896,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    {
       jto.oid = bpmn2Binding.findOid(shape);
 
-      Bounds bounds = determineShapeBounds(shape);
+      Bounds bounds = shape.getBounds();
       jto.x = (int) bounds.getX();
       jto.y = (int) bounds.getY();
       jto.width = (int) bounds.getWidth();
@@ -1015,94 +1021,6 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          // vertical
          return (0.0 < dy) ? ModelerConstants.SOUTH_KEY : ModelerConstants.NORTH_KEY;
       }
-   }
-
-   /**
-    *
-    * @param shape
-    * @return
-    */
-   private Bounds determineShapeBounds(BPMNShape shape)
-   {
-      Definitions model = Bpmn2Utils.findContainingModel(shape);
-      if ((null != model) && ("ADONIS".equals(model.getExporter())))
-      {
-         Bounds bounds = shape.getBounds();
-         if ((shape.getBpmnElement() instanceof Lane))
-         {
-            bounds = cloneBounds(bounds);
-            if (shape.isIsHorizontal())
-            {
-               bounds.setWidth(bounds.getWidth() + 100.0F);
-            }
-            else
-            {
-               bounds.setHeight(bounds.getHeight() + 100.0F);
-            }
-         }
-         else if (shape.getBpmnElement() instanceof Activity)
-         {
-            bounds = cloneBounds(bounds);
-            if (105.0F == bounds.getWidth())
-            {
-               // fix default width to be multiple of two
-               bounds.setWidth(106.0F);
-            }
-         }
-         else if (shape.getBpmnElement() instanceof Event)
-         {
-            bounds = cloneBounds(bounds);
-            // fix missing width/height
-            if (0.0F == bounds.getWidth())
-            {
-               bounds.setX(bounds.getX() + (106.0F - 24.0F) / 2.0F);
-               bounds.setWidth(24.0F);
-            }
-            if (0.0F == bounds.getHeight())
-            {
-               bounds.setY(bounds.getY() + (56.0F - 24.0F) / 2.0F);
-               bounds.setHeight(24.0F);
-            }
-         }
-         else if (shape.getBpmnElement() instanceof Gateway)
-         {
-            bounds = cloneBounds(bounds);
-            // fix missing width/height
-            if (0.0F == bounds.getWidth())
-            {
-               bounds.setX(bounds.getX() + (106.0F - 40.0F) / 2.0F);
-               bounds.setWidth(40.0F);
-            }
-            if (0.0F == bounds.getHeight())
-            {
-               bounds.setY(bounds.getY() + (56.0F - 40.0F) / 2.0F);
-               bounds.setHeight(40.0F);
-            }
-         }
-
-         return bounds;
-      }
-      else
-      {
-         return shape.getBounds();
-      }
-   }
-
-   /**
-    *
-    * @param bounds
-    * @return
-    */
-   private Bounds cloneBounds(Bounds bounds)
-   {
-      Bounds clonedBounds;
-      clonedBounds = bpmn2DcFactory().createBounds();
-      clonedBounds.setX(bounds.getX());
-      clonedBounds.setY(bounds.getY());
-      clonedBounds.setWidth(bounds.getWidth());
-      clonedBounds.setHeight(bounds.getHeight());
-
-      return clonedBounds;
    }
 
    /**

@@ -21,9 +21,11 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.springframework.stereotype.Service;
 
+import org.eclipse.stardust.common.config.CurrentVersion;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.compatibility.AdonisImporter;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.DirectStreamsURIHandler;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
 
@@ -66,6 +68,14 @@ public class Bpmn2PersistenceHandler implements ModelPersistenceHandler<Definiti
                {
                   DocumentRoot rootElement = (DocumentRoot) eObj;
                   Definitions definitions = rootElement.getDefinitions();
+
+                  if ("ADONIS".equals(definitions.getExporter()))
+                  {
+                     new AdonisImporter().fixModel(definitions);
+                  }
+
+                  definitions.setExporter("Eclipse Stardust");
+                  definitions.setExporterVersion(CurrentVersion.getVersionName());
 
                   String modelUuid;
                   try
