@@ -19,8 +19,7 @@
 
    <properties>
       <ipp.version>7.1.0-NIGHTLY-SNAPSHOT</ipp.version>
-      <atmosphere.version>0.9.7</atmosphere.version>
-      <!--atmosphere.version>1.0.0.beta5</atmosphere.version -->
+		<atmosphere.version>1.0.4</atmosphere.version>
    </properties>
 
    <dependencyManagement>
