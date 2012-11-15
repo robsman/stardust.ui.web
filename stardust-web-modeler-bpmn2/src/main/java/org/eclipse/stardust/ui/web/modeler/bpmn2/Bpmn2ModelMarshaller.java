@@ -205,10 +205,21 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
       Definitions bpmn2Model = (Definitions) model;
 
+      String modelUuid = Bpmn2Utils.getModelUuid(bpmn2Model);
+
       ModelJto modelJto = new ModelJto();
-      modelJto.uuid = bpmn2Model.getId();
-      modelJto.id = bpmn2Model.getId();
-      modelJto.name = nameOrId(bpmn2Model.getName(), bpmn2Model.getId());
+      modelJto.uuid = modelUuid;
+      modelJto.id = modelUuid;
+      modelJto.name = bpmn2Model.getName();
+      if (isEmpty(modelJto.name))
+      {
+         modelJto.name = bpmn2Binding.getModelFileName(bpmn2Model);
+         if (!isEmpty(modelJto.name) && modelJto.name.endsWith(".bpmn"))
+         {
+            modelJto.name = modelJto.name.substring(0,
+                  modelJto.name.length() - ".bpmn".length());
+         }
+      }
 
       // TODO processes etc.
       for (RootElement root : bpmn2Model.getRootElements())
@@ -814,7 +825,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param <T>
     * @param <J>
     * @param src
@@ -868,7 +879,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param <T>
     * @param <J>
     * @param shape
@@ -889,7 +900,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param <T>
     * @param <J>
     * @param edge
@@ -913,7 +924,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param event
     * @return
     */
@@ -943,7 +954,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param node
     * @return
     */
@@ -968,7 +979,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param fromShape
     * @param point
     * @param point2
@@ -1007,7 +1018,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param shape
     * @return
     */
@@ -1078,7 +1089,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param bounds
     * @return
     */
@@ -1095,7 +1106,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param name
     * @param id
     * @return
@@ -1106,7 +1117,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param jto
     */

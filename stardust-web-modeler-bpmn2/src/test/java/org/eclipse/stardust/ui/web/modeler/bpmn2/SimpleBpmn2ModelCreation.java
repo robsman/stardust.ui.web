@@ -40,7 +40,7 @@ import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler.ModelDesc
 
 public class SimpleBpmn2ModelCreation
 {
-   static final Bpmn2Binding binding = new Bpmn2Binding();
+   static final Bpmn2Binding binding = new Bpmn2Binding(null);
 
    private static final Bpmn2Navigator navigator = new Bpmn2Navigator(binding);
 

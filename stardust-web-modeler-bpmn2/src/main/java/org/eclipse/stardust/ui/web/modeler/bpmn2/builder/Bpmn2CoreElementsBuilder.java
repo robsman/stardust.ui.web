@@ -1,12 +1,15 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2.builder;
 
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.createInternalId;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils.setExtensionAttribute;
 
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.ProcessType;
 
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils;
 import org.eclipse.stardust.ui.web.modeler.model.ModelJto;
 import org.eclipse.stardust.ui.web.modeler.model.ProcessDefinitionJto;
@@ -21,6 +24,8 @@ public class Bpmn2CoreElementsBuilder
       model.setId( !isEmpty(jto.id)
             ? jto.id
             : Bpmn2Utils.deriveElementIdFromName(jto.name));
+
+      setExtensionAttribute(model, ModelerConstants.UUID_PROPERTY, createInternalId());
 
       // TODO review, externalize values
       model.setExporter("Eclipse Lightdust");

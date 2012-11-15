@@ -37,8 +37,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
-
 /**
  * @author Robert Sauer
  */
@@ -216,6 +214,56 @@ public class Bpmn2ExtensionUtils
          extensionElement.getAnyAttribute().add(
                new EStructuralFeatureImpl.SimpleFeatureMapEntry(extensionAttributeType,
                      value));
+      }
+   }
+
+   public static String getExtensionAttribute(BaseElement element, String name)
+   {
+      Object value = null;
+      for (Iterator<FeatureMap.Entry> i = element.getAnyAttribute().iterator(); i.hasNext(); )
+      {
+         FeatureMap.Entry extension = i.next();
+         if (isInFilter(extension.getEStructuralFeature(), name))
+         {
+            value = extension.getValue();
+            break;
+         }
+      }
+
+      return (String) ((value instanceof String) ? value : null);
+   }
+
+   public static void setExtensionAttribute(BaseElement element, String name, String value)
+   {
+      EStructuralFeature attributeAccessor = null;
+      Object oldValue = null;
+      for (Iterator<FeatureMap.Entry> i = element.getAnyAttribute().iterator(); i.hasNext(); )
+      {
+         FeatureMap.Entry extension = i.next();
+         if (isInFilter(extension.getEStructuralFeature(), name))
+         {
+            attributeAccessor = extension.getEStructuralFeature();
+            oldValue = extension.getValue();
+            break;
+         }
+      }
+
+      if (null == attributeAccessor)
+      {
+         attributeAccessor = XmlExtendedMetadata.INSTANCE.demandFeature(NS_URI_STARDUST, name, false, false);
+         attributeAccessor.setChangeable(true);
+      }
+
+      if (isEmpty(value))
+      {
+         if (null != oldValue)
+         {
+            element.getAnyAttribute().list(attributeAccessor).remove(oldValue);
+         }
+      }
+      else
+      {
+         element.getAnyAttribute().set(attributeAccessor, value);
       }
    }
 

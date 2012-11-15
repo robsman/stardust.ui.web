@@ -31,7 +31,7 @@ public class ModelRepository
       this.session = session;
 
       this.modelBindings = newArrayList();
-      modelBindings.add(new XpdlBinding(session.modelElementMarshaller(),
+      modelBindings.add(new XpdlBinding(session, session.modelElementMarshaller(),
             session.modelElementUnmarshaller()));
 
       // TODO migrate to Spring based discovery?
@@ -43,7 +43,10 @@ public class ModelRepository
          Class<? extends ModelBinding<?>> clsBpmn2Binding = Reflect.getClassFromClassName(fqcnBpmn2Binding, false);
          if (null != clsBpmn2Binding)
          {
-            modelBindings.add(clsBpmn2Binding.cast(Reflect.createInstance(clsBpmn2Binding, null, null)));
+            modelBindings.add(clsBpmn2Binding.cast(Reflect.createInstance(
+                  clsBpmn2Binding, //
+                  new Class<?>[] {ModelingSession.class}, //
+                  new Object[] {session})));
             trace.info("Registered BPMN2 model binding.");
          }
          else
@@ -79,13 +82,30 @@ public class ModelRepository
                      @Override
                      public EObject execute(ModelType xpdlModel)
                      {
-                        return (session.modelManagementStrategy() instanceof AbstractModelManagementStrategy)
-                              ? ((AbstractModelManagementStrategy) session.modelManagementStrategy()).getNativeModel(xpdlModel.getId())
-                              : xpdlModel;
+                        return getNativeModel(xpdlModel);
                      }
                   });
          }
       };
+   }
+
+   public String getModelFileName(EObject model)
+   {
+      for (ModelType xpdlModel : session.modelManagementStrategy().getModels().values())
+      {
+         if (model == getNativeModel(xpdlModel))
+         {
+            return session.modelManagementStrategy().getModelFileName(xpdlModel);
+         }
+      }
+      return null;
+   }
+
+   protected EObject getNativeModel(ModelType xpdlModel)
+   {
+      return (session.modelManagementStrategy() instanceof AbstractModelManagementStrategy)
+            ? ((AbstractModelManagementStrategy) session.modelManagementStrategy()).getNativeModel(xpdlModel.getId())
+            : xpdlModel;
    }
 
    @SuppressWarnings("unchecked")

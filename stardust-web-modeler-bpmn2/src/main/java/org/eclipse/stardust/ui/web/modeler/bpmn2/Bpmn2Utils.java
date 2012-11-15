@@ -1,6 +1,8 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2;
 
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils.getExtensionAttribute;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +16,8 @@ import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.dd.dc.DcFactory;
 import org.eclipse.dd.di.Diagram;
 import org.eclipse.emf.ecore.EObject;
+
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 
 public class Bpmn2Utils
 {
@@ -36,6 +40,17 @@ public class Bpmn2Utils
    public static DcFactory bpmn2DcFactory()
    {
       return F_BPMN2DC;
+   }
+
+   public static String getModelUuid(Definitions model)
+   {
+      String modelUuid = getExtensionAttribute(model, ModelerConstants.UUID_PROPERTY);
+      if (isEmpty(modelUuid))
+      {
+         modelUuid = model.getId();
+      }
+
+      return modelUuid;
    }
 
    public static String deriveElementIdFromName(String name)

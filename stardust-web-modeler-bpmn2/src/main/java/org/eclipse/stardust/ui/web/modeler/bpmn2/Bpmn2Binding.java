@@ -12,6 +12,7 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.ecore.EObject;
 
+import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 
 public class Bpmn2Binding extends ModelBinding<Definitions>
@@ -22,9 +23,9 @@ public class Bpmn2Binding extends ModelBinding<Definitions>
 
    private final ConcurrentMap<Definitions, ConcurrentMap<EObject, Long>> oidRegistry = newConcurrentHashMap();
 
-   public Bpmn2Binding()
+   public Bpmn2Binding(ModelingSession session)
    {
-      super(new Bpmn2Navigator(), new Bpmn2ModelMarshaller(),
+      super(session, new Bpmn2Navigator(), new Bpmn2ModelMarshaller(),
             new Bpmn2ModelUnmarshaller());
 
       ((Bpmn2Navigator) navigator).setBinding(this);
@@ -41,7 +42,12 @@ public class Bpmn2Binding extends ModelBinding<Definitions>
    @Override
    public String getModelId(Definitions model)
    {
-      return ((Definitions) model).getId();
+      return Bpmn2Utils.getModelUuid(model);
+   }
+
+   public String getModelFileName(Definitions model)
+   {
+      return getModelingSession().modelRepository().getModelFileName(model);
    }
 
    public String findUuid(BaseElement element)

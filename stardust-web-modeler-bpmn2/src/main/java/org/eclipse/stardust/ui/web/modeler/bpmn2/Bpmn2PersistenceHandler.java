@@ -1,6 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2;
 
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils.setExtensionAttribute;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.DirectStreamsURIHandler;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
 
@@ -64,23 +66,33 @@ public class Bpmn2PersistenceHandler implements ModelPersistenceHandler<Definiti
                {
                   DocumentRoot rootElement = (DocumentRoot) eObj;
                   Definitions definitions = rootElement.getDefinitions();
+
+                  String modelUuid;
                   try
                   {
                      // test if current ID already is a UUID ...
                      UUID.fromString(definitions.getId());
+                     modelUuid = definitions.getId();
                   }
                   catch (IllegalArgumentException iae)
                   {
                      // ... nope
-                     if (isEmpty(definitions.getName()))
-                     {
-                        definitions.setName(definitions.getId());
-                     }
-                     definitions.setId(UUID.randomUUID().toString());
+                     modelUuid = Bpmn2Utils.createInternalId();
+                     setExtensionAttribute(definitions, ModelerConstants.UUID_PROPERTY, modelUuid);
                   }
 
-                  return new ModelDescriptor<Definitions>(definitions.getId(),
-                        definitions.getName(), definitions);
+                  String modelName = definitions.getName();
+                  if (isEmpty(modelName))
+                  {
+                     modelName = contentName;
+                     if (modelName.endsWith(".bpmn"))
+                     {
+                        modelName = modelName.substring(0, modelName.length() - ".bpmn".length());
+                     }
+                  }
+
+                  return new ModelDescriptor<Definitions>(modelUuid, modelName,
+                        definitions);
                }
             }
          }
