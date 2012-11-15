@@ -62,6 +62,7 @@ import org.eclipse.xsd.util.XSDConstants;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -112,7 +113,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    public JsonElement toJson(EObject element)
    {
       trace.info("Converting to JSON: " + element);
-      
+
       if (element instanceof Definitions)
       {
          return toModelJson(element);
@@ -292,7 +293,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          List<Process> participatingProcesses = findParticipatingProcesses((Collaboration) plane.getBpmnElement());
          if (1 != participatingProcesses.size())
          {
-            throw new IllegalArgumentException("Unsupported diagram configuration: " + diagram);
+            throw new IllegalArgumentException("Unsupported diagram configuration: "
+                  + diagram);
          }
          else
          {
@@ -301,13 +303,15 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       }
       else
       {
-         throw new IllegalArgumentException("Unsupported diagram configuration: " + diagram);
+         throw new IllegalArgumentException("Unsupported diagram configuration: "
+               + diagram);
       }
 
       Definitions model = findContainingModel(diagram);
       if (null == model)
       {
-         throw new IllegalArgumentException("Must not pass a detached diagram: " + diagram);
+         throw new IllegalArgumentException("Must not pass a detached diagram: "
+               + diagram);
       }
 
       // find pool/lane shapes
@@ -455,7 +459,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
                if (shape.getBpmnElement() instanceof Activity)
                {
-                  ActivitySymbolJto symbolJto = newShapeJto(shape, new ActivitySymbolJto());
+                  ActivitySymbolJto symbolJto = newShapeJto(shape,
+                        new ActivitySymbolJto());
 
                   symbolJto.modelElement = toJto((Activity) shape.getBpmnElement());
 
@@ -471,7 +476,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
                }
                else if (shape.getBpmnElement() instanceof Event)
                {
-                  if ((shape.getBpmnElement() instanceof StartEvent) || (shape.getBpmnElement() instanceof EndEvent))
+                  if ((shape.getBpmnElement() instanceof StartEvent)
+                        || (shape.getBpmnElement() instanceof EndEvent))
                   {
                      EventSymbolJto symbolJto = newShapeJto(shape, new EventSymbolJto());
 
@@ -509,14 +515,17 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
                symbolJto.type = ModelerConstants.CONTROL_FLOW_CONNECTION_LITERAL;
                symbolJto.modelElement = toJto(sFlow);
 
-               symbolJto.fromModelElementOid = bpmn2Binding.findOid((Definitions) model, sourceNode);
+               symbolJto.fromModelElementOid = bpmn2Binding.findOid((Definitions) model,
+                     sourceNode);
                symbolJto.fromModelElementType = encodeNodeKind(sFlow.getSourceRef());
-               symbolJto.toModelElementOid = bpmn2Binding.findOid((Definitions) model, targetNode);
+               symbolJto.toModelElementOid = bpmn2Binding.findOid((Definitions) model,
+                     targetNode);
                symbolJto.toModelElementType = encodeNodeKind(sFlow.getTargetRef());
 
                if ( !isEmpty(edge.getWaypoint()) && (2 <= edge.getWaypoint().size()))
                {
-                  // use original coordinates to avoid having to adjust waypoints as well (see determineShapeBounds)
+                  // use original coordinates to avoid having to adjust waypoints as well
+                  // (see determineShapeBounds)
                   symbolJto.fromAnchorPointOrientation = determineAnchorPoint(sourceNode,
                         edge.getWaypoint().get(0), edge.getWaypoint().get(1));
                   symbolJto.toAnchorPointOrientation = determineAnchorPoint(targetNode,
@@ -577,7 +586,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
    public TypeDeclarationJto toJto(ItemDefinition itemDefinition)
    {
-      TypeDeclarationJto jto = newModelElementJto(itemDefinition, new TypeDeclarationJto());
+      TypeDeclarationJto jto = newModelElementJto(itemDefinition,
+            new TypeDeclarationJto());
 
       // TODO
       String schemaLocation = null;
@@ -595,7 +605,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       Import importSpec = itemDefinition.getImport();
       if ((null == importSpec) && !isEmpty(schemaLocation))
       {
-         for (Import candidate : Bpmn2Utils.findContainingModel(itemDefinition).getImports())
+         for (Import candidate : Bpmn2Utils.findContainingModel(itemDefinition)
+               .getImports())
          {
             if (schemaLocation.equals(candidate.getLocation()))
             {
@@ -605,10 +616,10 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          }
       }
 
-      if ((null != importSpec) && (XSDConstants.SCHEMA_FOR_SCHEMA_URI_2001.equals(importSpec.getImportType())))
+      if ((null != importSpec)
+            && (XSDConstants.SCHEMA_FOR_SCHEMA_URI_2001.equals(importSpec.getImportType())))
       {
-         XSDSchema importedSchema = externalXmlSchemaManager.resolveSchemaFromUri(importSpec
-               .getLocation());
+         XSDSchema importedSchema = externalXmlSchemaManager.resolveSchemaFromUri(importSpec.getLocation());
          if ((null != importedSchema) && !isEmpty(typeId))
          {
             for (XSDTypeDefinition typeDefinition : importedSchema.getTypeDefinitions())
@@ -665,7 +676,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       ProcessDefinitionJto jto = newModelElementJto(process, new ProcessDefinitionJto());
 
       loadAttributes(process, jto);
-      
+
       for (FlowElement flowElement : process.getFlowElements())
       {
          // TODO
@@ -696,7 +707,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       {
          // TODO
          jto.dataType = ModelerConstants.STRUCTURED_DATA_TYPE_KEY;
-         jto.structuredDataTypeFullId = Bpmn2Utils.findContainingModel(variable).getId() + ":" + variable.getItemSubjectRef().getId();
+         jto.structuredDataTypeFullId = Bpmn2Utils.findContainingModel(variable).getId()
+               + ":" + variable.getItemSubjectRef().getId();
       }
       return jto;
    }
@@ -791,7 +803,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
     * @param jto
     * @return
     */
-   public <T extends BaseElement, J extends ModelElementJto> J newModelElementJto(T src, J jto)
+   public <T extends BaseElement, J extends ModelElementJto> J newModelElementJto(T src,
+         J jto)
    {
       jto.uuid = bpmn2Binding.findUuid(src);
       jto.id = src.getId();
@@ -865,7 +878,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
     * @param jto
     * @return
     */
-   public <T extends Edge, J extends ConnectionSymbolJto> J newEdgeJto(BPMNEdge edge, J jto)
+   public <T extends Edge, J extends ConnectionSymbolJto> J newEdgeJto(BPMNEdge edge,
+         J jto)
    {
       jto.oid = bpmn2Binding.findOid(edge);
 
@@ -903,7 +917,11 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
             // TODO more event classes ...
          }
       }
-      return (1 == eventClasses.size()) ? eventClasses.iterator().next() : null; // TODO "complex" instead of null;
+      return (1 == eventClasses.size()) ? eventClasses.iterator().next() : null; // TODO
+                                                                                 // "complex"
+                                                                                 // instead
+                                                                                 // of
+                                                                                 // null;
    }
 
    /**
@@ -1077,12 +1095,16 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    private void loadAttributes(BaseElement element, ModelElementJto json)
    {
       Map<String, Object> extensions = getExtensions(element);
-      
-      for (String key : extensions.keySet())
+
+      String attributesString = (String) extensions.get(ModelerConstants.ATTRIBUTES_PROPERTY);
+
+      if (attributesString != null)
       {
-         trace.info("Loading attribute " + key + " of value " + extensions.get(key).toString());
-         
-         json.attributes.addProperty(key, extensions.get(key).toString());
+         json.attributes = jsonIo.readJsonObject(attributesString);
+      }
+      else
+      {
+         json.attributes = new JsonObject();
       }
    }
 
@@ -1096,12 +1118,12 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       List<Map<String, Object>> extensionAttributes = Bpmn2ExtensionUtils.getExtensionAttributes(
             element, "bpmn");
       Map<String, Object> result = emptyMap();
-      
+
       if ( !extensionAttributes.isEmpty())
       {
          result = extensionAttributes.get(0);
       }
-      
+
       return result;
    }
 }
