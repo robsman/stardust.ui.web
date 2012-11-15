@@ -26,7 +26,6 @@
    <property name="project.etc" value="${project.dir}/etc" />
 	<property file="${project.etc}/private.properties"/>
    
-   <property name="organizationId" value="com.infinity.bpm" />
    <property name="artifactId" value="ipp-business-control-center" />
 
    <import file="../../build.tools/commons-build.xml" />

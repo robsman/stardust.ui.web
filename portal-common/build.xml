@@ -19,7 +19,6 @@
    <property name="project.webapp.dir" value="${project.dir}/src/main/webapp" />
    <property file="${project.etc}/private.properties" />
 
-   <property name="organizationId" value="com.infinity.bpm" />
    <property name="artifactId" value="ipp-portal-common" />
    <property name="webArtifactId" value="ipp-portal" />
    
