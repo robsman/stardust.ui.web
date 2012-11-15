@@ -122,7 +122,7 @@
       <dependency org="org.icepdf" name="icepdf-core" rev="4.3.2" transitive="false" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-base-lib-module-runtime->jcr-vfs-module-runtime">
          <exclude org="commons-fileupload" module="commons-fileupload"/>
-         <exclude org="com.infinity.bpm" name="carnot-engine"/>
+         <exclude org="org.eclipse.stardust.engine" name="carnot-engine"/>
          <exclude org="javax.jcr" module="jcr"/>
          <exclude org="org.springframework" module="spring-aop"/>
          <exclude org="org.springframework" module="spring-asm"/>
