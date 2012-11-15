@@ -95,9 +95,11 @@ public class AdonisImporter
                         startPoint.setX(sourceBounds.getX() + sourceBounds.getWidth() / 2.0F);
                         startPoint.setY(sourceBounds.getY() + sourceBounds.getHeight() / 2.0F);
                      }
-
+                  }
+                  if (edge.getTarget() instanceof BPMNShape)
+                  {
                      Point endPoint = edge.getWaypoint().get(edge.getWaypoint().size() - 1);
-                     Bounds targetBounds = ((BPMNShape) edge.getSource()).getBounds();
+                     Bounds targetBounds = ((BPMNShape) edge.getTarget()).getBounds();
                      if ((targetBounds.getX() == endPoint.getX()) && (targetBounds.getY()) == endPoint.getY())
                      {
                         endPoint.setX(targetBounds.getX() + targetBounds.getWidth() / 2.0F);
