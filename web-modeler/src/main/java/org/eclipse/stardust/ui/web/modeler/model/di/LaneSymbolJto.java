@@ -11,6 +11,8 @@ public class LaneSymbolJto extends ShapeJto
    public String id;
    public String name;
 
+   public String orientation = ModelerConstants.DIAGRAM_FLOW_ORIENTATION_VERTICAL;
+
    public String participantFullId;
 
    public List<ActivitySymbolJto> activitySymbols = newArrayList();

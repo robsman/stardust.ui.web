@@ -3,37 +3,41 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
 
 define(
 		[ "m_utils", "m_constants", "m_extensionManager", "m_urlUtils",
-			"m_communicationController", "m_commandsController",
-			"m_command", "m_session", "m_canvasManager", "m_messageDisplay", "m_symbol",
-			"m_poolSymbol", "m_activitySymbol", "m_dataSymbol",
-			"m_eventSymbol", "m_gatewaySymbol", "m_swimlaneSymbol", "m_connection",
-			"m_propertiesPanel", "m_processPropertiesPanel",
-			"m_activityPropertiesPanel", "m_dataPropertiesPanel",
-			"m_eventPropertiesPanel", "m_gatewayPropertiesPanel", "m_annotationPropertiesPanel",
-			"m_swimlanePropertiesPanel", "m_controlFlowPropertiesPanel",
-			"m_dataFlowPropertiesPanel", "m_model", "m_process", "m_data",
-			"m_modelerUtils", "m_autoScrollManager" ],
-	function(m_utils, m_constants, m_extensionManager, m_urlUtils,
-			m_communicationController, m_commandsController, m_command,
-			m_session, m_canvasManager, m_messageDisplay, m_symbol, m_poolSymbol,
-			m_activitySymbol, m_dataSymbol, m_eventSymbol, m_gatewaySymbol, m_swimlaneSymbol,
-			m_connection, m_propertiesPanel, m_processPropertiesPanel,
-			m_activityPropertiesPanel, m_dataPropertiesPanel,
-			m_eventPropertiesPanel, m_gatewayPropertiesPanel, m_annotationPropertiesPanel,
-			m_swimlanePropertiesPanel, m_controlFlowPropertiesPanel,
-			m_dataFlowPropertiesPanel, m_model, m_process, m_data,
-			m_modelerUtils, m_autoScrollManager) {
+				"m_communicationController", "m_commandsController",
+				"m_command", "m_session", "m_canvasManager",
+				"m_messageDisplay", "m_symbol", "m_poolSymbol",
+				"m_activitySymbol", "m_dataSymbol", "m_eventSymbol",
+				"m_gatewaySymbol", "m_swimlaneSymbol", "m_connection",
+				"m_propertiesPanel", "m_processPropertiesPanel",
+				"m_activityPropertiesPanel", "m_dataPropertiesPanel",
+				"m_eventPropertiesPanel", "m_gatewayPropertiesPanel",
+				"m_annotationPropertiesPanel", "m_swimlanePropertiesPanel",
+				"m_controlFlowPropertiesPanel", "m_dataFlowPropertiesPanel",
+				"m_model", "m_process", "m_data", "m_modelerUtils",
+				"m_autoScrollManager" ],
+		function(m_utils, m_constants, m_extensionManager, m_urlUtils,
+				m_communicationController, m_commandsController, m_command,
+				m_session, m_canvasManager, m_messageDisplay, m_symbol,
+				m_poolSymbol, m_activitySymbol, m_dataSymbol, m_eventSymbol,
+				m_gatewaySymbol, m_swimlaneSymbol, m_connection,
+				m_propertiesPanel, m_processPropertiesPanel,
+				m_activityPropertiesPanel, m_dataPropertiesPanel,
+				m_eventPropertiesPanel, m_gatewayPropertiesPanel,
+				m_annotationPropertiesPanel, m_swimlanePropertiesPanel,
+				m_controlFlowPropertiesPanel, m_dataFlowPropertiesPanel,
+				m_model, m_process, m_data, m_modelerUtils, m_autoScrollManager) {
 
 			var canvasPos = $("#canvas").position();
 			var X_OFFSET = canvasPos.left; // Set fpr #panningSensor
-			var Y_OFFSET = canvasPos.top; // Set for #toolbar + #messageDisplay
+			var Y_OFFSET = canvasPos.top; // Set for #toolbar +
+			// #messageDisplay
 			// Adjustments for Editable Text on Symbol
 			var WIDTH_ADJUSTMENT = 60;
 
@@ -48,7 +52,7 @@ define(
 			var symbolEditMode = false;
 
 			/**
-			 *
+			 * 
 			 */
 			function Diagram(newDivId) {
 				currentDiagram = this;
@@ -175,7 +179,8 @@ define(
 														.append(msg);
 												m_utils.debug(msg);
 											} else {
-												extension.provider.create(dummy);
+												extension.provider
+														.create(dummy);
 											}
 										});
 					} else {
@@ -404,6 +409,7 @@ define(
 								{
 									type : "text",
 									event : "dblclick",
+									placeholder : "",
 									onblur : "submit",
 									onreset : function(settings, value) { // On
 										// Reset
@@ -427,16 +433,17 @@ define(
 
 				this.currentTextPrimitive = null;
 				this.poolSymbol = null;
+				this.poolSymbols = {};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.toString = function() {
 					return "Lightdust.Diagram";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.initialize = function() {
 					// TODO Bind against loaded models
@@ -447,8 +454,10 @@ define(
 							.param("processId");
 					this.model = m_model.findModel(this.modelId);
 
-					//TODO - this is a temporary workaround. This will have to be replaced with
-					// a solution where we can refresh / reload models from server side
+					// TODO - this is a temporary workaround. This will have to
+					// be replaced with
+					// a solution where we can refresh / reload models from
+					// server side
 					if (!this.model) {
 						m_model.loadModels(true);
 						this.model = m_model.findModel(this.modelId);
@@ -468,65 +477,84 @@ define(
 					m_gatewayPropertiesPanel.initialize(this);
 					m_annotationPropertiesPanel.initialize(this);
 					m_swimlanePropertiesPanel.initialize(this);
-					m_controlFlowPropertiesPanel
-							.initialize(this);
+					m_controlFlowPropertiesPanel.initialize(this);
 					m_dataFlowPropertiesPanel.initialize(this);
-					m_autoScrollManager.initScrollManager("scrollpane", function() {
-						var inAutoScrollMode = false;
-						if (null != currentDiagram.newSymbol
-						     		&& (currentDiagram.newSymbol.isPoolSymbol() ||
-						     				currentDiagram.newSymbol.type == m_constants.SWIMLANE_SYMBOL)) {
-							// For Default Pool drag and drop is not allowed.
-							inAutoScrollMode = false;
-						}else if (true == currentDiagram.isInConnectionMode()
-								|| currentDiagram.mode == currentDiagram.SYMBOL_MOVE_MODE
-								|| null != currentDiagram.newSymbol
-								|| true == currentDiagram.isDragAndDropMode()) {
-							inAutoScrollMode = true;
-						} else {
-							inAutoScrollMode = false;
-						}
+					m_autoScrollManager
+							.initScrollManager(
+									"scrollpane",
+									function() {
+										var inAutoScrollMode = false;
+										if (null != currentDiagram.newSymbol
+												&& (currentDiagram.newSymbol
+														.isPoolSymbol() || currentDiagram.newSymbol.type == m_constants.SWIMLANE_SYMBOL)) {
+											// For Default Pool drag and drop is
+											// not allowed.
+											inAutoScrollMode = false;
+										} else if (true == currentDiagram
+												.isInConnectionMode()
+												|| currentDiagram.mode == currentDiagram.SYMBOL_MOVE_MODE
+												|| null != currentDiagram.newSymbol
+												|| true == currentDiagram
+														.isDragAndDropMode()) {
+											inAutoScrollMode = true;
+										} else {
+											inAutoScrollMode = false;
+										}
 
-						return inAutoScrollMode;
-					}, function(event) {
-						if (null != currentDiagram.newSymbol
-								|| currentDiagram.isInConnectionMode()) {
-							currentDiagram.onGlobalMouseMove(event.pageX
-									- X_OFFSET
-									+ currentDiagram.scrollPane
-											.scrollLeft(), event.pageY
-									- Y_OFFSET
-									+ currentDiagram.scrollPane
-											.scrollTop());
-						} else if (currentDiagram.currentSelection.length > 0) {
-							for (var i in currentDiagram.currentSelection) {
-								if (currentDiagram.currentSelection[i].toString() == "Lightdust.Connection") {
-									//TODO - The connnection should stick with mouse pointer
-									// in case of auto-scroll in case of a re-route
-								} else {
-									currentDiagram.currentSelection[i].move(event.pageX
-											- X_OFFSET
-											+ currentDiagram.scrollPane
-													.scrollLeft(), event.pageY
-											- Y_OFFSET
-											+ currentDiagram.scrollPane
-													.scrollTop())
-								}
-							}
-						}
-					});
+										return inAutoScrollMode;
+									},
+									function(event) {
+										if (null != currentDiagram.newSymbol
+												|| currentDiagram
+														.isInConnectionMode()) {
+											currentDiagram
+													.onGlobalMouseMove(
+															event.pageX
+																	- X_OFFSET
+																	+ currentDiagram.scrollPane
+																			.scrollLeft(),
+															event.pageY
+																	- Y_OFFSET
+																	+ currentDiagram.scrollPane
+																			.scrollTop());
+										} else if (currentDiagram.currentSelection.length > 0) {
+											for ( var i in currentDiagram.currentSelection) {
+												if (currentDiagram.currentSelection[i]
+														.toString() == "Lightdust.Connection") {
+													// TODO - The connnection
+													// should stick with
+													// mouse pointer
+													// in case of auto-scroll in
+													// case of a
+													// re-route
+												} else {
+													currentDiagram.currentSelection[i]
+															.move(
+																	event.pageX
+																			- X_OFFSET
+																			+ currentDiagram.scrollPane
+																					.scrollLeft(),
+																	event.pageY
+																			- Y_OFFSET
+																			+ currentDiagram.scrollPane
+																					.scrollTop())
+												}
+											}
+										}
+									});
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.getEndpointUrl = function() {
 					return m_urlUtils.getContextName()
-							+ "/services/rest/bpm-modeler/modeler/" + new Date().getTime();
+							+ "/services/rest/bpm-modeler/modeler/"
+							+ new Date().getTime();
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.createTransferObject = function() {
 					var transferObject = {};
@@ -535,8 +563,10 @@ define(
 
 					transferObject.poolSymbols = {};
 
-					transferObject.poolSymbols[this.poolSymbol.id] = this.poolSymbol
-							.createTransferObject();
+					for ( var id in this.poolSymbols) {
+						transferObject.poolSymbols[id] = this.poolSymbols[id]
+								.createTransferObject();
+					}
 
 					return transferObject;
 				};
@@ -561,13 +591,17 @@ define(
 				/**
 				 * Find symbol in current model by ModelElement OID
 				 */
-				Diagram.prototype.findSymbolByModelElementGuid = function(guid, modelId) {
+				Diagram.prototype.findSymbolByModelElementGuid = function(guid,
+						modelId) {
 
 					if (null != guid) {
 						for ( var i = 0; i < this.symbols.length; i++) {
 							if (this.symbols[i].diagram.modelId == modelId
-									&& (this.symbols[i].modelElement != null &&
-											this.symbols[i].modelElement.oid == guid)) {
+									&& (this.symbols[i].modelElement != null && this.symbols[i].modelElement.oid == guid)) {
+								return this.symbols[i];
+							} else if (this.symbols[i].diagram.modelId == modelId
+									&& m_constants.ANNOTATION_SYMBOL == this.symbols[i].type
+									&& this.symbols[i].oid == guid) {
 								return this.symbols[i];
 							}
 						}
@@ -584,8 +618,7 @@ define(
 
 					for ( var i = 0; i < this.connections.length; i++) {
 						if (this.connections[i].diagram.modelId == modelId
-								&& (this.connections[i].fromModelElementOid == conn.fromModelElementOid &&
-										this.connections[i].toModelElementOid == conn.toModelElementOid)) {
+								&& (this.connections[i].fromModelElementOid == conn.fromModelElementOid && this.connections[i].toModelElementOid == conn.toModelElementOid)) {
 							// while adding a connection, to update connection
 							// connection is searched using modelELementOid
 							return this.connections[i];
@@ -653,14 +686,18 @@ define(
 						// Delete removed elements
 						for ( var i = 0; i < obj.changes.removed.length; i++) {
 							var symbol = this
-									.findSymbolByGuid(obj.changes.removed[i].oid, command.modelId);
+									.findSymbolByGuid(
+											obj.changes.removed[i].oid,
+											command.modelId);
 							if (null == symbol) {
-								symbol = this
-										.findSymbolByModelElementGuid(obj.changes.removed[i].oid, command.modelId);
+								symbol = this.findSymbolByModelElementGuid(
+										obj.changes.removed[i].oid,
+										command.modelId);
 							}
 							if (null == symbol) {
-								symbol = this
-										.findConnectionByGuid(obj.changes.removed[i].oid, command.modelId);
+								symbol = this.findConnectionByGuid(
+										obj.changes.removed[i].oid,
+										command.modelId);
 							}
 							if (null != symbol) {
 								symbol.remove();
@@ -669,8 +706,10 @@ define(
 
 						}
 
-						// Run the added loop and create any swimlanes before creating other elements
-						// particularly useful in case of UNDO of swimlane delete
+						// Run the added loop and create any swimlanes before
+						// creating other elements
+						// particularly useful in case of UNDO of swimlane
+						// delete
 						for ( var i = 0; i < obj.changes.added.length; i++) {
 							if (obj.changes.added[i].type == m_constants.SWIMLANE_SYMBOL) {
 								if ((null != this.lastSymbol && null != obj.changes.added[i].type)
@@ -681,9 +720,16 @@ define(
 									this.lastSymbol.refresh();
 									this.registerSymbol(this.lastSymbol);
 									this.lastSymbol = null;
-								} else {
-									if (null == this.findSymbolByGuid(obj.changes.added[i].oid, command.modelId)) {
-										this.poolSymbol.laneSymbols.push(m_swimlaneSymbol.createSwimlaneSymbolFromJson(this, this.poolSymbol, obj.changes.added[i]));
+								} else if (command.isUndo || command.isRedo) {
+									if (null == this.findSymbolByGuid(
+											obj.changes.added[i].oid,
+											command.modelId)) {
+										this.poolSymbol.laneSymbols
+												.push(m_swimlaneSymbol
+														.createSwimlaneSymbolFromJson(
+																this,
+																this.poolSymbol,
+																obj.changes.added[i]));
 										this.poolSymbol.sortLanes();
 										this.poolSymbol.adjustChildSymbols();
 									}
@@ -691,15 +737,16 @@ define(
 							}
 						}
 
-						//Run the added loop to add all data symbols except connections and swimlane
-						//For connections the loop is run again - to make sure all connected symbols are
-						//created already
+						// Run the added loop to add all data symbols except
+						// connections and swimlane
+						// For connections the loop is run again - to make sure
+						// all connected symbols are
+						// created already
 						for ( var i = 0; i < obj.changes.added.length; i++) {
 							if (!(obj.changes.added[i].type == m_constants.CONTROL_FLOW_CONNECTION
 									|| obj.changes.added[i].type == m_constants.DATA_FLOW_CONNECTION
 									|| obj.changes.added[i].type == m_constants.CONTROL_FLOW
-									|| obj.changes.added[i].type == m_constants.DATA_FLOW
-									|| obj.changes.added[i].type == m_constants.SWIMLANE_SYMBOL)) {
+									|| obj.changes.added[i].type == m_constants.DATA_FLOW || obj.changes.added[i].type == m_constants.SWIMLANE_SYMBOL)) {
 								if ((null != this.lastSymbol && null != obj.changes.added[i].type)
 										&& obj.changes.added[i].type
 												.match(this.lastSymbol.type)) {
@@ -710,8 +757,10 @@ define(
 									this.lastSymbol = null;
 								}// For connections lastSymbol will be empty
 								else if (command.isUndo || command.isRedo) {
-									// Else block is executed in case of undo / redo
-									//Find swimlane from modified array or added
+									// Else block is executed in case of undo /
+									// redo
+									// Find swimlane from modified array or
+									// added
 									var swimlane;
 									for ( var j = 0; j < obj.changes.modified.length; j++) {
 										if (obj.changes.modified[j].type == m_constants.SWIMLANE_SYMBOL) {
@@ -727,33 +776,56 @@ define(
 									}
 
 									if (swimlane) {
-										swimlane = this.findSymbolByGuid(swimlane.oid, command.modelId);
+										swimlane = this.findSymbolByGuid(
+												swimlane.oid, command.modelId);
 									} else {
-										//Swimlane delete undo scenario
+										// Swimlane delete undo scenario
 										for ( var j = 0; j < obj.changes.added.length; j++) {
 											if (obj.changes.added[j].type == m_constants.SWIMLANE_SYMBOL) {
-												swimlane = m_swimlaneSymbol.createSwimlaneSymbolFromJson(this, this.poolSymbol, obj.changes.added[j]);
-												this.poolSymbol.laneSymbols.push(swimlane);
+												swimlane = m_swimlaneSymbol
+														.createSwimlaneSymbolFromJson(
+																this,
+																this.poolSymbol,
+																obj.changes.added[j]);
+												this.poolSymbol.laneSymbols
+														.push(swimlane);
 												this.poolSymbol.sortLanes();
-												this.poolSymbol.adjustChildSymbols();
+												this.poolSymbol
+														.adjustChildSymbols();
 											}
 										}
 									}
 
 									if (swimlane) {
-										//Attach prototype object
+										// Attach prototype object
 										obj.changes.added[i].prototype = {};
 										if (obj.changes.added[i].type == m_constants.ACTIVITY_SYMBOL) {
-											m_activitySymbol.createActivitySymbolFromJson(this, swimlane, obj.changes.added[i]);
+											m_activitySymbol
+													.createActivitySymbolFromJson(
+															this,
+															swimlane,
+															obj.changes.added[i]);
 											this.lastSymbol = null;
 										} else if (obj.changes.added[i].type == m_constants.GATEWAY_SYMBOL) {
-											m_gatewaySymbol.createGatewaySymbolFromJson(this, swimlane, obj.changes.added[i])
+											m_gatewaySymbol
+													.createGatewaySymbolFromJson(
+															this,
+															swimlane,
+															obj.changes.added[i])
 											this.lastSymbol = null;
 										} else if (obj.changes.added[i].type == m_constants.EVENT_SYMBOL) {
-											m_eventSymbol.createEventSymbolFromJson(this, swimlane, obj.changes.added[i])
+											m_eventSymbol
+													.createEventSymbolFromJson(
+															this,
+															swimlane,
+															obj.changes.added[i])
 											this.lastSymbol = null;
 										} else if (obj.changes.added[i].type == m_constants.DATA_SYMBOL) {
-											m_dataSymbol.createDataSymbolFromJson(this, swimlane, obj.changes.added[i]);
+											m_dataSymbol
+													.createDataSymbolFromJson(
+															this,
+															swimlane,
+															obj.changes.added[i]);
 											this.lastSymbol = null;
 										}
 									}
@@ -761,13 +833,14 @@ define(
 							}
 						}
 
-						//Run the added loop again to add data connections
+						// Run the added loop again to add data connections
 						for ( var i = 0; i < obj.changes.added.length; i++) {
 							if (obj.changes.added[i].type == m_constants.CONTROL_FLOW_CONNECTION
 									|| obj.changes.added[i].type == m_constants.DATA_FLOW_CONNECTION
 									|| obj.changes.added[i].type == m_constants.CONTROL_FLOW
 									|| obj.changes.added[i].type == m_constants.DATA_FLOW) {
-								var conn = this.findConnection(obj.changes.added[i], command.modelId);
+								var conn = this.findConnection(
+										obj.changes.added[i], command.modelId);
 								if (null != conn) {
 									conn.applyChanges(obj.changes.added[i]);
 									conn.refresh();
@@ -784,24 +857,35 @@ define(
 						this.animationEasing = "<";
 
 						for ( var i = 0; i < obj.changes.modified.length; i++) {
-							var symbol = this
-									.findSymbolByGuid(obj.changes.modified[i].oid, command.modelId);
+							var symbol = this.findSymbolByGuid(
+									obj.changes.modified[i].oid,
+									command.modelId);
 
 							if (symbol != null) {
 								m_utils.debug("Up to changed symbol:");
 								m_utils.debug(symbol);
 
-								symbol.lastModifyingUser = command.account; //m_session.getUserByAccount(command.account);
+								symbol.lastModifyingUser = command.account; // m_session.getUserByAccount(command.account);
 
 								symbol.applyChanges(obj.changes.modified[i]);
 								m_utils.debug("Changed symbol to:");
 								m_utils.debug(symbol);
 								symbol.refresh();
+								if (symbol.type == m_constants.SWIMLANE_SYMBOL) {
+									// When swimlane co-ordinates change in
+									// Undo/Redo,
+									// PoolSymbol needs adjustment.
+									symbol.parentSymbol
+											.recalculateBoundingBox();
+									symbol.parentSymbol.adjustPrimitives();
+									this.poolSymbol.adjustChildSymbols();
+								}
 								this.resetLastSymbol(symbol.oid);
 							}
 
-							symbol = this
-									.findSymbolByModelElementGuid(obj.changes.modified[i].oid, command.modelId);
+							symbol = this.findSymbolByModelElementGuid(
+									obj.changes.modified[i].oid,
+									command.modelId);
 
 							if (symbol != null) {
 								m_utils.debug("Up to changed symbol:");
@@ -820,8 +904,9 @@ define(
 							}
 
 							// Check if connection is modified
-							var conn = this
-									.findConnectionByGuid(obj.changes.modified[i].oid, command.modelId);
+							var conn = this.findConnectionByGuid(
+									obj.changes.modified[i].oid,
+									command.modelId);
 
 							if (null != conn) {
 								conn.applyChanges(obj.changes.modified[i]);
@@ -829,8 +914,9 @@ define(
 								conn.reroute();
 								conn.refresh();
 							} else {
-								conn = this
-										.findConnectionByModelElementGuid(obj.changes.modified[i].oid, command.modelId);
+								conn = this.findConnectionByModelElementGuid(
+										obj.changes.modified[i].oid,
+										command.modelId);
 								if (null != conn) {
 									m_utils.inheritFields(conn.modelElement,
 											obj.changes.modified[i]);
@@ -846,7 +932,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.findActivitySymbolById = function(id) {
 					for ( var n in this.activitySymbols) {
@@ -861,7 +947,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.resetLastSymbol = function(oid) {
 					if (oid && this.lastSymbol != null
@@ -871,7 +957,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.findGatewaySymbolById = function(id) {
 					for ( var n in this.gatewaySymbols) {
@@ -886,7 +972,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.findEventSymbolById = function(id) {
 					for ( var n in this.eventSymbols) {
@@ -901,7 +987,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.findDataSymbolById = function(id) {
 					for ( var n in this.dataSymbols) {
@@ -916,7 +1002,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.submitUpdate = function() {
 					// TODO Incomplete
@@ -928,13 +1014,13 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.onUpdate = function() {
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.addActivitySymbol = function() {
 					this.newSymbol = m_activitySymbol.createActivitySymbol(
@@ -942,7 +1028,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.isDragAndDropMode = function() {
 					if (parent.iDnD.getTransferObject()) {
@@ -953,14 +1039,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.isInConnectionMode = function() {
 					return this.mode == this.CONNECTION_MODE;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.setSelectMode = function() {
 					this.clearCurrentSelection();
@@ -978,7 +1064,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.setSeparatorMode = function() {
 					this.clearCurrentSelection();
@@ -996,7 +1082,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.isInNormalMode = function() {
 					return this.mode == this.NORMAL_MODE;
@@ -1028,7 +1114,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.onGlobalMouseMove = function(x, y) {
 					if (this.newSymbol != null) {
@@ -1172,7 +1258,8 @@ define(
 
 							if (this.currentConnection.toAnchorPoint.symbol == null
 									|| (this.currentConnection.toAnchorPoint.symbol.type == m_constants.SWIMLANE_SYMBOL)) {
-								// when connection moves with toAnchorPoint.symbol as
+								// when connection moves with
+								// toAnchorPoint.symbol as
 								// swimlane , move is allowed on connection
 								this.currentConnection.toAnchorPoint.moveTo(x
 										* this.zoomFactor, y * this.zoomFactor);
@@ -1183,7 +1270,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.onGlobalMouseUp = function(x, y) {
 					if (this.mode == this.RUBBERBAND_MODE) {
@@ -1211,7 +1298,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.getSymbolContainingCoordinates = function(x,
 						y) {
@@ -1225,7 +1312,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.moveLeftOfBy = function(x, dX) {
 					for ( var n in this.symbols) {
@@ -1236,7 +1323,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.moveRightOfBy = function(x, dX) {
 					for ( var n in this.symbols) {
@@ -1247,7 +1334,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.moveAboveBy = function(y, dY) {
 					for ( var n in this.symbols) {
@@ -1258,7 +1345,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.moveBelowBy = function(y, dY) {
 					for ( var n in this.symbols) {
@@ -1269,7 +1356,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.getSymbolContainingCoordinatesExcludeContainerSymbols = function(
 						x, y) {
@@ -1284,7 +1371,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.checkSnapLines = function(symbol) {
 					this.verticalSnapLine.hide();
@@ -1333,7 +1420,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.hideSnapLines = function(symbol) {
 					this.verticalSnapLine.hide();
@@ -1344,7 +1431,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.adjustVerticalSnapLine = function(newPosition) {
 					this.verticalSnapLinePosition = newPosition;
@@ -1355,7 +1442,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.adjustHorizontalSnapLine = function(
 						newPosition) {
@@ -1367,7 +1454,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.snapSymbol = function(symbol) {
 					if (this.isVerticalSnap) {
@@ -1389,7 +1476,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.onClick = function(x, y) {
 					if (this.newSymbol != null) {
@@ -1440,7 +1527,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.flipFlowOrientation = function(anchorPoint) {
 					if (this.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
@@ -1449,9 +1536,13 @@ define(
 						this.flowOrientation = m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL;
 					}
 
-					this.poolSymbol.flipFlowOrientation(this.flowOrientation);
-					this.poolSymbol.recalculateBoundingBox();
-					this.poolSymbol.adjustGeometry();
+					// TODO Not the right algorithm - kept as a reminder to change
+					
+					for ( var id in this.poolSymbols) {
+						this.poolSymbols[id].flipFlowOrientation(this.flowOrientation);
+						this.poolSymbols[id].recalculateBoundingBox();
+						this.poolSymbols[id].adjustGeometry();
+					}
 
 					// Rotate anchor points
 
@@ -1462,14 +1553,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.print = function(anchorPoint) {
 					jQuery("#scrollpane").print();
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.connectSymbol = function(symbol) {
 					this.mode = this.CONNECTION_MODE;
@@ -1481,24 +1572,25 @@ define(
 						this.currentConnection = m_connection.createConnection(
 								this, symbol.anchorPoints[1]);
 					}
-					if(null!=this.currentConnection){
+					if (null != this.currentConnection) {
 						// Set dummy anchor point
 						this.currentConnection.setDummySecondAnchorPoint();
-					}else{
+					} else {
 						this.mode = this.NORMAL_MODE;
 					}
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.connectToActivity = function(symbol) {
 					this.addAndConnectSymbol(symbol, m_activitySymbol
-							.createActivitySymbol(this, m_constants.MANUAL_ACTIVITY_TYPE));
+							.createActivitySymbol(this,
+									m_constants.MANUAL_ACTIVITY_TYPE));
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.connectToGateway = function(symbol) {
 					this.addAndConnectSymbol(symbol, m_gatewaySymbol
@@ -1506,7 +1598,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.connectToStopEvent = function(symbol) {
 					this.addAndConnectSymbol(symbol, m_eventSymbol
@@ -1514,7 +1606,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.addAndConnectSymbol = function(startSymbol,
 						targetSymbol) {
@@ -1527,9 +1619,10 @@ define(
 						this.currentConnection = m_connection.createConnection(
 								this, startSymbol.anchorPoints[2]);
 						if (null != this.currentConnection
-								&& this.currentConnection.validateCreateConnection(
-										this.currentConnection.fromAnchorPoint,
-										this.newSymbol.anchorPoints[0])) {
+								&& this.currentConnection
+										.validateCreateConnection(
+												this.currentConnection.fromAnchorPoint,
+												this.newSymbol.anchorPoints[0])) {
 							this.currentConnection.prepare();
 							this.currentConnection
 									.setSecondAnchorPointNoComplete(this.newSymbol.anchorPoints[0]);
@@ -1558,7 +1651,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.setAnchorPoint = function(anchorPoint) {
 					if (this.currentConnection == null) {
@@ -1571,7 +1664,7 @@ define(
 						// Set dummy anchor point
 						if (this.currentConnection) {
 							this.currentConnection.setDummySecondAnchorPoint();
-						}else{
+						} else {
 							this.currentConnection = null;
 							this.mode = this.NORMAL_MODE;
 						}
@@ -1583,8 +1676,9 @@ define(
 								anchorPoint)) {
 							// When connection created from toolbar, the anchor
 							// point should not change
-							if(!$(".selected-tool").is("#connectorButton")){
-								this.currentConnection.updateAnchorPointForSymbol();
+							if (!$(".selected-tool").is("#connectorButton")) {
+								this.currentConnection
+										.updateAnchorPointForSymbol();
 							}
 							this.currentConnection
 									.setSecondAnchorPoint(anchorPoint);
@@ -1593,14 +1687,16 @@ define(
 							} else {
 								this.currentConnection.select();
 								m_messageDisplay
-								.showMessage("Connection created");
+										.showMessage("Connection created");
 							}
 							this.currentConnection = null;
 							this.mode = this.NORMAL_MODE;
-						}else{
-							if(this.currentConnection.toAnchorPoint.symbol){
-								m_utils.removeItemFromArray(
-										this.currentConnection.toAnchorPoint.symbol.connections, this.currentConnection);
+						} else {
+							if (this.currentConnection.toAnchorPoint.symbol) {
+								m_utils
+										.removeItemFromArray(
+												this.currentConnection.toAnchorPoint.symbol.connections,
+												this.currentConnection);
 							}
 
 						}
@@ -1614,14 +1710,14 @@ define(
 					return m_connection.createConnection(this, anchorPoint);
 				};
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.addToCurrentSelection = function(drawable) {
 					this.currentSelection.push(drawable);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.deselectCurrentSelection = function() {
 					for ( var item in this.currentSelection) {
@@ -1630,7 +1726,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.clearCurrentSelection = function() {
 					this.deselectCurrentSelection();
@@ -1658,7 +1754,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.showProcessPropertiesPanel = function() {
 					m_processPropertiesPanel.getInstance().setElement(
@@ -1670,7 +1766,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.moveSelectedSymbolsTo = function(dX, dY) {
 					for ( var n in this.currentSelection) {
@@ -1679,34 +1775,45 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.showEditable = function(textPrimitive) {
 					this.currentTextPrimitive = textPrimitive;
 					var scrollPos = m_modelerUtils.getModelerScrollPosition();
 					// Use the Symbol's x co-ordinate to decide the width of
 					// textbox
-					var textboxWidth = textPrimitive.auxiliaryProperties.callbackScope.width
-							- WIDTH_ADJUSTMENT;
 					m_utils.debug("text primitive set");
-					this.editableText.css("width", parseInt(textboxWidth
-							.valueOf()));
+					var name = null;
+					if (m_constants.ANNOTATION_SYMBOL == textPrimitive.auxiliaryProperties.callbackScope.type) {
+						name = textPrimitive.auxiliaryProperties.callbackScope.content;
+					} else {
+						name = textPrimitive.auxiliaryProperties.callbackScope.modelElement.name;
+						var textboxWidth = textPrimitive.auxiliaryProperties.callbackScope.width
+								- WIDTH_ADJUSTMENT;
+						this.editableText.css("width", parseInt(textboxWidth
+								.valueOf()));
+					}
+					
 					this.editableText
 							.css("visibility", "visible")
-							.html(textPrimitive.auxiliaryProperties.callbackScope.modelElement.name)
+							.html(name)
 							.moveDiv(
 									{
 										"x" : textPrimitive.auxiliaryProperties.callbackScope.x
-												+ X_OFFSET + textPrimitive.auxiliaryProperties.callbackScope.width/5 - scrollPos.left,
+												+ X_OFFSET
+												+ textPrimitive.auxiliaryProperties.callbackScope.width
+												/ 5 - scrollPos.left,
 										"y" : textPrimitive.auxiliaryProperties.callbackScope.y
-												+ Y_OFFSET + textPrimitive.auxiliaryProperties.callbackScope.height/3 -scrollPos.top
+												+ Y_OFFSET
+												+ textPrimitive.auxiliaryProperties.callbackScope.height
+												/ 3 - scrollPos.top
 									}).show().trigger("dblclick");
 					this.symbolEditMode = true;
 					m_utils.debug("editable activated");
 				};
-
+				
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.submitEditable = function(content) {
 					if (content == '') {
@@ -1716,11 +1823,20 @@ define(
 								.trigger("blur");
 						this.currentTextPrimitive.attr("text", content);
 						m_utils.debug("text set");
-						var changes = {
-							modelElement : {
-								name : this.currentTextPrimitive.attr("text")
+						var changes;
+						if (m_constants.ANNOTATION_SYMBOL == this.currentTextPrimitive.auxiliaryProperties.callbackScope.type) {
+							changes = {
+								content : this.currentTextPrimitive
+										.attr("text")
 							}
-						};
+						} else {
+							changes = {
+								modelElement : {
+									name : this.currentTextPrimitive
+											.attr("text")
+								}
+							}
+						}
 
 						m_commandsController
 								.submitCommand(m_command
@@ -1737,7 +1853,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.cancelEditable = function() {
 					this.editableText.css("visibility", "hidden").hide()
@@ -1748,7 +1864,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.zoomIn = function() {
 					this.zoomFactor = Math.max(this.zoomFactor
@@ -1764,7 +1880,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.zoomOut = function() {
 					this.zoomFactor = this.zoomFactor
@@ -1780,7 +1896,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.loadProcess = function() {
 					m_communicationController.syncGetData({
@@ -1802,7 +1918,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.loadFromJson = function(json) {
 					m_utils.debug("===> Process/Diagram JSON");
@@ -1810,20 +1926,40 @@ define(
 
 					// Create pools and lanes
 
-					// TODO Multiple pool symbols
-
+					var poolCount = 0;
+					
 					for ( var n in json.poolSymbols) {
-						m_poolSymbol.createPoolSymbolFromJson(this,
+						this.poolSymbols[n] = m_poolSymbol.createPoolSymbolFromJson(this,
 								json.poolSymbols[n]);
+						
+						// TODO Remove
+						
+						this.poolSymbol = this.poolSymbols[n];
+						
+						poolCount++;
 					}
 
-					if (this.poolSymbol == null) {
+					if (poolCount == 0) {
 						m_messageDisplay
 								.showErrorMessage("Process diagram does not contain any pools. Possibly not well-formed BPMN.");
 					}
 
-					this.setSize(this.poolSymbol.width, this.poolSymbol.height);
-					this.flowOrientation = this.poolSymbol.orientation;
+					// TODO Correct algorithms
+					
+					var totalWidth = 0;
+					var totalHeight = 0;
+					
+					for ( var n in this.poolSymbols) {
+						totalWidth += this.poolSymbols[n].width;
+						totalHeight += this.poolSymbols[n].height;
+					}
+					
+					this.setSize(totalWidth, totalHeight);
+
+					for ( var n in this.poolSymbols) {						
+						this.flowOrientation = this.poolSymbols[n].orientation;
+						break;
+					}
 
 					m_utils.debug("===> Diagram JSON");
 					m_utils.debug(this);
@@ -1840,7 +1976,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.setSize = function(width, height) {
 					this.width = width;
@@ -1853,7 +1989,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.applyDecoration = function(decoration) {
 					for ( var decorationElement in decoration.elements) {
@@ -1903,7 +2039,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.findLane = function(id) {
 					return this.poolSymbol.findLane(id);

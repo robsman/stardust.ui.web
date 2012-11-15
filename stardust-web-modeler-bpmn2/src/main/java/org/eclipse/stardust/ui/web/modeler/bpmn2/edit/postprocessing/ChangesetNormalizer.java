@@ -1,7 +1,5 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2.edit.postprocessing;
 
-import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findContainingModel;
-
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Definitions;
@@ -42,6 +40,11 @@ public class ChangesetNormalizer implements ChangePostprocessor
       // modified
       for (EObject element : change.getModifiedElements())
       {
+         if (null == change.findContainer(element, Definitions.class))
+         {
+            // no BPMN2 element
+            continue;
+         }
          Pair<InspectionQualifier, EObject> inspectionResult = inspectModification(element);
          if ((null == inspectionResult) || (InspectionQualifier.Accept == inspectionResult.getFirst()))
          {
@@ -60,7 +63,7 @@ public class ChangesetNormalizer implements ChangePostprocessor
       // added
       for (EObject candidate : change.getAddedElements())
       {
-         if ((null != findContainingModel(candidate))
+         if ((null != change.findContainer(candidate, Definitions.class))
                && !isModelOrModelElement(candidate))
          {
             if ( !isIgnoredElement(candidate))
@@ -84,7 +87,8 @@ public class ChangesetNormalizer implements ChangePostprocessor
       // removed
       for (EObject candidate : change.getRemovedElements())
       {
-         if ( !isModelOrModelElement(candidate))
+         if ((null != change.findContainer(candidate, Definitions.class))
+               && !isModelOrModelElement(candidate))
          {
             change.markUnmodified(candidate);
          }

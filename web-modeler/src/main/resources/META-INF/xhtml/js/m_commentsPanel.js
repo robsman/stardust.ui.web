@@ -36,7 +36,7 @@ define(
 							+ " #submitButton");
 					this.deleteButton = jQuery("#" + this.scope
 							+ " #deleteButton");
-
+					this.deleteButton.attr("title","+Delete");
 					this.submitButton.click({
 						panel : this
 					}, function(event) {

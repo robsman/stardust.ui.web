@@ -41,20 +41,15 @@
       <property name="javac.debuglevel" value="lines,source" />
    </target>
 
-   <target name="init" depends="initOnDevelopment, initOnProduction, initBuildDir, initIvy">
-      <property name="build.dir" value="${build.home}" />
+   <target name="init" depends="initOnDevelopment, initOnProduction">
+      <property name="build.dir" value="${project.dir}/build" />
    </target>
 
    <target name="clean" depends="init" description="removes all build results">
       <delete dir="${build.dir}" />
    </target>
 
-   <target name="initBuildDir" unless="build.home">
-      <property name="build.home" value="${project.dir}/build" />
-   </target>
-
-   <target name="initBuild" depends="init, initBuildDir">
-      <property name="build.dir" value="${build.home}" />
+   <target name="initBuild" depends="init">
       <property name="build.classes" value="${build.dir}/classes" />
       <property name="build.lib" value="${build.dir}/lib" />
       <property name="build.lib.src" value="${build.dir}/src" />
@@ -80,7 +75,7 @@
       <init-ivy />
    </target>
 
-   <target name="initClasspath" depends="init">
+   <target name="initClasspath" depends="initIvy">
    	<init-ivy-classpath />
 
       <path id="web.modeler.classpath">
@@ -112,7 +107,8 @@
       </copy>
    </target>
    
-   <target name="compile" depends="prepareSources, initClasspath, init" description="Compiles the project's Java classes">
+   <target name="compile" depends="prepareSources, initClasspath" 
+      description="Compiles the project's Java classes" unless="skip.compile">
       <!-- if build.fast property is set - only CurrentVersion class is compiled here. Otherwise all classes are compiled -->
       <ipp:javac-java6 destdir="${build.classes}"
          srcdir="${build.src.generated}" sourcepath="${build.src.generated}:${build.src.static}">
@@ -162,24 +158,26 @@
    </target>
 
    <target name="dist" depends="build, jar.src">
-      <!-- TODO: copy to correct location -->
-      <!-- property name="stardust.dir" value="../.." />
-      <copy file="${xpdl.builder.jar}" todir="${stardust.dir}/ide/engine/org.eclipse.stardust.ide.engine.base/lib" />
-      <copy file="${xpdl.builder.src-jar}" todir="${stardust.dir}/ide/engine/org.eclipse.stardust.ide.engine.base/lib" / -->
+      <property name="stardust.dir" value="../.." />
+      <copy file="${web.modeler.jar}" todir="${stardust.dir}/ide.wst/org.eclipse.stardust.ide.wst.facet.portal/lib" />
    </target>
 
    <target name="deploy" depends="build" />
 
-   <target name="install" depends="deploy" if="maven.localRepository"
-     description="installs the artifacts into a local Maven repository">
-     <ipp:init-mvn />
+   <target name="install" if="maven.localRepository" depends="initBuild"
+      description="installs the artifacts into a local Maven repository">
+
+      <ipp:init-mvn localMavenRepository="${maven.localRepository}" />
+      <ipp:mvn-install file="${web.modeler.jar}" 
+      	pomFile="${build.lib}/${artifactId}.pom" />
+   </target>
+   
+   <target name="publish" depends="initBuild"
+     description="publish artifacts into a remote Maven repository">
+
       <ipp:init-mvn />
-      <exec dir="." executable="${m2.home}/bin/${mvn.exe}" failonerror="true">
-         <arg value="install:install-file"/>
-         <arg value="-Dfile=${web.modeler.jar}"/>
-         <arg value="-DpomFile=${build.lib}/${artifactId}.pom"/>
-         <arg value="-DlocalRepositoryPath=${maven.localRepository}"/>
-      </exec>
+      <ipp:mvn-deploy file="${web.modeler.jar}" 
+      	pomFile="${build.lib}/${artifactId}.pom" />
    </target>
    
    <!-- target is invoked by stardust-engine-nls project -->

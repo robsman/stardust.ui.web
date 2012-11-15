@@ -24,6 +24,8 @@ define(
 					viewObject(obj);
 				},
 
+				typeObject : typeObject,
+
 				inheritFields : function(childObject, parentObject) {
 					inheritFields(childObject, parentObject);
 				},
@@ -52,7 +54,11 @@ define(
 
 				formatDate : formatDate,
 
-				textWrap : textWrap
+				textWrap : textWrap,
+
+				xmlToString: xmlToString,
+
+				contentWrap : contentWrap
 			};
 
 			function getLastIndexOf(str, searchStr) {
@@ -131,7 +137,8 @@ define(
 					str += content.charAt(i);
 				}
 				t.attr({
-					"text" : str
+					"text" : str,
+					"title" : content
 				});
 			}
 
@@ -157,11 +164,31 @@ define(
 			}
 
 			/**
+			 *
+			 */
+			function typeObject(proto, untypedObject) {
+				var typedObject = Object.create(proto);
+			    for(prop in untypedObject) {
+			        if(untypedObject.hasOwnProperty(prop)) {
+			            typedObject[prop] = untypedObject[prop];
+			        }
+			    }
+			    return typedObject;
+			}
+
+			/**
 			 * Copies all data members of and object into another object
 			 * recursively. Members existing in the childObject and not existing
 			 * in the parentObject will not be overwritten.
 			 *
 			 * Arrays however will be overwritten.
+			 *
+			 * TODO - review behaviour for attributes:
+			 * Attributes also will be over written, like arrays, as in some cases attributes don't
+			 * switch between different values (like true and false), but they
+			 * either exist or they don't. In such cases it is necessary to
+			 * remove the attributes from child if they don't exist in the
+			 * parent.
 			 *
 			 * The function will not check for cyclic dependencies.
 			 *
@@ -175,7 +202,8 @@ define(
 
 					if (typeof parentObject[member] == "object"
 							&& childObject[member] != null
-							&& !isArray(parentObject[member])) {
+							&& !isArray(parentObject[member])
+							&& !isAttribute(member)) {
 						// Copy recursively
 
 						inheritFields(childObject[member], parentObject[member]);
@@ -186,12 +214,23 @@ define(
 			}
 
 			/**
+			 *
+			 */
+			function isAttribute(member) {
+				if (member == "attributes") {
+					return true;
+				}
+
+				return false;
+			}
+
+			/**
 			 * See http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
 			 */
 			function isArray(o) {
 				  return Object.prototype.toString.call(o) === '[object Array]';
 				}
-			
+
 			/**
 			 * Copies all methods of and object into another object.
 			 */
@@ -673,5 +712,41 @@ define(
 				var y = utc ? date.getUTCFullYear() : date.getFullYear();
 
 				return !(y % 4) && (y % 100) || !(y % 400) ? true : false;
+			}
+
+			/**
+			 * Stringifies the content of an entire XML tag.
+			 */
+			function xmlToString(xmlData)
+			{
+			    var xmlString;
+
+			    // IE
+			    if (window.ActiveXObject){
+			        xmlString = xmlData.xml;
+			    }
+			    // Code for Mozilla, Firefox, Opera, etc.
+			    else{
+			        xmlString = (new XMLSerializer()).serializeToString(xmlData[0]);
+			    }
+
+			    return xmlString;
+			}
+
+			/** wraps String
+			 * @param content :
+			 *           	string to be wrapped
+			 * @param maxLength :
+			 * 				max number of characters in one line
+			 * @param brk :
+			 * 				The character(s) to be inserted at every break
+			 *
+			 */
+			function contentWrap(content, maxLength, brk) {
+				if (!content) {
+					return content;
+				}
+				var regex = ".{1," + maxLength + "}(\\s|$)";
+				return content.match(RegExp(regex, "g")).join(brk);
 			}
 		});

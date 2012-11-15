@@ -118,12 +118,23 @@ public class ProcessesView extends AbstractLaunchPanel implements
          {
             activateIframe();
          }
+
+         if (null != sessionLogPanel && sessionLogPanel.isExpanded())
+         {
+            SessionLogPanel.activateSessionLogPanelIframe();
+         }
          break;
       case DEACTIVATED:
       case LAUNCH_PANELS_DEACTIVATED:
          deActivateIframe();
+         if (null != sessionLogPanel && sessionLogPanel.isExpanded())
+         {
+            SessionLogPanel.deactivateSessionLogPanelIframe();
+         }
          FacesUtils.refreshPage();
          break;
       }
+
+
    }
 }

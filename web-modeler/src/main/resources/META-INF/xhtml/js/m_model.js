@@ -22,32 +22,30 @@ define(
 					return new Model();
 				},
 
-				findModel : function(id) {
-					return getModels()[id];
-				},
+				findModel : findModel,
 
 				deleteModel : function(id) {
 					delete getModels()[id];
 				},
 
 				findTypeDeclaration : function(fullId) {
-					return getModels()[stripModelId(fullId)].typeDeclarations[stripElementId(fullId)];
+					return findModel(stripModelId(fullId)).typeDeclarations[stripElementId(fullId)];
 				},
 
 				findData : function(fullId) {
-					return getModels()[stripModelId(fullId)].dataItems[stripElementId(fullId)];
+					return findModel(stripModelId(fullId)).dataItems[stripElementId(fullId)];
 				},
 
 				findApplication : function(fullId) {
-					return getModels()[stripModelId(fullId)].applications[stripElementId(fullId)];
+					return findModel(stripModelId(fullId)).applications[stripElementId(fullId)];
 				},
 
 				findParticipant : function(fullId) {
-					return getModels()[stripModelId(fullId)].participants[stripElementId(fullId)];
+					return findModel(stripModelId(fullId)).participants[stripElementId(fullId)];
 				},
 
 				findProcess : function(fullId) {
-					return getModels()[stripModelId(fullId)].processes[stripElementId(fullId)];
+					return findModel(stripModelId(fullId)).processes[stripElementId(fullId)];
 				},
 				createModel : function(id, name, uuid) {
 					var model = new Model();
@@ -61,7 +59,7 @@ define(
 					return model;
 				},
 				renameModel : function(id, newId, newName) {
-					var model = getModels()[id];
+					var model = findModel(id);
 
 					model.id = newId;
 					model.name = newName;
@@ -71,7 +69,7 @@ define(
 				},
 				/**
 				 * TODO May not be safe as element OIDs are not unique.
-				 * 
+				 *
 				 * @param guid
 				 * @returns
 				 */
@@ -103,7 +101,7 @@ define(
 
 				/**
 				 * Fetches the model for given element UUID.
-				 * 
+				 *
 				 * @param elementUUID
 				 * @returns model
 				 */
@@ -122,7 +120,7 @@ define(
 
 				/**
 				 * Fetches the element with given OID within the given modelId.
-				 * 
+				 *
 				 * @param guid
 				 * @returns
 				 */
@@ -143,7 +141,7 @@ define(
 
 				/**
 				 * Fetches the element with given UUID within the given modelId.
-				 * 
+				 *
 				 * @param guid
 				 * @returns
 				 */
@@ -164,7 +162,7 @@ define(
 				},
 
 				/**
-				 * 
+				 *
 				 */
 				getFullId : function(model, symbolId) {
 					return model.id + ":" + symbolId;
@@ -172,7 +170,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function stripModelId(fullId) {
 				// TODO Change to format {modelId}/elementId once server has
@@ -183,7 +181,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function stripElementId(fullId) {
 				// TODO Change to format {modelId}/elementId once server has
@@ -194,7 +192,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Model() {
 				this.type = m_constants.MODEL;
@@ -207,21 +205,21 @@ define(
 				this.participants = {};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.toString = function() {
 					return "Lightdust.Model";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.getFullId = function() {
 					return this.id;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.rename = function(id, name) {
 					delete getModels()[this.id];
@@ -232,7 +230,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.getNewDataIndex = function() {
 					var index = 0;
@@ -247,14 +245,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.toJsonString = function() {
 					return JSON.stringify(this);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.getApplicationIndex = function() {
 					var index = 0;
@@ -305,7 +303,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.findModelElementById = function(id) {
 					var n;
@@ -344,7 +342,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.findTypeDeclarationBySchemaName = function(
 						schemaName) {
@@ -367,8 +365,12 @@ define(
 				return window.top.models;
 			}
 
+			function findModel(id) {
+				return getModels()[id];
+			}
+
 			/**
-			 * 
+			 *
 			 */
 			function loadModels(force) {
 				if (!force && getModels() != null) {
@@ -379,7 +381,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function refreshModels() {
 				m_communicationController.syncGetData({
@@ -398,7 +400,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function bindModels() {
 				for ( var model in getModels()) {
@@ -407,7 +409,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function bindModel(model) {
 				// TODO Ugly, user prototype

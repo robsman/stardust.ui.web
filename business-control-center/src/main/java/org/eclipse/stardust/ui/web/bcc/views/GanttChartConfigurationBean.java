@@ -332,7 +332,7 @@ public class GanttChartConfigurationBean extends UIComponentBean implements Conf
             if (successor != null && predecessor != null && successor.equals(predecessor))
             {
 
-               warningMessage = MessagesViewsCommonBean.getInstance().getString(
+               warningMessage = propsBean.getString(
                      "views.ganttChartView.configure.error.successorEqualsPredecessor");
                return;
 
@@ -555,7 +555,7 @@ public class GanttChartConfigurationBean extends UIComponentBean implements Conf
       MessagePropertiesBean propsBean = MessagePropertiesBean.getInstance();
       ganttChartConfirmationDialog.setTitle(propsBean.getString("common.configurationPanel.confirmResetTitle"));
       ganttChartConfirmationDialog.setMessage(propsBean.getParamString("common.configurationPanel.confirmReset",
-            MessagesViewsCommonBean.getInstance().getString("views.ganttChartView.labelTitle")));
+            MessagesBCCBean.getInstance().getString("views.ganttChartView.labelTitle")));
       ganttChartConfirmationDialog.openPopup();
    }
 

@@ -11,5 +11,7 @@ public class EventJto extends ModelElementJto
 
    public String eventType;
 
+   public String eventClass;
+
    // TODO more details
 }

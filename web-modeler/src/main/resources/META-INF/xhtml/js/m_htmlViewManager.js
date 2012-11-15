@@ -18,25 +18,25 @@ define([ "m_utils", "m_extensionManager" ], function(m_utils,
 		m_extensionManager) {
 	return {
 		create : function() {
-			return new TestViewManager();
+			return new HtmlViewManager();
 		}
 	};
 
 	/**
 	 * 
 	 */
-	function TestViewManager() {
+	function HtmlViewManager() {
 		/**
 		 * 
 		 */
-		TestViewManager.prototype.toString = function() {
-			return "Lightdust.TestViewManager";
+		HtmlViewManager.prototype.toString = function() {
+			return "Lightdust.HtmlViewManager";
 		};
 
 		/**
 		 * 
 		 */
-		TestViewManager.prototype.openView = function(viewId, queryString,
+		HtmlViewManager.prototype.openView = function(viewId, queryString,
 				objectId) {
 			var extension = m_extensionManager.findExtensions("view", "viewId",
 					viewId)[0];
@@ -44,6 +44,8 @@ define([ "m_utils", "m_extensionManager" ], function(m_utils,
 			m_utils.debug("Extension: " + extension.viewHtmlUrl + " "
 					+ extension.viewJavaScriptUrl);
 
+			jQuery("#viewHeader").empty();
+			jQuery("#viewHeader").append(extension.viewLabel);
 			jQuery("#viewAnchor").attr("src", extension.viewHtmlUrl + "?" + queryString);
 		};
 	}

@@ -2,84 +2,85 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils" ],
-		function(m_utils) {
+		[ "m_utils","m_i18nUtils" ],
+		function(m_utils,m_i18nUtils) {
+			
 			var categories = {
 				"General" : {
-					"label" : "General",
+					"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.general"), 
 					"categories" : [],
 					"properties" : [ {
-						"label" : "Key",
+						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.general.persistent"), 
 						"type" : "boolean"
 					}, {
-						"label" : "Persistent",
+						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.general.key"), 
 						"type" : "boolean"
 					} ]
 				},
 				"UI" : {
-					"label" : "UI",
+					"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui"),
 					"categories" : [],
 					"properties" : [ {
-						"label" : "Label",
+						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.label"), 
 						"type" : "String"
 					},{
 						"name" : "InputPreferences_showDescription",
-						"label" : "Show Description",
+						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.showDescription"), 
 						"type" : "boolean"
 					}, 
 					{
 						"name" : "InputPreferences_readonly",
-						"label" : "Readonly",
+						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.readOnly"), 
 						"type" : "boolean"
 					}, {
 						"name" : "InputPreferences_mandatory",
-						"label" : "Mandatory",
+						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.mandatory"), 
 						"type" : "boolean"
 					}, {
-						"label" : "Format",
+						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.format"),
 						"type" : "string"
 					}, {
 						"name" : "InputPreferences_style",
-						"label" : "CSS Style",
+						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.cssStyle"),
 						"type" : "string"
 					}, {
 						"name" : "InputPreferences_styleClass",
-						"label" : "CSS Style Class",
+						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.cssStyleClass"),
 						"type" : "string"
 					}, {
 						"name" : "InputPreferences_prefixKey",
-						"label" : "Prefix I18N Key",
+						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.prefixI18NKey"),
 						"type" : "string"
 					}, {
 						"name" : "InputPreferences_suffixKey",
-						"label" : "Suffix I18N Key",
+						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.suffixI18NKey"),
 						"type" : "string"
 					}, {
 						"name" : "StringInputPreferences_stringInputType",
-						"label" : "String Input Type",
+						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.stringInputType"),
 						"type" : "string",
 						"enumeration" : [ {
-							"label" : "TextInput",
+							"label" :  m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.textInput"),
 							"value" : "TEXTINPUT"
 						}, {
-							"label" : "Text Area",
+							"label" :  m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.textArea"),
 							"value" : "TEXTAREA"
 						} ]
 					}, {
-						"label" : "Text Area Rows",
+						"label" :  m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.textAreaRows"),
 						"type" : "long"
 					}, {
-						"label" : "Text Area Columns",
+						"label" :  m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.textAreaColumns"),
 						"type" : "long"
 					}, {
 						"name" : "BooleanInputPreferences_readonlyOutputType",
-						"label" : "Boolean Readonly Input Type",
+						"label" :  m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.booleanReadonlyInputType"),
 						"type" : "string",
 						"enumeration" : [ {
-							"label" : "Checkbox",
+							"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.checkBox"),
 							"value" : "CHECKBOX"
 						}, {
-							"label" : "Text Output",
+							"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.textOutput"),
 							"value" : "TEXTOUTPUT"
 						} ]
 					} ]

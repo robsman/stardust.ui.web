@@ -26,6 +26,11 @@ public class DefaultLogger implements Logger
       this.logger = logger;
    }
    
+   public void debug(Throwable throwable)
+   {
+      logger.debug("", throwable);
+   }   
+   
    public void debug(Object o)
    {
       logger.debug(o.toString());
@@ -36,6 +41,11 @@ public class DefaultLogger implements Logger
       logger.debug(o.toString(), throwable);
    }
 
+   public void error(Throwable throwable)
+   {
+      logger.error("", throwable);
+   }
+   
    public void error(Object o)
    {
       logger.error(o.toString());
@@ -46,6 +56,11 @@ public class DefaultLogger implements Logger
       logger.error(o.toString(), throwable);
    }
 
+   public void fatal(Throwable throwable)
+   {
+      logger.trace("", throwable);
+   }
+   
    public void fatal(Object o)
    {
       logger.trace(o.toString());
@@ -56,6 +71,11 @@ public class DefaultLogger implements Logger
       logger.trace(o.toString(), throwable);
    }
 
+   public void info(Throwable throwable)
+   {
+      logger.info("", throwable);
+   }
+   
    public void info(Object o)
    {
       logger.info(o.toString());
@@ -66,6 +86,11 @@ public class DefaultLogger implements Logger
       logger.info(o.toString(), throwable);
    }
 
+   public void warn(Throwable throwable)
+   {
+      logger.warn("", throwable);
+   }
+   
    public void warn(Object o)
    {
       logger.warn(o.toString());

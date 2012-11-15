@@ -11,25 +11,25 @@
 	<ice:panelGroup>
 		<ice:panelGroup styleClass="heading">
 			<ice:outputText
-				value="Process Modeling Configuration" />
+				value="#{bpmModelerMessages['configuremodeling.panel.heading']}" />
 		</ice:panelGroup>
 		<ice:panelGrid columns="1">
 			<ice:outputText
-				value="Changes will only become effective after next login." />
+				value="#{bpmModelerMessages['configuremodeling.panel.changes']}" />
 		</ice:panelGrid>
 		<ice:panelGrid columns="2" style="margin-top: 10px;">
 			<ice:selectBooleanCheckbox partialSubmit="true"
 				value="#{modelingConfigurationPanel.showTechnologyPreview}"
 				valueChangeListener="#{modelingConfigurationPanel.showTechnologyPreviewChanged}" />
-			<ice:outputLabel value="Show Technology Preview Features" />
+			<ice:outputLabel value="#{bpmModelerMessages['configuremodeling.panel.preview']}" />
 		</ice:panelGrid>
 		<ice:panelGrid columns="2" style="margin-top: 10px;">
-			<ice:outputLabel value="Default Profile" />
+			<ice:outputLabel value="#{bpmModelerMessages['configuremodeling.panel.defaultProfile']}" />
 			<ice:selectOneMenu partialSubmit="true"
 				value="#{modelingConfigurationPanel.defaultProfile}" valueChangeListener="#{modelingConfigurationPanel.defaultProfileChanged}">
 				<f:selectItem itemValue="BusinessAnalyst"
-					itemLabel="Business Analyst" />
-				<f:selectItem itemValue="Integrator" itemLabel="Integrator" />
+					itemLabel="#{bpmModelerMessages['launchpanels.profileSelector.list1.businessAnalyst']}" />
+				<f:selectItem itemValue="Integrator" itemLabel="#{bpmModelerMessages['launchpanels.profileSelector.list2.integrator']}" />
 			</ice:selectOneMenu>
 		</ice:panelGrid>
 	</ice:panelGroup>

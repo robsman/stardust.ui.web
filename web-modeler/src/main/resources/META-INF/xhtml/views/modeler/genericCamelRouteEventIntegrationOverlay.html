@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Generic Camel Route</title>
+</head>
+<body>
+	<div id="propertiesTabs" style="margin-top: 10px;">
+		<ul id="propertiesTabsList">
+			<li><a href="#configurationTab"><span class="tabLabel"
+					id="configuration">Configuration</span> </a>
+			</li>
+			<li><a href="#parametersTab"><span class="tabLabel"
+					id="parameters">Parameters</span> </a>
+			</li>
+		</ul>
+		<div id="configurationTab">
+			<table>
+				<tr>
+					<td><div class="code">&lt;route&gt;</div>
+					</td>
+				</tr>
+				<tr>
+					<td><div id="endpointUriPrefix" class="code">&lt;from
+							uri="</div>
+					</td>
+				</tr>
+				<tr>
+					<td><textarea id="endpointUriTextarea" cols="40" rows="2"
+							class="code">
+																</textarea>
+					</td>
+				</tr>
+				<tr>
+					<td><div class="code">"&gt;</div>
+					</td>
+				</tr>
+				<tr>
+					<td><label for="routeTextarea">Additional Route
+							Specification</label>
+					</td>
+				</tr>
+				<tr>
+					<td><textarea id="routeTextarea" cols="40" rows="3"
+							class="code"></textarea></td>
+				</tr>
+				<tr>
+					<td><div class="code">&lt;/route&gt;</div>
+					</td>
+				</tr>
+				<tr>
+					<td><label for="beanTextarea">Additional Beans
+							Specification</label>
+					</td>
+				</tr>
+				<tr>
+					<td><textarea id="beanTextarea" cols="40" rows="3"
+							class="code"></textarea></td>
+				</tr>
+			</table>
+		</div>
+		<div id="parametersTab">
+			<div id="parameterMappingsPanelAnchor" />
+		</div>
+	</div>
+</body>
+</html>

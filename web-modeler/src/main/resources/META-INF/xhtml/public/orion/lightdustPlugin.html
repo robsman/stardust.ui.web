@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Reverse Plugin</title>
+<script src="plugin.js"></script>
+<script>
+	window.onload = function() {
+		var headers = {
+			name : "Lightdust Plugin",
+			version : "1.0",
+			description : "Lightdust BPMN plugin."
+		};
+		var provider = new orion.PluginProvider(headers);
+
+		// Process modeling editor
+
+		provider
+				.registerServiceProvider(
+						"orion.edit.editor",
+						{},
+						{
+							id : "lightdust.editor",
+							name : "Lightdust Process Model Editor",
+							uriTemplate : "http://localhost:8080/pepper-test/plugins/bpm-modeler/public/processEditor.html?modelFile={Location}"
+						});
+
+		// Content types for process models
+		
+		provider.registerServiceProvider("orion.core.contenttype", {}, {
+			contentTypes : [ {
+				id : "text/xpdl",
+				name : "XPDL",
+				extension : [ "xpdl" ]
+			}, {
+				id : "text/bpmn",
+				name : "BPMN",
+				extension : [ "bpmn" ]
+			} ]
+		});
+
+		// Connect file extensions to content types
+	
+		provider.registerServiceProvider("orion.navigate.openWith", {}, {
+			editor : "lightdust.editor",
+			contentType : [ "text/xpdl", "text/bpmn" ]
+		});
+
+		// Navigator entry to create an empty process model
+		
+		var temp = document.createElement('a');
+		temp.href = "empty-model.zip";
+
+		provider.registerService("orion.navigate.content", null, {
+			id: "lightdust.content.bpmn",
+			name: "Create Process Model",
+			description: "Create an empty BPMN Process Model.",
+			command: "orion.importZipURL",
+			parameters: [{name: "url", type: "url", label: "Extracted from:", defaultValue: temp.href},
+				{name: "unzip", type: "boolean", label: "Unzip:", defaultValue: true}]
+		});
+		
+		provider.connect();
+	};
+</script>
+</head>
+<body></body>
+</html>

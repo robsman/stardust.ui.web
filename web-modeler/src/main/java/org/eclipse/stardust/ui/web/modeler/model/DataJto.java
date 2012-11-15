@@ -11,5 +11,7 @@ public class DataJto extends ModelElementJto
 
    public String dataType;
 
+   public String structuredDataTypeFullId;
+
    // TODO more details
 }

@@ -19,7 +19,7 @@ public class ModelJto
    public String filePath;
 
    public List<ModelParticipantJto> participants = newArrayList();
-   public List<StructuredDataTypeJto> typeDeclarations = newArrayList();
+   public List<TypeDeclarationJto> typeDeclarations = newArrayList();
    public List<DataJto> dataItems = newArrayList();
    public List<ApplicationJto> applications = newArrayList();
    public List<ProcessDefinitionJto> processes = newArrayList();

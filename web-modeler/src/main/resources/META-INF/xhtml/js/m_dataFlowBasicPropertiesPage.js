@@ -28,7 +28,7 @@ define(
 						propertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
@@ -72,6 +72,8 @@ define(
 													true);
 
 											return;
+										} else {
+											page.propertiesPanel.element.modelElement.inputDataMapping = undefined;
 										}
 
 										page
@@ -85,7 +87,14 @@ define(
 													// TODO Usually, we are not
 													// submitting the object
 													// itself
-													modelElement : page.propertiesPanel.element.modelElement
+													//modelElement : page.propertiesPanel.element.modelElement
+													modelElement : {
+														id : page.propertiesPanel.element.modelElement.id,
+														name : page.propertiesPanel.element.modelElement.name,
+														updateDataMapping : true,
+														inputDataMapping : page.propertiesPanel.element.modelElement.inputDataMapping,
+														outputDataMapping : page.propertiesPanel.element.modelElement.outputDataMapping
+													}
 												});
 									});
 
@@ -108,6 +117,8 @@ define(
 													true);
 
 											return;
+										} else {
+											page.propertiesPanel.element.modelElement.outputDataMapping = undefined;
 										}
 
 										page
@@ -120,7 +131,14 @@ define(
 													// TODO Usually, we are not
 													// submitting the object
 													// itself
-													modelElement : page.propertiesPanel.element.modelElement
+													//modelElement : page.propertiesPanel.element.modelElement
+													modelElement : {
+														id : page.propertiesPanel.element.modelElement.id,
+														name : page.propertiesPanel.element.modelElement.name,
+														updateDataMapping : true,
+														inputDataMapping : page.propertiesPanel.element.modelElement.inputDataMapping,
+														outputDataMapping : page.propertiesPanel.element.modelElement.outputDataMapping
+													}
 												});
 									});
 
@@ -186,7 +204,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.setDirection = function(
 						hasInputMapping, hasOutputMapping) {
@@ -207,38 +225,18 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.populateInputAccessPointSelectInput = function(
 						dataFlow) {
 					this.inputAccessPointSelectInput.empty();
 
-					var contexts = {};
-					var count = 0;
-
-					for ( var n in dataFlow.activity.accessPoints) {
-						var accessPoint = dataFlow.activity.accessPoints[n];
-
-						if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
-							continue;
-						}
-
-						if (contexts[accessPoint.context] == null) {
-							contexts[accessPoint.context] = {};
-						}
-
-						contexts[accessPoint.context][accessPoint.id] = accessPoint;
-						count++;
-					}
-
-					if (count == 0) {
-						m_dialog
-								.makeInvisible(this.inputAccessPointSelectInputPanel);
-
-						return;
-					} else {
+					if (dataFlow.activity.hasInputAccessPoints()) {
 						m_dialog
 								.makeVisible(this.inputAccessPointSelectInputPanel);
+					} else {
+						m_dialog
+								.makeInvisible(this.inputAccessPointSelectInputPanel);
 					}
 
 					// TODO Use method of m_activity; proper type binding
@@ -251,13 +249,42 @@ define(
 								.append("<option value='DEFAULT'>(To be defined)</option>"); // I18N
 					}
 
-					for ( var i in contexts) {
+					m_utils.debug("Contexts");
+					m_utils.debug(dataFlow.activity.getContexts());
+
+					for ( var i in dataFlow.activity.getContexts()) {
+						var context = dataFlow.activity.getContexts()[i];
+						var count = 0;
+
+						m_utils.debug("i = " + i);
+						m_utils.debug(context);
+
+						for ( var m = 0; m < context.accessPoints.length; ++m) {
+							var accessPoint = context.accessPoints[m];
+
+							m_utils.debug("m = " + m);
+							m_utils.debug(accessPoint);
+
+							if (accessPoint.direction == m_constants.IN_ACCESS_POINT) {
+								count++;
+							}
+						}
+
+						if (count == 0) {
+							continue;
+						}
+
 						var group = jQuery("<optgroup label='" + i + "'/>"); // I18N
 
 						this.inputAccessPointSelectInput.append(group);
 
-						for ( var m in contexts[i]) {
-							var accessPoint = contexts[i][m];
+						for ( var m = 0; m < context.accessPoints.length; ++m) {
+							var accessPoint = context.accessPoints[m];
+
+							if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
+								continue;
+							}
+
 							var option = "<option value='";
 
 							option += i;
@@ -273,39 +300,21 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.populateOutputAccessPointSelectInput = function(
 						dataFlow) {
 					this.outputAccessPointSelectInput.empty();
 
-					var contexts = {};
-					var count = 0;
-
-					for ( var n in dataFlow.activity.accessPoints) {
-						var accessPoint = dataFlow.activity.accessPoints[n];
-
-						if (accessPoint.direction == m_constants.IN_ACCESS_POINT) {
-							continue;
-						}
-
-						if (contexts[accessPoint.context] == null) {
-							contexts[accessPoint.context] = {};
-						}
-
-						contexts[accessPoint.context][accessPoint.id] = accessPoint;
-						count++;
-					}
-
-					if (count == 0) {
-						m_dialog
-								.makeInvisible(this.outputAccessPointSelectInputPanel);
-
-						return;
-					} else {
+					if (dataFlow.activity.hasOutputAccessPoints()) {
 						m_dialog
 								.makeVisible(this.outputAccessPointSelectInputPanel);
+					} else {
+						m_dialog
+								.makeInvisible(this.outputAccessPointSelectInputPanel);
 					}
+
+					m_utils.debug("Before default");
 
 					// TODO Use method of m_activity; proper type binding
 					// required
@@ -317,13 +326,42 @@ define(
 								.append("<option value='DEFAULT'>(To be defined)</option>"); // I18N
 					}
 
-					for ( var i in contexts) {
+					m_utils.debug("Contexts");
+					m_utils.debug(dataFlow.activity.getContexts());
+
+					for ( var i in dataFlow.activity.getContexts()) {
+						var context = dataFlow.activity.getContexts()[i];
+						var count = 0;
+
+						m_utils.debug("i = " + i);
+						m_utils.debug(context);
+
+						for ( var m = 0; m < context.accessPoints.length; ++m) {
+							var accessPoint = context.accessPoints[m];
+
+							m_utils.debug("m = " + m);
+							m_utils.debug(accessPoint);
+
+							if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
+								count++;
+							}
+						}
+
+						if (count == 0) {
+							continue;
+						}
+
 						var group = jQuery("<optgroup label='" + i + "'/>"); // I18N
 
 						this.outputAccessPointSelectInput.append(group);
 
-						for ( var m in contexts[i]) {
-							var accessPoint = contexts[i][m];
+						for ( var m = 0; m < context.accessPoints.length; ++m) {
+							var accessPoint = context.accessPoints[m];
+
+							if (accessPoint.direction == m_constants.IN_ACCESS_POINT) {
+								continue;
+							}
+
 							var option = "<option value='";
 
 							option += i;
@@ -339,7 +377,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();

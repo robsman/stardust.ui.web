@@ -41,6 +41,7 @@ import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
+import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
@@ -58,6 +59,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
 @CommandHandler
 public class ConnectionCommandHandler
 {
+   
    @Resource
    private ApplicationContext springContext;
 
@@ -201,6 +203,32 @@ public class ConnectionCommandHandler
                      + " for connection.");
             }
          }
+         else if (ModelerConstants.ANNOTATION_SYMBOL.equals(extractString(request,
+               ModelerConstants.TO_MODEL_ELEMENT_TYPE))
+               || ModelerConstants.ANNOTATION_SYMBOL.equals(extractString(request,
+                     ModelerConstants.FROM_MODEL_ELEMENT_TYPE)))
+         {
+            String typeInRequest = extractString(request,
+                  ModelerConstants.FROM_MODEL_ELEMENT_TYPE);
+            Long oid = extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID);
+
+            INodeSymbol sourceSymbol = getNodeSymbol(request, processDefinition,
+                  typeInRequest, oid);
+
+            typeInRequest = extractString(request, ModelerConstants.TO_MODEL_ELEMENT_TYPE);
+            oid = extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID);
+
+            INodeSymbol targetSymbol = getNodeSymbol(request, processDefinition,
+                  typeInRequest, oid);
+
+            if (null != sourceSymbol && null != targetSymbol)
+            {
+               // TODO: Association is not supported in 7.1 so commented the code
+               // createAssociation(request, processDefinition, sourceSymbol,
+               // targetSymbol,
+               // maxOid);
+            }
+         }
          else
          {
             throw new IllegalArgumentException("Unsupported source symbol type "
@@ -208,6 +236,51 @@ public class ConnectionCommandHandler
                   + " for connection.");
          }
       }
+   }
+   
+   
+   /**
+    * Finds NodeSymbol in Model based on input parameters
+    * 
+    * @param request
+    *           : json Object
+    * @param processDefinition
+    * @param typeInRequest
+    *           (Activity, GateWay etc)
+    * @param oidInRequest
+    * @return
+    */
+   private INodeSymbol getNodeSymbol(JsonObject request,
+         ProcessDefinitionType processDefinition, String typeInRequest, Long oidInRequest)
+   {
+      INodeSymbol nodeSymbal = null;
+
+      if (ModelerConstants.ACTIVITY_KEY.equals(typeInRequest))
+      {
+         nodeSymbal = getModelBuilderFacade().findActivitySymbol(
+               processDefinition.getDiagram().get(0), oidInRequest);
+      }
+      else if (ModelerConstants.GATEWAY.equals(typeInRequest))
+      {
+         nodeSymbal = getModelBuilderFacade().findActivitySymbol(
+               processDefinition.getDiagram().get(0), oidInRequest);
+      }
+      else if (ModelerConstants.EVENT_KEY.equals(typeInRequest))
+      {
+         nodeSymbal = getModelBuilderFacade().findStartEventSymbol(
+               processDefinition.getDiagram().get(0), oidInRequest);
+      }
+      else if (ModelerConstants.DATA.equals(typeInRequest))
+      {
+         nodeSymbal = getModelBuilderFacade().findDataSymbol(
+               processDefinition.getDiagram().get(0), oidInRequest);
+      }
+      else if (ModelerConstants.ANNOTATION_SYMBOL.equals(typeInRequest))
+      {
+         nodeSymbal = getModelBuilderFacade().findAnnotationSymbol(
+               processDefinition.getDiagram().get(0), oidInRequest);
+      }
+      return nodeSymbal;
    }
 
    @OnCommand(commandId = "connection.delete")
@@ -367,6 +440,38 @@ public class ConnectionCommandHandler
             .add(transitionConnection);
    }
 
+   
+   /**
+    * creates association between model elements and Text Annotations TODO: currently
+    * Modeler API is not available
+    * 
+    * @param connectionJson
+    * @param processDefinition
+    * @param sourceSymbol
+    * @param targetSymbol
+    * @param maxOid
+    */
+   private void createAssociation(JsonObject connectionJson,
+         ProcessDefinitionType processDefinition, INodeSymbol sourceSymbol,
+         INodeSymbol targetSymbol, long maxOid)
+   {
+      TransitionConnectionType transitionConnection = AbstractElementBuilder.F_CWM.createTransitionConnectionType();
+      transitionConnection.setElementOid(++maxOid);
+      transitionConnection.setSourceNode(sourceSymbol);
+      transitionConnection.setTargetNode(targetSymbol);
+      transitionConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
+            connectionJson, ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+      transitionConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
+            connectionJson, ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+
+      processDefinition.getDiagram()
+            .get(0)
+            .getPoolSymbols()
+            .get(0)
+            .getTransitionConnection()
+            .add(transitionConnection);
+   }
+   
    /**
     *
     * @param connectionJson

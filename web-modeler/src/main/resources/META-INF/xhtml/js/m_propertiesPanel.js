@@ -333,7 +333,6 @@ define(
 				 */
 				PropertiesPanel.prototype.processCommand = function(command) {
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
-						// this.initializePropertiesPages();
 						this.setElement(this.element);
 
 						return;

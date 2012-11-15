@@ -7,6 +7,7 @@ public class ConnectionSymbolJto
 {
    public Long oid;
 
+   public String type;
    public ModelElementJto modelElement;
 
    public int fromAnchorPointOrientation = ModelerConstants.UNDEFINED_ORIENTATION_KEY;

@@ -36,20 +36,23 @@ public class ModelingUiExtensionsController
       StringBuilder buffer = new StringBuilder();
       buffer.append("define([ 'm_extensionManager',\n");
 
-      buffer.append("    // view managers\n");
+      buffer.append("    // View Managers\n");
       listExtensionDependencies(buffer, registry.getViewManagerExtensions());
 
-      buffer.append("    // diagram toolbar\n");
+      buffer.append("    // Diagram Toolbar\n");
       listExtensionDependencies(buffer, registry.getDiagramToolbarExtensions());
 
-      buffer.append("    // properties pages\n");
+      buffer.append("    // Properties Pages\n");
       listExtensionDependencies(buffer, registry.getPropertiesPageExtensions());
 
-      buffer.append("    // meta-types\n");
+      buffer.append("    // Meta-types\n");
       listExtensionDependencies(buffer, registry.getMetaModelExtensions());
 
-      buffer.append("    // decorations\n");
+      buffer.append("    // Decorations\n");
       listExtensionDependencies(buffer, registry.getModelDecorations());
+
+      buffer.append("    // Integration Overlays\n");
+      listExtensionDependencies(buffer, registry.getIntegrationOverlayExtensions());
 
       buffer.append("], function(m_extensionManager) {\n")
             .append("\n");
@@ -59,6 +62,7 @@ public class ModelingUiExtensionsController
       listExtensionInitialization(buffer, "registerPropertyPageExtensions", registry.getPropertiesPageExtensions());
       listExtensionInitialization(buffer, "registerMetaModelExtensions", registry.getMetaModelExtensions());
       listExtensionInitialization(buffer, "registerModelDecorationExtensions", registry.getModelDecorations());
+      listExtensionInitialization(buffer, "registerIntegrationOverlayExtensions", registry.getIntegrationOverlayExtensions());
 
       buffer.append("\n")
             .append("    return {};\n")
@@ -77,15 +81,21 @@ public class ModelingUiExtensionsController
       StringBuilder buffer = new StringBuilder();
       buffer.append("define([ 'm_extensionManager',\n");
 
-      buffer.append("    // view managers\n");
+      buffer.append("    // View Manager\n");
       listExtensionDependencies(buffer, registry.getViewManagerExtensions());
+
+      buffer.append("    // Meta Model\n");
       listExtensionDependencies(buffer, registry.getMetaModelExtensions());
+
+      buffer.append("    // Views\n");
+      listExtensionDependencies(buffer, registry.getViewExtensions());
 
       buffer.append("], function(m_extensionManager) {\n")
             .append("\n");
 
       listExtensionInitialization(buffer, "registerViewManager", registry.getViewManagerExtensions());
       listExtensionInitialization(buffer, "registerMetaModelExtensions", registry.getMetaModelExtensions());
+      listExtensionInitialization(buffer, "registerViewExtensions", registry.getViewExtensions());
 
       buffer.append("\n")
             .append("    return {};\n")
@@ -104,15 +114,18 @@ public class ModelingUiExtensionsController
       StringBuilder buffer = new StringBuilder();
       buffer.append("define([ 'm_extensionManager',\n");
 
-      buffer.append("    // view managers\n");
+      buffer.append("    // View Managers\n");
       listExtensionDependencies(buffer, registry.getViewManagerExtensions());
       listExtensionDependencies(buffer, registry.getMetaModelExtensions());
 
-      buffer.append("    // properties pages\n");
+      buffer.append("    // Properties Pages\n");
       listExtensionDependencies(buffer, registry.getPropertiesPageExtensions());
 
       buffer.append("    // Integration Overlays\n");
       listExtensionDependencies(buffer, registry.getIntegrationOverlayExtensions());
+
+      buffer.append("    // Views\n");
+      listExtensionDependencies(buffer, registry.getViewExtensions());
 
       buffer.append("], function(m_extensionManager) {\n")
             .append("\n");
@@ -121,6 +134,7 @@ public class ModelingUiExtensionsController
       listExtensionInitialization(buffer, "registerMetaModelExtensions", registry.getMetaModelExtensions());
       listExtensionInitialization(buffer, "registerPropertyPageExtensions", registry.getPropertiesPageExtensions());
       listExtensionInitialization(buffer, "registerIntegrationOverlayExtensions", registry.getIntegrationOverlayExtensions());
+      listExtensionInitialization(buffer, "registerViewExtensions", registry.getViewExtensions());
 
       buffer.append("\n")
             .append("    return {};\n")

@@ -11,13 +11,13 @@
 define(
 		[ "m_utils", "m_constants", "m_extensionManager", "m_session",
 				"m_commandsController", "m_dialog", "m_modelElementView",
-				"m_model" ],
+				"m_model","m_i18nUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_session,
-				m_commandsController, m_dialog, m_modelElementView, m_model) {
+				m_commandsController, m_dialog, m_modelElementView, m_model, m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
 					var view = new CamelApplicationView();
-
+				i18camelrouteproperties();
 					// TODO Unregister!
 					// In Initializer?
 					m_commandsController.registerCommandHandler(view);
@@ -26,6 +26,69 @@ define(
 				}
 			};
 
+
+			function i18camelrouteproperties() {
+
+				$("label[for='guidOutput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.uuid"));
+								
+				$("label[for='idOutput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.id"));
+
+				jQuery("#applicationName")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.applicationName"));
+				jQuery("#description")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.description"));
+				jQuery("#camelConfiguration")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.tab"));
+				jQuery("#endPointType")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.endpointType"));
+				jQuery("#camelContext")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.camelContext"));
+								 
+				jQuery("#addBeanSpec")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.additionalBeanSpecification"));
+				jQuery("#direction")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.direction"));
+
+				var directioninput = jQuery("#directionInput");
+
+				var selectdata = m_i18nUtils
+						.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.direction.requestOnly");
+				directioninput.append("<option value=\"requestOnly\">"
+						+ selectdata + "</option>");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.direction.requestResponse");
+				directioninput.append("<option value=\"requestResponse\">"
+						+ selectdata + "</option>");
+
+				var selectendpoint = jQuery("#endpointTypeSelectInput");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.endPoint.generic");
+				selectendpoint.append("<option value=\"genericEndpoint\">"
+						+ selectdata + "</option>");
+
+			}
 			/**
 			 * 
 			 */
@@ -118,6 +181,11 @@ define(
 												view.overlayControllers[jQuery(
 														this).attr("id")] = extension.provider
 														.create(view);
+												m_utils
+														.debug("Overlay loaded: "
+																+ jQuery(this)
+																		.attr(
+																				"id"));
 											}
 										});
 					}
@@ -130,7 +198,6 @@ define(
 						view.overlayControllers[view.endpointTypeSelectInput
 								.val()].activate();
 						view.setOverlay(view.endpointTypeSelectInput.val());
-
 					});
 
 					this.initializeModelElementView(application);
@@ -154,21 +221,28 @@ define(
 				 * Overlay protocol
 				 */
 				CamelApplicationView.prototype.activate = function() {
-					if (this.application.attributes["carnot:engine:camel::camelContextId"] == null) {
-						this.submitChanges({attributes: {"carnot:engine:camel::camelContextId": "Default"}});
-					}
 				};
 
 				/**
 				 * Overlay protocol
 				 */
 				CamelApplicationView.prototype.update = function() {
-					this.camelContextInput
-							.val(this.application.attributes["carnot:engine:camel::camelContextId"]);
-					this.routeTextarea
-							.val(this.application.attributes["carnot:engine:camel::routeEntries"]);
-					this.additionalBeanSpecificationTextarea
-							.val(this.application.attributes["carnot:engine:camel::additionalSpringBeanDefinitions"]);
+					if (this.application.attributes["carnot:engine:camel::camelContextId"] == null) {
+						this
+								.submitChanges({
+									attributes : {
+										"carnot:engine:camel::camelContextId" : "Default"
+									}
+								});
+					} else {
+						this.camelContextInput
+								.val(this.application.attributes["carnot:engine:camel::camelContextId"]);
+
+						this.routeTextarea
+								.val(this.application.attributes["carnot:engine:camel::routeEntries"]);
+						this.additionalBeanSpecificationTextarea
+								.val(this.application.attributes["carnot:engine:camel::additionalSpringBeanDefinitions"]);
+					}
 				};
 
 				/**
@@ -180,7 +254,7 @@ define(
 
 					m_utils.debug("===> Application");
 					m_utils.debug(application);
-					
+
 					this.initializeModelElement(application);
 
 					if (this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"] == null) {

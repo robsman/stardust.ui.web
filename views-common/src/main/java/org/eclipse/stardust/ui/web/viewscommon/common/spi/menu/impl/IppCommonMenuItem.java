@@ -11,6 +11,8 @@
 package org.eclipse.stardust.ui.web.viewscommon.common.spi.menu.impl;
 
 import org.eclipse.stardust.ui.web.common.spi.menu.CommonMenuItem;
+import org.eclipse.stardust.ui.web.common.util.AbstractMessageBean;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 
 /**
  * @author Anoop.Nair
@@ -25,6 +27,7 @@ public class IppCommonMenuItem implements CommonMenuItem
    private String URL;
    private String iconPath;
    private boolean changed;
+   private String titleCache;
    
    public IppCommonMenuItem()
    {
@@ -51,9 +54,40 @@ public class IppCommonMenuItem implements CommonMenuItem
       return id;
    }
 
+   /**
+    * If title is I18N, title will be of format 'messageBean#message' split and return the
+    * message
+    */
    public String getTitle()
    {
-      return title;
+      if (null == titleCache)
+      {
+         try
+         {
+            if (title.contains("#"))
+            {
+               String[] parts = title.split("#");
+               if (null != parts)
+               {
+                  AbstractMessageBean messBean = (AbstractMessageBean) FacesUtils.getBeanFromContext(parts[0]);
+                  String titleStr = messBean.getString(parts[1]);
+                  titleCache = titleStr;
+               }
+            }
+         }
+         catch (Exception e)
+         {
+         }
+         finally
+         {
+            if (null == titleCache)
+            {
+               titleCache = title;
+            }
+         }
+
+      }
+      return titleCache;
    }
 
    public String getURL()

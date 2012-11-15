@@ -1,7 +1,5 @@
 package org.eclipse.stardust.ui.web.modeler.edit.postprocessing;
 
-import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingApplication;
-
 import org.eclipse.emf.ecore.EObject;
 import org.springframework.stereotype.Component;
 
@@ -9,40 +7,17 @@ import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.ContextType;
-import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
 
 @Component
-public class ApplicationAccessPointChangeTracker implements ChangePostprocessor
+public class ApplicationAccessPointChangeTracker extends AbstractChangeTracker
 {
    @Override
-   public int getInspectionPhase()
-   {
-      return 100;
-   }
-
-   @Override
-
-   public void inspectChange(Modification change)
-   {
-      for (EObject candidate : change.getAddedElements())
-      {
-         trackApplicationAccessPointChanges(change, candidate);
-      }
-      for (EObject candidate : change.getModifiedElements())
-      {
-         trackApplicationAccessPointChanges(change, candidate);
-      }
-      for (EObject candidate : change.getRemovedElements())
-      {
-         trackApplicationAccessPointChanges(change, candidate);
-      }
-   }
-
-   private void trackApplicationAccessPointChanges(Modification change, EObject candidate)
+   protected void inspectChange(Modification change, EObject candidate)
    {
       if ((candidate instanceof AccessPointType) || (candidate instanceof ContextType))
       {
-         ApplicationType containingApplication = findContainingApplication(candidate);
+         ApplicationType containingApplication = change.findContainer(candidate,
+               ApplicationType.class);
          if (null != containingApplication)
          {
             change.markAlsoModified(containingApplication);

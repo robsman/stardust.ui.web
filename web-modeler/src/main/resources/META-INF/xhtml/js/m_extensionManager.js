@@ -65,6 +65,12 @@ define(
 					});
 				},
 
+				registerViewExtensions : function(extensionsConfig) {
+					loadExtensions({
+						view : extensionsConfig.view
+					});
+				},
+
 				/**
 				 * 
 				 * @param extensionPoint

@@ -86,7 +86,7 @@
 							<td><div id="idOutput" class="output"></div></td>
 						</tr>
 						<tr>
-							<td><label for="nameInput">Application Name</label></td>
+							<td><label for="nameInput" id="application">Application Name</label></td>
 							<td><input id="nameInput" type="text" style="width: 200px;"></input>
 							</td>
 						</tr>
@@ -94,7 +94,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td><label for="descriptionTextarea">Description</label></td>
+				<td><label for="descriptionTextarea" id="description">Description</label></td>
 			</tr>
 			<tr>
 				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
@@ -105,12 +105,12 @@
 				<td>
 					<div id="propertiesTabs" style="margin-top: 10px;">
 						<ul id="propertiesTabsList">
-							<li><a href="#configurationTab"><img
+							<li><a href="#configurationTab" id="configuration"><img
 									src="../../images/icons/basic-properties-page.png"></img><span
 									class="tabLabel">Configuration</span> </a></li>
 							<li><a href="#testTab"><img
 									src="../../images/icons/basic-properties-page.png"></img><span
-									class="tabLabel">Test</span> </a></li>
+									class="tabLabel" id="testdata">Test</span> </a></li>
 						</ul>
 						<div id="configurationTab">
 							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
@@ -119,9 +119,9 @@
 										<table cellpadding="0" cellspacing="0" class="layoutTable">
 											<tr valign="top">
 												<td>
-													<div class="heading" style="margin-bottom: 5px;">Source
+													<div class="heading" id="sourcemessage" style="margin-bottom: 5px;">Source
 														Message</div></td>
-												<td><div class="heading"
+												<td><div class="heading" id="targetmessage"
 														style="margin-bottom: 5px; margin-left: 10px;">Target
 														Message</div></td>
 											</tr>
@@ -160,8 +160,8 @@
 																			style="width: 500px;">
 																			<thead>
 																				<tr>
-																					<th style="width: 400px;">Element</th>
-																					<th style="width: 100px;">Type</th>
+																					<th style="width: 400px;" id="element">Element</th>
+																					<th style="width: 100px;" id="type">Type</th>
 																				</tr>
 																			</thead>
 																			<tbody />
@@ -202,8 +202,8 @@
 																						type="image" src="../../images/bulb-off.gif"
 																						title="Display highlighted and non-highlighted fields" />
 																					</td>
-																					<td><input type="image"
-																						src="../../images/error.gif"
+																					<td><input id="filterFieldsWithMappingInvalid" 
+																						type="image" src="../../images/error.gif"
 																						title="Display only fields whose mapping expression is invalid" />
 																					</td>
 																					<td><input id="targetFilterInput" type="text"
@@ -220,10 +220,10 @@
 																				style="width: 900px;">
 																				<thead>
 																					<tr>
-																						<th style="width: $ 00px;">Element</th>
-																						<th style="width: 100px;">Type</th>
-																						<th style="width: 200px;">Mapping</th>
-																						<th style="width: 200px;">Problem</th>
+																						<th style="width: 400px;" id="element1">Element</th>
+																						<th style="width: 100px;" id="type1">Type</th>
+																						<th style="width: 200px;" id="mapping">Mapping</th>
+																						<th style="width: 200px;" id="problem">Problem</th>
 																					</tr>
 																				</thead>
 																				<tbody />
@@ -236,7 +236,7 @@
 											</tr>
 											<tr>
 												<td colspan="2"><div class="heading"
-														style="margin-top: 10px;">Advanced Mapping</div></td>
+														id= advancedMapping style="margin-top: 10px;">Advanced Mapping</div></td>
 											</tr>
 											<tr>
 												<td colspan="2"><div id="elementIndicatorText">&nbsp;</div>
@@ -268,7 +268,7 @@
 										</table></td>
 								</tr>
 								<tr>
-									<td><label for="inputDataTextArea">Input Data</label>
+									<td><label for="inputDataTextArea" id="inputData">Input Data</label>
 									</td>
 								</tr>
 								<tr>
@@ -276,7 +276,7 @@
 											style="width: 680px;"></textarea></td>
 								</tr>
 								<tr>
-									<td><label for="outputDataTable">Output Data</label>
+									<td><label for="outputDataTable" id="outputData">Output Data</label>
 									</td>
 								</tr>
 								<tr>
@@ -296,14 +296,14 @@
 		style="min-width: 300px; min-height: 200px;">
 		<table>
 			<tr>
-				<td><label for="typeSelectInput">Type:</label>
+				<td><label for="typeSelectInput" id="type">Type:</label>
 				</td>
 				<td><select id="typeSelectInput">
 				</select>
 				</td>
 			</tr>
 			<tr>
-				<td><label for="nameTextInput">Name:</label>
+				<td><label for="nameTextInput" id="name">Name:</label>
 				</td>
 				<td><input id="nameTextInput" type="text" />
 				</td>
@@ -325,14 +325,14 @@
 		style="min-width: 300px; min-height: 200px;">
 		<table>
 			<tr>
-				<td><label for="typeSelectInput">Type:</label>
+				<td><label for="typeSelectInput" id="type">Type:</label>
 				</td>
 				<td><select id="typeSelectInput">
 				</select>
 				</td>
 			</tr>
 			<tr>
-				<td><label for="nameTextInput">Name:</label>
+				<td><label for="nameTextInput" id="name">Name:</label>
 				</td>
 				<td><input id="nameTextInput" type="text" />
 				</td>

@@ -34,8 +34,8 @@ public class ApplicationTypeChangeCommandHandler
    @OnCommand(commandId = "webServiceApplication.create")
    public void createWebServiceApp(ModelType model, JsonObject request)
    {
-      String applicationID = extractString(request, ModelerConstants.ID_PROPERTY);
       String applicationName = extractString(request, ModelerConstants.NAME_PROPERTY);
+      String applicationID = getModelBuilderFacade().createIdFromName(applicationName);
 
       ApplicationType applicationType = getModelBuilderFacade().createApplication(model,
             applicationID, applicationName,
@@ -49,8 +49,8 @@ public class ApplicationTypeChangeCommandHandler
    @OnCommand(commandId = "messageTransformationApplication.create")
    public void createMessageTransformationApp(ModelType model, JsonObject request)
    {
-      String applicationID = extractString(request, ModelerConstants.ID_PROPERTY);
       String applicationName = extractString(request, ModelerConstants.NAME_PROPERTY);
+      String applicationID = getModelBuilderFacade().createIdFromName(applicationName);
 
       ApplicationType applicationType = getModelBuilderFacade().createApplication(model,
             applicationID, applicationName,
@@ -65,8 +65,8 @@ public class ApplicationTypeChangeCommandHandler
    @OnCommand(commandId = "camelApplication.create")
    public void createCamelApp(ModelType model, JsonObject request)
    {
-      String applicationID = extractString(request, ModelerConstants.ID_PROPERTY);
       String applicationName = extractString(request, ModelerConstants.NAME_PROPERTY);
+      String applicationID = getModelBuilderFacade().createIdFromName(applicationName);
 
       ApplicationType applicationType = getModelBuilderFacade().createApplication(model,
             applicationID, applicationName,
@@ -80,8 +80,8 @@ public class ApplicationTypeChangeCommandHandler
    @OnCommand(commandId = "uiMashupApplication.create")
    public void createUiMashupApp(ModelType model, JsonObject request)
    {
-      String id = extractString(request, ModelerConstants.ID_PROPERTY);
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
+      String id = getModelBuilderFacade().createIdFromName(name);
 
       ApplicationType applicationType = getModelBuilderFacade().createApplication(model,
             id, name, ModelerConstants.EXTERNAL_WEB_APP_CONTEXT_TYPE_KEY);

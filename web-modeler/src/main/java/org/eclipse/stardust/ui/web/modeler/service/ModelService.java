@@ -75,6 +75,7 @@ import org.eclipse.xsd.*;
 import org.eclipse.xsd.impl.XSDImportImpl;
 import org.eclipse.xsd.util.XSDResourceFactoryImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.google.gson.JsonArray;
@@ -263,6 +264,9 @@ public class ModelService
    public static final int START_END_SYMBOL_LEFT_OFFSET = 12;
 
    @Resource
+   private ApplicationContext context;
+
+   @Resource
    private UserIdProvider me;
 
    @Resource
@@ -333,13 +337,11 @@ public class ModelService
    }
 
    /**
-    *
+    * Only used for ORION integration
     * @param modelManagementStrategy
     */
-   @Deprecated
    public void setModelManagementStrategy(ModelManagementStrategy modelManagementStrategy)
    {
-      // TODO review if really needed
       currentSession().setModelManagementStrategy(modelManagementStrategy);
    }
 
@@ -2255,7 +2257,7 @@ public class ModelService
       }
    }
 
-   private ModelBuilderFacade getModelBuilderFacade()
+   public ModelBuilderFacade getModelBuilderFacade()
    {
       return new ModelBuilderFacade(getModelManagementStrategy());
    }

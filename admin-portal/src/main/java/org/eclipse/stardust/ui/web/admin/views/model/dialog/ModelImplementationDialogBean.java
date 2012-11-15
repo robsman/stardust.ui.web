@@ -126,11 +126,11 @@ public class ModelImplementationDialogBean extends PopupUIComponentBean implemen
       ImplementationTableEntry selectedRow = null;
 
       int index = getSelectedIndex(implementationTable.getList());
-      String implementationModelID = null;
+      String implementationId = null;
       if (index != -1)
       {
          selectedRow = implementationTable.getList().get(index);
-         implementationModelID = selectedRow.getModelId();
+         implementationId = selectedRow.getImplementationId();
       }
 
       try
@@ -141,7 +141,7 @@ public class ModelImplementationDialogBean extends PopupUIComponentBean implemen
          // processName,
          // implementationModelID, options);
          administrationService.setPrimaryImplementation(userObject.getParent().getOid(), userObject.getTreeItem()
-               .getProcessId(), implementationModelID, options);
+               .getProcessId(), implementationId, options);
 
          ModelCache.findModelCache().updateModel(userObject.getParent().getOid());
          closePopup();
@@ -283,11 +283,11 @@ public class ModelImplementationDialogBean extends PopupUIComponentBean implemen
                DeployedModel model = ModelCache.findModelCache().getModel(implementation.getImplementationModelOid());
                ImplementationTableEntry entry = new ImplementationTableEntry();
                entry.setModelName(I18nUtils.getLabel(model, model.getName()));
-               entry.setModelId(model.getId());
                ProcessDefinition processdefination = ProcessDefinitionUtils.getProcessDefinition(
                      implementation.getImplementationModelOid(), implementation.getImplementationProcessId());
                entry.setProcess(I18nUtils.getProcessName(processdefination));
                entry.setVersion(model.getVersion());
+               entry.setImplementationId(processdefination.getQualifiedId());
                entry.setModelOID((int) implementation.getImplementationModelOid());
                entry.setCheckSelection(implementation.isPrimaryImplementation());
                entry.setRowDeselectionListener(this);

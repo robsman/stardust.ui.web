@@ -4,8 +4,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_extensionManager", "m_model", "m_dialog" ],
-		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog) {
+		[ "m_utils", "m_constants", "m_extensionManager", "m_model", "m_dialog" ,"m_i18nUtils"],
+		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog ,m_i18nUtils) {
 			return {
 				create : function(options) {
 					var panel = new DataTypeSelector();
@@ -30,6 +30,11 @@ define(
 					this.submitHandler = options.submitHandler;
 					this.supportsOtherData = options.supportsOtherData;
 
+					// TODO - not sure what the purpose of this flag is
+					// setting it to true by default to make things work as before
+					// needs to be set appropriately where required.
+					this.supportDocumentTypes = true;
+
 					this.dataTypeSelect = jQuery("#" + this.scope
 							+ " #dataTypeSelect");
 					this.primitiveDataTypeRow = jQuery("#" + this.scope
@@ -49,24 +54,40 @@ define(
 					this.otherTypeName = jQuery("#" + this.scope
 							+ " #otherTypeName");
 
-					this.dataTypeSelect.empty();
-					this.dataTypeSelect
-							.append("<option value='primitive'>Primitive</option>");
-					this.dataTypeSelect
-							.append("<option value='struct'>Data Structure</option>");
-					this.dataTypeSelect
-							.append("<option value='dmsDocument'>Document</option>");
+					this.initializeDataTypeOptions();
+
+				 var propertiesData = m_i18nUtils
+							.getProperty("modeler.element.properties.commonProperties.primitive");
+
+					this.dataTypeSelect.append("<option value='primitive'>"
+							+ propertiesData + "</option>");
+					propertiesData = m_i18nUtils
+							.getProperty("modeler.element.properties.commonProperties.dataStructure");
+					this.dataTypeSelect.append("<option value='struct'>"
+							+ propertiesData + "</option>");
+
+					if (options.supportDocumentTypes) {
+						propertiesData = m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.document");
+						this.dataTypeSelect.append("<option value='dmsDocument'>"
+								+ propertiesData + "</option>");
+					}
 
 					if (this.supportsOtherData) {
-						this.dataTypeSelect
-								.append("<option value='other'>Other</option>");
+						propertiesData = m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.other");
+						4
+						this.dataTypeSelect.append("<option value='other'>"
+								+ propertiesData + "</option>");
+						//this.dataTypeSelect.append("<option value='other'>Other</option>");
 					}
 
 					this.dataTypeSelect.change({
 						panel : this
 					}, function(event) {
-						event.data.panel.setDataType({
-							dataType : event.data.panel.dataTypeSelect.val()});
+						event.data.panel.setDataTypeSelectVal({
+							dataType : event.data.panel.dataTypeSelect.val()
+						});
 
 							event.data.panel.submitChanges();
 					});
@@ -76,25 +97,84 @@ define(
 						event.data.panel.setPrimitiveDataType(event.data.panel.primitiveDataTypeSelect.val());
 						event.data.panel.submitChanges();
 					});
-					this.structuredDataTypeSelect.change({
-						panel : this
-					}, function(event) {
-						event.data.panel.setStructuredDataType(event.data.panel.structuredDataTypeSelect.val());
-						event.data.panel.submitChanges();
-					});
-					this.documentTypeSelect.change({
-						panel : this
-					}, function(event) {
-						event.data.panel.setDocumentDataType(event.data.panel.documentDataTypeSelect.val());
-						event.data.panel.submitChanges();
-					});
+					this.primitiveDataTypeSelect
+							.change(
+									{
+										panel : this
+									},
+									function(event) {
+										event.data.panel
+												.setPrimitiveDataType(event.data.panel.primitiveDataTypeSelect
+														.val());
+										event.data.panel.submitChanges();
+									});
+					this.structuredDataTypeSelect
+							.change(
+									{
+										panel : this
+									},
+									function(event) {
+										event.data.panel
+												.setStructuredDataType(event.data.panel.structuredDataTypeSelect
+														.val());
+										event.data.panel.submitChanges();
+									});
+					this.documentTypeSelect
+							.change(
+									{
+										panel : this
+									},
+									function(event) {
+										event.data.panel
+												.setDocumentDataType(event.data.panel.documentDataTypeSelect
+														.val());
+										event.data.panel.submitChanges();
+									});
 				};
 
 				/**
-				 * 
+				 *
+				 */
+				DataTypeSelector.prototype.initializeDataTypeOptions = function() {
+					this.dataTypeSelect.empty();
+					
+					var propertiesData = m_i18nUtils
+					.getProperty("modeler.element.properties.commonProperties.primitive");
+					
+					this.dataTypeSelect
+							.append("<option value='primitive'>"+propertiesData+"</option>");
+					
+					propertiesData = m_i18nUtils
+					.getProperty("modeler.element.properties.commonProperties.structureData");
+					
+					
+					
+					this.dataTypeSelect
+							.append("<option value='struct'>"+propertiesData+"</option>");
+					
+					
+
+					if (this.supportDocumentTypes) {
+						propertiesData = m_i18nUtils
+						.getProperty("modeler.element.properties.commonProperties.document");
+						this.dataTypeSelect
+								.append("<option value='dmsDocument'>"+propertiesData+"</option>");
+					}
+							
+					if (this.supportsOtherData) {
+						propertiesData = m_i18nUtils
+						.getProperty("modeler.element.properties.commonProperties.other");
+						this.dataTypeSelect
+								.append("<option value='other'>"+propertiesData+"</option>");
+					}
+				}
+
+				/**
+				 *
 				 */
 				DataTypeSelector.prototype.setScopeModel = function(scopeModel) {
 					this.scopeModel = scopeModel;
+					
 					this.populateDataStructuresSelectInput();
 					this.populateDocumentTypesSelectInput();
 				};
@@ -151,17 +231,15 @@ define(
 					this.documentTypeSelect.append("<option value='"
 							+ m_constants.TO_BE_DEFINED
 							+ "'>(To be defined)</option>");
-					this.documentTypeSelect
-							.append("<option value='GENERIC_DOCUMENT_TYPE'>(Generic Document)</option>");
 
 					this.documentTypeSelect
-							.append("<optgroup label=\"This Model\"></optgroup>");
+							.append("<optgroup label=\"This Model\">");
 
-					for ( var i in this.scopeModel.structuredDataTypes) {
+					for ( var i in this.scopeModel.typeDeclarations) {
 						this.documentTypeSelect.append("<option value='"
-								+ this.scopeModel.structuredDataTypes[i]
+								+ this.scopeModel.typeDeclarations[i]
 										.getFullId() + "'>"
-								+ this.scopeModel.structuredDataTypes[i].name
+								+ this.scopeModel.typeDeclarations[i].name
 								+ "</option>");
 					}
 
@@ -173,15 +251,15 @@ define(
 							continue;
 						}
 
-						for ( var m in m_model.getModels()[n].structuredDataTypes) {
+						for ( var m in m_model.getModels()[n].typeDeclarations) {
 							this.documentTypeSelect
 									.append("<option value='"
-											+ m_model.getModels()[n].structuredDataTypes[m]
+											+ m_model.getModels()[n].typeDeclarations[m]
 													.getFullId()
 											+ "'>"
 											+ m_model.getModels()[n].name
 											+ "/"
-											+ m_model.getModels()[n].structuredDataTypes[m].name
+											+ m_model.getModels()[n].typeDeclarations[m].name
 											+ "</option>");
 						}
 					}
@@ -193,6 +271,22 @@ define(
 				 * 
 				 */
 				DataTypeSelector.prototype.setDataType = function(data) {
+					if (data.isSupportedDataType
+							&& typeof data.isSupportedDataType === "function") {
+						this.supportsOtherData = !data.isSupportedDataType();
+					} else {
+						this.supportsOtherData = false;
+					}
+
+					this.initializeDataTypeOptions();
+
+					this.setDataTypeSelectVal(data);
+				};
+
+				/**
+				 *
+				 */
+				DataTypeSelector.prototype.setDataTypeSelectVal = function(data) {
 					this.dataTypeSelect.val(data.dataType);
 
 					if (data.dataType == null

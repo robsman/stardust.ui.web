@@ -11,7 +11,6 @@
 <link rel="stylesheet" type="text/css"
 	href="../../css/jquery-ui-1.8.20.custom.css"></link>
 <link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
-<link href="../../css/jquery.treeTable.css" rel="stylesheet" type="text/css" />
 <style>
 #typeDeclarationsTable {
 	width: 600px;
@@ -50,7 +49,7 @@
 								<td><div id="idOutput" class="output"></div></td>
 							</tr>
 							<tr>
-								<td><label for="nameInput">Data Structure Name</label></td>
+								<td><label for="nameInput" id="dataStructName">Data Structure Name</label></td>
 								<td><input id="nameInput" type="text" style="width: 200px;" />
 								</td>
 							</tr>
@@ -58,7 +57,7 @@
 					</div></td>
 			</tr>
 			<tr>
-				<td><label for="descriptionTextarea">Description</label></td>
+				<td><label for="descriptionTextarea" id="description">Description</label></td>
 			</tr>
 			<tr>
 				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
@@ -69,19 +68,19 @@
 				<td>
 					<div id="propertiesTabs" style="margin-top: 10px;">
 						<ul id="propertiesTabsList">
-							<li><a href="#configurationTab"><img
+							<li><a href="#configurationTab" id="configuration"><img
 									src="../../images/icons/basic-properties-page.png"></img><span
-									class="tabLabel">Configuration</span> </a></li>
+									class="tabLabel" id="configuration">Configuration</span> </a></li>
 						</ul>
 						<div id="configurationTab">
-							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+							<table cellpadding="0" cellspacing="0" class="layoutTable">
 
 								<tr>
 									<td>
 										<div style="margin-bottom: 10px;">
 											<table cellpadding="0" cellspacing="0" class="layoutTable">
 												<tr>
-													<td colspan="2">Create and modify a Data Structure
+													<td colspan="2" id="xsdtext">Create and modify a Data Structure
 														manually by adding elements, specifying their names and
 														cardinalities.</td>
 												</tr>
@@ -92,10 +91,10 @@
 															<tr>
 																<td><input id="structureRadioButton" type="radio" />
 																</td>
-																<td>Structure</td>
+																<td id="struct">Structure</td>
 																<td><input id="enumerationRadioButton" type="radio" />
 																</td>
-																<td>Enumeration</td>
+																<td id="enum">Enumeration</td>
 															</tr>
 														</table></td>
 												</tr>
@@ -162,7 +161,7 @@
 											</tr>
 											<tr>
 												<td align="left"><div class="heading"
-														style="margin-top: 10px;">Field Properties</div></td>
+														style="margin-top: 10px;" id="fieldProp">Field Properties</div></td>
 												<td></td>
 											</tr>
 											<tr>
@@ -174,8 +173,8 @@
 																style="width: 600px; text-align: left;">
 																<thead>
 																	<tr>
-																		<th style="width: 400px;">Property</th>
-																		<th class="last" style="width: 200px;">Value</th>
+																		<th style="width: 400px;" id="prop">Property</th>
+																		<th class="last" style="width: 200px;" id="val">Value</th>
 																	</tr>
 																</thead>
 																<tbody />

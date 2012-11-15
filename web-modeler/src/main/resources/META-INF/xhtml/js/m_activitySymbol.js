@@ -124,12 +124,8 @@ define(
 				 *
 				 */
 				ActivitySymbol.prototype.initializeFromJson = function(lane) {
-					if (!this.modelElement.prototype) {
-						this.modelElement.prototype = {};
-					}
-					m_utils.inheritMethods(this.modelElement.prototype,
-							m_activity.prototype);
-
+					m_activity.typeObject(this.modelElement);
+					
 					this.parentSymbol = lane;
 					this.parentSymbolId = lane.id;
 					this.parentSymbol.containedSymbols.push(this);

@@ -12,7 +12,8 @@
 package org.eclipse.stardust.ui.web.modeler.edit.model.element;
 
 import static org.eclipse.stardust.engine.api.model.PredefinedConstants.ADMINISTRATOR_ROLE;
-import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newBpmModel;
+
+import java.util.Date;
 
 import javax.annotation.Resource;
 
@@ -28,6 +29,7 @@ import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
@@ -77,9 +79,11 @@ public class ModelChangeCommandHandler
     */
    private JsonObject createModel(String commandId, JsonObject request)
    {
-      ModelType model = newBpmModel().withIdAndName(
-            request.get(ModelerConstants.ID_PROPERTY).getAsString(),
-            request.get(ModelerConstants.NAME_PROPERTY).getAsString()).build();
+      ModelBuilderFacade facade = new ModelBuilderFacade(modelService().getModelManagementStrategy());
+      String modelName = request.get(ModelerConstants.NAME_PROPERTY).getAsString();
+      String modelID = generateId(modelName);
+      ModelType model = facade.createModel(modelID, modelName);
+      modelService().getModelBuilderFacade().setModified(model, model.getCreated());
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(model);
 
@@ -151,7 +155,9 @@ public class ModelChangeCommandHandler
 
          modelService().currentSession().modelElementUnmarshaller().populateFromJson(model, request);
 
+         model.setId(generateId(model.getName()));
          modelMgtStrategy.getModels().put(model.getId(), model);
+         modelService().getModelBuilderFacade().setModified(model, new Date());
          modelMgtStrategy.saveModel(model);
 
          JsonArray modified = new JsonArray();
@@ -207,9 +213,29 @@ public class ModelChangeCommandHandler
       return response;
    }
 
+   /**
+    * @return
+    */
    private ModelService modelService()
    {
       return springContext.getBean(ModelService.class);
+   }
+
+   /**
+    * @param modelName
+    * @return
+    */
+   private String generateId(String modelName)
+   {
+      String id = modelService().getModelBuilderFacade().createIdFromName(modelName);
+      String newId = id;
+      int postFix = 1;
+      while (null != modelService().getModelBuilderFacade().findModel(newId))
+      {
+         newId = id + "_" + postFix++ ;
+      }
+
+      return newId;
    }
 }
 

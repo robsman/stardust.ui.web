@@ -10,15 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.common.util;
 
-import java.util.Iterator;
 import java.util.Set;
 
-import org.eclipse.stardust.ui.web.common.PerspectiveDefinition;
-import org.eclipse.stardust.ui.web.common.PerspectiveExtension;
-import org.eclipse.stardust.ui.web.common.UiElementWithPermissions;
-import org.eclipse.stardust.ui.web.common.spi.user.IAuthorizationProvider;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
-import org.eclipse.stardust.ui.web.plugin.support.ServiceLoaderUtils;
 
 /**
  * @author Subodh.Godbole
@@ -34,71 +28,11 @@ public class UserUtils
 
    /**
     * @param user
-    * @param perspectiveDef
-    * @author Yogesh.Manware
-    * @return
-    */
-   public static boolean isAuthorized(User user, PerspectiveDefinition perspectiveDef)
-   {
-      Boolean isAuthorized = getAuthorizationProvider().isAuthorized(user, perspectiveDef.getName());
-
-      if (null != isAuthorized)
-      {
-         return isAuthorized;
-      }
-      else
-      {
-         return isAuthorized(user, perspectiveDef.getRequiredRolesSet(), perspectiveDef.getExcludeRolesSet());
-      }
-   }
-
-   /**
-    * @param user
-    * @param perspectiveExt
-    * @author Yogesh.Manware
-    * @return
-    */
-   public static boolean isAuthorized(User user, PerspectiveExtension perspectiveExt)
-   {
-      Boolean isAuthorized = getAuthorizationProvider().isAuthorized(user, perspectiveExt.getName());
-
-      if (null != isAuthorized)
-      {
-         return isAuthorized;
-      }
-      else
-      {
-         return isAuthorized(user, perspectiveExt.getRequiredRolesSet(), perspectiveExt.getExcludeRolesSet());
-      }
-   }
-
-   /**
-    * @param user
-    * @param uiElement
-    * @author Yogesh.Manware
-    * @return
-    */
-   public static boolean isAuthorized(User user, UiElementWithPermissions uiElement)
-   {
-      Boolean isAuthorized = getAuthorizationProvider().isAuthorized(user, uiElement.getName());
-
-      if (null != isAuthorized)
-      {
-         return isAuthorized;
-      }
-      else
-      {
-         return isAuthorized(user, uiElement.getRequiredRolesSet(), uiElement.getExcludeRolesSet());
-      }
-   }
-
-   /**
-    * @param user
     * @param requriedRoles
     * @param excludeRoles
     * @return
     */
-   private static boolean isAuthorized(User user, Set<String> requriedRoles, Set<String> excludeRoles)
+   public static boolean isAuthorized(User user, Set<String> requriedRoles, Set<String> excludeRoles)
    {
       // Empty means for all
       if (CollectionUtils.isEmpty(requriedRoles) || checkRoles(user, requriedRoles))
@@ -131,30 +65,4 @@ public class UserUtils
       }
       return false;
    }
-
-   /**
-    * @return AuthorizationProvider
-    * @author Yogesh.Manware
-    */
-   private static IAuthorizationProvider getAuthorizationProvider()
-   {
-      Iterator<IAuthorizationProvider.Factory> serviceProviders = ServiceLoaderUtils
-            .searchProviders(IAuthorizationProvider.Factory.class);
-
-      IAuthorizationProvider.Factory factory = null;
-
-      if (null != serviceProviders)
-      {
-         while (serviceProviders.hasNext())
-         {
-            factory = serviceProviders.next();
-            if (null != factory)
-            {
-               return factory.getAuthorizationProvider();
-            }
-         }
-      }
-      return null;
-   }
-
 }

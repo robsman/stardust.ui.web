@@ -55,8 +55,8 @@ public class ParticipantChangeCommandHandler
    @OnCommand(commandId = "role.create")
    public void createRole(ModelType model, JsonObject request)
    {
-      String roleID = extractString(request, ModelerConstants.ID_PROPERTY);
       String roleName = extractString(request, ModelerConstants.NAME_PROPERTY);
+      String roleID = getModelBuilderFacade().createIdFromName(roleName);
       RoleType role = null;
       synchronized (model)
       {
@@ -77,8 +77,8 @@ public class ParticipantChangeCommandHandler
    @OnCommand(commandId = "organization.create")
    public void createOrganization(ModelType model, JsonObject request)
    {
-      String orgID = extractString(request, ModelerConstants.ID_PROPERTY);
       String orgName = extractString(request, ModelerConstants.NAME_PROPERTY);
+      String orgID = getModelBuilderFacade().createIdFromName(orgName);
       OrganizationType org = null;
       synchronized (model)
       {
@@ -99,9 +99,9 @@ public class ParticipantChangeCommandHandler
    @OnCommand(commandId = "conditionalPerformer.create")
    public void createConditionalPerformer(ModelType model, JsonObject request)
    {
-      String conditionalPerformerID = extractString(request, ModelerConstants.ID_PROPERTY);
       String conditionalPerformerName = extractString(request,
             ModelerConstants.NAME_PROPERTY);
+      String conditionalPerformerID = getModelBuilderFacade().createIdFromName(conditionalPerformerName);
       ConditionalPerformerType conditionalPerformer = null;
       synchronized (model)
       {

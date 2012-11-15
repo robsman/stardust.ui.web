@@ -20,11 +20,7 @@ import com.icesoft.faces.context.effects.JavascriptContext;
 
 import org.eclipse.stardust.ui.web.common.ResourcePaths;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
-import org.eclipse.stardust.ui.web.common.event.PerspectiveEvent;
-import org.eclipse.stardust.ui.web.common.event.PerspectiveEventHandler;
 import org.eclipse.stardust.ui.web.common.uielement.AbstractLaunchPanel;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 
 /**
  * @author Shrikant.Gangal
@@ -32,9 +28,9 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
  */
 @Component
 @Scope("session")
-public class SessionLogPanel extends AbstractLaunchPanel
-      implements ResourcePaths, PerspectiveEventHandler
+public class SessionLogPanel extends AbstractLaunchPanel implements ResourcePaths
 {
+   private static final long serialVersionUID = -6011422465888235475L;
 
    /**
     *
@@ -42,29 +38,6 @@ public class SessionLogPanel extends AbstractLaunchPanel
    public SessionLogPanel()
    {
       super("sessionLogPanel");
-   }
-
-   @Override
-   public void handleEvent(PerspectiveEvent event)
-   {
-      switch (event.getType())
-      {
-      case ACTIVATED:
-      case LAUNCH_PANELS_ACTIVATED:
-         // Create "process-models" folder if it doesn't exist already.
-         DocumentMgmtUtility.createFolderIfNotExists("/process-models");
-
-         if (isExpanded() && PortalApplication.getInstance().isLaunchPanelsActivated())
-         {
-            activateSessionLogPanelIframe();
-         }
-         break;
-      case DEACTIVATED:
-      case LAUNCH_PANELS_DEACTIVATED:
-         deactivateSessionLogPanelIframe();
-         FacesUtils.refreshPage();
-         break;
-      }
    }
 
    @Override
@@ -102,7 +75,7 @@ public class SessionLogPanel extends AbstractLaunchPanel
    /**
     *
     */
-   private static void activateSessionLogPanelIframe()
+   protected static void activateSessionLogPanelIframe()
    {
       String activateSessionLogPanelIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('sessionLogPanelFrame', '../bpm-modeler/launchpad/sessionLogPanel.html', {anchorId:'sessionLogPanelAnchor', width:280, height:400, maxWidth:350, maxHeight:1000, anchorYAdjustment:10, zIndex:200, noUnloadWarning: 'true'});";
 
@@ -114,7 +87,7 @@ public class SessionLogPanel extends AbstractLaunchPanel
    /**
     *
     */
-   private static void deactivateSessionLogPanelIframe()
+   protected static void deactivateSessionLogPanelIframe()
    {
       String deactivateSessionLogPanelPanelIframeJS = "InfinityBpm.ProcessPortal.deactivateContentFrame('sessionLogPanelFrame');";
 

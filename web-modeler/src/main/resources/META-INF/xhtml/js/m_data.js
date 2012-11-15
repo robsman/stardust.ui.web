@@ -9,11 +9,11 @@
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 
-define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsController"], function(m_utils, m_constants, m_modelElement, m_command, m_commandsController) {
+define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsController", "m_elementConfiguration" ], function(m_utils, m_constants, m_modelElement, m_command, m_commandsController, m_elementConfiguration) {
 	return {
 		/**
 		 * @deprecated Is this still needed?
-		 * 
+		 *
 		 * @param model
 		 * @returns
 		 */
@@ -28,7 +28,7 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 
 			return data;
 		},
-		
+
 		createDataFromDataStructure : function(model, dataStructure) {
 			var data = new Data();
 			var index = model.getNewDataIndex();
@@ -38,12 +38,12 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 
 			data.dataType = m_constants.STRUCTURED_DATA_TYPE;
 			data.structuredDataTypeFullId = dataStructure.getFullId();
-			
+
 			return data;
 		},
-		
+
 		initializeFromJson : function(model, json) {
-			// TODO Ugly, use prototype					
+			// TODO Ugly, use prototype
 			m_utils.typeObject(json, new Data());
 
 			json.initializeFromJson(model);
@@ -57,20 +57,20 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	function Data() {
 		m_utils.inheritMethods(Data.prototype, m_modelElement.create());
 
 		/**
-		 * 
+		 *
 		 */
 		Data.prototype.toString = function() {
 			return "Lightdust.Data()";
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		Data.prototype.initialize = function(model, name) {
 			this.type = m_constants.DATA;
@@ -78,20 +78,20 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 			this.id = m_utils.generateIDFromName(name);
 			this.name = name;
 
-			// TODO This implies that even data created implicitly from data symbol creation would remain in the model 
+			// TODO This implies that even data created implicitly from data symbol creation would remain in the model
 			this.model.dataItems[this.id] = this;
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		Data.prototype.initializeFromJson = function(model) {
 			this.model = model;
 			this.model.dataItems[this.id] = this;
 		};
-		
+
 		/**
-		 * 
+		 *
 		 */
 		Data.prototype.createTransferObject = function() {
 			var transferObject = {};
@@ -106,7 +106,7 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		Data.prototype.submitCreation = function() {
 			var command =m_command
@@ -121,7 +121,7 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		Data.prototype.rename = function(id, name)
 		{
@@ -134,9 +134,20 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		Data.prototype.onCreate = function() {
+		};
+
+		/**
+		 *
+		 */
+		Data.prototype.isSupportedDataType = function() {
+			if (this.dataType) {
+				return m_elementConfiguration.isSupportedDataType(this.dataType);
+			}
+
+			return false;
 		};
 	}
 });

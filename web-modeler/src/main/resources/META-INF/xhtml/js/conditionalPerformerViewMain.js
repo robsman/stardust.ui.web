@@ -22,9 +22,13 @@ require.config({
 		'jquery.treeTable': ['libs/jquery/plugins/jquery.treeTable', 'https://raw.github.com/ludo/jquery-treetable/f98c6d07a02cb48052e9d4e033ce7dcdf64218e1/src/javascripts/jquery.treeTable'],
 		'jquery.url': ['libs/jquery/plugins/jquery.url', 'https://raw.github.com/allmarkedup/jQuery-URL-Parser/472315f02afbfd7193184300cc381163e19b4a16/jquery.url'],
 
-		'common-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/common-plugins'
+		'common-plugins': '../../../services/rest/bpm-modeler/config/ui/plugins/common-plugins',
+		'i18n' : '../../common/InfinityBPMI18N'
 	},
 	shim: {
+		'i18n': {
+			exports: "InfinityBPMI18N"
+		},
 		'jquery-ui': ['jquery'],
 		'jquery.download': ['jquery'],
 		'jquery.form': ['jquery'],
@@ -40,7 +44,7 @@ require.config({
 require(["require", "m_extensionManager",
          "jquery",
          "extensions_jquery",
-
+         "i18n",
          "jquery-ui",
          "jquery.download",
          "jquery.form",

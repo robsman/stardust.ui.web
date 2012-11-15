@@ -3,16 +3,101 @@
  */
 define(
 		[ "m_utils", "m_constants", "m_extensionManager", "m_command",
-				"m_commandsController", "m_user", "m_dialog", "m_view" ],
+				"m_commandsController", "m_user", "m_dialog", "m_view", "m_i18nUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_command,
-				m_commandsController, m_user, m_dialog, m_view) {
+				m_commandsController, m_user, m_dialog, m_view, m_i18nUtils) {
 			return {
 				create : function(id) {
-					var view = new ModelElementView();
-
+					var view = new ModelElementView();					
+					i18modelelement();
 					return view;
 				}
 			};
+			
+
+					function i18modelelement() {
+
+				jQuery("#name")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.name"));
+
+				$("label[for='nameInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.dataStructureName"));
+
+				$("label[for='descriptionTextarea']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.description"));
+
+				jQuery("#dataStructName")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.dataStructureName"));
+				jQuery("#xsdtext")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.textInfo"));
+				jQuery("#struct")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.structure"));
+				jQuery("#enum")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.enumeration"));
+				jQuery("#deleteElementButton")
+						.attr(
+								"title",
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.delete"));
+				jQuery("#moveElementUpButton")
+						.attr(
+								"title",
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.moveUp"));
+				jQuery("#moveElementDownButton")
+						.attr(
+								"title",
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.moveDown"));
+				jQuery("#moveElementDownButton")
+						.attr(
+								"title",
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.moveDown"));
+				jQuery("#elementColumn")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.targetMessage.element"));
+				jQuery("#typeColumn")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.type"));
+				jQuery("#cardinalityColumn")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.cardinality"));
+				jQuery("#fieldProp")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.heading.filedProperties"));
+				jQuery("#prop")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.property"));
+				jQuery("#val")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.processDefinition.propertyPages.value"));
+				jQuery("#configuration")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.tab"));
+
+			}
 
 			/**
 			 *
@@ -38,8 +123,6 @@ define(
 					this.descriptionTextarea = jQuery("#descriptionTextarea");
 					this.propertiesTabs = jQuery("#propertiesTabs");
 					this.propertiesTabsList = jQuery("#propertiesTabsList");
-					this.creationDateOutput = jQuery("#creationDateOutput");
-					this.lastModificationDateOutput = jQuery("#lastModificationDateOutput");
 
 					this.nameInput.change({
 						"view" : this
@@ -168,26 +251,6 @@ define(
 
 					this.nameInput.val(this.modelElement.name);
 					this.descriptionTextarea.val(this.modelElement.description);
-					if (this.modelElement[m_constants.DATE_OF_CREATION]) {
-						this.creationDateOutput.empty();
-						this.creationDateOutput.append(this.modelElement[m_constants.DATE_OF_CREATION]);
-					} else {
-						this.creationDateOutput.empty();
-						// TODO I18N
-						this.creationDateOutput.append("UNKNOWN");
-					}
-
-					// TODO - check if lastModificationDate will be stored in the XPDL
-					// or needs to be managed on the UI side
-					this.lastModificationDateOutput.append("UNKNOWN");
-//					if (this.modelElement[m_constants.LAST_MODIFIED_DATE]) {
-//						this.lastModificationDateOutput.empty();
-//						this.lastModificationDateOutput.append(this.modelElement[m_constants.LAST_MODIFIED_DATE]);
-//					} else {
-//						this.lastModificationDateOutput.empty();
-//						// TODO I18N
-//						this.lastModificationDateOutput.append("UNKNOWN");
-//					}
 
 					if (this.modelElement.attributes == null) {
 						this.modelElement.attributes = {};
@@ -251,8 +314,7 @@ define(
 				 */
 				ModelElementView.prototype.renameModelElement = function(name) {
 					this.submitChanges({
-						name : this.nameInput.val(),
-						id : m_utils.generateIDFromName(this.nameInput.val())
+						name : this.nameInput.val()
 					});
 				};
 
@@ -269,7 +331,7 @@ define(
 
 					m_commandsController.submitCommand(m_command
 							.createUpdateModelElementWithUUIDCommand(this
-									.getModel().id, this
+									.getModelElement().model.id, this
 									.getModelElement().uuid, changes));
 				};
 
@@ -382,7 +444,7 @@ define(
 
 					if (object && object.changes && object.changes.modified) {
 						for (var i = 0; i < object.changes.modified.length; i++) {
-							if (this.getModelElement().uuid == object.changes.modified[i].uuid) {
+							if (this.getModelElement().oid == object.changes.modified[i].oid) {
 								m_utils.inheritFields(this.getModelElement(),
 										object.changes.modified[i]);
 

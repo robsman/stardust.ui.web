@@ -137,6 +137,9 @@ define(function() {
 		ANNOTATION_SYMBOL_DEFAULT_HEIGHT : 30,
 		ANNOTATION_SYMBOL_DEFAULT_FILL_COLOR : 'white',
 		ANNOTATION_SYMBOL_DEFAULT_STROKE_WIDTH : 0.5,
+		ANNOTATION_SYMBOL_TEXT_MAX : 14,
+
+		ASSOCIATION : "association",
 
 		// Connection
 
@@ -145,7 +148,7 @@ define(function() {
 		CONTROL_FLOW_COLOR : "#7f8d9f",
 		CONNECTION_STROKE_WIDTH : 1.5,
 		CONNECTION_SELECT_STROKE_WIDTH : 2.0,
-		CONNECTION_MINIMAL_SEGMENT_LENGTH : 11,
+		CONNECTION_MINIMAL_SEGMENT_LENGTH : 16,
 		CONNECTION_DEFAULT_STROKE_WIDTH : 1.0,
 		CONNECTION_DEFAULT_ARROW_LENGTH : 14.0,
 		CONNECTION_DEFAULT_ARROW_WIDTH : 6.0,
@@ -195,7 +198,7 @@ define(function() {
 
 		MODEL : "model",
 		DATE_OF_CREATION : "dateOfCreation",
-		LAST_MODIFIED_DATE : "lastModifiedDate",
+		DATE_OF_MODIFICATION : "dateOfModification",
 
 		// Process Definition
 
@@ -217,6 +220,7 @@ define(function() {
 		ORGANIZATION_PARTICIPANT_TYPE : "organizationParticipant",
 		CONDITIONAL_PERFORMER_PARTICIPANT_TYPE : "conditionalPerformerParticipant",
 		TEAM_LEADER_KEY : "isTeamLeader",
+		CARDINALITY : "cardinality",
 
 		// Activity
 
@@ -236,9 +240,10 @@ define(function() {
 		BOOLEAN_PRIMITIVE_DATA_TYPE : "boolean",
 		STRING_PRIMITIVE_DATA_TYPE : "string",
 		DATE_PRIMITIVE_DATA_TYPE : "date",
-		INTEGER_PRIMITIVE_DATA_TYPE : "integer",
+		INTEGER_PRIMITIVE_DATA_TYPE : "int",
 		DOUBLE_PRIMITIVE_DATA_TYPE : "double",
 		DECIMAL_PRIMITIVE_DATA_TYPE : "decimal",
+		DATE_PRIMITIVE_DATA_TYPE : "Calendar",
 		STRUCTURED_DATA_TYPE : "struct",
 		TYPE_DECLARATION_PROPERTY : "typeDeclaration",
 		DOCUMENT_DATA_TYPE : "dmsDocument",
@@ -260,6 +265,11 @@ define(function() {
 		EVENT : "event",
 		START_EVENT_TYPE : "startEvent",
 		STOP_EVENT_TYPE : "stopEvent",
+		GENERIC_CAMEL_ROUTE_EVENT_CLASS : "genericCamelRouteEvent",
+		TIMER_EVENT_CLASS : "timerEvent",
+		EMAIL_EVENT_CLASS : "emailEvent",
+		MESSAGE_EVENT_CLASS : "messageEvent",
+		FILE_EVENT_CLASS : "fileEvent",
 		EVENT_DEFAULT_RADIUS : 12,
 		EVENT_ICON_WIDTH : 16,
 		EVENT_DEFAULT_FILL : 'white',
@@ -270,7 +280,6 @@ define(function() {
 
 		IN_ACCESS_POINT : "IN",
 		OUT_ACCESS_POINT : "OUT",
-		INOUT_ACCESS_POINT : "INOUT",
 		PRIMITIVE_ACCESS_POINT : "PRIMITIVE_ACCESS_POINT",
 		JAVA_CLASS_ACCESS_POINT : "JAVA_CLASS_ACCESS_POINT",
 		DATA_STRUCTURE_ACCESS_POINT : "DATA_STRUCTURE_ACCESS_POINT",
@@ -358,7 +367,10 @@ define(function() {
 		// User
 
 		BUSINESS_ANALYST_ROLE : "BusinessAnalyst",
-		INTEGRATOR_ROLE : "Integrator"
+		INTEGRATOR_ROLE : "Integrator",
+
+		//General
+		NEW_LINE : 	"\n"
 
 
 	};

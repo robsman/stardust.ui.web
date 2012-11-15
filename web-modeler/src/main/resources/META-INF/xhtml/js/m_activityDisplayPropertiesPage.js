@@ -9,8 +9,8 @@
  ******************************************************************************/
 
 define([ "m_utils", "m_constants", "m_commandsController", "m_command",
-		"m_propertiesPage" ], function(m_utils, m_constants,
-		m_commandsController, m_command, m_propertiesPage) {
+		"m_propertiesPage","m_i18nUtils"], function(m_utils, m_constants,
+		m_commandsController, m_command, m_propertiesPage,m_i18nUtils) {
 	return {
 		create : function(propertiesPanel) {
 			var page = new ActivityDisplayPropertiesPage(propertiesPanel);
@@ -23,7 +23,7 @@ define([ "m_utils", "m_constants", "m_commandsController", "m_command",
 
 	function ActivityDisplayPropertiesPage(propertiesPanel) {
 		var propertiesPage = m_propertiesPage.createPropertiesPage(
-				propertiesPanel, "displayPropertiesPage", "Display",
+				propertiesPanel, "displayPropertiesPage", m_i18nUtils.getProperty("modeler.propertyPages.commonProperties.display"),
 				"../../images/icons/display-properties-page.png");
 
 		m_utils.inheritFields(this, propertiesPage);

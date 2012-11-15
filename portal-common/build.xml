@@ -40,20 +40,15 @@
       <property name="javac.debuglevel" value="lines,source" />
    </target>
 
-   <target name="init" depends="initOnDevelopment, initOnProduction, initBuildDir">
-      <property name="build.dir" value="${build.home}" />
+   <target name="init" depends="initOnDevelopment, initOnProduction">
+      <property name="build.dir" value="${project.dir}/build" />
    </target>
 
    <target name="clean" depends="init" description="removes all build results">
       <delete dir="${build.dir}" />
    </target>
 
-   <target name="initBuildDir" unless="build.home">
-      <property name="build.home" value="${project.dir}/build" />
-   </target>
-
-   <target name="initBuild" depends="init, initBuildDir">
-      <property name="build.dir" value="${build.home}" />
+   <target name="initBuild" depends="init">
       <property name="build.classes" value="${build.dir}/classes" />
       <property name="build.lib" value="${build.dir}/lib" />
       <property name="build.src" value="${build.dir}/src" />
@@ -61,10 +56,17 @@
       <property name="build.config" value="${build.dir}/etc" />
       <property name="build.temp" value="${build.dir}/temp" />
 
-      <property name="portal.common.jarfile" value="ipp-portal-common.jar" />
+      <property name="portal.common.jarfile" value="${artifactId}.jar" />
+      <property name="portal.common.pomfile" value="${artifactId}.pom" />
       <property name="portal.common.jar" value="${build.lib}/${portal.common.jarfile}" />
-      <property name="portal.common.src-jarfile" value="ipp-portal-common-sources.jar" />
+      <property name="portal.common.pom" value="${build.lib}/${portal.common.pomfile}" />
+      <property name="portal.common.src-jarfile" value="${artifactId}-sources.jar" />
       <property name="portal.common.src-jar" value="${build.lib}/${portal.common.src-jarfile}" />
+
+   	<property name="ipp-portal.warfile" value="${webArtifactId}.war" />
+   	<property name="ipp-portal.pomfile" value="${webArtifactId}.pom" />
+   	<property name="ipp-portal.war" value="${build.deploy}/${ipp-portal.warfile}" />
+   	<property name="ipp-portal.pom" value="${build.lib}/${ipp-portal.pomfile}" />
    </target>
 
    <target name="initBuildDirectories" depends="initBuild">
@@ -85,19 +87,19 @@
       </copy>
    </target>
 
-   <target name="init.ivy" if="dependencies.mode.ivy">
+   <target name="init.ivy">
       <echo message="Using Ivy for dependency management." />
       <init-ivy />
    </target>
    
-   <target name="publish.icefaces" xmlns:ivy="antlib:org.apache.ivy.ant">
+   <target name="publish.icefaces" depends="initBuild" xmlns:ivy="antlib:org.apache.ivy.ant">
       <ivy:resolve file="${icefaces-conf.xml}" conf="*" keep="true"/>
       <ivy:deliver deliverpattern="${build.lib}/icefaces-ivy-conf.xml" />
       <ivy:publish srcivypattern="${icefaces-conf.xml}" conf="*" resolver="buildenv" merge="false"
          organisation="com.infinity.bpm" module="icefaces-impl" overwrite="true" haltonmissing="true"/>
    </target>
    
-   <target name="initClasspath" if="dependencies.mode.ivy" depends="init, init.ivy, publish.icefaces"
+   <target name="initClasspath" depends="init.ivy, publish.icefaces"
       xmlns:ivy="antlib:org.apache.ivy.ant">
       <ivy:resolve file="${project.dir}/ivy.xml" conf="*" keep="true"/>
       <init-ivy-classpath />
@@ -117,7 +119,8 @@
       </ipp:javac-java6>
    </target>
 
-   <target name="compile" depends="prepareSources, initBuildDirectories, initClasspath, compile.jdk16" description="compiles the portal common classes" />
+   <target name="compile" depends="prepareSources, initBuildDirectories, initClasspath, compile.jdk16" 
+   	description="compiles the portal common classes" unless="skip.compile"/>
 
    <target name="copyDatFiles" depends="initBuildDirectories">
       <copy todir="${build.classes}">
@@ -173,21 +176,21 @@
       <!-- drop folder if it already exists by a previous build -->
       <delete dir="${project.webapp.dir}/WEB-INF/classes" failonerror="false"/>
       
-      <war destfile="${build.deploy}/ipp-portal.war" basedir="${project.webapp.dir}"
+      <war destfile="${ipp-portal.war}" basedir="${project.webapp.dir}"
          webxml="${project.webapp.dir}/WEB-INF/web.xml" excludes="**/.gitignore,readme.txt">
       </war>
    </target>
 
    <target name="build" if="dependencies.mode.ivy" depends="jar, jar.src, war">
-      <copy file="${build.deploy}/${webArtifactId}.war" todir="${build.lib}"/>
+      <copy file="${ipp-portal.war}" todir="${build.lib}"/>
       <ivy:makepom xmlns:ivy="antlib:org.apache.ivy.ant"
-         ivyfile="${ivy.dep.file}" pomfile="${build.lib}/${webArtifactId}.pom" 
+         ivyfile="${ivy.dep.file}" pomfile="${ipp-portal.pom}" 
          artifactId="${webArtifactId}" packaging="war">
          <mapping conf="test" scope="test" />
       </ivy:makepom>
       <ivy-make-nirvana-module-poms ivyFile="${ivy.dep.file}" pomFilePath="${build.lib}" />
       <ivy-publish-local artifactId="${artifactId}" artifactDir="${build.lib}"/>
-      <delete file="${build.lib}/${webArtifactId}.war"/>
+      <delete file="${build.lib}/${ipp-portal.warfile}"/>
    </target>
 
    <target name="deploy" depends="build" />
@@ -208,17 +211,28 @@
 
    <target name="dist" depends="build, copyToMoonglow" />
 
-   <target name="install" depends="deploy" if="maven.localRepository"
+   <target name="install" if="maven.localRepository" depends="initBuild"
       description="installs the artifacts into a local Maven repository">
-      <ipp:init-mvn />
-      <exec dir="." executable="${m2.home}/bin/${mvn.exe}" failonerror="true">
-         <arg value="install:install-file"/>
-         <arg value="-Dfile=${portal.common.jar}"/>
-         <arg value="-DpomFile=${build.lib}/ipp-portal-common.pom"/>
-         <arg value="-DlocalRepositoryPath=${maven.localRepository}"/>
-      </exec>
+
+      <ipp:init-mvn localMavenRepository="${maven.localRepository}" />
+      <ipp:mvn-install file="${portal.common.jar}" pomFile="${portal.common.pom}" />
+      <ipp:mvn-install file="${ipp-portal.war}" pomFile="${ipp-portal.pom}" />
+      <ipp:mvn-install pomFile="${build.lib}/jsf-api-module.pom" />
+      <ipp:mvn-install pomFile="${build.lib}/jsf-myfaces-module.pom" />
+      <ipp:mvn-install pomFile="${build.lib}/jsf-mojarra-module.pom" />
    </target>
    
+   <target name="publish" depends="initBuild"
+     description="publish artifacts into a remote Maven repository">
+
+      <ipp:init-mvn />
+   	<ipp:mvn-deploy file="${portal.common.jar}" pomFile="${portal.common.pom}" />
+   	<ipp:mvn-deploy file="${ipp-portal.war}" pomFile="${ipp-portal.pom}" />
+   	<ipp:mvn-deploy pomFile="${build.lib}/jsf-api-module.pom" />
+   	<ipp:mvn-deploy pomFile="${build.lib}/jsf-myfaces-module.pom" />
+   	<ipp:mvn-deploy pomFile="${build.lib}/jsf-mojarra-module.pom" />
+   </target>
+	
    <!-- target is invoked by stardust-ui-web-nls project -->
    <target name="copy-nls-resources" 
       description="copies the resources into a given folder">

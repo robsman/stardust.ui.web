@@ -467,4 +467,10 @@
 		class="org.eclipse.stardust.ui.web.viewscommon.dialogs.ConfigurationImportDialogBean"
 		scope="portalTab">
 	</bean>  
+	
+	<bean name="departmentCacheManager"
+		class="org.eclipse.stardust.ui.web.viewscommon.common.DepartmentCacheManager"
+		scope="session">
+	</bean>	
+		
 </beans>

@@ -5,9 +5,10 @@
  */
 define(
 		[ "m_utils", "m_constants", "m_extensionManager", "m_model",
-				"m_dialog", "m_dataTypeSelector" ],
-		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog,
-				m_dataTypeSelector) {
+				"m_typeDeclaration", "m_dialog", "m_dataTypeSelector",
+				"m_i18nUtils" ],
+		function(m_utils, m_constants, m_extensionManager, m_model,
+				m_typeDeclaration, m_dialog, m_dataTypeSelector, m_i18nUtils) {
 			return {
 				create : function(options) {
 					var panel = new ParameterDefinitionsPanel();
@@ -19,10 +20,10 @@ define(
 			};
 
 			/**
-			 * Options are scope submitHandler listType supportsDataMappings
-			 * supportsDescriptors supportsDataTypeSelection supportsDataPathes
-			 * directionColumnWidth nameColumnWidth typeColumnWidth
-			 * mappingColumnWidth tableWidth
+			 * Options are scope submitHandler supportsOrdering
+			 * supportsDataMappings supportsDescriptors
+			 * supportsDataTypeSelection supportsDataPathes directionColumnWidth
+			 * nameColumnWidth typeColumnWidth mappingColumnWidth tableWidth
 			 */
 			function ParameterDefinitionsPanel() {
 				/**
@@ -39,9 +40,9 @@ define(
 					}
 
 					// TODO: Change width via CSS and classes here
-					
+
 					if (this.options.tableWidth == null) {
-						this.options.tableWidth = "400px";
+						this.options.tableWidth = "350px";
 					}
 
 					if (this.options.directionColumnWidth == null) {
@@ -53,21 +54,16 @@ define(
 					}
 
 					if (this.options.typeColumnWidth == null) {
-						this.options.typeColumnWidth = "200px";
+						this.options.typeColumnWidth = "150px";
 					}
 
 					if (this.options.mappingColumnWidth == null) {
 						this.options.mappingColumnWidth = "200px";
 					}
 
-					if (this.options.listType == "array") {
-						this.parameterDefinitionsTable = [];
-					} else {
-						this.parameterDefinitionsTable = {};
-					}
-
+					this.parameterDefinitions = [];
 					this.currentParameterDefinition = null;
-					this.selectedRowIndex = 0;
+					this.selectedRowIndex = -1;
 					this.parameterDefinitionsTable = jQuery(this.options.scope
 							+ " #parameterDefinitionsTable");
 
@@ -85,6 +81,8 @@ define(
 					this.deleteParameterDefinitionButton = jQuery(this.options.scope
 							+ " #deleteParameterDefinitionButton");
 
+					this.currentFocusInput = this.parameterDefinitionNameInput;
+
 					if (this.options.supportsDataTypeSelection) {
 						this.dataTypeSelector = m_dataTypeSelector.create({
 							scope : "parameterDefinitionTypeSelector",
@@ -93,7 +91,7 @@ define(
 						});
 					}
 
-					if (this.options.listType == "array") {
+					if (this.options.supportsOrdering) {
 						this.moveParameterDefinitionUpButton = jQuery(this.options.scope
 								+ " #moveParameterDefinitionUpButton");
 						this.moveParameterDefinitionDownButton = jQuery(this.options.scope
@@ -132,7 +130,7 @@ define(
 						event.data.panel.deleteParameterDefinition();
 					});
 
-					if (this.options.listType == "array") {
+					if (this.options.supportsOrdering) {
 						this.moveParameterDefinitionUpButton.click({
 							panel : this
 						}, function(event) {
@@ -154,6 +152,7 @@ define(
 										if (event.data.panel.currentParameterDefinition != null) {
 											event.data.panel.currentParameterDefinition.name = event.data.panel.parameterDefinitionNameInput
 													.val();
+											event.data.panel.currentFocusInput = this.parameterDefinitionDirectionSelect;
 											event.data.panel.submitChanges();
 										}
 									});
@@ -166,6 +165,12 @@ define(
 										if (event.data.panel.currentParameterDefinition != null) {
 											event.data.panel.currentParameterDefinition.direction = event.data.panel.parameterDefinitionDirectionSelect
 													.val();
+
+											// Switch back to standard focus
+											// handling
+
+											event.data.panel.currentFocusInput = null;
+
 											event.data.panel.submitChanges();
 										}
 									});
@@ -178,7 +183,18 @@ define(
 										},
 										function(event) {
 											event.data.panel.currentParameterDefinition.descriptor = event.data.panel.descriptorInput
-													.val();
+													.prop("checked");
+
+											if (event.data.panel.descriptorInput
+													.prop("checked")) {
+												event.data.panel.currentFocusInput = event.data.panel.keyDescriptorInput;
+											} else {
+												// Switch back to standard focus
+												// handling
+
+												event.data.panel.currentFocusInput = null;
+											}
+
 											event.data.panel.submitChanges();
 										});
 						this.keyDescriptorInput
@@ -187,8 +203,14 @@ define(
 											"panel" : this
 										},
 										function(event) {
-											event.data.panel.currentDataPath.keyDescriptor = event.data.panel.keyDescriptorInput
-													.val();
+											event.data.panel.currentParameterDefinition.keyDescriptor = event.data.panel.keyDescriptorInput
+													.prop("checked");
+
+											// Switch back to standard focus
+											// handling
+
+											event.data.panel.currentFocusInput = null;
+
 											event.data.panel.submitChanges();
 										});
 					}
@@ -209,6 +231,11 @@ define(
 															.val();
 												}
 
+												// Switch back to standard focus
+												// handling
+
+												event.data.panel.currentFocusInput = null;
+
 												event.data.panel
 														.submitChanges();
 											}
@@ -224,11 +251,24 @@ define(
 												if (event.data.panel.currentParameterDefinition != null) {
 													event.data.panel.currentParameterDefinition.dataPath = event.data.panel.parameterDefinitionPathInput
 															.val();
+
+													// Switch back to standard
+													// focus handling
+
+													event.data.panel.currentFocusInput = null;
+
 													event.data.panel
 															.submitChanges();
 												}
 											});
 						}
+					}
+
+					if (this.options.readOnlyParameterList) {
+						m_dialog
+								.makeInvisible(this.deleteParameterDefinitionButton);
+						m_dialog
+								.makeInvisible(this.addParameterDefinitionButton);
 					}
 				};
 
@@ -239,24 +279,50 @@ define(
 						parameterDefinitions) {
 					this.parameterDefinitions = parameterDefinitions;
 
+					m_utils.debug("===> Parameter Definitions:")
+					m_utils.debug(parameterDefinitions)
+
 					this.initializeParameterDefinitionsTable();
-					this.populateParameterDefinitionFields();
 					this.selectCurrentParameterDefinition();
+					this.populateParameterDefinitionFields();
 				};
 
 				/**
 				 */
 				ParameterDefinitionsPanel.prototype.selectCurrentParameterDefinition = function() {
-					var tableRows = jQuery("table#parameterDefinitionsTable tr");
+					if (this.parameterDefinitions.length == 0) {
+						this.selectedRowIndex = -1;
+						this.currentParameterDefinition = null;
 
-					if (tableRows.length > this.selectedRowIndex) {
-						var selectedRow = jQuery(tableRows[this.selectedRowIndex]);
-						
-						selectedRow.addClass("selected");
-						
-						m_utils.debug("Index = " + selectedRow.attr("id"));
-						this.currentParameterDefinition = this.parameterDefinitions[selectedRow.attr("id")];
+						return;
 					}
+
+					// Select first parameter for non-empty parameter
+					// definitions list and none preselected
+
+					if (this.selectedRowIndex < 0) {
+						this.selectedRowIndex = 0;
+					}
+
+					// Select last parameter if previous index exceeds length
+
+					if (this.selectedRowIndex >= this.parameterDefinitions.length) {
+						this.selectedRowIndex = this.parameterDefinitions.length - 1;
+					}
+
+					m_utils.debug("Row Index: " + this.selectedRowIndex);
+
+					this.currentParameterDefinition = this.parameterDefinitions[this.selectedRowIndex];
+
+					// Select row
+
+					var tableRows = jQuery(this.options.scope
+							+ " #parameterDefinitionsTable tr");
+
+					m_utils.debug("Table Rows: " + tableRows);
+
+					jQuery(tableRows[this.selectedRowIndex]).addClass(
+							"selected");
 				};
 
 				/**
@@ -310,8 +376,10 @@ define(
 					this.parameterDefinitionDataSelect
 							.append("<option value=\"TO_BE_DEFINED\">(To be defined))</option>");
 
+					var modelname = m_i18nUtils
+							.getProperty("modeler.element.properties.commonProperties.thisModel");
 					this.parameterDefinitionDataSelect
-							.append("<optgroup label=\"This Model\">");
+							.append("<optgroup label=\"" + modelname + "\">");
 
 					for ( var i in this.scopeModel.dataItems) {
 						var dataItem = this.scopeModel.dataItems[i];
@@ -322,8 +390,11 @@ define(
 										+ dataItem.name + "</option>");
 					}
 
+					var othermodel = m_i18nUtils
+							.getProperty("modeler.element.properties.commonProperties.otherModel")
 					this.parameterDefinitionDataSelect
-							.append("</optgroup><optgroup label=\"Other Models\">");
+							.append("</optgroup><optgroup label=\""
+									+ othermodel + "\">");
 
 					for ( var n in m_model.getModels()) {
 						if (m_model.getModels()[n] == this.scopeModel) {
@@ -350,10 +421,7 @@ define(
 				ParameterDefinitionsPanel.prototype.initializeParameterDefinitionsTable = function() {
 					this.parameterDefinitionsTableBody.empty();
 
-					m_utils.debug("Set Parameters: "
-							+ this.parameterDefinitions);
-
-					for ( var m in this.parameterDefinitions) {
+					for ( var m = 0; m < this.parameterDefinitions.length; ++m) {
 						var parameterDefinition = this.parameterDefinitions[m];
 
 						var content = "<tr id=\"" + m + "\">";
@@ -389,7 +457,8 @@ define(
 							content += "<td style=\"width: "
 									+ this.options.typeColumnWidth + "\">";
 							if (parameterDefinition.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
-								content += parameterDefinition.primitiveDataType; // TODO
+								content += m_typeDeclaration
+										.getPrimitiveTypeLabel(parameterDefinition.primitiveDataType); // TODO
 								// Convert
 							} else {
 								content += parameterDefinition.structuredDataTypeFullId; // TODO
@@ -420,6 +489,13 @@ define(
 							content += "</td>";
 						}
 
+						var newValue = m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.inputText.new");
+						content = content.replace(">New", ">" + newValue);
+						newValue = m_i18nUtils
+								.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectType.string");
+						content = content.replace("String", newValue);
+
 						this.parameterDefinitionsTableBody.append(content);
 
 						jQuery(
@@ -434,9 +510,11 @@ define(
 													.deselectParameterDefinitions();
 											jQuery(this).addClass("selected");
 
-											id = jQuery(this).attr("id");
+											var index = jQuery(this).attr("id");
 
-											event.data.panel.currentParameterDefinition = event.data.panel.parameterDefinitions[id];
+											event.data.panel.currentParameterDefinition = event.data.panel.parameterDefinitions[index];
+											event.data.panel.selectedRowIndex = index;
+
 											event.data.panel
 													.populateParameterDefinitionFields();
 										});
@@ -488,28 +566,68 @@ define(
 							}
 						}
 					} else {
-						this.parameterDefinitionNameInput
-								.removeAttr("disabled");
-						this.parameterDefinitionDirectionSelect
-								.removeAttr("disabled");
+						if (this.options.readOnlyParameterList) {
+							this.parameterDefinitionNameInput.attr("disabled",
+									true);
+							this.parameterDefinitionDirectionSelect.attr(
+									"disabled", true);
+						} else {
+							this.parameterDefinitionNameInput
+									.removeAttr("disabled");
+							this.parameterDefinitionDirectionSelect
+									.removeAttr("disabled");
+						}
+
 						this.parameterDefinitionNameInput
 								.val(this.currentParameterDefinition.name);
 						this.parameterDefinitionDirectionSelect
 								.val(this.currentParameterDefinition.direction);
 
 						if (this.options.supportsDataTypeSelection) {
-							this.dataTypeSelector.enable();
+							if (this.options.readOnlyParameterList) {
+								this.dataTypeSelector.disable();
+							} else {
+								this.dataTypeSelector.enable();
+							}
+
 							this.dataTypeSelector
 									.setDataType(this.currentParameterDefinition);
 						}
 
 						if (this.options.supportsDescriptors) {
-							this.descriptorInput.removeAttr("disabled");
-							this.keyDescriptorInput.removeAttr("disabled");
-							this.descriptorInput
-									.val(this.currentParameterDefinition.descriptor);
-							this.keyDescriptorInput
-									.val(this.currentParameterDefinition.keyDescriptor);
+							if (this.currentParameterDefinition.direction == "IN") {
+								if (this.options.readOnlyParameterList) {
+									this.descriptorInput.removeAttr("disabled");
+									this.keyDescriptorInput
+											.removeAttr("disabled");
+								} else {
+									this.descriptorInput.attr("disabled", true);
+									this.keyDescriptorInput.attr("disabled",
+											true);
+								}
+
+								this.descriptorInput
+										.prop(
+												"checked",
+												this.currentParameterDefinition.descriptor);
+
+								if (this.currentParameterDefinition.descriptor) {
+									this.keyDescriptorInput
+											.prop(
+													"checked",
+													this.currentParameterDefinition.keyDescriptor);
+								} else {
+									this.keyDescriptorInput.attr("disabled",
+											true);
+									this.keyDescriptorInput.prop("checked",
+											false);
+								}
+							} else {
+								this.descriptorInput.attr("disabled", true);
+								this.keyDescriptorInput.attr("disabled", true);
+								this.descriptorInput.prop("checked", false);
+								this.keyDescriptorInput.prop("checked", false);
+							}
 						}
 
 						if (this.options.supportsDataMappings) {
@@ -531,6 +649,13 @@ define(
 										.val(this.currentParameterDefinition.dataPath);
 							}
 						}
+
+						if (this.currentFocusInput) {
+							// Set focus and select
+
+							this.currentFocusInput.focus();
+							this.currentFocusInput.select();
+						}
 					}
 				};
 
@@ -538,19 +663,11 @@ define(
 				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.addParameterDefinition = function() {
-					var n = 1;
-
-					if (this.parameterDefinitions == null) {
-						this.parameters = {};
-					} else {
-						for ( var m in this.parameterDefinitions) {
-							++n;
-						}
-					}
+					var n = this.parameterDefinitions.length;
 
 					this.currentParameterDefinition = {
 						id : "New_" + n, // TODO: Anticipates renaming of ID
-											// on server
+						// on server
 						name : "New " + n,
 						direction : "IN",
 						dataFullId : null,
@@ -567,19 +684,13 @@ define(
 								.getDataType(this.currentParameterDefinition);
 					}
 
-					if (this.options.listType == "array") {
-						this.parameterDefinitions
-								.push(this.currentParameterDefinition);
-					} else {
-						this.parameterDefinitions[this.currentParameterDefinition.id] = this.currentParameterDefinition;
-					}
+					this.parameterDefinitions
+							.push(this.currentParameterDefinition);
 
 					// New parameter definitions are always appended
-					
-					this.selectedRowIndex = Math
-							.max(
-									jQuery("table#parameterDefinitionsTable tr").length,
-									0);
+
+					this.selectedRowIndex = this.parameterDefinitions.length - 1;
+					this.currentFocusInput = this.parameterDefinitionNameInput;
 
 					this.submitChanges();
 				};
@@ -591,33 +702,19 @@ define(
 					m_utils.debug("Deleting "
 							+ this.currentParameterDefinition.id);
 
-					if (this.options.listType == "array") {
-						var changedParameterDefinitions = [];
+					var changedParameterDefinitions = [];
 
-						for ( var n = 0; n < this.parameterDefinitions.length; ++n) {
-							if (this.parameterDefinitions[n].id != this.currentParameterDefinition.id) {
-								changedParameterDefinitions
-										.push(this.parameterDefinitions[n]);
-							}
+					for ( var n = 0; n < this.parameterDefinitions.length; ++n) {
+						if (this.parameterDefinitions[n].id != this.currentParameterDefinition.id) {
+							changedParameterDefinitions
+									.push(this.parameterDefinitions[n]);
 						}
-
-						this.parameterDefinitions = changedParameterDefinitions;
-					} else {
-						var changedParameterDefinitions = {};
-
-						for ( var n in this.parameterDefinitions) {
-							if (this.parameterDefinitions[n].id != this.currentParameterDefinition.id) {
-								changedParameterDefinitions[n] = this.parameterDefinitions[n];
-							}
-						}
-
-						this.parameterDefinitions = changedParameterDefinitions;
 					}
 
-					this.selectedRowIndex = Math
-							.max(
-									jQuery("table#parameterDefinitionsTable tr").length - 2,
-									0);
+					this.parameterDefinitions = changedParameterDefinitions;
+
+					this.selectedRowIndex = this.parameterDefinitions.length - 1;
+					this.currentFocusInput = this.parameterDefinitionNameInput;
 
 					this.submitChanges();
 				};
@@ -636,7 +733,7 @@ define(
 							changedParameterDefinitions
 									.push(this.parameterDefinitions[n]);
 
-							this.selectedRowIndex = n - 1;
+							this.selectedRowIndex = n;
 
 							++n;
 						} else {
@@ -646,6 +743,7 @@ define(
 					}
 
 					this.parameterDefinitions = changedParameterDefinitions;
+					this.currentFocusInput = this.parameterDefinitionNameInput;
 
 					this.submitChanges();
 				};
@@ -654,9 +752,6 @@ define(
 				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.moveParameterDefinitionDown = function() {
-					m_utils.debug("Moving down "
-							+ this.currentParameterDefinition.id);
-
 					var changedParameterDefinitions = [];
 
 					for ( var n = 0; n < this.parameterDefinitions.length; ++n) {
@@ -677,9 +772,7 @@ define(
 					}
 
 					this.parameterDefinitions = changedParameterDefinitions;
-
-					m_utils.debug("Changed parameter definitions");
-					m_utils.debug(this.parameterDefinitions);
+					this.currentFocusInput = this.parameterDefinitionNameInput;
 
 					this.submitChanges();
 				};

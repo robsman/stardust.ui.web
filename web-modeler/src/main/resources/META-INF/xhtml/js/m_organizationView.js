@@ -10,13 +10,13 @@
 
 define(
 		[ "m_utils", "m_constants", "m_command", "m_commandsController",
-				"m_dialog", "m_modelElementView", "m_model"],
+				"m_dialog", "m_modelElementView", "m_model","m_i18nUtils"],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_dialog, m_modelElementView, m_model) {
+				m_dialog, m_modelElementView, m_model,m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
 					var organization = m_model.findParticipant(fullId);
-
+					i18nOrganizationview();
 					m_utils.debug("===> Organization");
 					m_utils.debug(organization);
 
@@ -27,8 +27,85 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(organization);
+					
 				}
 			};
+
+						
+			function i18nOrganizationview() {
+				
+				$("label[for='guidOutput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.uuid"));
+								
+				$("label[for='idOutput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.id"));
+
+				
+				$("label[for='nameInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.organization.organizationName"));
+				$("label[for='descriptionTextarea']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.description"));
+				$("label[for='publicVisibilityCheckbox']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
+				$("label[for='supportsDepartmentsCheckbox']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.organization.supportDepartment"));
+				$("label[for='departmentDataSelect']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.data"));
+				$("label[for='departmentDataPathInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.dataPath"));
+				$("label[for='leaderSelect']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.organization.leader"));
+				$("label[for='chooseAssignmentRadio']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.organization.assignment"));
+				$("label[for='assignAutomaticallyRadio']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.assignAutomatically"));
+				$("label[for='costCenterInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.organization.costCenter"));
+				jQuery("#deptartment")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.organization.department"));
+				jQuery("#teamlead")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.organization.teamLead"));
+				jQuery("#activityassignment")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.role.activityAssignment"));
+				jQuery("#controlling")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.role.controlling"));
+				jQuery("#basicPropertiesPage div.heading")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.processDefinition.propertyPages.general.heading"));
+			}
 
 			/**
 			 *
@@ -174,56 +251,58 @@ define(
 													});
 										}
 									});
-					this.supportsDepartmentsCheckbox
-							.change(
-									{
-										view : this
-									},
-									function(event) {
-										var view = event.data.view;
 
-										view
-												.setSupportDepartments(view.supportsDepartmentsCheckbox
-														.is(":checked"));
-
-										// Submit changes
-									});
-					this.departmentDataSelect
-							.change(
-									{
-										view : this
-									},
-									function(event) {
-										var view = event.data.view;
-
-										view.departmentDataPathInput.val(null);
-										view
-												.submitChanges({
-													attributes : {
-														"carnot:engine:dataId" : view.departmentDataSelect
-																.val() == m_constants.TO_BE_DEFINED ? null
-																: view.departmentDataSelect
-																		.val(),
-														"carnot:engine:dataId" : null
-													}
-												});
-									});
-					this.departmentDataPathInput
-							.change(
-									{
-										view : this
-									},
-									function(event) {
-										var view = event.data.view;
-
-										view
-												.submitChanges({
-													attributes : {
-														"carnot:engine:dataId" : view.departmentDataPathInput
-																.val()
-													}
-												});
-									});
+					//TODO - check if needed, else delete
+//					this.supportsDepartmentsCheckbox
+//							.change(
+//									{
+//										view : this
+//									},
+//									function(event) {
+//										var view = event.data.view;
+//
+//										view
+//												.setSupportDepartments(view.supportsDepartmentsCheckbox
+//														.is(":checked"));
+//
+//										// Submit changes
+//									});
+//					this.departmentDataSelect
+//							.change(
+//									{
+//										view : this
+//									},
+//									function(event) {
+//										var view = event.data.view;
+//
+//										view.departmentDataPathInput.val(null);
+//										view
+//												.submitChanges({
+//													attributes : {
+//														"carnot:engine:dataId" : view.departmentDataSelect
+//																.val() == m_constants.TO_BE_DEFINED ? null
+//																: view.departmentDataSelect
+//																		.val(),
+//														"carnot:engine:dataId" : null
+//													}
+//												});
+//									});
+//					this.departmentDataPathInput
+//							.change(
+//									{
+//										view : this
+//									},
+//									function(event) {
+//										var view = event.data.view;
+//
+//										view
+//												.submitChanges({
+//													attributes : {
+//														"carnot:engine:dataId" : view.departmentDataPathInput
+//																.val()
+//													}
+//												});
+//									});
 
 					this.leaderSelect.change({
 						view : this
@@ -243,7 +322,7 @@ define(
 				 */
 				OrganizationView.prototype.setModelElement = function(organization) {
 					this.organization = organization;
-					
+
 					this.initializeModelElement(organization);
 					this.populateDepartmentDataSelectInput();
 					this.populateLeaderSelectInput();
@@ -297,19 +376,21 @@ define(
 					this.departmentDataSelect.append("<option value='"
 							+ m_constants.TO_BE_DEFINED
 							+ "'>(To be defined)</option>");
+				var	 modellabel =  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.thisModel");
 					this.departmentDataSelect
-							.append("<optgroup label=\"This Model\">");
+							.append("<optgroup label=\""+modellabel+"\">");
 
 					for ( var i in this.getModelElement().model.dataItems) {
 						var dataItem = this.getModelElement().model.dataItems[i];
 
 						this.departmentDataSelect.append("<option value='"
-								+ dataItem.getFullId() + "'>" + dataItem.name
+								+ dataItem.id + "'>" + dataItem.name
 								+ "</option>");
 					}
 
+					 modellabel =  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel");
 					this.departmentDataSelect
-							.append("</optgroup><optgroup label=\"Other Models\">");
+							.append("</optgroup><optgroup label=\""+modellabel+"\">");
 
 					for ( var n in m_model.getModels()) {
 						if (this.getModelElement().model == m_model.getModels()[n]) {
@@ -335,7 +416,7 @@ define(
 				OrganizationView.prototype.setSupportDepartments = function(
 						supportDepartments, departmentDataId,
 						departmentDataPath) {
-					if (supportDepartments) {
+					if ("true" == supportDepartments) {
 						this.departmentDataSelect.removeAttr("disabled");
 						this.departmentDataPathInput.removeAttr("disabled");
 						this.supportsDepartmentsCheckbox.attr("checked", true);
@@ -362,47 +443,23 @@ define(
 				 */
 				OrganizationView.prototype.populateLeaderSelectInput = function() {
 					this.leaderSelect.empty();
+				var dataNone =	m_i18nUtils
+					.getProperty("modeler.element.properties.commonProperties.none")
+					 ;
 					this.leaderSelect.append("<option value='"
-							+ m_constants.TO_BE_DEFINED + "'>(None)</option>");
-
-					this.leaderSelect.append("<optgroup label=\"This Model\">");
-
-					var participant = null;
+							+ m_constants.TO_BE_DEFINED + "'>("+dataNone+")</option>");
 
 					for ( var i in this.getModelElement().model.participants) {
-						participant = this.getModelElement().model.participants[i];
+						var participant = this.getModelElement().model.participants[i];
 
-						if (participant.type == m_constants.ROLE_PARTICIPANT_TYPE
-								|| participant.type == m_constants.TEAM_LEADER_TYPE) {
+						if (participant.parentUUID == this.getModelElement().uuid
+								&& (participant.type == m_constants.ROLE_PARTICIPANT_TYPE
+								|| participant.type == m_constants.TEAM_LEADER_TYPE)) {
 							this.leaderSelect.append("<option value='"
 									+ participant.getFullId() + "'>"
 									+ participant.name + "</option>");
 						}
 					}
-
-					this.leaderSelect
-							.append("</optgroup><optgroup label=\"Other Models\">");
-
-					for ( var n in m_model.getModels()) {
-						if (m_model.getModels()[n] == this.getModelElement().model) {
-							continue;
-						}
-
-						for ( var m in m_model.getModels()[n].participants) {
-							participant = m_model.getModels()[n].participants[m];
-
-							if (participant.type == m_constants.ROLE_PARTICIPANT_TYPE
-									|| participant.type == m_constants.TEAM_LEADER_TYPE) {
-								this.leaderSelect.append("<option value='"
-										+ participant.getFullId() + "'>"
-										+ m_model.getModels()[n].name + "/"
-										+ participant.name + "</option>");
-							}
-						}
-					}
-
-					this.leaderSelect.append("</optgroup>");
-
 				};
 
 				/**
@@ -423,7 +480,7 @@ define(
 					if (this.nameInput.val() == null
 							|| this.nameInput.val() == "") {
 						this.errorMessages
-								.push("Application name must not be empty.");
+								.push("Organization name must not be empty.");
 						this.nameInput.addClass("error");
 					}
 

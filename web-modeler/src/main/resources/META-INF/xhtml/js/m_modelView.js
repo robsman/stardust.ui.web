@@ -11,14 +11,14 @@
 define(
 		[ "m_utils", "m_extensionManager", "m_communicationController",
 				"m_command", "m_commandsController", "m_dialog", "m_view",
-				"m_model", "m_modelElementView" ],
+				"m_model", "m_modelElementView","m_i18nUtils" ],
 		function(m_utils, m_extensionManager, m_communicationController,
-				m_command, m_commandsController, m_dialog, m_view, m_model, m_modelElementView) {
+				m_command, m_commandsController, m_dialog, m_view, m_model, m_modelElementView,m_i18nUtils) {
 			return {
 				initialize : function(modelId) {
 					var model = m_model.findModel(modelId);
 					var view = new ModelView();
-
+					i18modelview();
 					// TODO Make View singleton
 
 					m_commandsController.registerCommandHandler(view);
@@ -27,6 +27,66 @@ define(
 				}
 			};
 
+			function i18modelview() {
+				jQuery("#accesscontrol")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.propertyView.modelView.accessControl"));
+				jQuery("#problem")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.problem"));
+				jQuery("#modeltext1")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.propertyView.modelView.modelText"));
+				jQuery("#modeltex2")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.propertyView.modelView.modelText2"));
+				jQuery("#markreadonly")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.propertyView.modelView.markReadonlyLink"));
+				jQuery("#markwritable")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.propertyView.modelView.markWritable"));
+				jQuery("#severity")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.propertyView.modelView.severity"));
+				jQuery("#element")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.element"));
+				jQuery("#description")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.description"));
+				jQuery("#refreshValidationButton")
+						.attr(
+								"title",
+								m_i18nUtils
+										.getProperty("modeler.propertyView.modelView.validationRefresh"));
+				$("label[for='descriptionTextarea']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.description"));
+				$("label[for='lastModificationDateOutput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.propertyView.modelView.lastModificationDate"));
+				$("label[for='creationDateOutput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.propertyView.modelView.creationDateOutput"));
+				$("label[for='nameInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.propertyView.modelView.name"));
+
+			}
 			/**
 			 *
 			 */

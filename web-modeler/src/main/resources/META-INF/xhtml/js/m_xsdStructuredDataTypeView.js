@@ -4,10 +4,10 @@
 define(
 		[ "jquery", "m_utils", "m_constants", "m_communicationController", "m_command",
 				"m_commandsController", "m_dialog", "m_modelElementView",
-				"m_model", "m_propertiesTree" ],
+				"m_model", "m_propertiesTree","m_i18nUtils" ],
 		function(jQuery, m_utils, m_constants, m_communicationController, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_propertiesTree) {
+				m_propertiesTree,m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
 					var view = new XsdStructuredDataTypeView();
@@ -201,46 +201,39 @@ define(
 						var path = element.name.replace(/:/g, "-");
 
 						var newRow = jQuery("<tr id='" + path + "'></tr>");
-						var childRows = [];
 
+						var childRows = [];
+                            
+						
+						//alert(element.name);
+						
+						var name = element.name;
+						var propertyName = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.inputText.new"); 
+						name =name.replace("New", propertyName);
 						var nameColumn = jQuery("<td></td>").appendTo(newRow);
-						nameColumn.append("<input class='nameInput' type='text' value='" + element.name + "'/>");
+						nameColumn.append("<input class='nameInput' type='text' value='" + name + "'/>");
 
 						var typeColumn = jQuery("<td></td>").appendTo(newRow);
 						if (view.typeDeclaration.isSequence()) {
 
-							var elementType = view.typeDeclaration.resolveElementType(element.name);
+							var schemaType = view.typeDeclaration.resolveElementType(element.name);
 
 							if ( !view.typeDeclaration.isReadOnly()) {
-								typeColumn.append(view.getTypeSelectList(element.type));
+								typeColumn.append(view.getTypeSelectList(schemaType));
 							} else {
-								typeColumn.append(element.type);
+								typeColumn.append(schemaType.name);
 							}
 
-							if ((element.type != null)
-									&& (element.type.body != null)
-									&& (element.type.body.classifier == "sequence")) {
-								// TODO append child rows
-								jQuery.each(elementType.type.body.elements, function() {
-									var childRow = jQuery("<tr id='' class='child-of-" + path + "'></tr>");
-
-									jQuery("<td>" + this.name + "</td>").appendTo(childRow);
-									jQuery("<td>" + this.type + "</td>").appendTo(childRow);
-									jQuery("<td>" + this.cardinality + "</td>").appendTo(childRow);
-
-									childRows.push(childRow);
-
-									// TODO recurse
-								});
-							}
+							childRows = view.generateChildElementRows(path, schemaType);
 						}
 
 						var cardinalityColumn = jQuery("<td></td>").appendTo(newRow);
 						if (view.typeDeclaration.isSequence()) {
 							if ( !view.typeDeclaration.isReadOnly()) {
+								 								
 								cardinalityColumn.append("<select size='1' class='cardinalitySelect'>"
-										+ "  <option value='required'" + (element.cardinality == "required" ? "selected" : "") + ">Required</option>"
-										+ "  <option value='many'" + (element.cardinality == "many" ? "selected" : "") + ">Many</option>"
+										+ "  <option value='required'" + (element.cardinality == "required" ? "selected" : "") + ">"+m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.cardinality.option.required")+"</option>"
+										+ "  <option value='many'" + (element.cardinality == "many" ? "selected" : "") + ">"+m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.cardinality.option.many")+"</option>"
 										+ "</select>");
 							} else {
 								cardinalityColumn.append(element.cardinality);
@@ -257,7 +250,7 @@ define(
 					});
 
 					this.tableBody.append("<tr id='newRow'>"
-						+ "  <td><input id='newLink' type='image' src='../../images/icons/add.png'/></td>"
+						+ "  <td><span class='data-element'><input id='newLink' type='image' src='../../images/icons/add.png'/></span></td>"
 						+ "  </td><td>"
 						+ "  </td><td>"
 						+ "</tr>");
@@ -269,8 +262,62 @@ define(
 					});
 
 					this.tree.treeTable({
-						indent: 20,
+						indent: 14,
+						onNodeShow: function() {
+							var parentRow = jQuery(this);
+							if ( !parentRow.data("elements-initialized")) {
+								var parentPath = this.id;
+								var schemaType = parentRow.data("schemaType");
+
+								// trick to trigger initialization of child rows
+								// first append at root ...
+								var childRows = view.generateChildElementRows(null, schemaType);
+								jQuery.each(childRows, function(i, childRow) {
+									// ... then move to the proper location
+									parentRow.after(childRow);
+									childRow.appendBranchTo(parentRow[0]);
+								});
+								parentRow.collapse();
+
+								parentRow.data("elements-initialized", true);
+							}
+						}
 					});
+				};
+
+				XsdStructuredDataTypeView.prototype.generateChildElementRows = function(parentPath, schemaType) {
+					var childRows = [];
+
+					if ((schemaType != null)
+							&& (schemaType.isStructure())) {
+						// append child rows
+						jQuery.each(schemaType.getElements(), function(i, element) {
+							var childPath = parentPath + "-" + element.name;
+							var childRow = jQuery("<tr id='" + childPath + "'></tr>");
+							if (null != parentPath) {
+								childRow.addClass("child-of-" + parentPath);
+							}
+
+							var childSchemaType = schemaType.resolveElementType(element.name);
+
+							jQuery("<td><span class='data-element'>" + this.name + "</span></td>").appendTo(childRow);
+							jQuery("<td>" + this.type + "</td>").appendTo(childRow);
+							jQuery("<td>" + this.cardinality + "</td>").appendTo(childRow);
+
+							if (childSchemaType.isStructure()) {
+								// add styles in preparation of lazily appending child rows
+								childRow.addClass("parent");
+								childRow.addClass("expanded");
+							}
+
+							childRow.data("parentId", parentPath);
+							childRow.data("schemaType", childSchemaType);
+
+							childRows.push(childRow);
+						});
+					}
+
+					return childRows;
 				};
 
 				/**
@@ -323,43 +370,45 @@ define(
 				/**
 				 *
 				 */
-				XsdStructuredDataTypeView.prototype.getTypeSelectList = function(type) {
-					var select = "<select size=\"1\" class=\"typeSelect\">";
+				XsdStructuredDataTypeView.prototype.getTypeSelectList = function(schemaType) {
+					var select = "<select size='1' class='typeSelect'>";
 
-					select += "<optgroup label=\"Primitive Data\">";
+					
+					var xsdTypes = [
+		                { id: "xsd:string", label: m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectType.string") },
+	                    { id: "xsd:int", label: m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectType.integer") },
+		                { id: "xsd:double", label: m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectType.float") },		                
+		                { id: "xsd:decimal", label: m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectType.decimal") },
+		                { id: "xsd:date", label: m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectType.date") }
+	                ];
 
-					select += "<option value=\"xsd:string\""
-							+ (type == "xsd:string" ? "selected" : "")
-							+ ">String</option>";
-					select += "<option value=\"xsd:int\""
-							+ (type == "xsd:int" ? "selected" : "")
-							+ ">Integer</option>";
-					select += "<option value=\"xsd:double\""
-							+ (type == "xsd:double" ? "selected" : "")
-							+ ">Float</option>";
-					select += "<option value=\"xsd:decimal\""
-							+ (type == "xsd:decimal" ? "selected" : "")
-							+ ">Decimal</option>";
-					select += "<option value=\"xsd:date\""
-							+ (type == "xsd:date" ? "selected" : "")
-							+ ">Date</option>";
+					select += "<optgroup label='"+m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveData")+"'>";
 
-					select += "</optgroup><optgroup label=\"This Model\">";
-
-					for ( var n in this.typeDeclaration.model.typeDeclarations) {
-						var typeDeclaration = this.typeDeclaration.model.typeDeclarations[n];
-
-						if (typeDeclaration.typeDeclaration.schema.elements[typeDeclaration.id] == null) {
-							continue;
+					jQuery.each(xsdTypes, function() {
+						select += "<option value='" + this.id + "' ";
+						if (schemaType.isBuiltinType() && (this.id == schemaType.name)) {
+							select += "selected ";
 						}
+						select += ">" + this.label + "</option>";
+					});
 
-						select += "<option value=\""
-								+ typeDeclaration.typeDeclaration.schema.elements[typeDeclaration.id].type
-								+ "\""
-								+ (type == typeDeclaration.typeDeclaration.schema.elements[typeDeclaration.id].type ? "selected"
-										: "") + ">" + typeDeclaration.name
-								+ "</option>";
-					}
+					select += "</optgroup>";
+					select += "<optgroup label='"+m_i18nUtils.getProperty("modeler.element.properties.commonProperties.thisModel")+"'>";
+					jQuery.each(this.typeDeclaration.model.typeDeclarations, function() {
+						var typeDeclaration = this;
+
+						var mainElement = typeDeclaration.typeDeclaration.schema.elements[typeDeclaration.id];
+						if (mainElement) {
+							// consumable type, as there is an equivalent global element
+							var elementType = typeDeclaration.resolveSchemaType(mainElement.type);
+
+							select += "<option value='" + mainElement.type + "' ";
+							if ( !schemaType.isBuiltinType() && (null != elementType)) {
+								select += ((schemaType.name == elementType.name) && (schemaType.nsUri == elementType.nsUri) ? "selected " : "");
+							}
+							select += ">" + typeDeclaration.name + "</option>";
+						}
+					});
 
 					// select += "</optgroup><optgroup label=\"Other Models\">";
 					//

@@ -207,6 +207,7 @@ define(
 							m_messageDisplay
 									.showErrorMessage("Symbol can only be dropped inside a expanded lane.");
 							this.diagram.hideSnapLines(this);
+							this.remove();
 							return;
 						} else {
 							this.parentSymbol.containedSymbols.push(this);
@@ -433,9 +434,9 @@ define(
 				 */
 				Symbol.prototype.show = function() {
 					this.visible = true;
+					this.showPrimitives();
 					this.refreshFromModelElement();
 					this.refreshCommentPrimitives();
-					this.showPrimitives();
 					this.showConnections();
 					this.showProximitySensor();
 				};
@@ -451,6 +452,12 @@ define(
 						var connectionToLane = conn.toAnchorPoint.symbol.parentSymbol;
 						// connections resides in current lane
 						if (connectionStartLane.id == connectionToLane.id) {
+							if (connectionStartLane.symbolXOffset > 0) {
+								conn.fromAnchorPoint.cacheX = conn.fromAnchorPoint.x;
+								conn.toAnchorPoint.cacheX = conn.toAnchorPoint.x;
+								this.connections[n].fromAnchorPoint.cacheOrientation = conn.fromAnchorPoint.orientation;
+								this.connections[n].toAnchorPoint.cacheOrientation = conn.toAnchorPoint.orientation;
+							}
 							this.connections[n].hide();
 						} else {
 							// from-anchor point adjustment
@@ -1035,8 +1042,10 @@ define(
 												this.getYCenter());
 
 								if (newParentSymbol == null) {
-									this.move(this.dragStartX, this.dragStartY);
-
+									this.moveTo(this.dragStartX, this.dragStartY);
+									this.diagram.hideSnapLines(this);
+									m_utils.removeItemFromArray(this.diagram.currentSelection, this);
+									this.deselect();
 									m_messageDisplay
 											.showErrorMessage("Symbol is not contained in Swimlane. Reverting drag.");
 
@@ -1368,10 +1377,6 @@ define(
 									- this.diagram.X_OFFSET, y
 									- this.diagram.Y_OFFSET);
 						}
-						// If symbol is outside the swimlane, remove it
-						if (!status) {
-							this.remove();
-						}
 					} else {
 						if (this.diagram.isInConnectionMode()) {
 
@@ -1384,7 +1389,13 @@ define(
 												- this.diagram.Y_OFFSET));
 								this.hideAnchorPoints();
 							}
-						} else {
+						} else if (this.diagram.dragEnabled
+								&& -1 == jQuery.inArray(
+										this.diagram.currentSelection, this)) {
+							//When drag/drop fails
+							this.diagram.dragEnabled = false;
+							this.deselect();
+						}else {
 							this.select();
 						}
 					}
@@ -1733,8 +1744,9 @@ define(
 			function Symbol_clickClosure(event, x, y) {
 				this.auxiliaryProperties.callbackScope.click(x, y);
 				// Reset tool selection
-				if (this.auxiliaryProperties.callbackScope.diagram
-						.isInNormalMode()) {
+				if (this.auxiliaryProperties
+						&& this.auxiliaryProperties.callbackScope.diagram
+								.isInNormalMode()) {
 					$(".selected-tool").removeClass("selected-tool");
 				}
 			}

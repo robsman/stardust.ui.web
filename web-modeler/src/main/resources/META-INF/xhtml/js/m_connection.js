@@ -396,8 +396,11 @@ define(
 									.getInstance();
 						} else {
 							this.fromModelElementOid = this.fromAnchorPoint.symbol.oid;
-							if(this.fromAnchorPoint.symbol.modelElement){
+
+							if(null != this.fromAnchorPoint.symbol.modelElement){
 								this.fromModelElementType = this.fromAnchorPoint.symbol.modelElement.type;
+							}else{
+								this.fromModelElementType = this.fromAnchorPoint.symbol.type;;
 							}
 							this.toModelElementOid = this.toAnchorPoint.symbol.oid;
 							if (this.toAnchorPoint.symbol.modelElement) {
@@ -447,23 +450,23 @@ define(
 												|| dataSymbol.connections[n].toAnchorPoint.symbol.oid == activity.oid)) {
 									// Use the existing connection
 									updateConnection = dataSymbol.connections[n];
-									// This will be the case always, just cross
-									// verification for IN-OUT mapping
-									if (updateConnection.modelElement.inputDataMapping != null && this.modelElement.outputDataMapping) {
-										updateConnection.modelElement.inputDataMapping = {};
-										updateConnection.modelElement.outputDataMapping = {};
-										// While update only mapping change are required
-										var changes = {
-											modelElement : {
-												inputDataMapping : updateConnection.modelElement.inputDataMapping,
-												outputDataMapping : updateConnection.modelElement.outputDataMapping
-											}
+
+									updateConnection.modelElement.inputDataMapping = {};
+									updateConnection.modelElement.outputDataMapping = {};
+									// While update only mapping change are required
+									var changes = {
+										modelElement : {
+											inputDataMapping : updateConnection.modelElement.inputDataMapping,
+											outputDataMapping : updateConnection.modelElement.outputDataMapping,
+											id : updateConnection.modelElement.id,
+											name : updateConnection.modelElement.name,
+											updateDataMapping : true
 										}
-										updateConnection.createUpdateCommand(changes);
-										m_messageDisplay
-												.showMessage("Connection updated");
-										break;
 									}
+									updateConnection.createUpdateCommand(changes);
+									m_messageDisplay
+											.showMessage("Connection updated");
+									break;
 								}
 							}
 						}
@@ -867,64 +870,122 @@ define(
 						// this.toAnchorPoint.y += 1;
 						// }
 
-						var targetX = this.toAnchorPoint.x;
-						var targetY = this.toAnchorPoint.y;
+						var sourceBox = {
+							left: this.fromAnchorPoint.symbol.x - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+							top: this.fromAnchorPoint.symbol.y - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+							right: this.fromAnchorPoint.symbol.x + this.fromAnchorPoint.symbol.width + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+							bottom: this.fromAnchorPoint.symbol.y + this.fromAnchorPoint.symbol.height + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+						};
+						var targetBox = {
+							left: this.toAnchorPoint.symbol.x - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+							top: this.toAnchorPoint.symbol.y - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+							right: this.toAnchorPoint.symbol.x + this.toAnchorPoint.symbol.width + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+							bottom: this.toAnchorPoint.symbol.y + this.toAnchorPoint.symbol.height + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+						};
+
+						var offset;
+						var sourceX;
+						var sourceY;
+						var targetX;
+						var targetY;
+						if (this.fromAnchorPoint.orientation === this.toAnchorPoint.orientation) {
+							// definitely not a straight line ....
+							var fromOffset = {
+								dx: (this.fromAnchorPoint.symbol.width / 2),
+								dy: this.fromAnchorPoint.symbol.height / 2
+							};
+							var toOffset = {
+								dx: (this.toAnchorPoint.symbol.width / 2),
+								dy: this.toAnchorPoint.symbol.height / 2
+							};
+							// center of source/target symbol
+							var sourceX = this.fromAnchorPoint.symbol.x + fromOffset.dx;
+							var sourceY = this.fromAnchorPoint.symbol.y + fromOffset.dy;
+							var targetX = this.toAnchorPoint.symbol.x + toOffset.dx;
+							var targetY = this.toAnchorPoint.symbol.y + toOffset.dy;
+							// ensure first/last segment extends beyond both source and target symbol
+							offset = {
+								dx: fromOffset.dx >= toOffset.dx ? fromOffset.dx : toOffset.dx,
+								dy: fromOffset.dy >= toOffset.dy ? fromOffset.dy : toOffset.dy,
+							};
+						} else {
+							offset = {
+								dx: 0,
+								dy: 0
+							};
+							var sourceX = this.fromAnchorPoint.x;
+							var sourceY = this.fromAnchorPoint.y;
+							var targetX = this.toAnchorPoint.x;
+							var targetY = this.toAnchorPoint.y;
+						}
 
 						// Adjust target
 
-						if (this.toAnchorPoint.orientation == 0) {
-							targetY = targetY
-									- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH;
-						} else if (this.toAnchorPoint.orientation == 1) {
-							targetX = targetX
-									+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH;
-						} else if (this.toAnchorPoint.orientation == 2) {
-							targetY = targetY
-									+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH;
-						} else if (this.toAnchorPoint.orientation == 3) {
-							targetX = targetX
-									- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH;
+						if (this.toAnchorPoint.orientation == m_constants.NORTH) {
+							targetY -= (offset.dy + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH);
+						} else if (this.toAnchorPoint.orientation == m_constants.EAST) {
+							targetX += (offset.dx + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH);
+						} else if (this.toAnchorPoint.orientation == m_constants.SOUTH) {
+							targetY += (offset.dy + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH);
+						} else if (this.toAnchorPoint.orientation == m_constants.WEST) {
+							targetX -= (offset.dx + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH);
 						}
 
 						// Add first segment
 
 						var currentSegment = null;
 
-						if (this.fromAnchorPoint.orientation == 0) {
+						if (this.fromAnchorPoint.orientation == m_constants.NORTH) {
 							this.segments
 									.push(currentSegment = new Segment(
 											this.fromAnchorPoint.x,
 											this.fromAnchorPoint.y,
-											this.fromAnchorPoint.x,
-											this.fromAnchorPoint.y
-													- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+											sourceX,
+											sourceY - (offset.dy + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH),
 											currentSegment));
-						} else if (this.fromAnchorPoint.orientation == 1) {
+
+							// avoid route crossing source element
+							if ((sourceY < targetY) && ((sourceBox.left < targetX) && (targetX < sourceBox.right))) {
+								this.segments.push(currentSegment = new Segment(
+										currentSegment.toX,
+										currentSegment.toY,
+										sourceBox.right,
+										currentSegment.toY,
+										currentSegment));
+							}
+						} else if (this.fromAnchorPoint.orientation == m_constants.EAST) {
 							this.segments
 									.push(currentSegment = new Segment(
 											this.fromAnchorPoint.x,
 											this.fromAnchorPoint.y,
-											this.fromAnchorPoint.x
-													+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-											this.fromAnchorPoint.y,
+											sourceX + (offset.dx + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH),
+											sourceY,
 											currentSegment));
-						} else if (this.fromAnchorPoint.orientation == 2) {
+						} else if (this.fromAnchorPoint.orientation == m_constants.SOUTH) {
 							this.segments
 									.push(currentSegment = new Segment(
 											this.fromAnchorPoint.x,
 											this.fromAnchorPoint.y,
-											this.fromAnchorPoint.x,
-											this.fromAnchorPoint.y
-													+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+											sourceX,
+											sourceY + (offset.dy + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH),
 											currentSegment));
-						} else if (this.fromAnchorPoint.orientation == 3) {
+
+							// avoid route crossing source element
+							if ((sourceY > targetY) && ((sourceBox.left < targetX) && (targetX < sourceBox.right))) {
+								this.segments.push(currentSegment = new Segment(
+										currentSegment.toX,
+										currentSegment.toY,
+										sourceBox.right,
+										currentSegment.toY,
+										currentSegment));
+							}
+						} else if (this.fromAnchorPoint.orientation == m_constants.WEST) {
 							this.segments
 									.push(currentSegment = new Segment(
 											this.fromAnchorPoint.x,
 											this.fromAnchorPoint.y,
-											this.fromAnchorPoint.x
-													- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-											this.fromAnchorPoint.y,
+											sourceX - (offset.dx + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH),
+											sourceY,
 											currentSegment));
 						}
 
@@ -1062,10 +1123,10 @@ define(
 									else if (currentSegment.toY < targetY) {
 										if (targetY != this.toAnchorPoint.y) {
 											// following scenario bend not required
-											if ((this.fromAnchorPoint.orientation == 3
-													&& this.toAnchorPoint.orientation == 0 && currentSegment.toX > targetX)
-													|| (this.fromAnchorPoint.orientation == 1
-															&& this.toAnchorPoint.orientation == 0 && currentSegment.toX < targetX)) {
+											if ((this.fromAnchorPoint.orientation == m_constants.WEST
+													&& this.toAnchorPoint.orientation == m_constants.NORTH && currentSegment.toX > targetX)
+													|| (this.fromAnchorPoint.orientation == m_constants.EAST
+															&& this.toAnchorPoint.orientation == m_constants.NORTH && currentSegment.toX < targetX)) {
 												currentSegment.toX = targetX;
 											} else
 												this.segments
@@ -1092,10 +1153,10 @@ define(
 									else if (currentSegment.toY > targetY) {
 										if (targetY != this.toAnchorPoint.y) {
 											// following scenario bend not required
-											if ((this.fromAnchorPoint.orientation == 3
-													&& this.toAnchorPoint.orientation == 2 && currentSegment.toX > targetX)
-													|| (this.fromAnchorPoint.orientation == 1
-															&& this.toAnchorPoint.orientation == 2 && currentSegment.toX < targetX)) {
+											if ((this.fromAnchorPoint.orientation == m_constants.WEST
+													&& this.toAnchorPoint.orientation == m_constants.SOUTH && currentSegment.toX > targetX)
+													|| (this.fromAnchorPoint.orientation == m_constants.EAST
+															&& this.toAnchorPoint.orientation == m_constants.SOUTH && currentSegment.toX < targetX)) {
 												currentSegment.toX = targetX;
 											} else
 												// Horizontal segment from 3 o'clk to 3 o'clk
@@ -1194,8 +1255,8 @@ define(
 									// Vertical segment from 6'clk moving downwards
 									else if (currentSegment.toX > targetX) {
 										if (targetX != this.toAnchorPoint.x) {
-											if ((this.fromAnchorPoint.orientation == 2
-													&& this.toAnchorPoint.orientation == 1 && currentSegment.toY < targetY)) {
+											if ((this.fromAnchorPoint.orientation == m_constants.SOUTH
+													&& this.toAnchorPoint.orientation == m_constants.EAST && currentSegment.toY < targetY)) {
 												currentSegment.toY = targetY;
 											} else
 												this.segments
@@ -1219,10 +1280,10 @@ define(
 									// Vertical segment from 6'clk moving upwards
 									else if (currentSegment.toX < targetX) {
 										if (targetX != this.toAnchorPoint.x) {
-											if ((this.fromAnchorPoint.orientation == 2
-													&& this.toAnchorPoint.orientation == 3 && currentSegment.toY < targetY)
-													|| (this.fromAnchorPoint.orientation == 0
-															&& this.toAnchorPoint.orientation == 3 && currentSegment.toY > targetY)) {
+											if ((this.fromAnchorPoint.orientation == m_constants.SOUTH
+													&& this.toAnchorPoint.orientation == m_constants.WEST && currentSegment.toY < targetY)
+													|| (this.fromAnchorPoint.orientation == m_constants.NORTH
+															&& this.toAnchorPoint.orientation == m_constants.WEST && currentSegment.toY > targetY)) {
 												currentSegment.toY = targetY;
 											} else
 												// Vertical - From 6 o'clk to 9 o'clk
@@ -1277,8 +1338,8 @@ define(
 										&& ((currentSegment.toX < this.fromAnchorPoint.symbol.x) && this.toAnchorPoint.symbol.x
 												+ this.toAnchorPoint.symbol.width < targetX)) {
 									// For scenario connecting from 9 o'clk(Symbol 1) to 3 o'clk(symbol2)
-									if (this.fromAnchorPoint.orientation == 3
-											&& this.toAnchorPoint.orientation == 1) {
+									if (this.fromAnchorPoint.orientation == m_constants.WEST
+											&& this.toAnchorPoint.orientation == m_constants.EAST) {
 										this.segments
 												.push(currentSegment = new Segment(
 														currentSegment.toX,
@@ -1300,8 +1361,8 @@ define(
 										&& ((currentSegment.toX >= (this.fromAnchorPoint.symbol.x + this.fromAnchorPoint.symbol.width))
 												&& this.toAnchorPoint.symbol.x > targetX)) {
 									// For scenario connecting from 3 o'clk(Symbol 1) to 9 o'clk(symbol2)
-									if (this.fromAnchorPoint.orientation == 1
-											&& this.toAnchorPoint.orientation == 3) {
+									if (this.fromAnchorPoint.orientation == m_constants.EAST
+											&& this.toAnchorPoint.orientation == m_constants.WEST) {
 										this.segments
 												.push(currentSegment = new Segment(
 														currentSegment.toX,

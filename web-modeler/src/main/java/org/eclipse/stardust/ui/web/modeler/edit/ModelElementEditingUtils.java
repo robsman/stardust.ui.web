@@ -12,8 +12,11 @@
 package org.eclipse.stardust.ui.web.modeler.edit;
 
 import java.util.Iterator;
+import java.util.List;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.IFlowObjectSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
@@ -101,6 +104,32 @@ public class ModelElementEditingUtils
          ProcessDefinitionType processDefinition,
          DataMappingConnectionType dataMappingConnection)
    {
+      List<DataMappingType> dataMapping = CollectionUtils.newArrayList();
+      if (null != dataMappingConnection.getActivitySymbol()) {
+         for (DataMappingType dataMappingType : dataMappingConnection.getActivitySymbol()
+               .getActivity()
+               .getDataMapping())
+         {
+            if (dataMappingType.getData()
+                  .getId()
+                  .equals(dataMappingConnection.getDataSymbol().getData().getId()))
+            {
+               dataMapping.add(dataMappingType);
+            }
+         }
+         dataMappingConnection.getActivitySymbol()
+         .getActivity()
+         .getDataMapping()
+         .removeAll(dataMapping);
+      }
+
+      if (null != dataMappingConnection.getDataSymbol()) {
+         dataMappingConnection.getDataSymbol()
+         .getData()
+         .getDataMappings()
+         .removeAll(dataMapping);
+      }
+
       processDefinition.getDiagram()
             .get(0)
             .getPoolSymbols()

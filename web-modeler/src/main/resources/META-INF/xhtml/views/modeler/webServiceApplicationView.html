@@ -43,7 +43,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td><label for="nameInput">Application Name</label>
+							<td><label for="nameInput" id="application">Application Name</label>
 							</td>
 							<td><input id="nameInput" type="text"></input>
 							</td>
@@ -51,7 +51,7 @@
 					</table></td>
 			</tr>
 			<tr>
-				<td><label for="descriptionTextarea">Description</label>
+				<td><label for="descriptionTextarea" id="description">Description</label>
 				</td>
 			</tr>
 			<tr>
@@ -64,7 +64,7 @@
 						<ul id="propertiesTabsList">
 							<li><a href="#configurationTab"><img
 									src="../../images/icons/basic-properties-page.png"></img><span
-									class="tabLabel">Configuration</span> </a>
+									class="tabLabel" id="configuration">Configuration</span> </a>
 							</li>
 						</ul>
 						<div id="configurationTab">
@@ -74,7 +74,7 @@
 										<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 											style="margin-bottom: 10px;">
 											<tr>
-												<td><label for="wsdlUrlInput">WSDL URL</label>
+												<td><label for="wsdlUrlInput" id="wsdlurl">WSDL URL</label>
 												</td>
 												<td><table>
 														<tr>
@@ -89,37 +89,37 @@
 												</td>
 											</tr>
 											<tr>
-												<td><label for="serviceSelect">Service</label>
+												<td><label for="serviceSelect" id="service">Service</label>
 												</td>
 												<td><select id="serviceSelect"></select>
 												</td>
 											</tr>
 											<tr>
-												<td><label for="portSelect">Port</label>
+												<td><label for="portSelect" id="port">Port</label>
 												</td>
 												<td><select id="portSelect"></select>
 												</td>
 											</tr>
 											<tr>
-												<td><label for="operationSelect">Operation</label>
+												<td><label for="operationSelect" id="operation">Operation</label>
 												</td>
 												<td><select id="operationSelect"></select>
 												</td>
 											</tr>
 											<tr>
-												<td><label for="styleOutput">Style</label>
+												<td><label for="styleOutput" id="style">Style</label>
 												</td>
 												<td><div id="styleOutput" class="output"></div>
 												</td>
 											</tr>
 											<tr>
-												<td><label for="protocolOutput">Protocol</label>
+												<td><label for="protocolOutput" id="protocal">Protocol</label>
 												</td>
 												<td><div id="protocolOutput" class="output"></div>
 												</td>
 											</tr>
 											<tr>
-												<td><label for="useOutput">Use</label>
+												<td><label for="useOutput" id="use">Use</label>
 												</td>
 												<td><div id="useOutput" class="output"></div>
 												</td>
@@ -128,7 +128,7 @@
 										<table class="layoutTable">
 											<tr>
 												<td>
-													<div class="heading">Implementation</div>
+													<div class="heading" id="implementation">Implementation</div>
 													<table style="margin-bottom: 10px;">
 														<tr>
 															<td>
@@ -137,8 +137,8 @@
 																	<tr>
 																		<td><input id="addressingInput" type="checkbox"></input>
 																		</td>
-																		<td><label for="addressingInput">Include
-																				WS-Addressing EPR</label>
+																		<td><div id="includedAddressing"><label for="addressingInput">Include
+																				WS-Addressing EPR</label></div>
 																		</td>
 																	</tr>
 																</table>
@@ -147,19 +147,26 @@
 														<tr>
 															<td><table class="fieldSetTable">
 																	<tr>
-																		<td><label for="implementationSelect">Implementation</label>
+																		<td><label for="implementationSelect" id="implementation1">Implementation</label>
 																		</td>
-																		<td><select id="implementationSelect"><option
-																					value="generic">Generic Resource</option>
+																		<td>
+																		
+																		<select id="implementationSelect">
+																		
+																		<!--  <option
+																					value="generic"><span>Generic Resource</span></option>
 																				<option value="carnot">Infinity Specific</option>
-																		</select></td>
+																				-->
+																		</select>
+																		
+																		</td>
 																	</tr>
 																</table></td>
 														</tr>
 													</table>
 												</td>
 												<td style="padding-left: 10px;">
-													<div class="heading">Security</div>
+													<div class="heading" id="security">Security</div>
 													<table style="margin-bottom: 10px;">
 														<tr>
 															<td>
@@ -168,7 +175,7 @@
 																	<tr>
 																		<td><input id="authenticationInput"
 																			type="checkbox"></input></td>
-																		<td><label for="authenticationInput">Authentication
+																		<td><label for="authenticationInput" id=authenticationReq>Authentication
 																				Required</label></td>
 																	</tr>
 																</table>
@@ -177,15 +184,18 @@
 														<tr>
 															<td><table class="fieldSetTable">
 																	<tr>
-																		<td><label for="mechanismSelect">Mechanism</label>
+																		<td><label for="mechanismSelect" id="mechanism">Mechanism</label>
 																		</td>
-																		<td><select id="mechanismSelect"><option
+																		<td><select id="mechanismSelect">
+																		
+																		<!-- <option
 																					value="basic">HTTP Basic Authorization</option>
 																				<option value="ws-security">WS-Security</option>
+																				 -->
 																		</select></td>
 																	</tr>
 																	<tr>
-																		<td><label for="variantSelect">Variant</label></td>
+																		<td><label for="variantSelect" id="variant">Variant</label></td>
 																		<td><select id="variantSelect"></select></td>
 																	</tr>
 																</table></td>

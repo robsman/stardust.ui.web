@@ -26,7 +26,6 @@ import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
 /**
  * @author Subodh.Godbole
@@ -108,7 +107,7 @@ public class ModelHelper
       }
       else if (deptInfo instanceof DepartmentInfoDetails)
       {
-         dept = ServiceFactoryUtils.getAdministrationService().getDepartment(deptInfo.getOID());
+         dept = DepartmentCacheManager.getDepartment(deptInfo.getOID());
       }
 
       while (null != organization)

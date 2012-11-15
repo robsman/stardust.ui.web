@@ -18,7 +18,7 @@ define(
 					var annotationSymbol = new AnnotationSymbol();
 
 					annotationSymbol.bind(diagram);
-					annotationSymbol.modelElement = {};
+					annotationSymbol.modelElement = null;
 
 					return annotationSymbol;
 				},
@@ -148,7 +148,7 @@ define(
 				 */
 				AnnotationSymbol.prototype.getPathSvgString = function() {
 					return "M"
-							+ (this.x + m_constants.ANNOTATION_SYMBOL_DEFAULT_WIDTH)
+							+ (this.x + this.width)
 							+ " "
 							+ this.y
 							+ " L"
@@ -158,13 +158,13 @@ define(
 							+ " L"
 							+ this.x
 							+ " "
-							+ (this.y + m_constants.ANNOTATION_SYMBOL_DEFAULT_HEIGHT)
+							+ (this.y + this.height)
 							+ " L"
-							+ (this.x + m_constants.ANNOTATION_SYMBOL_DEFAULT_WIDTH)
+							+ (this.x + this.width)
 							+ " "
-							+ (this.y + m_constants.ANNOTATION_SYMBOL_DEFAULT_HEIGHT);
+							+ (this.y + this.height);
 				};
-
+				
 				/**
 				 * Registers symbol in specific lists in the diagram and model
 				 * element in the process.
@@ -234,19 +234,40 @@ define(
 				 * 
 				 */
 				AnnotationSymbol.prototype.adjustPrimitives = function(dX, dY) {
+					if (this.parentSymbol && this.parentSymbol.minimized) {
+						return;
+					}
+					if (this.text.getBBox().width > this.width) {
+						wrappedContent = m_utils.contentWrap(this.text
+								.attr("text"),
+								m_constants.ANNOTATION_SYMBOL_TEXT_MAX,
+								m_constants.NEW_LINE);
+
+						this.text.attr({
+							"text" : wrappedContent
+						});
+					}
+
+					this.height = this.text.getBBox().height + 5;
+
+					if (this.height < m_constants.ANNOTATION_SYMBOL_DEFAULT_HEIGHT) {
+						this.height = m_constants.ANNOTATION_SYMBOL_DEFAULT_HEIGHT;
+					}
+					
 					this.rect.attr({
 						x : this.x,
-						y : this.y
+						y : this.y,
+						height : this.height
 					});
 					this.path.attr({
 						path : this.getPathSvgString()
 					});
 					this.text.attr({
-						x : this.x +  + 0.5 * this.width,
-						y : this.y +  + 0.5 * this.height
+						x : this.x + 0.6 * this.width,
+						y : this.y + 0.5 * this.height
 					});
 				};
-
+				
 				/**
 				 * 
 				 */

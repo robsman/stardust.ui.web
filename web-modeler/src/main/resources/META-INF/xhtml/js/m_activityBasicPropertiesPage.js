@@ -11,11 +11,12 @@
 define(
 		[ "m_utils", "m_constants", "m_command", "m_commandsController",
 				"m_user", "m_model", "m_dialog", "m_basicPropertiesPage",
-				"m_activity" ],
+				"m_activity", "m_i18nUtils" ],
 		function(m_utils, m_constants, m_command, m_commandsController, m_user,
-				m_model, m_dialog, m_basicPropertiesPage, m_activity) {
+				m_model, m_dialog, m_basicPropertiesPage, m_activity, m_i18nUtils) {
 			return {
 				create : function(propertiesPanel) {
+					i18nProcessActivityScreen();
 					var page = new ActivityBasicPropertiesPage(propertiesPanel);
 
 					page.initialize();
@@ -23,7 +24,62 @@ define(
 					return page;
 				}
 			};
+			
+		  function i18nProcessActivityScreen() {
+				$("label[for='guidOutput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.uuid"));
+								
+				$("label[for='idOutput']")
+				.text(
+						m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.id"));		
 
+				jQuery("#name")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.name"));
+				jQuery("#description")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.description"));
+				$("label[for='allowAbortByParticipantInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.general.participantAction"));
+				$("label[for='hibernateInitiallyInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.general.hibernate"));
+				$("label[for='supportsRelocationInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.general.relocation"));
+				$("label[for='isRelocationTargetInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.general.relocationTarget"));
+				jQuery("#userTask")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.general.userTask"));
+				jQuery("#userTask")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.general.userTask"));
+				$("label[for='applicationInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.general.applicationInput"));
+				$("label[for='subprocessInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.general.subProcessInput"));
+			}
+            	
+           
+          
 			function ActivityBasicPropertiesPage(propertiesPanel) {
 				var basicPropertiesPage = m_basicPropertiesPage
 						.create(propertiesPanel);
@@ -162,8 +218,9 @@ define(
 							+ m_constants.AUTO_GENERATED_UI
 							+ "'>(Auto-generated Screen)</option>");
 
+					var	 modellabel =  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.thisModel");
 					this.userApplicationList
-							.append("<optgroup label=\"This Model\">");
+							.append("<optgroup label=\""+modellabel+"\">");
 
 					for ( var i in this.getModel().applications) {
 						if (!this.getModel().applications[i].interactive) {
@@ -177,8 +234,9 @@ define(
 					}
 
 					this.userApplicationList.append("</optgroup>");
+						 modellabel =  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel");
 					this.userApplicationList
-							.append("</optgroup><optgroup label=\"Others Model\">");
+							.append("</optgroup><optgroup label=\""+modellabel+"\">");
 
 					for ( var n in m_model.getModels()) {
 						if (m_model.getModels()[n] == this.getModel()) {

@@ -16,11 +16,13 @@ define([ "m_utils", "m_constants", "m_messageDisplay",
 		"m_communicationController", "m_constants", "m_logger",
 		"m_commandsController", "m_diagram", "m_activitySymbol",
 		"m_eventSymbol", "m_gatewaySymbol", "m_dataSymbol", "m_annotationSymbol", "m_model",
-		"m_process", "m_activity", "m_data" ], function(m_utils, m_constants,
+		"m_process", "m_activity", "m_data","m_i18nUtils"],
+		
+		function(m_utils, m_constants,
 		m_messageDisplay, m_canvasManager,
 		m_communicationController, m_constants, m_logger, m_commandsController,
 		m_diagram, m_activitySymbol, m_eventSymbol, m_gatewaySymbol,
-		m_dataSymbol, m_annotationSymbol, m_model, m_process, m_activity, m_data) {
+		m_dataSymbol, m_annotationSymbol, m_model, m_process, m_activity, m_data, m_i18nUtils) {
 
 	function selectTool(toolButtonId) {
 		$(".selected-tool").removeClass("selected-tool");
@@ -77,8 +79,9 @@ define([ "m_utils", "m_constants", "m_messageDisplay",
 			diagram.clearCurrentToolSelection();
 			selectTool("connectorButton");
 			diagram.mode = diagram.CONNECTION_MODE;
+			var errorMessage = m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.errorMessage");
 			m_messageDisplay
-					.showMessage("Select first anchor point for connection.");
+					.showMessage(errorMessage);
 		},
 
 		createAnnotation : function(diagram) {

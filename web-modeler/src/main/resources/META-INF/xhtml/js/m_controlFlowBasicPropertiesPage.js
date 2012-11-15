@@ -12,8 +12,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_basicPropertiesPage", "m_dataTraversal" ],
-		function(m_utils, m_constants, m_basicPropertiesPage, m_dataTraversal) {
+		[ "m_utils", "m_constants", "m_basicPropertiesPage", "m_dataTraversal", "m_codeEditor" ],
+		function(m_utils, m_constants, m_basicPropertiesPage, m_dataTraversal, m_codeEditor) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new ControlFlowBasicPropertiesPage(
@@ -43,11 +43,9 @@ define(
 					propertiesPage.show();
 					this.conditionExpressionInputEditor.refresh();
 
-					// Bind the Model Data as top "window" level objects to be used for Code Editor auto-complete
+					// Global variables for Code Editor auto-complete / validation
 					var globalVariables = m_dataTraversal.getAllDataAsJavaScriptObjects(this.propertiesPanel.diagram.model);
-					for (var key in globalVariables) {
-						window[key] = globalVariables[key];
-					}
+					this.conditionExpressionInputEditor.setGlobalVariables(globalVariables);
 				};
 
 				/**
@@ -61,35 +59,7 @@ define(
 					this.descriptionInput = this.mapInputId("descriptionInput");
 					this.conditionPanel = this.mapInputId("conditionPanel");
 
-					// Set up code editor for JS code expression
-					CodeMirror.commands.autocomplete = function(cm) {
-						CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
-					}
-
-					var editor = CodeMirror.fromTextArea(this.conditionExpressionInput[0], {
-						mode: "javascript",
-						theme: "eclipse",
-						lineNumbers: true,
-						lineWrapping: true,
-						indentUnit: 3,
-						matchBrackets: true,
-						extraKeys: {"Ctrl-Space": "autocomplete"},
-						onCursorActivity: function() {
-							// Highlight selected text
-							editor.matchHighlight("CodeMirror-matchhighlight");
-							// Set active line
-							editor.setLineClass(hlLine, null, null);
-							hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
-						},
-						onBlur: function() {
-							editor.save();
-							// Programmatically invoke the change handler on the hidden text area
-							// as it will not be invoked automatically
-							jQuery(editor.getTextArea()).change();
-						}
-					});
-					var hlLine = editor.setLineClass(0, "activeline");
-					this.conditionExpressionInputEditor = editor;
+					this.conditionExpressionInputEditor = m_codeEditor.getCodeEditor(this.conditionExpressionInput[0]);
 
 					this.registerInputForModelElementChangeSubmission(
 							this.descriptionInput, "description");
@@ -109,24 +79,19 @@ define(
 							.val(this.propertiesPanel.element.modelElement.description);
 
 					if (this.propertiesPanel.element.allowsCondition()) {
-						var editor = this.conditionExpressionInputEditor;
-
 						this.otherwiseInput
 								.attr(
 										"checked",
 										this.propertiesPanel.element.modelElement.otherwise);
 						this.conditionExpressionInput
 								.val(this.propertiesPanel.element.modelElement.conditionExpression);
-						editor.setValue(this.conditionExpressionInput.val());
+						this.conditionExpressionInputEditor.setValue(this.conditionExpressionInput.val());
 
-						var editorWrapperNode = editor.getWrapperElement();
 						if (this.propertiesPanel.element.modelElement.otherwise) {
-							editor.setOption("readOnly", "nocursor");
-							jQuery(editorWrapperNode).addClass("CodeMirror-disabled");
+							this.conditionExpressionInputEditor.disable();
 							this.setTitle("Default Sequence Flow");
 						} else {
-							editor.setOption("readOnly", false);
-							jQuery(editorWrapperNode).removeClass("CodeMirror-disabled");
+							this.conditionExpressionInputEditor.enable();
 							this.setTitle("Conditional Sequence Flow");
 						}
 

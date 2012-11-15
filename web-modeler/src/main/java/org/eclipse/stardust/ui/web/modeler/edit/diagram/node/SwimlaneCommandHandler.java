@@ -60,8 +60,8 @@ public class SwimlaneCommandHandler
    {
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentSymbol);
 
-      String laneId = extractString(request, ModelerConstants.ID_PROPERTY);
       String laneName = extractString(request, ModelerConstants.NAME_PROPERTY);
+      String laneId = getModelBuilderFacade().createIdFromName(laneName);
       int xPos = extractInt(request, X_PROPERTY);
       int yPos = extractInt(request, Y_PROPERTY);
       int width = extractInt(request, WIDTH_PROPERTY);
@@ -101,6 +101,8 @@ public class SwimlaneCommandHandler
          removeLaneAndItsChildElements(lane);
          parentSymbol.getLanes().remove(lane);
          parentSymbol.getChildLanes().remove(lane);
+         // Update co-ordinates of adjacent Lanes
+         updateAdjacentLanes(lane, parentSymbol);
       }
    }
 
@@ -178,4 +180,27 @@ public class SwimlaneCommandHandler
 //         connIter.remove();
 //      }
    }
+
+   /**
+    *
+    * @param currentLane
+    * @param poolSymbol
+    */
+   private void updateAdjacentLanes(LaneSymbol currentLane, PoolSymbol poolSymbol)
+   {
+      long xOffset = 0;
+      for (LaneSymbol laneSymbol : poolSymbol.getLanes())
+      {
+         // For all lanes to the right of current lane, adjust 'X'
+         if (laneSymbol.getElementOid() != currentLane.getElementOid()
+               && (laneSymbol.getXPos() > currentLane.getXPos()))
+         {
+            if (xOffset == 0)
+               xOffset = laneSymbol.getXPos() - currentLane.getXPos();
+            laneSymbol.setXPos(laneSymbol.getXPos() - xOffset);
+            // TODO - Implement for horizontal orientation
+         }
+      }
+   }
+
 }
