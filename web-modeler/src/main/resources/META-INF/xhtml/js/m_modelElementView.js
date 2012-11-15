@@ -186,7 +186,7 @@ define(
 					this.propertiesTabsList.append(propertiesTabHeader);
 
 					var pageDiv = jQuery("<div id='" + extension.pageId
-							+ "'>Bla</div>");
+							+ "'></div>");
 
 					this.propertiesTabs.append(pageDiv);
 
