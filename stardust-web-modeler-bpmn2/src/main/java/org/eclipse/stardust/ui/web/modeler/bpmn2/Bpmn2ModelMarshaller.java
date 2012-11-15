@@ -468,8 +468,6 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
             if (shape.getBpmnElement() instanceof FlowNode)
             {
-               nodeSymbolPerElement.put((FlowNode) shape.getBpmnElement(), shape);
-
                if (shape.getBpmnElement() instanceof Activity)
                {
                   ActivitySymbolJto symbolJto = newShapeJto(shape,
@@ -478,6 +476,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
                   symbolJto.modelElement = toJto((Activity) shape.getBpmnElement());
 
                   laneJto.activitySymbols.add(symbolJto);
+                  nodeSymbolPerElement.put((FlowNode) shape.getBpmnElement(), shape);
                }
                else if (shape.getBpmnElement() instanceof Gateway)
                {
@@ -486,6 +485,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
                   symbolJto.modelElement = toJto((Gateway) shape.getBpmnElement());
 
                   laneJto.gatewaySymbols.add(symbolJto);
+                  nodeSymbolPerElement.put((FlowNode) shape.getBpmnElement(), shape);
                }
                else if (shape.getBpmnElement() instanceof Event)
                {
@@ -497,6 +497,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
                      symbolJto.modelElement = toJto((Event) shape.getBpmnElement());
 
                      laneJto.eventSymbols.add(symbolJto);
+                     nodeSymbolPerElement.put((FlowNode) shape.getBpmnElement(), shape);
                   }
                   else if (shape.getBpmnElement() instanceof BoundaryEvent)
                   {
@@ -505,6 +506,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
                      symbolJto.modelElement = toJto((Event) shape.getBpmnElement());
 
                      laneJto.eventSymbols.add(symbolJto);
+                     nodeSymbolPerElement.put((FlowNode) shape.getBpmnElement(), shape);
                   }
                }
             }
@@ -513,45 +515,45 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          {
             edges.add((BPMNEdge) symbol);
          }
+      }
 
-         for (BPMNEdge edge : edges)
+      for (BPMNEdge edge : edges)
+      {
+         if (edge.getBpmnElement() instanceof SequenceFlow)
          {
-            if (edge.getBpmnElement() instanceof SequenceFlow)
+            ConnectionSymbolJto symbolJto = new ConnectionSymbolJto();
+            SequenceFlow sFlow = (SequenceFlow) edge.getBpmnElement();
+
+            BPMNShape sourceNode = nodeSymbolPerElement.get(sFlow.getSourceRef());
+            BPMNShape targetNode = nodeSymbolPerElement.get(sFlow.getTargetRef());
+            if ((null == sourceNode) || (null == targetNode))
             {
-               ConnectionSymbolJto symbolJto = new ConnectionSymbolJto();
-               SequenceFlow sFlow = (SequenceFlow) edge.getBpmnElement();
-
-               BPMNShape sourceNode = nodeSymbolPerElement.get(sFlow.getSourceRef());
-               BPMNShape targetNode = nodeSymbolPerElement.get(sFlow.getTargetRef());
-               if ((null == sourceNode) || (null == targetNode))
-               {
-                  // quick exist to cater for currently unsupported node types
-                  continue;
-               }
-
-               symbolJto.type = ModelerConstants.CONTROL_FLOW_CONNECTION_LITERAL;
-               symbolJto.modelElement = toJto(sFlow);
-
-               symbolJto.fromModelElementOid = bpmn2Binding.findOid((Definitions) model,
-                     sourceNode);
-               symbolJto.fromModelElementType = encodeNodeKind(sFlow.getSourceRef());
-               symbolJto.toModelElementOid = bpmn2Binding.findOid((Definitions) model,
-                     targetNode);
-               symbolJto.toModelElementType = encodeNodeKind(sFlow.getTargetRef());
-
-               if ( !isEmpty(edge.getWaypoint()) && (2 <= edge.getWaypoint().size()))
-               {
-                  // use original coordinates to avoid having to adjust waypoints as well
-                  // (see determineShapeBounds)
-                  symbolJto.fromAnchorPointOrientation = determineAnchorPoint(sourceNode,
-                        edge.getWaypoint().get(0), edge.getWaypoint().get(1));
-                  symbolJto.toAnchorPointOrientation = determineAnchorPoint(targetNode,
-                        edge.getWaypoint().get(edge.getWaypoint().size() - 1),
-                        edge.getWaypoint().get(edge.getWaypoint().size() - 2));
-               }
-
-               jto.connections.add(symbolJto);
+               // quick exist to cater for currently unsupported node types
+               continue;
             }
+
+            symbolJto.type = ModelerConstants.CONTROL_FLOW_CONNECTION_LITERAL;
+            symbolJto.modelElement = toJto(sFlow);
+
+            symbolJto.fromModelElementOid = bpmn2Binding.findOid((Definitions) model,
+                  sourceNode);
+            symbolJto.fromModelElementType = encodeNodeKind(sFlow.getSourceRef());
+            symbolJto.toModelElementOid = bpmn2Binding.findOid((Definitions) model,
+                  targetNode);
+            symbolJto.toModelElementType = encodeNodeKind(sFlow.getTargetRef());
+
+            if ( !isEmpty(edge.getWaypoint()) && (2 <= edge.getWaypoint().size()))
+            {
+               // use original coordinates to avoid having to adjust waypoints as well
+               // (see determineShapeBounds)
+               symbolJto.fromAnchorPointOrientation = determineAnchorPoint(sourceNode,
+                     edge.getWaypoint().get(0), edge.getWaypoint().get(1));
+               symbolJto.toAnchorPointOrientation = determineAnchorPoint(targetNode,
+                     edge.getWaypoint().get(edge.getWaypoint().size() - 1),
+                     edge.getWaypoint().get(edge.getWaypoint().size() - 2));
+            }
+
+            jto.connections.add(symbolJto);
          }
       }
 
@@ -995,8 +997,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    {
       Bounds fromBounds = fromShape.getBounds(); // determineShapeBounds(fromShape);
 
-      double dx = point.getX() - (fromBounds.getX()); // + fromBounds.getWidth() / 2.0);
-      double dy = point.getY() - (fromBounds.getY()); // + fromBounds.getHeight() / 2.0);
+      double dx = point.getX() - (fromBounds.getX() + fromBounds.getWidth() / 2.0);
+      double dy = point.getY() - (fromBounds.getY() + fromBounds.getHeight() / 2.0);
 
       if ((dx == 0.0) && (dy == 0.0))
       {
