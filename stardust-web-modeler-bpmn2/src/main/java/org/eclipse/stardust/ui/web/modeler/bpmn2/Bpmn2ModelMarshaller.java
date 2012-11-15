@@ -1,6 +1,5 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2;
 
-import static java.util.Collections.emptyMap;
 import static org.eclipse.stardust.common.CollectionUtils.isEmpty;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
@@ -31,7 +30,6 @@ import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.Import;
-import org.eclipse.bpmn2.InclusiveGateway;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.MessageEventDefinition;
@@ -41,8 +39,11 @@ import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.StartEvent;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.TimerEventDefinition;
+import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNPlane;
@@ -62,7 +63,6 @@ import org.eclipse.xsd.util.XSDConstants;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -675,8 +675,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    {
       ProcessDefinitionJto jto = newModelElementJto(process, new ProcessDefinitionJto());
 
-      loadAttributes(process, jto);
-
+      loadExtensions(process, jto);
+      
       for (FlowElement flowElement : process.getFlowElements())
       {
          // TODO
@@ -701,8 +701,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    {
       DataJto jto = newModelElementJto(variable, new DataJto());
 
-      loadAttributes(variable, jto);
-
+      loadExtensions(variable, jto);
+      
       if (null != variable.getItemSubjectRef())
       {
          // TODO
@@ -717,11 +717,29 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    {
       ActivityJto jto = newModelElementJto(activity, new ActivityJto());
 
-      loadAttributes(activity, jto);
+      loadExtensions(activity, jto);
+      
+      if (activity instanceof ServiceTask)
+      {
+         jto.activityType = ModelerConstants.APPLICATION_ACTIVITY;
+      }
+      else if (activity instanceof UserTask)
+      {
+         // TODO Review
 
-      // TODO
-      jto.activityType = "manual";
+         jto.activityType = ModelerConstants.APPLICATION_ACTIVITY;
+      }
+      else if (activity instanceof SubProcess)
+      {
+         SubProcess subProcess = (SubProcess) activity;
 
+         jto.activityType = ModelerConstants.SUBPROCESS_ACTIVITY;
+
+         // jto.subprocessFullId = subProcess.get;
+      }
+
+      loadExtensions(activity, jto);
+      
       return jto;
    }
 
@@ -729,8 +747,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    {
       GatewayJto jto = newModelElementJto(gateway, new GatewayJto());
 
-      loadAttributes(gateway, jto);
-
+      loadExtensions(gateway, jto);
+      
       // prefix name due to current gateway-workarounds
       jto.name = "gateway" + jto.name;
 
@@ -751,8 +769,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    {
       EventJto jto = newModelElementJto(event, new EventJto());
 
-      loadAttributes(event, jto);
-
+      loadExtensions(event, jto);
+      
       if (event instanceof StartEvent)
       {
          jto.eventType = ModelerConstants.START_EVENT;
@@ -780,8 +798,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    {
       TransitionJto jto = newModelElementJto(sFlow, new TransitionJto());
 
-      loadAttributes(sFlow, jto);
-
+      loadExtensions(sFlow, jto);
+      
       if (sFlow.getConditionExpression() instanceof FormalExpression)
       {
          // TODO otherwise
@@ -1090,40 +1108,21 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    /**
     * 
     * @param element
-    * @param json
+    * @param jto
     */
-   private void loadAttributes(BaseElement element, ModelElementJto json)
+   private void loadExtensions(BaseElement element, ModelElementJto jto)
    {
-      Map<String, Object> extensions = getExtensions(element);
+      JsonElement attributes = Bpmn2ExtensionUtils.getExtensionAsJson(element, "core")
+            .get(ModelerConstants.ATTRIBUTES_PROPERTY);
 
-      String attributesString = (String) extensions.get(ModelerConstants.ATTRIBUTES_PROPERTY);
-
-      if (attributesString != null)
+      if (attributes != null)
       {
-         json.attributes = jsonIo.readJsonObject(attributesString);
+         jto.attributes = attributes.getAsJsonObject();
       }
       else
       {
-         json.attributes = new JsonObject();
-      }
-   }
-
-   /**
-    * 
-    * @param element
-    * @return
-    */
-   private Map<String, Object> getExtensions(BaseElement element)
-   {
-      List<Map<String, Object>> extensionAttributes = Bpmn2ExtensionUtils.getExtensionAttributes(
-            element, "bpmn");
-      Map<String, Object> result = emptyMap();
-
-      if ( !extensionAttributes.isEmpty())
-      {
-         result = extensionAttributes.get(0);
+         jto.attributes = new JsonObject();
       }
 
-      return result;
    }
 }

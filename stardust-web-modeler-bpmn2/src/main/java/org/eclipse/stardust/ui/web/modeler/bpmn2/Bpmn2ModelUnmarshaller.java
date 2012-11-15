@@ -1,28 +1,22 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2;
 
-import static java.util.Collections.emptyMap;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.bpmn2Factory;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.DataObject;
-import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.Event;
-import org.eclipse.bpmn2.ExclusiveGateway;
 import org.eclipse.bpmn2.Gateway;
-import org.eclipse.bpmn2.GatewayDirection;
 import org.eclipse.bpmn2.Operation;
-import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.ServiceTask;
-import org.eclipse.bpmn2.StartEvent;
+import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.emf.ecore.EObject;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.log.LogManager;
@@ -48,7 +42,9 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    private static final Logger trace = LogManager.getLogger(Bpmn2ModelUnmarshaller.class);
 
    private Bpmn2Binding bpmn2Binding;
+
    private Bpmn2FlowNodeBuilder flowNodeBuilder = new Bpmn2FlowNodeBuilder();
+
    private final JsonMarshaller jsonIo = new JsonMarshaller();
 
    void setBinding(Bpmn2Binding bpmn2Binding)
@@ -137,7 +133,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    {
       process.setName(processJson.name);
 
-      storeAttributes(process, processJson);
+      storeExtensions(process, processJson);
    }
 
    /**
@@ -148,25 +144,83 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    private void updateActivity(Activity activity, ActivityJto activityJson)
    {
       Process p = (Process) activity.eContainer();
-      
+
       trace.info("Contains element: " + p.getFlowElements().contains(activity));
-      
+
       if (activityJson.name != null)
       {
          activity.setName(activityJson.name);
       }
 
-      storeAttributes(activity, activityJson);
-      
-//      if (activityJson.activityType == ModelerConstants.APPLICATION_ACTIVITY &&
-//            !activity instanceof ServiceTask)
-//      {
-//         ServiceTask serviceTask;
-//         Operation op = new Op;
-//         
-//         op.se
-//         serviceTask.setOperationRef(arg0)
-//      }
+      trace.info("Activity Type: " + activity);
+      trace.info("Activity JSON Type: " + activityJson.activityType);
+
+      if (activityJson.activityType != null)
+      {
+         if (activityJson.activityType == ModelerConstants.MANUAL_ACTIVITY)
+         {
+            UserTask userTask = null;
+
+            if ( !(activity instanceof UserTask))
+            {
+               trace.error("Conversion to User Task not yet supported");
+            }
+            else
+            {
+               userTask = (UserTask) activity;
+
+               userTask.setImplementation("##unspecified");
+            }
+         }
+         else if (activityJson.activityType == ModelerConstants.APPLICATION_ACTIVITY)
+         {
+            if (activityJson.participantFullId != null)
+            {
+               UserTask userTask = null;
+
+               if ( !(activity instanceof UserTask))
+               {
+                  trace.error("Conversion to User Task not yet supported");
+               }
+               else
+               {
+                  userTask = (UserTask) activity;
+
+                  userTask.setImplementation("##unspecified");
+               }
+            }
+            else
+            {
+               ServiceTask serviceTask = null;
+
+               if ( !(activity instanceof ServiceTask))
+               {
+                  trace.error("Conversion to Service Task not yet supported");
+               }
+               else
+               {
+                  serviceTask = (ServiceTask) activity;
+
+                  if (true)
+                  {
+                     serviceTask.setImplementation("##WebService");
+
+                     Operation operation = bpmn2Factory().createOperation();
+
+                     operation.setId(activityJson.applicationFullId);
+
+                     serviceTask.setOperationRef(operation);
+                  }
+                  else
+                  {
+                     serviceTask.setImplementation("##unspecified");
+                  }
+               }
+            }
+         }
+      }
+
+      storeExtensions(activity, activityJson);
    }
 
    /**
@@ -192,7 +246,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
          // gateway instanceof ParallelGateway
       }
 
-      storeAttributes(gateway, gatewayJson);
+      storeExtensions(gateway, gatewayJson);
    }
 
    /**
@@ -220,7 +274,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
          // event instanceof EndEvent
       }
 
-      storeAttributes(event, eventJson);
+      storeExtensions(event, eventJson);
    }
 
    /**
@@ -235,80 +289,66 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
          dataObject.setName(dataJson.name);
       }
 
-      storeAttributes(dataObject, dataJson);
+      storeExtensions(dataObject, dataJson);
    }
 
    /**
     * 
     * @param element
-    * @param attribs
+    * @param jto
     */
-   private void storeAttributes(BaseElement element, ModelElementJto json)
+   private void storeExtensions(BaseElement element, ModelElementJto jto)
    {
-      Map<String, Object> extensions = getExtensions(element);
-
-      String attributesString = (String) extensions.get(ModelerConstants.ATTRIBUTES_PROPERTY);
-      JsonObject attributes = null;
-
-      if (attributesString != null)
+      // TODO This method will need a general mechanism of deep overwrite with keeping existing properties intact
+      
+      if ((null != jto.attributes) && !jto.attributes.entrySet().isEmpty())
       {
-         trace.info("Reading JSON from attributes string " + attributesString);
+         JsonObject coreExtensions = new JsonObject();
+         JsonObject attributes = getAttributes(element);
 
-         attributes = jsonIo.readJsonObject(attributesString);
-      }
-      else
-      {
-         trace.info("Creating new JSON Object");
+         // Merge attributes
 
-         attributes = new JsonObject();
-      }
-
-      if (json.attributes != null)
-      {
-         for (Map.Entry<String, ? > entry : json.attributes.entrySet())
+         for (Map.Entry<String, ? > entry : jto.attributes.entrySet())
          {
             String key = entry.getKey();
 
+            if (jto.attributes.get(key).isJsonNull())
+            {
+               trace.info("Setting extended attribute " + key + " to null.");
+            }
+            else
+            {
                trace.info("Setting extended attribute " + key + " to "
-                     + json.attributes.get(key).getAsString());
-
-               attributes.addProperty(key, json.attributes.get(key).getAsString());
+                     + jto.attributes.get(key).getAsString());
+               attributes.addProperty(key, jto.attributes.get(key).getAsString());
+            }
          }
+
+         coreExtensions.add(ModelerConstants.ATTRIBUTES_PROPERTY, attributes);
+
+         Bpmn2ExtensionUtils.setExtensionFromJson(element, "core", coreExtensions);
       }
-
-      trace.info("Attributes JSON String: " + attributes.toString());
-
-      extensions.put(ModelerConstants.ATTRIBUTES_PROPERTY, attributes.toString());
-      setExtensions(element, extensions);
    }
 
-   /**
-    * 
-    * @param element
-    * @param attribs
-    */
-   private void setExtensions(BaseElement element, Map<String, Object> attribs)
-   {
-      Bpmn2ExtensionUtils.setExtensionAttributes(element, "bpmn", attribs);
-   }
-   
    /**
     * 
     * @param element
     * @return
     */
-   private Map<String, Object> getExtensions(BaseElement element)
+   private JsonObject getAttributes(BaseElement element)
    {
-      List<Map<String, Object>> extensionAttributes = Bpmn2ExtensionUtils.getExtensionAttributes(
-            element, "bpmn");
-      Map<String, Object> result = new HashMap<String,Object>();//emptyMap();
-      
-      if ( !extensionAttributes.isEmpty())
-      {
-         result = extensionAttributes.get(0);
-      }
-      
-      return result;
-   }
-}
+      JsonElement attributes = Bpmn2ExtensionUtils.getExtensionAsJson(element, "core")
+            .get(ModelerConstants.ATTRIBUTES_PROPERTY);
 
+      if (attributes != null)
+      {
+         return attributes.getAsJsonObject();
+      }
+      else
+      {
+         return new JsonObject();
+      }
+
+   }
+
+}
