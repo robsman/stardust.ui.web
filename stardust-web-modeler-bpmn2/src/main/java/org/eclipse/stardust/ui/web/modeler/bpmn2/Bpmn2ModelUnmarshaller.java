@@ -131,6 +131,8 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
     */
    private void updateProcessDefinition(Process process, ProcessDefinitionJto processJson)
    {
+      trace.info("Updating Process from JSON " + processJson.toString());
+      
       process.setName(processJson.name);
 
       storeExtensions(process, processJson);
