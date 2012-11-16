@@ -5,11 +5,14 @@ import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findContainin
 import java.util.UUID;
 
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2CoreElementsBuilder;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2DiBuilder;
+import org.eclipse.stardust.ui.web.modeler.model.ApplicationJto;
 import org.eclipse.stardust.ui.web.modeler.model.ModelJto;
 import org.eclipse.stardust.ui.web.modeler.model.ProcessDefinitionJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.ProcessDiagramJto;
@@ -21,6 +24,10 @@ public class Bpmn2TestUtils
    public static final String PROCESS_NAME = "Test Process";
 
    public static final String PROCESS_ID = UUID.randomUUID().toString();
+
+   public static final String WEB_SERVICE_NAME = "Web Service";
+
+   public static final String WEB_SERVICE_ID = UUID.randomUUID().toString();
 
    private static final Bpmn2CoreElementsBuilder CORE_ELEMENTS_BUILDER = new Bpmn2CoreElementsBuilder();
 
@@ -45,6 +52,21 @@ public class Bpmn2TestUtils
       CORE_ELEMENTS_BUILDER.attachProcess(model, process);
 
       return process;
+   }
+
+   public static Interface createTestWebService(Definitions model)
+   {
+      ApplicationJto jto = new ApplicationJto();
+      jto.uuid = WEB_SERVICE_ID;
+      jto.id = WEB_SERVICE_ID;
+      jto.name = WEB_SERVICE_NAME;
+
+      jto.applicationType = ModelerConstants.WEB_SERVICE_APPLICATION_TYPE_ID;
+
+      Interface webService = CORE_ELEMENTS_BUILDER.createApplicationDefinition(model, jto);
+      CORE_ELEMENTS_BUILDER.attachToModel(model, webService);
+
+      return webService;
    }
 
    public static BPMNDiagram createTestProcessDiagram(Process process)

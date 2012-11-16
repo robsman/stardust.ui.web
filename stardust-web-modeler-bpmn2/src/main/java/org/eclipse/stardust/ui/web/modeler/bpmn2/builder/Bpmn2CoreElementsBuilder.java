@@ -6,12 +6,19 @@ import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtil
 
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
+import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.ProcessType;
+import org.eclipse.bpmn2.RootElement;
+import org.eclipse.emf.ecore.EObject;
+
+import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.config.CurrentVersion;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils;
+import org.eclipse.stardust.ui.web.modeler.model.ApplicationJto;
 import org.eclipse.stardust.ui.web.modeler.model.ModelJto;
 import org.eclipse.stardust.ui.web.modeler.model.ProcessDefinitionJto;
 
@@ -65,6 +72,36 @@ public class Bpmn2CoreElementsBuilder
       assert (null == process.eContainer());
 
       model.getRootElements().add(process);
+   }
+
+   public Interface createApplicationDefinition(Definitions model, ApplicationJto jto)
+   {
+      Interface application = Bpmn2Utils.bpmn2Factory().createInterface();
+
+      application.setName(jto.name);
+      application.setId( !isEmpty(jto.id)
+            ? jto.id
+            : Bpmn2Utils.deriveElementIdFromName(jto.name));
+
+      // apply defaults
+      JsonObject appDetails = new JsonObject();
+      appDetails.addProperty(ModelerConstants.APPLICATION_TYPE_PROPERTY, jto.applicationType);
+      Bpmn2ExtensionUtils.setExtensionFromJson(application, jto.applicationType, appDetails);
+
+      EObject extensionElement = Bpmn2ExtensionUtils.getExtensionElement(application, jto.applicationType);
+      if (null != extensionElement)
+      {
+         application.setImplementationRef(extensionElement);
+      }
+
+      return application;
+   }
+
+   public void attachToModel(Definitions model, RootElement element)
+   {
+      assert (null == element.eContainer());
+
+      model.getRootElements().add(element);
    }
 
 }

@@ -5,7 +5,9 @@ import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.test.Bpmn2TestUtil
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.test.Bpmn2TestUtils.createTestProcessDiagram;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
@@ -15,6 +17,7 @@ import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Gateway;
+import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.Process;
@@ -47,6 +50,7 @@ public class SimpleBpmn2ModelCreation
    private final ExternalXmlSchemaManager externalXmlSchemaManager = new ExternalXmlSchemaManager();
 
    private Definitions model;
+   private Interface testWebService;
    private Process testProcess;
    private BPMNDiagram testProcessDiagram;
 
@@ -60,6 +64,21 @@ public class SimpleBpmn2ModelCreation
       assertThat(model.getName(), is(Bpmn2TestUtils.MODEL_NAME));
 
       assertThat(model.getTargetNamespace(), is(notNullValue()));
+   }
+
+   @Test
+   public void creatingASimpleApplicationMustProperlyConfigureDefaultsAndAttachTheDefinition()
+   {
+      this.model = createModel();
+      this.testWebService = Bpmn2TestUtils.createTestWebService(model);
+
+      assertThat(testWebService, is(notNullValue()));
+      assertThat(testWebService.getId(), is(notNullValue()));
+      assertThat(testWebService.getName(), is(Bpmn2TestUtils.WEB_SERVICE_NAME));
+
+      assertThat(testWebService.getImplementationRef(), is(not(nullValue())));
+
+//      assertThat(navigator.findProcess(model, Bpmn2TestUtils.PROCESS_ID), is(testProcess));
    }
 
    @Test

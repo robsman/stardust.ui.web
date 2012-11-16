@@ -29,6 +29,7 @@ import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.Import;
+import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.MessageEventDefinition;
@@ -71,6 +72,7 @@ import org.eclipse.stardust.ui.web.modeler.integration.ExternalXmlSchemaManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelMarshaller;
 import org.eclipse.stardust.ui.web.modeler.model.ActivityJto;
+import org.eclipse.stardust.ui.web.modeler.model.ApplicationJto;
 import org.eclipse.stardust.ui.web.modeler.model.DataJto;
 import org.eclipse.stardust.ui.web.modeler.model.EventJto;
 import org.eclipse.stardust.ui.web.modeler.model.GatewayJto;
@@ -116,6 +118,10 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       if (element instanceof Definitions)
       {
          return toModelJson(element);
+      }
+      else if (element instanceof Interface)
+      {
+         return jsonIo.gson().toJsonTree(toJto((Interface) element));
       }
       else if (element instanceof Process)
       {
@@ -690,6 +696,18 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       return jto;
    }
 
+   public ApplicationJto toJto(Interface application)
+   {
+      ApplicationJto jto = newModelElementJto(application, new ApplicationJto());
+
+      loadExtensions(application, jto);
+
+      // TODO resolve app type from model element
+      jto.applicationType = ModelerConstants.WEB_SERVICE_APPLICATION_TYPE_ID;
+
+      return jto;
+   }
+
    public ProcessDefinitionJto toJto(Process process)
    {
       ProcessDefinitionJto jto = newModelElementJto(process, new ProcessDefinitionJto());
@@ -850,6 +868,10 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       if (src instanceof ItemDefinition)
       {
          name = ((ItemDefinition) src).getId();
+      }
+      else if (src instanceof Interface)
+      {
+         name = ((Interface) src).getId();
       }
       else if (src instanceof Participant)
       {

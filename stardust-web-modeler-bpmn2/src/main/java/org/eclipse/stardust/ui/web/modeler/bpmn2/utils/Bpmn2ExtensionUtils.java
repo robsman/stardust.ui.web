@@ -46,6 +46,31 @@ public class Bpmn2ExtensionUtils
 
    public static final String NS_PREFIX_STARDUST = "stardust";
 
+   public static EObject getExtensionElement(BaseElement object, String tag)
+   {
+      ExtensionAttributeValue extensionAttributes = !object.getExtensionValues()
+            .isEmpty() //
+            ? object.getExtensionValues().get(0)
+            : null;
+      if (null != extensionAttributes)
+      {
+         for (FeatureMap.Entry extension : extensionAttributes.getValue())
+         {
+            if (isInFilter(extension.getEStructuralFeature(), tag))
+            {
+               Object extensionValue = extension.getValue();
+
+               if (extensionValue instanceof EObject)
+               {
+                  return (EObject) extensionValue;
+               }
+            }
+         }
+      }
+
+      return null;
+   }
+
    /**
     * Returns extensions for a given object
     *

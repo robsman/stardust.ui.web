@@ -6,6 +6,7 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.ExtensionDefinition;
 import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Participant;
@@ -161,6 +162,7 @@ public class ChangesetNormalizer implements ChangePostprocessor
    private boolean isModelOrModelElement(EObject changedObject)
    {
       return (changedObject instanceof Definitions)
+            || (changedObject instanceof Interface)
             || (changedObject instanceof Process)
             || (changedObject instanceof FlowElement)
             || (changedObject instanceof Diagram)
