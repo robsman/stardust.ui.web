@@ -102,35 +102,38 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
          UnusedModelElementsSearcher searcher = new UnusedModelElementsSearcher();         
          Map matchedElements = searcher.search(model);
          List<EObject> children = (List) matchedElements.get(model);
-         for(EObject element : children)
+         if(children != null)
          {
-            String id = checkIsExternalReference(element);         
-            if(!StringUtils.isEmpty(id))
-            {      
-               if(element instanceof IIdentifiableModelElement)
-               {
-                  if(((IIdentifiableModelElement) element).getSymbols().isEmpty())
+            for(EObject element : children)
+            {
+               String id = checkIsExternalReference(element);         
+               if(!StringUtils.isEmpty(id))
+               {      
+                  if(element instanceof IIdentifiableModelElement)
                   {
-                     if(element instanceof RoleType)
+                     if(((IIdentifiableModelElement) element).getSymbols().isEmpty())
                      {
-                        model.getRole().remove(element);                                  
+                        if(element instanceof RoleType)
+                        {
+                           model.getRole().remove(element);                                  
+                        }
+                        else if(element instanceof ConditionalPerformerType)
+                        {
+                           model.getConditionalPerformer().remove(element);                                  
+                        }
+                        else if(element instanceof OrganizationType)
+                        {
+                           model.getOrganization().remove(element);                                  
+                        } 
+                        else if(element instanceof DataType)
+                        {
+                           model.getData().remove(element);                                  
+                        } 
+                        change.markAlsoModified(element);                     
                      }
-                     else if(element instanceof ConditionalPerformerType)
-                     {
-                        model.getConditionalPerformer().remove(element);                                  
-                     }
-                     else if(element instanceof OrganizationType)
-                     {
-                        model.getOrganization().remove(element);                                  
-                     } 
-                     else if(element instanceof DataType)
-                     {
-                        model.getData().remove(element);                                  
-                     } 
-                     change.markAlsoModified(element);                     
                   }
-               }
-            }            
+               }            
+            }
          }
       }      
    }
