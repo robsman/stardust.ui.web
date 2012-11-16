@@ -1,5 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.model;
 
+import com.google.gson.JsonArray;
+
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 
 public class EventJto extends ModelElementJto
@@ -13,5 +15,5 @@ public class EventJto extends ModelElementJto
 
    public String eventClass;
 
-   // TODO more details
+   public JsonArray parameterMappings = new JsonArray();
 }
