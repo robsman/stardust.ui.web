@@ -49,14 +49,11 @@ public class DataMappingTypeChangeTracker implements ChangePostprocessor
             {
                for (DataMappingConnectionType dataMappingConnection : dataSymbol.getDataMappings())
                {
-                  if ( !change.isChangedElement(dataMappingConnection))
-                  {
-                     change.markAlsoModified(dataMappingConnection);
-                  }               
+                  change.markAlsoModified(dataMappingConnection);
                }
             }
          }
-         
+
          change.markUnmodified(candidate);
       }
    }

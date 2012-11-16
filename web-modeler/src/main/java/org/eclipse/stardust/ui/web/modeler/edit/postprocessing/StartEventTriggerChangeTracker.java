@@ -15,14 +15,14 @@ public class StartEventTriggerChangeTracker extends AbstractChangeTracker
    {
       if (candidate instanceof TriggerType)
       {
-         StartEventSymbol startEvent = ((TriggerType) candidate).getStartingEventSymbols()
-               .get(0);
-
-         if (null != startEvent)
+         for (StartEventSymbol eventSymbol : ((TriggerType) candidate).getStartingEventSymbols())
          {
-            change.markAlsoModified(startEvent);
-            change.markUnmodified(candidate);
+            if (null != eventSymbol)
+            {
+               change.markAlsoModified(eventSymbol);
+            }
          }
+         change.markUnmodified(candidate);
       }
    }
 }

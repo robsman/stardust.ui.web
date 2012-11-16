@@ -21,14 +21,14 @@ public class TriggerAccessPointChangeTracker extends AbstractChangeTracker
 
          if (containingTrigger != null)
          {
-            StartEventSymbol startEvent = containingTrigger.getStartingEventSymbols()
-                  .get(0);
-
-            if (null != startEvent)
+            for (StartEventSymbol eventSymbol : containingTrigger.getStartingEventSymbols())
             {
-               change.markAlsoModified(containingTrigger);
-               change.markUnmodified(candidate);
+               if (null != eventSymbol)
+               {
+                  change.markAlsoModified(containingTrigger);
+               }
             }
+            change.markUnmodified(candidate);
          }
       }
    }
