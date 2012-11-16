@@ -87,6 +87,7 @@ public class EventCommandHandler
             TriggerType manualTrigger = newManualTrigger(processDefinition) //
                   .accessibleTo(parentLaneSymbol.getParticipant())
                   .build();
+            manualTrigger.setElementOid(++maxOid);
             startEventSymbol.setTrigger(manualTrigger);
          }
          else
