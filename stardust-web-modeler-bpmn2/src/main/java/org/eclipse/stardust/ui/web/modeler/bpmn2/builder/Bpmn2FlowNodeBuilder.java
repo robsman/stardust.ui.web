@@ -78,7 +78,7 @@ public class Bpmn2FlowNodeBuilder
       Gateway gateway;
       if (ModelerConstants.XOR_GATEWAY_TYPE.equals(jto.gatewayType))
       {
-         gateway = bpmn2Factory().createInclusiveGateway();
+         gateway = bpmn2Factory().createExclusiveGateway();
       }
       else if (ModelerConstants.AND_GATEWAY_TYPE.equals(jto.gatewayType))
       {

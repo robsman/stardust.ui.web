@@ -1,19 +1,25 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2;
 
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.bpmn2Factory;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.bpmn2Package;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findContainingModel;
 
 import java.util.Map;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.DataObject;
+import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Event;
+import org.eclipse.bpmn2.ExclusiveGateway;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.Operation;
+import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.di.BPMNShape;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 
 import com.google.gson.JsonElement;
@@ -24,6 +30,7 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2FlowNodeBuilder;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.EObjectMorpher;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelUnmarshaller;
 import org.eclipse.stardust.ui.web.modeler.model.ActivityJto;
@@ -125,7 +132,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param process
     * @param processJson
     */
@@ -139,7 +146,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @param activityJson
     */
@@ -226,7 +233,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param gateway
     * @param gatewayJson
     */
@@ -239,20 +246,26 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
 
       // gateway.setGatewayDirection(GatewayDirection.CONVERGING);
 
-      if (gatewayJson.gatewayType == ModelerConstants.XOR_GATEWAY_TYPE)
+      if (ModelerConstants.XOR_GATEWAY_TYPE.equals(gatewayJson.gatewayType))
       {
-         // gateway instanceof ExclusiveGateway)
+         if ( !(gateway instanceof ExclusiveGateway))
+         {
+            gateway = (Gateway) switchElementType(gateway, bpmn2Package().getExclusiveGateway());
+         }
       }
-      else if (gatewayJson.gatewayType == ModelerConstants.AND_GATEWAY_TYPE)
+      else if (ModelerConstants.AND_GATEWAY_TYPE.equals(gatewayJson.gatewayType))
       {
-         // gateway instanceof ParallelGateway
+         if ( !(gateway instanceof ParallelGateway))
+         {
+            gateway = (Gateway) switchElementType(gateway, bpmn2Package().getParallelGateway());
+         }
       }
 
       storeExtensions(gateway, gatewayJson);
    }
 
    /**
-    * 
+    *
     * @param event
     * @param eventJson
     */
@@ -280,7 +293,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param dataObject
     * @param dataJson
     */
@@ -295,14 +308,14 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param jto
     */
    private void storeExtensions(BaseElement element, ModelElementJto jto)
    {
       // TODO This method will need a general mechanism of deep overwrite with keeping existing properties intact
-      
+
       if ((null != jto.attributes) && !jto.attributes.entrySet().isEmpty())
       {
          JsonObject coreExtensions = new JsonObject();
@@ -333,7 +346,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @return
     */
@@ -353,4 +366,21 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
 
    }
 
+   private EObject switchElementType(EObject current, EClass newType)
+   {
+      Definitions model = findContainingModel(current);
+
+      EObject target = EObjectMorpher.morphType(current, newType);
+
+      // reconnect target for source in model
+      EObjectMorpher.replace(current, target);
+
+      if (null != model)
+      {
+         bpmn2Binding.reassociateUuid(model, current, target);
+         bpmn2Binding.reassociateOid(model, current, target);
+      }
+
+      return target;
+   }
 }

@@ -1,6 +1,8 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2;
 
 import static org.eclipse.stardust.common.CollectionUtils.newConcurrentHashMap;
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findContainingModel;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,19 +54,11 @@ public class Bpmn2Binding extends ModelBinding<Definitions>
 
    public String findUuid(BaseElement element)
    {
-      EObject context = element;
-      do
+      Definitions model = findContainingModel(element);
+      if (null != model)
       {
-         if (context instanceof Definitions)
-         {
-            return findUuid((Definitions) context, element);
-         }
-         else
-         {
-            context = context.eContainer();
-         }
+         return findUuid(model, element);
       }
-      while (context != null);
 
       throw new IllegalArgumentException("Element must be part of a BPMN2 model.");
    }
@@ -112,40 +106,35 @@ public class Bpmn2Binding extends ModelBinding<Definitions>
       return null;
    }
 
+   public void reassociateUuid(Definitions model, EObject oldElement, EObject newElement)
+   {
+      ConcurrentMap<EObject, String> modelUuids = uuidRegistry.get(model);
+      String uuid = modelUuids.get(oldElement);
+      if ( !isEmpty(uuid))
+      {
+         modelUuids.putIfAbsent(newElement, uuid);
+         modelUuids.remove(oldElement, uuid);
+      }
+   }
+
    public Long findOid(BaseElement element)
    {
-      EObject context = element;
-      do
+      Definitions model = findContainingModel(element);
+      if (null != model)
       {
-         if (context instanceof Definitions)
-         {
-            return findOid((Definitions) context, element);
-         }
-         else
-         {
-            context = context.eContainer();
-         }
+         return findOid(model, element);
       }
-      while (context != null);
 
       throw new IllegalArgumentException("Element must be part of a BPMN2 model.");
    }
 
    public Long findOid(DiagramElement element)
    {
-      EObject context = element;
-      do
+      Definitions model = findContainingModel(element);
+      if (null != model)
       {
-         if (context instanceof Definitions)
-         {
-            return findOid((Definitions) context, element);
-         }
-         else
-         {
-            context = context.eContainer();
-         }
+         return findOid(model, element);
       }
-      while (context != null);
 
       throw new IllegalArgumentException("Element must be part of a BPMN2 model.");
    }
@@ -192,4 +181,16 @@ public class Bpmn2Binding extends ModelBinding<Definitions>
 
       return null;
    }
+
+   public void reassociateOid(Definitions model, EObject oldElement, EObject newElement)
+   {
+      ConcurrentMap<EObject, Long> modelOids = oidRegistry.get(model);
+      Long oid = modelOids.get(oldElement);
+      if (null != oid)
+      {
+         modelOids.putIfAbsent(newElement, oid);
+         modelOids.remove(oldElement, oid);
+      }
+   }
+
 }

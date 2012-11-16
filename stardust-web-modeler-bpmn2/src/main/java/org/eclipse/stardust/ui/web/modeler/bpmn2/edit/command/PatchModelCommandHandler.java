@@ -1,5 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2.edit.command;
 
+import javax.annotation.Resource;
+
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.dd.di.DiagramElement;
@@ -8,21 +10,17 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2ModelUnmarshaller;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 @CommandHandler
 public class PatchModelCommandHandler
 {
    private static final Logger trace = LogManager.getLogger(PatchModelCommandHandler.class);
 
-   private final Bpmn2ModelUnmarshaller unmarshaller;
-
-   public PatchModelCommandHandler()
-   {
-      this.unmarshaller = new Bpmn2ModelUnmarshaller();
-   }
+   @Resource
+   private ModelService modelService;
 
    @OnCommand(commandId = "modelElement.update")
    public void patchBpmn2ModelElement(Definitions model, BaseElement targetElement,
@@ -30,7 +28,7 @@ public class PatchModelCommandHandler
    {
       trace.info("About to patch model element " + targetElement);
 
-      unmarshaller.populateFromJson(targetElement, patch);
+      modelService.findModelBinding(model).updateModelElement(targetElement, patch);
    }
 
    @OnCommand(commandId = "modelElement.update")
@@ -38,6 +36,6 @@ public class PatchModelCommandHandler
    {
       trace.info("About to patch diagram element " + targetElement);
 
-      unmarshaller.populateFromJson(targetElement, patch);
+      modelService.findModelBinding(model).updateModelElement(targetElement, patch);
    }
 }

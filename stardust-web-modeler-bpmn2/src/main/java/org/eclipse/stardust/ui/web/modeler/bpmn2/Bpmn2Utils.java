@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.bpmn2.Bpmn2Factory;
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Participant;
@@ -16,16 +17,24 @@ import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.dd.dc.DcFactory;
 import org.eclipse.dd.di.Diagram;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.change.impl.ChangeDescriptionImpl;
 
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 
 public class Bpmn2Utils
 {
+   private static final Bpmn2Package PKG_BPMN2 = Bpmn2Package.eINSTANCE;
+
    private static final Bpmn2Factory F_BPMN2 = Bpmn2Factory.eINSTANCE;
 
    private static final BpmnDiFactory F_BPMN2DI = BpmnDiFactory.eINSTANCE;
 
    private static final DcFactory F_BPMN2DC = DcFactory.eINSTANCE;
+
+   public static Bpmn2Package bpmn2Package()
+   {
+      return PKG_BPMN2;
+   }
 
    public static Bpmn2Factory bpmn2Factory()
    {
@@ -88,20 +97,7 @@ public class Bpmn2Utils
 
    public static Definitions findContainingModel(EObject element)
    {
-      EObject parent = element.eContainer();
-      while ((null != parent))
-      {
-         if (parent instanceof Definitions)
-         {
-            return (Definitions) parent;
-         }
-         else
-         {
-            parent = parent.eContainer();
-         }
-      }
-
-      return null;
+      return findContainer(element, Definitions.class);
    }
 
    public static Process findContainingProcess(EObject element)
@@ -116,16 +112,24 @@ public class Bpmn2Utils
 
    public static <T extends EObject> T findContainer(EObject element, Class<T> containerType)
    {
-      EObject parent = element.eContainer();
-      while ((null != parent))
+      EObject currentElement = element;
+      while (null != currentElement)
       {
-         if (containerType.isInstance(parent))
+         EObject currentContainer = currentElement.eContainer();
+         if (currentContainer instanceof ChangeDescriptionImpl)
          {
-            return containerType.cast(parent);
+            // substitute with real container (the one containing the element before it was detached)
+            currentContainer = ((ChangeDescriptionImpl) currentContainer).getOldContainer(currentElement);
+         }
+
+         if (containerType.isInstance(currentContainer))
+         {
+            return containerType.cast(currentContainer);
          }
          else
          {
-            parent = parent.eContainer();
+            // navigate one level up
+            currentElement = currentContainer;
          }
       }
 
