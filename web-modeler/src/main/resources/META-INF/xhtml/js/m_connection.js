@@ -870,24 +870,21 @@ define(
 						// this.toAnchorPoint.y += 1;
 						// }
 
-						var sourceBox = {
-							left: this.fromAnchorPoint.symbol.x - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-							top: this.fromAnchorPoint.symbol.y - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-							right: this.fromAnchorPoint.symbol.x + this.fromAnchorPoint.symbol.width + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-							bottom: this.fromAnchorPoint.symbol.y + this.fromAnchorPoint.symbol.height + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH
-						};
-						if (this.toAnchorPoint.symbol != null) {
-							var targetBox = {
-								left : this.toAnchorPoint.symbol.x
-										- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-								top : this.toAnchorPoint.symbol.y
-										- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-								right : this.toAnchorPoint.symbol.x
-										+ this.toAnchorPoint.symbol.width
-										+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-								bottom : this.toAnchorPoint.symbol.y
-										+ this.toAnchorPoint.symbol.height
-										+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH
+						var sourceBox, targetBox;
+						if (this.fromAnchorPoint.symbol) {
+							sourceBox = {
+									left: this.fromAnchorPoint.symbol.x - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+									top: this.fromAnchorPoint.symbol.y - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+									right: this.fromAnchorPoint.symbol.x + this.fromAnchorPoint.symbol.width + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+									bottom: this.fromAnchorPoint.symbol.y + this.fromAnchorPoint.symbol.height + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH
+							};
+						}
+						if (this.toAnchorPoint.symbol) {
+							targetBox = {
+								left : this.toAnchorPoint.symbol.x - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+								top : this.toAnchorPoint.symbol.y - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+								right : this.toAnchorPoint.symbol.x + this.toAnchorPoint.symbol.width + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+								bottom : this.toAnchorPoint.symbol.y + this.toAnchorPoint.symbol.height + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH
 							};
 						}
 
@@ -953,7 +950,7 @@ define(
 											currentSegment));
 
 							// avoid route crossing source element
-							if ((sourceY < targetY) && ((sourceBox.left < targetX) && (targetX < sourceBox.right))) {
+							if ((sourceY < targetY) && (sourceBox && (sourceBox.left < targetX) && (targetX < sourceBox.right))) {
 								this.segments.push(currentSegment = new Segment(
 										currentSegment.toX,
 										currentSegment.toY,
@@ -979,7 +976,7 @@ define(
 											currentSegment));
 
 							// avoid route crossing source element
-							if ((sourceY > targetY) && ((sourceBox.left < targetX) && (targetX < sourceBox.right))) {
+							if ((sourceY > targetY) && (sourceBox && (sourceBox.left < targetX) && (targetX < sourceBox.right))) {
 								this.segments.push(currentSegment = new Segment(
 										currentSegment.toX,
 										currentSegment.toY,
