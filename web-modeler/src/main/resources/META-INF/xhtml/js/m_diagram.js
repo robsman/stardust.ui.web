@@ -851,10 +851,11 @@ define(
 								}
 							}
 						}
+						
 						// Apply changes
 
-						this.animationDelay = 1000;
-						this.animationEasing = "<";
+//						this.animationDelay = 1000;
+//						this.animationEasing = "<";
 
 						for ( var i = 0; i < obj.changes.modified.length; i++) {
 							var symbol = this.findSymbolByGuid(

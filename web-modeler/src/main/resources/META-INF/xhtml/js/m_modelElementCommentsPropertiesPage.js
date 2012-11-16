@@ -66,9 +66,8 @@ define(
 				/**
 				 * 
 				 */
-				
 				CommentsPropertiesPage.prototype.submitCommentsChanges = function(comments) {					
-					this.submitChanges(this.assembleChangedObjectFromProperty(commentsText, comments));
+					this.submitChanges(this.assembleChangedObjectFromProperty("comments", comments));
 				};
 			}
 			/**

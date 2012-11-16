@@ -134,10 +134,12 @@ define(
 					// TODO: Needed?
 
 					if (this.model.attributes == null) {
-						this.model.attributes = {};
+						this.model.attributes = {};				
 					}
+					
+					// TODO Commented out because it is slow
 
-					this.refreshValidation();
+					//this.refreshValidation();
 				};
 
 				/**

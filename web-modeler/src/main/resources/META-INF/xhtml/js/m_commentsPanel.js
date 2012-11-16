@@ -36,7 +36,7 @@ define(
 							+ " #submitButton");
 					this.deleteButton = jQuery("#" + this.scope
 							+ " #deleteButton");
-					this.deleteButton.attr("title","+Delete");
+					this.deleteButton.attr("title", "+Delete");
 					this.submitButton.click({
 						panel : this
 					}, function(event) {
@@ -55,6 +55,12 @@ define(
 				 */
 				CommentsPanel.prototype.setComments = function(comments) {
 					this.comments = comments;
+
+					// TODO Should not be necessary; patched for Activity for client demo
+
+					if (this.comments == null) {
+						this.comments = [];
+					}
 
 					this.populateCommentsTable();
 					this.deleteButton.attr("disabled", true);
