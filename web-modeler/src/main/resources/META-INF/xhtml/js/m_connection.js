@@ -874,14 +874,22 @@ define(
 							left: this.fromAnchorPoint.symbol.x - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
 							top: this.fromAnchorPoint.symbol.y - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
 							right: this.fromAnchorPoint.symbol.x + this.fromAnchorPoint.symbol.width + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-							bottom: this.fromAnchorPoint.symbol.y + this.fromAnchorPoint.symbol.height + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+							bottom: this.fromAnchorPoint.symbol.y + this.fromAnchorPoint.symbol.height + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH
 						};
-						var targetBox = {
-							left: this.toAnchorPoint.symbol.x - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-							top: this.toAnchorPoint.symbol.y - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-							right: this.toAnchorPoint.symbol.x + this.toAnchorPoint.symbol.width + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-							bottom: this.toAnchorPoint.symbol.y + this.toAnchorPoint.symbol.height + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-						};
+						if (this.toAnchorPoint.symbol != null) {
+							var targetBox = {
+								left : this.toAnchorPoint.symbol.x
+										- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+								top : this.toAnchorPoint.symbol.y
+										- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+								right : this.toAnchorPoint.symbol.x
+										+ this.toAnchorPoint.symbol.width
+										+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+								bottom : this.toAnchorPoint.symbol.y
+										+ this.toAnchorPoint.symbol.height
+										+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH
+							};
+						}
 
 						var offset;
 						var sourceX;
@@ -906,7 +914,7 @@ define(
 							// ensure first/last segment extends beyond both source and target symbol
 							offset = {
 								dx: fromOffset.dx >= toOffset.dx ? fromOffset.dx : toOffset.dx,
-								dy: fromOffset.dy >= toOffset.dy ? fromOffset.dy : toOffset.dy,
+								dy: fromOffset.dy >= toOffset.dy ? fromOffset.dy : toOffset.dy
 							};
 						} else {
 							offset = {
