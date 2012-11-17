@@ -429,6 +429,51 @@ public class Bpmn2ExtensionUtils
       setExtensionClob(object, tag, clobValue);
    }
 
+   /**
+    * 
+    * @param target
+    * @param source
+    */
+   public static void overwriteJson(JsonObject target, JsonObject source)
+   {
+      if (source == null)
+      {
+         return;
+      }
+      
+      for (Map.Entry<String, ? > entry : source.entrySet())
+      {
+         String key = entry.getKey();
+         
+         if (target.has(key))
+         {
+            if (!source.get(key).isJsonNull() && source.get(key).isJsonObject())
+            {
+               if (!target.get(key).isJsonObject())
+               {
+                  throw new IllegalArgumentException("Cannot map object element " + key + " to non-object element in target object.");
+               }
+               
+               // Recursive overwrite
+               
+               overwriteJson(target.get(key).getAsJsonObject(), source.get(key).getAsJsonObject());
+            }
+            else if (source.get(key).isJsonArray() || source.get(key).isJsonPrimitive())
+            {
+               // Arrays and primitives are overwritten
+               
+               target.add(key, source.get(key));
+            }
+         }
+         else
+         {
+            // Element does not exist in target
+            
+            target.add(key, source.get(key));
+         }
+      }
+   }
+
    protected static String getCDataString(FeatureMap featureMap)
    {
       String result = null;

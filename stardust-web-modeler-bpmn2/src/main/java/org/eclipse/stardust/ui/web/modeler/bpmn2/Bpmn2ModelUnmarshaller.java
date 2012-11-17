@@ -4,8 +4,6 @@ import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.bpmn2Factory;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.bpmn2Package;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findContainingModel;
 
-import java.util.Map;
-
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.DataObject;
@@ -25,27 +23,15 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2FlowNodeBuilder;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.EObjectMorpher;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelUnmarshaller;
-import org.eclipse.stardust.ui.web.modeler.model.ActivityJto;
-import org.eclipse.stardust.ui.web.modeler.model.DataJto;
-import org.eclipse.stardust.ui.web.modeler.model.EventJto;
-import org.eclipse.stardust.ui.web.modeler.model.GatewayJto;
-import org.eclipse.stardust.ui.web.modeler.model.ModelElementJto;
-import org.eclipse.stardust.ui.web.modeler.model.ProcessDefinitionJto;
-import org.eclipse.stardust.ui.web.modeler.model.di.ActivitySymbolJto;
-import org.eclipse.stardust.ui.web.modeler.model.di.DataSymbolJto;
-import org.eclipse.stardust.ui.web.modeler.model.di.EventSymbolJto;
-import org.eclipse.stardust.ui.web.modeler.model.di.GatewaySymbolJto;
 
 public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
 {
@@ -67,27 +53,23 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
 
       if (modelElement instanceof Process)
       {
-         updateProcessDefinition((Process) modelElement,
-               jsonIo.gson().fromJson(jto, ProcessDefinitionJto.class));
+         updateProcessDefinition((Process) modelElement, jto);
       }
       else if (modelElement instanceof Activity)
       {
-         updateActivity((Activity) modelElement,
-               jsonIo.gson().fromJson(jto, ActivityJto.class));
+         updateActivity((Activity) modelElement, jto);
       }
       else if (modelElement instanceof Gateway)
       {
-         updateGateway((Gateway) modelElement,
-               jsonIo.gson().fromJson(jto, GatewayJto.class));
+         updateGateway((Gateway) modelElement, jto);
       }
       else if (modelElement instanceof Event)
       {
-         updateEvent((Event) modelElement, jsonIo.gson().fromJson(jto, EventJto.class));
+         updateEvent((Event) modelElement, jto);
       }
       else if (modelElement instanceof DataObject)
       {
-         updateDataObject((DataObject) modelElement,
-               jsonIo.gson().fromJson(jto, DataJto.class));
+         updateDataObject((DataObject) modelElement, jto);
       }
       else if (modelElement instanceof BPMNShape)
       {
@@ -98,27 +80,23 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
 
          if (shape.getBpmnElement() instanceof Activity)
          {
-            updateActivity(
-                  (Activity) shape.getBpmnElement(),
-                  ((ActivitySymbolJto) jsonIo.gson().fromJson(jto,
-                        ActivitySymbolJto.class)).modelElement);
+            updateActivity((Activity) shape.getBpmnElement(),
+                  jto.get(ModelerConstants.MODEL_ELEMENT_PROPERTY).getAsJsonObject());
          }
          else if (shape.getBpmnElement() instanceof Gateway)
          {
-            updateGateway(
-                  (Gateway) shape.getBpmnElement(),
-                  ((GatewaySymbolJto) jsonIo.gson().fromJson(jto, GatewaySymbolJto.class)).modelElement);
+            updateGateway((Gateway) shape.getBpmnElement(),
+                  jto.get(ModelerConstants.MODEL_ELEMENT_PROPERTY).getAsJsonObject());
          }
          else if (shape.getBpmnElement() instanceof Event)
          {
-            updateEvent((Event) shape.getBpmnElement(), ((EventSymbolJto) jsonIo.gson()
-                  .fromJson(jto, EventSymbolJto.class)).modelElement);
+            updateEvent((Event) shape.getBpmnElement(),
+                  jto.get(ModelerConstants.MODEL_ELEMENT_PROPERTY).getAsJsonObject());
          }
          else if (shape.getBpmnElement() instanceof DataObject)
          {
-            updateDataObject(
-                  (DataObject) shape.getBpmnElement(),
-                  ((DataSymbolJto) jsonIo.gson().fromJson(jto, DataSymbolJto.class)).modelElement);
+            updateDataObject((DataObject) shape.getBpmnElement(),
+                  jto.get(ModelerConstants.MODEL_ELEMENT_PROPERTY).getAsJsonObject());
          }
          else
          {
@@ -137,11 +115,14 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
     * @param process
     * @param processJson
     */
-   private void updateProcessDefinition(Process process, ProcessDefinitionJto processJson)
+   private void updateProcessDefinition(Process process, JsonObject processJson)
    {
       trace.info("Updating Process from JSON " + processJson.toString());
 
-      process.setName(processJson.name);
+      if (processJson.has(ModelerConstants.NAME_PROPERTY))
+      {
+         process.setName(processJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
+      }
 
       storeDescription(process, processJson);
       storeExtensions(process, processJson);
@@ -152,23 +133,23 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
     * @param activity
     * @param activityJson
     */
-   private void updateActivity(Activity activity, ActivityJto activityJson)
+   private void updateActivity(Activity activity, JsonObject activityJson)
    {
       Process p = (Process) activity.eContainer();
 
       trace.info("Contains element: " + p.getFlowElements().contains(activity));
 
-      if (activityJson.name != null)
+      if (activityJson.has(ModelerConstants.NAME_PROPERTY))
       {
-         activity.setName(activityJson.name);
+         activity.setName(activityJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
       }
 
       trace.info("Activity Type: " + activity);
-      trace.info("Activity JSON Type: " + activityJson.activityType);
+      trace.info("Activity JSON: " + activityJson);
 
-      if (activityJson.activityType != null)
+      if (activityJson.has(ModelerConstants.ACTIVITY_TYPE))
       {
-         if (activityJson.activityType == ModelerConstants.MANUAL_ACTIVITY)
+         if (ModelerConstants.MANUAL_ACTIVITY.equals(activityJson.get(ModelerConstants.ACTIVITY_TYPE)))
          {
             UserTask userTask = null;
 
@@ -183,9 +164,9 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
                userTask.setImplementation("##unspecified");
             }
          }
-         else if (activityJson.activityType == ModelerConstants.APPLICATION_ACTIVITY)
+         else if (ModelerConstants.APPLICATION_ACTIVITY.equals(activityJson.get(ModelerConstants.ACTIVITY_TYPE)))
          {
-            if (activityJson.participantFullId != null)
+            if (activityJson.has(ModelerConstants.PARTICIPANT_FULL_ID))
             {
                UserTask userTask = null;
 
@@ -220,7 +201,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
 
                      Operation operation = bpmn2Factory().createOperation();
 
-                     operation.setId(activityJson.applicationFullId);
+                     operation.setId(activityJson.get(ModelerConstants.APPLICATION_FULL_ID_PROPERTY).getAsString());
 
                      serviceTask.setOperationRef(operation);
                   }
@@ -231,7 +212,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
                }
             }
          }
-         else if (activityJson.activityType == ModelerConstants.SUBPROCESS_ACTIVITY)
+         else if (ModelerConstants.SUBPROCESS_ACTIVITY.equals(activityJson.get(ModelerConstants.ACTIVITY_TYPE)))
          {
             SubProcess subProcess;
 
@@ -256,16 +237,16 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
     * @param gateway
     * @param gatewayJson
     */
-   private void updateGateway(Gateway gateway, GatewayJto gatewayJson)
+   private void updateGateway(Gateway gateway, JsonObject gatewayJson)
    {
-      if (gatewayJson.name == null)
+      if (gatewayJson.has(ModelerConstants.NAME_PROPERTY))
       {
-         gateway.setName(gatewayJson.name);
+         gateway.setName(gatewayJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
       }
 
       // gateway.setGatewayDirection(GatewayDirection.CONVERGING);
 
-      if (ModelerConstants.XOR_GATEWAY_TYPE.equals(gatewayJson.gatewayType))
+      if (ModelerConstants.XOR_GATEWAY_TYPE.equals(gatewayJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)))
       {
          if ( !(gateway instanceof ExclusiveGateway))
          {
@@ -273,7 +254,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
                   bpmn2Package().getExclusiveGateway());
          }
       }
-      else if (ModelerConstants.AND_GATEWAY_TYPE.equals(gatewayJson.gatewayType))
+      else if (ModelerConstants.AND_GATEWAY_TYPE.equals(gatewayJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)))
       {
          if ( !(gateway instanceof ParallelGateway))
          {
@@ -291,17 +272,19 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
     * @param event
     * @param eventJson
     */
-   private void updateEvent(Event event, EventJto eventJson)
+   private void updateEvent(Event event, JsonObject eventJson)
    {
-      if (eventJson.name != null)
+      if (eventJson.has(ModelerConstants.NAME_PROPERTY))
       {
-         event.setName(eventJson.name);
+         event.setName(eventJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
       }
 
-      if (eventJson.eventType == ModelerConstants.START_EVENT)
+      if (eventJson.get(ModelerConstants.EVENT_TYPE_PROPERTY)
+            .getAsString()
+            .equals(ModelerConstants.START_EVENT))
       {
          StartEvent startEvent = null;
-         
+
          if ( !(event instanceof StartEvent))
          {
             startEvent = (StartEvent) switchElementType(event,
@@ -316,7 +299,9 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
       // {
       // // event instanceof BoundaryEvent
       // }
-      else if (eventJson.eventType == ModelerConstants.STOP_EVENT)
+      else if (eventJson.get(ModelerConstants.EVENT_TYPE_PROPERTY)
+            .getAsString()
+            .equals(ModelerConstants.STOP_EVENT))
       {
       }
 
@@ -329,11 +314,11 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
     * @param dataObject
     * @param dataJson
     */
-   private void updateDataObject(DataObject dataObject, DataJto dataJson)
+   private void updateDataObject(DataObject dataObject, JsonObject dataJson)
    {
-      if (dataJson.name != null)
+      if (dataJson.has(ModelerConstants.NAME_PROPERTY))
       {
-         dataObject.setName(dataJson.name);
+         dataObject.setName(dataJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
       }
 
       storeDescription(dataObject, dataJson);
@@ -345,19 +330,20 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
     * @param element
     * @param jto
     */
-   private void storeDescription(BaseElement element, ModelElementJto jto)
+   private void storeDescription(BaseElement element, JsonObject jto)
    {
       Documentation description = Bpmn2ExtensionUtils.getDescription(element);
-      
+
       if (description == null)
       {
-         element.getDocumentation().add(description = bpmn2Factory().createDocumentation());
-         
+         element.getDocumentation().add(
+               description = bpmn2Factory().createDocumentation());
+
          description.setId("description");
       }
 
-      description.setTextFormat("plain/text");   
-      description.setText(jto.description);
+      description.setTextFormat("plain/text");
+      description.setText(jto.get(ModelerConstants.DESCRIPTION_PROPERTY).getAsString());
    }
 
    /**
@@ -365,61 +351,20 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
     * @param element
     * @param jto
     */
-   private void storeExtensions(BaseElement element, ModelElementJto jto)
+   private void storeExtensions(BaseElement element, JsonObject jto)
    {
-      // TODO This method will need a general mechanism of deep overwrite with keeping
-      // existing properties intact
+      JsonObject coreExtensions = Bpmn2ExtensionUtils.getExtensionAsJson(element, "core");
 
-      if ((null != jto.attributes) && !jto.attributes.entrySet().isEmpty())
-      {
-         JsonObject coreExtensions = new JsonObject();
-         JsonObject attributes = getAttributes(element);
-
-         // Merge attributes
-
-         for (Map.Entry<String, ? > entry : jto.attributes.entrySet())
-         {
-            String key = entry.getKey();
-
-            if (jto.attributes.get(key).isJsonNull())
-            {
-               trace.info("Setting extended attribute " + key + " to null.");
-            }
-            else
-            {
-               trace.info("Setting extended attribute " + key + " to "
-                     + jto.attributes.get(key).getAsString());
-               attributes.addProperty(key, jto.attributes.get(key).getAsString());
-            }
-         }
-
-         coreExtensions.add(ModelerConstants.ATTRIBUTES_PROPERTY, attributes);
-
-         Bpmn2ExtensionUtils.setExtensionFromJson(element, "core", coreExtensions);
-      }
+      Bpmn2ExtensionUtils.overwriteJson(coreExtensions, jto);
+      Bpmn2ExtensionUtils.setExtensionFromJson(element, "core", coreExtensions);
    }
 
    /**
     * 
-    * @param element
+    * @param current
+    * @param newType
     * @return
     */
-   private JsonObject getAttributes(BaseElement element)
-   {
-      JsonElement attributes = Bpmn2ExtensionUtils.getExtensionAsJson(element, "core")
-            .get(ModelerConstants.ATTRIBUTES_PROPERTY);
-
-      if (attributes != null)
-      {
-         return attributes.getAsJsonObject();
-      }
-      else
-      {
-         return new JsonObject();
-      }
-
-   }
-
    private EObject switchElementType(EObject current, EClass newType)
    {
       Definitions model = findContainingModel(current);
