@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.Documentation;
 import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
@@ -712,6 +713,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    {
       ProcessDefinitionJto jto = newModelElementJto(process, new ProcessDefinitionJto());
 
+      loadDescription(process, jto);
       loadExtensions(process, jto);
 
       for (FlowElement flowElement : process.getFlowElements())
@@ -738,6 +740,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    {
       DataJto jto = newModelElementJto(variable, new DataJto());
 
+      loadDescription(variable, jto);
       loadExtensions(variable, jto);
 
       if (null != variable.getItemSubjectRef())
@@ -754,6 +757,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    {
       ActivityJto jto = newModelElementJto(activity, new ActivityJto());
 
+      loadDescription(activity, jto);
       loadExtensions(activity, jto);
 
       if (activity instanceof ServiceTask)
@@ -775,16 +779,15 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          // jto.subprocessFullId = subProcess.get;
       }
 
-      loadExtensions(activity, jto);
-
-      return jto;
+        return jto;
    }
 
    public GatewayJto toJto(Gateway gateway)
    {
       GatewayJto jto = newModelElementJto(gateway, new GatewayJto());
 
-      loadExtensions(gateway, jto);
+      loadDescription(gateway, jto);
+    loadExtensions(gateway, jto);
 
       // prefix name due to current gateway-workarounds
       jto.name = "gateway" + jto.name;
@@ -806,6 +809,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    {
       EventJto jto = newModelElementJto(event, new EventJto());
 
+      loadDescription(event, jto);
       loadExtensions(event, jto);
 
       if (event instanceof StartEvent)
@@ -835,6 +839,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    {
       TransitionJto jto = newModelElementJto(sFlow, new TransitionJto());
 
+      loadDescription(sFlow, jto);
       loadExtensions(sFlow, jto);
 
       if (sFlow.getConditionExpression() instanceof FormalExpression)
@@ -865,6 +870,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       jto.id = src.getId();
 
       String name;
+      
       if (src instanceof ItemDefinition)
       {
          name = ((ItemDefinition) src).getId();
@@ -1058,6 +1064,21 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       return !isEmpty(name) ? name : id;
    }
 
+   /**
+    * 
+    * @param element
+    * @param jto
+    */
+   private void loadDescription(BaseElement element, ModelElementJto jto)
+   {
+      Documentation description = Bpmn2ExtensionUtils.getDescription(element);
+      
+      if (description != null)
+      {
+         jto.description = description.getText();
+      }
+   }
+   
    /**
     *
     * @param element

@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.Documentation;
 import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.util.XmlExtendedMetadata;
 import org.eclipse.emf.ecore.EClass;
@@ -68,6 +69,25 @@ public class Bpmn2ExtensionUtils
          }
       }
 
+      return null;
+   }
+
+   /**
+    * Extracts the Documentation "description" of a given element.
+    *  
+    * @param element
+    * @return
+    */
+   public static Documentation getDescription(BaseElement element)
+   {
+      for (Documentation documentation : element.getDocumentation())
+      {
+         if (documentation.getId().equals("description"))
+         {
+            return documentation;
+         }
+      }
+      
       return null;
    }
 

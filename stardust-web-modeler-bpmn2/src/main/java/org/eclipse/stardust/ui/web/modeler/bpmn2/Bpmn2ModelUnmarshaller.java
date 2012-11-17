@@ -10,6 +10,7 @@ import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.Documentation;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.ExclusiveGateway;
 import org.eclipse.bpmn2.Gateway;
@@ -17,6 +18,8 @@ import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.ServiceTask;
+import org.eclipse.bpmn2.StartEvent;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.emf.ecore.EClass;
@@ -49,8 +52,6 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    private static final Logger trace = LogManager.getLogger(Bpmn2ModelUnmarshaller.class);
 
    private Bpmn2Binding bpmn2Binding;
-
-   private Bpmn2FlowNodeBuilder flowNodeBuilder = new Bpmn2FlowNodeBuilder();
 
    private final JsonMarshaller jsonIo = new JsonMarshaller();
 
@@ -132,21 +133,22 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param process
     * @param processJson
     */
    private void updateProcessDefinition(Process process, ProcessDefinitionJto processJson)
    {
       trace.info("Updating Process from JSON " + processJson.toString());
-      
+
       process.setName(processJson.name);
 
+      storeDescription(process, processJson);
       storeExtensions(process, processJson);
    }
 
    /**
-    *
+    * 
     * @param activity
     * @param activityJson
     */
@@ -189,7 +191,8 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
 
                if ( !(activity instanceof UserTask))
                {
-                  trace.error("Conversion to User Task not yet supported");
+                  userTask = (UserTask) switchElementType(activity,
+                        bpmn2Package().getUserTask());
                }
                else
                {
@@ -204,7 +207,8 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
 
                if ( !(activity instanceof ServiceTask))
                {
-                  trace.error("Conversion to Service Task not yet supported");
+                  serviceTask = (ServiceTask) switchElementType(activity,
+                        bpmn2Package().getServiceTask());
                }
                else
                {
@@ -227,13 +231,28 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
                }
             }
          }
+         else if (activityJson.activityType == ModelerConstants.SUBPROCESS_ACTIVITY)
+         {
+            SubProcess subProcess;
+
+            if ( !(activity instanceof SubProcess))
+            {
+               subProcess = (SubProcess) switchElementType(activity,
+                     bpmn2Package().getSubProcess());
+            }
+            else
+            {
+               subProcess = (SubProcess) activity;
+            }
+         }
       }
 
+      storeDescription(activity, activityJson);
       storeExtensions(activity, activityJson);
    }
 
    /**
-    *
+    * 
     * @param gateway
     * @param gatewayJson
     */
@@ -250,22 +269,25 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
       {
          if ( !(gateway instanceof ExclusiveGateway))
          {
-            gateway = (Gateway) switchElementType(gateway, bpmn2Package().getExclusiveGateway());
+            gateway = (Gateway) switchElementType(gateway,
+                  bpmn2Package().getExclusiveGateway());
          }
       }
       else if (ModelerConstants.AND_GATEWAY_TYPE.equals(gatewayJson.gatewayType))
       {
          if ( !(gateway instanceof ParallelGateway))
          {
-            gateway = (Gateway) switchElementType(gateway, bpmn2Package().getParallelGateway());
+            gateway = (Gateway) switchElementType(gateway,
+                  bpmn2Package().getParallelGateway());
          }
       }
 
+      storeDescription(gateway, gatewayJson);
       storeExtensions(gateway, gatewayJson);
    }
 
    /**
-    *
+    * 
     * @param event
     * @param eventJson
     */
@@ -278,7 +300,17 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
 
       if (eventJson.eventType == ModelerConstants.START_EVENT)
       {
-         // event instanceof StartEvent
+         StartEvent startEvent = null;
+         
+         if ( !(event instanceof StartEvent))
+         {
+            startEvent = (StartEvent) switchElementType(event,
+                  bpmn2Package().getStartEvent());
+         }
+         else
+         {
+            startEvent = (StartEvent) event;
+         }
       }
       // else if (eventJson.eventType == ModelerConstants.START_EVENT)
       // {
@@ -286,14 +318,14 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
       // }
       else if (eventJson.eventType == ModelerConstants.STOP_EVENT)
       {
-         // event instanceof EndEvent
       }
 
+      storeDescription(event, eventJson);
       storeExtensions(event, eventJson);
    }
 
    /**
-    *
+    * 
     * @param dataObject
     * @param dataJson
     */
@@ -304,17 +336,39 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
          dataObject.setName(dataJson.name);
       }
 
+      storeDescription(dataObject, dataJson);
       storeExtensions(dataObject, dataJson);
    }
 
    /**
-    *
+    * 
+    * @param element
+    * @param jto
+    */
+   private void storeDescription(BaseElement element, ModelElementJto jto)
+   {
+      Documentation description = Bpmn2ExtensionUtils.getDescription(element);
+      
+      if (description == null)
+      {
+         element.getDocumentation().add(description = bpmn2Factory().createDocumentation());
+         
+         description.setId("description");
+      }
+
+      description.setTextFormat("plain/text");   
+      description.setText(jto.description);
+   }
+
+   /**
+    * 
     * @param element
     * @param jto
     */
    private void storeExtensions(BaseElement element, ModelElementJto jto)
    {
-      // TODO This method will need a general mechanism of deep overwrite with keeping existing properties intact
+      // TODO This method will need a general mechanism of deep overwrite with keeping
+      // existing properties intact
 
       if ((null != jto.attributes) && !jto.attributes.entrySet().isEmpty())
       {
@@ -346,7 +400,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
+    * 
     * @param element
     * @return
     */
