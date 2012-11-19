@@ -31,18 +31,18 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(data);
-					
+
 				}
 			};
-					
+
 
 			function i18primitivedataproperties() {
-                
+
 				$("label[for='guidOutput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.uuid"));
-								
+
 				$("label[for='idOutput']")
 				.text(
 						m_i18nUtils
@@ -76,6 +76,10 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
+				jQuery("[for='structuredDataTypeSelect']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.structuredType"));
 				jQuery("#dataStructure")
 						.text(
 								m_i18nUtils
@@ -151,7 +155,7 @@ define(
 					this.primitiveDataTypeSelect
 							.append("<option value=\"Calendar\">" + selectdata
 									+ "</option>");
-					
+
 
 					this.dataTypeSelector = m_dataTypeSelector.create({
 						scope : "dataView",
