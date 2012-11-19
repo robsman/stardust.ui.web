@@ -47,7 +47,9 @@ define(
 				},
 
 				generateIDFromName : function(name) {
-					return name.replace(/ /g, '_');
+					// Added toUpperCase for compatibility with server side Id
+					// generation logic
+					return name.replace(/ /g, '_').toUpperCase();
 				},
 
 				prettyDateTime : prettyDateTime,

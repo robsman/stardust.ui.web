@@ -37,7 +37,7 @@ define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsCon
 							m_constants.STRUCTURED_DATA_TYPE);
 
 			data.dataType = m_constants.STRUCTURED_DATA_TYPE;
-			data.structuredDataTypeFullId = dataStructure.getFullId();
+			data.structuredDataTypeFullId = data.getFullId();
 
 			return data;
 		},
