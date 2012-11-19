@@ -160,7 +160,7 @@ public class Bpmn2PersistenceHandler implements ModelPersistenceHandler<Definiti
       }
       catch (IOException ioe)
       {
-         trace.warn("Failed loading BPMN2 model.", ioe);
+         trace.warn("Failed saving BPMN2 model.", ioe);
       }
    }
 
