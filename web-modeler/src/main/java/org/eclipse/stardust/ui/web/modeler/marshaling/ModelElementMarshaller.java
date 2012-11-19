@@ -1,15 +1,21 @@
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
+import static org.eclipse.emf.common.util.ECollections.sort;
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
-import java.io.ObjectInputStream.GetField;
 import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.change.ChangeDescription;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
@@ -66,15 +72,9 @@ import org.eclipse.stardust.model.xpdl.xpdl2.XpdlTypeType;
 import org.eclipse.stardust.modeling.repository.common.descriptors.EObjectDescriptor;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
-import static org.eclipse.emf.common.util.ECollections.sort;
-
 /**
  * IPP XPDL marshaller.
- * 
+ *
  * @author Marc.Gille
  * @author Robert Sauer
  */
@@ -89,7 +89,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
    /**
-    * 
+    *
     * @param modelElement
     * @return
     */
@@ -375,9 +375,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * To resolve inconsistency between Access Point and
-    * 
+    *
     * TODO Review and move to Facade
-    * 
+    *
     * @param type
     * @return
     */
@@ -402,7 +402,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param laneSymbol
     * @return
     */
@@ -623,7 +623,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @return
     */
@@ -802,7 +802,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @return
     */
@@ -890,7 +890,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -978,7 +978,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
             loadAttributes(accessPoint, parameterMappingJson);
 
-            for (ParameterMappingType 
+            for (ParameterMappingType
                   parameterMapping : trigger.getParameterMapping())
             {
                if (accessPoint.getId().equals(parameterMapping.getParameter()))
@@ -986,7 +986,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   parameterMappingJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
                         getModelBuilderFacade().createFullId(ModelUtils.findContainingModel(parameterMapping.getData()), parameterMapping.getData()));
                   parameterMappingJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY,
-                        parameterMapping.getDataPath());    
+                        parameterMapping.getDataPath());
 
                   break;
                }
@@ -1003,7 +1003,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1055,7 +1055,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param data
     * @return
     */
@@ -1174,7 +1174,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1525,7 +1525,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param annotationSymbol
     * @return
     */
@@ -1576,7 +1576,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param dataMappingConnection
     * @return
     */
@@ -1693,7 +1693,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -1835,7 +1835,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -2039,7 +2039,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * TODO - is there a better way to do this?
-    * 
+    *
     * @param participant
     * @return
     */
@@ -2168,6 +2168,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       loadAttributes(structType, structJson);
 
+      structJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
+            (null != structType.getDescription()) ? structType.getDescription() : "");
+
       JsonObject typeDeclarationJson = new JsonObject();
 
       structJson.add("typeDeclaration", typeDeclarationJson);
@@ -2219,7 +2222,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -2250,7 +2253,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -2270,7 +2273,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     * @throws JSONException
@@ -2350,9 +2353,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * TODO From DynamicConnectionCommand. Refactor?
-    * 
+    *
     * @param activity
     * @return
     */

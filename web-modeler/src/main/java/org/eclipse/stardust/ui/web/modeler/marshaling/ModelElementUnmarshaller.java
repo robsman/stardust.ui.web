@@ -54,7 +54,6 @@ import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelPackage;
 import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
-import org.eclipse.stardust.model.xpdl.carnot.ContextType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
@@ -73,7 +72,6 @@ import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
-import org.eclipse.stardust.model.xpdl.carnot.ParameterMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
@@ -1343,6 +1341,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    private void updateTypeDeclaration(TypeDeclarationType typeDeclaration, JsonObject json)
    {
       storeAttributes(typeDeclaration, json);
+      storeDescription(typeDeclaration, json);
 
       String oldId = typeDeclaration.getId();
       if (updateElementNameAndId(typeDeclaration,
@@ -2099,13 +2098,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    *
-    * @param modelElementJson
-    * @param element
-    */
-   private void storeDescription(IIdentifiableModelElement element,
-         JsonObject modelElementJson)
-   {
+   *
+   * @param modelElementJson
+   * @param element
+   */
+  private void storeDescription(IIdentifiableModelElement element,
+        JsonObject modelElementJson)
+  {
       String description = null;
 
       if (modelElementJson.has(ModelerConstants.DESCRIPTION_PROPERTY))
@@ -2119,6 +2118,31 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          DescriptionType dt = AbstractElementBuilder.F_CWM.createDescriptionType();
          dt.getMixed().add(FeatureMapUtil.createRawTextEntry(description));
          element.setDescription(dt);
+      }
+   }
+
+   /**
+    *
+    * @param modelElementJson
+    * @param element
+    */
+   private void storeDescription(TypeDeclarationType element,
+         JsonObject modelElementJson)
+   {
+      String description = null;
+      if (modelElementJson.has(ModelerConstants.DESCRIPTION_PROPERTY))
+      {
+         description = extractString(modelElementJson,
+               ModelerConstants.DESCRIPTION_PROPERTY);
+
+         if ( !isEmpty(description))
+         {
+            element.setDescription(description);
+         }
+         else
+         {
+            element.setDescription(null);
+         }
       }
    }
 
