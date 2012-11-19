@@ -111,7 +111,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param process
     * @param processJson
     */
@@ -129,7 +129,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @param activityJson
     */
@@ -233,7 +233,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param gateway
     * @param gatewayJson
     */
@@ -268,7 +268,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param event
     * @param eventJson
     */
@@ -310,7 +310,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param dataObject
     * @param dataJson
     */
@@ -326,7 +326,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param jto
     */
@@ -343,11 +343,14 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
       }
 
       description.setTextFormat("plain/text");
-      description.setText(jto.get(ModelerConstants.DESCRIPTION_PROPERTY).getAsString());
+      if (jto.has(ModelerConstants.DESCRIPTION_PROPERTY))
+      {
+         description.setText(jto.get(ModelerConstants.DESCRIPTION_PROPERTY).getAsString());
+      }
    }
 
    /**
-    * 
+    *
     * @param element
     * @param jto
     */
@@ -360,7 +363,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param current
     * @param newType
     * @return

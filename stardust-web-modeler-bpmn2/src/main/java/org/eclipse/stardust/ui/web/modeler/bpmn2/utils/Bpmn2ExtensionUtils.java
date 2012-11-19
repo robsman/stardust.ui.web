@@ -74,7 +74,7 @@ public class Bpmn2ExtensionUtils
 
    /**
     * Extracts the Documentation "description" of a given element.
-    *  
+    *
     * @param element
     * @return
     */
@@ -82,12 +82,13 @@ public class Bpmn2ExtensionUtils
    {
       for (Documentation documentation : element.getDocumentation())
       {
-         if (documentation.getId().equals("description"))
+         if ((null != documentation) && !isEmpty(documentation.getId())
+               && documentation.getId().equals("description"))
          {
             return documentation;
          }
       }
-      
+
       return null;
    }
 
@@ -430,7 +431,7 @@ public class Bpmn2ExtensionUtils
    }
 
    /**
-    * 
+    *
     * @param target
     * @param source
     */
@@ -440,11 +441,11 @@ public class Bpmn2ExtensionUtils
       {
          return;
       }
-      
+
       for (Map.Entry<String, ? > entry : source.entrySet())
       {
          String key = entry.getKey();
-         
+
          if (target.has(key))
          {
             if (!source.get(key).isJsonNull() && source.get(key).isJsonObject())
@@ -453,22 +454,22 @@ public class Bpmn2ExtensionUtils
                {
                   throw new IllegalArgumentException("Cannot map object element " + key + " to non-object element in target object.");
                }
-               
+
                // Recursive overwrite
-               
+
                overwriteJson(target.get(key).getAsJsonObject(), source.get(key).getAsJsonObject());
             }
             else if (source.get(key).isJsonArray() || source.get(key).isJsonPrimitive())
             {
                // Arrays and primitives are overwritten
-               
+
                target.add(key, source.get(key));
             }
          }
          else
          {
             // Element does not exist in target
-            
+
             target.add(key, source.get(key));
          }
       }
