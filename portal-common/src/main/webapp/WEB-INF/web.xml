@@ -5,7 +5,7 @@
     are made available under the terms of the Eclipse Public License v1.0
     which accompanies this distribution, and is available at
     http://www.eclipse.org/legal/epl-v10.html
-   
+
     Contributors:
        SunGard CSA LLC - initial API and implementation and/or initial documentation
  -->
@@ -126,6 +126,15 @@
 		<filter-name>IppPortalLoginFilter</filter-name>
 		<url-pattern>*.xhtml</url-pattern>
 	</filter-mapping>
+	<filter>
+	    <filter-name>touchSessionFilter</filter-name>
+	    <filter-class>com.icesoft.faces.webapp.http.servlet.TouchSessionFilter</filter-class>
+    </filter>
+	<filter-mapping>
+	    <filter-name>touchSessionFilter</filter-name>
+	    <url-pattern>/services/rest/*</url-pattern>
+	</filter-mapping>
+
 	<listener>
 		<listener-class>org.eclipse.stardust.ui.web.viewscommon.common.listener.SessionContextListener</listener-class>
 	</listener>
@@ -171,7 +180,7 @@
 		<servlet-name>FsdContentServlet</servlet-name>
 		<url-pattern>/fsd-content/*</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet-mapping>
 		<servlet-name>faces</servlet-name>
 		<url-pattern>/faces/*</url-pattern>
