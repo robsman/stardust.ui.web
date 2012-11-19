@@ -768,7 +768,14 @@ public class ModelService
       Collection<ModelType> models = getModelManagementStrategy().getModels().values();
       for (ModelType model : models)
       {
-         getModelManagementStrategy().saveModel(model);
+         try
+         {
+            getModelManagementStrategy().saveModel(model);
+         }
+         catch (Exception e)
+         {
+            trace.warn("Failed saving model " + getModelFileName(model.getId()), e);
+         }
       }
    }
 
