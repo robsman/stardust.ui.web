@@ -3,6 +3,7 @@ package org.eclipse.stardust.ui.web.modeler.bpmn2;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.bpmn2Package;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.test.Bpmn2TestUtils.createModel;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.test.Bpmn2TestUtils.createTestProcess;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.test.Bpmn2TestUtils.createTestProcessDiagram;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -20,15 +21,14 @@ import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.UserTask;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EClass;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2DiBuilder;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2FlowNodeBuilder;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2SequenceFlowBuilder;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.EObjectMorpher;
@@ -36,6 +36,7 @@ import org.eclipse.stardust.ui.web.modeler.model.ActivityJto;
 import org.eclipse.stardust.ui.web.modeler.model.EventJto;
 import org.eclipse.stardust.ui.web.modeler.model.GatewayJto;
 import org.eclipse.stardust.ui.web.modeler.model.TransitionJto;
+import org.eclipse.stardust.ui.web.modeler.model.di.GatewaySymbolJto;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler.ModelDescriptor;
 
 public class SwitchElementTypeTest
@@ -53,6 +54,8 @@ public class SwitchElementTypeTest
       this.testProcess = createTestProcess(model);
       createTestFlow();
 
+      BPMNDiagram testDiagram = createTestProcessDiagram(testProcess);
+
       for (FlowElement flowElement : testProcess.getFlowElements())
       {
          if (flowElement instanceof ExclusiveGateway)
@@ -61,6 +64,16 @@ public class SwitchElementTypeTest
             break;
          }
       }
+
+      Bpmn2DiBuilder diBuilder = new Bpmn2DiBuilder();
+
+      GatewaySymbolJto nodeSymbolJto = new GatewaySymbolJto();
+      nodeSymbolJto.x = 100;
+      nodeSymbolJto.y = 100;
+      nodeSymbolJto.width = 32;
+      nodeSymbolJto.height = 32;
+      diBuilder.attachDiagramElement(testDiagram,
+            diBuilder.createNodeSymbol(model, nodeSymbolJto, xorGateway));
 
       traceGeneratedModel();
    }
@@ -75,11 +88,6 @@ public class SwitchElementTypeTest
 
       assertThat(andGateway, is(not(nullValue())));
       assertThat(andGateway.getId(), is(xorGateway.getId()));
-
-      assertThat(xorGateway.eContainer(), is((EObject) testProcess));
-      assertThat(andGateway.eContainer(), is(nullValue()));
-
-      EObjectMorpher.replace(xorGateway, andGateway);
 
       assertThat(xorGateway.eContainer(), is(nullValue()));
       assertThat(andGateway.eContainer(), is((EObject) testProcess));

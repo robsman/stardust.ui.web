@@ -1,13 +1,17 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2.utils;
 
+import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature.Setting;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.util.EcoreUtil.UsageCrossReferencer;
 import org.eclipse.emf.ecore.util.InternalEList;
+
+import org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils;
 
 public class EObjectMorpher
 {
@@ -18,27 +22,16 @@ public class EObjectMorpher
       // phase one, copy common attribute set, incl. contained elements
       EObject target = copier.copy(source);
 
-      // phase two, reconnect target for source
+      // phase two, reconnect target for source for all source-outgoing references
       copier.copyReferences();
 
-      return target;
-   }
-
-   public static EObject replace(EObject source, EObject target)
-   {
-      if (null != source.eContainer())
+      // phase three, reconnect target for source for remaining source-incoming references
+      Collection<Setting> xRefs = UsageCrossReferencer.find(source, Bpmn2Utils.findContainingModel(source));
+      for (Setting setting : xRefs)
       {
-         if (source.eContainingFeature().isMany())
-         {
-            EList<Object> containingList = (EList<Object>) source.eContainer().eGet(source.eContainingFeature());
-            int idx = containingList.indexOf(source);
-            containingList.set(idx, target);
-         }
-         else
-         {
-            source.eContainer().eSet(source.eContainingFeature(), target);
-         }
+         EcoreUtil.replace(setting, source, target);
       }
+      EcoreUtil.replace(source, target);
 
       return target;
    }

@@ -369,10 +369,8 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    {
       Definitions model = findContainingModel(current);
 
+      // switch to target type and reconnect target for source in model
       EObject target = EObjectMorpher.morphType(current, newType);
-
-      // reconnect target for source in model
-      EObjectMorpher.replace(current, target);
 
       if (null != model)
       {
