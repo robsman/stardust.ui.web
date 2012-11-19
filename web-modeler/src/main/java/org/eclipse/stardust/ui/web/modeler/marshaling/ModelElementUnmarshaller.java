@@ -73,6 +73,7 @@ import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
+import org.eclipse.stardust.model.xpdl.carnot.ParameterMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
@@ -111,9 +112,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * 
+ *
  * @author Marc.Gille
- * 
+ *
  */
 public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 {
@@ -191,7 +192,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     */
@@ -280,7 +281,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     */
@@ -417,7 +418,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param controlFlowJson
     */
@@ -487,7 +488,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param dataFlowConnection
     * @param dataFlowConnectionJson
     */
@@ -495,7 +496,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          JsonObject dataFlowConnectionJson)
    {
       // dataFlowConnectionJson is the diagram element; dataFlowJson is the model element
-      
+
       JsonObject dataFlowJson = dataFlowConnectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
 
       if (dataFlowConnectionJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
@@ -541,7 +542,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
 
       // dataFlowJson holds an input and/or an output dataMappingJson; data mappings have to be created for both
-      
+
       // Create input mapping
 
       if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
@@ -562,7 +563,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @param data
     * @param direction
@@ -576,7 +577,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
 
       long maxOid = XpdlModelUtils.getMaxUsedOid(ModelUtils.findContainingModel(activity));
-      
+
       dataMapping.setElementOid(++maxOid);
       dataMapping.setId(dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString());
       dataMapping.setName(dataFlowJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
@@ -594,7 +595,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       else
       {
          // TODO Review
-         
+
          dataMapping.setApplicationAccessPoint(null);
          dataMapping.setContext(ModelerConstants.DEFAULT_LITERAL);
       }
@@ -614,7 +615,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     */
@@ -642,7 +643,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param elementJson
     */
@@ -730,7 +731,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param processDefinition
     * @param processDefinitionJson
     */
@@ -913,7 +914,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @param activitySymbolJson
     */
@@ -932,7 +933,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @param activitySymbolJson
     */
@@ -1037,7 +1038,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
    /**
     * Update the x,y co-ordinates of symbols contained in the lane
-    * 
+    *
     * @param laneSymbol
     * @param xOffset
     * @param yOffset
@@ -1068,7 +1069,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @param gatewaySymbolJson
     */
@@ -1087,7 +1088,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @param startEventSymbolJson
     */
@@ -1175,9 +1176,16 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
                if (parameterMappingJson.has(ModelerConstants.DATA_FULL_ID_PROPERTY))
                {
-                  // TODO Create new parameter mapping with data
-                  // ModelerConstants.DATA_FULL_ID_PROPERTY and path
-                  // ModelerConstants.DATA_PATH_PROPERTY
+                  String dataPath = null;
+                  String dataFullID = parameterMappingJson.get(
+                        ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
+                  if (parameterMappingJson.has(ModelerConstants.DATA_PATH_PROPERTY))
+                  {
+                     dataPath = parameterMappingJson.get(
+                           ModelerConstants.DATA_PATH_PROPERTY).getAsString();
+                  }
+                  getModelBuilderFacade().createParameterMapping(trigger, dataFullID,
+                        dataPath);
                }
             }
          }
@@ -1188,7 +1196,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param endEventSymbol
     * @param endEventSymbolJson
     */
@@ -1210,7 +1218,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param annotationSymbol
     * @param annotationSymbolJson
     */
@@ -1533,7 +1541,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param def
     * @param simpleTypeJson
     */
@@ -1586,7 +1594,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param def
     * @param json
     */
@@ -1754,7 +1762,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param schema
     * @param json
     */
@@ -1942,7 +1950,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param elementJson
     * @param elementProperties
@@ -1960,7 +1968,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param targetElement
     * @param request
     * @param property
@@ -2030,7 +2038,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param json
     * @param element
     * @throws JSONException
@@ -2091,7 +2099,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -2115,7 +2123,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -2142,7 +2150,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @return
     */
    private ModelBuilderFacade getModelBuilderFacade()
@@ -2151,7 +2159,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param json
     * @param memberName
     * @return
@@ -2230,7 +2238,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param elementType
     * @return
     */
@@ -2257,7 +2265,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @return
     */
    private DocumentManagementService getDocumentManagementService()
@@ -2271,7 +2279,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @return
     */
    private ServiceFactory getServiceFactory()
