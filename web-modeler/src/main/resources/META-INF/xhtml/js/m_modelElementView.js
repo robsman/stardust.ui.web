@@ -8,12 +8,12 @@ define(
 				m_commandsController, m_user, m_dialog, m_view, m_i18nUtils) {
 			return {
 				create : function(id) {
-					var view = new ModelElementView();					
+					var view = new ModelElementView();
 					i18modelelement();
 					return view;
 				}
 			};
-			
+
 
 					function i18modelelement() {
 
@@ -444,7 +444,7 @@ define(
 
 					if (object && object.changes && object.changes.modified) {
 						for (var i = 0; i < object.changes.modified.length; i++) {
-							if (this.getModelElement().oid == object.changes.modified[i].oid) {
+							if (this.getModelElement().uuid == object.changes.modified[i].uuid) {
 								m_utils.inheritFields(this.getModelElement(),
 										object.changes.modified[i]);
 
