@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -34,7 +34,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function AnnotationSymbol() {
 				var symbol = m_symbol.createSymbol();
@@ -66,14 +66,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnnotationSymbol.prototype.toString = function() {
 					return "Lightdust.AnnotationSymbol";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnnotationSymbol.prototype.initializeFromJson = function(lane) {
 					// m_utils.inheritMethods(this.modelElement.prototype,
@@ -88,7 +88,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnnotationSymbol.prototype.createTransferObject = function() {
 					var transferObject = {};
@@ -105,7 +105,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnnotationSymbol.prototype.createPrimitives = function() {
 					this.rect = m_canvasManager
@@ -132,12 +132,13 @@ define(
 					this.addToPrimitives(this.path);
 
 					this.text = m_canvasManager.drawTextNode(
-							this.x + 0.5 * this.width,
-							this.y + 0.5 * this.height, this.content).attr({
-						"text-anchor" : "left",
+							this.x,
+							this.y, this.content).attr({
+						"text-anchor" : "start",
 						"font-family" : m_constants.DEFAULT_FONT_FAMILY,
 						"font-size" : m_constants.DEFAULT_FONT_SIZE
 					});
+
 
 					this.addToPrimitives(this.text);
 					this.addToEditableTextPrimitives(this.text);
@@ -164,7 +165,7 @@ define(
 							+ " "
 							+ (this.y + this.height);
 				};
-				
+
 				/**
 				 * Registers symbol in specific lists in the diagram and model
 				 * element in the process.
@@ -176,13 +177,13 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnnotationSymbol.prototype.initializeEventHandling = function() {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnnotationSymbol.prototype.refreshFromModelElement = function() {
 					this.text.attr({
@@ -191,7 +192,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnnotationSymbol.prototype.createFlyOutMenu = function() {
 					this
@@ -213,7 +214,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnnotationSymbol.prototype.highlight = function() {
 					this.path.attr({
@@ -222,7 +223,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnnotationSymbol.prototype.dehighlight = function() {
 					this.path.attr({
@@ -231,21 +232,11 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnnotationSymbol.prototype.adjustPrimitives = function(dX, dY) {
 					if (this.parentSymbol && this.parentSymbol.minimized) {
 						return;
-					}
-					if (this.text.getBBox().width > this.width) {
-						wrappedContent = m_utils.contentWrap(this.text
-								.attr("text"),
-								m_constants.ANNOTATION_SYMBOL_TEXT_MAX,
-								m_constants.NEW_LINE);
-
-						this.text.attr({
-							"text" : wrappedContent
-						});
 					}
 
 					this.height = this.text.getBBox().height + 5;
@@ -253,7 +244,7 @@ define(
 					if (this.height < m_constants.ANNOTATION_SYMBOL_DEFAULT_HEIGHT) {
 						this.height = m_constants.ANNOTATION_SYMBOL_DEFAULT_HEIGHT;
 					}
-					
+
 					this.rect.attr({
 						x : this.x,
 						y : this.y,
@@ -263,41 +254,41 @@ define(
 						path : this.getPathSvgString()
 					});
 					this.text.attr({
-						x : this.x + 0.6 * this.width,
+						x : this.x + 8,
 						y : this.y + 0.5 * this.height
 					});
 				};
-				
+
 				/**
-				 * 
+				 *
 				 */
 				AnnotationSymbol.prototype.recalculateBoundingBox = function() {
 					// Noting to be done here
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnnotationSymbol.prototype.validateCreateConnection = function() {
 					return false;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				AnnotationSymbol.prototype.onComplete = function() {
 					this.onParentSymbolChange();
 				};
 
 				/*
-				 * 
+				 *
 				 */
 				AnnotationSymbol.prototype.onParentSymbolChange = function() {
 				};
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function AnnotationSymbol_connectToClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -305,7 +296,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function AnnotationSymbol_connectToGatewayClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -313,7 +304,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function AnnotationSymbol_connectToActivityClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -321,7 +312,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function AnnotationSymbol_removeClosure() {
 				this.auxiliaryProperties.callbackScope
