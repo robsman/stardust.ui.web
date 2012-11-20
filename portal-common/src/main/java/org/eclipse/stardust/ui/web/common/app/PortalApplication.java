@@ -915,8 +915,17 @@ public class PortalApplication
     */
    public String logout()
    {
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("#PortalApplication.logout() invoked...");
+      }
       // Close All Open Views
       closeAllViews();
+      
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("#closeAllViews()...");
+      }
       
       // If All Views are successfully closed, then fire logout 
       if (getOpenViewsSize() == 0)
@@ -925,8 +934,15 @@ public class PortalApplication
          String logoutScript = "InfinityBpm.Core.closeSession();";
          JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), logoutScript);
          addEventScript(logoutScript); // This is required since addJavascriptCall does not work if JSF Page refresh is involved 
-         
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("#addEventScript(logoutScript)...");
+         }
          SessionRendererHelper.removeCurrentSession(SessionRendererHelper.getPortalSessionRendererId(getLoggedInUser()));
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("#SessionRendererHelper.removeCurrentSession(SessionRendererHelper.getPortalSessionRendererId(getLoggedInUser()))...");
+         }
       }
       else
       {
@@ -935,7 +951,10 @@ public class PortalApplication
             trace.debug("Not all Views got closed successully. Cannot logout...");
          }
       }
-      
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("#Returning from Logout....");
+      }
       return null;
    }
 

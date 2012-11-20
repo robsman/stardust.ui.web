@@ -31,7 +31,7 @@ public class PortalParameters implements Serializable, InitializingBean
    public static final String AUTOMATION_ENABLED = "Carnot.Client.Automation.Enabled";
    private static final Logger trace = LogManager.getLogger(PortalParameters.class);
 
-   private boolean automationEnabled;
+   private Boolean automationEnabled;
    
    /**
     * 
@@ -45,12 +45,24 @@ public class PortalParameters implements Serializable, InitializingBean
     */
    public void afterPropertiesSet() throws Exception
    {
+      
+   }
+   
+   private void init()
+   {
+      trace.debug("Lazy Initialization Started....");
+      
       // Automation Related
       String autoAttr = FacesContext.getCurrentInstance().getExternalContext().getInitParameter(
             AUTOMATION_ENABLED);
+      
       if (StringUtils.isNotEmpty(autoAttr))
       {
          automationEnabled = Boolean.valueOf(autoAttr);
+      }
+      else
+      {
+         automationEnabled = false;
       }
       
       if (trace.isDebugEnabled())
@@ -61,6 +73,10 @@ public class PortalParameters implements Serializable, InitializingBean
    
    public boolean isAutomationEnabled()
    {
+      if (null == automationEnabled)
+      {
+         init();
+      }
       return automationEnabled;
    }
 }

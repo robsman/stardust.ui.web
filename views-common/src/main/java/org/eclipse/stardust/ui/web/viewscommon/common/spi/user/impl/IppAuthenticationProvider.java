@@ -16,6 +16,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.spi.user.AuthenticationProvider;
 import org.eclipse.stardust.ui.web.viewscommon.login.InfinityStartup;
 
@@ -27,7 +29,8 @@ import org.eclipse.stardust.ui.web.viewscommon.login.InfinityStartup;
 public class IppAuthenticationProvider implements AuthenticationProvider
 {
    private InfinityStartup infinityStartup;
-
+   private static final Logger trace = LogManager.getLogger(IppAuthenticationProvider.class);
+   
    /**
     * 
     */
@@ -41,8 +44,18 @@ public class IppAuthenticationProvider implements AuthenticationProvider
    public void initialize(ServletContext servletContext, HttpServletRequest request,
          HttpServletResponse response)
    {
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("#IppAuthenticationProvider()....");
+      }
       infinityStartup = new InfinityStartup(servletContext, request, response);
       infinityStartup.createSession();
+      
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("#IppAuthenticationProvider initialized....");
+      }
+      
    }
 
    /* (non-Javadoc)

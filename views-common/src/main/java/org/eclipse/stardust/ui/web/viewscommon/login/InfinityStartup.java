@@ -50,11 +50,20 @@ public class InfinityStartup
 
    public InfinityStartup(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response)
    {
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("#creating InfinityStartup....");
+      }
+      
       this.servletContext = servletContext;
       this.request = request;
       this.response = response;
       
       this.params = getParams(request);
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("#InfinityStartup created....");
+      }
    }
    
    private static void copyParam(StringBuffer params, Map<String, String[]> reqParamMap, String key)
@@ -111,6 +120,10 @@ public class InfinityStartup
    
    public void createSession()
    {
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("#InfinityStartup createSession()....");
+      }
       HttpSession httpSession = request.getSession();
       if(null != httpSession)
       { 
@@ -137,9 +150,22 @@ public class InfinityStartup
                }
             }
          }
-
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("#Invalidating Session....");
+         }
+         
          httpSession.invalidate();
+		 if (trace.isDebugEnabled())
+         {
+            trace.debug("#creating new session");
+         }
          request.getSession(true);
+         
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("#exiting from createSession()");
+         }
       }
    }
    

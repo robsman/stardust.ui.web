@@ -31,7 +31,21 @@ public class SessionContextListener implements HttpSessionListener
 
    public void sessionCreated(HttpSessionEvent event)
    {
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("#sessionCreated(HttpSessionEvent event)");
+         if (null != event.getSession())
+         {
+            trace.debug("#Session Id:  " + event.getSession().getId());
+         }
+      }
+      
       correctHeadlessSetting(event.getSession().getServletContext());
+      
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("#Returning from sessionCreated(HttpSessionEvent event)");
+      }
    }
 
    /**
@@ -83,10 +97,27 @@ public class SessionContextListener implements HttpSessionListener
 
    public void sessionDestroyed(HttpSessionEvent event)
    {
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("#sessionDestroyed(HttpSessionEvent event)");
+      }
+      
       HttpSession session = event.getSession();
+      
       boolean sessionUnregistered = ApplicationContext.unregisterSession(session);
+      
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("#ApplicationContext.unregisterSession(session)....");
+      }
+      
       if (session != null)
       {
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("#Session Id:  " + session.getId());
+         }
+         
          Object attr = session.getAttribute(SessionContext.BEAN_ID);
          if (attr instanceof SessionContext)
          {
@@ -96,6 +127,10 @@ public class SessionContextListener implements HttpSessionListener
                ServiceFactory serviceFactory = sessionCtx.getServiceFactory();
                serviceFactory.close();
                session.setAttribute(SessionContext.BEAN_ID, null);
+               if (trace.isDebugEnabled())
+               {
+                  trace.debug("#resetting ServiceFactory done....");
+               }
             }
          }
 
@@ -110,6 +145,10 @@ public class SessionContextListener implements HttpSessionListener
                trace.debug("session '" + session.getId() + "' not found");
             }
          }
+      }
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("#sessionDestroyed(HttpSessionEvent event) exiting...");
       }
    }
 
