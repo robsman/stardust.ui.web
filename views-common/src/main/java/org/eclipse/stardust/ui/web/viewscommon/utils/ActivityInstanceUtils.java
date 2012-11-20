@@ -26,6 +26,8 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.common.error.ConcurrencyException;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.HistoricalState;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.ContextData;
@@ -66,6 +68,8 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
  */
 public class ActivityInstanceUtils
 {
+   private static final Logger trace = LogManager.getLogger(ActivityInstanceUtils.class);
+
    private static final String STATUS_PREFIX = "views.activityTable.statusFilter.";
    public static final String IMAGE_BASE_PATH = "/plugins/views-common/images/icons/process-history/";
    private static final Map<String, String> iconMap;
@@ -471,6 +475,12 @@ public class ActivityInstanceUtils
       ActivityInstance suspendedAi = null;
       try
       {
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("Suspending Activity '" + ai.getActivity().getName()
+                  + "' to default performer, with out data = " + data);
+         }
+
          if (isEmpty(context))
          {
             suspendedAi = ServiceFactoryUtils.getWorkflowService().suspendToDefaultPerformer(ai.getOID());
@@ -512,6 +522,12 @@ public class ActivityInstanceUtils
 
       try
       {
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("Suspending Activity '" + ai.getActivity().getName() + "' with out data = "
+                  + ((null != outData) ? outData.getData() : null));
+         }
+
          suspendedAi = ServiceFactoryUtils.getWorkflowService().suspend(ai.getOID(), outData);
 
          sendActivityEvent(ai, ActivityEvent.suspended(suspendedAi));
@@ -544,6 +560,12 @@ public class ActivityInstanceUtils
       ActivityInstance suspendedAi = null;
       try
       {
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("Suspending Activity '" + ai.getActivity().getName() + "' to User Worklist, with out data = "
+                  + data);
+         }
+
          if (isEmpty(context))
          {
             suspendedAi = ServiceFactoryUtils.getWorkflowService().suspendToUser(ai.getOID());

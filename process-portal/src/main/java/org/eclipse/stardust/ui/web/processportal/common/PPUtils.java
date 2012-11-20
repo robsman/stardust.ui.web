@@ -419,6 +419,11 @@ public class PPUtils
 
       try
       {
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("Completing Activity '" + ai.getActivity().getName() + "' with out data = " + data);
+         }
+
          switch (options)
          {
          case ACTIVATE_NEXT:

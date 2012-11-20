@@ -173,36 +173,43 @@ public class ActivityPanelController extends UIComponentBean
                .info("Handling externally triggered close of activity panel: "
                      + commandId);
 
-         ClosePanelScenario scenario = (ClosePanelScenario) ClosePanelScenario.getKey(
-               ClosePanelScenario.class, commandId);
-
-         if (ClosePanelScenario.COMPLETE == scenario)
+         try
          {
-            activityDetailsBean.completeCurrentActivity();
+            ClosePanelScenario scenario = (ClosePanelScenario) ClosePanelScenario.getKey(
+                  ClosePanelScenario.class, commandId);
+   
+            if (ClosePanelScenario.COMPLETE == scenario)
+            {
+               activityDetailsBean.completeCurrentActivity();
+            }
+            else if (ClosePanelScenario.QA_PASS == scenario)
+            {
+               activityDetailsBean.completeQualityAssurancePass();
+            }
+            else if (ClosePanelScenario.QA_FAIL == scenario)
+            {
+               activityDetailsBean.completeQualityAssuranceFail();
+            }
+            else if (ClosePanelScenario.SUSPEND_AND_SAVE == scenario)
+            {
+               activityDetailsBean.suspendAndSaveCurrentActivity();
+            }
+            else if (ClosePanelScenario.SUSPEND == scenario)
+            {
+               activityDetailsBean.suspendCurrentActivity();
+            }
+            else if (ClosePanelScenario.ABORT == scenario)
+            {
+               activityDetailsBean.abortCurrentActivity();
+            }
+            else
+            {
+               trace.warn("Externally triggered command NOT handled: " + commandId);
+            }
          }
-         else if (ClosePanelScenario.QA_PASS == scenario)
+         catch (Exception e)
          {
-            activityDetailsBean.completeQualityAssurancePass();
-         }
-         else if (ClosePanelScenario.QA_FAIL == scenario)
-         {
-            activityDetailsBean.completeQualityAssuranceFail();
-         }
-         else if (ClosePanelScenario.SUSPEND_AND_SAVE == scenario)
-         {
-            activityDetailsBean.suspendAndSaveCurrentActivity();
-         }
-         else if (ClosePanelScenario.SUSPEND == scenario)
-         {
-            activityDetailsBean.suspendCurrentActivity();
-         }
-         else if (ClosePanelScenario.ABORT == scenario)
-         {
-            activityDetailsBean.abortCurrentActivity();
-         }
-         else
-         {
-            trace.warn("Externally triggered command NOT handled: " + commandId);
+            trace.error("Error in handling externally triggered close of activity panel", e);
          }
       }
    }
