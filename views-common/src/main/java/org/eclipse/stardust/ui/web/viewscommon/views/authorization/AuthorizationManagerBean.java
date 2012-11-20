@@ -924,7 +924,7 @@ public class AuthorizationManagerBean extends PopupUIComponentBean
    private DefaultMutableTreeNode buildGeneralPermissionTree(DefaultMutableTreeNode rootTreeNode)
    {
       // Create root node
-      DefaultMutableTreeNode generalPermTreeNode = addAbsoluteNode(rootTreeNode, "General Permissions",
+      DefaultMutableTreeNode generalPermTreeNode = addAbsoluteNode(rootTreeNode, getMessages().getString("generalPermissions"),
             UiPermissionUtils.ICON_GENERAL_PERM);
 
       try
