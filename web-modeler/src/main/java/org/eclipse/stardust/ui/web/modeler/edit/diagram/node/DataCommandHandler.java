@@ -77,13 +77,21 @@ public class DataCommandHandler
          try
          {
             data = getModelBuilderFacade().importData(model, dataFullID);
+            if (null == data)
+            {
+               data = getModelBuilderFacade().createPrimitiveData(model, dataID,
+                     dataName, ModelerConstants.STRING_PRIMITIVE_DATA_TYPE);
+               mapper.map(data);
+            }
          }
          catch (ObjectNotFoundException x)
          {
+            // TODO - Remove this (Earlier exception was thrown when no data exist , now
+            // null returned from MBFacade),analyse and remove if exception is never thrown
             if (true)
             {
-               data = getModelBuilderFacade().createPrimitiveData(model, dataID, dataName,
-                     ModelerConstants.STRING_PRIMITIVE_DATA_TYPE);
+               data = getModelBuilderFacade().createPrimitiveData(model, dataID,
+                     dataName, ModelerConstants.STRING_PRIMITIVE_DATA_TYPE);
                mapper.map(data);
             }
          }
