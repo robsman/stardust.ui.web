@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. 
+	This program and the accompanying materials are made available under the 
+	terms of the Eclipse Public License v1.0 which accompanies this distribution, 
+	and is available at http://www.eclipse.org/legal/epl-v10.html Contributors: 
+	SunGard CSA LLC - initial API and implementation and/or initial documentation -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ippui="http://infinity.com/bpm/ui/common/uiDefinition"
+	xsi:schemaLocation="
+  http://www.springframework.org/schema/beans 
+  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+  http://www.springframework.org/schema/aop 
+  http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+	<bean name="commonMenuProvider"
+		class="org.eclipse.stardust.ui.web.viewscommon.common.spi.menu.impl.IppCommonMenuProvider"
+		scope="session">
+		<property name="menuItems">
+			<list>
+				<bean
+					class="org.eclipse.stardust.ui.web.viewscommon.common.spi.menu.impl.IppCommonMenuItem">
+					<property name="id" value="1" />
+					<property name="title"
+						value="views_common_msgPropsBean#ippCommonMenuItem.finSysCommunity" />
+				</bean>
+				<bean
+					class="org.eclipse.stardust.ui.web.viewscommon.common.spi.menu.impl.IppCommonMenuItem">
+					<property name="id" value="2" />
+					<property name="title"
+						value="views_common_msgPropsBean#ippCommonMenuItem.tenBlogs" />
+					<property name="URL" value="http://blogs.sungard.com/ten/" />
+					<property name="iconPath"
+						value="/plugins/common/css/camino-images/b_article.png" />
+					<property name="changed" value="false" />
+				</bean>
+				<bean
+					class="org.eclipse.stardust.ui.web.viewscommon.common.spi.menu.impl.IppCommonMenuItem">
+					<property name="id" value="3" />
+					<property name="title"
+						value="views_common_msgPropsBean#ippCommonMenuItem.signUpNextCityDay" />
+					<property name="URL"
+						value="http://www.capitalize-on-change.com/events.aspx" />
+					<property name="iconPath"
+						value="/plugins/common/css/camino-images/b_edit.png" />
+					<property name="changed" value="false" />
+				</bean>
+				<bean
+					class="org.eclipse.stardust.ui.web.viewscommon.common.spi.menu.impl.IppCommonMenuItem">
+					<property name="id" value="4" />
+					<property name="title"
+						value="views_common_msgPropsBean#ippCommonMenuItem.latestPressReleases" />
+					<property name="URL" value="http://www.google.com" />
+					<property name="iconPath"
+						value="/plugins/common/css/camino-images/b_document.png" />
+					<property name="changed" value="false" />
+				</bean>
+				<bean
+					class="org.eclipse.stardust.ui.web.viewscommon.common.spi.menu.impl.IppCommonMenuItem">
+					<property name="id" value="5" />
+					<property name="title"
+						value="views_common_msgPropsBean#ippCommonMenuItem.seeAll" />
+					<property name="URL" value="http://www.google.com" />
+					<property name="changed" value="false" />
+				</bean>
+				<bean
+					class="org.eclipse.stardust.ui.web.viewscommon.common.spi.menu.impl.IppCommonMenuItem">
+					<property name="id" value="6" />
+					<property name="title"
+						value="views_common_msgPropsBean#ippCommonMenuItem.infinity" />
+				</bean>
+				<bean
+					class="org.eclipse.stardust.ui.web.viewscommon.common.spi.menu.impl.IppCommonMenuItem">
+					<property name="id" value="7" />
+					<property name="title"
+						value="views_common_msgPropsBean#ippCommonMenuItem.ipp" />
+					<property name="URL"
+						value="http://www.sungard.com/financialsystems/products/infinityprocessplatform.aspx" />
+					<property name="iconPath"
+						value="/plugins/common/css/camino-images/b_chat.png" />
+					<property name="changed" value="false" />
+				</bean>
+				<bean
+					class="org.eclipse.stardust.ui.web.viewscommon.common.spi.menu.impl.IppCommonMenuItem">
+					<property name="id" value="8" />
+					<property name="title"
+						value="views_common_msgPropsBean#ippCommonMenuItem.documentation" />
+					<property name="URL"
+						value="http://infinity.sungard.com/documentation/ipp" />
+					<property name="iconPath"
+						value="/plugins/common/css/camino-images/b_add.png" />
+					<property name="changed" value="false" />
+				</bean>
+				<bean
+					class="org.eclipse.stardust.ui.web.viewscommon.common.spi.menu.impl.IppCommonMenuItem">
+					<property name="id" value="9" />
+					<property name="title"
+						value="views_common_msgPropsBean#ippCommonMenuItem.ippAsService" />
+					<property name="URL"
+						value="https://www.infinity.com/storefront/faces/procurement/solution-details.xhtml?solutionGuid=a97a63ee-e80f-4be6-8f3a-dfd2a24a064f" />
+					<property name="iconPath"
+						value="/plugins/common/css/camino-images/b_next.png" />
+					<property name="changed" value="false" />
+				</bean>
+				<bean
+					class="org.eclipse.stardust.ui.web.viewscommon.common.spi.menu.impl.IppCommonMenuItem">
+					<property name="id" value="10" />
+					<property name="title"
+						value="views_common_msgPropsBean#ippCommonMenuItem.stardust" />
+				</bean>
+				<bean
+					class="org.eclipse.stardust.ui.web.viewscommon.common.spi.menu.impl.IppCommonMenuItem">
+					<property name="id" value="11" />
+					<property name="title"
+						value="views_common_msgPropsBean#ippCommonMenuItem.getStardust" />
+					<property name="URL"
+						value="http://www.eclipse.org/stardust/download/download.php" />
+					<property name="iconPath"
+						value="/plugins/common/css/camino-images/b_next.png" />
+					<property name="changed" value="false" />
+				</bean>
+				<bean
+					class="org.eclipse.stardust.ui.web.viewscommon.common.spi.menu.impl.IppCommonMenuItem">
+					<property name="id" value="12" />
+					<property name="title"
+						value="views_common_msgPropsBean#ippCommonMenuItem.communityForum" />
+					<property name="URL"
+						value="http://www.eclipse.org/forums/index.php?t=thread&amp;frm_id=225" />
+					<property name="iconPath"
+						value="/plugins/common/css/camino-images/b_group.png" />
+					<property name="changed" value="false" />
+				</bean>
+				<bean
+					class="org.eclipse.stardust.ui.web.viewscommon.common.spi.menu.impl.IppCommonMenuItem">
+					<property name="id" value="13" />
+					<property name="title"
+						value="views_common_msgPropsBean#ippCommonMenuItem.blogs" />
+					<property name="URL" value="http://blogs.sungard.com/fs_stardust/" />
+					<property name="iconPath"
+						value="/plugins/common/css/camino-images/b_message.png" />
+					<property name="changed" value="false" />
+				</bean>
+			</list>
+		</property>
+		<aop:scoped-proxy />
+	</bean>
+</beans>
