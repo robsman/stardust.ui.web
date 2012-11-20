@@ -769,19 +769,36 @@ public class AuthorizationManagerBean extends PopupUIComponentBean
             UiPermissionUtils.ICON_UI_PERM);
 
       Map<String, IPerspectiveDefinition> perspectives = PortalUiController.getInstance().getPerspectives();
+      
+      List<IPerspectiveDefinition> allPerspectives = new ArrayList<IPerspectiveDefinition>();
+      for (IPerspectiveDefinition perspectiveDef : perspectives.values())
+      {
+         allPerspectives.add(perspectiveDef);
+      }
 
+      // Sort Perspectives
+      Collections.sort(allPerspectives, new Comparator<IPerspectiveDefinition>()
+      {
+         public int compare(IPerspectiveDefinition arg0, IPerspectiveDefinition arg1)
+         {
+            // For time being till Authorization is not implemented for
+            // Admin Perspective sort in reverse (descending) order
+            // so that other users can login into portal
+            return arg0.getLabel().compareTo(arg1.getLabel());
+         }
+      });
+      
       // global elements
       Map<String, Map<String, Set<UiElement>>> globalElements = new HashMap<String, Map<String, Set<UiElement>>>();
 
-      for (Entry<String, IPerspectiveDefinition> perspEntry : perspectives.entrySet())
+      for (IPerspectiveDefinition perspective : allPerspectives)
       {
-         IPerspectiveDefinition perspective = perspEntry.getValue();
          // add perspective node
          DefaultMutableTreeNode perspNode = addAbsoluteNode(uiTreeNode, perspective.getLabel(),
                PermissionUserObject.ICON_PERMISSION);
 
          // add permissions for perspective
-         DefaultMutableTreeNode perspAccessNode = addPermissionNode(perspNode, perspEntry.getKey(),
+         DefaultMutableTreeNode perspAccessNode = addPermissionNode(perspNode, perspective.getName(),
                PERMISSION_TYPE.ALLOW);
 
          updateParticipantNodes(perspAccessNode);
