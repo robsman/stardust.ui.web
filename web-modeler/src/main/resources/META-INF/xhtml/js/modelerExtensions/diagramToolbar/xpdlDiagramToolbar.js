@@ -36,7 +36,7 @@ define([ 'm_defaultPaletteHandler', 'm_decorationPalette',"m_i18nUtils" ],
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.panels.decoration.title"), 
 			contentHtmlUrl : "decorationPalette.html",
 			provider: m_decorationPalette,
-			visibility : "preview"
+			visibility : "always"
 		}, ],
 		// entries
 		diagramToolbarPaletteEntry : [ {
