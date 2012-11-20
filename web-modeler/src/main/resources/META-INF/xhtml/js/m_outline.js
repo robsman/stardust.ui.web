@@ -2395,6 +2395,7 @@ define(
 								}
 								renameElementViewLabel(node.attr("rel"), node
 										.attr("id"), node.attr("name"));
+								m_utils.inheritFields(modelElement, obj.changes.modified[i]);
 							}
 						}
 						for ( var i = 0; i < obj.changes.removed.length; i++) {
