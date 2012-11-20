@@ -27,24 +27,24 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(organization);
-					
+
 				}
 			};
 
-						
+
 			function i18nOrganizationview() {
-				
+
 				$("label[for='guidOutput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.uuid"));
-								
+
 				$("label[for='idOutput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.id"));
 
-				
+
 				$("label[for='nameInput']")
 						.text(
 								m_i18nUtils
@@ -416,7 +416,7 @@ define(
 				OrganizationView.prototype.setSupportDepartments = function(
 						supportDepartments, departmentDataId,
 						departmentDataPath) {
-					if ("true" == supportDepartments) {
+					if (true == supportDepartments) {
 						this.departmentDataSelect.removeAttr("disabled");
 						this.departmentDataPathInput.removeAttr("disabled");
 						this.supportsDepartmentsCheckbox.attr("checked", true);

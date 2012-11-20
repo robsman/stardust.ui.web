@@ -2075,6 +2075,11 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                System.out.println("Setting extended attribute " + key + " to null.");
                getModelBuilderFacade().setAttribute(element, key, null);
             }
+            else if (attributes.get(key).getAsJsonPrimitive().isBoolean())
+            {
+               getModelBuilderFacade().setBooleanAttribute(element, key,
+                     attributes.get(key).getAsBoolean());
+            }
             else
             {
                // TODO Trick to create document

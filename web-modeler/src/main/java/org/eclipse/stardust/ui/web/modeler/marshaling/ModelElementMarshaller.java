@@ -2339,6 +2339,13 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             json.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY,
                   structuredDataFullId);
          }
+         else if (getModelBuilderFacade().isBooleanAttribute(attribute))
+         {
+            attributes.addProperty(
+                  getModelBuilderFacade().getAttributeName(attribute),
+                  Boolean.parseBoolean(getModelBuilderFacade().getAttributeValue(
+                        attribute)));
+         }
          else
          {
             attributes.addProperty(getModelBuilderFacade().getAttributeName(attribute),

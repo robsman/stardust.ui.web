@@ -267,7 +267,7 @@ define(
 							m_dialog
 									.makeVisible(this.primitiveDefaultCheckboxInputRow);
 							this.primitiveDefaultCheckboxInput.attr("checked",
-									(defaultValue == "true"));
+									(defaultValue == true));
 						} else {
 							m_dialog
 									.makeVisible(this.primitiveDefaultTextInputRow);

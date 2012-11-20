@@ -24,17 +24,17 @@ define(
 					return page;
 				}
 			};
-			
+
 		  function i18nProcessActivityScreen() {
 				$("label[for='guidOutput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.uuid"));
-								
+
 				$("label[for='idOutput']")
 				.text(
 						m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.id"));		
+								.getProperty("modeler.element.properties.commonProperties.id"));
 
 				jQuery("#name")
 						.text(
@@ -77,9 +77,9 @@ define(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.general.subProcessInput"));
 			}
-            	
-           
-          
+
+
+
 			function ActivityBasicPropertiesPage(propertiesPanel) {
 				var basicPropertiesPage = m_basicPropertiesPage
 						.create(propertiesPanel);
@@ -554,11 +554,11 @@ define(
 					this.supportsRelocationInput
 							.attr(
 									"checked",
-									this.getModelElement().attributes["carnot:engine:relocate:source"] == "true");
+									this.getModelElement().attributes["carnot:engine:relocate:source"] == true);
 					this.isRelocationTargetInput
 							.attr(
 									"checked",
-									this.getModelElement().attributes["carnot:engine:relocate:target"] == "true");
+									this.getModelElement().attributes["carnot:engine:relocate:target"] == true);
 
 					if (this.getModelElement().activityType == m_constants.MANUAL_ACTIVITY_TYPE) {
 						this.setUserTaskType(m_constants.AUTO_GENERATED_UI);

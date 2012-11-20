@@ -75,8 +75,7 @@ define([ "m_utils", "m_constants", "m_commandsController", "m_command",
 		 */
 		ActivityDisplayPropertiesPage.prototype.setElement = function() {
 			if (this.getModelElement().attributes
-					&& this.getModelElement().attributes["isAuxiliaryActivity"]
-					&& (this.getModelElement().attributes["isAuxiliaryActivity"] == "true")) {
+					&& (true == this.getModelElement().attributes["isAuxiliaryActivity"])) {
 				this.auxiliaryActivityInput.attr("checked", true);
 			} else {
 				this.auxiliaryActivityInput.attr("checked", false);
