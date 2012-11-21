@@ -37,7 +37,7 @@ define(
 				initPropertiesPanelCollapseClickHandlers();
 			}
 
-						
+
 			function i18nProcessScreen() {
 				jQuery("#basicPropertiesPage div.heading")
 						.text(
@@ -157,17 +157,17 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.name"));
-				
-				
+
+
 				$(
 				"#basicPropertiesPage label[for='nameInput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.name"));
-				
-				
+
+
 				$("#displayPropertiesPage label[for='auxiliaryActivityInput']").text(m_i18nUtils.getProperty("modeler.activity.propertyPages.display.isAuxiliaryActivity"));
-				
+
 
 				$("#datatableid")
 						.find(
@@ -207,7 +207,7 @@ define(
 				var primitiveDataTypeSelect = $("#datatableid").find(
 						"#primitiveDataTypeRow").find(
 						"#primitiveDataTypeSelect");
-				
+
 				var selectdata = m_i18nUtils
 						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.string");
 				primitiveDataTypeSelect.append("<option value=\"String\">"
@@ -303,17 +303,17 @@ define(
 										.getProperty("modeler.diagram.toolbar.tool.gateway.type"));
 
 				var gatewayTypeInputselect = jQuery("#gatewayTypeInput");
-				
+
 				selectdata = m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.gateway.typeSelect.and");
 				gatewayTypeInputselect.append("<option value=\"and\">"+selectdata+"</option>" );
-				
+
 				selectdata = m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.gateway.typeSelect.xor");
 				gatewayTypeInputselect.append("<option value=\"xor\">"+selectdata+"</option>" );
-				
-	
-				
+
+
+
 				var processdefinationselect = $("#processdefinationselect").find("#processInterfaceTypeSelectInput");
-				
+
 				selectdata = m_i18nUtils.getProperty("modeler.processdefination.propertyPages.processInterface.type.noProcessInterface");
 				processdefinationselect.append("<option value=\"noProcessInterface\">"+selectdata+"</option>" );
 
@@ -353,34 +353,34 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.type"));
-				
-				
-				var directionSelect = $("#parameterDefinitionTypeSelector").find("#parameterDefinitionDirectionSelect");  				
-				
+
+
+				var directionSelect = $("#parameterDefinitionTypeSelector").find("#parameterDefinitionDirectionSelect");
+
 				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.in");
-				directionSelect.append("<option value=\"providesProcessInterface\">"+ selectdata + "</option>");
+				directionSelect.append("<option value=\"IN\">"+ selectdata + "</option>");
 
 				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.out");
-				directionSelect.append("<option value=\"implementsProcessInterface\">"+ selectdata + "</option>");	
-					
-				directionSelect = $("#directionlistTable").find("#parameterDefinitionDirectionSelect");  				
-					
+				directionSelect.append("<option value=\"OUT\">"+ selectdata + "</option>");
+
+				directionSelect = $("#directionlistTable").find("#parameterDefinitionDirectionSelect");
+
 				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.in");
-				directionSelect.append("<option value=\"providesProcessInterface\">"+ selectdata + "</option>");
+				directionSelect.append("<option value=\"IN\">"+ selectdata + "</option>");
 
 				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.out");
-				directionSelect.append("<option value=\"implementsProcessInterface\">"+ selectdata + "</option>");	
-				
-				
+				directionSelect.append("<option value=\"OUT\">"+ selectdata + "</option>");
+
+
 				jQuery("#gatewayid")
 				.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.gateway"));
-				
+
 				jQuery("#dataid")
 				.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.data"));
-				
-				
-				
-				
+
+
+
+
 			}
 
 			function hidePropertiesPane() {
@@ -391,7 +391,7 @@ define(
 					$("#modelerDiagramPanelWrapper").css("width",
 							(innerWidth - HORIZONTAL_SCROLL_OFFSET) + "px");
 				}
-				
+
 				setDrawingPaneDivWidths((parseInt($("#modelerDiagramPanelWrapper").css("width")) - 10));
 
 				m_dialog.makeVisible($("#propertiesPanelShowControl"));
@@ -416,11 +416,11 @@ define(
 							.css("overflow", "auto");
 
 					var diagWidth = innerWidth - $("#modelerPropertiesPanelWrapper")[0].offsetWidth - HORIZONTAL_SCROLL_OFFSET;
-					
+
 					if (diagWidth < getToolbarWidth()) {
 						diagWidth = getToolbarWidth() + 10;
 					}
-					
+
 					setDrawingPaneDivWidths((diagWidth - 10));
 
 					$("#modelerDiagramPanelWrapper").css("width", (diagWidth) + "px").css("overflow", "auto");
@@ -432,12 +432,12 @@ define(
 					propertiesPaneVisible = true;
 
 					adjustPanels();
-					
+
 					m_dialog.makeVisible($("#propertiesPanelHideControl"));
 					m_dialog.makeInvisible($("#propertiesPanelShowControl"));
 				}
 			}
-			
+
 			function getToolbarWidth() {
 				return $("div.toolbar-section").last().offset().left + $("div.toolbar-section").last().width() + 20;
 			}
@@ -445,7 +445,7 @@ define(
 			/*
 			 * Ideally setting of toolbar / diagram pane width etc. should have been handled with width = auto / 100% etc but that
 			 * didn't work in latest FF (worked in FF4) hence taking a tedious way.
-			 *  
+			 *
 			 * */
 			function setDrawingPaneDivWidths(width) {
 				$("#toolbar").css("width", (width) + "px");
