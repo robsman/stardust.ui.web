@@ -452,7 +452,7 @@ define(
 								jQuery.data(document, "diagram")
 										.submitEditableArea(
 												$('textarea', this).val());
-							},
+							}
 						}).css("font-family",
 						m_constants.DEFAULT_FONT_FAMILY).css(
 						"font-size", m_constants.DEFAULT_FONT_SIZE);

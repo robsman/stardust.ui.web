@@ -497,66 +497,78 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       JsonObject dataFlowJson = dataFlowConnectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
 
-      if (dataFlowConnectionJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      if (dataFlowJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
-         dataFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(dataFlowConnectionJson,
+         dataFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(dataFlowJson,
                ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
 
-      if (dataFlowConnectionJson.has(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      if (dataFlowJson.has(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
-         dataFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(dataFlowConnectionJson,
+         dataFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(dataFlowJson,
                ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
 
-      // Collect all data mappings between the activity and the data
-
-      List<DataMappingType> dataMappings = new ArrayList<DataMappingType>();
-
-      for (DataMappingType dataMapping : dataFlowConnection.getActivitySymbol()
-            .getActivity()
-            .getDataMapping())
+      // Mapping should be updated,if JSON contains mapping element
+      if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
+            || dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
       {
-         if (dataMapping.getData()
-               .getId()
-               .equals(dataFlowConnection.getDataSymbol().getData().getId()))
-         {
-            dataMappings.add(dataMapping);
-         }
-      }
+         // Collect all data mappings between the activity and the data
 
-      // Delete all data mappings between the activity and the data
+         List<DataMappingType> dataMappings = new ArrayList<DataMappingType>();
 
-      for (DataMappingType dataMapping : dataMappings)
-      {
-         dataFlowConnection.getActivitySymbol()
+         for (DataMappingType dataMapping : dataFlowConnection.getActivitySymbol()
                .getActivity()
-               .getDataMapping()
-               .remove(dataMapping);
-         dataFlowConnection.getDataSymbol()
-               .getData()
-               .getDataMappings()
-               .remove(dataMapping);
-      }
+               .getDataMapping())
+         {
+            if (dataMapping.getData()
+                  .getId()
+                  .equals(dataFlowConnection.getDataSymbol().getData().getId()))
+            {
+               dataMappings.add(dataMapping);
+            }
+         }
 
-      // dataFlowJson holds an input and/or an output dataMappingJson; data mappings have to be created for both
+         // Delete all data mappings between the activity and the data
 
-      // Create input mapping
+         for (DataMappingType dataMapping : dataMappings)
+         {
+            dataFlowConnection.getActivitySymbol()
+                  .getActivity()
+                  .getDataMapping()
+                  .remove(dataMapping);
+            dataFlowConnection.getDataSymbol()
+                  .getData()
+                  .getDataMappings()
+                  .remove(dataMapping);
+         }
 
-      if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
-      {
-         createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-               dataFlowConnection.getDataSymbol().getData(), dataFlowJson, DirectionType.IN_LITERAL,
-               dataFlowJson.getAsJsonObject(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY));
-      }
+         // dataFlowJson holds an input and/or an output dataMappingJson; data mappings
+         // have to be created for both
 
-      // Create output mapping
+         // Create input mapping
 
-      if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
-      {
-         createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-               dataFlowConnection.getDataSymbol().getData(), dataFlowJson, DirectionType.OUT_LITERAL,
-               dataFlowJson.getAsJsonObject(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY));
+         if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
+         {
+            createDataMapping(
+                  dataFlowConnection.getActivitySymbol().getActivity(),
+                  dataFlowConnection.getDataSymbol().getData(),
+                  dataFlowJson,
+                  DirectionType.IN_LITERAL,
+                  dataFlowJson.getAsJsonObject(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY));
+         }
+
+         // Create output mapping
+
+         if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
+         {
+            createDataMapping(
+                  dataFlowConnection.getActivitySymbol().getActivity(),
+                  dataFlowConnection.getDataSymbol().getData(),
+                  dataFlowJson,
+                  DirectionType.OUT_LITERAL,
+                  dataFlowJson.getAsJsonObject(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY));
+         }
       }
    }
 
