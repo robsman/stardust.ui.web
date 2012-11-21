@@ -1761,7 +1761,15 @@ define(
 				function createModel() {
 					var modelName =  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.model");
 					var count = 0;
-					var name = modelName+" " + (++count);
+					var name = modelName + " " + (++count);
+
+					// This check is needed as model with same name but not
+					// following convention for ID may exist causing new model
+					// to be created with same name.
+					while (modelNameExists(name)) {
+						name = modelName + " " + (++count);
+					}
+
  					//alert(name);
 					var id = m_utils.generateIDFromName(name);
 					while (m_model.findModel(id)) {
@@ -1775,6 +1783,16 @@ define(
 								"id" : id
 							}));
 					isElementCreatedViaOutline = true;
+				}
+
+				function modelNameExists(name) {
+					for (m in m_model.getModels()) {
+						if (m_model.getModels()[m].name == name) {
+							return true;
+						}
+					}
+
+					return false;
 				}
 
 				/**
