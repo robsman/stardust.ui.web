@@ -207,6 +207,12 @@
 				<ice:outputText value="#{documentHandlerBean.messages['popout.message']}" />				 
 			</ice:panelGroup>
 		</ice:panelGroup>
+		
+		<c:if test="#{not empty documentHandlerBean.autoDownloadLinkId}">
+			<a id="#{documentHandlerBean.autoDownloadLinkId}" name="#{documentHandlerBean.autoDownloadLinkId}"
+				target="_blank" style="display: none; visibility: hidden"
+				href="#{facesContext.externalContext.requestContextPath}#{documentHandlerBean.documentContentInfo.URL}">Auto Click</a>
+		</c:if>
 	</ice:panelGroup>
 
 	<ice:panelGroup rendered="#{not documentHandlerBean.loadSuccessful}">

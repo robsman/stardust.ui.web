@@ -75,6 +75,7 @@ public class IppDocumentInputController extends DocumentInputController implemen
    private boolean enableOpenDocument = true;
    private Document documentToBeMoved;
    private Document documentToBeDeleted;
+   private boolean disableAutoDownload;
 
    /**
     * @param path
@@ -136,6 +137,10 @@ public class IppDocumentInputController extends DocumentInputController implemen
             params.put("processInstance", activityInstance.getProcessInstance());
             params.put("dataPathId", dataMapping.getDataPath());
             params.put("dataId", dataMapping.getDataId());
+            if(disableAutoDownload)
+            {
+               params.put("disableAutoDownload", disableAutoDownload);   
+            }
             documentView = DocumentViewUtil.openDataMappingDocument(activityInstance.getProcessInstance(),
                   dataMapping.getDataId(), docInfo, params);
             PortalApplication.getInstance().registerViewDataEventHandler(documentView, this);
@@ -212,10 +217,12 @@ public class IppDocumentInputController extends DocumentInputController implemen
                      fireEvent(DocumentInputEventType.UPLOADED, null);
                      if (fileWrapper.isOpenDocument())
                      {
+                        disableAutoDownload = true;
                         viewDocument();
                      }
                   }
                   refreshPortalSession();
+                  disableAutoDownload = false;
                }
                catch (Exception e)
                {

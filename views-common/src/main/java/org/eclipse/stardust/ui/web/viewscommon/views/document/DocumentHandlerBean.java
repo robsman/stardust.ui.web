@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.viewscommon.views.document;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.faces.component.UIComponent;
 import javax.faces.event.ActionEvent;
@@ -102,9 +103,12 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    private boolean disableSaveAction;
    private boolean embededView;
    private boolean loadSuccessful = false;
+   private boolean disableAutoDownload = false;
    private String loadUnsuccessfulMsg;
    private ConfirmationDialog confirmationDialog;
    
+   private String autoDownloadLinkId;
+
    /**
     * default constructor
     */
@@ -184,6 +188,15 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
             popOutDocument();
          }
          
+         // disableAutoDownload : true when DocumentViewer opened after FileUpload for
+         // UnsupportedFileType when OpenDocument check is true
+         if (null == contentHandler && !embededView && !disableAutoDownload)
+         {
+            autoDownloadLinkId = "autoClickToDownload" + new Random().nextInt(10000);
+            PortalApplication.getInstance().addEventScript(
+                  "softClickHtmlLink('" + autoDownloadLinkId + "')");
+         }
+
          loadSuccessful = true;
       }
       else if (ViewEventType.ACTIVATED == event.getType())
@@ -323,6 +336,20 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          else
          {
             disableSaveAction = Boolean.valueOf((String) disableSaveActionObj);
+         }
+      }
+      
+      Object disableAutoDownloadObj = thisView.getViewParams().get("disableAutoDownload");
+
+      if (null != disableAutoDownloadObj)
+      {
+         if (disableAutoDownloadObj instanceof Boolean)
+         {
+            disableAutoDownload = (Boolean) disableAutoDownloadObj;
+         }
+         else
+         {
+            disableAutoDownload = Boolean.valueOf((String) disableAutoDownloadObj);
          }
       }
       return true;
@@ -1223,4 +1250,16 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    {
       this.confirmationDialog = confirmationDialog;
    }
+
+   public String getAutoDownloadLinkId()
+   {
+      return autoDownloadLinkId;
+   }
+
+   public boolean isDisableAutoDownload()
+   {
+      return disableAutoDownload;
+   }
+   
+   
 }

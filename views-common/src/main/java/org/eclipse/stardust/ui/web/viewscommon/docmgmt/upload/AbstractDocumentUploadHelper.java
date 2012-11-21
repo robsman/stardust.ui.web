@@ -353,6 +353,7 @@ public abstract class AbstractDocumentUploadHelper implements Serializable
 
          if (fileWrapper.isOpenDocument())
          {
+            viewParam.put("disableAutoDownload", true);
             openDocument(updatedDocument);
          }
       }
@@ -376,6 +377,7 @@ public abstract class AbstractDocumentUploadHelper implements Serializable
          informInitiator(DocumentUploadEventType.DOCUMENT_CREATED, updatedDocument);
          if (fileWrapper.isOpenDocument())
          {
+            viewParam.put("disableAutoDownload", true);
             openDocument(updatedDocument);   
          }
       }

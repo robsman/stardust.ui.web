@@ -65,10 +65,11 @@
 			image="/plugins/views-common/images/icons/external.png"
 			title="#{documentHandlerBean.messages['popOut.title']}"
 			action="#{documentHandlerBean.popOutDocument}" immediate="true"
-			styleClass="toolbar-button">
+			styleClass="toolbar-button"
+			disabled="#{documentHandlerBean.contentHandler == null}">
 			<pc:automationTag value="auto-COM-DocView-ToolbarPopOutDoc"
 				standAlone="false" />
-		</ice:commandButton>	
+		</ice:commandButton>
 
 		<ice:commandButton rendered="#{documentHandlerBean.poppedOut}"
 			image="/plugins/views-common/images/icons/external_sw.png"

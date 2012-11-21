@@ -28,3 +28,12 @@ function softClick(type,linkName)
 function String_endsWith(str,subStr) {
     return str.length >= subStr.length && (str.substring(str.length - subStr.length) == subStr);
 }
+
+function softClickHtmlLink(id)
+{
+	var aLink = document.getElementById(id);
+	if(aLink)
+	{
+		aLink.click();
+	}
+}
