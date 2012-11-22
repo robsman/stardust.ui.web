@@ -25,7 +25,7 @@ require.config({
 		'jquery.url': ['bpm-modeler/js/libs/jquery/plugins/jquery.url', 'https://raw.github.com/allmarkedup/jQuery-URL-Parser/472315f02afbfd7193184300cc381163e19b4a16/jquery.url'],
 
 		'common-plugins': '../services/rest/bpm-modeler/config/ui/plugins/common-plugins',
-		 'i18n' : '../../common/InfinityBPMI18N'
+		 'i18n' : 'common/InfinityBPMI18N'
 	},
 	shim: {
 		'i18n' : {
@@ -58,7 +58,7 @@ require(["require", "bpm-modeler/js/m_extensionManager",
          "jquery.url",
 
          "common-plugins",
-         //"i18n",
+         "i18n",
          "bpm-modeler/js/m_roleView"],
 		 function(require) {
 	require("bpm-modeler/js/m_roleView").initialize(

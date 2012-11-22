@@ -24,7 +24,7 @@ require.config({
 		'jquery.url': ['bpm-modeler/js/libs/jquery/plugins/jquery.url', 'https://raw.github.com/allmarkedup/jQuery-URL-Parser/472315f02afbfd7193184300cc381163e19b4a16/jquery.url'],
 
 		'common-plugins': '../services/rest/bpm-modeler/config/ui/plugins/common-plugins',
-		'i18n' : '../common/InfinityBPMI18N'
+		'i18n' : 'common/InfinityBPMI18N'
 	},
 	shim: {
 		'i18n': {
@@ -42,10 +42,10 @@ require.config({
 	}
 });
 
-require(["require", 
+require(["require",
          "jquery",
          //"extensions_jquery",
-         //"i18n",
+         "i18n",
          "jquery-ui",
          "jquery.download",
          "jquery.form",

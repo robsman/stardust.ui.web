@@ -23,7 +23,7 @@ require.config({
 		'jquery.tablescroll': ['bpm-modeler/js/libs/jquery/plugins/jquery.tablescroll', 'https://raw.github.com/farinspace/jquery.tableScroll/master/jquery.tablescroll'],
 		'jquery.treeTable': ['bpm-modeler/js/libs/jquery/plugins/jquery.treeTable', 'https://raw.github.com/ludo/jquery-treetable/f98c6d07a02cb48052e9d4e033ce7dcdf64218e1/src/javascripts/jquery.treeTable'],
 		'jquery.url': ['bpm-modeler/js/libs/jquery/plugins/jquery.url', 'https://raw.github.com/allmarkedup/jQuery-URL-Parser/472315f02afbfd7193184300cc381163e19b4a16/jquery.url'],
-		
+
 		'jshint': ['bpm-modeler/js/libs/jshint/jshint-r12', 'https://raw.github.com/jshint/jshint/80277ef7cf1f35137ee653a25ce5664e2752b0db/jshint'],
 
 		'codemirror': ['bpm-modeler/js/libs/codemirror/codemirror-2.34', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/codemirror'],
@@ -36,7 +36,7 @@ require.config({
 		'codemirror.util.simple-hint': ['bpm-modeler/js/libs/codemirror/util/simple-hint', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/util/simple-hint'],
 
 		'common-plugins': '../services/rest/bpm-modeler/config/ui/plugins/common-plugins',
-		 'i18n' : '../common/InfinityBPMI18N'
+		 'i18n' : 'common/InfinityBPMI18N'
 	},
 	shim: {
 	    'i18n' : {
@@ -84,7 +84,7 @@ require(["require",
 		 "codemirror.util.javascript-hint",
 
 		 "common-plugins",
-		 // TODO: Needed? "i18n",
+		 "i18n",
          "bpm-modeler/js/m_messageTransformationApplicationView"],
 		 function(require) {
 	require("bpm-modeler/js/m_messageTransformationApplicationView").initialize(

@@ -1,7 +1,7 @@
 /**
  * @author Shrikant.Gangal
  */
-define([ "bpm-modeler/js/m_urlUtils" ], function(m_urlUtils) {
+define([ "bpm-modeler/js/m_urlUtils", "common/InfinityBPMI18N" ], function(m_urlUtils, InfinityBPMI18N) {
 	var modelerI18N;
 	return {
 		getProperty : function(key, defaultVal) {

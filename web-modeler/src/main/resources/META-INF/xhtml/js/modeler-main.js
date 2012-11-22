@@ -97,8 +97,8 @@ require(["require",
 	 "codemirror.util.javascript-hint",
 
 	 "modeler-plugins",
-	 "bpm-modeler/js/m_modelerViewLayoutManager"
-	// TODO: Needed? "i18n"
+	 "bpm-modeler/js/m_modelerViewLayoutManager",
+	 "i18n"
 	 ], function (require) {
 	require("bpm-modeler/js/m_modelerViewLayoutManager").initialize(
 				$.url.setUrl(window.location.search).param("fullId"));
