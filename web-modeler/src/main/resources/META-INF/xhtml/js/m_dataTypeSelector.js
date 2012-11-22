@@ -236,11 +236,14 @@ define(
 							.append("<optgroup label=\"This Model\">");
 
 					for ( var i in this.scopeModel.typeDeclarations) {
-						this.documentTypeSelect.append("<option value='"
-								+ this.scopeModel.typeDeclarations[i]
-										.getFullId() + "'>"
-								+ this.scopeModel.typeDeclarations[i].name
-								+ "</option>");
+						// Only composite structured types and not enumerations are listed here
+						if (this.scopeModel.typeDeclarations[i].isSequence()) {
+							this.documentTypeSelect.append("<option value='"
+									+ this.scopeModel.typeDeclarations[i]
+											.getFullId() + "'>"
+									+ this.scopeModel.typeDeclarations[i].name
+									+ "</option>");
+						}
 					}
 
 					this.documentTypeSelect
@@ -252,15 +255,18 @@ define(
 						}
 
 						for ( var m in m_model.getModels()[n].typeDeclarations) {
-							this.documentTypeSelect
-									.append("<option value='"
-											+ m_model.getModels()[n].typeDeclarations[m]
-													.getFullId()
-											+ "'>"
-											+ m_model.getModels()[n].name
-											+ "/"
-											+ m_model.getModels()[n].typeDeclarations[m].name
-											+ "</option>");
+							// Only composite structured types and not enumerations are listed here
+							if (m_model.getModels()[n].typeDeclarations[m].isSequence()) {
+								this.documentTypeSelect
+								.append("<option value='"
+										+ m_model.getModels()[n].typeDeclarations[m]
+												.getFullId()
+										+ "'>"
+										+ m_model.getModels()[n].name
+										+ "/"
+										+ m_model.getModels()[n].typeDeclarations[m].name
+										+ "</option>");
+							}
 						}
 					}
 
