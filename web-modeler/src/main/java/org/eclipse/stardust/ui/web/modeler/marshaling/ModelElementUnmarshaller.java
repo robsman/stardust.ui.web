@@ -368,11 +368,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                String subprocessFullId = extractString(activityJson,
                      ModelerConstants.SUBPROCESS_ID);
 
-               ProcessDefinitionType subProcessDefinition = getModelBuilderFacade().getProcessDefinition(
-                     getModelBuilderFacade().getModelId(subprocessFullId),
-                     getModelBuilderFacade().stripFullId(subprocessFullId));
-
-               activity.setImplementationProcess(subProcessDefinition);
+               getModelBuilderFacade().setSubProcess(activity, subprocessFullId);
 
                if (activityJson.has(ModelerConstants.SUBPROCESS_MODE_PROPERTY))
                {
