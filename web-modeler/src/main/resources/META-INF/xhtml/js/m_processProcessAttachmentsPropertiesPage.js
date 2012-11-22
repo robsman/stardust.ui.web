@@ -24,7 +24,7 @@ define(
 					return page;
 				}
 			};
-			
+
 
 			function i18nProcessStaticLabels() {
 				// headingdata
@@ -162,6 +162,11 @@ define(
 				ProcessProcessAttachmentsPropertiesPage.prototype.setElement = function() {
 					this.supportsAttachmentsInput.attr("checked", this
 							.hasProcessAttachmentsDataPathes());
+					if (this.supportsAttachmentsInput.is(":checked")) {
+						this.uniquePerRootProcessInstanceInput.removeAttr("disabled");
+					} else {
+						this.uniquePerRootProcessInstanceInput.attr("disabled", true);
+					}
 				};
 
 				/**
