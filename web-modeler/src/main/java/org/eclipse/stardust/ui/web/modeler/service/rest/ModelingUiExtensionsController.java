@@ -34,7 +34,7 @@ public class ModelingUiExtensionsController
       UiExtensionsRegistry registry = resolveUiExtensionsRegistry();
 
       StringBuilder buffer = new StringBuilder();
-      buffer.append("define([ 'm_extensionManager',\n");
+      buffer.append("define([ 'bpm-modeler/js/m_extensionManager',\n");
 
       buffer.append("    // View Managers\n");
       listExtensionDependencies(buffer, registry.getViewManagerExtensions());
@@ -79,7 +79,7 @@ public class ModelingUiExtensionsController
       UiExtensionsRegistry registry = resolveUiExtensionsRegistry();
 
       StringBuilder buffer = new StringBuilder();
-      buffer.append("define([ 'm_extensionManager',\n");
+      buffer.append("define([ 'bpm-modeler/js/m_extensionManager',\n");
 
       buffer.append("    // View Manager\n");
       listExtensionDependencies(buffer, registry.getViewManagerExtensions());
@@ -112,7 +112,7 @@ public class ModelingUiExtensionsController
       UiExtensionsRegistry registry = resolveUiExtensionsRegistry();
 
       StringBuilder buffer = new StringBuilder();
-      buffer.append("define([ 'm_extensionManager',\n");
+      buffer.append("define([ 'bpm-modeler/js/m_extensionManager',\n");
 
       buffer.append("    // View Managers\n");
       listExtensionDependencies(buffer, registry.getViewManagerExtensions());
@@ -163,7 +163,7 @@ public class ModelingUiExtensionsController
 
    private String toModuleUri(String extensionUri)
    {
-      String moduleUri = "../../../" + extensionUri;
+      String moduleUri = extensionUri;
       if (moduleUri.endsWith(".js"))
       {
          moduleUri = moduleUri.substring(0, moduleUri.length() - ".js".length());
