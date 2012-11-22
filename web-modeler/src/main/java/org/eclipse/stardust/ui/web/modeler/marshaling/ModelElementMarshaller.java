@@ -1153,6 +1153,23 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   dataJson.addProperty(
                         ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
                }
+               else
+               {
+                  String typeDeclarationId = AttributeUtil.getAttributeValue(data,
+                        "carnot:engine:dms:resourceMetadataSchema");
+
+                  if ( !StringUtils.isEmpty(typeDeclarationId))
+                  {
+                     TypeDeclarationType typeDeclaration = model.getTypeDeclarations()
+                           .getTypeDeclaration(typeDeclarationId);
+
+                     String fullId = getModelBuilderFacade().createFullId(model,
+                           typeDeclaration);
+
+                     dataJson.addProperty(
+                           ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
+                  }
+               }
             }
          }
          else if (null != data.getType()

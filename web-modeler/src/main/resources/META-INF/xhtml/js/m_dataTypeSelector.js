@@ -1,6 +1,6 @@
 /**
  * Utility functions for dialog programming.
- * 
+ *
  * @author Marc.Gille
  */
 define(
@@ -17,12 +17,12 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function DataTypeSelector() {
 				/**
 				 * Options are
-				 * 
+				 *
 				 * scope submitHandler supportsOtherData
 				 */
 				DataTypeSelector.prototype.initialize = function(options) {
@@ -126,7 +126,7 @@ define(
 									},
 									function(event) {
 										event.data.panel
-												.setDocumentDataType(event.data.panel.documentDataTypeSelect
+												.setDocumentDataType(event.data.panel.documentTypeSelect
 														.val());
 										event.data.panel.submitChanges();
 									});
@@ -137,22 +137,22 @@ define(
 				 */
 				DataTypeSelector.prototype.initializeDataTypeOptions = function() {
 					this.dataTypeSelect.empty();
-					
+
 					var propertiesData = m_i18nUtils
 					.getProperty("modeler.element.properties.commonProperties.primitive");
-					
+
 					this.dataTypeSelect
 							.append("<option value='primitive'>"+propertiesData+"</option>");
-					
+
 					propertiesData = m_i18nUtils
 					.getProperty("modeler.element.properties.commonProperties.structureData");
-					
-					
-					
+
+
+
 					this.dataTypeSelect
 							.append("<option value='struct'>"+propertiesData+"</option>");
-					
-					
+
+
 
 					if (this.supportDocumentTypes) {
 						propertiesData = m_i18nUtils
@@ -160,7 +160,7 @@ define(
 						this.dataTypeSelect
 								.append("<option value='dmsDocument'>"+propertiesData+"</option>");
 					}
-							
+
 					if (this.supportsOtherData) {
 						propertiesData = m_i18nUtils
 						.getProperty("modeler.element.properties.commonProperties.other");
@@ -174,13 +174,13 @@ define(
 				 */
 				DataTypeSelector.prototype.setScopeModel = function(scopeModel) {
 					this.scopeModel = scopeModel;
-					
+
 					this.populateDataStructuresSelectInput();
 					this.populateDocumentTypesSelectInput();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.populateDataStructuresSelectInput = function() {
 					this.structuredDataTypeSelect.empty();
@@ -224,7 +224,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.populateDocumentTypesSelectInput = function() {
 					this.documentTypeSelect.empty();
@@ -268,7 +268,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.setDataType = function(data) {
 					if (data.isSupportedDataType
@@ -304,7 +304,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.getDataType = function(data) {
 					data.dataType = this.dataTypeSelect.val();
@@ -324,7 +324,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.setPrimitiveDataType = function(
 						primitiveDataType) {
@@ -344,7 +344,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.setStructuredDataType = function(
 						structuredDataTypeFullId) {
@@ -360,7 +360,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.setDocumentDataType = function(
 						documentDataTypeFullId) {
@@ -376,7 +376,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.setOtherDataType = function(dataType) {
 					if (this.otherTypeRow == null || this.otherTypeName == null) {
@@ -400,7 +400,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.enable = function() {
 					this.dataTypeSelect.removeAttr("disabled");
@@ -414,7 +414,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.disable = function() {
 					this.dataTypeSelect.attr("disabled", true);
@@ -428,18 +428,29 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.submitChanges = function() {
 					if (this.submitHandler) {
+
+						var structTypeFullId;
+						if (m_constants.STRUCTURED_DATA_TYPE == this.dataTypeSelect
+								.val()) {
+							structTypeFullId = this.structuredDataTypeSelect
+									.val()
+						} else if (m_constants.DOCUMENT_DATA_TYPE == this.dataTypeSelect
+								.val()) {
+							structTypeFullId = this.documentTypeSelect
+									.val()
+						}
+
 						// TODO Check for changes?
 						this.submitHandler
 								.submitDataChanges({
 									dataType : this.dataTypeSelect.val(),
 									primitiveDataType : this.primitiveDataTypeSelect
 											.val(),
-									structuredDataTypeFullId : this.structuredDataTypeSelect
-											.val()
+									structuredDataTypeFullId : structTypeFullId
 								});
 					}
 				};
