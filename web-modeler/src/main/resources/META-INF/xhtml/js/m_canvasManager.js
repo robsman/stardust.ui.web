@@ -4,7 +4,7 @@
  * @author Omkar.Patil, Marc.Gille
  */
 
-define(["m_utils"], function(m_utils){
+define(["bpm-modeler/js/m_utils"], function(m_utils){
 	return {
 		initialize: function(divId, cWidth, cHeight, bImage){
 			canvas = Raphael(divId, cWidth, cHeight);

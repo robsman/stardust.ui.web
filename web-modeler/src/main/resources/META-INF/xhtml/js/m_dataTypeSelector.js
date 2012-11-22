@@ -4,7 +4,7 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_extensionManager", "m_model", "m_dialog" ,"m_i18nUtils"],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_model", "bpm-modeler/js/m_dialog" ,"bpm-modeler/js/m_i18nUtils"],
 		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog ,m_i18nUtils) {
 			return {
 				create : function(options) {

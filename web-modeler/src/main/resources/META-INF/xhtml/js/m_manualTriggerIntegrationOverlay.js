@@ -9,8 +9,8 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_commandsController", "m_command",
-				"m_model", "m_accessPoint", "m_parameterDefinitionsPanel","m_eventIntegrationOverlay"],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_parameterDefinitionsPanel","bpm-modeler/js/m_eventIntegrationOverlay"],
 		function(m_utils, m_constants, m_commandsController, m_command,
 				m_model, m_accessPoint, m_parameterDefinitionsPanel, m_eventIntegrationOverlay) {
 

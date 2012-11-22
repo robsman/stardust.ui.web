@@ -2,7 +2,7 @@
  * @author Shrikant.Gangal
  */
 
-define(["m_constants"], function(m_constants) {
+define(["bpm-modeler/js/m_constants"], function(m_constants) {
 	var _toolClickActionsMap;
 	return {
 		init: function(divId, toolClickActionsMap){

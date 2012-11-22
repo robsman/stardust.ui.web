@@ -9,7 +9,7 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_modelElement" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_modelElement" ],
 		function(m_utils, m_constants, m_modelElement) {
 			return {
 				initializeFromJson : function(model, json) {

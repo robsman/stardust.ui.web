@@ -9,7 +9,7 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants" ],
 		function(m_utils, m_constants) {
 			var managerMap = [];
 			var PANNING_INCREMENT = 10;

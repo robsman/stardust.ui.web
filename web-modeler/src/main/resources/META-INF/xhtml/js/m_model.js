@@ -2,9 +2,9 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_urlUtils", "m_communicationController",
-				"m_application", "m_data", "m_process", "m_participant",
-				"m_typeDeclaration" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_communicationController",
+				"bpm-modeler/js/m_application", "bpm-modeler/js/m_data", "bpm-modeler/js/m_process", "bpm-modeler/js/m_participant",
+				"bpm-modeler/js/m_typeDeclaration" ],
 		function(m_utils, m_constants, m_urlUtils, m_communicationController,
 				m_application, m_data, m_process, m_participant,
 				m_typeDeclaration) {

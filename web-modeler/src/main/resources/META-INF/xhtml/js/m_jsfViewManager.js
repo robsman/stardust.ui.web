@@ -14,7 +14,7 @@
  *
  * @author Marc.Gille
  */
-define([ "m_utils" ], function(m_utils) {
+define([ "bpm-modeler/js/m_utils" ], function(m_utils) {
 	return {
 		create : function() {
 			return new JsfViewManager();

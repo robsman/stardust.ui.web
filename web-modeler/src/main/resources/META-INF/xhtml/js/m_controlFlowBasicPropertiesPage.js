@@ -12,7 +12,7 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_basicPropertiesPage", "m_dataTraversal", "m_codeEditor" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_basicPropertiesPage", "bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_codeEditor" ],
 		function(m_utils, m_constants, m_basicPropertiesPage, m_dataTraversal, m_codeEditor) {
 			return {
 				create : function(propertiesPanel) {

@@ -9,7 +9,7 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_model", "m_parameter" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_model", "bpm-modeler/js/m_parameter" ],
 		function(m_utils, m_constants, m_model, m_parameter) {
 
 			return {

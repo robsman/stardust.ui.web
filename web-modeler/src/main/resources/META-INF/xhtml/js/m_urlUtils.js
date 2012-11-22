@@ -36,7 +36,7 @@ define( function() {
 		
 		getURL : function()
 		{
-			//return require('m_urlUtils').getContextName() + m_constants.ANNOTATIONS_RESTLET_PATH + documentId + m_constants.ANNOTATIONS_RESTLET_PATH_PAGE + m_pageController.getOriginalPageIndex() + "/" + m_pageController.getURLPostFix();
+			//return require('bpm-modeler/js/m_urlUtils').getContextName() + m_constants.ANNOTATIONS_RESTLET_PATH + documentId + m_constants.ANNOTATIONS_RESTLET_PATH_PAGE + m_pageController.getOriginalPageIndex() + "/" + m_pageController.getURLPostFix();
 		},
 		
 		getUserServicesURL : function()
@@ -46,13 +46,13 @@ define( function() {
 		
 		getStampsQueryURL : function()
 		{
-			m_constants = require("m_constants");
+			m_constants = require("bpm-modeler/js/m_constants");
 			return this.getContextName() + m_constants.DMS_RESTLET_PATH + m_constants.STAMPS_GET_REQUEST_URL;
 		},
 		
 		getDocDownloadTokenURL : function()
 		{
-			m_constants = require("m_constants");
+			m_constants = require("bpm-modeler/js/m_constants");
 			return this.getContextName() + m_constants.DMS_RESTLET_PATH + m_constants.DOCUMENT_DOWNLOAD_TOKEN_URL;
 		},
 		

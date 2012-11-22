@@ -2,8 +2,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "jquery", "m_utils", "m_constants","m_i18nUtils"  ],
-		function(jQuery, m_utils, m_constants, m_i18nUtils){
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants","bpm-modeler/js/m_i18nUtils"  ],
+		function(m_utils, m_constants, m_i18nUtils){
 
 			var INFO_MESSAGE = 0;
 			var ERROR_MESSAGE = 1;

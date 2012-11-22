@@ -2,7 +2,7 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils","m_i18nUtils" ],
+		[ "bpm-modeler/js/m_utils","bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils,m_i18nUtils) {
 			
 			var categories = {

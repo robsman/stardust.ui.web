@@ -9,8 +9,8 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_extensionManager", "m_command", "m_commandsController",
-				"m_dialog", "m_modelElementView", "m_model" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView", "bpm-modeler/js/m_model" ],
 		function(m_utils, m_extensionManager, m_command, m_commandsController,
 				m_dialog, m_modelElementView, m_model) {
 			return {

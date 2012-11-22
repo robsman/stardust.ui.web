@@ -9,8 +9,8 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_modelElement", "m_model",
-				"m_accessPoint" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_modelElement", "bpm-modeler/js/m_model",
+				"bpm-modeler/js/m_accessPoint" ],
 		function(m_utils, m_constants, m_modelElement, m_model, m_accessPoint) {
 
 			return {

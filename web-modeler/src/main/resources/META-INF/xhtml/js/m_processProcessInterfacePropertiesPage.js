@@ -3,9 +3,9 @@
  */
 
 define(
-		[ "m_utils", "m_constants", "m_dialog", "m_propertiesPage",
-				"m_dataTypeSelector",
-				"m_parameterDefinitionsPanel","m_i18nUtils" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_propertiesPage",
+				"bpm-modeler/js/m_dataTypeSelector",
+				"bpm-modeler/js/m_parameterDefinitionsPanel","bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_dialog, m_propertiesPage,
 				m_dataTypeSelector,
 				m_parameterDefinitionsPanel,m_i18nUtils) {

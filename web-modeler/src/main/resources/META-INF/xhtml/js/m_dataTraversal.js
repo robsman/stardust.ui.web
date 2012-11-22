@@ -2,7 +2,7 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_model" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_model" ],
 		function(m_utils, m_constants, m_model) {
 			return {
 				split: split,

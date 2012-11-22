@@ -4,8 +4,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_extensionManager", "m_user",
-				"m_session", "m_dialog" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_user",
+				"bpm-modeler/js/m_session", "bpm-modeler/js/m_dialog" ],
 		function(m_utils, m_constants, m_extensionManager, m_user, m_session,
 				m_dialog) {
 			return {

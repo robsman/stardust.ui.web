@@ -9,9 +9,9 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_extensionManager", "m_command",
-				"m_commandsController", "m_dialog", "m_basicPropertiesPage",
-				"m_dataTypeSelector" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_basicPropertiesPage",
+				"bpm-modeler/js/m_dataTypeSelector" ],
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_commandsController, m_dialog, m_basicPropertiesPage,
 				m_dataTypeSelector) {

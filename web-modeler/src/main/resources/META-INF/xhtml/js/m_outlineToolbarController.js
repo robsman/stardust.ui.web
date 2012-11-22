@@ -1,7 +1,7 @@
 /**
  * @author shrikant.gangal
  */
-define([ "m_toolbarManager", "m_constants" ], function(m_toolbarManager,
+define([ "bpm-modeler/js/m_toolbarManager", "bpm-modeler/js/m_constants" ], function(m_toolbarManager,
 		m_constants) {
 	var currentSelection;
 	var toolSelectActions = {

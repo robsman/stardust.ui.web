@@ -1,12 +1,14 @@
 /**
  * Utility functions for dialog programming.
- *
+ * 
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_extensionManager", "m_model",
-				"m_typeDeclaration", "m_dialog", "m_dataTypeSelector",
-				"m_i18nUtils" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_model",
+				"bpm-modeler/js/m_typeDeclaration", "bpm-modeler/js/m_dialog",
+				"bpm-modeler/js/m_dataTypeSelector",
+				"bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_model,
 				m_typeDeclaration, m_dialog, m_dataTypeSelector, m_i18nUtils) {
 			return {
@@ -27,7 +29,7 @@ define(
 			 */
 			function ParameterDefinitionsPanel() {
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.initialize = function(
 						options) {
@@ -273,7 +275,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.setParameterDefinitions = function(
 						parameterDefinitions) {
@@ -326,7 +328,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.setScopeModel = function(
 						scopeModel) {
@@ -342,7 +344,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.submitChanges = function() {
 					if (this.options.submitHandler) {
@@ -352,7 +354,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.setDescriptor = function() {
 					this.descriptorInput.attr("checked", true);
@@ -360,7 +362,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.setKeyDescriptor = function() {
 					this.descriptorInput.attr("checked", false);
@@ -368,7 +370,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.populateDataItemsList = function() {
 					this.parameterDefinitionDataSelect.empty();
@@ -416,7 +418,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.initializeParameterDefinitionsTable = function() {
 					this.parameterDefinitionsTableBody.empty();
@@ -528,7 +530,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.deselectParameterDefinitions = function(
 						dataPath) {
@@ -539,7 +541,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.populateParameterDefinitionFields = function() {
 					if (this.currentParameterDefinition == null) {
@@ -651,25 +653,32 @@ define(
 						}
 
 						// Disable name and direction for Process_attachments
-						// TODO - check if this is a good place to check for process attachments
+						// TODO - check if this is a good place to check for
+						// process attachments
 						// data paths.
-						// May be data paths themselves can have parameter indicating whether
+						// May be data paths themselves can have parameter
+						// indicating whether
 						// they are read only or not?
 						if (this.currentParameterDefinition.dataFullId
-								&& (-1 != this.currentParameterDefinition.dataFullId.indexOf("PROCESS_ATTACHMENTS"))) {
+								&& (-1 != this.currentParameterDefinition.dataFullId
+										.indexOf("PROCESS_ATTACHMENTS"))) {
 							this.parameterDefinitionDirectionSelect.attr(
 									"disabled", true);
-							this.parameterDefinitionDataSelect.attr(
-									"disabled", true);
-							this.parameterDefinitionPathInput.attr(
-									"disabled", true);
+							this.parameterDefinitionDataSelect.attr("disabled",
+									true);
+							if (this.options.supportsDataPathes) {
+								this.parameterDefinitionPathInput.attr(
+										"disabled", true);
+							}
 						} else {
 							this.parameterDefinitionDirectionSelect
 									.removeAttr("disabled");
 							this.parameterDefinitionDataSelect
 									.removeAttr("disabled");
-							this.parameterDefinitionPathInput
-									.removeAttr("disabled");
+							if (this.options.supportsDataPathes) {
+								this.parameterDefinitionPathInput
+										.removeAttr("disabled");
+							}
 						}
 
 						if (this.currentFocusInput) {
@@ -682,7 +691,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.addParameterDefinition = function() {
 					var n = this.parameterDefinitions.length;
@@ -718,7 +727,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.deleteParameterDefinition = function() {
 					m_utils.debug("Deleting "
@@ -742,7 +751,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.moveParameterDefinitionUp = function() {
 					var changedParameterDefinitions = [];
@@ -771,7 +780,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.moveParameterDefinitionDown = function() {
 					var changedParameterDefinitions = [];
@@ -800,13 +809,13 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.validate = function() {
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.submitDataChanges = function(
 						dataChanges) {

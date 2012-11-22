@@ -8,8 +8,8 @@
  * documentation
  ******************************************************************************/
 
-define([ "m_utils", "m_constants", "m_commandsController", "m_command",
-		"m_propertiesPage","m_i18nUtils"], function(m_utils, m_constants,
+define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
+		"bpm-modeler/js/m_propertiesPage","bpm-modeler/js/m_i18nUtils"], function(m_utils, m_constants,
 		m_commandsController, m_command, m_propertiesPage,m_i18nUtils) {
 	return {
 		create : function(propertiesPanel) {

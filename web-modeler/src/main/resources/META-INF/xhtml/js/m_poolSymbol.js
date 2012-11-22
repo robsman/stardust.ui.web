@@ -2,8 +2,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_commandsController", "m_command",
-				"m_canvasManager", "m_symbol", "m_swimlaneSymbol", "m_messageDisplay","m_i18nUtils" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_symbol", "bpm-modeler/js/m_swimlaneSymbol", "bpm-modeler/js/m_messageDisplay","bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
 				m_canvasManager, m_symbol, m_swimlaneSymbol, m_messageDisplay, m_i18nUtils) {
 

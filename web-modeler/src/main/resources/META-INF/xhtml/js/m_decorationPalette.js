@@ -9,9 +9,9 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_extensionManager",
-				"m_communicationController", "m_commandsController",
-				"m_command" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager",
+				"bpm-modeler/js/m_communicationController", "bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_command" ],
 		function(m_utils, m_constants, m_extensionManager,
 				m_communicationController, m_commandsController, m_command) {
 			return {

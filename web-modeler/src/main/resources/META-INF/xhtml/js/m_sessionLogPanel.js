@@ -9,11 +9,11 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_user", "m_session", "m_command",
-				"m_commandsController", "m_model", 
-				"m_accessPoint", "m_dataTraversal", "m_dialog",
-				"m_communicationController", "m_websocketModel",
-				"m_websocketInvite", "mustache", "m_i18nUtils" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_user", "bpm-modeler/js/m_session", "bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_model", 
+				"bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_dialog",
+				"bpm-modeler/js/m_communicationController", "bpm-modeler/js/m_websocketModel",
+				"bpm-modeler/js/m_websocketInvite", "mustache", "bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_user, m_session, m_command,
 				m_commandsController, m_model, 
 				m_accessPoint, m_dataTraversal, m_dialog,

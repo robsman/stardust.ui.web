@@ -3,34 +3,37 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_urlUtils", "m_constants", "outline-plugins",
-				"m_extensionManager", "m_communicationController",
-				"m_commandsController", "m_command", "m_session", "m_user",
-				"m_model", "m_process", "m_application", "m_participant",
-				"m_typeDeclaration", "m_outlineToolbarController", "m_data",
-				"m_elementConfiguration", "m_messageDisplay", "m_i18nUtils" ],
-		function(m_utils, m_urlUtils, m_constants, outlinePlugins,
-				m_extensionManager, m_communicationController,
-				m_commandsController, m_command, m_session, m_user, m_model,
-				m_process, m_application, m_participant, m_typeDeclaration,
-				m_outlineToolbarController, m_data, m_elementConfiguration,
-				m_messageDisplay, m_i18nUtils) {
-
-			// TODO Find better location
-			var viewManagerExtension = m_extensionManager
-					.findExtension("viewManager");
-			var viewManager = viewManagerExtension.provider.create();
-
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_urlUtils",
+				"bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_extensionManager",
+				"bpm-modeler/js/m_communicationController",
+				"bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_command", "bpm-modeler/js/m_session",
+				"bpm-modeler/js/m_user", "bpm-modeler/js/m_model",
+				"bpm-modeler/js/m_process", "bpm-modeler/js/m_application",
+				"bpm-modeler/js/m_participant",
+				"bpm-modeler/js/m_typeDeclaration",
+				"bpm-modeler/js/m_outlineToolbarController",
+				"bpm-modeler/js/m_data",
+				"bpm-modeler/js/m_elementConfiguration",
+				"bpm-modeler/js/m_jsfViewManager",
+				"bpm-modeler/js/m_messageDisplay", "bpm-modeler/js/m_i18nUtils" ],
+		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
+				m_communicationController, m_commandsController, m_command,
+				m_session, m_user, m_model, m_process, m_application,
+				m_participant, m_typeDeclaration, m_outlineToolbarController,
+				m_data, m_elementConfiguration, m_jsfViewManager, m_messageDisplay, m_i18nUtils) {
 			var isElementCreatedViaOutline = false;
 			var hasUnsavedModifications = false;
 			function getURL() {
-				return require('m_urlUtils').getContextName()
+				return require('../../bpm-modeler/js/m_urlUtils')
+						.getContextName()
 						+ "/services/rest/bpm-modeler/modeler/"
 						+ new Date().getTime();
 			}
@@ -38,10 +41,10 @@ define(
 			var readAllModels = function(force) {
 				m_model.loadModels(force);
 
-
-
-				jQuery("#lastsave").text(m_i18nUtils.getProperty("modeler.outline.lastSavedMessage.title"));
-
+				jQuery("#lastsave")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.outline.lastSavedMessage.title"));
 
 				jQuery
 						.each(
@@ -364,7 +367,8 @@ define(
 			var downloadModel = function(modelUUID) {
 				var model = m_model.findModelByUuid(modelUUID);
 
-				window.location = require("m_urlUtils").getModelerEndpointUrl()
+				window.location = require("bpm-modeler/js/m_urlUtils")
+						.getModelerEndpointUrl()
 						+ "/models/" + model.id + "/download";
 			}
 
@@ -373,7 +377,6 @@ define(
 
 				window.open("../public/reportTest.html?modelId=" + model.id);
 			}
-
 
 			// TODO Is this still needed? Delete after verifying
 			var elementCreationHandler = function(id, name, type, parent) {
@@ -619,7 +622,7 @@ define(
 				m_communicationController
 						.syncGetData(
 								{
-									url : require("m_urlUtils")
+									url : require("bpm-modeler/js/m_urlUtils")
 											.getModelerEndpointUrl()
 											+ "/models/save"
 								},
@@ -1108,14 +1111,16 @@ define(
 														}
 													},
 													"download" : {
-														"label" : m_i18nUtils.getProperty("modeler.outline.model.contextMenu.download"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.model.contextMenu.download"),
 														"action" : function(obj) {
 															downloadModel(obj
 																	.attr("id"));
 														}
 													},
 													"openModelReport" : {
-														"label" : m_i18nUtils.getProperty("modeler.outline.model.contextMenu.openModelReport"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.model.contextMenu.openModelReport"),
 														"action" : function(obj) {
 															openModelReport(obj
 																	.attr("id"));
@@ -1128,7 +1133,8 @@ define(
 													"ccp" : false,
 													"create" : false,
 													"rename" : {
-														"label" :  m_i18nUtils.getProperty("modeler.outline.contextMenu.rename"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
 															jQuery("#outline")
 																	.jstree(
@@ -1139,7 +1145,8 @@ define(
 														}
 													},
 													"deleteProcess" : {
-														"label" : m_i18nUtils.getProperty("modeler.element.properties.commonProperties.delete"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.element.properties.commonProperties.delete"),
 														"action" : function(obj) {
 															deleteElementAction(
 																	obj.context.lastChild.data,
@@ -1161,28 +1168,32 @@ define(
 													"create" : false,
 													"rename" : false,
 													"createWebServiceApplication" : {
-														"label" : m_i18nUtils.getProperty("modeler.outline.applications.contextMenu.createWebService"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.applications.contextMenu.createWebService"),
 														"action" : function(obj) {
 															createWebServiceApplication(obj
 																	.attr("modelUUID"));
 														}
 													},
 													"createMessageTransformationApplication" : {
-														"label" :  m_i18nUtils.getProperty("modeler.outline.applications.contextMenu.createTransformation"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.applications.contextMenu.createTransformation"),
 														"action" : function(obj) {
 															createMessageTransformationApplication(obj
 																	.attr("modelUUID"));
 														}
 													},
 													"createCamelApplication" : {
-														"label" : m_i18nUtils.getProperty("modeler.outline.applications.contextMenu.createCamelRoute"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.applications.contextMenu.createCamelRoute"),
 														"action" : function(obj) {
 															createCamelApplication(obj
 																	.attr("modelUUID"));
 														}
 													},
 													"createUiMashupApplication" : {
-														"label" : m_i18nUtils.getProperty("modeler.outline.applications.contextMenu.createUIMashup"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.applications.contextMenu.createUIMashup"),
 														"action" : function(obj) {
 															createUiMashupApplication(obj
 																	.attr("modelUUID"));
@@ -1196,21 +1207,24 @@ define(
 													"create" : false,
 													"rename" : false,
 													"createPrimitiveData" : {
-														"label" :  m_i18nUtils.getProperty("modeler.outline.data.contextMenu.createPrimitiveData"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.data.contextMenu.createPrimitiveData"),
 														"action" : function(obj) {
 															createPrimitiveData(obj
 																	.attr("modelUUID"));
 														}
 													},
 													"createDocumentData" : {
-														"label" : m_i18nUtils.getProperty("modeler.outline.data.contextMenu.createDocument"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.data.contextMenu.createDocument"),
 														"action" : function(obj) {
 															createDocumentData(obj
 																	.attr("modelUUID"));
 														}
 													},
 													"createStructuredData" : {
-														"label" : m_i18nUtils.getProperty("modeler.outline.data.contextMenu.createStructuredData"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.data.contextMenu.createStructuredData"),
 														"action" : function(obj) {
 															createStructuredData(obj
 																	.attr("modelUUID"));
@@ -1224,7 +1238,8 @@ define(
 													"ccp" : false,
 													"create" : false,
 													"rename" : {
-														"label" :  m_i18nUtils.getProperty("modeler.outline.contextMenu.rename"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
 															jQuery("#outline")
 																	.jstree(
@@ -1235,7 +1250,8 @@ define(
 														}
 													},
 													"deleteData" : {
-														"label" : m_i18nUtils.getProperty("modeler.element.properties.commonProperties.delete"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.element.properties.commonProperties.delete"),
 														"action" : function(obj) {
 															deleteElementAction(
 																	obj.context.lastChild.data,
@@ -1256,21 +1272,24 @@ define(
 													"create" : false,
 													"rename" : false,
 													"createRole" : {
-														"label" : m_i18nUtils.getProperty("modeler.outline.participants.contextMenu.createRole"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.participants.contextMenu.createRole"),
 														"action" : function(obj) {
 															createRole(obj
 																	.attr("modelUUID"));
 														}
 													},
 													"createOrganization" : {
-														"label" :m_i18nUtils.getProperty("modeler.outline.participants.contextMenu.createOrganization"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.participants.contextMenu.createOrganization"),
 														"action" : function(obj) {
 															createOrganization(obj
 																	.attr("modelUUID"));
 														}
 													},
 													"createConditionalPerformer" : {
-														"label" : m_i18nUtils.getProperty("modeler.outline.participants.contextMenu.createConditionalPerformer"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.participants.contextMenu.createConditionalPerformer"),
 														"action" : function(obj) {
 															createConditionalPerformer(obj
 																	.attr("modelUUID"));
@@ -1284,7 +1303,8 @@ define(
 													"ccp" : false,
 													"create" : false,
 													"rename" : {
-														"label" : m_i18nUtils.getProperty("modeler.outline.contextMenu.rename"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
 															jQuery("#outline")
 																	.jstree(
@@ -1312,7 +1332,8 @@ define(
 													// }
 													// },
 													"deleteApplication" : {
-														"label" : m_i18nUtils.getProperty("modeler.element.properties.commonProperties.delete"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.element.properties.commonProperties.delete"),
 														"action" : function(obj) {
 															deleteElementAction(
 																	obj.context.lastChild.data,
@@ -1333,14 +1354,16 @@ define(
 													"create" : false,
 													"rename" : false,
 													"createXSDStructuredDataType" : {
-														"label" : m_i18nUtils.getProperty("modeler.outline.structureDataType.contextMenu.createDataType"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.structureDataType.contextMenu.createDataType"),
 														"action" : function(obj) {
 															createXsdStructuredDataType(obj
 																	.attr("modelUUID"));
 														}
 													},
 													importTypeDeclarations : {
-														"label" : m_i18nUtils.getProperty("modeler.outline.structureDataType.contextMenu.importTypeDeclarations"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.structureDataType.contextMenu.importTypeDeclarations"),
 														"action" : function(obj) {
 															var model = m_model
 																	.findModelByUuid(obj
@@ -1356,7 +1379,8 @@ define(
 													"ccp" : false,
 													"create" : false,
 													"rename" : {
-														"label" : m_i18nUtils.getProperty("modeler.outline.contextMenu.rename"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
 															jQuery("#outline")
 																	.jstree(
@@ -1367,7 +1391,8 @@ define(
 														}
 													},
 													"deleteStructuredDataType" : {
-														"label" : m_i18nUtils.getProperty("modeler.element.properties.commonProperties.delete"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.element.properties.commonProperties.delete"),
 														"action" : function(obj) {
 															deleteElementAction(
 																	obj.context.lastChild.data,
@@ -1389,7 +1414,8 @@ define(
 													"ccp" : false,
 													"create" : false,
 													"rename" : {
-														"label" :  m_i18nUtils.getProperty("modeler.outline.contextMenu.rename"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
 															jQuery("#outline")
 																	.jstree(
@@ -1400,7 +1426,8 @@ define(
 														}
 													},
 													"deleteParticipant" : {
-														"label" : m_i18nUtils.getProperty("modeler.element.properties.commonProperties.delete"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.element.properties.commonProperties.delete"),
 														"action" : function(obj) {
 															deleteElementAction(
 																	obj.context.lastChild.data,
@@ -1414,7 +1441,8 @@ define(
 														}
 													},
 													"setAsManager" : {
-														"label" : m_i18nUtils.getProperty("modeler.outline.participants.role.contextMenu.setAsManager"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.participants.role.contextMenu.setAsManager"),
 														"_disabled" : ((undefined == node
 																.attr("parentUUID")) || ('teamLeader' == node
 																.attr('rel'))),
@@ -1435,7 +1463,8 @@ define(
 													"ccp" : false,
 													"create" : false,
 													"rename" : {
-														"label" : m_i18nUtils.getProperty("modeler.outline.contextMenu.rename"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
 															jQuery("#outline")
 																	.jstree(
@@ -1446,7 +1475,8 @@ define(
 														}
 													},
 													"deleteParticipant" : {
-														"label" : m_i18nUtils.getProperty("modeler.element.properties.commonProperties.delete"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.element.properties.commonProperties.delete"),
 														"action" : function(obj) {
 															deleteElementAction(
 																	obj.context.lastChild.data,
@@ -1466,7 +1496,8 @@ define(
 													"ccp" : false,
 													"create" : false,
 													"rename" : {
-														"label" :  m_i18nUtils.getProperty("modeler.outline.contextMenu.rename"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
 															jQuery("#outline")
 																	.jstree(
@@ -1477,7 +1508,8 @@ define(
 														}
 													},
 													"deleteParticipant" : {
-														"label" : m_i18nUtils.getProperty("modeler.element.properties.commonProperties.delete"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.element.properties.commonProperties.delete"),
 														"action" : function(obj) {
 															deleteElementAction(
 																	obj.context.lastChild.data,
@@ -1491,7 +1523,8 @@ define(
 														}
 													},
 													"createRole" : {
-														"label" : m_i18nUtils.getProperty("modeler.outline.participants.contextMenu.createRole"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.participants.contextMenu.createRole"),
 														"action" : function(obj) {
 															createRole(
 																	obj
@@ -1501,7 +1534,8 @@ define(
 														}
 													},
 													"createOrganization" : {
-														"label" : m_i18nUtils.getProperty("modeler.outline.participants.contextMenu.createOrganization"),
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.participants.contextMenu.createOrganization"),
 														"action" : function(obj) {
 															createOrganization(
 																	obj
@@ -1720,7 +1754,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				function prepareInfoDialogPoupupData(msg, okText) {
 					return {
@@ -1738,7 +1772,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function prepareErrorDialogPoupupData(msg, okText) {
 					return {
@@ -1756,10 +1790,11 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createModel() {
-					var modelName =  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.model");
+					var modelName = m_i18nUtils
+							.getProperty("modeler.element.properties.commonProperties.model");
 					var count = 0;
 					var name = modelName + " " + (++count);
 
@@ -1770,10 +1805,10 @@ define(
 						name = modelName + " " + (++count);
 					}
 
- 					//alert(name);
+					// alert(name);
 					var id = m_utils.generateIDFromName(name);
 					while (m_model.findModel(id)) {
-						name = modelName+" "+ (++count);
+						name = modelName + " " + (++count);
 						id = m_utils.generateIDFromName(name);
 					}
 
@@ -1796,7 +1831,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteModel(modelId) {
 					var model = m_model.findModel(modelId);
@@ -1805,7 +1840,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function getUniqueNameForElement(modelId, namePrefix) {
 					var suffix = 0;
@@ -1823,7 +1858,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createProcess(modelId) {
 					var name = getUniqueNameForElement(modelId, "Process ");
@@ -1838,7 +1873,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteProcess(processId, modelUUID) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1860,7 +1895,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteParticipant(modelUUID, id) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1872,7 +1907,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteApplication(modelUUID, appId) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1884,7 +1919,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteData(modelUUID, id) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1925,13 +1960,13 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createPrimitiveData(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils.getProperty("modeler.outline.newPrimitivedata.namePrefix");
-					var name = getUniqueNameForElement(model.id,
-							titledata);
+					var titledata = m_i18nUtils
+							.getProperty("modeler.outline.newPrimitivedata.namePrefix");
+					var name = getUniqueNameForElement(model.id, titledata);
 					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController
@@ -1948,13 +1983,13 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createDocumentData(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils.getProperty("modeler.outline.newDocumentdata.namePrefix");
-					var name = getUniqueNameForElement(model.id,
-							titledata);
+					var titledata = m_i18nUtils
+							.getProperty("modeler.outline.newDocumentdata.namePrefix");
+					var name = getUniqueNameForElement(model.id, titledata);
 					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController.submitCommand(m_command
@@ -1967,13 +2002,13 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createStructuredData(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils.getProperty("modeler.outline.newStructureddata.namePrefix");
-					var name = getUniqueNameForElement(model.id,
-							titledata);
+					var titledata = m_i18nUtils
+							.getProperty("modeler.outline.newStructureddata.namePrefix");
+					var name = getUniqueNameForElement(model.id, titledata);
 					var id = m_utils.generateIDFromName(name);
 					var fullId = model.id + ":" + id;
 
@@ -1988,11 +2023,12 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createRole(modelUUId, targetUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils.getProperty("modeler.outline.newRole.namePrefix");
+					var titledata = m_i18nUtils
+							.getProperty("modeler.outline.newRole.namePrefix");
 					var name = getUniqueNameForElement(model.id, titledata);
 					var id = m_utils.generateIDFromName(name);
 					var targetOid = (targetUUID ? m_model
@@ -2008,13 +2044,13 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createConditionalPerformer(modelUUId, targetUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils.getProperty("modeler.outline.newConditionalperformer.namePrefix");
-					var name = getUniqueNameForElement(model.id,
-							titledata);
+					var titledata = m_i18nUtils
+							.getProperty("modeler.outline.newConditionalperformer.namePrefix");
+					var name = getUniqueNameForElement(model.id, titledata);
 					var id = m_utils.generateIDFromName(name);
 					var targetOid = (targetUUID ? m_model
 							.findElementInModelByUuid(model.id, targetUUID).oid
@@ -2030,7 +2066,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function setAsManager(modelUUId, orgUUID, roleUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2046,13 +2082,13 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createOrganization(modelUUId, targetUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils.getProperty("modeler.outline.newOrganization.namePrefix");
-					var name = getUniqueNameForElement(model.id,
-							titledata);
+					var titledata = m_i18nUtils
+							.getProperty("modeler.outline.newOrganization.namePrefix");
+					var name = getUniqueNameForElement(model.id, titledata);
 					var id = m_utils.generateIDFromName(name);
 					var targetOid = (targetUUID ? m_model
 							.findElementInModelByUuid(model.id, targetUUID).oid
@@ -2068,11 +2104,12 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createWebServiceApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils.getProperty("modeler.outline.newWebservice.namePrefix");
+					var titledata = m_i18nUtils
+							.getProperty("modeler.outline.newWebservice.namePrefix");
 					var name = getUniqueNameForElement(model.id, titledata);
 					var id = m_utils.generateIDFromName(name);
 
@@ -2086,13 +2123,13 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createMessageTransformationApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils.getProperty("modeler.outline.newMsgTransformation.namePrefix");
-					var name = getUniqueNameForElement(model.id,
-							titledata);
+					var titledata = m_i18nUtils
+							.getProperty("modeler.outline.newMsgTransformation.namePrefix");
+					var name = getUniqueNameForElement(model.id, titledata);
 					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController.submitCommand(m_command
@@ -2105,11 +2142,12 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createCamelApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils.getProperty("modeler.outline.newCamelroute.namePrefix");
+					var titledata = m_i18nUtils
+							.getProperty("modeler.outline.newCamelroute.namePrefix");
 					var name = getUniqueNameForElement(model.id, titledata);
 					var id = m_utils.generateIDFromName(name);
 
@@ -2122,11 +2160,12 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createUiMashupApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils.getProperty("modeler.outline.newUimashup.namePrefix");
+					var titledata = m_i18nUtils
+							.getProperty("modeler.outline.newUimashup.namePrefix");
 					var name = getUniqueNameForElement(model.id, titledata);
 					var id = m_utils.generateIDFromName(name);
 
@@ -2140,15 +2179,15 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 * @param modelId
 				 * @returns
 				 */
 				function createXsdStructuredDataType(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils.getProperty("modeler.outline.newXsddatastructure.namePrefix");
-					var name = getUniqueNameForElement(model.id,
-							titledata);
+					var titledata = m_i18nUtils
+							.getProperty("modeler.outline.newXsddatastructure.namePrefix");
+					var name = getUniqueNameForElement(model.id, titledata);
 					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController.submitCommand(m_command
@@ -2161,7 +2200,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 * @param modelId
 				 * @param id
 				 * @returns
@@ -2191,7 +2230,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 * @param modelId
 				 * @param id
 				 * @returns
@@ -2259,7 +2298,7 @@ define(
 								m_i18nUtils
 										.getProperty("modeler.outline.toolbar.tooltip.refreshModels"));
 
-			  };
+			};
 
 			var outline;
 
@@ -2268,6 +2307,8 @@ define(
 
 					if (newViewManager != null) {
 						viewManager = newViewManager;
+					} else {
+						viewManager = m_jsfViewManager.create();
 					}
 
 					setupEventHandling();
@@ -2284,18 +2325,18 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function Outline() {
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.toString = function() {
 					return "Lightdust.Outline";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.initialize = function() {
 					// Register with Event Bus
@@ -2304,7 +2345,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.openElementView = function(element, openView) {
 					if (isElementCreatedViaOutline || openView) {
@@ -2326,14 +2367,14 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.fireCloseViewCommand = function(uuid) {
 					viewManager.closeViewsForElement(uuid);
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.processCommand = function(command) {
 					m_utils.debug("===> Outline Process Event");
@@ -2413,7 +2454,8 @@ define(
 								}
 								renameElementViewLabel(node.attr("rel"), node
 										.attr("id"), node.attr("name"));
-								m_utils.inheritFields(modelElement, obj.changes.modified[i]);
+								m_utils.inheritFields(modelElement,
+										obj.changes.modified[i]);
 							}
 						}
 						for ( var i = 0; i < obj.changes.removed.length; i++) {
@@ -2555,13 +2597,12 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createModel = function(data) {
 					var outlineObj = this;
 					var model = m_model.createModel(data.id, data.name,
 							data.uuid);
-
 
 					jQuery("#outline").jstree("create", "#outline", "last", {
 						"attr" : {
@@ -2628,7 +2669,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteModel = function(transferObject) {
 					m_model.deleteModel(transferObject.id);
@@ -2637,7 +2678,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteProcess = function(transferObject) {
 					jQuery("#outline").jstree("remove",
@@ -2648,7 +2689,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteApplication = function(transferObject) {
 					jQuery("#outline").jstree("remove",
@@ -2659,7 +2700,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteParticipant = function(transferObject) {
 					jQuery("#outline").jstree("remove",
@@ -2671,7 +2712,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteTypeDeclaration = function(
 						transferObject) {
@@ -2685,7 +2726,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteData = function(transferObject) {
 					jQuery("#outline").jstree("remove",
@@ -2696,7 +2737,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createProcess = function(transferObject) {
 					var model = m_model.findModel(transferObject.modelId);
@@ -2723,7 +2764,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createApplication = function(transferObject) {
 					var model = m_model.findModel(transferObject.modelId);
@@ -2749,7 +2790,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createData = function(transferObject) {
 					var model = m_model
@@ -2775,7 +2816,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createStructuredDataType = function(
 						transferObject) {
@@ -2802,7 +2843,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createParticipant = function(transferObject) {
 					var model = m_model

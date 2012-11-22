@@ -9,7 +9,7 @@
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 
-define([ "m_utils", "m_constants", "m_modelElement", "m_command", "m_commandsController", "m_elementConfiguration" ], function(m_utils, m_constants, m_modelElement, m_command, m_commandsController, m_elementConfiguration) {
+define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_modelElement", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_elementConfiguration" ], function(m_utils, m_constants, m_modelElement, m_command, m_commandsController, m_elementConfiguration) {
 	return {
 		/**
 		 * @deprecated Is this still needed?

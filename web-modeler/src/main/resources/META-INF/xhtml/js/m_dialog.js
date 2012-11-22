@@ -3,7 +3,7 @@
  * 
  * @author Marc.Gille
  */
-define([ "m_utils", "m_constants" ], function(m_utils, m_constants) {
+define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants" ], function(m_utils, m_constants) {
 	return {
 		makeInvisible : function(element) {
 			element.addClass("invisible");

@@ -12,7 +12,7 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_dialog", "m_propertiesPage", "m_i18nUtils" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_propertiesPage", "bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_dialog, m_propertiesPage, m_i18nUtils) {
 	
 			return {

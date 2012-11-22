@@ -10,8 +10,8 @@
  *******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_command", "m_commandsController",
-				"m_propertiesPage", "m_activity" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_propertiesPage", "bpm-modeler/js/m_activity" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
 				m_propertiesPage, m_activity) {
 			return {

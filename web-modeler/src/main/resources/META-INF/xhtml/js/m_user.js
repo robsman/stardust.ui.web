@@ -8,7 +8,7 @@
  * documentation
  ******************************************************************************/
 
-define([ "m_utils", "m_constants", "m_urlUtils", "m_communicationController" ],
+define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_communicationController" ],
 		function(m_utils, m_constants, m_urlUtils, m_communicationController) {
 			window.top.currentRole = m_constants.BUSINESS_ANALYST_ROLE;
 			//window.top.currentRole = m_constants.INTEGRATOR_ROLE

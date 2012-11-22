@@ -12,8 +12,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_command", "m_commandsController",
-				"m_basicPropertiesPage" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_basicPropertiesPage" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
 				m_basicPropertiesPage) {
 			return {

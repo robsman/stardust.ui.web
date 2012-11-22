@@ -9,9 +9,9 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_messageDisplay", "m_canvasManager",
-				"m_drawable", "m_commandsController", "m_command",
-				"m_propertiesPanel", "m_modelerUtils" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_messageDisplay", "bpm-modeler/js/m_canvasManager",
+				"bpm-modeler/js/m_drawable", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_propertiesPanel", "bpm-modeler/js/m_modelerUtils" ],
 		function(m_utils, m_constants, m_messageDisplay, m_canvasManager,
 				m_drawable, m_commandsController, m_command, m_propertiesPanel,
 				m_modelerUtils) {

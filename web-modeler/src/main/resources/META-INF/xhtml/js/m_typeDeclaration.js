@@ -2,8 +2,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "jquery", "m_utils", "m_modelElement" ],
-		function(jQuery, m_utils, m_modelElement) {
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_modelElement" ],
+		function(m_utils, m_modelElement) {
 			var STRUCTURE_TYPE = "STRUCTURE_TYPE";
 			var ENUMERATION_TYPE = "ENUMERATION_TYPE";
 

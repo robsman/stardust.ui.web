@@ -14,8 +14,8 @@
  * 
  * @author Marc.Gille
  */
-define([ "m_utils", "m_extensionManager", "m_communicationController",
-		"m_outline", "m_htmlViewManager" ], function(m_utils,
+define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_communicationController",
+		"bpm-modeler/js/m_outline", "bpm-modeler/js/m_htmlViewManager" ], function(m_utils,
 		m_extensionManager, m_communicationController, m_outline,
 		m_htmlViewManager) {
 	return {

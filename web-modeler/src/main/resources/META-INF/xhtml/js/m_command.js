@@ -8,7 +8,7 @@
  * documentation
  ******************************************************************************/
 
-define([ "m_utils", "m_constants", "m_user" ], function(m_utils, m_constants, m_user) {
+define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_user" ], function(m_utils, m_constants, m_user) {
 
 	var RETRIEVE = "RETRIEVE";
 	var CREATE = "CREATE";

@@ -3,8 +3,8 @@
  */
 
 define(
-		[ "m_utils", "m_constants", "m_user", "m_dialog",
-				"m_basicPropertiesPage" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_user", "bpm-modeler/js/m_dialog",
+				"bpm-modeler/js/m_basicPropertiesPage" ],
 		function(m_utils, m_constants, m_user, m_dialog, m_basicPropertiesPage) {
 			return {
 				create : function(propertiesPanel) {

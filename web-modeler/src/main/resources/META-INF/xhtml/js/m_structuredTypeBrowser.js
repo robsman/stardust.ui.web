@@ -2,7 +2,7 @@
  * @author Robert.Sauer
  */
 define(
-		[ "jquery", "m_utils", "jquery.treeTable" ],
+		[ "jquery", "bpm-modeler/js/m_utils", "jquery.treeTable" ],
 		function(jQuery, m_utils) {
 
 			function generateChildElementRow(parentPath, element, schemaType, rowInitializer) {

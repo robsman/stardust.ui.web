@@ -11,12 +11,12 @@
 /**
  *
  */
-define([ "m_utils", "m_constants", "m_messageDisplay",
-		"m_canvasManager",
-		"m_communicationController", "m_constants", "m_logger",
-		"m_commandsController", "m_diagram", "m_activitySymbol",
-		"m_eventSymbol", "m_gatewaySymbol", "m_dataSymbol", "m_annotationSymbol", "m_model",
-		"m_process", "m_activity", "m_data","m_i18nUtils"],
+define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_messageDisplay",
+		"bpm-modeler/js/m_canvasManager",
+		"bpm-modeler/js/m_communicationController", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_logger",
+		"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_diagram", "bpm-modeler/js/m_activitySymbol",
+		"bpm-modeler/js/m_eventSymbol", "bpm-modeler/js/m_gatewaySymbol", "bpm-modeler/js/m_dataSymbol", "bpm-modeler/js/m_annotationSymbol", "bpm-modeler/js/m_model",
+		"bpm-modeler/js/m_process", "bpm-modeler/js/m_activity", "bpm-modeler/js/m_data","bpm-modeler/js/m_i18nUtils"],
 		
 		function(m_utils, m_constants,
 		m_messageDisplay, m_canvasManager,

@@ -2,8 +2,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_extensionManager", "m_session",
-				"m_user", "m_command", "m_commandsController", "m_dialog" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_session",
+				"bpm-modeler/js/m_user", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog" ],
 		function(m_utils, m_constants, m_extensionManager, m_session, m_user,
 				m_command, m_commandsController, m_dialog) {
 
@@ -296,7 +296,7 @@ define(
 
 					this.clearErrorMessages();
 
-					require("m_modelerViewLayoutManager").adjustPanels();
+					require("bpm-modeler/js/m_modelerViewLayoutManager").adjustPanels();
 				};
 
 				/**

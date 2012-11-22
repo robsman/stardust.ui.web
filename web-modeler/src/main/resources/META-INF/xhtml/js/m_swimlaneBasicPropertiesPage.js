@@ -12,8 +12,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_commandsController", "m_command",
-				"m_model", "m_basicPropertiesPage", "m_participant","m_i18nUtils" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_basicPropertiesPage", "bpm-modeler/js/m_participant","bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
 				m_model, m_basicPropertiesPage, m_participant,m_i18nUtils) {
 			return {

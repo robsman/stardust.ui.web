@@ -9,9 +9,9 @@
  ******************************************************************************/
 
 define(
-		[ "m_utils", "m_constants", "m_command", "m_commandsController",
-				"m_user", "m_model", "m_dialog", "m_basicPropertiesPage",
-				"m_activity", "m_i18nUtils" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_user", "bpm-modeler/js/m_model", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_basicPropertiesPage",
+				"bpm-modeler/js/m_activity", "bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_command, m_commandsController, m_user,
 				m_model, m_dialog, m_basicPropertiesPage, m_activity, m_i18nUtils) {
 			return {

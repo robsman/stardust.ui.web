@@ -11,9 +11,9 @@
 /**
  * 
  */
-define([ "m_utils", "m_constants", "m_messageDisplay", "m_canvasManager",
-		"m_communicationController", "m_constants", "m_logger",
-		"m_commandsController", "m_diagram", "m_testSymbol" ], function(
+define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_messageDisplay", "bpm-modeler/js/m_canvasManager",
+		"bpm-modeler/js/m_communicationController", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_logger",
+		"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_diagram", "bpm-modeler/js/m_testSymbol" ], function(
 		m_utils, m_constants, m_messageDisplay, m_canvasManager,
 		m_communicationController, m_constants, m_logger, m_commandsController,
 		m_diagram, m_testSymbol) {

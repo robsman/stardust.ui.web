@@ -8,7 +8,7 @@
  * documentation
  ******************************************************************************/
 
-define([ "m_utils", "m_constants", "m_modelElement" ], function(m_utils,
+define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_modelElement" ], function(m_utils,
 		m_constants, m_modelElement) {
 	return {
 		createProcessFromJson : function(model, json) {

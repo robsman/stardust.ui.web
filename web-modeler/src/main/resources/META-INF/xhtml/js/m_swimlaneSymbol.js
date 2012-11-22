@@ -2,10 +2,10 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_commandsController", "m_command",
-				"m_canvasManager", "m_model", "m_symbol", "m_activitySymbol",
-				"m_gatewaySymbol", "m_eventSymbol", "m_dataSymbol", "m_annotationSymbol",
-				"m_propertiesPanel", "m_swimlanePropertiesPanel","m_modelerUtils","m_i18nUtils" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_model", "bpm-modeler/js/m_symbol", "bpm-modeler/js/m_activitySymbol",
+				"bpm-modeler/js/m_gatewaySymbol", "bpm-modeler/js/m_eventSymbol", "bpm-modeler/js/m_dataSymbol", "bpm-modeler/js/m_annotationSymbol",
+				"bpm-modeler/js/m_propertiesPanel", "bpm-modeler/js/m_swimlanePropertiesPanel","bpm-modeler/js/m_modelerUtils","bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
 				m_canvasManager, m_model, m_symbol, m_activitySymbol,
 				m_gatewaySymbol, m_eventSymbol, m_dataSymbol, m_annotationSymbol,

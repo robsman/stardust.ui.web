@@ -4,7 +4,7 @@
  * @author shrikant.gangal
  */
 define(
-		["m_utils"],
+		["bpm-modeler/js/m_utils"],
 		function(m_utils) {
 			var SCROLL_PANE_ID = "scrollpane";
 			

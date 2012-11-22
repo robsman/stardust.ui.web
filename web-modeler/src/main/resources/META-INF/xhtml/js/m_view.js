@@ -2,7 +2,7 @@
  * @author Marc.Gille
  */
 define(
-		[ "m_utils", "m_constants", "m_command", "m_commandsController", "m_dialog" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog" ],
 		function(m_utils, m_constants, m_command, m_commandsController, m_dialog) {
 			return {
 				create : function(id) {
