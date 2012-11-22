@@ -4,7 +4,7 @@
  *
  */
 define(
-		[ "m_commandsController", "m_urlUtils", "m_user", "jquery.atmosphere" ],
+		[ "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_user", "jquery.atmosphere" ],
 		function(m_commandsController, m_urlUtils, m_user) {
 
 			var socket = jQuery.atmosphere;

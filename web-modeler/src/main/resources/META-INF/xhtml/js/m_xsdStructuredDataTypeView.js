@@ -2,9 +2,9 @@
  * @author Marc.Gille
  */
 define(
-		[ "jquery", "m_utils", "m_constants", "m_communicationController", "m_command",
-				"m_commandsController", "m_dialog", "m_modelElementView",
-				"m_model", "m_propertiesTree", "m_structuredTypeBrowser", "m_i18nUtils" ],
+		[ "jquery", "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_communicationController", "bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_propertiesTree", "bpm-modeler/js/m_structuredTypeBrowser", "bpm-modeler/js/m_i18nUtils" ],
 		function(jQuery, m_utils, m_constants, m_communicationController, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
 				m_propertiesTree, m_structuredTypeBrowser, m_i18nUtils) {

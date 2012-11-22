@@ -3,8 +3,8 @@
 define('reportControllers',
 		[
 		 "reportApp",
-		 "m_model",
-		 "m_utils"
+		 "bpm-modeler/js/m_model",
+		 "bpm-modeler/js/m_utils"
 		],
 		function(app, m_model, m_utils) {
 
