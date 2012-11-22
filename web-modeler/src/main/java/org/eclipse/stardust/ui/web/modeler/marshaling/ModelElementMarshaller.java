@@ -1270,7 +1270,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                model, role);
          if (parentOrgs.size() > 0)
          {
-            // TODO - add array of orgs
+            // TODO - add array of orgs?
             OrganizationType org = parentOrgs.get(0);
             roleJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
                   eObjectUUIDMapper().getUUID(org));
@@ -1280,6 +1280,21 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                      ModelerConstants.TEAM_LEADER_TYPE_KEY);
             }
          }
+         else
+         {
+            for (OrganizationType org : model.getOrganization())
+            {
+               if (null != org.getTeamLead() && org.getTeamLead().equals(role))
+               {
+                  roleJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
+                        eObjectUUIDMapper().getUUID(org));
+                  roleJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                        ModelerConstants.TEAM_LEADER_TYPE_KEY);
+                  break;
+               }
+            }
+         }
+
          roleJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY,
                eObjectUUIDMapper().getUUID(model));
          roleJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
@@ -2086,10 +2101,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    {
       EList<ParticipantType> children = parent.getParticipant();
       boolean teamLeadAdded = false;
+      JsonArray childrenArray = null;
       if (children.size() > 0)
       {
-         JsonArray childrenArray = new JsonArray();
-         parentJson.add(ModelerConstants.CHILD_PARTICIPANTS_KEY, childrenArray);
+         childrenArray = new JsonArray();
          for (ParticipantType child : children)
          {
             IModelParticipant childParticipant = child.getParticipant();
@@ -2119,18 +2134,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                }
                else if (childParticipant instanceof RoleType)
                {
-                  if (null != parent.getTeamLead()
-                        && parent.getTeamLead().equals(childParticipant))
-                  {
-                     childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                           ModelerConstants.TEAM_LEADER_TYPE_KEY);
-                     teamLeadAdded = true;
-                  }
-                  else
-                  {
-                     childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                           ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
-                  }
+                  childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                        ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY);
                }
                else if (childParticipant instanceof ConditionalPerformerType)
                {
@@ -2142,31 +2147,35 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                loadAttributes(childParticipant, childJson);
             }
          }
-
-         // Add team leader if not already added.
-         // Team leader role is not contained in the list returned by org.getParticipant()
-         // for models created in eclipse
-         // hence a separate check
-         if (null != parent.getTeamLead() && !teamLeadAdded)
-         {
-            JsonObject childJson = new JsonObject();
-            childrenArray.add(childJson);
-            IModelParticipant childParticipant = parent.getTeamLead();
-            childJson.addProperty(ModelerConstants.ID_PROPERTY, childParticipant.getId());
-            childJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                  childParticipant.getName());
-            childJson.addProperty(ModelerConstants.OID_PROPERTY,
-                  childParticipant.getElementOid());
-            childJson.addProperty(ModelerConstants.UUID_PROPERTY,
-                  eObjectUUIDMapper().getUUID(childParticipant));
-            childJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
-                  eObjectUUIDMapper().getUUID(parent));
-            childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                  ModelerConstants.TEAM_LEADER_TYPE_KEY);
-            loadDescription(childJson, childParticipant);
-            loadAttributes(childParticipant, childJson);
-         }
       }
+
+      // Add teamlead as a child role so that it can be shown
+      // in the org hierarchy
+      if (null != parent.getTeamLead() && !teamLeadAdded)
+      {
+         JsonObject childJson = new JsonObject();
+         if (null == childrenArray)
+         {
+            childrenArray = new JsonArray();
+         }
+         childrenArray.add(childJson);
+         IModelParticipant childParticipant = parent.getTeamLead();
+         childJson.addProperty(ModelerConstants.ID_PROPERTY, childParticipant.getId());
+         childJson.addProperty(ModelerConstants.NAME_PROPERTY,
+               childParticipant.getName());
+         childJson.addProperty(ModelerConstants.OID_PROPERTY,
+               childParticipant.getElementOid());
+         childJson.addProperty(ModelerConstants.UUID_PROPERTY,
+               eObjectUUIDMapper().getUUID(childParticipant));
+         childJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
+               eObjectUUIDMapper().getUUID(parent));
+         childJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+               ModelerConstants.TEAM_LEADER_TYPE_KEY);
+         loadDescription(childJson, childParticipant);
+         loadAttributes(childParticipant, childJson);
+      }
+
+      parentJson.add(ModelerConstants.CHILD_PARTICIPANTS_KEY, childrenArray);
    }
 
    /**
