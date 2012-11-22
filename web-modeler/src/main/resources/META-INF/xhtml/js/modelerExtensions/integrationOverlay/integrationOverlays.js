@@ -1,4 +1,5 @@
-define(["m_manualTriggerIntegrationOverlay", "m_timerEventIntegrationOverlay", "m_fileEventIntegrationOverlay", "m_emailEventIntegrationOverlay", "m_messageEventIntegrationOverlay", "m_scanEventIntegrationOverlay", "m_genericCamelRouteEventIntegrationOverlay"], function(
+define(["bpm-modeler/js/m_manualTriggerIntegrationOverlay", "bpm-modeler/js/m_timerEventIntegrationOverlay", "bpm-modeler/js/m_fileEventIntegrationOverlay", "bpm-modeler/js/m_emailEventIntegrationOverlay", 
+        "bpm-modeler/js/m_messageEventIntegrationOverlay", "bpm-modeler/js/m_scanEventIntegrationOverlay", "bpm-modeler/js/m_genericCamelRouteEventIntegrationOverlay"], function(
 		m_manualTriggerIntegrationOverlay, m_timerEventIntegrationOverlay, m_fileEventIntegrationOverlay, m_emailEventIntegrationOverlay, m_messageEventIntegrationOverlay, m_scanEventIntegrationOverlay, m_genericCamelRouteEventIntegrationOverlay) {
 	return {
 		applicationIntegrationOverlay: [],
