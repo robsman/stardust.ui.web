@@ -16,6 +16,7 @@ import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 
 import java.lang.reflect.InvocationTargetException;
@@ -33,6 +34,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
@@ -109,6 +112,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+
 /**
  *
  * @author Marc.Gille
@@ -116,6 +120,8 @@ import com.google.gson.JsonObject;
  */
 public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 {
+   private static final Logger trace = LogManager.getLogger(ModelElementUnmarshaller.class);
+
    private Map<Class<? >, String[]> propertiesMap;
 
    protected abstract ModelManagementStrategy modelManagementStrategy();
@@ -1473,16 +1479,16 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (schemaJson.has("types"))
       {
-         updateXSDTypeDefinitions(schema, schemaJson.getAsJsonObject("types"));
+         updateXSDTypeDefinitions(schema, schemaJson.getAsJsonArray("types"));
       }
 
       if (schemaJson.has("elements"))
       {
-         updateElementDeclarations(schema, schemaJson.getAsJsonObject("elements"));
+         updateElementDeclarations(schema, schemaJson.getAsJsonArray("elements"));
       }
    }
 
-   private void updateXSDTypeDefinitions(XSDSchema schema, JsonObject json)
+   private void updateXSDTypeDefinitions(XSDSchema schema, JsonArray json)
    {
       Map<String, XSDTypeDefinition> typesIndex = newHashMap();
       Set<XSDTypeDefinition> updatedTypes = newHashSet();
@@ -1492,10 +1498,16 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          typesIndex.put(def.getName(), def);
       }
 
-      for (Map.Entry<String, JsonElement> entry : json.entrySet())
+      for (JsonElement entry : json)
       {
-         XSDTypeDefinition def = typesIndex.get(entry.getKey());
-         JsonObject defJson = (JsonObject) entry.getValue();
+         if ( !(entry instanceof JsonObject))
+         {
+            trace.warn("Expected object, but received " + entry);
+            continue;
+         }
+         JsonObject defJson = (JsonObject) entry;
+         String typeName = extractAsString((JsonObject) entry, ModelerConstants.NAME_PROPERTY);
+         XSDTypeDefinition def = typesIndex.get(typeName);
          boolean isComplexType = defJson.has("body");
 
          int contentsIdx = schema.getContents().size();
@@ -1507,7 +1519,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             contentsIdx = schema.getContents().indexOf(def);
             typeIdx = schema.getTypeDefinitions().indexOf(def);
             schema.getContents().remove(contentsIdx);
-            typesIndex.remove(entry.getKey());
+            typesIndex.remove(typeName);
             def = null;
          }
 
@@ -1519,7 +1531,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             schema.getContents().add(contentsIdx, def);
             schema.getTypeDefinitions().move(typeIdx, def);
 
-            typesIndex.put(entry.getKey(), def);
+            typesIndex.put(typeName, def);
          }
 
          def.setName(defJson.getAsJsonPrimitive("name").getAsString());
@@ -1560,10 +1572,15 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (simpleTypeJson.has("facets"))
       {
-         JsonObject facetsJson = simpleTypeJson.getAsJsonObject("facets");
-         for (Map.Entry<String, JsonElement> entry : facetsJson.entrySet())
+         JsonArray facetsJson = simpleTypeJson.getAsJsonArray("facets");
+         for (JsonElement entry : facetsJson)
          {
-            JsonObject facetJson = (JsonObject) entry.getValue();
+            if ( !(entry instanceof JsonObject))
+            {
+               trace.warn("Expected object, but received " + entry);
+               continue;
+            }
+            JsonObject facetJson = (JsonObject) entry;
             String classifier = facetJson.getAsJsonPrimitive("classifier").getAsString();
             XSDConstrainingFacet facet = SupportedXSDConstrainingFacets.valueOf(
                   classifier).create();
@@ -1633,10 +1650,15 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
             if (bodyJson.has("elements"))
             {
-               JsonObject elements = bodyJson.getAsJsonObject("elements");
-               for (Map.Entry<String, JsonElement> entry : elements.entrySet())
+               JsonArray elements = bodyJson.getAsJsonArray("elements");
+               for (JsonElement entry : elements)
                {
-                  JsonObject elementJson = (JsonObject) entry.getValue();
+                  if ( !(entry instanceof JsonObject))
+                  {
+                     trace.warn("Expected object, but received " + entry);
+                     continue;
+                  }
+                  JsonObject elementJson = (JsonObject) entry;
                   XSDParticle p = XSDFactory.eINSTANCE.createXSDParticle();
                   ParticleCardinality.get(
                         elementJson.getAsJsonPrimitive("cardinality").getAsString())
@@ -1773,7 +1795,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     * @param schema
     * @param json
     */
-   private void updateElementDeclarations(XSDSchema schema, JsonObject json)
+   private void updateElementDeclarations(XSDSchema schema, JsonArray json)
    {
       // TODO Auto-generated method stub
    }
