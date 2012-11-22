@@ -148,6 +148,24 @@
          </fileset>
       </copy>
       <copy file="${views-common-menu-context.xmlfile}" todir="${build.src}/META-INF/spring" overwrite="true" />
+      
+      <!-- Copy NL property file for locale "en" to NL property with no locale. -->
+      <copy todir="${build.classes}" overwrite="true">
+         <fileset dir="${resources.src}">
+            <include name="**/*_en.properties" />
+         </fileset>
+         <filtermapper>
+           <replacestring from="_en.properties" to=".properties"/>
+         </filtermapper>
+      </copy>
+      <copy todir="${build.src}" overwrite="true">
+         <fileset dir="${resources.src}">
+            <include name="**/*_en.properties" />
+         </fileset>
+         <filtermapper>
+           <replacestring from="_en.properties" to=".properties"/>
+         </filtermapper>
+      </copy>
    </target>
 
 	<target name="jar" depends="compile, copyDatFiles">
