@@ -14,40 +14,40 @@ define(
 					return getDataAsJavaScriptObject(data);
 				},
 				getAllDataAsJavaScriptObjects: function(model) {
-					return getAllDataAsJavaScriptObjects(model); 
+					return getAllDataAsJavaScriptObjects(model);
 				}
 			};
-			
+
 			/**
-			 * 
+			 *
 			 */
 			function getAllDataAsJavaScriptObjects(model) {
 				var allData = {}; // data.id used as object key
-				
+
 				jQuery.each(model.dataItems,
 					function(index, data) {
 						allData[data.id] = getDataAsJavaScriptObject(data);
 					});
-				
+
 				return allData;
 			}
-			
+
 			/**
-			 * 
+			 *
 			 */
 			function getDataAsJavaScriptObject(data) {
 				var obj;
-				
+
 				switch (data.dataType) {
 				case m_constants.PRIMITIVE_DATA_TYPE:
 					obj = getPrimitiveValue(data.primitiveDataType);
 					break;
-					
+
 				case m_constants.STRUCTURED_DATA_TYPE:
-					var typeDeclaration = m_model.findTypeDeclaration(data.structuredDataTypeFullId);
+					var typeDeclaration = m_model.findTypeDeclaration(data.getFullId());
 					obj = createObject(typeDeclaration);
 					break;
-					
+
 				// Treat unrecognized / unsupported data types as empty Objects
 				case m_constants.DOCUMENT_DATA_TYPE:
 				case "dmsDocumentList":
@@ -57,30 +57,30 @@ define(
 					obj = {};
 					break;
 				}
-				
+
 				return obj;
 			}
-			
+
 			/**
-			 * 
+			 *
 			 */
 			function createObject(typeDeclaration) {
 				var obj = {};
-				
+
 				var id = typeDeclaration.id;
-				
+
 				var body = typeDeclaration.typeDeclaration.schema.types[id].body;
 				var elements, facets;
-				
+
 				var structureType = (body != null) ? "sequence" : "enumeration";
-				
+
 				switch (structureType) {
 				case "sequence":
 					elements = body.elements;
 					for (var element in elements) {
 						var name = elements[element].name;
 						var type = elements[element].type;
-						
+
 						// Evaluate type
 						var value;
 						if (isBuiltInXsdDataType(type)) {
@@ -89,7 +89,7 @@ define(
 						}
 						else {
 							// TODO: Support for choice, anonymous, sequence
-							
+
 							// Possibly a nested type
 							var nestedTypeDeclaration = findTypeDeclaration(type, typeDeclaration.model);
 							if (nestedTypeDeclaration != null) {
@@ -106,38 +106,38 @@ define(
 						case "required":
 							obj[name] = value;
 							break;
-							
+
 						case "many":
-							// TODO: Returning an array for multiple cardinality fields breaks code auto-completion in CodeMirror 
+							// TODO: Returning an array for multiple cardinality fields breaks code auto-completion in CodeMirror
 							// obj[name] = new Array(value);
 
 							obj[name] = value;
 							break;
-							
+
 						default:
 							obj[name] = value;
 							break;
 						}
 					}
 					break;
-					
+
 				case "enumeration":
 					/*obj = [];
-					
+
 					facets = typeDeclaration.typeDeclaration.schema.types[id].facets;
 					for (var element in facets) {
 						obj.push(facets[element].name);
 					}*/
-					
+
 					obj = ""; // Enumerations are treated as Strings
 					break;
 				}
-				
+
 				return obj;
 			}
-			
+
 			/**
-			 * 
+			 *
 			 */
 			function findTypeDeclaration(type, model) {
 				for (var n in model.typeDeclarations) {
@@ -152,23 +152,23 @@ define(
 						return typeDeclaration;
 					}
 				}
-				
+
 				return null;
 			}
-			
+
 			/**
-			 * 
+			 *
 			 */
 			function isBuiltInXsdDataType(xsdDataType) {
-				return (getMappedPrimitiveType(xsdDataType) != "") ? true : false; 
+				return (getMappedPrimitiveType(xsdDataType) != "") ? true : false;
 			}
-			
+
 			/**
-			 * 
+			 *
 			 */
 			function getMappedPrimitiveType(xsdDataType) {
 				var primitiveType = "";
-				
+
 				// XSD Data types
 				var xsdStringDataTypes = ["ENTITIES", "ENTITY", "ID","IDREF","IDREFS","language","Name","NCName",
 				                          "NMTOKEN","NMTOKENS","normalizedString","QName","string","token"];
@@ -178,25 +178,25 @@ define(
 				var xsdMiscDataTypes = ["anyURI","base64Binary","boolean","double","float","hexBinary","NOTATION","QName"];
 
 				var dataType = "";
-				
+
 				// Split xsdDataType (e.g. "xsd:integer") to get "integer"
 				var index = m_utils.getLastIndexOf(xsdDataType, ":");
 				if (index != -1) {
 					dataType = xsdDataType.substr(index);
 				}
-				
+
 				// This "switch" block is required since boolean, float and double are contained in xsdMiscDataTypes
 				switch (dataType) {
 				case "boolean":
 					primitiveType = "boolean";
 					break;
-					
+
 				case "double":
 				case "float":
 					primitiveType = dataType;
 					break;
 				}
-				
+
 				if (primitiveType == "") {
 					if (m_utils.isItemInArray(xsdStringDataTypes, dataType)) {
 						primitiveType = "String";
@@ -212,17 +212,17 @@ define(
 						primitiveType = "String";
 					}
 				}
-				
+
 				return primitiveType;
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function getPrimitiveValue(primitiveType)
 			{
 				var val;
-				
+
 				switch (primitiveType)
 				{
 				case "String":
@@ -230,11 +230,11 @@ define(
 				case "char":
 					val = "";
 					break;
-					
+
 				case m_constants.BOOLEAN_PRIMITIVE_DATA_TYPE:
 					val = true;
 					break;
-				
+
 				case m_constants.DOUBLE_PRIMITIVE_DATA_TYPE:
 				case "float":
 				case "int":
@@ -242,23 +242,23 @@ define(
 				case "short":
 					val = 0;
 					break;
-				
+
 				case "Calendar":
 				case "Timestamp":
 					val = new Date();
 					break;
-					
+
 				default:
-					// Treat unsupported types as Strings  
+					// Treat unsupported types as Strings
 					val = "";
 					break;
 				}
-				
+
 				return val;
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function getStepOptions(data, path)
 			{
@@ -321,23 +321,23 @@ define(
 				m_utils
 						.debug("Illegal state: Loop should have been exited already.");
 			}
-			
+
 			/**
-			 * 
+			 *
 			 */
 			function split(val) {
 				return val.split(".");
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function extractLast(term) {
 				return split(term).pop();
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function findData(name) {
 				var models = m_model.getModels();
@@ -354,7 +354,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function getAllMatchingData(fragment) {
 				var stepOptions = [];
@@ -375,7 +375,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function getAllMatchingChildren(typeDeclaration, fragment) {
 				var stepOptions = [];

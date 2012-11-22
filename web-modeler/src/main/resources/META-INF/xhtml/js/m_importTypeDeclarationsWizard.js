@@ -21,10 +21,10 @@ define(
 					i18importtypeproperties();
 
 					wizard.initialize(payloadObj.model);
-					
+
 				}
 			};
-					
+
 
 			function i18importtypeproperties() {
 
@@ -202,12 +202,10 @@ define(
 					}
 
 					var view = this;
-					for ( var name in this.schema.types) {
-						var type = this.schema.types[name];
+					jQuery.each(this.schema.types, function(i, type) {
+						var schemaType = m_typeDeclaration.resolveSchemaTypeFromSchema(type.name, view.schema);
 
-						var schemaType = m_typeDeclaration.resolveSchemaTypeFromSchema(name, this.schema);
-
-						var path = "type-" + name.replace(/:/g, "-");
+						var path = "type-" + type.name.replace(/:/g, "-");
 
 						var row = m_structuredTypeBrowser.generateChildElementRow("type-", type, schemaType,
 								function(row, element, schemaType) {
@@ -222,7 +220,7 @@ define(
 						view.tableBody.append(row);
 
 						m_structuredTypeBrowser.insertChildElementRowsEagerly(row);
-					}
+					});
 
 					this.tree.tableScroll({
 						height : 150

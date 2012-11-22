@@ -2088,7 +2088,7 @@ public class ModelService
       }
       json.add("nsMappings", nsMappings);
 
-      JsonObject elements = new JsonObject();
+      JsonArray elements = new JsonArray();
       addChildren(elements, schema, cp, lp, ip, new Predicate<EObject>()
       {
          @Override
@@ -2097,12 +2097,12 @@ public class ModelService
             return arg instanceof XSDElementDeclaration;
          }
       });
-      if (!elements.entrySet().isEmpty())
+      if (0 < elements.size())
       {
          json.add("elements", elements);
       }
 
-      JsonObject types = new JsonObject();
+      JsonArray types = new JsonArray();
       addChildren(types, schema, cp, lp, ip, new Predicate<EObject>()
       {
          @Override
@@ -2111,74 +2111,108 @@ public class ModelService
             return arg instanceof XSDTypeDefinition;
          }
       });
-      if (!types.entrySet().isEmpty())
+      if (0 < types.size())
       {
          json.add("types", types);
       }
    }
 
-   private static void addChildren(JsonObject json, EObject component, XsdContentProvider cp, XsdTextProvider lp, XsdIconProvider ip, Predicate<EObject> filter)
+   private static void addChildren(JsonElement parentNodeJs, EObject component, XsdContentProvider cp, XsdTextProvider lp, XsdIconProvider ip, Predicate<EObject> filter)
    {
       EObject[] children = cp.doSwitch(component);
       if (children.length > 0)
       {
-         JsonObject att = null;
-         JsonObject facets = null;
+         JsonObject attributesJs = null;
+         JsonArray enumFacetsJs = null;
          for (EObject child : children)
          {
+            JsonElement childrenJs = null;
             if (filter == null || filter.accept(child))
             {
-               JsonObject js = new JsonObject();
+               JsonObject childJs = new JsonObject();
                lp.setColumn(0);
                String name = lp.doSwitch(child);
-               js.addProperty("name", name);
-               js.addProperty("icon", ip.doSwitch(child).getSimpleName());
+               childJs.addProperty("name", name);
+               childJs.addProperty("icon", ip.doSwitch(child).getSimpleName());
                lp.setColumn(1);
                String type = lp.doSwitch(child);
                if (!type.isEmpty())
                {
-                  js.addProperty("type", type);
+                  childJs.addProperty("type", type);
                }
                lp.setColumn(2);
                String cardinality = lp.doSwitch(child);
                if (!cardinality.isEmpty())
                {
-                  js.addProperty("cardinality", cardinality);
+                  childJs.addProperty("cardinality", cardinality);
                }
                if (child instanceof XSDFacet)
                {
-                  js.addProperty("classifier", ((XSDFacet) child).getFacetName());
-                  if (facets == null)
+                  childJs.addProperty("classifier", ((XSDFacet) child).getFacetName());
+                  if (enumFacetsJs == null)
                   {
-                     facets = new JsonObject();
-                     json.add("facets", facets);
+                     enumFacetsJs = new JsonArray();
+                     addNamedChild(parentNodeJs, "facets", enumFacetsJs);
                   }
-                  facets.add(name, js);
+                  enumFacetsJs.add(childJs);
                }
                else if (child instanceof XSDAttributeDeclaration)
                {
-                  if (att == null)
+                  if (attributesJs == null)
                   {
-                     att = new JsonObject();
-                     json.add("attributes", att);
+                     attributesJs = new JsonObject();
+                     addNamedChild(parentNodeJs, "attributes", attributesJs);
                   }
-                  att.add(name, js);
+                  attributesJs.add(name, childJs);
                }
                else if (child instanceof XSDModelGroup)
                {
-                  js.addProperty("classifier", ((XSDModelGroup) child).getCompositor().getLiteral());
-                  json.add("body", js);
-                  JsonObject c = new JsonObject();
-                  js.add("elements", c);
-                  js = c;
+                  childJs.addProperty("classifier", ((XSDModelGroup) child).getCompositor().getLiteral());
+                  addChild(parentNodeJs, "body", childJs);
+
+                  JsonArray elementsJs = new JsonArray();
+                  childJs.add("elements", elementsJs);
+
+                  // append any children as sub-elements
+                  childrenJs = elementsJs;
                }
                else
                {
-                  json.add(name, js);
+                  addChild(parentNodeJs, name, childJs);
+                  childrenJs = childJs;
                }
-               addChildren(js, child, cp, lp, ip, null);
+               addChildren((null != childrenJs) ? childrenJs : parentNodeJs, child, cp,
+                     lp, ip, null);
             }
          }
+      }
+   }
+
+   private static void addNamedChild(JsonElement parentNodeJs, String childName, JsonElement childJs)
+   {
+      if (parentNodeJs instanceof JsonObject)
+      {
+         ((JsonObject) parentNodeJs).add(childName, childJs);
+      }
+      else
+      {
+         throw new IllegalArgumentException("Expected an object, but got " + parentNodeJs);
+      }
+   }
+
+   private static void addChild(JsonElement parentNodeJs, String childName, JsonElement childJs)
+   {
+      if (parentNodeJs instanceof JsonObject)
+      {
+         addNamedChild(parentNodeJs, childName, childJs);
+      }
+      else if (parentNodeJs instanceof JsonArray)
+      {
+         ((JsonArray) parentNodeJs).add(childJs);
+      }
+      else
+      {
+         throw new IllegalArgumentException("Expected an array or object, but got " + parentNodeJs);
       }
    }
 

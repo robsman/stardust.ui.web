@@ -41,10 +41,10 @@ define(
 			function generateChildElementRows(parentPath, schemaTypeOrElements, rowInitializer) {
 				var childRows = [];
 
-				var elements = {};
+				var elements = [];
 				if (schemaTypeOrElements) {
 					if ((typeof schemaTypeOrElements.getElements === "function") && (typeof schemaTypeOrElements.isStructure === "function")) {
-						elements = schemaTypeOrElements.isStructure() ? schemaTypeOrElements.getElements() : {};
+						elements = schemaTypeOrElements.isStructure() ? schemaTypeOrElements.getElements() : [];
 					} else {
 						elements = schemaTypeOrElements;
 					}

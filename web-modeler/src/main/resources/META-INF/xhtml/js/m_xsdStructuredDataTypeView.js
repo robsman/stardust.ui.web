@@ -188,6 +188,36 @@ define(
 					});
 				};
 
+				XsdStructuredDataTypeView.prototype.moveElementUp = function(tableRows) {
+					var view = this;
+
+					jQuery(tableRows).each(function(i, tableRow) {
+						var typeDeclaration = jQuery(tableRow).data("typeDeclaration");
+						typeDeclaration.moveElement(jQuery(tableRow).data("elementName"), -1);
+
+						view.submitChanges({
+							typeDeclaration : typeDeclaration.typeDeclaration
+						});
+
+						view.refreshElementsTable();
+					});
+				};
+
+				XsdStructuredDataTypeView.prototype.moveElementDown = function(tableRows) {
+					var view = this;
+
+					jQuery(tableRows).each(function(i, tableRow) {
+						var typeDeclaration = jQuery(tableRow).data("typeDeclaration");
+						typeDeclaration.moveElement(jQuery(tableRow).data("elementName"), 1);
+
+						view.submitChanges({
+							typeDeclaration : typeDeclaration.typeDeclaration
+						});
+
+						view.refreshElementsTable();
+					});
+				};
+
 				XsdStructuredDataTypeView.prototype.initializeRow = function(row, element, schemaType) {
 
 					row.data("typeDeclaration", this.typeDeclaration);
@@ -291,6 +321,14 @@ define(
 						function(event) {
 							view.removeElement(jQuery("tr.selected", view.tableBody));
 						});
+					jQuery(this.upButton).click(
+							function(event) {
+								view.moveElementUp(jQuery("tr.selected", view.tableBody));
+							});
+					jQuery(this.downButton).click(
+							function(event) {
+								view.moveElementDown(jQuery("tr.selected", view.tableBody));
+							});
 
 					jQuery(".nameInput", this.tree).on("change", function(event) {
 							view.renameElement(jQuery(event.target).closest("tr"), jQuery(event.target).val());
@@ -344,7 +382,7 @@ define(
 					jQuery.each(this.typeDeclaration.model.typeDeclarations, function() {
 						var typeDeclaration = this;
 
-						var mainElement = typeDeclaration.typeDeclaration.schema.elements[typeDeclaration.id];
+						var mainElement = typeDeclaration.getElement(typeDeclaration.id);
 						if (mainElement) {
 							// consumable type, as there is an equivalent global element
 							var elementType = typeDeclaration.resolveSchemaType(mainElement.type);

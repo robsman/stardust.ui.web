@@ -8,7 +8,9 @@ define(
 			var ENUMERATION_TYPE = "ENUMERATION_TYPE";
 
 			/**
+			 * Represents a structured type.
 			 *
+			 * @constructor
 			 */
 			function TypeDeclaration() {
 				m_utils.inheritMethods(TypeDeclaration.prototype,
@@ -22,7 +24,9 @@ define(
 				};
 
 				/**
+				 * Initializes a the type declaration from JSON.
 				 *
+				 * @param {string} name the type's name
 				 */
 				TypeDeclaration.prototype.initialize = function(name, type) {
 					this.name = name;
@@ -59,10 +63,9 @@ define(
 				};
 
 				TypeDeclaration.prototype.getTypeDeclaration = function() {
-					return this.typeDeclaration.schema.types[
-                            ("ExternalReference" === this.typeDeclaration.type.classifier)
+					return findType(this.typeDeclaration.schema, ("ExternalReference" === this.typeDeclaration.type.classifier)
                                 ? this.typeDeclaration.type.xref
-							    : this.id];
+							    : this.id);
 				};
 
 				TypeDeclaration.prototype.isReadOnly = function() {
@@ -104,13 +107,10 @@ define(
 				 */
 				TypeDeclaration.prototype.getSchemaName = function() {
 					// TODO@Robert Review
-					if ((null != this.typeDeclaration)
-							&& this.typeDeclaration.schema
-							&& this.typeDeclaration.schema.elements
-							&& this.typeDeclaration.schema.elements[this.id]) {
-						return this.typeDeclaration.schema.elements[this.id].type;
+					var element = this.getElement(this.id);
+					if (element) {
+						return element.type;
 					}
-
 					return null;
 				};
 
@@ -120,7 +120,7 @@ define(
 				TypeDeclaration.prototype.getElementCount = function() {
 					var n = 0;
 
-					jQuery.each(this.getElements(), function(i, element) {
+					jQuery.each(this.getElements(), function() {
 						++n;
 					});
 
@@ -149,9 +149,7 @@ define(
 				 */
 				TypeDeclaration.prototype.populateSequenceInstanceRecursively = function(
 						typeDeclaration, instance) {
-					for ( var id in typeDeclaration.getBody().elements) {
-						var element = typeDeclaration.getBody().elements[id];
-
+					jQuery.each(typeDeclaration.getBody().elements, function (i, element) {
 						var childTypeDeclaration = this.model
 								.findTypeDeclarationBySchemaName(element.type);
 
@@ -172,7 +170,7 @@ define(
 						} else {
 							instance[id] = "";
 						}
-					}
+					});
 					return instance;
 				};
 
@@ -189,7 +187,7 @@ define(
 							name : "<sequence>",
 							icon : "XSDModelGroupSequence.gif",
 							classifier : "sequence",
-							elements : {}
+							elements : []
 						};
 						td.icon = "XSDComplexTypeDefinition.gif";
 					}
@@ -204,7 +202,7 @@ define(
 						delete td.body;
 
 						td.type = "xsd:string";
-						td.facets = {};
+						td.facets = [];
 						td.icon = "XSDSimpleTypeDefinition.gif";
 					}
 				};
@@ -215,7 +213,14 @@ define(
 				};
 
 				TypeDeclaration.prototype.getElement = function(name) {
-					return this.getElements()[name];
+					var element;
+					jQuery.each(this.getElements(), function() {
+						if (this.name === name) {
+							element = this;
+							return false;
+						}
+					});
+					return element;
 				};
 
 				TypeDeclaration.prototype.addElement = function(name) {
@@ -235,20 +240,35 @@ define(
 							classifier : "enumeration"
 						};
 					}
-					this.getElements()[newElement.name] = newElement;
+					this.getElements().push(newElement);
 
 					return newElement;
 				};
 
+				TypeDeclaration.prototype.moveElement = function(name, dIdx) {
+					var element = this.getElement(name);
+					if (element) {
+						var elements = this.getElements();
+						var oldIdx = elements.indexOf(element);
+						var newIdx = oldIdx + dIdx;
+						if ((0 <= newIdx) && (newIdx < elements.length)) {
+							// remove at old position
+							elements.splice(oldIdx, 1);
+//							if (oldIdx <= newIdx) {
+//								// adjust new position accordingly
+//								--newIdx;
+//							}
+							// insert at new position
+							elements.splice(newIdx, 0, element);
+						}
+					}
+				};
+
 				TypeDeclaration.prototype.renameElement = function(oldName,
 						newName) {
-					var elementContainer = this.getElements();
-
-					var element = elementContainer[oldName];
+					var element = this.getElement(oldName);
 					if (element) {
-						delete elementContainer[oldName];
 						element.name = newName;
-						elementContainer[element.name] = element;
 					}
 				};
 
@@ -277,7 +297,11 @@ define(
 				};
 
 				TypeDeclaration.prototype.removeElement = function(name) {
-					delete this.getElements()[name];
+					var element = this.getElement(name);
+					if (element) {
+						var elements = this.getElements();
+						elements.splice(elements.indexOf(element), 1);
+					}
 				};
 
 				TypeDeclaration.prototype.resolveElementType = function(name) {
@@ -288,22 +312,23 @@ define(
 				};
 
 				TypeDeclaration.prototype.resolveSchemaType = function(name) {
-					var typeQName = name.split(":");
-					if (1 == typeQName.length) {
+					var typeQName = parseQName(name);
+					if (typeQName.namespace) {
+						return resolveSchemaTypeFromModel("{" + typeQName.namespace + "}" + typeQName.name, this.model);
+					} else {
 						// no ns prefix, resolve to containing schema
-						var typeName = typeQName[0];
 						var schema = this.typeDeclaration.schema;
 						var schemaNsUri = schema.targetNamespace;
 
-						var type = schema.types[typeName];
-						return new SchemaType(typeName, schemaNsUri, type, schema, this.model);
-					} else if (2 == typeQName.length) {
-						var schemaNsUri = this.typeDeclaration.schema.nsMappings[typeQName[0]];
-						return resolveSchemaTypeFromModel("{" + schemaNsUri + "}" + typeQName[1], this.model);
+						var type = findType(schema, typeQName.name);
+						return new SchemaType(typeQName.name, schemaNsUri, type, schema, this.model);
 					}
 				};
 			};
 
+			/**
+			 * @constructor
+			 */
 			function SchemaType(name, nsUri, type, schema, scope) {
 				this.name = name;
 				this.nsUri = nsUri;
@@ -317,20 +342,32 @@ define(
 				return "Lightdust.SchemaType";
 			};
 
+			/**
+			 * @returns {Boolean}
+			 */
 			SchemaType.prototype.isBuiltinType = function() {
 				return (null == this.type) && (null == this.schema);
 			};
 
+			/**
+			 * @returns {Boolean}
+			 */
 			SchemaType.prototype.isStructure = function() {
 				return (null != this.type)
 						&& (null != this.type.body)
 						&& ((this.type.body.classifier === 'sequence') || (this.type.body.classifier === 'choice'));
 			};
 
+			/**
+			 * @returns {Boolean}
+			 */
 			SchemaType.prototype.isEnumeration = function() {
 				return (null != this.type) && (null != this.type.facets);
 			};
 
+			/**
+			 * @returns {Array}
+			 */
 			SchemaType.prototype.getElements = function() {
 				if (this.isStructure()) {
 					return this.type.body.elements;
@@ -340,23 +377,31 @@ define(
 			};
 
 			SchemaType.prototype.getElement = function(name) {
-				return this.getElements()[name];
+				var element;
+				jQuery.each(this.getElements(), function() {
+					if (this.name === name) {
+						element = this;
+						return false;
+					}
+				})
+				return element;
 			};
 
 			SchemaType.prototype.resolveElementType = function(elementName) {
 				var element = this.getElement(elementName);
-				if (element) {
+				if (element && element.type) {
 
-					var typeQName = element.type.split(":");
-					if (1 == typeQName.length) {
+					var typeQName = parseQName(element.type);
+					if ( !typeQName.prefix) {
 						// no ns prefix, resolve to containing schema
-						var typeName = typeQName[0];
-						var type = this.schema.types[typeName];
+						var type = findType(this.schema, typeQName.name);
 
-						return new SchemaType(typeName, this.schema.targetNamespace, type, this.schema, this.scope);
-					} else if (2 == typeQName.length) {
-						var schemaNsUri = this.schema.nsMappings[typeQName[0]];
-						return resolveSchemaTypeFromModel("{" + schemaNsUri + "}" + typeQName[1], this.scope);
+						return new SchemaType(typeQName.name, this.schema.targetNamespace, type, this.schema, this.scope);
+					} else {
+						if ( !typeQName.namespace && typeQName.prefix) {
+							typeQName.namespace = this.schema.nsMappings[typeQName.prefix];
+						}
+						return resolveSchemaTypeFromModel("{" + typeQName.namespace + "}" + typeQName.name, this.scope);
 					}
 				} else {
 					return undefined;
@@ -364,44 +409,84 @@ define(
 			};
 
 			function resolveSchemaTypeFromModel(sqName, model) {
-				var parsedSQName = ("{" == sqName.charAt(0)) ? sqName.substr(1, sqName.length).split("}") : [];
-				if (2 == parsedSQName.length) {
+				var schema;
+				var parsedName = parseQName(sqName);
+				if (parsedName.namespace) {
 					// resolve ns prefix to schema
-					var schemaNsUri = parsedSQName[0];
-					var typeName = parsedSQName[1];
-
-					if (schemaNsUri == "http://www.w3.org/2001/XMLSchema") {
-						return new SchemaType("xsd:" + typeName, schemaNsUri);
+					if (parsedName.namespace === "http://www.w3.org/2001/XMLSchema") {
+						return new SchemaType("xsd:" + parsedName.name, parsedName.namespace);
 					} else {
-						var schema;
 						jQuery.each(model.typeDeclarations, function(i, declaration) {
-							if ((declaration.typeDeclaration != null)
-									&& (declaration.typeDeclaration.schema != null)
-									&& (declaration.typeDeclaration.schema.targetNamespace == schemaNsUri)) {
+							if ((null != declaration.typeDeclaration)
+									&& (null != declaration.typeDeclaration.schema)
+									&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)) {
 								schema = declaration.typeDeclaration.schema;
 								return false;
 							}
 						});
 
 						if (schema) {
-							var type = schema.types[typeName];
-							return new SchemaType(typeName, schemaNsUri, type, schema, model);
+							var type = findType(schema, parsedName.name);
+							return new SchemaType(parsedName.name, parsedName.namespace, type, schema, model);
 						}
 					}
 				}
 
 				return undefined;
-			};
+			}
+
+			function parseQName(name) {
+				if ("{" === name.charAt(0)) {
+					return {
+						namespace: name.substr(1, name.length).split("}")[0],
+						name: name.substr(1, name.length).split("}")[1]
+					};
+				} else if (0 <= name.indexOf(":")) {
+					return {
+						prefix: name.split(":")[0],
+						name: name.split(":")[1]
+					};
+				} else {
+					return {
+						name: name
+					};
+				}
+			}
+
+			function findType(schema, typeName) {
+				var parsedName = parseQName(typeName);
+				if ( !parsedName.namespace || (parsedName.namespace === schema.targetNamespace)) {
+					jQuery.each(schema.types, function() {
+						if (this.name === parsedName.name) {
+							type = this;
+							return false;
+						}
+					});
+				}
+
+				return type;
+			}
 
 			function resolveSchemaTypeFromSchema(typeName, schema) {
-				var type = schema.types[typeName];
+				var type = findType(schema, typeName);
 				if (type) {
 					return new SchemaType(typeName, schema.targetNamespace, type, schema);
 				}
-			};
+			}
 
-			// module interface
-			return {
+			/**
+			 * XSD based structured type declarations.
+			 *
+			 * @exports bpmModeler/js/m_typeDeclaration
+			 */
+			var moduleApi = {
+
+				/**
+				 * Creates a new TypeDeclaration instance.
+				 *
+				 * @param name the type's name
+				 * @returns {TypeDeclaration}
+				 */
 				createTypeDeclaration : function(name) {
 					var typeDeclaration = new TypeDeclaration();
 
@@ -446,4 +531,5 @@ define(
 				ENUMERATION_TYPE : ENUMERATION_TYPE
 			};
 
+			return moduleApi;
 		});
