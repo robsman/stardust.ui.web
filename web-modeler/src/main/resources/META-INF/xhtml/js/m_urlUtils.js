@@ -3,6 +3,13 @@
  */
 define( function() {
 	return {
+		/** 
+		 * @returns e.g. http://testhost:8080/pepper-test/plugins/
+		 */
+		getPlugsInRoot : function() {			
+			return location.href.substring(0, location.href.indexOf("/plugins")) + "/plugins/";
+		},
+
 		getContextName : function() {
 			return location.pathname.substring(0, location.pathname.indexOf(
 					'/', 1));
