@@ -18,9 +18,10 @@
 
 <project name="nirvana archives" default="deploy" basedir=".">
 
-	<property name="project.dir" value="${basedir}" />
+   <property name="project.dir" value="${basedir}" />
    <property name="project.etc" value="${project.dir}/etc" />
-	<property file="${project.etc}/private.properties"/>
+   <property file="${project.etc}/private.properties"/>
+   <property name="views-common-menu-context.xmlfile" value="${project.dir}/views-common/src/main/resources/META-INF/spring/views-common-menu-context.xml" />
    
    <import file="${project.dir}/../build.tools/commons-build.xml" />
    
@@ -76,6 +77,7 @@
          <property name="build.lib" value="${build.lib}"/>
          <property name="copyright.message" value="${copyright.message}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
+         <property name="views-common-menu-context.xmlfile" value="${views-common-menu-context.xmlfile}" />
       </ant>
    </target>
 

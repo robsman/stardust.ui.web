@@ -22,7 +22,9 @@
 	<property name="project.src" value="${project.dir}/src/main/java" />
    <property name="resources.src" value="${project.dir}/src/main/resources" />
    <property name="project.etc" value="${project.dir}/etc" />
-	<property file="${project.etc}/private.properties"/>
+   <property file="${project.etc}/private.properties"/>
+   
+   <property name="views-common-menu-context.xmlfile" value="${resources.src}/META-INF/spring/views-common-menu-context.xml" />
    
    <property name="artifactId" value="ipp-views-common" />
 
@@ -131,16 +133,21 @@
          </fileset>
          <fileset dir="${resources.src}">
             <include name="**/*.*" />
+            <exclude name="META-INF/spring/views-common-menu-context.xml" />
          </fileset>
       </copy>
+      <copy file="${views-common-menu-context.xmlfile}" todir="${build.classes}/META-INF/spring" overwrite="true" />
+      
       <copy todir="${build.src}">
          <fileset dir="${project.src}">
             <include name="**/*.properties" />
          </fileset>
          <fileset dir="${resources.src}">
             <include name="**/*.*" />
+            <exclude name="META-INF/spring/views-common-menu-context.xml" />
          </fileset>
       </copy>
+      <copy file="${views-common-menu-context.xmlfile}" todir="${build.src}/META-INF/spring" overwrite="true" />
    </target>
 
 	<target name="jar" depends="compile, copyDatFiles">
