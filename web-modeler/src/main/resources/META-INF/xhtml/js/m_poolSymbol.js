@@ -546,46 +546,95 @@ define(
 							}
 						}
 
+						var swimLaneHeight = 0;
 						for ( var n in this.laneSymbols) {
 							var dX = currentX - this.laneSymbols[n].x;
-							var laneYMargin = topMargin - this.laneSymbols[n].y
+							var laneYMargin = topMargin - this.laneSymbols[n].y;
 							if (dX != 0) {
 								this.laneSymbols[n].moveBy(dX, 0);
 							}
-							if (laneYMargin > 0) {
+							if (laneYMargin != 0) {
 								this.laneSymbols[n].moveBy(0, laneYMargin);
 							}
-							currentX += this.laneSymbols[n].width;
-							currentX += m_constants.POOL_SWIMLANE_MARGIN;
 
 							for ( var c in this.laneSymbols[n].containedSymbols) {
 								this.laneSymbols[n].containedSymbols[c].moveBy(
 										dX, dY);
 							}
 
+							this.laneSymbols[n].recalculateBoundingBox();
+
+							if (swimLaneHeight < this.laneSymbols[n].height) {
+								swimLaneHeight = this.laneSymbols[n].height;
+							}
+
+							currentX += this.laneSymbols[n].width;
+							currentX += m_constants.POOL_SWIMLANE_MARGIN;
+
+							this.laneSymbols[n].adjustGeometry();
+						}
+						//Adjust height of lanes if required
+						for ( var n in this.laneSymbols) {
+							this.laneSymbols[n].height = swimLaneHeight;
 							this.laneSymbols[n].adjustGeometry();
 						}
 					} else {
+
+						var dX = 0;
+						for ( var n in this.laneSymbols) {
+
+							this.laneSymbols[n].x = this.x + topMargin;
+
+							var dXNew = (this.x + 2
+									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT + m_constants.POOL_SWIMLANE_MARGIN)
+									- this.laneSymbols[n].x;
+							// If child symbols are on lane header, dX is set to
+							// move the child symbols
+							for ( var c in this.laneSymbols[n].containedSymbols) {
+								if (this.laneSymbols[n].containedSymbols[c].x <= dXNew) {
+									if (dX < dXNew) {
+										dX = dXNew;
+									}
+								}
+							}
+						}
+
 						var currentY = this.y
 								+ m_constants.POOL_SWIMLANE_MARGIN;
 
+						var swimLaneWidth = 0;
 						for ( var n in this.laneSymbols) {
 							var dY = currentY - this.laneSymbols[n].y;
 
-							this.laneSymbols[n].x = this.x + topMargin;
 							if (dY != 0) {
 								this.laneSymbols[n].moveBy(0, dY);
 							}
+
+							for ( var c in this.laneSymbols[n].containedSymbols) {
+								this.laneSymbols[n].containedSymbols[c].moveBy(
+										dX, dY);
+							}
+
+							this.laneSymbols[n].recalculateBoundingBox();
+							if (swimLaneWidth < this.laneSymbols[n].width) {
+								swimLaneWidth = this.laneSymbols[n].width;
+							}
+
 							currentY += this.laneSymbols[n].height;
 							currentY += m_constants.POOL_SWIMLANE_MARGIN;
 
-							for (var c in this.laneSymbols[n].containedSymbols) {
-								this.laneSymbols[n].containedSymbols[c].moveBy(0, dY);
-							}
+							this.laneSymbols[n].adjustGeometry();
+						}
 
+						//Adjust width
+						for ( var n in this.laneSymbols) {
+							this.laneSymbols[n].width = swimLaneWidth;
 							this.laneSymbols[n].adjustGeometry();
 						}
 					}
+
+					this.recalculateBoundingBox();
+					this.adjustPrimitives();
 
 					/* Call hideSnapLines, as the moveBy function invokes checkSnaplines causing the
 					 * snap lines to be created. */

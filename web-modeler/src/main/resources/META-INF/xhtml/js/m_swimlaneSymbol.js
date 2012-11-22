@@ -340,7 +340,12 @@ define(
 											: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
 											this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.y + 1.2 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
 											: (this.y + 0.5 * this.height), 16,
-									16);
+									16)
+									.attr(
+											{
+												"transform" : this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? "R0"
+														: "R270"
+											});
 
 					this.addToPrimitives(this.minimizeIcon);
 
@@ -352,7 +357,13 @@ define(
 											: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
 											this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.y + 1.2 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
 											: (this.y + .35 * this.height), 16,
-									16);
+									16)
+									.attr(
+											{
+												"transform" : this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? "R0"
+														: "R270"
+											});
+
 					this.maximizeIcon.hide();
 					this.addToPrimitives(this.maximizeIcon);
 				};
@@ -382,11 +393,13 @@ define(
 									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
 						});
 						this.minimizeIcon.attr({
+							"transform" : "R0",
 							"x" : this.x + this.width - 20,
 							"y" : this.y + 0.15
 									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
 						});
 						this.maximizeIcon.attr({
+							"transform" : "R0",
 							"x" : this.x + this.width - 20,
 							"y" : this.y + 0.12
 									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
@@ -405,6 +418,21 @@ define(
 									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT,
 							"y" : this.y + 0.5 * this.height
 						});
+						this.minimizeIcon.attr({
+							"transform" : "R270",
+							"x" : this.x + 0.2
+									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT,
+							"y" : this.y + 0.5
+									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
+						});
+						this.maximizeIcon.attr({
+							"transform" : "R270",
+							"x" : this.x + 0.2
+									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT,
+							"y" : this.y + 0.5
+									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
+						});
+
 					}
 				};
 
@@ -416,9 +444,12 @@ define(
 					this.orientation = flowOrientation;
 
 					var buffer = this.width;
-
 					this.width = this.height;
 					this.height = buffer;
+
+					var temp = this.x;
+					this.x = this.y;
+					this.y = temp;
 
 					for ( var n in this.containedSymbols) {
 						this.containedSymbols[n]
@@ -481,8 +512,13 @@ define(
 				 *
 				 */
 				SwimlaneSymbol.prototype.onMinimizeIconClick = function() {
-					this.cacheWidth = this.width;
-					this.width = m_constants.LANE_MIN_WIDTH;
+					if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+						this.cacheWidth = this.width;
+						this.width = m_constants.LANE_MIN_WIDTH;
+					} else {
+						this.cacheWidth = this.height;
+						this.height = m_constants.LANE_MIN_WIDTH;
+					}
 					this.minimizeIcon.hide();
 					this.maximizeIcon.show();
 					this.parentSymbol.recalculateBoundingBox();
@@ -505,7 +541,11 @@ define(
 				 */
 				SwimlaneSymbol.prototype.onMaximizeIconClick = function() {
 					this.parentSymbol.updateLanesOffsetAndAdjustChild(this, false);
-					this.width = this.cacheWidth;
+					if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+						this.width = this.cacheWidth;
+					} else {
+						this.height = this.cacheWidth;
+					}
 					this.maximizeIcon.hide();
 					this.minimizeIcon.show();
 					this.minimized = false;
@@ -882,17 +922,18 @@ define(
 						this.parentSymbol.adjustGeometry();
 
 						var changes = {
-							x : this.x,
-							y : this.y,
-							width : this.width,
-							height : this.height,
-							xOffset : moveX,
-							yOffset : moveY
+						x : this.x,
+						y : this.y,
+						width : this.width,
+						height : this.height,
+						xOffset : moveX,
+						yOffset : moveY,
+						orientation : this.orientation
 						};
 
 						var command = m_command
-									.createUpdateModelElementCommand(
-											this.diagram.modelId, this.oid, changes);
+								.createUpdateModelElementCommand(
+										this.diagram.modelId, this.oid, changes);
 
 						m_commandsController.submitCommand(command);
 					}
@@ -955,6 +996,30 @@ define(
 					}
 
 					return false;
+				};
+
+
+				SwimlaneSymbol.prototype.recalculateBoundingBox = function() {
+
+					for ( var c in this.containedSymbols) {
+						containedSymbol = this.containedSymbols[c];
+
+						var sX2 = containedSymbol.x + containedSymbol.width
+								+ m_constants.SWIMLANE_SYMBOL_MARGIN;
+
+						var lX2 = this.x + this.width;
+						if (sX2 > lX2) {
+							this.width += (sX2 - lX2);
+						}
+
+						var sY2 = containedSymbol.y + containedSymbol.height
+								+ m_constants.SWIMLANE_SYMBOL_MARGIN;
+
+						var lY2 = this.y + this.height;
+						if (sY2 > lY2) {
+							this.height += (sY2 - lY2);
+						}
+					}
 				};
 
 				/**

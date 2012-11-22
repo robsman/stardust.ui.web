@@ -1674,10 +1674,9 @@ define(
 				 *
 				 */
 				Symbol.prototype.flipFlowOrientation = function(flowOrientation) {
-					var x = this.x;
-					var y = this.y;
-
-					this.move(y, x);
+					var temp = this.x;
+					this.x = this.y;
+					this.y = temp;
 				};
 
 				/*
