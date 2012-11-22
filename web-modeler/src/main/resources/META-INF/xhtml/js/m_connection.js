@@ -1762,7 +1762,7 @@ define(
 						//It may not be removed when connection is disengaged(canvas click)
 						//if connection is removed , but symbol contains the connection remove It.
 						var symbol = this.diagram
-								.findSymbolByGuid(this.toModelElementOid)
+								.findSymbolByGuid(this.toModelElementOid,this.diagram.model.id)
 						if (null != symbol) {
 							m_utils.removeItemFromArray(symbol.connections,
 									this);
@@ -1936,7 +1936,10 @@ define(
 										.showErrorMessage("No more connections allowed to this activity.");
 								return false;
 							}
+						}else if(toAnchorPoint.symbol.isPoolSymbol() || toAnchorPoint.symbol.type == m_constants.SWIMLANE_SYMBOL){
+							return false;
 						}
+
 						// If Start and End symbol are same, show error
 						if (fromAnchorPoint.symbol.oid != null
 								&& fromAnchorPoint.symbol.oid == toAnchorPoint.symbol.oid) {

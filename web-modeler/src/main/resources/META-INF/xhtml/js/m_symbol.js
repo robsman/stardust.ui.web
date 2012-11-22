@@ -1145,7 +1145,8 @@ define(
 							this.showFlyOutMenu();
 						}
 					} else {
-						if (this.validateCreateConnection()) {
+						if (this.diagram.isInConnectionMode()
+								&& this.validateCreateConnection()) {
 							this.showAnchorPoints();
 						}
 					}
@@ -1339,10 +1340,11 @@ define(
 					if (this.diagram.isInConnectionMode()) {
 						if (null != this.diagram.currentConnection
 								&& this.diagram.currentConnection.isPrepared()) {
+							m_utils.removeItemFromArray(
+									this.connections, this.diagram.currentConnection);
 							this.diagram.currentConnection
 									.setDummySecondAnchorPoint();
 						}
-
 						this.hideAnchorPoints();
 					} else {
 						this.showDefaultCursor();
