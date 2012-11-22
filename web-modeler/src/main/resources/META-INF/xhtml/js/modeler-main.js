@@ -71,9 +71,6 @@ require(["require",
 	 "jquery",
 	 "json",
 	 "raphael",
-	 // TODO Are these needed
-//     "extensions_jquery",
-//	 "extensions_raphael",
 
 	 "jquery-ui",
 	 "jquery.download",
@@ -97,6 +94,8 @@ require(["require",
 	 "codemirror.util.javascript-hint",
 
 	 "modeler-plugins",
+	 "bpm-modeler/js/extensions_jquery",
+	 "bpm-modeler/js/extensions_raphael",
 	 "bpm-modeler/js/m_modelerViewLayoutManager",
 	 "i18n"
 	 ], function (require) {
