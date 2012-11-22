@@ -1,9 +1,9 @@
-define([ 'm_activityBasicPropertiesPage',
-         'm_modelElementCommentsPropertiesPage',
-         'm_activityProcessingPropertiesPage',
-         'm_activityControllingPropertiesPage',
-         'm_activityQualityControlPropertiesPage',
-         'm_activityDisplayPropertiesPage'], function(
+define([ 'bpm-modeler/js/m_activityBasicPropertiesPage',
+         'bpm-modeler/js/m_modelElementCommentsPropertiesPage',
+         'bpm-modeler/js/m_activityProcessingPropertiesPage',
+         'bpm-modeler/js/m_activityControllingPropertiesPage',
+         'bpm-modeler/js/m_activityQualityControlPropertiesPage',
+         'bpm-modeler/js/m_activityDisplayPropertiesPage'], function(
         		 m_activityBasicPropertiesPage,
         		 m_modelElementCommentsPropertiesPage,
         		 m_activityProcessingPropertiesPage,

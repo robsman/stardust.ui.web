@@ -1,5 +1,5 @@
-define([ 'm_swimlaneBasicPropertiesPage',
-         'm_modelElementCommentsPropertiesPage'], function(
+define([ 'bpm-modeler/js/m_swimlaneBasicPropertiesPage',
+         'bpm-modeler/js/m_modelElementCommentsPropertiesPage'], function(
         		 m_swimlaneBasicPropertiesPage,
         		 m_modelElementCommentsPropertiesPage) {
 	return {

@@ -1,4 +1,4 @@
-define([ 'm_modelElementCommentsPropertiesPage'], function(
+define([ 'bpm-modeler/js/m_modelElementCommentsPropertiesPage'], function(
         		 m_modelElementCommentsPropertiesPage) {
 	return {
 		propertiesPage : [ {

@@ -1,4 +1,4 @@
-define([ 'm_modelElementCommentsPropertiesPage', "m_i18nUtils" ], function(
+define([ 'bpm-modeler/js/m_modelElementCommentsPropertiesPage', "bpm-modeler/js/m_i18nUtils" ], function(
 		m_modelElementCommentsPropertiesPage, m_i18nUtils) {
 	return {
 		propertiesPage : [ {

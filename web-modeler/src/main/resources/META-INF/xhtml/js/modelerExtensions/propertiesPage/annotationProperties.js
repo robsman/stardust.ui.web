@@ -1,4 +1,4 @@
-define([ 'm_annotationBasicPropertiesPage'], function(
+define([ 'bpm-modeler/js/m_annotationBasicPropertiesPage'], function(
         		 m_annotationBasicPropertiesPage) {
 	return {
 		propertiesPage : [ {
@@ -6,7 +6,7 @@ define([ 'm_annotationBasicPropertiesPage'], function(
 			pageId: "basicPropertiesPage",
 			pageHtmlUrl: "annotationBasicPropertiesPage.html",
 			provider: m_annotationBasicPropertiesPage,
-			visibility: "always",
-		}, ],
+			visibility: "always"
+		}, ]
 	};
 });

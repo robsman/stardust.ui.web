@@ -1,5 +1,5 @@
-define([ 'm_dataBasicPropertiesPage',
-         'm_modelElementCommentsPropertiesPage'], function(
+define([ 'bpm-modeler/js/m_dataBasicPropertiesPage',
+         'bpm-modeler/js/m_modelElementCommentsPropertiesPage'], function(
         		 m_dataBasicPropertiesPage,
         		 m_modelElementCommentsPropertiesPage) {
 	return {

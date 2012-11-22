@@ -1,5 +1,5 @@
-define([ 'm_dataFlowBasicPropertiesPage',
-         'm_modelElementCommentsPropertiesPage'], function(
+define([ 'bpm-modeler/js/m_dataFlowBasicPropertiesPage',
+         'bpm-modeler/js/m_modelElementCommentsPropertiesPage'], function(
         		 m_dataFlowBasicPropertiesPage,
         		 m_modelElementCommentsPropertiesPage) {
 	return {

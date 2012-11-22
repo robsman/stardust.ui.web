@@ -1,6 +1,6 @@
-define([ 'm_controlFlowBasicPropertiesPage',
-         'm_controlFlowTransactionPropertiesPage',
-         'm_modelElementCommentsPropertiesPage'], function(
+define([ 'bpm-modeler/js/m_controlFlowBasicPropertiesPage',
+         'bpm-modeler/js/m_controlFlowTransactionPropertiesPage',
+         'bpm-modeler/js/m_modelElementCommentsPropertiesPage'], function(
         		 m_controlFlowBasicPropertiesPage,
         		 m_controlFlowTransactionPropertiesPage,
         		 m_modelElementCommentsPropertiesPage) {
