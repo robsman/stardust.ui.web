@@ -119,19 +119,30 @@ define(
 				/**
 				 *
 				 */
-				XsdStructuredDataTypeView.prototype.renameElement = function(tableRows, newName) {
+				XsdStructuredDataTypeView.prototype.renameElement = function(tableRows, nameInput) {
 					var view = this;
 
+					var isValidName = view.validateElementName(nameInput);
 					jQuery(tableRows).each(function(i, tableRow) {
 						var typeDeclaration = jQuery(tableRow).data("typeDeclaration");
-						typeDeclaration.renameElement(jQuery(tableRow).data("elementName"), newName);
+						var oldName = jQuery(tableRow).data("elementName");
+						var newName = nameInput.val();
+						if (isValidName) {
+							typeDeclaration.renameElement(oldName, newName);
 
-						view.submitChanges({
-							typeDeclaration : typeDeclaration.typeDeclaration
-						});
-
-						view.refreshElementsTable();
+							view.submitChanges({
+								typeDeclaration : typeDeclaration.typeDeclaration
+							});
+						} else {
+							nameInput.val(oldName);
+						}
 					});
+
+					if (isValidName) {
+						view.refreshElementsTable();
+					}
+
+					return isValidName;
 				};
 
 				/**
@@ -331,7 +342,7 @@ define(
 							});
 
 					jQuery(".nameInput", this.tree).on("change", function(event) {
-							view.renameElement(jQuery(event.target).closest("tr"), jQuery(event.target).val());
+							return view.renameElement(jQuery(event.target).closest("tr"), jQuery(event.target));
 						});
 					jQuery(".typeSelect", this.tree).on("change", function(event) {
 							view.setElementType(jQuery(event.target).closest("tr"), jQuery(event.target).val());
@@ -441,6 +452,39 @@ define(
 						this.errorMessages
 								.push("Data type name must not be empty.");
 						this.nameInput.addClass("error");
+					}
+
+					if (this.errorMessages.length > 0) {
+						this.showErrorMessages();
+
+						return false;
+					}
+
+					return true;
+				};
+
+				XsdStructuredDataTypeView.prototype.validateElementName = function(nameInput) {
+					this.clearErrorMessages();
+
+					nameInput.removeClass("error");
+
+					if ((nameInput.val() == null) || (this.nameInput.val() === "")) {
+						this.errorMessages
+								.push("Element name must not be empty.");
+						nameInput.addClass("error");
+					} else {
+						var name = nameInput.val();
+						if (this.typeDeclaration.isSequence()) {
+							// name must be valid name according to XML rules
+							try {
+								jQuery.parseXML('<' + name + '/>');
+							} catch (e) {
+								this.errorMessages.push("Invalid element name.");
+								nameInput.addClass("error");
+							}
+						} else {
+							// TODO validate against enum pattern, if any
+						}
 					}
 
 					if (this.errorMessages.length > 0) {
