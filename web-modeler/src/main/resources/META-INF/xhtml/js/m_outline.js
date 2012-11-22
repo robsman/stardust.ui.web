@@ -32,7 +32,7 @@ define(
 			var isElementCreatedViaOutline = false;
 			var hasUnsavedModifications = false;
 			function getURL() {
-				return require('../../bpm-modeler/js/m_urlUtils')
+				return m_urlUtils
 						.getContextName()
 						+ "/services/rest/bpm-modeler/modeler/"
 						+ new Date().getTime();
@@ -511,7 +511,7 @@ define(
 								attributes : {
 									width : "400px",
 									height : "200px",
-									src : "../bpm-modeler/popups/outlineRefreshConfirmationDialog.html"
+									src : m_urlUtils.getPlugsInRoot() + "bpm-modeler/popups/outlineRefreshConfirmationDialog.html"
 								},
 								payload : {
 									title : "Confirm",
@@ -540,7 +540,7 @@ define(
 									attributes : {
 										width : "400px",
 										height : "200px",
-										src : "../bpm-modeler/popups/confirmationPopupDialogContent.html"
+										src : m_urlUtils.getPlugsInRoot() + "bpm-modeler/popups/confirmationPopupDialogContent.html"
 									},
 									payload : {
 										title : "Warning",
@@ -1554,7 +1554,7 @@ define(
 										"types" : {
 											"model" : {
 												"icon" : {
-													"image" : "../images/icons/model.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/model.png"
 												},
 												"valid_children" : [
 														"participants",
@@ -1565,167 +1565,167 @@ define(
 											},
 											"participants" : {
 												"icon" : {
-													"image" : "../images/icons/participants.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/participants.png"
 												}
 											},
 											"roleParticipant" : {
 												"icon" : {
-													"image" : "../images/icons/role.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/role.png"
 												}
 											},
 											"teamLeader" : {
 												"icon" : {
-													"image" : "../images/icons/manager.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/manager.png"
 												}
 											},
 											"organizationParticipant" : {
 												"icon" : {
-													"image" : "../images/icons/organization.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/organization.png"
 												}
 											},
 											"conditionalPerformerParticipant" : {
 												"icon" : {
-													"image" : "../images/icons/conditional.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/conditional.png"
 												}
 											},
 											"process" : {
 												"icon" : {
-													"image" : "../images/icons/process.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/process.png"
 												}
 											},
 											"structuredTypes" : {
 												"icon" : {
-													"image" : "../images/icons/structured-types.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/structured-types.png"
 												}
 											},
 											"structuredDataType" : {
 												"icon" : {
-													"image" : "../images/icons/structured-type.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/structured-type.png"
 												}
 											},
 											"applications" : {
 												"icon" : {
-													"image" : "../images/icons/applications.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/applications.png"
 												}
 											},
 											"interactive" : {
 												"icon" : {
-													"image" : "../images/icons/application-c-ext-web.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-c-ext-web.png"
 												}
 											},
 											"plainJava" : {
 												"icon" : {
-													"image" : "../images/icons/application-plain-java.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-plain-java.png"
 												}
 											},
 											"jms" : {
 												"icon" : {
-													"image" : "../images/icons/application-jms.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-jms.png"
 												}
 											},
 											"webservice" : {
 												"icon" : {
-													"image" : "../images/icons/application-web-service.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-web-service.png"
 												}
 											},
 											"dmsOperation" : {
 												"icon" : {
-													"image" : "../images/icons/application-dms.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-dms.png"
 												}
 											},
 											"mailBean" : {
 												"icon" : {
-													"image" : "../images/icons/application-mail.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-mail.png"
 												}
 											},
 											"messageParsingBean" : {
 												"icon" : {
-													"image" : "../images/icons/application-message-p.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-message-p.png"
 												}
 											},
 											"messageSerializationBean" : {
 												"icon" : {
-													"image" : "../images/icons/application-message-s.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-message-s.png"
 												}
 											},
 											"messageTransformationBean" : {
 												"icon" : {
-													"image" : "../images/icons/application-message-trans.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-message-trans.png"
 												}
 											},
 											"camelSpringProducerApplication" : {
 												"icon" : {
-													"image" : "../images/icons/application-camel.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-camel.png"
 												}
 											},
 											"rulesEngineBean" : {
 												"icon" : {
-													"image" : "../images/icons/application-drools.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-drools.png"
 												}
 											},
 											"sessionBean" : {
 												"icon" : {
-													"image" : "../images/icons/application-session.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-session.png"
 												}
 											},
 											"springBean" : {
 												"icon" : {
-													"image" : "../images/icons/application-plain-java.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-plain-java.png"
 												}
 											},
 											"xslMessageTransformationBean" : {
 												"icon" : {
-													"image" : "../images/icons/application-message-trans.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-message-trans.png"
 												}
 											},
 											"data" : {
 												"icon" : {
-													"image" : "../images/icons/data.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data.png"
 												}
 											},
 											"primitive" : {
 												"icon" : {
-													"image" : "../images/icons/data-primitive.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-primitive.png"
 												}
 											},
 											"hibernate" : {
 												"icon" : {
-													"image" : "../images/icons/data-hibernate.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-hibernate.png"
 												}
 											},
 											"struct" : {
 												"icon" : {
-													"image" : "../images/icons/data-structured.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-structured.png"
 												}
 											},
 											"serializable" : {
 												"icon" : {
-													"image" : "../images/icons/data-serializable.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-serializable.png"
 												}
 											},
 											"entity" : {
 												"icon" : {
-													"image" : "../images/icons/data-entity.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-entity.png"
 												}
 											},
 											"dmsDocument" : {
 												"icon" : {
-													"image" : "../images/icons/data-document.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-document.png"
 												}
 											},
 											"dmsDocumentList" : {
 												"icon" : {
-													"image" : "../images/icons/data-document-list.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-document-list.png"
 												}
 											},
 											"dmsFolder" : {
 												"icon" : {
-													"image" : "../images/icons/data-folder.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-folder.png"
 												}
 											},
 											"dmsFolderList" : {
 												"icon" : {
-													"image" : "../images/icons/data-folder-list.png"
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-folder-list.png"
 												}
 											}
 										}
@@ -1761,7 +1761,7 @@ define(
 						attributes : {
 							width : "400px",
 							height : "200px",
-							src : "../bpm-modeler/popups/notificationDialog.html"
+							src : m_urlUtils.getPlugsInRoot() + "bpm-modeler/popups/notificationDialog.html"
 						},
 						payload : {
 							title : "Info",
@@ -1779,7 +1779,7 @@ define(
 						attributes : {
 							width : "400px",
 							height : "200px",
-							src : "../bpm-modeler/popups/errorDialog.html"
+							src : m_urlUtils.getPlugsInRoot() + "bpm-modeler/popups/errorDialog.html"
 						},
 						payload : {
 							title : "Error",
@@ -1934,7 +1934,7 @@ define(
 						attributes : {
 							width : "400px",
 							height : "200px",
-							src : "../bpm-modeler/popups/confirmationPopupDialogContent.html"
+							src : m_urlUtils.getPlugsInRoot() + "bpm-modeler/popups/confirmationPopupDialogContent.html"
 						},
 						payload : {
 							title : "Confirm",
@@ -2210,7 +2210,7 @@ define(
 						attributes : {
 							width : "700px",
 							height : "500px",
-							src : "../bpm-modeler/views/modeler/serviceWrapperWizard.html"
+							src : m_urlUtils.getPlugsInRoot() + "bpm-modeler/views/modeler/serviceWrapperWizard.html"
 						},
 						payload : {
 							application : application,
@@ -2240,7 +2240,7 @@ define(
 						attributes : {
 							width : "750px",
 							height : "600px",
-							src : "../bpm-modeler/views/modeler/importTypeDeclarationsWizard.html"
+							src : m_urlUtils.getPlugsInRoot() + "bpm-modeler/views/modeler/importTypeDeclarationsWizard.html"
 						},
 						payload : {
 							model : model
