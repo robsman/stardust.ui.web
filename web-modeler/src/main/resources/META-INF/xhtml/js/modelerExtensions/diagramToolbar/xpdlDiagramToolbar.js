@@ -1,4 +1,4 @@
-define([ 'm_defaultPaletteHandler', 'm_decorationPalette',"m_i18nUtils" ], 
+define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationPalette', "bpm-modeler/js/m_i18nUtils" ], 
 		
 		function(m_defaultPaletteHandler, m_decorationPalette, m_i18nUtils) {
 	return {
