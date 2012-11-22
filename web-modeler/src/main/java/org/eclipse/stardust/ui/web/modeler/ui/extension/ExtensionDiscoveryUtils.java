@@ -35,7 +35,7 @@ public class ExtensionDiscoveryUtils
             String pluginId = resource.getFilename().substring(0, resource.getFilename().lastIndexOf("."));
             trace.debug("Inspecting portal plugin '" + pluginId + "' (" + resource.getURI() + ") for modeler extensions ...");
 
-            String webUriPrefix = "plugins/" + pluginId + "/";
+            String webUriPrefix = pluginId + "/";
 
             InputStream isPluginDescriptor = resource.getInputStream();
             try
