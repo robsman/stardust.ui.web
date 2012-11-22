@@ -362,6 +362,11 @@ define(
 			 * Singleton on DOM level.
 			 */
 			function getModels() {
+				if (window.top.models) {
+					return window.top.models;
+				}
+				loadModels(true);
+
 				return window.top.models;
 			}
 
