@@ -23,7 +23,7 @@ define([ "bpm-modeler/js/m_urlUtils" ], function(m_urlUtils) {
 		//TODO - Currently using service written for TIFF viewer in
 		//graphics-common. Will need to move to some generic service.
 		jQuery.ajax({
-					url : require('bpm-modeler/js/m_urlUtils').getContextName()
+					url : m_urlUtils.getContextName()
 							+ "/services/rest/bpm-modeler/modeler/"
 							+ new Date().getTime() + "/language",
 			async : false,
@@ -33,7 +33,7 @@ define([ "bpm-modeler/js/m_urlUtils" ], function(m_urlUtils) {
 		});
 		InfinityBPMI18N.initPluginProps({
 			pluginName : "modeler",
-			singleEndPoint : require('bpm-modeler/js/m_urlUtils').getContextName()
+			singleEndPoint : m_urlUtils.getContextName()
 					+ "/services/rest/bpm-modeler/modeler/" + new Date().getTime() + "/bpm-modeler-client-messages/"
 					+ lang
 		});
