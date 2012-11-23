@@ -35,7 +35,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.panels.decoration.title"), 
 			contentHtmlUrl : "decorationPalette.html",
 			provider: m_decorationPalette,
-			visibility : "always"
+			visibility : "preview"
 		}, ],
 		// entries
 		diagramToolbarPaletteEntry : [ {
