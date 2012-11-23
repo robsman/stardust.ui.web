@@ -147,10 +147,6 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.propertyView.processs.processDefinition.description"));
-				jQuery("#dataname")
-						.text(
-								m_i18nUtils
-										.getProperty("modeler.element.properties.commonProperties.name"));
 
 				$(
 						"#dataPathPropertiesPage label[for='targetProcessingTimeInput']")
