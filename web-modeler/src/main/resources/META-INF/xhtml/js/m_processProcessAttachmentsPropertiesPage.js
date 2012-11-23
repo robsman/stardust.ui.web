@@ -88,6 +88,11 @@ define(
 											}
 										}
 									});
+
+					this
+							.registerCheckboxInputForModelElementAttributeChangeSubmission(
+									this.uniquePerRootProcessInstanceInput,
+									"carnot:engine:dms:byReference");
 				};
 
 				/**
@@ -162,6 +167,10 @@ define(
 				ProcessProcessAttachmentsPropertiesPage.prototype.setElement = function() {
 					this.supportsAttachmentsInput.attr("checked", this
 							.hasProcessAttachmentsDataPathes());
+					this.uniquePerRootProcessInstanceInput
+							.attr(
+									"checked",
+									this.getModelElement().attributes["carnot:engine:dms:byReference"] == true);
 					if (this.supportsAttachmentsInput.is(":checked")) {
 						this.uniquePerRootProcessInstanceInput.removeAttr("disabled");
 					} else {
