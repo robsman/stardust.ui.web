@@ -2373,8 +2373,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             else
             {
                ModelType model = ModelUtils.findContainingModel(element);
-
-               structuredDataFullId = model.getId() + ":" + encodedId;
+               if (null != model)
+               {
+                  structuredDataFullId = model.getId() + ":" + encodedId;
+               }
             }
 
             json.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY,
