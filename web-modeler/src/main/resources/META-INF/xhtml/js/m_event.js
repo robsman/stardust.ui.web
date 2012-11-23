@@ -14,9 +14,8 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants" ], function(m_ut
 	return {
 		createStartEvent : function(process) {
 			var event = new Event();
-			var index = process.getNewEventIndex();
 
-			event.initialize("Event" + index, "Event " + index, m_constants.START_EVENT_TYPE);
+			event.initialize("", "", m_constants.START_EVENT_TYPE);
 			
 			return event;
 		},
@@ -25,7 +24,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants" ], function(m_ut
 			var event = new Event();
 			var index = process.getNewEventIndex();
 
-			event.initialize("Event" + index, "Event " + index, m_constants.STOP_EVENT_TYPE);
+			event.initialize("", "", m_constants.STOP_EVENT_TYPE);
 			
 			return event;
 		},

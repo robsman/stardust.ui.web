@@ -74,7 +74,7 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
  * IPP XPDL marshaller.
- *
+ * 
  * @author Marc.Gille
  * @author Robert Sauer
  */
@@ -89,7 +89,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
    /**
-    *
+    * 
     * @param modelElement
     * @return
     */
@@ -375,9 +375,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * To resolve inconsistency between Access Point and
-    *
+    * 
     * TODO Review and move to Facade
-    *
+    * 
     * @param type
     * @return
     */
@@ -402,7 +402,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param laneSymbol
     * @return
     */
@@ -623,7 +623,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param activity
     * @return
     */
@@ -802,7 +802,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param activitySymbol
     * @return
     */
@@ -890,7 +890,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -914,96 +914,43 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                : null;
       }
 
+      eventSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+            ModelerConstants.EVENT_SYMBOL);
       eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             startEventSymbol.getElementOid());
-
-      eventSymbolJson.addProperty(ModelerConstants.NAME_PROPERTY,
-      // startEventSymbol.getLabel()); TODO: Breaks compatibility to 7.0?
-            "NOT SUPPORTED");
-
       // TODO check this math
       eventSymbolJson.addProperty(ModelerConstants.X_PROPERTY, startEventSymbol.getXPos()
             + laneOffsetX);
       eventSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, startEventSymbol.getYPos()
             + laneOffsetY);
 
-      JsonObject eventJson = new JsonObject();
-      eventSymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, eventJson);
-
-      eventJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.EVENT_KEY);
-      eventJson.addProperty(ModelerConstants.EVENT_TYPE_PROPERTY,
-            ModelerConstants.START_EVENT);
-      eventSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-            ModelerConstants.EVENT_SYMBOL);
-      eventJson.add(ModelerConstants.ATTRIBUTES_PROPERTY, new JsonObject());
-
+      JsonObject eventJson = null;
       TriggerType trigger = (TriggerType) startEventSymbol.getModelElement();
 
       if (trigger != null)
       {
-         Object attribute = getModelBuilderFacade().getAttribute(
-               startEventSymbol.getModelElement(), "stardust::engine:eventClass");
-
-         if (attribute != null)
-         {
-            eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY,
-                  getModelBuilderFacade().getAttributeValue(attribute));
-         }
-
-         JsonArray parameterMappingsJson = new JsonArray();
-
-         eventJson.add(ModelerConstants.PARAMETER_MAPPINGS_PROPERTY, parameterMappingsJson);
-
-         for (AccessPointType accessPoint : trigger.getAccessPoint())
-         {
-            JsonObject parameterMappingJson = new JsonObject();
-
-            parameterMappingsJson.add(parameterMappingJson);
-            parameterMappingJson.addProperty(ModelerConstants.ID_PROPERTY,
-                  accessPoint.getId());
-            parameterMappingJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                  accessPoint.getName());
-
-            if (accessPoint.getType() != null)
-            {
-               parameterMappingJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
-                     accessPoint.getType().getId());
-            }
-
-            if (accessPoint.getDirection() != null)
-            {
-               parameterMappingJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
-                     accessPoint.getDirection().getLiteral());
-            }
-
-            loadAttributes(accessPoint, parameterMappingJson);
-
-            for (ParameterMappingType
-                  parameterMapping : trigger.getParameterMapping())
-            {
-               if (accessPoint.getId().equals(parameterMapping.getParameter()))
-               {
-                  parameterMappingJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
-                        getModelBuilderFacade().createFullId(ModelUtils.findContainingModel(parameterMapping.getData()), parameterMapping.getData()));
-                  parameterMappingJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY,
-                        parameterMapping.getDataPath());
-
-                  break;
-               }
-            }
-         }
-
-         // eventJson.put(ID_PROPERTY,
-         // String.valueOf(startEventSymbol.getModelElement().getId()));
-         // loadDescription(eventJson, startEventSymbol.getModelElement());
-         loadAttributes(trigger, eventJson);
+         eventJson = toEventJson(trigger);
       }
+      else
+      {
+         System.out.println("Creating dummy Event Model Element");
+
+         eventJson = new JsonObject();
+
+         eventJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.EVENT_KEY);
+         eventJson.add(ModelerConstants.ATTRIBUTES_PROPERTY, new JsonObject());
+      }
+
+      eventSymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY,
+      eventJson);
+      eventJson.addProperty(ModelerConstants.EVENT_TYPE_PROPERTY,
+            ModelerConstants.START_EVENT);
 
       return eventSymbolJson;
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -1051,11 +998,94 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       // eventJson);
 
       return eventSymbolJson;
-
    }
 
    /**
-    *
+    * 
+    * @param event
+    * @return
+    */
+   public JsonObject toEventJson(TriggerType event)
+   {
+      JsonObject eventJson = new JsonObject();
+
+      eventJson.addProperty(ModelerConstants.ID_PROPERTY, event.getId());
+      eventJson.addProperty(ModelerConstants.NAME_PROPERTY, event.getName());
+      eventJson.addProperty(ModelerConstants.UUID_PROPERTY,
+            eObjectUUIDMapper().getUUID(event));
+      eventJson.addProperty(ModelerConstants.OID_PROPERTY, event.getElementOid());
+      ModelType model = ModelUtils.findContainingModel(event);
+      eventJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY,
+            eObjectUUIDMapper().getUUID(model));
+      setContainingModelIdProperty(eventJson, event);
+
+      eventJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.EVENT_KEY);
+
+      // TODO This may changes
+      
+      
+      loadDescription(eventJson, event);
+      loadAttributes(event, eventJson);
+
+      Object attribute = getModelBuilderFacade().getAttribute(event,
+            "stardust::engine:eventClass");
+
+      if (attribute != null)
+      {
+         eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY,
+               getModelBuilderFacade().getAttributeValue(attribute));
+      }
+
+      JsonArray parameterMappingsJson = new JsonArray();
+
+      eventJson.add(ModelerConstants.PARAMETER_MAPPINGS_PROPERTY, parameterMappingsJson);
+
+      for (AccessPointType accessPoint : event.getAccessPoint())
+      {
+         JsonObject parameterMappingJson = new JsonObject();
+
+         parameterMappingsJson.add(parameterMappingJson);
+         parameterMappingJson.addProperty(ModelerConstants.ID_PROPERTY,
+               accessPoint.getId());
+         parameterMappingJson.addProperty(ModelerConstants.NAME_PROPERTY,
+               accessPoint.getName());
+
+         if (accessPoint.getType() != null)
+         {
+            parameterMappingJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                  accessPoint.getType().getId());
+         }
+
+         if (accessPoint.getDirection() != null)
+         {
+            parameterMappingJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+                  accessPoint.getDirection().getLiteral());
+         }
+
+         loadAttributes(accessPoint, parameterMappingJson);
+
+         for (ParameterMappingType parameterMapping : event.getParameterMapping())
+         {
+            if (accessPoint.getId().equals(parameterMapping.getParameter()))
+            {
+               parameterMappingJson.addProperty(
+                     ModelerConstants.DATA_FULL_ID_PROPERTY,
+                     getModelBuilderFacade().createFullId(
+                           ModelUtils.findContainingModel(parameterMapping.getData()),
+                           parameterMapping.getData()));
+               parameterMappingJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY,
+                     parameterMapping.getDataPath());
+
+               break;
+            }
+         }
+      }
+
+      return eventJson;
+   }
+
+   /**
+    * 
     * @param data
     * @return
     */
@@ -1191,7 +1221,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -1280,21 +1310,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                      ModelerConstants.TEAM_LEADER_TYPE_KEY);
             }
          }
-         else
-         {
-            for (OrganizationType org : model.getOrganization())
-            {
-               if (null != org.getTeamLead() && org.getTeamLead().equals(role))
-               {
-                  roleJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
-                        eObjectUUIDMapper().getUUID(org));
-                  roleJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                        ModelerConstants.TEAM_LEADER_TYPE_KEY);
-                  break;
-               }
-            }
-         }
-
          roleJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY,
                eObjectUUIDMapper().getUUID(model));
          roleJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
@@ -1557,7 +1572,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param annotationSymbol
     * @return
     */
@@ -1608,7 +1623,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param dataMappingConnection
     * @return
     */
@@ -1725,7 +1740,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -1867,7 +1882,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -2071,7 +2086,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * TODO - is there a better way to do this?
-    *
+    * 
     * @param participant
     * @return
     */
@@ -2248,7 +2263,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param orientation
     * @return
     */
@@ -2279,7 +2294,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param modelElementJson
     * @param element
     */
@@ -2299,7 +2314,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param element
     * @param json
     * @throws JSONException
@@ -2386,9 +2401,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * TODO From DynamicConnectionCommand. Refactor?
-    *
+    * 
     * @param activity
     * @return
     */

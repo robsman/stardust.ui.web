@@ -248,6 +248,20 @@ define(
 				/**
 				 *
 				 */
+				PropertiesPanel.prototype.disablePropertiesPage = function(id) {
+					jQuery("#" + this.id + " #" + id + "ListItem").prop("disabled", true);
+				};
+
+				/**
+				 *
+				 */
+				PropertiesPanel.prototype.enablePropertiesPage = function(id) {
+					jQuery("#" + this.id + " #" + id + "ListItem").prop("disabled", false);
+				};
+
+				/**
+				 *
+				 */
 				PropertiesPanel.prototype.hidePropertiesPages = function() {
 					for ( var n in this.propertiesPages) {
 						this.propertiesPages[n].hide();

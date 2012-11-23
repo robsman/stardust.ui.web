@@ -39,6 +39,8 @@ define(
 				EventBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
 
+					this.namePanel = this.mapInputId("annotationName");
+					this.descriptionPanel = this.mapInputId("annotationdesc");
 					this.startEventPanel = this.mapInputId("startEventPanel");
 					this.eventTypeSelectInput = this
 							.mapInputId("eventTypeSelectInput");
@@ -147,7 +149,9 @@ define(
 					this.setModelElement();
 
 					if (this.propertiesPanel.element.modelElement.eventType == m_constants.START_EVENT_TYPE) {
-						this.startEventPanel.removeAttr("class");
+						m_dialog.makeVisible(this.namePanel);
+						m_dialog.makeVisible(this.descriptionPanel);
+						m_dialog.makeVisible(this.startEventPanel);
 
 						if (this.propertiesPanel.element.modelElement.eventClass != null) {
 							this
@@ -163,7 +167,11 @@ define(
 							this.overlayControllers["manualTrigger"].activate();
 						}
 					} else {
-						this.startEventPanel.attr("class", "invisible");
+						// TODO Allow editing once endEvent becomes a full blown event with triggers
+						
+						m_dialog.makeInvisible(this.namePanel);
+						m_dialog.makeInvisible(this.descriptionPanel);
+						m_dialog.makeInvisible(this.startEventPanel);
 					}
 				};
 
@@ -171,7 +179,7 @@ define(
 				 * TODO Review, symbol returned as model element, because that is where naem and description is bound
 				 */
 				EventBasicPropertiesPage.prototype.getModelElement = function() {
-					return this.propertiesPanel.element;
+					return this.propertiesPanel.element.modelElement;
 				};
 
 				/**

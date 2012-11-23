@@ -12,17 +12,22 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_model", "bpm-modeler/js/m_propertiesPanel", "bpm-modeler/js/m_propertiesPage"],
-		function(m_utils, m_constants, m_commandsController, m_model, m_propertiesPanel, m_propertiesPage) {
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_propertiesPanel",
+				"bpm-modeler/js/m_propertiesPage" ],
+		function(m_utils, m_constants, m_commandsController, m_model,
+				m_propertiesPanel, m_propertiesPage) {
 
 			var eventPropertiesPanel = null;
 
 			return {
 				initialize : function(diagram) {
 					eventPropertiesPanel = new EventPropertiesPanel();
-				
-					m_commandsController.registerCommandHandler(eventPropertiesPanel);					
-					
+
+					m_commandsController
+							.registerCommandHandler(eventPropertiesPanel);
+
 					eventPropertiesPanel.initialize(diagram);
 				},
 				getInstance : function() {
@@ -54,12 +59,11 @@ define(
 				/**
 				 * 
 				 */
-				EventPropertiesPanel.prototype.setElement = function(
-						element) {
+				EventPropertiesPanel.prototype.setElement = function(element) {
 					this.clearErrorMessages();
-					
+
 					this.element = element;
-					
+
 					m_utils.debug("Event");
 					m_utils.debug(element);
 
@@ -70,6 +74,12 @@ define(
 
 					for ( var n in this.propertiesPages) {
 						this.propertiesPages[n].setElement();
+					}
+
+					if (this.element.modelElement.eventType == m_constants.END_EVENT_TYPE) {
+						this.disablePropertiesPage("commentsPropertiesPage");
+					} else {
+						this.enablePropertiesPage("commentsPropertiesPage");
 					}
 				};
 			}
