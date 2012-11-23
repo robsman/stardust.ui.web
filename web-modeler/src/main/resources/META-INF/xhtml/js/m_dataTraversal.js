@@ -44,8 +44,8 @@ define(
 					break;
 
 				case m_constants.STRUCTURED_DATA_TYPE:
-					var typeDeclaration = m_model.findTypeDeclaration(data.getFullId());
-					obj = createObject(typeDeclaration);
+					var typeDeclaration = m_model.findTypeDeclaration(data.structuredDataTypeFullId);
+					obj = createObject(typeDeclaration.asSchemaType());
 					break;
 
 				// Treat unrecognized / unsupported data types as empty Objects
@@ -64,22 +64,16 @@ define(
 			/**
 			 *
 			 */
-			function createObject(typeDeclaration) {
+			function createObject(schemaType) {
 				var obj = {};
 
-				var id = typeDeclaration.id;
-
-				var body = typeDeclaration.typeDeclaration.schema.types[id].body;
 				var elements, facets;
 
-				var structureType = (body != null) ? "sequence" : "enumeration";
-
-				switch (structureType) {
-				case "sequence":
-					elements = body.elements;
-					for (var element in elements) {
-						var name = elements[element].name;
-						var type = elements[element].type;
+				if (schemaType.isStructure()) {
+					elements = schemaType.getElements();
+					for (var i in elements) {
+						var name = elements[i].name;
+						var type = elements[i].type;
 
 						// Evaluate type
 						var value;
@@ -91,8 +85,8 @@ define(
 							// TODO: Support for choice, anonymous, sequence
 
 							// Possibly a nested type
-							var nestedTypeDeclaration = findTypeDeclaration(type, typeDeclaration.model);
-							if (nestedTypeDeclaration != null) {
+							var nestedTypeDeclaration = schemaType.resolveElementType(name);
+							if (nestedTypeDeclaration) {
 								value = createObject(nestedTypeDeclaration);
 							}
 							else {
@@ -101,7 +95,7 @@ define(
 						}
 
 						// Evaluate cardinality
-						switch (elements[element].cardinality)
+						switch (elements[i].cardinality)
 						{
 						case "required":
 							obj[name] = value;
@@ -119,41 +113,18 @@ define(
 							break;
 						}
 					}
-					break;
-
-				case "enumeration":
+				} else {
 					/*obj = [];
 
-					facets = typeDeclaration.typeDeclaration.schema.types[id].facets;
+					facets = schemaType.getElements();
 					for (var element in facets) {
 						obj.push(facets[element].name);
 					}*/
 
 					obj = ""; // Enumerations are treated as Strings
-					break;
 				}
 
 				return obj;
-			}
-
-			/**
-			 *
-			 */
-			function findTypeDeclaration(type, model) {
-				for (var n in model.typeDeclarations) {
-					var typeDeclaration = model.typeDeclarations[n];
-
-					if (typeDeclaration.typeDeclaration.schema.elements[typeDeclaration.id] == null) {
-						continue;
-					}
-
-					var currentType = typeDeclaration.typeDeclaration.schema.elements[typeDeclaration.id].type;
-					if (type == currentType) {
-						return typeDeclaration;
-					}
-				}
-
-				return null;
 			}
 
 			/**
