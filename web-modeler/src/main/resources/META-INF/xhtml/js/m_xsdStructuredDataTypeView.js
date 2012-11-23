@@ -382,7 +382,7 @@ define(
 
 					jQuery.each(xsdTypes, function() {
 						select += "<option value='" + this.id + "' ";
-						if (schemaType.isBuiltinType() && (this.id == schemaType.name)) {
+						if (schemaType.isBuiltinType() && (this.id === schemaType.name)) {
 							select += "selected ";
 						}
 						select += ">" + this.label + "</option>";
@@ -393,14 +393,11 @@ define(
 					jQuery.each(this.typeDeclaration.model.typeDeclarations, function() {
 						var typeDeclaration = this;
 
-						var mainElement = typeDeclaration.getElement(typeDeclaration.id);
-						if (mainElement) {
-							// consumable type, as there is an equivalent global element
-							var elementType = typeDeclaration.resolveSchemaType(mainElement.type);
-
-							select += "<option value='{" + elementType.nsUri +"}" + elementType.name + "' ";
-							if ( !schemaType.isBuiltinType() && (null != elementType)) {
-								select += ((schemaType.name == elementType.name) && (schemaType.nsUri == elementType.nsUri) ? "selected " : "");
+						var tdType = typeDeclaration.asSchemaType();
+						if (tdType) {
+							select += "<option value='{" + tdType.nsUri +"}" + tdType.name + "' ";
+							if ( !schemaType.isBuiltinType()) {
+								select += ((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
 							}
 							select += ">" + typeDeclaration.name + "</option>";
 						}
