@@ -2123,7 +2123,6 @@ public class ModelService
       if (children.length > 0)
       {
          JsonObject attributesJs = null;
-         JsonArray enumFacetsJs = null;
          for (EObject child : children)
          {
             JsonElement childrenJs = null;
@@ -2146,15 +2145,19 @@ public class ModelService
                {
                   childJs.addProperty("cardinality", cardinality);
                }
+               if (child instanceof XSDSimpleTypeDefinition)
+               {
+                  addNamedChild(childJs, "facets", new JsonArray());
+               }
+
                if (child instanceof XSDFacet)
                {
                   childJs.addProperty("classifier", ((XSDFacet) child).getFacetName());
-                  if (enumFacetsJs == null)
+                  if (parentNodeJs.isJsonObject())
                   {
-                     enumFacetsJs = new JsonArray();
-                     addNamedChild(parentNodeJs, "facets", enumFacetsJs);
+                     JsonArray enumFacetsJs = parentNodeJs.getAsJsonObject().getAsJsonArray("facets");
+                     enumFacetsJs.add(childJs);
                   }
-                  enumFacetsJs.add(childJs);
                }
                else if (child instanceof XSDAttributeDeclaration)
                {
