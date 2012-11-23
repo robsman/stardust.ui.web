@@ -1061,30 +1061,30 @@ define(
 					// If Symbol is moved beyond the starting Y margin and
 					// Height has increased, calculate the height change to move
 					// Symbol
-					if (parseInt(preAdjustmentPos.y) > (parseInt(y))
-							&& parseInt(this.height) > parseInt(preAdjustmentPos.height
-									.valueOf())) {
-						moveY = this.height - parseInt(preAdjustmentPos.height);
-
-					}else if (this.y < preAdjustmentPos.y
-							&& this.height > preAdjustmentPos.height) {
-						this.y = preAdjustmentPos.y;
-						moveY = this.heigth - parseInt(preAdjustmentPos.height);
+					if (this.height > preAdjustmentPos.height) {
+						if ((parseInt(preAdjustmentPos.y) > parseInt(y))
+								|| this.y < preAdjustmentPos.y) {
+							moveY = this.height
+									- parseInt(preAdjustmentPos.height)
+						}
+						if (this.height > preAdjustmentPos.height) {
+							this.y = preAdjustmentPos.y;
+						}
 					}
 
 					// If Symbol is moved beyond the starting X margin and
-					// Height has increased, calculate the width change to move
+					// width has increased, calculate the width change to move
 					// Symbol
-					if (parseInt(preAdjustmentPos.x) > (parseInt(x))
-							&& parseInt(this.width) > parseInt(preAdjustmentPos.width
-									.valueOf())) {
-						moveX = this.width - parseInt(preAdjustmentPos.width);
-
-					}else if (this.x < preAdjustmentPos.x
-								&& this.width > preAdjustmentPos.width) {
-							this.x = preAdjustmentPos.x;
-							moveX = this.width - parseInt(preAdjustmentPos.width);
+					if (this.width > preAdjustmentPos.width) {
+						if ((preAdjustmentPos.x > parseInt(x))
+								|| (this.x < preAdjustmentPos.x)) {
+							moveX = this.width
+									- parseInt(preAdjustmentPos.width);
 						}
+						if (this.x < preAdjustmentPos.x) {
+							this.x = preAdjustmentPos.x;
+						}
+					}
 
 					if (moveX > 0 || moveY > 0) {
 						for ( var n in this.containedSymbols) {

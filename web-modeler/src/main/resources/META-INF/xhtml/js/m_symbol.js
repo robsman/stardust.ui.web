@@ -1068,19 +1068,7 @@ define(
 								}
 
 								this.diagram.snapSymbol(this);
-								this.parentSymbol.adjustToSymbolBoundaries(
-										this.x, this.y);
 
-								// Other parts of the diagram may have been
-								// affected
-								// - update the diagram
-
-								// this.diagram.submitUpdate();
-								var oldGeometry = {
-									"x" : this.dragStartX,
-									"y" : this.dragStartY,
-									"oid" : this.oid
-								};
 								var newGeometry = {
 									"x" : this.x
 											+ this.parentSymbol.symbolXOffset,
@@ -1093,7 +1081,12 @@ define(
 										.createMoveNodeSymbolCommand(
 												this.diagram.model.id,
 												this.oid, newGeometry);
+								command.sync = true;
 								m_commandsController.submitCommand(command);
+
+								this.parentSymbol.adjustToSymbolBoundaries(
+										this.x, this.y);
+
 							} else {
 								this.diagram.snapSymbol(this);
 
