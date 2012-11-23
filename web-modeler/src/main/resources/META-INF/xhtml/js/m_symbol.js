@@ -1677,6 +1677,14 @@ define(
 					var temp = this.x;
 					this.x = this.y;
 					this.y = temp;
+					if (m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL === flowOrientation) {
+						this.y = this.y - (this.y * 0.5);
+						this.x = this.x - (this.width / 2 - this.height / 2);
+					} else {
+						this.x = this.x + (this.x * 0.5);
+						this.y = this.y + (this.width / 2 - this.height / 2);
+					}
+					this.moveBy(0, 0);
 				};
 
 				/*
