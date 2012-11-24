@@ -591,8 +591,25 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       long maxOid = XpdlModelUtils.getMaxUsedOid(ModelUtils.findContainingModel(activity));
 
       dataMapping.setElementOid(++maxOid);
-      dataMapping.setId(dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString());
-      dataMapping.setName(dataFlowJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
+      
+      if (dataFlowJson.has(ModelerConstants.ID_PROPERTY))
+      {
+         dataMapping.setId(dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString());
+      }
+      else
+      {
+         dataMapping.setId(data.getId());         
+      }
+      
+      if (dataFlowJson.has(ModelerConstants.NAME_PROPERTY))
+      {
+         dataMapping.setName(dataFlowJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
+      }
+      else
+      {
+         dataMapping.setName(data.getName());         
+      }
+      
       dataMapping.setDirection(direction);
 
       if (dataMappingJson.has(ModelerConstants.ACCESS_POINT_ID_PROPERTY)

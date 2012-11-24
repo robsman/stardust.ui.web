@@ -3,7 +3,8 @@
  */
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_user", "bpm-modeler/js/m_dialog",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_user", "bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_basicPropertiesPage" ],
 		function(m_utils, m_constants, m_user, m_dialog, m_basicPropertiesPage) {
 			return {
@@ -28,7 +29,7 @@ define(
 						propertiesPage);
 
 				/**
-				 *
+				 * 
 				 */
 				DataFlowBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
@@ -87,7 +88,8 @@ define(
 													// TODO Usually, we are not
 													// submitting the object
 													// itself
-													//modelElement : page.propertiesPanel.element.modelElement
+													// modelElement :
+													// page.propertiesPanel.element.modelElement
 													modelElement : {
 														id : page.propertiesPanel.element.modelElement.id,
 														name : page.propertiesPanel.element.modelElement.name,
@@ -131,7 +133,8 @@ define(
 													// TODO Usually, we are not
 													// submitting the object
 													// itself
-													//modelElement : page.propertiesPanel.element.modelElement
+													// modelElement :
+													// page.propertiesPanel.element.modelElement
 													modelElement : {
 														id : page.propertiesPanel.element.modelElement.id,
 														name : page.propertiesPanel.element.modelElement.name,
@@ -144,6 +147,69 @@ define(
 
 					this.registerInputForModelElementChangeSubmission(
 							this.descriptionInput, "description");
+
+					this.inputDataPathInput
+							.change(
+									{
+										page : this
+									},
+									function(event) {
+										var page = event.data.page;
+
+										m_utils.debug("Submitting data flow changes");
+										
+										// TODO Usually we push less
+										// information, but current server code
+										// requires this
+										page
+												.submitChanges({
+													modelElement : {
+														inputDataMapping : {
+															id : page
+																	.getModelElement().inputDataMapping.id,
+															name : page
+																	.getModelElement().inputDataMapping.name,
+															accessPointId : page
+																	.getModelElement().inputDataMapping.accessPointId,
+															dataPath : page.inputDataPathInput
+																	.val()
+														},
+														outputDataMapping : page
+																.getModelElement().outputDataMapping
+													}
+												});
+									});
+					this.outputDataPathInput
+							.change(
+									{
+										page : this
+									},
+									function(event) {
+										var page = event.data.page;
+
+										m_utils.debug("Submitting data flow changes");
+										
+										// TODO Usually we push less
+										// information, but current server code
+										// requires this
+										page
+												.submitChanges({
+													modelElement : {
+														inputDataMapping : page
+																.getModelElement().inputDataMapping,
+														outputDataMapping : {
+															id : page
+																	.getModelElement().outputDataMapping.id,
+															name : page
+																	.getModelElement().outputDataMapping.name,
+															accessPointId : page
+																	.getModelElement().outputDataMapping.accessPointId,
+															dataPath : page.outputDataPathInput
+																	.val()
+														}
+													}
+												});
+									});
 
 					this.inputAccessPointSelectInput
 							.change(
@@ -204,7 +270,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				DataFlowBasicPropertiesPage.prototype.setDirection = function(
 						hasInputMapping, hasOutputMapping) {
@@ -225,7 +291,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				DataFlowBasicPropertiesPage.prototype.populateInputAccessPointSelectInput = function(
 						dataFlow) {
@@ -300,7 +366,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				DataFlowBasicPropertiesPage.prototype.populateOutputAccessPointSelectInput = function(
 						dataFlow) {
@@ -377,7 +443,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				DataFlowBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();

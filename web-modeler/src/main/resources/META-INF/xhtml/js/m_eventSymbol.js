@@ -209,7 +209,11 @@ define(
 				 * 
 				 */
 				EventSymbol.prototype.refreshFromModelElement = function() {
-					this.text.attr("text", this.modelElement.name);
+					if (this.modelElement.name) {
+						this.text.attr("text", this.modelElement.name);
+					} else {
+						this.text.attr("text", "");
+					}
 
 					if (this.modelElement.eventType == m_constants.START_EVENT_TYPE) {
 						this.circle.attr("stroke-width",
