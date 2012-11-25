@@ -312,16 +312,12 @@ define(
 						this.selectedRowIndex = this.parameterDefinitions.length - 1;
 					}
 
-					m_utils.debug("Row Index: " + this.selectedRowIndex);
-
 					this.currentParameterDefinition = this.parameterDefinitions[this.selectedRowIndex];
 
 					// Select row
 
 					var tableRows = jQuery(this.options.scope
 							+ " #parameterDefinitionsTable tr");
-
-					m_utils.debug("Table Rows: " + tableRows);
 
 					jQuery(tableRows[this.selectedRowIndex]).addClass(
 							"selected");
@@ -378,18 +374,21 @@ define(
 					this.parameterDefinitionDataSelect
 							.append("<option value=\"TO_BE_DEFINED\">(To be defined))</option>");
 
-					var modelname = m_i18nUtils
-							.getProperty("modeler.element.properties.commonProperties.thisModel");
-					this.parameterDefinitionDataSelect
-							.append("<optgroup label=\"" + modelname + "\">");
-
-					for ( var i in this.scopeModel.dataItems) {
-						var dataItem = this.scopeModel.dataItems[i];
-
+					if (this.scopeModel) {
+						var modelname = m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.thisModel");
 						this.parameterDefinitionDataSelect
-								.append("<option value='"
-										+ dataItem.getFullId() + "'>"
-										+ dataItem.name + "</option>");
+								.append("<optgroup label=\"" + modelname
+										+ "\">");
+
+						for ( var i in this.scopeModel.dataItems) {
+							var dataItem = this.scopeModel.dataItems[i];
+
+							this.parameterDefinitionDataSelect
+									.append("<option value='"
+											+ dataItem.getFullId() + "'>"
+											+ dataItem.name + "</option>");
+						}
 					}
 
 					var othermodel = m_i18nUtils
@@ -399,7 +398,7 @@ define(
 									+ othermodel + "\">");
 
 					for ( var n in m_model.getModels()) {
-						if (m_model.getModels()[n] == this.scopeModel) {
+						if (this.scopeModel && m_model.getModels()[n] == this.scopeModel) {
 							continue;
 						}
 

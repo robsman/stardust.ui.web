@@ -1,11 +1,14 @@
 /**
  * Utility functions for dialog programming.
- *
+ * 
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_model", "bpm-modeler/js/m_dialog" ,"bpm-modeler/js/m_i18nUtils"],
-		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog ,m_i18nUtils) {
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_model",
+				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_i18nUtils" ],
+		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog,
+				m_i18nUtils) {
 			return {
 				create : function(options) {
 					var panel = new DataTypeSelector();
@@ -17,12 +20,12 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function DataTypeSelector() {
 				/**
 				 * Options are
-				 *
+				 * 
 				 * scope submitHandler supportsOtherData
 				 */
 				DataTypeSelector.prototype.initialize = function(options) {
@@ -31,7 +34,8 @@ define(
 					this.supportsOtherData = options.supportsOtherData;
 
 					// TODO - not sure what the purpose of this flag is
-					// setting it to true by default to make things work as before
+					// setting it to true by default to make things work as
+					// before
 					// needs to be set appropriately where required.
 					this.supportDocumentTypes = true;
 
@@ -56,7 +60,7 @@ define(
 
 					this.initializeDataTypeOptions();
 
-				 var propertiesData = m_i18nUtils
+					var propertiesData = m_i18nUtils
 							.getProperty("modeler.element.properties.commonProperties.primitive");
 
 					this.dataTypeSelect.append("<option value='primitive'>"
@@ -69,8 +73,9 @@ define(
 					if (options.supportDocumentTypes) {
 						propertiesData = m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.document");
-						this.dataTypeSelect.append("<option value='dmsDocument'>"
-								+ propertiesData + "</option>");
+						this.dataTypeSelect
+								.append("<option value='dmsDocument'>"
+										+ propertiesData + "</option>");
 					}
 
 					if (this.supportsOtherData) {
@@ -79,7 +84,8 @@ define(
 						4
 						this.dataTypeSelect.append("<option value='other'>"
 								+ propertiesData + "</option>");
-						//this.dataTypeSelect.append("<option value='other'>Other</option>");
+						// this.dataTypeSelect.append("<option
+						// value='other'>Other</option>");
 					}
 
 					this.dataTypeSelect.change({
@@ -89,14 +95,19 @@ define(
 							dataType : event.data.panel.dataTypeSelect.val()
 						});
 
-							event.data.panel.submitChanges();
-					});
-					this.primitiveDataTypeSelect.change({
-						panel : this
-					}, function(event) {
-						event.data.panel.setPrimitiveDataType(event.data.panel.primitiveDataTypeSelect.val());
 						event.data.panel.submitChanges();
 					});
+					this.primitiveDataTypeSelect
+							.change(
+									{
+										panel : this
+									},
+									function(event) {
+										event.data.panel
+												.setPrimitiveDataType(event.data.panel.primitiveDataTypeSelect
+														.val());
+										event.data.panel.submitChanges();
+									});
 					this.primitiveDataTypeSelect
 							.change(
 									{
@@ -133,44 +144,41 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				DataTypeSelector.prototype.initializeDataTypeOptions = function() {
 					this.dataTypeSelect.empty();
 
 					var propertiesData = m_i18nUtils
-					.getProperty("modeler.element.properties.commonProperties.primitive");
+							.getProperty("modeler.element.properties.commonProperties.primitive");
 
-					this.dataTypeSelect
-							.append("<option value='primitive'>"+propertiesData+"</option>");
+					this.dataTypeSelect.append("<option value='primitive'>"
+							+ propertiesData + "</option>");
 
 					propertiesData = m_i18nUtils
-					.getProperty("modeler.element.properties.commonProperties.structureData");
+							.getProperty("modeler.element.properties.commonProperties.structureData");
 
-
-
-					this.dataTypeSelect
-							.append("<option value='struct'>"+propertiesData+"</option>");
-
-
+					this.dataTypeSelect.append("<option value='struct'>"
+							+ propertiesData + "</option>");
 
 					if (this.supportDocumentTypes) {
 						propertiesData = m_i18nUtils
-						.getProperty("modeler.element.properties.commonProperties.document");
+								.getProperty("modeler.element.properties.commonProperties.document");
 						this.dataTypeSelect
-								.append("<option value='dmsDocument'>"+propertiesData+"</option>");
+								.append("<option value='dmsDocument'>"
+										+ propertiesData + "</option>");
 					}
 
 					if (this.supportsOtherData) {
 						propertiesData = m_i18nUtils
-						.getProperty("modeler.element.properties.commonProperties.other");
-						this.dataTypeSelect
-								.append("<option value='other'>"+propertiesData+"</option>");
+								.getProperty("modeler.element.properties.commonProperties.other");
+						this.dataTypeSelect.append("<option value='other'>"
+								+ propertiesData + "</option>");
 					}
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				DataTypeSelector.prototype.setScopeModel = function(scopeModel) {
 					this.scopeModel = scopeModel;
@@ -180,7 +188,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				DataTypeSelector.prototype.populateDataStructuresSelectInput = function() {
 					this.structuredDataTypeSelect.empty();
@@ -188,22 +196,27 @@ define(
 							+ m_constants.TO_BE_DEFINED
 							+ "'>(To be defined)</option>");
 
-					this.structuredDataTypeSelect
-							.append("<optgroup label=\"This Model\">");
+					if (this.scopeModel) {
+						this.structuredDataTypeSelect
+								.append("<optgroup label=\"This Model\">");
 
-					for ( var i in this.scopeModel.typeDeclarations) {
-						this.structuredDataTypeSelect.append("<option value='"
-								+ this.scopeModel.typeDeclarations[i]
-										.getFullId() + "'>"
-								+ this.scopeModel.typeDeclarations[i].name
-								+ "</option>");
+						for ( var i in this.scopeModel.typeDeclarations) {
+							this.structuredDataTypeSelect
+									.append("<option value='"
+											+ this.scopeModel.typeDeclarations[i]
+													.getFullId()
+											+ "'>"
+											+ this.scopeModel.typeDeclarations[i].name
+											+ "</option>");
+						}
 					}
 
 					this.structuredDataTypeSelect
 							.append("</optgroup><optgroup label=\"Other Models\">");
 
 					for ( var n in m_model.getModels()) {
-						if (m_model.getModels()[n] == this.scopeModel) {
+						if (this.scopeModel
+								&& m_model.getModels()[n] == this.scopeModel) {
 							continue;
 						}
 
@@ -224,7 +237,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				DataTypeSelector.prototype.populateDocumentTypesSelectInput = function() {
 					this.documentTypeSelect.empty();
@@ -235,14 +248,21 @@ define(
 					this.documentTypeSelect
 							.append("<optgroup label=\"This Model\">");
 
-					for ( var i in this.scopeModel.typeDeclarations) {
-						// Only composite structured types and not enumerations are listed here
-						if (this.scopeModel.typeDeclarations[i].isSequence()) {
-							this.documentTypeSelect.append("<option value='"
-									+ this.scopeModel.typeDeclarations[i]
-											.getFullId() + "'>"
-									+ this.scopeModel.typeDeclarations[i].name
-									+ "</option>");
+					if (this.scopeModel) {
+						for ( var i in this.scopeModel.typeDeclarations) {
+							// Only composite structured types and not
+							// enumerations
+							// are listed here
+							if (this.scopeModel.typeDeclarations[i]
+									.isSequence()) {
+								this.documentTypeSelect
+										.append("<option value='"
+												+ this.scopeModel.typeDeclarations[i]
+														.getFullId()
+												+ "'>"
+												+ this.scopeModel.typeDeclarations[i].name
+												+ "</option>");
+							}
 						}
 					}
 
@@ -250,22 +270,25 @@ define(
 							.append("</optgroup><optgroup label=\"Other Models\">");
 
 					for ( var n in m_model.getModels()) {
-						if (m_model.getModels()[n] == this.scopeModel) {
+						if (this.scopeModel
+								&& m_model.getModels()[n] == this.scopeModel) {
 							continue;
 						}
 
 						for ( var m in m_model.getModels()[n].typeDeclarations) {
-							// Only composite structured types and not enumerations are listed here
-							if (m_model.getModels()[n].typeDeclarations[m].isSequence()) {
+							// Only composite structured types and not
+							// enumerations are listed here
+							if (m_model.getModels()[n].typeDeclarations[m]
+									.isSequence()) {
 								this.documentTypeSelect
-								.append("<option value='"
-										+ m_model.getModels()[n].typeDeclarations[m]
-												.getFullId()
-										+ "'>"
-										+ m_model.getModels()[n].name
-										+ "/"
-										+ m_model.getModels()[n].typeDeclarations[m].name
-										+ "</option>");
+										.append("<option value='"
+												+ m_model.getModels()[n].typeDeclarations[m]
+														.getFullId()
+												+ "'>"
+												+ m_model.getModels()[n].name
+												+ "/"
+												+ m_model.getModels()[n].typeDeclarations[m].name
+												+ "</option>");
 							}
 						}
 					}
@@ -274,7 +297,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				DataTypeSelector.prototype.setDataType = function(data) {
 					if (data.isSupportedDataType
@@ -290,7 +313,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				DataTypeSelector.prototype.setDataTypeSelectVal = function(data) {
 					this.dataTypeSelect.val(data.dataType);
@@ -310,7 +333,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				DataTypeSelector.prototype.getDataType = function(data) {
 					data.dataType = this.dataTypeSelect.val();
@@ -330,7 +353,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				DataTypeSelector.prototype.setPrimitiveDataType = function(
 						primitiveDataType) {
@@ -350,7 +373,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				DataTypeSelector.prototype.setStructuredDataType = function(
 						structuredDataTypeFullId) {
@@ -366,7 +389,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				DataTypeSelector.prototype.setDocumentDataType = function(
 						documentDataTypeFullId) {
@@ -382,7 +405,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				DataTypeSelector.prototype.setOtherDataType = function(dataType) {
 					if (this.otherTypeRow == null || this.otherTypeName == null) {
@@ -406,7 +429,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				DataTypeSelector.prototype.enable = function() {
 					this.dataTypeSelect.removeAttr("disabled");
@@ -420,7 +443,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				DataTypeSelector.prototype.disable = function() {
 					this.dataTypeSelect.attr("disabled", true);
@@ -434,7 +457,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				DataTypeSelector.prototype.submitChanges = function() {
 					if (this.submitHandler) {
@@ -446,18 +469,16 @@ define(
 									.val()
 						} else if (m_constants.DOCUMENT_DATA_TYPE == this.dataTypeSelect
 								.val()) {
-							structTypeFullId = this.documentTypeSelect
-									.val()
+							structTypeFullId = this.documentTypeSelect.val()
 						}
 
 						// TODO Check for changes?
-						this.submitHandler
-								.submitDataChanges({
-									dataType : this.dataTypeSelect.val(),
-									primitiveDataType : this.primitiveDataTypeSelect
-											.val(),
-									structuredDataTypeFullId : structTypeFullId
-								});
+						this.submitHandler.submitDataChanges({
+							dataType : this.dataTypeSelect.val(),
+							primitiveDataType : this.primitiveDataTypeSelect
+									.val(),
+							structuredDataTypeFullId : structTypeFullId
+						});
 					}
 				};
 			}
