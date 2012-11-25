@@ -30,7 +30,6 @@ define(
 			 * 
 			 */
 			function CommentsPropertiesPage(propertiesPanel, id) {
-				
 				var commentsText = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.comments");
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, id, commentsText,
@@ -44,7 +43,7 @@ define(
 				 * 
 				 */
 				CommentsPropertiesPage.prototype.initialize = function() {
-					this.commentsPanel = m_commentsPanel.create({scope: this.id, submitHandler: this});
+					this.commentsPanel = m_commentsPanel.create({scope: "#" + this.propertiesPanel.id + " #" + this.id, submitHandler: this});
 				};
 
 				/**

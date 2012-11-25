@@ -28,13 +28,13 @@ define(
 					this.options = options;
 					this.scope = options.scope;
 
-					this.commentsTableBody = jQuery("#" + this.scope
+					this.commentsTableBody = jQuery(this.scope
 							+ " #commentsTable tbody");
-					this.contentTextArea = jQuery("#" + this.scope
+					this.contentTextArea = jQuery(this.scope
 							+ " #contentTextArea");
-					this.submitButton = jQuery("#" + this.scope
+					this.submitButton = jQuery(this.scope
 							+ " #submitButton");
-					this.deleteButton = jQuery("#" + this.scope
+					this.deleteButton = jQuery(this.scope
 							+ " #deleteButton");
 					this.deleteButton.attr("title", "+Delete");
 					this.submitButton.click({
@@ -137,7 +137,7 @@ define(
 				 * 
 				 */
 				CommentsPanel.prototype.changeSelection = function() {
-					var selectedRows = jQuery("table#commentsTable tr.selected");
+					var selectedRows = jQuery(this.scope + " table#commentsTable tr.selected");
 
 					if (selectedRows.length == 0) {
 						this.deleteButton.attr("disabled", true);
@@ -164,7 +164,7 @@ define(
 				 */
 				CommentsPanel.prototype.deleteSelectedComments = function() {
 					var remainingComments = [];
-					var rows = jQuery("table#commentsTable tr.commentRow");
+					var rows = jQuery(this.scope + " table#commentsTable tr.commentRow");
 
 					for ( var n = 0; n < rows.length; ++n) {
 						if (!jQuery(rows[n]).is(".selected")) {
