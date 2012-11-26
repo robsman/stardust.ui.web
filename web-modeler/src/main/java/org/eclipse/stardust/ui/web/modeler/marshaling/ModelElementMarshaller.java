@@ -498,6 +498,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   laneSymbol.getWidth());
             laneSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
                   laneSymbol.getHeight());
+            loadAttributes(laneSymbol, laneSymbolJson);
 
             if (laneSymbol.getParticipant() != null)
             {
