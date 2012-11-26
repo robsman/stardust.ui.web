@@ -3,17 +3,23 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
-				"bpm-modeler/js/m_user", "bpm-modeler/js/m_model", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_basicPropertiesPage",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_extensionManager",
+				"bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_user",
+				"bpm-modeler/js/m_session", "bpm-modeler/js/m_model",
+				"bpm-modeler/js/m_dialog",
+				"bpm-modeler/js/m_basicPropertiesPage",
 				"bpm-modeler/js/m_activity", "bpm-modeler/js/m_i18nUtils" ],
-		function(m_utils, m_constants, m_command, m_commandsController, m_user,
-				m_model, m_dialog, m_basicPropertiesPage, m_activity, m_i18nUtils) {
+		function(m_utils, m_constants, m_extensionManager, m_command,
+				m_commandsController, m_user, m_session, m_model, m_dialog,
+				m_basicPropertiesPage, m_activity, m_i18nUtils) {
 			return {
 				create : function(propertiesPanel) {
 					i18nProcessActivityScreen();
@@ -25,16 +31,16 @@ define(
 				}
 			};
 
-		  function i18nProcessActivityScreen() {
+			function i18nProcessActivityScreen() {
 				$("label[for='guidOutput']")
-				.text(
-						m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.uuid"));
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.uuid"));
 
 				$("label[for='idOutput']")
-				.text(
-						m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.id"));
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.id"));
 
 				jQuery("#name")
 						.text(
@@ -78,8 +84,6 @@ define(
 										.getProperty("modeler.activity.propertyPages.general.subProcessInput"));
 			}
 
-
-
 			function ActivityBasicPropertiesPage(propertiesPanel) {
 				var basicPropertiesPage = m_basicPropertiesPage
 						.create(propertiesPanel);
@@ -89,7 +93,7 @@ define(
 						basicPropertiesPage);
 
 				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
@@ -116,12 +120,24 @@ define(
 							.mapInputId("supportsRelocationInput");
 					this.isRelocationTargetInput = this
 							.mapInputId("isRelocationTargetInput");
+					this.rulesActivityRow = this.mapInputId("rulesActivityRow");
+					this.rulesActivityInput = this
+							.mapInputId("rulesActivityInput");
+					this.rulesActivityPackageList = this
+							.mapInputId("rulesActivityPackageList");
+
+					if (!m_session.getInstance().technologyPreview) {
+						m_dialog.makeInvisible(this.rulesActivityRow);
+					} else {
+						m_dialog.makeVisible(this.rulesActivityRow);
+					}
 
 					this.registerCheckboxInputForModelElementChangeSubmission(
 							this.allowAbortByParticipantInput,
 							"isAbortableByPerformer");
 					this.registerCheckboxInputForModelElementChangeSubmission(
-							this.hibernateInitiallyInput, "isHibernatedOnCreation");
+							this.hibernateInitiallyInput,
+							"isHibernatedOnCreation");
 					this
 							.registerCheckboxInputForModelElementAttributeChangeSubmission(
 									this.supportsRelocationInput,
@@ -192,6 +208,14 @@ define(
 							event.data.page.submitSubprocessChanges();
 						}
 					});
+					this.rulesActivityInput.click({
+						"page" : this
+					}, function(event) {
+						if (event.data.page.rulesActivityInput.is(":checked")) {
+							event.data.page.setRulesType();
+							//event.data.page.submitSubprocessChanges();
+						}
+					});
 					this.subprocessModeSelect
 							.change(
 									{
@@ -207,7 +231,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.populateUserApplicationSelect = function() {
 					this.userApplicationList.empty();
@@ -218,9 +242,10 @@ define(
 							+ m_constants.AUTO_GENERATED_UI
 							+ "'>(Auto-generated Screen)</option>");
 
-					var	 modellabel =  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.thisModel");
-					this.userApplicationList
-							.append("<optgroup label=\""+modellabel+"\">");
+					var modellabel = m_i18nUtils
+							.getProperty("modeler.element.properties.commonProperties.thisModel");
+					this.userApplicationList.append("<optgroup label=\""
+							+ modellabel + "\">");
 
 					for ( var i in this.getModel().applications) {
 						if (!this.getModel().applications[i].interactive) {
@@ -234,9 +259,11 @@ define(
 					}
 
 					this.userApplicationList.append("</optgroup>");
-						 modellabel =  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel");
+					modellabel = m_i18nUtils
+							.getProperty("modeler.element.properties.commonProperties.otherModel");
 					this.userApplicationList
-							.append("</optgroup><optgroup label=\""+modellabel+"\">");
+							.append("</optgroup><optgroup label=\""
+									+ modellabel + "\">");
 
 					for ( var n in m_model.getModels()) {
 						if (m_model.getModels()[n] == this.getModel()) {
@@ -264,7 +291,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.populateApplicationSelect = function() {
 					this.applicationList.empty();
@@ -316,7 +343,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.populateSubprocessSelect = function() {
 					this.subprocessList.empty();
@@ -358,7 +385,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.setUserTaskType = function(
 						applicationFullId) {
@@ -391,10 +418,15 @@ define(
 					this.subprocessModeSelect.attr("disabled", true);
 					this.copyDataInput.attr("disabled", true);
 					this.subprocessList.val(m_constants.TO_BE_DEFINED);
+
+					if (m_session.getInstance().technologyPreview) {
+						this.rulesActivityInput.attr("checked", false);
+						this.rulesActivityPackageList.attr("disabled", true);
+					}
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.setApplicationType = function(
 						applicationFullId) {
@@ -416,10 +448,15 @@ define(
 					this.subprocessModeSelect.attr("disabled", true);
 					this.copyDataInput.attr("disabled", true);
 					this.subprocessList.val(m_constants.TO_BE_DEFINED);
+
+					if (m_session.getInstance().technologyPreview) {
+						this.rulesActivityInput.attr("checked", false);
+						this.rulesActivityPackageList.attr("disabled", true);
+					}
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.setSubprocessType = function(
 						subprocessFullId, executionType, copyData) {
@@ -439,10 +476,41 @@ define(
 					this.applicationList.attr("disabled", true);
 					this.applicationList.val(m_constants.TO_BE_DEFINED);
 					this.setSubprocessMode(executionType, copyData);
+
+					if (m_session.getInstance().technologyPreview) {
+						this.rulesActivityInput.attr("checked", false);
+						this.rulesActivityPackageList.attr("disabled", true);
+					}
 				};
 
 				/**
-				 *
+				 * 
+				 */
+				ActivityBasicPropertiesPage.prototype.setRulesType = function(
+						ruleSetUuid) {
+					this.rulesActivityInput.attr("checked", true);
+					this.rulesActivityPackageList.removeAttr("disabled");
+
+					if (ruleSetUuid != null) {
+						this.rulesActivityPackageList.val(ruleSetUuid);
+					} else {
+						this.rulesActivityPackageList
+								.val(m_constants.TO_BE_DEFINED);
+					}
+
+					this.userTaskInput.attr("checked", false);
+					this.userApplicationList.attr("disabled", true);
+					this.userApplicationList.val(m_constants.TO_BE_DEFINED);
+					m_dialog.makeInvisible(this.participantOutput);
+					this.subprocessInput.attr("checked", false);
+					this.subprocessList.attr("disabled", true);
+					this.subprocessModeSelect.attr("disabled", true);
+					this.copyDataInput.attr("disabled", true);
+					this.subprocessList.val(m_constants.TO_BE_DEFINED);
+				};
+
+				/**
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.submitUserTaskChanges = function() {
 					if (this.propertiesPanel.element.modelElement.applicationFullId != this.userApplicationList
@@ -464,7 +532,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.submitApplicationChanges = function() {
 					if (this.propertiesPanel.element.modelElement.applicationFullId != this.applicationList
@@ -482,14 +550,11 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.setSubprocessMode = function(
 						executionType, copyData) {
 					this.subprocessModeSelect.val(executionType);
-
-					m_utils.debug("===> subprocessMode " + executionType + " "
-							+ copyData);
 
 					if (executionType == "synchShared") {
 						this.copyDataInput.attr("disabled", true);
@@ -502,7 +567,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.submitSubprocessChanges = function(
 						subprocessFullId) {
@@ -526,7 +591,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();
@@ -579,15 +644,38 @@ define(
 										this.getModelElement().subprocessMode,
 										this.getModelElement().attributes["carnot:engine:subprocess:copyAllData"]);
 
-						this.allowAbortByParticipantInput.attr("checked", false);
-						this.allowAbortByParticipantInput.attr("disabled", true);
+						this.allowAbortByParticipantInput
+								.attr("checked", false);
+						this.allowAbortByParticipantInput
+								.attr("disabled", true);
 						this.supportsRelocationInput.attr("checked", false);
 						this.supportsRelocationInput.attr("disabled", true);
+					}
+
+					if (m_session.getInstance().technologyPreview) {
+						var ruleSetProviders = m_extensionManager
+								.findExtensions("ruleSetProvider");
+
+						for ( var n = 0; n < ruleSetProviders.length; n++) {
+							var ruleSetProvider = ruleSetProviders[n].provider
+									.create();
+							var ruleSets = ruleSetProvider.getRuleSets();
+
+							this.rulesActivityPackageList.empty();
+
+							for ( var i in ruleSets) {
+								this.rulesActivityPackageList
+										.append("<option value='"
+												+ ruleSets[i].uuid + "'>"
+												+ ruleSets[i].name
+												+ "</option>")
+							}
+						}
 					}
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.validate = function() {
 					if (this.validateModelElement()) {

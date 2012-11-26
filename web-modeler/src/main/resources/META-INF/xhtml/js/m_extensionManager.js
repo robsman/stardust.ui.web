@@ -71,6 +71,12 @@ define(
 					});
 				},
 
+				registerRuleSetProviderExtensions : function(extensionsConfig) {
+					loadExtensions({
+						ruleSetProvider : extensionsConfig.ruleSetProvider
+					});
+				},
+
 				/**
 				 * 
 				 * @param extensionPoint
@@ -131,6 +137,7 @@ define(
 					if (!extensions[m]) {
 						continue;
 					}
+					
 					console.log("Adding Extensions of Extension Point: " + m);
 
 					var extensionsForExtensionPoint = extensions[m];
@@ -140,9 +147,6 @@ define(
 					}
 
 					for ( var n = 0; n < extensionsForExtensionPoint.length; ++n) {
-						m_utils.debug("Extension:");
-						m_utils.debug(extensionsForExtensionPoint[n]);
-
 						if (getCumulatedExtensions()[m] == null) {
 							getCumulatedExtensions()[m] = [];
 						}
