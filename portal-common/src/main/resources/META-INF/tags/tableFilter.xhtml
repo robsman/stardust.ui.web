@@ -152,10 +152,10 @@
 								action="#{filterPopup.apply}" styleClass="button" />
 							<ice:commandButton rendered="#{filterPopup.displayDataFilters.count > 1}"
 								value="#{common_msgPropsBean['common.filterPopup.resetFilter']}"
-								action="#{filterPopup.reset}" styleClass="button" />
+								action="#{filterPopup.reset}" styleClass="button secondary" />
 							<ice:commandButton rendered="#{filterPopup.displayDataFilters.count == 1}"
 								value="#{common_msgPropsBean['common.filterPopup.resetFilter']}"
-								action="#{filterPopup.resetAndApply}" immediate="true" styleClass="button" />
+								action="#{filterPopup.resetAndApply}" immediate="true" styleClass="button secondary" />
 						</ice:panelGroup>
 					</f:facet>
 				</ice:panelBorder>
