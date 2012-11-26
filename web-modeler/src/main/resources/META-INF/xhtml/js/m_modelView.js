@@ -11,9 +11,9 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_communicationController",
 				"bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_view",
-				"bpm-modeler/js/m_model", "bpm-modeler/js/m_modelElementView","bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_modelElementView","bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_constants" ],
 		function(m_utils, m_extensionManager, m_communicationController,
-				m_command, m_commandsController, m_dialog, m_view, m_model, m_modelElementView,m_i18nUtils) {
+				m_command, m_commandsController, m_dialog, m_view, m_model, m_modelElementView,m_i18nUtils, m_constants) {
 			return {
 				initialize : function(modelId) {
 					var model = m_model.findModel(modelId);
@@ -107,6 +107,8 @@ define(
 					this.problemsTable = jQuery("#problemsTable");
 					this.problemsTableBody = jQuery("table#problemsTable tbody");
 					this.refreshValidationButton = jQuery("#refreshValidationButton");
+					this.creationDateOutput = jQuery("#creationDateOutput");
+					this.lastModificationDateOutput = jQuery("#lastModificationDateOutput");
 
 					jQuery("#modelTabs").tabs();
 
@@ -130,13 +132,29 @@ define(
 					this.model = model;
 
 					this.initializeModelElement(model);
+					if (this.model[m_constants.DATE_OF_CREATION]) {
+						this.creationDateOutput.empty();
+						this.creationDateOutput.append(this.model[m_constants.DATE_OF_CREATION]);
+					} else {
+						this.creationDateOutput.empty();
+						this.creationDateOutput.append(m_i18nUtils
+								.getProperty("modeler.common.value.unknown"));
+					}
 
+					if (this.model[m_constants.DATE_OF_MODIFICATION]) {
+						this.lastModificationDateOutput.empty();
+						this.lastModificationDateOutput.append(this.model[m_constants.DATE_OF_MODIFICATION]);
+					} else {
+						this.lastModificationDateOutput.empty();
+						this.lastModificationDateOutput.append(m_i18nUtils
+								.getProperty("modeler.common.value.unknown"));
+					}
 					// TODO: Needed?
 
 					if (this.model.attributes == null) {
-						this.model.attributes = {};				
+						this.model.attributes = {};
 					}
-					
+
 					// TODO Commented out because it is slow
 
 					//this.refreshValidation();
