@@ -74,7 +74,7 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
  * IPP XPDL marshaller.
- * 
+ *
  * @author Marc.Gille
  * @author Robert Sauer
  */
@@ -89,7 +89,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
    /**
-    * 
+    *
     * @param modelElement
     * @return
     */
@@ -375,9 +375,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * To resolve inconsistency between Access Point and
-    * 
+    *
     * TODO Review and move to Facade
-    * 
+    *
     * @param type
     * @return
     */
@@ -402,7 +402,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param laneSymbol
     * @return
     */
@@ -623,7 +623,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @return
     */
@@ -802,7 +802,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @return
     */
@@ -890,7 +890,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -950,7 +950,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1001,7 +1001,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param event
     * @return
     */
@@ -1022,8 +1022,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       eventJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.EVENT_KEY);
 
       // TODO This may changes
-      
-      
+
+
       loadDescription(eventJson, event);
       loadAttributes(event, eventJson);
 
@@ -1085,7 +1085,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param data
     * @return
     */
@@ -1221,7 +1221,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1304,12 +1304,19 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             OrganizationType org = parentOrgs.get(0);
             roleJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
                   eObjectUUIDMapper().getUUID(org));
-            if (null != org.getTeamLead() && org.getTeamLead().equals(role))
+         }
+         else
+         {
+            OrganizationType parentOrg = getOrganizationForTeamLeader(role);
+            if (null != parentOrg)
             {
+               roleJson.addProperty(ModelerConstants.PARENT_UUID_PROPERTY,
+                     eObjectUUIDMapper().getUUID(parentOrg));
                roleJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                      ModelerConstants.TEAM_LEADER_TYPE_KEY);
             }
          }
+
          roleJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY,
                eObjectUUIDMapper().getUUID(model));
          roleJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, model.getId());
@@ -1572,7 +1579,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param annotationSymbol
     * @return
     */
@@ -1623,7 +1630,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param dataMappingConnection
     * @return
     */
@@ -1740,7 +1747,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -1882,7 +1889,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -1978,7 +1985,18 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       modelJson.addProperty(ModelerConstants.DATE_OF_MODIFICATION,
             getModelBuilderFacade().getModified(model));
 
-      // loadDescription(modelJson, model);
+      // Model description
+      if (null != model.getDescription()
+            && model.getDescription().getMixed().size() > 0)
+      {
+         modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
+               (String) model.getDescription().getMixed().get(0).getValue());
+      }
+      else
+      {
+         modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, "");
+      }
+
       loadAttributes(model, modelJson);
 
       if (model.getDescription() != null)
@@ -2006,7 +2024,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       for (RoleType role : model.getRole())
       {
-         if ( !hasParentParticipant(model, role) && !isTeamLeader(role))
+         // Role is not in an organisation hierarchy nor a team leader.
+         if ( !hasParentParticipant(model, role) && (null == getOrganizationForTeamLeader(role)))
          {
             participantsJson.add(role.getId(), toRoleJson(role));
          }
@@ -2086,11 +2105,14 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * TODO - is there a better way to do this?
-    * 
+    *
+    * Returns the organisation for which the role is a team leader, null otherwise
+    * returns null if role is not a team leader in the first place
+    *
     * @param participant
     * @return
     */
-   private boolean isTeamLeader(IModelParticipant participant)
+   private OrganizationType getOrganizationForTeamLeader(IModelParticipant participant)
    {
       ModelType model = ModelUtils.findContainingModel(participant);
       if (null != model)
@@ -2100,12 +2122,12 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          {
             if (null != org.getTeamLead() && org.getTeamLead().equals(participant))
             {
-               return true;
+               return org;
             }
          }
       }
 
-      return false;
+      return null;
    }
 
    /**
@@ -2263,7 +2285,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -2294,7 +2316,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -2314,7 +2336,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     * @throws JSONException
@@ -2403,9 +2425,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * TODO From DynamicConnectionCommand. Refactor?
-    * 
+    *
     * @param activity
     * @return
     */
