@@ -350,7 +350,7 @@
 							styleClass="button"/>
 						<ice:commandButton value="#{messages_admin['common.reset']}"
 							action="#{userProfileBean.openConfirmationDialog}" partialSubmit="true" immediate="true"
-							id="cancel" styleClass="button" />
+							id="cancel" styleClass="button secondary" />
 						<ice:panelGroup styleClass="msgError">
 							<ice:outputText value="#{userProfileBean.validationMsg}"
 								styleClass="msgError" />
@@ -372,7 +372,7 @@
 						styleClass="button" title="#{messages_admin['common.apply']}" />
 					<ice:commandButton value="#{messages_admin['common.cancel']}"
 						action="#{userProfileBean.closePopup}" immediate="true"
-						id="cancelUserProfile" styleClass="button"
+						id="cancelUserProfile" styleClass="button secondary"
 						title="#{messages_admin['common.cancel']}" />
 					<ice:panelGroup styleClass="msgError" style="width:260px;">
 						<ice:outputText value="#{userProfileBean.validationMsg}"
