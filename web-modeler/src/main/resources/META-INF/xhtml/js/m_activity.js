@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -19,7 +19,7 @@ define(
 				},
 				createActivity : function(process, type) {
 					var index = process.getNewActivityIndex();
-					var activity = new Activity("Activity" + index);
+					var activity = new Activity(m_utils.generateIDFromName("Activity " + index));
 
 					activity.initialize("Activity " + index, type);
 
@@ -30,7 +30,7 @@ define(
 
 				createActivityFromProcess : function(process, subprocess) {
 					var index = process.getNewActivityIndex();
-					var activity = new Activity(subprocess.id + index);
+					var activity = new Activity(m_utils.generateIDFromName("Activity " + index));
 
 					activity.initialize(subprocess.name + index,
 							m_constants.SUBPROCESS_ACTIVITY_TYPE);
@@ -42,7 +42,7 @@ define(
 
 				createActivityFromApplication : function(process, application) {
 					var index = process.getNewActivityIndex();
-					var activity = new Activity(application.id + index);
+					var activity = new Activity(m_utils.generateIDFromName("Activity " + index));
 
 					activity.initialize(application.name + index,
 							m_constants.APPLICATION_ACTIVITY_TYPE);
@@ -74,7 +74,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function Activity(id) {
 				var modelElement = m_modelElement.create();
@@ -94,14 +94,14 @@ define(
 				this.processingType = m_constants.SINGLE_PROCESSING_TYPE;
 
 				/**
-				 * 
+				 *
 				 */
 				Activity.prototype.toString = function() {
 					return "Lightdust.Activity";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Activity.prototype.initialize = function(name, activityType) {
 					this.name = name;
@@ -121,7 +121,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Activity.prototype.getContexts = function() {
 					// TODO Should/might be evaluated on the server
@@ -136,11 +136,11 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Activity.prototype.hasInputAccessPoints = function() {
 					var contexts = this.getContexts();
-					
+
 					for ( var key in contexts) {
 						for ( var n = 0; n < contexts[key].accessPoints.length; ++n) {
 							if (contexts[key].accessPoints[n].direction == m_constants.IN_ACCESS_POINT) {
@@ -153,7 +153,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Activity.prototype.hasOutputAccessPoints = function() {
 					var contexts = this.getContexts();
