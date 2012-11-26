@@ -1957,19 +1957,32 @@ define(
 				 */
 				Connection.prototype.flipFlowOrientation = function(
 						flowOrientation) {
-					// if (this.isDataFlow()) {
-					// return;
-					// }
+					// set fromAnchorPoint
+					 var index = this
+							.flipAnchorPoint(this.fromAnchorPoint.orientation);
+					this.fromAnchorPoint = this.getFromSymbol().anchorPoints[index];
 
-					if (flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
-						this.fromAnchorPoint = this.getFromSymbol().anchorPoints[(this.fromAnchorPoint.orientation + 1) % 4];
-						this.toAnchorPoint = this.getToSymbol().anchorPoints[(this.toAnchorPoint.orientation + 1) % 4];
-					} else {
-						this.fromAnchorPoint = this.getFromSymbol().anchorPoints[(this.fromAnchorPoint.orientation + 3) % 4];
-						this.toAnchorPoint = this.getToSymbol().anchorPoints[(this.toAnchorPoint.orientation + 3) % 4];
-					}
+					// set toAnchorPoint
+					index = this
+							.flipAnchorPoint(this.toAnchorPoint.orientation);
+					this.toAnchorPoint = this.getToSymbol().anchorPoints[index];
 
 					this.reroute();
+				};
+
+				// This method is written to handle Gateway anchor points
+				Connection.prototype.flipAnchorPoint = function(orientation) {
+					var newOrientation = 0;
+					if (orientation == m_constants.NORTH) {
+						newOrientation = m_constants.WEST;
+					} else if (orientation == m_constants.EAST) {
+						newOrientation = m_constants.SOUTH;
+					} else if (orientation == m_constants.SOUTH) {
+						newOrientation = m_constants.EAST;
+					} else if (orientation == m_constants.WEST) {
+						newOrientation = m_constants.NORTH;
+					}
+					return newOrientation;
 				};
 			}
 
