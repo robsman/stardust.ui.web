@@ -54,6 +54,7 @@ require(["require",
 		 "jquery.url",
 		 "common-plugins",
 		 "i18n",
+		 "bpm-modeler/js/m_importTypeDeclarationsWizard"
 ], function(require) {
 	require("bpm-modeler/js/m_importTypeDeclarationsWizard").initialize();
 });
