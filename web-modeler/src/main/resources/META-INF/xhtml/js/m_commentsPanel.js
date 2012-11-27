@@ -1,6 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
+ * documentation
+ ******************************************************************************/
+
 /**
  * Utility functions for dialog programming.
- * 
+ *
  * @author Marc.Gille
  */
 define(
@@ -22,7 +32,7 @@ define(
 			 */
 			function CommentsPanel() {
 				/**
-				 * 
+				 *
 				 */
 				CommentsPanel.prototype.initialize = function(options) {
 					this.options = options;
@@ -51,7 +61,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommentsPanel.prototype.setComments = function(comments) {
 					this.comments = comments;
@@ -67,7 +77,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommentsPanel.prototype.addComment = function() {
 					this.comments
@@ -84,7 +94,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommentsPanel.prototype.populateCommentsTable = function() {
 					this.commentsTableBody.empty();
@@ -134,7 +144,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommentsPanel.prototype.changeSelection = function() {
 					var selectedRows = jQuery(this.scope + " table#commentsTable tr.selected");
@@ -160,7 +170,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommentsPanel.prototype.deleteSelectedComments = function() {
 					var remainingComments = [];
@@ -180,7 +190,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommentsPanel.prototype.submitChanges = function() {
 					if (this.options.submitHandler) {

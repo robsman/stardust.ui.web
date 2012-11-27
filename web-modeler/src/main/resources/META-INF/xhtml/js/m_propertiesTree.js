@@ -1,19 +1,29 @@
+/*******************************************************************************
+ * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
+ * documentation
+ ******************************************************************************/
+
 /**
  * @author Marc.Gille
  */
 define(
 		[ "bpm-modeler/js/m_utils","bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils,m_i18nUtils) {
-			
+
 			var categories = {
 				"General" : {
-					"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.general"), 
+					"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.general"),
 					"categories" : [],
 					"properties" : [ {
-						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.general.persistent"), 
+						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.general.persistent"),
 						"type" : "boolean"
 					}, {
-						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.general.key"), 
+						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.general.key"),
 						"type" : "boolean"
 					} ]
 				},
@@ -21,20 +31,20 @@ define(
 					"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui"),
 					"categories" : [],
 					"properties" : [ {
-						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.label"), 
+						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.label"),
 						"type" : "String"
 					},{
 						"name" : "InputPreferences_showDescription",
-						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.showDescription"), 
+						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.showDescription"),
 						"type" : "boolean"
-					}, 
+					},
 					{
 						"name" : "InputPreferences_readonly",
-						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.readOnly"), 
+						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.readOnly"),
 						"type" : "boolean"
 					}, {
 						"name" : "InputPreferences_mandatory",
-						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.mandatory"), 
+						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.mandatory"),
 						"type" : "boolean"
 					}, {
 						"label" : m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.format"),
@@ -98,21 +108,21 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function PropertiesTree() {
 				this.tableId = null;
 				this.categories = null;
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesTree.prototype.toString = function() {
 					return "Lightdust.PropertiesTree";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesTree.prototype.initialize = function(tableId,
 						categories) {

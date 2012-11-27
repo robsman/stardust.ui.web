@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
+ * documentation
+ ******************************************************************************/
+
 /**
  * @author Marc.Gille
  */
@@ -29,7 +39,7 @@ define(
 						propertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
@@ -157,7 +167,7 @@ define(
 										var page = event.data.page;
 
 										m_utils.debug("Submitting data flow changes");
-										
+
 										// TODO Usually we push less
 										// information, but current server code
 										// requires this
@@ -188,7 +198,7 @@ define(
 										var page = event.data.page;
 
 										m_utils.debug("Submitting data flow changes");
-										
+
 										// TODO Usually we push less
 										// information, but current server code
 										// requires this
@@ -270,7 +280,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.setDirection = function(
 						hasInputMapping, hasOutputMapping) {
@@ -291,7 +301,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.populateInputAccessPointSelectInput = function(
 						dataFlow) {
@@ -366,7 +376,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.populateOutputAccessPointSelectInput = function(
 						dataFlow) {
@@ -443,7 +453,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();

@@ -1,6 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
+ * documentation
+ ******************************************************************************/
+
 /**
  * Utility functions for dialog programming.
- * 
+ *
  * @author Marc.Gille
  */
 define(
@@ -20,12 +30,12 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function DataTypeSelector() {
 				/**
 				 * Options are
-				 * 
+				 *
 				 * scope submitHandler supportsOtherData
 				 */
 				DataTypeSelector.prototype.initialize = function(options) {
@@ -144,7 +154,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.initializeDataTypeOptions = function() {
 					this.dataTypeSelect.empty();
@@ -178,7 +188,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.setScopeModel = function(scopeModel) {
 					this.scopeModel = scopeModel;
@@ -188,7 +198,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.populateDataStructuresSelectInput = function() {
 					this.structuredDataTypeSelect.empty();
@@ -237,7 +247,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.populateDocumentTypesSelectInput = function() {
 					this.documentTypeSelect.empty();
@@ -297,7 +307,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.setDataType = function(data) {
 					if (data.isSupportedDataType
@@ -313,7 +323,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.setDataTypeSelectVal = function(data) {
 					this.dataTypeSelect.val(data.dataType);
@@ -333,7 +343,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.getDataType = function(data) {
 					data.dataType = this.dataTypeSelect.val();
@@ -353,7 +363,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.setPrimitiveDataType = function(
 						primitiveDataType) {
@@ -373,7 +383,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.setStructuredDataType = function(
 						structuredDataTypeFullId) {
@@ -389,7 +399,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.setDocumentDataType = function(
 						documentDataTypeFullId) {
@@ -405,7 +415,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.setOtherDataType = function(dataType) {
 					if (this.otherTypeRow == null || this.otherTypeName == null) {
@@ -429,7 +439,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.enable = function() {
 					this.dataTypeSelect.removeAttr("disabled");
@@ -443,7 +453,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.disable = function() {
 					this.dataTypeSelect.attr("disabled", true);
@@ -457,7 +467,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.submitChanges = function() {
 					if (this.submitHandler) {
