@@ -12,8 +12,36 @@
  * @author Robert.Sauer
  */
 define(
-		[ "jquery", "bpm-modeler/js/m_utils", "jquery.treeTable" ],
-		function(jQuery, m_utils) {
+		[ "jquery", "bpm-modeler/js/m_typeDeclaration", "bpm-modeler/js/m_utils", "bpm-modeler/js/m_i18nUtils", "jquery.treeTable" ],
+		function(jQuery, m_typeDeclaration, m_utils, m_i18nUtils) {
+
+			/**
+			 * @param {string} qName the (potentially namespace prefixed) type name
+			 * @param {string} namespace optional argument, explicitly stating the qName's namespace
+			 * @returns {string} the type's label (either from a resource bundle, otherwise simple the type's name)
+			 */
+			function getSchemaTypeLabel(qName, namespace) {
+				var label = "";
+				var parsedName = m_typeDeclaration.parseQName(qName);
+				if (("xsd" === parsedName.prefix) || ("http://www.w3.org/2001/XMLSchema" === (parsedName.namespace || namespace))) {
+					label = m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectType." + parsedName.name);
+					if ( !label) {
+						label = "xsd:" + parsedName.name;
+					}
+				}
+
+				return label || parsedName.name;
+			}
+
+			/**
+			 * @param {string} cardinality the cardinality key
+			 * @returns {string} the cardinality's label (either from a resource bundle, otherwise simple the cardinality)
+			 */
+			function getCardinalityLabel(cardinality) {
+				var label = m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.cardinality.option." + cardinality);
+
+				return label || cardinality;
+			}
 
 			function generateChildElementRow(parentPath, element, schemaType, rowInitializer) {
 
@@ -29,8 +57,16 @@ define(
 					nameColumn.children("td span").text(element.name);
 					nameColumn.appendTo(childRow);
 
-					jQuery("<td>" + element.type + "</td>").appendTo(childRow);
-					jQuery("<td>" + element.cardinality + "</td>").appendTo(childRow);
+					var typeLabel;
+					if (schemaType) {
+						typeLabel = getSchemaTypeLabel(schemaType.name, schemaType.namespace);
+					} else {
+						typeLabel = getSchemaTypeLabel(element.type);
+					}
+					var cardinalityLabel = getCardinalityLabel(element.cardinality);
+
+					jQuery("<td>" + (typeLabel || "") + "</td>").appendTo(childRow);
+					jQuery("<td>" +  (cardinalityLabel || "") + "</td>").appendTo(childRow);
 
 					if ((null != schemaType) && schemaType.isStructure()) {
 						// add styles in preparation of lazily appending child rows
@@ -121,6 +157,19 @@ define(
 			}
 
 			return {
+				/**
+				 * @param {string} qName the (potentially namespace prefixed) type name
+				 * @param {string} namespace optional argument, explicitly stating the qName's namespace
+				 * @returns {string} the type's label (either from a resource bundle, otherwise simple the type's name)
+				 */
+				getSchemaTypeLabel: getSchemaTypeLabel,
+
+				/**
+				 * @param {string} cardinality the cardinality key
+				 * @returns {string} the cardinality's label (either from a resource bundle, otherwise simple the cardinality)
+				 */
+				getCardinalityLabel: getCardinalityLabel,
+
 				generateChildElementRow: function(parentPath, element, schemaType, rowInitializer) {
 					return generateChildElementRow(parentPath, element, schemaType, rowInitializer);
 				},

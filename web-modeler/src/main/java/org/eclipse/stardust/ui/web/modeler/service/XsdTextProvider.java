@@ -22,7 +22,7 @@ public class XsdTextProvider extends XSDSwitch<String>
       "required",//Structured_Messages.CardinalityRequiredLabel,
       "optional",//Structured_Messages.CardinalityOptionalLabel,
       "many",//Structured_Messages.CardinalityManyLabel,
-      "at least one"//Structured_Messages.CardinalityAtLeastOneLabel
+      "atLeastOne"//Structured_Messages.CardinalityAtLeastOneLabel
    };
 
    private int column;

@@ -446,12 +446,12 @@ define(
 			}
 
 			function parseQName(name) {
-				if ("{" === name.charAt(0)) {
+				if (name && ("{" === name.charAt(0))) {
 					return {
 						namespace: name.substr(1, name.length).split("}")[0],
 						name: name.substr(1, name.length).split("}")[1]
 					};
-				} else if (0 <= name.indexOf(":")) {
+				} else if (name && (0 <= name.indexOf(":"))) {
 					return {
 						prefix: name.split(":")[0],
 						name: name.split(":")[1]
@@ -485,6 +485,39 @@ define(
 			}
 
 			/**
+			 * @returns {Array} the list of core XSD built-in types (roughly
+			 *          equivalent to the list of Java primitive types)
+			 */
+			function getXsdCoreTypes() {
+				return [ "string", "boolean", "long", "int", "short", "byte", "double", "float", "char", "decimal", "dateTime"];
+			}
+
+			/**
+			 * @returns {Array} the list of not so commonly used XSD built-in
+			 *          types (all but the list of types equivalent to Java
+			 *          primitive types)
+			 */
+			function getXsdExtraTypes() {
+				var miscTypes = [];
+
+				// stringy types
+				miscTypes.push("ENTITIES", "ENTITY", "ID", "IDREF", "IDREFS",
+						"language", "Name", "NCName", "NMTOKEN", "NMTOKENS",
+						"normalizedString", "QName", "token");
+				// numeric types
+				miscTypes.push("integer", "negativeInteger", "nonNegativeInteger", "nonPositiveInteger",
+						"positiveInteger", "unsignedLong", "unsignedInt", "unsignedShort", "unsignedByte");
+				// data/time types
+				miscTypes.push("date","duration","gDay","gMonth","gMonthDay","gYear","gYearMonth","time");
+				// other
+				miscTypes.push("anyURI","base64Binary","hexBinary","NOTATION");
+
+				miscTypes.sort();
+
+				return miscTypes;
+			}
+
+			/**
 			 * XSD based structured type declarations.
 			 *
 			 * @exports bpmModeler/js/m_typeDeclaration
@@ -513,6 +546,12 @@ define(
 					return json;
 				},
 
+				/**
+				 *
+				 * @param {string} sqName The schema qualified name of the type to resolve.
+				 * @param model The model providing context for type resolution.
+				 * @returns {SchemaType} The resolved schema type.
+				 */
 				resolveSchemaTypeFromModel: function(sqName, model) {
 					return resolveSchemaTypeFromModel(sqName, model);
 				},
@@ -520,17 +559,28 @@ define(
 					return resolveSchemaTypeFromSchema(typeName, schema);
 				},
 
+				getXsdCoreTypes: function() {
+					return getXsdCoreTypes();
+				},
+				getXsdExtraTypes: function() {
+					return getXsdExtraTypes();
+				},
+
+				parseQName: function(qName) {
+					return parseQName(qName);
+				},
+
 				getPrimitiveTypeLabel : function(type) {
 					if (type == null) {
 						return "None"; // I18N
 					}
-					else if (type == "int") {
+					else if (type === "int") {
 						return "Integer"; // I18N
 					}
-					else if (type == "string") {
+					else if (type === "string") {
 						return "String"; // I18N
 					}
-					else if (type == "boolean") {
+					else if (type === "boolean") {
 						return "Boolean"; // I18N
 					}
 

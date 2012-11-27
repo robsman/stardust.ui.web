@@ -1601,6 +1601,26 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          JsonObject simpleTypeJson)
    {
       List<XSDConstrainingFacet> facets = def.getFacetContents();
+
+      if (simpleTypeJson.has(ModelerConstants.TYPE_PROPERTY))
+      {
+         String baseTypeName = extractAsString(simpleTypeJson, ModelerConstants.TYPE_PROPERTY);
+
+         String nsPrefix = null;
+         if (0 <= baseTypeName.indexOf(':'))
+         {
+            nsPrefix = baseTypeName.substring(0, baseTypeName.indexOf(':'));
+            baseTypeName = baseTypeName.substring(baseTypeName.indexOf(':') + 1);
+         }
+         String baseTypeNamespace = def.getSchema().getQNamePrefixToNamespaceMap().get(nsPrefix);
+
+         XSDSimpleTypeDefinition baseType = def.resolveSimpleTypeDefinition(baseTypeNamespace, baseTypeName);
+         if (null != baseType.eContainer())
+         {
+            def.setBaseTypeDefinition(baseType);
+         }
+      }
+
       facets.clear();
 
       if (simpleTypeJson.has("facets"))
@@ -1788,7 +1808,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private static enum ParticleCardinality
    {
-      required, optional, many, at_least_one;
+      required, optional, many, atLeastOne;
 
       void update(XSDParticle particle)
       {
@@ -1806,7 +1826,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             particle.setMinOccurs(0);
             particle.setMaxOccurs(XSDParticle.UNBOUNDED);
             break;
-         case at_least_one:
+         case atLeastOne:
             particle.unsetMinOccurs();
             particle.setMaxOccurs(XSDParticle.UNBOUNDED);
             break;
@@ -1817,7 +1837,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          if ("at least one".equals(name))
          {
-            return at_least_one;
+            return atLeastOne;
          }
          return valueOf(name);
       }

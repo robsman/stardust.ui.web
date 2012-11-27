@@ -14,10 +14,10 @@
 define(
 		[ "jquery", "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_communicationController", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
-				"bpm-modeler/js/m_model", "bpm-modeler/js/m_propertiesTree", "bpm-modeler/js/m_structuredTypeBrowser", "bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_propertiesTree", "bpm-modeler/js/m_typeDeclaration", "bpm-modeler/js/m_structuredTypeBrowser", "bpm-modeler/js/m_i18nUtils" ],
 		function(jQuery, m_utils, m_constants, m_communicationController, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_propertiesTree, m_structuredTypeBrowser, m_i18nUtils) {
+				m_propertiesTree, m_typeDeclaration, m_structuredTypeBrowser, m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
 					var view = new XsdStructuredDataTypeView();
@@ -256,19 +256,20 @@ define(
 						if ( !this.typeDeclaration.isReadOnly()) {
 							typeColumn.append(this.getTypeSelectList(schemaType));
 						} else {
-							typeColumn.append(schemaType.name);
+							typeColumn.append(m_structuredTypeBrowser.getSchemaTypeLabel(schemaType.name));
 						}
 					}
 
 					var cardinalityColumn = jQuery("<td></td>").appendTo(row);
 					if (this.typeDeclaration.isSequence()) {
 						if ( !this.typeDeclaration.isReadOnly()) {
-							cardinalityColumn.append("<select size='1' class='cardinalitySelect'>"
-									+ "  <option value='required'" + (element.cardinality == "required" ? "selected" : "") + ">" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.cardinality.option.required") + "</option>"
-									+ "  <option value='many'" + (element.cardinality == "many" ? "selected" : "") + ">" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.cardinality.option.many") + "</option>"
-									+ "</select>");
+							var cardinalityBox = jQuery("<select size='1' class='cardinalitySelect'></select>");
+							jQuery.each(["required", "optional", "many", "atLeastOne"], function(i, key) {
+								cardinalityBox.append("<option value='" + key + "'" + (element.cardinality === key ? "selected" : "") + ">" + m_structuredTypeBrowser.getCardinalityLabel(key) + "</option>");
+							});
+							cardinalityColumn.append(cardinalityBox);
 						} else {
-							cardinalityColumn.append(element.cardinality);
+							cardinalityColumn.append(m_structuredTypeBrowser.getCardinalityLabel(element.cardinality));
 						}
 					}
 				};
@@ -380,22 +381,17 @@ define(
 				XsdStructuredDataTypeView.prototype.getTypeSelectList = function(schemaType) {
 					var select = "<select size='1' class='typeSelect'>";
 
-					var xsdTypes = [
-		                { id: "xsd:string", label: m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectType.string") },
-	                    { id: "xsd:int", label: m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectType.integer") },
-		                { id: "xsd:double", label: m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectType.float") },
-		                { id: "xsd:decimal", label: m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectType.decimal") },
-		                { id: "xsd:date", label: m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectType.date") }
-	                ];
+					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectTypeSection.primitives") + "'>";
 
-					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveData") + "'>";
-
-					jQuery.each(xsdTypes, function() {
-						select += "<option value='" + this.id + "' ";
-						if (schemaType.isBuiltinType() && (this.id === schemaType.name)) {
+					jQuery.each(m_typeDeclaration.getXsdCoreTypes(), function() {
+						var typeQName = "xsd:" + this;
+						select += "<option value='" + typeQName + "' ";
+						if (schemaType.isBuiltinType() && (typeQName === schemaType.name)) {
 							select += "selected ";
 						}
-						select += ">" + this.label + "</option>";
+						var label = m_structuredTypeBrowser.getSchemaTypeLabel(typeQName);
+
+						select += "title='xsd:" + this + "'>" + label || typeQName + "</option>";
 					});
 
 					select += "</optgroup>";
@@ -409,11 +405,27 @@ define(
 							if ( !schemaType.isBuiltinType()) {
 								select += ((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
 							}
-							select += ">" + typeDeclaration.name + "</option>";
+							select += ">" + m_structuredTypeBrowser.getSchemaTypeLabel(typeDeclaration.name) + "</option>";
 						}
 					});
+					select += "</optgroup>";
 
-					// select += "</optgroup><optgroup label=\"Other Models\">";
+					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel") + "'>";
+
+					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectTypeSection.extraPrimitives") + "'>";
+
+					jQuery.each(m_typeDeclaration.getXsdExtraTypes(), function() {
+						var typeQName = "xsd:" + this;
+						select += "<option value='" + typeQName + "' ";
+						if (schemaType.isBuiltinType() && (typeQName === schemaType.name)) {
+							select += "selected ";
+						}
+						select += ">" + m_structuredTypeBrowser.getSchemaTypeLabel(typeQName) || typeQName + "</option>";
+					});
+
+					select += "</optgroup>";
+
+
 					//
 					// for ( var i in m_model.getModels()) {
 					// var model = m_model.getModels()[i];
