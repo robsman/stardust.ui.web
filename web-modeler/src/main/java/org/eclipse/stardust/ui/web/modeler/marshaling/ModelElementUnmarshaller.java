@@ -889,6 +889,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          {
             JsonObject dataPathJson = dataPathes.get(n).getAsJsonObject();
             DataPathType dataPath = getModelBuilderFacade().createDataPath();
+            ModelType model = ModelUtils.findContainingModel(processDefinition);
+            long maxOID = XpdlModelUtils.getMaxUsedOid(model);
+            dataPath.setElementOid(maxOID);
 
             dataPath.setId(getModelBuilderFacade().createIdFromName(
                   dataPathJson.get(ModelerConstants.NAME_PROPERTY).getAsString()));
@@ -902,7 +905,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                String dataFullId = dataPathJson.get(
                      ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
 
-               ModelType model = ModelUtils.findContainingModel(processDefinition);
                DataType data = getModelBuilderFacade().importData(model, dataFullId);
 
                dataPath.setData(data);
