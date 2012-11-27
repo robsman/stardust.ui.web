@@ -89,9 +89,7 @@ define(
 					this.type = m_constants.SWIMLANE_SYMBOL;
 
 					this.diagram = diagram;
-					if ( !this.orientation) {
-						this.orientation = parentSymbol.orientation;
-					}
+					this.orientation = parentSymbol.orientation;
 					this.parentSymbol = parentSymbol;
 
 					var laneHeight;
@@ -461,10 +459,28 @@ define(
 					this.x = this.y;
 					this.y = temp;
 
+					var changeDescriptionsLane = [];
+
+					var changesLane = {
+						x : this.x,
+						y : this.y,
+						width : this.width,
+						height : this.height,
+						orientation : this.orientation
+					};
+					changeDescriptionsLane.push({
+						oid : this.oid,
+						changes : changesLane
+					});
+
+					var symbolchangeDesc;
 					for ( var n in this.containedSymbols) {
-						this.containedSymbols[n]
+						symbolchangeDesc = this.containedSymbols[n]
 								.flipFlowOrientation(flowOrientation);
+						changeDescriptionsLane.push(symbolchangeDesc);
 					}
+
+					return changeDescriptionsLane;
 				};
 
 				/**
@@ -874,78 +890,156 @@ define(
 				 *
 				 */
 				SwimlaneSymbol.prototype.stretchStop = function() {
+					if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL){
+						// Check if the minimizing of the lane height is permissible given that
+						// adjoining lanes may have content longer than this lane.
+						var isStretchWithinLimitForOtherLanes = true;
+						for (var i = 0; i < this.parentSymbol.laneSymbols.length; i++) {
+							var childrenBindingRect = this.parentSymbol.laneSymbols[i].getChildSymbolsBindingRect();
+							if (parseInt(this.y) > parseInt(childrenBindingRect.top)
+									|| parseInt(this.y + this.height) < parseInt(childrenBindingRect.bottom)) {
+								isStretchWithinLimitForOtherLanes = false;
+							}
+						}
 
-					// Check if the minimizing of the lane height is permissible given that
-					// adjoining lanes may have content longer than this lane.
-					var isStretchWithinLimitForOtherLanes = true;
-					for (var i = 0; i < this.parentSymbol.laneSymbols.length; i++) {
-						var childrenBindingRect = this.parentSymbol.laneSymbols[i].getChildSymbolsBindingRect();
-						if (parseInt(this.y) > parseInt(childrenBindingRect.top)
-								|| parseInt(this.y + this.height) < parseInt(childrenBindingRect.bottom)) {
-							isStretchWithinLimitForOtherLanes = false;
+						if (isStretchWithinLimitForOtherLanes == false
+								|| parseInt(this.x) > parseInt(this.preDragState.containedSymbolsLeft)
+								|| parseInt(this.x + this.width) < parseInt(this.preDragState.containedSymbolsRight)
+								|| parseInt(this.y) > parseInt(this.preDragState.containedSymbolsTop)
+								|| parseInt(this.y + this.height) < parseInt(this.preDragState.containedSymbolsBottom)) {
+
+							//Reset the lane to pre-drag position
+							this.x = this.preDragState.x;
+							this.y = this.preDragState.y;
+							this.width = this.preDragState.width;
+							this.height = this.preDragState.height;
+							this.adjustGeometry();
+						} else {
+							// If the width is decreased below min_width the
+							// min-width should be set as width
+							if (this.width < m_constants.LANE_MIN_WIDTH) {
+								this.width = m_constants.LANE_MIN_WIDTH;
+								// The displayed text needs to be trimmed
+								var str = this.text.attr("text");
+								if (str.length > 8) {
+									this.text.attr("text", str.substring(0, 8)
+											+ " ...");
+								}
+							} else {
+								this.text.attr("text", this.name);
+							}
+
+							var moveX, moveY = 0;
+							if (this.preDragState.x < this.x) {
+								moveX = this.preDragState.x - this.x;
+								this.x = this.preDragState.x;
+							} else if (this.preDragState.x > this.x) {
+								moveX = this.preDragState.x - this.x;
+								this.x = this.preDragState.x;
+							}
+							if (this.preDragState.y < this.y) {
+								moveY = this.preDragState.y - this.y;
+								this.y = this.preDragState.y;
+							} else if (this.preDragState.y > this.y) {
+								moveY = this.preDragState.y - this.y;
+								this.y = this.preDragState.y;
+							}
+							this.parentSymbol.recalculateBoundingBox();
+							this.parentSymbol.adjustGeometry();
+
+							var changes = {
+							x : this.x,
+							y : this.y,
+							width : this.width,
+							height : this.height,
+							xOffset : moveX,
+							yOffset : moveY,
+							orientation : this.orientation
+							};
+
+							var command = m_command
+									.createUpdateModelElementCommand(
+											this.diagram.modelId, this.oid, changes);
+
+							m_commandsController.submitCommand(command);
 						}
 					}
+					//TODO : Optiomize following block - common code btw Horizontal Orientation and Vertical Orientation
+					else{
+						// Check if the minimizing of the lane height is permissible given that
+						// adjoining lanes may have content longer than this lane.
+						var isStretchWithinLimitForOtherLanes = true;
+						for (var i = 0; i < this.parentSymbol.laneSymbols.length; i++) {
+							var childrenBindingRect = this.parentSymbol.laneSymbols[i].getChildSymbolsBindingRect();
 
-					if (isStretchWithinLimitForOtherLanes == false
-							|| parseInt(this.x) > parseInt(this.preDragState.containedSymbolsLeft)
-							|| parseInt(this.x + this.width) < parseInt(this.preDragState.containedSymbolsRight)
-							|| parseInt(this.y) > parseInt(this.preDragState.containedSymbolsTop)
-							|| parseInt(this.y + this.height) < parseInt(this.preDragState.containedSymbolsBottom)) {
-
-						//Reset the lane to pre-drag position
-						this.x = this.preDragState.x;
-						this.y = this.preDragState.y;
-						this.width = this.preDragState.width;
-						this.height = this.preDragState.height;
-						this.adjustGeometry();
-					} else {
-						// If the width is decreased below min_width the
-						// min-width should be set as width
-						if (this.width < m_constants.LANE_MIN_WIDTH) {
-							this.width = m_constants.LANE_MIN_WIDTH;
-							// The displayed text needs to be trimmed
-							var str = this.text.attr("text");
-							if (str.length > 8) {
-								this.text.attr("text", str.substring(0, 8)
-										+ " ...");
+							if (parseInt(this.x) > parseInt(childrenBindingRect.left)
+									|| parseInt(this.x + this.width) < parseInt(childrenBindingRect.right)) {
+								isStretchWithinLimitForOtherLanes = false;
 							}
+						}
+
+						if (isStretchWithinLimitForOtherLanes == false
+								|| parseInt(this.y) > parseInt(this.preDragState.containedSymbolsTop)
+								|| parseInt(this.y + this.height) < parseInt(this.preDragState.containedSymbolsBottom)
+								|| parseInt(this.x) > parseInt(this.preDragState.containedSymbolsLeft)
+								|| parseInt(this.x + this.width) < parseInt(this.preDragState.containedSymbolsRight)) {
+
+							//Reset the lane to pre-drag position
+							this.x = this.preDragState.x;
+							this.y = this.preDragState.y;
+							this.width = this.preDragState.width;
+							this.height = this.preDragState.height;
+							this.adjustGeometry();
 						} else {
-							this.text.attr("text", this.name);
+							// If the width is decreased below min_width the
+							// min-width should be set as width
+							if (this.height < m_constants.LANE_MIN_WIDTH) {
+								this.height = m_constants.LANE_MIN_WIDTH;
+								// The displayed text needs to be trimmed
+
+								var str = this.text.attr("text");
+								if (str.length > 8) {
+									this.text.attr("text", str.substring(0, 8)
+											+ " ...");
+								}
+							} else {
+								this.text.attr("text", this.name);
+							}
+
+							var moveX, moveY = 0;
+							if (this.preDragState.x < this.x) {
+								moveX = this.preDragState.x - this.x;
+								this.x = this.preDragState.x;
+							} else if (this.preDragState.x > this.x) {
+								moveX = this.preDragState.x - this.x;
+								this.x = this.preDragState.x;
+							}
+							if (this.preDragState.y < this.y) {
+								moveY = this.preDragState.y - this.y;
+								this.y = this.preDragState.y;
+							} else if (this.preDragState.y > this.y) {
+								moveY = this.preDragState.y - this.y;
+								this.y = this.preDragState.y;
+							}
+							this.parentSymbol.recalculateBoundingBox();
+							this.parentSymbol.adjustGeometry();
+
+							var changes = {
+							x : this.x,
+							y : this.y,
+							width : this.width,
+							height : this.height,
+							xOffset : moveX,
+							yOffset : moveY,
+							orientation : this.orientation
+							};
+
+							var command = m_command
+									.createUpdateModelElementCommand(
+											this.diagram.modelId, this.oid, changes);
+
+							m_commandsController.submitCommand(command);
 						}
-
-						var moveX, moveY = 0;
-						if (this.preDragState.x < this.x) {
-							moveX = this.preDragState.x - this.x;
-							this.x = this.preDragState.x;
-						} else if (this.preDragState.x > this.x) {
-							moveX = this.preDragState.x - this.x;
-							this.x = this.preDragState.x;
-						}
-						if (this.preDragState.y < this.y) {
-							moveY = this.preDragState.y - this.y;
-							this.y = this.preDragState.y;
-						} else if (this.preDragState.y > this.y) {
-							moveY = this.preDragState.y - this.y;
-							this.y = this.preDragState.y;
-						}
-						this.parentSymbol.recalculateBoundingBox();
-						this.parentSymbol.adjustGeometry();
-
-						var changes = {
-						x : this.x,
-						y : this.y,
-						width : this.width,
-						height : this.height,
-						xOffset : moveX,
-						yOffset : moveY,
-						orientation : this.orientation
-						};
-
-						var command = m_command
-								.createUpdateModelElementCommand(
-										this.diagram.modelId, this.oid, changes);
-
-						m_commandsController.submitCommand(command);
 					}
 				};
 

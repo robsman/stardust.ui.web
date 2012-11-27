@@ -64,6 +64,7 @@ import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
 import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
+import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IAccessPointOwner;
@@ -76,6 +77,7 @@ import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
+import org.eclipse.stardust.model.xpdl.carnot.OrientationType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
@@ -270,6 +272,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          updateSwimlane((LaneSymbol) element, json);
       }
+      else if (element instanceof DiagramType)
+      {
+         updateDiagram((DiagramType) element, json);
+      }
       else if (element instanceof TransitionConnectionType)
       {
          updateControlFlowConnection((TransitionConnectionType) element, json);
@@ -291,6 +297,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private void updateActivity(ActivityType activity, JsonObject activityJson)
    {
+      if (null == activityJson)
+      {
+         return;
+      }
       // Detect gateways early to be able to fix accidental ID changes
       final boolean isGateway = activity.getId().toLowerCase().startsWith("gateway");
 
@@ -652,6 +662,21 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       updateIdentifiableElement(swimlaneSymbol, swimlaneSymbolJson);
 
+      // update orientation
+      String orientation = extractString(swimlaneSymbolJson,
+            ModelerConstants.ORIENTATION_PROPERTY);
+      if (StringUtils.isNotEmpty(orientation))
+      {
+         if (ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL.equals(orientation))
+         {
+            swimlaneSymbol.setOrientation(OrientationType.HORIZONTAL_LITERAL);
+         }
+         else
+         {
+            swimlaneSymbol.setOrientation(OrientationType.VERTICAL_LITERAL);
+         }
+      }
+
       updateNodeSymbol(swimlaneSymbol, swimlaneSymbolJson);
 
       mapDeclaredProperties(swimlaneSymbol, swimlaneSymbolJson,
@@ -669,6 +694,27 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
 
       storeAttributes(swimlaneSymbol, swimlaneSymbolJson);
+   }
+
+   /**
+    * @param diagram
+    * @param poolSymbolJson
+    */
+   private void updateDiagram(DiagramType diagram, JsonObject poolSymbolJson)
+   {
+      String orientation = extractString(poolSymbolJson,
+            ModelerConstants.ORIENTATION_PROPERTY);
+      if (StringUtils.isNotEmpty(orientation))
+      {
+         if (ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL.equals(orientation))
+         {
+            diagram.setOrientation(OrientationType.HORIZONTAL_LITERAL);
+         }
+         else
+         {
+            diagram.setOrientation(OrientationType.VERTICAL_LITERAL);
+         }
+      }
    }
 
    /**
@@ -1033,20 +1079,44 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             }
 
             // Update other swimlane width/height
-            for (LaneSymbol lane : poolSymbol.getLanes())
+            OrientationType orientation = getDiagramOrientationType(nodeSymbol);
+
+            if(orientation.equals(OrientationType.VERTICAL_LITERAL))
             {
-               if (nodeSymbol.getElementOid() != lane.getElementOid())
+               for (LaneSymbol lane : poolSymbol.getLanes())
                {
-                  if ((lane.getXPos() > nodeSymbol.getXPos() && widthOffset != 0))
+                  if (nodeSymbol.getElementOid() != lane.getElementOid())
                   {
-                     lane.setXPos(lane.getXPos() + widthOffset);
+                     if ((lane.getXPos() > nodeSymbol.getXPos() && widthOffset != 0))
+                     {
+                        lane.setXPos(lane.getXPos() + widthOffset);
+                     }
+                     if (heightOffset != 0)
+                     {
+                        lane.setHeight(height);
+                        // if symbol on currentLane(nodeSymbol) is moved , adjustment on
+                        // other lane symbol is required
+                        updateChildSymbolCoordinates(lane, 0, yOffset);
+                     }
                   }
-                  if (heightOffset != 0)
+               }
+            }
+            else{
+               for (LaneSymbol lane : poolSymbol.getLanes())
+               {
+                  if (nodeSymbol.getElementOid() != lane.getElementOid())
                   {
-                     lane.setHeight(height);
-                     // if symbol on currentLane(nodeSymbol) is moved , adjustment on
-                     // other lane symbol is required
-                     updateChildSymbolCoordinates(lane, 0, yOffset);
+                     if ((lane.getYPos() > nodeSymbol.getYPos() && heightOffset != 0))
+                     {
+                        lane.setYPos(lane.getYPos() + heightOffset);
+                     }
+                     if (widthOffset != 0)
+                     {
+                        lane.setWidth(width);
+                        // if symbol on currentLane(nodeSymbol) is moved , adjustment on
+                        // other lane symbol is required
+                        updateChildSymbolCoordinates(lane, xOffset, 0);
+                     }
                   }
                }
             }
@@ -1065,6 +1135,33 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             }
          }
       }
+   }
+
+   /**
+    * assist retrieving diagram - orientation
+    *
+    * @param nodeSymbol
+    * @return
+    */
+   private OrientationType getDiagramOrientationType(INodeSymbol nodeSymbol)
+   {
+      ISwimlaneSymbol container = (nodeSymbol.eContainer() instanceof ISwimlaneSymbol)
+            ? (ISwimlaneSymbol) nodeSymbol.eContainer()
+            : null;
+
+      if (null != container)
+      {
+         DiagramType diagram = (container.eContainer() instanceof DiagramType)
+               ? (DiagramType) container.eContainer()
+               : null;
+
+         if (null != diagram)
+         {
+            return diagram.getOrientation();
+         }
+      }
+
+      return OrientationType.VERTICAL_LITERAL;
    }
 
    /**
@@ -1128,7 +1225,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       JsonObject startEventJson = startEventSymbolJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
 
-      updateNodeSymbol(startEventSymbol, startEventJson);
+      updateNodeSymbol(startEventSymbol, startEventSymbolJson);
+
+      if (null == startEventJson)
+      {
+         return;
+      }
 
       TriggerType trigger = startEventSymbol.getTrigger();
 
@@ -1148,7 +1250,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       JsonObject endEventJson = endEventSymbolJson.getAsJsonObject("modelElement");
 
-      updateNodeSymbol(endEventSymbol, endEventJson);
+      updateNodeSymbol(endEventSymbol, endEventSymbolJson);
 
       mapDeclaredProperties(endEventSymbol.getModelElement(),
             endEventSymbolJson.getAsJsonObject("modelElement"),

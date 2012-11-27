@@ -1670,14 +1670,32 @@ define(
 					var temp = this.x;
 					this.x = this.y;
 					this.y = temp;
+
+					var diagramHeaderMargin = (2 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
+							+ m_constants.POOL_SWIMLANE_MARGIN;
+
 					if (m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL === flowOrientation) {
-						this.y = this.y - (this.y * 0.5);
+						//this.y = this.y - (this.y * 0.5) + diagramHeaderMargin;
 						this.x = this.x - (this.width / 2 - this.height / 2);
 					} else {
-						this.x = this.x + (this.x * 0.5);
+						//this.x = this.x + (this.x * 0.5) + diagramHeaderMargin;
 						this.y = this.y + (this.width / 2 - this.height / 2);
 					}
 					this.moveBy(0, 0);
+
+					var changesSymbol = {
+						x : this.x,
+						y : this.y,
+					};
+					var changeDesc = {
+						oid : this.oid,
+						changes : changesSymbol
+					};
+
+					//this.moveBy(0, 0);
+
+
+					return changeDesc;
 				};
 
 				/*

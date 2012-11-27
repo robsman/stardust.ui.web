@@ -1968,16 +1968,28 @@ define(
 				Connection.prototype.flipFlowOrientation = function(
 						flowOrientation) {
 					// set fromAnchorPoint
-					 var index = this
+					var index = this
 							.flipAnchorPoint(this.fromAnchorPoint.orientation);
-					this.fromAnchorPoint = this.getFromSymbol().anchorPoints[index];
+					this.fromAnchorPoint.orientation = index;
 
 					// set toAnchorPoint
 					index = this
 							.flipAnchorPoint(this.toAnchorPoint.orientation);
-					this.toAnchorPoint = this.getToSymbol().anchorPoints[index];
+					this.toAnchorPoint.orientation = index;
+
+					var changesConn = {
+						modelElement : {
+							toAnchorPointOrientation : this.toAnchorPoint.orientation,
+							fromAnchorPointOrientation : this.fromAnchorPoint.orientation
+						}
+					};
 
 					this.reroute();
+
+					return {
+						oid : this.oid,
+						changes : changesConn
+					};
 				};
 
 				// This method is written to handle Gateway anchor points

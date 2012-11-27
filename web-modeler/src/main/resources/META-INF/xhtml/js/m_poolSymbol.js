@@ -64,9 +64,7 @@ define(
 				PoolSymbol.prototype.bind = function(diagram) {
 					this.type = m_constants.POOL_SYMBOL;
 					this.diagram = diagram;
-					if ( !this.orientation) {
-						this.orientation = diagram.flowOrientation;
-					}
+					this.orientation = diagram.flowOrientation;
 					this.borderRectangle = null;
 					this.topRectangle = null;
 					this.text = null;
@@ -196,6 +194,8 @@ define(
 									this.name)
 							.attr(
 									{
+										"transform" : this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? "R0"
+												: "R270",
 										"text-anchor" : "middle",
 										"fill" : "white",
 										"font-family" : m_constants.DEFAULT_FONT_FAMILY,
@@ -203,9 +203,6 @@ define(
 										"font-weight" : "bold"
 									});
 
-					this.text
-							.rotate(this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? 0
-									: -90);
 					this.addToPrimitives(this.text);
 				};
 
@@ -491,6 +488,8 @@ define(
 							"height" : m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
 						});
 						this.text.attr({
+							"transform" : "R0",
+							"y" : 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT,
 							"x" : this.x + 0.5 * this.width
 						});
 					} else {
@@ -503,6 +502,8 @@ define(
 							"height" : this.height
 						});
 						this.text.attr({
+							"transform" : "R270",
+							"x" : 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT,
 							"y" : this.y + 0.5 * this.height
 						});
 					}
@@ -658,10 +659,18 @@ define(
 						flowOrientation) {
 					this.orientation = flowOrientation;
 
+					var changeDescriptionsPool = [];
+
+					var laneChangeDescs;
 					for ( var n in this.laneSymbols) {
-						this.laneSymbols[n]
+						laneChangeDescs = this.laneSymbols[n]
 								.flipFlowOrientation(flowOrientation);
+
+						changeDescriptionsPool = changeDescriptionsPool
+								.concat(laneChangeDescs);
 					}
+
+					return changeDescriptionsPool;
 				};
 
 				/**

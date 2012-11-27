@@ -61,7 +61,7 @@ define(
 				var SNAP_LINE_THRESHOLD = 15;
 
 				// Public constants
-
+				this.oid = 0;
 				this.NORMAL_MODE = "NORMAL_MODE";
 				this.RUBBERBAND_MODE = "RUBBERBAND_MODE";
 				this.CONNECTION_MODE = "CONNECTION_MODE";
@@ -939,7 +939,8 @@ define(
 
 							if (null != conn) {
 								conn.applyChanges(obj.changes.modified[i]);
-								conn.initializeAnchorPoints();
+								//TODO: commented as flip orientation was not working, not sure why we require this...
+								//conn.initializeAnchorPoints();
 								conn.reroute();
 								conn.refresh();
 							} else {
@@ -1566,19 +1567,40 @@ define(
 					}
 
 					// TODO Not the right algorithm - kept as a reminder to change
-
+					var changeDescriptionsDiagram = [];
+					var poolChangeDesc;
 					for ( var id in this.poolSymbols) {
-						this.poolSymbols[id].flipFlowOrientation(this.flowOrientation);
+						poolChangeDesc = this.poolSymbols[id]
+								.flipFlowOrientation(this.flowOrientation);
+						changeDescriptionsDiagram = changeDescriptionsDiagram
+								.concat(poolChangeDesc);
+
 						this.poolSymbols[id].recalculateBoundingBox();
 						this.poolSymbols[id].adjustGeometry();
 					}
 
 					// Rotate anchor points
-
+					var connectionDesc;
 					for ( var n in this.connections) {
-						this.connections[n]
+						connectionDesc = this.connections[n]
 								.flipFlowOrientation(this.flowOrientation);
+						changeDescriptionsDiagram.push(connectionDesc);
 					}
+
+					var diagramChanges = {
+						orientation : this.flowOrientation
+					};
+
+					changeDescriptionsDiagram.push({
+						oid : this.oid,
+						changes : diagramChanges
+					});
+
+					// update
+					var command = m_command.createUpdateDiagramCommand(
+							this.model.id, changeDescriptionsDiagram);
+
+					m_commandsController.submitCommand(command);
 				};
 
 				/**
@@ -2004,6 +2026,9 @@ define(
 					m_utils.debug("===> Process/Diagram JSON");
 					m_utils.debug(json);
 
+					this.oid = json.oid;
+					this.flowOrientation = json.orientation;
+
 					// Create pools and lanes
 
 					var poolCount = 0;
@@ -2035,11 +2060,6 @@ define(
 					}
 
 					this.setSize(totalWidth, totalHeight);
-
-					for ( var n in this.poolSymbols) {
-						this.flowOrientation = this.poolSymbols[n].orientation;
-						break;
-					}
 
 					m_utils.debug("===> Diagram JSON");
 					m_utils.debug(this);

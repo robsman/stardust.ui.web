@@ -161,6 +161,10 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 		createUpdateModelElementCommand : function(modelId, oid, changes) {
 			return new ChangeDescriptor("modelElement.update", modelId, [{oid: oid, changes: changes}]);
 		},
+		createUpdateDiagramCommand : function(modelId, changeDescriptions) {
+			return new ChangeDescriptor("modelElement.update", modelId,
+					changeDescriptions);
+		},
 		//TODO: temporary - later all commands will accept OID and/or UUID.
 		createUpdateModelElementWithUUIDCommand : function(modelId, uuid, changes) {
 			return new ChangeDescriptor("modelElement.update", modelId, [{uuid: uuid, changes: changes}]);
@@ -176,11 +180,11 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 		createDeclineInvite: function(oldObject, prospect) {
 			return new ChangeEvent(m_constants.DECLINE_INVITE_COMMAND, "/users", "declineInvite", oldObject, prospect);
 		},
-		
+
 		createFetchOwner : function(owner){
 			return new ChangeEvent(m_constants.UPDATE_OWNER, "/users", "updateOwner", owner, null);
 		},
-		
+
 		createFetchProspects : function(owner){
 			return new ChangeEvent(m_constants.UPDATE_INVITED_USERS_COMMAND, "/users", "getAllProspects", owner, null);
 		},

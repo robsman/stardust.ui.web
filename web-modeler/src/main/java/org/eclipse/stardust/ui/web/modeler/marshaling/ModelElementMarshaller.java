@@ -442,6 +442,23 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       JsonObject poolSymbolsJson = new JsonObject();
       diagramJson.add(ModelerConstants.POOL_SYMBOLS, poolSymbolsJson);
 
+      diagramJson.addProperty(ModelerConstants.OID_PROPERTY,
+            processDefinition.getDiagram().get(0).getElementOid());
+
+      if (processDefinition.getDiagram()
+            .get(0)
+            .getOrientation()
+            .equals(OrientationType.HORIZONTAL_LITERAL))
+      {
+         diagramJson.addProperty(ModelerConstants.ORIENTATION_PROPERTY,
+               ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL);
+      }
+      else
+      {
+         diagramJson.addProperty(ModelerConstants.ORIENTATION_PROPERTY,
+               ModelerConstants.DIAGRAM_FLOW_ORIENTATION_VERTICAL);
+      }
+
       for (PoolSymbol poolSymbol : processDefinition.getDiagram().get(0).getPoolSymbols())
       {
          JsonObject poolSymbolJson = new JsonObject();
