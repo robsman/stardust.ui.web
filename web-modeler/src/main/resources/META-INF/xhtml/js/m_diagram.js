@@ -476,9 +476,9 @@ define(
 				Diagram.prototype.initialize = function() {
 					// TODO Bind against loaded models
 
-					this.modelId = jQuery.url.setUrl(window.location.search)
+					this.modelId = jQuery.url(window.location.search)
 							.param("modelId");
-					this.processId = jQuery.url.setUrl(window.location.search)
+					this.processId = jQuery.url(window.location.search)
 							.param("processId");
 					this.model = m_model.findModel(this.modelId);
 
@@ -1585,7 +1585,7 @@ define(
 				 *
 				 */
 				Diagram.prototype.print = function(anchorPoint) {
-					jQuery("#scrollpane").print();
+					jQuery("#canvas").jqprint();
 				};
 
 				/**
