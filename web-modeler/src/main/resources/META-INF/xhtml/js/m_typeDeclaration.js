@@ -411,7 +411,11 @@ define(
 						if ( !typeQName.namespace && typeQName.prefix) {
 							typeQName.namespace = this.schema.nsMappings[typeQName.prefix];
 						}
-						return resolveSchemaTypeFromModel("{" + typeQName.namespace + "}" + typeQName.name, this.scope);
+						if (this.scope) {
+							return resolveSchemaTypeFromModel("{" + typeQName.namespace + "}" + typeQName.name, this.scope);
+						} else if (this.schema) {
+							return resolveSchemaTypeFromSchema("{" + typeQName.namespace + "}" + typeQName.name, this.schema);
+						}
 					}
 				} else {
 					return undefined;
@@ -425,7 +429,7 @@ define(
 					// resolve ns prefix to schema
 					if (parsedName.namespace === "http://www.w3.org/2001/XMLSchema") {
 						return new SchemaType("xsd:" + parsedName.name, parsedName.namespace);
-					} else {
+					} else if (model) {
 						jQuery.each(model.typeDeclarations, function(i, declaration) {
 							if ((null != declaration.typeDeclaration)
 									&& (null != declaration.typeDeclaration.schema)

@@ -184,8 +184,8 @@ define(
 
 						var path = "element-" + name.replace(/:/g, "-");
 
-						// TODO element's schema type
-						var row = m_structuredTypeBrowser.generateChildElementRow("element-", element, undefined,
+						var schemaType = m_typeDeclaration.resolveSchemaTypeFromSchema(element.type, schema);
+						var row = m_structuredTypeBrowser.generateChildElementRow("element-", element, schemaType,
 								function(row, element, schemaType) {
 							jQuery("<td><span class='data-element'>" + element.name + "</span></td>").appendTo(row);
 							jQuery("<td>" + element.type + "</td>").appendTo(row);
@@ -197,8 +197,10 @@ define(
 						row.addClass("top-level");
 						this.tableBody.append(row);
 
-						// TODO drill into elements, too (requires element's schemaType, see above)
-//						m_structuredTypeBrowser.insertChildElementRowsEagerly(row);
+						// drill into elements, too (requires element's schemaType, see above)
+						if (schemaType) {
+							m_structuredTypeBrowser.insertChildElementRowsEagerly(row);
+						}
 					}
 
 					var view = this;
