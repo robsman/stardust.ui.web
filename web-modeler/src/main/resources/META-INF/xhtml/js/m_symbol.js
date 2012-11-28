@@ -1328,8 +1328,11 @@ define(
 					if (this.diagram.isInConnectionMode()) {
 						if (null != this.diagram.currentConnection
 								&& this.diagram.currentConnection.isPrepared()) {
-							m_utils.removeItemFromArray(
-									this.connections, this.diagram.currentConnection);
+							if(this.diagram.currentConnection.fromAnchorPoint.symbol.oid != this.oid){
+								m_utils.removeItemFromArray(
+										this.connections, this.diagram.currentConnection);
+							}
+
 							this.diagram.currentConnection
 									.setDummySecondAnchorPoint();
 						}
