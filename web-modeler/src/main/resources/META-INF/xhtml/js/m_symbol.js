@@ -1052,6 +1052,9 @@ define(
 									return;
 								}
 
+								this.diagram.snapSymbol(this);
+
+								var newGeometry = {};
 								if (newParentSymbol != this.parentSymbol) {
 									m_utils.removeItemFromArray(
 											this.parentSymbol.containedSymbols,
@@ -1063,22 +1066,20 @@ define(
 											.push(this);
 
 									this.parentSymbolId = newParentSymbol.id;
+									newGeometry.modelElement = {
+											participantFullId : this.parentSymbol.participantFullId
+									}
 
 									this.onParentSymbolChange();
 								}
 
-								this.diagram.snapSymbol(this);
-
-								var newGeometry = {
-									"x" : this.x
-											+ this.parentSymbol.symbolXOffset,
-									"y" : this.y,
-									"parentSymbolId" : this.parentSymbol.id,
-									"type" : this.type
-								};
+								newGeometry['x'] = this.x + this.parentSymbol.symbolXOffset;
+								newGeometry['y'] = this.y;
+								newGeometry['parentSymbolId'] = this.parentSymbol.id;
+								newGeometry['type'] = this.type;
 
 								var command = m_command
-										.createMoveNodeSymbolCommand(
+										.createUpdateModelElementCommand(
 												this.diagram.model.id,
 												this.oid, newGeometry);
 								command.sync = true;
@@ -1093,13 +1094,7 @@ define(
 								// TODO Put in method
 
 								if (this.isCompleted() != null) {
-									// this.submitUpdate();
 
-									var oldGeometry = {
-										"x" : this.dragStartX,
-										"y" : this.dragStartY,
-										"oid" : this.oid
-									};
 									var newGeometry = {
 										"x" : this.x
 												+ this.parentSymbol.symbolXOffset,
@@ -1685,7 +1680,7 @@ define(
 
 					var changesSymbol = {
 						x : this.x,
-						y : this.y,
+						y : this.y
 					};
 					var changeDesc = {
 						oid : this.oid,
@@ -1693,7 +1688,6 @@ define(
 					};
 
 					//this.moveBy(0, 0);
-
 
 					return changeDesc;
 				};

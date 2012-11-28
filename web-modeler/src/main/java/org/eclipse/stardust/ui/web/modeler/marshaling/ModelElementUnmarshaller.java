@@ -16,7 +16,6 @@ import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
-import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newManualTrigger;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 
@@ -37,6 +36,7 @@ import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
@@ -361,17 +361,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                ModelerConstants.ACTIVITY_TYPE)))
          {
             activity.setImplementation(ActivityImplementationType.MANUAL_LITERAL);
-
-            if (activityJson.has(ModelerConstants.PARTICIPANT_FULL_ID)
-                  && !activityJson.get(ModelerConstants.PARTICIPANT_FULL_ID).isJsonNull())
-            {
-               String participantFullId = extractString(activityJson,
-                     ModelerConstants.PARTICIPANT_FULL_ID);
-
-               IModelParticipant performer = getModelBuilderFacade().findParticipant(
-                     participantFullId);
-               activity.setPerformer(performer);
-            }
          }
          else if (ModelerConstants.SUBPROCESS_ACTIVITY.equals(extractString(activityJson,
                ModelerConstants.ACTIVITY_TYPE)))
@@ -423,6 +412,18 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
                getModelBuilderFacade().setApplication(activity, applicationFullId);
             }
+         }
+         if (activity.getImplementation().equals(
+               ActivityImplementationType.MANUAL_LITERAL)
+               && activityJson.has(ModelerConstants.PARTICIPANT_FULL_ID)
+               && !activityJson.get(ModelerConstants.PARTICIPANT_FULL_ID).isJsonNull())
+         {
+            String participantFullId = extractString(activityJson,
+                  ModelerConstants.PARTICIPANT_FULL_ID);
+
+            IModelParticipant performer = getModelBuilderFacade().findParticipant(
+                  participantFullId);
+            activity.setPerformer(performer);
          }
       }
    }
@@ -1019,24 +1020,27 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       if (nodeSymbolJto.has(ModelerConstants.X_PROPERTY)
             && nodeSymbolJto.has(ModelerConstants.Y_PROPERTY))
       {
+         LaneSymbol newParentSymbol = null;
          int x = extractInt(nodeSymbolJto, ModelerConstants.X_PROPERTY);
          int y = extractInt(nodeSymbolJto, ModelerConstants.Y_PROPERTY);
 
          // adjust coordinates from global to local
          int laneOffsetX = 0;
          int laneOffsetY = 0;
-         ISwimlaneSymbol container = (nodeSymbol.eContainer() instanceof ISwimlaneSymbol)
-               ? (ISwimlaneSymbol) nodeSymbol.eContainer()
-               : null;
-         while (null != container)
-         {
-            laneOffsetX += container.getXPos();
-            laneOffsetY += container.getYPos();
 
-            // recurse
-            container = (container.eContainer() instanceof ISwimlaneSymbol)
-                  ? (ISwimlaneSymbol) container.eContainer()
-                  : null;
+         String parentID = extractString(nodeSymbolJto, ModelerConstants.PARENT_SYMBOL_ID_PROPERTY);
+         ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(nodeSymbol);
+         if ( !(nodeSymbol instanceof LaneSymbol))
+         {
+            newParentSymbol = getModelBuilderFacade().findLaneSymbolById(processDefinition,
+                  parentID);
+
+            if (null != newParentSymbol)
+            {
+               laneOffsetX = new Long(newParentSymbol.getXPos()).intValue();
+               laneOffsetY = new Long(newParentSymbol.getYPos()).intValue();
+            }
+
          }
 
          nodeSymbol.setXPos(x - laneOffsetX);
@@ -1129,6 +1133,16 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                nodeSymbol.setHeight(height);
             }
          }
+         // Type property is used to identify the symbol type, used while changing
+         // parentSymbol on move from one lane to another.
+         if (nodeSymbolJto.has(ModelerConstants.TYPE_PROPERTY))
+         {
+            String symbolType = nodeSymbolJto.get(ModelerConstants.TYPE_PROPERTY).getAsString();
+            if (null != symbolType)
+            {
+               updateParentSymbolForSymbol(nodeSymbol, newParentSymbol, symbolType);
+            }
+         }
       }
    }
 
@@ -1191,6 +1205,67 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
    }
 
+   /**
+    * remove the association from existing lane and add symbol to new Lane
+    *
+    * @param nodeSymbol
+    * @param newParentSymbol
+    * @param symbolType
+    */
+   private void updateParentSymbolForSymbol(INodeSymbol nodeSymbol,
+         LaneSymbol newParentSymbol, String symbolType)
+   {
+      LaneSymbol parentLane = (LaneSymbol) nodeSymbol.eContainer();
+      if (symbolType.equals(ModelerConstants.ACTIVITY_SYMBOL)
+            || symbolType.equals(ModelerConstants.GATEWAY_SYMBOL))
+      {
+         if (parentLane.getElementOid() != newParentSymbol.getElementOid())
+         {
+            // If the parent is changed, remove reference from old parent
+            parentLane.getActivitySymbol().remove(nodeSymbol);
+            ActivitySymbolType activitySymbol = (ActivitySymbolType) nodeSymbol;
+            // Set the Performer for Activ
+            if (null != activitySymbol.getActivity().getPerformer())
+            {
+               activitySymbol.getActivity()
+                     .setPerformer(newParentSymbol.getParticipant());
+            }
+            newParentSymbol.getActivitySymbol().add((ActivitySymbolType) nodeSymbol);
+         }
+      }
+      else if (symbolType.equals(ModelerConstants.EVENT_SYMBOL))
+      {
+         StartEventSymbol startSymbol = getModelBuilderFacade().findStartEventSymbol(
+               parentLane, nodeSymbol.getElementOid());
+         if (null != startSymbol)
+         {
+            if (parentLane.getElementOid() != newParentSymbol.getElementOid())
+            {
+               parentLane.getStartEventSymbols().remove(nodeSymbol);
+
+               newParentSymbol.getStartEventSymbols().add((StartEventSymbol) nodeSymbol);
+            }
+         }
+         else
+         {
+            if (parentLane.getElementOid() != newParentSymbol.getElementOid())
+            {
+               parentLane.getEndEventSymbols().remove(nodeSymbol);
+
+               newParentSymbol.getEndEventSymbols().add((EndEventSymbol) nodeSymbol);
+            }
+         }
+      }
+      else if (symbolType.equals(ModelerConstants.DATA_SYMBOL))
+      {
+         if (parentLane.getElementOid() != newParentSymbol.getElementOid())
+         {
+            parentLane.getDataSymbol().remove(nodeSymbol);
+
+            newParentSymbol.getDataSymbol().add((DataSymbolType) nodeSymbol);
+         }
+      }
+   }
    /**
     *
     * @param activitySymbol
@@ -1285,6 +1360,18 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          getModelBuilderFacade().setAttribute(trigger,
                "stardust::engine:eventClass",
                triggerJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString());
+      }
+      if (triggerJson.has(ModelerConstants.PARTICIPANT_FULL_ID))
+      {
+         String participantFullId = extractString(triggerJson,
+               ModelerConstants.PARTICIPANT_FULL_ID);
+
+         IModelParticipant performer = getModelBuilderFacade().findParticipant(
+               participantFullId);
+
+         getModelBuilderFacade().setAttribute(trigger,
+               PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT,
+               performer.getId());
       }
 
       if (triggerJson.has(ModelerConstants.PARAMETER_MAPPINGS_PROPERTY))
