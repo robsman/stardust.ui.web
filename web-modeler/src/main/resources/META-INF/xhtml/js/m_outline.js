@@ -1735,7 +1735,7 @@ define(
 										}
 									}
 								}).jstree("set_theme", "classic",
-								"../css/jstree/classic/style.css");
+								"../css/thirdparty/jstree/classic/style.css");
 				// "themes" : {
 				// "theme" : "default",
 				// "url" : "/xhtml/css/jstree"}}).jstree("set_theme",
