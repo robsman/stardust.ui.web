@@ -94,9 +94,33 @@ define(
 					this.registerInputForModelElementAttributeChangeSubmission(
 							this.primitiveDefaultTextInput,
 							"carnot:engine:defaultValue");
-					this.registerCheckboxInputForModelElementAttributeChangeSubmission(
-							this.primitiveDefaultCheckboxInput,
-							"carnot:engine:defaultValue");
+
+					// carnot:engine:defaultValue, in spite of being a checkbox
+					// is a string attribute
+					// Hence not using the usual change listener for checkboxes
+					this.primitiveDefaultCheckboxInput.click({
+						"page" : this,
+						"input" : this.primitiveDefaultCheckboxInput
+					}, function(event) {
+						var page = event.data.page;
+						var input = event.data.input;
+
+						if (!page.validate()) {
+							return;
+						}
+
+						if (input.is(":checked")) {
+							page.submitChanges(page
+									.assembleChangedObjectFromAttribute(
+											"carnot:engine:defaultValue",
+											"true"));
+						} else {
+							page.submitChanges(page
+									.assembleChangedObjectFromAttribute(
+											"carnot:engine:defaultValue",
+											"false"));
+						}
+					});
 				};
 
 				/**
@@ -115,7 +139,7 @@ define(
 					this
 							.initializeDataType(
 									this.getModelElement(),
-									this.getModelElement().attributes["carnot:engine:defaultValue"]);
+									("true" == this.getModelElement().attributes["carnot:engine:defaultValue"]));
 
 					if ("Public" == this.getModelElement().attributes["carnot:engine:visibility"]) {
 						this.publicVisibilityCheckbox.attr("checked", true);
