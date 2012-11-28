@@ -371,8 +371,8 @@ define(function() {
 		INTEGRATOR_ROLE : "Integrator",
 
 		//General
-		NEW_LINE : 	"\n"
-
+		NEW_LINE : 	"\n",
+		EXTERNAL_REFERENCE_PROPERTY : "externalReference"
 
 	};
 });
