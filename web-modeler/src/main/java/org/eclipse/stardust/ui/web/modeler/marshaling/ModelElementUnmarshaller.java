@@ -1081,13 +1081,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             // Update other swimlane width/height
             OrientationType orientation = getDiagramOrientationType(nodeSymbol);
 
-            if(orientation.equals(OrientationType.VERTICAL_LITERAL))
+            for (LaneSymbol lane : poolSymbol.getLanes())
             {
-               for (LaneSymbol lane : poolSymbol.getLanes())
+               if (nodeSymbol.getElementOid() != lane.getElementOid())
                {
-                  if (nodeSymbol.getElementOid() != lane.getElementOid())
+                  if (orientation.equals(OrientationType.VERTICAL_LITERAL))
                   {
-                     if ((lane.getXPos() > nodeSymbol.getXPos() && widthOffset != 0))
+                     if (lane.getXPos() > nodeSymbol.getXPos() && widthOffset != 0)
                      {
                         lane.setXPos(lane.getXPos() + widthOffset);
                      }
@@ -1099,14 +1099,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                         updateChildSymbolCoordinates(lane, 0, yOffset);
                      }
                   }
-               }
-            }
-            else{
-               for (LaneSymbol lane : poolSymbol.getLanes())
-               {
-                  if (nodeSymbol.getElementOid() != lane.getElementOid())
+                  else
                   {
-                     if ((lane.getYPos() > nodeSymbol.getYPos() && heightOffset != 0))
+                     if (lane.getYPos() > nodeSymbol.getYPos() && heightOffset != 0)
                      {
                         lane.setYPos(lane.getYPos() + heightOffset);
                      }
