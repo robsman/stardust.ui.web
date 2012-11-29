@@ -125,7 +125,6 @@ define(
 				 */
 				ActivitySymbol.prototype.initializeFromJson = function(lane) {
 					m_activity.typeObject(this.modelElement);
-					
 					this.parentSymbol = lane;
 					this.parentSymbolId = lane.id;
 					this.parentSymbol.containedSymbols.push(this);
@@ -484,7 +483,13 @@ define(
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_switchToApplicationActivityClosure
-											} ]);
+											},
+											{
+												imageUrl : "../../images/icons/activity-manual.png",
+												imageWidth : 16,
+												imageHeight : 16,
+												clickHandler : ActivitySymbol_switchToManualActivityClosure
+											}]);
 				};
 
 				/**
@@ -509,30 +514,51 @@ define(
 				 *
 				 */
 				ActivitySymbol.prototype.switchToSubprocessActivity = function() {
-					this.icon.hide();
+					if (this.modelElement.activityType != m_constants.SUBPROCESS_ACTIVITY_TYPE) {
+						this.icon.hide();
 
-					this.modelElement.activityType = m_constants.SUBPROCESS_ACTIVITY_TYPE;
-					this.icon = this.subprocessIcon;
+						this.modelElement.activityType = m_constants.SUBPROCESS_ACTIVITY_TYPE;
+						this.icon = this.subprocessIcon;
 
-					this.icon.show();
-					this.icon.toFront();
+						this.icon.show();
+						this.icon.toFront();
 
-					this.submitChanges();
+						this.submitChanges();
+					}
 				};
 
 				/**
 				 *
 				 */
 				ActivitySymbol.prototype.switchToApplicationActivity = function() {
-					this.icon.hide();
+					if (this.modelElement.activityType != m_constants.APPLICATION_ACTIVITY_TYPE) {
+						this.icon.hide();
 
-					this.modelElement.activityType = m_constants.APPLICATION_ACTIVITY_TYPE;
-					this.icon = this.applicationIcon;
+						this.modelElement.activityType = m_constants.APPLICATION_ACTIVITY_TYPE;
+						this.icon = this.applicationIcon;
 
-					this.icon.show();
-					this.icon.toFront();
+						this.icon.show();
+						this.icon.toFront();
 
-					this.submitChanges();
+						this.submitChanges();
+					}
+				};
+
+				/**
+				 *
+				 */
+				ActivitySymbol.prototype.switchToManualActivity = function() {
+					if (this.modelElement.activityType != m_constants.MANUAL_ACTIVITY_TYPE) {
+						this.icon.hide();
+
+						this.modelElement.activityType = m_constants.MANUAL_ACTIVITY_TYPE;
+						this.icon = this.manualActivityIcon;
+
+						this.icon.show();
+						this.icon.toFront();
+
+						this.submitChanges();
+					}
 				};
 
 				/**
@@ -708,6 +734,14 @@ define(
 			function ActivitySymbol_switchToApplicationActivityClosure() {
 				this.auxiliaryProperties.callbackScope
 						.switchToApplicationActivity();
+			}
+
+			/**
+			 *
+			 */
+			function ActivitySymbol_switchToManualActivityClosure() {
+				this.auxiliaryProperties.callbackScope
+						.switchToManualActivity();
 			}
 
 			/**
