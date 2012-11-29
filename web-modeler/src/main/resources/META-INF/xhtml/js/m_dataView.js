@@ -240,7 +240,7 @@ define(
 					this.dataTypeSelector.setScopeModel(this.data.model);
 					this.dataTypeSelector.setDataType(this.data);
 					this.initializeDataType(this.data,
-							("true" == this.data.attributes["carnot:engine:defaultValue"] ));
+							this.data.attributes["carnot:engine:defaultValue"]);
 
 					if ("Public" == this.data.attributes["carnot:engine:visibility"]) {
 						this.publicVisibilityCheckbox.attr("checked", true);
@@ -291,7 +291,7 @@ define(
 							m_dialog
 									.makeVisible(this.primitiveDefaultCheckboxInputRow);
 							this.primitiveDefaultCheckboxInput.attr("checked",
-									(defaultValue == true));
+									(defaultValue == "true"));
 						} else {
 							m_dialog
 									.makeVisible(this.primitiveDefaultTextInputRow);
