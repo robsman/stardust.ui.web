@@ -262,8 +262,14 @@ define(
 						// If any lane is minimized, symbolXOffset is added to
 						// store correct co-ord,
 						// as of state when all lane will be maximized
-						if (this.parentSymbol.symbolXOffset) {
-							this.x += this.parentSymbol.symbolXOffset;
+						if (this.parentSymbol.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+							if (this.parentSymbol.symbolXOffset) {
+								this.x += this.parentSymbol.symbolXOffset;
+							}
+						} else {
+							if (this.parentSymbol.symbolYOffset) {
+								this.y += this.parentSymbol.symbolYOffset;
+							}
 						}
 						this.createAndSubmitCreateCommand(sync);
 					}
@@ -458,54 +464,107 @@ define(
 								this.connections[n].fromAnchorPoint.cacheOrientation = conn.fromAnchorPoint.orientation;
 								this.connections[n].toAnchorPoint.cacheOrientation = conn.toAnchorPoint.orientation;
 							}
+							if (connectionStartLane.symbolYOffset > 0) {
+								conn.fromAnchorPoint.cacheY = conn.fromAnchorPoint.y;
+								conn.toAnchorPoint.cacheY = conn.toAnchorPoint.y;
+								this.connections[n].fromAnchorPoint.cacheOrientation = conn.fromAnchorPoint.orientation;
+								this.connections[n].toAnchorPoint.cacheOrientation = conn.toAnchorPoint.orientation;
+							}
 							this.connections[n].hide();
 						} else {
-							// from-anchor point adjustment
-							if (this.parentSymbol.id == connectionStartLane.id) {
-								// When connection is from left to right
-								if (conn.toAnchorPoint.x > conn.fromAnchorPoint.x) {
-									conn.fromAnchorPoint.cacheX = conn.fromAnchorPoint.x;
-									conn.fromAnchorPoint.x = this.parentSymbol.x
-											+ this.parentSymbol.width;
+							if (this.parentSymbol.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+								// from-anchor point adjustment
+								if (this.parentSymbol.id == connectionStartLane.id) {
+									// When connection is from left to right
+									if (conn.toAnchorPoint.x > conn.fromAnchorPoint.x) {
+										conn.fromAnchorPoint.cacheX = conn.fromAnchorPoint.x;
+										conn.fromAnchorPoint.x = this.parentSymbol.x
+												+ this.parentSymbol.width;
 
-									this.cacheAnchorPointAndAdjust(
-											conn.fromAnchorPoint,
-											conn.toAnchorPoint);
-									conn.fromAnchorPoint.orientation = m_constants.EAST;
+										this.cacheAnchorPointAndAdjust(
+												conn.fromAnchorPoint,
+												conn.toAnchorPoint);
+										conn.fromAnchorPoint.orientation = m_constants.EAST;
 
-								} else {
-									// When connection is from right to left
-									conn.fromAnchorPoint.cacheX = conn.fromAnchorPoint.x;
-									conn.fromAnchorPoint.x = this.parentSymbol.x;
-									this.cacheAnchorPointAndAdjust(
-											conn.fromAnchorPoint,
-											conn.toAnchorPoint);
-									conn.fromAnchorPoint.orientation = m_constants.WEST;
+									} else {
+										// When connection is from right to left
+										conn.fromAnchorPoint.cacheX = conn.fromAnchorPoint.x;
+										conn.fromAnchorPoint.x = this.parentSymbol.x;
+										this.cacheAnchorPointAndAdjust(
+												conn.fromAnchorPoint,
+												conn.toAnchorPoint);
+										conn.fromAnchorPoint.orientation = m_constants.WEST;
+									}
+
 								}
+								// to-anchor point adjustment
+								else {
+									// When connection is from right to left
+									if (conn.fromAnchorPoint.x > conn.toAnchorPoint.x) {
+										conn.toAnchorPoint.cacheX = conn.toAnchorPoint.x;
+										conn.toAnchorPoint.x = this.parentSymbol.x
+												+ this.parentSymbol.width;
 
-							}
-							// to-anchor point adjustment
-							else {
-								// When connection is from right to left
-								if (conn.fromAnchorPoint.x > conn.toAnchorPoint.x) {
-									conn.toAnchorPoint.cacheX = conn.toAnchorPoint.x;
-									conn.toAnchorPoint.x = this.parentSymbol.x
-											+ this.parentSymbol.width;
+										this.cacheAnchorPointAndAdjust(
+												conn.toAnchorPoint,
+												conn.fromAnchorPoint);
+										conn.toAnchorPoint.orientation = m_constants.EAST;
 
-									this.cacheAnchorPointAndAdjust(
-											conn.toAnchorPoint,
-											conn.fromAnchorPoint);
-									conn.toAnchorPoint.orientation = m_constants.EAST;
+									} else {
+										conn.toAnchorPoint.cacheX = conn.toAnchorPoint.x;
+										conn.toAnchorPoint.x = connectionToLane.x;
 
-								} else {
-									conn.toAnchorPoint.cacheX = conn.toAnchorPoint.x;
-									conn.toAnchorPoint.x = connectionToLane.x;
+										this.cacheAnchorPointAndAdjust(
+												conn.toAnchorPoint,
+												conn.fromAnchorPoint);
+										conn.toAnchorPoint.orientation = m_constants.WEST;
 
-									this.cacheAnchorPointAndAdjust(
-											conn.toAnchorPoint,
-											conn.fromAnchorPoint);
-									conn.toAnchorPoint.orientation = m_constants.WEST;
+									}
+								}
+							}//Horizontal orientation
+							else{
+								// from-anchor point adjustment
+								if (this.parentSymbol.id == connectionStartLane.id) {
+									// When connection is from top to bottom
+									if (conn.toAnchorPoint.y > conn.fromAnchorPoint.y) {
+										conn.fromAnchorPoint.cacheY = conn.fromAnchorPoint.y;
+										conn.fromAnchorPoint.y = this.parentSymbol.y
+												+ this.parentSymbol.height;
+										this.cacheAnchorPointAndAdjust(
+												conn.fromAnchorPoint,
+												conn.toAnchorPoint);
+										conn.fromAnchorPoint.orientation = m_constants.SOUTH;
 
+									} else {
+										// When connection is from bottom to top
+										conn.fromAnchorPoint.cacheY = conn.fromAnchorPoint.y;
+										conn.fromAnchorPoint.y = this.parentSymbol.y;
+										this.cacheAnchorPointAndAdjust(
+												conn.fromAnchorPoint,
+												conn.toAnchorPoint);
+										conn.fromAnchorPoint.orientation = m_constants.NORTH;
+									}
+								}
+								// to-anchor point adjustment
+								else {
+									// When connection is from bottom to top
+									if (conn.fromAnchorPoint.y > conn.toAnchorPoint.y) {
+										conn.toAnchorPoint.cacheY = conn.toAnchorPoint.y;
+										conn.toAnchorPoint.y = this.parentSymbol.y
+												+ this.parentSymbol.height;
+										this.cacheAnchorPointAndAdjust(
+												conn.toAnchorPoint,
+												conn.fromAnchorPoint);
+										conn.toAnchorPoint.orientation = m_constants.SOUTH;
+
+									} else { //top to bottom
+										conn.toAnchorPoint.cacheY = conn.toAnchorPoint.y;
+										conn.toAnchorPoint.y = connectionToLane.y;
+										this.cacheAnchorPointAndAdjust(
+												conn.toAnchorPoint,
+												conn.fromAnchorPoint);
+										conn.toAnchorPoint.orientation = m_constants.NORTH;
+									}
 								}
 							}
 							this.connections[n].reroute();
@@ -521,27 +580,49 @@ define(
 					// Cache the current orientation for the connection
 					if (currentAnchorPt.cacheOrientation == null) {
 						currentAnchorPt.cacheOrientation = currentAnchorPt.orientation;
-						if (!currentAnchorPt.symbol.visible
-								&& !targetAnchorPt.symbol.visible) {
-							currentAnchorPt.cacheY = currentAnchorPt.y;
-							currentAnchorPt.y = targetAnchorPt.y;
-						} else {
-							// When the to orientation is south, we need to
-							// move the connection down
-							if (targetAnchorPt.orientation == m_constants.SOUTH) {
-								currentAnchorPt.cacheY = currentAnchorPt.y;
-								currentAnchorPt.y = targetAnchorPt.y
-										+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH;
-							} else if (targetAnchorPt.orientation == m_constants.NORTH) {
-								currentAnchorPt.cacheY = currentAnchorPt.y;
-								currentAnchorPt.y = targetAnchorPt.y
-										- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH;
-							} else {
+						if(this.parentSymbol.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL){
+							if (!currentAnchorPt.symbol.visible
+									&& !targetAnchorPt.symbol.visible) {
 								currentAnchorPt.cacheY = currentAnchorPt.y;
 								currentAnchorPt.y = targetAnchorPt.y;
+							} else {
+								// When the to orientation is south, we need to
+								// move the connection down
+								if (targetAnchorPt.orientation == m_constants.SOUTH) {
+									currentAnchorPt.cacheY = currentAnchorPt.y;
+									currentAnchorPt.y = targetAnchorPt.y
+											+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH;
+								} else if (targetAnchorPt.orientation == m_constants.NORTH) {
+									currentAnchorPt.cacheY = currentAnchorPt.y;
+									currentAnchorPt.y = targetAnchorPt.y
+											- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH;
+								} else {
+									currentAnchorPt.cacheY = currentAnchorPt.y;
+									currentAnchorPt.y = targetAnchorPt.y;
+								}
+							}
+						}else{
+							if (!currentAnchorPt.symbol.visible
+									&& !targetAnchorPt.symbol.visible) {
+								currentAnchorPt.cacheX = currentAnchorPt.x;
+								currentAnchorPt.x = targetAnchorPt.x;
+							} else {
+								// When the to orientation is south, we need to
+								// move the connection down
+								if (targetAnchorPt.orientation == m_constants.EAST) {
+									currentAnchorPt.cacheX = currentAnchorPt.y;
+									currentAnchorPt.x = targetAnchorPt.x
+											+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH;
+								} else if (targetAnchorPt.orientation == m_constants.WEST) {
+									currentAnchorPt.cacheX = currentAnchorPt.x;
+									currentAnchorPt.y = targetAnchorPt.y
+											- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH;
+								} else {
+									currentAnchorPt.cacheX = currentAnchorPt.x;
+									currentAnchorPt.x = targetAnchorPt.x;
+								}
 							}
 						}
-
 					}
 				}
 
@@ -918,31 +999,60 @@ define(
 							// If connection is visible and swimlane is minimize
 							if (this.connections[connection].visible
 									&& this.parentSymbol.minimized) {
-								var fromAnchorPt = this.connections[connection].fromAnchorPoint;
-								var toAnchorPt = this.connections[connection].toAnchorPoint;
-								var fromAnchorParentLaneX = fromAnchorPt.symbol.parentSymbol.x;
-								var toAnchorParentLaneX = toAnchorPt.symbol.parentSymbol.x;
-								// When user minimize/maximise other lane this
-								// lane connector needs to be adjusted
-								if (!fromAnchorPt.symbol.visible) {
-									if (fromAnchorParentLaneX < toAnchorParentLaneX) {
-										this.connections[connection].fromAnchorPoint.x = fromAnchorParentLaneX
-												+ fromAnchorPt.symbol.parentSymbol.width;
-									} else {
-										this.connections[connection].fromAnchorPoint.x = fromAnchorParentLaneX;
-									}
+								if (this.parentSymbol.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+									var fromAnchorPt = this.connections[connection].fromAnchorPoint;
+									var toAnchorPt = this.connections[connection].toAnchorPoint;
+									var fromAnchorParentLaneX = fromAnchorPt.symbol.parentSymbol.x;
+									var toAnchorParentLaneX = toAnchorPt.symbol.parentSymbol.x;
+									// When user minimize/maximise other lane this
+									// lane connector needs to be adjusted
+									if (!fromAnchorPt.symbol.visible) {
+										if (fromAnchorParentLaneX < toAnchorParentLaneX) {
+											this.connections[connection].fromAnchorPoint.x = fromAnchorParentLaneX
+													+ fromAnchorPt.symbol.parentSymbol.width;
+										} else {
+											this.connections[connection].fromAnchorPoint.x = fromAnchorParentLaneX;
+										}
 
-								}
-								// This check is required as movement is not
-								// required when connecting Lane is visible
-								if (!toAnchorPt.symbol.visible) {
-									if (toAnchorParentLaneX > fromAnchorParentLaneX) {
-										this.connections[connection].toAnchorPoint.x = toAnchorParentLaneX;
-									} else {
-										this.connections[connection].toAnchorPoint.x = toAnchorParentLaneX
-												+ toAnchorPt.symbol.parentSymbol.width;
 									}
+									// This check is required as movement is not
+									// required when connecting Lane is visible
+									if (!toAnchorPt.symbol.visible) {
+										if (toAnchorParentLaneX > fromAnchorParentLaneX) {
+											this.connections[connection].toAnchorPoint.x = toAnchorParentLaneX;
+										} else {
+											this.connections[connection].toAnchorPoint.x = toAnchorParentLaneX
+													+ toAnchorPt.symbol.parentSymbol.width;
+										}
 
+									}
+								} else { // Horizontal Orientation
+									var fromAnchorPt = this.connections[connection].fromAnchorPoint;
+									var toAnchorPt = this.connections[connection].toAnchorPoint;
+									var fromAnchorParentLaneY = fromAnchorPt.symbol.parentSymbol.y;
+									var toAnchorParentLaneY = toAnchorPt.symbol.parentSymbol.y;
+									// When user minimize/maximise other lane
+									// this
+									// lane connector needs to be adjusted
+									if (!fromAnchorPt.symbol.visible) {
+										if (fromAnchorParentLaneY < toAnchorParentLaneY) {
+											this.connections[connection].fromAnchorPoint.y = fromAnchorParentLaneY
+													+ fromAnchorPt.symbol.parentSymbol.height;
+										} else {
+											this.connections[connection].fromAnchorPoint.y = fromAnchorParentLaneY;
+										}
+
+									}
+									// This check is required as movement is not
+									// required when connecting Lane is visible
+									if (!toAnchorPt.symbol.visible) {
+										if (toAnchorParentLaneY > fromAnchorParentLaneY) {
+											this.connections[connection].toAnchorPoint.y = toAnchorParentLaneY;
+										} else {
+											this.connections[connection].toAnchorPoint.y = toAnchorParentLaneY
+													+ toAnchorPt.symbol.parentSymbol.height;
+										}
+									}
 								}
 								this.connections[connection].reroute();
 							}

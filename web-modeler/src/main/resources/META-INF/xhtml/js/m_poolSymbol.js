@@ -326,11 +326,20 @@ define(
 				PoolSymbol.prototype.adjustCurrentLaneCoordinates = function(
 						swimlaneSymbol) {
 					var xOffset = 0;
+					var yOffset = 0;
 					for ( var n in this.laneSymbols) {
 						if (this.laneSymbols[n].minimized) {
-							xOffset = this.laneSymbols[n].cacheWidth - this.laneSymbols[n].width;
-							swimlaneSymbol.x += xOffset;
-							swimlaneSymbol.symbolXOffset = xOffset;
+							if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+								xOffset = this.laneSymbols[n].cacheWidth
+										- this.laneSymbols[n].width;
+								swimlaneSymbol.x += xOffset;
+								swimlaneSymbol.symbolXOffset = xOffset;
+							} else {
+								yOffset = this.laneSymbols[n].cacheHeight
+										- this.laneSymbols[n].height;
+								swimlaneSymbol.y += yOffset;
+								swimlaneSymbol.symbolYOffset = yOffset;
+							}
 							break;
 						}
 					}
@@ -414,55 +423,118 @@ define(
 				PoolSymbol.prototype.updateLanesOffsetAndAdjustChild = function(
 						currentLane, minimize) {
 					for ( var n in this.laneSymbols) {
-						// For all lanes right to current lane, set the XOffset
-						// for width adjustment
-						if (this.laneSymbols[n] != currentLane
-								&& this.laneSymbols[n].x > currentLane.x) {
-							if (minimize) {
-								this.laneSymbols[n].symbolXOffset += currentLane.cacheWidth
-										- currentLane.width;
-								// Move the lane to left when adjacent lane is
-								// minimized
-								this.laneSymbols[n].moveBy(
-										-(currentLane.cacheWidth - currentLane.width), 0);
-								// Move the contained symbols
-								for ( var c in this.laneSymbols[n].containedSymbols) {
-									this.laneSymbols[n].containedSymbols[c]
-											.moveBy(
-													-(currentLane.cacheWidth - currentLane.width),
-													0);
-								}
-							} else {
-								if (this.laneSymbols[n].symbolXOffset > 0) {
-									// Reset the offset, when adjacant lane is
-									// maximized
-									this.laneSymbols[n].symbolXOffset -= (currentLane.cacheWidth - currentLane.width);
-									// Move the lane to right
+						//Vertical Orientation
+						if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+							// For all lanes right to current lane, set the XOffset
+							// for width adjustment
+							if (this.laneSymbols[n] != currentLane
+									&& this.laneSymbols[n].x > currentLane.x) {
+								if (minimize) {
+									this.laneSymbols[n].symbolXOffset += currentLane.cacheWidth
+											- currentLane.width;
+									// Move the lane to left when adjacent lane is
+									// minimized
 									this.laneSymbols[n].moveBy(
-											currentLane.cacheWidth
-													- currentLane.width, 0);
-									// Move the contained symbols to saved
-									// location
+											-(currentLane.cacheWidth - currentLane.width), 0);
+									// Move the contained symbols
 									for ( var c in this.laneSymbols[n].containedSymbols) {
 										this.laneSymbols[n].containedSymbols[c]
-												.moveTo(
-														this.laneSymbols[n].containedSymbols[c].serverSideCoordinates.x
-																- this.laneSymbols[n].symbolXOffset,
-														this.laneSymbols[n].containedSymbols[c].serverSideCoordinates.y);
+												.moveBy(
+														-(currentLane.cacheWidth - currentLane.width),
+														0);
+									}
+								} else {
+									if (this.laneSymbols[n].symbolXOffset > 0) {
+										// Reset the offset, when adjacant lane is
+										// maximized
+										this.laneSymbols[n].symbolXOffset -= (currentLane.cacheWidth - currentLane.width);
+										// Move the lane to right
+										this.laneSymbols[n].moveBy(
+												currentLane.cacheWidth
+														- currentLane.width, 0);
+										// Move the contained symbols to saved
+										// location
+										for ( var c in this.laneSymbols[n].containedSymbols) {
+											this.laneSymbols[n].containedSymbols[c]
+													.moveTo(
+															this.laneSymbols[n].containedSymbols[c].serverSideCoordinates.x
+																	- this.laneSymbols[n].symbolXOffset,
+															this.laneSymbols[n].containedSymbols[c].serverSideCoordinates.y);
 
-										// Cache Anchor Points stored when lane is minimized, needs to be
-										// moved when adj lane is maximized and current lane is in minimized state
-										for ( var m in this.laneSymbols[n].containedSymbols[c].anchorPoints) {
-											if (this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheX) {
-												var symbolNewAnchorPointLocation = this.laneSymbols[n].containedSymbols[c].x
-														+ this.laneSymbols[n].containedSymbols[c].width
-														/ 2;
-												this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheX += (symbolNewAnchorPointLocation - this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheX);
-											}else if (this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheY) {
-												var symbolNewAnchorPointLocation = this.laneSymbols[n].containedSymbols[c].y
-														+ this.laneSymbols[n].containedSymbols[c].height
-														/ 2;
-												this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheY += (symbolNewAnchorPointLocation - this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheY);
+											// Cache Anchor Points stored when lane is minimized, needs to be
+											// moved when adj lane is maximized and current lane is in minimized state
+											for ( var m in this.laneSymbols[n].containedSymbols[c].anchorPoints) {
+												if (this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheX) {
+													var symbolNewAnchorPointLocation = this.laneSymbols[n].containedSymbols[c].x
+															+ this.laneSymbols[n].containedSymbols[c].width
+															/ 2;
+													this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheX += (symbolNewAnchorPointLocation - this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheX);
+												}else if (this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheY) {
+													var symbolNewAnchorPointLocation = this.laneSymbols[n].containedSymbols[c].y
+															+ this.laneSymbols[n].containedSymbols[c].height
+															/ 2;
+													this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheY += (symbolNewAnchorPointLocation - this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheY);
+												}
+											}
+										}
+									}
+								}
+							}
+						} else { // Horizontal Orientation
+							// For all lanes right to current lane, set the
+							// YOffset
+							// for hieght adjustment
+							if (this.laneSymbols[n] != currentLane
+									&& this.laneSymbols[n].y > currentLane.y) {
+								if (minimize) {
+									this.laneSymbols[n].symbolYOffset += currentLane.cacheHeight
+											- currentLane.height;
+									// Move the lane to Top when adjacent lane
+									// is
+									// minimized
+									this.laneSymbols[n]
+											.moveBy(
+													0,
+													-(currentLane.cacheHeight - currentLane.height));
+									// Move the contained symbols
+									for ( var c in this.laneSymbols[n].containedSymbols) {
+										this.laneSymbols[n].containedSymbols[c]
+												.moveBy(
+														0,
+														-(currentLane.cacheHeight - currentLane.height));
+									}
+								} else {
+									if (this.laneSymbols[n].symbolYOffset > 0) {
+										// Reset the offset, when adjacent lane
+										// is maximized
+										this.laneSymbols[n].symbolYOffset -= (currentLane.cacheHeight - currentLane.height);
+										// Move the lane to bottom
+										this.laneSymbols[n].moveBy(0,
+												currentLane.cacheHeight
+														- currentLane.height);
+										// Move the contained symbols to saved
+										// location
+										for ( var c in this.laneSymbols[n].containedSymbols) {
+											this.laneSymbols[n].containedSymbols[c]
+													.moveTo(
+															this.laneSymbols[n].containedSymbols[c].serverSideCoordinates.x,
+															this.laneSymbols[n].containedSymbols[c].serverSideCoordinates.y
+																	- this.laneSymbols[n].symbolYOffset);
+
+											// Cache Anchor Points stored when lane is minimized, needs to be
+											// moved when adj lane is maximized and current lane is in minimized state
+											for ( var m in this.laneSymbols[n].containedSymbols[c].anchorPoints) {
+												if (this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheY) {
+													var symbolNewAnchorPointLocation = this.laneSymbols[n].containedSymbols[c].y
+															+ this.laneSymbols[n].containedSymbols[c].height
+															/ 2;
+													this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheY += (symbolNewAnchorPointLocation - this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheY);
+												} else if (this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheX) {
+													var symbolNewAnchorPointLocation = this.laneSymbols[n].containedSymbols[c].x
+															+ this.laneSymbols[n].containedSymbols[c].width
+															/ 2;
+													this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheX += (symbolNewAnchorPointLocation - this.laneSymbols[n].containedSymbols[c].anchorPoints[m].cacheX);
+												}
 											}
 										}
 									}
@@ -515,12 +587,24 @@ define(
 				PoolSymbol.prototype.refreshDiagram = function() {
 					var laneMinimized = false;
 					for ( var n in this.laneSymbols) {
-						if (this.laneSymbols[n].symbolXOffset) {
-							laneMinimized = true;
-							this.laneSymbols[n].x = this.laneSymbols[n].serverSideCoordinates.x;
-							for ( var m in this.laneSymbols[n].containedSymbols) {
-								this.laneSymbols[n].containedSymbols[m].x = this.laneSymbols[n].containedSymbols[m].serverSideCoordinates.x;
-								this.laneSymbols[n].containedSymbols[m].adjustGeometry();
+						if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+							if (this.laneSymbols[n].symbolXOffset) {
+								laneMinimized = true;
+								this.laneSymbols[n].x = this.laneSymbols[n].serverSideCoordinates.x;
+								for ( var m in this.laneSymbols[n].containedSymbols) {
+									this.laneSymbols[n].containedSymbols[m].x = this.laneSymbols[n].containedSymbols[m].serverSideCoordinates.x;
+									this.laneSymbols[n].containedSymbols[m].adjustGeometry();
+								}
+							}
+						}
+						else{
+							if (this.laneSymbols[n].symbolYOffset) {
+								laneMinimized = true;
+								this.laneSymbols[n].y = this.laneSymbols[n].serverSideCoordinates.y;
+								for ( var m in this.laneSymbols[n].containedSymbols) {
+									this.laneSymbols[n].containedSymbols[m].y = this.laneSymbols[n].containedSymbols[m].serverSideCoordinates.y;
+									this.laneSymbols[n].containedSymbols[m].adjustGeometry();
+								}
 							}
 						}
 					}
