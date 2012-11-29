@@ -21,7 +21,8 @@ require.config({
 		'jquery.simplemodal': ['bpm-modeler/js/libs/jquery/plugins/jquery.simplemodal.1.4.1.min', '//simplemodal.googlecode.com/files/jquery.simplemodal.1.4.1.min'],
 		'jquery.tablescroll': ['bpm-modeler/js/libs/jquery/plugins/jquery.tablescroll', 'https://raw.github.com/farinspace/jquery.tableScroll/master/jquery.tablescroll'],
 		'jquery.treeTable': ['bpm-modeler/js/libs/jquery/plugins/jquery.treeTable', 'https://raw.github.com/ludo/jquery-treetable/f98c6d07a02cb48052e9d4e033ce7dcdf64218e1/src/javascripts/jquery.treeTable'],
-		'jquery.url': ['bpm-modeler/js/libs/jquery/plugins/jquery.url', 'https://raw.github.com/allmarkedup/jQuery-URL-Parser/472315f02afbfd7193184300cc381163e19b4a16/jquery.url'],
+		'jquery.url': ['bpm-modeler/js/libs/jquery/plugins/jquery.url', 'https://raw.github.com/allmarkedup/jQuery-URL-Parser/4f5254f2519111ad7037d398b2efa61d3cda58d4/jquery.url'],
+		'jquery.jqprint': ['bpm-modeler/js/libs/jquery/plugins/jquery.jqprint-0.3', 'https://raw.github.com/tanathos/jquery.jqprint/master/jquery.jqprint-0.3'],
 
 		'jshint': ['bpm-modeler/js/libs/jshint/jshint-r12', 'https://raw.github.com/jshint/jshint/80277ef7cf1f35137ee653a25ce5664e2752b0db/jshint'],
 
@@ -56,6 +57,7 @@ require.config({
 		'jquery.tablescroll': ['jquery'],
 		'jquery.treeTable': ['jquery'],
 		'jquery.url': ['jquery'],
+		'jquery.jqprint': ['jquery'],
 
 		'codemirror.mode.javascript': ['codemirror'],
 		'codemirror.util.dialog': ['codemirror'],
@@ -81,6 +83,7 @@ require(["require",
 	 "jquery.tablescroll",
 	 "jquery.treeTable",
 	 "jquery.url",
+	 "jquery.jqprint",
 
 	 "jshint",
 
@@ -100,6 +103,6 @@ require(["require",
 	 "i18n"
 	 ], function (require) {
 	require("bpm-modeler/js/m_modelerViewLayoutManager").initialize(
-				$.url.setUrl(window.location.search).param("fullId"));
+				$.url(window.location.search).param("fullId"));
 });
 

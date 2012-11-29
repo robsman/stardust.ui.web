@@ -19,11 +19,11 @@ define(
 
     	// register modelId, processId for injection by angular
         angularModule.factory('modelId', function ($window) {
-            var modelId = jQuery.url.setUrl(window.location.search).param("modelId");
+            var modelId = jQuery.url(window.location.search).param("modelId");
             return modelId;
         });
         angularModule.factory('processId', function ($window) {
-            var modelId = jQuery.url.setUrl(window.location.search).param("processId");
+            var modelId = jQuery.url(window.location.search).param("processId");
             return modelId;
         });
 
