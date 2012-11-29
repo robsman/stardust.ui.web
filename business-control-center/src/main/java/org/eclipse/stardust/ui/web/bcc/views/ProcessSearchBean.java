@@ -139,6 +139,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    private List<SelectItem> hierarchyTypes;
   
    private boolean preSearch;
+   private boolean allProcessDefSelected;
    private String columnPrefKey = UserPreferencesEntries.V_PROCESS_SEARCH;
 
    static
@@ -677,12 +678,14 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    private List<ProcessDefinition> getSelectedProcessDefs()
    {
       List<ProcessDefinition> selectedProcessDefs = new ArrayList<ProcessDefinition>();
-
+      allProcessDefSelected  = false;
       for (int i = 0; i < selectedProcesses.length; i++)
       {
          if (selectedProcesses[i].equals("ALL")) // all processes selected
          {
             selectedProcessDefs = new ArrayList<ProcessDefinition>(processDefinitions.values());
+            // flag used to filter Case Descriptor in common descriptor calculation
+            allProcessDefSelected = true;
             break;
          }
          selectedProcessDefs.add(processDefinitions.get(selectedProcesses[i]));
@@ -791,7 +794,17 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       descriptorItems.clear();
       if (CollectionUtils.isNotEmpty(selectedProcessDefs))
       {
-         commonDescriptors = CommonDescriptorUtils.getCommonDescriptors(selectedProcessDefs, true);
+         List<ProcessDefinition> selProcessDefs = new ArrayList<ProcessDefinition>();
+         selProcessDefs.addAll(selectedProcessDefs);
+         ProcessDefinition caseProcess = null;
+         if (allProcessDefSelected)
+         {
+            // Explicitly removing CaseProcess from Common Description retrieval
+            caseProcess = ProcessDefinitionUtils.getProcessDefinition(PredefinedConstants.CASE_PROCESS_ID);
+            selProcessDefs.remove(caseProcess);
+         }
+         commonDescriptors = CommonDescriptorUtils.getCommonDescriptors(selProcessDefs, true);
+            
          GenericDataMapping mapping;
          DataMappingWrapper dmWrapper;
          boolean includeCaseDescriptor = false;
@@ -808,10 +821,10 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
             dmWrapper.setDefaultValue(null);
          }
 
-         // If selected Process doesn't contain Case Process, and Hierarchy is Case
-         // RootPI add Case descriptors to filter criteria
-         if (!includeCaseDescriptor
-               & (SEARCH_OPTION.PROCESSES.equals(selectedSearchOption) & getFilterAttributes().isCaseOnlySearch()))
+         // Add case descriptor to filter criteria if 'ALL Processes' search is set or
+         // Hierarchy is Case RootPI add Case descriptors
+         if ( !includeCaseDescriptor
+               & ((SEARCH_OPTION.PROCESSES.equals(selectedSearchOption) & getFilterAttributes().isCaseOnlySearch()) || caseProcess != null))
          {
             descriptorItems.addAll(caseDescriptorItems);
          }
