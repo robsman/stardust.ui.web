@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
+ * documentation
+ ******************************************************************************/
+
 /**
  * @author Marc.Gille
  */
@@ -28,7 +38,7 @@ define(
 					this.imageUrl = imageUrl;
 				}
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPage.prototype.mapInputId = function(inputId) {
 					return jQuery("#" + this.propertiesPanel.id + " #"
@@ -36,34 +46,34 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPage.prototype.getElement = function() {
 					return this.propertiesPanel.element;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPage.prototype.setElement = function() {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPage.prototype.validate = function() {
 					return true;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPage.prototype.show = function() {
 					m_dialog.makeVisible(this.page);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPage.prototype.hide = function() {
 					m_dialog.makeInvisible(this.page);
@@ -80,7 +90,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPage.prototype.assembleChangedObjectFromProperty = function(
 						property, value) {
@@ -88,7 +98,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPage.prototype.assembleChangedObjectFromAttribute = function(
 						attribute, value) {
@@ -96,7 +106,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPage.prototype.registerInputForElementChangeSubmission = function(
 						input, property) {
@@ -123,7 +133,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPage.prototype.registerInputForModelElementChangeSubmission = function(
 						input, property) {
@@ -147,7 +157,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPage.prototype.registerInputForModelElementAttributeChangeSubmission = function(
 						input, attribute) {
@@ -177,7 +187,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPage.prototype.registerCheckboxInputForModelElementChangeSubmission = function(
 						input, property) {
@@ -202,7 +212,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPage.prototype.registerCheckboxInputForModelElementAttributeChangeSubmission = function(
 						input, attribute) {
@@ -233,14 +243,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPage.prototype.getModel = function() {
 					return this.propertiesPanel.getModel();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPage.prototype.submitChanges = function(changes) {
 					this.propertiesPanel.submitChanges(changes);

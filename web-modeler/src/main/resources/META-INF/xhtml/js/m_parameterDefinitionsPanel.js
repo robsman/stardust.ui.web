@@ -1,6 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
+ * documentation
+ ******************************************************************************/
+
 /**
  * Utility functions for dialog programming.
- * 
+ *
  * @author Marc.Gille
  */
 define(
@@ -29,7 +39,7 @@ define(
 			 */
 			function ParameterDefinitionsPanel() {
 				/**
-				 * 
+				 *
 				 */
 				ParameterDefinitionsPanel.prototype.initialize = function(
 						options) {
@@ -275,7 +285,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ParameterDefinitionsPanel.prototype.setParameterDefinitions = function(
 						parameterDefinitions) {
@@ -324,7 +334,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ParameterDefinitionsPanel.prototype.setScopeModel = function(
 						scopeModel) {
@@ -340,7 +350,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ParameterDefinitionsPanel.prototype.submitChanges = function() {
 					if (this.options.submitHandler) {
@@ -350,7 +360,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ParameterDefinitionsPanel.prototype.setDescriptor = function() {
 					this.descriptorInput.attr("checked", true);
@@ -358,7 +368,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ParameterDefinitionsPanel.prototype.setKeyDescriptor = function() {
 					this.descriptorInput.attr("checked", false);
@@ -366,7 +376,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ParameterDefinitionsPanel.prototype.populateDataItemsList = function() {
 					this.parameterDefinitionDataSelect.empty();
@@ -417,7 +427,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ParameterDefinitionsPanel.prototype.initializeParameterDefinitionsTable = function() {
 					this.parameterDefinitionsTableBody.empty();
@@ -529,7 +539,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ParameterDefinitionsPanel.prototype.deselectParameterDefinitions = function(
 						dataPath) {
@@ -540,7 +550,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ParameterDefinitionsPanel.prototype.populateParameterDefinitionFields = function() {
 					if (this.currentParameterDefinition == null) {
@@ -690,7 +700,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ParameterDefinitionsPanel.prototype.addParameterDefinition = function() {
 					var n = this.parameterDefinitions.length;
@@ -726,7 +736,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ParameterDefinitionsPanel.prototype.deleteParameterDefinition = function() {
 					m_utils.debug("Deleting "
@@ -750,7 +760,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ParameterDefinitionsPanel.prototype.moveParameterDefinitionUp = function() {
 					var changedParameterDefinitions = [];
@@ -779,7 +789,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ParameterDefinitionsPanel.prototype.moveParameterDefinitionDown = function() {
 					var changedParameterDefinitions = [];
@@ -808,13 +818,13 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ParameterDefinitionsPanel.prototype.validate = function() {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ParameterDefinitionsPanel.prototype.submitDataChanges = function(
 						dataChanges) {

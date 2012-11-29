@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
+ * documentation
+ ******************************************************************************/
+
 /**
  * @author Marc.Gille
  */
@@ -21,7 +31,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function ProcessProcessInterfacePropertiesPage(newPropertiesPanel,
 					newId, newTitle) {
@@ -36,7 +46,7 @@ define(
 						propertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.initialize = function() {
 					this.processInterfaceTypeSelectInput = this
@@ -190,7 +200,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.populateProcessDataTable = function() {
 					this.processDataTableBody.empty();
@@ -224,7 +234,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setNoInterface = function() {
 					this.processInterfaceTypeSelectInput.val("noInterface");
@@ -235,7 +245,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setProvidesProcessInterface = function() {
 					this.processInterfaceTypeSelectInput
@@ -251,7 +261,7 @@ define(
 								m_utils.debug("Set Parameters:");
 					m_utils.debug(this
 							.getModelElement().formalParameters);
-					
+
 					this.parameterDefinitionsPanel.setScopeModel(this
 							.getModelElement().model);
 					this.parameterDefinitionsPanel.setParameterDefinitions(this
@@ -259,7 +269,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setImplementsProcessInterface = function() {
 					this.processInterfaceTypeSelectInput
@@ -270,7 +280,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.populateParameterDefinitionFields = function() {
 					this.parameterDefinitionNameInput
@@ -286,14 +296,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.getModelElement = function() {
 					return this.propertiesPanel.element;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setElement = function() {
 					this.parameterDefinitionsPanel.setScopeModel(this
@@ -309,13 +319,13 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.validate = function() {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.submitProtocol = function() {
 					var attributes = {};

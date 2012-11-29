@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
+ * documentation
+ ******************************************************************************/
+
 /**
  * @author Marc.Gille
  */
@@ -16,7 +26,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 				initializeFromJson : function(process, json) {
 					// TODO Ugly, use prototype
 					m_utils.typeObject(json, new DataFlow());
-					
+
 					json.initializeFromJson(process);
 
 					return json;
@@ -25,7 +35,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function DataFlow(id) {
 				this.type = m_constants.DATA_FLOW;
@@ -41,14 +51,14 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 				this.outputAccessPointContext = null;
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlow.prototype.toString = function() {
 					return "Lightdust.DataFlow";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlow.prototype.initialize = function(data, activity) {
 					this.data = data;
@@ -56,7 +66,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlow.prototype.initializeFromJson = function(process) {
 					this.activity = process.activities[this.activityId];
@@ -64,7 +74,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataFlow.prototype.createTransferObject = function() {
 					var transferObject = {};
