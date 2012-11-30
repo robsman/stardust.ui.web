@@ -1792,6 +1792,7 @@ define(
 					this.moveBy(0, 0);
 
 					var changesSymbol = {
+						parentSymbolId: this.parentSymbol.id,
 						x : this.x,
 						y : this.y
 					};
