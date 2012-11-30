@@ -105,8 +105,26 @@
 							</ice:panelGrid>
 							<ice:message for="endTimeTo" styleClass="iceMsgInline" />		
 						</ice:column>
-						
-						
+
+						<ice:column>
+							<ice:outputText
+								value="#{processSearchBean.messages['processHierarchy.label']}#{processSearchBean.messages['colon']}"
+								styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+							<ice:selectOneMenu
+								valueChangeListener="#{processSearchBean.hierarchyTypeChangeListener}"
+								disabled="#{processSearchBean.selectedSearchOption eq 1}"
+								id="SlctHierarchyType" partialSubmit="true"
+								value="#{processSearchBean.selectedHierarchy}"
+								style="margin:4px;margin-left:5px;">
+								<pc:automationTag value="auto-BCC-ProcSrch-Hierarchy"
+									standAlone="false" />
+								<f:selectItems id="SlctHierarchyTypeItms"
+									value="#{processSearchBean.hierarchyTypes}" />
+							</ice:selectOneMenu>
+						</ice:column>
+
 						<ice:column style="vertical-align: top;">
 							<ice:panelGroup style="vertical-align: top;">
 								<ice:outputText value="#{processSearchBean.messages['chooseProcess.label']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
@@ -142,24 +160,6 @@
 										value="#{processSearchBean.processes}" />
 								</ice:selectManyMenu>
 							</ice:panelGroup>
-					</ice:column>
-
-					<ice:column>
-						<ice:outputText
-							value="#{processSearchBean.messages['processHierarchy.label']}#{processSearchBean.messages['colon']}"
-							styleClass="label-form" />
-					</ice:column>
-					<ice:column>
-						<ice:selectOneMenu valueChangeListener="#{processSearchBean.hierarchyTypeChangeListener}"
-							disabled="#{processSearchBean.selectedSearchOption eq 1}"
-							id="SlctHierarchyType" partialSubmit="true"
-							value="#{processSearchBean.selectedHierarchy}"
-							style="margin:4px;margin-left:5px;">
-							<pc:automationTag value="auto-BCC-ProcSrch-Hierarchy"
-								standAlone="false" />
-							<f:selectItems id="SlctHierarchyTypeItms"
-								value="#{processSearchBean.hierarchyTypes}" />
-						</ice:selectOneMenu>
 					</ice:column>
 
 					<ice:column>						
