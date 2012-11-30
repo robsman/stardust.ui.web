@@ -21,6 +21,6 @@ public class XsdStructuredDataTypeView extends AbstractAdapterView
    {
       super.handleEvent(event);
 
-      event.getView().setIcon("/plugins/bpm-modeler/images/icons/data-structured.png");
+      event.getView().setIcon("/plugins/bpm-modeler/images/icons/structured-type.png");
    }
 }

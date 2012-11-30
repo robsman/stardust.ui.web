@@ -11,12 +11,12 @@ public class CamelApplicationView extends AbstractAdapterView {
    {
       super("/plugins/bpm-modeler/views/modeler/camelApplicationView.html", "camelApplicationFrameAnchor");
    }
-   
+
    @Override
    public void handleEvent(ViewEvent event)
    {
       super.handleEvent(event);
-      
-      event.getView().setIcon("/plugins/bpm-modeler/images/icons/applications.png");
-   }  
+
+      event.getView().setIcon("/plugins/bpm-modeler/images/icons/application-camel.png");
+   }
 }
