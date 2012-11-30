@@ -49,36 +49,102 @@ define(
 					this.id = "xsdStructuredDataTypeView";
 					this.tree = jQuery("table#typeDeclarationsTable");
 					this.tableBody = jQuery("table#typeDeclarationsTable tbody");
+					this.addButton = jQuery("#addElementButton");
 					this.deleteButton = jQuery("#deleteElementButton");
 					this.upButton = jQuery("#moveElementUpButton");
 					this.downButton = jQuery("#moveElementDownButton");
 					this.structureDefinitionHintPanel = jQuery("#structureDefinitionHintPanel");
-					this.structureRadioButton = jQuery("#structureRadioButton");
-					this.enumerationRadioButton = jQuery("#enumerationRadioButton");
+					this.visibilitySelect = jQuery("#visibilityCheckbox");
+					this.structureKindSelect = jQuery("#structureKind select");
+					this.minimumLengthEdit = jQuery("#minimumLength input");
+					this.maximumLengthEdit = jQuery("#maximumLength input");
 
 					this.propertiesTree = m_propertiesTree.create("fieldPropertiesTable");
 
 					var view = this;
-					this.structureRadioButton.click(
-						function(event) {
-							view.typeDeclaration.switchToComplexType();
 
+					this.visibilitySelect.change(function(event) {
+						var currentVisibility = view.typeDeclaration.attributes["carnot:engine:visibility"];
+						var newVisibility = jQuery(event.target).is(":checked") ? "Public" : "Private";
+						if (currentVisibility !== newVisibility) {
 							view.submitChanges({
-								typeDeclaration : view.typeDeclaration.typeDeclaration
+										attributes : {
+											"carnot:engine:visibility" : newVisibility
+										}
+									});
+						}
+					});
+					this.structureKindSelect.change(
+						function(event) {
+							var doSubmit = false;
+							if (("struct" === jQuery(event.target).val()) && !view.typeDeclaration.isSequence()) {
+								view.typeDeclaration.switchToComplexType();
+								doSubmit = true;
+							} else if (("enum" === jQuery(event.target).val()) && view.typeDeclaration.isSequence()) {
+								view.typeDeclaration.switchToEnumeration();
+								doSubmit = true;
+							}
+
+							if (doSubmit) {
+								view.submitChanges({
+									typeDeclaration : view.typeDeclaration.typeDeclaration
+								});
+
+								view.initializeTypeDeclaration();
+							}
+						});
+					this.minimumLengthEdit.change(
+							function(event) {
+								if ( !view.typeDeclaration.isSequence()) {
+									var currentValue = view.typeDeclaration.getTypeDeclaration().minLength;
+									var newValue = parseInt(jQuery(event.target).val());
+									if (currentValue !== newValue) {
+										if (isNaN(newValue)) {
+											delete view.typeDeclaration.getTypeDeclaration().minLength;
+										} else {
+											view.typeDeclaration.getTypeDeclaration().minLength = newValue;
+										}
+										view.submitChanges({
+											typeDeclaration : view.typeDeclaration.typeDeclaration
+										});
+									}
+								}
+							});
+					this.maximumLengthEdit.change(
+							function(event) {
+								if ( !view.typeDeclaration.isSequence()) {
+									var currentValue = view.typeDeclaration.getTypeDeclaration().maxLength;
+									var newValue = parseInt(jQuery(event.target).val());
+									if (currentValue !== newValue) {
+										if (isNaN(newValue)) {
+											delete view.typeDeclaration.getTypeDeclaration().maxLength;
+										} else {
+											view.typeDeclaration.getTypeDeclaration().maxLength = newValue;
+										}
+										view.submitChanges({
+											typeDeclaration : view.typeDeclaration.typeDeclaration
+										});
+									}
+								}
 							});
 
-							view.initializeTypeDeclaration();
-						});
-					this.enumerationRadioButton.click(
+					jQuery(this.addButton).click(
 						function(event) {
-							view.typeDeclaration.switchToEnumeration();
-
-							view.submitChanges({
-								typeDeclaration : view.typeDeclaration.typeDeclaration
+							view.addElement();
+						});
+					jQuery(this.deleteButton).click(
+						function(event) {
+							view.removeElement(jQuery("tr.selected", view.tableBody));
+						});
+					jQuery(this.upButton).click(
+							function(event) {
+								view.moveElementUp(jQuery("tr.selected", view.tableBody));
+							});
+					jQuery(this.downButton).click(
+							function(event) {
+								view.moveElementDown(jQuery("tr.selected", view.tableBody));
 							});
 
-							view.initializeTypeDeclaration();
-						});
 					this.initializeModelElementView(typeDeclaration);
 				};
 
@@ -107,8 +173,14 @@ define(
 				 *
 				 */
 				XsdStructuredDataTypeView.prototype.initializeTypeDeclaration = function() {
-					this.structureRadioButton.attr("checked", this.typeDeclaration.isSequence());
-					this.enumerationRadioButton.attr("checked", !this.typeDeclaration.isSequence());
+					jQuery(this.typeDeclaration.isSequence() ? ".show-when-struct" : ".show-when-enum").show();
+					jQuery(this.typeDeclaration.isSequence() ? ".show-when-enum" : ".show-when-struct").hide();
+
+					this.visibilitySelect.prop("checked", "Public" === this.typeDeclaration.attributes["carnot:engine:visibility"]);
+					this.structureKindSelect.val(this.typeDeclaration.isSequence() ? "struct" : "enum");
+
+					this.minimumLengthEdit.val(this.typeDeclaration.getTypeDeclaration().minLength);
+					this.maximumLengthEdit.val(this.typeDeclaration.getTypeDeclaration().maxLength);
 
 					this.refreshElementsTable();
 				};
@@ -301,12 +373,6 @@ define(
 						});
 					});
 
-					this.tableBody.append("<tr id='newRow'>"
-						+ "  <td><span class='data-element'><input id='newLink' type='image' src='../../images/icons/add.png'/></span></td>"
-						+ "  </td><td>"
-						+ "  </td><td>"
-						+ "</tr>");
-
 					this.tree.tableScroll({
 						height : 150
 					});
@@ -334,23 +400,6 @@ define(
 							jQuery("tr.selected", view.tableBody).removeClass("selected");
 							jQuery(this).addClass("selected");
 						});
-
-					jQuery("#newRow #newLink", this.tree).click(
-						function(event) {
-							view.addElement();
-						});
-					jQuery(this.deleteButton).click(
-						function(event) {
-							view.removeElement(jQuery("tr.selected", view.tableBody));
-						});
-					jQuery(this.upButton).click(
-							function(event) {
-								view.moveElementUp(jQuery("tr.selected", view.tableBody));
-							});
-					jQuery(this.downButton).click(
-							function(event) {
-								view.moveElementDown(jQuery("tr.selected", view.tableBody));
-							});
 
 					jQuery(".nameInput", this.tree).on("change", function(event) {
 							return view.renameElement(jQuery(event.target).closest("tr"), jQuery(event.target));

@@ -1842,6 +1842,23 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       facets.clear();
 
+      JsonElement minLengthJson = simpleTypeJson.get("minLength");
+      if ((null != minLengthJson) && minLengthJson.isJsonPrimitive()
+            && minLengthJson.getAsJsonPrimitive().isNumber())
+      {
+         XSDConstrainingFacet minLengthFacet = SupportedXSDConstrainingFacets.minLength.create();
+         minLengthFacet.setLexicalValue(minLengthJson.getAsJsonPrimitive().getAsString());
+         facets.add(minLengthFacet);
+      }
+      JsonElement maxLengthJson = simpleTypeJson.get("maxLength");
+      if ((null != maxLengthJson) && maxLengthJson.isJsonPrimitive()
+            && maxLengthJson.getAsJsonPrimitive().isNumber())
+      {
+         XSDConstrainingFacet maxLengthFacet = SupportedXSDConstrainingFacets.maxLength.create();
+         maxLengthFacet.setLexicalValue(maxLengthJson.getAsJsonPrimitive().getAsString());
+         facets.add(maxLengthFacet);
+      }
+
       if (simpleTypeJson.has("facets"))
       {
          JsonArray facetsJson = simpleTypeJson.getAsJsonArray("facets");

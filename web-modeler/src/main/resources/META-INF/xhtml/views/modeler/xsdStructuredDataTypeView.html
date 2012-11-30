@@ -1,11 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:ice="http://www.icesoft.com/icefaces/component"
-	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Structured Data Type View</title>
 <link rel="stylesheet" type="text/css"
@@ -26,6 +21,24 @@
 
 #cardinalityColumn,.cardinalityCell {
 	width: 100px;
+}
+
+table.layoutTable tr.widget td {
+	padding-top: 6px;
+}
+/* table.layoutTable tr:first-child td {
+	padding-top: 0px;
+}
+ */
+table.layoutTable tr.widget td.label {
+	white-space: nowrap;
+	padding-right: 6px;
+}
+table.layoutTable tr.widget td.widget {
+	width: 100%;
+}
+table.layoutTable tr.widget td .widget {
+	width: 100%;
 }
 </style>
 <script type="text/javascript"
@@ -73,30 +86,42 @@
 									class="tabLabel" id="configuration">Configuration</span> </a></li>
 						</ul>
 						<div id="configurationTab">
-							<table cellpadding="0" cellspacing="0" class="layoutTable">
+							<table cellpadding="0" cellspacing="0" class="layoutTable" style="width: 100%;">
 
 								<tr>
 									<td>
 										<div style="margin-bottom: 10px;">
-											<table cellpadding="0" cellspacing="0" class="layoutTable">
+											<table cellpadding="0" cellspacing="0" class="layoutTable" style="width: 100%">
 												<tr>
 													<td colspan="2" id="xsdtext">Create and modify a Data Structure
 														manually by adding elements, specifying their names and
 														cardinalities.</td>
 												</tr>
 												<tr>
-													<td>
-														<table cellpadding="0" cellspacing="0" class="layoutTable"
-															style="margin-top: 10px;">
-															<tr>
-																<td><input id="structureRadioButton" type="radio" />
-																</td>
-																<td id="struct">Structure</td>
-																<td><input id="enumerationRadioButton" type="radio" />
-																</td>
-																<td id="enum">Enumeration</td>
-															</tr>
-														</table></td>
+													<td colspan="2">
+														<input id="visibilityCheckbox" type="checkbox" />Public Visibility
+													</td>
+												</tr>
+												<tr id="structureKind" class="widget">
+													<td class="label">Data structure type:</td>
+													<td class="widget">
+														<select class="widget">
+															<option class="label-struct" value="struct">Composite</option>
+															<option class="label-enum" value="enum">Enumeration</option>
+														</select>
+													</td>
+												</tr>
+												<tr id="minimumLength" class="widget show-when-enum">
+													<td class="label">Minimum length:</td>
+													<td class="widget">
+														<input type="text" class="widget" />
+													</td>
+												</tr>
+												<tr id="maximumLength" class="widget show-when-enum">
+													<td class="label">Maximum length:</td>
+													<td class="widget">
+														<input type="text" class="widget" />
+													</td>
 												</tr>
 											</table>
 										</div>
@@ -104,16 +129,20 @@
 								</tr>
 								<tr>
 									<td>
-										<table cellpadding="0" cellspacing="0" class="layoutTable">
+										<table cellpadding="0" cellspacing="0" class="layoutTable" style="width: 100%">
 											<tr>
 												<td>
 													<div class="panelBorder">
-														<table cellpadding="0" cellspacing="0" class="layoutTable">
+														<table cellpadding="0" cellspacing="0" class="layoutTable" style="width: 100%">
 															<tr>
 																<td><div class="toolBar">
 																		<table cellpadding="0" cellspacing="0"
 																			class="layoutTable">
 																			<tr>
+																				<td><input id="addElementButton"
+																					type="image" src="../../images/icons/add.png"
+																					title="Add" alt="Add" class="toolbarButton" />
+																				</td>
 																				<td><input id="deleteElementButton"
 																					type="image" src="../../images/icons/delete.png"
 																					title="Delete" alt="Delete" class="toolbarButton" />
@@ -142,12 +171,12 @@
 																<td>
 																	<div class="dataTable">
 																		<table id="typeDeclarationsTable" cellpadding="0"
-																			cellspacing="0" class="treeTable">
+																			cellspacing="0" class="treeTable" style="width: 100%">
 																			<thead>
 																				<tr>
-																					<th id="elementColumn">Element</th>
-																					<th id="typeColumn">Type</th>
-																					<th id="cardinalityColumn" class="last">Cardinality</th>
+																					<th id="elementColumn">Field</th>
+																					<th id="typeColumn" class="show-when-struct">Type</th>
+																					<th id="cardinalityColumn" class="show-when-struct last">Cardinality</th>
 																				</tr>
 																			</thead>
 																			<tbody />
@@ -159,18 +188,18 @@
 													</div>
 												</td>
 											</tr>
-											<tr>
+											<tr class="show-when-struct">
 												<td align="left"><div class="heading"
 														style="margin-top: 10px;" id="fieldProp">Field Properties</div></td>
 												<td></td>
 											</tr>
-											<tr>
+											<tr class="show-when-struct">
 												<td align="left">
 													<div class="panelBorder">
 														<div class="dataTable">
 															<table id="fieldPropertiesTable" cellpadding="0"
 																cellspacing="0" class="treeTable"
-																style="width: 600px; text-align: left;">
+																style="width: 100%; text-align: left;">
 																<thead>
 																	<tr>
 																		<th style="width: 400px;" id="prop">Property</th>

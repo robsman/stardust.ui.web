@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.modeler.service;
 
+import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
+
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
@@ -20,7 +22,7 @@ import org.eclipse.xsd.util.XSDSwitch;
 public class XsdContentProvider extends XSDSwitch<EObject[]>
 {
    protected boolean showDirectContentOnly;
-   
+
    public static EObject[] EMPTY_ARRAY = new EObject[0];
 
    public XsdContentProvider()
@@ -147,27 +149,18 @@ public class XsdContentProvider extends XSDSwitch<EObject[]>
    public EObject[] caseXSDSimpleTypeDefinition(XSDSimpleTypeDefinition type)
    {
       // TODO:
-      List<? extends XSDConstrainingFacet> elements = type.getEnumerationFacets();
-      if (elements.isEmpty())
-      {
-         elements = type.getPatternFacets();
-      }
+      List<EObject> result = newArrayList();
+
+      result.addAll(type.getEnumerationFacets());
+      result.addAll(type.getPatternFacets());
+
       XSDConstrainingFacet newElement = getNewItem(type);
-      int size = elements.size();
-      if (newElement != null)
+      if (null != newElement)
       {
-         size++;
+         result.add(newElement);
       }
-      EObject[] result = new EObject[size];
-      for (int i = 0; i < elements.size(); i++)
-      {
-         result[i] = elements.get(i);
-      }
-      if (newElement != null)
-      {
-         result[result.length - 1] = newElement;
-      }
-      return result;
+
+      return result.toArray(new EObject[result.size()]);
    }
 
    protected <T> T getNewItem(XSDComponent parent)

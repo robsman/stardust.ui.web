@@ -68,10 +68,12 @@ define(
 					jQuery("<td>" + (typeLabel || "") + "</td>").appendTo(childRow);
 					jQuery("<td>" +  (cardinalityLabel || "") + "</td>").appendTo(childRow);
 
-					if ((null != schemaType) && schemaType.isStructure()) {
-						// add styles in preparation of lazily appending child rows
-						childRow.addClass("parent");
-						childRow.addClass("expanded");
+					if (schemaType && (schemaType.isStructure() || schemaType.isEnumeration())) {
+						if ( !jQuery.isArray(schemaType.getElements()) || (0 < schemaType.getElements().length)) {
+							// add styles in preparation of lazily appending child rows
+							childRow.addClass("parent");
+							childRow.addClass("expanded");
+						}
 					}
 				}
 
@@ -87,18 +89,25 @@ define(
 			function generateChildElementRows(parentPath, schemaTypeOrElements, rowInitializer) {
 				var childRows = [];
 
+				var isStruct = false;
+				var isEnum = false;
 				var elements = [];
 				if (schemaTypeOrElements) {
-					if ((typeof schemaTypeOrElements.getElements === "function") && (typeof schemaTypeOrElements.isStructure === "function")) {
-						elements = schemaTypeOrElements.isStructure() ? schemaTypeOrElements.getElements() : [];
+					if ((typeof schemaTypeOrElements.getElements === "function")
+							&& (typeof schemaTypeOrElements.isStructure === "function")
+							&& (typeof schemaTypeOrElements.isEnumeration === "function")) {
+						isStruct = schemaTypeOrElements.isStructure();
+						isEnum = schemaTypeOrElements.isEnumeration();
+						elements = (isStruct || isEnum) ? schemaTypeOrElements.getElements() : [];
 					} else {
+						isStruct = true;
 						elements = schemaTypeOrElements;
 					}
 				}
 				if (elements) {
 					// append child rows
 					jQuery.each(elements, function(i, element) {
-						var childSchemaType = (schemaTypeOrElements.resolveElementType)
+						var childSchemaType = (isStruct && (typeof schemaTypeOrElements.resolveElementType === "function"))
 							? schemaTypeOrElements.resolveElementType(element.name)
 							: undefined;
 						var childRow = generateChildElementRow(parentPath, element, childSchemaType, rowInitializer);

@@ -2148,10 +2148,23 @@ public class ModelService
                if (child instanceof XSDSimpleTypeDefinition)
                {
                   addNamedChild(childJs, "facets", new JsonArray());
+
+                  if (null != ((XSDSimpleTypeDefinition) child).getMinLengthFacet())
+                  {
+                     childJs.addProperty("minLength", ((XSDSimpleTypeDefinition) child).getMinLengthFacet().getValue());
+                  }
+                  if (null != ((XSDSimpleTypeDefinition) child).getMaxLengthFacet())
+                  {
+                     childJs.addProperty("maxLength", ((XSDSimpleTypeDefinition) child).getMaxLengthFacet().getValue());
+                  }
                }
 
                if (child instanceof XSDFacet)
                {
+                  if ((child instanceof XSDMinLengthFacet) || (child instanceof XSDMaxLengthFacet))
+                  {
+                     childJs.addProperty("classifier", ((XSDFacet) child).getFacetName());
+                  }
                   childJs.addProperty("classifier", ((XSDFacet) child).getFacetName());
                   if (parentNodeJs.isJsonObject())
                   {
