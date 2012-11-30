@@ -31,6 +31,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
@@ -46,8 +47,12 @@ import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
+import org.eclipse.stardust.model.xpdl.builder.utils.ElementCopier;
+import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.model.xpdl.builder.utils.PepperIconFactory;
+import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerConnectionManager;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
@@ -86,6 +91,7 @@ import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
 import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
+import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
@@ -93,6 +99,7 @@ import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.model.xpdl.xpdl2.XpdlPackage;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
+import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.xsd.XSDComplexTypeContent;
 import org.eclipse.xsd.XSDComplexTypeDefinition;
@@ -649,7 +656,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     * @param json
     */
    private void updateSwimlane(LaneSymbol swimlaneSymbol, JsonObject swimlaneSymbolJson)
-   {
+   {      
       updateIdentifiableElement(swimlaneSymbol, swimlaneSymbolJson);
 
       updateNodeSymbol(swimlaneSymbol, swimlaneSymbolJson);
@@ -662,10 +669,37 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          String participantFullId = swimlaneSymbolJson.get(
                ModelerConstants.PARTICIPANT_FULL_ID).getAsString();
 
-         swimlaneSymbol.setParticipant(getModelBuilderFacade().findParticipant(
-               getModelBuilderFacade().findModel(
-                     getModelBuilderFacade().getModelId(participantFullId)),
-               getModelBuilderFacade().stripFullId(participantFullId)));
+         ModelType model = ModelUtils.findContainingModel(swimlaneSymbol);
+         String participantModelID = getModelBuilderFacade().getModelId(participantFullId);
+         ModelType participantModel = getModelBuilderFacade().findModel(participantModelID);
+         String participantId = getModelBuilderFacade().stripFullId(participantFullId);
+         
+         IModelParticipant findParticipant = getModelBuilderFacade().findParticipant(participantModel,
+               participantId);
+         
+         if (!participantModelID.equals(model.getId()))
+         {
+            String fileConnectionId = WebModelerConnectionManager.createFileConnection(model,
+                  participantModel);
+
+            String bundleId = CarnotConstants.DIAGRAM_PLUGIN_ID;
+            URI uri = URI.createURI("cnx://" + fileConnectionId + "/");
+
+            ModelType loadModel = getModelBuilderFacade().getModelManagementStrategy().loadModel(participantModelID + ".xpdl");
+            IModelParticipant participantCopy = getModelBuilderFacade().findParticipant(loadModel, participantId);
+            if(participantCopy == null)
+            {
+               ElementCopier copier = new ElementCopier(loadModel, null);
+               participantCopy = (IModelParticipant) copier.copy(findParticipant);
+            }
+
+            ReplaceModelElementDescriptor descriptor = new ReplaceModelElementDescriptor(
+                  uri, participantCopy, bundleId, null, true);
+            PepperIconFactory iconFactory = new PepperIconFactory();
+            descriptor.importElements(iconFactory, model, true);
+            findParticipant = getModelBuilderFacade().findParticipant(model, participantId);
+         }         
+         LaneParticipantUtil.setParticipant(swimlaneSymbol, findParticipant);
       }
 
       storeAttributes(swimlaneSymbol, swimlaneSymbolJson);
