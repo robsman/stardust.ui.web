@@ -77,10 +77,10 @@ public class WorklistConfigurationUtil
    public static Map<String, Object> getStoredValues(String id, String preferenceId)
    {
       // Check at partition level
-      Map<String, Object> worklistConf;
-      worklistConf = getWorklistConfigurationMap(PreferenceScope.PARTITION, preferenceId);
+      Map<String, Object> worklistConf = getWorklistConfigurationMap(PreferenceScope.PARTITION, preferenceId);
 
       Map<String, Object> configuration = getStoredValues(id, worklistConf);
+      
       boolean fetchUserConf = false;
 
       if (CollectionUtils.isNotEmpty(configuration))
@@ -106,11 +106,15 @@ public class WorklistConfigurationUtil
       // Check at user level
       if (fetchUserConf)
       {
-         worklistConf = getWorklistConfigurationMap(PreferenceScope.USER, preferenceId);
+         Map<String, Object> worklistConfUser = getWorklistConfigurationMap(PreferenceScope.USER, preferenceId);
 
-         if (CollectionUtils.isNotEmpty(worklistConf))
+         if (CollectionUtils.isNotEmpty(worklistConfUser))
          {
-            configuration = getStoredValues(id, worklistConf);
+            Map<String, Object> configurationUser = getStoredValues(id, worklistConfUser);
+            if (CollectionUtils.isNotEmpty(configurationUser))
+            {
+               configuration = configurationUser;
+            }
          }
       }
 
