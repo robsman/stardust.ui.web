@@ -561,7 +561,7 @@ public class ModelerResource
          element = new JsonObject();
          elements.add(element);
 
-         element.addProperty("id", "Activity1");
+         element.addProperty("id", "ACTIVITY_1");
 
          graphicsDecoration = new JsonObject();
          element.add("graphicsDecoration", graphicsDecoration);
@@ -593,7 +593,7 @@ public class ModelerResource
          element = new JsonObject();
          elements.add(element);
 
-         element.addProperty("id", "Activity2");
+         element.addProperty("id", "ACTIVITY_2");
 
          graphicsDecoration = new JsonObject();
          element.add("graphicsDecoration", graphicsDecoration);
@@ -617,7 +617,7 @@ public class ModelerResource
          element = new JsonObject();
          elements.add(element);
 
-         element.addProperty("id", "Activity1");
+         element.addProperty("id", "ACTIVITY_1");
 
          JsonArray dashboardContent = new JsonArray();
          element.add("dashboardContent", dashboardContent);
@@ -640,7 +640,7 @@ public class ModelerResource
          element = new JsonObject();
          elements.add(element);
 
-         element.addProperty("id", "Activity2");
+         element.addProperty("id", "ACTIVITY_2");
 
          dashboardContent = new JsonArray();
          element.add("dashboardContent", dashboardContent);
