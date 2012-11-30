@@ -2458,6 +2458,13 @@ define(
 									node.attr("rel",
 											obj.changes.modified[i].type);
 								}
+
+								// Change icon in case the date type changes
+								if (m_constants.DATA === modelElement.type) {
+									node.attr("rel",
+											obj.changes.modified[i].dataType);
+								}
+
 								renameElementViewLabel(node.attr("rel"), node
 										.attr("id"), node.attr("name"));
 								m_utils.inheritFields(modelElement,

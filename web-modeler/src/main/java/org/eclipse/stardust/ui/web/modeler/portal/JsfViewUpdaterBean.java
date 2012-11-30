@@ -15,6 +15,7 @@ import org.eclipse.stardust.ui.web.common.app.View;
  */
 public class JsfViewUpdaterBean
 {
+   public static final String VIEW_ICON_PARAM_KEY = "viewIcon";
    /**
     * Finds and updates a view's parameter.
     */
@@ -27,8 +28,34 @@ public class JsfViewUpdaterBean
       View view = PortalApplication.getInstance().getViewById(viewId, viewKey);
       if (null != view)
       {
-         view.getViewParams().putAll(View.parseParams(params.get("viewParams")));
+         Map<String, Object> viewParams = View.parseParams(params.get("viewParams"));
+         updateViewImage(view, viewParams);
+         view.getViewParams().putAll(viewParams);
          view.resolveLabelAndDescription();
+      }
+   }
+
+   /**
+    * Updates a view tab's icon.
+    */
+   public void updateViewIconForElement()
+   {
+      FacesContext context = FacesContext.getCurrentInstance();
+      Map<String, String> params = context.getExternalContext().getRequestParameterMap();
+      String uuid = params.get("uuid");
+      String iconURI = params.get("iconURI");
+      if (null != uuid)
+      {
+         List<View> openViews = PortalApplication.getInstance().getOpenViews();
+         for (View view : openViews)
+         {
+            Map<String, Object> viewParams = view.getViewParams();
+            if (uuid.equals(viewParams.get("uuid"))
+                  || uuid.equals(viewParams.get("modelUUID")))
+            {
+               view.setIcon(iconURI);
+            }
+         }
       }
    }
 
@@ -61,6 +88,19 @@ public class JsfViewUpdaterBean
          {
             PortalApplication.getInstance().closeView(view);
          }
+      }
+   }
+
+   /**
+    * @param view
+    * @param viewParams
+    */
+   private void updateViewImage(View view, Map<String, Object> viewParams)
+   {
+      if (null != viewParams && null != viewParams.get(VIEW_ICON_PARAM_KEY))
+      {
+         view.setIcon((String) viewParams.get(VIEW_ICON_PARAM_KEY));
+         viewParams.remove(VIEW_ICON_PARAM_KEY);
       }
    }
 }

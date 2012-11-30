@@ -372,7 +372,7 @@ define(function() {
 
 		//General
 		NEW_LINE : 	"\n",
-		EXTERNAL_REFERENCE_PROPERTY : "externalReference"
-
+		EXTERNAL_REFERENCE_PROPERTY : "externalReference",
+		VIEW_ICON_PARAM_KEY : "viewIcon"
 	};
 });

@@ -11,10 +11,10 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
-				"bpm-modeler/js/m_model", "bpm-modeler/js/m_dataTypeSelector","bpm-modeler/js/m_i18nUtils"],
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_dataTypeSelector","bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_jsfViewManager"],
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_dataTypeSelector, m_i18nUtils) {
+				m_dataTypeSelector, m_i18nUtils, m_jsfViewManager) {
 			var view;
 
 			return {
@@ -104,6 +104,7 @@ define(
 			 */
 			function DataView() {
 				var view = m_modelElementView.create();
+				var viewManager = m_jsfViewManager.create();
 
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(DataView.prototype, view);
@@ -246,6 +247,28 @@ define(
 						this.publicVisibilityCheckbox.attr("checked", true);
 					} else {
 						this.publicVisibilityCheckbox.attr("checked", false);
+					}
+
+					this.updateDataViewIcon();
+				};
+
+				/**
+				 * TODO - handle unsupported data types too.?
+				 */
+				DataView.prototype.updateDataViewIcon = function() {
+					var dataViewIcon = undefined;
+					if (this.data.dataType === m_constants.PRIMITIVE_DATA_TYPE) {
+						dataViewIcon = "/plugins/bpm-modeler/images/icons/data-primitive.png";
+					} else if (this.data.dataType === m_constants.STRUCTURED_DATA_TYPE) {
+						dataViewIcon = "/plugins/bpm-modeler/images/icons/data-structured.png";
+					} else if (this.data.dataType === m_constants.DOCUMENT_DATA_TYPE) {
+						dataViewIcon = "/plugins/bpm-modeler/images/icons/data-document.png";
+					}
+
+					if (dataViewIcon) {
+						viewManager.updateView("dataView",
+								m_constants.VIEW_ICON_PARAM_KEY + "="
+										+ dataViewIcon, this.data.uuid);
 					}
 				};
 
