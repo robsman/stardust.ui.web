@@ -26,6 +26,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
@@ -74,9 +75,7 @@ public class SwimlaneCommandHandler
       {
          LaneSymbol laneSymbol = getModelBuilderFacade().createLane(model,
                processDefinition, participantFullID, laneId, laneName, orientation, xPos, yPos,
-               width, height);
-
-         parentSymbol.getLanes().add(laneSymbol);
+               width, height, parentSymbol);
 
          PoolSymbol containingPool = parentSymbol;
          int poolWidth = containingPool.getWidth();
@@ -95,7 +94,8 @@ public class SwimlaneCommandHandler
 
       String laneId = extractString(request, ModelerConstants.ID_PROPERTY);
       LaneSymbol lane = getModelBuilderFacade().findLaneInProcess(processDefinition, laneId);
-
+      LaneParticipantUtil.deleteLane(lane);
+      
       synchronized (model)
       {
          removeLaneAndItsChildElements(lane);

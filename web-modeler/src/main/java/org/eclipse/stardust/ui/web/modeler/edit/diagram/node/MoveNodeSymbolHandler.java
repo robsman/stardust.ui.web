@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
@@ -88,7 +89,7 @@ public class MoveNodeSymbolHandler
                   // Set the Performer for Activ
                   if (null != activitySymbol.getActivity().getPerformer())
                   {
-                     activitySymbol.getActivity().setPerformer(newParentSymbol.getParticipant());
+                     activitySymbol.getActivity().setPerformer(LaneParticipantUtil.getParticipant(newParentSymbol));
                   }
                   newParentSymbol.getActivitySymbol()
                         .add((ActivitySymbolType) nodeSymbol);
