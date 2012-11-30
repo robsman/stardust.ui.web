@@ -104,6 +104,7 @@ public class WorklistColumnSelectorPopup extends PopupUIComponentBean
       {
          this.columns.add(worklistColumn.clone());
       }
+      this.columns = orderColumns();
    }
 
    public void apply()
@@ -154,6 +155,29 @@ public class WorklistColumnSelectorPopup extends PopupUIComponentBean
       }
    }
 
+   /**
+    * @return
+    */
+   private List<WorklistColumn> orderColumns()
+   {
+      List<WorklistColumn> selected = new ArrayList<WorklistColumn>();
+      List<WorklistColumn> unSelected = new ArrayList<WorklistColumn>();
+      for (WorklistColumn columnPreference : columns)
+      {
+         if (columnPreference.isVisible())
+         {
+            selected.add(columnPreference);
+         }
+         else
+         {
+            unSelected.add(columnPreference);
+         }
+      }
+      selected.addAll(unSelected);
+      return selected;
+   }
+   
+   
    /**
     * @param cols
     * @return
