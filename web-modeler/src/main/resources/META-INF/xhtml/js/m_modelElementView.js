@@ -32,11 +32,6 @@ define(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.name"));
 
-				$("label[for='nameInput']")
-						.text(
-								m_i18nUtils
-										.getProperty("modeler.model.propertyView.structuredTypes.dataStructureName"));
-
 				$("label[for='descriptionTextarea']")
 						.text(
 								m_i18nUtils
