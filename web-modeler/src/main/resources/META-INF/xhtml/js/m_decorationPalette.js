@@ -9,8 +9,10 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager",
-				"bpm-modeler/js/m_communicationController", "bpm-modeler/js/m_commandsController",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_extensionManager",
+				"bpm-modeler/js/m_communicationController",
+				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_command" ],
 		function(m_utils, m_constants, m_extensionManager,
 				m_communicationController, m_commandsController, m_command) {
@@ -28,6 +30,7 @@ define(
 			 * 
 			 */
 			function DecorationPalette() {
+				this.dialogContent = {};
 				/**
 				 * 
 				 */
@@ -37,39 +40,6 @@ define(
 								autoOpen : false,
 								draggable : false
 							});
-
-					jQuery("#decorationConfigurationDialog #closeButton")
-							.click(
-									function() {
-										jQuery("#decorationConfigurationDialog")
-												.dialog("close");
-									});
-
-					jQuery("#decorationConfigurationDialog #applyButton")
-							.click(
-									function() {
-										m_commandsController
-												.submitImmediately(
-														m_command
-																.createRetrieveCommand(
-																		"/models/"
-																				+ this.modelId
-																				+ "/processes/"
-																				+ this.processId
-																				+ "/decorations/"
-																				+ decorationId,
-																		{
-																		// Parameters
-																		// from
-																		// dialog
-																		}),
-														{
-															"callbackScope" : diagram,
-															"method" : "applyDecoration"
-														});
-										jQuery("#decorationConfigurationDialog")
-												.dialog("close");
-									});
 
 					// Decoration list
 
@@ -84,7 +54,11 @@ define(
 								+ decorationExtension.id + "'>"
 								+ decorationExtension.title + "</option>");
 
-						jQuery("#decorationConfigurationDialog")
+						var contentDiv = jQuery("<div></div>");
+
+						this.dialogContent[decorationExtension.id] = contentDiv;
+
+						contentDiv
 								.load(
 										decorationExtension.dialogHtmlUrl,
 										function(response, status, xhr) {
@@ -104,11 +78,75 @@ define(
 					}
 
 					decorationList
-							.change(function() {
-								decorationId = decorationList.val();
-								jQuery("#decorationConfigurationDialog")
-										.dialog('open');
-							});
+							.change(
+									{
+										palette : this
+									},
+									function(event) {
+										decorationId = decorationList.val();
+										jQuery(
+												"#decorationConfigurationDialog #contentAnchor")
+												.empty();
+										jQuery(
+												"#decorationConfigurationDialog #contentAnchor")
+												.append(
+														event.data.palette.dialogContent[decorationId]);
+
+										// TODO Following is nonsense; assuming
+										// that close/apply buttons are
+										// available. Use provider object in the
+										// future
+
+										jQuery(
+												"#decorationConfigurationDialog #closeButton")
+												.click(
+														function() {
+															m_utils
+																	.debug("Close dialog");
+															jQuery(
+																	"#decorationConfigurationDialog")
+																	.dialog(
+																			"close");
+														});
+
+										jQuery(
+												"#decorationConfigurationDialog #applyButton")
+												.click(
+														function() {
+															m_utils
+																	.debug("Apply Close dialog");
+															m_communicationController
+																	.postData(
+																			{
+																				url : m_communicationController
+																						.getEndpointUrl()
+																						+ "/models/"
+																						+ diagram.modelId
+																						+ "/processes/"
+																						+ diagram.processId
+																						+ "/decorations/"
+																						+ decorationId
+																			},
+																			{},
+																			{
+																				"success" : function(
+																						json) {
+																					diagram
+																							.applyDecoration(json);
+																				},
+																				"error" : function() {
+																					alert('Could not retrieve decoration');
+																				}
+																			});
+															jQuery(
+																	"#decorationConfigurationDialog")
+																	.dialog(
+																			"close");
+														});
+
+										jQuery("#decorationConfigurationDialog")
+												.dialog('open');
+									});
 
 					jQuery("#decorationConfigurationButton").click(
 							function() {

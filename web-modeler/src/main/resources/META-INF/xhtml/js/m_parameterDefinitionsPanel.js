@@ -10,7 +10,7 @@
 
 /**
  * Utility functions for dialog programming.
- *
+ * 
  * @author Marc.Gille
  */
 define(
@@ -39,7 +39,7 @@ define(
 			 */
 			function ParameterDefinitionsPanel() {
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.initialize = function(
 						options) {
@@ -285,7 +285,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.setParameterDefinitions = function(
 						parameterDefinitions) {
@@ -334,7 +334,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.setScopeModel = function(
 						scopeModel) {
@@ -350,7 +350,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.submitChanges = function() {
 					if (this.options.submitHandler) {
@@ -360,7 +360,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.setDescriptor = function() {
 					this.descriptorInput.attr("checked", true);
@@ -368,7 +368,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.setKeyDescriptor = function() {
 					this.descriptorInput.attr("checked", false);
@@ -376,7 +376,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.populateDataItemsList = function() {
 					this.parameterDefinitionDataSelect.empty();
@@ -408,7 +408,8 @@ define(
 									+ othermodel + "\">");
 
 					for ( var n in m_model.getModels()) {
-						if (this.scopeModel && m_model.getModels()[n] == this.scopeModel) {
+						if (this.scopeModel
+								&& m_model.getModels()[n] == this.scopeModel) {
 							continue;
 						}
 
@@ -427,7 +428,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.initializeParameterDefinitionsTable = function() {
 					this.parameterDefinitionsTableBody.empty();
@@ -539,7 +540,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.deselectParameterDefinitions = function(
 						dataPath) {
@@ -550,7 +551,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.populateParameterDefinitionFields = function() {
 					if (this.currentParameterDefinition == null) {
@@ -682,11 +683,14 @@ define(
 						} else {
 							this.parameterDefinitionDirectionSelect
 									.removeAttr("disabled");
-							this.parameterDefinitionDataSelect
-									.removeAttr("disabled");
-							if (this.options.supportsDataPathes) {
-								this.parameterDefinitionPathInput
+
+							if (this.options.supportsDataMappings) {
+								this.parameterDefinitionDataSelect
 										.removeAttr("disabled");
+								if (this.options.supportsDataPathes) {
+									this.parameterDefinitionPathInput
+											.removeAttr("disabled");
+								}
 							}
 						}
 
@@ -700,7 +704,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.addParameterDefinition = function() {
 					var n = this.parameterDefinitions.length;
@@ -736,7 +740,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.deleteParameterDefinition = function() {
 					m_utils.debug("Deleting "
@@ -760,7 +764,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.moveParameterDefinitionUp = function() {
 					var changedParameterDefinitions = [];
@@ -789,7 +793,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.moveParameterDefinitionDown = function() {
 					var changedParameterDefinitions = [];
@@ -818,13 +822,13 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.validate = function() {
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ParameterDefinitionsPanel.prototype.submitDataChanges = function(
 						dataChanges) {
