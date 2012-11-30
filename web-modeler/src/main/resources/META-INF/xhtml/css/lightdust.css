@@ -120,7 +120,7 @@ input[type=image] {
 }
 
 input[type=image]:focus {
-	
+
 }
 
 input[type=text].rightAligned {
@@ -309,11 +309,11 @@ div.toolBar {
 }
 
 .treeTable tr.collapsed td a.expander {
-	background-image: url(../images/toggle-expand-dark.png);
+	background-image: url(thirdparty/jquery/images/toggle-expand-dark.png);
 }
 
 .treeTable tr.expanded td a.expander {
-	background-image: url(../images/toggle-collapse-dark.png);
+	background-image: url(thirdparty/jquery/images/toggle-collapse-dark.png);
 }
 
 .treeTable span.data-element {
@@ -338,12 +338,12 @@ div.toolBar {
 
 .treeTable tr.collapsed.selected td a.expander,.treeTable tr.collapsed.accept td a.expander
 	{
-	background-image: url(../images/toggle-expand-dark.png);
+	background-image: url(thirdparty/jquery/images/toggle-expand-dark.png);
 }
 
 .treeTable tr.expanded.selected td a.expander,.treeTable tr.expanded.accept td a.expander
 	{
-	background-image: url(../images/toggle-collapse-dark.png);
+	background-image: url(thirdparty/jquery/images/toggle-collapse-dark.png);
 }
 
 .treeTable .ui-draggable-dragging {
