@@ -21,6 +21,7 @@ import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
+import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
@@ -421,10 +422,11 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       laneSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
             ModelerConstants.SWIMLANE_SYMBOL);
       laneSymbolJson.addProperty(
-            ModelerConstants.PARTICIPANT_FULL_ID,
+            ModelerConstants.PARTICIPANT_FULL_ID,            
             getModelBuilderFacade().createFullId(
-                  ModelUtils.findContainingModel(laneSymbol.getParticipant()),
-                  laneSymbol.getParticipant()));
+                  ModelUtils.findContainingModel(
+                        LaneParticipantUtil.getParticipant(laneSymbol)),
+                        LaneParticipantUtil.getParticipant(laneSymbol)));
       loadAttributes(laneSymbol, laneSymbolJson);
 
       return laneSymbolJson;
@@ -517,7 +519,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   laneSymbol.getHeight());
             loadAttributes(laneSymbol, laneSymbolJson);
 
-            if (laneSymbol.getParticipant() != null)
+            if (LaneParticipantUtil.getParticipant(laneSymbol) != null)
             {
                // TODO Scope handling
 
@@ -525,7 +527,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                      ModelerConstants.PARTICIPANT_FULL_ID,
                      getModelBuilderFacade().createFullId(
                            ModelUtils.findContainingModel(processDefinition),
-                           laneSymbol.getParticipant()));
+                           LaneParticipantUtil.getParticipant(laneSymbol)));
             }
 
             JsonObject activitySymbolsJson = new JsonObject();

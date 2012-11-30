@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.eclipse.stardust.common.CompareHelper;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
+import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelPackage;
@@ -42,7 +43,7 @@ public class LaneParticipantChangeTracker implements ChangePostprocessor
                && change.wasModified(candidate, PKG_XPDL.getISwimlaneSymbol_Participant()))
          {
             LaneSymbol lane = (LaneSymbol) candidate;
-            IModelParticipant participant = lane.getParticipant();
+            IModelParticipant participant = LaneParticipantUtil.getParticipant(lane);
             setParticipant(lane, participant);
          }
       }

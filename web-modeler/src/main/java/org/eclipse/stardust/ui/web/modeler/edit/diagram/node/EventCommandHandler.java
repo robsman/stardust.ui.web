@@ -29,6 +29,7 @@ import org.springframework.context.ApplicationContext;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
+import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
@@ -85,7 +86,7 @@ public class EventCommandHandler
 
             //Add a manual trigger by default
             TriggerType manualTrigger = newManualTrigger(processDefinition) //
-                  .accessibleTo(parentLaneSymbol.getParticipant())
+                  .accessibleTo(LaneParticipantUtil.getParticipant(parentLaneSymbol))
                   .build();
             manualTrigger.setElementOid(++maxOid);
             startEventSymbol.setTrigger(manualTrigger);

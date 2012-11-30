@@ -1237,8 +1237,8 @@ public class ModelService
             PepperIconFactory iconFactory = new PepperIconFactory();
             descriptor.importElements(iconFactory, model, true);
             modelParticipant = getModelBuilderFacade().findParticipant(model, participantId);
-         }
-         laneSymbol.setParticipant(modelParticipant);
+         }         
+         LaneParticipantUtil.setParticipant(laneSymbol, modelParticipant);
       }
 
       JsonObject activitySymbolsJson = laneSymbolJson.getAsJsonObject(ACTIVITY_SYMBOLS);

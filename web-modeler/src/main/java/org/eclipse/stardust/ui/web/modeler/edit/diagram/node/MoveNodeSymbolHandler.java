@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
@@ -67,6 +68,68 @@ public class MoveNodeSymbolHandler
       if (request.has(HEIGHT_PROPERTY))
       {
          nodeSymbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
+      }
+
+      // Type property is used to identify the symbol type, used while changing
+      // parentSymbol on move from one lane to another.
+      if (request.has(ModelerConstants.TYPE_PROPERTY))
+      {
+         String symbolType = request.get(ModelerConstants.TYPE_PROPERTY).getAsString();
+         if (null != symbolType)
+         {
+            LaneSymbol parentLane = (LaneSymbol) nodeSymbol.eContainer();
+            if (symbolType.equals(ModelerConstants.ACTIVITY_SYMBOL)
+                  || symbolType.equals(ModelerConstants.GATEWAY_SYMBOL))
+            {
+               if (parentLane.getElementOid() != newParentSymbol.getElementOid())
+               {
+                  // If the parent is changed, remove reference from old parent
+                  parentLane.getActivitySymbol().remove(nodeSymbol);
+                  ActivitySymbolType activitySymbol = (ActivitySymbolType) nodeSymbol;
+                  // Set the Performer for Activ
+                  if (null != activitySymbol.getActivity().getPerformer())
+                  {
+                     activitySymbol.getActivity().setPerformer(LaneParticipantUtil.getParticipant(newParentSymbol));
+                  }
+                  newParentSymbol.getActivitySymbol()
+                        .add((ActivitySymbolType) nodeSymbol);
+               }
+            }
+            else if (symbolType.equals(ModelerConstants.EVENT_SYMBOL))
+            {
+               StartEventSymbol startSymbol = getModelBuilderFacade().findStartEventSymbol(
+                     parentLane, nodeSymbol.getElementOid());
+               if (null != startSymbol)
+               {
+                  if (parentLane.getElementOid() != newParentSymbol.getElementOid())
+                  {
+                     parentLane.getStartEventSymbols().remove(nodeSymbol);
+
+                     newParentSymbol.getStartEventSymbols().add(
+                           (StartEventSymbol) nodeSymbol);
+                  }
+               }
+               else
+               {
+                  if (parentLane.getElementOid() != newParentSymbol.getElementOid())
+                  {
+                     parentLane.getEndEventSymbols().remove(nodeSymbol);
+
+                     newParentSymbol.getEndEventSymbols()
+                           .add((EndEventSymbol) nodeSymbol);
+                  }
+               }
+            }
+            else if (symbolType.equals(ModelerConstants.DATA_SYMBOL))
+            {
+               if (parentLane.getElementOid() != newParentSymbol.getElementOid())
+               {
+                  parentLane.getDataSymbol().remove(nodeSymbol);
+
+                  newParentSymbol.getDataSymbol().add((DataSymbolType) nodeSymbol);
+               }
+            }
+         }
       }
    }
 

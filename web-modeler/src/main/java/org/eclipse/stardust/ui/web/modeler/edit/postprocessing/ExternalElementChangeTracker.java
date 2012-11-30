@@ -22,10 +22,12 @@ import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
+import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
+import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
 import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
@@ -104,6 +106,8 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
          List<EObject> children = (List) matchedElements.get(model);
          if(children != null)
          {
+            boolean modified = false;
+            
             for(EObject element : children)
             {
                String id = checkIsExternalReference(element);         
@@ -113,23 +117,30 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
                   {
                      if(((IIdentifiableModelElement) element).getSymbols().isEmpty())
                      {
-                        if(element instanceof RoleType)
+                        if(element instanceof RoleType && !LaneParticipantUtil.isUsedInLane((IModelParticipant) element))
                         {
                            model.getRole().remove(element);                                  
+                           modified = true;
                         }
-                        else if(element instanceof ConditionalPerformerType)
+                        else if(element instanceof ConditionalPerformerType && !LaneParticipantUtil.isUsedInLane((IModelParticipant) element))
                         {
                            model.getConditionalPerformer().remove(element);                                  
+                           modified = true;                           
                         }
-                        else if(element instanceof OrganizationType)
+                        else if(element instanceof OrganizationType && !LaneParticipantUtil.isUsedInLane((IModelParticipant) element))
                         {
                            model.getOrganization().remove(element);                                  
+                           modified = true;                           
                         } 
                         else if(element instanceof DataType)
                         {
                            model.getData().remove(element);                                  
+                           modified = true;                           
                         } 
-                        change.markAlsoModified(element);                     
+                        if(modified)
+                        {
+                           change.markAlsoModified(element);                     
+                        }
                      }
                   }
                }            
