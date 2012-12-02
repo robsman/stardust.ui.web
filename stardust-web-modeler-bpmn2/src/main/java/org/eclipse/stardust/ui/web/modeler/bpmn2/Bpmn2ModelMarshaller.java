@@ -16,7 +16,6 @@ import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.CallableElement;
-import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.Definitions;
@@ -31,6 +30,8 @@ import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.Interface;
+import org.eclipse.bpmn2.IntermediateCatchEvent;
+import org.eclipse.bpmn2.IntermediateThrowEvent;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.MessageEventDefinition;
@@ -220,7 +221,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       if (isEmpty(modelJto.name))
       {
          modelJto.name = bpmn2Binding.getModelFileName(bpmn2Model);
-         if (!isEmpty(modelJto.name) && modelJto.name.endsWith(".bpmn"))
+         if ( !isEmpty(modelJto.name) && modelJto.name.endsWith(".bpmn"))
          {
             modelJto.name = modelJto.name.substring(0,
                   modelJto.name.length() - ".bpmn".length());
@@ -779,7 +780,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          // jto.subprocessFullId = subProcess.get;
       }
 
-        return jto;
+      return jto;
    }
 
    public GatewayJto toJto(Gateway gateway)
@@ -787,7 +788,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       GatewayJto jto = newModelElementJto(gateway, new GatewayJto());
 
       loadDescription(gateway, jto);
-    loadExtensions(gateway, jto);
+      loadExtensions(gateway, jto);
 
       // prefix name due to current gateway-workarounds
       jto.name = "gateway" + jto.name;
@@ -814,23 +815,43 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
       if (event instanceof StartEvent)
       {
+         StartEvent startEvent = (StartEvent) event;
          jto.eventType = ModelerConstants.START_EVENT;
+         jto.eventClass = encodeEventClass(startEvent.getEventDefinitions());
+         jto.throwing = false;
+         jto.interrupting = startEvent.isIsInterrupting();
+      }
+      else if (event instanceof IntermediateCatchEvent)
+      {
+         IntermediateCatchEvent intermediateCatchEvent = (IntermediateCatchEvent) event;
+         jto.eventType = ModelerConstants.INTERMEDIATE_EVENT;
+         jto.eventClass = encodeEventClass(intermediateCatchEvent.getEventDefinitions());
+         jto.throwing = false;
+      }
+      else if (event instanceof IntermediateThrowEvent)
+      {
+         IntermediateThrowEvent intermediateThrowEvent = (IntermediateThrowEvent) event;
+         jto.eventType = ModelerConstants.INTERMEDIATE_EVENT;
+         jto.eventClass = encodeEventClass(intermediateThrowEvent.getEventDefinitions());
+         jto.throwing = true;
       }
       else if (event instanceof BoundaryEvent)
       {
-         jto.eventType = ModelerConstants.START_EVENT;
+         BoundaryEvent boundaryEvent = (BoundaryEvent) event;
+
+         jto.eventType = ModelerConstants.INTERMEDIATE_EVENT;
+         jto.eventClass = encodeEventClass(boundaryEvent.getEventDefinitions());
+         jto.bindingActivityUuid = boundaryEvent.getAttachedToRef().getId();
+         jto.interrupting = boundaryEvent.isCancelActivity();
+         jto.throwing = false;
       }
       else if (event instanceof EndEvent)
       {
+         EndEvent endEvent = (EndEvent) event;
          jto.eventType = ModelerConstants.STOP_EVENT;
+         jto.eventClass = encodeEventClass(endEvent.getEventDefinitions());
+         jto.throwing = true;
       }
-
-      if ((null != jto) && (event instanceof CatchEvent))
-      {
-         jto.eventClass = encodeCatchEventType((CatchEvent) event);
-      }
-
-      // TODO
 
       return jto;
    }
@@ -856,7 +877,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param <T>
     * @param <J>
     * @param src
@@ -870,7 +891,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       jto.id = src.getId();
 
       String name;
-      
+
       if (src instanceof ItemDefinition)
       {
          name = ((ItemDefinition) src).getId();
@@ -915,7 +936,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param <T>
     * @param <J>
     * @param shape
@@ -936,7 +957,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param <T>
     * @param <J>
     * @param edge
@@ -960,14 +981,14 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param event
     * @return
     */
-   public String encodeCatchEventType(CatchEvent event)
+   public String encodeEventClass(List<EventDefinition> eventDefinitions)
    {
       Set<String> eventClasses = newHashSet();
-      for (EventDefinition eventDefinition : event.getEventDefinitions())
+      for (EventDefinition eventDefinition : eventDefinitions)
       {
          if (eventDefinition instanceof TimerEventDefinition)
          {
@@ -990,7 +1011,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param node
     * @return
     */
@@ -1015,7 +1036,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param fromShape
     * @param point
     * @param point2
@@ -1054,7 +1075,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param name
     * @param id
     * @return
@@ -1072,15 +1093,15 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    private void loadDescription(BaseElement element, ModelElementJto jto)
    {
       Documentation description = Bpmn2ExtensionUtils.getDescription(element);
-      
+
       if (description != null)
       {
          jto.description = description.getText();
       }
    }
-   
+
    /**
-    *
+    * 
     * @param element
     * @param jto
     */
