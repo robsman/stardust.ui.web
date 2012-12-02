@@ -69,7 +69,6 @@ define(
 
 					return json;
 				},
-
 				prototype : Activity.prototype
 			};
 

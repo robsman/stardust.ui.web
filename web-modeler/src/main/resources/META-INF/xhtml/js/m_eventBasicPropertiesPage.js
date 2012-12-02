@@ -180,8 +180,8 @@ define(
 				 */
 				EventBasicPropertiesPage.prototype.setCatching = function(
 						catching) {
-					this.catchingInput.prop("checked", true);
-					this.throwingInput.prop("checked", false);
+					this.catchingInput.prop("checked", catching);
+					this.throwingInput.prop("checked", !catching);
 				};
 
 				/**
@@ -189,8 +189,8 @@ define(
 				 */
 				EventBasicPropertiesPage.prototype.setThrowing = function(
 						throwing) {
-					this.catchingInput.prop("checked", false);
-					this.throwingInput.prop("checked", true);
+					this.catchingInput.prop("checked", !throwing);
+					this.throwingInput.prop("checked", throwing);
 				};
 
 				/**
@@ -344,7 +344,10 @@ define(
 					this
 							.setEventClass(this.propertiesPanel.element.modelElement.eventClass);
 
-					if (this.propertiesPanel.element.modelElement.eventType == m_constants.START_EVENT_TYPE) {
+					if (this.propertiesPanel.element.modelElement.eventType == m_constants.START_EVENT_TYPE
+							&& m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE) {
+						m_dialog.makeVisible(this.implementationPanel);
+
 						if (this.getModelElement().attributes["carnot:engine:camel::camelContextId"] != null) {
 							this.setOverlay("genericCamelRouteEvent");
 							this.overlayControllers["genericCamelRouteEvent"]
@@ -357,10 +360,6 @@ define(
 
 							this.setOverlay(overlay);
 						}
-					}
-
-					if (m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE) {
-						m_dialog.makeVisible(this.implementationPanel);
 					} else {
 						m_dialog.makeInvisible(this.implementationPanel);
 					}

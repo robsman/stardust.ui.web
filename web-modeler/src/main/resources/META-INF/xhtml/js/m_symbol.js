@@ -317,6 +317,13 @@ define(
 				};
 
 				/**
+				 * Resolve all further non-hierarchical relationships, e.g. boundary events.
+				 */
+				Symbol.prototype.resolveNonHierarchicalRelationships = function() {
+					// Do nothing
+				};
+				
+				/**
 				 * 
 				 */
 				Symbol.prototype.createPrimitives = function() {

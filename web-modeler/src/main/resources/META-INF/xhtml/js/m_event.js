@@ -33,6 +33,11 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants" ], function(
 
 			return event;
 		},
+		typeObject : function(json) {
+			m_utils.inheritMethods(json, new Event());
+
+			return json;
+		},
 		prototype : Event.prototype
 	};
 

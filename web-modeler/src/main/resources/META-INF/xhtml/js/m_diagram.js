@@ -111,6 +111,7 @@ define(
 				// Data symbols by OIDs
 
 				this.dataSymbols = {};
+				
 				// Data symbols by OIDs
 
 				this.annotationSymbols = {};
@@ -975,7 +976,7 @@ define(
 				};
 
 				/**
-				 * 
+				 * Find an Activity Symbol by the Id of the corresponding Activity.
 				 */
 				Diagram.prototype.findActivitySymbolById = function(id) {
 					for ( var n in this.activitySymbols) {
@@ -2111,6 +2112,12 @@ define(
 					for ( var n in json.connections) {
 						m_connection.createConnectionFromJson(this,
 								json.connections[n]);
+					}
+
+					// Resolve all further non-hierarchical relationships, e.g. boundary events
+
+					for ( var n in this.symbols) {
+						this.symbols[n].resolveNonHierarchicalRelationships();
 					}
 
 					m_processPropertiesPanel.getInstance().setElement(

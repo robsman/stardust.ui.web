@@ -86,22 +86,18 @@ define(
 					this.diagram = diagram;
 
 					this.diagram.lastSymbol = this;
-					this.bindingActivity = null;
+					this.bindingActivitySymbol = null;
 
 					this.propertiesPanel = m_eventPropertiesPanel.getInstance();
 					this.circle = null;
 					this.innerCircle = null;
 					this.image = null;
 					this.text = null;
-					this.startImageUrl = "../../images/icons/start-event.png";
-					this.startMessageImageUrl = "../../images/icons/start-event-message.png";
-					this.startTimerImageUrl = "../../images/icons/start-event-timer.png";
 					this.timerCatchingUrl = "../../images/icons/event-timer-catching.png";
 					this.messageCatchingUrl = "../../images/icons/event-message-catching.png";
 					this.messageThrowingUrl = "../../images/icons/event-message-throwing.png";
 					this.errorCatchingUrl = "../../images/icons/event-error-catching.png";
 					this.errorThrowingUrl = "../../images/icons/event-error-throwing.png";
-					this.stopImageUrl = "../../images/icons/stop-event.png";
 
 					// Size is not transfered from the server
 
@@ -120,11 +116,7 @@ define(
 				 * 
 				 */
 				EventSymbol.prototype.initializeFromJson = function(lane) {
-					if (!this.modelElement.prototype) {
-						this.modelElement.prototype = {};
-					}
-					m_utils.inheritMethods(this.modelElement.prototype,
-							m_event.prototype);
+					m_event.typeObject(this.modelElement);
 
 					// Overwrite width and height
 
@@ -155,7 +147,7 @@ define(
 					transferObject.text = null;
 					transferObject.startImageUrl = null;
 					transferObject.stopImageUrl = null;
-					transferObject.bindingActivity = null;
+					transferObject.bindingActivitySymbol = null;
 
 					return transferObject;
 				};
@@ -200,7 +192,7 @@ define(
 					this.addToPrimitives(this.innerCircle);
 
 					this.image = m_canvasManager.drawImageAt(
-							this.startImageUrl, this.x
+							this.timerCatchingUrl, this.x
 									+ m_constants.EVENT_DEFAULT_RADIUS - 0.5
 									* m_constants.EVENT_ICON_WIDTH, this.y
 									+ m_constants.EVENT_DEFAULT_RADIUS - 0.5
@@ -426,7 +418,7 @@ define(
 							m_utils.textWrap(this.text, 4.0 * this.width);
 						}
 					}
-				}
+				};
 
 				/**
 				 * 
@@ -521,8 +513,18 @@ define(
 						hitSymbol.addBoundaryEvent(this);
 
 						// TODO Submit change
-					} else if (this.bindingActivity != null) {
-						this.bindingActivity.removeBoundaryEvent(this);
+					} else if (this.bindingActivitySymbol != null) {
+						this.bindingActivitySymbol.removeBoundaryEvent(this);
+					}
+				};
+
+				/**
+				 * 
+				 */
+				EventSymbol.prototype.resolveNonHierarchicalRelationships = function() {
+					if (this.modelElement.isBoundaryEvent()) {
+						this.bindingActivitySymbol = this.diagram
+								.findActivitySymbolById(this.modelElement.bindingActivityUuid);
 					}
 				};
 			}

@@ -134,6 +134,7 @@ define(
 					this.parentSymbol = lane;
 					this.parentSymbolId = lane.id;
 					this.parentSymbol.containedSymbols.push(this);
+					this.boundaryEventSymbols = [];
 					this.prepareNoPosition();
 					this.completeNoTransfer();
 					this.register();
