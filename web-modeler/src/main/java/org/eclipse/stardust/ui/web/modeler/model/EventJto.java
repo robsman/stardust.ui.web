@@ -14,6 +14,12 @@ public class EventJto extends ModelElementJto
    public String eventType;
 
    public String eventClass;
+   
+   public boolean interrupting;
+   
+   public boolean throwing;
+   
+   public String  bindingActivityUuid;
 
    public JsonArray parameterMappings = new JsonArray();
 }
