@@ -15,11 +15,14 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Documentation;
 import org.eclipse.bpmn2.ExtensionAttributeValue;
+import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.util.XmlExtendedMetadata;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -475,6 +478,25 @@ public class Bpmn2ExtensionUtils
       }
    }
 
+   /**
+    * 
+    * @param id
+    * @return
+    */
+   public static Activity findActivityById(Process process, String id)
+   {
+      for (FlowElement flowElement : process.getFlowElements())
+      {
+         if (flowElement instanceof Activity &&
+               id.equals(((Activity)flowElement).getId()))
+         {
+            return (Activity)flowElement;
+         }
+      }
+
+      return null;
+   }
+   
    protected static String getCDataString(FeatureMap featureMap)
    {
       String result = null;
