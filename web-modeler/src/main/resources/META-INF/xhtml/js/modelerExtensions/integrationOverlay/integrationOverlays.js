@@ -16,42 +16,56 @@ define(["bpm-modeler/js/m_manualTriggerIntegrationOverlay", "bpm-modeler/js/m_ti
 		eventIntegrationOverlay: [{
 			id : "manualTrigger",
 			name : "Manual Start by User",
+			eventTypes : ["startEvent"],
+			eventClass : "none",
 			pageHtmlUrl: "manualTriggerIntegrationOverlay.html",
 			provider : m_manualTriggerIntegrationOverlay
 		},
 		{
 			id : "timerEvent",
 			name : "Timer Event",
+			eventTypes : ["startEvent", "intermediateEvent"],
+			eventClass : "timer",
 			pageHtmlUrl: "timerEventIntegrationOverlay.html",
 			provider : m_timerEventIntegrationOverlay
 		},
 		{
 			id : "fileEvent",
 			name : "File Event",
+			eventTypes : ["startEvent", "intermediateEvent", "endEvent"],
+			eventClass : "message",
 			pageHtmlUrl: "fileEventIntegrationOverlay.html",
 			provider : m_fileEventIntegrationOverlay
 		},
 		{
 			id : "emailEvent",
 			name : "EMail Event",
+			eventTypes : ["startEvent", "intermediateEvent", "endEvent"],
+			eventClass : "message",
 			pageHtmlUrl: "emailEventIntegrationOverlay.html",
 			provider : m_emailEventIntegrationOverlay
 		},
 		{
 			id : "messageEvent",
 			name : "Message Event",
+			eventTypes : ["startEvent", "intermediateEvent", "endEvent"],
+			eventClass : "message",
 			pageHtmlUrl: "messageEventIntegrationOverlay.html",
 			provider : m_messageEventIntegrationOverlay
 		},
 		{
 			id : "scanEvent",
 			name : "Scan Event",
+			eventTypes : ["startEvent"],
+			eventClass : "message",
 			pageHtmlUrl: "scanEventIntegrationOverlay.html",
 			provider : m_scanEventIntegrationOverlay
 		},
 		{
 			id : "genericCamelRouteEvent",
 			name : "Generic Camel Route Event",
+			eventTypes : ["startEvent"],
+			eventClass : "message",
 			pageHtmlUrl: "genericCamelRouteEventIntegrationOverlay.html",
 			provider : m_genericCamelRouteEventIntegrationOverlay
 		}]

@@ -121,6 +121,14 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			handlerMethod: "createStartEvent",
 			visibility : "always"
 		}, {
+			id : "intermediateEventButton",
+			paletteId : "eventPalette",
+			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createIntermediateEvent.title"),
+			iconUrl : "../../images/icons/end_event_with_border.png",
+			provider : m_defaultPaletteHandler,
+			handlerMethod: "createIntermediateEvent",
+			visibility : "preview"
+		}, {
 			id : "endEventButton",
 			paletteId : "eventPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createEndEvent.title"),
