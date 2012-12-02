@@ -74,6 +74,10 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants" ], function(
 				this.eventClass = m_constants.NONE_EVENT_CLASS;
 				this.interrupting = true;
 				this.throwing = false;
+				
+				// Convenience setting to immediately create Manual Triggers
+				
+				this.attributes["carnot:engine:eventIntegrationOverlay"] = "manualTrigger";
 			} else if (this.eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
 				this.eventClass = m_constants.MESSAGE_EVENT_CLASS;
 				this.interrupting = true;
