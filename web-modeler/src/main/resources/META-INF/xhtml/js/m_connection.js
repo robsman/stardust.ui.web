@@ -12,12 +12,18 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_drawable",
-				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command", "bpm-modeler/js/m_controlFlow",
-				"bpm-modeler/js/m_propertiesPanel", "bpm-modeler/js/m_dataFlowPropertiesPanel",
-				"bpm-modeler/js/m_controlFlowPropertiesPanel", "bpm-modeler/js/m_activitySymbol",
-				"bpm-modeler/js/m_gatewaySymbol", "bpm-modeler/js/m_eventSymbol", "bpm-modeler/js/m_controlFlow",
-				"bpm-modeler/js/m_dataFlow", "bpm-modeler/js/m_modelerUtils", "bpm-modeler/js/m_messageDisplay" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_drawable",
+				"bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_command", "bpm-modeler/js/m_controlFlow",
+				"bpm-modeler/js/m_propertiesPanel",
+				"bpm-modeler/js/m_dataFlowPropertiesPanel",
+				"bpm-modeler/js/m_controlFlowPropertiesPanel",
+				"bpm-modeler/js/m_activitySymbol",
+				"bpm-modeler/js/m_gatewaySymbol",
+				"bpm-modeler/js/m_eventSymbol", "bpm-modeler/js/m_controlFlow",
+				"bpm-modeler/js/m_dataFlow", "bpm-modeler/js/m_modelerUtils",
+				"bpm-modeler/js/m_messageDisplay" ],
 		function(m_utils, m_constants, m_canvasManager, m_drawable,
 				m_commandsController, m_command, m_controlFlow,
 				m_propertiesPanel, m_dataFlowPropertiesPanel,
@@ -31,9 +37,9 @@ define(
 
 					connection.bind(diagram);
 					// Validate the connection rules for anchor Point
-					if(connection.validateCreateConnection(fromAnchorPoint)){
+					if (connection.validateCreateConnection(fromAnchorPoint)) {
 						connection.setFirstAnchorPoint(fromAnchorPoint);
-					}else{
+					} else {
 						// reset the connection
 						connection = null;
 					}
@@ -55,7 +61,7 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function Connection() {
 				var drawable = m_drawable.createDrawable();
@@ -93,7 +99,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.toString = function() {
 					return "Lightdust.Connection";
@@ -169,7 +175,8 @@ define(
 					this.toAnchorPoint.symbol.connections.push(this);
 
 					if (this.isDataFlow()) {
-						m_dataFlow.initializeFromJson(this.diagram.process, this.modelElement);
+						m_dataFlow.initializeFromJson(this.diagram.process,
+								this.modelElement);
 						this.propertiesPanel = m_dataFlowPropertiesPanel
 								.getInstance();
 					} else {
@@ -200,7 +207,7 @@ define(
 				};
 
 				/*
-				 *
+				 * 
 				 */
 				Connection.prototype.initializeAnchorPoints = function() {
 					if (this.toModelElementType == m_constants.ACTIVITY) {
@@ -224,18 +231,22 @@ define(
 					}
 				}
 
-				/* Determinies orientation of anchorpoints for connections with undefined orientation.
-				 * Orientation string returned follows syntax - FromAnchopointOrientation(N/E/W/S)
-				 * followed by ToAnchopointOrientation(N/E/W/S)
-				 *
-				 * e.g. Orientation NE means From anchorpoint orientation is North and to-anchorpoint orientation is East
-				 *  */
+				/*
+				 * Determinies orientation of anchorpoints for connections with
+				 * undefined orientation. Orientation string returned follows
+				 * syntax - FromAnchopointOrientation(N/E/W/S) followed by
+				 * ToAnchopointOrientation(N/E/W/S)
+				 * 
+				 * e.g. Orientation NE means From anchorpoint orientation is
+				 * North and to-anchorpoint orientation is East
+				 */
 				Connection.prototype.determineOrientation = function() {
 					var frmSmbl;
 					var toSmbl;
 
 					if (this.fromModelElementType == m_constants.ACTIVITY) {
-						frmSmbl = this.diagram.activitySymbols[this.fromModelElementOid.toString()];
+						frmSmbl = this.diagram.activitySymbols[this.fromModelElementOid
+								.toString()];
 					} else if (this.fromModelElementType == m_constants.EVENT) {
 						frmSmbl = this.diagram.eventSymbols[this.fromModelElementOid];
 					} else if (this.fromModelElementType == m_constants.DATA) {
@@ -245,7 +256,8 @@ define(
 					}
 
 					if (this.toModelElementType == m_constants.ACTIVITY) {
-						toSmbl = this.diagram.activitySymbols[this.toModelElementOid.toString()];
+						toSmbl = this.diagram.activitySymbols[this.toModelElementOid
+								.toString()];
 					} else if (this.toModelElementType == m_constants.EVENT) {
 						toSmbl = this.diagram.eventSymbols[this.toModelElementOid];
 					} else if (this.toModelElementType == m_constants.DATA) {
@@ -255,13 +267,15 @@ define(
 					}
 
 					var orientation;
-					if (Math.abs(frmSmbl.anchorPoints[0].x - toSmbl.anchorPoints[0].x) < parseInt(toSmbl.width / 2)) {
+					if (Math.abs(frmSmbl.anchorPoints[0].x
+							- toSmbl.anchorPoints[0].x) < parseInt(toSmbl.width / 2)) {
 						if (frmSmbl.anchorPoints[1].y < toSmbl.anchorPoints[1].y) {
 							orientation = "SN";
 						} else {
 							orientation = "NS";
 						}
-					} else if (Math.abs(frmSmbl.anchorPoints[1].y - toSmbl.anchorPoints[1].y) < parseInt(toSmbl.height / 2)) {
+					} else if (Math.abs(frmSmbl.anchorPoints[1].y
+							- toSmbl.anchorPoints[1].y) < parseInt(toSmbl.height / 2)) {
 						if (frmSmbl.anchorPoints[1].x < toSmbl.anchorPoints[1].x) {
 							orientation = "EW";
 						} else {
@@ -269,36 +283,44 @@ define(
 						}
 					} else if (frmSmbl.anchorPoints[0].x < toSmbl.anchorPoints[0].x
 							&& frmSmbl.anchorPoints[1].y < toSmbl.anchorPoints[1].y) {
-						if (toSmbl.anchorPoints[0].x > parseInt(frmSmbl.anchorPoints[1].x + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH)) {
+						if (toSmbl.anchorPoints[0].x > parseInt(frmSmbl.anchorPoints[1].x
+								+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH)) {
 							orientation = "EN";
-						} else if (toSmbl.anchorPoints[3].y > parseInt(frmSmbl.anchorPoints[2].y + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH)) {
+						} else if (toSmbl.anchorPoints[3].y > parseInt(frmSmbl.anchorPoints[2].y
+								+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH)) {
 							orientation = "SW";
 						} else {
 							orientation = "SN";
 						}
 					} else if (frmSmbl.anchorPoints[0].x > toSmbl.anchorPoints[0].x
 							&& frmSmbl.anchorPoints[1].y > toSmbl.anchorPoints[1].y) {
-						if (frmSmbl.anchorPoints[0].x > parseInt(toSmbl.anchorPoints[1].x + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH)) {
+						if (frmSmbl.anchorPoints[0].x > parseInt(toSmbl.anchorPoints[1].x
+								+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH)) {
 							orientation = "NE";
-						} else if (frmSmbl.anchorPoints[3].y > parseInt(toSmbl.anchorPoints[2].y + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH)) {
+						} else if (frmSmbl.anchorPoints[3].y > parseInt(toSmbl.anchorPoints[2].y
+								+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH)) {
 							orientation = "WS";
 						} else {
 							orientation = "NS";
 						}
 					} else if (frmSmbl.anchorPoints[0].x < toSmbl.anchorPoints[0].x
 							&& frmSmbl.anchorPoints[1].y > toSmbl.anchorPoints[1].y) {
-						if (toSmbl.anchorPoints[3].x > parseInt(frmSmbl.anchorPoints[0].x + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH)) {
+						if (toSmbl.anchorPoints[3].x > parseInt(frmSmbl.anchorPoints[0].x
+								+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH)) {
 							orientation = "NW";
-						} else if (frmSmbl.anchorPoints[1].y > parseInt(toSmbl.anchorPoints[2].y + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH)) {
+						} else if (frmSmbl.anchorPoints[1].y > parseInt(toSmbl.anchorPoints[2].y
+								+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH)) {
 							orientation = "ES";
 						} else {
 							orientation = "NS";
 						}
 					} else if (frmSmbl.anchorPoints[0].x > toSmbl.anchorPoints[0].x
 							&& frmSmbl.anchorPoints[1].y < toSmbl.anchorPoints[1].y) {
-						if (frmSmbl.anchorPoints[3].x > parseInt(toSmbl.anchorPoints[0].x + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH)) {
+						if (frmSmbl.anchorPoints[3].x > parseInt(toSmbl.anchorPoints[0].x
+								+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH)) {
 							orientation = "WN";
-						} else if (toSmbl.anchorPoints[1].y > parseInt(frmSmbl.anchorPoints[3].y + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH)) {
+						} else if (toSmbl.anchorPoints[1].y > parseInt(frmSmbl.anchorPoints[3].y
+								+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH)) {
 							orientation = "SE";
 						} else {
 							orientation = "NS";
@@ -315,20 +337,21 @@ define(
 				Connection.prototype.updateAnchorPointForSymbol = function() {
 					var sourceOrientation = null;
 					var targetOrientation = 0;
-					if (this.fromAnchorPoint.symbol.type == m_constants.GATEWAY_SYMBOL || this.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
+					if (this.fromAnchorPoint.symbol.type == m_constants.GATEWAY_SYMBOL
+							|| this.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
 						var startSymbol = this.fromAnchorPoint.symbol;
 						var targetSymbol = this.toAnchorPoint.symbol;
 						if (startSymbol.x > targetSymbol.x + targetSymbol.width) {
 							// Start Symbol is at right, show arrow at left
 							sourceOrientation = 3;
-							if(startSymbol.y > targetSymbol.y){
-								targetOrientation =1;
+							if (startSymbol.y > targetSymbol.y) {
+								targetOrientation = 1;
 							}
 						} else if (startSymbol.x + startSymbol.width < targetSymbol.x) {
 							// Start Symbol is at left, show arrow at right
 							sourceOrientation = 1;
-							if(startSymbol.y > targetSymbol.y){
-								targetOrientation =3;
+							if (startSymbol.y > targetSymbol.y) {
+								targetOrientation = 3;
 							}
 						} else {
 							// default orientation is SOUTH for gateway
@@ -340,7 +363,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.setFirstAnchorPoint = function(anchorPoint) {
 					this.fromAnchorPoint = anchorPoint;
@@ -349,7 +372,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.setSecondAnchorPointNoComplete = function(
 						anchorPoint) {
@@ -359,7 +382,9 @@ define(
 						this.prepare();
 					}
 
-					if (this.toAnchorPoint.symbol != null && this.validateCreateConnection(this.fromAnchorPoint, this.toAnchorPoint)) {
+					if (this.toAnchorPoint.symbol != null
+							&& this.validateCreateConnection(
+									this.fromAnchorPoint, this.toAnchorPoint)) {
 						// On Mouse move , the same connection is added again,
 						// so remove if present then add(update)
 						m_utils.removeItemFromArray(
@@ -382,7 +407,7 @@ define(
 								activity = this.toAnchorPoint.symbol.modelElement;
 							} else {
 								this.fromModelElementOid = this.fromAnchorPoint.symbol.oid;
-								if(this.fromAnchorPoint.symbol.modelElement){
+								if (this.fromAnchorPoint.symbol.modelElement) {
 									this.fromModelElementType = this.fromAnchorPoint.symbol.modelElement.type;
 								}
 								this.toModelElementOid = this.toAnchorPoint.symbol.oid;
@@ -407,10 +432,11 @@ define(
 						} else {
 							this.fromModelElementOid = this.fromAnchorPoint.symbol.oid;
 
-							if(null != this.fromAnchorPoint.symbol.modelElement){
+							if (null != this.fromAnchorPoint.symbol.modelElement) {
 								this.fromModelElementType = this.fromAnchorPoint.symbol.modelElement.type;
-							}else{
-								this.fromModelElementType = this.fromAnchorPoint.symbol.type;;
+							} else {
+								this.fromModelElementType = this.fromAnchorPoint.symbol.type;
+								;
 							}
 							this.toModelElementOid = this.toAnchorPoint.symbol.oid;
 							if (this.toAnchorPoint.symbol.modelElement) {
@@ -456,14 +482,14 @@ define(
 								// Identify if connection exist between same
 								// Data and Activity symbol
 								if (dataSymbol.connections[n].oid
-										&& (dataSymbol.connections[n].fromAnchorPoint.symbol.oid == activity.oid
-												|| dataSymbol.connections[n].toAnchorPoint.symbol.oid == activity.oid)) {
+										&& (dataSymbol.connections[n].fromAnchorPoint.symbol.oid == activity.oid || dataSymbol.connections[n].toAnchorPoint.symbol.oid == activity.oid)) {
 									// Use the existing connection
 									updateConnection = dataSymbol.connections[n];
 
 									updateConnection.modelElement.inputDataMapping = {};
 									updateConnection.modelElement.outputDataMapping = {};
-									// While update only mapping change are required
+									// While update only mapping change are
+									// required
 									var changes = {
 										modelElement : {
 											inputDataMapping : updateConnection.modelElement.inputDataMapping,
@@ -473,7 +499,8 @@ define(
 											updateDataMapping : true
 										}
 									}
-									updateConnection.createUpdateCommand(changes);
+									updateConnection
+											.createUpdateCommand(changes);
 									m_messageDisplay
 											.showMessage("Connection updated");
 									break;
@@ -489,7 +516,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.createTransferObject = function() {
 					var transferObject = {};
@@ -516,23 +543,24 @@ define(
 
 					if (this.isControlFlow()) {
 						// TODO Can we store in graphical element?
-						if(null != this.conditionExpressionTextXOffset)
-						transferObject.modelElement.attributes["carnot:engine:conditionExpressionTextXOffset"] = this.conditionExpressionTextXOffset;
-						if(null !=this.conditionExpressionTextYOffset)
-						transferObject.modelElement.attributes["carnot:engine:conditionExpressionTextYOffset"] = this.conditionExpressionTextYOffset;
+						if (null != this.conditionExpressionTextXOffset)
+							transferObject.modelElement.attributes["carnot:engine:conditionExpressionTextXOffset"] = this.conditionExpressionTextXOffset;
+						if (null != this.conditionExpressionTextYOffset)
+							transferObject.modelElement.attributes["carnot:engine:conditionExpressionTextYOffset"] = this.conditionExpressionTextYOffset;
 						// TODO Add later
 						transferObject.segments = null;
 					} else {
-						transferObject.modelElement = transferObject.modelElement.createTransferObject();
+						transferObject.modelElement = transferObject.modelElement
+								.createTransferObject();
 						if (this.modelElement)
-						transferObject.modelElement.oid = this.modelElement.oid;
+							transferObject.modelElement.oid = this.modelElement.oid;
 					}
 
 					return transferObject;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.getPath = function(withId) {
 					var path = "/models/" + this.diagram.model.id
@@ -547,28 +575,28 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.refresh = function() {
 					this.adjustGeometry();
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.isUnknownFlow = function() {
 					return this.getToSymbol() == null;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.isPoolSymbol = function() {
 					return false;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.isDataFlow = function() {
 					// TODO Need better type indication
@@ -578,28 +606,28 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.allowsCondition = function() {
 					return this.fromModelElementType == m_constants.GATEWAY;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.isControlFlow = function() {
 					return !this.isDataFlow();
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.getFromSymbol = function() {
 					return this.fromAnchorPoint.symbol;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.getToSymbol = function() {
 					return this.toAnchorPoint == null ? null
@@ -607,7 +635,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.setDummySecondAnchorPoint = function() {
 					this.setSecondAnchorPoint(this.fromAnchorPoint
@@ -617,7 +645,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.prepare = function() {
 					this.createPathPrimitives();
@@ -633,9 +661,10 @@ define(
 				 */
 				Connection.prototype.complete = function(sync) {
 					this.completeNoTransfer();
-					var command = m_command.createCreateNodeCommand("connection.create",
-							this.diagram.model.id, this.diagram.process.oid,
-							this.createTransferObject());
+					var command = m_command.createCreateNodeCommand(
+							"connection.create", this.diagram.model.id,
+							this.diagram.process.oid, this
+									.createTransferObject());
 					command.sync = sync ? true : false;
 					m_commandsController.submitCommand(command);
 				};
@@ -643,21 +672,21 @@ define(
 				// TODO Move to drawable
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.isPrepared = function() {
 					return this.state == m_constants.SYMBOL_PREPARED_STATE;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.isCompleted = function() {
 					return this.state == m_constants.SYMBOL_COMPLETED_STATE;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.completeNoTransfer = function() {
 					this.register();
@@ -690,7 +719,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.register = function() {
 					this.diagram.connections.push(this);
@@ -703,7 +732,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.createPathPrimitives = function() {
 					this.path = m_canvasManager.drawPath("", {
@@ -748,14 +777,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.initializePrepareEventHandling = function() {
 					this.path.click(Connection_clickClosure);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.initializeEventHandling = function() {
 					this.auxiliaryPickPath.click(Connection_clickClosure);
@@ -787,7 +816,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.refreshFromModelElement = function() {
 					this.conditionExpressionText.hide();
@@ -820,14 +849,19 @@ define(
 							"stroke-dasharray" : "-"
 						});
 
-						// Remove the Marker attr(marker-start,marker-end)-commonId for all connection
-						jQuery("path[stroke='" + m_constants.DATA_FLOW_COLOR + "']").removeAttr(
-						"marker-end").removeAttr("marker-start");
+						// Remove the Marker
+						// attr(marker-start,marker-end)-commonId for all
+						// connection
+						jQuery(
+								"path[stroke='" + m_constants.DATA_FLOW_COLOR
+										+ "']").removeAttr("marker-end")
+								.removeAttr("marker-start");
 
 						for ( var n in this.diagram.connections) {
 							if (this.diagram.connections[n].isDataFlow()) {
 								var connTemp = this.diagram.connections[n];
-								// For In-Mapping path will be from Data to Activity
+								// For In-Mapping path will be from Data to
+								// Activity
 								// vice-versa for Out mapping
 								if (connTemp.modelElement.inputDataMapping != null
 										&& connTemp.modelElement.outputDataMapping != null) {
@@ -836,8 +870,10 @@ define(
 									connTemp.path.attr("arrow-end",
 											"block-wide-long");
 								} else if (connTemp.modelElement.inputDataMapping != null) {
-									// When dataFlow modified from properties panel
-									// the From,To anchor point symbols to not change
+									// When dataFlow modified from properties
+									// panel
+									// the From,To anchor point symbols to not
+									// change
 									if (connTemp.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
 										connTemp.path.attr("arrow-start",
 												"block-wide-long");
@@ -869,7 +905,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.reroute = function() {
 					if (this.isControlFlow()) {
@@ -883,18 +919,30 @@ define(
 						var sourceBox, targetBox;
 						if (this.fromAnchorPoint.symbol) {
 							sourceBox = {
-									left: this.fromAnchorPoint.symbol.x - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-									top: this.fromAnchorPoint.symbol.y - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-									right: this.fromAnchorPoint.symbol.x + this.fromAnchorPoint.symbol.width + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-									bottom: this.fromAnchorPoint.symbol.y + this.fromAnchorPoint.symbol.height + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH
+								left : this.fromAnchorPoint.symbol.x
+										- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+								top : this.fromAnchorPoint.symbol.y
+										- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+								right : this.fromAnchorPoint.symbol.x
+										+ this.fromAnchorPoint.symbol.width
+										+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+								bottom : this.fromAnchorPoint.symbol.y
+										+ this.fromAnchorPoint.symbol.height
+										+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH
 							};
 						}
 						if (this.toAnchorPoint.symbol) {
 							targetBox = {
-								left : this.toAnchorPoint.symbol.x - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-								top : this.toAnchorPoint.symbol.y - m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-								right : this.toAnchorPoint.symbol.x + this.toAnchorPoint.symbol.width + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
-								bottom : this.toAnchorPoint.symbol.y + this.toAnchorPoint.symbol.height + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH
+								left : this.toAnchorPoint.symbol.x
+										- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+								top : this.toAnchorPoint.symbol.y
+										- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+								right : this.toAnchorPoint.symbol.x
+										+ this.toAnchorPoint.symbol.width
+										+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+								bottom : this.toAnchorPoint.symbol.y
+										+ this.toAnchorPoint.symbol.height
+										+ m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH
 							};
 						}
 
@@ -906,27 +954,34 @@ define(
 						if (this.fromAnchorPoint.orientation === this.toAnchorPoint.orientation) {
 							// definitely not a straight line ....
 							var fromOffset = {
-								dx: (this.fromAnchorPoint.symbol.width / 2),
-								dy: this.fromAnchorPoint.symbol.height / 2
+								dx : (this.fromAnchorPoint.symbol.width / 2),
+								dy : this.fromAnchorPoint.symbol.height / 2
 							};
 							var toOffset = {
-								dx: (this.toAnchorPoint.symbol.width / 2),
-								dy: this.toAnchorPoint.symbol.height / 2
+								dx : (this.toAnchorPoint.symbol.width / 2),
+								dy : this.toAnchorPoint.symbol.height / 2
 							};
 							// center of source/target symbol
-							var sourceX = this.fromAnchorPoint.symbol.x + fromOffset.dx;
-							var sourceY = this.fromAnchorPoint.symbol.y + fromOffset.dy;
-							var targetX = this.toAnchorPoint.symbol.x + toOffset.dx;
-							var targetY = this.toAnchorPoint.symbol.y + toOffset.dy;
-							// ensure first/last segment extends beyond both source and target symbol
+							var sourceX = this.fromAnchorPoint.symbol.x
+									+ fromOffset.dx;
+							var sourceY = this.fromAnchorPoint.symbol.y
+									+ fromOffset.dy;
+							var targetX = this.toAnchorPoint.symbol.x
+									+ toOffset.dx;
+							var targetY = this.toAnchorPoint.symbol.y
+									+ toOffset.dy;
+							// ensure first/last segment extends beyond both
+							// source and target symbol
 							offset = {
-								dx: fromOffset.dx >= toOffset.dx ? fromOffset.dx : toOffset.dx,
-								dy: fromOffset.dy >= toOffset.dy ? fromOffset.dy : toOffset.dy
+								dx : fromOffset.dx >= toOffset.dx ? fromOffset.dx
+										: toOffset.dx,
+								dy : fromOffset.dy >= toOffset.dy ? fromOffset.dy
+										: toOffset.dy
 							};
 						} else {
 							offset = {
-								dx: 0,
-								dy: 0
+								dx : 0,
+								dy : 0
 							};
 							var sourceX = this.fromAnchorPoint.x;
 							var sourceY = this.fromAnchorPoint.y;
@@ -956,52 +1011,58 @@ define(
 											this.fromAnchorPoint.x,
 											this.fromAnchorPoint.y,
 											sourceX,
-											sourceY - (offset.dy + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH),
+											sourceY
+													- (offset.dy + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH),
 											currentSegment));
 
 							// avoid route crossing source element
-							if ((sourceY < targetY) && (sourceBox && (sourceBox.left < targetX) && (targetX < sourceBox.right))) {
-								this.segments.push(currentSegment = new Segment(
-										currentSegment.toX,
-										currentSegment.toY,
-										sourceBox.right,
-										currentSegment.toY,
-										currentSegment));
+							if ((sourceY < targetY)
+									&& (sourceBox && (sourceBox.left < targetX) && (targetX < sourceBox.right))) {
+								this.segments
+										.push(currentSegment = new Segment(
+												currentSegment.toX,
+												currentSegment.toY,
+												sourceBox.right,
+												currentSegment.toY,
+												currentSegment));
 							}
 						} else if (this.fromAnchorPoint.orientation == m_constants.EAST) {
 							this.segments
 									.push(currentSegment = new Segment(
 											this.fromAnchorPoint.x,
 											this.fromAnchorPoint.y,
-											sourceX + (offset.dx + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH),
-											sourceY,
-											currentSegment));
+											sourceX
+													+ (offset.dx + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH),
+											sourceY, currentSegment));
 						} else if (this.fromAnchorPoint.orientation == m_constants.SOUTH) {
 							this.segments
 									.push(currentSegment = new Segment(
 											this.fromAnchorPoint.x,
 											this.fromAnchorPoint.y,
 											sourceX,
-											sourceY + (offset.dy + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH),
+											sourceY
+													+ (offset.dy + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH),
 											currentSegment));
 
 							// avoid route crossing source element
-							if ((sourceY > targetY) && (sourceBox && (sourceBox.left < targetX) && (targetX < sourceBox.right))) {
-								this.segments.push(currentSegment = new Segment(
-										currentSegment.toX,
-										currentSegment.toY,
-										sourceBox.right,
-										currentSegment.toY,
-										currentSegment));
+							if ((sourceY > targetY)
+									&& (sourceBox && (sourceBox.left < targetX) && (targetX < sourceBox.right))) {
+								this.segments
+										.push(currentSegment = new Segment(
+												currentSegment.toX,
+												currentSegment.toY,
+												sourceBox.right,
+												currentSegment.toY,
+												currentSegment));
 							}
 						} else if (this.fromAnchorPoint.orientation == m_constants.WEST) {
 							this.segments
 									.push(currentSegment = new Segment(
 											this.fromAnchorPoint.x,
 											this.fromAnchorPoint.y,
-											sourceX - (offset.dx + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH),
-											sourceY,
-											currentSegment));
+											sourceX
+													- (offset.dx + m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH),
+											sourceY, currentSegment));
 						}
 
 						currentSegment = this.findPath(currentSegment, targetX,
@@ -1042,24 +1103,23 @@ define(
 												+ (this.fromAnchorPoint.x
 														+ m_constants.CONNECTION_DEFAULT_PATH_OFFSET - m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
 												+ " "
-												+ (this.fromAnchorPoint.y - m_constants.CONNECTION_DEFAULT_PATH_OFFSET/2)
+												+ (this.fromAnchorPoint.y - m_constants.CONNECTION_DEFAULT_PATH_OFFSET / 2)
 												+ "L"
 												+ (this.fromAnchorPoint.x
 														+ m_constants.CONNECTION_DEFAULT_PATH_OFFSET + m_constants.CONNECTION_DEFAULT_PATH_LENGTH)
 												+ " "
-												+ (this.fromAnchorPoint.y
-														+ m_constants.CONNECTION_DEFAULT_PATH_OFFSET/2)
+												+ (this.fromAnchorPoint.y + m_constants.CONNECTION_DEFAULT_PATH_OFFSET / 2)
 									});
 						} else if (this.fromAnchorPoint.orientation == m_constants.SOUTH) {
 							this.defaultIndicatorPath
 									.attr({
 										'path' : "M"
-												+ (this.fromAnchorPoint.x - m_constants.CONNECTION_DEFAULT_PATH_OFFSET + m_constants.CONNECTION_DEFAULT_PATH_LENGTH)
+												+ (this.fromAnchorPoint.x
+														- m_constants.CONNECTION_DEFAULT_PATH_OFFSET + m_constants.CONNECTION_DEFAULT_PATH_LENGTH)
 												+ " "
-												+ (this.fromAnchorPoint.y
-														+ m_constants.CONNECTION_DEFAULT_PATH_LENGTH)
+												+ (this.fromAnchorPoint.y + m_constants.CONNECTION_DEFAULT_PATH_LENGTH)
 												+ "L"
-												+ (this.fromAnchorPoint.x + m_constants.CONNECTION_DEFAULT_PATH_OFFSET/2)
+												+ (this.fromAnchorPoint.x + m_constants.CONNECTION_DEFAULT_PATH_OFFSET / 2)
 												+ " "
 												+ (this.fromAnchorPoint.y
 														+ m_constants.CONNECTION_DEFAULT_PATH_OFFSET + m_constants.CONNECTION_DEFAULT_PATH_LENGTH)
@@ -1071,13 +1131,12 @@ define(
 												+ (this.fromAnchorPoint.x
 														- m_constants.CONNECTION_DEFAULT_PATH_OFFSET - m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
 												+ " "
-												+ (this.fromAnchorPoint.y - m_constants.CONNECTION_DEFAULT_PATH_LENGTH )
+												+ (this.fromAnchorPoint.y - m_constants.CONNECTION_DEFAULT_PATH_LENGTH)
 												+ "L"
 												+ (this.fromAnchorPoint.x
 														- m_constants.CONNECTION_DEFAULT_PATH_OFFSET + m_constants.CONNECTION_DEFAULT_PATH_LENGTH / 2)
 												+ " "
-												+ (this.fromAnchorPoint.y
-														+ m_constants.CONNECTION_DEFAULT_PATH_OFFSET/2)
+												+ (this.fromAnchorPoint.y + m_constants.CONNECTION_DEFAULT_PATH_OFFSET / 2)
 									});
 
 						}
@@ -1105,7 +1164,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.findPath = function(startSegment, targetX,
 						targetY) {
@@ -1122,22 +1181,27 @@ define(
 									|| (currentSegment.fromX > currentSegment.toX && currentSegment.toX > targetX)) {
 
 								if (this.toAnchorPoint.symbol != null
-										&& this.toAnchorPoint.symbol.type != m_constants.SWIMLANE_SYMBOL && !this.diagram.anchorDragEnabled) {
-									// the Anchor point bend location should be midway between symbol's
-									if(n==0){
-										if(currentSegment.toX < targetX){
-											var anchorPointMargin =(this.toAnchorPoint.symbol.x - currentSegment.toX) / 2;
-											currentSegment.toX = currentSegment.toX + anchorPointMargin;
-										}
-										else{
-											var anchorPointMargin = (currentSegment.toX - (this.toAnchorPoint.symbol.x + this.toAnchorPoint.symbol.width))/2
-											currentSegment.toX = currentSegment.toX - anchorPointMargin;
+										&& this.toAnchorPoint.symbol.type != m_constants.SWIMLANE_SYMBOL
+										&& !this.diagram.anchorDragEnabled) {
+									// the Anchor point bend location should be
+									// midway between symbol's
+									if (n == 0) {
+										if (currentSegment.toX < targetX) {
+											var anchorPointMargin = (this.toAnchorPoint.symbol.x - currentSegment.toX) / 2;
+											currentSegment.toX = currentSegment.toX
+													+ anchorPointMargin;
+										} else {
+											var anchorPointMargin = (currentSegment.toX - (this.toAnchorPoint.symbol.x + this.toAnchorPoint.symbol.width)) / 2
+											currentSegment.toX = currentSegment.toX
+													- anchorPointMargin;
 										}
 									}
-									// Horizontal segment moving down from 3 o'clk (Source Symbol)
+									// Horizontal segment moving down from 3
+									// o'clk (Source Symbol)
 									else if (currentSegment.toY < targetY) {
 										if (targetY != this.toAnchorPoint.y) {
-											// following scenario bend not required
+											// following scenario bend not
+											// required
 											if ((this.fromAnchorPoint.orientation == m_constants.WEST
 													&& this.toAnchorPoint.orientation == m_constants.NORTH && currentSegment.toX > targetX)
 													|| (this.fromAnchorPoint.orientation == m_constants.EAST
@@ -1152,8 +1216,10 @@ define(
 																targetY,
 																currentSegment));
 										} else {
-											// Symbol connects to 9'clk(move right) of
-											//	Symbol 2 or 3'clk (move left) of symbol2
+											// Symbol connects to 9'clk(move
+											// right) of
+											// Symbol 2 or 3'clk (move left) of
+											// symbol2
 											this.segments
 													.push(currentSegment = new Segment(
 															currentSegment.toX,
@@ -1164,17 +1230,20 @@ define(
 										}
 
 									}
-									// Horizontal segment moving Upward from 3 o'clk
+									// Horizontal segment moving Upward from 3
+									// o'clk
 									else if (currentSegment.toY > targetY) {
 										if (targetY != this.toAnchorPoint.y) {
-											// following scenario bend not required
+											// following scenario bend not
+											// required
 											if ((this.fromAnchorPoint.orientation == m_constants.WEST
 													&& this.toAnchorPoint.orientation == m_constants.SOUTH && currentSegment.toX > targetX)
 													|| (this.fromAnchorPoint.orientation == m_constants.EAST
 															&& this.toAnchorPoint.orientation == m_constants.SOUTH && currentSegment.toX < targetX)) {
 												currentSegment.toX = targetX;
 											} else
-												// Horizontal segment from 3 o'clk to 3 o'clk
+												// Horizontal segment from 3
+												// o'clk to 3 o'clk
 												this.segments
 														.push(currentSegment = new Segment(
 																currentSegment.toX,
@@ -1184,8 +1253,10 @@ define(
 																		- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
 																currentSegment));
 										} else {
-											// Symbol connects to 9'clk(move right) of
-											//	Symbol 2 or 3'clk (move left) of symbol2
+											// Symbol connects to 9'clk(move
+											// right) of
+											// Symbol 2 or 3'clk (move left) of
+											// symbol2
 											this.segments
 													.push(currentSegment = new Segment(
 															currentSegment.toX,
@@ -1195,7 +1266,8 @@ define(
 															currentSegment));
 										}
 									}
-									// Intermediate Horizontal segment from 9 o'clk to 9 o'clk towards right
+									// Intermediate Horizontal segment from 9
+									// o'clk to 9 o'clk towards right
 									else if (currentSegment.toX < targetX
 											&& targetX > this.toAnchorPoint.x) {
 										this.segments
@@ -1207,7 +1279,8 @@ define(
 																- m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
 														currentSegment));
 									}
-									// Horizontal segment from 9 o'clk to 9 o'clk towards left
+									// Horizontal segment from 9 o'clk to 9
+									// o'clk towards left
 									else if (currentSegment.toX > targetX
 											&& targetX < this.toAnchorPoint.x) {
 										this.segments
@@ -1224,7 +1297,8 @@ define(
 								} else
 									currentSegment.toX = targetX;
 							} else {
-								// connect from 6 O'clk to 12 O'clk, when toX and TargetX match,
+								// connect from 6 O'clk to 12 O'clk, when toX
+								// and TargetX match,
 								// the vertical segment needs modification
 								if (this.toAnchorPoint.symbol != null
 										&& !this.diagram.anchorDragEnabled
@@ -1255,7 +1329,8 @@ define(
 										&& !this.diagram.anchorDragEnabled) {
 
 									if (n == 0) {
-										// the bend location should be midway between symbols,
+										// the bend location should be midway
+										// between symbols,
 										// update current segment
 										if (currentSegment.toY < targetY) {
 											var anchorPointMargin = (this.toAnchorPoint.symbol.y - currentSegment.toY) / 2;
@@ -1267,7 +1342,8 @@ define(
 													- anchorPointMargin;
 										}
 									}
-									// Vertical segment from 6'clk moving downwards
+									// Vertical segment from 6'clk moving
+									// downwards
 									else if (currentSegment.toX > targetX) {
 										if (targetX != this.toAnchorPoint.x) {
 											if ((this.fromAnchorPoint.orientation == m_constants.SOUTH
@@ -1282,7 +1358,8 @@ define(
 																currentSegment.toY,
 																currentSegment));
 										} else {
-											// Vertical segment from 6'clk to 12'clk vice versa
+											// Vertical segment from 6'clk to
+											// 12'clk vice versa
 											this.segments
 													.push(currentSegment = new Segment(
 															currentSegment.toX,
@@ -1292,7 +1369,8 @@ define(
 															currentSegment));
 										}
 									}
-									// Vertical segment from 6'clk moving upwards
+									// Vertical segment from 6'clk moving
+									// upwards
 									else if (currentSegment.toX < targetX) {
 										if (targetX != this.toAnchorPoint.x) {
 											if ((this.fromAnchorPoint.orientation == m_constants.SOUTH
@@ -1301,8 +1379,10 @@ define(
 															&& this.toAnchorPoint.orientation == m_constants.WEST && currentSegment.toY > targetY)) {
 												currentSegment.toY = targetY;
 											} else
-												// Vertical - From 6 o'clk to 9 o'clk
-												// left to right, no bend required
+												// Vertical - From 6 o'clk to 9
+												// o'clk
+												// left to right, no bend
+												// required
 												this.segments
 														.push(currentSegment = new Segment(
 																currentSegment.toX,
@@ -1322,7 +1402,8 @@ define(
 
 									} else if (currentSegment.toY < targetY
 											&& targetY > this.toAnchorPoint.y) {
-										// Intermediate vertical lines, connecting to 9 O'clk segment
+										// Intermediate vertical lines,
+										// connecting to 9 O'clk segment
 										this.segments
 												.push(currentSegment = new Segment(
 														currentSegment.toX,
@@ -1333,7 +1414,8 @@ define(
 														currentSegment));
 									} else if (currentSegment.toY > targetY
 											&& targetY < this.toAnchorPoint.y) {
-										// Intermediate vertical lines, connecting to 12 O'clk segment
+										// Intermediate vertical lines,
+										// connecting to 12 O'clk segment
 										this.segments
 												.push(currentSegment = new Segment(
 														currentSegment.toX,
@@ -1352,7 +1434,8 @@ define(
 										&& !this.diagram.anchorDragEnabled
 										&& ((currentSegment.toX < this.fromAnchorPoint.symbol.x) && this.toAnchorPoint.symbol.x
 												+ this.toAnchorPoint.symbol.width < targetX)) {
-									// For scenario connecting from 9 o'clk(Symbol 1) to 3 o'clk(symbol2)
+									// For scenario connecting from 9
+									// o'clk(Symbol 1) to 3 o'clk(symbol2)
 									if (this.fromAnchorPoint.orientation == m_constants.WEST
 											&& this.toAnchorPoint.orientation == m_constants.EAST) {
 										this.segments
@@ -1373,9 +1456,9 @@ define(
 														currentSegment));
 								} else if (this.toAnchorPoint.symbol != null
 										&& !this.diagram.anchorDragEnabled
-										&& ((currentSegment.toX >= (this.fromAnchorPoint.symbol.x + this.fromAnchorPoint.symbol.width))
-												&& this.toAnchorPoint.symbol.x > targetX)) {
-									// For scenario connecting from 3 o'clk(Symbol 1) to 9 o'clk(symbol2)
+										&& ((currentSegment.toX >= (this.fromAnchorPoint.symbol.x + this.fromAnchorPoint.symbol.width)) && this.toAnchorPoint.symbol.x > targetX)) {
+									// For scenario connecting from 3
+									// o'clk(Symbol 1) to 9 o'clk(symbol2)
 									if (this.fromAnchorPoint.orientation == m_constants.EAST
 											&& this.toAnchorPoint.orientation == m_constants.WEST) {
 										this.segments
@@ -1413,7 +1496,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.getSvgString = function() {
 					var svgString = "M " + this.fromAnchorPoint.x + " "
@@ -1432,7 +1515,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.select = function() {
 					this.selected = true;
@@ -1448,7 +1531,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.deselect = function() {
 					this.selected = false;
@@ -1461,7 +1544,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.dragMove = function(dX, dY, x, y, event) {
 					if (this.clickedSegmentIndex > 0
@@ -1512,7 +1595,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.click = function(x, y, event) {
 					m_utils.debug("Connection.prototype.click");
@@ -1540,27 +1623,27 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.dragStart = function(x, y, event) {
 					this.clickedSegmentIndex = this.findClickedSegment(x, y);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.dragStop = function(x, y, event) {
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.dragStartConditionExpressionText = function(
 						x, y, event) {
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.dragConditionExpressionText = function(dX,
 						dY, x, y, event) {
@@ -1580,14 +1663,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.dragStopConditionExpressionText = function(
 						x, y, event) {
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.hoverInConditionExpressionText = function() {
 					this.conditionExpressionText.attr({
@@ -1597,7 +1680,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.hoverOutConditionExpressionText = function() {
 					this.conditionExpressionText.attr({
@@ -1608,7 +1691,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.hoverIn = function() {
 					this.path.attr({
@@ -1618,7 +1701,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.hoverOut = function() {
 					this.path
@@ -1630,7 +1713,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.createFlyOutMenu = function() {
 					this.addFlyOutMenuItems([], [], [ {
@@ -1650,18 +1733,19 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.proximityHoverIn = function(event) {
 					if (this.diagram.isInNormalMode()) {
-						var scrollPos = m_modelerUtils.getModelerScrollPosition();
+						var scrollPos = m_modelerUtils
+								.getModelerScrollPosition();
 
 						this.adjustFlyOutMenu(event.pageX
 								- this.diagram.X_OFFSET + scrollPos.left
 								- m_constants.FLY_OUT_MENU_ITEM_MARGIN,
-								event.pageY - this.diagram.Y_OFFSET -FLYOUT_MENU_LOC_OFFSET
-										+ scrollPos.top
-										, 60, 30);
+								event.pageY - this.diagram.Y_OFFSET
+										- FLYOUT_MENU_LOC_OFFSET
+										+ scrollPos.top, 60, 30);
 						// If connection hoverIn is called before other symbol
 						// hoverOut, manual HoverOut is required.
 						if (this.diagram.currentFlyOutSymbol
@@ -1677,7 +1761,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.proximityHoverOut = function(event) {
 					if (this.diagram.isInNormalMode()) {
@@ -1686,7 +1770,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.createFlyOutMenuBackground = function(x,
 						y, height, width) {
@@ -1716,41 +1800,40 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.adjustFlyOutMenu = function(x, y, width,
 						height) {
 					this.flyOutMenuBackground.attr({
 						'x' : x,
 						'y' : y,
-						width :width,
-						height :height
+						width : width,
+						height : height
 					});
 
 					this.adjustFlyOutMenuItems(x, y, width, height);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.adjustFlyOutMenuItems = function(x, y,
 						width, height) {
 					var n = 0;
 					while (n < this.bottomFlyOutMenuItems.length) {
-						this.bottomFlyOutMenuItems[n]
-								.attr({
-									'x' : x
-											+ n
-											* (m_constants.FLY_OUT_MENU_CONTENT_MARGIN) + 10,
-									'y' : y + 2
+						this.bottomFlyOutMenuItems[n].attr({
+							'x' : x + n
+									* (m_constants.FLY_OUT_MENU_CONTENT_MARGIN)
+									+ 10,
+							'y' : y + 2
 
-								});
+						});
 						++n;
 					}
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.remove = function() {
 					this.removePrimitives();
@@ -1768,11 +1851,13 @@ define(
 								this.toAnchorPoint.symbol.connections, this);
 
 					} else if (this.toModelElementOid != null) {
-						//On hover over symbol, connection gets added to symbol
-						//It may not be removed when connection is disengaged(canvas click)
-						//if connection is removed , but symbol contains the connection remove It.
-						var symbol = this.diagram
-								.findSymbolByGuid(this.toModelElementOid,this.diagram.model.id)
+						// On hover over symbol, connection gets added to symbol
+						// It may not be removed when connection is
+						// disengaged(canvas click)
+						// if connection is removed , but symbol contains the
+						// connection remove It.
+						var symbol = this.diagram.findSymbolByGuid(
+								this.toModelElementOid, this.diagram.model.id)
 						if (null != symbol) {
 							m_utils.removeItemFromArray(symbol.connections,
 									this);
@@ -1781,13 +1866,13 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.removePrimitives = function() {
 					var n = 0;
 
 					while (n < this.primitives.length) {
-						if(this.primitives[n].node){
+						if (this.primitives[n].node) {
 							this.primitives[n].remove();
 						}
 						n++;
@@ -1809,7 +1894,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.createUpdateCommand = function(changes) {
 					var command = m_command.createUpdateModelElementCommand(
@@ -1825,7 +1910,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.hide = function() {
 					this.path.hide();
@@ -1834,7 +1919,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.show = function() {
 					this.path.show();
@@ -1851,18 +1936,13 @@ define(
 						// Check for OUT connections on End Event
 						if (fromAnchorPoint.symbol.modelElement.eventType == m_constants.STOP_EVENT_TYPE) {
 							m_messageDisplay
-									.showErrorMessage("Only in sequence flow connections are allowed on End Events.");
+									.showErrorMessage("Only incomin sequence flow connections are allowed on End events.");
 							return false;
 						}// Connection between Event and Data not supported
 						else if (null != toAnchorPoint
 								&& toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
 							m_messageDisplay
 									.showErrorMessage("Data connections/associations are not supported for this symbol.");
-							return false;
-						} else if (null != toAnchorPoint
-								&& toAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
-							m_messageDisplay
-									.showErrorMessage("Events can be connected only to activities and gateways.");
 							return false;
 						} else if (!fromAnchorPoint.symbol
 								.validateCreateConnection(this)) {
@@ -1897,7 +1977,7 @@ define(
 							if (!toAnchorPoint.symbol
 									.validateCreateConnection()) {
 								m_messageDisplay
-										.showErrorMessage("No further OUT Connection allowed from this activity.");
+										.showErrorMessage("No further outgoing connection allowed from this activity.");
 								return false;
 							}
 						} else if (!fromAnchorPoint.symbol
@@ -1914,15 +1994,16 @@ define(
 							return false;
 						}
 					}
+					
 					if (toAnchorPoint != null) {
 						if (toAnchorPoint.symbol.type == m_constants.SWIMLANE_SYMBOL
 								|| toAnchorPoint.symbol.type == m_constants.POOL_SYMBOL) {
 							return false;
-						}else if (toAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
+						} else if (toAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
 							// Check for IN connections on Start Event
 							if (toAnchorPoint.symbol.modelElement.eventType == m_constants.START_EVENT_TYPE) {
 								m_messageDisplay
-										.showErrorMessage("Only out sequence flow connections are allowed on Start Events.");
+										.showErrorMessage("Only outgoing sequence flow connections are allowed on Start events.");
 								return false;
 							} else if (!toAnchorPoint.symbol
 									.validateCreateConnection(this)) {
@@ -1938,7 +2019,7 @@ define(
 										.showErrorMessage("No more OUT Connection allowed from this activity.");
 								return false;
 							}
-						}else if (toAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
+						} else if (toAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
 							if ((fromAnchorPoint.symbol.type != m_constants.DATA_SYMBOL && fromAnchorPoint.symbol.type != m_constants.EVENT_SYMBOL)
 									&& !toAnchorPoint.symbol
 											.validateCreateConnection(this)) {
@@ -1946,7 +2027,8 @@ define(
 										.showErrorMessage("No more connections allowed to this activity.");
 								return false;
 							}
-						}else if(toAnchorPoint.symbol.isPoolSymbol() || toAnchorPoint.symbol.type == m_constants.SWIMLANE_SYMBOL){
+						} else if (toAnchorPoint.symbol.isPoolSymbol()
+								|| toAnchorPoint.symbol.type == m_constants.SWIMLANE_SYMBOL) {
 							return false;
 						}
 
@@ -1963,7 +2045,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Connection.prototype.flipFlowOrientation = function(
 						flowOrientation) {
@@ -2094,7 +2176,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Segment.prototype.toString = function() {
 					return "[object Lightdust.Segment()]";
@@ -2138,7 +2220,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Segment.prototype.getSvgString = function() {
 					var previousXOffset = 0;

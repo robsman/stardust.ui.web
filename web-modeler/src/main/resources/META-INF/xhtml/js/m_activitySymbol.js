@@ -3,16 +3,21 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_command",
-				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_symbol", "bpm-modeler/js/m_gatewaySymbol", "bpm-modeler/js/m_session",
-				"bpm-modeler/js/m_eventSymbol", "bpm-modeler/js/m_activityPropertiesPanel", "bpm-modeler/js/m_model",
-				"bpm-modeler/js/m_activity", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_extensionManager",
+				"bpm-modeler/js/m_command", "bpm-modeler/js/m_canvasManager",
+				"bpm-modeler/js/m_symbol", "bpm-modeler/js/m_gatewaySymbol",
+				"bpm-modeler/js/m_session", "bpm-modeler/js/m_eventSymbol",
+				"bpm-modeler/js/m_activityPropertiesPanel",
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_activity",
+				"bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_command" ],
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_canvasManager, m_symbol, m_gatewaySymbol, m_eventSymbol,
 				m_session, m_activityPropertiesPanel, m_model, m_activity,
@@ -69,7 +74,7 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function ActivitySymbol() {
 				var symbol = m_symbol.createSymbol();
@@ -82,6 +87,7 @@ define(
 				this.width = m_constants.ACTIVITY_SYMBOL_DEFAULT_WIDTH;
 				this.height = m_constants.ACTIVITY_SYMBOL_DEFAULT_HEIGHT;
 				this.modelElement = null;
+				this.boundaryEventSymbols = [];
 
 				/**
 				 * Binds all client-side aspects to the object (graphics
@@ -114,14 +120,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.toString = function() {
 					return "Lightdust.ActivitySymbol";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.initializeFromJson = function(lane) {
 					m_activity.typeObject(this.modelElement);
@@ -134,7 +140,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.createTransferObject = function() {
 					var transferObject = {};
@@ -152,12 +158,13 @@ define(
 					transferObject.parallelMultiProcessingMarkerIcon = null;
 					transferObject.sequentialMultiProcessingMarkerIcon = null;
 					transferObject.subprocessMarkerIcon = null;
+					transferObject.boundaryEvents = null;
 
 					return transferObject;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.getPath = function(withId) {
 					var path = "/models/" + this.diagram.model.id
@@ -172,7 +179,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.createPrimitives = function() {
 					this.rectangle = m_canvasManager
@@ -251,7 +258,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.initializeEventHandling = function() {
 					this.subprocessMarkerIcon
@@ -270,16 +277,15 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
-//				ActivitySymbol.prototype.showPrimitives = function() {
-//					this.rectangle.show();
-//					this.text.show();
-//					this.refreshFromModelElement();
-//				};
-
+				// ActivitySymbol.prototype.showPrimitives = function() {
+				// this.rectangle.show();
+				// this.text.show();
+				// this.refreshFromModelElement();
+				// };
 				/**
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.refreshFromModelElement = function() {
 					this.text.attr("text", this.modelElement.name);
@@ -314,7 +320,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.adjustPrimitives = function() {
 					this.hideGlow();
@@ -434,7 +440,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.createFlyOutMenu = function() {
 					this
@@ -489,11 +495,11 @@ define(
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_switchToManualActivityClosure
-											}]);
+											} ]);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.highlight = function() {
 					this.rectangle.attr({
@@ -502,7 +508,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.dehighlight = function() {
 					this.rectangle.attr({
@@ -511,7 +517,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.switchToSubprocessActivity = function() {
 					if (this.modelElement.activityType != m_constants.SUBPROCESS_ACTIVITY_TYPE) {
@@ -528,7 +534,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.switchToApplicationActivity = function() {
 					if (this.modelElement.activityType != m_constants.APPLICATION_ACTIVITY_TYPE) {
@@ -545,7 +551,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.switchToManualActivity = function() {
 					if (this.modelElement.activityType != m_constants.MANUAL_ACTIVITY_TYPE) {
@@ -562,14 +568,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.onComplete = function() {
 					this.onParentSymbolChange();
 				};
 
 				/*
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.onParentSymbolChange = function() {
 					if ((this.modelElement.activityType == m_constants.MANUAL_ACTIVITY_TYPE || this.modelElement.activityType == m_constants.APPLICATION_ACTIVITY_TYPE)
@@ -579,14 +585,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.onSubprocessMarkerIconMouseMove = function() {
 					this.showPointerCursor();
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.onSubprocessMarkerIconClick = function() {
 					var model = m_model.findModel(m_model
@@ -614,7 +620,7 @@ define(
 									this.modelElement.oid, changes));
 				};
 				/**
-				 *
+				 * 
 				 */
 				ActivitySymbol.prototype.validateCreateConnection = function(
 						conn) {
@@ -678,10 +684,56 @@ define(
 					return true;
 				};
 
+				/**
+				 * 
+				 */
+				ActivitySymbol.prototype.postMove = function(x, y, originalX, originalY) {
+					for ( var n = 0; n < this.boundaryEventSymbols.length; ++n) {
+						this.boundaryEventSymbols[n].moveBy(x - originalX, y - originalY);
+						this.boundaryEventSymbols[n].toFront();
+					}
+				};
+
+				/**
+				 * 
+				 */
+				ActivitySymbol.prototype.addBoundaryEvent = function(
+						eventSymbol) {
+					if (m_utils.isItemInArray(this.boundaryEventSymbols,
+							eventSymbol)) {
+						return;
+					}
+
+					this.boundaryEventSymbols.push(eventSymbol);
+
+					eventSymbol.bindingActivity = this;
+
+					// Move Event Symbol to Activity symbol boundary
+					eventSymbol.moveTo(this.x + this.width - 20 - 0.5
+							* eventSymbol.width, this.y + this.height - 0.5
+							* eventSymbol.height);
+
+					eventSymbol.modelElement
+							.bindWithActivity(this.modelElement);
+				};
+
+				/**
+				 * 
+				 */
+				ActivitySymbol.prototype.removeBoundaryEvent = function(
+						eventSymbol) {
+					m_utils.removeItemFromArray(this.boundaryEventSymbols,
+							eventSymbol);
+
+					eventSymbol.bindingActivity = null;
+
+					eventSymbol.modelElement
+							.unbindFromActivity(this.modelElement);
+				};
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function ActivitySymbol_connectToClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -689,7 +741,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function ActivitySymbol_connectToActivityClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -697,7 +749,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function ActivitySymbol_connectToGatewayClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -705,7 +757,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function ActivitySymbol_connectToEndEventClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -713,7 +765,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function ActivitySymbol_removeClosure() {
 				this.auxiliaryProperties.callbackScope
@@ -721,7 +773,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function ActivitySymbol_switchToSubprocessActivityClosure() {
 				this.auxiliaryProperties.callbackScope
@@ -729,7 +781,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function ActivitySymbol_switchToApplicationActivityClosure() {
 				this.auxiliaryProperties.callbackScope
@@ -737,15 +789,14 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function ActivitySymbol_switchToManualActivityClosure() {
-				this.auxiliaryProperties.callbackScope
-						.switchToManualActivity();
+				this.auxiliaryProperties.callbackScope.switchToManualActivity();
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function ActivitySymbol_subprocessMarkerIconMouseMoveClosure() {
 				this.auxiliaryProperties.callbackScope
@@ -753,7 +804,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function ActivitySymbol_subprocessMarkerIconClickClosure() {
 				this.auxiliaryProperties.callbackScope
@@ -761,7 +812,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function ActivitySymbol_updateGlow() {
 				this.auxiliaryProperties.callbackScope.removeGlow();

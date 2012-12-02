@@ -3,24 +3,38 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_urlUtils",
-				"bpm-modeler/js/m_communicationController", "bpm-modeler/js/m_commandsController",
-				"bpm-modeler/js/m_command", "bpm-modeler/js/m_session", "bpm-modeler/js/m_canvasManager",
-				"bpm-modeler/js/m_messageDisplay", "bpm-modeler/js/m_symbol", "bpm-modeler/js/m_poolSymbol",
-				"bpm-modeler/js/m_activitySymbol", "bpm-modeler/js/m_dataSymbol", "bpm-modeler/js/m_eventSymbol",
-				"bpm-modeler/js/m_gatewaySymbol", "bpm-modeler/js/m_swimlaneSymbol", "bpm-modeler/js/m_connection",
-				"bpm-modeler/js/m_propertiesPanel", "bpm-modeler/js/m_processPropertiesPanel",
-				"bpm-modeler/js/m_activityPropertiesPanel", "bpm-modeler/js/m_dataPropertiesPanel",
-				"bpm-modeler/js/m_eventPropertiesPanel", "bpm-modeler/js/m_gatewayPropertiesPanel",
-				"bpm-modeler/js/m_annotationPropertiesPanel", "bpm-modeler/js/m_swimlanePropertiesPanel",
-				"bpm-modeler/js/m_controlFlowPropertiesPanel", "bpm-modeler/js/m_dataFlowPropertiesPanel",
-				"bpm-modeler/js/m_model", "bpm-modeler/js/m_process", "bpm-modeler/js/m_data", "bpm-modeler/js/m_modelerUtils",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_extensionManager",
+				"bpm-modeler/js/m_urlUtils",
+				"bpm-modeler/js/m_communicationController",
+				"bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_command", "bpm-modeler/js/m_session",
+				"bpm-modeler/js/m_canvasManager",
+				"bpm-modeler/js/m_messageDisplay", "bpm-modeler/js/m_symbol",
+				"bpm-modeler/js/m_poolSymbol",
+				"bpm-modeler/js/m_activitySymbol",
+				"bpm-modeler/js/m_dataSymbol", "bpm-modeler/js/m_eventSymbol",
+				"bpm-modeler/js/m_gatewaySymbol",
+				"bpm-modeler/js/m_swimlaneSymbol",
+				"bpm-modeler/js/m_connection",
+				"bpm-modeler/js/m_propertiesPanel",
+				"bpm-modeler/js/m_processPropertiesPanel",
+				"bpm-modeler/js/m_activityPropertiesPanel",
+				"bpm-modeler/js/m_dataPropertiesPanel",
+				"bpm-modeler/js/m_eventPropertiesPanel",
+				"bpm-modeler/js/m_gatewayPropertiesPanel",
+				"bpm-modeler/js/m_annotationPropertiesPanel",
+				"bpm-modeler/js/m_swimlanePropertiesPanel",
+				"bpm-modeler/js/m_controlFlowPropertiesPanel",
+				"bpm-modeler/js/m_dataFlowPropertiesPanel",
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_process",
+				"bpm-modeler/js/m_data", "bpm-modeler/js/m_modelerUtils",
 				"bpm-modeler/js/m_autoScrollManager" ],
 		function(m_utils, m_constants, m_extensionManager, m_urlUtils,
 				m_communicationController, m_commandsController, m_command,
@@ -52,7 +66,7 @@ define(
 			var symbolEditMode = false;
 
 			/**
-			 *
+			 * 
 			 */
 			function Diagram(newDivId) {
 				currentDiagram = this;
@@ -429,8 +443,7 @@ define(
 								m_constants.DEFAULT_FONT_FAMILY).css(
 								"font-size", m_constants.DEFAULT_FONT_SIZE);
 
-				this.editableTextArea = jQuery("#editableArea")
-				.editable(
+				this.editableTextArea = jQuery("#editableArea").editable(
 						function(value, settings) {
 							return value;
 						},
@@ -453,9 +466,8 @@ define(
 										.submitEditableArea(
 												$('textarea', this).val());
 							}
-						}).css("font-family",
-						m_constants.DEFAULT_FONT_FAMILY).css(
-						"font-size", m_constants.DEFAULT_FONT_SIZE);
+						}).css("font-family", m_constants.DEFAULT_FONT_FAMILY)
+						.css("font-size", m_constants.DEFAULT_FONT_SIZE);
 
 				jQuery.data(document, "diagram", this);
 
@@ -464,22 +476,22 @@ define(
 				this.poolSymbols = {};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.toString = function() {
 					return "Lightdust.Diagram";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.initialize = function() {
 					// TODO Bind against loaded models
 
-					this.modelId = jQuery.url(window.location.search)
-							.param("modelId");
-					this.processId = jQuery.url(window.location.search)
-							.param("processId");
+					this.modelId = jQuery.url(window.location.search).param(
+							"modelId");
+					this.processId = jQuery.url(window.location.search).param(
+							"processId");
 					this.model = m_model.findModel(this.modelId);
 
 					// TODO - this is a temporary workaround. This will have to
@@ -573,7 +585,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.getEndpointUrl = function() {
 					return m_urlUtils.getContextName()
@@ -582,7 +594,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.createTransferObject = function() {
 					var transferObject = {};
@@ -882,8 +894,8 @@ define(
 
 						// Apply changes
 
-//						this.animationDelay = 1000;
-//						this.animationEasing = "<";
+						// this.animationDelay = 1000;
+						// this.animationEasing = "<";
 
 						for ( var i = 0; i < obj.changes.modified.length; i++) {
 							var symbol = this.findSymbolByGuid(
@@ -939,8 +951,9 @@ define(
 
 							if (null != conn) {
 								conn.applyChanges(obj.changes.modified[i]);
-								//TODO: commented as flip orientation was not working, not sure why we require this...
-								//conn.initializeAnchorPoints();
+								// TODO: commented as flip orientation was not
+								// working, not sure why we require this...
+								// conn.initializeAnchorPoints();
 								conn.reroute();
 								conn.refresh();
 							} else {
@@ -962,7 +975,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.findActivitySymbolById = function(id) {
 					for ( var n in this.activitySymbols) {
@@ -977,7 +990,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.resetLastSymbol = function(oid) {
 					if (oid && this.lastSymbol != null
@@ -987,7 +1000,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.findGatewaySymbolById = function(id) {
 					for ( var n in this.gatewaySymbols) {
@@ -1002,7 +1015,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.findEventSymbolById = function(id) {
 					for ( var n in this.eventSymbols) {
@@ -1017,7 +1030,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.findDataSymbolById = function(id) {
 					for ( var n in this.dataSymbols) {
@@ -1032,7 +1045,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.submitUpdate = function() {
 					// TODO Incomplete
@@ -1044,13 +1057,13 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.onUpdate = function() {
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.addActivitySymbol = function() {
 					this.newSymbol = m_activitySymbol.createActivitySymbol(
@@ -1058,7 +1071,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.isDragAndDropMode = function() {
 					if (parent.iDnD.getTransferObject()) {
@@ -1069,14 +1082,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.isInConnectionMode = function() {
 					return this.mode == this.CONNECTION_MODE;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.setSelectMode = function() {
 					this.clearCurrentSelection();
@@ -1094,7 +1107,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.setSeparatorMode = function() {
 					this.clearCurrentSelection();
@@ -1112,7 +1125,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.isInNormalMode = function() {
 					return this.mode == this.NORMAL_MODE;
@@ -1144,7 +1157,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.onGlobalMouseMove = function(x, y) {
 					if (this.newSymbol != null) {
@@ -1300,7 +1313,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.onGlobalMouseUp = function(x, y) {
 					if (this.mode == this.RUBBERBAND_MODE) {
@@ -1328,7 +1341,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.getSymbolContainingCoordinates = function(x,
 						y) {
@@ -1342,7 +1355,34 @@ define(
 				};
 
 				/**
-				 *
+				 * Returns the first symbol which is not a container symbol
+				 * (pool, lane), overlapping with <code>symbol</code>.
+				 */
+				Diagram.prototype.getSymbolOverlappingWithSymbol = function(
+						symbol) {
+					for ( var n in this.symbols) {
+						if (!this.symbols[n].isContainerSymbol()
+								&& this.symbols[n] != symbol
+								&& (this.symbols[n].isInBoundingBox(symbol.x,
+										symbol.y)
+										|| this.symbols[n].isInBoundingBox(
+												symbol.x + symbol.width,
+												symbol.y)
+										|| this.symbols[n].isInBoundingBox(
+												symbol.x, symbol.y
+														+ symbol.height) || this.symbols[n]
+										.isInBoundingBox(symbol.x
+												+ symbol.width, symbol.y
+												+ symbol.height))) {
+							return this.symbols[n];
+						}
+					}
+
+					return null;
+				};
+
+				/**
+				 * 
 				 */
 				Diagram.prototype.moveLeftOfBy = function(x, dX) {
 					for ( var n in this.symbols) {
@@ -1353,7 +1393,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.moveRightOfBy = function(x, dX) {
 					for ( var n in this.symbols) {
@@ -1364,7 +1404,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.moveAboveBy = function(y, dY) {
 					for ( var n in this.symbols) {
@@ -1375,7 +1415,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.moveBelowBy = function(y, dY) {
 					for ( var n in this.symbols) {
@@ -1386,7 +1426,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.getSymbolContainingCoordinatesExcludeContainerSymbols = function(
 						x, y) {
@@ -1401,7 +1441,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.checkSnapLines = function(symbol) {
 					this.verticalSnapLine.hide();
@@ -1450,7 +1490,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.hideSnapLines = function(symbol) {
 					this.verticalSnapLine.hide();
@@ -1461,7 +1501,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.adjustVerticalSnapLine = function(newPosition) {
 					this.verticalSnapLinePosition = newPosition;
@@ -1472,7 +1512,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.adjustHorizontalSnapLine = function(
 						newPosition) {
@@ -1484,7 +1524,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.snapSymbol = function(symbol) {
 					if (this.isVerticalSnap) {
@@ -1506,7 +1546,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.onClick = function(x, y) {
 					if (this.newSymbol != null) {
@@ -1557,7 +1597,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.flipFlowOrientation = function(anchorPoint) {
 					if (this.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
@@ -1566,7 +1606,8 @@ define(
 						this.flowOrientation = m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL;
 					}
 
-					// TODO Not the right algorithm - kept as a reminder to change
+					// TODO Not the right algorithm - kept as a reminder to
+					// change
 					var changeDescriptionsDiagram = [];
 					var poolChangeDesc;
 					for ( var id in this.poolSymbols) {
@@ -1604,14 +1645,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.print = function(anchorPoint) {
 					jQuery("#canvas").jqprint();
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.connectSymbol = function(symbol) {
 					this.mode = this.CONNECTION_MODE;
@@ -1632,7 +1673,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.connectToActivity = function(symbol) {
 					this.addAndConnectSymbol(symbol, m_activitySymbol
@@ -1641,7 +1682,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.connectToGateway = function(symbol) {
 					this.addAndConnectSymbol(symbol, m_gatewaySymbol
@@ -1649,7 +1690,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.connectToStopEvent = function(symbol) {
 					this.addAndConnectSymbol(symbol, m_eventSymbol
@@ -1657,7 +1698,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.addAndConnectSymbol = function(startSymbol,
 						targetSymbol) {
@@ -1702,7 +1743,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.setAnchorPoint = function(anchorPoint) {
 					if (this.currentConnection == null) {
@@ -1761,14 +1802,14 @@ define(
 					return m_connection.createConnection(this, anchorPoint);
 				};
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.addToCurrentSelection = function(drawable) {
 					this.currentSelection.push(drawable);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.deselectCurrentSelection = function() {
 					for ( var item in this.currentSelection) {
@@ -1777,7 +1818,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.clearCurrentSelection = function() {
 					this.deselectCurrentSelection();
@@ -1805,7 +1846,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.showProcessPropertiesPanel = function() {
 					m_processPropertiesPanel.getInstance().setElement(
@@ -1817,16 +1858,16 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
-				Diagram.prototype.moveSelectedSymbolsTo = function(dX, dY) {
+				Diagram.prototype.moveSelectedSymbolsBy = function(dX, dY) {
 					for ( var n in this.currentSelection) {
-						this.currentSelection[n].moveTo(dX, dY);
+						this.currentSelection[n].moveBy(dX, dY);
 					}
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.showEditable = function(textPrimitive) {
 					this.currentTextPrimitive = textPrimitive;
@@ -1837,26 +1878,29 @@ define(
 					var name = null;
 					if (m_constants.ANNOTATION_SYMBOL == textPrimitive.auxiliaryProperties.callbackScope.type) {
 						name = textPrimitive.auxiliaryProperties.callbackScope.content;
-						var textboxWidth = textPrimitive.auxiliaryProperties.callbackScope.text.getBBox().width + 20;
-						var textboxHeight = textPrimitive.auxiliaryProperties.callbackScope.text.getBBox().height + 20;
-						this.editableTextArea.css("width",	parseInt(textboxWidth.valueOf()));
-						this.editableTextArea.css("height", parseInt(textboxHeight.valueOf()));
+						var textboxWidth = textPrimitive.auxiliaryProperties.callbackScope.text
+								.getBBox().width + 20;
+						var textboxHeight = textPrimitive.auxiliaryProperties.callbackScope.text
+								.getBBox().height + 20;
+						this.editableTextArea.css("width",
+								parseInt(textboxWidth.valueOf()));
+						this.editableTextArea.css("height",
+								parseInt(textboxHeight.valueOf()));
 
 						this.editableTextArea
-						.css("visibility", "visible")
-						.html(name)
-						.moveDiv(
-								{
-									"x" : textPrimitive.auxiliaryProperties.callbackScope.x
-											+ X_OFFSET
-											+ textPrimitive.auxiliaryProperties.callbackScope.width
-											/ 5 - scrollPos.left,
-									"y" : textPrimitive.auxiliaryProperties.callbackScope.y
-											+ Y_OFFSET
-											+ textPrimitive.auxiliaryProperties.callbackScope.height
-											/ 8 - scrollPos.top
-								}).show().trigger("dblclick");
-
+								.css("visibility", "visible")
+								.html(name)
+								.moveDiv(
+										{
+											"x" : textPrimitive.auxiliaryProperties.callbackScope.x
+													+ X_OFFSET
+													+ textPrimitive.auxiliaryProperties.callbackScope.width
+													/ 5 - scrollPos.left,
+											"y" : textPrimitive.auxiliaryProperties.callbackScope.y
+													+ Y_OFFSET
+													+ textPrimitive.auxiliaryProperties.callbackScope.height
+													/ 8 - scrollPos.top
+										}).show().trigger("dblclick");
 
 					} else {
 						name = textPrimitive.auxiliaryProperties.callbackScope.modelElement.name;
@@ -1866,28 +1910,27 @@ define(
 								.valueOf()));
 
 						this.editableText
-						.css("visibility", "visible")
-						.html(name)
-						.moveDiv(
-								{
-									"x" : textPrimitive.auxiliaryProperties.callbackScope.x
-											+ X_OFFSET
-											+ textPrimitive.auxiliaryProperties.callbackScope.width
-											/ 5 - scrollPos.left,
-									"y" : textPrimitive.auxiliaryProperties.callbackScope.y
-											+ Y_OFFSET
-											+ textPrimitive.auxiliaryProperties.callbackScope.height
-											/ 3 - scrollPos.top
-								}).show().trigger("dblclick");
+								.css("visibility", "visible")
+								.html(name)
+								.moveDiv(
+										{
+											"x" : textPrimitive.auxiliaryProperties.callbackScope.x
+													+ X_OFFSET
+													+ textPrimitive.auxiliaryProperties.callbackScope.width
+													/ 5 - scrollPos.left,
+											"y" : textPrimitive.auxiliaryProperties.callbackScope.y
+													+ Y_OFFSET
+													+ textPrimitive.auxiliaryProperties.callbackScope.height
+													/ 3 - scrollPos.top
+										}).show().trigger("dblclick");
 					}
-
 
 					this.symbolEditMode = true;
 					m_utils.debug("editable activated");
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.submitEditable = function(content) {
 					if (content == '') {
@@ -1900,8 +1943,7 @@ define(
 						var changes;
 						changes = {
 							modelElement : {
-								name : this.currentTextPrimitive
-										.attr("text")
+								name : this.currentTextPrimitive.attr("text")
 							}
 						}
 						m_commandsController
@@ -1922,14 +1964,13 @@ define(
 					if (content == '') {
 						this.cancelEditableArea();
 					} else {
-						this.editableTextArea.css("visibility", "hidden").hide()
-								.trigger("blur");
+						this.editableTextArea.css("visibility", "hidden")
+								.hide().trigger("blur");
 						this.currentTextPrimitive.attr("text", content);
 						m_utils.debug("textarea set");
 						var changes;
 						changes = {
-								content : this.currentTextPrimitive
-										.attr("text")
+							content : this.currentTextPrimitive.attr("text")
 						}
 
 						m_commandsController
@@ -1947,7 +1988,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.cancelEditable = function() {
 					this.editableText.css("visibility", "hidden").hide()
@@ -1966,7 +2007,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.zoomIn = function() {
 					this.zoomFactor = Math.max(this.zoomFactor
@@ -1982,7 +2023,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.zoomOut = function() {
 					this.zoomFactor = this.zoomFactor
@@ -1998,7 +2039,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.loadProcess = function() {
 					m_communicationController.syncGetData({
@@ -2020,7 +2061,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.loadFromJson = function(json) {
 					m_utils.debug("===> Process/Diagram JSON");
@@ -2034,8 +2075,9 @@ define(
 					var poolCount = 0;
 
 					for ( var n in json.poolSymbols) {
-						this.poolSymbols[n] = m_poolSymbol.createPoolSymbolFromJson(this,
-								json.poolSymbols[n]);
+						this.poolSymbols[n] = m_poolSymbol
+								.createPoolSymbolFromJson(this,
+										json.poolSymbols[n]);
 
 						// TODO Remove
 
@@ -2076,7 +2118,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.setSize = function(width, height) {
 					this.width = width;
@@ -2089,7 +2131,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.applyDecoration = function(decoration) {
 					for ( var decorationElement in decoration.elements) {
@@ -2139,7 +2181,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Diagram.prototype.findLane = function(id) {
 					return this.poolSymbol.findLane(id);

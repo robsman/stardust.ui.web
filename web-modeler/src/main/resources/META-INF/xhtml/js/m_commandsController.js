@@ -12,7 +12,9 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_communicationController", "bpm-modeler/js/m_command" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_communicationController",
+				"bpm-modeler/js/m_command" ],
 		function(m_utils, m_constants, m_communicationController, m_command) {
 			var executeImmediate;
 			var needUndoSupport;
@@ -31,8 +33,8 @@ define(
 
 				submitImmediately : function(command, successCallback,
 						errorCallback) {
-					getInstance().submitImmediately(command,
-							successCallback, errorCallback);
+					getInstance().submitImmediately(command, successCallback,
+							errorCallback);
 				},
 
 				submitCommand : function(command) {
@@ -71,19 +73,24 @@ define(
 				if (!window.callbackScope.objectsToUnregister) {
 					window.callbackScope.objectsToUnregister = new Array();
 					window.onunload = function() {
-							if (this.callbackScope && this.callbackScope.objectsToUnregister) {
-								for (var i = 0; i < this.callbackScope.objectsToUnregister.length; i++) {
-									m_utils.debug("Unregistering command handler: " + this.callbackScope.objectsToUnregister[i]);
-									getInstance().unregisterCommandHandler(this.callbackScope.objectsToUnregister[i]);
-								}
+						if (this.callbackScope
+								&& this.callbackScope.objectsToUnregister) {
+							for ( var i = 0; i < this.callbackScope.objectsToUnregister.length; i++) {
+								m_utils
+										.debug("Unregistering command handler: "
+												+ this.callbackScope.objectsToUnregister[i]);
+								getInstance()
+										.unregisterCommandHandler(
+												this.callbackScope.objectsToUnregister[i]);
 							}
-						};
+						}
+					};
 				}
 				window.callbackScope.objectsToUnregister.push(commandHandler);
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function CommandsController(newCommunicationController) {
 				// Initialize members
@@ -93,7 +100,7 @@ define(
 				this.commandHandlers = [];
 
 				/**
-				 *
+				 * 
 				 */
 				CommandsController.prototype.toString = function() {
 					return "Lightdust.CommandController";
@@ -180,7 +187,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				CommandsController.prototype.submitCommand = function(command) {
 					var url = m_communicationController.getEndpointUrl()
@@ -192,11 +199,8 @@ define(
 					}
 
 					m_utils.debug("URL: " + url);
-					m_utils.debug("Type:" + command.type);
-					m_utils.debug("Old Object:");
-					m_utils.debug(command.oldObject);
-					m_utils.debug("New Object:");
-					m_utils.debug(command.newObject);
+					m_utils.debug("Command:");
+					m_utils.debug(command);
 
 					if (command.type == m_constants.DELETE_COMMAND) {
 						m_communicationController
@@ -226,18 +230,23 @@ define(
 								.postData(
 										{
 											"url" : url,
-											"sync" : command.sync ? true // Optional param for sync submit
-													: false
+											"sync" : command.sync ? true // Optional
+											// param
+											// for
+											// sync
+											// submit
+											: false
 										},
 										// Added to remove any cyclic reference
-										JSON.stringify(command, function(key, val) {
-											   if (typeof val == "object") {
+										JSON.stringify(command, function(key,
+												val) {
+											if (typeof val == "object") {
 												if (obj.indexOf(val) >= 0)
 													return undefined;
 												obj.push(val);
 											}
 											return val;
-											}),
+										}),
 										new function() {
 											return {
 												"success" : function(command) {
@@ -257,7 +266,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				CommandsController.prototype.registerCommandHandler = function(
 						commandHandler) {
@@ -265,15 +274,16 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				CommandsController.prototype.unregisterCommandHandler = function(
 						commandHandler) {
-					m_utils.removeItemFromArray(this.commandHandlers, commandHandler);
+					m_utils.removeItemFromArray(this.commandHandlers,
+							commandHandler);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				CommandsController.prototype.broadcastCommand = function(
 						command) {
@@ -288,13 +298,15 @@ define(
 								this.commandHandlers[n].processCommand(command);
 							}
 						} catch (e) {
-							m_utils.debug("Exception while invoking command handler " +  e);
+							m_utils
+									.debug("Exception while invoking command handler "
+											+ e);
 						}
 					}
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				CommandsController.prototype.broadcastCommandUndo = function(
 						command) {
@@ -305,7 +317,8 @@ define(
 					for ( var n = 0; n < this.commandHandlers.length; ++n) {
 						try {
 							this.commandHandlers[n].processCommand(command);
-							//this.commandHandlers[n].undoCommand(command); TODO do we still need a specific undo?
+							// this.commandHandlers[n].undoCommand(command);
+							// TODO do we still need a specific undo?
 						} catch (e) {
 							m_utils.debug("Failed broadcasting undo: " + e);
 						}

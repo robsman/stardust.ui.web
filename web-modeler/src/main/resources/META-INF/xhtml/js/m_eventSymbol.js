@@ -31,6 +31,18 @@ define(
 
 					return eventSymbol;
 				},
+				createIntermediateEventSymbol : function(diagram) {
+					var eventSymbol = new EventSymbol();
+
+					eventSymbol.bind(diagram);
+					eventSymbol.modelElement = m_event
+							.createIntermediateEvent(diagram.process);
+
+					m_utils.debug("Intermediate Event created");
+					m_utils.debug(eventSymbol);
+
+					return eventSymbol;
+				},
 				createStopEventSymbol : function(diagram) {
 					var eventSymbol = new EventSymbol();
 
@@ -74,14 +86,21 @@ define(
 					this.diagram = diagram;
 
 					this.diagram.lastSymbol = this;
+					this.bindingActivity = null;
 
 					this.propertiesPanel = m_eventPropertiesPanel.getInstance();
 					this.circle = null;
+					this.innerCircle = null;
 					this.image = null;
 					this.text = null;
 					this.startImageUrl = "../../images/icons/start-event.png";
 					this.startMessageImageUrl = "../../images/icons/start-event-message.png";
 					this.startTimerImageUrl = "../../images/icons/start-event-timer.png";
+					this.timerCatchingUrl = "../../images/icons/event-timer-catching.png";
+					this.messageCatchingUrl = "../../images/icons/event-message-catching.png";
+					this.messageThrowingUrl = "../../images/icons/event-message-throwing.png";
+					this.errorCatchingUrl = "../../images/icons/event-error-catching.png";
+					this.errorThrowingUrl = "../../images/icons/event-error-throwing.png";
 					this.stopImageUrl = "../../images/icons/stop-event.png";
 
 					// Size is not transfered from the server
@@ -131,10 +150,13 @@ define(
 					transferObject = this.prepareTransferObject(transferObject);
 
 					transferObject.circle = null;
+					transferObject.innerCircle = null;
 					transferObject.image = null;
 					transferObject.text = null;
 					transferObject.startImageUrl = null;
 					transferObject.stopImageUrl = null;
+					transferObject.bindingActivity = null;
+
 					return transferObject;
 				};
 
@@ -166,6 +188,16 @@ define(
 							});
 
 					this.addToPrimitives(this.circle);
+
+					this.innerCircle = m_canvasManager.drawCircle(this.x
+							+ m_constants.EVENT_DEFAULT_RADIUS, this.y
+							+ m_constants.EVENT_DEFAULT_RADIUS,
+							m_constants.EVENT_DEFAULT_RADIUS - 2, {
+								"fill" : m_constants.EVENT_DEFAULT_FILL,
+								"stroke" : m_constants.DEFAULT_STROKE
+							});
+
+					this.addToPrimitives(this.innerCircle);
 
 					this.image = m_canvasManager.drawImageAt(
 							this.startImageUrl, this.x
@@ -215,22 +247,65 @@ define(
 						this.text.attr("text", "");
 					}
 
+					if (this.modelElement.interrupting) {
+						this.circle.attr("stroke-dasharray",
+								m_constants.EVENT_INTERRUPTING_STROKE_WIDTH);
+						this.innerCircle.attr("stroke-dasharray",
+								m_constants.EVENT_INTERRUPTING_STROKE_WIDTH);
+					} else {
+						this.circle
+								.attr(
+										"stroke-dasharray",
+										m_constants.EVENT_NON_INTERRUPTING_STROKE_DASHARRAY);
+						this.innerCircle
+								.attr(
+										"stroke-dasharray",
+										m_constants.EVENT_NON_INTERRUPTING_STROKE_DASHARRAY);
+					}
+
+					// Determin circle stroke and showing
+
 					if (this.modelElement.eventType == m_constants.START_EVENT_TYPE) {
 						this.circle.attr("stroke-width",
 								m_constants.EVENT_START_STROKE_WIDTH);
+						this.innerCircle.hide();
+					} else if (this.modelElement.eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
+						this.circle.attr("stroke-width",
+								m_constants.EVENT_INTERMEDIATE_STROKE_WIDTH);
+						this.innerCircle.attr("stroke-width",
+								m_constants.EVENT_INTERMEDIATE_STROKE_WIDTH);
 
-						if (this.modelElement.eventClass == m_constants.TIMER_EVENT_CLASS) {
-							this.image.attr("src", this.startTimerImageUrl);
-						} else if (this.modelElement.eventClass == m_constants.MESSAGE_EVENT_CLASS
-								|| this.modelElement.eventClass == m_constants.EMAIL_EVENT_CLASS) {
-							this.image.attr("src", this.startMessageImageUrl);
-						} else {
-							this.image.attr("src", this.startImageUrl);
-						}
+						this.innerCircle.show();
 					} else {
 						this.circle.attr("stroke-width",
 								m_constants.EVENT_STOP_STROKE_WIDTH);
-						this.image.attr("src", this.stopImageUrl);
+						this.innerCircle.hide();
+					}
+
+					// Determine icon
+
+					if (this.modelElement.eventClass == m_constants.TIMER_EVENT_CLASS
+							&& this.modelElement.throwing) {
+						this.image.attr("src", this.timerCatchingUrl);
+						this.image.show();
+					} else if (this.modelElement.eventClass == m_constants.MESSAGE_EVENT_CLASS) {
+						if (this.modelElement.throwing) {
+							this.image.attr("src", this.messageCatchingUrl);
+							this.image.show();
+						} else {
+							this.image.attr("src", this.messageThrowingUrl);
+							this.image.show();
+						}
+					} else if (this.modelElement.eventClass == m_constants.ERROR_EVENT_CLASS) {
+						if (this.modelElement.throwing) {
+							this.image.attr("src", this.errorCatchingUrl);
+							this.image.show();
+						} else {
+							this.image.attr("src", this.errorThrowingUrl);
+							this.image.show();
+						}
+					} else {
+						this.image.hide();
 					}
 				};
 
@@ -242,7 +317,8 @@ define(
 					var rightMenu = [];
 
 					// If start event
-					if (this.modelElement.eventType == m_constants.START_EVENT_TYPE) {
+					if (this.modelElement.eventType == m_constants.START_EVENT_TYPE
+							|| this.modelElement.eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
 						rightMenu = [ {
 							imageUrl : "../../images/icons/connect.png",
 							imageWidth : 16,
@@ -276,6 +352,9 @@ define(
 					this.circle.attr({
 						"stroke" : m_constants.SELECT_STROKE_COLOR
 					});
+					this.innerCircle.attr({
+						"stroke" : m_constants.SELECT_STROKE_COLOR
+					});
 				};
 
 				/**
@@ -283,6 +362,9 @@ define(
 				 */
 				EventSymbol.prototype.dehighlight = function() {
 					this.circle.attr({
+						"stroke" : m_constants.DEFAULT_STROKE_COLOR
+					});
+					this.innerCircle.attr({
 						"stroke" : m_constants.DEFAULT_STROKE_COLOR
 					});
 				};
@@ -296,7 +378,11 @@ define(
 						cy : this.y + m_constants.EVENT_DEFAULT_RADIUS
 					}, this.diagram.animationDelay,
 							this.diagram.animationEasing);
-
+					this.innerCircle.animate({
+						cx : this.x + m_constants.EVENT_DEFAULT_RADIUS,
+						cy : this.y + m_constants.EVENT_DEFAULT_RADIUS
+					}, this.diagram.animationDelay,
+							this.diagram.animationEasing);
 					this.image.animate({
 						x : this.x + m_constants.EVENT_DEFAULT_RADIUS - 0.5
 								* m_constants.EVENT_ICON_WIDTH,
@@ -370,6 +456,17 @@ define(
 				 */
 				EventSymbol.prototype.onComplete = function() {
 					this.onParentSymbolChange();
+
+					if (this.modelElement.eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
+						var hitSymbol = this.diagram
+								.getSymbolOverlappingWithSymbol(this);
+
+						if (hitSymbol != null
+								&& hitSymbol.type == m_constants.ACTIVITY_SYMBOL) {
+							hitSymbol.addBoundaryEvent(this);
+							// TODO Submit Change
+						}
+					}
 				};
 
 				/*
@@ -379,9 +476,53 @@ define(
 					if (this.modelElement.eventType == m_constants.START_EVENT_TYPE
 							&& this.parentSymbol.participantFullId != null) {
 						this.modelElement.participantFullId = this.parentSymbol.participantFullId;
+					}
+				};
 
-						m_utils.debug("===> Event Participant ID set to "
-								+ this.modelElement.participantFullId);
+				/**
+				 * 
+				 */
+				EventSymbol.prototype.postMove = function() {
+					var hitSymbol = this.diagram
+							.getSymbolOverlappingWithSymbol(this);
+
+					if (hitSymbol != null
+							&& hitSymbol.type == m_constants.ACTIVITY_SYMBOL) {
+						this.highlight();
+					} else {
+						this.dehighlight();
+					}
+				};
+
+				/**
+				 * 
+				 */
+				EventSymbol.prototype.postDrag = function(dX, dY, x, y) {
+					var hitSymbol = this.diagram
+							.getSymbolOverlappingWithSymbol(this);
+
+					if (hitSymbol != null
+							&& hitSymbol.type == m_constants.ACTIVITY_SYMBOL) {
+						this.highlight();
+					} else {
+						this.dehighlight();
+					}
+				};
+
+				/**
+				 * 
+				 */
+				EventSymbol.prototype.postDragStop = function() {
+					var hitSymbol = this.diagram
+							.getSymbolOverlappingWithSymbol(this);
+
+					if (hitSymbol != null
+							&& hitSymbol.type == m_constants.ACTIVITY_SYMBOL) {
+						hitSymbol.addBoundaryEvent(this);
+
+						// TODO Submit change
+					} else if (this.bindingActivity != null) {
+						this.bindingActivity.removeBoundaryEvent(this);
 					}
 				};
 			}

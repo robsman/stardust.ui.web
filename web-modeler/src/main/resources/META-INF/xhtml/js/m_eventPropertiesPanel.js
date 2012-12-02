@@ -15,9 +15,9 @@ define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_propertiesPanel",
-				"bpm-modeler/js/m_propertiesPage" ],
+				"bpm-modeler/js/m_propertiesPage", "bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_model,
-				m_propertiesPanel, m_propertiesPage) {
+				m_propertiesPanel, m_propertiesPage, m_i18nUtils) {
 
 			var eventPropertiesPanel = null;
 
@@ -66,6 +66,29 @@ define(
 
 					m_utils.debug("Event");
 					m_utils.debug(element);
+
+					this.titleSpan = jQuery("#" + this.id + " #title");
+					
+					m_utils.debug(this.titleSpan);
+					
+					this.titleSpan.empty();
+
+					if (element.modelElement.eventType == m_constants.START_EVENT_TYPE) {
+						this.titleSpan
+								.append(
+										m_i18nUtils
+												.getProperty("modeler.diagram.toolbar.tool.event.title.startEvent"));
+					} else if (element.modelElement.eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
+						this.titleSpan
+								.append(
+										m_i18nUtils
+												.getProperty("modeler.diagram.toolbar.tool.event.title.intermediateEvent"));
+					} else if (element.modelElement.eventType == m_constants.STOP_EVENT_TYPE) {
+						this.titleSpan
+								.append(
+										m_i18nUtils
+												.getProperty("modeler.diagram.toolbar.tool.event.title.endEvent"));
+					}
 
 					if (this.element.modelElement.participantFullId != null) {
 						this.participant = m_model

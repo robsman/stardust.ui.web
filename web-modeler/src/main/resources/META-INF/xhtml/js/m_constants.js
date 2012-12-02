@@ -265,17 +265,21 @@ define(function() {
 
 		EVENT : "event",
 		START_EVENT_TYPE : "startEvent",
+		INTERMEDIATE_EVENT_TYPE : "intermediateEvent",
 		STOP_EVENT_TYPE : "stopEvent",
 		GENERIC_CAMEL_ROUTE_EVENT_CLASS : "genericCamelRouteEvent",
-		TIMER_EVENT_CLASS : "timerEvent",
-		EMAIL_EVENT_CLASS : "emailEvent",
-		MESSAGE_EVENT_CLASS : "messageEvent",
-		FILE_EVENT_CLASS : "fileEvent",
-		EVENT_DEFAULT_RADIUS : 12,
+		NONE_EVENT_CLASS : "none",
+		TIMER_EVENT_CLASS : "timer",
+		MESSAGE_EVENT_CLASS : "message",
+		ERROR_EVENT_CLASS : "error",
+		EVENT_DEFAULT_RADIUS : 13,
 		EVENT_ICON_WIDTH : 16,
 		EVENT_DEFAULT_FILL : 'white',
 		EVENT_START_STROKE_WIDTH : 1.0,
+		EVENT_INTERMEDIATE_STROKE_WIDTH : 1.0,		
 		EVENT_STOP_STROKE_WIDTH : 2.0,
+		EVENT_INTERRUPTING_STROKE_DASHARRAY	: "",	
+		EVENT_NON_INTERRUPTING_STROKE_DASHARRAY	: " -",	
 
 		// Access Points
 
