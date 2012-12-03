@@ -17,6 +17,12 @@ public class WebServiceApplicationView extends AbstractAdapterView {
    {
       super.handleEvent(event);
 
-      event.getView().setIcon("/plugins/bpm-modeler/images/icons/application-web-service.png");
+      switch (event.getType())
+      {
+      case CREATED:
+         event.getView().setIcon(
+               "/plugins/bpm-modeler/images/icons/application-web-service.png");
+         break;
+      }
    }
 }

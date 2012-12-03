@@ -34,6 +34,11 @@ public class DataView extends AbstractAdapterView
    {
       super.handleEvent(event);
 
-      event.getView().setIcon("/plugins/bpm-modeler/images/icons/data.png");
+      switch (event.getType())
+      {
+      case CREATED:
+         event.getView().setIcon("/plugins/bpm-modeler/images/icons/data.png");
+         break;
+      }
    }
 }

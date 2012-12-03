@@ -17,6 +17,11 @@ public class GenericApplicationView extends AbstractAdapterView {
    {
       super.handleEvent(event);
 
-      event.getView().setIcon("/plugins/bpm-modeler/images/icons/applications.png");
+      switch (event.getType())
+      {
+      case CREATED:
+         event.getView().setIcon("/plugins/bpm-modeler/images/icons/applications.png");
+         break;
+      }
    }
 }

@@ -14,25 +14,30 @@ package org.eclipse.stardust.ui.web.modeler.portal;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 
 /**
- * 
+ *
  * @author Marc.Gille
  *
  * TODO Use AbstractAdapterView with Spring Bean Properties?
  */
-public class OrganizationView extends AbstractAdapterView {  
+public class OrganizationView extends AbstractAdapterView {
    /**
-    * 
+    *
     */
 	public OrganizationView()
    {
       super("/plugins/bpm-modeler/views/modeler/organizationView.html", "organizationFrameAnchor");
-   }	
+   }
 
    @Override
    public void handleEvent(ViewEvent event)
    {
       super.handleEvent(event);
-      
-      event.getView().setIcon("/plugins/bpm-modeler/images/icons/organization.png");
-   }	
+
+      switch (event.getType())
+      {
+      case CREATED:
+         event.getView().setIcon("/plugins/bpm-modeler/images/icons/organization.png");
+         break;
+      }
+   }
 }

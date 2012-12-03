@@ -9,12 +9,18 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_command",
-				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
-				"bpm-modeler/js/m_model", "bpm-modeler/js/m_dataTypeSelector","bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_jsfViewManager"],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_extensionManager",
+				"bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_dataTypeSelector",
+				"bpm-modeler/js/m_i18nUtils",
+				"bpm-modeler/js/m_jsfViewManager",
+				"bpm-modeler/js/m_elementConfiguration" ],
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_dataTypeSelector, m_i18nUtils, m_jsfViewManager) {
+				m_dataTypeSelector, m_i18nUtils, m_jsfViewManager, m_elementConfiguration) {
 			var view;
 
 			return {
@@ -237,6 +243,7 @@ define(
 					this.data = data;
 
 					this.initializeModelElement(data);
+					this.updateViewIcon();
 
 					this.dataTypeSelector.setScopeModel(this.data.model);
 					this.dataTypeSelector.setDataType(this.data);
@@ -248,23 +255,14 @@ define(
 					} else {
 						this.publicVisibilityCheckbox.attr("checked", false);
 					}
-
-					this.updateDataViewIcon();
 				};
 
 				/**
 				 * TODO - handle unsupported data types too.?
 				 */
-				DataView.prototype.updateDataViewIcon = function() {
-					var dataViewIcon = undefined;
-					if (this.data.dataType === m_constants.PRIMITIVE_DATA_TYPE) {
-						dataViewIcon = "/plugins/bpm-modeler/images/icons/data-primitive.png";
-					} else if (this.data.dataType === m_constants.STRUCTURED_DATA_TYPE) {
-						dataViewIcon = "/plugins/bpm-modeler/images/icons/data-structured.png";
-					} else if (this.data.dataType === m_constants.DOCUMENT_DATA_TYPE) {
-						dataViewIcon = "/plugins/bpm-modeler/images/icons/data-document.png";
-					}
-
+				DataView.prototype.updateViewIcon = function() {
+					var dataViewIcon = m_elementConfiguration
+							.getIconForElementType(this.data.dataType);
 					if (dataViewIcon) {
 						viewManager.updateView("dataView",
 								m_constants.VIEW_ICON_PARAM_KEY + "="

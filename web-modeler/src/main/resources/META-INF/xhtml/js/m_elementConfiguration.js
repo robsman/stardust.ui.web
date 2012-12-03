@@ -34,6 +34,36 @@ define([ "bpm-modeler/js/m_utils" ], function(m_utils) {
 	var validParticipants = supportedParticipants
 			.concat(unSupportedParticipants);
 
+	var elementTypeVsIconsMap = {
+			"primitive" : "/plugins/bpm-modeler/images/icons/data-primitive.png",
+			"dmsDocument" : "/plugins/bpm-modeler/images/icons/data-document.png",
+			"struct" : "/plugins/bpm-modeler/images/icons/data-structured.png",
+			"entity" : "/plugins/bpm-modeler/images/icons/data-entity.png",
+			"serializable" : "/plugins/bpm-modeler/images/icons/data-serializable.png",
+			"dmsDocumentList" : "/plugins/bpm-modeler/images/icons/data-document-list.png",
+			"dmsFolder" : "/plugins/bpm-modeler/images/icons/data-folder.png",
+			"hibernate" : "/plugins/bpm-modeler/images/icons/data-hibernate.png",
+			"webservice" : "/plugins/bpm-modeler/images/icons/application-web-service.png",
+			"messageTransformationBean" : "/plugins/bpm-modeler/images/icons/application-message-trans.png",
+			"camelBean" : "/plugins/bpm-modeler/images/icons/application-camel.png",
+			"interactive" : "/plugins/bpm-modeler/images/icons/applications.png",
+			"dmsOperation" : "/plugins/bpm-modeler/images/icons/application-dms.png",
+			"messageParsingBean" : "/plugins/bpm-modeler/images/icons/application-message-p.png",
+			"messageSerializationBean" : "/plugins/bpm-modeler/images/icons/application-message-s.png",
+			"springBean" : "/plugins/bpm-modeler/images/icons/applications.png",
+			"mailBean" : "/plugins/bpm-modeler/images/icons/application-mail.png",
+			"jms" : "/plugins/bpm-modeler/images/icons/application-jms.png",
+			"plainJava" : "/plugins/bpm-modeler/images/icons/application-plain-java.png",
+			"xslMessageTransformationBean" : "/plugins/bpm-modeler/images/icons/",
+			"rulesEngineBean" : "/plugins/bpm-modeler/images/icons/application-drools.png",
+			"sessionBean" : "/plugins/bpm-modeler/images/icons/application-session.png",
+			"camelSpringProducerApplication" : "/plugins/bpm-modeler/images/icons/application-camel.png",
+			"roleParticipant" : "/plugins/bpm-modeler/images/icons/role.png",
+			"teamLeader" : "/plugins/bpm-modeler/images/icons/manager.png",
+			"organizationParticipant" : "/plugins/bpm-modeler/images/icons/organization.png",
+			"conditionalPerformerParticipant" : "/plugins/bpm-modeler/images/icons/conditional.png"
+	};
+
 	return {
 		getValidDataTypes : function() {
 			return validDataTypes;
@@ -69,6 +99,10 @@ define([ "bpm-modeler/js/m_utils" ], function(m_utils) {
 
 		getUnSupportedParticipants : function() {
 			return unSupportedParticipants;
+		},
+
+		getIconForElementType : function(elementType) {
+			return elementTypeVsIconsMap[elementType];
 		},
 
 		isSupportedDataType : function(dataType) {

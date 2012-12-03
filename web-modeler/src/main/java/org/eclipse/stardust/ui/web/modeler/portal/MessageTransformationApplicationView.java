@@ -23,6 +23,12 @@ public class MessageTransformationApplicationView extends AbstractAdapterView
    {
       super.handleEvent(event);
 
-      event.getView().setIcon("/plugins/bpm-modeler/images/icons/application-message-trans.png");
+      switch (event.getType())
+      {
+      case CREATED:
+         event.getView().setIcon(
+               "/plugins/bpm-modeler/images/icons/application-message-trans.png");
+         break;
+      }
    }
 }

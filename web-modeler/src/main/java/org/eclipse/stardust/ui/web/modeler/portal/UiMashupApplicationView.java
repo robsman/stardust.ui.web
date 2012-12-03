@@ -17,6 +17,12 @@ public class UiMashupApplicationView extends AbstractAdapterView {
    {
       super.handleEvent(event);
 
-      event.getView().setIcon("/plugins/bpm-modeler/images/icons/application-c-ext-web.png");
+      switch (event.getType())
+      {
+      case CREATED:
+         event.getView().setIcon(
+               "/plugins/bpm-modeler/images/icons/application-c-ext-web.png");
+         break;
+      }
    }
 }

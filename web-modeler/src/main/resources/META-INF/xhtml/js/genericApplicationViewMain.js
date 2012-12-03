@@ -33,9 +33,13 @@ require.config({
 		'jquery.treeTable': ['bpm-modeler/js/libs/jquery/plugins/jquery.treeTable', 'https://raw.github.com/ludo/jquery-treetable/master/src/javascripts/jquery.treeTable'],
 		'jquery.url': ['bpm-modeler/js/libs/jquery/plugins/jquery.url', 'https://raw.github.com/allmarkedup/jQuery-URL-Parser/4f5254f2519111ad7037d398b2efa61d3cda58d4/jquery.url'],
 
-		'common-plugins': '../services/rest/bpm-modeler/config/ui/plugins/common-plugins'
+		'common-plugins': '../services/rest/bpm-modeler/config/ui/plugins/common-plugins',
+		'i18n' : 'common/InfinityBPMI18N'
 	},
 	shim: {
+	    'i18n' : {
+			exports : "InfinityBPMI18N"
+		 },
 		'jquery-ui': ['jquery'],
 		'jquery.tablescroll': ['jquery'],
 		'jquery.treeTable': ['jquery'],
@@ -50,6 +54,7 @@ require(["require",
          "jquery.treeTable",
 		 "jquery.url",
 		 "common-plugins",
+		 "i18n",
 		 "bpm-modeler/js/m_genericApplicationView"], function(require) {
 	require("bpm-modeler/js/m_genericApplicationView").initialize(
 			jQuery.url(window.location.search).param("fullId"));

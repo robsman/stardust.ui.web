@@ -432,10 +432,12 @@ define(
 					var extension = m_extensionManager.findExtensions(
 							"dataType", "id", dataType)[0];
 
-					this.otherTypeName
-							.append("<b>"
-									+ extension.readableName
-									+ "</b> not yet supported for the Browser Modeler.");
+					if (extension) {
+						this.otherTypeName
+						.append("<b>"
+								+ extension.readableName
+								+ "</b> not yet supported for the Browser Modeler.");
+					}
 				};
 
 				/**
