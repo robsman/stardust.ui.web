@@ -667,7 +667,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     * @param json
     */
    private void updateSwimlane(LaneSymbol swimlaneSymbol, JsonObject swimlaneSymbolJson)
-   {      
+   {
       updateIdentifiableElement(swimlaneSymbol, swimlaneSymbolJson);
 
       // update orientation
@@ -699,10 +699,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          String participantModelID = getModelBuilderFacade().getModelId(participantFullId);
          ModelType participantModel = getModelBuilderFacade().findModel(participantModelID);
          String participantId = getModelBuilderFacade().stripFullId(participantFullId);
-         
+
          IModelParticipant findParticipant = getModelBuilderFacade().findParticipant(participantModel,
                participantId);
-         
+
          if (!participantModelID.equals(model.getId()))
          {
             String fileConnectionId = WebModelerConnectionManager.createFileConnection(model,
@@ -724,7 +724,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             PepperIconFactory iconFactory = new PepperIconFactory();
             descriptor.importElements(iconFactory, model, true);
             findParticipant = getModelBuilderFacade().findParticipant(model, participantId);
-         }         
+         }
          LaneParticipantUtil.setParticipant(swimlaneSymbol, findParticipant);
       }
 
@@ -1399,12 +1399,15 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          String participantFullId = extractString(triggerJson,
                ModelerConstants.PARTICIPANT_FULL_ID);
 
-         IModelParticipant performer = getModelBuilderFacade().findParticipant(
-               participantFullId);
+         if (participantFullId != null)
+         {
+            IModelParticipant performer = getModelBuilderFacade().findParticipant(
+                  participantFullId);
 
-         getModelBuilderFacade().setAttribute(trigger,
-               PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT,
-               performer.getId());
+            getModelBuilderFacade().setAttribute(trigger,
+                  PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT, performer.getId());
+         }
+
       }
 
       if (triggerJson.has(ModelerConstants.PARAMETER_MAPPINGS_PROPERTY))
