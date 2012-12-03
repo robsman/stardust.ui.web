@@ -1731,6 +1731,11 @@ define(
 												"icon" : {
 													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-folder-list.png"
 												}
+											},
+											"plainXML" : {
+												"icon" : {
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-xml.png"
+												}
 											}
 										}
 									}

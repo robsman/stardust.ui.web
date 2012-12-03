@@ -13,7 +13,7 @@ define([ "bpm-modeler/js/m_utils" ], function(m_utils) {
 	var supportedDataTypes = [ "primitive", "dmsDocument", "struct" ];
 
 	var unSupportedDataTypes = [ "entity", "serializable", "dmsDocumentList",
-			"dmsFolder", "hibernate" ];
+			"dmsFolder", "dmsFolderList", "hibernate", "plainXML" ];
 
 	var validDataTypes = supportedDataTypes.concat(unSupportedDataTypes);
 
@@ -42,6 +42,8 @@ define([ "bpm-modeler/js/m_utils" ], function(m_utils) {
 			"serializable" : "/plugins/bpm-modeler/images/icons/data-serializable.png",
 			"dmsDocumentList" : "/plugins/bpm-modeler/images/icons/data-document-list.png",
 			"dmsFolder" : "/plugins/bpm-modeler/images/icons/data-folder.png",
+			"dmsFolderList" : "/plugins/bpm-modeler/images/icons/data-folder-list.png",
+			"plainXML" : "/plugins/bpm-modeler/images/icons/data-xml.png",
 			"hibernate" : "/plugins/bpm-modeler/images/icons/data-hibernate.png",
 			"webservice" : "/plugins/bpm-modeler/images/icons/application-web-service.png",
 			"messageTransformationBean" : "/plugins/bpm-modeler/images/icons/application-message-trans.png",
