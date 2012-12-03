@@ -1388,12 +1388,29 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       storeAttributes(trigger, triggerJson);
       storeDescription(trigger, triggerJson);
 
+      // A few BPMN properties
+      
       if (triggerJson.has(ModelerConstants.EVENT_CLASS_PROPERTY))
       {
          getModelBuilderFacade().setAttribute(trigger,
-               "stardust::engine:eventClass",
+               "stardust::bpmn:eventClass",
                triggerJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString());
       }
+      
+      if (triggerJson.has(ModelerConstants.THROWING_PROPERTY))
+      {
+         getModelBuilderFacade().setBooleanAttribute(trigger,
+               "stardust::bpmn:throwing",
+               triggerJson.get(ModelerConstants.THROWING_PROPERTY).getAsBoolean());
+      }
+
+      if (triggerJson.has(ModelerConstants.INTERRUPTING_PROPERTY))
+      {
+         getModelBuilderFacade().setBooleanAttribute(trigger,
+               "stardust::bpmn:interrupting",
+               triggerJson.get(ModelerConstants.INTERRUPTING_PROPERTY).getAsBoolean());
+      }
+
       if (triggerJson.has(ModelerConstants.PARTICIPANT_FULL_ID))
       {
          String participantFullId = extractString(triggerJson,

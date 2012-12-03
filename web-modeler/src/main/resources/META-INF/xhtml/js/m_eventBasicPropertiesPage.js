@@ -53,67 +53,7 @@ define(
 							.mapInputId("interruptingInput");
 					this.throwingInput = this.mapInputId("throwingInput");
 					this.catchingInput = this.mapInputId("catchingInput");
-					this.implementationPanel = this
-							.mapInputId("implementationPanel");
 					this.eventClassSelect = this.mapInputId("eventClassSelect");
-					this.eventIntegrationOverlaySelect = this
-							.mapInputId("eventIntegrationOverlaySelect");
-					this.overlayTableCell = jQuery("#overlayTableCell");
-
-					var eventIntegrationOverlays = m_extensionManager
-							.findExtensions("eventIntegrationOverlay");
-
-					this.overlays = {};
-					this.overlayControllers = {};
-					this.extensions = {};
-
-					for ( var n = 0; n < eventIntegrationOverlays.length; n++) {
-						var extension = eventIntegrationOverlays[n];
-
-						this.extensions[extension.id] = extension;
-
-						if (!m_session.initialize().technologyPreview
-								&& extension.visibility == "preview") {
-							continue;
-						}
-
-						var pageDiv = jQuery("<div id=\"" + extension.id
-								+ "\"></div>");
-
-						this.overlays[extension.id] = pageDiv;
-
-						this.overlayTableCell.append(pageDiv);
-
-						// TODO this variable may be overwritten in the
-						// loop, find mechanism to pass data to load
-						// callback
-
-						var page = this;
-
-						pageDiv
-								.load(
-										extension.pageHtmlUrl,
-										function(response, status, xhr) {
-											if (status == "error") {
-												var msg = "Properties Page Load Error: "
-														+ xhr.status
-														+ " "
-														+ xhr.statusText;
-
-												jQuery(this).append(msg);
-											} else {
-												var extension = page.extensions[jQuery(
-														this).attr("id")];
-												page.overlayControllers[jQuery(
-														this).attr("id")] = extension.provider
-														.create(page, jQuery(
-																this)
-																.attr("id"));
-												m_dialog
-														.makeInvisible(page.overlays[extension.id]);
-											}
-										});
-					}
 
 					this.interruptingInput
 							.change(
@@ -121,42 +61,49 @@ define(
 										"page" : this
 									},
 									function(event) {
-										event.data.page
-												.setInterrupting(event.data.page.interruptingInput
+										var page = 
+											event.data.page;
+						
+										page
+												.setInterrupting(page.interruptingInput
 														.prop("checked"));
+										page.submitChanges({modelElement: {interrupting: page.interruptingInput
+											.prop("checked")}});
 									});
 					this.throwingInput.change({
 						"page" : this
 					}, function(event) {
-						event.data.page
-								.setThrowing(event.data.page.throwingInput
+						var page = 
+							event.data.page;
+						
+						page
+								.setThrowing(page.throwingInput
 										.prop("checked"));
+						page.submitChanges({modelElement: {throwing: page.throwingInput
+							.prop("checked")}});
 					});
 					this.catchingInput.change({
 						"page" : this
 					}, function(event) {
-						event.data.page
-								.setCatching(event.data.page.catchingInput
+						var page = 
+							event.data.page;
+						
+						page
+								.setCatching(page.catchingInput
 										.prop("checked"));
+						page.submitChanges({modelElement: {throwing: !page.throwingInput
+							.prop("checked")}});
 					});
 					this.eventClassSelect.change({
 						"page" : this
 					}, function(event) {
+						var page = 
+							event.data.page;
+						
+						page
+								.getModelElement().eventClass = page.eventClassSelect.val();
+						page.submitChanges({modelElement: page.getModelElement()});
 					});
-					this.eventIntegrationOverlaySelect
-							.change(
-									{
-										"page" : this
-									},
-									function(event) {
-										page.overlayControllers[page.eventIntegrationOverlaySelect
-												.val()].activate();
-										page
-												.setOverlay(page.eventIntegrationOverlaySelect
-														.val());
-										page.getModelElement().eventClass = page.extensions[page.eventIntegrationOverlaySelect
-												.val()];
-									});
 				};
 
 				/**
@@ -196,34 +143,6 @@ define(
 				/**
 				 * 
 				 */
-				EventBasicPropertiesPage.prototype.populateOverlaySelect = function() {
-					this.eventIntegrationOverlaySelect.empty();
-
-					// Add only those overlays, being supported for the event
-					// class of the event
-
-					for ( var e in this.extensions) {
-						var extension = this.extensions[e];
-
-						if (this.getModelElement().eventClass == extension.eventClass
-								&& m_utils.isItemInArray(extension.eventTypes,
-										this.getModelElement().eventType)) {
-							this.eventIntegrationOverlaySelect
-									.append("<option value='"
-											+ extension.id
-											+ "'>"
-											+ m_i18nUtils
-													.getProperty("modeler.element.properties."
-															+ extension.id
-															+ ".title")
-											+ "</option>");
-						}
-					}
-				};
-
-				/**
-				 * 
-				 */
 				EventBasicPropertiesPage.prototype.populateEventClassSelect = function() {
 					this.eventClassSelect.empty();
 
@@ -257,40 +176,12 @@ define(
 				/**
 				 * 
 				 */
-				EventBasicPropertiesPage.prototype.setOverlay = function(
-						overlay) {
-
-					for ( var id in this.overlays) {
-						m_dialog.makeInvisible(this.overlays[id]);
-					}
-
-					if (overlay == null) {
-						if (this.getModelElement().eventType == m_constants.START_EVENT) {
-							this.setOverlay("manualTrigger");
-							this.overlayControllers["manualTrigger"].activate();
-						} else {
-							return;
-						}
-					}
-
-					this.eventIntegrationOverlaySelect.val(overlay);
-
-					m_dialog.makeVisible(this.overlays[overlay]);
-
-					// TODO Distinguish from activate; update only on change
-					this.overlayControllers[overlay].update();
-				};
-
-				/**
-				 * 
-				 */
 				EventBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();
 
 					m_utils.debug("Event ");
 					m_utils.debug(this.getModelElement());
 
-					this.populateOverlaySelect();
 					this.populateEventClassSelect();
 
 					if (this.getModelElement().eventType == m_constants.START_EVENT_TYPE
@@ -322,14 +213,14 @@ define(
 							this.bindingInformation
 									.append(m_i18nUtils
 											.getProperty(
-													"modeler.diagram.toolbar.tool.event.boundMessage")
+													"modeler.eventPropertiesPanel.basicPropertiesPage.boundMessage")
 											.replace(
 													"{0}",
 													this.getModelElement().bindingActivityUuid));
 						} else {
 							this.bindingInformation
 									.append(m_i18nUtils
-											.getProperty("modeler.diagram.toolbar.tool.event.notBoundMessage"));
+											.getProperty("modeler.eventPropertiesPanel.basicPropertiesPage.notBoundMessage"));
 						}
 					} else {
 						m_dialog.makeInvisible(this.intermediateEventPanel);
@@ -343,26 +234,6 @@ define(
 
 					this
 							.setEventClass(this.propertiesPanel.element.modelElement.eventClass);
-
-					if (this.propertiesPanel.element.modelElement.eventType == m_constants.START_EVENT_TYPE
-							&& m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE) {
-						m_dialog.makeVisible(this.implementationPanel);
-
-						if (this.getModelElement().attributes["carnot:engine:camel::camelContextId"] != null) {
-							this.setOverlay("genericCamelRouteEvent");
-							this.overlayControllers["genericCamelRouteEvent"]
-									.activate();
-						} else if (this.getModelElement().documentDataId != null) {
-							this.setOverlay("scanEvent");
-							this.overlayControllers["scanEvent"].activate();
-						} else {
-							var overlay = this.getModelElement().attributes["carnot:engine:eventIntegrationOverlay"];
-
-							this.setOverlay(overlay);
-						}
-					} else {
-						m_dialog.makeInvisible(this.implementationPanel);
-					}
 				};
 
 				/**

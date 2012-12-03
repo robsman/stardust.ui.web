@@ -38,9 +38,6 @@ define(
 					eventSymbol.modelElement = m_event
 							.createIntermediateEvent(diagram.process);
 
-					m_utils.debug("Intermediate Event created");
-					m_utils.debug(eventSymbol);
-
 					return eventSymbol;
 				},
 				createStopEventSymbol : function(diagram) {
@@ -241,9 +238,9 @@ define(
 
 					if (this.modelElement.interrupting) {
 						this.circle.attr("stroke-dasharray",
-								m_constants.EVENT_INTERRUPTING_STROKE_WIDTH);
+								m_constants.EVENT_INTERRUPTING_STROKE_DASHARRAY);
 						this.innerCircle.attr("stroke-dasharray",
-								m_constants.EVENT_INTERRUPTING_STROKE_WIDTH);
+								m_constants.EVENT_INTERRUPTING_STROKE_DASHARRAY);
 					} else {
 						this.circle
 								.attr(
@@ -277,7 +274,7 @@ define(
 					// Determine icon
 
 					if (this.modelElement.eventClass == m_constants.TIMER_EVENT_CLASS
-							&& this.modelElement.throwing) {
+							&& !this.modelElement.throwing) {
 						this.image.attr("src", this.timerCatchingUrl);
 						this.image.show();
 					} else if (this.modelElement.eventClass == m_constants.MESSAGE_EVENT_CLASS) {

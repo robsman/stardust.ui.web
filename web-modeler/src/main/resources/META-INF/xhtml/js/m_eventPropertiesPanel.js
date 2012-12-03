@@ -77,17 +77,17 @@ define(
 						this.titleSpan
 								.append(
 										m_i18nUtils
-												.getProperty("modeler.diagram.toolbar.tool.event.title.startEvent"));
+												.getProperty("modeler.eventPropertiesPanel.heading.startEvent"));
 					} else if (element.modelElement.eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
 						this.titleSpan
 								.append(
 										m_i18nUtils
-												.getProperty("modeler.diagram.toolbar.tool.event.title.intermediateEvent"));
+												.getProperty("modeler.eventPropertiesPanel.heading.intermediateEvent"));
 					} else if (element.modelElement.eventType == m_constants.STOP_EVENT_TYPE) {
 						this.titleSpan
 								.append(
 										m_i18nUtils
-												.getProperty("modeler.diagram.toolbar.tool.event.title.endEvent"));
+												.getProperty("modeler.eventPropertiesPanel.heading.endEvent"));
 					}
 
 					if (this.element.modelElement.participantFullId != null) {

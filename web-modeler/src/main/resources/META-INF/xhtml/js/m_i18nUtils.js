@@ -11,31 +11,42 @@
 /**
  * @author Shrikant.Gangal
  */
-define([ "bpm-modeler/js/m_urlUtils", "i18n" ], function(m_urlUtils, InfinityBPMI18N) {
+define([ "bpm-modeler/js/m_urlUtils", "i18n" ], function(m_urlUtils,
+		InfinityBPMI18N) {
 	var modelerI18N;
 	return {
-		getProperty : function(key, defaultVal) {
+		getProperty : function(key, defaultValue) {
 			if (!modelerI18N) {
 				try {
 					initModelerI18N();
 				} catch (e) {
-					return defaultVal;
+					if (defaultValue) {
+						return defaultValue;
+					} else {
+						return key;
+					}
 				}
 			}
 
-			return modelerI18N.getProperty(key, defaultVal);
+			var value = modelerI18N.getProperty(key, defaultValue);
+			
+			if (value) {
+				return value;
+			} else {
+				return key;
+			}
 		}
 	};
 
 	function initModelerI18N() {
 		var lang = "en";
 
-		//TODO - Currently using service written for TIFF viewer in
-		//graphics-common. Will need to move to some generic service.
+		// TODO - Currently using service written for TIFF viewer in
+		// graphics-common. Will need to move to some generic service.
 		jQuery.ajax({
-					url : m_urlUtils.getContextName()
-							+ "/services/rest/bpm-modeler/modeler/"
-							+ new Date().getTime() + "/language",
+			url : m_urlUtils.getContextName()
+					+ "/services/rest/bpm-modeler/modeler/"
+					+ new Date().getTime() + "/language",
 			async : false,
 			success : function(l) {
 				lang = l;
@@ -44,7 +55,8 @@ define([ "bpm-modeler/js/m_urlUtils", "i18n" ], function(m_urlUtils, InfinityBPM
 		InfinityBPMI18N.initPluginProps({
 			pluginName : "modeler",
 			singleEndPoint : m_urlUtils.getContextName()
-					+ "/services/rest/bpm-modeler/modeler/" + new Date().getTime() + "/bpm-modeler-client-messages/"
+					+ "/services/rest/bpm-modeler/modeler/"
+					+ new Date().getTime() + "/bpm-modeler-client-messages/"
 					+ lang
 		});
 

@@ -286,10 +286,11 @@ define(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.name"));
 
-				jQuery("#event")
-						.text(
-								m_i18nUtils
-										.getProperty("modeler.diagram.toolbar.tool.event.title"));
+				// TODO These queries are far to course grained; will hit a lot of elements
+//				jQuery("#event")
+//						.text(
+//								m_i18nUtils
+//										.getProperty("modeler.diagram.toolbar.tool.event.title"));
 				jQuery("#annotationheading")
 						.text(
 								m_i18nUtils
