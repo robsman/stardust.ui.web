@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -66,7 +66,7 @@ define(
 			var symbolEditMode = false;
 
 			/**
-			 * 
+			 *
 			 */
 			function Diagram(newDivId) {
 				currentDiagram = this;
@@ -111,7 +111,7 @@ define(
 				// Data symbols by OIDs
 
 				this.dataSymbols = {};
-				
+
 				// Data symbols by OIDs
 
 				this.annotationSymbols = {};
@@ -477,14 +477,14 @@ define(
 				this.poolSymbols = {};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.toString = function() {
 					return "Lightdust.Diagram";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.initialize = function() {
 					// TODO Bind against loaded models
@@ -586,7 +586,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.getEndpointUrl = function() {
 					return m_urlUtils.getContextName()
@@ -595,7 +595,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.createTransferObject = function() {
 					var transferObject = {};
@@ -951,6 +951,18 @@ define(
 									command.modelId);
 
 							if (null != conn) {
+								if ((command.isUndo || command.isRedo)
+										&& conn.isDataFlow()) {
+									// When dataMapping changes in Undo/Redo, only checked mapping is available in
+									// change array, Update the dataMapping for unchecked dataMapping
+									if (obj.changes.modified[i].modelElement.inputDataMapping == null
+											&& conn.modelElement.inputDataMapping != null) {
+										conn.modelElement.inputDataMapping = null;
+									} else if (obj.changes.modified[i].modelElement.outputDataMapping == null
+											&& conn.modelElement.outputDataMapping != null) {
+										conn.modelElement.outputDataMapping = null;
+									}
+								}
 								conn.applyChanges(obj.changes.modified[i]);
 								// TODO: commented as flip orientation was not
 								// working, not sure why we require this...
@@ -991,7 +1003,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.resetLastSymbol = function(oid) {
 					if (oid && this.lastSymbol != null
@@ -1001,7 +1013,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.findGatewaySymbolById = function(id) {
 					for ( var n in this.gatewaySymbols) {
@@ -1016,7 +1028,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.findEventSymbolById = function(id) {
 					for ( var n in this.eventSymbols) {
@@ -1031,7 +1043,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.findDataSymbolById = function(id) {
 					for ( var n in this.dataSymbols) {
@@ -1046,7 +1058,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.submitUpdate = function() {
 					// TODO Incomplete
@@ -1058,13 +1070,13 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.onUpdate = function() {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.addActivitySymbol = function() {
 					this.newSymbol = m_activitySymbol.createActivitySymbol(
@@ -1072,7 +1084,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.isDragAndDropMode = function() {
 					if (parent.iDnD.getTransferObject()) {
@@ -1083,14 +1095,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.isInConnectionMode = function() {
 					return this.mode == this.CONNECTION_MODE;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.setSelectMode = function() {
 					this.clearCurrentSelection();
@@ -1108,7 +1120,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.setSeparatorMode = function() {
 					this.clearCurrentSelection();
@@ -1126,7 +1138,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.isInNormalMode = function() {
 					return this.mode == this.NORMAL_MODE;
@@ -1158,7 +1170,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.onGlobalMouseMove = function(x, y) {
 					if (this.newSymbol != null) {
@@ -1314,7 +1326,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.onGlobalMouseUp = function(x, y) {
 					if (this.mode == this.RUBBERBAND_MODE) {
@@ -1342,7 +1354,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.getSymbolContainingCoordinates = function(x,
 						y) {
@@ -1383,7 +1395,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.moveLeftOfBy = function(x, dX) {
 					for ( var n in this.symbols) {
@@ -1394,7 +1406,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.moveRightOfBy = function(x, dX) {
 					for ( var n in this.symbols) {
@@ -1405,7 +1417,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.moveAboveBy = function(y, dY) {
 					for ( var n in this.symbols) {
@@ -1416,7 +1428,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.moveBelowBy = function(y, dY) {
 					for ( var n in this.symbols) {
@@ -1427,7 +1439,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.getSymbolContainingCoordinatesExcludeContainerSymbols = function(
 						x, y) {
@@ -1442,7 +1454,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.checkSnapLines = function(symbol) {
 					this.verticalSnapLine.hide();
@@ -1491,7 +1503,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.hideSnapLines = function(symbol) {
 					this.verticalSnapLine.hide();
@@ -1502,7 +1514,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.adjustVerticalSnapLine = function(newPosition) {
 					this.verticalSnapLinePosition = newPosition;
@@ -1513,7 +1525,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.adjustHorizontalSnapLine = function(
 						newPosition) {
@@ -1525,7 +1537,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.snapSymbol = function(symbol) {
 					if (this.isVerticalSnap) {
@@ -1547,7 +1559,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.onClick = function(x, y) {
 					if (this.newSymbol != null) {
@@ -1598,7 +1610,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.flipFlowOrientation = function(anchorPoint) {
 					if (this.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
@@ -1646,14 +1658,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.print = function(anchorPoint) {
 					jQuery("#canvas").jqprint();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.connectSymbol = function(symbol) {
 					this.mode = this.CONNECTION_MODE;
@@ -1674,7 +1686,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.connectToActivity = function(symbol) {
 					this.addAndConnectSymbol(symbol, m_activitySymbol
@@ -1683,7 +1695,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.connectToGateway = function(symbol) {
 					this.addAndConnectSymbol(symbol, m_gatewaySymbol
@@ -1691,7 +1703,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.connectToStopEvent = function(symbol) {
 					this.addAndConnectSymbol(symbol, m_eventSymbol
@@ -1699,7 +1711,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.addAndConnectSymbol = function(startSymbol,
 						targetSymbol) {
@@ -1744,7 +1756,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.setAnchorPoint = function(anchorPoint) {
 					if (this.currentConnection == null) {
@@ -1803,14 +1815,14 @@ define(
 					return m_connection.createConnection(this, anchorPoint);
 				};
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.addToCurrentSelection = function(drawable) {
 					this.currentSelection.push(drawable);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.deselectCurrentSelection = function() {
 					for ( var item in this.currentSelection) {
@@ -1819,7 +1831,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.clearCurrentSelection = function() {
 					this.deselectCurrentSelection();
@@ -1847,7 +1859,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.showProcessPropertiesPanel = function() {
 					m_processPropertiesPanel.getInstance().setElement(
@@ -1859,7 +1871,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.moveSelectedSymbolsBy = function(dX, dY) {
 					for ( var n in this.currentSelection) {
@@ -1868,7 +1880,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.showEditable = function(textPrimitive) {
 					this.currentTextPrimitive = textPrimitive;
@@ -1931,7 +1943,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.submitEditable = function(content) {
 					if (content == '') {
@@ -1989,7 +2001,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.cancelEditable = function() {
 					this.editableText.css("visibility", "hidden").hide()
@@ -2008,7 +2020,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.zoomIn = function() {
 					this.zoomFactor = Math.max(this.zoomFactor
@@ -2024,7 +2036,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.zoomOut = function() {
 					this.zoomFactor = this.zoomFactor
@@ -2040,7 +2052,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.loadProcess = function() {
 					m_communicationController.syncGetData({
@@ -2062,7 +2074,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.loadFromJson = function(json) {
 					m_utils.debug("===> Process/Diagram JSON");
@@ -2125,7 +2137,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.setSize = function(width, height) {
 					this.width = width;
@@ -2138,7 +2150,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.applyDecoration = function(decoration) {
 					for ( var decorationElement in decoration.elements) {
@@ -2188,7 +2200,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.findLane = function(id) {
 					return this.poolSymbol.findLane(id);
