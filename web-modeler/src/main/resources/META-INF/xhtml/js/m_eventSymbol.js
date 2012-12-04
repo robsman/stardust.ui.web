@@ -202,12 +202,12 @@ define(
 					this.text = m_canvasManager.drawTextNode(
 							this.x + 0.5 * this.width,
 							this.y + this.height + 1.2
-									* m_constants.DEFAULT_FONT_SIZE,
-							this.modelElement.name).attr({
+									* m_constants.DEFAULT_FONT_SIZE, "").attr({
 						"text-anchor" : "middle",
 						"font-family" : m_constants.DEFAULT_FONT_FAMILY,
 						"font-size" : m_constants.DEFAULT_FONT_SIZE
 					});
+
 					this.addToPrimitives(this.text);
 				};
 
@@ -230,17 +230,23 @@ define(
 				 * 
 				 */
 				EventSymbol.prototype.refreshFromModelElement = function() {
-					if (this.modelElement.name) {
+					if (this.modelElement.name
+							&& this.modelElement.name.trim() != "") {
 						this.text.attr("text", this.modelElement.name);
+						this.text.show();
 					} else {
-						this.text.attr("text", "");
+						this.text.hide();
 					}
 
 					if (this.modelElement.interrupting) {
-						this.circle.attr("stroke-dasharray",
-								m_constants.EVENT_INTERRUPTING_STROKE_DASHARRAY);
-						this.innerCircle.attr("stroke-dasharray",
-								m_constants.EVENT_INTERRUPTING_STROKE_DASHARRAY);
+						this.circle
+								.attr(
+										"stroke-dasharray",
+										m_constants.EVENT_INTERRUPTING_STROKE_DASHARRAY);
+						this.innerCircle
+								.attr(
+										"stroke-dasharray",
+										m_constants.EVENT_INTERRUPTING_STROKE_DASHARRAY);
 					} else {
 						this.circle
 								.attr(
@@ -379,15 +385,13 @@ define(
 								* m_constants.EVENT_ICON_WIDTH
 					}, this.diagram.animationDelay,
 							this.diagram.animationEasing);
+					this.text.animate({
+						x : this.x + 0.5 * this.width,
+						y : this.y + this.height + 1.2
+								* m_constants.DEFAULT_FONT_SIZE
+					}, this.diagram.animationDelay,
+							this.diagram.animationEasing);
 
-					if (this.text) {
-						this.text.animate({
-							x : this.x + 0.5 * this.width,
-							y : this.y + this.height + 1.2
-									* m_constants.DEFAULT_FONT_SIZE
-						}, this.diagram.animationDelay,
-								this.diagram.animationEasing);
-					}
 					this.adjustPrimitivesOnShrink();
 
 					if (this.diagram.symbolGlow
@@ -447,7 +451,7 @@ define(
 					this.onParentSymbolChange();
 
 					m_utils.debug("EventSymbol.onComplete");
-					
+
 					if (this.modelElement.eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
 						var hitSymbol = this.diagram
 								.getSymbolOverlappingWithSymbol(this);

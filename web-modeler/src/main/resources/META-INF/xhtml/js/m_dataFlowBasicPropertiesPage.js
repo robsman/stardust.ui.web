@@ -402,21 +402,12 @@ define(
 								.append("<option value='DEFAULT'>(To be defined)</option>"); // I18N
 					}
 
-					m_utils.debug("Contexts");
-					m_utils.debug(dataFlow.activity.getContexts());
-
 					for ( var i in dataFlow.activity.getContexts()) {
 						var context = dataFlow.activity.getContexts()[i];
 						var count = 0;
 
-						m_utils.debug("i = " + i);
-						m_utils.debug(context);
-
 						for ( var m = 0; m < context.accessPoints.length; ++m) {
 							var accessPoint = context.accessPoints[m];
-
-							m_utils.debug("m = " + m);
-							m_utils.debug(accessPoint);
 
 							if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
 								count++;

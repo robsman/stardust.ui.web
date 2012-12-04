@@ -255,20 +255,8 @@ define(
 				 * 
 				 */
 				EventBasicPropertiesPage.prototype.validate = function() {
-					this.propertiesPanel.clearErrorMessages();
-					this.nameInput.removeClass("error");
-
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
-						this.propertiesPanel.errorMessages
-								.push("Event name must not be empty.");
-						this.nameInput.addClass("error");
-
-						this.propertiesPanel.showErrorMessages();
-
-						return false;
-					}
-
+					// We allow empty names
+					
 					return true;
 				};
 			}

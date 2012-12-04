@@ -370,7 +370,11 @@ public class ConnectionCommandHandler
       transition.setFrom(sourceActivitySymbol.getActivity());
       transition.setTo(targetActivitySymbol.getActivity());
       transition.setId(extractString(controlFlowJson, ModelerConstants.ID_PROPERTY));
-      transition.setName(extractString(controlFlowJson, ModelerConstants.ID_PROPERTY));
+
+      // We accept an empty name here
+      
+      transition.setName(extractString(controlFlowJson, ModelerConstants.NAME_PROPERTY));
+    
       if (extractBoolean(controlFlowJson, ModelerConstants.OTHERWISE_PROPERTY))
       {
          transition.setCondition(ModelerConstants.OTHERWISE_KEY);

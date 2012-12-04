@@ -144,6 +144,8 @@ define(
 						var page = event.data.page;
 						var input = event.data.input;
 
+						m_utils.debug("Changed " + property + ": " + input.val());
+						
 						if (!page.validate()) {
 							return;
 						}

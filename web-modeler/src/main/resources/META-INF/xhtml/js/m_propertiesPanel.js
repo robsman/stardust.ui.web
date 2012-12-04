@@ -275,7 +275,6 @@ define(
 				PropertiesPanel.prototype.hidePropertiesPages = function() {
 					for ( var n in this.propertiesPages) {
 						this.propertiesPages[n].hide();
-						m_utils.debug("Hiding properties page " + this.propertiesPages[n].id);
 					}
 				};
 

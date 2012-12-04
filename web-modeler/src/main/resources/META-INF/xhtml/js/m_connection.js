@@ -836,10 +836,20 @@ define(
 						if (this.modelElement.otherwise) {
 							this.defaultIndicatorPath.show();
 						} else {
-							if (this.modelElement.conditionExpression != "true") {
+							if (this.modelElement.conditionExpression
+									&& this.modelElement.conditionExpression
+											.trim() != ""
+									&& this.modelElement.conditionExpression
+											.trim() != "true") {
 								this.conditionExpressionText.attr("text",
 										this.modelElement.conditionExpression);
 								this.conditionExpressionText.show();
+							} else if (this.modelElement.name) {
+								this.conditionExpressionText.attr("text",
+										this.modelElement.name);
+								this.conditionExpressionText.show();
+							} else {
+								this.conditionExpressionText.hide();
 							}
 						}
 					} else if (this.isDataFlow()) {
@@ -1994,7 +2004,7 @@ define(
 							return false;
 						}
 					}
-					
+
 					if (toAnchorPoint != null) {
 						if (toAnchorPoint.symbol.type == m_constants.SWIMLANE_SYMBOL
 								|| toAnchorPoint.symbol.type == m_constants.POOL_SYMBOL) {

@@ -64,11 +64,9 @@ define(
 				 * 
 				 */
 				GatewayBasicPropertiesPage.prototype.validate = function() {
-					if (this.validateModelElement()) {
-						return true;
-					}
+					// We allow empty names
 					
-					return false;
+					return true;
 				};
 			}
 		});

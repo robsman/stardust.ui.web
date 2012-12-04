@@ -561,7 +561,7 @@ define(
 										} else if (currentDiagram.currentSelection.length > 0) {
 											for ( var i in currentDiagram.currentSelection) {
 												if (currentDiagram.currentSelection[i]
-														.toString() == "Lightdust.Connection") {
+														.type == m_constants.CONTROL_FLOW) {
 													// TODO - The connnection
 													// should stick with
 													// mouse pointer
@@ -1571,6 +1571,7 @@ define(
 							this.currentConnection.toModelElementOid = this.lastSymbol.oid;
 							this.currentConnection.updateAnchorPointForSymbol();
 							this.currentConnection.complete();
+
 							this.currentConnection = null;
 						} else {
 							this.placeNewSymbol(x * this.zoomFactor, y
@@ -1677,6 +1678,7 @@ define(
 						this.currentConnection = m_connection.createConnection(
 								this, symbol.anchorPoints[1]);
 					}
+
 					if (null != this.currentConnection) {
 						// Set dummy anchor point
 						this.currentConnection.setDummySecondAnchorPoint();
@@ -1779,20 +1781,24 @@ define(
 						if (this.currentConnection.validateCreateConnection(
 								this.currentConnection.fromAnchorPoint,
 								anchorPoint)) {
+
 							// When connection created from toolbar, the anchor
 							// point should not change
 							if (!$(".selected-tool").is("#connectorButton")) {
 								this.currentConnection
 										.updateAnchorPointForSymbol();
 							}
+
 							this.currentConnection
 									.setSecondAnchorPoint(anchorPoint);
+							
+
 							if (!this.currentConnection.isCompleted()) {
 								this.currentConnection.remove();
 							} else {
 								this.currentConnection.select();
 								m_messageDisplay
-										.showMessage("Connection created");
+										.showMessage("Connection created"); // TODO I18N
 							}
 							this.currentConnection = null;
 							this.mode = this.NORMAL_MODE;

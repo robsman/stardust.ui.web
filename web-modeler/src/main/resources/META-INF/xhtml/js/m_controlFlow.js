@@ -29,6 +29,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants" ], function(m_ut
 	function ControlFlow(id) {
 		this.type = m_constants.CONTROL_FLOW;
 		this.id = id;
+		this.name = "";
 		this.attributes = {};
 		this.conditionExpression = null;
 		this.otherwise = false;
@@ -38,13 +39,6 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants" ], function(m_ut
 		 */
 		ControlFlow.prototype.toString = function() {
 			return "Lightdust.ControlFlow";
-		};
-
-		/**
-		 *
-		 */
-		ControlFlow.prototype.toJsonString = function() {
-			return JSON.stringify(this);
 		};
 	}
 });

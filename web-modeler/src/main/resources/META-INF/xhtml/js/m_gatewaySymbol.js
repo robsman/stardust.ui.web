@@ -1,17 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2011 SunGard CSA LLC and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *    SunGard CSA LLC - initial API and implementation and/or initial documentation
- *******************************************************************************/
+ * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
+ * documentation
+ ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_symbol",
-				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command", "bpm-modeler/js/m_activity",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_symbol",
+				"bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_command", "bpm-modeler/js/m_activity",
 				"bpm-modeler/js/m_gatewayPropertiesPanel" ],
 		function(m_utils, m_constants, m_canvasManager, m_symbol,
 				m_commandsController, m_command, m_activity,
@@ -69,17 +70,18 @@ define(
 					this.andPath = null;
 					this.xorPath = null;
 					this.orCircle = null;
+					this.text = null;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				GatewaySymbol.prototype.toString = function() {
 					return "Lightdust.GatewaySymbol";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				GatewaySymbol.prototype.initializeFromJson = function(lane) {
 					if (!this.modelElement.prototype) {
@@ -105,7 +107,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				GatewaySymbol.prototype.createTransferObject = function() {
 					var transferObject = {};
@@ -118,12 +120,13 @@ define(
 					transferObject.andPath = null;
 					transferObject.xorPath = null;
 					transferObject.orCircle = null;
+					transferObject.text = null;
 
 					return transferObject;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				GatewaySymbol.prototype.getPath = function(withId) {
 					var path = "/models/" + this.diagram.model.id
@@ -138,7 +141,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				GatewaySymbol.prototype.createPrimitives = function() {
 					this.path = m_canvasManager
@@ -194,16 +197,27 @@ define(
 
 					this.orCircle.hide();
 					this.addToPrimitives(this.orCircle);
+
+					this.text = m_canvasManager.drawTextNode(
+							this.x + 0.5 * this.width,
+							this.y + this.height + 1.2
+									* m_constants.DEFAULT_FONT_SIZE, "").attr({
+						"text-anchor" : "middle",
+						"font-family" : m_constants.DEFAULT_FONT_FAMILY,
+						"font-size" : m_constants.DEFAULT_FONT_SIZE
+					});
+
+					this.addToPrimitives(this.text);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				GatewaySymbol.prototype.initializeEventHandling = function() {
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				GatewaySymbol.prototype.getPathSvgString = function() {
 					return "M "
@@ -229,7 +243,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				GatewaySymbol.prototype.getPlusPathSvgString = function() {
 					return "M "
@@ -253,7 +267,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				GatewaySymbol.prototype.getCrossPathSvgString = function() {
 					return "M "
@@ -279,9 +293,15 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				GatewaySymbol.prototype.adjustPrimitives = function(dX, dY) {
+					this.text.animate({
+						x : this.x + 0.5 * this.width,
+						y : this.y + this.height + 1.2
+								* m_constants.DEFAULT_FONT_SIZE
+					}, this.diagram.animationDelay,
+							this.diagram.animationEasing);
 					this.path.attr({
 						"path" : this.getPathSvgString()
 					});
@@ -301,8 +321,8 @@ define(
 				};
 
 				/**
-				 * Returns max height for flyout menu
-				 * based on number of vertical menu items and symbol height
+				 * Returns max height for flyout menu based on number of
+				 * vertical menu items and symbol height
 				 */
 				GatewaySymbol.prototype.getFlyoutMenuHeight = function(height) {
 					var defaultheight = height
@@ -315,23 +335,26 @@ define(
 							+ this.leftFlyOutMenuItems.length
 							* (16 + m_constants.FLY_OUT_MENU_ITEM_MARGIN);
 
-					return Math.max(defaultheight, rightVertMenuHeight, leftVertMenuHeight);
+					return Math.max(defaultheight, rightVertMenuHeight,
+							leftVertMenuHeight);
 				}
 
 				/**
 				 * Overrides Drawable.prototype.adjustFlyOutMenu
-				 *
-				 * TODO - this can be the default implementation as it caclulates the height
-				 * dynamically. Will also need to determine width dynamically if moved
-				 * to Diagram as default implementation.
+				 * 
+				 * TODO - this can be the default implementation as it
+				 * caclulates the height dynamically. Will also need to
+				 * determine width dynamically if moved to Diagram as default
+				 * implementation.
 				 */
-				GatewaySymbol.prototype.adjustFlyOutMenu = function(x, y, width,
-						height) {
+				GatewaySymbol.prototype.adjustFlyOutMenu = function(x, y,
+						width, height) {
 
 					this.flyOutMenuBackground.attr({
 						'x' : x - m_constants.FLY_OUT_MENU_CONTENT_MARGIN,
 						'y' : y - m_constants.FLY_OUT_MENU_EMPTY_MARGIN,
-						'width' : width + 2 * m_constants.FLY_OUT_MENU_CONTENT_MARGIN,
+						'width' : width + 2
+								* m_constants.FLY_OUT_MENU_CONTENT_MARGIN,
 						'height' : this.getFlyoutMenuHeight(height)
 					});
 
@@ -346,13 +369,17 @@ define(
 					var n = 0;
 
 					while (n < this.leftFlyOutMenuItems.length) {
-						this.leftFlyOutMenuItems[n].attr({
-							x : x - m_constants.FLY_OUT_MENU_CONTENT_MARGIN
-									+ m_constants.FLY_OUT_MENU_ITEM_MARGIN,
-							y : y - m_constants.FLY_OUT_MENU_EMPTY_MARGIN
-									+ m_constants.FLY_OUT_MENU_ITEM_MARGIN + n
-									* (16 + m_constants.FLY_OUT_MENU_ITEM_MARGIN)
-						});
+						this.leftFlyOutMenuItems[n]
+								.attr({
+									x : x
+											- m_constants.FLY_OUT_MENU_CONTENT_MARGIN
+											+ m_constants.FLY_OUT_MENU_ITEM_MARGIN,
+									y : y
+											- m_constants.FLY_OUT_MENU_EMPTY_MARGIN
+											+ m_constants.FLY_OUT_MENU_ITEM_MARGIN
+											+ n
+											* (16 + m_constants.FLY_OUT_MENU_ITEM_MARGIN)
+								});
 
 						++n;
 					}
@@ -360,13 +387,19 @@ define(
 					n = 0;
 
 					while (n < this.rightFlyOutMenuItems.length) {
-						this.rightFlyOutMenuItems[n].attr({
-							x : x + width + m_constants.FLY_OUT_MENU_CONTENT_MARGIN
-									- m_constants.FLY_OUT_MENU_ITEM_MARGIN - 16,
-							y : y - m_constants.FLY_OUT_MENU_EMPTY_MARGIN
-									+ m_constants.FLY_OUT_MENU_ITEM_MARGIN + n
-									* (16 + m_constants.FLY_OUT_MENU_ITEM_MARGIN)
-						});
+						this.rightFlyOutMenuItems[n]
+								.attr({
+									x : x
+											+ width
+											+ m_constants.FLY_OUT_MENU_CONTENT_MARGIN
+											- m_constants.FLY_OUT_MENU_ITEM_MARGIN
+											- 16,
+									y : y
+											- m_constants.FLY_OUT_MENU_EMPTY_MARGIN
+											+ m_constants.FLY_OUT_MENU_ITEM_MARGIN
+											+ n
+											* (16 + m_constants.FLY_OUT_MENU_ITEM_MARGIN)
+								});
 
 						++n;
 					}
@@ -374,15 +407,19 @@ define(
 					n = 0;
 
 					while (n < this.bottomFlyOutMenuItems.length) {
-						this.bottomFlyOutMenuItems[n].attr({
-							x : x - m_constants.FLY_OUT_MENU_CONTENT_MARGIN
-									+ m_constants.FLY_OUT_MENU_ITEM_MARGIN + n
-									* (16 + m_constants.FLY_OUT_MENU_ITEM_MARGIN),
-							y : y - m_constants.FLY_OUT_MENU_EMPTY_MARGIN
-									+ this.getFlyoutMenuHeight(height)
-									- (16 + m_constants.FLY_OUT_MENU_ITEM_MARGIN)
+						this.bottomFlyOutMenuItems[n]
+								.attr({
+									x : x
+											- m_constants.FLY_OUT_MENU_CONTENT_MARGIN
+											+ m_constants.FLY_OUT_MENU_ITEM_MARGIN
+											+ n
+											* (16 + m_constants.FLY_OUT_MENU_ITEM_MARGIN),
+									y : y
+											- m_constants.FLY_OUT_MENU_EMPTY_MARGIN
+											+ this.getFlyoutMenuHeight(height)
+											- (16 + m_constants.FLY_OUT_MENU_ITEM_MARGIN)
 
-						});
+								});
 
 						++n;
 					}
@@ -398,7 +435,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				GatewaySymbol.prototype.showPrimitives = function() {
 					this.path.show();
@@ -406,9 +443,17 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				GatewaySymbol.prototype.refreshFromModelElement = function() {
+					if (this.modelElement.name
+							&& this.modelElement.name.trim() != "") {
+						this.text.attr("text", this.modelElement.name);
+						this.text.show();
+					} else {
+						this.text.hide();
+					}
+
 					if (this.modelElement.gatewayType == m_constants.AND_GATEWAY_TYPE) {
 						this.andPath.show();
 						this.xorPath.hide();
@@ -430,7 +475,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				GatewaySymbol.prototype.createFlyOutMenu = function() {
 					this
@@ -485,7 +530,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				GatewaySymbol.prototype.highlight = function() {
 					this.path.attr({
@@ -503,7 +548,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				GatewaySymbol.prototype.dehighlight = function() {
 					this.path.attr({
@@ -549,7 +594,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function GatewaySymbol_connectToClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -557,7 +602,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function GatewaySymbol_connectToActivityClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -565,7 +610,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function GatewaySymbol_connectToGatewayClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -573,7 +618,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function GatewaySymbol_connectToEndEventClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -581,21 +626,22 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function GatewaySymbol_removeClosure() {
-				this.auxiliaryProperties.callbackScope.createAndSubmitDeleteCommand();
+				this.auxiliaryProperties.callbackScope
+						.createAndSubmitDeleteCommand();
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function GatewaySymbol_switchToXorGatewayClosure() {
 				this.auxiliaryProperties.callbackScope.switchToXorGateway();
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function GatewaySymbol_switchToAndGatewayClosure() {
 				this.auxiliaryProperties.callbackScope.switchToAndGateway();
