@@ -23,12 +23,14 @@ define(
 				"bpm-modeler/js/m_data",
 				"bpm-modeler/js/m_elementConfiguration",
 				"bpm-modeler/js/m_jsfViewManager",
-				"bpm-modeler/js/m_messageDisplay", "bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_messageDisplay", "bpm-modeler/js/m_i18nUtils",
+				"bpm-modeler/js/m_modelerUtils" ],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_communicationController, m_commandsController, m_command,
 				m_session, m_user, m_model, m_process, m_application,
 				m_participant, m_typeDeclaration, m_outlineToolbarController,
-				m_data, m_elementConfiguration, m_jsfViewManager, m_messageDisplay, m_i18nUtils) {
+				m_data, m_elementConfiguration, m_jsfViewManager,
+				m_messageDisplay, m_i18nUtils, m_modelerUtils) {
 			var isElementCreatedViaOutline = false;
 			var hasUnsavedModifications = false;
 			function getURL() {
@@ -532,6 +534,12 @@ define(
 				if (true == saveFirst) {
 					saveAllModels();
 				}
+
+				// Close all modeler-related views This is to
+				// avoid having any open view in inconsistent
+				// state.
+				m_modelerUtils.closeAllModelerViews();
+
 				jQuery("#outline").empty();
 				readAllModels(true);
 			};

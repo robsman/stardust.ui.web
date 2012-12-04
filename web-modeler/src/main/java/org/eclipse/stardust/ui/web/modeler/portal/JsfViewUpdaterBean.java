@@ -77,8 +77,9 @@ public class JsfViewUpdaterBean
          for (View view : openViews)
          {
             Map<String, Object> viewParams = view.getViewParams();
-            if (uuid.equals(viewParams.get("uuid"))
-                  || uuid.equals(viewParams.get("modelUUID")))
+            if (null != viewParams
+                  &&(uuid.equals(viewParams.get("uuid"))
+                  || uuid.equals(viewParams.get("modelUUID"))))
             {
                viewsToClose.add(view);
             }

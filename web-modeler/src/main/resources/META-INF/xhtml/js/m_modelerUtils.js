@@ -14,14 +14,17 @@
  * @author shrikant.gangal
  */
 define(
-		["bpm-modeler/js/m_utils"],
-		function(m_utils) {
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_model", "bpm-modeler/js/m_jsfViewManager" ],
+		function(m_utils, m_model, m_jsfViewManager) {
 			var SCROLL_PANE_ID = "scrollpane";
+			var viewManager = m_jsfViewManager.create();
 
 			return {
 				getModelerScrollPosition : function() {
 					return getScrollpaneScrollPosition();
-				}
+				},
+
+				closeAllModelerViews : closeAllModelerViews
 			};
 
 			function getScrollpaneScrollPosition() {
@@ -31,6 +34,18 @@ define(
 						top : scrollPane.scrollTop,
 						left : scrollPane.scrollLeft
 					}
+				}
+			}
+
+			/**
+			 * Fire close views for all models so that only
+			 * modeler related views will be closed.
+			 */
+			function closeAllModelerViews() {
+				m_jsfViewManager
+				var models = m_model.getModels();
+				for (var i in models) {
+					viewManager.closeViewsForElement(models[i].uuid);
 				}
 			}
 		});
