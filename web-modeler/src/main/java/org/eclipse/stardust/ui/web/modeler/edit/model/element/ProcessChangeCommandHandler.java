@@ -4,8 +4,6 @@
  */
 package org.eclipse.stardust.ui.web.modeler.edit.model.element;
 
-import static org.eclipse.stardust.engine.api.model.PredefinedConstants.ADMINISTRATOR_ROLE;
-import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newManualTrigger;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newProcessDefinition;
 import static org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants.ID_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
@@ -79,7 +77,7 @@ public class ProcessChangeCommandHandler
       poolSymbol.setYPos(0);
       poolSymbol.setWidth(500);
       poolSymbol.setHeight(600);
-      poolSymbol.setName("DEFAULT POOL");
+      poolSymbol.setName(DefaultNames.getString("views.diagram.defaultPool"));
       poolSymbol.setId("_default_pool__1");
       poolSymbol.setOrientation(OrientationType.VERTICAL_LITERAL);
 
@@ -90,7 +88,7 @@ public class ProcessChangeCommandHandler
 
       laneSymbol.setElementOid(++maxOid);
       laneSymbol.setId(ModelerConstants.DEF_LANE_ID);
-      laneSymbol.setName(ModelerConstants.DEF_LANE_NAME);
+      laneSymbol.setName(DefaultNames.getString("views.modelView.defaultLane"));
       // Setting the x,y for default swimlane
       //TODO - Move this code to javascript
       laneSymbol.setXPos(12);
