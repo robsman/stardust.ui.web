@@ -2403,36 +2403,34 @@ define(
 						m_messageDisplay.markModified();
 						hasUnsavedModifications = true;
 						for ( var i = 0; i < obj.changes.added.length; i++) {
-							if (!command.changes.added[i][m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
-								// Create Process
-								if (m_constants.PROCESS == command.changes.added[i].type) {
-									this
-											.openElementView(
-													this
-															.createProcess(command.changes.added[i]),
-													(command.isRedo || command.isUndo));
-								} else if (m_constants.MODEL == command.changes.added[i].type) {
-									this.openElementView(this
-											.createModel(command.changes.added[i]));
-								} else if (m_constants.TYPE_DECLARATION_PROPERTY == command.changes.added[i].type) {
-									this
-											.openElementView(this
-													.createStructuredDataType(command.changes.added[i]));
-								} else if (m_constants.DATA == command.changes.added[i].type) {
-									this.openElementView(this
-											.createData(command.changes.added[i]));
-								} else if (m_constants.APPLICATION == command.changes.added[i].type) {
-									this
-											.openElementView(this
-													.createApplication(command.changes.added[i]));
-								} else if (m_constants.ROLE_PARTICIPANT_TYPE == command.changes.added[i].type
-										|| m_constants.TEAM_LEADER_TYPE == command.changes.added[i].type
-										|| m_constants.ORGANIZATION_PARTICIPANT_TYPE == command.changes.added[i].type
-										|| m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == command.changes.added[i].type) {
-									this
-											.openElementView(this
-													.createParticipant(command.changes.added[i]));
-								}
+							// Create Process
+							if (m_constants.PROCESS == command.changes.added[i].type) {
+								this
+										.openElementView(
+												this
+														.createProcess(command.changes.added[i]),
+												(command.isRedo || command.isUndo));
+							} else if (m_constants.MODEL == command.changes.added[i].type) {
+								this.openElementView(this
+										.createModel(command.changes.added[i]));
+							} else if (m_constants.TYPE_DECLARATION_PROPERTY == command.changes.added[i].type) {
+								this
+										.openElementView(this
+												.createStructuredDataType(command.changes.added[i]));
+							} else if (m_constants.DATA == command.changes.added[i].type) {
+								this.openElementView(this
+										.createData(command.changes.added[i]));
+							} else if (m_constants.APPLICATION == command.changes.added[i].type) {
+								this
+										.openElementView(this
+												.createApplication(command.changes.added[i]));
+							} else if (m_constants.ROLE_PARTICIPANT_TYPE == command.changes.added[i].type
+									|| m_constants.TEAM_LEADER_TYPE == command.changes.added[i].type
+									|| m_constants.ORGANIZATION_PARTICIPANT_TYPE == command.changes.added[i].type
+									|| m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == command.changes.added[i].type) {
+								this
+										.openElementView(this
+												.createParticipant(command.changes.added[i]));
 							}
 						}
 						for ( var i = 0; i < obj.changes.modified.length; i++) {
@@ -2822,21 +2820,23 @@ define(
 					var model = m_model
 							.findModelByUuid(transferObject.modelUUID);
 					var data = m_data.initializeFromJson(model, transferObject);
-					var parentSelector = '#data_' + model.uuid;
 
-					jQuery("#outline").jstree("create", parentSelector, "last",
-							{
-								"attr" : {
-									"rel" : data.dataType,
-									"modelId" : model.id,
-									"modelUUID" : model.uuid,
-									"id" : data.uuid,
-									"elementId" : data.id,
-									"fullId" : data.getFullId(),
-									"draggable" : true
-								},
-								"data" : data.name
-							}, null, true);
+					if (!transferObject[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
+						var parentSelector = '#data_' + model.uuid;
+						jQuery("#outline").jstree("create", parentSelector, "last",
+								{
+									"attr" : {
+										"rel" : data.dataType,
+										"modelId" : model.id,
+										"modelUUID" : model.uuid,
+										"id" : data.uuid,
+										"elementId" : data.id,
+										"fullId" : data.getFullId(),
+										"draggable" : true
+									},
+									"data" : data.name
+								}, null, true);
+					}
 
 					return data;
 				};
@@ -2876,22 +2876,25 @@ define(
 							.findModelByUuid(transferObject.modelUUID);
 					var participant = m_participant.initializeFromJson(model,
 							transferObject);
-					var parentSelector = (transferObject.parentUUID ? ("#" + transferObject.parentUUID)
-							: ("#participants_" + model.uuid));
-					jQuery("#outline").jstree("create", parentSelector, "last",
-							{
-								"attr" : {
-									"id" : participant.uuid,
-									"fullId" : participant.getFullId(),
-									"rel" : participant.type,
-									"modelId" : model.id,
-									"modelUUID" : model.uuid,
-									"parentUUID" : transferObject.parentUUID,
-									"draggable" : true,
-									"elementId" : participant.id
-								},
-								"data" : participant.name
-							}, null, true);
+
+					if (!transferObject[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
+						var parentSelector = (transferObject.parentUUID ? ("#" + transferObject.parentUUID)
+								: ("#participants_" + model.uuid));
+						jQuery("#outline").jstree("create", parentSelector, "last",
+								{
+									"attr" : {
+										"id" : participant.uuid,
+										"fullId" : participant.getFullId(),
+										"rel" : participant.type,
+										"modelId" : model.id,
+										"modelUUID" : model.uuid,
+										"parentUUID" : transferObject.parentUUID,
+										"draggable" : true,
+										"elementId" : participant.id
+									},
+									"data" : participant.name
+								}, null, true);
+					}
 
 					return participant;
 				}
