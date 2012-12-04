@@ -12,6 +12,7 @@
 		document.getElementById('acceptButton').value = payloadObj.acceptButtonText;
 		document.getElementById('cancelButton').onclick = closePopup;
 		document.getElementById('dialogCloseIcon').onclick = closePopup;
+		document.getElementById("saveCheckbox").checked = true;
 		document.getElementById('acceptButton').onclick = function() {
 			payloadObj
 					.acceptFunction(document.getElementById("saveCheckbox").checked);
